@@ -62,17 +62,12 @@ public static class Camouflage
                     .Set("", 13, "hat_pk05_Plant", "", "visor_BubbleBumVisor", "", "");
                 break;
 
-            case 3: // Loonie
-                CamouflageOutfit = new GameData.PlayerOutfit()
-                    .Set("", 12, "hat_pkHW01_Wolf", "skin_scarfskin", "visor_Carrot", "pet_Pusheen", "");
-                break;
-
-            case 4: // Lauryn
+            case 3: // Lauryn
                 CamouflageOutfit = new GameData.PlayerOutfit()
                     .Set("", 13, "hat_rabbitEars", "skin_Bananaskin", "visor_BubbleBumVisor", "pet_Pusheen", "");
                 break;
 
-            case 5: // Moe
+            case 4: // Moe
                 CamouflageOutfit = new GameData.PlayerOutfit()
                     .Set("", 4, "hat_mira_headset_yellow", "skin_SuitB", "visor_lollipopCrew", "pet_EmptyPet", "");
                 break;

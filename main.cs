@@ -24,7 +24,7 @@ public class Main : BasePlugin
     // == プログラム設定 / Program Config ==
     public const string OriginalForkId = "OriginalTOH";
 
-    public static readonly string ModName = "TOH-RE";
+    public static readonly string ModName = "TOHE";
     public static readonly string ForkId = "TOHE";
     public static readonly string ModColor = "#ffc0cb";
     public static readonly bool AllowPublicRoom = true;
@@ -36,22 +36,22 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.karped1em.townofhostedited";
-    public const string PluginVersion = "3.1.0";
-    public const string PluginDisplayVersion = "3.1.0";
+    public const string PluginVersion = "1.0.0";
+    public const string PluginDisplayVersion = "1.0.0";
     public static readonly string SupportedVersionAU = "2023.7.11";
     public const bool Canary = false;
 
     public static readonly bool ShowGitHubButton = true;
-    public static readonly string GitHubInviteUrl = "https://github.com/Loonie-Toons/TownOfHost-ReEdited";
+    public static readonly string GitHubInviteUrl = "https://github.com/0xDrMoe/TownofHost-Enhanced";
 
     public static readonly bool ShowDiscordButton = true;
-    public static readonly string DiscordInviteUrl = "https://dsc.gg/tohe";
+    public static readonly string DiscordInviteUrl = "https://discord.gg/tohe";
 
     public static readonly bool ShowWebsiteButton = true;
     public static readonly string WebsiteInviteUrl = "https://tohre.dev";
 
-//    public static readonly bool ShowPatreonButton = true;
-//    public static readonly string PatreonInviteUrl = "https://www.patreon.com/TOHRE";
+    public static readonly bool ShowPatreonButton = true;
+    public static readonly string PatreonInviteUrl = "https://www.patreon.com/TOHRE";
 
     public Harmony Harmony { get; } = new Harmony(PluginGuid);
     public static Version version = Version.Parse(PluginVersion);

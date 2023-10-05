@@ -1715,7 +1715,7 @@ public static class Utils
         else
         {
             if (!GameStates.IsLobby) return;
-            if (player.AmOwner && player.FriendCode != "gnuedaphic#7196" && player.FriendCode != "loonietoons" && player.FriendCode != "dovebliss#9271")
+            if (player.AmOwner)
             {
                 if (!player.IsModClient()) return;
                 {
@@ -1724,27 +1724,6 @@ public static class Utils
 
                     //name = $"<color=#902efd>{GetString("HostText")}</color><color=#4bf4ff>♥</color>" + name;
                 }
-            }
-            if (player.FriendCode == "gnuedaphic#7196") // Loonie
-            {
-                if (GameStates.IsOnlineGame || GameStates.IsLocalGame)
-                    name = $"{GradientColorText("f34c50", "cf2b30", "Loonie")}";
-
-            }
-            if (player.FriendCode == "loonietoons") // Loonie
-            {
-                if (GameStates.IsOnlineGame || GameStates.IsLocalGame)
-                    name = $"{GradientColorText("f34c50", "cf2b30", "Loonie")}";
-            }
-            if (player.FriendCode == "dovebliss#9271") // Cake
-            {
-                if (GameStates.IsOnlineGame || GameStates.IsLocalGame)
-                    name = $"{GradientColorText("bd7269", "a05559", "cake")}";
-            }
-            if (player.FriendCode == "croaktense#0572") // Eevee (duh)
-            {
-                if (GameStates.IsOnlineGame || GameStates.IsLocalGame)
-                    name = $"{GradientColorText("C6C6C6", "6f6f6f", "Eevee")}";
             }
             var modtag = "";
             if (Options.ApplyModeratorList.GetValue() == 1 && player.FriendCode != PlayerControl.LocalPlayer.FriendCode)
