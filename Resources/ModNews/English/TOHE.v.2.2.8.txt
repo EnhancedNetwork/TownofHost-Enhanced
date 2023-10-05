@@ -1,0 +1,39 @@
+#Number:100032
+#Title:TownOfHostEdited v2.2.8
+#SubTitle:★★★★Emergency Fix★★★★
+#ShortTitle:★TOHE v2.2.8
+#Date:2023-4-13T00:00:00Z
+#-----------------------------
+Thank you for using TOHE!
+
+
+## Base
+- Base on TOH v4.1.2
+
+## Fix
+- Fixed bug that Jackal Can Sabotage' doesn't work
+- Fixed bug that Killing Machine Can Sabotage
+- Fixed bug that Concealer's skills will not expire
+- Fixed bug that vanilla players can see other player's names while the camouflage
+- Fixed bug that vanilla players can see name and skill notify while the camouflage
+- Fixed bug that psychic with mod sometimes cannot see the red name
+- Fixed bug that there was no skill end prompt after the Grenadier became a madmate
+- Fixed bug that 'Kick players whose level lower than' sometimes doesn't work
+- Fixed bug that players with mod sometimes can see through the wall
+- Fixed bug that Mediumshiper's skill notice doesn't work
+- Fixed bug that the mod may not load when starting the game in some regions
+- Fixed some wrong English translations
+
+## Changing
+- Moved a large number of role skill judgments from starting a meeting to reporting a body to prevent issues with certain skills not triggering
+- Optimized the codes of Veterans and Grenadier to improve performance
+
+## New Feature
+- Option: Specially set the team that the Mad-Sheriff can kill
+- Option: Imp know Madmate
+- Option: Imp can kill Madmate
+- Option: Madmate know Madmate
+- Option: Madmate know Imp
+- Option: Madmate can kill Imp
+- Notify the player when the player's role is erased by the Eraser
+- Command: /n all shows /n for TOH version

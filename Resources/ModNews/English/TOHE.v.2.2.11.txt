@@ -1,0 +1,40 @@
+#Number:100035
+#Title:TownOfHostEdited v2.2.11
+#SubTitle:★★★★BUUUUUUUGG!!!★★★★
+#ShortTitle:★TOHE v2.2.11
+#Date:2023-4-23T00:00:00Z
+#-----------------------------
+Thank you for using TOHE!
+
+
+## Base
+- Base on TOH v4.1.2
+
+## Fix
+- Fixed bug that Swooper will reveal when they kills a player
+- Fixed bug that The title of the Revenge of the Mafia message was not translated
+- Fixed bug that The Executioner's Victory text will be displayed after the Executioner is dead
+- Fixed bug that When the Host uses the UI to guess as a Guesser, a repeated command will be send
+- Fixed bug that Garbled messages appear when hiding Guesser and Judge command
+- Fixed bug that Sheriff's killable target option has no effect
+- Fixed bug that the /m command is invalid when becoming a hidden role
+- Fixed bug that Greedy kill cooldown is always an even cooldown
+- Fixed bug that Celebrity death message may be seen by Imp or Neutral players and the title is wrong
+- Fixed bug that Madmates are counted in the crew team causing the game not to end
+- Fixed bug that Fortune Teller divination Sooper result is wrong
+- Fixed bug that The Guesser, Judge, and Mafia skill buttons may not respond when clicked
+- Fixed bug that The Guesser, Judge, and Mafia skill buttons may have chosen a wrong target when the click button
+- Fixed numerous bugs that could result from meetings held by Paranoid, Hacker, and Host commands
+
+## Changing
+- Now the First Dead Shield will only take effect when all players are alive
+- Optimized some visual effects of the Guesser UI and fixed some bugs
+- According to the options of whether the Guesser can guess a certain role type, it is determined whether to display the role type in the UI
+- Optimize the hud text of the Swooper for mod
+- Optimized the performance of the Butcher
+
+## New Feature
+- Guesser UI now has additional roles
+- The shield-animation will display as a reminder when the Swooper skill ends
+- Discord TOHE-Chan
+- Option: Low Load Mode

@@ -1,0 +1,40 @@
+#Number:100034
+#Title:TownOfHostEdited v2.2.10
+#SubTitle:★★★★Sth Good★★★★
+#ShortTitle:★TOHE v2.2.10
+#Date:2023-4-19T00:00:00Z
+#-----------------------------
+Thank you for using TOHE!
+
+
+## Base
+- Base on TOH v4.1.2
+
+## Fix
+- Fixed bug that the news of the death of the Celebrity is sent to everyone and spam the chat
+- Fixed bug that non-host mods may be kicked when the rename prompting is triggered
+- Fixed bug that the Crew cannot become Workhorse when 'Assign Only To ' was enabled
+- Fixed bug that could cause the meeting not to end when the Jester was voted out
+- Fixed bug that 'Show Role Descriptions to Unmodded Clients at First Meeting' doesn't work
+- Fixed bug that the skill would not prompt or cause the meeting to crash when the Detective reported a suicide corpse
+- Fixed bug that an abnormal exit from the game or disconnection without a pop-up window will cause an error
+- Fixed bug that the target of the Innocent quits the game, which may cause the meeting to crash and the Executioner, Jester and other roles cannot win
+- Fixed bug that the prompts of other roles skills may be invalid when the player who killed by Mimic quits the game
+- Fixed bug that the command does not take effect after using the command continuously
+
+## Changing
+- The Psychic does not display the red name when there are no evil players remain
+- After the player dies in the meeting stage, it can be displayed as a dead state normally when using mod
+
+- Removed the Guardian Angel animation at the start of the meeting when using mod
+
+## New Feature
+- The Speed Booster shows the correct speed value after reaching the speed cap
+- The skill UI of the Guesser when using mod
+- The skill UI of the Judge when using mod
+- The skill UI of the Mafia when using mod
+- Use Github for update checks in regions outside of China
+- Option: Disable Hidden Roles
+
+## New Role
+- Impostor: Swooper

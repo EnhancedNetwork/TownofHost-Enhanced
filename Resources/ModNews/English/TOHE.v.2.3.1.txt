@@ -1,0 +1,55 @@
+#Number:100038
+#Title:TownOfHostEdited v2.3.1
+#SubTitle:★★★★Waiting for TOH update★★★★
+#ShortTitle:★TOHE v2.3.1
+#Date:2023-5-5T00:00:00Z
+#-----------------------------
+Thank you for using TOHE!
+
+
+## Base
+- Base on TOH v4.1.2
+
+## Fix
+- Fixed bug that CrewPostor may black screen after meeting
+- Fixed bug that Buttons for Guesser, Judge, Mafia may disappear
+- Fixed bug that Terrorists may not trigger victory checks after being killed by Pelican, guessed by Guesser, killed by Deceiver, cursed by Witch
+- Fixed bug that Executioner may not change role after their target being killed by Pelican, guessed by Guesser, killed by Deceiver, cursed by Witch
+- Fixed bug that the player swallowed by the Pelican may not return to the map after the pelican being killed by Pelican, guessed by Guesser, killed by Deceiver, cursed by Witch
+- Fixed bug that Assassin kill cooldown resets to mark cooldown after assassination instead of default kill cooldown
+- Fixed bug that Swooper is still considered invisible after skill ends
+- Fixed bug that host sometimes does not respond when clicking the vent button as a Swooper
+- Fixed bug that Concealer's skills don't expire
+- Fixed bug that After the Pelican exits the game, some players' role may be revealed
+- Fixed bug that Both the Madmate prefix and the Madmate text are displayed in the kill log
+
+## Changing
+- Reduced font size of host name suffix to prevent obscuring message
+- Swooper is no longer an experimental role
+- When searching for a lobby, display different colors for rooms on different platforms (PC blue, phone green, console game red)
+- Prevent question mark language lobby from appearing when searching game room
+- Minor tweaks to the task panel on the left side of the game
+- Disabeled the /color command in the game
+- The number of players swallowed next to the name is grayed out when the pelican is not swallowing players
+- The option to auto start at full lobby is retained after exiting
+
+## Deletion
+- Removed the unnecessary shield-animation when the Swooper's invisibility ends
+
+## New Feature
+- Block shapeshifting during meeting
+- During the meeting, prevent the death HUD that appears after a player dies or the Guesser guesses (the vanilla cannot solve it)
+- F1 also displays the options of your role
+- F2 to view your additional roles
+- Option: KPD style camouflage
+- Option: Display the team when confirming the role on ejection
+- Option: Hide Fortune Teller votes
+
+## Role Changing
+- If an Celebrity dies at a meeting, a death notification will be sent immediately
+- Blood Knight => Vigilante
+
+## New Role
+- Neutral：Follower
+- Crewmate：Observer
+- Add-On：Reach

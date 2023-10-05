@@ -1,0 +1,68 @@
+
+#Number:100050
+#Title:TownOfHostEdited v2.4.2
+#SubTitle:★★★★Ooooh bigger update★★★★
+#ShortTitle:★TOHE v2.4.2
+#Date:2023-7-5T00:00:00Z
+#-----------------------------
+Added in some new stuff, along with some bug fixes.
+Among Us v2023.3.28 is recommended so the roles work correctly.
+
+
+## Base
+- Base on TOH v4.1.2
+
+## Fixes
+- Fixed various black screen bugs (some still exist but should be less common)
+- Other various bug fixes (they're hard to keep track of)
+
+## Changes
+- Judge now supports Guesser Mode
+- Background image reverted to use the AU v2023.3.28 size due to the recommended Among Us version being v2023.3.28
+- Many other unlisted changes
+- Mario renamed to Vector due to copyright concerns
+
+## New Features
+### Impostors
+- Councillor
+- Deathpact (role by papercut on Discord)
+- Saboteur (25% chance to replace Inhibitor)
+- Consigliere (by Yumeno from TOHY)
+- Dazzler (role by papercut on Discord)
+- Devourer (role by papercut on Discord)
+### Crewmates
+- Addict (role by papercut on Discord)
+- Tracefinder
+- Deputy
+- Merchant (role by papercut on Discord)
+- Oracle
+- Spiritualist (role by papercut on Discord)
+- Retributionist
+- Guardian
+- Monarch
+### Neutrals
+- Maverick
+- Cursed Soul
+- Vulture (role by ryuk on Discord)
+- Jinx
+- Pickpocket
+- Ritualist
+- Traitor
+### Add-ons
+- Double Shot (add-on by TommyXL)
+- Rascal
+	
+## Role Changes
+- Mimic now has a setting to see the roles of dead players, due to how useless this add-on was
+- A revealed Workaholic can no longer be guessed
+- Doctor has a new setting like Workaholic to be revealed to all (currently exposes evil Doctors, use at your own risk)
+- Mayor has a setting for a TOS mechanic to reveal themselves
+- Warlock balancing
+- Cleaner balancing (resets kill cooldown to value set in Cleaner settings)
+- Updated Monarch
+- Removed speed boost from Mare
+
+## Removals
+- Removed Flash
+- Removed Speed Booster
+- Temporarily removed Oblivious

@@ -1,0 +1,43 @@
+#Number:100033
+#Title:TownOfHostEdited v2.2.9
+#SubTitle:★★★★Just Fixing★★★★
+#ShortTitle:★TOHE v2.2.9
+#Date:2023-4-16T00:00:00Z
+#-----------------------------
+Thank you for using TOHE!
+
+
+## Base
+- Base on TOH v4.1.2
+
+## Fix
+- Fixed bug that Vampire target's abnormal state may cause the meeting to crash
+- Fixed bug that the message received by the Medium and the target opposite
+- Fixed bug that Detective dosen't work
+- Fix formatting errors on some text displays
+- Fixed bug that exiting the game after the death of a Celebrity may result in skill dosen't work or even meeting crash
+- Fixed bug that ineffective command from the Medium's target
+- Fixed bug that the option to kick out low-level players could kick out the hosts themselves
+- Fixed bug that the message template file was always in English when mod first started
+- Fixed bug that the option to kick out low-level players was sometimes invalid
+- Fixed bug that the red name did not disappear after the death of the mod Psychic
+- Fixed bug that Mad-Psychic sometimes couldn't see the red name
+- Fixed bug that Psychic dosen't work
+- Fixed bug that the Hangman could still kill Madmate when the option 'Impostor can kill Madmate' is off
+- Fixed bug that the Hangman cannot get additional votes when he becomes a Stealer
+- Fixed bug that sometimes the list of winning players did not include Lovers when Lovers won
+
+## Changing
+- Rework the code for message prompts at the beginning of the meeting to optimize performance
+- Optimize the handling of player messages when hosts receive them
+- Rework the code about baned word to optimize performance
+- Bounty Hunter' target is not displayed during the meeting
+- The translation file has been refactored
+- PVP mode no longer automatically boots players from the vent to prevent kicking out by official anti-cheats
+
+## New Feature
+- Message template file in Russian
+- Prompt the player when they are killed by a Scavenger
+- Option: The first meeting automatically sends all players their own role description
+- PVP Mode Option: Boot player who stuck in vent
+- PVP Mode Option: Attack Cooldown

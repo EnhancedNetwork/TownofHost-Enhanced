@@ -1,0 +1,47 @@
+#Number:100036
+#Title:TownOfHostEdited v2.2.12
+#SubTitle:★★★★Something Coooool★★★★
+#ShortTitle:★TOHE v2.2.12
+#Date:2023-4-27T00:00:00Z
+#-----------------------------
+Thank you for using TOHE!
+
+
+## Base
+- Base on TOH v4.1.2
+
+## Fix
+- Fixed bug that Greedy would cause the meeting to crash
+- Fixed bug that The Swooper will die after the skill ends
+- Fixed bug that Fortuneteller was performing an unnecessary reset camera operation
+- Fixed bug that Sheriff was performing an unnecessary reset camera operation on non-host clients
+- Fixed bug that ejection confirmation still shows Executioner victory after Executioner has exited the game
+- Fixed bug that Swooper's kill ignores any status of the victim and kills directly
+
+## Changing
+- Optimize part of the code during the meeting to reduce lag
+- Reduce the degree of low load mode to avoid some errors
+- Better Ping display
+- Hide useless buttons in PVP mode
+- Allow setting the fueling time for Arsonist and the recruiting time for Revolutionist to 0
+- Btter intro screen
+
+## New Feature
+- Press F1 while using a mod to display your role's description
+- Some pop-up prompts for the UI of Guesser, Judge, and Mafia
+- Sound effects for some role skills for mods
+- Show role mode if Hide Game Settings is OFF
+- Kill count for last results
+- Option: Medic knows a player's shield is broken
+- Mario's vent button will display the remaining number of vents needed
+- The number of remaining skills will be displayed on the Hacker's shapeshift button
+- The number of remaining bullets will be displayed on the Quick Shooter's shapeshift button
+- Text for vent button for Revolutionist, Terrorist, Veteran, Grenadier, Mario, Mayor, Paranoid
+- Text of the Sheriff's kill button
+
+## Role Changing
+- Lazy Guy won't become a Workaholic
+
+## New Role
+- Neutral：Blood Knight
+- Impostor：CrewPostor

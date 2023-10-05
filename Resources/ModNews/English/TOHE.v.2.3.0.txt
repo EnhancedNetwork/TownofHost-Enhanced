@@ -1,0 +1,40 @@
+#Number:100037
+#Title:TownOfHostEdited v2.3.0
+#SubTitle:★★★★Framework Update★★★★
+#ShortTitle:★TOHE v2.3.0
+#Date:2023-5-1T00:00:00Z
+#-----------------------------
+This update is for .NET and BepinEx
+Although there is no new content
+There may be some improvement in performance
+
+
+## Base
+- Base on TOH v4.1.2
+
+## IMPORTANT
+- .NET Framework Updated: .NET2.1 => .NET6.0
+- BeipinEx Framework Updated: 6.0.0-be.567 => 6.0.0-be.668
+
+## Fix
+- Fixed bug that The vanilla cannot see the text of other players' remaining tasks, remaining skill counts, etc.
+- Fixed bug that Blood Knight's kill cooldown resets to half of the set cooldown when the skill expires
+- Fixed bug that Remnant data of Swooper and Pelican not being cleared in meeting
+- Fixed bug that Swooper cooldown not resetting after meeting
+- Fixed bug that Sometimes the meeting on mod would crash after the player left
+- Fixed bug that the option that the CrowPostor can kill teammates is opposite to the actual situation
+- Fixed bug that Cursed targets still die after the witch dies or is ejected
+- Fixed bug that Kill button blinking constantly in Low Load Mode
+- Fixed bug that Arsonists, Revolutionist, Witche, Puppeteer, Vampire, and SerialKiller cannot use their skills normally in Low Load Mode
+- Fixed bug that the skill buttons of Guesser, Judge, and Mafia can still be used after the voting ends
+- Fixed bug that Local game doesn't show the number of players but a useless countdown
+- Fixed bug that Deceiver has tasks
+- Fixed bug that Doctor option missing translation
+
+
+## Changing
+- Removed the shield-animation from the Blood Knight skill to prevent errors
+
+## New Feature
+- Option: Imp/Crew/Neutral can be a Seer
+- option: everyone knows who is a Workaholic

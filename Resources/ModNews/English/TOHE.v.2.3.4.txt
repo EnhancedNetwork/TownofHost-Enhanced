@@ -1,0 +1,44 @@
+#Number:100041
+#Title:TownOfHostEdited v2.3.4
+#SubTitle:★★★★Waiting for TOH update★★★★
+#ShortTitle:★TOHE v2.3.4
+#Date:2023-5-9T00:00:00Z
+#-----------------------------
+I hope this is the last version before the TOH update
+No more bugs plz!
+
+
+## Base
+- Base on TOH v4.1.2
+
+## Fix
+- Fixed bug that F1 and F2 can be used in PVP mode
+- Fixed bug that F2 will show a charmed role
+- Fixed bug that high ping in PVP mode may cause stuck in the vent
+- Fixed bug that option for Snitch Can Become Workhorse Appears in experimental roles tab
+- Fixed bug that option Charmed players know each other doesn't work
+- Fixed bug that The format of the vanilla player name prompt is wrong
+- Fixed bug that The Madmate on mod will show everyone as teammates at the intro
+- Fixed bug that Succubus may cause black screen
+- Fixed bug that The trial of the Judge and the revenge of the Mafia at the meeting may cause the Terrorist to fail to win, the Executioner's role will not change, and the Celebrity skills will not be triggered, etc.
+- Fixed bug that Lovers will leave dead bodies after meeting with Gueser guessing, Judge trial, Mafia revenge
+- Fixed bug that Mafia's revenge in non-meetings may cause the vanilla player's name and roles to display abnormally
+- Fixed bug that if the Mafia takes revenge multiple times in quick succession, the limit can be bypassed
+- Fixed bug that Revolutionist and Arsonists who become Reach may be terminated immediately when dousing or recruiting due to too far away
+- Fixed bug that the Fortune Teller can't get result when voting Succubus
+- Fixed bug that the CrewPostor on mod will show everyone as teammates at the intro
+- Fixed bug that Meeting skill buttons don't disappear after voting ends
+- Fixed bug that Killing the Avenger by the Butcher will not avenge the whole players
+
+## Changing
+- Mafia revenge at meeting leaves no body now
+
+## New Feature
+- PVP Mode uses the task panel to display leaderboards and personal stats
+- Option: Impostors can't sabotage after they died
+- Option：When all Impostors are dead, the Jackal wins by sabotage instead
+- Option：Reset Jackal's kill cooldown when someone is killed
+	
+## Role Changing
+- Arsonist and Revolutionsit's dousing/recruiting range limits will increase with the set kill range
+- CrewPostor are now an experimental role

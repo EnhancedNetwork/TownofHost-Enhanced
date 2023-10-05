@@ -1,0 +1,37 @@
+#Number:100039
+#Title:TownOfHostEdited v2.3.2
+#SubTitle:★★★★Emergency Fix★★★★
+#ShortTitle:★TOHE v2.3.2
+#Date:2023-5-6T00:00:00Z
+#-----------------------------
+Thank you for using TOHE!
+
+
+## Base
+- Base on TOH v4.1.2
+
+## Fix
+- Fixed bug that task panel display abnormal
+- Fixed bug that Blood Knight and CrewPostor can sometimes cause other players to black screen
+- Fixed bug that Gangster's Kill/Recruit cooldown has not been applied
+- Fixed bug that The name color are incorrect when the Imp and Madmate see each other
+- Fixed bug that When the option "Imp Knows Madmates" is enabled, other Imp cannot see the Madmates correctly for a short period of time after the Gangster recruits a Crew
+
+## Changing
+- Display English instead of Chinese when missing translation
+- The number of tasks for the CrewPostor is displayed in red
+- F1 and F2 prompts will only appear before the first meeting
+
+## New Feature
+- Option: Snitch can become a Workhorse
+- Option: Imp can see other Egoist Imp
+
+## Role Changing
+- Workhorse is no longer an experimental role
+- The Madmate will be completely regarded as an Imp team
+- Schizophrenic can now become a Madmate
+- Vigilante => Blood Knight
+- Knight => Vigilante
+
+## New Role
+- Neutral：Succubus

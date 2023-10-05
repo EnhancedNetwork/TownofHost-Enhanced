@@ -1,0 +1,62 @@
+#Number:100040
+#Title:TownOfHostEdited v2.3.3
+#SubTitle:★★★★Waiting for TOH update★★★★
+#ShortTitle:★TOHE v2.3.3
+#Date:2023-5-7T00:00:00Z
+#-----------------------------
+I hope this is the last version before the TOH update
+No any bugs plz!
+
+
+## Base
+- Base on TOH v4.1.2
+
+## Fix
+- Fixed bug that update may crash or return to the vanilla
+- Fixed bug that Workhorse doesn't work
+- Fixed bug that the Imp and the Madmate could see the Charmed Imp
+- Fixed bug that the Succubus would appear twice in the settlement interface after winning
+- Fixed bug that the eject confirm also display the team will display the Madmate as a crew team
+- Fixed bug that the eject confirm also display the team will display the team of exiled player's main role as the Charmed player
+- Fixed bug that the common roles options will appear on the settings panel in PVP Mode
+- Fixed bug that Task panel display error
+- Fixed bug that abnormal player name display in the PVP mode of vanilla
+- Fixed bug that The role text will disappear when the vnilla player get a name prompt
+- Fixed bug that meeting skill buttons can still be selected when blocked by the chat interface
+- Fixed bug that during the meeting, the name may change to a skill prompt
+- Fixed bug that /win doesn't work
+- Fixed bug that get incorrect role description when querying role
+- Fixed bug that the bodies killed by the Scavenger can be reported
+
+## Changing
+- Use Simplified Chinese when Traditional Chinese is missing translation
+- Eject confirm will default to displaying Madmate and Charmed players
+- Allow longer voting time
+- Fine-tuning the settings panel
+- Fine-tuning the tasks panel
+- Move the position of color-blind text in the meeting to prevent it from being blocked
+- Allows to set Arson's oiling cooldown to 0
+
+## Deletion
+- Option: Eject confirm Madmate
+
+## New Feature
+- Added text to Succubus kill button
+- Option: Charmed players can know each other
+- Option: Madmate Count Mode
+- Automatically add modded servers
+- Option: Sheriff can kill Charmed players
+- Option: Judge can trail Charmed player
+- Option: Charmed players count mode
+- Option: Hide Eraser's Votes
+- Options: Imp/Neutral/Crew can be Bait
+- Options: Imp/Neutral/Crew can be Beartrap
+- Option: Bait Report Min/Max Delay
+- Option: Warn that the killer who killed the Bait is about to report
+- Translation: 100% support Traditional Chinese
+	
+## Role Changing
+- Observer skills will not take effect until the first meeting
+- Lovers can now follow the Succubus to victory
+- Crew Bait => Addon Bait
+- Crew Beartrap => Addon Beartrap
