@@ -107,7 +107,6 @@ public static class Options
         "CamouflageMode.Default",
         "CamouflageMode.Host",
         "CamouflageMode.Karpe",
-        "CamouflageMode.Loonie",
         "CamouflageMode.Lauryn",
         "CamouflageMode.Moe"
     };
