@@ -474,6 +474,9 @@ public class Main : BasePlugin
                 {CustomRoles.SoulCollector, "#A675A1"},
                 {CustomRoles.Imitator, "#B3D94C"},
                 {CustomRoles.Doppelganger,"#f6f4a3" },
+                {CustomRoles.Mutineer, "#7f4718"},
+                {CustomRoles.Mutineer2, "#7f4718"},
+                {CustomRoles.Carnivore, "#8dbd80"},
             
                 // GM
                 {CustomRoles.GM, "#ff5b70"},
@@ -830,6 +833,9 @@ public enum CustomRoles
     Occultist,
     Shade,
     Imitator,
+    Mutineer,
+    Mutineer2,
+    Carnivore,
    //two-way camp
     Mini,
    // Sorcerer,
@@ -976,6 +982,8 @@ public enum CustomWinner
     RuthlessRomantic = CustomRoles.RuthlessRomantic,
     NiceMini = CustomRoles.Mini,
     Doppelganger = CustomRoles.Doppelganger,
+    Mutineer2 = CustomRoles.Mutineer2,
+    Carnivore = CustomRoles.Carnivore,
 }
 public enum AdditionalWinners
 {
@@ -998,6 +1006,7 @@ public enum AdditionalWinners
     Phantom = CustomRoles.Phantom,
     Maverick = CustomRoles.Maverick,
     Shaman = CustomRoles.Shaman,
+    Mutineer = CustomRoles.Mutineer,
  //   NiceMini = CustomRoles.NiceMini,
  //   Baker = CustomRoles.Baker,
 }
