@@ -1197,6 +1197,9 @@ internal static class RPC
             case CustomRoles.Maverick:
                 Maverick.Add(targetId);
                 break;
+            case CustomRoles.Carnivore:
+                Carnivore.Add(targetId);
+                break;
             case CustomRoles.Dazzler:
                 Dazzler.Add(targetId);
                 break;
