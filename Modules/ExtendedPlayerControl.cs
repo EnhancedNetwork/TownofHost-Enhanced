@@ -545,6 +545,8 @@ static class ExtendedPlayerControl
             CustomRoles.ChiefOfPolice => ChiefOfPolice.CanUseKillButton(pc.PlayerId),
             CustomRoles.EvilMini => pc.IsAlive(),
             CustomRoles.Doppelganger => pc.IsAlive(),
+            CustomRoles.Mutineer => pc.IsAlive(),
+            CustomRoles.Carnivore => pc.IsAlive(),
 
             _ => pc.Is(CustomRoleTypes.Impostor),
         };
@@ -640,6 +642,9 @@ static class ExtendedPlayerControl
             CustomRoles.ChiefOfPolice => true,
             CustomRoles.EvilMini => true,
             CustomRoles.Doppelganger => true,
+            CustomRoles.Mutineer => true,
+            CustomRoles.Mutineer2 => true,
+            CustomRoles.Carnivore => true,
 
             _ => pc.Is(CustomRoleTypes.Impostor),
         };
@@ -721,6 +726,9 @@ static class ExtendedPlayerControl
             CustomRoles.Parasite => true,
             CustomRoles.Refugee => true,
             CustomRoles.Spiritcaller => Spiritcaller.CanVent.GetBool(),
+            CustomRoles.Mutineer => Options.MutineerCanVent.GetBool(),
+            CustomRoles.Mutineer2 => Options.MutineerCanVent.GetBool(),
+            CustomRoles.Carnivore => Carnivore.CanVent.GetBool(),
 
             CustomRoles.Arsonist => pc.IsDouseDone() || (Options.ArsonistCanIgniteAnytime.GetBool() && (Utils.GetDousedPlayerCount(pc.PlayerId).Item1 >= Options.ArsonistMinPlayersToIgnite.GetInt() || pc.inVent)),
             CustomRoles.Revolutionist => pc.IsDrawDone(),
@@ -915,6 +923,15 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Doppelganger:
                 Doppelganger.SetKillCooldown(player.PlayerId);
+                break;
+            case CustomRoles.Mutineer:
+                Main.AllPlayerKillCooldown[player.PlayerId] = Options.MutineerCooldown.GetFloat();
+                break;
+            case CustomRoles.Carnivore:
+                Carnivore.SetKillCooldown(player.PlayerId);
+                break;
+            case CustomRoles.Mutineer2:
+                Main.AllPlayerKillCooldown[player.PlayerId] = Options.MutineerCooldown.GetFloat();
                 break;
             case CustomRoles.PlagueBearer:
                 PlagueBearer.SetKillCooldown(player.PlayerId);
