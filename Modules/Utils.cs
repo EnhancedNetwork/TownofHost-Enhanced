@@ -2364,9 +2364,6 @@ public static class Utils
 
                                 if (Options.PassiveNeutralsCanGuess.GetBool() && seer.GetCustomRole().IsNonNK() && !seer.Is(CustomRoles.Doomsayer))
                                     TargetPlayerName = GetTragetId;
-
-
-
                             }
                         }
                         else // Guesser Mode is Off ID
