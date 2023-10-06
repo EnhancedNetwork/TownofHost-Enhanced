@@ -32,7 +32,7 @@
 <br>
 
 **Credit to these mods and their developers for the code and help:**
-### :star: [TOHRE](https://github.com/LoonieToons/) 
+### :star: [TOHRE](https://github.com/Loonie-Toons/) 
 > 
 > - TOH: Enhanced was forked from TOH-RE
 >
