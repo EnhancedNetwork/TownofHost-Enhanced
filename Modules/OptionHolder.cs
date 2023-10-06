@@ -1565,6 +1565,7 @@ public static class Options
         MayorTasks = OverrideTasksData.Create(9515, TabGroup.CrewmateRoles, CustomRoles.Mayor);
         Monarch.SetupCustomOption();
         Farseer.SetupCustomOption();
+        President.SetupCustomOption();
         Monitor.SetupCustomOption();
     //    ChiefOfPolice.SetupCustomOption();
 

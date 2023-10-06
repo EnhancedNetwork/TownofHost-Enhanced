@@ -301,6 +301,11 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("GuessSuperStar"));
                     return true;
                 }
+                if (role == CustomRoles.President || target.Is(CustomRoles.President) && President.CheckPresidentReveal[target.PlayerId] == true && !President.PresidentCanBeGuessedAfterRevealing.GetBool())
+                {
+                    Utils.SendMessage(GetString("GuessPresident"), pc.PlayerId);
+                    return true;
+                }
                 if (role == CustomRoles.Bait && target.Is(CustomRoles.Bait) && Options.BaitNotification.GetBool())
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessNotifiedBait"), pc.PlayerId);

@@ -101,6 +101,7 @@ enum CustomRPC
     SetTracefinderArrow,
     Judge,
     Guess,
+    PresidentEnd,
     MeetingKill,
     MafiaRevenge,
     RetributionistRevenge,
@@ -545,6 +546,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.Judge:
                 Judge.ReceiveRPC(reader, __instance);
+                break;
+            case CustomRPC.PresidentEnd:
+                President.ReceiveRPC(reader, __instance);
                 break;
             case CustomRPC.MeetingKill:
                 Councillor.ReceiveRPC(reader, __instance);
@@ -1051,6 +1055,9 @@ internal static class RPC
                 break;
             case CustomRoles.Judge:
                 Judge.Add(targetId);
+                break;
+            case CustomRoles.President:
+                President.Add(targetId);
                 break;
             case CustomRoles.ParityCop:
                 ParityCop.Add(targetId);

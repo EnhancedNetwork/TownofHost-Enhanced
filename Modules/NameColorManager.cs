@@ -226,7 +226,10 @@ public static class NameColorManager
             || PotionMaster.IsShowTargetRole(seer, target)
          //   || Mare.KnowTargetRoleColor(target, isMeeting)
             || (target.Is(CustomRoles.NiceMini) && Mini.EveryoneCanKnowMini.GetBool())
-            || (target.Is(CustomRoles.EvilMini) && Mini.EveryoneCanKnowMini.GetBool());
+            || (target.Is(CustomRoles.EvilMini) && Mini.EveryoneCanKnowMini.GetBool())
+            || (target.Is(CustomRoles.President) && seer.Is(CustomRoles.Madmate) && President.MadmatesSeePresident.GetBool() && President.CheckPresidentReveal[target.PlayerId] == true)
+            || (target.Is(CustomRoles.President) && seer.Is(CustomRoleTypes.Neutral) && President.NeutralsSeePresident.GetBool() && President.CheckPresidentReveal[target.PlayerId] == true)
+            || (target.Is(CustomRoles.President) && (seer.Is(CustomRoleTypes.Impostor) || seer.Is(CustomRoles.Crewpostor)) && President.ImpsSeePresident.GetBool() && President.CheckPresidentReveal[target.PlayerId] == true);
     }
     public static bool TryGetData(PlayerControl seer, PlayerControl target, out string colorCode)
     {
