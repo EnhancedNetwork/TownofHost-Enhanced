@@ -717,6 +717,8 @@ class MeetingHudStartPatch
         //提示神存活
         if (CustomRoles.God.RoleExist() && Options.NotifyGodAlive.GetBool())
             AddMsg(GetString("GodNoticeAlive"), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.God), GetString("GodAliveTitle")));
+        if (CustomRoles.Mutineer2.RoleExist() && Options.NotifyMutineerAlive.GetBool())
+            AddMsg(GetString("MutineerNoticeAlive"), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mutineer), GetString("MutineerAliveTitle")));
         //工作狂的生存技巧
         if (MeetingStates.FirstMeeting && CustomRoles.Workaholic.RoleExist() && Options.WorkaholicGiveAdviceAlive.GetBool() && !Options.WorkaholicCannotWinAtDeath.GetBool() && !Options.GhostIgnoreTasks.GetBool())
         {
@@ -1033,6 +1035,8 @@ class MeetingHudStartPatch
                 case CustomRoles.Huntsman:
                 case CustomRoles.Traitor:
                 case CustomRoles.Spiritcaller:
+                case CustomRoles.Mutineer2:
+                case CustomRoles.Carnivore:
                     sb.Append(Snitch.GetWarningMark(seer, target));
                     break;
                 case CustomRoles.Jackal:
