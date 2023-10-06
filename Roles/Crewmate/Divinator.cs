@@ -72,7 +72,6 @@ public static class Divinator
             msg = string.Format(GetString("DivinatorCheck.TaskDone"), target.GetRealName(), GetString(target.GetCustomRole().ToString()));
         }
         else
-        // Investigator
         {
             string text = target.GetCustomRole() switch
             {
@@ -190,6 +189,7 @@ public static class Divinator
                 CustomRoles.CyberStar or
                 CustomRoles.SuperStar or
                 CustomRoles.Deathpact or
+                CustomRoles.Investigator or
                 CustomRoles.Devourer
                 => "Result12",
 
