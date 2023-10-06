@@ -481,24 +481,26 @@ class CheckForEndVotingPatch
         var DecidedWinner = false;
 
         //迷你船员长大前被驱逐抢夺胜利
-    /*    if (crole == CustomRoles.NiceMini && Mini.Age !< 18)
+        if (crole == CustomRoles.NiceMini && Mini.Age !< 18)
         {
             name = string.Format(GetString("ExiledNiceMini"), realName, coloredRole);
             DecidedWinner = true;
-        } */
+        }
 
         //小丑胜利
-   /*     if (crole == CustomRoles.Jester)
+        if (crole == CustomRoles.Jester)
         {
             name = string.Format(GetString("ExiledJester"), realName, coloredRole);
             DecidedWinner = true;
         }
+
         //处刑人胜利
         if (Executioner.CheckExileTarget(exiledPlayer, DecidedWinner, true))
         {
             name = string.Format(GetString("ExiledExeTarget"), realName, coloredRole);
             DecidedWinner = true;
         }
+
         //冤罪师胜利
         if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exileId))
         {
@@ -508,7 +510,7 @@ class CheckForEndVotingPatch
                 else name = string.Format(GetString("ExiledInnocentTargetInOneLine"), realName, coloredRole);
                 DecidedWinner = true;
             }
-        } */
+        }
 
         if (DecidedWinner) name += "<size=0>";
         if (Options.ShowImpRemainOnEject.GetBool() && !DecidedWinner)
