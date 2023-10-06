@@ -173,6 +173,11 @@ public static class CopyCat
                 case CustomRoles.Reverie:
                     Reverie.NowCooldown.Remove(pc.PlayerId);
                     break;
+                case CustomRoles.President:
+                    President.CheckPresidentReveal.Remove(pc.PlayerId);
+                    President.EndLimit.Remove(pc.PlayerId);
+                    President.RevealLimit.Remove(pc.PlayerId);
+                    break;
             }
             pc.RpcSetCustomRole(CustomRoles.CopyCat);
             SetKillCooldown(player);
@@ -337,6 +342,12 @@ public static class CopyCat
                 case CustomRoles.Reverie:
                 Reverie.NowCooldown.TryAdd(pc.PlayerId, Reverie.DefaultKillCooldown.GetFloat());
                 break;
+                case CustomRoles.President:
+                    President.CheckPresidentReveal.Add(pc.PlayerId,false);
+                    President.EndLimit.Add(pc.PlayerId, President.PresidentAbilityUses.GetInt());
+                    President.RevealLimit.Add(pc.PlayerId, 1);
+                    break;
+
             }
 
             pc.RpcSetCustomRole(role);

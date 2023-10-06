@@ -335,6 +335,7 @@ public class Main : BasePlugin
                 {CustomRoles.GuardianAngelTOHE, "#77e6d1"},
                 //特殊クルー役職
                 {CustomRoles.Luckey, "#b8d7a3" },
+                {CustomRoles.President, "#00ffac"},
                 {CustomRoles.Needy, "#a4dffe"},
                 {CustomRoles.SabotageMaster, "#3333ff"},
                 {CustomRoles.Snitch, "#b8fb4f"},
@@ -695,6 +696,7 @@ public enum CustomRoles
     ScientistTOHE,
     //Crewmate
     Luckey,
+    President,
     Needy,
     SuperStar,
     CyberStar,
