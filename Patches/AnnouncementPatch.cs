@@ -49,11 +49,53 @@ public class ModNewsHistory
         if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.English)
         {
             {
+                var news = new ModNews
+                {
+                    Number = 100002,
+                    Title = "Town of Host: Enhanced v1.0.1",
+                    SubTitle = "★★ A New Era ★★",
+                    ShortTitle = "TOH: Enhanced v1.0.1",
+                    BeforeNumber = 100001,
+                    Text = "<size=150%>Welcome to TOH: Enhanced v1.0.1!</size>" +
+                    "\n<b>【Base】</b>\n - Base on TOH-RE v3.1.0 (Notes Available)\r\n" +
+                    "\n<b>【Hotfixes】</b>" +
+                    "\n     - Removed spray of Loonie and replaced it" +
+                    "\n     - Added an updated clue in Fortune Teller" +
+                    "\n     - Fixed templates and VIP List not generating" +
+                    "\n     - A new tease...for a new role...?" +
+                    "\n\n★ Welcome to Town of Host: Enhanced! ★",
+
+                    Date = "2023-10-5T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
+                    Number = 100001,
+                    Title = "Town of Host: Enhanced v1.0.0",
+                    SubTitle = "★★ A New Era ★★",
+                    ShortTitle = "TOH: Enhanced v1.0.0",
+                    BeforeNumber = 100000,
+                    Text = "<size=150%>Welcome to TOH: Enhanced v1.0.0!</size>" +
+                    "\n<b>【Base】</b>\n - Base on TOH-RE v3.1.0 (Notes Available)\r\n" +
+                    "\n<b>【Changes/Fixes】</b>" +
+                    "\n     - Removed all association with Loonie, credit in README" +
+                    "\n     - Renamed Jailor -> Jailer (you're welcome, ryuk)" +
+                    "\n     - Updated templates with all strings/variables" +
+                    "\n     - Fixed Bandit Text String" +
+                    "\n\n★ Made the mod better. Welcome to Town of Host: Enhanced! ★",
+
+                    Date = "2023-10-5T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
                 // When making new changes/roles, add information
                 // TOHE v3.1.0
                 var news = new ModNews
                 {
-                    Number = 100003,
+                    Number = 100000,
                     Title = "Town of Host Re-Edited v3.1.0",
                     SubTitle = "★★Smaller update, but still kinda large★★",
                     ShortTitle = "★TOH-RE v3.1.0",
@@ -136,250 +178,6 @@ public class ModNewsHistory
                             "\n     - Removed Covens (Poisoner, Jinx, Potion Master, Medusa, Wraith, and Hex Master are now neutral killers again.\nShade, Coven Leader, and Ritualist are now unused)",
 
                     Date = "2023-9-29T00:00:00Z"
-
-                };
-                AllModNews.Add(news);
-            }
-            {
-                // TOHE v3.0.0
-                var news = new ModNews
-                {
-                    Number = 100002,
-                    Title = "Town of Host Re-Edited v3.0.0",
-                    SubTitle = "★★The next big update!★★",
-                    ShortTitle = "★TOH-RE v3.0.0",
-                    Text = "<size=150%>Welcome to TOHE v3.0.0!</size>\n\n<size=125%>Support for Among Us v2023.7.11 and v2023.7.12</size>\n"
-
-                        + "\n<b>【Base】</b>\n - Base on TOH v4.1.2\r\n"
-
-                        + "\n<b>【New Roles】</b>" +
-                        "\n\r<b><i>Impostor: (5 roles)</i></b>" +
-                            "\n     - Nuker (hidden)" +
-                            "\n     - Pitfall" +
-                            "\n     - Godfather" +
-                            "\n     - Ludopath" +
-                            "\n     - Berserker\n\r" +
-
-                        "\n\r<b><i>Crewmate: (13 roles)</i></b>" +
-                            "\n     - Admirer" +
-                            "\n     - Copycat" +
-                            "\n     - Time Master" +
-                            "\n     - Crusader" +
-                            "\n     - Reverie" +
-                            "\n     - Lookout" +
-                            "\n     - Telecommunication" +
-                            "\n     - Chameleon" +
-                            "\n     - Cleanser" +
-                            "\n     - Lighter (Add-on: Lighter renamed to Torch)" +
-                            "\n     - Task Manager" +
-                            "\n     - Jailor" +
-                            "\n     - Swapper (Experimental role)\n\r" +
-
-                        "\n\r<b><i>Neutral: (17 roles)</i></b>" +
-                            "\n     - Amnesiac" +
-                            "\n     - Plaguebearer/Pestilence" +
-                            "\n     - Masochist" +
-                            "\n     - Doomsayer" +
-                            "\n     - Pirate" +
-                            "\n     - Shroud" +
-                            "\n     - Werewolf" +
-                            "\n     - Shaman" +
-                            "\n     - Occultist" +
-                            "\n     - Shade" +
-                            "\n     - Romantic (Vengeful Romantic & Ruthless Romantic)" +
-                            "\n     - Seeker" +
-                            "\n     - Agitater" +
-                            "\n     - Soul Collector\n\r" +
-
-                        "\n\r<b><i>Added new faction: Coven: (10 roles)</i></b>" +
-                            "\n     - Banshee" +
-                            "\n     - Coven Leader" +
-                            "\n     - Necromancer" +
-                            "\n     - Potion Master" +
-                            "\n     - Moved Jinx to coven" +
-                            "\n     - Moved Hex Master to coven" +
-                            "\n     - Moved Medusa to coven" +
-                            "\n     - Moved Poisoner to coven" +
-                            "\n     - Moved Ritualist to coven" +
-                            "\n     - Moved Wraith to coven\n\r" +
-
-                        "\n\r<b><i>Add-on: (12 add-ons)</i></b>" +
-                            "\n     - Ghoul" +
-                            "\n     - Unlucky" +
-                            "\n     - Oblivious (returned)" +
-                            "\n     - Diseased" +
-                            "\n     - Antidote" +
-                            "\n     - Burst" +
-                            "\n     - Clumsy" +
-                            "\n     - Sleuth" +
-                            "\n     - Aware" +
-                            "\n     - Fragile" +
-                            "\n     - Repairman" +
-                            "\n     - Void Ballot\n\r" +
-
-                        "\n\r<b>【Rework Roles/Add-ons】</b>" +
-                            "\n     - Bomber" +
-                            "\n     - Medic" +
-                            "\n     - Jackal" +
-                            "\n     - Trapster" +
-                            "\n     - Mare (is now an add-on)\n\r" +
-
-                        "\n\r<b>【Bug Fixes】</b>" +
-                            "\n     - Fixed Torch" +
-                            "\n     - Fixed fatal error on Crusader" +
-                            "\n     - Fixed long loading time for game with mod" +
-                            "\n     - Jinx should no longer be able to somehow jinx themself" +
-                            "\n     - Cursed Wolf should no longer be able to somehow curse themself" +
-                            "\n     - Fixed bug when extra title appears in settings mod" +
-                            "\n     - Fixed bug when modded non-host can't guess add-ons and some roles" +
-                            "\n     - Fixed bug when some roles could not get Add-ons" +
-                            "\n     - Fixed a bug where the text \"Devoured\" did not appear for the player" +
-                            "\n     - Fixed bug where non-Lovers players would dead together" +
-                            "\n     - Fixed bug when shield in-lobby caused by Vulture cooldown up" +
-                            "\n     - Fixed bug where role Tracefinder sometime did not have arrows" +
-                            "\n     - Fixed bug when setting \"Neutrals Win Together\" doesn't work" +
-                            "\n     - Fixed Bug When Some Neutrals Cant Click Sabotage Button (Host)" +
-                            "\n     - Fixed Bug When Puppeteer and Witch Dont Sees Target Mark" +
-                            "\n     - Fixed Zoom" +
-                            "\n     - Some fixes black screen" +
-                            "\n     - Some Fix for Sheriff" +
-                            "\n     - Fixed Tracker Arrow" +
-                            "\n     - Fixed Divinator" +
-                            "\n     - Fixed some add-on conflicts" +
-                            "\n     - Fixed Report Button Icon\n\r" +
-
-                        "\n\r<b>【Improvements Roles】</b>" +
-                            "\n     - Fortune Teller" +
-                            "\n     - Serial Killer" +
-                            "\n     - Camouflager" +
-                            "\n     - Retributionist Balancing" +
-                            "\n     - Setting: Arsonist keeps the game going" +
-                            "\n     - Vector setting: Vent Cooldown" +
-                            "\n     - Jester setting: Impostor Vision" +
-                            "\n     - Avenger setting: Crewmates/Neutrals can become Avenger" +
-                            "\n     - Judge Can TrialIs Coven" +
-                            "\n     - Setting: Torch is affected by Lights Sabotage" +
-                            "\n     - SS Duration and CD setting for Miner and Escapist" +
-                            "\n     - Added ability use limit for Time Master and Grenadier" +
-                            "\n     - Added the ability to increase abilities when completing tasks for: Coroner, Chameleon, Tracker, Mechanic, Oracle, Inspector, Medium, Fortune Teller, Grenadier, Veteran, Time Master, and Pacifist" +
-                            "\n     - Setting to hide the shot limit for Sheriff" +
-                            "\n     - Setting for Fortune Teller whether it shows specific roles instead of clues on task completion" +
-                            "\n     - Settings for Tracefinder that determine a delay in when the arrows show up" +
-                            "\n     - Setting for Mortician whether it has arrows toward bodies or not" +
-                            "\n     - Setting for Oracle that determines the chance of showing an incorrect result" +
-                            "\n     - Settings for Mechanic that determine how many uses it takes to fix Reactor/O2 and Lights/Comms" +
-                            "\n     - Setting for Swooper, Wraith, Chameleon, and Shade that determines if the player can vent normally when invisibility is on cooldown" +
-                            "\n     - Setting: Bait Can Be Reported Under All Conditions" +
-                            "\n     - Chameleon uses the engineer vent cooldown" +
-                            "\n     - Vampire and Poisoner now have their cooldowns reset when the bitten/poisoned player dies\n\r" +
-
-                        "\n\r<b>【New Client Settings】</b>" +
-                            "\n     - Show FPS" +
-                            "\n     - Game Master (GM) (has been moved)" +
-                            "\n     - Text Overlay" +
-                            "\n     - Small Screen Mode" +
-                            "\n     - Old Role Summary\n\r" +
-
-                        "\n\r<b>【New Mod Settings】</b>" +
-                            "\n     - Use Protection Anti Blackout" +
-                            "\n     - Killer count command (Also includes /kcount command)" +
-                            "\n     - See ejected roles in meetings" +
-                            "\n     - Remove pets at dead players (Vanilla bug fix)" +
-                            "\n     - Setting to disable unnecessary shield animations" +
-                            "\n     - Setting to hide the kill animation when guesses happen" +
-                            "\n     - Disable comms camouflage on some maps" +
-                            "\n     - Block Switches When They Are Up" +
-                            "\n     - Sabotage Cooldown Control" +
-                            "\n     - Reset Doors After Meeting (Airship/Polus)\n\r" +
-
-                        "\n\r<b>【Some Changes】</b>" +
-                            "\n     - Victory and Defeat text is no longer role colored" +
-                            "\n     - Last Impostor can no longer be guessed" +
-                            "\n     - Tasks from a crewmate lover now count towards a task win" +
-                            "\n     - Infected players now die after a meeting if there's no alive Infectious" +
-                            "\n     - Body reports during camouflage is now separated" +
-                            "\n     - Trapster, Vector, Egoist, Revolutionist, Provocateur, Guesser are no longer experimental" +
-                            "\n     - Added ability to change settings by 5 instead of 1 when holding the Left/Right Shift key" +
-                            "\n     - All ability cooldowns are now reset after meetings" +
-                            "\n     - Lovers can not become Sunnyboy" +
-                            "\n     - Task bar always set to none" +
-                            "\n     - Hangman moved to experimental due to bugs" +
-                            "\n     - Roles with an add-on equivalent will not spawn if the add-on is enabled" +
-                            "\n     - \"/r\" command has been improved\n\r" +
-
-                        "\n\r<b>【New Features】</b>" +
-                            "\n     - Load time reduced significantly" +
-                            "\n     - The mod has been translated to Spanish (Partially)" +
-                            "\n     - The mod has been translated to Chinese" +
-                            "\n     - Improvement Random Map" +
-                            "\n     - Main menu has been changed" +
-                            "\n     - Added new buttons in main menu" +
-                            "\n     - Added Auto starting features" +
-                            "\n     - Reworked Discord Rich Presence" +
-                            "\n     - Moderator and Sponsor improvement (/kick, /ban, /warn, and Moderator tags)" +
-                            "\n     - Default template file has been updated" +
-                            "\n     - Reworked end game summary (In the settings you can also return the old)" +
-                            "\n     - Improvement platform kick" +
-                            "\n     - Check Supported Version Among Us\n\r" +
-
-                        "\n\r<b>【Removals】</b>" +
-                            "\n     - Removed Solo PVP mode" +
-                            "\n     - Removed Neptune" +
-                            "\n     - Removed Capitalist",
-
-                    Date = "2023-9-16T00:00:00Z"
-
-                };
-                AllModNews.Add(news);
-            }
-
-            {
-                // TOHE v2.5.0
-                var news = new ModNews
-                {
-                    Number = 100001,
-                    Title = "TownOfHostEdited v2.5.0",
-                    SubTitle = "★★★★Another big update, maybe bigger?★★★★",
-                    ShortTitle = "★TOHE v2.5.0",
-                    Text = "<size=150%>Welcome to TOHE v2.5.0.</size>\n\n<size=125%>Support for Among Us v2023.7.11 and v2023.7.12</size>\n"
-
-                        + "\n【Base】\n - Base on TOH v4.1.2\r\n"
-                        + "\n【Fixes】\n - Various bug fixes\n\r"
-                        + "\n【Changes】\n - Hex Master hex icon changed to separate it from Spellcaster\n - Fortune Teller moved to Experimentals due to a planned and unfinished rework\n\r"
-
-                        + "\n【New Features】\n - New role: Twister (role by papercut on Discord)\n\r - New role: Chameleon (from Project: Lotus)\n\r - New role: Morphling\n\r - New role: Inspector (role by ryuk on Discord)\n\r - New role: Medusa\n\r - New add-on: Lazy\n\r - New add-on: Gravestone\n\r - New add-on: Autopsy (from TOHY)\n\r - New add-on: Loyal\n\r - New add-on: Visionary\n\r- New experimental role: Spiritcaller (role by papercut on Discord)\n\r"
-
-                        + "\n【Role Changes】\n - Various changes were made, such as an update to Opportunist\n\r",
-
-                    Date = "2023-7-14T00:00:00Z"
-
-                };
-                AllModNews.Add(news);
-            }
-
-            {
-                // TOHE v2.4.2
-                var news = new ModNews
-                {
-                    Number = 100000,
-                    Title = "TownOfHostEdited v2.4.2",
-                    SubTitle = "★★★★Ooooh bigger update★★★★",
-                    ShortTitle = "★TOHE v2.4.2",
-                    Text = "Added in some new stuff, along with some bug fixes.\r\nAmong Us v2023.3.28 is recommended so the roles work correctly.\n"
-
-                        + "\n【Base】\n - Base on TOH v4.1.2\r\n"
-                        + "\n【Fixes】\n - Fixed various black screen bugs (some still exist but should be less common)\r\n - Other various bug fixes (they're hard to keep track of)\r\n"
-                        + "\n【Changes】\n - Judge now supports Guesser Mode\r\n - Background image reverted to use the AU v2023.3.28 size due to the recommended Among Us version being v2023.3.28\r\n - Many other unlisted changes\r\n - Mario renamed to Vector due to copyright concerns\r\n"
-
-                        + "\n【New Features】\n - ###Impostors\n - Councillor\r\n - Deathpact (role by papercut on Discord)\r\n - Saboteur (25% chance to replace Inhibitor)\r\n - Consigliere (by Yumeno from TOHY)\r\n - Dazzler (role by papercut on Discord)\r\n - Devourer (role by papercut on Discord)\r\n"
-                        + "\n ### Crewmates\n - Addict (role by papercut on Discord)\r\n - Tracefinder\r\n - Deputy\r\n - Merchant (role by papercut on Discord)\r\n - Oracle\r\n - Spiritualist (role by papercut on Discord)\r\n - Retributionist\r\n- Guardian\r\n - Monarch\r\n"
-                        + "\n ### Neutrals\n - Maverick\r\n - Cursed Soul\r\n - Vulture (role by ryuk on Discord)\r\n - Jinx\r\n - Pickpocket\r\n - PotionMaster\r\n - Traitor\r\n"
-                        + "\n ### Add-ons\n - Double Shot (add-on by TommyXL)\r\n - Rascal\r\n"
-
-                        + "\n【Role Changes】\n - Mimic now has a setting to see the roles of dead players, due to how useless this add-on was\r\n - A revealed Workaholic can no longer be guessed\r\n - Doctor has a new setting like Workaholic to be revealed to all (currently exposes evil Doctors, use at your own risk)\r\n - Mayor has a setting for a TOS mechanic to reveal themselves\r\n - Warlock balancing\r\n - Cleaner balancing (resets kill cooldown to value set in Cleaner settings)\r\n - Updated Monarch\r\n- Removed speed boost from Mare\r\n"
-                        + "\n【Removals】\n - Removed Flash\r\n - Removed Speed Booster\r\n - Temporarily removed Oblivious",
-
-                    Date = "2023-7-5T00:00:00Z"
 
                 };
                 AllModNews.Add(news);
