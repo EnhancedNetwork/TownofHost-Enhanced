@@ -548,6 +548,9 @@ public static class Utils
             case CustomRoles.Romantic:
             case CustomRoles.VengefulRomantic:
             case CustomRoles.RuthlessRomantic:
+            case CustomRoles.Mutineer:
+            case CustomRoles.Mutineer2:
+            case CustomRoles.Carnivore:
                 hasTasks = false;
                 break;
             case CustomRoles.Workaholic:
@@ -912,7 +915,10 @@ public static class Utils
                 break;
             case CustomRoles.Vulture:
                 ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Vulture).ShadeColor(0.25f), $"({(Vulture.BodyReportCount.TryGetValue(playerId, out var count1) ? count1 : 0)}/{Vulture.NumberOfReportsToWin.GetInt()})"));
-                break;            
+                break;  
+            case CustomRoles.Carnivore:
+                ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Carnivore).ShadeColor(0.25f), $"({(Carnivore.CarnivoreCount.TryGetValue(playerId, out var count4) ? count4 : 0)}/{Carnivore.CarnivoreToWin.GetInt()})"));
+                break;  
             case CustomRoles.Masochist:
                 ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Masochist).ShadeColor(0.25f), $"({(Main.MasochistKillMax.TryGetValue(playerId, out var count3) ? count3 : 0)}/{Options.MasochistKillMax.GetInt()})"));
                 break;            
