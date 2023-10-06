@@ -156,15 +156,15 @@ public static class DevManager
 //        DevUserList.Add(new(code: "honestsofa#2870", color: "#D381D9", tag: "Discord: SolarFlare#0700", isUp: true, isDev: false, colorCmd: false, deBug: false, upName: "SolarFlare")); //SolarFlare
         DevUserList.Add(new(code: "caseeast#7194", color: "#1c2451", tag: "disc.gg/maul", isUp: false, isDev: false, colorCmd: false, deBug: false, upName: null)); //laikrai
         // Lauryn and Moe
-        DevUserList.Add(new(code: "straymovie#6453", color: "#F6B05E", tag: "Project Lead", isUp: true, isDev: false, deBug: false, colorCmd: true, upName: "Moe")); //Moe
-        DevUserList.Add(new(code: "singlesign#1823", color: "#ffb6cd", tag: "Princess", isUp: true, isDev: false, deBug: false, colorCmd: true, upName: "Lauryn")); //Lauryn
+        DevUserList.Add(new(code: "straymovie#6453", color: "#F6B05E", tag: "Project Lead", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "Moe")); //Moe
+        DevUserList.Add(new(code: "singlesign#1823", color: "#ffb6cd", tag: "Princess", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "Lauryn")); //Lauryn
         // Other
         DevUserList.Add(new(code: "croaktense#0572", color: "#C6C6C6", tag: "Shiny Eevee", isUp: true, isDev: false, deBug: false, colorCmd: true, upName: null)); //Eevee
         DevUserList.Add(new(code: "dovebliss#9271", color: "#c67c6f", tag: "Cherry", isUp: true, isDev: false, deBug: false, colorCmd: true, upName: null)); //Cake
         // Chinese translation
-        DevUserList.Add(new(code: "cloakhazy#9133", color: "#87CEFA", tag: "这里是崽子吖awa", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null)); //乐崽吖
-        DevUserList.Add(new(code: "drawncod#3642", color: "#00FFFF", tag: "简中翻译人员", isUp: false, isDev: true, deBug: false, colorCmd: false, upName: null)); //船员小青
-        DevUserList.Add(new(code: "grubmotive#0072", color: "#4169E1", tag: "跟班诅咒中", isUp: false, isDev: true, deBug: false, colorCmd: false, upName: null));//您有一个好
+        DevUserList.Add(new(code: "cloakhazy#9133", color: "#87CEFA", tag: "我是崽子吖awa", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null)); //乐崽吖
+        DevUserList.Add(new(code: "drawncod#3642", color: "#00FFFF", tag: "简中翻译人员", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null)); //船员小青
+        DevUserList.Add(new(code: "grubmotive#0072", color: "#4169E1", tag: "跟班诅咒中", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null)); //您有一个好
         // Patreons
         DevUserList.Add(new(code: "firmshame#7569", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "Yankee"));
         DevUserList.Add(new(code: "ghostapt#7243", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "MasterKy"));

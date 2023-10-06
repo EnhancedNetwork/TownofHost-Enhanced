@@ -76,3 +76,7 @@
 ### :star: [Project Lotus](https://github.com/ImaMapleTree/Lotus)
 >
 > - Ideas for some roles (such as Crusader)
+
+### :star: [TOHE+](https://github.com/Gurge44/TOHE_PLUS)
+>
+> - Provided roles: Pyromaniac, Necromancer, Huntsman, Alchemist, and others
