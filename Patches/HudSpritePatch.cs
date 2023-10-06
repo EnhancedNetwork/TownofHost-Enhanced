@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using TOHE.Modules;
 using TOHE.Roles.Impostor;
 using UnityEngine;
