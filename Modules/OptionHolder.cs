@@ -905,6 +905,9 @@ public static class Options
     public static OptionItem CrewCanBeLoyal;
     //public static OptionItem SidekickCountMode;
     public static OptionItem GodfatherChangeOpt;
+    public static OptionItem MutineerCanVent;
+    public static OptionItem NotifyMutineerAlive;
+    public static OptionItem MutineerCooldown;
     
     public static readonly string[] GodfatherChangeMode =
     {
@@ -1374,6 +1377,7 @@ public static class Options
         TextOptionItem.Create(100007, "RoleType.CrewSupport", TabGroup.CrewmateRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
+        Admirer.SetupCustomOption();
         Chameleon.SetupCustomOption();
         Bloodhound.SetupCustomOption();
         Deputy.SetupCustomOption();
@@ -1585,6 +1589,14 @@ public static class Options
         OppoImmuneToAttacksWhenTasksDone = BooleanOptionItem.Create(10110, "ImmuneToAttacksWhenTasksDone", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Opportunist]);
         OpportunistTasks = OverrideTasksData.Create(10111, TabGroup.NeutralRoles, CustomRoles.Opportunist);
+        SetupRoleOptions(154697, TabGroup.NeutralRoles, CustomRoles.Mutineer);
+        MutineerCooldown = FloatOptionItem.Create(177749, "MutineerCooldown", new(0f, 999f, 2.5f), 30f, TabGroup.NeutralRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Mutineer])
+            .SetValueFormat(OptionFormat.Seconds);
+        NotifyMutineerAlive = BooleanOptionItem.Create(173935, "NotifyMutineerAlive", true, TabGroup.NeutralRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Mutineer]);
+        MutineerCanVent = BooleanOptionItem.Create(1742467, "CanVent", true, TabGroup.NeutralRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Mutineer]);
 
         Pursuer.SetupCustomOption();
         Romantic.SetupCustomOption();
@@ -1716,6 +1728,7 @@ public static class Options
             .SetParent(ArsonistCanIgniteAnytime);
         Bandit.SetupCustomOption();
         BloodKnight.SetupCustomOption();
+        Carnivore.SetupCustomOption();
         Gamer.SetupCustomOption();
         Glitch.SetupCustomOption();
         HexMaster.SetupCustomOption();
@@ -2219,18 +2232,17 @@ public static class Options
         TextOptionItem.Create(100019, "OtherRoles.CrewmateRoles", TabGroup.OtherRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
-        /*   SetupRoleOptions(18000, TabGroup.OtherRoles, CustomRoles.SpeedBooster);
-           SpeedBoosterUpSpeed = FloatOptionItem.Create(18010, "SpeedBoosterUpSpeed", new(0.1f, 1.0f, 0.1f), 0.2f, TabGroup.OtherRoles, false)
-           .SetParent(CustomRoleSpawnChances[CustomRoles.SpeedBooster])
-               .SetValueFormat(OptionFormat.Multiplier);
-           SpeedBoosterTimes = IntegerOptionItem.Create(18011, "SpeedBoosterTimes", new(1, 99, 1), 5, TabGroup.OtherRoles, false)
-           .SetParent(CustomRoleSpawnChances[CustomRoles.SpeedBooster])
-               .SetValueFormat(OptionFormat.Times); */
-        /*   SetupRoleOptions(18100, TabGroup.OtherRoles, CustomRoles.Glitch);
-           GlitchCanVote = BooleanOptionItem.Create(18110, "GlitchCanVote", true, TabGroup.OtherRoles, false)
-               .SetParent(CustomRoleSpawnChances[CustomRoles.Glitch]); */
-        //     Divinator.SetupCustomOption();
-        Admirer.SetupCustomOption();
+     /*   SetupRoleOptions(18000, TabGroup.OtherRoles, CustomRoles.SpeedBooster);
+        SpeedBoosterUpSpeed = FloatOptionItem.Create(18010, "SpeedBoosterUpSpeed", new(0.1f, 1.0f, 0.1f), 0.2f, TabGroup.OtherRoles, false)
+        .SetParent(CustomRoleSpawnChances[CustomRoles.SpeedBooster])
+            .SetValueFormat(OptionFormat.Multiplier);
+        SpeedBoosterTimes = IntegerOptionItem.Create(18011, "SpeedBoosterTimes", new(1, 99, 1), 5, TabGroup.OtherRoles, false)
+        .SetParent(CustomRoleSpawnChances[CustomRoles.SpeedBooster])
+            .SetValueFormat(OptionFormat.Times); */
+     /*   SetupRoleOptions(18100, TabGroup.OtherRoles, CustomRoles.Glitch);
+        GlitchCanVote = BooleanOptionItem.Create(18110, "GlitchCanVote", true, TabGroup.OtherRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Glitch]); */
+   //     Divinator.SetupCustomOption();
         Swapper.SetupCustomOption();
         Investigator.SetupCustomOption();
         // 中立
