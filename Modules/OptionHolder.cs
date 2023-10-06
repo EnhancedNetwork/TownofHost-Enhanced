@@ -1374,7 +1374,6 @@ public static class Options
         TextOptionItem.Create(100007, "RoleType.CrewSupport", TabGroup.CrewmateRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
-        Admirer.SetupCustomOption();
         Chameleon.SetupCustomOption();
         Bloodhound.SetupCustomOption();
         Deputy.SetupCustomOption();
@@ -2220,17 +2219,18 @@ public static class Options
         TextOptionItem.Create(100019, "OtherRoles.CrewmateRoles", TabGroup.OtherRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
-     /*   SetupRoleOptions(18000, TabGroup.OtherRoles, CustomRoles.SpeedBooster);
-        SpeedBoosterUpSpeed = FloatOptionItem.Create(18010, "SpeedBoosterUpSpeed", new(0.1f, 1.0f, 0.1f), 0.2f, TabGroup.OtherRoles, false)
-        .SetParent(CustomRoleSpawnChances[CustomRoles.SpeedBooster])
-            .SetValueFormat(OptionFormat.Multiplier);
-        SpeedBoosterTimes = IntegerOptionItem.Create(18011, "SpeedBoosterTimes", new(1, 99, 1), 5, TabGroup.OtherRoles, false)
-        .SetParent(CustomRoleSpawnChances[CustomRoles.SpeedBooster])
-            .SetValueFormat(OptionFormat.Times); */
-     /*   SetupRoleOptions(18100, TabGroup.OtherRoles, CustomRoles.Glitch);
-        GlitchCanVote = BooleanOptionItem.Create(18110, "GlitchCanVote", true, TabGroup.OtherRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Glitch]); */
-   //     Divinator.SetupCustomOption();
+        /*   SetupRoleOptions(18000, TabGroup.OtherRoles, CustomRoles.SpeedBooster);
+           SpeedBoosterUpSpeed = FloatOptionItem.Create(18010, "SpeedBoosterUpSpeed", new(0.1f, 1.0f, 0.1f), 0.2f, TabGroup.OtherRoles, false)
+           .SetParent(CustomRoleSpawnChances[CustomRoles.SpeedBooster])
+               .SetValueFormat(OptionFormat.Multiplier);
+           SpeedBoosterTimes = IntegerOptionItem.Create(18011, "SpeedBoosterTimes", new(1, 99, 1), 5, TabGroup.OtherRoles, false)
+           .SetParent(CustomRoleSpawnChances[CustomRoles.SpeedBooster])
+               .SetValueFormat(OptionFormat.Times); */
+        /*   SetupRoleOptions(18100, TabGroup.OtherRoles, CustomRoles.Glitch);
+           GlitchCanVote = BooleanOptionItem.Create(18110, "GlitchCanVote", true, TabGroup.OtherRoles, false)
+               .SetParent(CustomRoleSpawnChances[CustomRoles.Glitch]); */
+        //     Divinator.SetupCustomOption();
+        Admirer.SetupCustomOption();
         Swapper.SetupCustomOption();
         Investigator.SetupCustomOption();
         // 中立
