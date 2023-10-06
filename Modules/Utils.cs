@@ -2096,7 +2096,7 @@ public static class Utils
 
 
             // Start run loop for target only if condition is "true"
-            if (seer.Data.IsDead
+            if (seer.Data.IsDead || !seer.IsAlive()
                 || NoCache
                 || ForceLoop)
                 foreach (var target in Main.AllPlayerControls)
