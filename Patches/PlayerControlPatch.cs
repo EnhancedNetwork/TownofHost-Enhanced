@@ -431,6 +431,24 @@ class CheckMurderPatch
                         return false;
                     }
                     break;
+                case CustomRoles.Mutineer:
+                    if (!target.Is(CustomRoles.SuperStar))
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        killer.RpcSetCustomRole(CustomRoles.Mutineer2);
+                        killer.Notify(GetString("MutineerNotify"));
+                    }
+                    break;
+                case CustomRoles.Carnivore:
+                    if (!target.Is(CustomRoles.Pestilence))
+                    {
+                        Carnivore.CarnivoreCount[killer.PlayerId] += 1;
+                        killer.Notify(GetString("CarnivoreNotify"));
+                        }
+                    break;
                 case CustomRoles.Gamer:
                     Gamer.CheckGamerMurder(killer, target);
                     return false;
@@ -1288,6 +1306,14 @@ class MurderPlayerPatch
                 if (delay > 0.15f && Options.BaitDelayNotify.GetBool()) killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), string.Format(GetString("KillBaitNotify"), (int)delay)), delay);
                 Logger.Info($"{killer.GetNameWithRole()} 击杀诱饵 => {target.GetNameWithRole()}", "MurderPlayer");
                 _ = new LateTask(() => { if (GameStates.IsInTask) killer.CmdReportDeadBody(target.Data); }, delay, "Bait Self Report");
+            }
+        }
+        if (target.Is(CustomRoles.Reverie) && (!killer.Is(CustomRoleTypes.Impostor)))
+        {
+            if (killer.PlayerId != target.PlayerId)
+            {
+                killer.RpcSetCustomRole(CustomRoles.Reverie);
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Reverie), GetString("ReverieNotify")));
             }
         }
         if (target.Is(CustomRoles.Burst) && !killer.Data.IsDead)
@@ -2762,6 +2788,12 @@ class FixedUpdatePatch
                 {
                     Vulture.BodyReportCount[player.PlayerId] = Vulture.NumberOfReportsToWin.GetInt();
                     CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Vulture);
+                    CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
+                }
+                if (GameStates.IsInTask && player.Is(CustomRoles.Carnivore) && Carnivore.CarnivoreCount[player.PlayerId] >= Carnivore.CarnivoreToWin.GetInt())
+                {
+                    Carnivore.CarnivoreCount[player.PlayerId] = Carnivore.CarnivoreToWin.GetInt();
+                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Carnivore);
                     CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
                 }
 
