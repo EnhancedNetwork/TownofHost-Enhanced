@@ -364,8 +364,6 @@ public class TaskState
                 else player.Notify(string.Format(Translator.GetString("SpeedBoosterTaskDone"), Main.AllPlayerSpeed[player.PlayerId].ToString("0.0#####")));
             }
 
-
-
             /*
             //叛徒修理搞破坏
             if (player.IsAlive()
@@ -504,6 +502,10 @@ public class TaskState
             {
                 Chameleon.UseLimit[player.PlayerId] += Chameleon.ChameleonAbilityUseGainWithEachTaskCompleted.GetFloat();
             }
+            if (player.Is(CustomRoles.Spy) && player.IsAlive())
+            {
+                Spy.UseLimit[player.PlayerId] += Spy.SpyAbilityUseGainWithEachTaskCompleted.GetFloat();
+            }
 
             if (player.Is(CustomRoles.Ghoul) && (CompletedTasksCount + 1) >= AllTasksCount && player.IsAlive())
             _ = new LateTask(() =>
@@ -590,7 +592,6 @@ public class TaskState
                     }
                 }
             } 
-
         }
 
         //クリアしてたらカウントしない

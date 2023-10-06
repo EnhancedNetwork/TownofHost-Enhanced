@@ -151,7 +151,6 @@ public static class Swapper
                     Utils.NotifyRoles(isForMeeting: true, NoCache: true);
                 }, 0.2f);
             }
-
         }
         return true;
     }
@@ -268,10 +267,8 @@ public static class Swapper
             {
                 renderer.sprite = CustomButton.Get("SwapNo"); 
             }
-
             button.OnClick.RemoveAllListeners();
             button.OnClick.AddListener((Action)(() => SwapperOnClick(pva.TargetPlayerId, __instance)));
         }
-    
     }
 }
