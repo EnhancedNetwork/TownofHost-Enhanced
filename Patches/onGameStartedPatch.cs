@@ -287,6 +287,7 @@ internal class ChangeRoleSettings
             Pyromaniac.Init();
             NSerialKiller.Init();
             Maverick.Init();
+            Carnivore.Init();
             Jinx.Init();
             DoubleShot.Init();
             Dazzler.Init();
@@ -866,6 +867,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Maverick:
                         Maverick.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Carnivore:
+                        Carnivore.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Dazzler:
                         Dazzler.Add(pc.PlayerId);
