@@ -221,6 +221,7 @@ class HudManagerPatch
                     case CustomRoles.Necromancer:
                     case CustomRoles.DarkHide:
                     case CustomRoles.Maverick:
+                    case CustomRoles.Carnivore:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("KillButtonText"));
                         break;
