@@ -172,7 +172,8 @@ public static class Divinator
                 CustomRoles.Judge or
                 CustomRoles.CursedSoul or
                 CustomRoles.Cleanser or
-                CustomRoles.CursedWolf
+                CustomRoles.CursedWolf or
+                CustomRoles.President
                 => "Result10",
 
                 CustomRoles.Addict or
@@ -206,6 +207,7 @@ public static class Divinator
                 CustomRoles.Paranoia or
                 CustomRoles.Mastermind or
                 CustomRoles.Pickpocket or
+                CustomRoles.Spy or
                 CustomRoles.Vindicator
                 => "Result14",
 

@@ -202,6 +202,8 @@ public static class CopyCat
             CustomRoles.Tracefinder or
             CustomRoles.Spiritualist or
             CustomRoles.Tracker or
+            //bcoz of single role
+            CustomRoles.Spy or
             // Other
             CustomRoles.Investigator;
     }

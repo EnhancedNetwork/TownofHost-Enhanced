@@ -12,7 +12,6 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
-
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
@@ -1019,12 +1018,9 @@ public static class Utils
             case CustomRoles.ChiefOfPolice:
                 ProgressText.Append(ChiefOfPolice.GetSkillLimit(playerId));
                 break; 
-        /*    case CustomRoles.NiceMini:
-                ProgressText.Append(Mini.GetAge(playerId));
+            case CustomRoles.Spy:
+                ProgressText.Append(Spy.GetProgressText(playerId, comms));
                 break;
-            case CustomRoles.EvilMini:
-                ProgressText.Append(Mini.GetAge(playerId));
-                break; */
             default:
                 //タスクテキスト
                 var taskState = Main.PlayerStates?[playerId].GetTaskState();

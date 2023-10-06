@@ -193,6 +193,8 @@ class CheckMurderPatch
             return Mastermind.ForceKillForManipulatedPlayer(killer, target);
         }
 
+        if (target.Is(CustomRoles.Spy)) Spy.OnKillAttempt(killer, target);
+
         //実際のキラーとkillerが違う場合の入れ替え処理
         if (Sniper.IsEnable) Sniper.TryGetSniper(target.PlayerId, ref killer);
         if (killer != __instance) Logger.Info($"Real Killer={killer.GetNameWithRole()}", "CheckMurder");
@@ -2783,6 +2785,7 @@ class FixedUpdatePatch
                 Wraith.OnFixedUpdate(player);
                 Shade.OnFixedUpdate(player);
                 Chameleon.OnFixedUpdate(player);
+                Spy.OnFixedUpdate(player);
             //    Alchemist.OnFixedUpdate(player);
 
                 if (GameStates.IsInTask)
