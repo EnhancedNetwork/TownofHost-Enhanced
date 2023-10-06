@@ -72,7 +72,6 @@ public static class Spy
                     change = true;
             }
         }
-
         if (change && GameStates.IsInTask) { NotifyRoles(SpecifySeer: pc); }
     }
     public static string GetProgressText(byte playerId, bool comms)
@@ -91,7 +90,7 @@ public static class Spy
         if (UseLimit[playerId] < 1) TextColor1 = Color.red;
         else TextColor1 = Color.white;
 
-        sb.Append(ColorString(TextColor, $"<color=#777777>-</color> {Completed}/{taskState.AllTasksCount}"));
+        sb.Append(ColorString(TextColor, $"({Completed}/{taskState.AllTasksCount})"));
         sb.Append(ColorString(TextColor1, $" <color=#777777>-</color> {Math.Round(UseLimit[playerId], 1)}"));
 
         return sb.ToString();
