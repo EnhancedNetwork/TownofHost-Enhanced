@@ -179,6 +179,7 @@ public static class DevManager
         DevUserList.Add(new(code: "dusksole#6956", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "Bandz"));
         DevUserList.Add(new(code: "wontsave#5153", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "wayne"));
         DevUserList.Add(new(code: "rollingegg#7687", color: "#fe7d6e", tag: "Ruler of Jiggly Peach Cakes", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "DarlingXX"));
+        DevUserList.Add(new(code: "riskyhunt#8928", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "Panda"));
     }
     public static bool IsDevUser(this string code) => DevUserList.Any(x => x.Code == code);
     public static DevUser GetDevUser(this string code) => code.IsDevUser() ? DevUserList.Find(x => x.Code == code) : DefaultDevUser;
