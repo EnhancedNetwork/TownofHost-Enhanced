@@ -200,6 +200,12 @@ class ExileControllerWrapUpPatch
                 ) pc.RpcResetAbilityCooldown();
 
 
+            }
+            if (pc.Is(CustomRoles.Mutineer2) && pc.IsAlive())
+            {
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Mutineer2);
+                CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+            }
             if (Infectious.IsEnable)
             {
                 if (pc.Is(CustomRoles.Infectious) && !pc.IsAlive())
