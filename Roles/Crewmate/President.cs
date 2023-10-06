@@ -26,7 +26,7 @@ public static class President
     public static void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.President);
-        PresidentAbilityUses = IntegerOptionItem.Create(Id + 10, "PresidentAbilityUses", new(1, 99, 1), 1, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.President])
+        PresidentAbilityUses = IntegerOptionItem.Create(Id + 10, "PresidentAbilityUses", new(1, 20, 1), 1, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.President])
             .SetValueFormat(OptionFormat.Times);
         PresidentCanBeGuessedAfterRevealing = BooleanOptionItem.Create(Id + 11, "PresidentCanBeGuessedAfterRevealing", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.President]);
         NeutralsSeePresident = BooleanOptionItem.Create(Id + 12, "NeutralsSeePresident", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.President]);
