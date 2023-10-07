@@ -1106,6 +1106,11 @@ class CheckMurderPatch
                     return false;
                 }
                 break;
+            //President kill
+            case CustomRoles.President:
+                if (President.CheckPresidentReveal[target.PlayerId] == true)
+                    killer.SetKillCooldown(0.9f);
+                return true;
             case CustomRoles.SuperStar:
                 if (Main.AllAlivePlayerControls.Where(x =>
                     x.PlayerId != killer.PlayerId &&
