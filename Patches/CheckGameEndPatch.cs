@@ -559,6 +559,8 @@ class GameEndChecker
 
             int totalNKAlive = new int[] { Rit, Traitor, Med, PP, Jackal, Vamp, DH, Rogue, Wraith, Agitater, Pestilence, PB, Juggy, Doppelganger, Hunt, Necro, Pyro, Hex, Bandit, RR, WW, Shr, Arso, Glitch, Jinx, SK, Occ, Pel, Gam, BK, Pois, Virus, SC, CM }.Sum();
             // not included coven in above list
+            CustomWinner? winner = null;
+            CustomRoles? rl = null;
 
             if (Main.AllAlivePlayerControls.All(p => p.Is(CustomRoles.Lovers))) // if lover is alive lover wins
             {
@@ -572,19 +574,21 @@ class GameEndChecker
                 if (Crew == 0 && Imp == 0) // crew and Imp both 0 everyone dead
                 {
                     reason = GameOverReason.ImpostorByKill;
-                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.None);
+                    winner = CustomWinner.None;
                 }
                 else if (Crew <= Imp) // crew less than imps Imp wins
                 {
                     reason = GameOverReason.ImpostorByKill;
-                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Impostor);
+                    winner = CustomWinner.Impostor;
                 }
                 else if (Imp == 0) // remaining imp 0 crew win (neutral already dead)
                 {
                     reason = GameOverReason.HumansByVote;
-                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
+                    winner = CustomWinner.Crewmate;
                 }
                 else return false; // crew greater than Imps and Imp not dead game must continue
+                if (winner != null)
+                    CustomWinnerHolder.ResetAndSetWinner((CustomWinner)winner);
                 return true;
             }
 
@@ -597,201 +601,201 @@ class GameEndChecker
                     if (Rit == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.PotionMaster);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.PotionMaster);
+                        winner = CustomWinner.PotionMaster;
+                        rl = CustomRoles.PotionMaster;
                     }
                     else if (Traitor == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Traitor);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Traitor);
+                        winner = CustomWinner.Traitor;
+                        rl = CustomRoles.Traitor;
                     }
                     else if (Med == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Medusa);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Medusa);
+                        winner = CustomWinner.Medusa;
+                        rl = CustomRoles.Medusa;
                     }
                     else if (PP == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Pickpocket);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Pickpocket);
+                        winner = CustomWinner.Pickpocket;
+                        rl = CustomRoles.Pickpocket;
                     }
                     else if (Jackal == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Jackal);
+                        winner = CustomWinner.Jackal;
                     }
                     else if (Vamp == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Infectious);
+                        winner = CustomWinner.Infectious;
                     }
                     else if (DH == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.DarkHide);
+                        winner = CustomWinner.DarkHide;
                     }
                     else if (Rogue == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Rogue);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Rogue);
+                        winner = CustomWinner.Rogue;
                     }
                     else if (Wraith == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Wraith);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Wraith);
+                        winner = CustomWinner.Wraith;
+                        rl = CustomRoles.Wraith;
                     }
                     else if (Agitater == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Agitater);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Agitater);
+                        winner = CustomWinner.Agitater;
                     }
                     else if (Pestilence == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Pestilence);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Pestilence);
+                        winner = CustomWinner.Pestilence;
+                        rl = CustomRoles.Pestilence;
                     }
                     else if (PB == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Plaguebearer);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.PlagueBearer);
+                        winner = CustomWinner.Plaguebearer;
+                        rl = CustomRoles.PlagueBearer;
                     }
                     else if (Juggy == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Juggernaut);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Juggernaut);
+                        winner = CustomWinner.Juggernaut;
+                        rl = CustomRoles.Juggernaut;
                     }
                     else if (Doppelganger == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Doppelganger);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Doppelganger);
+                        winner = CustomWinner.Doppelganger;
+                        rl = CustomRoles.Doppelganger;
                     }
                     else if (Hunt == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Huntsman);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Huntsman);
+                        winner = CustomWinner.Huntsman;
+                        rl = CustomRoles.Huntsman;
                     }
                     else if (Necro == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Necromancer);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Necromancer);
+                        winner = CustomWinner.Huntsman;
+                        rl = CustomRoles.Huntsman;
                     }
                     else if (Pyro == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Pyromaniac);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Pyromaniac);
+                        winner = CustomWinner.Pyromaniac;
+                        rl = CustomRoles.Pyromaniac;
                     }
                     else if (Hex == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.HexMaster);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.HexMaster);
+                        winner = CustomWinner.HexMaster;
+                        rl = CustomRoles.HexMaster;
                     }
                     else if (Bandit == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Bandit);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Bandit);
+                        winner = CustomWinner.Bandit;
+                        rl = CustomRoles.Bandit;
                     }
                     else if (RR == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.RuthlessRomantic);
+                        winner = CustomWinner.RuthlessRomantic; 
                     }
                     else if (WW == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Werewolf);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Werewolf);
+                        winner = CustomWinner.Werewolf;
+                        rl = CustomRoles.Werewolf;
                     }
                     else if (Shr == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Shroud);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Shroud);
+                        winner = CustomWinner.Shroud;
+                        rl = CustomRoles.Shroud;
                     }
                     else if (Arso == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Arsonist);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Arsonist);
+                        winner = CustomWinner.Arsonist;
+                        rl = CustomRoles.Arsonist;
                     }
                     else if (Glitch == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Glitch);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Glitch);
+                        winner = CustomWinner.Glitch;
+                        rl = CustomRoles.Glitch;
                     }
                     else if (Jinx == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Jinx);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Jinx);
+                        winner = CustomWinner.Jinx;
+                        rl = CustomRoles.Jinx;
                     }
                     else if (SK == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.SerialKiller);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.NSerialKiller);
+                        winner = CustomWinner.SerialKiller;
+                        rl = CustomRoles.NSerialKiller;
                     }
                     else if (Occ == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Occultist);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Occultist);
+                        winner = CustomWinner.Occultist;
+                        rl = CustomRoles.Occultist;
                     }
                     else if (Pel == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Pelican);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Pelican);
+                        winner = CustomWinner.Pelican;
+                        rl = CustomRoles.Pelican;
                     }
                     else if (Gam == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Gamer);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Gamer);
+                        winner = CustomWinner.Gamer;
+                        rl = CustomRoles.Gamer;
                     }
                     else if (BK == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.BloodKnight);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.BloodKnight);
+                        winner = CustomWinner.BloodKnight;
+                        rl = CustomRoles.BloodKnight;
                     }
                     else if (Pois == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Poisoner);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Poisoner);
+                        winner = CustomWinner.Poisoner;
+                        rl = CustomRoles.Poisoner;
                     }
                     else if (Virus == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Virus);
+                        winner = CustomWinner.Virus;
                     }
                     else if (SC == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Spiritcaller);
+                        winner = CustomWinner.Spiritcaller;
                     }
                     else if (CM == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Succubus);
+                        winner = CustomWinner.Succubus;
                     }
                     else return false; // not all alive neutrals were in one team
+                    if (winner != null) CustomWinnerHolder.ResetAndSetWinner((CustomWinner)winner);
+                    if (rl != null) CustomWinnerHolder.WinnerRoles.Add((CustomRoles)rl);
                     return true;
                 }
             }
