@@ -32,9 +32,13 @@
 <br>
 
 **Credit to these mods and their developers for the code and help:**
+### :star: [TOHRE](https://github.com/Loonie-Toons/) 
+> 
+> - TOH: Enhanced was forked from TOH-RE
+>
 ### :star: [TOHE](https://github.com/KARPED1EM/TownOfHostEdited) :
 > 
-> - Our repo is forked from TOHE
+> - TOHRE was forked from TOHE
 ### :star: [TOH](https://github.com/tukasa0001/TownOfHost) :
 > 
 > - Our repo is based initially on TOH
