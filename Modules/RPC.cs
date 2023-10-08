@@ -654,9 +654,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SetPoliceLimlit:
                 ChiefOfPolice.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SyncMiniAge:
-                Mini.ReceiveRPC(reader);
-                break;
             case CustomRPC.SyncSabotageMasterSkill:
                 SabotageMaster.ReceiveRPC(reader);
                 break;
