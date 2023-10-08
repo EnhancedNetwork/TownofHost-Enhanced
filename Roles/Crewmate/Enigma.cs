@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Epic.OnlineServices.AntiCheatClient;
 using Hazel;
 using MS.Internal.Xml.XPath;
 using static TOHE.Options;
@@ -24,8 +25,10 @@ namespace TOHE.Roles.Crewmate
 
         private static List<EnigmaClue> EnigmaClues = new List<EnigmaClue>
         {
-            new EnigmaClue { ClueStage = 1, EnigmaClueType = EnigmaClueType.HatClue },
-            new EnigmaClue { ClueStage = 3, EnigmaClueType = EnigmaClueType.HatClue },
+            new EnigmaHatClue { ClueStage = 1, EnigmaClueType = EnigmaClueType.HatClue },
+            new EnigmaHatClue { ClueStage = 3, EnigmaClueType = EnigmaClueType.HatClue },
+
+            // TODO Refactoring
             new EnigmaClue { ClueStage = 1, EnigmaClueType = EnigmaClueType.VisorClue },
             new EnigmaClue { ClueStage = 3, EnigmaClueType = EnigmaClueType.VisorClue },
             new EnigmaClue { ClueStage = 1, EnigmaClueType = EnigmaClueType.SkinClue },
@@ -129,7 +132,7 @@ namespace TOHE.Roles.Crewmate
 
                 EnigmaClue clue = clues[rd.Next(0, clues.Count)];
 
-                ShownClues[playerId].Add(new EnigmaClue { ClueStage = clue.ClueStage, EnigmaClueType = clue.EnigmaClueType });
+                ShownClues[playerId].Add(clue);
 
                 title = GetTitleForClue(clue.EnigmaClueType);
                 msg = GetMessageForClue(stage, clue.EnigmaClueType, killer, showStageClue);
@@ -428,10 +431,35 @@ namespace TOHE.Roles.Crewmate
         }
     }
 
-    public class EnigmaClue
+    public abstract class EnigmaClue
     {
         public int ClueStage { get; set; }
         public EnigmaClueType EnigmaClueType { get; set; }
+
+        public abstract string GetMessage(PlayerControl killer, bool showStageClue);
+    }
+
+    public class EnigmaHatClue : EnigmaClue
+    {
+        public override string GetMessage(PlayerControl killer, bool showStageClue)
+        {
+            var killerOutfit = Camouflage.PlayerSkins[killer.PlayerId];
+            if (killerOutfit.HatId == "hat_EmptyHat")
+                return GetString("EnigmaClueHat2");
+
+            switch (this.ClueStage)
+            {
+                case 1:
+                case 2:
+                    return GetString("EnigmaClueHat1");
+                case 3:
+                    if (showStageClue)
+                        return string.Format(GetString("EnigmaClueHat3"), killerOutfit.HatId);
+                    return GetString("EnigmaClueHat1");
+            }
+
+            return null;
+        }
     }
 
     public enum EnigmaClueType
