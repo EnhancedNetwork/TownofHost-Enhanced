@@ -2658,7 +2658,7 @@ class FixedUpdatePatch
                     }
                 }
 
-                #region 检查迷你船员是否要增加年龄
+                #region EvilMini & NiceMini
                 if (GameStates.IsInTask && player.Is(CustomRoles.NiceMini))
                 {
                     if (Mini.Age < 18 && player.IsAlive())
@@ -2674,9 +2674,9 @@ class FixedUpdatePatch
                             Logger.Info($"年龄增加1", "Child");
                             if (Mini.UpDateAge.GetBool())
                             {
-                                //foreach (var pc in Main.AllPlayerControls)
+                                if (player.Is(CustomRoles.NiceMini))
                                 {
-                                    if (player.Is(CustomRoles.NiceMini)) player.Notify(GetString("MiniUp"));
+                                    player.Notify(GetString("MiniUp"));
                                 }
                             }
                         }
@@ -2707,9 +2707,9 @@ class FixedUpdatePatch
 
                             if (Mini.UpDateAge.GetBool())
                             {
-                                //foreach (var pc in Main.AllPlayerControls)
+                                if (player.Is(CustomRoles.EvilMini))
                                 {
-                                    if (player.Is(CustomRoles.EvilMini)) player.Notify(GetString("MiniUp"));
+                                    player.Notify(GetString("MiniUp"));
                                 }
                             }
                             Logger.Info($"重置击杀冷却{Main.EvilMiniKillcooldownf -1f}", "Child");      
