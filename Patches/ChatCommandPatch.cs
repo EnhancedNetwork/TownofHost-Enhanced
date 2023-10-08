@@ -1514,9 +1514,8 @@ internal class ChatCommands
                     Utils.SendMessage(GetString("ColorCommandNoLobby"), player.PlayerId);
                     break;
                 }
-                subArgs = args.Length < 3 ? "" : args[1] + " " + args[2];
-                Regex regex = new Regex(@"^[0-9A-Fa-f]{6}\s[0-9A-Fa-f]{6}$");
-                if (string.IsNullOrEmpty(subArgs) || !regex.IsMatch(subArgs))
+                subArgs = args.Length != 2 ? "" : args[1];
+                if (string.IsNullOrEmpty(subArgs) || !Utils.CheckColorHex(subArgs))
                 {
                     Logger.Msg($"{subArgs}", "modcolor");
                     Utils.SendMessage(GetString("ColorInvalidHexCode"), player.PlayerId);
@@ -1525,11 +1524,10 @@ internal class ChatCommands
                 string colorFilePath = $"{modTagsFiles}/{player.FriendCode}.txt";
                 if (!File.Exists(colorFilePath))
                 {
-                    Logger.Msg($"File Not exist, creating file at {modTagsFiles}/{player.FriendCode}.txt", "modcolor");
+                    Logger.Warn($"File Not exist, creating file at {modTagsFiles}/{player.FriendCode}.txt", "modcolor");
                     File.Create(colorFilePath).Close();
                 }
-                //Logger.Msg($"File exists, creating file at {modTagsFiles}/{player.FriendCode}.txt", "modcolor");
-                //Logger.Msg($"{subArgs}","modcolor");
+
                 File.WriteAllText(colorFilePath, $"{subArgs}");
                 break;
             case "/vipcolor":
@@ -1549,9 +1547,8 @@ internal class ChatCommands
                     Utils.SendMessage(GetString("VipColorCommandNoLobby"), player.PlayerId);
                     break;
                 }
-                subArgs = args.Length < 3 ? "" : args[1] + " " + args[2];
-                Regex regexx = new Regex(@"^[0-9A-Fa-f]{6}\s[0-9A-Fa-f]{6}$");
-                if (string.IsNullOrEmpty(subArgs) || !regexx.IsMatch(subArgs))
+                subArgs = args.Length != 2 ? "" : args[1];
+                if (string.IsNullOrEmpty(subArgs) || !Utils.CheckColorHex(subArgs))
                 {
                     Logger.Msg($"{subArgs}", "vipcolor");
                     Utils.SendMessage(GetString("VipColorInvalidHexCode"), player.PlayerId);
@@ -1560,11 +1557,10 @@ internal class ChatCommands
                 string colorFilePathh = $"{vipTagsFiles}/{player.FriendCode}.txt";
                 if (!File.Exists(colorFilePathh))
                 {
-                    Logger.Msg($"File Not exist, creating file at {vipTagsFiles}/{player.FriendCode}.txt", "vipcolor");
+                    Logger.Warn($"File Not exist, creating file at {vipTagsFiles}/{player.FriendCode}.txt", "vipcolor");
                     File.Create(colorFilePathh).Close();
                 }
-                //Logger.Msg($"File exists, creating file at {vipTagsFiles}/{player.FriendCode}.txt", "vipcolor");
-                //Logger.Msg($"{subArgs}","modcolor");
+        
                 File.WriteAllText(colorFilePathh, $"{subArgs}");
                 break;
             case "/tagcolor":

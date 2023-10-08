@@ -166,7 +166,7 @@ class CheckMurderPatch
                     break;
             }
         }
-        if (target.Is(CustomRoles.Shaman) && !killer.Is(CustomRoles.NWitch))
+        if (target.Is(CustomRoles.Shaman))
         {
             if (Main.ShamanTarget != byte.MaxValue && target.IsAlive())
             { 
