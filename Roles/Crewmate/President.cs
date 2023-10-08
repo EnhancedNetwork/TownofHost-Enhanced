@@ -1,5 +1,4 @@
-﻿using HarmonyLib;
-using Hazel;
+﻿using Hazel;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Modules.ChatManager;
@@ -42,6 +41,7 @@ public static class President
     }
     public static void Add(byte playerId)
     {
+        CheckPresidentReveal[playerId] = false;
         EndLimit.Add(playerId, PresidentAbilityUses.GetInt());
         RevealLimit.Add(playerId, 1);
     }
@@ -138,6 +138,7 @@ public static class President
                 if (!ImpsSeePresident.GetBool() && (tar.GetCustomRole().IsImpostor() || tar.Is(CustomRoles.Crewpostor))) continue;
                 Utils.SendMessage(string.Format(GetString("PresidentRevealed"), pc.GetRealName()), tar.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.President), GetString("PresidentRevealTitle")));
             }
+            SendRPC(pc.PlayerId, isEnd: false);
         }
         return true;
     }
@@ -162,15 +163,31 @@ public static class President
         return false;
     }
 
-    private static void SendRPC(byte playerId)
+    private static void SendRPC(byte playerId, bool isEnd = true)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PresidentEnd, SendOption.Reliable, -1);
+        MessageWriter writer;
+        if (!isEnd)
+        {
+            writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PresidentReveal, SendOption.Reliable, -1);
+            writer.Write(playerId);
+            writer.Write(CheckPresidentReveal[playerId]);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            return;
+        }
+        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PresidentEnd, SendOption.Reliable, -1);
         writer.Write(playerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader, PlayerControl pc)
+    public static void ReceiveRPC(MessageReader reader, PlayerControl pc, bool isEnd = true)
     {
-        int PlayerId = reader.ReadByte();
+        byte PlayerId = reader.ReadByte();
+        if (!isEnd) 
+        {
+            bool revealed = reader.ReadBoolean();
+            if (CheckPresidentReveal.ContainsKey(PlayerId)) CheckPresidentReveal[PlayerId] = revealed;
+            else CheckPresidentReveal.Add(PlayerId, false);
+            return;
+        }
         EndMsg(pc, $"/end");
     }
 }

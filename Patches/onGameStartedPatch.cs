@@ -736,7 +736,6 @@ internal class SelectRolesPatch
                         Judge.Add(pc.PlayerId);
                         break;
                     case CustomRoles.President:
-                        President.CheckPresidentReveal[pc.PlayerId] = false;
                         President.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Councillor:
