@@ -1748,6 +1748,7 @@
   "DovesOfNeaceMaxOfUseage": "Max Number of Ability Uses",
   "BloodhoundArrowsPointingToDeadBody": "Arrows pointing to dead bodies",
   "BloodhoundLeaveDeadBodyUnreportable": "Bodies the <color=#8B0000>Coroner</color> uses can't be reported",
+  "BloodhoundInformKillerBeingTracked": "Inform the Killer that he gets tracked",
   "TrackerHideVote": "Hide <color=#3CB371>Tracker</color> Votes",
   "TrackerCanGetArrowColor": "Can See Colored Arrows",
 
@@ -2060,6 +2061,7 @@
   "BeRecruitedByJackal": "You have been recruited by the Jackal",
   "BloodhoundTrackRecorded": "Track recorded",
   "BloodhoundNoTrack": "Nothing to track",
+  "BloodhoundIsTrackingYou": "The Bloodhound is tracking you!",
   "TrackerLastRoomMessage": "The evaluation of your tracking showed that the last room in which your target was located was:[{0}]",
   "MerchantAddonDelivered": "Add-on sold",
   "MerchantAddonSell": "The Merchant sold you a new Add-on",
