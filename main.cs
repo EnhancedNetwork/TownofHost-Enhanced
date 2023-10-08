@@ -761,6 +761,7 @@ public enum CustomRoles
     ChiefOfPolice,
     NiceMini,
     Spy,
+    Enigma,
 
     //Neutral
     Arsonist,
