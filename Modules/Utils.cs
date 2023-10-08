@@ -1755,11 +1755,6 @@ public static class Utils
                         ColorCode.Trim();
                         if (CheckColorHex(ColorCode)) startColorCode = ColorCode;
                     }
-                    if (!CheckColorHex(ColorCode))
-                    {
-                        startColorCode = "8bbee0";
-                        //endColorCode = "8bbee0";
-                    }
                     //"33ccff", "ff99cc"
                     modtag = $"<color=#{startColorCode}>{GetString("ModTag")}</color>";
 
