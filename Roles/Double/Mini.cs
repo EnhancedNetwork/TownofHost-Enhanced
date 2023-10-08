@@ -20,15 +20,14 @@ public class Mini
         IsEvilMini = Random.Range(1, 100) < EvilMiniRate;
     }
     private static List<byte> playerIdList = new();
-    public static bool IsEnable = false;
     public static int GrowUpTime = new();
     public static int GrowUp = new();
     public static int EvilKillCDmin = new();
     public static int Age = new();
-    public static int Up = new();
     public static OptionItem GrowUpDuration;
     public static OptionItem EveryoneCanKnowMini;
     //public static OptionItem OnMeetingStopCountdown;
+    public static bool IsEnable = false;
     public static OptionItem EvilMiniSpawnChances;
     public static OptionItem CanBeEvil;
     public static OptionItem UpDateAge;
@@ -43,10 +42,10 @@ public class Mini
         CanBeEvil = BooleanOptionItem.Create(Id + 106, "CanBeEvil", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mini]);
         EvilMiniSpawnChances = IntegerOptionItem.Create(Id + 108, "EvilMiniSpawnChances", new(0, 100, 5), 50, TabGroup.CrewmateRoles, false).SetParent(CanBeEvil)
             .SetValueFormat(OptionFormat.Percent);
-        MinorCD = FloatOptionItem.Create(Id + 110, "MinorCooldown", new(0f, 180f, 2.5f), 45f, TabGroup.CrewmateRoles, false).SetParent(CanBeEvil)
+        MinorCD = FloatOptionItem.Create(Id + 110, "KillCooldown", new(0f, 180f, 2.5f), 45f, TabGroup.CrewmateRoles, false).SetParent(CanBeEvil)
             .SetValueFormat(OptionFormat.Seconds);
         MajorCD = FloatOptionItem.Create(Id + 112, "MajorCooldown", new(0f, 180f, 2.5f), 15f, TabGroup.CrewmateRoles, false).SetParent(CanBeEvil)
-            .SetValueFormat(OptionFormat.Seconds);
+           .SetValueFormat(OptionFormat.Seconds);
         UpDateAge = BooleanOptionItem.Create(Id + 114, "UpDateAge", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mini]);
     }
     public static void Init()
@@ -54,9 +53,8 @@ public class Mini
         GrowUpTime = 0;
         playerIdList = new();
         GrowUp = GrowUpDuration.GetInt() / 18;
-        Age = 0;
-        Up = GrowUp;
         IsEnable = false;
+        Age = 0;
     }
     public static void Add(byte playerId)
     {
@@ -67,16 +65,6 @@ public class Mini
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public static void SendRPC()
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncMiniAge, SendOption.Reliable, -1);
-        writer.Write(Age);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
 
-    public static void ReceiveRPC(MessageReader reader)
-    {
-        Age = reader.ReadInt32();
-    }
-    public static string GetAge(byte playerId) => Utils.ColorString(Color.yellow, Age < 18 ? $"({Age})" : "(18)");
+    public static string GetAge(byte playerId) => Utils.ColorString(Color.yellow, Age != 18 ? $"({Age})" : "");
 }

@@ -180,15 +180,6 @@ class GameEndChecker
                         .Do(p => CustomWinnerHolder.WinnerIds.Add(p.PlayerId));
                 }
 
-                //迷你船员长大前被驱逐抢夺胜利
-                //if (CustomRolesHelper.RoleExist(CustomRoles.NiceMini))
-                //{
-                //    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.NiceMini);
-                //    Main.AllPlayerControls
-                //        .Where(p => p.Is(CustomRoles.NiceMini) && p.IsAlive() && Mini.Age < 18)
-                //        .Do(p => CustomWinnerHolder.WinnerIds.Add(p.PlayerId));
-                //}
-
                 //恋人抢夺胜利
                 else if (CustomRolesHelper.RoleExist(CustomRoles.Lovers) && !reason.Equals(GameOverReason.HumansByTask))
                 {

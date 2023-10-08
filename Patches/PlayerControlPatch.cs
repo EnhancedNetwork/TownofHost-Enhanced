@@ -757,7 +757,6 @@ class CheckMurderPatch
                             }
                         }
                     }, 0.1f, "Werewolf Maul Bug Fix");
-
                 }
             }
 
@@ -2669,14 +2668,16 @@ class FixedUpdatePatch
                         Mini.GrowUpTime ++;
                         if (Mini.GrowUpTime >= Mini.GrowUpDuration.GetInt()/18)
                         {
-                            Mini.Age += 1;                            
+                            Mini.Age += 1;
                             Mini.GrowUpTime = 0;                         
                             player.RpcGuardAndKill();
                             Logger.Info($"年龄增加1", "Child");
                             if (Mini.UpDateAge.GetBool())
                             {
-                                Mini.SendRPC();
-                                Utils.NotifyRoles();
+                                //foreach (var pc in Main.AllPlayerControls)
+                                {
+                                    if (player.Is(CustomRoles.NiceMini)) player.Notify(GetString("MiniUp"));
+                                }
                             }
                         }
                     }
@@ -2703,14 +2704,15 @@ class FixedUpdatePatch
                             Mini.Age += 1;
                             Mini.GrowUpTime = 0;
                             Logger.Info($"年龄增加1", "Child");
-                            player.SetKillCooldown();
 
                             if (Mini.UpDateAge.GetBool())
                             {
-                                Mini.SendRPC();
-                                Utils.NotifyRoles();
+                                //foreach (var pc in Main.AllPlayerControls)
+                                {
+                                    if (player.Is(CustomRoles.EvilMini)) player.Notify(GetString("MiniUp"));
+                                }
                             }
-                            Logger.Info($"重置击杀冷却{Main.EvilMiniKillcooldownf -1f}", "Child");
+                            Logger.Info($"重置击杀冷却{Main.EvilMiniKillcooldownf -1f}", "Child");      
                         }
                     }
                 }
