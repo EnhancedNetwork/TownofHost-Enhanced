@@ -35,7 +35,7 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
     public static readonly string MainMenuText = " ";
 
-    public const string PluginGuid = "com.karped1em.townofhostedited";
+    public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
     public const string PluginVersion = "1.0.2.3";
     public const string PluginDisplayVersion = "1.0.2 Dev 3";
     public static readonly string SupportedVersionAU = "2023.7.11";
