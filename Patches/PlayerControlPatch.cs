@@ -2384,10 +2384,11 @@ class FixedUpdatePatch
                     PlayerinAllowList = false;
                 if (!PlayerinAllowList)
                 {
-                    //踢出低等级的人
-                    if (!lowLoad && !player.AmOwner && Options.KickLowLevelPlayer.GetInt() != 0 && (
-                        (player.Data.PlayerLevel != 0 && player.Data.PlayerLevel < Options.KickLowLevelPlayer.GetInt())
-                        ))
+                    // Kick Low Level Player
+                    if (!lowLoad && !player.AmOwner 
+                        && Options.KickLowLevelPlayer.GetInt() != 0 
+                        && player.Data.PlayerLevel != 0 
+                        && (player.Data.PlayerLevel < Options.KickLowLevelPlayer.GetInt()))
                     {
                         LevelKickBufferTime--;
                         if (LevelKickBufferTime <= 0)
