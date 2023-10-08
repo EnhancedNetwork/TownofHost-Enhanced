@@ -56,7 +56,7 @@ public class ModNewsHistory
                     SubTitle = "★★ A New Era ★★",
                     ShortTitle = "TOH: Enhanced v1.0.1",
                     BeforeNumber = 100001,
-                    Text = "<size=150%>Welcome to TOH: Enhanced v1.0.1!</size>" +
+                    Text = "<size=150%>Welcome to TOH: Enhanced v1.0.1!</size>\n\n<size=125%>Support for Among Us v2023.7.11 and v2023.7.12</size>\n" +
                     "\n<b>【Base】</b>\n - Base on TOH-RE v3.1.0 (Notes Available)\r\n" +
                     "\n<b>【Hotfixes】</b>" +
                     "\n     - Removed spray of Loonie and replaced it" +
@@ -77,7 +77,7 @@ public class ModNewsHistory
                     SubTitle = "★★ A New Era ★★",
                     ShortTitle = "TOH: Enhanced v1.0.0",
                     BeforeNumber = 100000,
-                    Text = "<size=150%>Welcome to TOH: Enhanced v1.0.0!</size>" +
+                    Text = "<size=150%>Welcome to TOH: Enhanced v1.0.0!</size>\n\n<size=125%>Support for Among Us v2023.7.11 and v2023.7.12</size>\n" +
                     "\n<b>【Base】</b>\n - Base on TOH-RE v3.1.0 (Notes Available)\r\n" +
                     "\n<b>【Changes/Fixes】</b>" +
                     "\n     - Removed all association with Loonie, credit in README" +
@@ -194,7 +194,7 @@ public class ModNewsHistory
                     SubTitle = "★★ Новая Эра ★★",
                     ShortTitle = "TOH: Enhanced v1.0.1",
                     BeforeNumber = 90001,
-                    Text = "<size=150%>Добро Пожаловать в TOH: Enhanced v1.0.1!</size>" +
+                    Text = "<size=150%>Добро Пожаловать в TOH: Enhanced v1.0.1!</size>\n\n<size=125%>Поддерживает версию Among Us v2023.7.11 и v2023.7.12</size>\n" +
                     "\n<b>【Основан】</b>\n - Основан на TOH-RE v3.1.0\r\n" +
                     "\n<b>【Исправления】</b>" +
                     "\n     - Убран спрей Loonie и заменен на новое" +
@@ -214,7 +214,7 @@ public class ModNewsHistory
                     SubTitle = "★★ Новая Эра ★★",
                     ShortTitle = "TOH: Enhanced v1.0.0",
                     BeforeNumber = 90000,
-                    Text = "<size=150%>Добро Пожаловать в TOH: Enhanced v1.0.0!</size>" +
+                    Text = "<size=150%>Добро Пожаловать в TOH: Enhanced v1.0.0!</size>\n\n<size=125%>Поддерживает версию Among Us v2023.7.11 и v2023.7.12</size>\n" +
                     "\n<b>【Основан】</b>\n - Основан на TOH-RE v3.1.0\r\n" +
                     "\n<b>【Изменения/Исправления】</b>" +
                     "\n     - Удалены все ассоциации с Loonie, ссылки в README" +
