@@ -8,7 +8,7 @@ namespace TOHE.Roles.Impostor
 {
     public static class Devourer
     {
-        static GameData.PlayerOutfit ConsumedOutfit = new GameData.PlayerOutfit().Set("", 15, "", "", "visor_Crack", "", "");
+        static GameData.PlayerOutfit ConsumedOutfit = new GameData.PlayerOutfit().Set("", 0, "", "", "visor_Lava", "", "");
         private static Dictionary<byte, GameData.PlayerOutfit> OriginalPlayerSkins = new();
 
         private static readonly int Id = 3550;
