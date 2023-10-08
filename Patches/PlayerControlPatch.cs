@@ -2669,10 +2669,9 @@ class FixedUpdatePatch
                             Logger.Info($"年龄增加1", "Child");
                             if (Mini.UpDateAge.GetBool())
                             {
-                                foreach (var pc in Main.AllPlayerControls)
+                                //foreach (var pc in Main.AllPlayerControls)
                                 {
-                                    if (pc.PlayerId != player.PlayerId) continue;
-                                    player.Notify(GetString("MiniUp"));
+                                    if (player.Is(CustomRoles.NiceMini)) player.Notify(GetString("MiniUp"));
                                 }
                             }
                         }
@@ -2703,10 +2702,9 @@ class FixedUpdatePatch
 
                             if (Mini.UpDateAge.GetBool())
                             {
-                                foreach (var pc in Main.AllPlayerControls)
+                                //foreach (var pc in Main.AllPlayerControls)
                                 {
-                                    if (pc.PlayerId != player.PlayerId) continue;
-                                    player.Notify(GetString("MiniUp"));
+                                    if (player.Is(CustomRoles.EvilMini)) player.Notify(GetString("MiniUp"));
                                 }
                             }
                             Logger.Info($"重置击杀冷却{Main.EvilMiniKillcooldownf -1f}", "Child");      
