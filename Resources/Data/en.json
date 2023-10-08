@@ -2800,6 +2800,7 @@
   "OptionAvenger": "Can sell <color=#ffab1c>Avenger</color>",
   "TwisterCooldown": "Twist Cooldown",
   "TwisterButtonText": "Twist",
+  "TwisterHideTwistedPlayerNames": "Hide who the players swap places with",
   "ParityCopTryHideMsg": "Hide <color=#0D57AF>Inspector</color>'s commands",
   "MaxParityCheckLimit": "Max inspections per game",
   "ParityCheckLimitPerMeeting": "Max inspections per meeting",
