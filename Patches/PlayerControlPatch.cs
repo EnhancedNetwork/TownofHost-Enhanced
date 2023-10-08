@@ -2343,7 +2343,7 @@ class FixedUpdatePatch
         var allowListFilePath = @"./TOHE-DATA/WhiteList.txt";
         if (!File.Exists(allowListFilePath)) File.Create(allowListFilePath).Close();
         var friendcodes = File.ReadAllLines(allowListFilePath);
-        return friendcodes.Contains(friendcode);
+        return friendcodes.Any(x => x == friendcode || x.Contains(friendcode));
     }
     public static void Postfix(PlayerControl __instance)
     {
@@ -2379,15 +2379,14 @@ class FixedUpdatePatch
 
                 bool PlayerinAllowList = false;
                 if (Options.ApplyAllowList.GetBool())
-                    PlayerinAllowList = CheckAllowList(player.FriendCode);
+                    PlayerinAllowList = CheckAllowList(player.Data.FriendCode);
                 else
                     PlayerinAllowList = false;
                 if (!PlayerinAllowList)
                 {
                     //踢出低等级的人
                     if (!lowLoad && !player.AmOwner && Options.KickLowLevelPlayer.GetInt() != 0 && (
-                        (player.Data.PlayerLevel != 0 && player.Data.PlayerLevel < Options.KickLowLevelPlayer.GetInt()) ||
-                        player.Data.FriendCode == ""
+                        (player.Data.PlayerLevel != 0 && player.Data.PlayerLevel < Options.KickLowLevelPlayer.GetInt())
                         ))
                     {
                         LevelKickBufferTime--;
