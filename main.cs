@@ -37,7 +37,7 @@ public class Main : BasePlugin
 
     public const string PluginGuid = "com.karped1em.townofhostedited";
     public const string PluginVersion = "1.0.2.014";
-    public const string PluginDisplayVersion = "1.0.2 Dev 2";
+    public const string PluginDisplayVersion = "1.0.2 Dev 2.1";
     public static readonly string SupportedVersionAU = "2023.7.11";
     public const bool Canary = false;
 

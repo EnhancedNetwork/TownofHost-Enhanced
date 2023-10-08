@@ -102,6 +102,7 @@ enum CustomRPC
     Judge,
     Guess,
     PresidentEnd,
+    PresidentReveal,
     MeetingKill,
     MafiaRevenge,
     RetributionistRevenge,
@@ -549,6 +550,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.PresidentEnd:
                 President.ReceiveRPC(reader, __instance);
+                break;
+            case CustomRPC.PresidentReveal:
+                President.ReceiveRPC(reader, __instance, isEnd: false);
                 break;
             case CustomRPC.MeetingKill:
                 Councillor.ReceiveRPC(reader, __instance);
