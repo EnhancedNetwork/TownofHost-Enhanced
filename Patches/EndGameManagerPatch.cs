@@ -39,7 +39,7 @@ public class EndGameManagerPatch
         if (seconds == Options.AutoPlayAgainCountdown.GetInt())
         {
             CountdownText = new GameObject("CountdownText");
-            CountdownText.transform.position = new Vector3(0f, -2.1f, 30f);
+            CountdownText.transform.position = new Vector3(0f, -2.5f, 30f);
             var CountdownTextText = CountdownText.AddComponent<TextMeshPro>();
             CountdownTextText.text = string.Format(GetString("CountdownText"), seconds);
             CountdownTextText.alignment = TextAlignmentOptions.Center;
