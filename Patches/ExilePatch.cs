@@ -98,7 +98,7 @@ class ExileControllerWrapUpPatch
                     DecidedWinner = true;
                 }
             }            
-            Executioner.CheckExileTarget(exiled, DecidedWinner);
+            if (Executioner.CheckExileTarget(exiled, DecidedWinner)) DecidedWinner = true;
 
             if (role == CustomRoles.Terrorist) Utils.CheckTerroristWin(exiled);
 
