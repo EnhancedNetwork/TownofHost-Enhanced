@@ -21,6 +21,7 @@
         public static OptionItem UseLimitOpt;
         public static OptionItem LeaveDeadBodyUnreportable;
         public static OptionItem BloodhoundAbilityUseGainWithEachTaskCompleted;
+        public static OptionItem InformKillerBeingTracked;
 
         public static void SetupCustomOption()
         {
@@ -32,6 +33,7 @@
             BloodhoundAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 13, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Bloodhound])
             .SetValueFormat(OptionFormat.Times);
+            InformKillerBeingTracked = BooleanOptionItem.Create(Id + 14, "BloodhoundInformKillerBeingTracked", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Bloodhound]);
         }
         public static void Init()
         {
@@ -126,6 +128,11 @@
                 if (LeaveDeadBodyUnreportable.GetBool())
                 {
                     UnreportablePlayers.Add(target.PlayerId);
+                }
+
+                if (InformKillerBeingTracked.GetBool())
+                {
+                    killer.Notify(GetString("BloodhoundIsTrackingYou"));
                 }
             }
             else
