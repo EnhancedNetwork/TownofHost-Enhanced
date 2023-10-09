@@ -151,6 +151,7 @@ static class CustomRolesHelper
                 CustomRoles.EvilMini => CustomRoles.Impostor,
                 CustomRoles.Blackmailer => CustomRoles.Shapeshifter,
                 CustomRoles.Spy => CustomRoles.Crewmate,
+                CustomRoles.Enigma => CustomRoles.Crewmate,
 
                 _ => role.IsImpostor() ? CustomRoles.Impostor : CustomRoles.Crewmate,
             };

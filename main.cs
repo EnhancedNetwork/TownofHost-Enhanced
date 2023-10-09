@@ -398,6 +398,7 @@ public class Main : BasePlugin
                 {CustomRoles.ChiefOfPolice,"#f8cd46"},
                 {CustomRoles.NiceMini, "#edc240" },
                 {CustomRoles.Spy, "#34495E"},
+                {CustomRoles.Enigma, "#676798"},
                 //第三陣営役職
                 {CustomRoles.Arsonist, "#ff6633"},
                 {CustomRoles.Pyromaniac, "#ff2400"},

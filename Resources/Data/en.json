@@ -3042,6 +3042,7 @@
   "EnigmaClueStage3Tasks": "Number of Tasks to complete to see Stage 3 <color=#676798>Clues</color>",
   "EnigmaClueStage2Probability": "Probability to see Stage 2 <color=#676798>Clues</color>",
   "EnigmaClueStage3Probability": "Probability to see Stage 3 <color=#676798>Clues</color>",
+  "EnigmaClueGetCluesWithoutReporting": "<color=#676798>Enigma</color> can get <color=#676798>Clues</color> without reporting a dead body",
   "EnigmaClueHat1": "The Killer wears a Hat!",
   "EnigmaClueHat2": "The Killer does not wear a Hat!",
   "EnigmaClueHat3": "The Killer wears {0} as a Hat!",

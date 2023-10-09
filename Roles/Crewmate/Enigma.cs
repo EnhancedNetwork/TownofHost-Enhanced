@@ -18,6 +18,7 @@ namespace TOHE.Roles.Crewmate
         public static OptionItem EnigmaClueStage3Tasks;
         public static OptionItem EnigmaClueStage2Probability;
         public static OptionItem EnigmaClueStage3Probability;
+        public static OptionItem EnigmaGetCluesWithoutReporting;
 
         public static Dictionary<byte, string> MsgToSend = new();
         public static Dictionary<byte, string> MsgToSendTitle = new();
@@ -63,6 +64,7 @@ namespace TOHE.Roles.Crewmate
                 .SetValueFormat(OptionFormat.Percent);
             EnigmaClueStage3Probability = IntegerOptionItem.Create(Id + 15, "EnigmaClueStage3Probability", new(0, 100, 5), 80, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Enigma])
                 .SetValueFormat(OptionFormat.Percent);
+            EnigmaGetCluesWithoutReporting = BooleanOptionItem.Create(Id + 16, "EnigmaClueGetCluesWithoutReporting", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Enigma]);
 
             OverrideTasksData.Create(Id + 20, TabGroup.CrewmateRoles, CustomRoles.Enigma);
         }
