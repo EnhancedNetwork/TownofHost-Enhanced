@@ -375,7 +375,7 @@ namespace TOHE.Roles.Crewmate
                     case 2:
                         return GetStage1Clue(killerOutfit.ColorId);
                     case 3:
-                        if (showStageClue) return string.Format(GetString("EnigmaClueColor3"), killerOutfit.ColorId);
+                        if (showStageClue) return string.Format(GetString("EnigmaClueColor3"), killer.Data.ColorName);
                         return GetStage1Clue(killerOutfit.ColorId);
                 }
 
