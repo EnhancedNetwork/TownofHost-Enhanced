@@ -1,9 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Epic.OnlineServices.AntiCheatClient;
-using Epic.OnlineServices.TitleStorage;
-using Hazel;
-using MS.Internal.Xml.XPath;
 using static TOHE.Options;
 using static TOHE.Translator;
 
