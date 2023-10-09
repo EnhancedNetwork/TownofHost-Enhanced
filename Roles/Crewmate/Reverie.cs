@@ -55,7 +55,7 @@ public static class Reverie
         if (killer == null || target == null) return;
         if (!IsEnable || !killer.Is(CustomRoles.Reverie)) return;
         float kcd;
-        if (target.GetCustomRole().IsCrewmate()) kcd = NowCooldown[killer.PlayerId] - ReduceKillCooldown.GetFloat();
+        if (!target.GetCustomRole().IsCrewmate()) kcd = NowCooldown[killer.PlayerId] - ReduceKillCooldown.GetFloat();
         else kcd = NowCooldown[killer.PlayerId] + IncreaseKillCooldown.GetFloat();
         NowCooldown[killer.PlayerId] = Math.Clamp(kcd, MinKillCooldown.GetFloat(), MaxKillCooldown.GetFloat());
         killer.ResetKillCooldown();
