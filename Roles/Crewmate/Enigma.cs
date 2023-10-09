@@ -368,7 +368,23 @@ namespace TOHE.Roles.Crewmate
             {
                 var killerOutfit = Camouflage.PlayerSkins[killer.PlayerId];
 
-                switch (killerOutfit.ColorId)
+                // Exakte Farbe
+                switch (this.ClueStage)
+                {
+                    case 1:
+                    case 2:
+                        return GetStage1Clue(killerOutfit.ColorId);
+                    case 3:
+                        if (showStageClue) return string.Format(GetString("EnigmaClueColor3"), killerOutfit.ColorId);
+                        return GetStage1Clue(killerOutfit.ColorId);
+                }
+
+                return GetStage1Clue(killerOutfit.ColorId);
+            }
+
+            private string GetStage1Clue(int colorId)
+            {
+                switch (colorId)
                 {
                     case 0:
                     case 3:

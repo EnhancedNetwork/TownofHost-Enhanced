@@ -3061,6 +3061,7 @@
   "EnigmaClueNameLength2": "The Name of the Killer has a Length of {0} letters!",
   "EnigmaClueColor1": "The Killer has a light color!",
   "EnigmaClueColor2": "The Killer has a dark color!",
+  "EnigmaClueColor3": "The Killer's color is {0}!",
   "EnigmaClueLocation": "The Last Room the Killer was in is {0}!",
   "EnigmaClueStatus1": "The Killer is currently inside a Vent!",
   "EnigmaClueStatus2": "The Killer is currently on a Ladder!",
