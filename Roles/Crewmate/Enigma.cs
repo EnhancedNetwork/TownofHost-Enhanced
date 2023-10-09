@@ -41,7 +41,10 @@ namespace TOHE.Roles.Crewmate
             new EnigmaLocationClue { ClueStage = 2, EnigmaClueType = EnigmaClueType.LocationClue },
             new EnigmaKillerStatusClue { ClueStage = 1, EnigmaClueType = EnigmaClueType.KillerStatusClue },
             new EnigmaKillerRoleClue { ClueStage = 1, EnigmaClueType = EnigmaClueType.KillerRoleClue },
-            new EnigmaKillerRoleClue { ClueStage = 2, EnigmaClueType = EnigmaClueType.KillerRoleClue }
+            new EnigmaKillerRoleClue { ClueStage = 2, EnigmaClueType = EnigmaClueType.KillerRoleClue },
+            new EnigmaKillerLevelClue { ClueStage = 1, EnigmaClueType = EnigmaClueType.KillerLevelClue },
+            new EnigmaKillerLevelClue { ClueStage = 2, EnigmaClueType = EnigmaClueType.KillerLevelClue },
+            new EnigmaKillerLevelClue { ClueStage = 3, EnigmaClueType = EnigmaClueType.KillerLevelClue },
         };
 
         public static void SetupCustomOption()
@@ -91,10 +94,7 @@ namespace TOHE.Roles.Crewmate
             foreach (var playerId in playerIdList)
             {
                 var enigmaPlayer = Utils.GetPlayerById(playerId);
-                if (enigmaPlayer == null)
-                {
-                    continue;
-                }
+                if (enigmaPlayer == null) continue;
 
                 int tasksCompleted = enigmaPlayer.GetPlayerTaskState().CompletedTasksCount;
                 int stage = 0;
@@ -116,8 +116,7 @@ namespace TOHE.Roles.Crewmate
                 var clues = EnigmaClues.Where(a => a.ClueStage <= stage &&
                     !ShownClues[playerId].Any(b => b.EnigmaClueType == a.EnigmaClueType && b.ClueStage == a.ClueStage))
                     .ToList();
-                if (clues.Count == 0)
-                    continue;
+                if (clues.Count == 0) continue;
                 if (showStageClue && clues.Any(a => a.ClueStage == stage))
                     clues = clues.Where(a => a.ClueStage == stage).ToList();
 
@@ -447,6 +446,50 @@ namespace TOHE.Roles.Crewmate
                 return null;
             }
         }
+        private class EnigmaKillerLevelClue : EnigmaClue
+        {
+            private IRandom rd = IRandom.Instance;
+
+            public override string Title { get { return GetString("EnigmaClueLevelTitle"); } }
+
+            public override string GetMessage(PlayerControl killer, bool showStageClue)
+            {
+                int level = (int)killer.Data.PlayerLevel;
+
+                switch (this.ClueStage)
+                {
+                    case 1:
+                        return GetStage1Clue(level);
+                    case 2:
+                        if (showStageClue) return GetStage2Clue(level);
+                        return GetStage1Clue(level);
+                    case 3:
+                        if (showStageClue) return GetStage3Clue(level);
+                        if (rd.Next(0, 100) < Enigma.EnigmaClueStage2Probability.GetInt()) return GetStage2Clue(level);
+                        return GetStage1Clue(level);
+                }
+
+                return null;
+            }
+
+            private string GetStage1Clue(int level)
+            {
+                if (level > 50) return GetString("EnigmaClueLevel1");
+                return GetString("EnigmaClueLevel2");
+            }
+
+            private string GetStage2Clue(int level)
+            {
+                int rangeStart = level - 15;
+                int rangeEnd = level + 15;
+                return string.Format(GetString("EnigmaClueLevel3"), rangeStart, rangeEnd >= 100 ? 100 : rangeEnd);
+            }
+
+            private string GetStage3Clue(int level)
+            {
+                return string.Format(GetString("EnigmaClueLevel4"), level);
+            }
+        }
 
         private enum EnigmaClueType
         {
@@ -460,6 +503,7 @@ namespace TOHE.Roles.Crewmate
             LocationClue,
             KillerStatusClue,
             KillerRoleClue,
+            KillerLevelClue
             //SecurityClue,
             //SabotageClue,
             //RandomClue
