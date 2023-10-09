@@ -38,6 +38,7 @@ namespace TOHE.Roles.Crewmate
             new EnigmaNameLengthClue { ClueStage = 2, EnigmaClueType = EnigmaClueType.NameLengthClue },
             new EnigmaNameLengthClue { ClueStage = 3, EnigmaClueType = EnigmaClueType.NameLengthClue },
             new EnigmaColorClue { ClueStage = 1, EnigmaClueType = EnigmaClueType.ColorClue },
+            new EnigmaColorClue { ClueStage = 3, EnigmaClueType = EnigmaClueType.ColorClue },
             new EnigmaLocationClue { ClueStage = 2, EnigmaClueType = EnigmaClueType.LocationClue },
             new EnigmaKillerStatusClue { ClueStage = 1, EnigmaClueType = EnigmaClueType.KillerStatusClue },
             new EnigmaKillerRoleClue { ClueStage = 1, EnigmaClueType = EnigmaClueType.KillerRoleClue },
