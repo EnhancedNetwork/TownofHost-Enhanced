@@ -245,6 +245,8 @@ namespace TOHE.Roles.Crewmate
         }
         private class EnigmaNameClue : EnigmaClue
         {
+            private IRandom rd = IRandom.Instance;
+
             public override string Title { get { return GetString("EnigmaClueNameTitle"); } }
 
             private static List<string> Letters = new List<string>
@@ -254,60 +256,55 @@ namespace TOHE.Roles.Crewmate
 
             public override string GetMessage(PlayerControl killer, bool showStageClue)
             {
-                var rd = IRandom.Instance;
-
                 string killerName = killer.GetRealName();
-                string letter = killerName[rd.Next(0, killerName.Length - 1)].ToString();
-                string letter2 = string.Empty;
-                string randomLetter;
-                int random;
+                string letter = killerName[rd.Next(0, killerName.Length - 1)].ToString().ToLower();
 
                 switch (this.ClueStage)
                 {
                     case 1:
-                        randomLetter = Letters.Where(a => a != letter).ToArray()[rd.Next(0, Letters.Count - 2)];
-                        random = rd.Next(1, 2);
-                        if (random == 1)
-                            return string.Format(GetString("EnigmaClueName1"), letter, randomLetter);
-                        else
-                            return string.Format(GetString("EnigmaClueName1"), randomLetter, letter);
+                        return GetStage1Clue(letter);
                     case 2:
-                        if (showStageClue)
-                        {
-                            return string.Format(GetString("EnigmaClueName2"), letter);
-                        }
-
-                        randomLetter = Letters.Where(a => a != letter).ToArray()[rd.Next(0, Letters.Count - 2)];
-                        random = rd.Next(1, 2);
-                        if (random == 1)
-                            return string.Format(GetString("EnigmaClueName1"), letter, randomLetter);
-                        else
-                            return string.Format(GetString("EnigmaClueName1"), randomLetter, letter);
+                        if (showStageClue) GetStage2Clue(letter);
+                        return GetStage1Clue(letter);
                     case 3:
-                        if (showStageClue)
-                        {
-                            string tmpName = killerName.Replace(letter, string.Empty);
-                            if (!string.IsNullOrEmpty(tmpName))
-                            {
-                                letter2 = tmpName[rd.Next(0, tmpName.Length - 1)].ToString();
-                            }
-
-                            return string.Format(GetString("EnigmaClueName3"), letter, letter2);
-                        }
-                        if (rd.Next(0, 100) < Enigma.EnigmaClueStage2Probability.GetInt())
-                        {
-                            return string.Format(GetString("EnigmaClueName2"), letter);
-                        }
-
-                        randomLetter = Letters.Where(a => a != letter).ToArray()[rd.Next(0, Letters.Count - 2)];
-                        random = rd.Next(1, 2);
-                        if (random == 1)
-                            return string.Format(GetString("EnigmaClueName1"), letter, randomLetter);
-                        else
-                            return string.Format(GetString("EnigmaClueName1"), randomLetter, letter);
+                        if (showStageClue) GetStage3Clue(killerName, letter);
+                        if (rd.Next(0, 100) < Enigma.EnigmaClueStage2Probability.GetInt()) GetStage2Clue(letter);
+                        return GetStage1Clue(letter);
                 }
 
                 return null;
+            }
+
+            private string GetStage1Clue(string letter)
+            {
+                string randomLetter = GetRandomLetter(letter);
+                int random = rd.Next(1, 2);
+                if (random == 1)
+                    return string.Format(GetString("EnigmaClueName1"), letter, randomLetter);
+                else
+                    return string.Format(GetString("EnigmaClueName1"), randomLetter, letter);
+            }
+
+            private string GetStage2Clue(string letter)
+            {
+                return string.Format(GetString("EnigmaClueName2"), letter);
+            }
+
+            private string GetStage3Clue(string killerName, string letter)
+            {
+                string letter2 = string.Empty;
+                string tmpName = killerName.Replace(letter, string.Empty);
+                if (!string.IsNullOrEmpty(tmpName))
+                {
+                    letter2 = tmpName[rd.Next(0, tmpName.Length - 1)].ToString().ToLower();
+                }
+
+                return string.Format(GetString("EnigmaClueName3"), letter, letter2);
+            }
+
+            private string GetRandomLetter(string letter)
+            {
+                return Letters.Where(a => a != letter).ToArray()[rd.Next(0, Letters.Count - 2)];
             }
         }
         private class EnigmaNameLengthClue : EnigmaClue
