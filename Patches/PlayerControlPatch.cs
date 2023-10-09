@@ -149,6 +149,7 @@ class CheckMurderPatch
                 else target.RpcMurderPlayer(target);
                 Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Shattered;
                 target.SetRealKiller(target);
+                target.SetRealKiller(killer);
                 killer.ResetKillCooldown();
                 return false;
             }
@@ -166,7 +167,7 @@ class CheckMurderPatch
                     break;
             }
         }
-        if (target.Is(CustomRoles.Shaman) && !killer.Is(CustomRoles.NWitch))
+        if (target.Is(CustomRoles.Shaman))
         {
             if (Main.ShamanTarget != byte.MaxValue && target.IsAlive())
             { 
@@ -348,7 +349,7 @@ class CheckMurderPatch
                     Juggernaut.OnCheckMurder(killer);
                     break;
                 case CustomRoles.Reverie:
-                    Reverie.OnCheckMurder(killer);
+                    Reverie.OnCheckMurder(killer, target);
                     break;
                 case CustomRoles.Hangman:
                     if (!Hangman.OnCheckMurder(killer, target)) return false;
