@@ -2239,6 +2239,7 @@ class ReportDeadBodyPatch
         Main.GodfatherTarget.Clear();
 
         Camouflager.OnReportDeadBody();
+        Reverie.OnReportDeadBody();
         Psychic.OnReportDeadBody();
         BountyHunter.OnReportDeadBody();
         if (Huntsman.IsEnable) Huntsman.OnReportDeadBody();
