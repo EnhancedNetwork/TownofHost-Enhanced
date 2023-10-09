@@ -35,7 +35,7 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
     public static readonly string MainMenuText = " ";
 
-    public const string PluginGuid = "com.karped1em.townofhostedited";
+    public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
     public const string PluginVersion = "1.0.2.3";
     public const string PluginDisplayVersion = "1.0.2 Dev 3";
     public static readonly string SupportedVersionAU = "2023.7.11";
@@ -526,7 +526,7 @@ public class Main : BasePlugin
                 {CustomRoles.Visionary, "#ff1919"},
                 {CustomRoles.Recruit, "#00b4eb"},
                 {CustomRoles.Admired, "#ee43c3"},
-                {CustomRoles.Glow, "#E2F147"},
+                //{CustomRoles.Glow, "#E2F147"},
                 {CustomRoles.Diseased, "#AAAAAA"},
                 {CustomRoles.Antidote,"#FF9876"},
                 {CustomRoles.VoidBallot,"#FF3399"},
@@ -889,7 +889,7 @@ public enum CustomRoles
     EvilSpirit,
     Recruit,
     Admired,
-    Glow,
+    //Glow,
     Diseased,
     Antidote,
     VoidBallot,

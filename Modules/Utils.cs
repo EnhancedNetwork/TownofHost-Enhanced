@@ -1725,64 +1725,44 @@ public static class Utils
                 }
             }
             var modtag = "";
-            if (Options.ApplyModeratorList.GetValue() == 1 && player.FriendCode != PlayerControl.LocalPlayer.FriendCode)
-            {
-                if (IsPlayerModerator(player.FriendCode))
-                {
-                    string colorFilePath = @$"./TOHE-DATA/Tags/MOD_TAGS/{player.FriendCode}.txt";
-                    string startColorCode = "8bbee0";
-                    string endColorCode = "8bbee0";
-                    string ColorCode = "";
-                    if (File.Exists(colorFilePath))
-                    {
-                        ColorCode = File.ReadAllText(colorFilePath);
-                        if (ColorCode.Split(" ").Length == 2)
-                        {
-                            startColorCode = ColorCode.Split(" ")[0];
-                            endColorCode = ColorCode.Split(" ")[1];
-                        }
-                    }
-                    if (!CheckGradientCode(ColorCode))
-                    {
-                        startColorCode = "8bbee0";
-                        endColorCode = "8bbee0";
-                    }
-                    //"33ccff", "ff99cc"
-                    modtag = GradientColorText(startColorCode, endColorCode, GetString("ModTag"));
-
-                }
-            }
-            var viptag = "";
             if (Options.ApplyVipList.GetValue() == 1 && player.FriendCode != PlayerControl.LocalPlayer.FriendCode)
             {
                 if (IsPlayerVIP(player.FriendCode))
                 {
                     string colorFilePath = @$"./TOHE-DATA/Tags/VIP_TAGS/{player.FriendCode}.txt";
                     string startColorCode = "ffff00";
-                    string endColorCode = "ffff00";
+                    if (File.Exists(colorFilePath))
+                    {
+                        string ColorCode = File.ReadAllText(colorFilePath);
+                        ColorCode.Trim();
+                        if (CheckColorHex(ColorCode)) startColorCode = ColorCode;
+                    }
+                    //"33ccff", "ff99cc"
+                    modtag = $"<color=#{startColorCode}>{GetString("VipTag")}</color>";
+
+                }
+            }
+            if (Options.ApplyModeratorList.GetValue() == 1 && player.FriendCode != PlayerControl.LocalPlayer.FriendCode)
+            {
+                if (IsPlayerModerator(player.FriendCode))
+                {
+                    string colorFilePath = @$"./TOHE-DATA/Tags/MOD_TAGS/{player.FriendCode}.txt";
+                    string startColorCode = "8bbee0";
                     string ColorCode = "";
                     if (File.Exists(colorFilePath))
                     {
                         ColorCode = File.ReadAllText(colorFilePath);
-                        if (ColorCode.Split(" ").Length == 2)
-                        {
-                            startColorCode = ColorCode.Split(" ")[0];
-                            endColorCode = ColorCode.Split(" ")[1];
-                        }
-                    }
-                    if (!CheckGradientCode(ColorCode))
-                    {
-                        startColorCode = "ffff00";
-                        endColorCode = "ffff00";
+                        ColorCode.Trim();
+                        if (CheckColorHex(ColorCode)) startColorCode = ColorCode;
                     }
                     //"33ccff", "ff99cc"
-                    viptag = GradientColorText(startColorCode, endColorCode, GetString("VipTag"));
+                    modtag = $"<color=#{startColorCode}>{GetString("ModTag")}</color>";
 
                 }
-            }
+            }           
             if (!name.Contains('\r') && player.FriendCode.GetDevUser().HasTag())
             {
-                name = player.FriendCode.GetDevUser().GetTag() + "<size=1.5>" + viptag + "</size>" + "<size=1.5>" + modtag + "</size>" + name;
+                name = player.FriendCode.GetDevUser().GetTag() + "<size=1.5>" + modtag + "</size>" + name;
             }
             else if (player.AmOwner)
             {
@@ -1799,7 +1779,7 @@ public static class Utils
                     _ => name
                 };
             }
-            else name = viptag + modtag + name;
+            else name = modtag + name;
         }
         if (name != player.name && player.CurrentOutfitType == PlayerOutfitType.Default)
             player.RpcSetName(name);

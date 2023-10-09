@@ -50,7 +50,7 @@ namespace TOHE.Roles.Crewmate
             CustomRoles.Antidote,
             CustomRoles.Aware,
             CustomRoles.Gravestone,
-            CustomRoles.Glow,
+            //CustomRoles.Glow,
             CustomRoles.Onbound,
         };
 
