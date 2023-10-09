@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.UIElements;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -309,59 +310,55 @@ namespace TOHE.Roles.Crewmate
         }
         private class EnigmaNameLengthClue : EnigmaClue
         {
+            private IRandom rd = IRandom.Instance;
+
             public override string Title { get { return GetString("EnigmaClueNameLengthTitle"); } }
 
             public override string GetMessage(PlayerControl killer, bool showStageClue)
             {
-                var rd = IRandom.Instance;
-
-                string killerName = killer.GetRealName();
-
-                int length = killerName.Length;
-                int start = 0;
-                int end = 0;
+                int length = killer.GetRealName().Length;
 
                 switch (this.ClueStage)
                 {
                     case 1:
-                        start = length - rd.Next(1, length) - 2;
-                        end = length + rd.Next(1, length) + 2;
-                        break;
-
+                        return GetStage1Clue(length);
                     case 2:
-                        if (showStageClue)
-                        {
-                            start = length - rd.Next(1, length);
-                            end = length + rd.Next(1, length);
-                        }
-                        else
-                        {
-                            start = length - rd.Next(1, length) - 2;
-                            end = length + rd.Next(1, length) + 2;
-                        }
-                        break;
-
+                        if (showStageClue) return GetStage2Clue(length);
+                        return GetStage1Clue(length);
                     case 3:
-                        if (showStageClue)
-                            return string.Format(GetString("EnigmaClueNameLength2"), length);
-
-                        if (rd.Next(0, 100) < Enigma.EnigmaClueStage2Probability.GetInt())
-                        {
-                            start = length - rd.Next(1, length);
-                            end = length + rd.Next(1, length);
-                        }
-                        else
-                        {
-                            start = length - rd.Next(1, length) - 2;
-                            end = length + rd.Next(1, length) + 2;
-                        }
-                        break;
+                        if (showStageClue) return GetStage3Clue(length);
+                        if (rd.Next(0, 100) < Enigma.EnigmaClueStage2Probability.GetInt()) return GetStage2Clue(length);
+                        return GetStage1Clue(length);
                 }
+
+                return null;
+            }
+
+            private string GetStage1Clue(int length)
+            {
+                int start = length - rd.Next(2, 3);
+                int end = length + rd.Next(2, 3);
 
                 start = start < 0 ? 0 : start;
                 end = end > 8 ? 8 : end;
 
                 return string.Format(GetString("EnigmaClueNameLength1"), start, end);
+            }
+
+            private string GetStage2Clue(int length)
+            {
+                int start = length - rd.Next(1, 2);
+                int end = length + rd.Next(1, 2);
+
+                start = start < 0 ? 0 : start;
+                end = end > 8 ? 8 : end;
+
+                return string.Format(GetString("EnigmaClueNameLength1"), start, end);
+            }
+
+            private string GetStage3Clue(int length)
+            {
+                return string.Format(GetString("EnigmaClueNameLength2"), length);
             }
         }
         private class EnigmaColorClue : EnigmaClue
