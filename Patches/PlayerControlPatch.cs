@@ -149,6 +149,7 @@ class CheckMurderPatch
                 else target.RpcMurderPlayer(target);
                 Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Shattered;
                 target.SetRealKiller(target);
+                target.SetRealKiller(killer);
                 killer.ResetKillCooldown();
                 return false;
             }
@@ -348,7 +349,7 @@ class CheckMurderPatch
                     Juggernaut.OnCheckMurder(killer);
                     break;
                 case CustomRoles.Reverie:
-                    Reverie.OnCheckMurder(killer);
+                    Reverie.OnCheckMurder(killer, target);
                     break;
                 case CustomRoles.Hangman:
                     if (!Hangman.OnCheckMurder(killer, target)) return false;

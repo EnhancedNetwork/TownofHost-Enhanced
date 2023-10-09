@@ -13,18 +13,24 @@ public static class Reverie
 
     public static OptionItem DefaultKillCooldown;
     public static OptionItem ReduceKillCooldown;
+    public static OptionItem IncreaseKillCooldown;
     public static OptionItem MinKillCooldown;
+    public static OptionItem MaxKillCooldown;
 
     public static Dictionary<byte, float> NowCooldown;
 
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Reverie);
-        DefaultKillCooldown = FloatOptionItem.Create(Id + 10, "SansDefaultKillCooldown", new(0f, 180f, 2.5f), 65f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
+        DefaultKillCooldown = FloatOptionItem.Create(Id + 10, "SansDefaultKillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
             .SetValueFormat(OptionFormat.Seconds);
-        ReduceKillCooldown = FloatOptionItem.Create(Id + 11, "SansReduceKillCooldown", new(0f, 180f, 2.5f), 15f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
+        ReduceKillCooldown = FloatOptionItem.Create(Id + 11, "SansReduceKillCooldown", new(0f, 180f, 2.5f), 7.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
             .SetValueFormat(OptionFormat.Seconds);
         MinKillCooldown = FloatOptionItem.Create(Id + 12, "SansMinKillCooldown", new(0f, 180f, 2.5f), 2.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
+            .SetValueFormat(OptionFormat.Seconds);
+        IncreaseKillCooldown = FloatOptionItem.Create(Id + 13, "ReverieIncreaseKillCooldown", new(0f, 180f, 2.5f), 7.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
+            .SetValueFormat(OptionFormat.Seconds);
+        MaxKillCooldown = FloatOptionItem.Create(Id + 14, "ReverieMaxKillCooldown", new(0f, 180f, 2.5f), 40f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie])
             .SetValueFormat(OptionFormat.Seconds);
     }
     public static void Init()
@@ -44,10 +50,20 @@ public static class Reverie
             Main.ResetCamPlayerList.Add(playerId);
     }
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = NowCooldown[id];
-    public static void OnCheckMurder(PlayerControl killer)
+    public static void OnCheckMurder(PlayerControl killer,PlayerControl target)
     {
-        NowCooldown[killer.PlayerId] = Math.Clamp(NowCooldown[killer.PlayerId] - ReduceKillCooldown.GetFloat(), MinKillCooldown.GetFloat(), DefaultKillCooldown.GetFloat());
+        if (killer == null || target == null) return;
+        if (!IsEnable || !killer.Is(CustomRoles.Reverie)) return;
+        float kcd;
+        if (target.GetCustomRole().IsCrewmate()) kcd = NowCooldown[killer.PlayerId] - ReduceKillCooldown.GetFloat();
+        else kcd = NowCooldown[killer.PlayerId] + IncreaseKillCooldown.GetFloat();
+        NowCooldown[killer.PlayerId] = Math.Clamp(kcd, MinKillCooldown.GetFloat(), MaxKillCooldown.GetFloat());
         killer.ResetKillCooldown();
         killer.SyncSettings();
+        if (NowCooldown[killer.PlayerId] >= MaxKillCooldown.GetFloat())
+        {
+            Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
+            killer.RpcMurderPlayerV3(killer);
+        }
     }
 }

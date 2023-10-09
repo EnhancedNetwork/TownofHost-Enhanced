@@ -338,9 +338,9 @@ public static class Options
     public static OptionItem ImpCanBeSunglasses;
     public static OptionItem CrewCanBeSunglasses;
     public static OptionItem NeutralCanBeSunglasses;
-    public static OptionItem ImpCanBeGlow;
-    public static OptionItem CrewCanBeGlow;
-    public static OptionItem NeutralCanBeGlow;
+    //public static OptionItem ImpCanBeGlow;
+    //public static OptionItem CrewCanBeGlow;
+    //public static OptionItem NeutralCanBeGlow;
     public static OptionItem ImpCanBeGuesser;
     public static OptionItem CrewCanBeGuesser;
     public static OptionItem NeutralCanBeGuesser;
@@ -2061,13 +2061,14 @@ public static class Options
         DiseasedCDReset = BooleanOptionItem.Create(111425, "DiseasedCDReset", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Diseased]);
         SetupAdtRoleOptions(15250, CustomRoles.Ghoul, canSetNum: true);
-        SetupAdtRoleOptions(14020, CustomRoles.Glow, canSetNum: true);
-        ImpCanBeGlow = BooleanOptionItem.Create(14030, "ImpCanBeGlow", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
-        CrewCanBeGlow = BooleanOptionItem.Create(14031, "CrewCanBeGlow", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
-        NeutralCanBeGlow = BooleanOptionItem.Create(14032, "NeutralCanBeGlow", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
+        //BYE GLOW, SEE YOU NEVER
+       // SetupAdtRoleOptions(14020, CustomRoles.Glow, canSetNum: true);
+        //ImpCanBeGlow = BooleanOptionItem.Create(14030, "ImpCanBeGlow", true, TabGroup.Addons, false)
+            //.SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
+        //CrewCanBeGlow = BooleanOptionItem.Create(14031, "CrewCanBeGlow", true, TabGroup.Addons, false)
+            //.SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
+        //NeutralCanBeGlow = BooleanOptionItem.Create(14032, "NeutralCanBeGlow", true, TabGroup.Addons, false)
+            //.SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
         SetupAdtRoleOptions(14000, CustomRoles.Gravestone, canSetNum: true);
         ImpCanBeGravestone = BooleanOptionItem.Create(14010, "ImpCanBeGravestone", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Gravestone]);
