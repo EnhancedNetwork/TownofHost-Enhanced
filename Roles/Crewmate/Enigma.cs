@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UIElements;
+using static Logger;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -46,6 +47,7 @@ namespace TOHE.Roles.Crewmate
             new EnigmaKillerLevelClue { ClueStage = 1, EnigmaClueType = EnigmaClueType.KillerLevelClue },
             new EnigmaKillerLevelClue { ClueStage = 2, EnigmaClueType = EnigmaClueType.KillerLevelClue },
             new EnigmaKillerLevelClue { ClueStage = 3, EnigmaClueType = EnigmaClueType.KillerLevelClue },
+            new EnigmaFriendCodeClue { ClueStage = 3, EnigmaClueType = EnigmaClueType.FriendCodeClue },
         };
 
         public static void SetupCustomOption()
@@ -506,6 +508,16 @@ namespace TOHE.Roles.Crewmate
                 return string.Format(GetString("EnigmaClueLevel4"), level);
             }
         }
+        private class EnigmaFriendCodeClue : EnigmaClue
+        {
+            public override string Title { get { return GetString("EnigmaClueFriendCodeTitle"); } }
+
+            public override string GetMessage(PlayerControl killer, bool showStageClue)
+            {
+                string friendcode = killer.Data.FriendCode;
+                return string.Format(GetString("EnigmaClueFriendCode"), friendcode);
+            }
+        }
 
         private enum EnigmaClueType
         {
@@ -519,7 +531,8 @@ namespace TOHE.Roles.Crewmate
             LocationClue,
             KillerStatusClue,
             KillerRoleClue,
-            KillerLevelClue
+            KillerLevelClue,
+            FriendCodeClue
             //SecurityClue,
             //SabotageClue,
             //RandomClue
