@@ -2449,7 +2449,7 @@
   "EAC.CheatDetected.HighLevel": "Warning: EAC detected High Level of cheats.",
   "EAC.CheatDetected.LowLevel": "Warning: EAC detected Low Level of cheats. One of the players is hacking.",
   "ExiledJester": "You're all fools!\n{0} the {1} laughing out loud tricked you into ejecting them.\nGG!",
-  "ExiledExeTarget": "{0} was the {1}.\nBut they were also the <color=#611c3a>Executioner</color>'s target!\nGG!",
+  "ExiledExeTarget": "{0} was the {1}.\nBut they were also the <color=#c0c0c0>Executioner</color>'s target!\nGG!",
   "ExiledInnocentTargetAddBelow": "\nLooking back at the <color=#8f815e>Innocent</color> counts the money in their hands",
   "ExiledInnocentTargetInOneLine": "{0} was the {1}.\nBut looking back, there's the <color=#8f815e>Innocent</color> counting the money in their hands....\nGG!",
   "IsGood": "{0} was a <color=#8cffff>good guy</color>",
