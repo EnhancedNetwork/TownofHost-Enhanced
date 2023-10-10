@@ -249,6 +249,7 @@ class CreatePlayerPatch
         }
 
         _ = new LateTask(() => { if (client.Character == null || client == null) return; OptionItem.SyncAllOptions(client.Id); }, 3f, "Sync All Options For New Player");
+        Main.GuessNumber[client.Character.PlayerId] = new List<int> { -1, 7 };
 
         _ = new LateTask(() =>
         {
