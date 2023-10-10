@@ -1814,10 +1814,12 @@
   "ColorCommandNoAccess": "You do not have access to the modcolor command.",
   "ColorCommandNoLobby": "You can only use the command in Lobby when the game hasn't started.",
   "ColorInvalidHexCode": "Invalid hexcode specified.\nPlease use '/modcolor [hexcode]' to change color of MODERATOR♥.\nExample :- /modcolor 33ccff",
+  "ColorInvalidGradientCode": "Invalid hexcode specified.\nPlease use '/modcolor [hexcode][hexcode]' to change color of MODERATOR♥.\nExample :- /modcolor 33ccff ff99cc",
   "VipColorCommandDisabled": "The vipcolor command is currently disabled.",
   "VipColorCommandNoAccess": "You do not have access to the vipcolor command.",
   "VipColorCommandNoLobby": "You can only use the command in Lobby when the game hasn't started.",
   "VipColorInvalidHexCode": "Invalid hexcode specified.\nPlease use '/vipcolor [hexcode]' to change color of VIP★.\nExample :- /vipcolor 33ccff",
+  "VipColorInvalidGradientCode": "Invalid hexcode specified.\nPlease use '/vipcolor [hexcode][hexcode]' to change color of VIP★.\nExample :- /vipcolor 33ccff ff99cc",
   "TagColorInvalidHexCode": "Invalid hexcode specified.\nPlease use '/tagcolor [hexcode]' to change color of your tag.\nExample :- /tagcolor ff00ff",
   "midCommandDisabled": "The mid command is currently disabled.",
   "midCommandNoAccess": "You do not have access to the mid command.",
@@ -2162,6 +2164,10 @@
   "Warning.TemporaryAntiBlackoutFix": "<size=150%>Warning:</size>\n\nThe setting <b>Black Screen Prevention</b> is enabled.\nAll ejections will be displayed as a tie because there are more than one Neutral Killers and/or Covens in game, but will not effect the outcome of the ejection.\n\nThis is recommended to keep enabled to prevent black screens.",
   "TemporaryAntiBlackoutFix": "Black Screen Prevention (Recommended)",
   "AntiBlackoutFixTitle": "ANTI BLACKOUT FIX",
+
+  "EnableGadientTags": "Enable Gradient Tags <color=#ff0000>(can cause disconnect issues)</color>",
+  "Warning.GradientTags": "<color=#ff0000><size=150%>Warning:</size></color>\n\nHost has enabled gradient tags. This feature is not recommended to use because it can cause <b>disconnect issues</b>",
+
   "Warning.OverrideExiledPlayer": "Warning: Since the number of Impostors is set to 1, in order to avoid black screen, the voting screen will always show as a tied vote or a skip vote (only affects the visual, not the voting results). Please set more number of Impostors to avoid this problem.",
   "Warning.ShowAntiBlackExiledPlayer": "<b>Last meeting tiggered Black Screen Prevention!\nFollowing is the information of the player exiled in last meeting.</b>\n",
   "Warning.InvalidRpc": "Kicked <b>{0}</b> because an invalid RPC was received.\nPlease check that no mods other than TOHE installed.",

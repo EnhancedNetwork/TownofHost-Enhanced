@@ -145,6 +145,7 @@ public static class Options
     public static OptionItem CheatResponses;
     public static OptionItem LowLoadMode;
     public static OptionItem NewHideMsg;
+    public static OptionItem GradientTagsOpt;
 
     // Dummy Settings
     public static OptionItem SpawnSidekickAlone;
@@ -2300,6 +2301,9 @@ public static class Options
         TemporaryAntiBlackoutFix = BooleanOptionItem.Create(44427, "TemporaryAntiBlackoutFix", true, TabGroup.SystemSettings, false)
             .SetHeader(true)
             .SetColor(Color.red);
+        GradientTagsOpt = BooleanOptionItem.Create(44430, "EnableGadientTags", false, TabGroup.SystemSettings, false)
+            .SetHeader(true);
+
         EnableKillerLeftCommand = BooleanOptionItem.Create(44428, "EnableKillerLeftCommand", true, TabGroup.SystemSettings, false)
             .SetColor(Color.green);
         SeeEjectedRolesInMeeting = BooleanOptionItem.Create(44429, "SeeEjectedRolesInMeeting", true, TabGroup.SystemSettings, false)
