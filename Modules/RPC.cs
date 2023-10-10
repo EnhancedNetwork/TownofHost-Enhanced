@@ -109,7 +109,6 @@ enum CustomRPC
     SetSwooperTimer,
     SetWraithTimer,
     SetBKTimer,
-    SetBansheeTimer,
     SyncTotocalcioTargetAndTimes,
     SetSuccubusCharmLimit,
     SetCursedSoulCurseLimit,
@@ -575,9 +574,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetBKTimer:
                 BloodKnight.ReceiveRPC(reader);
-                break;
-            case CustomRPC.SetBansheeTimer:
-                Banshee.ReceiveRPC(reader);
                 break;
             case CustomRPC.SyncTotocalcioTargetAndTimes:
                 Totocalcio.ReceiveRPC(reader);
@@ -1096,9 +1092,6 @@ internal static class RPC
                 break;
             case CustomRoles.Alchemist:
                 Alchemist.Add(targetId);
-                break;
-            case CustomRoles.Banshee:
-                Banshee.Add(targetId);
                 break;
             case CustomRoles.Totocalcio:
                 Totocalcio.Add(targetId);

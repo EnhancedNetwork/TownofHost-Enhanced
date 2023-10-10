@@ -514,7 +514,6 @@ public static class Utils
             case CustomRoles.Provocateur:
             case CustomRoles.Medic:
             case CustomRoles.BloodKnight:
-            case CustomRoles.Banshee:
             case CustomRoles.Camouflager:
             case CustomRoles.Totocalcio:
             case CustomRoles.Succubus:
@@ -1985,7 +1984,7 @@ public static class Utils
                     SeerRealName = $"<size=110%><color=#8cffff>" + GetString("YouAreCrewmate") + $"</color></size>\n" + SeerRoleInfo;
 
                 else if (seerRole.IsNeutral())
-                    SeerRealName = $"<size=110%><color=#ff1919>" + GetString("YouAreNeutral") + $"</color></size>\n<size=130%>" + SeerRoleInfo + $"</size>";
+                    SeerRealName = $"<size=110%><color=#7f8c8d>" + GetString("YouAreNeutral") + $"</color></size>\n<size=130%>" + SeerRoleInfo + $"</size>";
 
                 else if (seerRole.IsMadmate() || seerRole == CustomRoles.Madmate)
                     SeerRealName = $"<size=110%><color=#ff1919>" + GetString("YouAreMadmate") + $"</color></size>\n<size=130%>" + SeerRoleInfo + $"</size>";

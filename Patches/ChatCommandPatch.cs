@@ -981,7 +981,6 @@ internal class ChatCommands
             "药剂师"=> GetString("PotionMaster"),
             "祭祀者"=> GetString("Ritualist"),
             "亡灵巫师"=> GetString("Necromancer"),
-            "护盾巫师"=> GetString("Banshee"),
             "好迷你船员" => GetString("NiceMini"),
             "坏迷你船员" => GetString("EvilMini"),
             _ => text,

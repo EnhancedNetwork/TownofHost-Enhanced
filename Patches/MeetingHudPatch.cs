@@ -1014,7 +1014,6 @@ class MeetingHudStartPatch
                 case CustomRoles.Pelican:
                 case CustomRoles.DarkHide:
                 case CustomRoles.BloodKnight:
-                case CustomRoles.Banshee:
                 case CustomRoles.Infectious:
                 case CustomRoles.RuthlessRomantic:
                 case CustomRoles.Necromancer:

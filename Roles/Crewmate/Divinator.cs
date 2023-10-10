@@ -117,7 +117,6 @@ public static class Divinator
                 CustomRoles.PlagueBearer or
                 CustomRoles.Observer or
                 CustomRoles.BloodKnight or
-                CustomRoles.Banshee or
                 CustomRoles.Guardian or
                 CustomRoles.Wildling
                 => "Result4",

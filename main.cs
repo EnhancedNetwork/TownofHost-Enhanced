@@ -37,8 +37,8 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "1.0.2.31";
-    public const string PluginDisplayVersion = "1.0.2 Dev 3.1";
+    public const string PluginVersion = "1.0.2.44";
+    public const string PluginDisplayVersion = "1.0.2 Dev 4";
     public static readonly string SupportedVersionAU = "2023.7.11";
     public const bool Canary = false;
 
@@ -430,7 +430,6 @@ public class Main : BasePlugin
                 {CustomRoles.Poisoner, "#478800"},
                 {CustomRoles.Huntsman, "#ad8739"},
                 {CustomRoles.Necromancer, "#9C87AB"},
-                {CustomRoles.Banshee, "#663399"},
                 {CustomRoles.NWitch, "#BF5FFF"},
                 {CustomRoles.Totocalcio, "#ff9409"},
                 {CustomRoles.Romantic, "#FF1493"},
@@ -821,7 +820,6 @@ public enum CustomRoles
     Werewolf,
     Necromancer,
     Huntsman,
-    Banshee,
     Occultist,
     Imitator,
    //two-way camp

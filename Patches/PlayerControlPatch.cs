@@ -1124,15 +1124,6 @@ class CheckMurderPatch
                     return false;
                 }
                 break;
-            case CustomRoles.Banshee:
-                if (Banshee.InProtect(target.PlayerId))
-                {
-                    killer.RpcGuardAndKill(target);
-                    if (!Options.DisableShieldAnimations.GetBool()) target.RpcGuardAndKill();
-                    target.Notify(GetString("BKOffsetKill"));
-                    return false;
-                }
-                break;
             case CustomRoles.Wildling:
                 if (Wildling.InProtect(target.PlayerId))
                 {
@@ -1345,9 +1336,6 @@ class MurderPlayerPatch
                 break;
             case CustomRoles.BloodKnight:
                 BloodKnight.OnMurderPlayer(killer, target);
-                break;
-            case CustomRoles.Banshee:
-                Banshee.OnMurderPlayer(killer, target);
                 break;
             case CustomRoles.Wildling:
                 Wildling.OnMurderPlayer(killer, target);
@@ -2767,7 +2755,6 @@ class FixedUpdatePatch
                 Puppeteer.OnFixedUpdate(player);
                 Shroud.OnFixedUpdate(player);
                 NWitch.OnFixedUpdate(player);
-                Banshee.OnFixedUpdate(player);
                 Wildling.OnFixedUpdate(player);
                 Spiritcaller.OnFixedUpdate(player);
                 Pitfall.OnFixedUpdate(player);

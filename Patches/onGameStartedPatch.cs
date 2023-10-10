@@ -262,7 +262,6 @@ internal class ChangeRoleSettings
             Wraith.Init();
             SoulCollector.Init();
             BloodKnight.Init();
-            Banshee.Init();
             Totocalcio.Init();
             Romantic.Init();
             VengefulRomantic.Init();
@@ -777,9 +776,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.BloodKnight:
                         BloodKnight.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Banshee:
-                        Banshee.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Totocalcio:
                         Totocalcio.Add(pc.PlayerId);

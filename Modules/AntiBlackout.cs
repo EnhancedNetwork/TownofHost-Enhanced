@@ -35,7 +35,7 @@ public static class AntiBlackout
         || Virus.IsEnable || Werewolf.IsEnable
         || Gamer.IsEnable || Succubus.IsEnable
         || NWitch.IsEnable || Maverick.IsEnable
-        || RuthlessRomantic.IsEnable || Banshee.IsEnable
+        || RuthlessRomantic.IsEnable || Bandit.IsEnable
         || Spiritcaller.IsEnable || Occultist.IsEnable
         || Pyromaniac.IsEnable || Huntsman.IsEnable
         || PlagueBearer.IsEnable || CustomRoles.Pestilence.RoleExist(true)
@@ -43,7 +43,6 @@ public static class AntiBlackout
         || Medusa.IsEnable || Poisoner.IsEnable
         || PotionMaster.IsEnable || Wraith.IsEnable
         || Necromancer.IsEnable || Doppelganger.IsEnable
-        || Bandit.IsEnable
         || CustomRoles.Sidekick.RoleExist(true) || (CustomRoles.Arsonist.RoleExist(true) && Options.ArsonistCanIgniteAnytime.GetBool());
     ///<summary>
     ///Difference between the number of non-impostors and the number of imposters

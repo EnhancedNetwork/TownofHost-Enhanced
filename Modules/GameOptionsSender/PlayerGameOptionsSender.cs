@@ -390,9 +390,6 @@ public class PlayerGameOptionsSender : GameOptionsSender
             case CustomRoles.BloodKnight:
                 BloodKnight.ApplyGameOptions(opt);
                 break;
-            case CustomRoles.Banshee:
-                Banshee.ApplyGameOptions(opt);
-                break;
             case CustomRoles.DovesOfNeace:
                 AURoleOptions.EngineerCooldown = Options.DovesOfNeaceCooldown.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 1;

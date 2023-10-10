@@ -516,7 +516,6 @@ static class ExtendedPlayerControl
             CustomRoles.Provocateur => pc.IsAlive(),
             CustomRoles.Assassin => Assassin.CanUseKillButton(pc),
             CustomRoles.BloodKnight => pc.IsAlive(),
-            CustomRoles.Banshee => pc.IsAlive(),
             CustomRoles.Crewpostor => false,
             CustomRoles.Totocalcio => Totocalcio.CanUseKillButton(pc),
             CustomRoles.Romantic => pc.IsAlive(),
@@ -608,7 +607,6 @@ static class ExtendedPlayerControl
             CustomRoles.Provocateur => true,
             CustomRoles.Assassin => true,
             CustomRoles.BloodKnight => true,
-            CustomRoles.Banshee => true,
             CustomRoles.Amnesiac => true,
             CustomRoles.Totocalcio => true,
             CustomRoles.Romantic => true,
@@ -696,7 +694,6 @@ static class ExtendedPlayerControl
             CustomRoles.Pelican => Pelican.CanVent.GetBool(),
             CustomRoles.Gamer => Gamer.CanVent.GetBool(),
             CustomRoles.BloodKnight => BloodKnight.CanVent.GetBool(),
-            CustomRoles.Banshee => Banshee.CanVent.GetBool(),
             CustomRoles.Juggernaut => Juggernaut.CanVent.GetBool(),
             CustomRoles.Infectious => Infectious.CanVent.GetBool(),
             CustomRoles.PotionMaster => PotionMaster.CanVent.GetBool(),
@@ -758,7 +755,6 @@ static class ExtendedPlayerControl
             CustomRoles.DarkHide or
             CustomRoles.Provocateur or
             CustomRoles.BloodKnight or
-            CustomRoles.Banshee or
             CustomRoles.Poisoner or
             CustomRoles.NSerialKiller or
             CustomRoles.Maverick or
@@ -1057,9 +1053,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.BloodKnight:
                 BloodKnight.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Banshee:
-                Banshee.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Totocalcio:
                 Totocalcio.SetKillCooldown(player.PlayerId);

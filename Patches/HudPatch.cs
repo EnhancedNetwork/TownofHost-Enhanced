@@ -204,7 +204,6 @@ class HudManagerPatch
                     case CustomRoles.Jackal:
                     case CustomRoles.Virus:
                     case CustomRoles.BloodKnight:
-                    case CustomRoles.Banshee:
                     case CustomRoles.SwordsMan:
                     case CustomRoles.Parasite:
                     case CustomRoles.Refugee:
@@ -506,10 +505,6 @@ class HudManagerPatch
                 else if (player.Is(CustomRoles.BloodKnight))
                 {
                     LowerInfoText.text = BloodKnight.GetHudText(player);
-                }
-                else if (player.Is(CustomRoles.Banshee))
-                {
-                    LowerInfoText.text = Banshee.GetHudText(player);
                 }
                 else if (player.Is(CustomRoles.Wildling))
                 {

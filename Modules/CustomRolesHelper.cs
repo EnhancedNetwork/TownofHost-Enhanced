@@ -219,7 +219,6 @@ static class CustomRolesHelper
             CustomRoles.DarkHide => RoleTypes.Impostor,
             CustomRoles.Provocateur => RoleTypes.Impostor,
             CustomRoles.BloodKnight => RoleTypes.Impostor,
-            CustomRoles.Banshee => RoleTypes.Impostor,
             CustomRoles.Poisoner => RoleTypes.Impostor,
             CustomRoles.NSerialKiller => RoleTypes.Impostor,
             CustomRoles.Werewolf => RoleTypes.Impostor,
@@ -564,7 +563,6 @@ static class CustomRolesHelper
             CustomRoles.Parasite or
             CustomRoles.NSerialKiller or
             CustomRoles.Werewolf or
-            CustomRoles.Banshee or
             CustomRoles.PotionMaster or
             CustomRoles.Pickpocket or
             CustomRoles.Traitor or
@@ -730,7 +728,6 @@ static class CustomRolesHelper
             CustomRoles.FFF or
             CustomRoles.Konan or
             CustomRoles.Gamer or
-            CustomRoles.Banshee or
             CustomRoles.Maverick or
             CustomRoles.CursedSoul or
             CustomRoles.DarkHide or
@@ -759,7 +756,7 @@ static class CustomRolesHelper
             CustomRoles.Wraith or
             CustomRoles.Ritualist or
             CustomRoles.Banshee or
-       //     CustomRoles.Sorcerer or
+            CustomRoles.Sorcerer or
             CustomRoles.Jinx or
             CustomRoles.Necromancer or
             CustomRoles.CovenLeader or
@@ -797,7 +794,6 @@ static class CustomRolesHelper
             CustomRoles.Gamer or
             CustomRoles.DarkHide or
             CustomRoles.Necromancer or
-            CustomRoles.Banshee or
             CustomRoles.Pirate or
             CustomRoles.Provocateur or
             CustomRoles.SoulCollector or
