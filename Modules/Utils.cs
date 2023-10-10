@@ -1983,7 +1983,7 @@ public static class Utils
                 else if (seerRole.IsCrewmate() && !seer.Is(CustomRoles.Madmate))
                     SeerRealName = $"<size=110%><color=#8cffff>" + GetString("YouAreCrewmate") + $"</color></size>\n" + SeerRoleInfo;
 
-                else if (seerRole.IsNeutral())
+                else if (seerRole.IsNeutral() && !seerRole.IsMadmate())
                     SeerRealName = $"<size=110%><color=#7f8c8d>" + GetString("YouAreNeutral") + $"</color></size>\n<size=130%>" + SeerRoleInfo + $"</size>";
 
                 else if (seerRole.IsMadmate() || seerRole == CustomRoles.Madmate)
