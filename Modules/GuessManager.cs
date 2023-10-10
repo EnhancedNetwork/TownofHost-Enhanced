@@ -92,7 +92,6 @@ public static class GuessManager
         if (!GameStates.IsInGame || pc == null) return false;
         if (!pc.Is(CustomRoles.NiceGuesser) 
             && !pc.Is(CustomRoles.EvilGuesser) 
-            && !pc.Is(CustomRoles.Ritualist) 
             && !pc.Is(CustomRoles.Doomsayer) 
             && !pc.Is(CustomRoles.Judge) 
             && !pc.Is(CustomRoles.Councillor) 
@@ -133,16 +132,6 @@ public static class GuessManager
             }
         }
 
-    /*    if (!pc.Is(CustomRoles.Ritualist))
-        {
-            if (pc.GetCustomRole().IsCoven() && !Options.CovenMembersCanGuess.GetBool() && !pc.Is(CustomRoles.Guesser))
-            {
-                if (!isUI) Utils.SendMessage(GetString("GuessNotAllowed"), pc.PlayerId);
-                else pc.ShowPopUp(GetString("GuessNotAllowed"));
-                return true;
-            }
-        } */
-
         if (pc.GetCustomRole().IsNK() && !Options.NeutralKillersCanGuess.GetBool() && !pc.Is(CustomRoles.Guesser))
         {
             if (!isUI) Utils.SendMessage(GetString("GuessNotAllowed"), pc.PlayerId);
@@ -168,7 +157,6 @@ public static class GuessManager
             if (
             (pc.Is(CustomRoles.NiceGuesser) && Options.GGTryHideMsg.GetBool()) ||
             (pc.Is(CustomRoles.EvilGuesser) && Options.EGTryHideMsg.GetBool()) ||
-            (pc.Is(CustomRoles.Ritualist) && Options.ConjTryHideMsg.GetBool()) ||
             (pc.Is(CustomRoles.Doomsayer) && Doomsayer.DoomsayerTryHideMsg.GetBool()) ||
             (pc.Is(CustomRoles.Guesser) && Options.GTryHideMsg.GetBool()) ||
             (Options.GuesserMode.GetBool() && Options.HideGuesserCommands.GetBool())
@@ -212,12 +200,6 @@ public static class GuessManager
                 {
                     if (!isUI) Utils.SendMessage(GetString("EGGuessMax"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("EGGuessMax"));
-                    return true;
-                }
-                if (pc.Is(CustomRoles.Ritualist) && Main.GuesserGuessed[pc.PlayerId] >= Options.ConjCanGuessTime.GetInt())
-                {
-                    if (!isUI) Utils.SendMessage(GetString("ConjGuessMax"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("ConjGuessMax"));
                     return true;
                 }
                 if (pc.Is(CustomRoles.Phantom) && !Options.PhantomCanGuess.GetBool())
@@ -446,13 +428,6 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("GuessAdtRole"));
                     return true;
                 }
-                // Ritualist Cant Guess Addons
-                else if (role.IsAdditionRole() && pc.Is(CustomRoles.Ritualist) && !Options.ConjCanGuessAdt.GetBool())
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessAdtRole"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessAdtRole"));
-                    return true;
-                }
                 // Guesser (add-on) Cant Guess Addons
                 else if (role.IsAdditionRole() && pc.Is(CustomRoles.Guesser) && !Options.GCanGuessAdt.GetBool())
                 {
@@ -483,7 +458,7 @@ public static class GuessManager
                         }
 
                         // Neutrals Cant Guess Addons
-                        if ((Options.NeutralKillersCanGuess.GetBool() || Options.PassiveNeutralsCanGuess.GetBool()) && pc.Is(CustomRoleTypes.Neutral) && !(pc.Is(CustomRoles.Ritualist) || pc.Is(CustomRoles.Doomsayer) || pc.Is(CustomRoles.Guesser)))
+                        if ((Options.NeutralKillersCanGuess.GetBool() || Options.PassiveNeutralsCanGuess.GetBool()) && pc.Is(CustomRoleTypes.Neutral) && !(pc.Is(CustomRoles.Doomsayer) || pc.Is(CustomRoles.Guesser)))
                         {
                             if (!isUI) Utils.SendMessage(GetString("GuessAdtRole"), pc.PlayerId);
                             else pc.ShowPopUp(GetString("GuessAdtRole"));
@@ -896,11 +871,6 @@ public static class GuessManager
                 else if (PlayerControl.LocalPlayer.GetCustomRole() is CustomRoles.NiceGuesser && !Options.CrewmatesCanGuess.GetBool())
                     CreateGuesserButton(__instance);
 
-            /*    if (PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.GetCustomRole().IsCoven() && Options.CovenMembersCanGuess.GetBool())
-                    CreateGuesserButton(__instance); 
-                else if (PlayerControl.LocalPlayer.GetCustomRole() is CustomRoles.Ritualist && !Options.CovenMembersCanGuess.GetBool())
-                    CreateGuesserButton(__instance); */
-
                 if (PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.GetCustomRole().IsNK() && Options.NeutralKillersCanGuess.GetBool())
                     CreateGuesserButton(__instance);
                 if (PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.GetCustomRole().IsNonNK() && Options.PassiveNeutralsCanGuess.GetBool())
@@ -1032,10 +1002,6 @@ public static class GuessManager
                     if (!Options.EGCanGuessImp.GetBool() && index == 1) continue;
                     if (!Options.EGCanGuessAdt.GetBool() && index == 3) continue;
                 }
-                else if (PlayerControl.LocalPlayer.Is(CustomRoles.Ritualist))
-                {
-                    if (!Options.ConjCanGuessAdt.GetBool() && index == 3) continue;
-                }
                 else if (PlayerControl.LocalPlayer.Is(CustomRoles.NiceGuesser))
                 {
                     if (!Options.GGCanGuessCrew.GetBool() && index == 0) continue;
@@ -1058,7 +1024,6 @@ public static class GuessManager
                     !(PlayerControl.LocalPlayer.Is(CustomRoles.EvilGuesser) ||
                       PlayerControl.LocalPlayer.Is(CustomRoles.NiceGuesser) ||
                       PlayerControl.LocalPlayer.Is(CustomRoles.Doomsayer) ||
-                      PlayerControl.LocalPlayer.Is(CustomRoles.Ritualist) ||
                       PlayerControl.LocalPlayer.Is(CustomRoles.Guesser)))
                 {
                     if (!Options.CrewCanGuessCrew.GetBool() && PlayerControl.LocalPlayer.Is(CustomRoleTypes.Crewmate) && index == 0) continue;
@@ -1080,7 +1045,6 @@ public static class GuessManager
                     CustomRoleTypes.Crewmate => new Color32(140, 255, 255, byte.MaxValue),
                     CustomRoleTypes.Impostor => new Color32(255, 25, 25, byte.MaxValue),
                     CustomRoleTypes.Neutral => new Color32(127, 140, 141, byte.MaxValue),
-                    //      CustomRoleTypes.Coven => new Color32(102, 51, 153, byte.MaxValue),
                     CustomRoleTypes.Addon => new Color32(255, 154, 206, byte.MaxValue),
                     _ => throw new NotImplementedException(),
                 };
