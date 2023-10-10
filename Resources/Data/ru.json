@@ -1417,7 +1417,7 @@
   "In%team%": "(Команда %team%)",
   "SheriffMisfireKillsTarget": "<color=#f8cd46>Шериф</color> убивает цель вместе с собой",
   "SheriffShotLimit": "Количество выстрелов",
-  "SheriffCanKillAllAlive": "Может убить всех живых",
+  "SheriffCanKillAllAlive": "Может убивать когда никто не умер",
   "SheriffCanKillCharmed": "Может убить <color=#cf6acd>Зачарованных</color> игроков",
   "SheriffCanKillEgoist": "Может убить <color=#5600ff>Эгоистов</color>",
   "SheriffCanKillSidekick": "Может убить <color=#00b4eb>Союзников</color>",
