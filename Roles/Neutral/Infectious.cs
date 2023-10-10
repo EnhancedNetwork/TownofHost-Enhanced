@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+﻿using MS.Internal.Xml.XPath;
+using UnityEngine;
 
 using static TOHE.Options;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
@@ -19,6 +21,7 @@ public static class Infectious
     public static OptionItem TargetKnowOtherTarget;
     public static OptionItem HasImpostorVision;
     public static OptionItem CanVent;
+    public static OptionItem DoubleClickKill;
     public static OptionItem HideBittenRolesOnEject;
     
 
@@ -33,6 +36,8 @@ public static class Infectious
         TargetKnowOtherTarget = BooleanOptionItem.Create(Id + 14, "InfectiousTargetKnowOtherTarget", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);
         HasImpostorVision = BooleanOptionItem.Create(Id + 15, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);
         CanVent = BooleanOptionItem.Create(Id + 17, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);        
+        DoubleClickKill = BooleanOptionItem.Create(Id + 18, "DoubleClickKill", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);        
+    
     }
     public static void Init()
     {
@@ -43,6 +48,8 @@ public static class Infectious
     {
         BiteLimit = BiteMax.GetInt();
         IsEnable = true;
+        var pc = Utils.GetPlayerById(playerId);
+        if (pc != null) pc.AddDoubleTrigger();
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -50,13 +57,8 @@ public static class Infectious
     }
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = BiteCooldown.GetFloat();
     public static bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && BiteLimit >= 1;
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public static bool InfectOrMurder(PlayerControl killer, PlayerControl target)
     {
-        if (target.Is(CustomRoles.Pestilence)) return true;
-        if (target.Is(CustomRoles.Infectious)) return true;
-        if (target.Is(CustomRoles.NSerialKiller)) return true;
-
-        if (BiteLimit < 1) return false;
         if (CanBeBitten(target))
         {
             BiteLimit--;
@@ -71,9 +73,8 @@ public static class Infectious
             if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
             target.RpcGuardAndKill(killer);
             target.RpcGuardAndKill(target);
-
             Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Infected.ToString(), "Assign " + CustomRoles.Infected.ToString());
-            
+
             if (BiteLimit < 0)
             {
                 HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
@@ -97,6 +98,30 @@ public static class Infectious
 
         Logger.Info($"{killer.GetNameWithRole()} : 剩余{BiteLimit}次招募机会", "Infectious");
         return false;
+    }
+    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    {
+        if (target.Is(CustomRoles.Pestilence)) return true;
+        if (target.Is(CustomRoles.Infectious)) return true;
+        if (target.Is(CustomRoles.NSerialKiller)) return true;
+
+        if (BiteLimit < 1) return false;
+        if (DoubleClickKill.GetBool())
+        { 
+            bool check = killer.CheckDoubleTrigger(target, () => { InfectOrMurder(killer, target); });
+            //Logger.Warn("VALUE OF CHECK IS")
+            if (check)
+            {
+                killer.RpcMurderPlayerV3(target);
+                return true;
+            }
+            else return false;
+        }
+        else
+        {
+            return InfectOrMurder(killer, target);
+        }
+        
     }
     public static void MurderInfectedPlayers()
     {
