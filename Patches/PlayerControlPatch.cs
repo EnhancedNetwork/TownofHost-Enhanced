@@ -161,7 +161,6 @@ class CheckMurderPatch
             {
                 case CustomRoles.EvilDiviner:
                 case CustomRoles.Farseer:
-                case CustomRoles.Ritualist:
                     if (!Main.AwareInteracted.ContainsKey(target.PlayerId)) Main.AwareInteracted.Add(target.PlayerId, new());
                     if (!Main.AwareInteracted[target.PlayerId].Contains(Utils.GetRoleName(killer.GetCustomRole()))) Main.AwareInteracted[target.PlayerId].Add(Utils.GetRoleName(killer.GetCustomRole()));
                     break;
@@ -309,9 +308,6 @@ class CheckMurderPatch
                 case CustomRoles.NWitch:
                     if (!NWitch.OnCheckMurder(killer, target)) return false;
                     break;
-                case CustomRoles.CovenLeader:
-                    if (!CovenLeader.OnCheckMurder(killer, target)) return false;
-                    break;
                 case CustomRoles.Shroud:
                     if (!Shroud.OnCheckMurder(killer, target)) return false;
                     break;
@@ -359,9 +355,6 @@ class CheckMurderPatch
                     break;
                 case CustomRoles.Wraith:
                     if (!Wraith.OnCheckMurder(killer, target)) return false;
-                    break;
-                case CustomRoles.Shade:
-                    if (!Shade.OnCheckMurder(killer, target)) return false;
                     break;
                 case CustomRoles.Lurker:
                     Lurker.OnCheckMurder(killer);
@@ -826,8 +819,6 @@ class CheckMurderPatch
             return false;
         if (killer.Is(CustomRoles.Wraith) && target.Is(CustomRoles.Wraith))
             return false;
-        if (killer.Is(CustomRoles.Shade) && target.Is(CustomRoles.Shade))
-            return false;
         if (killer.Is(CustomRoles.HexMaster) && target.Is(CustomRoles.HexMaster))
             return false;
         if (killer.Is(CustomRoles.Occultist) && target.Is(CustomRoles.Occultist))
@@ -1284,7 +1275,7 @@ class MurderPlayerPatch
 
         if (target.Is(CustomRoles.Bait))
         {
-            if (killer.PlayerId != target.PlayerId || (target.GetRealKiller()?.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Shade or CustomRoles.Wraith) || !killer.Is(CustomRoles.Oblivious) || (killer.Is(CustomRoles.Oblivious) && !Options.ObliviousBaitImmune.GetBool()))
+            if (killer.PlayerId != target.PlayerId || (target.GetRealKiller()?.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Wraith) || !killer.Is(CustomRoles.Oblivious) || (killer.Is(CustomRoles.Oblivious) && !Options.ObliviousBaitImmune.GetBool()))
             {
                 killer.RPCPlayCustomSound("Congrats");
                 target.RPCPlayCustomSound("Congrats");
@@ -1848,14 +1839,6 @@ class ReportDeadBodyPatch
                         tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                     }
 
-                /*    if (tar.GetCustomRole().IsCoven())
-                    {
-                        __instance.RpcSetCustomRole(CustomRoles.Banshee);
-                        Banshee.Add(__instance.PlayerId);
-                        __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
-                        tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
-                    } */
-
                     if (tar.GetCustomRole().IsMadmate() || tar.Is(CustomRoles.Madmate))
                     {
                         __instance.RpcSetCustomRole(CustomRoles.Refugee);
@@ -2270,7 +2253,6 @@ class ReportDeadBodyPatch
         ParityCop.OnReportDeadBody();
         Doomsayer.OnReportDeadBody();
         BallLightning.OnReportDeadBody();
-        CovenLeader.OnReportDeadBody();
         NWitch.OnReportDeadBody();
         Seeker.OnReportDeadBody();
         Jailer.OnReportDeadBody();
@@ -2783,7 +2765,6 @@ class FixedUpdatePatch
                 BallLightning.OnFixedUpdate();
                 BloodKnight.OnFixedUpdate(player);
                 Puppeteer.OnFixedUpdate(player);
-                CovenLeader.OnFixedUpdate(player);
                 Shroud.OnFixedUpdate(player);
                 NWitch.OnFixedUpdate(player);
                 Banshee.OnFixedUpdate(player);
@@ -2792,7 +2773,6 @@ class FixedUpdatePatch
                 Pitfall.OnFixedUpdate(player);
                 Swooper.OnFixedUpdate(player);
                 Wraith.OnFixedUpdate(player);
-                Shade.OnFixedUpdate(player);
                 Chameleon.OnFixedUpdate(player);
                 Spy.OnFixedUpdate(player);
             //    Alchemist.OnFixedUpdate(player);
@@ -3047,10 +3027,6 @@ class FixedUpdatePatch
                         Mark.Append(Puppeteer.TargetMark(seer, target));
                         break;
 
-                    case CustomRoles.CovenLeader:
-                        Mark.Append(CovenLeader.TargetMark(seer, target));
-                        break;
-
                     case CustomRoles.NWitch:
                         Mark.Append(NWitch.TargetMark(seer, target));
                         break;
@@ -3303,7 +3279,6 @@ class EnterVentPatch
 
         Swooper.OnEnterVent(pc, __instance);
         Wraith.OnEnterVent(pc, __instance);
-        Shade.OnEnterVent(pc, __instance);
         Addict.OnEnterVent(pc, __instance);
         Alchemist.OnEnterVent(pc, __instance.Id);
         Chameleon.OnEnterVent(pc, __instance);
@@ -3557,9 +3532,6 @@ class CoEnterVentPatch
 
         if (__instance.myPlayer.Is(CustomRoles.Wraith))
             Wraith.OnCoEnterVent(__instance, id);
-
-        if (__instance.myPlayer.Is(CustomRoles.Shade))
-            Shade.OnCoEnterVent(__instance, id);
 
         if (__instance.myPlayer.Is(CustomRoles.Chameleon))
             Chameleon.OnCoEnterVent(__instance, id);

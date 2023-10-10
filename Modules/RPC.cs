@@ -108,7 +108,6 @@ enum CustomRPC
     RetributionistRevenge,
     SetSwooperTimer,
     SetWraithTimer,
-    SetShadeTimer,
     SetBKTimer,
     SetBansheeTimer,
     SyncTotocalcioTargetAndTimes,
@@ -137,7 +136,6 @@ enum CustomRPC
     SetAdmireLimit,
     SetRememberLimit,
     SetImitateLimit,
-    SyncCovenLeader,
     SyncNWitch,
     SyncShroud,
     SyncMiniAge,
@@ -527,9 +525,6 @@ internal class RPCHandlerPatch
                 for (int i = 0; i < num; i++)
                     Main.AllPlayerNames.TryAdd(reader.ReadByte(), reader.ReadString());
                 break;
-            case CustomRPC.SyncCovenLeader:
-                CovenLeader.ReceiveRPC(reader);
-                break;
             case CustomRPC.SyncNWitch:
                 NWitch.ReceiveRPC(reader);
                 break;
@@ -571,9 +566,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetWraithTimer:
                 Wraith.ReceiveRPC(reader);
-                break;
-            case CustomRPC.SetShadeTimer:
-                Shade.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetChameleonTimer:
                 Chameleon.ReceiveRPC(reader);
@@ -1096,9 +1088,6 @@ internal static class RPC
             case CustomRoles.Wraith:
                 Wraith.Add(targetId);
                 break;
-            case CustomRoles.Shade:
-                Shade.Add(targetId);
-                break;
             case CustomRoles.Chameleon:
                 Chameleon.Add(targetId);
                 break;
@@ -1188,9 +1177,6 @@ internal static class RPC
                 break;
             case CustomRoles.NWitch:
                 NWitch.Add(targetId);
-                break;
-            case CustomRoles.CovenLeader:
-                CovenLeader.Add(targetId);
                 break;
             case CustomRoles.Shroud:
                 Shroud.Add(targetId);

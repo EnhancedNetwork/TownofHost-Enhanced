@@ -247,9 +247,7 @@ public static class Divinator
                 CustomRoles.EvilGuesser or
                 CustomRoles.NiceGuesser or
                 CustomRoles.DarkHide or
-                CustomRoles.Ritualist or
                 CustomRoles.Camouflager or
-                CustomRoles.Shade or
                 CustomRoles.Chameleon or
                 CustomRoles.Doppelganger
                 => "Result19",
@@ -267,7 +265,6 @@ public static class Divinator
                 CustomRoles.DovesOfNeace or
                 CustomRoles.ImperiusCurse or
                 CustomRoles.Huntsman or
-                CustomRoles.CovenLeader or
                 CustomRoles.Traitor
                 => "Result21",
 

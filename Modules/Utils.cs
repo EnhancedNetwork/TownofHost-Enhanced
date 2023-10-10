@@ -473,9 +473,7 @@ public static class Utils
             case CustomRoles.Doppelganger:
             case CustomRoles.Sidekick:
             case CustomRoles.Poisoner:
-            case CustomRoles.CovenLeader:
             case CustomRoles.Necromancer:
-            case CustomRoles.Ritualist:
             case CustomRoles.NSerialKiller:
             case CustomRoles.Pyromaniac:
             case CustomRoles.Werewolf:
@@ -490,7 +488,6 @@ public static class Utils
             case CustomRoles.Parasite:
             case CustomRoles.Crusader:
             case CustomRoles.Refugee:
-    //        case CustomRoles.Minion:
             case CustomRoles.Jester:
             case CustomRoles.Pirate:
             case CustomRoles.NWitch:
@@ -508,8 +505,6 @@ public static class Utils
             case CustomRoles.HexMaster:
             case CustomRoles.Occultist:
             case CustomRoles.Wraith:
-            case CustomRoles.Shade:
-      //      case CustomRoles.Chameleon:
             case CustomRoles.Juggernaut:
             case CustomRoles.Reverie:
             case CustomRoles.PotionMaster:
@@ -565,7 +560,7 @@ public static class Utils
                     hasTasks = false;
                 break;
             default:
-                if (role.IsImpostor()) hasTasks = false;
+                if (role.IsImpostor() || role.IsNK()) hasTasks = false;
                 break;
         }
 
@@ -1173,13 +1168,11 @@ public static class Utils
 
         List<string> impsb = new();
         List<string> neutralsb = new();
-        List<string> covensb = new();
         List<string> crewsb = new();
         List<string> addonsb = new();
 
         //var impsb = new StringBuilder();
         //var neutralsb = new StringBuilder();
-        //var covensb = new StringBuilder();
         //var crewsb = new StringBuilder();
         //var addonsb = new StringBuilder();
         //int headCount = -1;
@@ -1211,20 +1204,17 @@ public static class Utils
         impsb.Sort();
         crewsb.Sort();
         neutralsb.Sort();
-    //    covensb.Sort();
         addonsb.Sort();
         
         SendMessage(string.Join("", impsb) + "\n.", PlayerId, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ImpostorRoles")));
         SendMessage(string.Join("", crewsb) + "\n.", PlayerId, ColorString(GetRoleColor(CustomRoles.Crewmate), GetString("CrewmateRoles")));
         SendMessage(string.Join("", neutralsb) + "\n.", PlayerId, GetString("NeutralRoles"));
-    //    SendMessage(string.Join("", covensb) + "\n.", PlayerId, GetString("CovenRoles"));
         SendMessage(string.Join("", addonsb) + "\n.", PlayerId, GetString("AddonRoles"));
         
 
         //SendMessage(impsb.Append("\n.").ToString(), PlayerId, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ImpostorRoles")));
         //SendMessage(crewsb.Append("\n.").ToString(), PlayerId, ColorString(Utils.GetRoleColor(CustomRoles.Crewmate), GetString("CrewmateRoles")));
         //SendMessage(neutralsb.Append("\n.").ToString(), PlayerId, GetString("NeutralRoles"));
-        //SendMessage(covensb.Append("\n.").ToString(), PlayerId, GetString("CovenRoles"));
         //SendMessage(addonsb.Append("\n.").ToString(), PlayerId, GetString("AddonRoles"));
         //foreach (string roleList in sb.ToString().Split("\n\n●"))
         //    SendMessage("\n\n●" + roleList + "\n\n.", PlayerId);
@@ -1991,21 +1981,15 @@ public static class Utils
                 if (seerRole.IsImpostor())
                     SeerRealName = $"<size=110%><color=#ff1919>" + GetString("YouAreImpostor") + $"</color></size>\n<size=130%>" + SeerRoleInfo + $"</size>";
                 
-                else if (seer.Is(CustomRoles.Madmate))
-                    SeerRealName = $"<size=110%><color=#ff1919>" + GetString("YouAreMadmate") + $"</color></size>\n<size=130%>" + SeerRoleInfo + $"</size>";
-                
                 else if (seerRole.IsCrewmate() && !seer.Is(CustomRoles.Madmate))
                     SeerRealName = $"<size=110%><color=#8cffff>" + GetString("YouAreCrewmate") + $"</color></size>\n" + SeerRoleInfo;
-                
-            /*    else if (seerRole.IsNeutral() && !seerRole.IsMadmate() && !seerRole.IsCoven())
-                    SeerRealName = $"<size=110%><color=#7f8c8d>" + GetString("YouAreNeutral") + $"</color></size>\n<size=130%>" + SeerRoleInfo + $"</size>";
-                */
-                else if (seerRole.IsMadmate())
+
+                else if (seerRole.IsNeutral())
+                    SeerRealName = $"<size=110%><color=#ff1919>" + GetString("YouAreNeutral") + $"</color></size>\n<size=130%>" + SeerRoleInfo + $"</size>";
+
+                else if (seerRole.IsMadmate() || seerRole == CustomRoles.Madmate)
                     SeerRealName = $"<size=110%><color=#ff1919>" + GetString("YouAreMadmate") + $"</color></size>\n<size=130%>" + SeerRoleInfo + $"</size>";
-                
-            /*    else if (seerRole.IsCoven())
-                    SeerRealName = $"<size=110%><color=#663399>" + GetString("YouAreCoven") + $"</color></size>\n<size=130%>" + SeerRoleInfo + $"</size>";
-*/            }
+            }
 
         // ====== Combine SelfRoleName, SelfTaskText, SelfName, SelfDeathReason for seer ======
 
@@ -2205,10 +2189,6 @@ public static class Utils
 
                         case CustomRoles.Puppeteer:
                             TargetMark.Append(Puppeteer.TargetMark(seer, target));
-                            break;
-
-                        case CustomRoles.CovenLeader:
-                            TargetMark.Append(CovenLeader.TargetMark(seer, target));
                             break;
 
                         case CustomRoles.Shroud:
@@ -2432,7 +2412,6 @@ public static class Utils
         Swooper.AfterMeetingTasks();
         Glitch.AfterMeetingTasks();
         Wraith.AfterMeetingTasks();
-        Shade.AfterMeetingTasks();
         Chameleon.AfterMeetingTasks();
         Eraser.AfterMeetingTasks();
         Cleanser.AfterMeetingTasks();

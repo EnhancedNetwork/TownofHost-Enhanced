@@ -227,7 +227,7 @@ public static class CopyCat
             if (role == CustomRoles.Vindicator || role == CustomRoles.Pickpocket) role = CustomRoles.Mayor;
             else if (role == CustomRoles.Councillor) role = CustomRoles.Judge;
             else if (role == CustomRoles.Sans || role == CustomRoles.Juggernaut) role = CustomRoles.Reverie;
-            else if (role == CustomRoles.EvilGuesser || role == CustomRoles.Doomsayer || role == CustomRoles.Ritualist) role = CustomRoles.NiceGuesser;
+            else if (role == CustomRoles.EvilGuesser || role == CustomRoles.Doomsayer) role = CustomRoles.NiceGuesser;
         }
         if (role.IsCrewmate()/* && (!tpc.GetCustomSubRoles().Any(x => x == CustomRoles.Rascal))*/)
         {

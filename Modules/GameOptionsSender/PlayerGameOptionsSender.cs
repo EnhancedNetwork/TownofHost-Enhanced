@@ -270,7 +270,6 @@ public class PlayerGameOptionsSender : GameOptionsSender
                 break;
             case CustomRoles.FFF:
             case CustomRoles.Pursuer:
-            case CustomRoles.Ritualist:
                 opt.SetVision(true);
                 break;
             case CustomRoles.NSerialKiller:
@@ -296,9 +295,6 @@ public class PlayerGameOptionsSender : GameOptionsSender
                 break;
             case CustomRoles.NWitch:
                 NWitch.ApplyGameOptions(opt);
-                break;
-            case CustomRoles.CovenLeader:
-                CovenLeader.ApplyGameOptions(opt);
                 break;
             case CustomRoles.Shroud:
                 Shroud.ApplyGameOptions(opt);
@@ -338,7 +334,6 @@ public class PlayerGameOptionsSender : GameOptionsSender
             case CustomRoles.Lawyer:
                 //Main.NormalOptions.CrewLightMod = Lawyer.LawyerVision.GetFloat();
                 break;
-            case CustomRoles.Shade:
             case CustomRoles.Parasite:
                 opt.SetVision(true);
                 break;

@@ -155,7 +155,7 @@ static class CustomRolesHelper
                 _ => role.IsImpostor() ? CustomRoles.Impostor : CustomRoles.Crewmate,
             };
     }
-    // Erased RoleType - Impostor, Shapeshifter, Crewmate, Engineer, Scientist (Not Neutrals/Covens)
+    // Erased RoleType - Impostor, Shapeshifter, Crewmate, Engineer, Scientist (Not Neutrals)
     public static CustomRoles GetErasedRole(RoleTypes roleType, CustomRoles role)
     {
         return role.IsVanilla()
@@ -213,7 +213,6 @@ static class CustomRolesHelper
             CustomRoles.HexMaster => RoleTypes.Impostor,
             CustomRoles.Occultist => RoleTypes.Impostor,
             CustomRoles.Wraith => RoleTypes.Impostor,
-            CustomRoles.Shade => RoleTypes.Impostor,
             CustomRoles.Glitch => RoleTypes.Impostor,
             CustomRoles.Juggernaut => RoleTypes.Impostor,
             CustomRoles.Jinx => RoleTypes.Impostor,
@@ -227,7 +226,6 @@ static class CustomRolesHelper
             CustomRoles.Maverick => RoleTypes.Impostor,
             CustomRoles.Parasite => RoleTypes.Impostor,
             CustomRoles.NWitch => RoleTypes.Impostor,
-            CustomRoles.CovenLeader => RoleTypes.Impostor,
             CustomRoles.Necromancer => RoleTypes.Impostor,
             CustomRoles.Shroud => RoleTypes.Impostor,
             CustomRoles.Totocalcio => RoleTypes.Impostor,
@@ -239,7 +237,6 @@ static class CustomRolesHelper
             CustomRoles.Virus => RoleTypes.Impostor,
             CustomRoles.Farseer => RoleTypes.Impostor,
             CustomRoles.PotionMaster => RoleTypes.Impostor,
-            CustomRoles.Ritualist => RoleTypes.Impostor,
             CustomRoles.Pickpocket => RoleTypes.Impostor,
             CustomRoles.Traitor => RoleTypes.Impostor,
             CustomRoles.PlagueBearer => RoleTypes.Impostor,
@@ -405,7 +402,6 @@ static class CustomRolesHelper
             CustomRoles.Sidekick or
             CustomRoles.Infectious or
             CustomRoles.Pyromaniac or
-            CustomRoles.Shade or
             CustomRoles.Medusa or
             CustomRoles.Necromancer or
             CustomRoles.Wraith or
@@ -436,7 +432,6 @@ static class CustomRolesHelper
             CustomRoles.Huntsman or
             CustomRoles.Occultist or
             CustomRoles.Infectious or
-            CustomRoles.Shade or
             CustomRoles.Medusa or
             CustomRoles.Pelican or
             CustomRoles.DarkHide or
@@ -556,8 +551,6 @@ static class CustomRolesHelper
             CustomRoles.HexMaster or
             CustomRoles.Occultist or
             CustomRoles.Necromancer or
-            CustomRoles.CovenLeader or
-            CustomRoles.Ritualist or
             CustomRoles.Refugee or
             CustomRoles.Pyromaniac or
             CustomRoles.Infectious or
@@ -691,7 +684,6 @@ static class CustomRolesHelper
             CustomRoles.Amnesiac or
             CustomRoles.Huntsman or
             CustomRoles.Medusa or
-            CustomRoles.Ritualist or
             CustomRoles.HexMaster or
             CustomRoles.Occultist or
             CustomRoles.Glitch or
@@ -701,7 +693,6 @@ static class CustomRolesHelper
             CustomRoles.NWitch or
             CustomRoles.Shroud or
             CustomRoles.Wraith or
-            CustomRoles.Shade or
             CustomRoles.SoulCollector or
             CustomRoles.Vulture or
             CustomRoles.Convict or
@@ -710,7 +701,6 @@ static class CustomRolesHelper
             CustomRoles.Terrorist or
             CustomRoles.Executioner or
             CustomRoles.Juggernaut or
-            CustomRoles.CovenLeader or
             CustomRoles.Refugee or
             CustomRoles.Pyromaniac or
             CustomRoles.Jinx or
@@ -807,11 +797,9 @@ static class CustomRolesHelper
             CustomRoles.Gamer or
             CustomRoles.DarkHide or
             CustomRoles.Necromancer or
-            CustomRoles.CovenLeader or
             CustomRoles.Banshee or
             CustomRoles.Pirate or
             CustomRoles.Provocateur or
-            CustomRoles.Shade or
             CustomRoles.SoulCollector or
             CustomRoles.Wraith or
             CustomRoles.Juggernaut or
@@ -1497,8 +1485,6 @@ static class CustomRolesHelper
         //if (role is CustomRoles.Onbound && pc.Is(CustomRoles.Reflective)) return false;
         //if (role is CustomRoles.Reflective && pc.Is(CustomRoles.Onbound)) return false;
         //if (role is CustomRoles.Cyber && pc.Is(CustomRoles.CyberStar)) return false;
-
-        // Coven is not allowed to get add-ons, it gets special abilities from the Necronomicon (will be worked on further once I start Necronomicon)
         //if (role is CustomRoles.Ntr or CustomRoles.Watcher or CustomRoles.Flashman or CustomRoles.Torch or CustomRoles.Seer or CustomRoles.Bait or CustomRoles.Burst) return false;
 
         return true;
@@ -1562,7 +1548,6 @@ static class CustomRolesHelper
         CustomRoleTypes type = CustomRoleTypes.Crewmate;
         if (role.IsImpostor()) type = CustomRoleTypes.Impostor;
         if (role.IsNeutral()) type = CustomRoleTypes.Neutral;
-    //    if (role.IsCoven()) type = CustomRoleTypes.Coven;
         if (role.IsAdditionRole()) type = CustomRoleTypes.Addon;
         return type;
     }
@@ -1619,8 +1604,6 @@ static class CustomRolesHelper
            CustomRoles.Doppelganger => CountTypes.Doppelganger,
            CustomRoles.Bandit => CountTypes.Bandit,
            CustomRoles.Poisoner => CountTypes.Poisoner,
-           //CustomRoles.CovenLeader => CountTypes.Coven,
-           //CustomRoles.Banshee => CountTypes.Coven,
            CustomRoles.Pelican => CountTypes.Pelican,
            CustomRoles.Gamer => CountTypes.Gamer,
            CustomRoles.BloodKnight => CountTypes.BloodKnight,
@@ -1633,11 +1616,9 @@ static class CustomRolesHelper
            CustomRoles.Werewolf => CountTypes.Werewolf,
            CustomRoles.Wraith => CountTypes.Wraith,
            CustomRoles.Pestilence => CountTypes.Pestilence,
-           CustomRoles.Shade => CountTypes.Shade,
            CustomRoles.PlagueBearer => CountTypes.PlagueBearer,
            CustomRoles.Agitater => CountTypes.Agitater,
            CustomRoles.Parasite => CountTypes.Impostor,
-    //       CustomRoles.Sorcerer => CountTypes.Coven,
            CustomRoles.NSerialKiller => CountTypes.NSerialKiller,
            CustomRoles.Juggernaut => CountTypes.Juggernaut,
            CustomRoles.Jinx => CountTypes.Jinx,
@@ -1646,7 +1627,6 @@ static class CustomRolesHelper
            CustomRoles.Pyromaniac => CountTypes.Pyromaniac,
            CustomRoles.Virus => CountTypes.Virus,
            CustomRoles.PotionMaster => CountTypes.PotionMaster,
-           CustomRoles.Ritualist => CountTypes.Coven,
            CustomRoles.Pickpocket => CountTypes.Pickpocket,
            CustomRoles.Traitor => CountTypes.Traitor,
            CustomRoles.Medusa => CountTypes.Medusa,
@@ -1675,7 +1655,6 @@ public enum CountTypes
     None,
     Crew,
     Impostor,
-    Coven,
     Jackal,
     Doppelganger,
     Bandit,

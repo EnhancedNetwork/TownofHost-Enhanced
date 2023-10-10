@@ -979,7 +979,6 @@ internal class ChatCommands
             "魅影"=> GetString("Wraith"),
             "扫把星"=> GetString("Jinx"),
             "药剂师"=> GetString("PotionMaster"),
-            "巫师首领"=> GetString("CovenLeader"),
             "祭祀者"=> GetString("Ritualist"),
             "亡灵巫师"=> GetString("Necromancer"),
             "护盾巫师"=> GetString("Banshee"),

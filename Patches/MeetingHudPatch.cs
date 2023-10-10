@@ -429,7 +429,6 @@ class CheckForEndVotingPatch
         var name = "";
         int impnum = 0;
         int neutralnum = 0;
-    //    int covennum = 0;
 
         if (CustomRolesHelper.RoleExist(CustomRoles.Bard))
         {
@@ -447,8 +446,6 @@ class CheckForEndVotingPatch
                 impnum++;
             else if (pc_role.IsNK() && pc != exiledPlayer.Object)
                 neutralnum++;
-        /*    else if (pc_role.IsCoven() && pc != exiledPlayer.Object)
-                covennum++; */
         }
         switch (Options.CEMode.GetInt())
         {
@@ -517,7 +514,6 @@ class CheckForEndVotingPatch
         {
             name += "\n";
             string comma = neutralnum > 0 ? "" : "";
-        //    string commacoven = covennum > 0 ? "" : "";
             if (impnum == 0) name += GetString("NoImpRemain") + comma;
             if (impnum == 1) name += GetString("OneImpRemain") + comma;
             if (impnum == 2) name += GetString("TwoImpRemain") + comma;
@@ -944,9 +940,6 @@ class MeetingHudStartPatch
                 if (Options.ImpostorsCanGuess.GetBool() && seer.GetCustomRole().IsImpostor() && !seer.Is(CustomRoles.Councillor))
                     if (!seer.Data.IsDead && !target.Data.IsDead)
                         pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + pva.NameText.text;
-            //    if (Options.CovenMembersCanGuess.GetBool() && seer.GetCustomRole().IsCoven() && !seer.Is(CustomRoles.Ritualist))
-            //        if (!seer.Data.IsDead && !target.Data.IsDead)
-            //            pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + pva.NameText.text;
                 if (Options.NeutralKillersCanGuess.GetBool() && seer.GetCustomRole().IsNK())
                     if (!seer.Data.IsDead && !target.Data.IsDead)
                         pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + pva.NameText.text;
@@ -1029,7 +1022,6 @@ class MeetingHudStartPatch
                 case CustomRoles.Pyromaniac:
                 case CustomRoles.Medusa:
                 case CustomRoles.Succubus:
-                case CustomRoles.CovenLeader:
                 case CustomRoles.Pickpocket:
                 case CustomRoles.PotionMaster:
                 case CustomRoles.Huntsman:
@@ -1039,19 +1031,13 @@ class MeetingHudStartPatch
                     break;
                 case CustomRoles.Jackal:
                 case CustomRoles.Sidekick:
-           //         if (target.Is(CustomRoles.Sidekick))
-             //       sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), " ♥")); //変更対象にSnitchマークをつける
                     sb.Append(Snitch.GetWarningMark(seer, target));
                     break;
-       /*         case CustomRoles.Monarch:
-                    if (target.Is(CustomRoles.Knighted))
-                    sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Knighted), " 亗")); //変更対象にSnitchマークをつける
-                    break; */
                 case CustomRoles.EvilTracker:
                     sb.Append(EvilTracker.GetTargetMark(seer, target));
                     break;
                 case CustomRoles.Revolutionist:
-                    if (seer.IsDrawPlayer(target)) //seerがtargetに既にオイルを塗っている(完了)
+                    if (seer.IsDrawPlayer(target))
                         sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Revolutionist), "●"));
                     break;
                 case CustomRoles.Psychic:
@@ -1078,11 +1064,6 @@ class MeetingHudStartPatch
                 case CustomRoles.Swapper:
                     if (!seer.Data.IsDead && !target.Data.IsDead)
                         pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + pva.NameText.text;
-                    break;
-                case CustomRoles.Ritualist:
-                    sb.Append(Snitch.GetWarningMark(seer, target));
-                    if (!seer.Data.IsDead && !target.Data.IsDead)
-                        pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Ritualist), target.PlayerId.ToString()) + " " + pva.NameText.text;
                     break;
                 case CustomRoles.Lookout:
                     if (!seer.Data.IsDead && !target.Data.IsDead)
@@ -1259,7 +1240,7 @@ class MeetingHudUpdatePatch
             __instance.playerStates.Where(x => (!Main.PlayerStates.TryGetValue(x.TargetPlayerId, out var ps) || ps.IsDead) && !x.AmDead).Do(x => x.SetDead(x.DidReport, true));
 
             //若玩家死亡则销毁技能按钮
-            if (myRole is CustomRoles.NiceGuesser or CustomRoles.EvilGuesser or CustomRoles.Ritualist or CustomRoles.Doomsayer or CustomRoles.Judge or CustomRoles.Councillor or CustomRoles.Guesser && !PlayerControl.LocalPlayer.IsAlive())
+            if (myRole is CustomRoles.NiceGuesser or CustomRoles.EvilGuesser or CustomRoles.Doomsayer or CustomRoles.Judge or CustomRoles.Councillor or CustomRoles.Guesser && !PlayerControl.LocalPlayer.IsAlive())
                 ClearShootButton(__instance, true);
 
             //若黑手党死亡则创建技能按钮

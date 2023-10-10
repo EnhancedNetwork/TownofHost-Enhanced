@@ -158,10 +158,6 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("KillButtonText"));
                         break;
-                    case CustomRoles.CovenLeader:
-                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        __instance.KillButton.OverrideText(GetString("WitchControlButtonText"));
-                        break;
                     case CustomRoles.NWitch:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText($"{GetString("WitchControlButtonText")}");
@@ -217,7 +213,6 @@ class HudManagerPatch
                     case CustomRoles.PotionMaster:
                     case CustomRoles.Werewolf:
                     case CustomRoles.Spiritcaller:
-                    case CustomRoles.Ritualist:
                     case CustomRoles.Necromancer:
                     case CustomRoles.DarkHide:
                     case CustomRoles.Maverick:
@@ -301,11 +296,6 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("KillButtonText"));
                         __instance.ImpostorVentButton.OverrideText(GetString(Wraith.IsInvis(PlayerControl.LocalPlayer.PlayerId) ? "WraithRevertVentButtonText" : "WraithVentButtonText"));
-                        break;
-                    case CustomRoles.Shade:
-                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        __instance.KillButton.OverrideText(GetString("KillButtonText"));
-                        __instance.ImpostorVentButton.OverrideText(GetString(Shade.IsInvis(PlayerControl.LocalPlayer.PlayerId) ? "WraithRevertVentButtonText" : "WraithVentButtonText"));
                         break;
                     case CustomRoles.Chameleon:
                         __instance.AbilityButton.OverrideText(GetString(Chameleon.IsInvis(PlayerControl.LocalPlayer.PlayerId) ? "ChameleonRevertDisguise" : "ChameleonDisguise"));
@@ -505,10 +495,6 @@ class HudManagerPatch
                 {
                     LowerInfoText.text = Wraith.GetHudText(player);
                 }
-                else if (player.Is(CustomRoles.Shade))
-                {
-                    LowerInfoText.text = Shade.GetHudText(player);
-                }
                 else if (player.Is(CustomRoles.Chameleon))
                 {
                     LowerInfoText.text = Chameleon.GetHudText(player);
@@ -654,8 +640,6 @@ class SetHudActivePatch
             case CustomRoles.Investigator:
             case CustomRoles.Monarch:
             case CustomRoles.NWitch:
-            case CustomRoles.CovenLeader:
-            case CustomRoles.Ritualist:
             case CustomRoles.Shroud:
             case CustomRoles.Innocent:
             case CustomRoles.Reverie:
@@ -722,7 +706,7 @@ class VentButtonDoClickPatch
     {
         var pc = PlayerControl.LocalPlayer;
         {
-            if (!pc.Is(CustomRoles.Swooper) || !pc.Is(CustomRoles.Wraith) || !pc.Is(CustomRoles.Shade) || !pc.Is(CustomRoles.Chameleon) || pc.inVent || __instance.currentTarget == null || !pc.CanMove || !__instance.isActiveAndEnabled) return true;
+            if (!pc.Is(CustomRoles.Swooper) || !pc.Is(CustomRoles.Wraith) || !pc.Is(CustomRoles.Chameleon) || pc.inVent || __instance.currentTarget == null || !pc.CanMove || !__instance.isActiveAndEnabled) return true;
             pc?.MyPhysics?.RpcEnterVent(__instance.currentTarget.Id);
             return false;
         }

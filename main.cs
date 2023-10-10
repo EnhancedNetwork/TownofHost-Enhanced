@@ -429,8 +429,6 @@ public class Main : BasePlugin
                 {CustomRoles.Sunnyboy, "#ff9902"},
                 {CustomRoles.Poisoner, "#478800"},
                 {CustomRoles.Huntsman, "#ad8739"},
-                {CustomRoles.CovenLeader, "#663399"},
-                {CustomRoles.Ritualist, "#663399"},
                 {CustomRoles.Necromancer, "#9C87AB"},
                 {CustomRoles.Banshee, "#663399"},
                 {CustomRoles.NWitch, "#BF5FFF"},
@@ -442,7 +440,6 @@ public class Main : BasePlugin
                 {CustomRoles.HexMaster, "#ff00ff"},
                 {CustomRoles.Occultist, "#375d91"},
                 {CustomRoles.Wraith, "#4B0082"},
-                {CustomRoles.Shade, "#000930"},
                 {CustomRoles.NSerialKiller, "#233fcc"},
                 {CustomRoles.BloodKnight, "#630000"},
                 {CustomRoles.Juggernaut, "#A41342"},
@@ -558,9 +555,6 @@ public class Main : BasePlugin
                     case CustomRoleTypes.Impostor:
                         roleColors.TryAdd(role, "#ff1919");
                         break;
-               /*     case CustomRoleTypes.Coven:
-                        roleColors.TryAdd(role, "#663399"); 
-                        break; */
                     default:
                         break;
                 }
@@ -825,13 +819,10 @@ public enum CustomRoles
     Masochist,
     Shroud,
     Werewolf,
-    CovenLeader,
-    Ritualist,
     Necromancer,
     Huntsman,
     Banshee,
     Occultist,
-    Shade,
     Imitator,
    //two-way camp
     Mini,
@@ -947,7 +938,6 @@ public enum CustomWinner
     Succubus = CustomRoles.Succubus,
     Wraith = CustomRoles.Wraith,
     Bandit = CustomRoles.Bandit,
-    Shade = CustomRoles.Shade,
     Pirate = CustomRoles.Pirate,
     SerialKiller = CustomRoles.NSerialKiller,
     Werewolf = CustomRoles.Werewolf,
@@ -973,7 +963,6 @@ public enum CustomWinner
     Masochist = CustomRoles.Masochist,
     Doomsayer = CustomRoles.Doomsayer,
     Shroud = CustomRoles.Shroud,
-    Coven = CustomRoles.CovenLeader,
     Seeker = CustomRoles.Seeker,
     SoulCollector = CustomRoles.SoulCollector,
     RuthlessRomantic = CustomRoles.RuthlessRomantic,

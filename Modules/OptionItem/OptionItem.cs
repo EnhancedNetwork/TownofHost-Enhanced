@@ -289,7 +289,6 @@ public enum TabGroup
     ImpostorRoles,
     CrewmateRoles,
     NeutralRoles,
-   // CovenRoles,
     Addons,
     OtherRoles
 }
