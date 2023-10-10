@@ -102,7 +102,7 @@ namespace TOHE.Modules.ChatManager
         {
             var rd = IRandom.Instance;
             string msg;
-            List<CustomRoles> roles = Enum.GetValues(typeof(CustomRoles)).Cast<CustomRoles>().Where(x => x is not CustomRoles.Shade).ToList();
+            List<CustomRoles> roles = Enum.GetValues(typeof(CustomRoles)).Cast<CustomRoles>().ToList();
             string[] specialTexts = new string[] { "bet", "bt", "guess", "gs", "shoot", "st", "赌", "猜", "审判", "tl", "判", "审", "trial" };
 
             for (int i = chatHistory.Count; i < 30; i++)

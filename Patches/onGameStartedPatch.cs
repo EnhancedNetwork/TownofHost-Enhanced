@@ -260,10 +260,8 @@ internal class ChangeRoleSettings
             Mediumshiper.Init();
             Swooper.Init();
             Wraith.Init();
-            Shade.Init();
             SoulCollector.Init();
             BloodKnight.Init();
-            Banshee.Init();
             Totocalcio.Init();
             Romantic.Init();
             VengefulRomantic.Init();
@@ -280,7 +278,6 @@ internal class ChangeRoleSettings
             Infectious.Init();
             Monarch.Init();
             Virus.Init();
-            CovenLeader.Init();
             Bloodhound.Init();
             Tracker.Init();
             Merchant.Init();
@@ -765,9 +762,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Wraith:
                         Wraith.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Shade:
-                        Shade.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Lighter:
                         Main.LighterNumOfUsed.Add(pc.PlayerId, Options.LighterSkillMaxOfUseage.GetInt());
                         break;
@@ -782,9 +776,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.BloodKnight:
                         BloodKnight.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Banshee:
-                        Banshee.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Totocalcio:
                         Totocalcio.Add(pc.PlayerId);
@@ -857,9 +848,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.NWitch:
                         NWitch.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.CovenLeader:
-                        CovenLeader.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Shroud:
                         Shroud.Add(pc.PlayerId);
@@ -977,7 +965,7 @@ internal class SelectRolesPatch
             }
 
             // ResetCamが必要なプレイヤーのリストにクラス化が済んでいない役職のプレイヤーを追加
-            Main.ResetCamPlayerList.AddRange(Main.AllPlayerControls.Where(p => p.GetCustomRole() is CustomRoles.Arsonist or CustomRoles.Ritualist or CustomRoles.Revolutionist or CustomRoles.Sidekick or CustomRoles.Shaman).Select(p => p.PlayerId));
+            Main.ResetCamPlayerList.AddRange(Main.AllPlayerControls.Where(p => p.GetCustomRole() is CustomRoles.Arsonist or CustomRoles.Revolutionist or CustomRoles.Sidekick or CustomRoles.Shaman).Select(p => p.PlayerId));
             Utils.CountAlivePlayers(true);
             Utils.SyncAllSettings();
             SetColorPatch.IsAntiGlitchDisabled = false;

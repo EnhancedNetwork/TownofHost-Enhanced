@@ -37,8 +37,8 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "1.0.2.3";
-    public const string PluginDisplayVersion = "1.0.2 Dev 3";
+    public const string PluginVersion = "1.0.2.44";
+    public const string PluginDisplayVersion = "1.0.2 Dev 4";
     public static readonly string SupportedVersionAU = "2023.7.11";
     public const bool Canary = false;
 
@@ -431,10 +431,7 @@ public class Main : BasePlugin
                 {CustomRoles.Sunnyboy, "#ff9902"},
                 {CustomRoles.Poisoner, "#478800"},
                 {CustomRoles.Huntsman, "#ad8739"},
-                {CustomRoles.CovenLeader, "#663399"},
-                {CustomRoles.Ritualist, "#663399"},
                 {CustomRoles.Necromancer, "#9C87AB"},
-                {CustomRoles.Banshee, "#663399"},
                 {CustomRoles.NWitch, "#BF5FFF"},
                 {CustomRoles.Totocalcio, "#ff9409"},
                 {CustomRoles.Romantic, "#FF1493"},
@@ -444,7 +441,6 @@ public class Main : BasePlugin
                 {CustomRoles.HexMaster, "#ff00ff"},
                 {CustomRoles.Occultist, "#375d91"},
                 {CustomRoles.Wraith, "#4B0082"},
-                {CustomRoles.Shade, "#000930"},
                 {CustomRoles.NSerialKiller, "#233fcc"},
                 {CustomRoles.BloodKnight, "#630000"},
                 {CustomRoles.Juggernaut, "#A41342"},
@@ -560,9 +556,6 @@ public class Main : BasePlugin
                     case CustomRoleTypes.Impostor:
                         roleColors.TryAdd(role, "#ff1919");
                         break;
-               /*     case CustomRoleTypes.Coven:
-                        roleColors.TryAdd(role, "#663399"); 
-                        break; */
                     default:
                         break;
                 }
@@ -827,13 +820,9 @@ public enum CustomRoles
     Masochist,
     Shroud,
     Werewolf,
-    CovenLeader,
-    Ritualist,
     Necromancer,
     Huntsman,
-    Banshee,
     Occultist,
-    Shade,
     Imitator,
    //two-way camp
     Mini,
@@ -949,7 +938,6 @@ public enum CustomWinner
     Succubus = CustomRoles.Succubus,
     Wraith = CustomRoles.Wraith,
     Bandit = CustomRoles.Bandit,
-    Shade = CustomRoles.Shade,
     Pirate = CustomRoles.Pirate,
     SerialKiller = CustomRoles.NSerialKiller,
     Werewolf = CustomRoles.Werewolf,
@@ -975,7 +963,6 @@ public enum CustomWinner
     Masochist = CustomRoles.Masochist,
     Doomsayer = CustomRoles.Doomsayer,
     Shroud = CustomRoles.Shroud,
-    Coven = CustomRoles.CovenLeader,
     Seeker = CustomRoles.Seeker,
     SoulCollector = CustomRoles.SoulCollector,
     RuthlessRomantic = CustomRoles.RuthlessRomantic,

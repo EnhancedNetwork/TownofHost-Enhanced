@@ -199,7 +199,6 @@ public class GameOptionsMenuUpdatePatch
                 TabGroup.NeutralRoles => "#7f8c8d",
                 TabGroup.Addons => "#ff9ace",
                 TabGroup.OtherRoles => "#76b8e0",
-            //    TabGroup.CovenRoles => "#663399",
                 _ => "#ffffff",
             };
             if (__instance.transform.parent.parent.name != tab + "Tab") continue;

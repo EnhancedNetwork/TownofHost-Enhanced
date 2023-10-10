@@ -24,7 +24,6 @@ internal class CustomRoleSelector
         int optImpNum = Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors);
         int optNonNeutralKillingNum = 0;
         int optNeutralKillingNum = 0;
-        int optCovenNum = 0;
 
         if (Options.NonNeutralKillingRolesMaxPlayer.GetInt() > 0 && Options.NonNeutralKillingRolesMaxPlayer.GetInt() >= Options.NonNeutralKillingRolesMinPlayer.GetInt())
         {
@@ -34,15 +33,10 @@ internal class CustomRoleSelector
         {
             optNeutralKillingNum = rd.Next(Options.NeutralKillingRolesMinPlayer.GetInt(), Options.NeutralKillingRolesMaxPlayer.GetInt() + 1);
         }
-        if (Options.CovenRolesMaxPlayer.GetInt() > 0 && Options.CovenRolesMaxPlayer.GetInt() >= Options.CovenRolesMinPlayer.GetInt())
-        {
-            optCovenNum = rd.Next(Options.CovenRolesMinPlayer.GetInt(), Options.CovenRolesMaxPlayer.GetInt() + 1);
-        }
 
         int readyRoleNum = 0;
         int readyNonNeutralKillingNum = 0;
         int readyNeutralKillingNum = 0;
-        int readyCovenNum = 0;
 
         List<CustomRoles> rolesToAssign = new();
         List<CustomRoles> roleList = new();
@@ -58,9 +52,6 @@ internal class CustomRoleSelector
 
         List<CustomRoles> NeutralKillingOnList = new();
         List<CustomRoles> NeutralKillingRateList = new();
-
-        List<CustomRoles> CovenOnList = new();
-        List<CustomRoles> CovenRateList = new();
 
         List<CustomRoles> roleRateList = new();
 
@@ -80,7 +71,6 @@ internal class CustomRoleSelector
             else if (role.IsMini()) MiniOnList.Add(role);
             else if (role.IsNonNK()) NonNeutralKillingOnList.Add(role);
             else if (role.IsNK()) NeutralKillingOnList.Add(role);
-        //    else if (role.IsCoven()) CovenOnList.Add(role);
             else roleOnList.Add(role);
         }
         // 职业设置为：启用
@@ -90,7 +80,6 @@ internal class CustomRoleSelector
             else if (role.IsMini()) MiniRateList.Add(role);
             else if (role.IsNonNK()) NonNeutralKillingRateList.Add(role);
             else if (role.IsNK()) NeutralKillingRateList.Add(role);
-        //    else if (role.IsCoven()) CovenRateList.Add(role);
             else roleRateList.Add(role);
         }
 
@@ -204,35 +193,6 @@ internal class CustomRoleSelector
                 Logger.Info(select.ToString() + " Add to NeutralKilling waiting list", "CustomRoleSelector");
                 if (readyRoleNum >= playerCount) goto EndOfAssign;
                 if (readyNeutralKillingNum >= optNeutralKillingNum) break;
-            }
-        }
-
-        // Select Coven "Always"
-        while (CovenOnList.Any() && optCovenNum > 0)
-        {
-            var select = CovenOnList[rd.Next(0, CovenOnList.Count)];
-            CovenOnList.Remove(select);
-            rolesToAssign.Add(select);
-            readyRoleNum++;
-            readyCovenNum += select.GetCount();
-            Logger.Info(select.ToString() + " Add to Coven waiting list (priority)", "CustomRoleSelector");
-            if (readyRoleNum >= playerCount) goto EndOfAssign;
-            if (readyCovenNum >= optCovenNum) break;
-        }
-
-        // Select Coven "Random"
-        if (readyRoleNum < playerCount && readyCovenNum < optCovenNum)
-        {
-            while (CovenRateList.Any() && optCovenNum > 0)
-            {
-                var select = CovenRateList[rd.Next(0, CovenRateList.Count)];
-                CovenRateList.Remove(select);
-                rolesToAssign.Add(select);
-                readyRoleNum++;
-                readyCovenNum += select.GetCount();
-                Logger.Info(select.ToString() + " Add to Coven waiting list", "CustomRoleSelector");
-                if (readyRoleNum >= playerCount) goto EndOfAssign;
-                if (readyCovenNum >= optCovenNum) break;
             }
         }
 
@@ -429,7 +389,6 @@ internal class CustomRoleSelector
                     (dr.Value.IsImpostor() && role.IsImpostor()) ||
                     (dr.Value.IsNonNK() && role.IsNonNK()) ||
                     (dr.Value.IsNK() && role.IsNK()) ||
-                //    (dr.Value.IsCoven() && role.IsCoven()) ||
                     (dr.Value.IsCrewmate() & role.IsCrewmate())
                     )
                 {

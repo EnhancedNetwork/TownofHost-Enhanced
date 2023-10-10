@@ -140,7 +140,6 @@ public static class Options
     public static OptionItem ConfirmEjectionsNeutralAsImp;
     public static OptionItem ShowImpRemainOnEject;
     public static OptionItem ShowNKRemainOnEject;
-    public static OptionItem ShowCovenRemainOnEject;
     public static OptionItem ShowTeamNextToRoleNameOnEject;
     public static OptionItem CheatResponses;
     public static OptionItem LowLoadMode;
@@ -164,12 +163,6 @@ public static class Options
     public static OptionItem NeutralKillingRolesMaxPlayer;
     public static OptionItem NeutralRoleWinTogether;
     public static OptionItem NeutralWinTogether;
-
-    // Coven Settings
-    public static OptionItem CovenRolesMinPlayer;
-    public static OptionItem CovenRolesMaxPlayer;
-    public static OptionItem CovenKnowAlliesRole;
-    public static OptionItem CovenKillCooldown;
 
 
     public static OptionItem DefaultShapeshiftCooldown;
@@ -536,13 +529,6 @@ public static class Options
     public static OptionItem GCanGuessTaskDoneSnitch;
     public static OptionItem GTryHideMsg;
 
-    public static OptionItem ConjCanGuessAdt;
-    public static OptionItem ConjGuessTaskDoneSnitch;
-    public static OptionItem ConjCanGuessTime;
-    public static OptionItem ConjTryHideMsg;
-    public static OptionItem RitualistCanVent;
-
-
     // Masochist
     public static OptionItem MasochistKillMax;
     
@@ -696,7 +682,6 @@ public static class Options
     public static OptionItem ImpostorsCanGuess;
     public static OptionItem NeutralKillersCanGuess;
     public static OptionItem PassiveNeutralsCanGuess;
-    public static OptionItem CovenMembersCanGuess;
     public static OptionItem HideGuesserCommands;
     public static OptionItem CanGuessAddons;
     public static OptionItem ImpCanGuessImp;
@@ -1745,35 +1730,7 @@ public static class Options
         Wraith.SetupCustomOption();
 
 
-        CovenRolesMinPlayer = IntegerOptionItem.Create(206, "CovenRolesMinPlayer", new(0, 15, 1), 0, TabGroup.NeutralRoles, false)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetHeader(true)
-            .SetHidden(true)
-            .SetValueFormat(OptionFormat.Players);
-        CovenRolesMaxPlayer = IntegerOptionItem.Create(207, "CovenRolesMaxPlayer", new(0, 15, 1), 0, TabGroup.NeutralRoles, false)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetHidden(true)
-            .SetValueFormat(OptionFormat.Players);
-        CovenKnowAlliesRole = BooleanOptionItem.Create(212, "CovenKnowAlliesRole", true, TabGroup.NeutralRoles, false)
-            .SetHidden(true)
-            .SetGameMode(CustomGameMode.Standard);
-    //    Banshee.SetupCustomOption();
-    //    CovenLeader.SetupCustomOption();
-    /*    SetupSingleRoleOptions(10450, TabGroup.NeutralRoles, CustomRoles.Ritualist, 1, zeroOne: false);
-        ConjCanGuessTime = IntegerOptionItem.Create(10460, "GuesserCanGuessTimes", new(1, 15, 1), 15, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Ritualist])
-            .SetValueFormat(OptionFormat.Times);
-        ConjCanGuessAdt = BooleanOptionItem.Create(10461, "ConjCanGuessAdt", false, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Ritualist]);
-        ConjTryHideMsg = BooleanOptionItem.Create(10462, "GuesserTryHideMsg", true, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Ritualist])
-            .SetColor(Color.green);
-        RitualistCanVent = BooleanOptionItem.Create(10463, "CanVent", true, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Ritualist]); */
-
-
-        // Add-Ons
- 
+        // Add-Ons 
         TextOptionItem.Create(100014, "RoleType.Helpful", TabGroup.Addons) // HELPFUL
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 154, 206, byte.MaxValue));
@@ -2429,11 +2386,6 @@ public static class Options
         .SetParent(ShowImpRemainOnEject)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue));
-        ShowCovenRemainOnEject = BooleanOptionItem.Create(19814, "ShowCovenRemainOnEject", true, TabGroup.GameSettings, false)
-        .SetParent(ShowImpRemainOnEject)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetHidden(true)
-            .SetColor(new Color32(255, 238, 232, byte.MaxValue));
         ShowTeamNextToRoleNameOnEject = BooleanOptionItem.Create(19812, "ShowTeamNextToRoleNameOnEject", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue));
@@ -2887,9 +2839,6 @@ public static class Options
         NeutralKillersCanGuess = BooleanOptionItem.Create(19712, "NeutralKillersCanGuess", false, TabGroup.TaskSettings, false)
             .SetParent(GuesserMode);
         PassiveNeutralsCanGuess = BooleanOptionItem.Create(19713, "PassiveNeutralsCanGuess", false, TabGroup.TaskSettings, false)
-            .SetParent(GuesserMode);
-        CovenMembersCanGuess = BooleanOptionItem.Create(19718, "CovenCanGuess", false, TabGroup.TaskSettings, false)
-            .SetHidden(true)
             .SetParent(GuesserMode);
         CanGuessAddons = BooleanOptionItem.Create(19714, "CanGuessAddons", true, TabGroup.TaskSettings, false)
             .SetParent(GuesserMode);

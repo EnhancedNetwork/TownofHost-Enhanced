@@ -367,7 +367,7 @@ class GameEndChecker
                     {
                         var pc = Utils.GetPlayerById(id);
                         if (pc == null || !pc.GetCustomRole().IsNeutral()) continue;
-                        //    if (pc.GetCustomRole().IsCoven()) continue;
+
                         foreach (var tar in Main.AllPlayerControls)
                             if (!CustomWinnerHolder.WinnerIds.Contains(tar.PlayerId) && tar.GetCustomRole() == pc.GetCustomRole())
                                 CustomWinnerHolder.WinnerIds.Add(tar.PlayerId);
@@ -533,7 +533,6 @@ class GameEndChecker
             int Arso = Utils.AlivePlayersCount(CountTypes.Arsonist);
             int Shr = Utils.AlivePlayersCount(CountTypes.Shroud);
             int WW = Utils.AlivePlayersCount(CountTypes.Werewolf);
-            int Coven = Utils.AlivePlayersCount(CountTypes.Coven);
             int RR = Utils.AlivePlayersCount(CountTypes.RuthlessRomantic);
 
             Imp += Main.AllAlivePlayerControls.Count(x => x.GetCustomRole().IsImpostor() && x.Is(CustomRoles.DualPersonality));
@@ -549,7 +548,7 @@ class GameEndChecker
             Imp += Main.AllAlivePlayerControls.Count(x => x.Is(CustomRoles.Madmate) && x.Is(CustomRoles.DualPersonality));
 
             int totalNKAlive = new int[] { Rit, Traitor, Med, PP, Jackal, Vamp, DH, Rogue, Wraith, Agitater, Pestilence, PB, Juggy, Doppelganger, Hunt, Necro, Pyro, Hex, Bandit, RR, WW, Shr, Arso, Glitch, Jinx, SK, Occ, Pel, Gam, BK, Pois, Virus, SC, CM }.Sum();
-            // not included coven in above list
+
             CustomWinner? winner = null;
             CustomRoles? rl = null;
 
