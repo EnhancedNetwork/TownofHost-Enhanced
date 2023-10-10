@@ -1001,7 +1001,7 @@
   "GlowInfoLong": "(Add-ons):\nAs the Glow, your name is colored during a lights sabotage.",
   "DiseasedInfoLong": "(Add-ons):\nWhen someone tries to use kill button on you, their cooldown will be increased by configurable amount of time",
   "AntidoteInfoLong": "(Add-ons):\nWhen someone tries to use kill button on you, their cooldown will be decreased by configurable amount of time",
-  "StubbornInfoLong": "(Add-ons):\nWith the Stubborn add on, Eraser can’t erase your role erase, Cleanser can't cleanse you, Bandit can't steal from you and Monarch can't knight you.\nAdditionally, you can’t gain any new addons from the merchant",
+  "StubbornInfoLong": "(Add-ons):\nWith the Stubborn add on, Eraser can’t erase your role, Cleanser can't cleanse you, Bandit can't steal from you and Monarch can't knight you.\nAdditionally, you can’t gain any new addons from the merchant",
   "SwiftInfoLong": "(Add-ons):\nAs the Swift, your kills will not cause you to lunge.",
   "UnluckyInfoLong": "(Add-ons):\nAs the Unlucky, doing tasks, killing, or venting as a chance to kill you.",
   "VoidBallotInfoLong": "(Add-ons):\nHolder of this addon will have 0 vote count",
