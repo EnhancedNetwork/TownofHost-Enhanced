@@ -1431,9 +1431,9 @@
   "SheriffMadCanKillCrew": "Can kill <color=#8cffff>Crewmates</color>",
 
   "ReverieIncreaseKillCooldown": "Increase kill cooldown",
-  "ReverieMaxKillCooldown": "Max kill coolodwn",
+  "ReverieMaxKillCooldown": "Max kill cooldown",
   "ReverieMisfireSuicide": "Misfire on reaching max kill cooldown",
-  "ResetCooldownMeeting": "Reset kill cooldown after meeting",
+  "ReverieResetCooldownMeeting": "Reset kill cooldown after meeting",
 
   "DoctorTaskCompletedBatteryCharge": "Battery Duration",
   "SnitchEnableTargetArrow": "See Arrow Towards Target",
@@ -2545,13 +2545,19 @@
   "DeathCmd.Shrouded": "You were<b>shrouded</b> by a <b><color=#6697FF>Shroud</color></b> and didn't make a kill, so you suicided.",
   "DeathCmd.Lovers": "Your <color=#ff9ace>lover</color> had died.",
 
-  "RpsCommandInfo": "<b>This Command can only be used when in lobby or after you die.</b>\n\ntype /rps X for to play Rock Paper Scissors with the system. X can be 0 (rock), 1 (paper) or 2 (scissors). \n\nExample :- /rps 0",
+  "RpsCommandInfo": "<b>This Command can only be used when in lobby or after you die.</b>\n\ntype <b>/rps X</b> to play Rock Paper Scissors with the system. X can be 0 (rock), 1 (paper) or 2 (scissors). \n\nExample :- /rps 0",
   "RpsDraw": "I choose <b>{0}</b>\n\nWow, what an intense battle of wits we just had! It's almost as if we're equally matched in this game of sheer luck and randomness.",
   "RpsLose": "I choose <b>{0}</b>\n\nWell, well, well, looks like I've managed to outsmart a human again in this highly complex game of Rock, Paper, Scissors. I guess my unbeatable powers strike again! ",
   "RpsWin": "I choose <b>{0}</b>\n\nOh, congratulations! You must have a crystal ball hidden behind that screen to beat me at Rock, Paper, Scissors. Or maybe I just have the world's worst luck algorithm.",
 
   "CoinFlipCommandInfo": "<b>This Command can only be used when in lobby or after you die.</b>",
   "CoinFlipResult": "Drumroll, please... After an intense battle of gravity and randomness, the coin has decided to grace us with its presence! And the majestic winner is... (wait for it) ... the one and only... <b>{0}</b>! Who could have seen that coming?! Clearly, a momentous occasion in the history of coin flips.",
+
+  "GNoCommandInfo": "<b>This Command can only be used when in lobby or after you die.</b>\n\ntype <b>/gno X</b> to play guess a number. X can be a number between 0 and 99 (both included). \n\nYou get maximum of <color=#ff0000>7 tries</color> to guess the number.\n\n Example:- <b>/gno 10</b>",
+  "GNoLost": "Oh, you were so close! Just one more guess, and you might have cracked the Da Vinci code! By the way, <color=#ff0000>the secret number was... {0}!</color> But hey, you were only off by a few billion possibilities.  Better luck next time, Sherlock! ",
+  "GNoLow": "Oh, you're really nailing this! It's so low, I almost need a shovel to dig it up!\nYou have <color=#ff0000>{0} guesses</color> left!",
+  "GNoHigh": "Oh, absolutely! You're getting warmer. In fact, it's so high, I need a telescope to see it from here! \nYou have <color=#ff0000>{0} guesses</color> left!",
+  "GNoWon": "Oh, how did you ever figure that out? It's almost like you're a mind reader! Congratulations, you're a genius! You found the secret number in <color=#00ff00>{0} guesses</color> left!",
 
   "ChanceToMiss": "Chance to miss a kill",
   "ImpCanBeClumsy": "<color=#ff1919>Impostors</color> can become Clumsy",

@@ -728,17 +728,17 @@ internal class ChatCommands
                         var rpsList = new List<string> { "Rock", "Paper", "Scissors" };
                         if (botChoice == playerChoice)
                         {
-                            Utils.SendMessage(String.Format(GetString("RpsDraw"), rpsList[botChoice]));
+                            Utils.SendMessage(String.Format(GetString("RpsDraw"), rpsList[botChoice]), PlayerControl.LocalPlayer.PlayerId);
                         }
                         else if ((botChoice == 0 && playerChoice == 2) ||
                                  (botChoice == 1 && playerChoice == 0) ||
                                  (botChoice == 2 && playerChoice == 1))
                         {
-                            Utils.SendMessage(String.Format(GetString("RpsLose"), rpsList[botChoice]));
+                            Utils.SendMessage(String.Format(GetString("RpsLose"), rpsList[botChoice]), PlayerControl.LocalPlayer.PlayerId);
                         }
                         else
                         {
-                            Utils.SendMessage(String.Format(GetString("RpsWin"), rpsList[botChoice]));
+                            Utils.SendMessage(String.Format(GetString("RpsWin"), rpsList[botChoice]), PlayerControl.LocalPlayer.PlayerId);
                         }
                         break;
                     }
@@ -758,7 +758,59 @@ internal class ChatCommands
                         Utils.SendMessage(String.Format(GetString("CoinFlipResult"),coinSide), PlayerControl.LocalPlayer.PlayerId);
                         break;
                     }
+                case "/gno":
+                    canceled = true;
+                    if (!GameStates.IsLobby && PlayerControl.LocalPlayer.IsAlive())
+                    {
+                        Utils.SendMessage(GetString("GNoCommandInfo"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    subArgs = args.Length != 2 ? "" : args[1];
+                    if (subArgs == "" || !int.TryParse(subArgs, out int guessedNo))
+                    {
+                        Utils.SendMessage(GetString("GNoCommandInfo"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    else if (guessedNo < 0 || guessedNo > 99)
+                    {
+                        Utils.SendMessage(GetString("GNoCommandInfo"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    else
+                    {
+                        int targetNumber = Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0];
+                        if (Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0] == -1)
+                        {
+                            var rand = IRandom.Instance;
+                            Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0] = rand.Next(0, 100);
+                            targetNumber = Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0];
+                        }
+                        Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][1]--;
+                        if (Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][1] == 0)
+                        {
+                            Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0] = -1;
+                            Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][1] = 7;
+                            targetNumber = Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0];
+                            Utils.SendMessage(String.Format(GetString("GNoLost"), targetNumber), PlayerControl.LocalPlayer.PlayerId);
+                            break;
+                        }                        
+                        else if (guessedNo < targetNumber)
+                        {
+                            Utils.SendMessage(String.Format(GetString("GNoLow"), Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][1]), PlayerControl.LocalPlayer.PlayerId);
+                            break;
+                        }
+                        else if (guessedNo > targetNumber)
+                        {
+                            Utils.SendMessage(String.Format(GetString("GNoHigh"), Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][1]), PlayerControl.LocalPlayer.PlayerId);
+                            break;
+                        }
+                        else
+                        {
+                            Utils.SendMessage(String.Format(GetString("GNoWon"), Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][1]), PlayerControl.LocalPlayer.PlayerId);
+                            break;
+                        }
 
+                    }
 
                 default:
                     Main.isChatCommand = false;
@@ -1722,17 +1774,17 @@ internal class ChatCommands
                     var rpsList = new List<string> { "Rock", "Paper", "Scissors" };
                     if (botChoice == playerChoice)
                     {
-                        Utils.SendMessage(String.Format(GetString("RpsDraw"), rpsList[botChoice]));
+                        Utils.SendMessage(String.Format(GetString("RpsDraw"), rpsList[botChoice]), player.PlayerId);
                     }
                     else if ((botChoice == 0 && playerChoice == 2) ||
                              (botChoice == 1 && playerChoice == 0) ||
                              (botChoice == 2 && playerChoice == 1))
                     {
-                        Utils.SendMessage(String.Format(GetString("RpsLose"), rpsList[botChoice]));
+                        Utils.SendMessage(String.Format(GetString("RpsLose"), rpsList[botChoice]), player.PlayerId);
                     }
                     else
                     {
-                        Utils.SendMessage(String.Format(GetString("RpsWin"), rpsList[botChoice]));
+                        Utils.SendMessage(String.Format(GetString("RpsWin"), rpsList[botChoice]), player.PlayerId);
                     }
                     break;
                 }
@@ -1752,8 +1804,60 @@ internal class ChatCommands
                     Utils.SendMessage(String.Format(GetString("CoinFlipResult"), coinSide), player.PlayerId);
                     break;
                 }
+            case "/gno":
+                canceled = true;
+                if (!GameStates.IsLobby && player.IsAlive())
+                {
+                    Utils.SendMessage(GetString("GNoCommandInfo"), player.PlayerId);
+                    break;
+                }
+                subArgs = args.Length != 2 ? "" : args[1];
+                if (subArgs == "" || !int.TryParse(subArgs, out int guessedNo))
+                {
+                    Utils.SendMessage(GetString("GNoCommandInfo"), player.PlayerId);
+                    break;
+                }
+                else if (guessedNo < 0 || guessedNo > 99)
+                {
+                    Utils.SendMessage(GetString("GNoCommandInfo"), player.PlayerId);
+                    break;
+                }
+                else
+                {
+                    int targetNumber = Main.GuessNumber[player.PlayerId][0];
+                    if (Main.GuessNumber[player.PlayerId][0] == -1)
+                    {
+                        var rand = IRandom.Instance;
+                        Main.GuessNumber[player.PlayerId][0] = rand.Next(0, 100);
+                        targetNumber = Main.GuessNumber[player.PlayerId][0];
+                    }
+                    Main.GuessNumber[player.PlayerId][1]--;
+                    if (Main.GuessNumber[player.PlayerId][1] == 0)
+                    {
+                        Main.GuessNumber[player.PlayerId][0] = -1;
+                        Main.GuessNumber[player.PlayerId][1] = 7;
+                        targetNumber = Main.GuessNumber[player.PlayerId][0];
+                        Utils.SendMessage(String.Format(GetString("GNoLost"), targetNumber), player.PlayerId);
+                        break;
+                    }
+                    else if (guessedNo < targetNumber)
+                    {
+                        Utils.SendMessage(String.Format(GetString("GNoLow"), Main.GuessNumber[player.PlayerId][1]), player.PlayerId);
+                        break;
+                    }
+                    else if (guessedNo > targetNumber)
+                    {
+                        Utils.SendMessage(String.Format(GetString("GNoHigh"), Main.GuessNumber[player.PlayerId][1]), player.PlayerId);
+                        break;
+                    }
+                    else
+                    {
+                        Utils.SendMessage(String.Format(GetString("GNoWon"), 7-Main.GuessNumber[player.PlayerId][1]), player.PlayerId);
+                        break;
+                    }
+                }
 
-            default:
+                default:
                 if (SpamManager.CheckSpam(player, text)) return;
                 break;
         }
