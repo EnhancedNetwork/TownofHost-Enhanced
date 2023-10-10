@@ -295,7 +295,7 @@ static class CustomRolesHelper
             CustomRoles.Loyal or
             CustomRoles.Egoist or
             CustomRoles.Recruit or
-            CustomRoles.Glow or
+            //CustomRoles.Glow or
             CustomRoles.TicketsStealer or
             CustomRoles.DualPersonality or
             CustomRoles.Mimic or
@@ -1044,7 +1044,7 @@ static class CustomRolesHelper
                 if (pc.Is(CustomRoles.SuperStar)
                     || (pc.Is(CustomRoles.Doctor) && Options.DoctorVisibleToEveryone.GetBool())
                     || (pc.Is(CustomRoles.Bait) && Options.BaitNotification.GetBool())
-                    || pc.Is(CustomRoles.Glow) 
+                    //|| pc.Is(CustomRoles.Glow) 
                     || pc.Is(CustomRoles.LastImpostor) 
                     || pc.Is(CustomRoles.NiceMini)
                     || pc.Is(CustomRoles.Mare))
@@ -1442,11 +1442,11 @@ static class CustomRolesHelper
                     return false;
                 break;
 
-            case CustomRoles.Glow:
-                if (pc.Is(CustomRoles.Onbound)) return false;
-                if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeGlow.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeGlow.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeGlow.GetBool()))
-                    return false;
-                break;
+            //case CustomRoles.Glow:
+            //    if (pc.Is(CustomRoles.Onbound)) return false;
+            //    if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeGlow.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeGlow.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeGlow.GetBool()))
+            //        return false;
+            //    break;
 
             case CustomRoles.Gravestone:
                 if (pc.Is(CustomRoles.SuperStar))

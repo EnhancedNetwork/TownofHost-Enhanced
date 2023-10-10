@@ -88,7 +88,7 @@ public static class ParityCop
         int operate = 0; // 1:ID 2:猜测
         msg = msg.ToLower().TrimStart().TrimEnd();
         if (CheckCommond(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id")) operate = 1;
-        else if (CheckCommond(ref msg, "compare|cp|cmp|比较", false)) operate = 2;
+        else if (CheckCommond(ref msg, "compare|cmp|比较", false)) operate = 2;
         else return false;
 
         if (!pc.IsAlive())
@@ -320,7 +320,7 @@ public static class ParityCop
         List<CustomRoles> roles = CustomRolesHelper.AllRoles.Where(x => x is not CustomRoles.NotAssigned).ToList();
         var rd = IRandom.Instance;
         string msg;
-        string[] command = new string[] { "cp", "cmp", "compare", "比较" };
+        string[] command = new string[] { "cmp", "compare", "比较" };
         for (int i = 0; i < 20; i++)
         {
             msg = "/";
