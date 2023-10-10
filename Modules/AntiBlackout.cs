@@ -94,7 +94,7 @@ public static class AntiBlackout
         logger.Info($"SetIsDead is called from {callerMethodName}");
         if (IsCached)
         {
-            logger.Info("再度SetIsDeadを実行する前に、RestoreIsDeadを実行してください。");
+            logger.Info("Please run RestoreIsDead before running SetIsDead again.");
             return;
         }
         isDeadCache.Clear();

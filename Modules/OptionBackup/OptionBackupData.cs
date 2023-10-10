@@ -33,9 +33,9 @@ public class OptionBackupData
             if (option.TryGetInt(name, out var value))
                 AllValues.Add(new IntOptionBackupValue(name, value));
         }
-        // [バニラ側バグ] GetIntで部屋の人数のみ取得できないため、別で取得する
+        // [Vanilla bug] Only the number of people in the room cannot be obtained with GetInt, so obtain it separately.
         AllValues.Add(new IntOptionBackupValue(Int32OptionNames.MaxPlayers, option.MaxPlayers));
-        // TryGetUIntが実装されていないため、別で取得する
+        // TryGetUInt is not implemented, so get it separately
         AllValues.Add(new UIntOptionBackupValue(UInt32OptionNames.Keywords, (uint)option.Keywords));
 
         foreach (RoleTypes role in new RoleTypes[] { RoleTypes.Scientist, RoleTypes.Engineer, RoleTypes.GuardianAngel, RoleTypes.Shapeshifter })

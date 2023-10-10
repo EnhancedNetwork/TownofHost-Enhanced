@@ -108,7 +108,8 @@ public static class Options
         "CamouflageMode.Host",
         "CamouflageMode.Karpe",
         "CamouflageMode.Lauryn",
-        "CamouflageMode.Moe"
+        "CamouflageMode.Moe",
+        "CamouflageMode.Pyro"
     };
 
     // 各役職の詳細設定
@@ -400,8 +401,6 @@ public static class Options
     public static OptionItem CrewCanBeSleuth;
     public static OptionItem NeutralCanBeSleuth;
 
-
-
     // Ludopath
     public static OptionItem LudopathRandomKillCD;
 
@@ -547,7 +546,7 @@ public static class Options
     public static OptionItem MasochistKillMax;
     
 
-//Task Management
+    //Task Management
     public static OptionItem DisableShortTasks;
     public static OptionItem DisableCleanVent;
     public static OptionItem DisableCalibrateDistributor;
@@ -658,7 +657,8 @@ public static class Options
     public static OptionItem MiraChance;
     public static OptionItem PolusChance;
     public static OptionItem AirshipChance;
- // public static OptionItem FungleChance;
+    
+    // public static OptionItem FungleChance;
     public static OptionItem UseMoreRandomMapSelection;
     public static OptionItem AddedDleks;
     public static OptionItem RandomSpawn;

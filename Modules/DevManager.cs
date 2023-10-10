@@ -96,8 +96,8 @@ public class DevUser
 
 public static class DevManager
 {
-    public static DevUser DefaultDevUser = new();
-    public static List<DevUser> DevUserList = new();
+    private readonly static DevUser DefaultDevUser = new();
+    private readonly static List<DevUser> DevUserList = new();
     public static void Init()
     {
         // Dev

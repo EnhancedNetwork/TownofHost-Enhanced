@@ -2524,6 +2524,7 @@
   "CamouflageMode.Karpe": "<color=#ffc0cb>KARPED1EM</color>",
   "CamouflageMode.Lauryn": "<color=#f0b6d5>Lauryn</color>",
   "CamouflageMode.Moe": "<color=#ffb347>Moe</color>",
+  "CamouflageMode.Pyro": "<color=#ec7578>Pyro</color>",
   "DeathCmd.HeyPlayer": "Hey ",
   "DeathCmd.YouAreRole": ", looks like you're the ",
   "DeathCmd.NotDead": "You haven't died yet, this can only be used after you die\n\nCheck back again after you've been brutally <b><color=#ff1919>murdered</color></b>",
