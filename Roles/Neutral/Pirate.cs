@@ -151,7 +151,7 @@ public static class Pirate
 
         msg = msg.ToLower().TrimStart().TrimEnd();
         bool operate = false;
-        if (CheckCommond(ref msg, "duel|rps")) operate = true;
+        if (CheckCommond(ref msg, "duel")) operate = true;
         else return false;
 
         if (!pc.IsAlive())

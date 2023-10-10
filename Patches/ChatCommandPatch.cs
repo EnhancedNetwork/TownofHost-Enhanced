@@ -47,7 +47,7 @@ internal class ChatCommands
             ChatManager.SendMessage(PlayerControl.LocalPlayer, text);
         }
 
-        if (text.Length >= 3) if (text[..2] == "/r" && text[..3] != "/rn" && text[..3] != "/rs") args[0] = "/r";
+        //if (text.Length >= 3) if (text[..2] == "/r" && text[..3] != "/rn" && text[..3] != "/rs") args[0] = "/r";
         if (text.Length >= 4) if (text[..3] == "/up") args[0] = "/up";
         if (GuessManager.GuesserMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Judge.TrialMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
@@ -69,7 +69,6 @@ internal class ChatCommands
             ChatManager.cancel = false;
             goto Canceled;
         }
-
         switch (args[0])
         {
             case "/dump":
@@ -702,6 +701,64 @@ internal class ChatCommands
                     if (args.Length < 1 || !int.TryParse(args[1], out int sound1)) break;
                     RPC.PlaySoundRPC(PlayerControl.LocalPlayer.PlayerId, (Sounds)sound1);
                     break;
+                case "/rps":
+                    canceled = true;
+                    subArgs = args.Length != 2 ? "" : args[1];
+
+                    if (!GameStates.IsLobby && PlayerControl.LocalPlayer.IsAlive())
+                    {
+                        Utils.SendMessage(GetString("RpsCommandInfo"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    
+                    if (subArgs == "" || !int.TryParse(subArgs, out int playerChoice))
+                    {
+                        Utils.SendMessage(GetString("RpsCommandInfo"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    else if (playerChoice < 0 || playerChoice > 2)
+                    {
+                        Utils.SendMessage(GetString("RpsCommandInfo"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    else
+                    {
+                        var rand = IRandom.Instance;
+                        int botChoice = rand.Next(0, 3);
+                        var rpsList = new List<string> { "Rock", "Paper", "Scissors" };
+                        if (botChoice == playerChoice)
+                        {
+                            Utils.SendMessage(String.Format(GetString("RpsDraw"), rpsList[botChoice]));
+                        }
+                        else if ((botChoice == 0 && playerChoice == 2) ||
+                                 (botChoice == 1 && playerChoice == 0) ||
+                                 (botChoice == 2 && playerChoice == 1))
+                        {
+                            Utils.SendMessage(String.Format(GetString("RpsLose"), rpsList[botChoice]));
+                        }
+                        else
+                        {
+                            Utils.SendMessage(String.Format(GetString("RpsWin"), rpsList[botChoice]));
+                        }
+                        break;
+                    }
+                case "/coinflip":
+                    canceled = true;
+
+                    if (!GameStates.IsLobby && PlayerControl.LocalPlayer.IsAlive())
+                    {
+                        Utils.SendMessage(GetString("CoinFlipCommandInfo"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    else  
+                    {
+                        var rand = IRandom.Instance;
+                        int botChoice = rand.Next(0, 2);
+                        var coinSide = (botChoice == 0) ? "Heads" : "Tails";
+                        Utils.SendMessage(String.Format(GetString("CoinFlipResult"),coinSide), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+
 
                 default:
                     Main.isChatCommand = false;
@@ -1638,6 +1695,63 @@ internal class ChatCommands
                     }
                 }
                 break;
+            case "/rps":
+                canceled = true;
+                subArgs = args.Length != 2 ? "" : args[1];
+
+                if (!GameStates.IsLobby && player.IsAlive())
+                {
+                    Utils.SendMessage(GetString("RpsCommandInfo"), player.PlayerId);
+                    break;
+                }
+
+                if (subArgs == "" || !int.TryParse(subArgs, out int playerChoice))
+                {
+                    Utils.SendMessage(GetString("RpsCommandInfo"), player.PlayerId);
+                    break;
+                }
+                else if (playerChoice < 0 || playerChoice > 2)
+                {
+                    Utils.SendMessage(GetString("RpsCommandInfo"), player.PlayerId);
+                    break;
+                }
+                else
+                {
+                    var rand = IRandom.Instance;
+                    int botChoice = rand.Next(0, 3);
+                    var rpsList = new List<string> { "Rock", "Paper", "Scissors" };
+                    if (botChoice == playerChoice)
+                    {
+                        Utils.SendMessage(String.Format(GetString("RpsDraw"), rpsList[botChoice]));
+                    }
+                    else if ((botChoice == 0 && playerChoice == 2) ||
+                             (botChoice == 1 && playerChoice == 0) ||
+                             (botChoice == 2 && playerChoice == 1))
+                    {
+                        Utils.SendMessage(String.Format(GetString("RpsLose"), rpsList[botChoice]));
+                    }
+                    else
+                    {
+                        Utils.SendMessage(String.Format(GetString("RpsWin"), rpsList[botChoice]));
+                    }
+                    break;
+                }
+            case "/coinflip":
+                canceled = true;
+
+                if (!GameStates.IsLobby && player.IsAlive())
+                {
+                    Utils.SendMessage(GetString("CoinflipCommandInfo"), player.PlayerId);
+                    break;
+                }
+                else
+                {
+                    var rand = IRandom.Instance;
+                    int botChoice = rand.Next(0, 2);
+                    var coinSide = (botChoice == 0) ? "Heads" : "Tails";
+                    Utils.SendMessage(String.Format(GetString("CoinFlipResult"), coinSide), player.PlayerId);
+                    break;
+                }
 
             default:
                 if (SpamManager.CheckSpam(player, text)) return;

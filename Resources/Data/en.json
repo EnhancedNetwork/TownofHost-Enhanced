@@ -857,7 +857,7 @@
   "FarseerInfoLong": "(Crewmates):\nAs a Overseer you have very limited vision but you can use your kill button to reveal the role of a nearby player. Use the kill button to start the reveal, a 「○」 will be displayed next to the reveal target. Stay near the target for a defined time to reveal his role, if you move too far away from the target the reveal will be aborted.",
   "BloodhoundInfoLong": "(Crewmates):\nAs a Coroner you can't report corpses, instead after trying to report the corpse you will see an arrow leading you to the killer. If a meeting is called, the arrows disappear. Depending on the setting, the body you found cannot be reported.",
   "TrackerInfoLong": "(Crewmates):\nAs a Tracker, you can vote for a player in the meeting, which will mark their position for you in the game with arrows. In addition, at the beginning of a meeting you will be shown in which room the player was last, if the option is activated.",
-  "PresidentInfoLong": "(Crewmates):\nThe President has 2 abilities: End the meeting and Reveal identity.\n\n+ Ability 1: End the meeting - Type /end in meetings as President to instantly end the meeting.\n+ Ability 2: Reveal identity - Type /reveal in meetings to reveal yourself. Revealing yourself will make it so every player can see that you are the President and you will become unguessable after typing the command. However, after the President has revealed themselves, whoever killed the President will have their kill CD greatly reduced on their next kill.",
+  "PresidentInfoLong": "(Crewmates):\nThe President has 2 abilities: End the meeting and Reveal identity.\n\n+ Ability 1: End the meeting - Type /finish in meetings as President to instantly end the meeting.\n+ Ability 2: Reveal identity - Type /reveal in meetings to reveal yourself. Revealing yourself will make it so every player can see that you are the President and you will become unguessable after typing the command. However, after the President has revealed themselves, whoever killed the President will have their kill CD greatly reduced on their next kill.",
   "MerchantInfoLong": "(Crewmates):\\As a merchant, you sell a random add-on to a random player for each task you complete. Each add-on sold earns you money. If you have a certain amount of money, you can avert the next killing attempt against you by bribing the murderer. The bribed player won't be able to kill you, but you don't know who it is. The bribe money used is lost and is not available for additional bribes.",
   "RetributionistInfoLong": "(Crewmates):\nAs the Retributionist, you can kill a limited amount of players after your death.\n\nUse /ret [playerID] to kill.",
   "DeputyInfoLong": "(Crewmates):\nAs the Deputy, use your kill button on a player to reset their kill cooldown.\n\nIf the target does not have a kill button, then the handcuff was a waste.",
@@ -1711,6 +1711,7 @@
   "InfectiousBiteMax": "Maximum Infections",
   "InfectiousKnowTargetRole": "Know <color=#7B8968>infected</color> player's role",
   "InfectiousTargetKnowOtherTarget": "<color=#7B8968>Infected</color> players know each other",
+  "DoubleClickKill": "Double click to kill the target",
   "VirusKillCooldown": "Kill Cooldown",
   "VirusCanVent": "Can Vent",
   "VirusInfectMax": "Maximum Number Of <color=#2E8B57>Spreads</color>",
@@ -2543,6 +2544,15 @@
   "DeathCmd.Misfired": "You <b>misfired</b>.",
   "DeathCmd.Shrouded": "You were<b>shrouded</b> by a <b><color=#6697FF>Shroud</color></b> and didn't make a kill, so you suicided.",
   "DeathCmd.Lovers": "Your <color=#ff9ace>lover</color> had died.",
+
+  "RpsCommandInfo": "<b>This Command can only be used when in lobby or after you die.</b>\n\ntype /rps X for to play Rock Paper Scissors with the system. X can be 0 (rock), 1 (paper) or 2 (scissors). \n\nExample :- /rps 0",
+  "RpsDraw": "I choose <b>{0}</b>\n\nWow, what an intense battle of wits we just had! It's almost as if we're equally matched in this game of sheer luck and randomness.",
+  "RpsLose": "I choose <b>{0}</b>\n\nWell, well, well, looks like I've managed to outsmart a human again in this highly complex game of Rock, Paper, Scissors. I guess my unbeatable powers strike again! ",
+  "RpsWin": "I choose <b>{0}</b>\n\nOh, congratulations! You must have a crystal ball hidden behind that screen to beat me at Rock, Paper, Scissors. Or maybe I just have the world's worst luck algorithm.",
+
+  "CoinFlipCommandInfo": "<b>This Command can only be used when in lobby or after you die.</b>",
+  "CoinFlipResult": "Drumroll, please... After an intense battle of gravity and randomness, the coin has decided to grace us with its presence! And the majestic winner is... (wait for it) ... the one and only... <b>{0}</b>! Who could have seen that coming?! Clearly, a momentous occasion in the history of coin flips.",
+
   "ChanceToMiss": "Chance to miss a kill",
   "ImpCanBeClumsy": "<color=#ff1919>Impostors</color> can become Clumsy",
   "NeutralCanBeClumsy": "<color=#7f8c8d>Neutral Killers</color> can become Clumsy",
