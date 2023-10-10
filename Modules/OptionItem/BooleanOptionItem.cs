@@ -5,18 +5,14 @@ public class BooleanOptionItem : OptionItem
     public const string TEXT_true = "ColoredOn";
     public const string TEXT_false = "ColoredOff";
 
-    // コンストラクタ
+    // Constructor
     public BooleanOptionItem(int id, string name, bool defaultValue, TabGroup tab, bool isSingleValue)
     : base(id, name, defaultValue ? 1 : 0, tab, isSingleValue)
     {
     }
-    public static BooleanOptionItem Create(
-        int id, string name, bool defaultValue, TabGroup tab, bool isSingleValue
-    )
+    public static BooleanOptionItem Create(int id, string name, bool defaultValue, TabGroup tab, bool isSingleValue)
     {
-        return new BooleanOptionItem(
-            id, name, defaultValue, tab, isSingleValue
-        );
+        return new BooleanOptionItem(id, name, defaultValue, tab, isSingleValue);
     }
 
     // Getter
