@@ -127,6 +127,11 @@ public static class Councillor
                     else pc.ShowPopUp(GetString("GuessMini"));
                     return true;
                 }
+                else if (target.Is(CustomRoles.Rebound))
+                {
+                    Logger.Info($"{pc.GetNameWithRole()} judged {target.GetNameWithRole()}, councillor sucide = true because target rebound", "CouncillorTrialMsg");
+                    CouncillorSuicide = true;
+                }
                 else if (target.Is(CustomRoles.Madmate) && CanMurderMadmate.GetBool()) CouncillorSuicide = false;
                 else if (target.Is(CustomRoles.Parasite) && CanMurderMadmate.GetBool()) CouncillorSuicide = false;
                 else if (target.Is(CustomRoles.Refugee) && CanMurderMadmate.GetBool()) CouncillorSuicide = false;

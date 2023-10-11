@@ -361,6 +361,9 @@ public static class Options
     public static OptionItem ImpCanBeOnbound;
     public static OptionItem CrewCanBeOnbound;
     public static OptionItem NeutralCanBeOnbound;
+    public static OptionItem ImpCanBeRebound;
+    public static OptionItem CrewCanBeRebound;
+    public static OptionItem NeutralCanBeRebound;
     public static OptionItem ImpCanBeInLove;
     public static OptionItem CrewCanBeInLove;
     public static OptionItem NeutralCanBeInLove;
@@ -2054,6 +2057,15 @@ public static class Options
         GTryHideMsg = BooleanOptionItem.Create(19118, "GuesserTryHideMsg", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Guesser])
             .SetColor(Color.green);
+
+        SetupAdtRoleOptions(6210000, CustomRoles.Rebound, canSetNum: true, tab: TabGroup.Addons);
+        ImpCanBeRebound = BooleanOptionItem.Create(6210010, "ImpCanBeRebound", true, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Rebound]);
+        CrewCanBeRebound = BooleanOptionItem.Create(6210011, "CrewCanBeRebound", true, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Rebound]);
+        NeutralCanBeRebound = BooleanOptionItem.Create(6210012, "NeutralCanBeRebound", true, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Rebound]);
+
         SetupAdtRoleOptions(14700, CustomRoles.DualPersonality, canSetNum: true);
         ImpCanBeDualPersonality = BooleanOptionItem.Create(14710, "ImpCanBeDualPersonality", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.DualPersonality]);
