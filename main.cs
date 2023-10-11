@@ -43,7 +43,7 @@ public class Main : BasePlugin
     public const bool Canary = false;
 
     public static readonly bool ShowGitHubButton = true;
-    public static readonly bool ShowkofiButton = true;
+    public static readonly bool ShowKofiButton = true;
     public static readonly string GitHubInviteUrl = "https://github.com/0xDrMoe/TownofHost-Enhanced";
     public static readonly string kofiInviteUrl = "https://ko-fi.com/TOHEN";
 
