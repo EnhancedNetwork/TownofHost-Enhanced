@@ -82,7 +82,7 @@ namespace TOHE.Roles.Crewmate
         }
         public static bool IsEnable => playerIdList.Count > 0;
 
-        public static void OnReportDeadBody(GameData.PlayerInfo targetInfo)
+        public static void OnReportDeadBody(PlayerControl player, GameData.PlayerInfo targetInfo)
         {
             if (targetInfo == null || !IsEnable) return;
 
@@ -98,6 +98,8 @@ namespace TOHE.Roles.Crewmate
 
             foreach (var playerId in playerIdList)
             {
+                if (!EnigmaGetCluesWithoutReporting.GetBool() && playerId != player.PlayerId) continue;
+
                 var enigmaPlayer = Utils.GetPlayerById(playerId);
                 if (enigmaPlayer == null) continue;
 

@@ -2281,10 +2281,7 @@ class ReportDeadBodyPatch
         Tracefinder.OnReportDeadBody(player, target);
         Mediumshiper.OnReportDeadBody(target);
         Spiritualist.OnReportDeadBody(target);
-        if (Enigma.EnigmaGetCluesWithoutReporting.GetBool())
-        {
-            Enigma.OnReportDeadBody(target);
-        } 
+        Enigma.OnReportDeadBody(target);
 
         foreach (var pid in Main.AwareInteracted.Keys)
         {
