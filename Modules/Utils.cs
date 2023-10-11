@@ -464,6 +464,7 @@ public static class Utils
         {
             case CustomRoles.GM:
             case CustomRoles.Sheriff:
+            case CustomRoles.Vigilante:
             case CustomRoles.Jailer:
             case CustomRoles.CopyCat:
             case CustomRoles.Shaman:
@@ -605,7 +606,8 @@ public static class Utils
             pc.Is(CustomRoles.TaskManager) ||
          //   pc.Is(CustomRoles.Cyber) ||
             pc.Is(CustomRoles.Egoist) ||
-            pc.Is(CustomRoles.DualPersonality)
+            pc.Is(CustomRoles.DualPersonality) ||
+            pc.Is(CustomRoles.Vigilante)
             );
     }
     public static string GetProgressText(PlayerControl pc)

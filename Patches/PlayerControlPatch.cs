@@ -521,6 +521,16 @@ class CheckMurderPatch
                     if (Counterfeiter.CanBeClient(target) && Counterfeiter.CanSeel(killer.PlayerId))
                         Counterfeiter.SeelToClient(killer, target);
                     return false;
+                case CustomRoles.Vigilante:
+                    if (killer.Is(CustomRoles.Madmate)) break;
+                    if (target.GetCustomRole().IsCrewmate())
+                    {
+                        killer.RpcSetCustomRole(CustomRoles.Madmate);
+                        Utils.NotifyRoles();
+                        Utils.MarkEveryoneDirtySettings();
+                        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("VigilanteNotify")));
+                    }
+                    break;
                 case CustomRoles.Pursuer:
                     if (target.Is(CustomRoles.NSerialKiller)) return true;
                     if (Pursuer.CanBeClient(target) && Pursuer.CanSeel(killer.PlayerId))

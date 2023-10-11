@@ -163,6 +163,7 @@
   "Psychic": "Psychic",
   "SabotageMaster": "Mechanic",
   "Sheriff": "Sheriff",
+  "Vigilante": "Vigilante",
   "Jailer": "Jailer",
   "CopyCat": "Copycat",
   "Snitch": "Snitch",
@@ -546,6 +547,7 @@
   "PsychicInfo": "One of the red names are <color=#ff1919>evil</color>",
   "SabotageMasterInfo": "Vent around and fix sabotages",
   "SheriffInfo": "Shoot the <color=#ff1919>Impostors</color>",
+  "VigilanteInfo": "Not the hero we deserved but the hero we needed",
   "JailerInfo": "Jail suspicious players",
   "CopyCatInfo": "Use kill button to copy target's role",
   "SnitchInfo": "Finish your tasks to find the <color=#ff1919>Impostors</color>",
@@ -815,6 +817,7 @@
   "PsychicInfoLong": "(Crewmates):\nThe Psychic can see the names of several players highlighted in red during the meeting, at least one of them is evil. The Psychic will correctly see all Neutrals and Killing Crewmates displayed as red names when becoming a Madmate.",
   "SabotageMasterInfoLong": "(Crewmates):\nThe Mechanic can use the vent at any time. They can also fix Reactors, O2, Communications by using only one side. Lights can be fixed by flicking only one switch. Opening a door will open all doors in the map.",
   "SheriffInfoLong": "(Crewmates):\nSheriff has no task. The sheriff can kill the Impostor (according to the host settings, the sheriff can also kill neutrals). If the Sheriff tries to kill a crewmate, the Sheriff will kill himself. The sheriff can kill anyone when he becomes a madmate (also according to the host settings).",
+  "VigilanteInfoLong": "(Crewmates):\nThe Vigilante is tasked with eliminating potential threats to the crew, but if they mistakenly kill an innocent crew member, they become a Madmate driven by guilt and remorse.\n\n Note: Gangster can not convert Vigilante into madmate.",
   "JailerInfoLong": "(Crewmates):\nAs the Jailer, use your kill button to lock a player in jail. During the next meeting, the jailed player cannot vote or be voted (vote count will be 0). The Jailer may choose to execute the prisoner by voting them. If the Jailer executes an innocent player, the Jailer loses the ability to execute for the rest of the game.\nIf the Jailer is evil, then they can execute anyone.\nThe Jailer has limited executions.\n\nNote : Jailed players cannot be guessed or judged and jailed players can only guess Jailer.",
   "SnitchInfoLong": "(Crewmates):\nAfter the Snitch completes all tasks, they can see Impostors names being displayed in red on meeting. When the Snitch has only one task left, the Impostors will see a 「★」 mark next to the name of themselves and the Snitch. When a Snitch becomes a Madmate, the 「★」 mark turns red.",
   "MarshallInfoLong": "(Crewmates):\nAs the Marshall, complete your tasks to reveal yourself to the rest of the crew.\nOther teams will not be able to see you.\nHowever, madmates CAN see you.",
@@ -1412,6 +1415,8 @@
   "ReverieMaxKillCooldown": "Max kill cooldown",
   "ReverieMisfireSuicide": "Misfire on reaching max kill cooldown",
   "ReverieResetCooldownMeeting": "Reset kill cooldown after meeting",
+
+  "VigilanteNotify": "You have become the very thing you swore to destroy",
 
   "DoctorTaskCompletedBatteryCharge": "Battery Duration",
   "SnitchEnableTargetArrow": "See Arrow Towards Target",
@@ -2530,7 +2535,7 @@
   "CoinFlipResult": "Drumroll, please... After an intense battle of gravity and randomness, the coin has decided to grace us with its presence! And the majestic winner is... (wait for it) ... the one and only... <b>{0}</b>! Who could have seen that coming?! Clearly, a momentous occasion in the history of coin flips.",
 
   "GNoCommandInfo": "<b>This Command can only be used when in lobby or after you die.</b>\n\ntype <b>/gno X</b> to play guess a number. X can be a number between 0 and 99 (both included). \n\nYou get maximum of <color=#ff0000>7 tries</color> to guess the number.\n\n Example:- <b>/gno 10</b>",
-  "GNoLost": "Oh, you were so close! Just one more guess, and you might have cracked the Da Vinci code! By the way, <color=#ff0000>the secret number was... {0}!</color> But hey, you were only off by a few billion possibilities.  Better luck next time, Sherlock! ",
+  "GNoLost": "Oh, you were so close! Just one more guess, and you might have deciphered the Da Vinci code! By the way, <color=#ff0000>the secret number was... {0}!</color> But hey, you were only off by a few billion possibilities.  Better luck next time, Sherlock! ",
   "GNoLow": "Oh, you're really nailing this! It's so low, I almost need a shovel to dig it up!\nYou have <color=#ff0000>{0} guesses</color> left!",
   "GNoHigh": "Oh, absolutely! You're getting warmer. In fact, it's so high, I need a telescope to see it from here! \nYou have <color=#ff0000>{0} guesses</color> left!",
   "GNoWon": "Oh, how did you ever figure that out? It's almost like you're a mind reader! Congratulations, you're a genius! You found the secret number in <color=#00ff00>{0} guesses</color> left!",

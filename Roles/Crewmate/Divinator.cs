@@ -124,6 +124,7 @@ public static class Divinator
                 CustomRoles.Bard or
                 CustomRoles.Juggernaut or
                 CustomRoles.Reverie or
+                CustomRoles.Vigilante or
                 CustomRoles.Sans or
                 CustomRoles.Minimalism or
                 CustomRoles.Cultivator or
