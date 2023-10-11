@@ -16,6 +16,7 @@ public static class MainMenuManagerPatch
 {
     private static PassiveButton template;
     private static PassiveButton gitHubButton;
+    private static PassiveButton kofiButton;
     private static PassiveButton discordButton;
     private static PassiveButton websiteButton;
     //private static PassiveButton patreonButton;
@@ -143,6 +144,19 @@ public static class MainMenuManagerPatch
 
         if (template == null) return;
 
+
+        // ko-fi Button
+        if (kofiButton == null)
+        {
+            kofiButton = CreateButton(
+                "kofiButton",
+                new(-1.8f, -1.1f, 1f),
+                new(0, 255, 255, byte.MaxValue),
+                new(75, 255, 255, byte.MaxValue),
+                () => Application.OpenURL(Main.kofiInviteUrl),
+                GetString("kofi")); //"Kofi"
+        }
+        kofiButton.gameObject.SetActive(Main.ShowKofiButton);
 
         // GitHub Button
         if (gitHubButton == null)

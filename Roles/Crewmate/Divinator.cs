@@ -117,7 +117,6 @@ public static class Divinator
                 CustomRoles.PlagueBearer or
                 CustomRoles.Observer or
                 CustomRoles.BloodKnight or
-                CustomRoles.Banshee or
                 CustomRoles.Guardian or
                 CustomRoles.Wildling
                 => "Result4",
@@ -125,6 +124,7 @@ public static class Divinator
                 CustomRoles.Bard or
                 CustomRoles.Juggernaut or
                 CustomRoles.Reverie or
+                CustomRoles.Vigilante or
                 CustomRoles.Sans or
                 CustomRoles.Minimalism or
                 CustomRoles.Cultivator or
@@ -248,9 +248,7 @@ public static class Divinator
                 CustomRoles.EvilGuesser or
                 CustomRoles.NiceGuesser or
                 CustomRoles.DarkHide or
-                CustomRoles.Ritualist or
                 CustomRoles.Camouflager or
-                CustomRoles.Shade or
                 CustomRoles.Chameleon or
                 CustomRoles.Doppelganger
                 => "Result19",
@@ -268,7 +266,6 @@ public static class Divinator
                 CustomRoles.DovesOfNeace or
                 CustomRoles.ImperiusCurse or
                 CustomRoles.Huntsman or
-                CustomRoles.CovenLeader or
                 CustomRoles.Traitor
                 => "Result21",
 

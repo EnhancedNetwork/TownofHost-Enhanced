@@ -58,7 +58,7 @@ public static class President
         {
             msg = "/";
             if (rd.Next(1, 100) < 20)
-                msg += "end";
+                msg += "finish";
             else
                 msg += "reveal";
             var player = Main.AllAlivePlayerControls.ToArray()[rd.Next(0, Main.AllAlivePlayerControls.Count())];
@@ -84,7 +84,7 @@ public static class President
 
         int operate = 0;
         msg = msg.ToLower().TrimStart().TrimEnd();
-        if (CheckCommond(ref msg, "end")) operate = 1;
+        if (CheckCommond(ref msg, "finish")) operate = 1;
         else if (CheckCommond(ref msg, "reveal")) operate = 2;
         else return false;
 
@@ -188,6 +188,6 @@ public static class President
             else CheckPresidentReveal.Add(PlayerId, false);
             return;
         }
-        EndMsg(pc, $"/end");
+        EndMsg(pc, $"/finish");
     }
 }

@@ -11,13 +11,9 @@ public class IntegerOptionItem : OptionItem
     {
         Rule = rule;
     }
-    public static IntegerOptionItem Create(
-        int id, string name, IntegerValueRule rule, int defaultValue, TabGroup tab, bool isSingleValue
-    )
+    public static IntegerOptionItem Create(int id, string name, IntegerValueRule rule, int defaultValue, TabGroup tab, bool isSingleValue)
     {
-        return new IntegerOptionItem(
-            id, name, defaultValue, tab, isSingleValue, rule
-        );
+        return new IntegerOptionItem(id, name, defaultValue, tab, isSingleValue, rule);
     }
 
     // Getter

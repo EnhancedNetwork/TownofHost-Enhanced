@@ -11,11 +11,11 @@ namespace TOHE;
 public static class AntiBlackout
 {
     ///<summary>
-    ///Whether to override the expulsion process due to one Impostor and Neutral killers / Covens
+    ///Whether to override the expulsion process due to one Impostor and Neutral killers
     ///</summary>
     public static bool ImpostorOverrideExiledPlayer => IsRequired && (IsSingleImpostor || Diff_CrewImp == 1);
     ///<summary>
-    ///Whether to override the expulsion process due to Neutral Killers or Covens
+    ///Whether to override the expulsion process due to Neutral Killers
     ///</summary>
     public static bool NeutralOverrideExiledPlayer => Options.TemporaryAntiBlackoutFix.GetBool() && CountNeutralKiller > 1 && !(IsSingleImpostor || Diff_CrewImp == 1);
     ///<summary>
@@ -35,18 +35,15 @@ public static class AntiBlackout
         || Virus.IsEnable || Werewolf.IsEnable
         || Gamer.IsEnable || Succubus.IsEnable
         || NWitch.IsEnable || Maverick.IsEnable
-        || Shade.IsEnable || RuthlessRomantic.IsEnable
+        || RuthlessRomantic.IsEnable || Bandit.IsEnable
         || Spiritcaller.IsEnable || Occultist.IsEnable
         || Pyromaniac.IsEnable || Huntsman.IsEnable
         || PlagueBearer.IsEnable || CustomRoles.Pestilence.RoleExist(true)
-        || CustomRoles.Sidekick.RoleExist(true) || (CustomRoles.Arsonist.RoleExist(true) && Options.ArsonistCanIgniteAnytime.GetBool())
-        // Covens
-        || Banshee.IsEnable || CovenLeader.IsEnable
         || HexMaster.IsEnable || Jinx.IsEnable
         || Medusa.IsEnable || Poisoner.IsEnable
         || PotionMaster.IsEnable || Wraith.IsEnable
-        || Necromancer.IsEnable
-        || Bandit.IsEnable || Doppelganger.IsEnable;
+        || Necromancer.IsEnable || Doppelganger.IsEnable
+        || CustomRoles.Sidekick.RoleExist(true) || (CustomRoles.Arsonist.RoleExist(true) && Options.ArsonistCanIgniteAnytime.GetBool());
     ///<summary>
     ///Difference between the number of non-impostors and the number of imposters
     ///</summary>
@@ -94,7 +91,7 @@ public static class AntiBlackout
         logger.Info($"SetIsDead is called from {callerMethodName}");
         if (IsCached)
         {
-            logger.Info("再度SetIsDeadを実行する前に、RestoreIsDeadを実行してください。");
+            logger.Info("Please run RestoreIsDead before running SetIsDead again.");
             return;
         }
         isDeadCache.Clear();

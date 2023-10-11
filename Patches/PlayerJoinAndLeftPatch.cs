@@ -249,6 +249,7 @@ class CreatePlayerPatch
         }
 
         _ = new LateTask(() => { if (client.Character == null || client == null) return; OptionItem.SyncAllOptions(client.Id); }, 3f, "Sync All Options For New Player");
+        Main.GuessNumber[client.Character.PlayerId] = new List<int> { -1, 7 };
 
         _ = new LateTask(() =>
         {
@@ -256,6 +257,15 @@ class CreatePlayerPatch
             if (Main.OverrideWelcomeMsg != "") Utils.SendMessage(Main.OverrideWelcomeMsg, client.Character.PlayerId);
             else TemplateManager.SendTemplate("welcome", client.Character.PlayerId, true);
         }, 3f, "Welcome Message");
+        
+        _ = new LateTask(() =>
+        {
+            if (Options.GradientTagsOpt.GetBool())
+            {
+                if (client.Character == null) return;
+                Utils.SendMessage(GetString("Warning.GradientTags"),client.Character.PlayerId);
+            }
+        }, 3.3f, "GradientWarning");
 
         if (Main.OverrideWelcomeMsg == "" && Main.PlayerStates.Count != 0 && Main.clientIdList.Contains(client.Id))
         {

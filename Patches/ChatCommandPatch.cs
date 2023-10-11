@@ -47,7 +47,7 @@ internal class ChatCommands
             ChatManager.SendMessage(PlayerControl.LocalPlayer, text);
         }
 
-        if (text.Length >= 3) if (text[..2] == "/r" && text[..3] != "/rn" && text[..3] != "/rs") args[0] = "/r";
+        //if (text.Length >= 3) if (text[..2] == "/r" && text[..3] != "/rn" && text[..3] != "/rs") args[0] = "/r";
         if (text.Length >= 4) if (text[..3] == "/up") args[0] = "/up";
         if (GuessManager.GuesserMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Judge.TrialMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
@@ -69,7 +69,6 @@ internal class ChatCommands
             ChatManager.cancel = false;
             goto Canceled;
         }
-
         switch (args[0])
         {
             case "/dump":
@@ -702,6 +701,116 @@ internal class ChatCommands
                     if (args.Length < 1 || !int.TryParse(args[1], out int sound1)) break;
                     RPC.PlaySoundRPC(PlayerControl.LocalPlayer.PlayerId, (Sounds)sound1);
                     break;
+                case "/rps":
+                    canceled = true;
+                    subArgs = args.Length != 2 ? "" : args[1];
+
+                    if (!GameStates.IsLobby && PlayerControl.LocalPlayer.IsAlive())
+                    {
+                        Utils.SendMessage(GetString("RpsCommandInfo"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    
+                    if (subArgs == "" || !int.TryParse(subArgs, out int playerChoice))
+                    {
+                        Utils.SendMessage(GetString("RpsCommandInfo"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    else if (playerChoice < 0 || playerChoice > 2)
+                    {
+                        Utils.SendMessage(GetString("RpsCommandInfo"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    else
+                    {
+                        var rand = IRandom.Instance;
+                        int botChoice = rand.Next(0, 3);
+                        var rpsList = new List<string> { GetString("Rock"), GetString("Paper"), GetString("Scissors") };
+                        if (botChoice == playerChoice)
+                        {
+                            Utils.SendMessage(String.Format(GetString("RpsDraw"), rpsList[botChoice]), PlayerControl.LocalPlayer.PlayerId);
+                        }
+                        else if ((botChoice == 0 && playerChoice == 2) ||
+                                 (botChoice == 1 && playerChoice == 0) ||
+                                 (botChoice == 2 && playerChoice == 1))
+                        {
+                            Utils.SendMessage(String.Format(GetString("RpsLose"), rpsList[botChoice]), PlayerControl.LocalPlayer.PlayerId);
+                        }
+                        else
+                        {
+                            Utils.SendMessage(String.Format(GetString("RpsWin"), rpsList[botChoice]), PlayerControl.LocalPlayer.PlayerId);
+                        }
+                        break;
+                    }
+                case "/coinflip":
+                    canceled = true;
+
+                    if (!GameStates.IsLobby && PlayerControl.LocalPlayer.IsAlive())
+                    {
+                        Utils.SendMessage(GetString("CoinFlipCommandInfo"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    else  
+                    {
+                        var rand = IRandom.Instance;
+                        int botChoice = rand.Next(0, 2);
+                        var coinSide = (botChoice == 0) ? "Heads" : "Tails";
+                        Utils.SendMessage(String.Format(GetString("CoinFlipResult"),coinSide), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                case "/gno":
+                    canceled = true;
+                    if (!GameStates.IsLobby && PlayerControl.LocalPlayer.IsAlive())
+                    {
+                        Utils.SendMessage(GetString("GNoCommandInfo"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    subArgs = args.Length != 2 ? "" : args[1];
+                    if (subArgs == "" || !int.TryParse(subArgs, out int guessedNo))
+                    {
+                        Utils.SendMessage(GetString("GNoCommandInfo"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    else if (guessedNo < 0 || guessedNo > 99)
+                    {
+                        Utils.SendMessage(GetString("GNoCommandInfo"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    else
+                    {
+                        int targetNumber = Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0];
+                        if (Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0] == -1)
+                        {
+                            var rand = IRandom.Instance;
+                            Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0] = rand.Next(0, 100);
+                            targetNumber = Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0];
+                        }
+                        Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][1]--;
+                        if (Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][1] == 0)
+                        {
+                            Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0] = -1;
+                            Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][1] = 7;
+                            //targetNumber = Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0];
+                            Utils.SendMessage(String.Format(GetString("GNoLost"), targetNumber), PlayerControl.LocalPlayer.PlayerId);
+                            break;
+                        }                        
+                        else if (guessedNo < targetNumber)
+                        {
+                            Utils.SendMessage(String.Format(GetString("GNoLow"), Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][1]), PlayerControl.LocalPlayer.PlayerId);
+                            break;
+                        }
+                        else if (guessedNo > targetNumber)
+                        {
+                            Utils.SendMessage(String.Format(GetString("GNoHigh"), Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][1]), PlayerControl.LocalPlayer.PlayerId);
+                            break;
+                        }
+                        else
+                        {
+                            Utils.SendMessage(String.Format(GetString("GNoWon"), Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][1]), PlayerControl.LocalPlayer.PlayerId);
+                            break;
+                        }
+
+                    }
 
                 default:
                     Main.isChatCommand = false;
@@ -922,10 +1031,8 @@ internal class ChatCommands
             "魅影"=> GetString("Wraith"),
             "扫把星"=> GetString("Jinx"),
             "药剂师"=> GetString("PotionMaster"),
-            "巫师首领"=> GetString("CovenLeader"),
             "祭祀者"=> GetString("Ritualist"),
             "亡灵巫师"=> GetString("Necromancer"),
-            "护盾巫师"=> GetString("Banshee"),
             "好迷你船员" => GetString("NiceMini"),
             "坏迷你船员" => GetString("EvilMini"),
             _ => text,
@@ -1514,22 +1621,46 @@ internal class ChatCommands
                     Utils.SendMessage(GetString("ColorCommandNoLobby"), player.PlayerId);
                     break;
                 }
-                subArgs = args.Length != 2 ? "" : args[1];
-                if (string.IsNullOrEmpty(subArgs) || !Utils.CheckColorHex(subArgs))
+                if (!Options.GradientTagsOpt.GetBool()) 
                 {
-                    Logger.Msg($"{subArgs}", "modcolor");
-                    Utils.SendMessage(GetString("ColorInvalidHexCode"), player.PlayerId);
+                    subArgs = args.Length != 2 ? "" : args[1];
+                    if (string.IsNullOrEmpty(subArgs) || !Utils.CheckColorHex(subArgs))
+                    {
+                        Logger.Msg($"{subArgs}", "modcolor");
+                        Utils.SendMessage(GetString("ColorInvalidHexCode"), player.PlayerId);
+                        break;
+                    }
+                    string colorFilePath = $"{modTagsFiles}/{player.FriendCode}.txt";
+                    if (!File.Exists(colorFilePath))
+                    {
+                        Logger.Warn($"File Not exist, creating file at {modTagsFiles}/{player.FriendCode}.txt", "modcolor");
+                        File.Create(colorFilePath).Close();
+                    }
+
+                    File.WriteAllText(colorFilePath, $"{subArgs}");
                     break;
                 }
-                string colorFilePath = $"{modTagsFiles}/{player.FriendCode}.txt";
-                if (!File.Exists(colorFilePath))
+                else
                 {
-                    Logger.Warn($"File Not exist, creating file at {modTagsFiles}/{player.FriendCode}.txt", "modcolor");
-                    File.Create(colorFilePath).Close();
+                    subArgs = args.Length < 3 ? "" : args[1] + " " + args[2];
+                    Regex regex = new Regex(@"^[0-9A-Fa-f]{6}\s[0-9A-Fa-f]{6}$");
+                    if (string.IsNullOrEmpty(subArgs) || !regex.IsMatch(subArgs))
+                    {
+                        Logger.Msg($"{subArgs}", "modcolor");
+                        Utils.SendMessage(GetString("ColorInvalidGradientCode"), player.PlayerId);
+                        break;
+                    }
+                    string colorFilePath = $"{modTagsFiles}/{player.FriendCode}.txt";
+                    if (!File.Exists(colorFilePath))
+                    {
+                        Logger.Msg($"File Not exist, creating file at {modTagsFiles}/{player.FriendCode}.txt", "modcolor");
+                        File.Create(colorFilePath).Close();
+                    }
+                    //Logger.Msg($"File exists, creating file at {modTagsFiles}/{player.FriendCode}.txt", "modcolor");
+                    //Logger.Msg($"{subArgs}","modcolor");
+                    File.WriteAllText(colorFilePath, $"{subArgs}");
+                    break;
                 }
-
-                File.WriteAllText(colorFilePath, $"{subArgs}");
-                break;
             case "/vipcolor":
             case "/vipcolour":
                 if (Options.ApplyVipList.GetValue() == 0)
@@ -1547,22 +1678,46 @@ internal class ChatCommands
                     Utils.SendMessage(GetString("VipColorCommandNoLobby"), player.PlayerId);
                     break;
                 }
-                subArgs = args.Length != 2 ? "" : args[1];
-                if (string.IsNullOrEmpty(subArgs) || !Utils.CheckColorHex(subArgs))
-                {
-                    Logger.Msg($"{subArgs}", "vipcolor");
-                    Utils.SendMessage(GetString("VipColorInvalidHexCode"), player.PlayerId);
+                if (Options.GradientTagsOpt.GetBool()) 
+                { 
+                    subArgs = args.Length != 2 ? "" : args[1];
+                    if (string.IsNullOrEmpty(subArgs) || !Utils.CheckColorHex(subArgs))
+                    {
+                        Logger.Msg($"{subArgs}", "vipcolor");
+                        Utils.SendMessage(GetString("VipColorInvalidHexCode"), player.PlayerId);
+                        break;
+                    }
+                    string colorFilePathh = $"{vipTagsFiles}/{player.FriendCode}.txt";
+                    if (!File.Exists(colorFilePathh))
+                    {
+                        Logger.Warn($"File Not exist, creating file at {vipTagsFiles}/{player.FriendCode}.txt", "vipcolor");
+                        File.Create(colorFilePathh).Close();
+                    }
+        
+                    File.WriteAllText(colorFilePathh, $"{subArgs}");
                     break;
                 }
-                string colorFilePathh = $"{vipTagsFiles}/{player.FriendCode}.txt";
-                if (!File.Exists(colorFilePathh))
+                else
                 {
-                    Logger.Warn($"File Not exist, creating file at {vipTagsFiles}/{player.FriendCode}.txt", "vipcolor");
-                    File.Create(colorFilePathh).Close();
+                    subArgs = args.Length < 3 ? "" : args[1] + " " + args[2];
+                    Regex regexx = new Regex(@"^[0-9A-Fa-f]{6}\s[0-9A-Fa-f]{6}$");
+                    if (string.IsNullOrEmpty(subArgs) || !regexx.IsMatch(subArgs))
+                    {
+                        Logger.Msg($"{subArgs}", "vipcolor");
+                        Utils.SendMessage(GetString("VipColorInvalidGradientCode"), player.PlayerId);
+                        break;
+                    }
+                    string colorFilePathh = $"{vipTagsFiles}/{player.FriendCode}.txt";
+                    if (!File.Exists(colorFilePathh))
+                    {
+                        Logger.Msg($"File Not exist, creating file at {vipTagsFiles}/{player.FriendCode}.txt", "vipcolor");
+                        File.Create(colorFilePathh).Close();
+                    }
+                    //Logger.Msg($"File exists, creating file at {vipTagsFiles}/{player.FriendCode}.txt", "vipcolor");
+                    //Logger.Msg($"{subArgs}","modcolor");
+                    File.WriteAllText(colorFilePathh, $"{subArgs}");
+                    break;
                 }
-        
-                File.WriteAllText(colorFilePathh, $"{subArgs}");
-                break;
             case "/tagcolor":
             case "/tagcolour":
                 string name1 = Main.AllPlayerNames.TryGetValue(player.PlayerId, out var n) ? n : "";
@@ -1638,8 +1793,117 @@ internal class ChatCommands
                     }
                 }
                 break;
+            case "/rps":
+                canceled = true;
+                subArgs = args.Length != 2 ? "" : args[1];
 
-            default:
+                if (!GameStates.IsLobby && player.IsAlive())
+                {
+                    Utils.SendMessage(GetString("RpsCommandInfo"), player.PlayerId);
+                    break;
+                }
+
+                if (subArgs == "" || !int.TryParse(subArgs, out int playerChoice))
+                {
+                    Utils.SendMessage(GetString("RpsCommandInfo"), player.PlayerId);
+                    break;
+                }
+                else if (playerChoice < 0 || playerChoice > 2)
+                {
+                    Utils.SendMessage(GetString("RpsCommandInfo"), player.PlayerId);
+                    break;
+                }
+                else
+                {
+                    var rand = IRandom.Instance;
+                    int botChoice = rand.Next(0, 3);
+                    var rpsList = new List<string> { GetString("Rock"), GetString("Paper"), GetString("Scissors") };
+                    if (botChoice == playerChoice)
+                    {
+                        Utils.SendMessage(String.Format(GetString("RpsDraw"), rpsList[botChoice]), player.PlayerId);
+                    }
+                    else if ((botChoice == 0 && playerChoice == 2) ||
+                             (botChoice == 1 && playerChoice == 0) ||
+                             (botChoice == 2 && playerChoice == 1))
+                    {
+                        Utils.SendMessage(String.Format(GetString("RpsLose"), rpsList[botChoice]), player.PlayerId);
+                    }
+                    else
+                    {
+                        Utils.SendMessage(String.Format(GetString("RpsWin"), rpsList[botChoice]), player.PlayerId);
+                    }
+                    break;
+                }
+            case "/coinflip":
+                canceled = true;
+
+                if (!GameStates.IsLobby && player.IsAlive())
+                {
+                    Utils.SendMessage(GetString("CoinflipCommandInfo"), player.PlayerId);
+                    break;
+                }
+                else
+                {
+                    var rand = IRandom.Instance;
+                    int botChoice = rand.Next(0, 2);
+                    var coinSide = (botChoice == 0) ? "Heads" : "Tails";
+                    Utils.SendMessage(String.Format(GetString("CoinFlipResult"), coinSide), player.PlayerId);
+                    break;
+                }
+            case "/gno":
+                canceled = true;
+                if (!GameStates.IsLobby && player.IsAlive())
+                {
+                    Utils.SendMessage(GetString("GNoCommandInfo"), player.PlayerId);
+                    break;
+                }
+                subArgs = args.Length != 2 ? "" : args[1];
+                if (subArgs == "" || !int.TryParse(subArgs, out int guessedNo))
+                {
+                    Utils.SendMessage(GetString("GNoCommandInfo"), player.PlayerId);
+                    break;
+                }
+                else if (guessedNo < 0 || guessedNo > 99)
+                {
+                    Utils.SendMessage(GetString("GNoCommandInfo"), player.PlayerId);
+                    break;
+                }
+                else
+                {
+                    int targetNumber = Main.GuessNumber[player.PlayerId][0];
+                    if (Main.GuessNumber[player.PlayerId][0] == -1)
+                    {
+                        var rand = IRandom.Instance;
+                        Main.GuessNumber[player.PlayerId][0] = rand.Next(0, 100);
+                        targetNumber = Main.GuessNumber[player.PlayerId][0];
+                    }
+                    Main.GuessNumber[player.PlayerId][1]--;
+                    if (Main.GuessNumber[player.PlayerId][1] == 0)
+                    {
+                        Main.GuessNumber[player.PlayerId][0] = -1;
+                        Main.GuessNumber[player.PlayerId][1] = 7;
+                        //targetNumber = Main.GuessNumber[player.PlayerId][0];
+                        Utils.SendMessage(String.Format(GetString("GNoLost"), targetNumber), player.PlayerId);
+                        break;
+                    }
+                    else if (guessedNo < targetNumber)
+                    {
+                        Utils.SendMessage(String.Format(GetString("GNoLow"), Main.GuessNumber[player.PlayerId][1]), player.PlayerId);
+                        break;
+                    }
+                    else if (guessedNo > targetNumber)
+                    {
+                        Utils.SendMessage(String.Format(GetString("GNoHigh"), Main.GuessNumber[player.PlayerId][1]), player.PlayerId);
+                        break;
+                    }
+                    else
+                    {
+                        Utils.SendMessage(String.Format(GetString("GNoWon"), 7-Main.GuessNumber[player.PlayerId][1]), player.PlayerId);
+                        break;
+                    }
+                }
+
+                default:
                 if (SpamManager.CheckSpam(player, text)) return;
                 break;
         }

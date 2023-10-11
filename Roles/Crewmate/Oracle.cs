@@ -198,18 +198,6 @@ public static class Oracle
                 //      CustomRoles.Pirate
                 //          => "Neut",
 
-                //      CustomRoles.Poisoner or
-                //      CustomRoles.Wraith or
-                //      CustomRoles.Jinx or
-                //      CustomRoles.PotionMaster or
-                //      CustomRoles.Banshee or
-                //      CustomRoles.Medusa or
-                //      CustomRoles.Ritualist or
-                //      CustomRoles.Necromancer or
-                //      CustomRoles.HexMaster or
-                //      CustomRoles.CovenLeader
-                //          => "Coven",
-
                 //          _ => "Crew",
                 //      };
                 if (FailChance.GetInt() > 0)

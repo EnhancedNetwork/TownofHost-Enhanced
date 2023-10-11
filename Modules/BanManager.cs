@@ -17,7 +17,7 @@ public static class BanManager
     private static readonly string MODERATOR_LIST_PATH = @"./TOHE-DATA/Moderators.txt";
     private static readonly string VIP_LIST_PATH = @"./TOHE-DATA/VIP-List.txt";
     private static readonly string WHITE_LIST_LIST_PATH = @"./TOHE-DATA/WhiteList.txt";
-    private static List<string> EACList = new();
+    private static readonly List<string> EACList = new();
     public static void Init()
     {
         try
@@ -51,7 +51,7 @@ public static class BanManager
                 File.Create(WHITE_LIST_LIST_PATH).Close();
             }
 
-            //读取EAC名单
+            // Read EAC List
             var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("TOHE.Resources.Config.EACList.txt");
             stream.Position = 0;
             using StreamReader sr = new(stream, Encoding.UTF8);
@@ -59,7 +59,7 @@ public static class BanManager
             while ((line = sr.ReadLine()) != null)
             {
                 if (line == "" || line.StartsWith("#")) continue;
-      //         if (line.Contains("actorour#0029")) continue;
+                // if (line.Contains("actorour#0029")) continue;
                 EACList.Add(line);
             }
 

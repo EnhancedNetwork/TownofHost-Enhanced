@@ -57,16 +57,18 @@ public static class TemplateManager
                 else
                 {
                     string fileName;
-                    string[] name = CultureInfo.CurrentCulture.Name.Split("-");
+                    string name = CultureInfo.CurrentCulture.Name;
                     if (name.Count() >= 2)
-                        fileName = name[0] switch
+                        fileName = name switch // https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-lcid/a9eac961-e77d-41a6-90a5-ce1a8b0cdb9c
                         {
-                            "zh" => "SChinese",
                             "ru" => "Russian",
+                            "zh-Hans" or "zh" or "zh-CN" or "zn-SG" => "SChinese",
+                            "zh-Hant" or "zh-HK" or "zh-MO" or "zh-TW" => "TChinese",
+                            "pt-BR" => "Brazilian",
                             _ => "English"
                         };
                     else fileName = "English";
-                    Logger.Warn($"创建新的 Template 文件：{fileName}", "TemplateManager");
+                        Logger.Warn($"Creating a new Template file：{fileName}", "TemplateManager");
                     File.WriteAllText(TEMPLATE_FILE_PATH, GetResourcesTxt($"TOHE.Resources.Config.template.{fileName}.txt"));
                 }
             }

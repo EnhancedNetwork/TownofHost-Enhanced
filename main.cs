@@ -32,17 +32,20 @@ public class Main : BasePlugin
     public static HashAuth DebugKeyAuth { get; private set; }
     public const string DebugKeyHash = "c0fd562955ba56af3ae20d7ec9e64c664f0facecef4b3e366e109306adeae29d";
     public const string DebugKeySalt = "59687b";
+
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "1.0.2.3";
-    public const string PluginDisplayVersion = "1.0.2 Dev 3";
+    public const string PluginVersion = "1.0.2.4";
+    public const string PluginDisplayVersion = "1.0.2 Dev 4";
     public static readonly string SupportedVersionAU = "2023.7.11";
     public const bool Canary = false;
 
     public static readonly bool ShowGitHubButton = true;
+    public static readonly bool ShowKofiButton = true;
     public static readonly string GitHubInviteUrl = "https://github.com/0xDrMoe/TownofHost-Enhanced";
+    public static readonly string kofiInviteUrl = "https://ko-fi.com/TOHEN";
 
     public static readonly bool ShowDiscordButton = true;
     public static readonly string DiscordInviteUrl = "https://discord.gg/tohe";
@@ -117,7 +120,7 @@ public class Main : BasePlugin
     public static bool isLoversDead = true;
     public static Dictionary<byte, float> AllPlayerKillCooldown = new();
     public static Dictionary<byte, float> EvilMiniKillcooldown = new();
-    public static Dictionary<byte, long> NiceMiniTime = new(); 
+    public static Dictionary<byte, long> NiceMiniTime = new();
     public static float EvilMiniKillcooldownf = new();
     public static Dictionary<byte, Vent> LastEnteredVent = new();
     public static Dictionary<byte, Vector2> LastEnteredVentLocation = new();
@@ -225,7 +228,7 @@ public class Main : BasePlugin
     public static Dictionary<byte, List<string>> AwareInteracted = new();
     public static byte ShamanTarget = byte.MaxValue;
     public static bool ShamanTargetChoosen = false;
-    
+
 
 
     public static IEnumerable<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null);
@@ -237,6 +240,8 @@ public class Main : BasePlugin
 
     public static string OverrideWelcomeMsg = "";
     public static int HostClientId;
+
+    public static Dictionary<byte,List<int>> GuessNumber = new();
 
     public static List<string> TName_Snacks_CN = new() { "冰激凌", "奶茶", "巧克力", "蛋糕", "甜甜圈", "可乐", "柠檬水", "冰糖葫芦", "果冻", "糖果", "牛奶", "抹茶", "烧仙草", "菠萝包", "布丁", "椰子冻", "曲奇", "红豆土司", "三彩团子", "艾草团子", "泡芙", "可丽饼", "桃酥", "麻薯", "鸡蛋仔", "马卡龙", "雪梅娘", "炒酸奶", "蛋挞", "松饼", "西米露", "奶冻", "奶酥", "可颂", "奶糖" };
     public static List<string> TName_Snacks_EN = new() { "Ice cream", "Milk tea", "Chocolate", "Cake", "Donut", "Coke", "Lemonade", "Candied haws", "Jelly", "Candy", "Milk", "Matcha", "Burning Grass Jelly", "Pineapple Bun", "Pudding", "Coconut Jelly", "Cookies", "Red Bean Toast", "Three Color Dumplings", "Wormwood Dumplings", "Puffs", "Can be Crepe", "Peach Crisp", "Mochi", "Egg Waffle", "Macaron", "Snow Plum Niang", "Fried Yogurt", "Egg Tart", "Muffin", "Sago Dew", "panna cotta", "soufflé", "croissant", "toffee" };
@@ -346,6 +351,7 @@ public class Main : BasePlugin
                 {CustomRoles.Psychic, "#6F698C"},
                 {CustomRoles.Cleanser,"#98FF98" },
                 {CustomRoles.Sheriff, "#ffb347"},
+                {CustomRoles.Vigilante, "#9900CC"},
                 {CustomRoles.CopyCat, "#ffb2ab"},
                 {CustomRoles.SuperStar, "#f6f657"},
                 {CustomRoles.CyberStar, "#ee4a55" },
@@ -429,10 +435,7 @@ public class Main : BasePlugin
                 {CustomRoles.Sunnyboy, "#ff9902"},
                 {CustomRoles.Poisoner, "#478800"},
                 {CustomRoles.Huntsman, "#ad8739"},
-                {CustomRoles.CovenLeader, "#663399"},
-                {CustomRoles.Ritualist, "#663399"},
                 {CustomRoles.Necromancer, "#9C87AB"},
-                {CustomRoles.Banshee, "#663399"},
                 {CustomRoles.NWitch, "#BF5FFF"},
                 {CustomRoles.Totocalcio, "#ff9409"},
                 {CustomRoles.Romantic, "#FF1493"},
@@ -442,7 +445,6 @@ public class Main : BasePlugin
                 {CustomRoles.HexMaster, "#ff00ff"},
                 {CustomRoles.Occultist, "#375d91"},
                 {CustomRoles.Wraith, "#4B0082"},
-                {CustomRoles.Shade, "#000930"},
                 {CustomRoles.NSerialKiller, "#233fcc"},
                 {CustomRoles.BloodKnight, "#630000"},
                 {CustomRoles.Juggernaut, "#A41342"},
@@ -558,9 +560,6 @@ public class Main : BasePlugin
                     case CustomRoleTypes.Impostor:
                         roleColors.TryAdd(role, "#ff1919");
                         break;
-               /*     case CustomRoleTypes.Coven:
-                        roleColors.TryAdd(role, "#663399"); 
-                        break; */
                     default:
                         break;
                 }
@@ -709,6 +708,7 @@ public enum CustomRoles
     Psychic,
     SabotageMaster,
     Sheriff,
+    Vigilante,
     Snitch,
     Jailer,
     Marshall,
@@ -826,13 +826,9 @@ public enum CustomRoles
     Masochist,
     Shroud,
     Werewolf,
-    CovenLeader,
-    Ritualist,
     Necromancer,
     Huntsman,
-    Banshee,
     Occultist,
-    Shade,
     Imitator,
    //two-way camp
     Mini,
@@ -948,7 +944,6 @@ public enum CustomWinner
     Succubus = CustomRoles.Succubus,
     Wraith = CustomRoles.Wraith,
     Bandit = CustomRoles.Bandit,
-    Shade = CustomRoles.Shade,
     Pirate = CustomRoles.Pirate,
     SerialKiller = CustomRoles.NSerialKiller,
     Werewolf = CustomRoles.Werewolf,
@@ -974,7 +969,6 @@ public enum CustomWinner
     Masochist = CustomRoles.Masochist,
     Doomsayer = CustomRoles.Doomsayer,
     Shroud = CustomRoles.Shroud,
-    Coven = CustomRoles.CovenLeader,
     Seeker = CustomRoles.Seeker,
     SoulCollector = CustomRoles.SoulCollector,
     RuthlessRomantic = CustomRoles.RuthlessRomantic,
