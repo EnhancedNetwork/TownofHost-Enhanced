@@ -322,6 +322,28 @@ public class ModNewsHistory
         else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.SChinese)
         {
             {
+                //TOHE v1.0.1
+                var news = new ModNews
+                {
+                    Number = 80004,
+                    Title = "Town of Host: Enhanced v1.0.1",
+                    SubTitle = "★★ 新时代 ★★",
+                    ShortTitle = "TOH: Enhanced v1.0.1",
+                    BeforeNumber = 80003,
+                    Text = "<size=150%>欢迎来到 TOH: Enhanced v1.0.1!</size>\n\n<size=125%>适配 Among Us v2023.7.11 和 v2023.7.12</size>\n" +
+                    "\n<b>【基于官方版本】</b>\n - 基于 TOH-RE v3.1.0 (备注可用)\r\n" +
+                    "\n<b>【修复】</b>" +
+                    "\n     - 移除Loonie的logo，并将其取代" +
+                    "\n     - 在调查员中添加了一条更新的线索" +
+                    "\n     - 修复了无法生成 模板文件 和 VIP 列表的问题" +
+                    "\n     - 新角色......的新戏弄？" +
+                    "\n\n★ 欢迎来到 Town of Host: Enhanced! ★",
+
+                    Date = "2023-10-5T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
                 // TOHE v1.0.0
                 var news = new ModNews
                 {
@@ -331,10 +353,9 @@ public class ModNewsHistory
                     ShortTitle = "TOH: Enhanced v1.0.0",
                     BeforeNumber = 80001,
                     Text = "<size=150%>欢迎来到 TOH: Enhanced v1.0.0!</size>" +
-                    "\n<b>【基于官方版本】</b>\n - 基于 TOH-RE v3.1.0 (Notes Available)\r\n" +
+                    "\n<b>【基于官方版本】</b>\n - 基于 TOH-RE v3.1.0 (备注可用)\r\n" +
                     "\n<b>【更改/修复】</b>" +
                     "\n     - 删除了与 Lounie 的所有关联，自述文件中的信用" +
-                    "\n     - 改名了 Jailor -> Jailer (不用客气, ryuk)" +
                     "\n     - 更新了包含所有string/variable" +
                     "\n     - 修复了强盗文本文字" +
                     "\n\n★ 使模组变得更好。欢迎来到 Town of Host: Enhanced！ ★",
