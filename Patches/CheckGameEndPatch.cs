@@ -554,7 +554,7 @@ class GameEndChecker
             Imp += Main.AllAlivePlayerControls.Count(x => x.Is(CustomRoles.Madmate) && x.Is(CustomRoles.DualPersonality));
             Si += Main.AllAlivePlayerControls.Count(x => x.Is(CustomRoles.Yandere) || Main.ForYandere.Contains(x.PlayerId));
 
-            int totalNKAlive = new int[] { Rit, Traitor, Med, PP, Jackal, Vamp, DH, Rogue, Wraith, Agitater, Pestilence, PB, Juggy, Doppelganger, Hunt, Necro, Pyro, Hex, Bandit, RR, WW, Shr, Arso, Glitch, Jinx, SK, Occ, Pel, Gam, BK, Pois, Virus, SC, CM }.Sum();
+            int totalNKAlive = new int[] { Rit, Traitor, Med, PP, Jackal, Vamp, DH, Rogue, Wraith, Agitater, Pestilence, PB, Juggy, Doppelganger, Hunt, Necro, Pyro, Hex, Bandit, RR, WW, Shr, Arso, Glitch, Jinx, SK, Occ, Pel, Gam, BK, Pois, Virus, SC, CM, Si }.Sum();
 
             CustomWinner? winner = null;
             CustomRoles? rl = null;
@@ -583,11 +583,11 @@ class GameEndChecker
                     reason = GameOverReason.HumansByVote;
                     winner = CustomWinner.Crewmate;
                 }
-                else if (Jackal < Si && Pel < Si && Imp < Si && BK < Si && Gam < Si && Crew < Si && CM < Si) //胜利
+                /*else if (Jackal < Si && Pel < Si && Imp < Si && BK < Si && Gam < Si && Crew < Si && CM < Si) //胜利
                 {
                     reason = GameOverReason.ImpostorByKill;
                     CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Yandere);
-                }
+                }*/
                 else return false; // crew greater than Imps and Imp not dead game must continue
                 if (winner != null)
                     CustomWinnerHolder.ResetAndSetWinner((CustomWinner)winner);
@@ -678,6 +678,12 @@ class GameEndChecker
                         reason = GameOverReason.ImpostorByKill;
                         winner = CustomWinner.Doppelganger;
                         rl = CustomRoles.Doppelganger;
+                    }
+                    else if (Si == totalNKAlive)
+                    {
+                        reason = GameOverReason.ImpostorByKill;
+                        winner = CustomWinner.Yandere;
+                        rl = CustomRoles.Yandere;   
                     }
                     else if (Hunt == totalNKAlive)
                     {

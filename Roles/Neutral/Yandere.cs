@@ -202,7 +202,7 @@ public static class Yandere
                     if (yanderes.Is(CustomRoles.Yandere))
                     {
                         var playerId = yanderes.PlayerId;
-                        NameColorManager.Add(yanderes.PlayerId, pcs.PlayerId, "#FF0000");
+                        NameColorManager.Add(yanderes.PlayerId, pcs.PlayerId, "#8B0000");
                         var targetId = pcs.PlayerId;
                         Target[playerId] = targetId;
                         TargetArrow.Add(playerId, targetId);
