@@ -177,6 +177,7 @@ static class CustomRolesHelper
         {
             //Standard
             CustomRoles.Sheriff => RoleTypes.Impostor,
+            CustomRoles.Vigilante => RoleTypes.Impostor,
             CustomRoles.Jailer => RoleTypes.Impostor,
             CustomRoles.Crusader => RoleTypes.Impostor,
             CustomRoles.Seeker => RoleTypes.Impostor,
@@ -592,6 +593,7 @@ static class CustomRolesHelper
             CustomRoles.Counterfeiter or
             CustomRoles.Retributionist or
             CustomRoles.Sheriff or
+            CustomRoles.Vigilante or
             CustomRoles.Jailer;
     }
     public static bool IsMini(this CustomRoles role) // �Ƿ��ڹ�

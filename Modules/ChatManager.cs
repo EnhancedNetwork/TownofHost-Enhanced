@@ -11,6 +11,10 @@ namespace TOHE.Modules.ChatManager
         public static bool cancel = false;
         private static List<string> chatHistory = new();
         private const int maxHistorySize = 20;
+        public static void resetHistory()
+        {
+            chatHistory = new();
+        }
         public static bool CheckCommond(ref string msg, string command, bool exact = true)
         {
             var comList = command.Split('|');
