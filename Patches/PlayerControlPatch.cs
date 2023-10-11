@@ -193,7 +193,7 @@ class CheckMurderPatch
             return Mastermind.ForceKillForManipulatedPlayer(killer, target);
         }
 
-        if (target.Is(CustomRoles.Spy)) Spy.OnKillAttempt(killer, target);
+        //if (target.Is(CustomRoles.Spy)) Spy.OnKillAttempt(killer, target);
 
         //実際のキラーとkillerが違う場合の入れ替え処理
         if (Sniper.IsEnable) Sniper.TryGetSniper(target.PlayerId, ref killer);
@@ -210,7 +210,8 @@ class CheckMurderPatch
         if (Pursuer.OnClientMurder(killer)) return false;
         if (Addict.IsImmortal(target)) return false;
         if (target.Is(CustomRoles.Necromancer) && !Necromancer.OnKillAttempt(killer, target)) return false;
-        
+        if (target.Is(CustomRoles.Spy) && !Spy.OnKillAttempt(killer, target)) return false;
+
         if (Alchemist.IsProtected && target.Is(CustomRoles.Alchemist))
         {
             killer.SetKillCooldown(time: 5f);
