@@ -243,6 +243,7 @@ static class CustomRolesHelper
             CustomRoles.Agitater => RoleTypes.Impostor,
             CustomRoles.Spiritcaller => RoleTypes.Impostor,
             CustomRoles.ChiefOfPolice => RoleTypes.Impostor,
+            CustomRoles.Yandere => RoleTypes.Impostor,
             _ => RoleTypes.GuardianAngel
         };
     }
@@ -415,6 +416,7 @@ static class CustomRolesHelper
             CustomRoles.Traitor or
             CustomRoles.Virus or
             CustomRoles.Spiritcaller or
+            CustomRoles.Yandere or
             CustomRoles.Succubus;
     }
 
@@ -456,6 +458,7 @@ static class CustomRolesHelper
             CustomRoles.PlagueBearer or
             CustomRoles.Agitater or
             CustomRoles.RuthlessRomantic or
+            CustomRoles.Yandere or
             CustomRoles.Pestilence;
     }
     public static bool IsNonNK(this CustomRoles role) // ROLE ASSIGNING, NOT NEUTRAL TYPE
@@ -576,6 +579,7 @@ static class CustomRolesHelper
             CustomRoles.PlagueBearer or
             CustomRoles.Agitater or
             CustomRoles.RuthlessRomantic or
+            CustomRoles.Yandere or
             CustomRoles.Pestilence;
     }
     public static bool IsCK(this CustomRoles role)
@@ -745,6 +749,7 @@ static class CustomRolesHelper
             CustomRoles.Virus or
             CustomRoles.Succubus or
             CustomRoles.Doomsayer or
+            CustomRoles.Yandere or
             CustomRoles.Spiritcaller;
     }
 /*    public static bool IsCoven(this CustomRoles role)
@@ -877,6 +882,7 @@ static class CustomRolesHelper
             CustomRoles.Romantic or
             CustomRoles.RuthlessRomantic or
             CustomRoles.VengefulRomantic or
+            CustomRoles.Yandere or
             CustomRoles.Seeker;
     }
     public static bool IsMadmate(this CustomRoles role)
@@ -1119,6 +1125,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Bomber)
                     || pc.Is(CustomRoles.Nuker)
                     || pc.Is(CustomRoles.Jinx)
+                    || pc.Is(CustomRoles.Spy)
                     || pc.Is(CustomRoles.CursedWolf))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeFragile.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeFragile.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeFragile.GetBool()))
@@ -1629,6 +1636,8 @@ static class CustomRolesHelper
            CustomRoles.Refugee => CountTypes.Impostor,
            CustomRoles.Huntsman => CountTypes.Huntsman,
            CustomRoles.Glitch => CountTypes.Glitch,
+           CustomRoles.Yandere => CountTypes.Yandere,
+     
           // CustomRoles.Phantom => CountTypes.OutOfGame,
         //   CustomRoles.CursedSoul => CountTypes.OutOfGame, // if they count as OutOfGame, it prevents them from winning lmao
            
@@ -1687,5 +1696,6 @@ public enum CountTypes
     Occultist,
     Shade,
     RuthlessRomantic,
+    Yandere,
     Necromancer
 }

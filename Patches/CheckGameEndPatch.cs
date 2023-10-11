@@ -86,6 +86,11 @@ class GameEndChecker
                         .Where(pc => (pc.Is(CustomRoles.Spiritcaller) || pc.Is(CustomRoles.EvilSpirit)))
                         .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
+                case CustomWinner.Yandere:
+                    Main.AllPlayerControls
+                        .Where(pc => Main.ForYandere.Contains(pc.PlayerId) || pc.Is(CustomRoles.Yandere))
+                        .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
+                    break;
                 case CustomWinner.RuthlessRomantic:
                     foreach (var pc in Main.AllPlayerControls)
                     {
@@ -534,6 +539,7 @@ class GameEndChecker
             int Shr = Utils.AlivePlayersCount(CountTypes.Shroud);
             int WW = Utils.AlivePlayersCount(CountTypes.Werewolf);
             int RR = Utils.AlivePlayersCount(CountTypes.RuthlessRomantic);
+            int Si = Utils.AlivePlayersCount(CountTypes.Yandere);
 
             Imp += Main.AllAlivePlayerControls.Count(x => x.GetCustomRole().IsImpostor() && x.Is(CustomRoles.DualPersonality));
             Crew += Main.AllAlivePlayerControls.Count(x => x.GetCustomRole().IsCrewmate() && x.Is(CustomRoles.DualPersonality));
@@ -546,6 +552,7 @@ class GameEndChecker
             Vamp += Main.AllAlivePlayerControls.Count(x => x.Is(CustomRoles.Infected) && x.Is(CustomRoles.DualPersonality));
             Virus += Main.AllAlivePlayerControls.Count(x => x.Is(CustomRoles.Contagious) && x.Is(CustomRoles.DualPersonality));
             Imp += Main.AllAlivePlayerControls.Count(x => x.Is(CustomRoles.Madmate) && x.Is(CustomRoles.DualPersonality));
+            Si += Main.AllAlivePlayerControls.Count(x => x.Is(CustomRoles.Yandere) || Main.ForYandere.Contains(x.PlayerId));
 
             int totalNKAlive = new int[] { Rit, Traitor, Med, PP, Jackal, Vamp, DH, Rogue, Wraith, Agitater, Pestilence, PB, Juggy, Doppelganger, Hunt, Necro, Pyro, Hex, Bandit, RR, WW, Shr, Arso, Glitch, Jinx, SK, Occ, Pel, Gam, BK, Pois, Virus, SC, CM }.Sum();
 
@@ -575,6 +582,11 @@ class GameEndChecker
                 {
                     reason = GameOverReason.HumansByVote;
                     winner = CustomWinner.Crewmate;
+                }
+                else if (Jackal < Si && Pel < Si && Imp < Si && BK < Si && Gam < Si && Crew < Si && CM < Si) //胜利
+                {
+                    reason = GameOverReason.ImpostorByKill;
+                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Yandere);
                 }
                 else return false; // crew greater than Imps and Imp not dead game must continue
                 if (winner != null)

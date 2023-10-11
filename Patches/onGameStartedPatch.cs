@@ -76,6 +76,8 @@ internal class ChangeRoleSettings
             Main.MedusaBodies = new();
             Main.InfectedBodies = new();
             Main.VirusNotify = new();
+            Main.ForYandere = new();
+            Main.NeedKillYandere = new();
 
             Main.LastEnteredVent = new();
             Main.LastEnteredVentLocation = new();
@@ -319,6 +321,7 @@ internal class ChangeRoleSettings
             Mini.Init();
             Blackmailer.Init();
             Spy.Init();
+            Yandere.Init();
             
             CustomWinnerHolder.Reset();
             AntiBlackout.Reset();
@@ -914,6 +917,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Spy:
                         Spy.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Yandere:
+                        Yandere.Add(pc.PlayerId);
                         break;
                 }
                 foreach (var subRole in pc.GetCustomSubRoles())

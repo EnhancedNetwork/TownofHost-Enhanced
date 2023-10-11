@@ -146,6 +146,19 @@ class ExileControllerWrapUpPatch
                 pc.SetKillCooldown();
             }
         }
+
+        //判断病娇胜利
+        if (Main.ForYandere.Contains(exiled.PlayerId))
+        {
+            foreach (var pc in Main.AllAlivePlayerControls)
+            {
+                if (pc.Is(CustomRoles.Yandere))
+                {
+                     pc.RpcMurderPlayerV3(pc);   
+                }
+                break;
+            }
+        }
         
         foreach (var pc in Main.AllPlayerControls)
         {

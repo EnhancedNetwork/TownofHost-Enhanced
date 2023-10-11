@@ -139,6 +139,10 @@ class OnPlayerLeftPatch
                     Pelican.OnPelicanDied(data.Character.PlayerId);
                 if (Spiritualist.SpiritualistTarget == data.Character.PlayerId)
                     Spiritualist.RemoveTarget();
+                if (data.Character.Is(CustomRoles.Yandere) && Yandere.Target.ContainsKey(data.Character.PlayerId))
+                Yandere.ChangeRole(data.Character);
+                if (Yandere.Target.ContainsValue(data.Character.PlayerId))
+                Yandere.ChangeRoleByTarget(data.Character); 
                 if (Main.PlayerStates[data.Character.PlayerId].deathReason == PlayerState.DeathReason.etc) // If no cause of death was established
                 {
                     Main.PlayerStates[data.Character.PlayerId].deathReason = PlayerState.DeathReason.Disconnected;

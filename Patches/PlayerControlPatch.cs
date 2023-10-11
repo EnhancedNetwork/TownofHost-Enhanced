@@ -376,6 +376,17 @@ class CheckMurderPatch
                     if (!Pirate.OnCheckMurder(killer, target))
                         return false;
                     break;
+                case CustomRoles.Yandere:
+                    if (!Main.NeedKillYandere.Contains(target.PlayerId))
+                    {
+                        killer.Data.IsDead = true;
+                        Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
+                        killer.RpcMurderPlayerV3(killer);
+                        Main.PlayerStates[killer.PlayerId].SetDead();
+                        Logger.Info($"{killer.GetRealName()} 击杀了非目标玩家，壮烈牺牲了（bushi）", "y");
+                        return false;
+                    }
+                    break;
 
                 case CustomRoles.Arsonist:
                     killer.SetKillCooldown(Options.ArsonistDouseTime.GetFloat());
@@ -2763,6 +2774,7 @@ class FixedUpdatePatch
                 Wraith.OnFixedUpdate(player);
                 Chameleon.OnFixedUpdate(player);
                 Spy.OnFixedUpdate(player);
+                Yandere.OnFixedUpdate(player);
             //    Alchemist.OnFixedUpdate(player);
 
                 if (GameStates.IsInTask)
@@ -2955,6 +2967,7 @@ class FixedUpdatePatch
                 Mark.Append(Romantic.TargetMark(seer, target));
                 Mark.Append(Lawyer.LawyerMark(seer, target));
                 Mark.Append(Snitch.GetWarningArrow(seer, target));
+                Mark.Append(Yandere.TargetMark(seer, target));
 
                 if (seer.Is(CustomRoles.EvilTracker))
                     Mark.Append(EvilTracker.GetTargetMark(seer, target));
@@ -3066,6 +3079,7 @@ class FixedUpdatePatch
                 Suffix.Append(Deathpact.GetDeathpactMark(seer, target));
                 Suffix.Append(Spiritualist.GetSpiritualistArrow(seer, target));
                 Suffix.Append(Tracefinder.GetTargetArrow(seer, target));
+                Suffix.Append(Yandere.GetTargetArrow(seer, target));
 
                 if (Vulture.ArrowsPointingToDeadBody.GetBool())
                     Suffix.Append(Vulture.GetTargetArrow(seer, target));

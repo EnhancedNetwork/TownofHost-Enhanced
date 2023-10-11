@@ -139,6 +139,8 @@ public class Main : BasePlugin
     public static List<byte> TasklessCrewmate = new();
     public static List<byte> BoobyTrapBody = new();
     public static List<byte> BoobyTrapKiller = new();
+    public static List<byte> NeedKillYandere = new();
+    public static List<byte> ForYandere = new();
     //public static List<byte> KilledDiseased = new();
     public static Dictionary<byte, int> KilledDiseased = new();
     public static Dictionary<byte, int> KilledAntidote = new();
@@ -228,8 +230,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, List<string>> AwareInteracted = new();
     public static byte ShamanTarget = byte.MaxValue;
     public static bool ShamanTargetChoosen = false;
-
-
 
     public static IEnumerable<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null);
     public static IEnumerable<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId));
@@ -476,7 +476,7 @@ public class Main : BasePlugin
                 {CustomRoles.SoulCollector, "#A675A1"},
                 {CustomRoles.Imitator, "#B3D94C"},
                 {CustomRoles.Doppelganger,"#f6f4a3" },
-            
+                {CustomRoles.Yandere, "#ff00ff" },
                 // GM
                 {CustomRoles.GM, "#ff5b70"},
                 //サブ役職
@@ -826,6 +826,7 @@ public enum CustomRoles
     Huntsman,
     Occultist,
     Imitator,
+    Yandere,
    //two-way camp
     Mini,
    // Sorcerer,
@@ -970,6 +971,7 @@ public enum CustomWinner
     RuthlessRomantic = CustomRoles.RuthlessRomantic,
     NiceMini = CustomRoles.Mini,
     Doppelganger = CustomRoles.Doppelganger,
+    Yandere = CustomRoles.Yandere,
 }
 public enum AdditionalWinners
 {

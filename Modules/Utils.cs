@@ -539,6 +539,7 @@ public static class Utils
             case CustomRoles.Doomsayer:
             case CustomRoles.Seeker:
             case CustomRoles.Romantic:
+            case CustomRoles.Yandere:
             case CustomRoles.VengefulRomantic:
             case CustomRoles.RuthlessRomantic:
                 hasTasks = false;
@@ -2531,6 +2532,13 @@ public static class Utils
             case CustomRoles.Devourer:
                 Devourer.OnDevourerDied(target.PlayerId);
                 break;
+            case CustomRoles.Yandere:
+                if (Yandere.Target.ContainsKey(target.PlayerId))
+                {
+                    Yandere.Target.Remove(target.PlayerId);
+                    Yandere.SendRPC(target.PlayerId);
+                }
+                break;
         }
 
             var States = Main.PlayerStates[target.PlayerId];
@@ -2555,6 +2563,8 @@ public static class Utils
             Romantic.ChangeRole(target.PlayerId);
         if (Lawyer.Target.ContainsValue(target.PlayerId))
             Lawyer.ChangeRoleByTarget(target);
+        if (Yandere.Target.ContainsValue(target.PlayerId))
+            Yandere.ChangeRoleByTarget(target);
 
         FixedUpdatePatch.LoversSuicide(target.PlayerId, onMeeting);
     }

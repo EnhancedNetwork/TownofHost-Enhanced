@@ -1006,6 +1006,8 @@ class MeetingHudStartPatch
                 case CustomRoles.Lawyer:
                  //   sb.Append(Lawyer.TargetMark(seer, target));
                     break;
+                case CustomRoles.Yandere:
+                    break;
              //   case CustomRoles.Jackal:
              //   case CustomRoles.Sidekick:
                 case CustomRoles.Poisoner:
@@ -1180,6 +1182,10 @@ class MeetingHudStartPatch
             sb.Append(Totocalcio.TargetMark(seer, target));
             sb.Append(Romantic.TargetMark(seer, target));
             sb.Append(Lawyer.LawyerMark(seer, target));
+
+            //病娇提示
+            if (seer.Is(CustomRoles.Yandere))
+            sb.Append(Yandere.GetTargetArrow(seer));
 
             //会議画面ではインポスター自身の名前にSnitchマークはつけません。
 

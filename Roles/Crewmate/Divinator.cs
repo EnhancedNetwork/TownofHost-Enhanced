@@ -230,6 +230,7 @@ public static class Divinator
                 CustomRoles.Jester or
                 CustomRoles.Lurker or
                 CustomRoles.Swapper or
+                CustomRoles.Yandere or
                 CustomRoles.Sunnyboy
                 => "Result17",
 
