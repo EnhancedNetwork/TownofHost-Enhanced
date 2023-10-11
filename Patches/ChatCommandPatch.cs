@@ -725,7 +725,7 @@ internal class ChatCommands
                     {
                         var rand = IRandom.Instance;
                         int botChoice = rand.Next(0, 3);
-                        var rpsList = new List<string> { "Rock", "Paper", "Scissors" };
+                        var rpsList = new List<string> { GetString("Rock"), GetString("Paper"), GetString("Scissors") };
                         if (botChoice == playerChoice)
                         {
                             Utils.SendMessage(String.Format(GetString("RpsDraw"), rpsList[botChoice]), PlayerControl.LocalPlayer.PlayerId);
@@ -790,7 +790,7 @@ internal class ChatCommands
                         {
                             Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0] = -1;
                             Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][1] = 7;
-                            targetNumber = Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0];
+                            //targetNumber = Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0];
                             Utils.SendMessage(String.Format(GetString("GNoLost"), targetNumber), PlayerControl.LocalPlayer.PlayerId);
                             break;
                         }                        
@@ -1621,22 +1621,46 @@ internal class ChatCommands
                     Utils.SendMessage(GetString("ColorCommandNoLobby"), player.PlayerId);
                     break;
                 }
-                subArgs = args.Length != 2 ? "" : args[1];
-                if (string.IsNullOrEmpty(subArgs) || !Utils.CheckColorHex(subArgs))
+                if (!Options.GradientTagsOpt.GetBool()) 
                 {
-                    Logger.Msg($"{subArgs}", "modcolor");
-                    Utils.SendMessage(GetString("ColorInvalidHexCode"), player.PlayerId);
+                    subArgs = args.Length != 2 ? "" : args[1];
+                    if (string.IsNullOrEmpty(subArgs) || !Utils.CheckColorHex(subArgs))
+                    {
+                        Logger.Msg($"{subArgs}", "modcolor");
+                        Utils.SendMessage(GetString("ColorInvalidHexCode"), player.PlayerId);
+                        break;
+                    }
+                    string colorFilePath = $"{modTagsFiles}/{player.FriendCode}.txt";
+                    if (!File.Exists(colorFilePath))
+                    {
+                        Logger.Warn($"File Not exist, creating file at {modTagsFiles}/{player.FriendCode}.txt", "modcolor");
+                        File.Create(colorFilePath).Close();
+                    }
+
+                    File.WriteAllText(colorFilePath, $"{subArgs}");
                     break;
                 }
-                string colorFilePath = $"{modTagsFiles}/{player.FriendCode}.txt";
-                if (!File.Exists(colorFilePath))
+                else
                 {
-                    Logger.Warn($"File Not exist, creating file at {modTagsFiles}/{player.FriendCode}.txt", "modcolor");
-                    File.Create(colorFilePath).Close();
+                    subArgs = args.Length < 3 ? "" : args[1] + " " + args[2];
+                    Regex regex = new Regex(@"^[0-9A-Fa-f]{6}\s[0-9A-Fa-f]{6}$");
+                    if (string.IsNullOrEmpty(subArgs) || !regex.IsMatch(subArgs))
+                    {
+                        Logger.Msg($"{subArgs}", "modcolor");
+                        Utils.SendMessage(GetString("ColorInvalidGradientCode"), player.PlayerId);
+                        break;
+                    }
+                    string colorFilePath = $"{modTagsFiles}/{player.FriendCode}.txt";
+                    if (!File.Exists(colorFilePath))
+                    {
+                        Logger.Msg($"File Not exist, creating file at {modTagsFiles}/{player.FriendCode}.txt", "modcolor");
+                        File.Create(colorFilePath).Close();
+                    }
+                    //Logger.Msg($"File exists, creating file at {modTagsFiles}/{player.FriendCode}.txt", "modcolor");
+                    //Logger.Msg($"{subArgs}","modcolor");
+                    File.WriteAllText(colorFilePath, $"{subArgs}");
+                    break;
                 }
-
-                File.WriteAllText(colorFilePath, $"{subArgs}");
-                break;
             case "/vipcolor":
             case "/vipcolour":
                 if (Options.ApplyVipList.GetValue() == 0)
@@ -1654,22 +1678,46 @@ internal class ChatCommands
                     Utils.SendMessage(GetString("VipColorCommandNoLobby"), player.PlayerId);
                     break;
                 }
-                subArgs = args.Length != 2 ? "" : args[1];
-                if (string.IsNullOrEmpty(subArgs) || !Utils.CheckColorHex(subArgs))
-                {
-                    Logger.Msg($"{subArgs}", "vipcolor");
-                    Utils.SendMessage(GetString("VipColorInvalidHexCode"), player.PlayerId);
+                if (Options.GradientTagsOpt.GetBool()) 
+                { 
+                    subArgs = args.Length != 2 ? "" : args[1];
+                    if (string.IsNullOrEmpty(subArgs) || !Utils.CheckColorHex(subArgs))
+                    {
+                        Logger.Msg($"{subArgs}", "vipcolor");
+                        Utils.SendMessage(GetString("VipColorInvalidHexCode"), player.PlayerId);
+                        break;
+                    }
+                    string colorFilePathh = $"{vipTagsFiles}/{player.FriendCode}.txt";
+                    if (!File.Exists(colorFilePathh))
+                    {
+                        Logger.Warn($"File Not exist, creating file at {vipTagsFiles}/{player.FriendCode}.txt", "vipcolor");
+                        File.Create(colorFilePathh).Close();
+                    }
+        
+                    File.WriteAllText(colorFilePathh, $"{subArgs}");
                     break;
                 }
-                string colorFilePathh = $"{vipTagsFiles}/{player.FriendCode}.txt";
-                if (!File.Exists(colorFilePathh))
+                else
                 {
-                    Logger.Warn($"File Not exist, creating file at {vipTagsFiles}/{player.FriendCode}.txt", "vipcolor");
-                    File.Create(colorFilePathh).Close();
+                    subArgs = args.Length < 3 ? "" : args[1] + " " + args[2];
+                    Regex regexx = new Regex(@"^[0-9A-Fa-f]{6}\s[0-9A-Fa-f]{6}$");
+                    if (string.IsNullOrEmpty(subArgs) || !regexx.IsMatch(subArgs))
+                    {
+                        Logger.Msg($"{subArgs}", "vipcolor");
+                        Utils.SendMessage(GetString("VipColorInvalidGradientCode"), player.PlayerId);
+                        break;
+                    }
+                    string colorFilePathh = $"{vipTagsFiles}/{player.FriendCode}.txt";
+                    if (!File.Exists(colorFilePathh))
+                    {
+                        Logger.Msg($"File Not exist, creating file at {vipTagsFiles}/{player.FriendCode}.txt", "vipcolor");
+                        File.Create(colorFilePathh).Close();
+                    }
+                    //Logger.Msg($"File exists, creating file at {vipTagsFiles}/{player.FriendCode}.txt", "vipcolor");
+                    //Logger.Msg($"{subArgs}","modcolor");
+                    File.WriteAllText(colorFilePathh, $"{subArgs}");
+                    break;
                 }
-        
-                File.WriteAllText(colorFilePathh, $"{subArgs}");
-                break;
             case "/tagcolor":
             case "/tagcolour":
                 string name1 = Main.AllPlayerNames.TryGetValue(player.PlayerId, out var n) ? n : "";
@@ -1769,7 +1817,7 @@ internal class ChatCommands
                 {
                     var rand = IRandom.Instance;
                     int botChoice = rand.Next(0, 3);
-                    var rpsList = new List<string> { "Rock", "Paper", "Scissors" };
+                    var rpsList = new List<string> { GetString("Rock"), GetString("Paper"), GetString("Scissors") };
                     if (botChoice == playerChoice)
                     {
                         Utils.SendMessage(String.Format(GetString("RpsDraw"), rpsList[botChoice]), player.PlayerId);
@@ -1834,7 +1882,7 @@ internal class ChatCommands
                     {
                         Main.GuessNumber[player.PlayerId][0] = -1;
                         Main.GuessNumber[player.PlayerId][1] = 7;
-                        targetNumber = Main.GuessNumber[player.PlayerId][0];
+                        //targetNumber = Main.GuessNumber[player.PlayerId][0];
                         Utils.SendMessage(String.Format(GetString("GNoLost"), targetNumber), player.PlayerId);
                         break;
                     }

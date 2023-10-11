@@ -1719,16 +1719,43 @@ public static class Utils
                 if (IsPlayerVIP(player.FriendCode))
                 {
                     string colorFilePath = @$"./TOHE-DATA/Tags/VIP_TAGS/{player.FriendCode}.txt";
-                    string startColorCode = "ffff00";
-                    if (File.Exists(colorFilePath))
+                    //static color
+                    if (!Options.GradientTagsOpt.GetBool())
+                    { 
+                        string startColorCode = "ffff00";
+                        if (File.Exists(colorFilePath))
+                        {
+                            string ColorCode = File.ReadAllText(colorFilePath);
+                            ColorCode.Trim();
+                            if (CheckColorHex(ColorCode)) startColorCode = ColorCode;
+                        }
+                        //"ffff00"
+                        modtag = $"<color=#{startColorCode}>{GetString("VipTag")}</color>";
+                        }
+                    else //gradient color
                     {
-                        string ColorCode = File.ReadAllText(colorFilePath);
-                        ColorCode.Trim();
-                        if (CheckColorHex(ColorCode)) startColorCode = ColorCode;
-                    }
-                    //"33ccff", "ff99cc"
-                    modtag = $"<color=#{startColorCode}>{GetString("VipTag")}</color>";
+                        string startColorCode = "ffff00";
+                        string endColorCode = "ffff00";
+                        string ColorCode = "";
+                        if (File.Exists(colorFilePath))
+                        {
+                            ColorCode = File.ReadAllText(colorFilePath);
+                            if (ColorCode.Split(" ").Length == 2)
+                            {
+                                startColorCode = ColorCode.Split(" ")[0];
+                                endColorCode = ColorCode.Split(" ")[1];
+                            }
+                        }
+                        if (!CheckGradientCode(ColorCode))
+                        {
+                            startColorCode = "ffff00";
+                            endColorCode = "ffff00";
+                        }
+                        //"33ccff", "ff99cc"
+                        if (startColorCode == endColorCode) modtag = $"<color=#{startColorCode}>{GetString("VipTag")}</color>";
 
+                        else modtag = GradientColorText(startColorCode, endColorCode, GetString("VIPTag"));
+                    }
                 }
             }
             if (Options.ApplyModeratorList.GetValue() == 1 && player.FriendCode != PlayerControl.LocalPlayer.FriendCode)
@@ -1736,17 +1763,44 @@ public static class Utils
                 if (IsPlayerModerator(player.FriendCode))
                 {
                     string colorFilePath = @$"./TOHE-DATA/Tags/MOD_TAGS/{player.FriendCode}.txt";
-                    string startColorCode = "8bbee0";
-                    string ColorCode = "";
-                    if (File.Exists(colorFilePath))
-                    {
-                        ColorCode = File.ReadAllText(colorFilePath);
-                        ColorCode.Trim();
-                        if (CheckColorHex(ColorCode)) startColorCode = ColorCode;
+                    //static color
+                    if (!Options.GradientTagsOpt.GetBool())
+                    { 
+                        string startColorCode = "8bbee0";
+                        string ColorCode = "";
+                        if (File.Exists(colorFilePath))
+                        {
+                            ColorCode = File.ReadAllText(colorFilePath);
+                            ColorCode.Trim();
+                            if (CheckColorHex(ColorCode)) startColorCode = ColorCode;
+                        }
+                        //"33ccff", "ff99cc"
+                        modtag = $"<color=#{startColorCode}>{GetString("ModTag")}</color>";
                     }
-                    //"33ccff", "ff99cc"
-                    modtag = $"<color=#{startColorCode}>{GetString("ModTag")}</color>";
+                    else //gradient color
+                    {
+                        string startColorCode = "8bbee0";
+                        string endColorCode = "8bbee0";
+                        string ColorCode = "";
+                        if (File.Exists(colorFilePath))
+                        {
+                            ColorCode = File.ReadAllText(colorFilePath);
+                            if (ColorCode.Split(" ").Length == 2)
+                            {
+                                startColorCode = ColorCode.Split(" ")[0];
+                                endColorCode = ColorCode.Split(" ")[1];
+                            }
+                        }
+                        if (!CheckGradientCode(ColorCode))
+                        {
+                            startColorCode = "8bbee0";
+                            endColorCode = "8bbee0";
+                        }
+                        //"33ccff", "ff99cc"
+                        if (startColorCode == endColorCode) modtag = $"<color=#{startColorCode}>{GetString("ModTag")}</color>";
 
+                        else modtag = GradientColorText(startColorCode, endColorCode, GetString("ModTag"));
+                    }
                 }
             }           
             if (!name.Contains('\r') && player.FriendCode.GetDevUser().HasTag())
