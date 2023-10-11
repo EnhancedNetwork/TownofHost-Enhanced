@@ -37,13 +37,13 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "1.0.2.44";
+    public const string PluginVersion = "1.0.2.4";
     public const string PluginDisplayVersion = "1.0.2 Dev 4";
     public static readonly string SupportedVersionAU = "2023.7.11";
     public const bool Canary = false;
 
     public static readonly bool ShowGitHubButton = true;
-    public static readonly bool ShowkofiButton = true;
+    public static readonly bool ShowKofiButton = true;
     public static readonly string GitHubInviteUrl = "https://github.com/0xDrMoe/TownofHost-Enhanced";
     public static readonly string kofiInviteUrl = "https://ko-fi.com/TOHEN";
 
