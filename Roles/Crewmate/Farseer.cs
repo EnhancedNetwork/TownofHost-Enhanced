@@ -1,8 +1,9 @@
 using System.Linq;
+using UnityEngine;
 using AmongUs.GameOptions;
+using System.Collections.Generic;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -16,11 +17,13 @@ namespace TOHE.Roles.Crewmate
         private static readonly string fontSize = "1.5";
         public static bool IsEnable = false;
 
+        public static Dictionary<byte, (PlayerControl, float)> FarseerTimer = new();
+
         public static OptionItem FarseerCooldown;
         public static OptionItem FarseerRevealTime;
         public static OptionItem Vision;
 
-        private static System.Collections.Generic.List<CustomRoles> randomRolesForTrickster = new System.Collections.Generic.List<CustomRoles>
+        private static List<CustomRoles> randomRolesForTrickster = new List<CustomRoles>
         {
             CustomRoles.Snitch,
             CustomRoles.Luckey,
@@ -78,6 +81,7 @@ namespace TOHE.Roles.Crewmate
         }
         public static void Init()
         {
+            FarseerTimer = new();
             IsEnable = false;
         }
         public static void Add(byte playerId)
@@ -90,58 +94,67 @@ namespace TOHE.Roles.Crewmate
         }
 
         public static void SetCooldown(byte id) => Main.AllPlayerKillCooldown[id] = FarseerCooldown.GetFloat();
-
-        public static void OnPostFix(PlayerControl player)
+        public static void OnCheckMurder(PlayerControl killer, PlayerControl target, PlayerControl __instance)
         {
-            if (!IsEnable) return;
-
-            if (GameStates.IsInTask && Main.FarseerTimer.ContainsKey(player.PlayerId))//アーソニストが誰かを塗っているとき
+            killer.SetKillCooldown(FarseerRevealTime.GetFloat());
+            if (!Main.isRevealed[(killer.PlayerId, target.PlayerId)] && !FarseerTimer.ContainsKey(killer.PlayerId))
             {
-                if (!player.IsAlive() || Pelican.IsEaten(player.PlayerId))
+                FarseerTimer.TryAdd(killer.PlayerId, (target, 0f));
+                NotifyRoles(SpecifySeer: __instance);
+                RPC.SetCurrentRevealTarget(killer.PlayerId, target.PlayerId);
+            }
+        }
+        public static void OnFixedUpdate(PlayerControl player)
+        {
+            if (!FarseerTimer.ContainsKey(player.PlayerId)) return;
+
+            if (!player.IsAlive() || Pelican.IsEaten(player.PlayerId))
+            {
+                FarseerTimer.Remove(player.PlayerId);
+                NotifyRoles(SpecifySeer: player);
+                RPC.ResetCurrentRevealTarget(player.PlayerId);
+            }
+            else
+            {
+                var ar_target = FarseerTimer[player.PlayerId].Item1;
+                var ar_time = FarseerTimer[player.PlayerId].Item2;
+                if (!ar_target.IsAlive())
                 {
-                    Main.FarseerTimer.Remove(player.PlayerId);
+                    FarseerTimer.Remove(player.PlayerId);
+                }
+                else if (ar_time >= FarseerRevealTime.GetFloat())
+                {
+                    player.SetKillCooldown();
+                    FarseerTimer.Remove(player.PlayerId);
+                    Main.isRevealed[(player.PlayerId, ar_target.PlayerId)] = true;
+                    player.RpcSetRevealtPlayer(ar_target, true);
                     NotifyRoles(SpecifySeer: player);
                     RPC.ResetCurrentRevealTarget(player.PlayerId);
                 }
                 else
                 {
-                    var ar_target = Main.FarseerTimer[player.PlayerId].Item1;//塗られる人
-                    var ar_time = Main.FarseerTimer[player.PlayerId].Item2;//塗った時間
-                    if (!ar_target.IsAlive())
+
+                    float range = NormalGameOptionsV07.KillDistances[Mathf.Clamp(player.Is(CustomRoles.Reach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
+                    float dis = Vector2.Distance(player.transform.position, ar_target.transform.position);
+                    if (dis <= range)
                     {
-                        Main.FarseerTimer.Remove(player.PlayerId);
-                    }
-                    else if (ar_time >= Farseer.FarseerRevealTime.GetFloat())//時間以上一緒にいて塗れた時
-                    {
-                        player.SetKillCooldown();
-                        Main.FarseerTimer.Remove(player.PlayerId);//塗が完了したのでDictionaryから削除
-                        Main.isRevealed[(player.PlayerId, ar_target.PlayerId)] = true;//塗り完了
-                        player.RpcSetRevealtPlayer(ar_target, true);
-                        NotifyRoles(SpecifySeer: player);//名前変更
-                        RPC.ResetCurrentRevealTarget(player.PlayerId);
+                        FarseerTimer[player.PlayerId] = (ar_target, ar_time + Time.fixedDeltaTime);
                     }
                     else
                     {
+                        FarseerTimer.Remove(player.PlayerId);
+                        NotifyRoles(SpecifySeer: player);
+                        RPC.ResetCurrentRevealTarget(player.PlayerId);
 
-                        float range = NormalGameOptionsV07.KillDistances[Mathf.Clamp(player.Is(CustomRoles.Reach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
-                        float dis = Vector2.Distance(player.transform.position, ar_target.transform.position);//距離を出す
-                        if (dis <= range)//一定の距離にターゲットがいるならば時間をカウント
-                        {
-                            Main.FarseerTimer[player.PlayerId] = (ar_target, ar_time + Time.fixedDeltaTime);
-                        }
-                        else//それ以外は削除
-                        {
-                            Main.FarseerTimer.Remove(player.PlayerId);
-                            NotifyRoles(SpecifySeer: player);
-                            RPC.ResetCurrentRevealTarget(player.PlayerId);
-
-                            Logger.Info($"Canceled: {player.GetNameWithRole()}", "Farseer");
-                        }
+                        Logger.Info($"Canceled: {player.GetNameWithRole()}", "Farseer");
                     }
                 }
             }
         }
-
+        public static void OnReportDeadBody()
+        {
+            FarseerTimer.Clear();
+        }
         public static string GetRandomCrewRoleString()
         {
             var rd = IRandom.Instance;

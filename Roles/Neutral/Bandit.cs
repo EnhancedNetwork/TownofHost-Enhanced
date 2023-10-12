@@ -147,7 +147,6 @@ public static class Bandit
 
     public static void OnReportDeadBody()
     {
-        if (!IsEnable) return;
         if (StealMode.GetValue() == 1) return;
         foreach (var kvp1 in Targets)
         {

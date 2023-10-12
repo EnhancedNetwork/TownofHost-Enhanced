@@ -10,6 +10,7 @@ public static class Glitch
 {
     private static readonly int Id = 18125;
     public static List<byte> playerIdList = new();
+    public static bool IsEnable = false;
 
     public static Dictionary<byte, long> hackedIdList = new();
 
@@ -53,10 +54,12 @@ public static class Glitch
     {
         playerIdList = new();
         hackedIdList = new();
+        IsEnable = false;
     }
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
+        IsEnable = true;
 
         HackCDTimer = 10;
         KCDTimer = 10;
@@ -65,9 +68,11 @@ public static class Glitch
 
         isShifted = false;
 
-        LastKill = Utils.GetTimeStamp() + FixFirstKillCooldown.GetInt() - 10; // Starting Kill Cooldown is synced with the setting
-        LastHack = Utils.GetTimeStamp() + HackCooldown.GetInt();
-        LastMimic = Utils.GetTimeStamp() + MimicCooldown.GetInt();
+        var ts = Utils.GetTimeStamp();
+
+        LastKill = ts;
+        LastHack = ts;
+        LastMimic = ts;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -82,13 +87,11 @@ public static class Glitch
         __instance.SabotageButton.ToggleVisible(true);
     }
 
-    public static bool IsEnable => playerIdList.Any();
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 1f;
     public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(HasImpostorVision.GetBool());
     public static void Mimic(PlayerControl pc)
     {
         if (pc == null) return;
-        if (!pc.Is(CustomRoles.Glitch)) return;
         if (!pc.IsAlive()) return;
         if (MimicCDTimer > 0) return;
         if (isShifted) return;
@@ -104,7 +107,10 @@ public static class Glitch
             MimicCDTimer = MimicCooldown.GetInt();
             MimicDurTimer = MimicDuration.GetInt();
         }
-        catch { }
+        catch (System.Exception ex)
+        {
+            Logger.Error(ex.ToString(), "Glitch.Mimic.RpcShapeshift");
+        }
     }
     public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
@@ -168,14 +174,21 @@ public static class Glitch
             catch { MimicDurTimer = 0; }
             if (MimicDurTimer > 180) MimicDurTimer = 0;
         }
-        if (MimicDurTimer <= 0 && isShifted)
+        if ((MimicDurTimer <= 0 || !GameStates.IsInTask) && isShifted)
         {
             try
             {
                 player.RpcRevertShapeshift(false);
                 isShifted = false;
             }
-            catch { }
+            catch (System.Exception ex)
+            {
+                Logger.Error(ex.ToString(), "Glitch.Mimic.RpcRevertShapeshift");
+            }
+            if (!GameStates.IsInTask)
+            {
+                MimicDurTimer = 0;
+            }
         }
 
         if (HackCDTimer <= 0 && KCDTimer <= 0 && MimicCDTimer <= 0 && MimicDurTimer <= 0) return;
@@ -188,7 +201,7 @@ public static class Glitch
         catch { KCDTimer = 0; }
         if (KCDTimer > 180 || KCDTimer < 0) KCDTimer = 0;
 
-        try { MimicCDTimer = (int)(MimicCooldown.GetInt() - (Utils.GetTimeStamp() - LastMimic)); }
+        try { MimicCDTimer = (int)(MimicCooldown.GetInt() + MimicDuration.GetInt() - (Utils.GetTimeStamp() - LastMimic)); }
         catch { MimicCDTimer = 0; }
         if (MimicCDTimer > 180 || MimicCDTimer < 0) MimicCDTimer = 0;
 
@@ -197,9 +210,9 @@ public static class Glitch
             var sb = new StringBuilder();
 
             if (MimicDurTimer > 0) sb.Append($"\n{string.Format(Translator.GetString("MimicDur"), MimicDurTimer)}");
+            if (MimicCDTimer > 0 && MimicDurTimer <= 0) sb.Append($"\n{string.Format(Translator.GetString("MimicCD"), MimicCDTimer)}");
             if (HackCDTimer > 0) sb.Append($"\n{string.Format(Translator.GetString("HackCD"), HackCDTimer)}");
             if (KCDTimer > 0) sb.Append($"\n{string.Format(Translator.GetString("KCD"), KCDTimer)}");
-            if (MimicCDTimer > 0) sb.Append($"\n{string.Format(Translator.GetString("MimicCD"), MimicCDTimer)}");
 
             string ns = sb.ToString();
 
@@ -214,10 +227,10 @@ public static class Glitch
 
         var sb = new StringBuilder();
 
-        if (MimicDurTimer > 0) sb.Append($"\n{string.Format(Translator.GetString("MimicDur"), MimicDurTimer)}");
-        if (HackCDTimer > 0) sb.Append($"\n{string.Format(Translator.GetString("HackCD"), HackCDTimer)}");
-        if (KCDTimer > 0) sb.Append($"\n{string.Format(Translator.GetString("KCD"), KCDTimer)}");
-        if (MimicCDTimer > 0) sb.Append($"\n{string.Format(Translator.GetString("MimicCD"), MimicCDTimer)}");
+        if (MimicDurTimer > 0) sb.Append($"{string.Format(Translator.GetString("MimicDur"), MimicDurTimer)}\n");
+        if (MimicCDTimer > 0 && MimicDurTimer <= 0) sb.Append($"{string.Format(Translator.GetString("MimicCD"), MimicCDTimer)}\n");
+        if (HackCDTimer > 0) sb.Append($"{string.Format(Translator.GetString("HackCD"), HackCDTimer)}\n");
+        if (KCDTimer > 0) sb.Append($"{string.Format(Translator.GetString("KCD"), KCDTimer)}\n");
 
         return sb.ToString();
     }

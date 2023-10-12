@@ -81,8 +81,6 @@ public static class NWitch
 
     public static void OnFixedUpdate(PlayerControl taglocked)
     {
-        if (!IsEnable) return;
-        if (!GameStates.IsInTask) return;
         if (!TaglockedList.ContainsKey(taglocked.PlayerId)) return;
 
         if (!taglocked.IsAlive() || Pelican.IsEaten(taglocked.PlayerId))

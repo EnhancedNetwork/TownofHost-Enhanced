@@ -1,4 +1,6 @@
 ﻿using Hazel;
+using System.Linq;
+using UnityEngine;
 using AmongUs.GameOptions;
 using System.Collections.Generic;
 using static TOHE.Translator;
@@ -109,7 +111,6 @@ public static class Agitater
 
     public static void OnReportDeadBody()
     {
-        if (!IsEnable) return;
         if (CurrentBombedPlayer == byte.MaxValue) return;
         var target = Utils.GetPlayerById(CurrentBombedPlayer);
         var killer = Utils.GetPlayerById(playerIdList[0]);
@@ -122,10 +123,41 @@ public static class Agitater
         ResetBomb();
         Logger.Info($"{killer.GetRealName()} bombed {target.GetRealName()} on report", "Agitater");
     }
+    public static void OnFixedUpdate(PlayerControl player)
+    {
+        if (!GameStates.IsInTask) return;
+        if (!(CurrentBombedPlayer == player.PlayerId)) return;
 
+        if (!player.IsAlive())
+        {
+            ResetBomb();
+        }
+        else
+        {
+            Vector2 bloodlustPos = player.transform.position;
+            Dictionary<byte, float> targetDistance = new();
+            float dis;
+            foreach (var target in Main.AllPlayerControls)
+            {
+                if (!target.IsAlive()) continue;
+                if (target.PlayerId != player.PlayerId && target.PlayerId != LastBombedPlayer && !target.Data.IsDead)
+                {
+                    dis = Vector2.Distance(bloodlustPos, target.transform.position);
+                    targetDistance.Add(target.PlayerId, dis);
+                }
+            }
+            if (targetDistance.Count != 0)
+            {
+                var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
+                PlayerControl target = Utils.GetPlayerById(min.Key);
+                var KillRange = GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.currentNormalGameOptions.KillDistance, 0, 2)];
+                if (min.Value <= KillRange && player.CanMove && target.CanMove)
+                    PassBomb(player, target);
+            }
+        }
+    }
     public static void PassBomb(PlayerControl player, PlayerControl target, bool IsAgitater = false)
     {
-        if (!IsEnable) return;
         if (!AgitaterHasBombed) return;
         if (target.Data.IsDead) return;
 

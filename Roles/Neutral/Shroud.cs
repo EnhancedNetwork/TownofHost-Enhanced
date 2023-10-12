@@ -81,8 +81,6 @@ public static class Shroud
 
     public static void OnFixedUpdate(PlayerControl shroud)
     {
-        if (!IsEnable) return;
-        if (!GameStates.IsInTask) return;
         if (!ShroudList.ContainsKey(shroud.PlayerId)) return;
 
         if (!shroud.IsAlive() || Pelican.IsEaten(shroud.PlayerId))

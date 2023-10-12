@@ -494,8 +494,7 @@ public static class Divinator
     }
     public static void OnReportDeadBody()
     {
-        if (!IsEnable) return;
-
+        didVote.Clear();
         foreach (var divinatorId in playerIdList)
         {
             TempCheckLimit[divinatorId] = CheckLimit[divinatorId];
