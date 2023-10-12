@@ -409,8 +409,10 @@ class CheckForEndVotingPatch
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (exiledPlayer == null) return;
+
         var exileId = exiledPlayer.PlayerId;
         if (exileId is < 0 or > 254) return;
+
         var realName = exiledPlayer.Object.GetRealName(isMeeting: true);
         Main.LastVotedPlayer = realName;
 
@@ -418,14 +420,16 @@ class CheckForEndVotingPatch
         var role = GetString(exiledPlayer.GetCustomRole().ToString());
         var crole = exiledPlayer.GetCustomRole();
         var coloredRole = Utils.GetDisplayRoleName(exileId, true);
+
         if (Options.ConfirmEgoistOnEject.GetBool() && player.Is(CustomRoles.Egoist))
             coloredRole = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Egoist), GetRoleString("Temp.Blank") + coloredRole.RemoveHtmlTags());
-     //   if (Options.ConfirmSidekickOnEject.GetBool() && player.Is(CustomRoles.Sidekick))
-     //       coloredRole = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sidekick), GetRoleString("Temp.Blank") + coloredRole.RemoveHtmlTags());
+
         if (Options.ConfirmLoversOnEject.GetBool() && player.Is(CustomRoles.Lovers))
             coloredRole = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), GetRoleString("Temp.Blank") + coloredRole.RemoveHtmlTags());
+
         if (Options.RascalAppearAsMadmate.GetBool() && player.Is(CustomRoles.Rascal))
             coloredRole = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetRoleString("Mad-") + coloredRole.RemoveHtmlTags());
+        
         var name = "";
         int impnum = 0;
         int neutralnum = 0;
@@ -442,7 +446,7 @@ class CheckForEndVotingPatch
         foreach (var pc in Main.AllAlivePlayerControls)
         {
             var pc_role = pc.GetCustomRole();
-            if (pc_role.IsImpostor() && !pc.Is(CustomRoles.Trickster) && pc != exiledPlayer.Object)
+            if (pc_role.IsImpostor() && pc != exiledPlayer.Object)
                 impnum++;
             else if (pc_role.IsNK() && pc != exiledPlayer.Object)
                 neutralnum++;
@@ -455,10 +459,13 @@ class CheckForEndVotingPatch
             case 1:
                 if (player.GetCustomRole().IsImpostor() || player.Is(CustomRoles.Parasite) || player.Is(CustomRoles.Crewpostor) || player.Is(CustomRoles.Refugee) || player.Is(CustomRoles.Convict))
                     name = string.Format(GetString("BelongTo"), realName, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), GetString("TeamImpostor")));
+
                 else if (player.GetCustomRole().IsCrewmate())
                     name = string.Format(GetString("IsGood"), realName);
+
                 else if (player.GetCustomRole().IsNeutral() && !player.Is(CustomRoles.Parasite) && !player.Is(CustomRoles.Refugee) && !player.Is(CustomRoles.Crewpostor) && !player.Is(CustomRoles.Convict))
                     name = string.Format(GetString("BelongTo"), realName, Utils.ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral")));
+
                 break;
             case 2:
                 name = string.Format(GetString("PlayerIsRole"), realName, coloredRole);

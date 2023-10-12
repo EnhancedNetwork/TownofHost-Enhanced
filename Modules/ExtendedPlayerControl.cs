@@ -666,7 +666,6 @@ static class ExtendedPlayerControl
             CustomRoles.CursedSoul or
             CustomRoles.PlagueBearer or
             CustomRoles.Admirer or
-            CustomRoles.Bandit or
             CustomRoles.Doppelganger or
             CustomRoles.Crusader or
             CustomRoles.ChiefOfPolice or
@@ -674,6 +673,7 @@ static class ExtendedPlayerControl
             => false,
 
             CustomRoles.Jackal => Jackal.CanVent.GetBool(),
+            CustomRoles.Bandit => Bandit.CanVent.GetBool(),
             CustomRoles.VengefulRomantic => Romantic.VengefulCanVent.GetBool(),
             CustomRoles.Glitch => Glitch.CanVent.GetBool(),
             CustomRoles.RuthlessRomantic => Romantic.RuthlessCanVent.GetBool(),
