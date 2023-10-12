@@ -2341,7 +2341,7 @@ public static class Options
         EndWhenPlayerBug = BooleanOptionItem.Create(19318, "EndWhenPlayerBug", true, TabGroup.SystemSettings, false)
             .SetHeader(true)
             .SetColor(Color.blue);
-        RemovePetsAtDeadPlayers = BooleanOptionItem.Create(44450, "RemovePetsAtDeadPlayers", false, TabGroup.SystemSettings, false)
+        RemovePetsAtDeadPlayers = BooleanOptionItem.Create(44450, "RemovePetsAtDeadPlayers", true, TabGroup.SystemSettings, false)
             .SetColor(Color.magenta);
 
         CheatResponses = StringOptionItem.Create(19319, "CheatResponses", CheatResponsesName, 0, TabGroup.SystemSettings, false)
