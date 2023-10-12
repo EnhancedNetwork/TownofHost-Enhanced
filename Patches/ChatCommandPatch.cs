@@ -255,6 +255,7 @@ internal class ChatCommands
                                 Utils.SendMessage(GetString("Command.icons"));
                                 break;
                             }*/
+
                 case "/kcount":
                     canceled = true;
                     int impnum = 0;
@@ -262,7 +263,7 @@ internal class ChatCommands
 
                     foreach (var players in Main.AllAlivePlayerControls)
                     {
-                        if (Options.ShowImpRemainOnEject.GetBool() && !players.Is(CustomRoles.Trickster))
+                        if (Options.ShowImpRemainOnEject.GetBool())
                         {
                             if (players.GetCustomRole().IsImpostor())
                                 impnum++;
@@ -1276,7 +1277,7 @@ internal class ChatCommands
                 {
                     if (Options.ShowImpRemainOnEject.GetBool())
                     {
-                        if (players.GetCustomRole().IsImpostor() && !players.Is(CustomRoles.Trickster))
+                        if (players.GetCustomRole().IsImpostor())
                             impnum++;
                     }
                     if (Options.ShowNKRemainOnEject.GetBool())
