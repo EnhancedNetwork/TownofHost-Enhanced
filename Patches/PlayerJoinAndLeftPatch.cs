@@ -10,6 +10,7 @@ using TOHE.Modules;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -253,11 +254,13 @@ class CreatePlayerPatch
 
         _ = new LateTask(() =>
         {
+            //Logger.Warn($"{client.Character.CurrentOutfit.ColorId},{client.Character.CurrentOutfit.HatId}, {client.Character.CurrentOutfit.SkinId}, {client.Character.CurrentOutfit.VisorId}, {client.Character.CurrentOutfit.PetId}", "SKIN LOGGED");
+
             if (client.Character == null) return;
             if (Main.OverrideWelcomeMsg != "") Utils.SendMessage(Main.OverrideWelcomeMsg, client.Character.PlayerId);
             else TemplateManager.SendTemplate("welcome", client.Character.PlayerId, true);
         }, 3f, "Welcome Message");
-        
+
         _ = new LateTask(() =>
         {
             if (Options.GradientTagsOpt.GetBool())

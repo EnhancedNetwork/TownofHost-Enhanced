@@ -568,26 +568,39 @@ public class TaskState
                 List<PlayerControl> list = Main.AllAlivePlayerControls.Where(x => x.PlayerId != player.PlayerId && (Options.CrewpostorCanKillAllies.GetBool() || !x.GetCustomRole().IsImpostorTeam())).ToList();
                 if (list.Count < 1)
                 {
-                    Logger.Info($"船鬼没有可击杀目标", "Crewpostor");
+                    Logger.Info($"No target to kill", "Crewpostor");
                 }
                 else
                 {
+
                     {
                         list = list.OrderBy(x => Vector2.Distance(player.transform.position, x.transform.position)).ToList();
                             var target = list[0];
                         if (!target.Is(CustomRoles.Pestilence))
                         {
-                            target.SetRealKiller(player);
-                            target.RpcCheckAndMurder(target);
-                            player.RpcGuardAndKill();
-                            Logger.Info($"船鬼完成任务击杀：{player.GetNameWithRole()} => {target.GetNameWithRole()}", "Crewpostor");
+                            if (!Options.CrewpostorLungeKill.GetBool())
+                            { 
+                                target.SetRealKiller(player);
+                                target.RpcCheckAndMurder(target);
+                                player.RpcGuardAndKill();
+                                Logger.Info("No lunge mode kill", "Crewpostor");
+                            }
+                            else
+                            {
+                                target.SetRealKiller(player);
+                                player.RpcMurderPlayerV3(target);
+                                player.RpcGuardAndKill();
+                                Logger.Info("lunge mode kill", "Crewpostor");
+
+                            }
+                            Logger.Info($"Crewpostor completed task to kill：{player.GetNameWithRole()} => {target.GetNameWithRole()}", "Crewpostor");
                         }
                         if (target.Is(CustomRoles.Pestilence))
                         {
-                            target.SetRealKiller(player);
+                            player.SetRealKiller(target);
                             target.RpcMurderPlayerV3(player);
                             player.RpcGuardAndKill();
-                            Logger.Info($"船鬼完成任务击杀：{target.GetNameWithRole()} => {player.GetNameWithRole()}", "Pestilence Reflect");
+                            Logger.Info($"Crewpostor tried to kill pestilence (reflected back)：{target.GetNameWithRole()} => {player.GetNameWithRole()}", "Pestilence Reflect");
                         }
                     }
                 }
