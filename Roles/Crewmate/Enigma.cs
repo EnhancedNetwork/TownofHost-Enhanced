@@ -133,16 +133,13 @@ namespace TOHE.Roles.Crewmate
                 title = clue.Title;
                 msg = clue.GetMessage(killer, showStageClue);
 
-                Logger.Info($"Enigma ShownClues[{playerId}].Add({clue.Title})", "Enigma");
                 ShownClues[playerId].Add(clue);
 
-                Logger.Info($"Enigma MsgToSend.Add({playerId}, {msg});", "Enigma");
                 if (MsgToSend.ContainsKey(playerId))
                     MsgToSend[playerId] = msg;
                 else
                     MsgToSend.Add(playerId, msg);
 
-                Logger.Info($"Enigma MsgToSendTitle.Add({playerId}, {title});", "Enigma");
                 if (MsgToSendTitle.ContainsKey(playerId))
                     MsgToSendTitle[playerId] = title;
                 else
