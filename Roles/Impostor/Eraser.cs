@@ -95,8 +95,6 @@ internal static class Eraser
     }
     public static void OnReportDeadBody()
     {
-        if (!IsEnable) return;
-
         foreach (var eraserId in playerIdList)
         {
             TempEraseLimit[eraserId] = EraseLimit[eraserId];

@@ -138,4 +138,21 @@ public static class PlagueBearer
         target.RpcMurderPlayerV3(killer);
         return true;
     }
+    public static void OnFixedUpdate(PlayerControl player)
+    {
+        if (IsPlaguedAll(player))
+        {
+            player.RpcSetCustomRole(CustomRoles.Pestilence);
+            Utils.NotifyRoles();
+
+            player.Notify(GetString("PlagueBearerToPestilence"));
+            player.RpcGuardAndKill(player);
+
+            if (!PestilenceList.Contains(player.PlayerId))
+                PestilenceList.Add(player.PlayerId);
+
+            SetKillCooldownPestilence(player.PlayerId);
+            playerIdList.Remove(player.PlayerId);
+        }
+    }
 }

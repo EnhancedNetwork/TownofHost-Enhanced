@@ -69,14 +69,13 @@ public static class Tracefinder
         else
             LocateArrow.RemoveAllTarget(playerId);
     }
-    public static void OnReportDeadBody(PlayerControl pc, GameData.PlayerInfo target)
+    public static void OnReportDeadBody()
     {
         foreach (var apc in playerIdList)
         {
             LocateArrow.RemoveAllTarget(apc);
             SendRPC(apc, false);
         }
-
     }
 
     public static void OnPlayerDead(PlayerControl target)

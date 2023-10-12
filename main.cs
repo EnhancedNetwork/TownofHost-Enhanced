@@ -174,11 +174,9 @@ public class Main : BasePlugin
     public static Dictionary<(byte, byte), bool> isRevealed = new();
     public static Dictionary<byte, (PlayerControl, float)> ArsonistTimer = new();
     public static Dictionary<byte, (PlayerControl, float)> RevolutionistTimer = new();
-    public static Dictionary<byte, (PlayerControl, float)> FarseerTimer = new();
     public static Dictionary<byte, long> RevolutionistStart = new();
     public static Dictionary<byte, long> RevolutionistLastTime = new();
     public static Dictionary<byte, int> RevolutionistCountdown = new();
-    public static Dictionary<byte, byte> BloodlustList = new();
     public static Dictionary<byte, byte> SpeedBoostTarget = new();
     public static Dictionary<byte, int> MayorUsedButtonCount = new();
     public static Dictionary<byte, int> ParaUsedButtonCount = new();

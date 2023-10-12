@@ -1427,6 +1427,7 @@ static class ExtendedPlayerControl
     public static bool Is(this PlayerControl target, CustomRoleTypes type) { return target.GetCustomRole().GetCustomRoleTypes() == type; }
     public static bool Is(this PlayerControl target, RoleTypes type) { return target.GetCustomRole().GetRoleTypes() == type; }
     public static bool Is(this PlayerControl target, CountTypes type) { return target.GetCountTypes() == type; }
+    public static bool Is(this CustomRoles playerRole, CustomRoles trueRole) { return playerRole == trueRole; }
     public static bool IsAlive(this PlayerControl target)
     {
         //ロビーなら生きている

@@ -53,8 +53,6 @@ static class DoubleTrigger
     }
     public static void OnFixedUpdate(PlayerControl player)
     {
-        if (!PlayerIdList.Any()) return;
-
         if (!GameStates.IsInTask)
         {
             FirstTriggerTimer.Clear();
