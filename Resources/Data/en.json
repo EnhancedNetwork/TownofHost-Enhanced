@@ -2949,6 +2949,7 @@
   "DeathpactReduceVisionWhileInPact": "Reduce vision for players in <color=#ff1919>Death Pact</color>",
   "DeathpactVisionWhileInPact": "Vision for players in <color=#ff1919>Death Pact</color>",
   "DeathpactKillPlayersInDeathpactOnMeeting": "Kill players in <color=#ff1919>Death Pact</color> on meeting",
+  "DeathpactPlayersInDeathpactCanCallMeeting": "Players in active <color=#ff1919>Death Pact</color> can call meeting",
   "DeathpactActiveDeathpact": "Find <b>{0}</b> in <b>{1}</b> seconds.",
   "DeathpactCouldNotAddTarget": "Target can't be added to Death Pact.",
   "DeathpactComplete": "Death Pact was concluded.",
