@@ -1157,6 +1157,7 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.CursedWolf])
             .SetValueFormat(OptionFormat.Times);
         Deathpact.SetupCustomOption();
+        Eris.SetupCustomOption();
         Greedier.SetupCustomOption(); //TOH_Y
         SetupRoleOptions(1500, TabGroup.ImpostorRoles, CustomRoles.Inhibitor);
         InhibitorCD = FloatOptionItem.Create(1510, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false)
@@ -1211,7 +1212,6 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.Cleaner])
             .SetValueFormat(OptionFormat.Seconds);
         EvilDiviner.SetupCustomOption();
-        Eris.SetupCustomOption();
         AntiAdminer.SetupCustomOption();
         FireWorks.SetupCustomOption();
         Gangster.SetupCustomOption();
