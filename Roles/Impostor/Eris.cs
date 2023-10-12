@@ -66,17 +66,19 @@ namespace TOHE.Roles.Impostor
 
                 if (!killPotentials.Any()) break;
 
+                List<byte> killPlayers = new List<byte>();
+
                 for (int i = 0; i < KillsPerAbilityUse.GetInt(); i++)
                 {
                     if (!killPotentials.Any()) break;
 
                     PlayerControl target = killPotentials[rd.Next(0, killPotentials.Count-1)];
-                    target.RpcMurderPlayerV3(target);
                     target.SetRealKiller(killer);
-                    Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Discord;
-
+                    killPlayers.Add(target.PlayerId);
                     killPotentials.Remove(target);
                 }
+
+                CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Discord, killPlayers.ToArray());
 
                 AbilityUseCount[player] += 1;
             }
