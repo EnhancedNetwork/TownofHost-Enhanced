@@ -6,6 +6,8 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Double;
+using System.Collections.Generic;
+using MS.Internal.Xml.XPath;
 
 namespace TOHE;
 
@@ -107,6 +109,8 @@ class ExileControllerWrapUpPatch
             if (Lawyer.CheckExileTarget(exiled, DecidedWinner)) DecidedWinner = false;
 
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist) Main.PlayerStates[exiled.PlayerId].SetDead();
+
+            Eris.OnPlayerExile(exiled);
         }
         if (AmongUsClient.Instance.AmHost && Main.IsFixedCooldown)
             Main.RefixCooldownDelay = Options.DefaultKillCooldown - 3f;
@@ -196,7 +200,8 @@ class ExileControllerWrapUpPatch
                 CustomRoles.Doctor or
                 CustomRoles.Alchemist or
                 CustomRoles.Bomber or
-                CustomRoles.Undertaker
+                CustomRoles.Undertaker or
+                CustomRoles.Eris
                 ) pc.RpcResetAbilityCooldown();
 
 

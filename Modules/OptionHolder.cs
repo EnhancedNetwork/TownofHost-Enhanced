@@ -1211,6 +1211,7 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.Cleaner])
             .SetValueFormat(OptionFormat.Seconds);
         EvilDiviner.SetupCustomOption();
+        Eris.SetupCustomOption();
         AntiAdminer.SetupCustomOption();
         FireWorks.SetupCustomOption();
         Gangster.SetupCustomOption();

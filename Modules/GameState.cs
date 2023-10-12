@@ -297,6 +297,7 @@ public class PlayerState
         Drained,
         Shattered,
         Trap,
+        Discord,
 
         etc = -1,
     }
