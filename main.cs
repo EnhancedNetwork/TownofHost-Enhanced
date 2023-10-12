@@ -404,7 +404,7 @@ public class Main : BasePlugin
                 {CustomRoles.Spy, "#34495E"},
                 //第三陣営役職
                 {CustomRoles.Arsonist, "#ff6633"},
-                {CustomRoles.Pyromaniac, "#ff2400"},
+                {CustomRoles.Pyromaniac, "#fc8a4c"},
                 {CustomRoles.Agitater, "#F4A460"},
                 {CustomRoles.Bandit, "#8B008B"},
                 {CustomRoles.PlagueBearer,"#e5f6b4"},
