@@ -86,7 +86,7 @@ namespace TOHE.Roles.Crewmate
 
         public static void OnReportDeadBody(PlayerControl player, GameData.PlayerInfo targetInfo)
         {
-            if (targetInfo == null || !IsEnable) return;
+            if (targetInfo == null) return;
 
             var target = Utils.GetPlayerById(targetInfo.PlayerId);
             if (target == null) return;
