@@ -78,9 +78,6 @@ public static class Vampire
 
     public static void OnFixedUpdate(PlayerControl vampire)
     {
-        if (!IsEnable) return;
-        if (!GameStates.IsInTask) return;
-
         var vampireID = vampire.PlayerId;
         if (!IsThisRole(vampire.PlayerId)) return;
 

@@ -186,8 +186,12 @@ public static class Pelican
             }
             return;
         }
-
-        if (!IsEnable) return; Count--; if (Count > 0) return; Count = 30;
+        
+        Count--;
+        
+        if (Count > 0) return; 
+        
+        Count = 30;
 
         foreach (var pc in eatenList)
         {
@@ -199,7 +203,7 @@ public static class Pelican
                 var dis = Vector2.Distance(pos, target.transform.position);
                 if (dis < 1f) continue;
                 target.RpcTeleport(new Vector2 (pos.x, pos.y));
-                Utils.NotifyRoles(SpecifySeer: target);
+                Utils.NotifyRoles(SpecifySeer: target, ForceLoop: false);
             }
         }
     }

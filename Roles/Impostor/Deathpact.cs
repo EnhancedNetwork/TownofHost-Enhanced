@@ -102,7 +102,7 @@ namespace TOHE.Roles.Impostor
             }
 
             pc.Notify(GetString("DeathpactComplete"));
-            DeathpactTime[pc.PlayerId] = GetTimeStamp() + (long)DeathpactDuration.GetInt();
+            DeathpactTime[pc.PlayerId] = GetTimeStamp() + DeathpactDuration.GetInt();
             ActiveDeathpacts.Add(pc.PlayerId);
 
             foreach (var player in PlayersInDeathpact[pc.PlayerId])
@@ -136,8 +136,6 @@ namespace TOHE.Roles.Impostor
 
         public static void OnFixedUpdate(PlayerControl player)
         {
-            if (!IsEnable) return;
-            if (!GameStates.IsInTask || !player.Is(CustomRoles.Deathpact)) return;
             if (!ActiveDeathpacts.Contains(player.PlayerId)) return;
             if (CheckCancelDeathpact(player)) return;
 

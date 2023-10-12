@@ -105,9 +105,6 @@ public static class BallLightning
     }
     public static void OnFixedUpdate()
     {
-        if (!IsEnable) return;
-        if (!GameStates.IsInTask) return;
-
         List<byte> deList = new();
         foreach (var ghost in GhostPlayer)
         {
@@ -142,8 +139,6 @@ public static class BallLightning
     }
     public static void OnReportDeadBody()
     {
-        if (!(IsEnable || CustomRoles.BallLightning.IsEnable())) return;
-
         foreach (var ghost in GhostPlayer)
         {
             var gs = Utils.GetPlayerById(ghost);

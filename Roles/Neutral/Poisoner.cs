@@ -84,9 +84,6 @@ public static class Poisoner
 
     public static void OnFixedUpdate(PlayerControl poisoner)
     {
-        if (!IsEnable) return;
-        if (!GameStates.IsInTask) return;
-
         var poisonerID = poisoner.PlayerId;
         if (!IsThisRole(poisoner.PlayerId)) return;
 

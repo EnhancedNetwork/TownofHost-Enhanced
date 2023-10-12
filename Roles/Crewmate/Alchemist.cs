@@ -6,6 +6,7 @@ namespace TOHE.Roles.Crewmate
     using System.Linq;
     using System.Text;
     using UnityEngine;
+    using AmongUs.GameOptions;
     using TOHE.Modules;
     using TOHE.Roles.Neutral;
     using static TOHE.Options;
@@ -14,14 +15,17 @@ namespace TOHE.Roles.Crewmate
     public static class Alchemist
     {
         private static readonly int Id = 5250;
-        public static bool IsProtected = false;
         private static List<byte> playerIdList = new();
+
+        public static Dictionary<byte, byte> BloodlustList = new();
         private static Dictionary<byte, int> ventedId = new();
+        private static Dictionary<byte, long> InvisTime = new();
+
         public static byte PotionID = 10;
         public static string PlayerName = string.Empty;
-        private static Dictionary<byte, long> InvisTime = new();
         public static bool VisionPotionActive = false;
         public static bool FixNextSabo = false;
+        public static bool IsProtected = false;
 
         public static OptionItem VentCooldown;
         public static OptionItem ShieldDuration;
@@ -47,6 +51,7 @@ namespace TOHE.Roles.Crewmate
         public static void Init()
         {
             playerIdList = new();
+            BloodlustList = new();
             PotionID = 10;
             PlayerName = string.Empty;
             ventedId = new();
@@ -136,9 +141,9 @@ namespace TOHE.Roles.Crewmate
                     break;
                 case 6: // Bloodlust
                     player.Notify(GetString("AlchemistPotionBloodlust"));
-                    if (!Main.BloodlustList.ContainsKey(player.PlayerId))
+                    if (!BloodlustList.ContainsKey(player.PlayerId))
                     {
-                        Main.BloodlustList[player.PlayerId] = player.PlayerId;
+                        BloodlustList[player.PlayerId] = player.PlayerId;
                     }
                     break;
                 case 7: // Increased vision
@@ -174,61 +179,105 @@ namespace TOHE.Roles.Crewmate
             long last = long.Parse(reader.ReadString());
             if (invis > 0) InvisTime.Add(PlayerControl.LocalPlayer.PlayerId, invis);
         }
-    /*    public static void OnCoEnterVent(PlayerPhysics __instance, int ventId)
+        public static void OnFixedUpdate(PlayerControl player)
         {
-            PotionID = 10;
-            var pc = __instance.myPlayer;
-            NameNotifyManager.Notice.Remove(pc.PlayerId);
-            if (!AmongUsClient.Instance.AmHost) return;
-            _ = new LateTask(() =>
+            if (!BloodlustList.ContainsKey(player.PlayerId)) return;
+
+            if (!player.IsAlive() || Pelican.IsEaten(player.PlayerId))
             {
-                ventedId.Remove(pc.PlayerId);
-                ventedId.Add(pc.PlayerId, ventId);
-
-                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, 34, SendOption.Reliable, pc.GetClientId());
-                writer.WritePacked(ventId);
-                AmongUsClient.Instance.FinishRpcImmediately(writer);
-
-                InvisTime.Add(pc.PlayerId, Utils.GetTimeStamp());
-                SendRPC(pc);
-            //    NameNotifyManager.Notify(pc, GetString("ChameleonInvisState"), InvisDuration.GetFloat());
-            }, 0.5f, "Alchemist Invis");
-        } */
-    /*    public static void OnFixedUpdate(PlayerControl player)
-        {
-            if (!GameStates.IsInTask || !IsEnable) return;
-
-            var now = Utils.GetTimeStamp();
-
-            if (lastFixedTime != now)
-            {
-                lastFixedTime = now;
-                Dictionary<byte, long> newList = new();
-                List<byte> refreshList = new();
-                foreach (var it in InvisTime)
-                {
-                    var pc = Utils.GetPlayerById(it.Key);
-                    if (pc == null) continue;
-                    var remainTime = it.Value + (long)InvisDuration.GetFloat() - now;
-                    if (remainTime < 0)
-                    {
-                        pc?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(pc.PlayerId, out var id) ? id : Main.LastEnteredVent[pc.PlayerId].Id);
-                        NameNotifyManager.Notify(pc, GetString("ChameleonInvisStateOut"));
-                        pc.RpcResetAbilityCooldown();
-                        SendRPC(pc);
-                        continue;
-                    }
-                    else if (remainTime <= 10)
-                    {
-                        if (!pc.IsModClient()) pc.Notify(string.Format(GetString("ChameleonInvisStateCountdown"), remainTime + 1));
-                    }
-                    newList.Add(it.Key, it.Value);
-                }
-                InvisTime.Where(x => !newList.ContainsKey(x.Key)).Do(x => refreshList.Add(x.Key));
-                InvisTime = newList;
-                refreshList.Do(x => SendRPC(Utils.GetPlayerById(x)));
+                BloodlustList.Remove(player.PlayerId);
             }
-        } */
+            else
+            {
+                Vector2 bloodlustPos = player.transform.position;
+                Dictionary<byte, float> targetDistance = new();
+                float dis;
+                foreach (var target in Main.AllAlivePlayerControls)
+                {
+                    if (target.PlayerId != player.PlayerId && !target.Is(CustomRoles.Pestilence))
+                    {
+                        dis = Vector2.Distance(bloodlustPos, target.transform.position);
+                        targetDistance.Add(target.PlayerId, dis);
+                    }
+                }
+                if (targetDistance.Any())
+                {
+                    var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
+                    PlayerControl target = Utils.GetPlayerById(min.Key);
+                    var KillRange = NormalGameOptionsV07.KillDistances[Mathf.Clamp(Main.NormalOptions.KillDistance, 0, 2)];
+                    if (min.Value <= KillRange && player.CanMove && target.CanMove)
+                    {
+                        if (player.RpcCheckAndMurder(target, true))
+                        {
+                            var bloodlustId = BloodlustList[player.PlayerId];
+                            RPC.PlaySoundRPC(bloodlustId, Sounds.KillSound);
+                            target.SetRealKiller(Utils.GetPlayerById(bloodlustId));
+                            player.RpcMurderPlayerV3(target);
+                            player.MarkDirtySettings();
+                            target.MarkDirtySettings();
+                            BloodlustList.Remove(player.PlayerId);
+                            Utils.NotifyRoles(SpecifySeer: player);
+                            Utils.NotifyRoles(SpecifySeer: target);
+                        }
+                    }
+                }
+            }
+        }
+        /*    public static void OnCoEnterVent(PlayerPhysics __instance, int ventId)
+            {
+                PotionID = 10;
+                var pc = __instance.myPlayer;
+                NameNotifyManager.Notice.Remove(pc.PlayerId);
+                if (!AmongUsClient.Instance.AmHost) return;
+                _ = new LateTask(() =>
+                {
+                    ventedId.Remove(pc.PlayerId);
+                    ventedId.Add(pc.PlayerId, ventId);
+
+                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, 34, SendOption.Reliable, pc.GetClientId());
+                    writer.WritePacked(ventId);
+                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+                    InvisTime.Add(pc.PlayerId, Utils.GetTimeStamp());
+                    SendRPC(pc);
+                //    NameNotifyManager.Notify(pc, GetString("ChameleonInvisState"), InvisDuration.GetFloat());
+                }, 0.5f, "Alchemist Invis");
+            } */
+        /*    public static void OnFixedUpdate(PlayerControl player)
+            {
+                if (!GameStates.IsInTask || !IsEnable) return;
+
+                var now = Utils.GetTimeStamp();
+
+                if (lastFixedTime != now)
+                {
+                    lastFixedTime = now;
+                    Dictionary<byte, long> newList = new();
+                    List<byte> refreshList = new();
+                    foreach (var it in InvisTime)
+                    {
+                        var pc = Utils.GetPlayerById(it.Key);
+                        if (pc == null) continue;
+                        var remainTime = it.Value + (long)InvisDuration.GetFloat() - now;
+                        if (remainTime < 0)
+                        {
+                            pc?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(pc.PlayerId, out var id) ? id : Main.LastEnteredVent[pc.PlayerId].Id);
+                            NameNotifyManager.Notify(pc, GetString("ChameleonInvisStateOut"));
+                            pc.RpcResetAbilityCooldown();
+                            SendRPC(pc);
+                            continue;
+                        }
+                        else if (remainTime <= 10)
+                        {
+                            if (!pc.IsModClient()) pc.Notify(string.Format(GetString("ChameleonInvisStateCountdown"), remainTime + 1));
+                        }
+                        newList.Add(it.Key, it.Value);
+                    }
+                    InvisTime.Where(x => !newList.ContainsKey(x.Key)).Do(x => refreshList.Add(x.Key));
+                    InvisTime = newList;
+                    refreshList.Do(x => SendRPC(Utils.GetPlayerById(x)));
+                }
+            } */
         public static string GetHudText(PlayerControl pc)
         {
             if (pc == null || !GameStates.IsInTask || !PlayerControl.LocalPlayer.IsAlive()) return string.Empty;

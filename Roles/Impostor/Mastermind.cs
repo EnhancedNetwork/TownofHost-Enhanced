@@ -11,6 +11,7 @@ namespace TOHE.Roles.Impostor
     {
         private static readonly int Id = 640600;
         public static List<byte> playerIdList = new();
+        public static bool IsEnable = false;
 
         public static Dictionary<byte, long> ManipulatedPlayers = new();
         public static Dictionary<byte, long> ManipulateDelays = new();
@@ -43,18 +44,19 @@ namespace TOHE.Roles.Impostor
             ManipulatedPlayers = new();
             ManipulateDelays = new();
             TempKCDs = new();
+            IsEnable = false;
         }
 
         public static void Add(byte playerId)
         {
             playerIdList.Add(playerId);
             ManipulateCD = KillCooldown.GetFloat() + (TimeLimit.GetFloat() / 2) + (Delay.GetFloat() / 2);
-        // Double Trigger
-        var pc = Utils.GetPlayerById(playerId);
-        pc.AddDoubleTrigger();
-        }
+            IsEnable = true;
 
-        public static bool IsEnable => playerIdList.Any();
+            // Double Trigger
+            var pc = GetPlayerById(playerId);
+            pc.AddDoubleTrigger();
+        }
 
         public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
         {
@@ -74,7 +76,6 @@ namespace TOHE.Roles.Impostor
 
         public static void OnFixedUpdate()
         {
-            if (GameStates.IsMeeting) return;
             if (!ManipulatedPlayers.Any() && !ManipulateDelays.Any()) return;
 
             foreach (var x in ManipulateDelays)

@@ -88,9 +88,6 @@ public static class Chameleon
     }
     public static void OnFixedUpdate(PlayerControl player)
     {
-        if (!IsEnable) return;
-        if (!GameStates.IsInTask) return;
-
         var now = Utils.GetTimeStamp();
 
         if (lastTime.TryGetValue(player.PlayerId, out var time) && time + (long)ChameleonCooldown.GetFloat() < now)
