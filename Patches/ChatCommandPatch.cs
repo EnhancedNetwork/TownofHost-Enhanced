@@ -255,6 +255,7 @@ internal class ChatCommands
                                 Utils.SendMessage(GetString("Command.icons"));
                                 break;
                             }*/
+
                 case "/kcount":
                     canceled = true;
                     int impnum = 0;
@@ -262,7 +263,7 @@ internal class ChatCommands
 
                     foreach (var players in Main.AllAlivePlayerControls)
                     {
-                        if (Options.ShowImpRemainOnEject.GetBool() && !players.Is(CustomRoles.Trickster))
+                        if (Options.ShowImpRemainOnEject.GetBool())
                         {
                             if (players.GetCustomRole().IsImpostor())
                                 impnum++;
@@ -753,8 +754,8 @@ internal class ChatCommands
                     else  
                     {
                         var rand = IRandom.Instance;
-                        int botChoice = rand.Next(0, 2);
-                        var coinSide = (botChoice == 0) ? "Heads" : "Tails";
+                        int botChoice = rand.Next(1, 101);
+                        var coinSide = (botChoice < 51) ? "Heads" : "Tails";
                         Utils.SendMessage(String.Format(GetString("CoinFlipResult"),coinSide), PlayerControl.LocalPlayer.PlayerId);
                         break;
                     }
@@ -1276,7 +1277,7 @@ internal class ChatCommands
                 {
                     if (Options.ShowImpRemainOnEject.GetBool())
                     {
-                        if (players.GetCustomRole().IsImpostor() && !players.Is(CustomRoles.Trickster))
+                        if (players.GetCustomRole().IsImpostor())
                             impnum++;
                     }
                     if (Options.ShowNKRemainOnEject.GetBool())
@@ -1845,8 +1846,8 @@ internal class ChatCommands
                 else
                 {
                     var rand = IRandom.Instance;
-                    int botChoice = rand.Next(0, 2);
-                    var coinSide = (botChoice == 0) ? "Heads" : "Tails";
+                    int botChoice = rand.Next(1,101);
+                    var coinSide = (botChoice < 51) ? "Heads" : "Tails";
                     Utils.SendMessage(String.Format(GetString("CoinFlipResult"), coinSide), player.PlayerId);
                     break;
                 }
