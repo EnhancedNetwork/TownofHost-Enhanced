@@ -127,10 +127,11 @@ namespace TOHE.Roles.Crewmate
                 if (showStageClue && clues.Any(a => a.ClueStage == stage))
                     clues = clues.Where(a => a.ClueStage == stage).ToList();
 
-                EnigmaClue clue = clues[rd.Next(0, clues.Count)];
+                EnigmaClue clue = clues[rd.Next(0, clues.Count-1)];
                 title = clue.Title;
                 msg = clue.GetMessage(killer, showStageClue);
 
+                Logger.Info($"Enigma ShownClues[{playerId}].Add({clue.Title})", "Enigma");
                 ShownClues[playerId].Add(clue);
 
                 if (MsgToSend.ContainsKey(playerId))
@@ -140,7 +141,9 @@ namespace TOHE.Roles.Crewmate
                 }
                 else
                 {
+                    Logger.Info($"Enigma MsgToSend.Add({playerId}, {msg});", "Enigma");
                     MsgToSend.Add(playerId, msg);
+                    Logger.Info($"Enigma MsgToSendTitle.Add({playerId}, {title});", "Enigma");
                     MsgToSendTitle.Add(playerId, title);
                 }
             }
