@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using MS.Internal.Xml.XPath;
+using TOHE.Roles.Neutral;
 using UnityEngine.UIElements;
 using static Logger;
 using static TOHE.Options;
@@ -258,11 +260,6 @@ namespace TOHE.Roles.Crewmate
 
             public override string Title { get { return GetString("EnigmaClueNameTitle"); } }
 
-            private static List<string> Letters = new List<string>
-            {
-                "a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"
-            };
-
             public override string GetMessage(PlayerControl killer, bool showStageClue)
             {
                 string killerName = killer.GetRealName();
@@ -271,22 +268,22 @@ namespace TOHE.Roles.Crewmate
                 switch (this.ClueStage)
                 {
                     case 1:
-                        return GetStage1Clue(letter);
+                        return GetStage1Clue(killer, letter);
                     case 2:
                         if (showStageClue) GetStage2Clue(letter);
-                        return GetStage1Clue(letter);
+                        return GetStage1Clue(killer, letter);
                     case 3:
                         if (showStageClue) GetStage3Clue(killerName, letter);
                         if (rd.Next(0, 100) < Enigma.EnigmaClueStage2Probability.GetInt()) GetStage2Clue(letter);
-                        return GetStage1Clue(letter);
+                        return GetStage1Clue(killer, letter);
                 }
 
                 return null;
             }
 
-            private string GetStage1Clue(string letter)
+            private string GetStage1Clue(PlayerControl killer, string letter)
             {
-                string randomLetter = GetRandomLetter(letter);
+                string randomLetter = GetRandomLetter(killer, letter);
                 int random = rd.Next(1, 2);
                 if (random == 1)
                     return string.Format(GetString("EnigmaClueName1"), letter, randomLetter);
@@ -311,9 +308,13 @@ namespace TOHE.Roles.Crewmate
                 return string.Format(GetString("EnigmaClueName3"), letter, letter2);
             }
 
-            private string GetRandomLetter(string letter)
+            private string GetRandomLetter(PlayerControl killer, string letter)
             {
-                return Letters.Where(a => a != letter).ToArray()[rd.Next(0, Letters.Count - 2)];
+                var alivePlayers = Main.AllAlivePlayerControls.Where(a => a.PlayerId != killer.PlayerId).ToList();
+                var rndPlayer = alivePlayers[rd.Next(0, alivePlayers.Count - 1)];
+                string rndPlayerName = rndPlayer.GetRealName().Replace(letter, "");
+                string letter2 = rndPlayerName[rd.Next(0, rndPlayerName.Length - 1)].ToString().ToLower();
+                return letter2;
             }
         }
         private class EnigmaNameLengthClue : EnigmaClue
