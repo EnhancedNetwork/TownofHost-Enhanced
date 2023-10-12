@@ -52,6 +52,8 @@ namespace TOHE.Roles.Crewmate
             CustomRoles.Gravestone,
             //CustomRoles.Glow,
             CustomRoles.Onbound,
+            CustomRoles.Stubborn,
+            CustomRoles.Rebound,
         };
 
         private static OptionItem OptionMaxSell;
