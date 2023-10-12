@@ -1864,6 +1864,7 @@
   "DeathReason.Drained": "Drained",
   "DeathReason.Shattered": "Shattered",
   "DeathReason.Trap": "Trapped",
+  "DeathReason.Discord": "Discord",
   "Alive": "Alive",
   "Win": " Wins!",
   "Last-": "Last ",
