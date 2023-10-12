@@ -105,9 +105,6 @@ public static class Vampiress
 
     public static void OnFixedUpdate(PlayerControl vampiress)
     {
-        if (!IsEnable) return;
-        if (!GameStates.IsInTask) return;
-
         var vampiressID = vampiress.PlayerId;
         if (!IsThisRole(vampiress.PlayerId)) return;
 

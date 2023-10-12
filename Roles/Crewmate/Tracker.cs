@@ -91,8 +91,6 @@ namespace TOHE.Roles.Crewmate
 
         public static void OnReportDeadBody()
         {
-            if (!IsEnable) return;
-
             foreach (var trackerId in playerIdList) 
             {
                 TempTrackLimit[trackerId] = TrackLimit[trackerId];

@@ -99,8 +99,6 @@ public static class Puppeteer
 
     public static void OnFixedUpdate(PlayerControl puppet)
     {
-        if (!IsEnable) return;
-        if (!GameStates.IsInTask) return;
         if (!PuppeteerList.ContainsKey(puppet.PlayerId)) return;
 
         if (!puppet.IsAlive() || Pelican.IsEaten(puppet.PlayerId))

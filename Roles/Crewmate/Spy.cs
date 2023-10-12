@@ -67,7 +67,6 @@ namespace TOHE.Roles.Crewmate
         public static void OnFixedUpdate(PlayerControl pc)
         {
             if (pc == null) return;
-            if (!pc.Is(CustomRoles.Spy)) return;
             if (!SpyRedNameList.Any()) return;
 
             bool change = false;

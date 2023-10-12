@@ -219,9 +219,9 @@ static class ExtendedPlayerControl
         if (player.Is(CustomRoles.Glitch))
         {
             Glitch.LastKill = Utils.GetTimeStamp() + ((int)(time / 2) - Glitch.KillCooldown.GetInt());
-            Glitch.KCDTimer = (int)(time / 2) - Glitch.KillCooldown.GetInt();
+            Glitch.KCDTimer = (int)(time / 2);
         }
-        if (forceAnime || !player.IsModClient() || !Options.DisableShieldAnimations.GetBool())
+        else if (forceAnime || !player.IsModClient() || !Options.DisableShieldAnimations.GetBool())
         {
             player.SyncSettings();
             player.RpcGuardAndKill(target, 11);
@@ -303,7 +303,7 @@ static class ExtendedPlayerControl
             Glitch.MimicCDTimer = 10;
             Glitch.HackCDTimer = 10;
         }
-        if (PlayerControl.LocalPlayer == target)
+        else if (PlayerControl.LocalPlayer == target)
         {
             //targetがホストだった場合
             PlayerControl.LocalPlayer.Data.Role.SetCooldown();
@@ -1427,6 +1427,7 @@ static class ExtendedPlayerControl
     public static bool Is(this PlayerControl target, CustomRoleTypes type) { return target.GetCustomRole().GetCustomRoleTypes() == type; }
     public static bool Is(this PlayerControl target, RoleTypes type) { return target.GetCustomRole().GetRoleTypes() == type; }
     public static bool Is(this PlayerControl target, CountTypes type) { return target.GetCountTypes() == type; }
+    public static bool Is(this CustomRoles playerRole, CustomRoles trueRole) { return playerRole == trueRole; }
     public static bool IsAlive(this PlayerControl target)
     {
         //ロビーなら生きている

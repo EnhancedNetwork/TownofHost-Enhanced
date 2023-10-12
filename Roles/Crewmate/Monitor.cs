@@ -45,8 +45,6 @@ internal class Monitor
     private static int Count = 0;
     public static void FixedUpdate()
     {
-        if (!IsEnable) return;
-
         Count--; if (Count > 0) return; Count = 5;
 
         bool Admin = false, Camera = false, DoorLog = false, Vital = false;

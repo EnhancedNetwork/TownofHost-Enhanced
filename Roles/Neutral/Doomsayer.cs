@@ -107,7 +107,7 @@ public static class Doomsayer
     }
     public static void OnReportDeadBody()
     {
-        if (!(IsEnable && AdvancedSettings.GetBool())) return;
+        if (!AdvancedSettings.GetBool()) return;
 
         CantGuess = false;
         GuessesCountPerMeeting = 0;
