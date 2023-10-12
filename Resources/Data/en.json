@@ -2160,7 +2160,7 @@
   "Warning.GradientTags": "<color=#ff0000><size=150%>Warning:</size></color>\n\nHost has enabled gradient tags. This feature is not recommended to use because it can cause <b>disconnect issues</b>",
 
   "Warning.OverrideExiledPlayer": "Warning: Since the number of Impostors is set to 1, in order to avoid black screen, the voting screen will always show as a tied vote or a skip vote (only affects the visual, not the voting results). Please set more number of Impostors to avoid this problem.",
-  "Warning.ShowAntiBlackExiledPlayer": "<b>Last meeting tiggered Black Screen Prevention!\nFollowing is the information of the player exiled in last meeting.</b>\n",
+  "Warning.ShowAntiBlackExiledPlayer": "<b>Last meeting triggered Black Screen Prevention!\nFollowing is the information of the player exiled in last meeting.</b>\n",
   "Warning.InvalidRpc": "Kicked <b>{0}</b> because an invalid RPC was received.\nPlease check that no mods other than TOHE installed.",
   "Warning.NoModHost": "TOHE is not installed on the host",
   "Warning.MismatchedVersion": "<b>{0}</b> has a different version of <b>{1}</b>",
