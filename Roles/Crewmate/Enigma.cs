@@ -1,9 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using MS.Internal.Xml.XPath;
-using TOHE.Roles.Neutral;
-using UnityEngine.UIElements;
-using static Logger;
 using static TOHE.Options;
 using static TOHE.Translator;
 
