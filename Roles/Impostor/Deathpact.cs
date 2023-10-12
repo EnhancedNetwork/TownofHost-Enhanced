@@ -29,7 +29,7 @@ namespace TOHE.Roles.Impostor
         private static OptionItem ReduceVisionWhileInPact;
         private static OptionItem VisionWhileInPact;
         private static OptionItem KillDeathpactPlayersOnMeeting;
-        private static OptionItem PlayersInDeathpactCanCallMeeting;
+        public static OptionItem PlayersInDeathpactCanCallMeeting;
 
         public static void SetupCustomOption()
         {
