@@ -52,7 +52,6 @@ internal class ChangeRoleSettings
             Main.RevolutionistCountdown = new();
             Main.TimeMasterBackTrack = new();
             Main.TimeMasterNum = new();
-            Main.FarseerTimer = new();
             Main.CursedPlayers = new();
             Main.MafiaRevenged = new();
             Main.RetributionistRevenged = new();
@@ -73,7 +72,6 @@ internal class ChangeRoleSettings
             Main.KillerOfBoobyTrapBody = new();
             Main.CleanerBodies = new();
             Main.BurstBodies = new();
-            Main.BloodlustList = new();
             Main.MedusaBodies = new();
             Main.InfectedBodies = new();
             Main.VirusNotify = new();

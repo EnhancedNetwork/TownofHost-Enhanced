@@ -434,9 +434,9 @@ public class TaskState
 
                 }
             }
-            if (player.Is(CustomRoles.Bloodlust) && player.IsAlive() && !Main.BloodlustList.ContainsKey(player.PlayerId))
+            if (player.Is(CustomRoles.Bloodlust) && player.IsAlive() && !Alchemist.BloodlustList.ContainsKey(player.PlayerId))
             {
-                Main.BloodlustList[player.PlayerId] = player.PlayerId;
+                Alchemist.BloodlustList[player.PlayerId] = player.PlayerId;
                 player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bloodlust), string.Format(Translator.GetString("BloodlustAdded"))));
             }
 

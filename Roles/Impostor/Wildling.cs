@@ -64,10 +64,6 @@ public static class Wildling
     }
     public static void OnFixedUpdate(PlayerControl pc)
     {
-        if (!IsEnable) return;
-        if (!GameStates.IsInTask) return;
-        if (!pc.Is(CustomRoles.Wildling)) return;
-
         if (TimeStamp[pc.PlayerId] < Utils.GetTimeStamp(DateTime.Now) && TimeStamp[pc.PlayerId] != 0)
         {
             TimeStamp[pc.PlayerId] = 0;

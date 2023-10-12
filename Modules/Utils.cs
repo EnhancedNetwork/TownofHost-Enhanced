@@ -2238,7 +2238,7 @@ public static class Utils
                             break;
 
                         case CustomRoles.Farseer:
-                            if (Main.FarseerTimer.TryGetValue(seer.PlayerId, out var fa_kvp) && fa_kvp.Item1 == target)
+                            if (Farseer.FarseerTimer.TryGetValue(seer.PlayerId, out var fa_kvp) && fa_kvp.Item1 == target)
                                 TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Farseer)}>○</color>");
                             break;
 

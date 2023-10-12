@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate
@@ -65,10 +64,9 @@ namespace TOHE.Roles.Crewmate
             }
         }
 
-        public static void FixedUpdate(PlayerControl player)
+        public static void OnFixedUpdate(PlayerControl player)
         {
-            if (!IsEnable) return;
-            if (!GameStates.IsInTask || !SuicideTimer.ContainsKey(player.PlayerId) || !player.IsAlive()) return;
+            if (!SuicideTimer.ContainsKey(player.PlayerId) || !player.IsAlive()) return;
 
             if (SuicideTimer[player.PlayerId] >= TimeLimit.GetFloat())
             {
