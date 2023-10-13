@@ -1557,50 +1557,108 @@ public static class Options
 
         //==================================================================================================================================//
 
-        // Crewmate
-        /*        TextOptionItem.Create(100005, "RoleType.VanillaRoles", TabGroup.CrewmateRoles)
-                    .SetGameMode(CustomGameMode.Standard)
-                    .SetColor(new Color32(140, 255, 255, byte.MaxValue));
-                SetupRoleOptions(5050, TabGroup.CrewmateRoles, CustomRoles.CrewmateTOHE); */
+        /*
+         * VANILLA ROLES
+         */
+        TextOptionItem.Create(100005, "RoleType.VanillaRoles", TabGroup.CrewmateRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(140, 255, 255, byte.MaxValue));
+        
+        /*
+         * Crewmate
+         */
+        SetupRoleOptions(5050, TabGroup.CrewmateRoles, CustomRoles.CrewmateTOHE);
 
+        /*
+         * BASIC ROLES
+         */
         TextOptionItem.Create(100006, "RoleType.CrewBasic", TabGroup.CrewmateRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
+
+        /*
+         * Addict
+         */
         Addict.SetupCustomOption();
+
+        /*
+         * Alchemist
+         */
         Alchemist.SetupCustomOption();
 
+        /*
+         * Celebrity
+         */
         SetupRoleOptions(5300, TabGroup.CrewmateRoles, CustomRoles.CyberStar);
         ImpKnowCyberStarDead = BooleanOptionItem.Create(5400, "ImpKnowCyberStarDead", false, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.CyberStar]);
         NeutralKnowCyberStarDead = BooleanOptionItem.Create(5500, "NeutralKnowCyberStarDead", false, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.CyberStar]);
+
+        /*
+         * Cleanser
+         */
         Cleanser.SetupCustomOption();
+
+        /*
+         * Doctor
+         */
         SetupRoleOptions(5600, TabGroup.CrewmateRoles, CustomRoles.Doctor);
         DoctorTaskCompletedBatteryCharge = FloatOptionItem.Create(5610, "DoctorTaskCompletedBatteryCharge", new(0f, 250f, 1f), 50f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Doctor])
             .SetValueFormat(OptionFormat.Seconds);
         DoctorVisibleToEveryone = BooleanOptionItem.Create(5611, "DoctorVisibleToEveryone", false, TabGroup.CrewmateRoles, false)
         .SetParent(CustomRoleSpawnChances[CustomRoles.Doctor]);
+
+        /*
+         * Lazy Guy
+         */
         SetupRoleOptions(5700, TabGroup.CrewmateRoles, CustomRoles.Needy);
+
+        /*
+         * Luckey
+         */
         SetupRoleOptions(5800, TabGroup.CrewmateRoles, CustomRoles.Luckey);
         LuckeyProbability = IntegerOptionItem.Create(5900, "LuckeyProbability", new(0, 100, 5), 50, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Luckey])
             .SetValueFormat(OptionFormat.Percent);
+
+        /*
+         * Mini
+         */
         Mini.SetupCustomOption();
+
         SetupRoleOptions(6000, TabGroup.CrewmateRoles, CustomRoles.SuperStar);
         EveryOneKnowSuperStar = BooleanOptionItem.Create(6010, "EveryOneKnowSuperStar", true, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.SuperStar]);
+
+        /*
+         * Task Manager
+         */
         SetupRoleOptions(5575, TabGroup.CrewmateRoles, CustomRoles.TaskManager);
+
+        /*
+         * Tracefinder
+         */
         Tracefinder.SetupCustomOption();
+
+        /*
+         * Transporter
+         */
         SetupRoleOptions(6200, TabGroup.CrewmateRoles, CustomRoles.Transporter);
         TransporterTeleportMax = IntegerOptionItem.Create(6210, "TransporterTeleportMax", new(1, 100, 1), 5, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Transporter])
             .SetValueFormat(OptionFormat.Times);
         TransporterTasks = OverrideTasksData.Create(6211, TabGroup.CrewmateRoles, CustomRoles.Transporter);
 
+        /*
+         * SUPPORT ROLES
+         */
         TextOptionItem.Create(100007, "RoleType.CrewSupport", TabGroup.CrewmateRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
+
+        // CONTINUE FROM HERE - IF YOU WANT TO PR/FIX THIS PLS HELP
         Chameleon.SetupCustomOption();
         Bloodhound.SetupCustomOption();
         Deputy.SetupCustomOption();
