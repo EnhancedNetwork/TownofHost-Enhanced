@@ -294,9 +294,9 @@ class CheckMurderPatch
                 case CustomRoles.Huntsman:
                     Huntsman.OnCheckMurder(killer, target);
                     break;
-                case CustomRoles.Occultist:
-                    if (!Occultist.OnCheckMurder(killer, target)) return false;
-                    break;
+                //case CustomRoles.Occultist:
+                //    if (!Occultist.OnCheckMurder(killer, target)) return false;
+                //    break;
                 case CustomRoles.Puppeteer:
                     if (!Puppeteer.OnCheckPuppet(killer, target)) return false;
                     break;
@@ -826,8 +826,8 @@ class CheckMurderPatch
             return false;
         if (killer.Is(CustomRoles.HexMaster) && target.Is(CustomRoles.HexMaster))
             return false;
-        if (killer.Is(CustomRoles.Occultist) && target.Is(CustomRoles.Occultist))
-            return false;
+        //if (killer.Is(CustomRoles.Occultist) && target.Is(CustomRoles.Occultist))
+        //    return false;
         if (killer.Is(CustomRoles.BloodKnight) && target.Is(CustomRoles.BloodKnight))
             return false;
         if (killer.Is(CustomRoles.Jackal) && target.Is(CustomRoles.Jackal))
@@ -3209,7 +3209,7 @@ class EnterVentPatch
 
         Witch.OnEnterVent(pc);
         HexMaster.OnEnterVent(pc);
-        Occultist.OnEnterVent(pc);
+        //Occultist.OnEnterVent(pc);
 
         if (pc.Is(CustomRoles.Mayor) && Options.MayorHasPortableButton.GetBool() && !CopyCat.playerIdList.Contains(pc.PlayerId))
         {

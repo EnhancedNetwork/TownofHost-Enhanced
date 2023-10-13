@@ -212,7 +212,7 @@ static class CustomRolesHelper
             CustomRoles.Medic => RoleTypes.Impostor,
             CustomRoles.Gamer => RoleTypes.Impostor,
             CustomRoles.HexMaster => RoleTypes.Impostor,
-            CustomRoles.Occultist => RoleTypes.Impostor,
+            //CustomRoles.Occultist => RoleTypes.Impostor,
             CustomRoles.Wraith => RoleTypes.Impostor,
             CustomRoles.Glitch => RoleTypes.Impostor,
             CustomRoles.Juggernaut => RoleTypes.Impostor,
@@ -431,7 +431,7 @@ static class CustomRolesHelper
             CustomRoles.Glitch or
             CustomRoles.Sidekick or
             CustomRoles.Huntsman or
-            CustomRoles.Occultist or
+            //CustomRoles.Occultist or
             CustomRoles.Infectious or
             CustomRoles.Medusa or
             CustomRoles.Pelican or
@@ -551,7 +551,7 @@ static class CustomRolesHelper
             CustomRoles.Bandit or
             CustomRoles.Sidekick or
             CustomRoles.HexMaster or
-            CustomRoles.Occultist or
+            //CustomRoles.Occultist or
             CustomRoles.Necromancer or
             CustomRoles.Refugee or
             CustomRoles.Pyromaniac or
@@ -687,7 +687,7 @@ static class CustomRolesHelper
             CustomRoles.Huntsman or
             CustomRoles.Medusa or
             CustomRoles.HexMaster or
-            CustomRoles.Occultist or
+            //CustomRoles.Occultist or
             CustomRoles.Glitch or
             CustomRoles.Imitator or
             CustomRoles.Shaman or
@@ -1628,7 +1628,7 @@ static class CustomRolesHelper
            CustomRoles.BloodKnight => CountTypes.BloodKnight,
            CustomRoles.Succubus => CountTypes.Succubus,
            CustomRoles.HexMaster => CountTypes.HexMaster,
-           CustomRoles.Occultist => CountTypes.Occultist,
+           //CustomRoles.Occultist => CountTypes.Occultist,
            CustomRoles.Necromancer => CountTypes.Necromancer,
            CustomRoles.NWitch => CountTypes.NWitch,
            CustomRoles.Shroud => CountTypes.Shroud,
@@ -1707,7 +1707,7 @@ public enum CountTypes
     Shroud,
     Werewolf,
     Agitater,
-    Occultist,
+    //Occultist,
     Shade,
     RuthlessRomantic,
     Necromancer

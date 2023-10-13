@@ -484,7 +484,7 @@ static class ExtendedPlayerControl
             CustomRoles.Sidekick => pc.IsAlive(),
             CustomRoles.Necromancer => pc.IsAlive(),
             CustomRoles.HexMaster => pc.IsAlive(),
-            CustomRoles.Occultist => pc.IsAlive(),
+            //CustomRoles.Occultist => pc.IsAlive(),
             CustomRoles.Poisoner => pc.IsAlive(),
             CustomRoles.Juggernaut => pc.IsAlive(),
             CustomRoles.Reverie => pc.IsAlive(),
@@ -575,7 +575,7 @@ static class ExtendedPlayerControl
             CustomRoles.Sidekick => true,
             CustomRoles.Necromancer => true,
             CustomRoles.HexMaster => true,
-            CustomRoles.Occultist => true,
+            //CustomRoles.Occultist => true,
             CustomRoles.Poisoner => true,
             CustomRoles.Juggernaut => true,
             CustomRoles.Reverie => true,
@@ -703,7 +703,7 @@ static class ExtendedPlayerControl
             CustomRoles.SwordsMan => SwordsMan.CanVent.GetBool(),
             CustomRoles.Pickpocket => Pickpocket.CanVent.GetBool(),
             CustomRoles.HexMaster => true,
-            CustomRoles.Occultist => true,
+            //CustomRoles.Occultist => true,
             CustomRoles.Wraith => true,
             CustomRoles.Pyromaniac => Pyromaniac.CanVent.GetBool(),
             CustomRoles.Amnesiac => true,
@@ -750,7 +750,7 @@ static class ExtendedPlayerControl
             CustomRoles.Medic or
             CustomRoles.Gamer or
             CustomRoles.HexMaster or
-            CustomRoles.Occultist or
+            //CustomRoles.Occultist or
             CustomRoles.Wraith or
             CustomRoles.Juggernaut or
             CustomRoles.Jinx or

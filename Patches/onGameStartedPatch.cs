@@ -201,7 +201,7 @@ internal class ChangeRoleSettings
             Mastermind.Init();
             Witch.Init();
             HexMaster.Init();
-            Occultist.Init();
+            //Occultist.Init();
             SabotageMaster.Init();
             Repairman.Init();
             Executioner.Init();
@@ -506,9 +506,9 @@ internal class SelectRolesPatch
                     case CustomRoles.HexMaster:
                         HexMaster.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Occultist:
-                        Occultist.Add(pc.PlayerId);
-                        break;
+                    //case CustomRoles.Occultist:
+                    //    Occultist.Add(pc.PlayerId);
+                    //    break;
                     case CustomRoles.Crusader:
                         Crusader.Add(pc.PlayerId);
                         Crusader.CrusaderLimit[pc.PlayerId] = Crusader.SkillLimitOpt.GetInt();

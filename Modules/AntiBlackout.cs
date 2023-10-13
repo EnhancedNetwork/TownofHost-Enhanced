@@ -36,7 +36,7 @@ public static class AntiBlackout
         || Gamer.IsEnable || Succubus.IsEnable
         || NWitch.IsEnable || Maverick.IsEnable
         || RuthlessRomantic.IsEnable || Bandit.IsEnable
-        || Spiritcaller.IsEnable || Occultist.IsEnable
+        || Spiritcaller.IsEnable //|| Occultist.IsEnable
         || Pyromaniac.IsEnable || Huntsman.IsEnable
         || PlagueBearer.IsEnable || CustomRoles.Pestilence.RoleExist(true)
         || HexMaster.IsEnable || Jinx.IsEnable
