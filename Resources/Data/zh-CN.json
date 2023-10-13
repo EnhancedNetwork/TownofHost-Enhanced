@@ -2330,7 +2330,7 @@
   "DivinatorCheck.Result14": "<b>{0}</b> 可能是\n隐匿者\n市长\n策划者\n小偷\n卫道士\n被害妄想症\n间谍",
   "DivinatorCheck.Result15": "<b>{0}</b> 可能是\n感染者阵营\n病毒阵营\n君主阵营\n革命者阵营\n魅魔阵营",
   "DivinatorCheck.Result16": "<b>{0}</b> 可能是\n冤罪师\n受虐狂\n抑制者\n修理工\n萨满\n破坏者",
-  "DivinatorCheck.Result17": "<b>{0}</b> 可能是\n医生\n马里奥\n小丑\n潜伏者\n狱警\n换票师\n阳光开朗大男孩",
+  "DivinatorCheck.Result17": "<b>{0}</b> 可能是\n医生\n马里奥\n小丑\n潜伏者\n狱警\n换票师\n阳光开朗大男孩\n病娇",
   "DivinatorCheck.Result18": "<b>{0}</b> 可能是\n黑手党\n惩罚者\n歹徒\n教父\n缺点者\n幸运儿\n失败者",
   "DivinatorCheck.Result19": "<b>{0}</b> 可能是\n邪恶赌怪\n正义赌怪\n潜藏者\n亡灵法师\n隐蔽者\n变色龙\n分身者",
   "DivinatorCheck.Result20": "<b>{0}</b> 可能是\n豺狼\n跟班\n独行者\n投机者\n追击者\n自爆卡车",
@@ -3245,5 +3245,9 @@
   "PresidentRevealMax": "你已经展现了自己...",
   "PresidentRevealed": "[{0}] 已选择自爆总统身份！",
   "GuessPresident": "小子，你还想猜总统是吧？",
-  "PresidentRevealTitle": "[ ★ 总统揭秘 ★ ]"
+  "PresidentRevealTitle": "[ ★ 总统揭秘 ★ ]",
+  "Yandere": "病娇",
+  "YandereInfo": "你永远是我的宝贝❥",
+  "TargetKnowsYandere": "目标可以看见病娇",
+  "YandereInfoLong": "(中立阵营):\n开局时病娇有一个目标，当有人碰到这个目标时，病娇才能击杀那个人，否则自杀，如果目标死亡病娇也会自杀。"
 }

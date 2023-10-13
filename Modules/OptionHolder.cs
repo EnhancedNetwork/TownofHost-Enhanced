@@ -1746,6 +1746,7 @@ public static class Options
         Virus.SetupCustomOption();
         Werewolf.SetupCustomOption();
         Wraith.SetupCustomOption();
+        Yandere.SetupCustomOption();
 
 
         // Add-Ons 

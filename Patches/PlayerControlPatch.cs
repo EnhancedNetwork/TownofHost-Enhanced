@@ -386,6 +386,17 @@ class CheckMurderPatch
                         RPC.SetCurrentDousingTarget(killer.PlayerId, target.PlayerId);
                     }
                     return false;
+                case CustomRoles.Yandere:
+                    if (!Main.NeedKillYandere.Contains(target.PlayerId))
+                    {
+                        killer.Data.IsDead = true;
+                        Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
+                        killer.RpcMurderPlayerV3(killer);
+                        Main.PlayerStates[killer.PlayerId].SetDead();
+                        Logger.Info($"{killer.GetRealName()} 击杀了非目标玩家", "y");
+                        return false;
+                    }
+                    break;
                 case CustomRoles.Revolutionist:
                     killer.SetKillCooldown(Options.RevolutionistDrawTime.GetFloat());
                     if (!Main.isDraw[(killer.PlayerId, target.PlayerId)] && !Main.RevolutionistTimer.ContainsKey(killer.PlayerId))
@@ -2250,7 +2261,6 @@ class ReportDeadBodyPatch
         if (Jailer.IsEnable) Jailer.OnReportDeadBody();
         if (Romantic.IsEnable) Romantic.OnReportDeadBody();
 
-
         // if (Councillor.IsEnable) Councillor.OnReportDeadBody();
 
         if (Mortician.IsEnable) Mortician.OnReportDeadBody(player, target);
@@ -2783,6 +2793,9 @@ class FixedUpdatePatch
                     if (Shroud.IsEnable && playerRole.Is(CustomRoles.Shroud)) 
                         Shroud.OnFixedUpdate(player);
 
+                    if (Yandere.IsEnable && playerRole.Is(CustomRoles.Yandere))
+                        Yandere.OnFixedUpdate(player);
+
                     if (NWitch.IsEnable && playerRole.Is(CustomRoles.NWitch)) 
                         NWitch.OnFixedUpdate(player);
 
@@ -2800,7 +2813,6 @@ class FixedUpdatePatch
 
                     if (Alchemist.IsEnable && playerRole.Is(CustomRoles.Alchemist)) 
                         Alchemist.OnFixedUpdate(player);
-
 
                     if (Options.LadderDeath.GetBool() && player.IsAlive()) 
                         FallFromLadder.FixedUpdate(player);
@@ -2949,6 +2961,7 @@ class FixedUpdatePatch
                 Mark.Append(Romantic.TargetMark(seer, target));
                 Mark.Append(Lawyer.LawyerMark(seer, target));
                 Mark.Append(Snitch.GetWarningArrow(seer, target));
+                Mark.Append(Yandere.TargetMark(seer, target));
 
                 if (seer.Is(CustomRoles.EvilTracker))
                     Mark.Append(EvilTracker.GetTargetMark(seer, target));
@@ -3060,6 +3073,7 @@ class FixedUpdatePatch
                 Suffix.Append(Deathpact.GetDeathpactMark(seer, target));
                 Suffix.Append(Spiritualist.GetSpiritualistArrow(seer, target));
                 Suffix.Append(Tracefinder.GetTargetArrow(seer, target));
+                Suffix.Append(Yandere.GetTargetArrow(seer, target));
 
                 if (Vulture.ArrowsPointingToDeadBody.GetBool())
                     Suffix.Append(Vulture.GetTargetArrow(seer, target));

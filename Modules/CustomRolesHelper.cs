@@ -244,6 +244,7 @@ static class CustomRolesHelper
             CustomRoles.Agitater => RoleTypes.Impostor,
             CustomRoles.Spiritcaller => RoleTypes.Impostor,
             CustomRoles.ChiefOfPolice => RoleTypes.Impostor,
+            CustomRoles.Yandere => RoleTypes.Impostor,
             _ => RoleTypes.GuardianAngel
         };
     }
@@ -426,6 +427,7 @@ static class CustomRolesHelper
 
         return role is
             CustomRoles.Jackal or
+            CustomRoles.Yandere or
             CustomRoles.Doppelganger or
             CustomRoles.Bandit or
             CustomRoles.Glitch or
@@ -547,6 +549,7 @@ static class CustomRolesHelper
         if (role is CustomRoles.Arsonist && Options.ArsonistKeepsGameGoing.GetBool()) return true;
         return role is
             CustomRoles.Jackal or
+            CustomRoles.Yandere or
             CustomRoles.Doppelganger or
             CustomRoles.Bandit or
             CustomRoles.Sidekick or
@@ -680,6 +683,7 @@ static class CustomRolesHelper
     {
         return role is
             CustomRoles.Jester or
+            CustomRoles.Yandere or
             CustomRoles.Opportunist or
             CustomRoles.Mario or
             CustomRoles.Masochist or
@@ -1652,6 +1656,8 @@ static class CustomRolesHelper
            CustomRoles.Refugee => CountTypes.Impostor,
            CustomRoles.Huntsman => CountTypes.Huntsman,
            CustomRoles.Glitch => CountTypes.Glitch,
+           CustomRoles.Yandere => CountTypes.Yandere,
+        
           // CustomRoles.Phantom => CountTypes.OutOfGame,
         //   CustomRoles.CursedSoul => CountTypes.OutOfGame, // if they count as OutOfGame, it prevents them from winning lmao
            
@@ -1710,5 +1716,6 @@ public enum CountTypes
     Occultist,
     Shade,
     RuthlessRomantic,
+    Yandere,
     Necromancer
 }

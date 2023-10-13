@@ -52,7 +52,6 @@ class CheckForEndVotingPatch
                 }
 
                 //催眠师催眠
-
                 if (pc.Is(CustomRoles.Dictator) && pva.DidVote && pc.PlayerId != pva.VotedFor && pva.VotedFor < 253 && !pc.Data.IsDead)
                 {
                     var voteTarget = Utils.GetPlayerById(pva.VotedFor);
@@ -202,10 +201,8 @@ class CheckForEndVotingPatch
                 if (CheckRole(ps.TargetPlayerId, CustomRoles.Oracle) && Oracle.HideVote.GetBool() && Oracle.TempCheckLimit[ps.TargetPlayerId] > 0) continue;
                 // Hide Oracle Vote
                 if (CheckRole(ps.TargetPlayerId, CustomRoles.Cleanser) && Cleanser.HideVote.GetBool() && Cleanser.CleanserUses[ps.TargetPlayerId] > 0) continue;
-                
                 // Hide Jester Vote
                 if (CheckRole(ps.TargetPlayerId, CustomRoles.Jester) && Options.HideJesterVote.GetBool()) continue;
-
 
                 //主动叛变模式下自票无效
                 if (ps.TargetPlayerId == ps.VotedFor && Options.MadmateSpawnMode.GetInt() == 2) continue;
@@ -1032,6 +1029,10 @@ class MeetingHudStartPatch
                 case CustomRoles.PotionMaster:
                 case CustomRoles.Huntsman:
                 case CustomRoles.Traitor:
+                case CustomRoles.Yandere:
+                    if (seer.Is(CustomRoles.Yandere))
+                    sb.Append(Yandere.GetTargetArrow(seer));
+                    break;
                 case CustomRoles.Spiritcaller:
                     sb.Append(Snitch.GetWarningMark(seer, target));
                     break;

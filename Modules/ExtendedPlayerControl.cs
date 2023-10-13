@@ -542,6 +542,7 @@ static class ExtendedPlayerControl
             CustomRoles.ChiefOfPolice => ChiefOfPolice.CanUseKillButton(pc.PlayerId),
             CustomRoles.EvilMini => pc.IsAlive(),
             CustomRoles.Doppelganger => pc.IsAlive(),
+            CustomRoles.Yandere => pc.IsAlive(),
 
             _ => pc.Is(CustomRoleTypes.Impostor),
         };
@@ -643,6 +644,7 @@ static class ExtendedPlayerControl
         if (CopyCat.playerIdList.Contains(pc.PlayerId)) return true;
         if (Main.TasklessCrewmate.Contains(pc.PlayerId)) return true;
         if (Necromancer.Killer && !pc.Is(CustomRoles.Necromancer)) return false;
+        if (pc.Is(CustomRoles.Yandere)) return true;
         if (pc.Is(CustomRoles.Nimble)) return true;
         if (pc.Is(CustomRoles.Circumvent)) return false;
 
@@ -669,6 +671,7 @@ static class ExtendedPlayerControl
             CustomRoles.Doppelganger or
             CustomRoles.Crusader or
             CustomRoles.ChiefOfPolice or
+            CustomRoles.Yandere or
             CustomRoles.Wildling
             => false,
 
@@ -1130,6 +1133,9 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.ChiefOfPolice:
                 ChiefOfPolice.SetKillCooldown(player.PlayerId);
+                break;
+            case CustomRoles.Yandere:
+                Yandere.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.EvilMini:
                 foreach (var pc in Main.AllPlayerControls)

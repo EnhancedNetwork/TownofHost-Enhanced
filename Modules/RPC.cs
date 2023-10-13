@@ -51,6 +51,8 @@ enum CustomRPC
     SetCurrentDousingTarget,
     SetEvilTrackerTarget,
     SetRealKiller,
+    SetYandereTarget,
+    RemoveYandereTarget,
 
     // TOHE
     AntiBlackout,
@@ -60,6 +62,7 @@ enum CustomRPC
     SyncNameNotify,
     ShowPopUp,
     KillFlash,
+    SetYandereArrow,
 
     //Roles
     SetDrawPlayer,
@@ -649,6 +652,12 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SyncSabotageMasterSkill:
                 SabotageMaster.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SetYandereTarget:
+                Yandere.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SetYandereArrow:
+                Yandere.ReceiveRPC(reader);
                 break;
         }
     }
@@ -1241,6 +1250,9 @@ internal static class RPC
                 break;
             case CustomRoles.Spy:
                 Spy.Add(targetId);
+                break;
+            case CustomRoles.Yandere:
+                Yandere.Add(targetId);
                 break;
         }
         HudManager.Instance.SetHudActive(true);

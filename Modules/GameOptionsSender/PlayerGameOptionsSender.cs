@@ -157,6 +157,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
             case CustomRoles.Succubus:
             case CustomRoles.CursedSoul:
             case CustomRoles.Admirer:
+            case CustomRoles.Yandere:
             case CustomRoles.Amnesiac:
                 opt.SetVision(false);
                 break;

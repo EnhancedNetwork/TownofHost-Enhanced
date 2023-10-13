@@ -86,15 +86,18 @@ class GameEndChecker
                         .Where(pc => (pc.Is(CustomRoles.Spiritcaller) || pc.Is(CustomRoles.EvilSpirit)))
                         .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
+                case CustomWinner.Yandere:
+                    Main.AllPlayerControls
+                        .Where(pc => Main.ForYandere.Contains(pc.PlayerId) || pc.Is(CustomRoles.Yandere))
+                        .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
+                    break;
                 case CustomWinner.RuthlessRomantic:
                     foreach (var pc in Main.AllPlayerControls)
                     {
                         if (pc.Is(CustomRoles.RuthlessRomantic))
                         {
                             CustomWinnerHolder.WinnerIds.Add(Romantic.BetPlayer[pc.PlayerId]);
-
                         }
-
                     }
                     //Main.AllPlayerControls
                     //    .Where(pc => (pc.Is(CustomRoles.RuthlessRomantic) || (Romantic.BetPlayer.TryGetValue(pc.PlayerId, out var RomanticPartner)) && pc.PlayerId == RomanticPartner))
@@ -198,12 +201,6 @@ class GameEndChecker
                 //追加胜利
                 foreach (var pc in Main.AllPlayerControls)
                 {
-                    //NiceMini
-                    //if (pc.Is(CustomRoles.NiceMini) && pc.IsAlive())
-                    //{
-                    //    CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
-                    //    CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.NiceMini);
-                    //}
                     //Opportunist
                     if (pc.Is(CustomRoles.Opportunist) && pc.IsAlive())
                     {
@@ -534,6 +531,7 @@ class GameEndChecker
             int Shr = Utils.AlivePlayersCount(CountTypes.Shroud);
             int WW = Utils.AlivePlayersCount(CountTypes.Werewolf);
             int RR = Utils.AlivePlayersCount(CountTypes.RuthlessRomantic);
+            int Si = Utils.AlivePlayersCount(CountTypes.Yandere);
 
             Imp += Main.AllAlivePlayerControls.Count(x => x.GetCustomRole().IsImpostor() && x.Is(CustomRoles.DualPersonality));
             Crew += Main.AllAlivePlayerControls.Count(x => x.GetCustomRole().IsCrewmate() && x.Is(CustomRoles.DualPersonality));
@@ -546,8 +544,9 @@ class GameEndChecker
             Vamp += Main.AllAlivePlayerControls.Count(x => x.Is(CustomRoles.Infected) && x.Is(CustomRoles.DualPersonality));
             Virus += Main.AllAlivePlayerControls.Count(x => x.Is(CustomRoles.Contagious) && x.Is(CustomRoles.DualPersonality));
             Imp += Main.AllAlivePlayerControls.Count(x => x.Is(CustomRoles.Madmate) && x.Is(CustomRoles.DualPersonality));
+            Si += Main.AllAlivePlayerControls.Count(x => x.Is(CustomRoles.Yandere) || Main.ForYandere.Contains(x.PlayerId));
 
-            int totalNKAlive = new int[] { Rit, Traitor, Med, PP, Jackal, Vamp, DH, Rogue, Wraith, Agitater, Pestilence, PB, Juggy, Doppelganger, Hunt, Necro, Pyro, Hex, Bandit, RR, WW, Shr, Arso, Glitch, Jinx, SK, Occ, Pel, Gam, BK, Pois, Virus, SC, CM }.Sum();
+            int totalNKAlive = new int[] { Rit, Traitor, Med, PP, Jackal, Vamp, DH, Rogue, Wraith, Agitater, Pestilence, PB, Juggy, Doppelganger, Hunt, Necro, Pyro, Hex, Bandit, RR, WW, Shr, Arso, Glitch, Jinx, SK, Occ, Pel, Gam, BK, Pois, Virus, SC, CM, Si }.Sum();
 
             CustomWinner? winner = null;
             CustomRoles? rl = null;
@@ -648,6 +647,12 @@ class GameEndChecker
                         reason = GameOverReason.ImpostorByKill;
                         winner = CustomWinner.Pestilence;
                         rl = CustomRoles.Pestilence;
+                    }
+                    else if (Si == totalNKAlive)
+                    {
+                        reason = GameOverReason.ImpostorByKill;
+                        winner = CustomWinner.Yandere;
+                        rl = CustomRoles.Yandere;   
                     }
                     else if (PB == totalNKAlive)
                     {
