@@ -84,9 +84,9 @@ public static class Poisoner
 
     public static void OnFixedUpdate(PlayerControl poisoner)
     {
-        var poisonerID = poisoner.PlayerId;
         if (!IsThisRole(poisoner.PlayerId)) return;
 
+        var poisonerID = poisoner.PlayerId;
         List<byte> targetList = new(PoisonedPlayers.Where(b => b.Value.PoisonerId == poisonerID).Select(b => b.Key));
 
         foreach (var targetId in targetList)
