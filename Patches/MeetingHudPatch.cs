@@ -1031,7 +1031,7 @@ class MeetingHudStartPatch
                 case CustomRoles.Traitor:
                 case CustomRoles.Yandere:
                     if (seer.Is(CustomRoles.Yandere))
-                    sb.Append(Yandere.GetTargetArrow(seer));
+                        sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Yandere), "■"));
                     break;
                 case CustomRoles.Spiritcaller:
                     sb.Append(Snitch.GetWarningMark(seer, target));

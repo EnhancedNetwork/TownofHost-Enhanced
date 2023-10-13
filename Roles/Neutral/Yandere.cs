@@ -22,6 +22,7 @@ public static class Yandere
     public static List<byte> playerIdList = new();
     public static byte WinnerID;
     public static bool IsEnable = false;
+    private static OptionItem KillCooldown;
     public static OptionItem KnowTargetRole;
     public static OptionItem TargetKnowsYandere;
     public static OptionItem SkillCooldown;
@@ -31,10 +32,10 @@ public static class Yandere
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Yandere);
+        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Maverick])
+            .SetValueFormat(OptionFormat.Seconds);
         KnowTargetRole = BooleanOptionItem.Create(Id + 14, "KnowTargetRole", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Yandere]);
         TargetKnowsYandere = BooleanOptionItem.Create(Id + 15, "TargetKnowsYandere", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Yandere]);
-        SkillCooldown = FloatOptionItem.Create(Id + 15, "KillCooldown", new(2.5f, 900f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Yandere])
-            .SetValueFormat(OptionFormat.Seconds);
     }
     public static void Init()
     {

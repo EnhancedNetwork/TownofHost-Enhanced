@@ -154,7 +154,7 @@ class ExileControllerWrapUpPatch
             {
                 if (pc.Is(CustomRoles.Yandere))
                 {
-                     pc.RpcMurderPlayerV3(pc);   
+                    pc.RpcMurderPlayerV3(pc);   
                 }
                 break;
             }
