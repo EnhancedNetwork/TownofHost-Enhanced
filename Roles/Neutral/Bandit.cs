@@ -18,6 +18,7 @@ public static class Bandit
     public static OptionItem CanStealBetrayalAddon;
     public static OptionItem CanStealImpOnlyAddon;
     public static OptionItem CanUseSabotage;
+    public static OptionItem CanVent;
 
     public static Dictionary<byte, int> TotalSteals = new();
     public static Dictionary<byte, Dictionary<byte, CustomRoles>> Targets = new();
@@ -38,6 +39,7 @@ public static class Bandit
         CanStealBetrayalAddon = BooleanOptionItem.Create(Id + 13, "BanditCanStealBetrayalAddon", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
         CanStealImpOnlyAddon = BooleanOptionItem.Create(Id + 14, "BanditCanStealImpOnlyAddon", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
         CanUseSabotage = BooleanOptionItem.Create(Id + 15, "CanUseSabotage", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
+        CanVent = BooleanOptionItem.Create(Id + 16, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
     }
 
     public static void Init()
@@ -92,6 +94,7 @@ public static class Bandit
                 role == CustomRoles.LastImpostor ||
                 role == CustomRoles.Lovers || // Causes issues involving Lovers Suicide
                 (role.IsImpOnlyAddon() && !CanStealImpOnlyAddon.GetBool()) ||
+                (role == CustomRoles.Nimble && CanVent.GetBool()) ||
                 (role.IsBetrayalAddon() && !CanStealBetrayalAddon.GetBool()))
             { 
                     Logger.Info($"Removed {role} from stealable addons", "Bandit");
@@ -144,7 +147,6 @@ public static class Bandit
 
     public static void OnReportDeadBody()
     {
-        if (!IsEnable) return;
         if (StealMode.GetValue() == 1) return;
         foreach (var kvp1 in Targets)
         {

@@ -37,7 +37,7 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "1.0.2.4";
+    public const string PluginVersion = "1.0.2.41";
     public const string PluginDisplayVersion = "1.0.2 Dev 4";
     public static readonly string SupportedVersionAU = "2023.7.11";
     public const bool Canary = false;
@@ -225,6 +225,7 @@ public class Main : BasePlugin
 
     public static Dictionary<byte, CustomRoles> DevRole = new();
     public static List<byte> GodfatherTarget = new();
+    public static Dictionary<byte, int> CrewpostorTasksDone = new();
     public static Dictionary<byte, List<string>> AwareInteracted = new();
     public static byte ShamanTarget = byte.MaxValue;
     public static bool ShamanTargetChoosen = false;
@@ -349,6 +350,7 @@ public class Main : BasePlugin
                 {CustomRoles.Psychic, "#6F698C"},
                 {CustomRoles.Cleanser,"#98FF98" },
                 {CustomRoles.Sheriff, "#ffb347"},
+                {CustomRoles.Vigilante, "#9900CC"},
                 {CustomRoles.CopyCat, "#ffb2ab"},
                 {CustomRoles.SuperStar, "#f6f657"},
                 {CustomRoles.CyberStar, "#ee4a55" },
@@ -403,7 +405,7 @@ public class Main : BasePlugin
                 {CustomRoles.Spy, "#34495E"},
                 //第三陣営役職
                 {CustomRoles.Arsonist, "#ff6633"},
-                {CustomRoles.Pyromaniac, "#ff2400"},
+                {CustomRoles.Pyromaniac, "#fc8a4c"},
                 {CustomRoles.Agitater, "#F4A460"},
                 {CustomRoles.Bandit, "#8B008B"},
                 {CustomRoles.PlagueBearer,"#e5f6b4"},
@@ -508,6 +510,7 @@ public class Main : BasePlugin
                 {CustomRoles.Trapper, "#5a8fd0"},
                 {CustomRoles.Infected, "#7B8968"},
                 {CustomRoles.Onbound, "#BAAAE9"},
+                {CustomRoles.Rebound, "#56b5ff"},
                 {CustomRoles.Knighted, "#FFA500"},
                 {CustomRoles.Contagious, "#2E8B57"},
                 {CustomRoles.Unreportable, "#FF6347"},
@@ -704,6 +707,7 @@ public enum CustomRoles
     Psychic,
     SabotageMaster,
     Sheriff,
+    Vigilante,
     Snitch,
     Jailer,
     Marshall,
@@ -864,6 +868,7 @@ public enum CustomRoles
     Trapper,
     Infected,
     Onbound,
+    Rebound,
     Knighted,
     Contagious,
     Unreportable,

@@ -109,7 +109,8 @@ public static class Options
         "CamouflageMode.Karpe",
         "CamouflageMode.Lauryn",
         "CamouflageMode.Moe",
-        "CamouflageMode.Pyro"
+        "CamouflageMode.Pyro",
+        "CamouflageMode.ryuk"
     };
 
     // 各役職の詳細設定
@@ -193,6 +194,9 @@ public static class Options
     public static OptionItem GGCanGuessAdt;
     public static OptionItem GGCanGuessTime;
     public static OptionItem GGTryHideMsg;
+
+    public static OptionItem VigilanteKillCooldown;
+
     public static OptionItem LuckeyProbability;
     public static OptionItem LuckyProbability;
     public static OptionItem OverclockedReduction;
@@ -319,8 +323,11 @@ public static class Options
     public static OptionItem ImperiusCurseShapeshiftCooldown;
     public static OptionItem ProvKillCD;
     public static OptionItem CrewpostorCanKillAllies;
+    public static OptionItem CrewpostorKillAfterTask;
     public static OptionItem CrewpostorKnowsAllies;
     public static OptionItem AlliesKnowCrewpostor;
+    public static OptionItem CrewpostorLungeKill;
+
     public static OptionItem ImpCanBeSeer;
     public static OptionItem CrewCanBeSeer;
     public static OptionItem NeutralCanBeSeer;
@@ -358,6 +365,9 @@ public static class Options
     public static OptionItem ImpCanBeOnbound;
     public static OptionItem CrewCanBeOnbound;
     public static OptionItem NeutralCanBeOnbound;
+    public static OptionItem ImpCanBeRebound;
+    public static OptionItem CrewCanBeRebound;
+    public static OptionItem NeutralCanBeRebound;
     public static OptionItem ImpCanBeInLove;
     public static OptionItem CrewCanBeInLove;
     public static OptionItem NeutralCanBeInLove;
@@ -1309,7 +1319,12 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.Crewpostor]);
         AlliesKnowCrewpostor = BooleanOptionItem.Create(4812, "AlliesKnowCrewpostor", true, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Crewpostor]);
-        CrewpostorTasks = OverrideTasksData.Create(4813, TabGroup.ImpostorRoles, CustomRoles.Crewpostor);
+        CrewpostorLungeKill = BooleanOptionItem.Create(4813, "CrewpostorLungeKill", true,TabGroup.ImpostorRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Crewpostor]);
+        CrewpostorKillAfterTask = IntegerOptionItem.Create(4814, "CrewpostorKillAfterTask", new(1, 50, 1), 1, TabGroup.ImpostorRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Crewpostor]);
+        CrewpostorTasks = OverrideTasksData.Create(4815, TabGroup.ImpostorRoles, CustomRoles.Crewpostor);
+        
         SetupSingleRoleOptions(4900, TabGroup.ImpostorRoles, CustomRoles.Parasite, 1, zeroOne: false);
         ParasiteCD = FloatOptionItem.Create(4910, "KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Parasite])
@@ -1489,7 +1504,17 @@ public static class Options
         Jailer.SetupCustomOption();
         Judge.SetupCustomOption();
         SwordsMan.SetupCustomOption();
-
+        SetupRoleOptions(8600, TabGroup.CrewmateRoles, CustomRoles.NiceGuesser);
+        GGCanGuessTime = IntegerOptionItem.Create(8610, "GuesserCanGuessTimes", new(1, 15, 1), 15, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser])
+            .SetValueFormat(OptionFormat.Times);
+        GGCanGuessCrew = BooleanOptionItem.Create(8611, "GGCanGuessCrew", true, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser]);
+        GGCanGuessAdt = BooleanOptionItem.Create(8612, "GGCanGuessAdt", false, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser]);
+        GGTryHideMsg = BooleanOptionItem.Create(8613, "GuesserTryHideMsg", true, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser])
+            .SetColor(Color.green);
         SetupRoleOptions(8700, TabGroup.CrewmateRoles, CustomRoles.Retributionist);
         RetributionistCanKillNum = IntegerOptionItem.Create(8710, "RetributionistCanKillNum", new(1, 15, 1), 1, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
@@ -1514,17 +1539,10 @@ public static class Options
             .SetValueFormat(OptionFormat.Times);
         VeteranAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(8913, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Veteran])
             .SetValueFormat(OptionFormat.Times);
-        SetupRoleOptions(8600, TabGroup.CrewmateRoles, CustomRoles.NiceGuesser);
-        GGCanGuessTime = IntegerOptionItem.Create(8610, "GuesserCanGuessTimes", new(1, 15, 1), 15, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser])
-            .SetValueFormat(OptionFormat.Times);
-        GGCanGuessCrew = BooleanOptionItem.Create(8611, "GGCanGuessCrew", true, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser]);
-        GGCanGuessAdt = BooleanOptionItem.Create(8612, "GGCanGuessAdt", false, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser]);
-        GGTryHideMsg = BooleanOptionItem.Create(8613, "GuesserTryHideMsg", true, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser])
-            .SetColor(Color.green);
+
+        SetupRoleOptions(3953755, TabGroup.CrewmateRoles, CustomRoles.Vigilante);
+        VigilanteKillCooldown = FloatOptionItem.Create(3953765, "KillCooldown", new(5f, 180f, 2.5f), 30f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Vigilante])
+            .SetValueFormat(OptionFormat.Seconds);
 
         TextOptionItem.Create(100009, "RoleType.CrewPower", TabGroup.CrewmateRoles)
             .SetGameMode(CustomGameMode.Standard)
@@ -2049,6 +2067,15 @@ public static class Options
         GTryHideMsg = BooleanOptionItem.Create(19118, "GuesserTryHideMsg", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Guesser])
             .SetColor(Color.green);
+
+        SetupAdtRoleOptions(6210000, CustomRoles.Rebound, canSetNum: true, tab: TabGroup.Addons);
+        ImpCanBeRebound = BooleanOptionItem.Create(6210010, "ImpCanBeRebound", true, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Rebound]);
+        CrewCanBeRebound = BooleanOptionItem.Create(6210011, "CrewCanBeRebound", true, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Rebound]);
+        NeutralCanBeRebound = BooleanOptionItem.Create(6210012, "NeutralCanBeRebound", true, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Rebound]);
+
         SetupAdtRoleOptions(14700, CustomRoles.DualPersonality, canSetNum: true);
         ImpCanBeDualPersonality = BooleanOptionItem.Create(14710, "ImpCanBeDualPersonality", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.DualPersonality]);
@@ -2324,7 +2351,7 @@ public static class Options
         EndWhenPlayerBug = BooleanOptionItem.Create(19318, "EndWhenPlayerBug", true, TabGroup.SystemSettings, false)
             .SetHeader(true)
             .SetColor(Color.blue);
-        RemovePetsAtDeadPlayers = BooleanOptionItem.Create(44450, "RemovePetsAtDeadPlayers", false, TabGroup.SystemSettings, false)
+        RemovePetsAtDeadPlayers = BooleanOptionItem.Create(44450, "RemovePetsAtDeadPlayers", true, TabGroup.SystemSettings, false)
             .SetColor(Color.magenta);
 
         CheatResponses = StringOptionItem.Create(19319, "CheatResponses", CheatResponsesName, 0, TabGroup.SystemSettings, false)

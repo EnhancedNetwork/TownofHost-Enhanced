@@ -43,14 +43,13 @@ internal class AntiAdminer
     private static int Count = 0;
     public static void FixedUpdate()
     {
-        if (!IsEnable) return;
-
         Count--; if (Count > 0) return; Count = 5;
 
         bool Admin = false, Camera = false, DoorLog = false, Vital = false;
         foreach (PlayerControl pc in Main.AllAlivePlayerControls)
         {
             if (Pelican.IsEaten(pc.PlayerId) || pc.inVent || pc.GetCustomRole().IsImpostor()) continue;
+
             try
             {
                 Vector2 PlayerPos = pc.transform.position;

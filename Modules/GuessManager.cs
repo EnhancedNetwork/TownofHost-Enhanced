@@ -467,18 +467,18 @@ public static class GuessManager
                     }
                 }
 
-             /* if ((pc.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoleTypes.Impostor) && !Options.ImpCanGuessImp.GetBool()) && Options.GuesserMode.GetBool())
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessImpRole"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessImpRole"));
-                    return true;
-                }
-                if ((role == CustomRoles.Phantom && pc.Is(CustomRoleTypes.Crewmate) && target.Is(CustomRoleTypes.Crewmate) && !Options.CrewCanGuessCrew.GetBool()) && Options.GuesserMode.GetBool())
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessCrewRole"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessCrewRole"));
-                    return true;
-                } */
+                /* if ((pc.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoleTypes.Impostor) && !Options.ImpCanGuessImp.GetBool()) && Options.GuesserMode.GetBool())
+                   {
+                       if (!isUI) Utils.SendMessage(GetString("GuessImpRole"), pc.PlayerId);
+                       else pc.ShowPopUp(GetString("GuessImpRole"));
+                       return true;
+                   }
+                   if ((role == CustomRoles.Phantom && pc.Is(CustomRoleTypes.Crewmate) && target.Is(CustomRoleTypes.Crewmate) && !Options.CrewCanGuessCrew.GetBool()) && Options.GuesserMode.GetBool())
+                   {
+                       if (!isUI) Utils.SendMessage(GetString("GuessCrewRole"), pc.PlayerId);
+                       else pc.ShowPopUp(GetString("GuessCrewRole"));
+                       return true;
+                   } */
 
                 if (target.Is(CustomRoles.Merchant) && Merchant.IsBribedKiller(pc, target))
                 {
@@ -576,6 +576,12 @@ public static class GuessManager
                     }
                 }
 
+                if (target.Is(role) && target.Is(CustomRoles.Rebound))
+                {
+                    guesserSuicide = true;
+                    Logger.Info($"{pc.GetNameWithRole()} guessed {target.GetNameWithRole()}, guesser suicide because rebound", "GuessManager");
+                }
+
                 Logger.Info($"{pc.GetNameWithRole()} guessed => {target.GetNameWithRole()}", "Guesser");
 
                 var dp = guesserSuicide ? pc : target;
@@ -584,8 +590,13 @@ public static class GuessManager
                 Logger.Info($" Player：{target.GetNameWithRole()} was guessed", "Guesser");
 
                 Main.GuesserGuessed[pc.PlayerId]++;
+                if (target.Is(CustomRoles.Rebound) && pc.Is(CustomRoles.Doomsayer) && !Doomsayer.DoesNotSuicideWhenMisguessing.GetBool() && !Doomsayer.GuessedRoles.Contains(role))
+                {
+                    guesserSuicide = true;
+                    Logger.Info($"{pc.GetNameWithRole()} guessed {target.GetNameWithRole()}, doomsayer suicide because rebound", "GuessManager");
+                }
 
-                if (pc.Is(CustomRoles.Doomsayer) && Doomsayer.AdvancedSettings.GetBool())
+                else if (pc.Is(CustomRoles.Doomsayer) && Doomsayer.AdvancedSettings.GetBool())
                 {
                     if (Doomsayer.GuessesCountPerMeeting >= Doomsayer.MaxNumberOfGuessesPerMeeting.GetInt() && pc.PlayerId != dp.PlayerId)
                     {

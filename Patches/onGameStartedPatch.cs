@@ -14,6 +14,7 @@ using TOHE.Roles.Neutral;
 using static TOHE.Modules.CustomRoleSelector;
 using static TOHE.Translator;
 using TOHE.Roles.Double;
+using TOHE.Modules.ChatManager;
 
 namespace TOHE;
 
@@ -51,7 +52,6 @@ internal class ChangeRoleSettings
             Main.RevolutionistCountdown = new();
             Main.TimeMasterBackTrack = new();
             Main.TimeMasterNum = new();
-            Main.FarseerTimer = new();
             Main.CursedPlayers = new();
             Main.MafiaRevenged = new();
             Main.RetributionistRevenged = new();
@@ -72,7 +72,6 @@ internal class ChangeRoleSettings
             Main.KillerOfBoobyTrapBody = new();
             Main.CleanerBodies = new();
             Main.BurstBodies = new();
-            Main.BloodlustList = new();
             Main.MedusaBodies = new();
             Main.InfectedBodies = new();
             Main.VirusNotify = new();
@@ -118,8 +117,10 @@ internal class ChangeRoleSettings
             Main.GodfatherTarget = new();
             Main.CultivatorKillMax = new();
             Main.AwareInteracted = new();
+            Main.CrewpostorTasksDone = new();
             Main.ShamanTarget = byte.MaxValue;
             Main.ShamanTargetChoosen = false;
+            ChatManager.resetHistory();
 
             ReportDeadBodyPatch.CanReport = new();
 
@@ -921,6 +922,9 @@ internal class SelectRolesPatch
                     case CustomRoles.Yandere:
                         Yandere.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.Crewpostor:
+                        Main.CrewpostorTasksDone[pc.PlayerId] = 0;
+                        break;
                 }
                 foreach (var subRole in pc.GetCustomSubRoles())
                 {
@@ -971,7 +975,7 @@ internal class SelectRolesPatch
             }
 
             // ResetCamが必要なプレイヤーのリストにクラス化が済んでいない役職のプレイヤーを追加
-            Main.ResetCamPlayerList.AddRange(Main.AllPlayerControls.Where(p => p.GetCustomRole() is CustomRoles.Arsonist or CustomRoles.Revolutionist or CustomRoles.Sidekick or CustomRoles.Shaman).Select(p => p.PlayerId));
+            Main.ResetCamPlayerList.AddRange(Main.AllPlayerControls.Where(p => p.GetCustomRole() is CustomRoles.Arsonist or CustomRoles.Revolutionist or CustomRoles.Sidekick or CustomRoles.Shaman or CustomRoles.Vigilante).Select(p => p.PlayerId));
             Utils.CountAlivePlayers(true);
             Utils.SyncAllSettings();
             SetColorPatch.IsAntiGlitchDisabled = false;

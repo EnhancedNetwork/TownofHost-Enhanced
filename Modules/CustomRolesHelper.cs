@@ -177,6 +177,7 @@ static class CustomRolesHelper
         {
             //Standard
             CustomRoles.Sheriff => RoleTypes.Impostor,
+            CustomRoles.Vigilante => RoleTypes.Impostor,
             CustomRoles.Jailer => RoleTypes.Impostor,
             CustomRoles.Crusader => RoleTypes.Impostor,
             CustomRoles.Seeker => RoleTypes.Impostor,
@@ -300,6 +301,7 @@ static class CustomRolesHelper
             CustomRoles.Charmed or
             CustomRoles.Infected or
             CustomRoles.Onbound or
+            CustomRoles.Rebound or
             CustomRoles.Lazy or
        //     CustomRoles.Reflective or
             CustomRoles.Rascal or
@@ -545,6 +547,7 @@ static class CustomRolesHelper
     }
     public static bool IsSnitchTarget(this CustomRoles role)
     {
+        if (role is CustomRoles.Arsonist && Options.ArsonistKeepsGameGoing.GetBool()) return true;
         return role is
             CustomRoles.Jackal or
             CustomRoles.Doppelganger or
@@ -596,6 +599,7 @@ static class CustomRolesHelper
             CustomRoles.Counterfeiter or
             CustomRoles.Retributionist or
             CustomRoles.Sheriff or
+            CustomRoles.Vigilante or
             CustomRoles.Jailer;
     }
     public static bool IsMini(this CustomRoles role) // �Ƿ��ڹ�
@@ -994,6 +998,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Burst)
                     || pc.Is(CustomRoles.NiceMini)
                     || (pc.Is(CustomRoles.Onbound) && Options.BaitNotification.GetBool())
+                    || (pc.Is(CustomRoles.Rebound) && Options.BaitNotification.GetBool())
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeBait.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeBait.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeBait.GetBool()))
@@ -1037,9 +1042,26 @@ static class CustomRolesHelper
                     //|| pc.Is(CustomRoles.Glow) 
                     || pc.Is(CustomRoles.LastImpostor) 
                     || pc.Is(CustomRoles.NiceMini)
-                    || pc.Is(CustomRoles.Mare))
+                    || pc.Is(CustomRoles.Mare)
+                    || pc.Is(CustomRoles.Rebound))
                     return false; //Based on guess manager
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeOnbound.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeOnbound.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeOnbound.GetBool()))
+                    return false;
+                break;
+            case CustomRoles.Rebound:
+                if (pc.Is(CustomRoles.SuperStar)
+                    || (pc.Is(CustomRoles.Doctor) && Options.DoctorVisibleToEveryone.GetBool())
+                    || (pc.Is(CustomRoles.Bait) && Options.BaitNotification.GetBool())
+                    //|| pc.Is(CustomRoles.Glow) 
+                    || pc.Is(CustomRoles.LastImpostor)
+                    || pc.Is(CustomRoles.NiceMini)
+                    || pc.Is(CustomRoles.Mare)
+                    || pc.Is(CustomRoles.Onbound))
+                {
+                    Logger.Warn("reached here", "REbound");
+                    return false;
+                } //Based on guess manager
+                if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeRebound.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeRebound.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeRebound.GetBool()))
                     return false;
                 break;
 
@@ -1334,7 +1356,8 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Nuker)
                     || pc.Is(CustomRoles.BoobyTrap)
                     || pc.Is(CustomRoles.Capitalism)
-                    || pc.Is(CustomRoles.Onbound))
+                    || pc.Is(CustomRoles.Onbound)
+                    || pc.Is(CustomRoles.Rebound))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;

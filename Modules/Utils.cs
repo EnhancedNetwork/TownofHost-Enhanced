@@ -464,6 +464,7 @@ public static class Utils
         {
             case CustomRoles.GM:
             case CustomRoles.Sheriff:
+            case CustomRoles.Vigilante:
             case CustomRoles.Jailer:
             case CustomRoles.CopyCat:
             case CustomRoles.Shaman:
@@ -606,7 +607,8 @@ public static class Utils
             pc.Is(CustomRoles.TaskManager) ||
          //   pc.Is(CustomRoles.Cyber) ||
             pc.Is(CustomRoles.Egoist) ||
-            pc.Is(CustomRoles.DualPersonality)
+            pc.Is(CustomRoles.DualPersonality) ||
+            pc.Is(CustomRoles.Vigilante)
             );
     }
     public static string GetProgressText(PlayerControl pc)
@@ -1755,7 +1757,7 @@ public static class Utils
                         //"33ccff", "ff99cc"
                         if (startColorCode == endColorCode) modtag = $"<color=#{startColorCode}>{GetString("VipTag")}</color>";
 
-                        else modtag = GradientColorText(startColorCode, endColorCode, GetString("VIPTag"));
+                        else modtag = GradientColorText(startColorCode, endColorCode, GetString("VipTag"));
                     }
                 }
             }
@@ -2237,7 +2239,7 @@ public static class Utils
                             break;
 
                         case CustomRoles.Farseer:
-                            if (Main.FarseerTimer.TryGetValue(seer.PlayerId, out var fa_kvp) && fa_kvp.Item1 == target)
+                            if (Farseer.FarseerTimer.TryGetValue(seer.PlayerId, out var fa_kvp) && fa_kvp.Item1 == target)
                                 TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Farseer)}>○</color>");
                             break;
 

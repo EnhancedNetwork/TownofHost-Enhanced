@@ -135,6 +135,11 @@ public static class Judge
                     else pc.ShowPopUp(GetString("GuessMini"));
                     return true;
                 }
+                else if  (target.Is(CustomRoles.Rebound))
+                {
+                    Logger.Info($"{pc.GetNameWithRole()} judged {target.GetNameWithRole()}, judge sucide = true because target rebound", "JudgeTrialMsg");
+                    judgeSuicide = true;
+                }
                 else if (pc.Is(CustomRoles.Madmate)) judgeSuicide = false;
                 else if (pc.Is(CustomRoles.Charmed)) judgeSuicide = false;
                 else if (pc.Is(CustomRoles.Recruit)) judgeSuicide = false;

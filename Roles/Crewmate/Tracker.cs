@@ -91,8 +91,6 @@ namespace TOHE.Roles.Crewmate
 
         public static void OnReportDeadBody()
         {
-            if (!IsEnable) return;
-
             foreach (var trackerId in playerIdList) 
             {
                 TempTrackLimit[trackerId] = TrackLimit[trackerId];
@@ -101,19 +99,21 @@ namespace TOHE.Roles.Crewmate
 
         public static string GetTrackerArrow(PlayerControl seer, PlayerControl target = null)
         {
-            if (seer == null) return "";
-            if (!seer.Is(CustomRoles.Tracker)) return "";
-            if (target != null && seer.PlayerId != target.PlayerId) return "";
-            if (!TrackerTarget.ContainsKey(seer.PlayerId)) return "";
-            if (GameStates.IsMeeting) return "";
+            if (seer == null) return string.Empty;
+            if (!seer.Is(CustomRoles.Tracker)) return string.Empty;
+            if (target != null && seer.PlayerId != target.PlayerId) return string.Empty;
+            if (!TrackerTarget.ContainsKey(seer.PlayerId)) return string.Empty;
+            if (GameStates.IsMeeting) return string.Empty;
 
-            var arrows = string.Empty;
+            var arrows = "";
             var targetList = TrackerTarget[seer.PlayerId];
+
             foreach (var trackTarget in targetList)
             {
-                if (!TrackerTarget[seer.PlayerId].Contains(trackTarget)) return "";
+                if (!TrackerTarget[seer.PlayerId].Contains(trackTarget)) continue;
 
                 var targetData = Utils.GetPlayerById(trackTarget);
+                if (targetData == null) continue;
 
                 var arrow = TargetArrow.GetArrows(seer, trackTarget);
                 arrows += Utils.ColorString(CanGetColoredArrow.GetBool() ? Palette.PlayerColors[targetData.Data.DefaultOutfit.ColorId] : Color.white, arrow);
@@ -128,6 +128,8 @@ namespace TOHE.Roles.Crewmate
 
         public static string GetArrowAndLastRoom(PlayerControl seer, PlayerControl target)
         {
+            if (seer == null || target == null) return string.Empty;
+
             string text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Tracker), TargetArrow.GetArrows(seer, target.PlayerId));
             var room = Main.PlayerStates[target.PlayerId].LastRoom;
             if (room == null) text += Utils.ColorString(Color.gray, "@" + GetString("FailToTrack"));

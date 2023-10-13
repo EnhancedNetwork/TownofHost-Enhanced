@@ -230,8 +230,7 @@ public static class Oracle
     }
     public static void OnReportDeadBody()
     {
-        if (!IsEnable) return;
-
+        didVote.Clear();
         foreach (var oracleId in playerIdList)
         {
             TempCheckLimit[oracleId] = CheckLimit[oracleId];

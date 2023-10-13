@@ -104,33 +104,25 @@ public static class Seeker
     }
     public static void OnReportDeadBody()
     {
-        if (!IsEnable) return;
-
         foreach (var playerId in playerIdList)
         {
             Main.AllPlayerSpeed[playerId] = DefaultSpeed;
         }
     }
 
-    public static void FixedUpdate(PlayerControl player)
+    public static void OnFixedUpdate(PlayerControl player)
     {
-        if (!IsEnable) return;
-        if (!player.Is(CustomRoles.Seeker)) return;
-
-        if (GameStates.IsInTask)
+        var targetId = GetTarget(player);
+        if (Main.PlayerStates[targetId].IsDead)
         {
-            var targetId = GetTarget(player);
-            if (Main.PlayerStates[targetId].IsDead)
-            {
-                ResetTarget(player);
-            }
+            ResetTarget(player);
+        }
 
-            if (TotalPoints[player.PlayerId] >= PointsToWin.GetInt())
-            {
-                TotalPoints[player.PlayerId] = PointsToWin.GetInt();
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Seeker);
-                CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
-            }
+        if (TotalPoints[player.PlayerId] >= PointsToWin.GetInt())
+        {
+            TotalPoints[player.PlayerId] = PointsToWin.GetInt();
+            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Seeker);
+            CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
         }
     }
     public static byte GetTarget(PlayerControl player)

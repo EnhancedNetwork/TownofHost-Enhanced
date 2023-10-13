@@ -219,9 +219,9 @@ static class ExtendedPlayerControl
         if (player.Is(CustomRoles.Glitch))
         {
             Glitch.LastKill = Utils.GetTimeStamp() + ((int)(time / 2) - Glitch.KillCooldown.GetInt());
-            Glitch.KCDTimer = (int)(time / 2) - Glitch.KillCooldown.GetInt();
+            Glitch.KCDTimer = (int)(time / 2);
         }
-        if (forceAnime || !player.IsModClient() || !Options.DisableShieldAnimations.GetBool())
+        else if (forceAnime || !player.IsModClient() || !Options.DisableShieldAnimations.GetBool())
         {
             player.SyncSettings();
             player.RpcGuardAndKill(target, 11);
@@ -303,7 +303,7 @@ static class ExtendedPlayerControl
             Glitch.MimicCDTimer = 10;
             Glitch.HackCDTimer = 10;
         }
-        if (PlayerControl.LocalPlayer == target)
+        else if (PlayerControl.LocalPlayer == target)
         {
             //targetがホストだった場合
             PlayerControl.LocalPlayer.Data.Role.SetCooldown();
@@ -468,6 +468,7 @@ static class ExtendedPlayerControl
             CustomRoles.Saboteur => Utils.IsActive(SystemTypes.Electrical) || Utils.IsActive(SystemTypes.Laboratory) || Utils.IsActive(SystemTypes.Comms) || Utils.IsActive(SystemTypes.LifeSupp) || Utils.IsActive(SystemTypes.Reactor),
             CustomRoles.Sniper => Sniper.CanUseKillButton(pc),
             CustomRoles.Sheriff => Sheriff.CanUseKillButton(pc.PlayerId),
+            CustomRoles.Vigilante => pc.IsAlive(),
             CustomRoles.Jailer => pc.IsAlive(),
             CustomRoles.Crusader => Crusader.CanUseKillButton(pc.PlayerId),
             CustomRoles.CopyCat => pc.IsAlive(),
@@ -651,6 +652,7 @@ static class ExtendedPlayerControl
         {
             CustomRoles.Minimalism or
             CustomRoles.Sheriff or
+            CustomRoles.Vigilante or
             CustomRoles.Deputy or
             CustomRoles.Investigator or
             CustomRoles.Innocent or
@@ -666,7 +668,6 @@ static class ExtendedPlayerControl
             CustomRoles.CursedSoul or
             CustomRoles.PlagueBearer or
             CustomRoles.Admirer or
-            CustomRoles.Bandit or
             CustomRoles.Doppelganger or
             CustomRoles.Crusader or
             CustomRoles.ChiefOfPolice or
@@ -674,6 +675,7 @@ static class ExtendedPlayerControl
             => false,
 
             CustomRoles.Jackal => Jackal.CanVent.GetBool(),
+            CustomRoles.Bandit => Bandit.CanVent.GetBool(),
             CustomRoles.VengefulRomantic => Romantic.VengefulCanVent.GetBool(),
             CustomRoles.Glitch => Glitch.CanVent.GetBool(),
             CustomRoles.RuthlessRomantic => Romantic.RuthlessCanVent.GetBool(),
@@ -841,6 +843,9 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Jailer:
                 Jailer.SetKillCooldown(player.PlayerId); //シリアルキラーはシリアルキラーのキルクールに。
+                break;
+            case CustomRoles.Vigilante:
+                Main.AllPlayerKillCooldown[player.PlayerId] = Options.VigilanteKillCooldown.GetFloat();
                 break;
             case CustomRoles.TimeThief:
                 TimeThief.SetKillCooldown(player.PlayerId); //タイムシーフはタイムシーフのキルクールに。
@@ -1426,6 +1431,7 @@ static class ExtendedPlayerControl
     public static bool Is(this PlayerControl target, CustomRoleTypes type) { return target.GetCustomRole().GetCustomRoleTypes() == type; }
     public static bool Is(this PlayerControl target, RoleTypes type) { return target.GetCustomRole().GetRoleTypes() == type; }
     public static bool Is(this PlayerControl target, CountTypes type) { return target.GetCountTypes() == type; }
+    public static bool Is(this CustomRoles playerRole, CustomRoles trueRole) { return playerRole == trueRole; }
     public static bool IsAlive(this PlayerControl target)
     {
         //ロビーなら生きている
