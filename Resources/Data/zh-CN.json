@@ -3245,5 +3245,6 @@
   "PresidentRevealMax": "你已经展现了自己...",
   "PresidentRevealed": "[{0}] 已选择自爆总统身份！",
   "GuessPresident": "小子，你还想猜总统是吧？",
-  "PresidentRevealTitle": "[ ★ 总统揭秘 ★ ]"
+  "PresidentRevealTitle": "[ ★ 总统揭秘 ★ ]",
+  "Warning.CantKickDev": "哈哈哈，你不会还想踢开发者吧？"
 }

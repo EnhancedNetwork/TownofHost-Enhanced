@@ -115,6 +115,17 @@ class OnPlayerJoinedPatch
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerLeft))]
 class OnPlayerLeftPatch
 {
+    static void Prefix([HarmonyArgument(0)] ClientData data)
+    {
+        if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
+        //CustomRoleManager.AllActiveRoles.Values.Do(role => role.OnPlayerDeath(data.Character, PlayerState.GetByPlayerId(data.Character.PlayerId).DeathReason, GameStates.IsMeeting));
+    }
+    public static List<int> ClientsProcessed = new();
+    public static void Add(int id)
+    {
+        ClientsProcessed.Remove(id);
+        ClientsProcessed.Add(id);
+    }
     public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ClientData data, [HarmonyArgument(1)] DisconnectReasons reason)
     {
         try
@@ -210,6 +221,7 @@ class OnPlayerLeftPatch
                 Main.playerVersion.Remove(data?.Character?.PlayerId ?? byte.MaxValue);
             }
         }
+    
         catch (Exception error)
         {
             Logger.Error(error.ToString(), "OnPlayerLeftPatch.Postfix");

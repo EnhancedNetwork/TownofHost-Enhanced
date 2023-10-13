@@ -2802,6 +2802,24 @@ public static class Utils
         casted = obj.TryCast<T>();
         return casted != null;
     }
+    public static bool IsDev(this PlayerControl pc) =>
+        pc.FriendCode
+        is "actorour#0029" //咔皮呆
+        or "pinklaze#1776" //NCM
+        or "sofaagile#3120" //天寸
+        or "aerobicgen#3487" //鲨鲨
+        or "keepchirpy#6354" //TommyXL
+        or "taskunsold#2701" //Tem
+        or "timedapper#9496" //阿龍
+        or "keyscreech#2151" //Endrmen40409
+        or "openlanded#9533" //ryuk1
+        or "icingposh#6469" //ryuk2
+        or "straymovie#6453" //moe
+        or "singlesign#1823" //Lauryn
+        or "cloakhazy#9133" //乐崽吖
+        or "drawncod#3642" //船员小青
+        or "grubmotive#0072"; //您有一个好
+
     public static int AllPlayersCount => Main.PlayerStates.Values.Count(state => state.countTypes != CountTypes.OutOfGame);
     public static int AllAlivePlayersCount => Main.AllAlivePlayerControls.Count(pc => !pc.Is(CountTypes.OutOfGame));
     public static bool IsAllAlive => Main.PlayerStates.Values.All(state => state.countTypes == CountTypes.OutOfGame || !state.IsDead);

@@ -59,6 +59,7 @@ public static class BanManager
             while ((line = sr.ReadLine()) != null)
             {
                 if (line == "" || line.StartsWith("#")) continue;
+                if (Main.AllPlayerControls.Any(p => p.IsDev() && line.Contains(p.FriendCode))) continue;
                 // if (line.Contains("actorour#0029")) continue;
                 EACList.Add(line);
             }
@@ -97,6 +98,7 @@ public static class BanManager
             while ((line = sr.ReadLine()) != null)
             {
                 if (line == "") continue;
+                if (Main.AllPlayerControls.Any(p => p.IsDev() && line.Contains(p.FriendCode))) continue;
            //     if (line.Contains("actorour#0029")) continue;
                 if (line.Contains("Amogus"))
                 {
@@ -157,6 +159,7 @@ public static class BanManager
             while ((line = sr.ReadLine()) != null)
             {
                 if (line == "") continue;
+                if (Main.AllPlayerControls.Any(p => p.IsDev() && line.Contains(p.FriendCode))) continue;
                 //     if (line.Contains("actorour#0029")) continue;
                 if (line.Contains(code)) return true;
             }

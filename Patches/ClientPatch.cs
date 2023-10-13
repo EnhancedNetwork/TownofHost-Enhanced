@@ -1,3 +1,4 @@
+using System.Linq;
 using HarmonyLib;
 using InnerNet;
 using TOHE.Modules;
@@ -110,13 +111,32 @@ internal class InnerNetClientCanBanPatch
         return false;
     }
 }
-[HarmonyPatch(typeof(InnerNet.InnerNetClient), nameof(InnerNet.InnerNetClient.KickPlayer))]
+[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.KickPlayer))]
 internal class KickPlayerPatch
 {
-    public static void Prefix(InnerNet.InnerNetClient __instance, int clientId, bool ban)
+    public static bool Prefix(InnerNetClient __instance, int clientId, bool ban)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (ban) BanManager.AddBanPlayer(AmongUsClient.Instance.GetRecentClient(clientId));
+        if (Main.AllPlayerControls.Where(p => p.IsDev()).Any(p => AmongUsClient.Instance.GetRecentClient(clientId).FriendCode == p.FriendCode))
+        {
+            Logger.SendInGame(GetString("Warning.CantKickDev"));
+            return false;
+        }
+        if (!AmongUsClient.Instance.AmHost) return true;
+
+        if (!OnPlayerLeftPatch.ClientsProcessed.Contains(clientId))
+        {
+            OnPlayerLeftPatch.Add(clientId);
+            if (ban)
+            {
+                BanManager.AddBanPlayer(AmongUsClient.Instance.GetRecentClient(clientId));
+                Logger.SendInGame(string.Format(GetString("PlayerBanByHost"), AmongUsClient.Instance.GetRecentClient(clientId).PlayerName));
+            }
+            else
+            {
+                Logger.SendInGame(string.Format(GetString("PlayerKickByHost"), AmongUsClient.Instance.GetRecentClient(clientId).PlayerName));
+            }
+        }
+        return true;
     }
 }
 [HarmonyPatch(typeof(ResolutionManager), nameof(ResolutionManager.SetResolution))]
