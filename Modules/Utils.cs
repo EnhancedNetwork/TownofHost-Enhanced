@@ -504,7 +504,7 @@ public static class Utils
             case CustomRoles.FFF:
             case CustomRoles.Gamer:
             case CustomRoles.HexMaster:
-            case CustomRoles.Occultist:
+            //case CustomRoles.Occultist:
             case CustomRoles.Wraith:
             case CustomRoles.Juggernaut:
             case CustomRoles.Reverie:
@@ -2017,9 +2017,9 @@ public static class Utils
                         SelfSuffix.Append(HexMaster.GetHexModeText(seer, false));
                         break;
 
-                    case CustomRoles.Occultist:
-                        SelfSuffix.Append(Occultist.GetHexModeText(seer, false));
-                        break;
+                    //case CustomRoles.Occultist:
+                    //    SelfSuffix.Append(Occultist.GetHexModeText(seer, false));
+                    //    break;
                 }
             }
             else // Only during meeting
@@ -2037,7 +2037,7 @@ public static class Utils
 
                 SelfMark.Append(HexMaster.GetHexedMark(seer.PlayerId, true));
 
-                SelfMark.Append(Occultist.GetCursedMark(seer.PlayerId, true));
+                //SelfMark.Append(Occultist.GetCursedMark(seer.PlayerId, true));
             }
             
 
@@ -2153,7 +2153,7 @@ public static class Utils
                         
                         TargetMark.Append(HexMaster.GetHexedMark(target.PlayerId, true));
 
-                        TargetMark.Append(Occultist.GetCursedMark(target.PlayerId, true));
+                        //TargetMark.Append(Occultist.GetCursedMark(target.PlayerId, true));
 
                         if (Pirate.IsEnable)
                             TargetMark.Append(Pirate.GetPlunderedMark(target.PlayerId, true));

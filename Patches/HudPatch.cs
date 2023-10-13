@@ -127,10 +127,10 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         HexMaster.GetAbilityButtonText(__instance);
                         break;
-                    case CustomRoles.Occultist:
-                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        Occultist.GetAbilityButtonText(__instance);
-                        break;
+                    //case CustomRoles.Occultist:
+                    //    __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
+                    //    Occultist.GetAbilityButtonText(__instance);
+                    //    break;
                     case CustomRoles.Vampire:
                     case CustomRoles.Vampiress:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
@@ -469,10 +469,10 @@ class HudManagerPatch
                 {
                     LowerInfoText.text = HexMaster.GetHexModeText(player, true);
                 }
-                else if (player.Is(CustomRoles.Occultist))
-                {
-                    LowerInfoText.text = Occultist.GetHexModeText(player, true);
-                }
+                //else if (player.Is(CustomRoles.Occultist))
+                //{
+                //    LowerInfoText.text = Occultist.GetHexModeText(player, true);
+                //}
                 else if (player.Is(CustomRoles.FireWorks))
                 {
                     var stateText = FireWorks.GetStateText(player);

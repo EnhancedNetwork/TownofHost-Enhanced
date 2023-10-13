@@ -279,7 +279,7 @@ public static class Divinator
                 CustomRoles.Divinator or
                 CustomRoles.EvilDiviner or
                 CustomRoles.PotionMaster or
-                CustomRoles.Occultist or
+                //CustomRoles.Occultist or
                 CustomRoles.HexMaster or
                 CustomRoles.Witch
                 => "Result23",

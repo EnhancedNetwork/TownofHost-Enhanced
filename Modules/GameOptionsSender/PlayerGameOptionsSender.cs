@@ -347,9 +347,9 @@ public class PlayerGameOptionsSender : GameOptionsSender
             case CustomRoles.HexMaster:
                 HexMaster.ApplyGameOptions(opt);
                 break;
-            case CustomRoles.Occultist:
-                Occultist.ApplyGameOptions(opt);
-                break;
+            //case CustomRoles.Occultist:
+            //    Occultist.ApplyGameOptions(opt);
+            //    break;
             case CustomRoles.Wraith:
                 Wraith.ApplyGameOptions(opt);
                 break;

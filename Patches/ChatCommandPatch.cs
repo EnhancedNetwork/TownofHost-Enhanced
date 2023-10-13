@@ -1021,7 +1021,7 @@ internal class ChatCommands
             "狼人"=> GetString("Werewolf"),
             "萨满"=> GetString("Shaman"),
             "探索者"=> GetString("Seeker"),
-            "神秘者"=> GetString("Occultist"),
+            //"神秘者"=> GetString("Occultist"),
             "遮蔽者"=> GetString("Shade"),
             "灵魂收集者"=> GetString("SoulCollector"),
             "浪漫者"=> GetString("Romantic"),

@@ -1732,7 +1732,7 @@ public static class Options
         Juggernaut.SetupCustomOption();
         Medusa.SetupCustomOption();
         Necromancer.SetupCustomOption();
-        Occultist.SetupCustomOption();
+        //Occultist.SetupCustomOption();
         Pelican.SetupCustomOption();
         Pickpocket.SetupCustomOption();
         Poisoner.SetupCustomOption();
