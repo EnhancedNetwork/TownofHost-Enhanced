@@ -223,6 +223,7 @@ public class Main : BasePlugin
 
     public static Dictionary<byte, CustomRoles> DevRole = new();
     public static List<byte> GodfatherTarget = new();
+    public static Dictionary<byte, int> CrewpostorTasksDone = new();
     public static Dictionary<byte, List<string>> AwareInteracted = new();
     public static byte ShamanTarget = byte.MaxValue;
     public static bool ShamanTargetChoosen = false;

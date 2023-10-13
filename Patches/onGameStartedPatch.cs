@@ -115,6 +115,7 @@ internal class ChangeRoleSettings
             Main.GodfatherTarget = new();
             Main.CultivatorKillMax = new();
             Main.AwareInteracted = new();
+            Main.CrewpostorTasksDone = new();
             Main.ShamanTarget = byte.MaxValue;
             Main.ShamanTargetChoosen = false;
             ChatManager.resetHistory();
@@ -914,6 +915,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Spy:
                         Spy.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Crewpostor:
+                        Main.CrewpostorTasksDone[pc.PlayerId] = 0;
                         break;
                 }
                 foreach (var subRole in pc.GetCustomSubRoles())

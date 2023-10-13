@@ -10,16 +10,19 @@ namespace TOHE.Roles.Crewmate;
 public static class President
 {
     private static readonly int Id = 4391357;
-    private static List<byte> playerIdList = new();
+    public static bool IsEnable = false;
+
+    public static Dictionary<byte, int> EndLimit;
+    public static Dictionary<byte, int> RevealLimit;
+    public static Dictionary<byte, bool> CheckPresidentReveal = new();
+
+
     public static OptionItem PresidentAbilityUses;
     public static OptionItem PresidentCanBeGuessedAfterRevealing;
     public static OptionItem HidePresidentEndCommand;
     public static OptionItem NeutralsSeePresident;
     public static OptionItem MadmatesSeePresident;
     public static OptionItem ImpsSeePresident;
-    public static Dictionary<byte, int> EndLimit;
-    public static Dictionary<byte, int> RevealLimit;
-    public static Dictionary<byte, bool> CheckPresidentReveal = new();
 
 
     public static void SetupCustomOption()
@@ -38,14 +41,15 @@ public static class President
         CheckPresidentReveal = new();
         EndLimit = new();
         RevealLimit = new();
+        IsEnable = false;
     }
     public static void Add(byte playerId)
     {
-        CheckPresidentReveal[playerId] = false;
+        CheckPresidentReveal.Add(playerId, false);
         EndLimit.Add(playerId, PresidentAbilityUses.GetInt());
         RevealLimit.Add(playerId, 1);
+        IsEnable = true;
     }
-    public static bool IsEnable => playerIdList.Count > 0;
     public static string GetEndLimit(byte playerId) => Utils.ColorString(EndLimit[playerId] > 0 ? Utils.GetRoleColor(CustomRoles.President) : Color.gray, EndLimit.TryGetValue(playerId, out var endLimit) ? $"({endLimit})" : "Invalid");
 
     public static void TryHideMsgForPresident()

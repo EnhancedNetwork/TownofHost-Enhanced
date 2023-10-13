@@ -75,15 +75,18 @@ namespace TOHE.Roles.Crewmate
             {
                 if (x.Value + SpyRedNameDur.GetInt() < GetTimeStamp() || !GameStates.IsInTask)
                 {
-                    SpyRedNameList.Remove(x.Key);
+                    if (SpyRedNameList.ContainsKey(x.Key))
+                    {
+                        SpyRedNameList.Remove(x.Key);
                         change = true;
+                    }
                 }
             }
             if (change && GameStates.IsInTask) { NotifyRoles(SpecifySeer: pc); }
         }
         public static string GetProgressText(byte playerId, bool comms)
         {
-            var sb = new StringBuilder();
+            var sb = "";
 
             var taskState = Main.PlayerStates?[playerId].GetTaskState();
             Color TextColor;
@@ -97,10 +100,10 @@ namespace TOHE.Roles.Crewmate
             if (UseLimit[playerId] < 1) TextColor1 = Color.red;
             else TextColor1 = Color.white;
 
-            sb.Append(ColorString(TextColor, $"({Completed}/{taskState.AllTasksCount})"));
-            sb.Append(ColorString(TextColor1, $" <color=#777777>-</color> {Math.Round(UseLimit[playerId], 1)}"));
+            sb += ColorString(TextColor, $"({Completed}/{taskState.AllTasksCount})");
+            sb += ColorString(TextColor1, $" <color=#777777>-</color> {Math.Round(UseLimit[playerId], 1)}");
 
-            return sb.ToString();
-            }
+            return sb;
         }
+    }
 }

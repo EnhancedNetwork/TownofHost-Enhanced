@@ -1679,7 +1679,7 @@ internal class ChatCommands
                     Utils.SendMessage(GetString("VipColorCommandNoLobby"), player.PlayerId);
                     break;
                 }
-                if (Options.GradientTagsOpt.GetBool()) 
+                if (!Options.GradientTagsOpt.GetBool()) 
                 { 
                     subArgs = args.Length != 2 ? "" : args[1];
                     if (string.IsNullOrEmpty(subArgs) || !Utils.CheckColorHex(subArgs))
