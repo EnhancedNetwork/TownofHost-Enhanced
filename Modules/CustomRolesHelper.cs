@@ -275,7 +275,7 @@ static class CustomRolesHelper
             CustomRoles.Brakar or
             CustomRoles.Oblivious or
             CustomRoles.Bewilder or
-            CustomRoles.Sunglasses or
+            //CustomRoles.Sunglasses or
             CustomRoles.Knighted or
             CustomRoles.Workhorse or
             CustomRoles.Fool or
@@ -1115,7 +1115,7 @@ static class CustomRolesHelper
 
             case CustomRoles.Torch:
                 if (pc.Is(CustomRoles.Bewilder)
-                    || pc.Is(CustomRoles.Sunglasses)
+                    //|| pc.Is(CustomRoles.Sunglasses)
                     || pc.Is(CustomRoles.Lighter)
                     || pc.Is(CustomRoles.GuardianAngelTOHE)) 
                     return false;
@@ -1205,7 +1205,7 @@ static class CustomRolesHelper
 
             case CustomRoles.Bewilder:
                 if (pc.Is(CustomRoles.Torch)
-                    || pc.Is(CustomRoles.Sunglasses)
+                    //|| pc.Is(CustomRoles.Sunglasses)
                     || pc.Is(CustomRoles.Lighter)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
@@ -1310,15 +1310,15 @@ static class CustomRolesHelper
                     return false;
                 break;
 
-            case CustomRoles.Sunglasses:
-                if (pc.Is(CustomRoles.Torch)
-                    || pc.Is(CustomRoles.Bewilder)
-                    || pc.Is(CustomRoles.Lighter)
-                    || pc.Is(CustomRoles.GuardianAngelTOHE))
-                    return false;
-                if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeSunglasses.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeSunglasses.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeSunglasses.GetBool()))
-                    return false;
-                break;
+            //case CustomRoles.Sunglasses:
+            //    if (pc.Is(CustomRoles.Torch)
+            //        || pc.Is(CustomRoles.Bewilder)
+            //        || pc.Is(CustomRoles.Lighter)
+            //        || pc.Is(CustomRoles.GuardianAngelTOHE))
+            //        return false;
+            //    if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeSunglasses.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeSunglasses.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeSunglasses.GetBool()))
+            //        return false;
+            //    break;
 
             case CustomRoles.TicketsStealer:
                 if (pc.Is(CustomRoles.Vindicator)
