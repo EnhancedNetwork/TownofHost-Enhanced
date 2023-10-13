@@ -1756,7 +1756,7 @@ public static class Utils
                         //"33ccff", "ff99cc"
                         if (startColorCode == endColorCode) modtag = $"<color=#{startColorCode}>{GetString("VipTag")}</color>";
 
-                        else modtag = GradientColorText(startColorCode, endColorCode, GetString("VIPTag"));
+                        else modtag = GradientColorText(startColorCode, endColorCode, GetString("VipTag"));
                     }
                 }
             }
