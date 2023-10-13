@@ -564,11 +564,17 @@ public class TaskState
             //船鬼要抽奖啦
             if (player.Is(CustomRoles.Crewpostor))
             {
-
+                if (Main.CrewpostorTasksDone.ContainsKey(player.PlayerId)) Main.CrewpostorTasksDone[player.PlayerId]++;
+                else Main.CrewpostorTasksDone[player.PlayerId] = 0;
+                RPC.CrewpostorTasksSendRPC(player.PlayerId, Main.CrewpostorTasksDone[player.PlayerId]);
                 List<PlayerControl> list = Main.AllAlivePlayerControls.Where(x => x.PlayerId != player.PlayerId && (Options.CrewpostorCanKillAllies.GetBool() || !x.GetCustomRole().IsImpostorTeam())).ToList();
                 if (list.Count < 1)
                 {
                     Logger.Info($"No target to kill", "Crewpostor");
+                }
+                else if (Main.CrewpostorTasksDone[player.PlayerId] % Options.CrewpostorKillAfterTask.GetInt() != 0 && Main.CrewpostorTasksDone[player.PlayerId] != 0)
+                {
+                    Logger.Info($"Crewpostor task done but kill skipped, tasks completed {Main.CrewpostorTasksDone[player.PlayerId]}, but it kills after {Options.CrewpostorKillAfterTask.GetInt()} tasks", "Crewpostor");
                 }
                 else
                 {

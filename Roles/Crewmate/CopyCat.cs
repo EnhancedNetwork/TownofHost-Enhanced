@@ -178,6 +178,9 @@ public static class CopyCat
                     President.EndLimit.Remove(pc.PlayerId);
                     President.RevealLimit.Remove(pc.PlayerId);
                     break;
+                case CustomRoles.Spy:
+                    Spy.UseLimit.Remove(pc.PlayerId);
+                    break;
             }
             pc.RpcSetCustomRole(CustomRoles.CopyCat);
             SetKillCooldown(player);
@@ -203,7 +206,6 @@ public static class CopyCat
             CustomRoles.Spiritualist or
             CustomRoles.Tracker or
             //bcoz of single role
-            CustomRoles.Spy or
             // Other
             CustomRoles.Investigator;
     }
@@ -381,6 +383,9 @@ public static class CopyCat
                     President.CheckPresidentReveal.Add(pc.PlayerId,false);
                     President.EndLimit.Add(pc.PlayerId, President.PresidentAbilityUses.GetInt());
                     President.RevealLimit.Add(pc.PlayerId, 1);
+                    break;
+                case CustomRoles.Spy:
+                    Spy.UseLimit.Add(pc.PlayerId, Spy.UseLimitOpt.GetInt());
                     break;
 
             }
