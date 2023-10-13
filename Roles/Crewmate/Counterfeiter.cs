@@ -17,6 +17,7 @@ public static class Counterfeiter
     public static Dictionary<byte, int> SeelLimit = new();
     public static OptionItem CounterfeiterSkillCooldown;
     public static OptionItem CounterfeiterSkillLimitTimes;
+    public static OptionItem CounterfeiterAbilityLost;
     public static void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Counterfeiter);
@@ -24,6 +25,7 @@ public static class Counterfeiter
             .SetValueFormat(OptionFormat.Seconds);
         CounterfeiterSkillLimitTimes = IntegerOptionItem.Create(Id + 11, "CounterfeiterSkillLimitTimes", new(1, 15, 1), 2, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Counterfeiter])
             .SetValueFormat(OptionFormat.Times);
+        CounterfeiterAbilityLost = BooleanOptionItem.Create(Id + 12, "CounterfeiterAbilityLost", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Counterfeiter]);
     }
     public static void Init()
     {
@@ -124,7 +126,12 @@ public static class Counterfeiter
                     CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Misfire, target.PlayerId);
                     target.SetRealKiller(Utils.GetPlayerById(pc));
                     target.SetRealKiller(killer);
-                    Logger.Info($"赝品商 {killer.GetRealName()} 的客户 {target.GetRealName()} 因不带刀自杀", "Counterfeiter");
+                    if (CounterfeiterAbilityLost.GetBool())
+                    {
+                        SeelLimit[killer.PlayerId] = 0;
+                        SendRPC(killer.PlayerId);
+                    }
+                    Logger.Info($"Counterfeiter: {killer.GetRealName()} deceived {target.GetRealName()} player without kill button", "Counterfeiter");
                 }
             }
     }
