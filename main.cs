@@ -868,7 +868,7 @@ public enum CustomRoles
     Trapper,
     Infected,
     Onbound,
-    Rebound
+    Rebound,
     Knighted,
     Contagious,
     Unreportable,
