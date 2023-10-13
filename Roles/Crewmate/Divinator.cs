@@ -253,6 +253,7 @@ public static class Divinator
                 => "Result19",
 
                 CustomRoles.Jackal or
+                CustomRoles.Jailer or
                 CustomRoles.Sidekick or
                 CustomRoles.Maverick or
                 CustomRoles.Opportunist or
