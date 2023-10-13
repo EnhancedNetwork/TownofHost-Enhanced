@@ -337,6 +337,7 @@ public static class Options
     public static OptionItem ImpCanBeBewilder;
     public static OptionItem CrewCanBeBewilder;
     public static OptionItem NeutralCanBeBewilder;
+    public static OptionItem KillerGetBewilderVision;
     public static OptionItem ImpCanBeSunglasses;
     public static OptionItem CrewCanBeSunglasses;
     public static OptionItem NeutralCanBeSunglasses;
@@ -1801,6 +1802,8 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.Bewilder]);
         NeutralCanBeBewilder = BooleanOptionItem.Create(15213, "NeutralCanBeBewilder", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Bewilder]);
+        KillerGetBewilderVision = BooleanOptionItem.Create(15214, "KillerGetBewilderVision", true, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Bewilder]);
         SetupAdtRoleOptions(13850, CustomRoles.Burst, canSetNum: true);
         ImpCanBeBurst = BooleanOptionItem.Create(13860, "ImpCanBeBurst", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Burst]);
@@ -1951,16 +1954,16 @@ public static class Options
         SetupAdtRoleOptions(15600, CustomRoles.Rascal, canSetNum: true, tab: TabGroup.Addons);
         RascalAppearAsMadmate = BooleanOptionItem.Create(15610, "RascalAppearAsMadmate", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Rascal]);
-        SetupAdtRoleOptions(15450, CustomRoles.Sunglasses, canSetNum: true);
-        SunglassesVision = FloatOptionItem.Create(15460, "SunglassesVision", new(0f, 5f, 0.05f), 0.75f, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Sunglasses])
-            .SetValueFormat(OptionFormat.Multiplier);
-        ImpCanBeSunglasses = BooleanOptionItem.Create(15461, "ImpCanBeSunglasses", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Sunglasses]);
-        CrewCanBeSunglasses = BooleanOptionItem.Create(15462, "CrewCanBeSunglasses", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Sunglasses]);
-        NeutralCanBeSunglasses = BooleanOptionItem.Create(15463, "NeutralCanBeSunglasses", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Sunglasses]);
+        //SetupAdtRoleOptions(15450, CustomRoles.Sunglasses, canSetNum: true);
+        //SunglassesVision = FloatOptionItem.Create(15460, "SunglassesVision", new(0f, 5f, 0.05f), 0.75f, TabGroup.Addons, false)
+        //    .SetParent(CustomRoleSpawnChances[CustomRoles.Sunglasses])
+        //    .SetValueFormat(OptionFormat.Multiplier);
+        //ImpCanBeSunglasses = BooleanOptionItem.Create(15461, "ImpCanBeSunglasses", true, TabGroup.Addons, false)
+        //    .SetParent(CustomRoleSpawnChances[CustomRoles.Sunglasses]);
+        //CrewCanBeSunglasses = BooleanOptionItem.Create(15462, "CrewCanBeSunglasses", true, TabGroup.Addons, false)
+        //    .SetParent(CustomRoleSpawnChances[CustomRoles.Sunglasses]);
+        //NeutralCanBeSunglasses = BooleanOptionItem.Create(15463, "NeutralCanBeSunglasses", true, TabGroup.Addons, false)
+        //    .SetParent(CustomRoleSpawnChances[CustomRoles.Sunglasses]);
         SetupAdtRoleOptions(14350, CustomRoles.Unlucky, canSetNum: true);
         UnluckyKillSuicideChance = IntegerOptionItem.Create(14364, "UnluckyKillSuicideChance", new(0, 100, 1), 2, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky])

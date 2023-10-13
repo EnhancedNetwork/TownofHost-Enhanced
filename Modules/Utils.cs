@@ -628,6 +628,7 @@ public static class Utils
         if (!Main.playerVersion.ContainsKey(0)) return ""; //ホストがMODを入れていなければ未記入を返す
         var ProgressText = new StringBuilder();
         var role = Main.PlayerStates[playerId].MainRole;
+        var pc = Utils.GetPlayerById(playerId);
         switch (role)
         {
             case CustomRoles.Arsonist:
