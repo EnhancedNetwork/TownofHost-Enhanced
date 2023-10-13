@@ -1724,6 +1724,7 @@ class ReportDeadBodyPatch
                         ))) return false;
             }
 
+            if (Deathpact.IsEnable && !Deathpact.PlayersInDeathpactCanCallMeeting.GetBool() && Deathpact.IsInActiveDeathpact(__instance)) return false;
 
             if (target == null) //拍灯事件
             {
