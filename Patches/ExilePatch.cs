@@ -201,7 +201,7 @@ class ExileControllerWrapUpPatch
                 CustomRoles.Alchemist or
                 CustomRoles.Bomber or
                 CustomRoles.Undertaker or
-                CustomRoles.Eris
+                CustomRoles.Instigator
                 ) pc.RpcResetAbilityCooldown();
 
 

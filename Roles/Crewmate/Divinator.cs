@@ -232,7 +232,7 @@ public static class Divinator
                 CustomRoles.Lurker or
                 CustomRoles.Swapper or
                 CustomRoles.Sunnyboy or
-                CustomRoles.Eris
+                CustomRoles.Instigator
                 => "Result17",
 
                 CustomRoles.Mafia or

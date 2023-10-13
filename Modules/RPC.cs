@@ -1242,7 +1242,7 @@ internal static class RPC
             case CustomRoles.Spy:
                 Spy.Add(targetId);
                 break;
-            case CustomRoles.Eris:
+            case CustomRoles.Instigator:
                 Eris.Add(targetId);
                 break;
         }

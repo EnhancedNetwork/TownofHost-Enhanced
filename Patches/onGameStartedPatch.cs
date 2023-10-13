@@ -917,11 +917,13 @@ internal class SelectRolesPatch
                     case CustomRoles.Spy:
                         Spy.Add(pc.PlayerId);
                         break;
+<<<<<<< HEAD
+                    case CustomRoles.Instigator:
+                        Eris.Add(pc.PlayerId);
+=======
                     case CustomRoles.Crewpostor:
                         Main.CrewpostorTasksDone[pc.PlayerId] = 0;
-                        break;
-                    case CustomRoles.Eris:
-                        Eris.Add(pc.PlayerId);
+>>>>>>> main
                         break;
                 }
                 foreach (var subRole in pc.GetCustomSubRoles())

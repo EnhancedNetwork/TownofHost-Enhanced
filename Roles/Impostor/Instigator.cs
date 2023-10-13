@@ -4,7 +4,7 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor
 {
-    public class Eris
+    public class Instigator
     {
         private static readonly int Id = 2121212;
         public static List<byte> playerIdList = new();
@@ -20,12 +20,12 @@ namespace TOHE.Roles.Impostor
 
         public static void SetupCustomOption()
         {
-            SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Eris);
-            KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(20f, 180f, 1f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Eris])
+            SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Instigator);
+            KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(20f, 180f, 1f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Instigator])
                 .SetValueFormat(OptionFormat.Seconds);
-            AbilityLimit = IntegerOptionItem.Create(Id + 11, "ErisAbilityLimit", new(1, 15, 1), 3, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Eris])
+            AbilityLimit = IntegerOptionItem.Create(Id + 11, "InstigatorAbilityLimit", new(1, 15, 1), 3, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Instigator])
                 .SetValueFormat(OptionFormat.Times);
-            KillsPerAbilityUse = IntegerOptionItem.Create(Id + 12, "ErisKillsPerAbilityUse", new(1, 15, 1), 1, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Eris])
+            KillsPerAbilityUse = IntegerOptionItem.Create(Id + 12, "InstigatorKillsPerAbilityUse", new(1, 15, 1), 1, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Instigator])
                 .SetValueFormat(OptionFormat.Times);
         }
         public static void Init()
@@ -78,7 +78,7 @@ namespace TOHE.Roles.Impostor
                     killPotentials.Remove(target);
                 }
 
-                CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Discord, killPlayers.ToArray());
+                CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Retribution, killPlayers.ToArray());
 
                 AbilityUseCount[player] += 1;
             }
