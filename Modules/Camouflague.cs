@@ -76,6 +76,10 @@ public static class Camouflage
                 CamouflageOutfit = new GameData.PlayerOutfit()
                     .Set("", 17, "hat_pkHW01_Witch", "skin_greedygrampaskin", "visor_Plsno", "pet_Pusheen", "");
                 break;
+            case 6: // ryuk
+                CamouflageOutfit = new GameData.PlayerOutfit()
+                    .Set("", 7, "hat_crownDouble", "skin_D2Saint14", "visor_anime", "pet_Bush", "");
+                break;
         }
     }
     public static void CheckCamouflage()

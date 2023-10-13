@@ -545,6 +545,7 @@ static class CustomRolesHelper
     }
     public static bool IsSnitchTarget(this CustomRoles role)
     {
+        if (role is CustomRoles.Arsonist && Options.ArsonistKeepsGameGoing.GetBool()) return true;
         return role is
             CustomRoles.Jackal or
             CustomRoles.Doppelganger or
