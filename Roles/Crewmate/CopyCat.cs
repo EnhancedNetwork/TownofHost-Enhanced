@@ -219,15 +219,48 @@ public static class CopyCat
         }
         if (CopyCrewVar.GetBool())
         {
-            if (role == CustomRoles.Eraser) role = CustomRoles.Cleanser;
-            if (role == CustomRoles.Mafia) role = CustomRoles.Retributionist;
-            if (role == CustomRoles.Visionary) role = CustomRoles.Oracle;
-            if (role == CustomRoles.Workaholic) role = CustomRoles.Snitch;
-            if (role == CustomRoles.Sunnyboy) role = CustomRoles.Doctor;
-            if (role == CustomRoles.Vindicator || role == CustomRoles.Pickpocket) role = CustomRoles.Mayor;
-            else if (role == CustomRoles.Councillor) role = CustomRoles.Judge;
-            else if (role == CustomRoles.Sans || role == CustomRoles.Juggernaut) role = CustomRoles.Reverie;
-            else if (role == CustomRoles.EvilGuesser || role == CustomRoles.Doomsayer) role = CustomRoles.NiceGuesser;
+            switch (role)
+            {
+                case CustomRoles.Eraser:
+                    role = CustomRoles.Cleanser;
+                    break;
+                case CustomRoles.Mafia:
+                    role = CustomRoles.Retributionist;
+                    break;
+                case CustomRoles.Visionary:
+                    role = CustomRoles.Oracle;
+                    break;
+                case CustomRoles.Workaholic:
+                    role = CustomRoles.Snitch;
+                    break;
+                case CustomRoles.Sunnyboy:
+                    role = CustomRoles.Doctor;
+                    break;
+                case CustomRoles.Vindicator:
+                case CustomRoles.Pickpocket:
+                    role = CustomRoles.Mayor;
+                    break;
+                case CustomRoles.Councillor:
+                    role = CustomRoles.Judge;
+                    break;
+                case CustomRoles.Sans:
+                case CustomRoles.Juggernaut:
+                    role = CustomRoles.Reverie;
+                    break;
+                case CustomRoles.EvilGuesser:
+                case CustomRoles.Doomsayer:
+                    role = CustomRoles.NiceGuesser;
+                    break;              
+            }
+            //if (role == CustomRoles.Eraser) role = CustomRoles.Cleanser;
+            //if (role == CustomRoles.Mafia) role = CustomRoles.Retributionist;
+            //if (role == CustomRoles.Visionary) role = CustomRoles.Oracle;
+            //if (role == CustomRoles.Workaholic) role = CustomRoles.Snitch;
+            //if (role == CustomRoles.Sunnyboy) role = CustomRoles.Doctor;
+            //if (role == CustomRoles.Vindicator || role == CustomRoles.Pickpocket) role = CustomRoles.Mayor;
+            //else if (role == CustomRoles.Councillor) role = CustomRoles.Judge;
+            //else if (role == CustomRoles.Sans || role == CustomRoles.Juggernaut) role = CustomRoles.Reverie;
+            //else if (role == CustomRoles.EvilGuesser || role == CustomRoles.Doomsayer) role = CustomRoles.NiceGuesser;
         }
         if (role.IsCrewmate()/* && (!tpc.GetCustomSubRoles().Any(x => x == CustomRoles.Rascal))*/)
         {
