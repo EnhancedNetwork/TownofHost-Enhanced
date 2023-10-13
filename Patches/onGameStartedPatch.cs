@@ -78,7 +78,7 @@ internal class ChangeRoleSettings
             Main.VirusNotify = new();
             Main.ForYandere = new();
             Main.NeedKillYandere = new();
-
+            
             Main.LastEnteredVent = new();
             Main.LastEnteredVentLocation = new();
             Main.EscapeeLocation = new();

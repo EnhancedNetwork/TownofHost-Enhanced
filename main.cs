@@ -139,8 +139,6 @@ public class Main : BasePlugin
     public static List<byte> TasklessCrewmate = new();
     public static List<byte> BoobyTrapBody = new();
     public static List<byte> BoobyTrapKiller = new();
-    public static List<byte> NeedKillYandere = new();
-    public static List<byte> ForYandere = new();
     //public static List<byte> KilledDiseased = new();
     public static Dictionary<byte, int> KilledDiseased = new();
     public static Dictionary<byte, int> KilledAntidote = new();

@@ -16,6 +16,7 @@ using Sentry.Internal;
 using static Rewired.Demos.GamepadTemplateUI.GamepadTemplateUI;
 
 namespace TOHE.Roles.Neutral;
+
 public static class Yandere
 {
     private static readonly int Id = 156465;
@@ -27,7 +28,8 @@ public static class Yandere
     public static OptionItem SkillCooldown;
     private static Dictionary<byte, string> lastPlayerName = new();
     public static Dictionary<byte, string> msgToSend = new();
-
+    public static List<byte> NeedKillYandere = new();
+    public static List<byte> ForYandere = new();
     public static Dictionary<byte, byte> Target = new();
     public static void SetupCustomOption()
     {
@@ -138,7 +140,7 @@ public static class Yandere
         foreach (var lv in Main.ForYandere)
         {
             var si = Utils.GetPlayerById(lv);
-            foreach (var pcs in Main.AllAlivePlayerControls)
+            //foreach (var pcs in Main.AllAlivePlayerControls)
             {
                 var posi = si.transform.position;
                 var diss = Vector2.Distance(posi, pcs.transform.position);
@@ -147,7 +149,7 @@ public static class Yandere
                 if (!Main.NeedKillYandere.Contains(pcs.PlayerId) && !pcs.Is(CustomRoles.Yandere))
                 {
                     Main.NeedKillYandere.Add(pcs.PlayerId);
-                    foreach (var yanderes in Main.AllAlivePlayerControls)
+                    //foreach (var yanderes in Main.AllAlivePlayerControls)
                     {
                         if (yanderes.Is(CustomRoles.Yandere))
                         {
@@ -193,16 +195,16 @@ public static class Yandere
         if (!seer.Is(CustomRoles.Yandere)) return "";
         if (target != null && seer.PlayerId != target.PlayerId) return "";
         if (GameStates.IsMeeting) return "";
-        foreach (var pcs in Main.AllAlivePlayerControls)
+        //foreach (var pcs in Main.AllAlivePlayerControls)
         {
             if (Main.NeedKillYandere.Contains(pcs.PlayerId))
             {
-                foreach (var yanderes in Main.AllAlivePlayerControls)
+                //foreach (var yanderes in Main.AllAlivePlayerControls)
                 {
                     if (yanderes.Is(CustomRoles.Yandere))
                     {
                         var playerId = yanderes.PlayerId;
-                        NameColorManager.Add(yanderes.PlayerId, pcs.PlayerId, "#8B0000");
+                        NameColorManager.Add(yanderes.PlayerId, pcs.PlayerId, "#FF0000");
                         var targetId = pcs.PlayerId;
                         Target[playerId] = targetId;
                         TargetArrow.Add(playerId, targetId);

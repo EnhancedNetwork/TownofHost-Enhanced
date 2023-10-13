@@ -117,7 +117,7 @@ public static class DevManager
         DevUserList.Add(new(code: "maltyhoney#2924", color: "null", tag: "Tradutor", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "TonyStark"));
         DevUserList.Add(new(code: "mimerecord#9638", color: "null", tag: "Tradutor", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "Arc"));
 
-        DevUserList.Add(new(code: "cloakhazy#9133", color: "#87CEFA", tag: "我是崽子吖awa", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null)); //乐崽吖
+        DevUserList.Add(new(code: "cloakhazy#9133", color: "#87CEFA", tag: "我是崽子吖awa", isUp: true, isDev: true, deBug: true, colorCmd: false, upName: null)); //乐崽吖
         DevUserList.Add(new(code: "drawncod#3642", color: "#00FFFF", tag: "简中翻译人员", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null)); //船员小青
         DevUserList.Add(new(code: "grubmotive#0072", color: "#4169E1", tag: "跟班诅咒中", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null)); //您有一个好
 
