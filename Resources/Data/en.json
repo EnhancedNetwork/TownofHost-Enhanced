@@ -1348,6 +1348,8 @@
   "CrewpostorKnowsAllies": "Knows <color=#ff1919>Impostors</color>",
   "AlliesKnowCrewpostor": "Known to <color=#ff1919>Impostors</color>",
   "CrewpostorLungeKill": "Crewpostor lunges on kill",
+  "CrewpostorKillAfterTask": "Number of tasks completed to make 1 kill",
+
   "HasSidekick": "Has <color=#00b4eb>Sidekick</color>",
   "NonNeutralKillingRolesMinPlayer": "<color=#00ffff>Minimum</color> amount of <color=#ffff00>Non-Killing</color> <color=#7f8c8d>Neutrals</color>",
   "NonNeutralKillingRolesMaxPlayer": "<color=#00a5ff>Maximum</color> amount of <color=#ffff00>Non-Killing</color> <color=#7f8c8d>Neutrals</color>",
