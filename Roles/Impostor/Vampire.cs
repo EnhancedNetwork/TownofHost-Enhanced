@@ -78,9 +78,9 @@ public static class Vampire
 
     public static void OnFixedUpdate(PlayerControl vampire)
     {
-        var vampireID = vampire.PlayerId;
         if (!IsThisRole(vampire.PlayerId)) return;
 
+        var vampireID = vampire.PlayerId;
         List<byte> targetList = new(BittenPlayers.Where(b => b.Value.VampireId == vampireID).Select(b => b.Key));
 
         foreach (var targetId in targetList)
