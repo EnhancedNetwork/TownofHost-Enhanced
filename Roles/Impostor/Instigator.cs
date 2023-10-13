@@ -59,9 +59,8 @@ namespace TOHE.Roles.Impostor
                 foreach (var playerVote in votedForExiled)
                 {
                     var crewPlayer = Main.AllPlayerControls.FirstOrDefault(a => a.PlayerId == playerVote.TargetPlayerId);
-                    if (crewPlayer == null) continue;
-                    if (crewPlayer.Data.GetCustomRole().IsCrewmate())
-                        killPotentials.Add(crewPlayer);
+                    if (crewPlayer == null || !crewPlayer.Data.GetCustomRole().IsCrewmate()) continue;
+                    killPotentials.Add(crewPlayer);
                 }
 
                 if (!killPotentials.Any()) break;
