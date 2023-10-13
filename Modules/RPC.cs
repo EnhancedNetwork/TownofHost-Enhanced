@@ -1243,7 +1243,7 @@ internal static class RPC
                 Spy.Add(targetId);
                 break;
             case CustomRoles.Instigator:
-                Eris.Add(targetId);
+                Instigator.Add(targetId);
                 break;
         }
         HudManager.Instance.SetHudActive(true);

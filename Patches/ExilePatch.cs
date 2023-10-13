@@ -110,7 +110,7 @@ class ExileControllerWrapUpPatch
 
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist) Main.PlayerStates[exiled.PlayerId].SetDead();
 
-            Eris.OnPlayerExile(exiled);
+            Instigator.OnPlayerExile(exiled);
         }
         if (AmongUsClient.Instance.AmHost && Main.IsFixedCooldown)
             Main.RefixCooldownDelay = Options.DefaultKillCooldown - 3f;

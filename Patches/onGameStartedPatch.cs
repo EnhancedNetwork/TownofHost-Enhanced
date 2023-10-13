@@ -320,7 +320,7 @@ internal class ChangeRoleSettings
             Mini.Init();
             Blackmailer.Init();
             Spy.Init();
-            Eris.Init();
+            Instigator.Init();
 
             CustomWinnerHolder.Reset();
             AntiBlackout.Reset();
@@ -917,13 +917,12 @@ internal class SelectRolesPatch
                     case CustomRoles.Spy:
                         Spy.Add(pc.PlayerId);
                         break;
-<<<<<<< HEAD
                     case CustomRoles.Instigator:
-                        Eris.Add(pc.PlayerId);
-=======
+                        Instigator.Add(pc.PlayerId);
+                        break;
+
                     case CustomRoles.Crewpostor:
                         Main.CrewpostorTasksDone[pc.PlayerId] = 0;
->>>>>>> main
                         break;
                 }
                 foreach (var subRole in pc.GetCustomSubRoles())
