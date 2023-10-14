@@ -365,6 +365,52 @@ public class ModNewsHistory
                 AllModNews.Add(news);
             }
         }
+           // ====== TChinese ======
+        else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.TChinese)
+        {
+             {
+                // TOHE v1.0.1
+                var news = new ModNews
+                {
+                    Number = 70004,
+                    Title = "Town of Host: Enhanced v1.0.1",
+                    SubTitle = "★★ 新時代 ★★",
+                    ShortTitle = "TOH: Enhanced v1.0.1",
+                    BeforeNumber = 70003,
+                    Text = "<size=150%>歡迎來到 TOH: Enhanced v1.0.1!</size>\n\n<size=125%>支援版本 Among Us v2023.7.11、v2023.7.12</size>\n" +
+                    "\n<b>【基於版本】</b>\n - 基於TOH-RE v3.1.0 (備註: 目前可以使用)\r\n" +
+                    "\n<b>【修復】</b>" +
+                    "\n     - 刪除了大廳中的Loonie標誌，並將其更換" +
+                    "\n     - 在占卜師中增加了一條更新的線索" +
+                    "\n     - 修復了模板以及VIP清單沒有產生的問題" +
+                    "\n     - 一個新職業的預告...?" +
+                    "\n\n★ 歡迎來到 Town of Host: Enhanced! ★",
+                    Date = "2023-10-15T00:00:00Z",
+                };
+                AllModNews.Add(news);
+            }
+            {
+                // TOHE v1.0.0
+                var news = new ModNews
+                {
+                    Number = 70002,
+                    Title = "Town of Host: Enhanced v1.0.0",
+                    SubTitle = "★★ 新時代的開始 ★★",
+                    ShortTitle = "TOH: Enhanced v1.0.0",
+                    BeforeNumber = 70001,
+                    Text = "<size=150%>歡迎來到 TOH: Enhanced v1.0.0!</size>\n\n<size=125%>支援版本 Among Us v2023.7.11、v2023.7.12</size>\n" +
+                    "\n<b>【基於版本】</b>\n - 基於TOH-RE v3.1.0 (備註: 目前可以使用)\r\n" +
+                    "\n<b>【更改/修復】</b>" +
+                    "\n     - 刪除了與Loonie的所有關聯，以及README.md中的Credits" +
+                    "\n     - (僅限英語翻譯)更改職業名稱 Jailor -> Jailer (you're welcome, ryuk)" +
+                    "\n     - 更新了模板/字串/參數" +
+                    "\n     - 修復了強盜字串" +
+                    "\n\n★ 讓模組變得更好了，歡迎來到 Town of Host: Enhanced! ★",
+                    Date = "2023-10-15T00:00:00Z",
+                };
+                AllModNews.Add(news);
+            }
+        }
     }
 
     [HarmonyPatch(typeof(PlayerAnnouncementData), nameof(PlayerAnnouncementData.SetAnnouncements)), HarmonyPrefix]
