@@ -125,8 +125,7 @@ public static class Agitater
     }
     public static void OnFixedUpdate(PlayerControl player)
     {
-        if (!GameStates.IsInTask) return;
-        if (!(CurrentBombedPlayer == player.PlayerId)) return;
+        if (!AgitaterHasBombed) return;
 
         if (!player.IsAlive())
         {
@@ -156,7 +155,7 @@ public static class Agitater
             }
         }
     }
-    public static void PassBomb(PlayerControl player, PlayerControl target, bool IsAgitater = false)
+    private static void PassBomb(PlayerControl player, PlayerControl target, bool IsAgitater = false)
     {
         if (!AgitaterHasBombed) return;
         if (target.Data.IsDead) return;
