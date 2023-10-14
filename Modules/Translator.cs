@@ -25,8 +25,8 @@ public static class Translator
     {
         try
         {
-            // Get the directory containing the JSON files (e.g., TOHE.Resources.Data)
-            string jsonDirectory = "TOHE.Resources.Data";
+            // Get the directory containing the JSON files (e.g., TOHE.Resources.Lang)
+            string jsonDirectory = "TOHE.Resources.Lang";
             // Get the assembly containing the resources
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();
             string[] jsonFileNames = GetJsonFileNames(assembly, jsonDirectory);
