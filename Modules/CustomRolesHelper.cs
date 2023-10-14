@@ -1077,6 +1077,13 @@ static class CustomRolesHelper
                     return false;
                 break;
 
+            case CustomRoles.Cyber:
+                if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeCyber.GetBool()) 
+                    || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeCyber.GetBool()) 
+                    || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeCyber.GetBool()))
+                    return false;
+                break;
+
             case CustomRoles.Reach:
                 if (!pc.CanUseKillButton())
                     return false;
