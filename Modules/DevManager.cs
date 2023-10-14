@@ -180,6 +180,7 @@ public static class DevManager
         DevUserList.Add(new(code: "examfishy#9080", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "killer5362"));
         DevUserList.Add(new(code: "dusksole#6956", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "Bandz"));
         DevUserList.Add(new(code: "wontsave#5153", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "wayne"));
+        DevUserList.Add(new(code: "sightcalm#1943", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "Scarlet")); //lavender_loves
         DevUserList.Add(new(code: "rollingegg#7687", color: "#fe7d6e", tag: "Ruler of Jiggly Peach Cakes", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "DarlingXX"));
         DevUserList.Add(new(code: "riskyhunt#8928", color: "#DC143C", tag: "I♥PANDAS", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "Panda"));
     }
