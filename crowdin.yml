@@ -1,3 +1,1 @@
-#files:
-#  - source: /Resources/Data/en.json
-#    translation: /Resources/Data/%locale_with_underscore%.json
+files: []
