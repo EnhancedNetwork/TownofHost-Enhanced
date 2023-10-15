@@ -198,12 +198,6 @@ class GameEndChecker
                 //追加胜利
                 foreach (var pc in Main.AllPlayerControls)
                 {
-                    //NiceMini
-                    //if (pc.Is(CustomRoles.NiceMini) && pc.IsAlive())
-                    //{
-                    //    CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
-                    //    CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.NiceMini);
-                    //}
                     //Opportunist
                     if (pc.Is(CustomRoles.Opportunist) && pc.IsAlive())
                     {
@@ -241,13 +235,13 @@ class GameEndChecker
                     }
                     if (!Options.PhantomSnatchesWin.GetBool())
                     {
-                        //Phantom
-                        if (pc.Is(CustomRoles.Phantom) && !pc.IsAlive() && pc.GetPlayerTaskState().IsTaskFinished)
-                        {
-                            CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
-                            CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Phantom);
-                        }
+                    //Phantom
+                    if (pc.Is(CustomRoles.Phantom) && !pc.IsAlive() && pc.GetPlayerTaskState().IsTaskFinished)
+                    {
+                        CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                        CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Phantom);
                     }
+                }
                     //自爆卡车来咯
                     if (pc.Is(CustomRoles.Provocateur) && Main.Provoked.TryGetValue(pc.PlayerId, out var tar))
                     {

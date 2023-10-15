@@ -1,5 +1,6 @@
 using Hazel;
 using System.Collections.Generic;
+using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -62,8 +63,12 @@ public static class CursedSoul
     public static bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && CurseLimit >= 1;
     public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
-
         if (CurseLimit < 1) return;
+        if (Mini.Age != 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
+        {
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Succubus), GetString("CantRecruit")));
+            return;
+        }
         if (CanBeSoulless(target))
         {
             CurseLimit--;

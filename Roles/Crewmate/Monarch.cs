@@ -1,6 +1,7 @@
 ﻿using Hazel;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -59,6 +60,11 @@ public static class Monarch
     public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
         if (KnightLimit < 1) return false;
+        if (Mini.Age != 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
+        {
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Succubus), GetString("CantRecruit")));
+            return false;
+        }
         if (CanBeKnighted(target))
         {
             KnightLimit--;

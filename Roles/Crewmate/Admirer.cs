@@ -57,6 +57,11 @@ public static class Admirer
     public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
         if (AdmireLimit < 1) return;
+        if (Mini.Age != 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
+        {
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Succubus), GetString("CantRecruit")));
+            return;
+        }
         if (CanBeAdmired(target))
         {
             if (!killer.Is(CustomRoles.Recruit) && !killer.Is(CustomRoles.Charmed) && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious) && !killer.Is(CustomRoles.Admired))
