@@ -37,8 +37,8 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "1.0.2.41";
-    public const string PluginDisplayVersion = "1.0.2 Dev 4";
+    public const string PluginVersion = "1.1.0.1";
+    public const string PluginDisplayVersion = "1.1.0 Dev 1";
     public static readonly string SupportedVersionAU = "2023.7.11";
     public const bool Canary = false;
 
@@ -441,7 +441,7 @@ public class Main : BasePlugin
                 {CustomRoles.RuthlessRomantic, "#D2691E"},
                 {CustomRoles.Succubus, "#cf6acd"},
                 {CustomRoles.HexMaster, "#ff00ff"},
-                {CustomRoles.Occultist, "#375d91"},
+                //{CustomRoles.Occultist, "#375d91"},
                 {CustomRoles.Wraith, "#4B0082"},
                 {CustomRoles.NSerialKiller, "#233fcc"},
                 {CustomRoles.BloodKnight, "#630000"},
@@ -492,7 +492,7 @@ public class Main : BasePlugin
                 {CustomRoles.Brakar, "#1447af"},
                 {CustomRoles.Oblivious, "#424242"},
                 {CustomRoles.Bewilder, "#c894f5"},
-                {CustomRoles.Sunglasses, "#E7C12B"},
+                //{CustomRoles.Sunglasses, "#E7C12B"},
                 {CustomRoles.Workhorse, "#00ffff"},
                 {CustomRoles.Fool, "#e6e7ff"},
                 {CustomRoles.Avanger, "#ffab1c"},
@@ -827,7 +827,7 @@ public enum CustomRoles
     Werewolf,
     Necromancer,
     Huntsman,
-    Occultist,
+    //Occultist,
     Imitator,
    //two-way camp
     Mini,
@@ -850,7 +850,7 @@ public enum CustomRoles
     Brakar,
     Oblivious,
     Bewilder,
-    Sunglasses,
+    //Sunglasses,
     Workhorse,
     Fool,
     Avanger,
@@ -940,7 +940,7 @@ public enum CustomWinner
     BloodKnight = CustomRoles.BloodKnight,
     Poisoner = CustomRoles.Poisoner,
     HexMaster = CustomRoles.HexMaster,
-    Occultist = CustomRoles.Occultist,
+    //Occultist = CustomRoles.Occultist,
     Succubus = CustomRoles.Succubus,
     Wraith = CustomRoles.Wraith,
     Bandit = CustomRoles.Bandit,

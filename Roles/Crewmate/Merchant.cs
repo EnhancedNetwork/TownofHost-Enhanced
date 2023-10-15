@@ -36,7 +36,7 @@ namespace TOHE.Roles.Crewmate
         private static readonly List<CustomRoles> harmfulAddons = new List<CustomRoles>
         {
             CustomRoles.Oblivious,
-            CustomRoles.Sunglasses,
+            //CustomRoles.Sunglasses,
             CustomRoles.VoidBallot,
             CustomRoles.Fragile,
             CustomRoles.Unreportable, // Disregarded

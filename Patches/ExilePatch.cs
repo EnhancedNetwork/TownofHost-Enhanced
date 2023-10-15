@@ -117,7 +117,7 @@ class ExileControllerWrapUpPatch
 
         Witch.RemoveSpelledPlayer();
         HexMaster.RemoveHexedPlayer();
-        Occultist.RemoveCursedPlayer();
+        //Occultist.RemoveCursedPlayer();
 
         if (Swapper.Vote.Count > 0 && Swapper.VoteTwo.Count > 0)
         {
