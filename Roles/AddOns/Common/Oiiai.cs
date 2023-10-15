@@ -68,12 +68,12 @@ namespace TOHE.Roles.AddOns.Common
             {
                 if (!killer.GetCustomRole().IsNK())
                 {
-                    //Eraser code here LOL
-                    if (killer == null) return;
+                    //Use eraser here LOL
                     killer.RpcSetCustomRole(CustomRolesHelper.GetErasedRole(killer.GetCustomRole().GetRoleTypes(), killer.GetCustomRole()));
                 }
                 else
                 {
+                    //Typically only NK tiggers this
                     killer.RpcSetCustomRole(NRoleChangeRoles[ChangeNeutralRole.GetValue() - 1]);
                 }
                 killer.MarkDirtySettings();
