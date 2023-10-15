@@ -319,9 +319,9 @@ internal class RPCHandlerPatch
             case CustomRPC.SetKillOrHex:
                 HexMaster.ReceiveRPC(reader, false);
                 break;
-            case CustomRPC.SetKillOrCurse:
-                Occultist.ReceiveRPC(reader, false);
-                break;
+            //case CustomRPC.SetKillOrCurse:
+            //    Occultist.ReceiveRPC(reader, false);
+            //    break;
 
             case CustomRPC.SetSheriffShotLimit:
                 Sheriff.ReceiveRPC(reader);
@@ -359,9 +359,9 @@ internal class RPCHandlerPatch
             case CustomRPC.DoHex:
                 HexMaster.ReceiveRPC(reader, true);
                 break;
-            case CustomRPC.DoCurse:
-                Occultist.ReceiveRPC(reader, true);
-                break;
+            //case CustomRPC.DoCurse:
+            //    Occultist.ReceiveRPC(reader, true);
+            //    break;
             case CustomRPC.SniperSync:
                 Sniper.ReceiveRPC(reader);
                 break;
@@ -884,9 +884,9 @@ internal static class RPC
             case CustomRoles.HexMaster:
                 HexMaster.Add(targetId);
                 break;
-            case CustomRoles.Occultist:
-                Occultist.Add(targetId);
-                break;
+            //case CustomRoles.Occultist:
+            //    Occultist.Add(targetId);
+            //    break;
             case CustomRoles.Camouflager:
                 Camouflager.Add(targetId);
                 break;

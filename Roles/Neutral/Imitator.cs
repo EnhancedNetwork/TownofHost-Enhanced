@@ -370,28 +370,28 @@ public static class Imitator
         }
         killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorInvalidTarget")));
         Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-        if (CanBeRememberedOccultist(target))
-        {
-            RememberLimit--;
-            SendRPC();
-            killer.RpcSetCustomRole(CustomRoles.HexMaster);
+        //if (CanBeRememberedOccultist(target))
+        //{
+        //    RememberLimit--;
+        //    SendRPC();
+        //    killer.RpcSetCustomRole(CustomRoles.HexMaster);
 
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatedNeutralKiller")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
-            Utils.NotifyRoles();
+        //    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatedNeutralKiller")));
+        //    target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
+        //    Utils.NotifyRoles();
 
-            HexMaster.Add(killer.PlayerId);
+        //    HexMaster.Add(killer.PlayerId);
 
-            killer.ResetKillCooldown();
-            killer.SetKillCooldown();
-            if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-            target.RpcGuardAndKill(killer);
-            target.RpcGuardAndKill(target);
+        //    killer.ResetKillCooldown();
+        //    killer.SetKillCooldown();
+        //    if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
+        //    target.RpcGuardAndKill(killer);
+        //    target.RpcGuardAndKill(target);
 
-            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Soulless.ToString(), "Assign " + CustomRoles.Soulless.ToString());
-            Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-            return;
-        }
+        //    Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Soulless.ToString(), "Assign " + CustomRoles.Soulless.ToString());
+        //    Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
+        //    return;
+        //}
         killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorInvalidTarget")));
         Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
         if (CanBeRememberedBloodKnight(target))
@@ -444,10 +444,10 @@ public static class Imitator
     {
         return pc != null && (pc.Is(CustomRoles.HexMaster));
     }
-    public static bool CanBeRememberedOccultist(this PlayerControl pc)
-    {
-        return pc != null && (pc.Is(CustomRoles.Occultist));
-    }
+    //public static bool CanBeRememberedOccultist(this PlayerControl pc)
+    //{
+    //    return pc != null && (pc.Is(CustomRoles.Occultist));
+    //}
     public static bool CanBeRememberedPoisoner(this PlayerControl pc)
     {
         return pc != null && (pc.Is(CustomRoles.Poisoner));
@@ -479,7 +479,7 @@ public static class Imitator
         if (player.Is(CustomRoles.Shroud) && target.Is(CustomRoles.Shroud)) return true;
         if (player.Is(CustomRoles.Refugee) && target.Is(CustomRoles.Refugee)) return true;
         if (player.Is(CustomRoles.Werewolf) && target.Is(CustomRoles.Werewolf)) return true;
-        if (player.Is(CustomRoles.Occultist) && target.Is(CustomRoles.Occultist)) return true;
+        //if (player.Is(CustomRoles.Occultist) && target.Is(CustomRoles.Occultist)) return true;
         if (player.Is(CustomRoles.Refugee) && target.Is(CustomRoleTypes.Impostor)) return true;
         if (player.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Refugee)) return true;
         return false;

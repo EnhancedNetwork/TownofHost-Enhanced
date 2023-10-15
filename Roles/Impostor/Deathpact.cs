@@ -29,6 +29,7 @@ namespace TOHE.Roles.Impostor
         private static OptionItem ReduceVisionWhileInPact;
         private static OptionItem VisionWhileInPact;
         private static OptionItem KillDeathpactPlayersOnMeeting;
+        public static OptionItem PlayersInDeathpactCanCallMeeting;
 
         public static void SetupCustomOption()
         {
@@ -48,6 +49,7 @@ namespace TOHE.Roles.Impostor
             VisionWhileInPact = FloatOptionItem.Create(Id + 17, "DeathpactVisionWhileInPact", new(0f, 5f, 0.05f), 0.65f, TabGroup.ImpostorRoles, false).SetParent(ReduceVisionWhileInPact)
                 .SetValueFormat(OptionFormat.Multiplier);
             KillDeathpactPlayersOnMeeting = BooleanOptionItem.Create(Id + 18, "DeathpactKillPlayersInDeathpactOnMeeting", false, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact]);
+            PlayersInDeathpactCanCallMeeting = BooleanOptionItem.Create(Id + 19, "DeathpactPlayersInDeathpactCanCallMeeting", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact]);
         }
 
         public static void Init()

@@ -347,9 +347,9 @@ public class PlayerGameOptionsSender : GameOptionsSender
             case CustomRoles.HexMaster:
                 HexMaster.ApplyGameOptions(opt);
                 break;
-            case CustomRoles.Occultist:
-                Occultist.ApplyGameOptions(opt);
-                break;
+            //case CustomRoles.Occultist:
+            //    Occultist.ApplyGameOptions(opt);
+            //    break;
             case CustomRoles.Wraith:
                 Wraith.ApplyGameOptions(opt);
                 break;
@@ -440,7 +440,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
 
         }
 
-        if (Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Bewilder) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId && !x.Is(CustomRoles.Hangman)).Any())
+        if (Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Bewilder) && !x.IsAlive() && (x.GetRealKiller()?.PlayerId == player.PlayerId && Options.KillerGetBewilderVision.GetBool()) && !x.Is(CustomRoles.Hangman)).Any())
         {
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, Options.BewilderVision.GetFloat());
@@ -524,11 +524,11 @@ public class PlayerGameOptionsSender : GameOptionsSender
                     opt.SetFloat(FloatOptionNames.CrewLightMod, Options.BewilderVision.GetFloat());
                     opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.BewilderVision.GetFloat());
                     break;
-                case CustomRoles.Sunglasses:
-                    opt.SetVision(false);
-                    opt.SetFloat(FloatOptionNames.CrewLightMod, Options.SunglassesVision.GetFloat());
-                    opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.SunglassesVision.GetFloat());
-                    break;
+                //case CustomRoles.Sunglasses:
+                //    opt.SetVision(false);
+                //    opt.SetFloat(FloatOptionNames.CrewLightMod, Options.SunglassesVision.GetFloat());
+                //    opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.SunglassesVision.GetFloat());
+                //    break;
                 case CustomRoles.Reach:
                     opt.SetInt(Int32OptionNames.KillDistance, 2);
                     break;
