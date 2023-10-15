@@ -320,6 +320,7 @@ internal class ChangeRoleSettings
             Mini.Init();
             Blackmailer.Init();
             Spy.Init();
+            Oiiai.Init();
             
             CustomWinnerHolder.Reset();
             AntiBlackout.Reset();
@@ -636,9 +637,6 @@ internal class SelectRolesPatch
                     case CustomRoles.SabotageMaster:
                         SabotageMaster.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Repairman:
-                        Repairman.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.EvilTracker:
                         EvilTracker.Add(pc.PlayerId);
                         break;
@@ -928,6 +926,13 @@ internal class SelectRolesPatch
                             Main.AwareInteracted[pc.PlayerId] = new();
                             break;
                         // ここに属性のAddを追加
+                        case CustomRoles.Repairman:
+                            Repairman.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.Oiiai:
+                            Oiiai.Add(pc.PlayerId);
+                            break;
+
                         default:
                             break;
                     }

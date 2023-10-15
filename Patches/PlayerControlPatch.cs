@@ -16,6 +16,7 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
+using TOHE.Roles.AddOns.Common;
 
 namespace TOHE;
 
@@ -1364,6 +1365,11 @@ class MurderPlayerPatch
                 rp.SetRealKiller(target);
                 rp.RpcMurderPlayerV3(rp);
             }
+        }
+
+        if (target.Is(CustomRoles.Oiiai))
+        {
+            Oiiai.OnMurderPlayer(killer, target);
         }
 
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Mediumshiper)))
