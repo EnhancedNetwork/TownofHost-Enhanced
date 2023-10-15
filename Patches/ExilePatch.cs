@@ -1,13 +1,10 @@
+using System.Linq;
 using AmongUs.Data;
 using HarmonyLib;
-using System.Linq;
-
-using TOHE.Roles.Impostor;
 using TOHE.Roles.Crewmate;
-using TOHE.Roles.Neutral;
 using TOHE.Roles.Double;
-using System.Collections.Generic;
-using MS.Internal.Xml.XPath;
+using TOHE.Roles.Impostor;
+using TOHE.Roles.Neutral;
 
 namespace TOHE;
 
