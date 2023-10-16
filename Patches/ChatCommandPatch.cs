@@ -974,7 +974,7 @@ internal class ChatCommands
             "速度者" or "速度者"=> GetString("Ludopath"),
             "天文學家" or "天文学家"=> GetString("Chronomancer"),
             "設陷者" or "设陷者"=> GetString("Pitfall"),
-            "狂戰士" or "狂战士"=> GetString("Cultivator"),
+            "狂戰士" or "狂战士"=> GetString("Berserker"),
             "預言家" or "预言家"=> GetString("Farseer"),
             "驗屍官" or "验尸官"=> GetString("Bloodhound"),
             "正義追踪者" or "正义追踪者"=> GetString("Tracker"),
