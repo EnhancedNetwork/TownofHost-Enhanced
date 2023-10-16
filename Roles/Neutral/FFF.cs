@@ -56,23 +56,23 @@ namespace TOHE.Roles.Neutral
                 Main.ResetCamPlayerList.Add(playerId);
         }
 
-        public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
+        public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
         {
-            if (killer == null || target == null) return;
-            if (killer.PlayerId == target.PlayerId) return;
+            if (killer == null || target == null) return false;
+            if (killer.PlayerId == target.PlayerId) return true;
 
-            if (target.GetCustomSubRoles().Any(x => x.IsConverted() || x == CustomRoles.Madmate || x == CustomRoles.Admired) 
+            if (target.GetCustomSubRoles().Any(x => x.IsConverted() || x == CustomRoles.Madmate || x == CustomRoles.Admired)
                 || IsConvertedMainRole(target.GetCustomRole()))
             {
                 if (!ChooseConverted.GetBool())
                 {
-                    killer.RpcMurderPlayerV3(target);
+                    //killer.RpcMurderPlayerV3(target);
                     if (!winnerFFFList.Contains(killer.PlayerId))
                     {
                         winnerFFFList.Add(killer.PlayerId);
                     }
                     Logger.Info($"{killer.GetRealName()} killed right target case 1", "FFF");
-                    return;
+                    return true;
                 }
                 else if (
                     ((target.Is(CustomRoles.Madmate) || target.Is(CustomRoles.Gangster)) && CanKillMadmate.GetBool())
@@ -87,52 +87,49 @@ namespace TOHE.Roles.Neutral
                     || ((target.Is(CustomRoles.Admired) || target.Is(CustomRoles.Admirer)) && CanKillAdmired.GetBool()))
                     )
                 {
-                    killer.RpcMurderPlayerV3(target);
+                    //killer.RpcMurderPlayerV3(target);
                     if (!winnerFFFList.Contains(killer.PlayerId))
                     {
                         winnerFFFList.Add(killer.PlayerId);
                     }
                     Logger.Info($"{killer.GetRealName()} killed right target case 2", "FFF");
-                    return;
+                    return true;
                 }
             }
             //Not return tigger following fail check
+            if (MisFireKillTarget.GetBool() && killer.RpcCheckAndMurder(target, true))
             {
-                if (MisFireKillTarget.GetBool())
-                {
-                    killer.RpcMurderPlayerV3(target);
-                    target.SetRealKiller(killer);
-                    target.Data.IsDead = true;
-                    Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
-                }
-                killer.Data.IsDead = true;
-                Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;
-                killer.RpcMurderPlayerV3(killer);
-                Main.PlayerStates[killer.PlayerId].SetDead();
-                Logger.Info($"{killer.GetRealName()} 击杀了非目标玩家，壮烈牺牲了（bushi）", "FFF");
-                return;
+                killer.RpcMurderPlayerV3(target);
+                target.SetRealKiller(killer);
+                target.Data.IsDead = true;
+                Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
             }
+            killer.Data.IsDead = true;
+            Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;
+            killer.RpcMurderPlayerV3(killer);
+            Main.PlayerStates[killer.PlayerId].SetDead();
+            Logger.Info($"{killer.GetRealName()} 击杀了非目标玩家，壮烈牺牲了（bushi）", "FFF");
+            return false;
         }
 
         private static bool IsConvertedMainRole(CustomRoles role)
         {
-            switch (role)
+            return role switch
             {
-                case CustomRoles.Gangster:
-                case CustomRoles.Succubus:
-                case CustomRoles.Romantic:
-                case CustomRoles.RuthlessRomantic:
-                case CustomRoles.VengefulRomantic:
-                case CustomRoles.Sidekick:
-                case CustomRoles.Jackal:
-                case CustomRoles.Virus:
-                case CustomRoles.Infectious:
-                case CustomRoles.Admirer:
-                    return true;
-                default:
-                    break;
-            }
-            return false;
+                CustomRoles.Gangster or
+                CustomRoles.Succubus or
+                CustomRoles.Romantic or
+                CustomRoles.RuthlessRomantic or
+                CustomRoles.VengefulRomantic or
+                CustomRoles.Sidekick or
+                CustomRoles.Jackal or
+                CustomRoles.Virus or
+                CustomRoles.Infectious or
+                CustomRoles.Admirer
+                => true,
+
+                _ => false,
+            };
         }
     }
 }

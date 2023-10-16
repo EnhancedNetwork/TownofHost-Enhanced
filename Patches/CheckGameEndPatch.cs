@@ -277,7 +277,7 @@ class GameEndChecker
 
 
                 //FFF
-                if (FFF.winnerFFFList.Count > 0)
+                if (FFF.winnerFFFList.Any())
                 {
                     CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.FFF);
                     FFF.winnerFFFList.Do(x => CustomWinnerHolder.WinnerIds.Add(x));
