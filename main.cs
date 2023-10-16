@@ -38,7 +38,7 @@ public class Main : BasePlugin
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
     public const string PluginVersion = "1.1.0.10";
-    public const string PluginDisplayVersion = "1.1.0 Canary 1";
+    public const string PluginDisplayVersion = "1.1.0";
     public static readonly string SupportedVersionAU = "2023.7.11";
     public const bool Canary = false;
 

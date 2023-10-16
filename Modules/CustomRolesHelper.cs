@@ -1053,7 +1053,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Mare)
                     || pc.Is(CustomRoles.Onbound))
                 {
-                    Logger.Warn("reached here", "REbound");
+                    Logger.Warn("reached here", "Rebound");
                     return false;
                 } //Based on guess manager
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeRebound.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeRebound.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeRebound.GetBool()))
