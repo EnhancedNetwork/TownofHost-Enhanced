@@ -97,7 +97,7 @@ public static class Bandit
                 (role == CustomRoles.Nimble && CanVent.GetBool()) ||
                 (role.IsBetrayalAddon() && !CanStealBetrayalAddon.GetBool()))
             { 
-                    Logger.Info($"Removed {role} from stealable addons", "Bandit");
+                    Logger.Info($"Removed {role} from list of stealable addons", "Bandit");
                     AllSubRoles.Remove(role);
             }
         }
@@ -127,7 +127,10 @@ public static class Bandit
         if (StealMode.GetValue() == 1)
         {    
             Main.PlayerStates[target.PlayerId].RemoveSubRole((CustomRoles)SelectedAddOn);
+            if (SelectedAddOn == CustomRoles.Aware) Main.AwareInteracted.Remove(target.PlayerId);
             Logger.Info($"Successfully removed {SelectedAddOn} addon from {target.GetNameWithRole()}", "Bandit");
+
+            if (SelectedAddOn == CustomRoles.Aware && !Main.AwareInteracted.ContainsKey(target.PlayerId)) Main.AwareInteracted[target.PlayerId] = new();
             killer.RpcSetCustomRole((CustomRoles)SelectedAddOn);
             Logger.Info($"Successfully Added {SelectedAddOn} addon to {killer.GetNameWithRole()}", "Bandit");
         }
@@ -161,7 +164,10 @@ public static class Bandit
                 if (target == null) continue;
                 CustomRoles role = kvp2.Value;
                 Main.PlayerStates[targetId].RemoveSubRole(role);
+                if (role == CustomRoles.Aware) Main.AwareInteracted.Remove(target.PlayerId);
                 Logger.Info($"Successfully removed {role} addon from {target.GetNameWithRole()}", "Bandit");
+
+                if (role == CustomRoles.Aware && !Main.AwareInteracted.ContainsKey(target.PlayerId)) Main.AwareInteracted[target.PlayerId] = new();
                 banditpc.RpcSetCustomRole(role);
                 Logger.Info($"Successfully Added {role} addon to {banditpc.GetNameWithRole()}", "Bandit");
             }
