@@ -56,7 +56,7 @@ static class CustomRolesHelper
                 CustomRoles.Dictator => CustomRoles.Crewmate,
                 CustomRoles.Inhibitor => CustomRoles.Impostor,
                 CustomRoles.Saboteur => CustomRoles.Impostor,
-                CustomRoles.Cultivator => CustomRoles.Impostor,
+                CustomRoles.Berserker => CustomRoles.Impostor,
                 CustomRoles.Doctor => CustomRoles.Scientist,
                 CustomRoles.ScientistTOHE => CustomRoles.Scientist,
                 CustomRoles.Tracefinder => CustomRoles.Scientist,
@@ -623,7 +623,7 @@ static class CustomRolesHelper
             CustomRoles.Warlock or
             CustomRoles.Undertaker or
             CustomRoles.Assassin or
-            CustomRoles.Cultivator or
+            CustomRoles.Berserker or
             CustomRoles.Hacker or
             CustomRoles.Visionary or
             CustomRoles.Miner or
