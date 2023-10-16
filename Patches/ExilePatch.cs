@@ -95,7 +95,7 @@ class ExileControllerWrapUpPatch
             {           
                 if (role == CustomRoles.Jester && AmongUsClient.Instance.AmHost)
                 {
-                    if (!Utils.GetPlayerById(exiled.PlayerId).Is(CustomRoles.Admired))
+                    if ((bool)!Utils.GetPlayerById(exiled.PlayerId)?.Is(CustomRoles.Admired))
                     {
                         CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Jester);
                         CustomWinnerHolder.WinnerIds.Add(exiled.PlayerId);

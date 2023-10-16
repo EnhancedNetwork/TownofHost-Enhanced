@@ -67,7 +67,10 @@ public static class Collector
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Collector);
                 foreach (var winner in pc) CustomWinnerHolder.WinnerIds.Add(winner.PlayerId);
             }
-            else CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
+            else
+            {
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
+            }
             return true;
         }
         return false;
