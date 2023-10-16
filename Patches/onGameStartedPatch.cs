@@ -320,6 +320,7 @@ internal class ChangeRoleSettings
             Mini.Init();
             Blackmailer.Init();
             Spy.Init();
+            FFF.Init();
             
             CustomWinnerHolder.Reset();
             AntiBlackout.Reset();
@@ -918,6 +919,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Crewpostor:
                         Main.CrewpostorTasksDone[pc.PlayerId] = 0;
+                        break;
+                    case CustomRoles.FFF:
+                        FFF.Add(pc.PlayerId);
                         break;
                 }
                 foreach (var subRole in pc.GetCustomSubRoles())

@@ -1899,7 +1899,7 @@ public static class Options
             .SetColor(new Color32(127, 140, 141, byte.MaxValue));
         Amnesiac.SetupCustomOption();
         Totocalcio.SetupCustomOption();
-        SetupRoleOptions(11300, TabGroup.NeutralRoles, CustomRoles.FFF);
+        FFF.SetupCustomOption();
         Imitator.SetupCustomOption();
         Lawyer.SetupCustomOption();
         Maverick.SetupCustomOption();
