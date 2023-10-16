@@ -3245,5 +3245,15 @@
   "PresidentRevealMax": "你已经展现了自己...",
   "PresidentRevealed": "[{0}] 已选择自爆总统身份！",
   "GuessPresident": "小子，你还想猜总统是吧？",
-  "PresidentRevealTitle": "[ ★ 总统揭秘 ★ ]"
+  "PresidentRevealTitle": "[ ★ 总统揭秘 ★ ]",
+  "FFFMisFireKillTarget": "FFF误杀的同时击杀目标",
+  "FFFChooseConverted": "指定FFF能击杀的附加职业",
+  "FFFCanKillMadmate": "FFF能击杀叛徒类",
+  "FFFCanKillCharmed": "FFF能击杀魅惑类",
+  "FFFCanKillLovers": "FFF能击杀恋人类",
+  "FFFCanKillSidekick": "FFF能击杀豺狼类",
+  "FFFCanKillEgoist": "FFF能击杀利己主义者",
+  "FFFCanKillInfected": "FFF能击杀感染者",
+  "FFFCanKillContagious": "FFF能击杀传染性",
+  "FFFCanKillAdmired": "FFF能击杀仰慕者"
 }

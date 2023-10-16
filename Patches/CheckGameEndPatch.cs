@@ -274,16 +274,10 @@ class GameEndChecker
 
 
                 //FFF
-                if (CustomWinnerHolder.WinnerTeam != CustomWinner.Lovers && !CustomWinnerHolder.AdditionalWinnerTeams.Contains(AdditionalWinners.Lovers) && !CustomRolesHelper.RoleExist(CustomRoles.Lovers) && !CustomRolesHelper.RoleExist(CustomRoles.Ntr))
+                if (FFF.winnerFFFList.Count > 0)
                 {
-                    foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.FFF)))
-                    {
-                        if (Main.AllPlayerControls.Where(x => (x.Is(CustomRoles.Lovers) || x.Is(CustomRoles.Ntr)) && x.GetRealKiller()?.PlayerId == pc.PlayerId).Any())
-                        {
-                            CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
-                            CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.FFF);
-                        }
-                    }
+                    CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.FFF);
+                    FFF.winnerFFFList.Do(x => CustomWinnerHolder.WinnerIds.Add(x));
                 }
 
                 foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Totocalcio)))

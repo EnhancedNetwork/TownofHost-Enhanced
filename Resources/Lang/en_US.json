@@ -3272,5 +3272,15 @@
   "ForceEnd": "Aborted",
   "EveryoneDied": "Everyone died",
   "ForceEndText": "Host has aborted the game",
-  "NiceMiniDied": "Nice Mini was killed"
+  "NiceMiniDied": "Nice Mini was killed",
+  "FFFMisFireKillTarget": "Hater kills target when misfire",
+  "FFFChooseConverted": "Select addons that Hater can kill",
+  "FFFCanKillMadmate": "Can kill madmate",
+  "FFFCanKillCharmed": "Can kill charmed",
+  "FFFCanKillLovers": "Can kill lovers",
+  "FFFCanKillSidekick": "Can kill jackal team",
+  "FFFCanKillEgoist": "Can kill egoist",
+  "FFFCanKillInfected": "Can kill infected team",
+  "FFFCanKillContagious": "Can kill virus team",
+  "FFFCanKillAdmired": "Can kill admirer"
 }
