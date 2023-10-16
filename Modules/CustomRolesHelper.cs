@@ -579,6 +579,7 @@ static class CustomRolesHelper
             CustomRoles.PlagueBearer or
             CustomRoles.Agitater or
             CustomRoles.RuthlessRomantic or
+            CustomRoles.Shroud or
             CustomRoles.Pestilence;
     }
     public static bool IsCK(this CustomRoles role)
