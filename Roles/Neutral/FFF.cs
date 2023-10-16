@@ -61,7 +61,8 @@ namespace TOHE.Roles.Neutral
             if (killer == null || target == null) return;
             if (killer.PlayerId == target.PlayerId) return;
 
-            if (target.GetCustomSubRoles().Any(x => x.IsConverted()) || IsConvertedMainRole(target.GetCustomRole()))
+            if (target.GetCustomSubRoles().Any(x => x.IsConverted() || x == CustomRoles.Madmate || x == CustomRoles.Admired) 
+                || IsConvertedMainRole(target.GetCustomRole()))
             {
                 if (!ChooseConverted.GetBool())
                 {
