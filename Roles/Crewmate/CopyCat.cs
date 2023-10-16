@@ -158,9 +158,9 @@ public static class CopyCat
                 case CustomRoles.Lighter:
                     Main.LighterNumOfUsed.Remove(player);
                     break;
-                case CustomRoles.TimeMaster:
-                    Main.TimeMasterNumOfUsed.Remove(player);
-                    break;
+                //case CustomRoles.TimeMaster:
+                //    Main.TimeMasterNumOfUsed.Remove(player);
+                //    break;
                 case CustomRoles.Judge:
                     Judge.TrialLimit.Remove(player);
                     break;
@@ -181,6 +181,9 @@ public static class CopyCat
                 case CustomRoles.Spy:
                     Spy.UseLimit.Remove(pc.PlayerId);
                     break;
+                case CustomRoles.SabotageMaster:
+                    SabotageMaster.UsedSkillCount.Remove(pc.PlayerId);
+                    break;
             }
             pc.RpcSetCustomRole(CustomRoles.CopyCat);
             SetKillCooldown(player);
@@ -199,6 +202,7 @@ public static class CopyCat
             CustomRoles.Addict or
             CustomRoles.Chameleon or
             CustomRoles.Alchemist or
+            CustomRoles.TimeMaster or
             //bcoz of arrows
             CustomRoles.Mortician or
             CustomRoles.Bloodhound or
@@ -386,6 +390,9 @@ public static class CopyCat
                     break;
                 case CustomRoles.Spy:
                     Spy.UseLimit.Add(pc.PlayerId, Spy.UseLimitOpt.GetInt());
+                    break;
+                case CustomRoles.SabotageMaster:
+                    SabotageMaster.UsedSkillCount.Add(pc.PlayerId, 0);
                     break;
 
             }
