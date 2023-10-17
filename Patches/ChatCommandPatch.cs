@@ -755,7 +755,7 @@ internal class ChatCommands
                     {
                         var rand = IRandom.Instance;
                         int botChoice = rand.Next(1, 101);
-                        var coinSide = (botChoice < 51) ? "Heads" : "Tails";
+                        var coinSide = (botChoice < 51) ? GetString("Heads") : GetString("Tails");
                         Utils.SendMessage(String.Format(GetString("CoinFlipResult"),coinSide), PlayerControl.LocalPlayer.PlayerId);
                         break;
                     }
@@ -1847,7 +1847,7 @@ internal class ChatCommands
                 {
                     var rand = IRandom.Instance;
                     int botChoice = rand.Next(1,101);
-                    var coinSide = (botChoice < 51) ? "Heads" : "Tails";
+                    var coinSide = (botChoice < 51) ? GetString("Heads") : GetString("Tails");
                     Utils.SendMessage(String.Format(GetString("CoinFlipResult"), coinSide), player.PlayerId);
                     break;
                 }
