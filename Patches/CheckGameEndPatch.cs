@@ -277,10 +277,15 @@ class GameEndChecker
 
 
                 //FFF
-                if (FFF.winnerFFFList.Any())
+                if (FFF.isWon)
                 {
                     CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.FFF);
-                    FFF.winnerFFFList.Do(x => CustomWinnerHolder.WinnerIds.Add(x));
+                    // You have a player id list, no need for another list; also use a for loop instead of LINQ
+                    //FFF.winnerFFFList.Do(x => CustomWinnerHolder.WinnerIds.Add(x));
+                    for (int i = 0; i < FFF.playerIdList.Count; i++)
+                    {
+                        CustomWinnerHolder.WinnerIds.Add(FFF.playerIdList[i]);
+                    }
                 }
 
                 foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Totocalcio)))

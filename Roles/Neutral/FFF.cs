@@ -23,7 +23,7 @@ namespace TOHE.Roles.Neutral
         public static OptionItem CanKillInfected;
         public static OptionItem CanKillContagious;
 
-        public static List<byte> winnerFFFList = new();
+        public static bool isWon = false; // There's already a playerIdList, so replaced this with a boolean value
         public static void SetupCustomOption()
         {
             SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.FFF, zeroOne: false);
@@ -43,7 +43,7 @@ namespace TOHE.Roles.Neutral
         {
             playerIdList = new();
             IsEnable = false;
-            winnerFFFList = new();
+            isWon = false;
         }
 
         public static void Add(byte playerId)
@@ -59,20 +59,16 @@ namespace TOHE.Roles.Neutral
         public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
         {
             if (killer == null || target == null) return false;
-            if (killer.PlayerId == target.PlayerId) return true;
+            if (killer.PlayerId == target.PlayerId) return true;  // Return true to allow suicides
 
             if (target.GetCustomSubRoles().Any(x => x.IsConverted() || x == CustomRoles.Madmate || x == CustomRoles.Admired)
                 || IsConvertedMainRole(target.GetCustomRole()))
             {
                 if (!ChooseConverted.GetBool())
                 {
-                    //killer.RpcMurderPlayerV3(target);
-                    if (!winnerFFFList.Contains(killer.PlayerId))
-                    {
-                        winnerFFFList.Add(killer.PlayerId);
-                    }
+                    if (killer.RpcCheckAndMurder(target)) isWon = true; // Only win if target can be killed - this kills the target if they can be killed
                     Logger.Info($"{killer.GetRealName()} killed right target case 1", "FFF");
-                    return true;
+                    return false;  // The murder is already done if it could be done, so return false to avoid double killing
                 }
                 else if (
                     ((target.Is(CustomRoles.Madmate) || target.Is(CustomRoles.Gangster)) && CanKillMadmate.GetBool())
@@ -81,25 +77,21 @@ namespace TOHE.Roles.Neutral
                     || ((target.Is(CustomRoles.Romantic) || target.Is(CustomRoles.RuthlessRomantic) || target.Is(CustomRoles.VengefulRomantic)
                         || Romantic.BetPlayer.ContainsValue(target.PlayerId)) && CanKillLovers.GetBool())
                     || ((target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Jackal) || target.Is(CustomRoles.Recruit)) && CanKillSidekicks.GetBool())
-                    || ((target.Is(CustomRoles.Egoist) && CanKillEgoists.GetBool())
+                    || (target.Is(CustomRoles.Egoist) && CanKillEgoists.GetBool())
                     || ((target.Is(CustomRoles.Infected) || target.Is(CustomRoles.Infectious)) && CanKillInfected.GetBool())
                     || ((target.Is(CustomRoles.Contagious) || target.Is(CustomRoles.Virus)) && CanKillContagious.GetBool())
-                    || ((target.Is(CustomRoles.Admired) || target.Is(CustomRoles.Admirer)) && CanKillAdmired.GetBool()))
+                    || ((target.Is(CustomRoles.Admired) || target.Is(CustomRoles.Admirer)) && CanKillAdmired.GetBool())
                     )
                 {
-                    //killer.RpcMurderPlayerV3(target);
-                    if (!winnerFFFList.Contains(killer.PlayerId))
-                    {
-                        winnerFFFList.Add(killer.PlayerId);
-                    }
+                    if (killer.RpcCheckAndMurder(target)) isWon = true; // Only win if target can be killed - this kills the target if they can be killed
                     Logger.Info($"{killer.GetRealName()} killed right target case 2", "FFF");
-                    return true;
+                    return false;  // The murder is already done if it could be done, so return false to avoid double killing
                 }
             }
-            //Not return tigger following fail check
-            if (MisFireKillTarget.GetBool() && killer.RpcCheckAndMurder(target, true))
+            //Not return trigger following fail check ---- I'm sorry, what?
+            if (MisFireKillTarget.GetBool() && killer.RpcCheckAndMurder(target, true)) // RpcCheckAndMurder checks if the target can be murdered or not (checks for shields and other stuff); the 'true' parameter indicates that we just want a check, and not murder yet.
             {
-                killer.RpcMurderPlayerV3(target);
+                killer.RpcMurderPlayerV3(target); // Murder the target only if the setting is on and the target can be killed
                 target.SetRealKiller(killer);
                 target.Data.IsDead = true;
                 Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
@@ -108,13 +100,13 @@ namespace TOHE.Roles.Neutral
             Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;
             killer.RpcMurderPlayerV3(killer);
             Main.PlayerStates[killer.PlayerId].SetDead();
-            Logger.Info($"{killer.GetRealName()} 击杀了非目标玩家，壮烈牺牲了（bushi）", "FFF");
+            Logger.Info($"{killer.GetRealName()} killed incorrect target => misfire", "FFF");
             return false;
         }
 
         private static bool IsConvertedMainRole(CustomRoles role)
         {
-            return role switch
+            return role switch  // Use the switch expression whenever possible instead of the switch statement to improve performance
             {
                 CustomRoles.Gangster or
                 CustomRoles.Succubus or
