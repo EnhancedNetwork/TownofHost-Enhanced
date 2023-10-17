@@ -48,7 +48,10 @@ class GameEndChecker
             {
                 case CustomWinner.Crewmate:
                     Main.AllPlayerControls
-                        .Where(pc => pc.Is(CustomRoleTypes.Crewmate) && !pc.Is(CustomRoles.Madmate) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Charmed) && !pc.Is(CustomRoles.Recruit) && !pc.Is(CustomRoles.Infected) && !pc.Is(CustomRoles.Contagious) && !pc.Is(CustomRoles.EvilSpirit) && !pc.Is(CustomRoles.Recruit) || pc.Is(CustomRoles.Admired))
+                        .Where(pc => pc.Is(CustomRoleTypes.Crewmate) && !pc.Is(CustomRoles.Madmate) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Charmed) && !pc.Is(CustomRoles.Recruit) && !pc.Is(CustomRoles.Infected) && !pc.Is(CustomRoles.Contagious) && !pc.Is(CustomRoles.EvilSpirit) && !pc.Is(CustomRoles.Recruit))
+                        .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
+                    Main.AllPlayerControls //Add admired players here to avoid bugs
+                        .Where(pc => pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
                 case CustomWinner.Impostor:
@@ -274,16 +277,10 @@ class GameEndChecker
 
 
                 //FFF
-                if (CustomWinnerHolder.WinnerTeam != CustomWinner.Lovers && !CustomWinnerHolder.AdditionalWinnerTeams.Contains(AdditionalWinners.Lovers) && !CustomRolesHelper.RoleExist(CustomRoles.Lovers) && !CustomRolesHelper.RoleExist(CustomRoles.Ntr))
+                if (FFF.winnerFFFList.Count > 0)
                 {
-                    foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.FFF)))
-                    {
-                        if (Main.AllPlayerControls.Where(x => (x.Is(CustomRoles.Lovers) || x.Is(CustomRoles.Ntr)) && x.GetRealKiller()?.PlayerId == pc.PlayerId).Any())
-                        {
-                            CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
-                            CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.FFF);
-                        }
-                    }
+                    CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.FFF);
+                    FFF.winnerFFFList.Do(x => CustomWinnerHolder.WinnerIds.Add(x));
                 }
 
                 foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Totocalcio)))
@@ -676,8 +673,8 @@ class GameEndChecker
                     else if (Necro == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        winner = CustomWinner.Huntsman;
-                        rl = CustomRoles.Huntsman;
+                        winner = CustomWinner.Necromancer;
+                        rl = CustomRoles.Necromancer;
                     }
                     else if (Pyro == totalNKAlive)
                     {
