@@ -3070,6 +3070,8 @@
   "Rock": "Rock",
   "Paper": "Paper",
   "Scissors": "Scissors",
+  "Heads": "Heads",
+  "Tails": "Tails",
   "SpyRedNameDur": "Colored Name Duration",
   "SpyInteractionBlocked": "Block kill button interaction",
   "AgitaterBombCooldown": "<color=#F4A460>Agitator</color> bomb coolodown",
