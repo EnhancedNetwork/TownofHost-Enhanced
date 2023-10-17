@@ -18,7 +18,7 @@ public static class Admirer
     public static OptionItem AdmireCooldown;
     public static OptionItem KnowTargetRole;
     public static OptionItem SkillLimit;
-    private static Dictionary<byte, int> AdmirerLimit;
+    public static Dictionary<byte, int> AdmirerLimit;
 
     public static void SetupCustomOption()
     {
