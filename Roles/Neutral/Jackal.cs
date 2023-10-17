@@ -144,7 +144,7 @@ public static class Jackal
     {
         if (target.Is(CustomRoles.Pestilence)) return true;
         if (target.Is(CustomRoles.Jackal)) return true;
-        if (Mini.Age != 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
+        if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Succubus), GetString("CantRecruit")));
             return false;

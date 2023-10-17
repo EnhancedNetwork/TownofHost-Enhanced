@@ -64,7 +64,7 @@ public static class CursedSoul
     public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
         if (CurseLimit < 1) return;
-        if (Mini.Age != 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
+        if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Succubus), GetString("CantRecruit")));
             return;

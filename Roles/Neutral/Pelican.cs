@@ -116,7 +116,7 @@ public static class Pelican
     public static void EatPlayer(PlayerControl pc, PlayerControl target)
     {
         if (pc == null || target == null || !CanEat(pc, target.PlayerId)) return;
-        if (Mini.Age != 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
+        if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
             pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("CantEat")));
             return;
