@@ -779,6 +779,7 @@ static class CustomRolesHelper
             CustomRoles.HexMaster or
             CustomRoles.Werewolf or
             CustomRoles.Sheriff or
+            CustomRoles.Vigilante or
             CustomRoles.Medic or
             CustomRoles.Crusader or
             CustomRoles.Investigator or
