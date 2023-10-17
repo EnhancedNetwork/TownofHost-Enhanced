@@ -927,7 +927,8 @@ static class CustomRolesHelper
             CustomRoles.SwordsMan or
             CustomRoles.Admirer or
             CustomRoles.Reverie or
-            CustomRoles.Deputy;
+            CustomRoles.Deputy or
+            CustomRoles.Vigilante;
     }
     public static bool IsTaskBasedCrewmate(this CustomRoles role)
     {
