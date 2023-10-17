@@ -19,9 +19,9 @@ public static class Pirate
     public static int NumWin = 0;
     public static readonly string[] OptionList =
     {
-        "Rock",
-        "Paper",
-        "Scissors"
+        GetString("Rock"),
+        GetString("Paper"),
+        GetString("Scissors")
     };
 
 
