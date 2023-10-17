@@ -127,7 +127,7 @@ public static class Divinator
                 CustomRoles.Vigilante or
                 CustomRoles.Sans or
                 CustomRoles.Minimalism or
-                CustomRoles.Cultivator or
+                CustomRoles.Berserker or
                 CustomRoles.OverKiller
                 => "Result5",
 

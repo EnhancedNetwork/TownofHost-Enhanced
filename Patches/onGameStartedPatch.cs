@@ -113,7 +113,7 @@ internal class ChangeRoleSettings
             Main.MeetingsPassed = 0;
             Main.DovesOfNeaceNumOfUsed = new();
             Main.GodfatherTarget = new();
-            Main.CultivatorKillMax = new();
+            Main.BerserkerKillMax = new();
             Main.AwareInteracted = new();
             Main.CrewpostorTasksDone = new();
             Main.ShamanTarget = byte.MaxValue;
@@ -320,6 +320,7 @@ internal class ChangeRoleSettings
             Mini.Init();
             Blackmailer.Init();
             Spy.Init();
+            FFF.Init();
             
             CustomWinnerHolder.Reset();
             AntiBlackout.Reset();
@@ -491,8 +492,8 @@ internal class SelectRolesPatch
                     case CustomRoles.BountyHunter:
                         BountyHunter.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Cultivator:
-                        Main.CultivatorKillMax[pc.PlayerId] = 0;
+                    case CustomRoles.Berserker:
+                        Main.BerserkerKillMax[pc.PlayerId] = 0;
                         break;
                     case CustomRoles.Reverie:
                         Reverie.Add(pc.PlayerId);
@@ -918,6 +919,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Crewpostor:
                         Main.CrewpostorTasksDone[pc.PlayerId] = 0;
+                        break;
+                    case CustomRoles.FFF:
+                        FFF.Add(pc.PlayerId);
                         break;
                 }
                 foreach (var subRole in pc.GetCustomSubRoles())
