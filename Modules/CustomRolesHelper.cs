@@ -56,7 +56,7 @@ static class CustomRolesHelper
                 CustomRoles.Dictator => CustomRoles.Crewmate,
                 CustomRoles.Inhibitor => CustomRoles.Impostor,
                 CustomRoles.Saboteur => CustomRoles.Impostor,
-                CustomRoles.Cultivator => CustomRoles.Impostor,
+                CustomRoles.Berserker => CustomRoles.Impostor,
                 CustomRoles.Doctor => CustomRoles.Scientist,
                 CustomRoles.ScientistTOHE => CustomRoles.Scientist,
                 CustomRoles.Tracefinder => CustomRoles.Scientist,
@@ -579,6 +579,7 @@ static class CustomRolesHelper
             CustomRoles.PlagueBearer or
             CustomRoles.Agitater or
             CustomRoles.RuthlessRomantic or
+            CustomRoles.Shroud or
             CustomRoles.Pestilence;
     }
     public static bool IsCK(this CustomRoles role)
@@ -623,7 +624,7 @@ static class CustomRolesHelper
             CustomRoles.Warlock or
             CustomRoles.Undertaker or
             CustomRoles.Assassin or
-            CustomRoles.Cultivator or
+            CustomRoles.Berserker or
             CustomRoles.Hacker or
             CustomRoles.Visionary or
             CustomRoles.Miner or
@@ -1052,7 +1053,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Mare)
                     || pc.Is(CustomRoles.Onbound))
                 {
-                    Logger.Warn("reached here", "REbound");
+                    Logger.Warn("reached here", "Rebound");
                     return false;
                 } //Based on guess manager
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeRebound.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeRebound.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeRebound.GetBool()))
