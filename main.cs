@@ -37,8 +37,8 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "1.1.0.1";
-    public const string PluginDisplayVersion = "1.1.0 Dev 1";
+    public const string PluginVersion = "1.1.0.10";
+    public const string PluginDisplayVersion = "1.1.0";
     public static readonly string SupportedVersionAU = "2023.7.11";
     public const bool Canary = false;
 
@@ -126,7 +126,7 @@ public class Main : BasePlugin
     public static Dictionary<byte, Vector2> LastEnteredVentLocation = new();
     public static Dictionary<byte, Vector2> TimeMasterBackTrack = new();
     public static Dictionary<byte, int> MasochistKillMax = new();
-    public static Dictionary<byte, int> CultivatorKillMax = new();
+    public static Dictionary<byte, int> BerserkerKillMax = new();
     public static Dictionary<byte, int> TimeMasterNum = new();
     public static Dictionary<byte, long> TimeMasterInProtect = new();
     //public static Dictionary<byte, long> FlashbangInProtect = new();
@@ -675,7 +675,7 @@ public enum CustomRoles
     Twister,
     Lurker,
     Convict,
-    Cultivator,
+    Berserker,
     Visionary,
     Refugee,
     Underdog,
