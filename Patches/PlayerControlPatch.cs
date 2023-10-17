@@ -993,11 +993,14 @@ class CheckMurderPatch
                 killer.RpcGuardAndKill(target);
                 target.RpcGuardAndKill(target);
                 Main.CursedWolfSpellCount[target.PlayerId] -= 1;
-                killer.SetRealKiller(target);
                 RPC.SendRPCCursedWolfSpellCount(target.PlayerId);
-                Logger.Info($"{target.GetNameWithRole()} : {Main.CursedWolfSpellCount[target.PlayerId]}回目", "CursedWolf");
-                Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Curse;
-                killer.RpcMurderPlayerV3(killer);
+                if (Options.killAttacker.GetBool())
+                { 
+                    killer.SetRealKiller(target);
+                    Logger.Info($"{target.GetNameWithRole()} : {Main.CursedWolfSpellCount[target.PlayerId]}回目", "CursedWolf");
+                    Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Curse;
+                    killer.RpcMurderPlayerV3(killer);
+                }
                 return false;
             case CustomRoles.Jinx:
                 if (Main.JinxSpellCount[target.PlayerId] <= 0) break;
@@ -1006,11 +1009,14 @@ class CheckMurderPatch
                 killer.RpcGuardAndKill(target);
                 target.RpcGuardAndKill(target);
                 Main.JinxSpellCount[target.PlayerId] -= 1;
-                killer.SetRealKiller(target);
                 RPC.SendRPCJinxSpellCount(target.PlayerId);
-                Logger.Info($"{target.GetNameWithRole()} : {Main.JinxSpellCount[target.PlayerId]}回目", "Jinx");
-                Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Jinx;
-                killer.RpcMurderPlayerV3(killer);
+                if (Jinx.killAttacker.GetBool())
+                {     
+                    killer.SetRealKiller(target);
+                    Logger.Info($"{target.GetNameWithRole()} : {Main.JinxSpellCount[target.PlayerId]}回目", "Jinx");
+                    Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Jinx;
+                    killer.RpcMurderPlayerV3(killer);
+                }
                 return false;
             //击杀老兵
             case CustomRoles.Veteran:

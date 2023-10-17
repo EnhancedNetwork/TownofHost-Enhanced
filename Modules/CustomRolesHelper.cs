@@ -1457,8 +1457,8 @@ static class CustomRolesHelper
             //    break;
 
             case CustomRoles.Gravestone:
-                if (pc.Is(CustomRoles.SuperStar))
-                if (pc.Is(CustomRoles.Innocent)
+                if (pc.Is(CustomRoles.SuperStar)
+                    || pc.Is(CustomRoles.Innocent)
                     || pc.Is(CustomRoles.NiceMini))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeGravestone.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeGravestone.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeGravestone.GetBool()))

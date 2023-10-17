@@ -1641,6 +1641,7 @@
   "WorkaholicGiveAdviceAlive": "Advice at first meeting if alive, can win after death, ghost tasks ON",
   "DoctorVisibleToEveryone": "Everyone knows who the <color=#80ffdd>Doctor</color> is",
   "GuardSpellTimes": "Amount of Cursed Shields",
+  "killAttacker":  "Kill attacker when ability is remaining",
   "JinxSpellTimes": "Amount of Jinx Spells",
   "CollectorCollectAmount": "Required number of votes",
   "GlitchCanVote": "Can vote",
