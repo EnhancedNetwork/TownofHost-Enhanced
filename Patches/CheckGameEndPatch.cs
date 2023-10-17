@@ -676,8 +676,8 @@ class GameEndChecker
                     else if (Necro == totalNKAlive)
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        winner = CustomWinner.Huntsman;
-                        rl = CustomRoles.Huntsman;
+                        winner = CustomWinner.Necromancer;
+                        rl = CustomRoles.Necromancer;
                     }
                     else if (Pyro == totalNKAlive)
                     {
