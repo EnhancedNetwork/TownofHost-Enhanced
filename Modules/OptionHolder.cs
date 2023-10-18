@@ -300,6 +300,7 @@ public static class Options
     public static OptionItem CleanerKillCooldown;
     public static OptionItem KillCooldownAfterCleaning;
     public static OptionItem GuardSpellTimes;
+    public static OptionItem killAttacker;
     public static OptionItem FlashWhenTrapBoobyTrap;
     public static OptionItem CapitalismSkillCooldown;
     public static OptionItem GrenadierSkillCooldown;
@@ -1182,6 +1183,8 @@ public static class Options
         GuardSpellTimes = IntegerOptionItem.Create(1010, "GuardSpellTimes", new(1, 15, 1), 3, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.CursedWolf])
             .SetValueFormat(OptionFormat.Times);
+        killAttacker = BooleanOptionItem.Create(1011, "killAttacker", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.CursedWolf]);
+
 
         /*
          * Deathpact

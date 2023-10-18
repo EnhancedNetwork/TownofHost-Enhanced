@@ -643,7 +643,7 @@ class CheckMurderPatch
             _ = new LateTask(() =>
             {
                 if (!Main.OverDeadPlayerList.Contains(target.PlayerId)) Main.OverDeadPlayerList.Add(target.PlayerId);
-                var ops = target.transform.position;
+                var ops = target.GetTruePosition();
                 var rd = IRandom.Instance;
                 for (int i = 0; i < 20; i++)
                 {
@@ -695,7 +695,7 @@ class CheckMurderPatch
             }
             if (Main.BerserkerKillMax[killer.PlayerId] == Options.BerserkerScavengerLevel.GetInt() && Options.BerserkerTwoCanScavenger.GetBool())
             {
-                killer.RpcTeleport(target.transform.position);
+                killer.RpcTeleport(target.GetTruePosition());
                 RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
                 target.RpcTeleport(new Vector2(Pelican.GetBlackRoomPS().x, Pelican.GetBlackRoomPS().y));
                 target.SetRealKiller(killer);
@@ -986,11 +986,14 @@ class CheckMurderPatch
                 killer.RpcGuardAndKill(target);
                 target.RpcGuardAndKill(target);
                 Main.CursedWolfSpellCount[target.PlayerId] -= 1;
-                killer.SetRealKiller(target);
                 RPC.SendRPCCursedWolfSpellCount(target.PlayerId);
-                Logger.Info($"{target.GetNameWithRole()} : {Main.CursedWolfSpellCount[target.PlayerId]}回目", "CursedWolf");
-                Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Curse;
-                killer.RpcMurderPlayerV3(killer);
+                if (Options.killAttacker.GetBool())
+                { 
+                    killer.SetRealKiller(target);
+                    Logger.Info($"{target.GetNameWithRole()} : {Main.CursedWolfSpellCount[target.PlayerId]}回目", "CursedWolf");
+                    Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Curse;
+                    killer.RpcMurderPlayerV3(killer);
+                }
                 return false;
             case CustomRoles.Jinx:
                 if (Main.JinxSpellCount[target.PlayerId] <= 0) break;
@@ -999,11 +1002,14 @@ class CheckMurderPatch
                 killer.RpcGuardAndKill(target);
                 target.RpcGuardAndKill(target);
                 Main.JinxSpellCount[target.PlayerId] -= 1;
-                killer.SetRealKiller(target);
                 RPC.SendRPCJinxSpellCount(target.PlayerId);
-                Logger.Info($"{target.GetNameWithRole()} : {Main.JinxSpellCount[target.PlayerId]}回目", "Jinx");
-                Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Jinx;
-                killer.RpcMurderPlayerV3(killer);
+                if (Jinx.killAttacker.GetBool())
+                {     
+                    killer.SetRealKiller(target);
+                    Logger.Info($"{target.GetNameWithRole()} : {Main.JinxSpellCount[target.PlayerId]}回目", "Jinx");
+                    Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Jinx;
+                    killer.RpcMurderPlayerV3(killer);
+                }
                 return false;
             //击杀老兵
             case CustomRoles.Veteran:
@@ -1089,7 +1095,7 @@ class CheckMurderPatch
             case CustomRoles.Berserker:
                 if (Main.BerserkerKillMax[killer.PlayerId] >= Options.BerserkerImmortalLevel.GetInt() && Options.BerserkerFourCanNotKill.GetBool())
                 {
-                    killer.RpcTeleport(target.transform.position);
+                    killer.RpcTeleport(target.GetTruePosition());
                     RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
                     killer.SetKillCooldown(target: target, forceAnime: true);
                     return false;
@@ -1502,7 +1508,7 @@ class ShapeshiftPatch
                         }
                         else
                         {
-                            Main.EscapeeLocation.Add(shapeshifter.PlayerId, new Vector2(shapeshifter.transform.position.x, shapeshifter.transform.position.y));
+                            Main.EscapeeLocation.Add(shapeshifter.PlayerId, shapeshifter.GetTruePosition());
                         }
                     }
                     break;
@@ -1598,8 +1604,8 @@ class ShapeshiftPatch
                         {
                             if (!(!GameStates.IsInTask || !shapeshifter.IsAlive() || !target.IsAlive() || shapeshifter.inVent || target.inVent))
                             {
-                                var originPs = target.transform.position;
-                                target.RpcTeleport(shapeshifter.transform.position);
+                                var originPs = target.GetTruePosition();
+                                target.RpcTeleport(shapeshifter.GetTruePosition());
                                 shapeshifter.RpcTeleport(originPs);
                             }
                         }, 1.5f, "ImperiusCurse TP");
@@ -3399,7 +3405,7 @@ class EnterVentPatch
                     }
                     else
                     {
-                        Main.TimeMasterBackTrack.Add(player.PlayerId, new Vector2(player.transform.position.x, player.transform.position.y));
+                        Main.TimeMasterBackTrack.Add(player.PlayerId, player.GetTruePosition());
                     }
                 }
             }
