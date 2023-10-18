@@ -412,8 +412,8 @@ class CheckMurderPatch
                     }
                     return false;
                 case CustomRoles.FFF:
-                    FFF.OnCheckMurder(killer, target);
-                    return false;
+                    if (!FFF.OnCheckMurder(killer, target)) return false;
+                    break;
                 case CustomRoles.Gamer:
                     Gamer.CheckGamerMurder(killer, target);
                     return false;
