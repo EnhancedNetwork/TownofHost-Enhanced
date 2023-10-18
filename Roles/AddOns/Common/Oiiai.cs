@@ -64,22 +64,19 @@ namespace TOHE.Roles.AddOns.Common
                 Logger.Info(killer.GetNameWithRole() + " gets Oiiai addon by " + target.GetNameWithRole(), "Oiiai");
             }
 
-            if (killer != null)
+            if (!killer.GetCustomRole().IsNK())
             {
-                if (!killer.GetCustomRole().IsNK())
-                {
-                    //Use eraser here LOL
-                    killer.RpcSetCustomRole(CustomRolesHelper.GetErasedRole(killer.GetCustomRole().GetRoleTypes(), killer.GetCustomRole()));
-                }
-                else
-                {
-                    //Typically only NK tiggers this
-                    killer.RpcSetCustomRole(NRoleChangeRoles[ChangeNeutralRole.GetValue() - 1]);
-                }
-                killer.MarkDirtySettings();
-                NameNotifyManager.Notify(killer, GetString("LostRoleByOiiai"));
-                Logger.Info($"{killer.GetNameWithRole()} was OIIAIed", "Oiiai");
+                //Use eraser here LOL
+                killer.RpcSetCustomRole(CustomRolesHelper.GetErasedRole(killer.GetCustomRole().GetRoleTypes(), killer.GetCustomRole()));
             }
+            else
+            {
+                //Typically only NK tiggers this
+                killer.RpcSetCustomRole(NRoleChangeRoles[ChangeNeutralRole.GetValue() - 1]);
+            }
+            killer.MarkDirtySettings();
+            killer.Notify(GetString("LostRoleByOiiai"));
+            Logger.Info($"{killer.GetRealName()} was OIIAIed", "Oiiai");
         }
 
         private static bool CanGetOiiaied(PlayerControl player)
