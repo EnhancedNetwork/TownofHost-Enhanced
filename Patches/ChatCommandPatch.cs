@@ -755,7 +755,7 @@ internal class ChatCommands
                     {
                         var rand = IRandom.Instance;
                         int botChoice = rand.Next(1, 101);
-                        var coinSide = (botChoice < 51) ? "Heads" : "Tails";
+                        var coinSide = (botChoice < 51) ? GetString("Heads") : GetString("Tails");
                         Utils.SendMessage(String.Format(GetString("CoinFlipResult"),coinSide), PlayerControl.LocalPlayer.PlayerId);
                         break;
                     }
@@ -1847,7 +1847,7 @@ internal class ChatCommands
                 {
                     var rand = IRandom.Instance;
                     int botChoice = rand.Next(1,101);
-                    var coinSide = (botChoice < 51) ? "Heads" : "Tails";
+                    var coinSide = (botChoice < 51) ? GetString("Heads") : GetString("Tails");
                     Utils.SendMessage(String.Format(GetString("CoinFlipResult"), coinSide), player.PlayerId);
                     break;
                 }
@@ -1911,14 +1911,14 @@ internal class ChatCommands
     }
 }
 [HarmonyPatch(typeof(ChatController), nameof(ChatController.Update))]
-internal class ChatUpdatePatch
+class ChatUpdatePatch
 {
     public static bool DoBlockChat = false;
     public static void Postfix(ChatController __instance)
     {
-        if (!AmongUsClient.Instance.AmHost || Main.MessagesToSend.Count < 1 || (Main.MessagesToSend[0].Item2 == byte.MaxValue && Main.MessageWait.Value > __instance.timeSinceLastMessage)) return;
+        if (!AmongUsClient.Instance.AmHost || !Main.MessagesToSend.Any() || (Main.MessagesToSend[0].Item2 == byte.MaxValue && Main.MessageWait.Value > __instance.timeSinceLastMessage)) return;
         if (DoBlockChat) return;
-        var player = Main.AllAlivePlayerControls.OrderBy(x => x.PlayerId).FirstOrDefault() ?? Main.AllPlayerControls.OrderBy(x => x.PlayerId).FirstOrDefault();
+        var player = Main.AllAlivePlayerControls.OrderBy(x => x.PlayerId).FirstOrDefault();
         if (player == null) return;
         (string msg, byte sendTo, string title) = Main.MessagesToSend[0];
         Main.MessagesToSend.RemoveAt(0);

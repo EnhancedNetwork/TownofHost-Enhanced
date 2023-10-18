@@ -75,7 +75,7 @@ public static class Utils
     {
         foreach (var pc in Main.AllAlivePlayerControls)
         {
-            pc.RpcTeleport(new Vector2(location.x, location.y));
+            pc.RpcTeleport(location);
         }
     }
     public static void RpcTeleport(this PlayerControl player, Vector2 location)

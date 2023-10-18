@@ -779,6 +779,7 @@ static class CustomRolesHelper
             CustomRoles.HexMaster or
             CustomRoles.Werewolf or
             CustomRoles.Sheriff or
+            CustomRoles.Vigilante or
             CustomRoles.Medic or
             CustomRoles.Crusader or
             CustomRoles.Investigator or
@@ -927,7 +928,8 @@ static class CustomRolesHelper
             CustomRoles.SwordsMan or
             CustomRoles.Admirer or
             CustomRoles.Reverie or
-            CustomRoles.Deputy;
+            CustomRoles.Deputy or
+            CustomRoles.Vigilante;
     }
     public static bool IsTaskBasedCrewmate(this CustomRoles role)
     {
@@ -1464,8 +1466,8 @@ static class CustomRolesHelper
             //    break;
 
             case CustomRoles.Gravestone:
-                if (pc.Is(CustomRoles.SuperStar))
-                if (pc.Is(CustomRoles.Innocent)
+                if (pc.Is(CustomRoles.SuperStar)
+                    || pc.Is(CustomRoles.Innocent)
                     || pc.Is(CustomRoles.NiceMini))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeGravestone.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeGravestone.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeGravestone.GetBool()))
