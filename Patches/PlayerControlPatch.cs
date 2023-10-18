@@ -413,16 +413,8 @@ class CheckMurderPatch
                     }
                     return false;
                 case CustomRoles.FFF:
-                    if (!target.Is(CustomRoles.Lovers) && !target.Is(CustomRoles.Ntr))
-                    {
-                        killer.Data.IsDead = true;
-                        Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;
-                        killer.RpcMurderPlayerV3(killer);
-                        Main.PlayerStates[killer.PlayerId].SetDead();
-                        Logger.Info($"{killer.GetRealName()} 击杀了非目标玩家，壮烈牺牲了（bushi）", "FFF");
-                        return false;
-                    }
-                    break;
+                    FFF.OnCheckMurder(killer, target);
+                    return false;
                 case CustomRoles.Gamer:
                     Gamer.CheckGamerMurder(killer, target);
                     return false;
@@ -651,7 +643,7 @@ class CheckMurderPatch
             _ = new LateTask(() =>
             {
                 if (!Main.OverDeadPlayerList.Contains(target.PlayerId)) Main.OverDeadPlayerList.Add(target.PlayerId);
-                var ops = target.transform.position;
+                var ops = target.GetTruePosition();
                 var rd = IRandom.Instance;
                 for (int i = 0; i < 20; i++)
                 {
@@ -683,37 +675,37 @@ class CheckMurderPatch
             }, 0.05f, "OverKiller Murder");
         }
 
-        if (killer.Is(CustomRoles.Cultivator))
+        if (killer.Is(CustomRoles.Berserker))
         {
-            if (Main.CultivatorKillMax[killer.PlayerId] < Options.CultivatorMax.GetInt())
+            if (Main.BerserkerKillMax[killer.PlayerId] < Options.BerserkerMax.GetInt())
             {
-                Main.CultivatorKillMax[killer.PlayerId]++;
-                killer.Notify(string.Format(GetString("CultivatorLevelChanged"), Main.CultivatorKillMax[killer.PlayerId]));
-                Logger.Info($"Increased the lvl to {Main.CultivatorKillMax[killer.PlayerId]}", "CULTIVATOR");
+                Main.BerserkerKillMax[killer.PlayerId]++;
+                killer.Notify(string.Format(GetString("BerserkerLevelChanged"), Main.BerserkerKillMax[killer.PlayerId]));
+                Logger.Info($"Increased the lvl to {Main.BerserkerKillMax[killer.PlayerId]}", "CULTIVATOR");
             }
             else
             {
-                killer.Notify(GetString("CultivatorMaxReached"));
-                Logger.Info($"Max level reached lvl =  {Main.CultivatorKillMax[killer.PlayerId]}", "CULTIVATOR");
+                killer.Notify(GetString("BerserkerMaxReached"));
+                Logger.Info($"Max level reached lvl =  {Main.BerserkerKillMax[killer.PlayerId]}", "CULTIVATOR");
 
             }
-            if (Main.CultivatorKillMax[killer.PlayerId] >= Options.CultivatorKillCooldownLevel.GetInt() && Options.CultivatorOneCanKillCooldown.GetBool())
+            if (Main.BerserkerKillMax[killer.PlayerId] >= Options.BerserkerKillCooldownLevel.GetInt() && Options.BerserkerOneCanKillCooldown.GetBool())
             {
-                Main.AllPlayerKillCooldown[killer.PlayerId] = Options.CultivatorOneKillCooldown.GetFloat();
+                Main.AllPlayerKillCooldown[killer.PlayerId] = Options.BerserkerOneKillCooldown.GetFloat();
             }
-            if (Main.CultivatorKillMax[killer.PlayerId] == Options.CultivatorScavengerLevel.GetInt() && Options.CultivatorTwoCanScavenger.GetBool())
+            if (Main.BerserkerKillMax[killer.PlayerId] == Options.BerserkerScavengerLevel.GetInt() && Options.BerserkerTwoCanScavenger.GetBool())
             {
-                killer.RpcTeleport(target.transform.position);
+                killer.RpcTeleport(target.GetTruePosition());
                 RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
                 target.RpcTeleport(new Vector2(Pelican.GetBlackRoomPS().x, Pelican.GetBlackRoomPS().y));
                 target.SetRealKiller(killer);
                 Main.PlayerStates[target.PlayerId].SetDead();
                 target.RpcMurderPlayerV3(target);
                 killer.SetKillCooldownV2();
-                NameNotifyManager.Notify(target, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultivator), GetString("KilledByCultivator")));
+                NameNotifyManager.Notify(target, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Berserker), GetString("KilledByBerserker")));
                 return false;
             }
-            if (Main.CultivatorKillMax[killer.PlayerId] >= Options.CultivatorBomberLevel.GetInt() && Options.CultivatorThreeCanBomber.GetBool())
+            if (Main.BerserkerKillMax[killer.PlayerId] >= Options.BerserkerBomberLevel.GetInt() && Options.BerserkerThreeCanBomber.GetBool())
             {
                 Logger.Info("炸弹爆炸了", "Boom");
                 CustomSoundsManager.RPCPlayCustomSoundAll("Boom");
@@ -730,9 +722,9 @@ class CheckMurderPatch
                     }
                 }
             }
-            //if (Main.CultivatorKillMax[killer.PlayerId] == 4 && Options.CultivatorFourCanFlash.GetBool())
+            //if (Main.BerserkerKillMax[killer.PlayerId] == 4 && Options.BerserkerFourCanFlash.GetBool())
             //{
-            //    Main.AllPlayerSpeed[killer.PlayerId] = Options.CultivatorSpeed.GetFloat();
+            //    Main.AllPlayerSpeed[killer.PlayerId] = Options.BerserkerSpeed.GetFloat();
             //}
         }
 
@@ -994,11 +986,14 @@ class CheckMurderPatch
                 killer.RpcGuardAndKill(target);
                 target.RpcGuardAndKill(target);
                 Main.CursedWolfSpellCount[target.PlayerId] -= 1;
-                killer.SetRealKiller(target);
                 RPC.SendRPCCursedWolfSpellCount(target.PlayerId);
-                Logger.Info($"{target.GetNameWithRole()} : {Main.CursedWolfSpellCount[target.PlayerId]}回目", "CursedWolf");
-                Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Curse;
-                killer.RpcMurderPlayerV3(killer);
+                if (Options.killAttacker.GetBool())
+                { 
+                    killer.SetRealKiller(target);
+                    Logger.Info($"{target.GetNameWithRole()} : {Main.CursedWolfSpellCount[target.PlayerId]}回目", "CursedWolf");
+                    Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Curse;
+                    killer.RpcMurderPlayerV3(killer);
+                }
                 return false;
             case CustomRoles.Jinx:
                 if (Main.JinxSpellCount[target.PlayerId] <= 0) break;
@@ -1007,11 +1002,14 @@ class CheckMurderPatch
                 killer.RpcGuardAndKill(target);
                 target.RpcGuardAndKill(target);
                 Main.JinxSpellCount[target.PlayerId] -= 1;
-                killer.SetRealKiller(target);
                 RPC.SendRPCJinxSpellCount(target.PlayerId);
-                Logger.Info($"{target.GetNameWithRole()} : {Main.JinxSpellCount[target.PlayerId]}回目", "Jinx");
-                Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Jinx;
-                killer.RpcMurderPlayerV3(killer);
+                if (Jinx.killAttacker.GetBool())
+                {     
+                    killer.SetRealKiller(target);
+                    Logger.Info($"{target.GetNameWithRole()} : {Main.JinxSpellCount[target.PlayerId]}回目", "Jinx");
+                    Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Jinx;
+                    killer.RpcMurderPlayerV3(killer);
+                }
                 return false;
             //击杀老兵
             case CustomRoles.Veteran:
@@ -1094,10 +1092,10 @@ class CheckMurderPatch
                         CustomWinnerHolder.WinnerIds.Add(target.PlayerId);
                     }
                 return false;
-            case CustomRoles.Cultivator:
-                if (Main.CultivatorKillMax[killer.PlayerId] >= Options.CultivatorImmortalLevel.GetInt() && Options.CultivatorFourCanNotKill.GetBool())
+            case CustomRoles.Berserker:
+                if (Main.BerserkerKillMax[killer.PlayerId] >= Options.BerserkerImmortalLevel.GetInt() && Options.BerserkerFourCanNotKill.GetBool())
                 {
-                    killer.RpcTeleport(target.transform.position);
+                    killer.RpcTeleport(target.GetTruePosition());
                     RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
                     killer.SetKillCooldown(target: target, forceAnime: true);
                     return false;
@@ -1510,7 +1508,7 @@ class ShapeshiftPatch
                         }
                         else
                         {
-                            Main.EscapeeLocation.Add(shapeshifter.PlayerId, new Vector2(shapeshifter.transform.position.x, shapeshifter.transform.position.y));
+                            Main.EscapeeLocation.Add(shapeshifter.PlayerId, shapeshifter.GetTruePosition());
                         }
                     }
                     break;
@@ -1606,8 +1604,8 @@ class ShapeshiftPatch
                         {
                             if (!(!GameStates.IsInTask || !shapeshifter.IsAlive() || !target.IsAlive() || shapeshifter.inVent || target.inVent))
                             {
-                                var originPs = target.transform.position;
-                                target.RpcTeleport(shapeshifter.transform.position);
+                                var originPs = target.GetTruePosition();
+                                target.RpcTeleport(shapeshifter.GetTruePosition());
                                 shapeshifter.RpcTeleport(originPs);
                             }
                         }, 1.5f, "ImperiusCurse TP");
@@ -3407,7 +3405,7 @@ class EnterVentPatch
                     }
                     else
                     {
-                        Main.TimeMasterBackTrack.Add(player.PlayerId, new Vector2(player.transform.position.x, player.transform.position.y));
+                        Main.TimeMasterBackTrack.Add(player.PlayerId, player.GetTruePosition());
                     }
                 }
             }
