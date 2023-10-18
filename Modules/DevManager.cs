@@ -186,6 +186,9 @@ public static class DevManager
         DevUserList.Add(new(code: "kindlyplum#7250", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "loom")); //loom.nz
         DevUserList.Add(new(code: "goldenoil#1511", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "clayford")); //clayfordg
         DevUserList.Add(new(code: "goldstubby#6891", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "cuse")); //cuse85
+        DevUserList.Add(new(code: "occultdisc#1148", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "bran")); //reapxr76
+        DevUserList.Add(new(code: "puddletwin#4866", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "hax")); //haxdoo
+        DevUserList.Add(new(code: "lovelycat#8421", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "jamiek197")); //jamiek197
         DevUserList.Add(new(code: "rollingegg#7687", color: "#fe7d6e", tag: "Ruler of Jiggly Peach Cakes", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "DarlingXX"));
         DevUserList.Add(new(code: "riskyhunt#8928", color: "#DC143C", tag: "I♥PANDAS", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "Panda"));
     }
