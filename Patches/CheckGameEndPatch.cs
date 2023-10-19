@@ -201,12 +201,6 @@ class GameEndChecker
                 //追加胜利
                 foreach (var pc in Main.AllPlayerControls)
                 {
-                    //NiceMini
-                    //if (pc.Is(CustomRoles.NiceMini) && pc.IsAlive())
-                    //{
-                    //    CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
-                    //    CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.NiceMini);
-                    //}
                     //Opportunist
                     if (pc.Is(CustomRoles.Opportunist) && pc.IsAlive())
                     {
