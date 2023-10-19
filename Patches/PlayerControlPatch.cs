@@ -2313,8 +2313,8 @@ class FixedUpdatePatch
     private static long LastFixedUpdate = new();
     private static StringBuilder Mark = new(20);
     private static StringBuilder Suffix = new(120);
-    private static int LevelKickBufferTime = 10;
-    private static Dictionary<byte, int> BufferTime = new();
+    private static int LevelKickBufferTime = 20;
+    private static Dictionary<int, int> BufferTime = new();
 
     private static bool CheckAllowList(string friendcode)
     {
@@ -2332,10 +2332,24 @@ class FixedUpdatePatch
         bool lowLoad = false;
         if (Options.LowLoadMode.GetBool())
         {
-            BufferTime.TryAdd(player.PlayerId, 10);
-            BufferTime[player.PlayerId]--;
-            if (BufferTime[player.PlayerId] > 0) lowLoad = true;
-            else BufferTime[player.PlayerId] = 10;
+            if (!BufferTime.TryGetValue(player.PlayerId, out var timerLowLoad))
+            {
+                BufferTime.TryAdd(player.PlayerId, 10);
+                timerLowLoad = 10;
+            }
+
+            timerLowLoad--;
+
+            if (timerLowLoad > 0)
+            {
+                lowLoad = true;
+            }
+            else
+            {
+                timerLowLoad = 10;
+            }
+
+            BufferTime[player.PlayerId] = timerLowLoad;
         }
 
         if (Sniper.IsEnable) 
@@ -2506,7 +2520,7 @@ class FixedUpdatePatch
                                 else
                                 {
                                     float range = NormalGameOptionsV07.KillDistances[Mathf.Clamp(player.Is(CustomRoles.Reach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
-                                    float distance = Vector2.Distance(player.transform.position, arTarget.transform.position);
+                                    float distance = Vector2.Distance(player.GetTruePosition(), arTarget.GetTruePosition());
 
                                     if (distance <= range)
                                     {
@@ -2538,8 +2552,8 @@ class FixedUpdatePatch
                     }
                     else
                     {
-                        var rv_target = revolutionistTimerData.Item1;
-                        var rv_time = revolutionistTimerData.Item2;
+                        var (rv_target, rv_time) = revolutionistTimerData;
+
                         if (!rv_target.IsAlive())
                         {
                             Main.RevolutionistTimer.Remove(player.PlayerId);
@@ -2564,7 +2578,7 @@ class FixedUpdatePatch
                         else
                         {
                             float range = NormalGameOptionsV07.KillDistances[Mathf.Clamp(player.Is(CustomRoles.Reach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
-                            float dis = Vector2.Distance(player.transform.position, rv_target.transform.position);
+                            float dis = Vector2.Distance(player.GetTruePosition(), rv_target.GetTruePosition());
                             if (dis <= range)
                             {
                                 Main.RevolutionistTimer[player.PlayerId] = (rv_target, rv_time + Time.fixedDeltaTime);
@@ -2581,45 +2595,50 @@ class FixedUpdatePatch
                 }
                 if (player.IsDrawDone() && player.IsAlive())
                 {
-                    if (!Main.RevolutionistStart.TryGetValue(player.PlayerId, out long start))
+                    if (Main.RevolutionistStart.TryGetValue(player.PlayerId, out long startTime))
                     {
-                        start = Utils.GetTimeStamp();
-                        Main.RevolutionistStart.Add(player.PlayerId, start);
-                    }
-
-                    if (!Main.RevolutionistLastTime.TryGetValue(player.PlayerId, out long lastTime))
-                    {
-                        Main.RevolutionistLastTime[player.PlayerId] = start;
-                    }
-
-                    long currentTime = Utils.GetTimeStamp();
-                    bool hasTimeChanged = Main.RevolutionistLastTime[player.PlayerId] != currentTime;
-                    Main.RevolutionistLastTime[player.PlayerId] = currentTime;
-
-                    int time = (int)(currentTime - start);
-                    int countdown = Options.RevolutionistVentCountDown.GetInt() - time;
-
-                    if (hasTimeChanged || countdown <= 0)
-                    {
-                        Utils.GetDrawPlayerCount(player.PlayerId, out var players);
-
-                        foreach (var pc in players.Where(x => x != null && x.IsAlive()))
+                        if (Main.RevolutionistLastTime.TryGetValue(player.PlayerId, out long lastTime))
                         {
-                            pc.Data.IsDead = true;
-                            Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;
-                            pc.RpcMurderPlayerV3(pc);
-                            Main.PlayerStates[pc.PlayerId].SetDead();
-                            Utils.NotifyRoles(SpecifySeer: pc);
-                        }
+                            long nowtime = Utils.GetTimeStamp();
+                            if (lastTime != nowtime)
+                            {
+                                Main.RevolutionistLastTime[player.PlayerId] = nowtime;
+                                lastTime = nowtime;
+                            }
+                            int time = (int)(lastTime - startTime);
+                            int countdown = Options.RevolutionistVentCountDown.GetInt() - time;
+                            Main.RevolutionistCountdown.Clear();
+                            
+                            if (countdown <= 0)
+                            {
+                                Utils.GetDrawPlayerCount(player.PlayerId, out var list);
 
-                        player.Data.IsDead = true;
-                        Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;
-                        player.RpcMurderPlayerV3(player);
-                        Main.PlayerStates[player.PlayerId].SetDead();
+                                foreach (var pc in list.Where(x => x != null && x.IsAlive()))
+                                {
+                                    pc.Data.IsDead = true;
+                                    Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;
+                                    pc.RpcMurderPlayerV3(pc);
+                                    Main.PlayerStates[pc.PlayerId].SetDead();
+                                    Utils.NotifyRoles(SpecifySeer: pc);
+                                }
+                                player.Data.IsDead = true;
+                                Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;
+                                player.RpcMurderPlayerV3(player);
+                                Main.PlayerStates[player.PlayerId].SetDead();
+                            }
+                            else
+                            {
+                                Main.RevolutionistCountdown.Add(player.PlayerId, countdown);
+                            }
+                        }
+                        else
+                        {
+                            Main.RevolutionistLastTime.TryAdd(player.PlayerId, Main.RevolutionistStart[player.PlayerId]);
+                        }
                     }
                     else
                     {
-                        Main.RevolutionistCountdown[player.PlayerId] = countdown;
+                        Main.RevolutionistStart.TryAdd(player.PlayerId, Utils.GetTimeStamp());
                     }
                 }
                 #endregion

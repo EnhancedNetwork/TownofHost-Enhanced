@@ -145,7 +145,7 @@ public static class Agitater
                     targetDistance.Add(target.PlayerId, dis);
                 }
             }
-            if (targetDistance.Count != 0)
+            if (targetDistance.Any())
             {
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 PlayerControl target = Utils.GetPlayerById(min.Key);
