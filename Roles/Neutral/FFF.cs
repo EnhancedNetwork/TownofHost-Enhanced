@@ -23,7 +23,7 @@ namespace TOHE.Roles.Neutral
         public static OptionItem CanKillInfected;
         public static OptionItem CanKillContagious;
 
-        public static List<byte> winnerFFFList = new();
+        public static bool isWon = false; // There's already a playerIdList, so replaced this with a boolean value
         public static void SetupCustomOption()
         {
             SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.FFF, zeroOne: false);
@@ -43,7 +43,7 @@ namespace TOHE.Roles.Neutral
         {
             playerIdList = new();
             IsEnable = false;
-            winnerFFFList = new();
+            isWon = false;
         }
 
         public static void Add(byte playerId)
@@ -56,23 +56,19 @@ namespace TOHE.Roles.Neutral
                 Main.ResetCamPlayerList.Add(playerId);
         }
 
-        public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
+        public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
         {
-            if (killer == null || target == null) return;
-            if (killer.PlayerId == target.PlayerId) return;
+            if (killer == null || target == null) return false;
+            if (killer.PlayerId == target.PlayerId) return true;  // Return true to allow suicides
 
-            if (target.GetCustomSubRoles().Any(x => x.IsConverted() || x == CustomRoles.Madmate || x == CustomRoles.Admired) 
+            if (target.GetCustomSubRoles().Any(x => x.IsConverted() || x == CustomRoles.Madmate || x == CustomRoles.Admired)
                 || IsConvertedMainRole(target.GetCustomRole()))
             {
                 if (!ChooseConverted.GetBool())
                 {
-                    killer.RpcMurderPlayerV3(target);
-                    if (!winnerFFFList.Contains(killer.PlayerId))
-                    {
-                        winnerFFFList.Add(killer.PlayerId);
-                    }
+                    if (killer.RpcCheckAndMurder(target)) isWon = true; // Only win if target can be killed - this kills the target if they can be killed
                     Logger.Info($"{killer.GetRealName()} killed right target case 1", "FFF");
-                    return;
+                    return false;  // The murder is already done if it could be done, so return false to avoid double killing
                 }
                 else if (
                     ((target.Is(CustomRoles.Madmate) || target.Is(CustomRoles.Gangster)) && CanKillMadmate.GetBool())
@@ -81,58 +77,51 @@ namespace TOHE.Roles.Neutral
                     || ((target.Is(CustomRoles.Romantic) || target.Is(CustomRoles.RuthlessRomantic) || target.Is(CustomRoles.VengefulRomantic)
                         || Romantic.BetPlayer.ContainsValue(target.PlayerId)) && CanKillLovers.GetBool())
                     || ((target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Jackal) || target.Is(CustomRoles.Recruit)) && CanKillSidekicks.GetBool())
-                    || ((target.Is(CustomRoles.Egoist) && CanKillEgoists.GetBool())
+                    || (target.Is(CustomRoles.Egoist) && CanKillEgoists.GetBool())
                     || ((target.Is(CustomRoles.Infected) || target.Is(CustomRoles.Infectious)) && CanKillInfected.GetBool())
                     || ((target.Is(CustomRoles.Contagious) || target.Is(CustomRoles.Virus)) && CanKillContagious.GetBool())
-                    || ((target.Is(CustomRoles.Admired) || target.Is(CustomRoles.Admirer)) && CanKillAdmired.GetBool()))
+                    || ((target.Is(CustomRoles.Admired) || target.Is(CustomRoles.Admirer)) && CanKillAdmired.GetBool())
                     )
                 {
-                    killer.RpcMurderPlayerV3(target);
-                    if (!winnerFFFList.Contains(killer.PlayerId))
-                    {
-                        winnerFFFList.Add(killer.PlayerId);
-                    }
+                    if (killer.RpcCheckAndMurder(target)) isWon = true; // Only win if target can be killed - this kills the target if they can be killed
                     Logger.Info($"{killer.GetRealName()} killed right target case 2", "FFF");
-                    return;
+                    return false;  // The murder is already done if it could be done, so return false to avoid double killing
                 }
             }
-            //Not return tigger following fail check
+            //Not return trigger following fail check ---- I'm sorry, what?
+            if (MisFireKillTarget.GetBool() && killer.RpcCheckAndMurder(target, true)) // RpcCheckAndMurder checks if the target can be murdered or not (checks for shields and other stuff); the 'true' parameter indicates that we just want a check, and not murder yet.
             {
-                if (MisFireKillTarget.GetBool())
-                {
-                    killer.RpcMurderPlayerV3(target);
-                    target.SetRealKiller(killer);
-                    target.Data.IsDead = true;
-                    Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
-                }
-                killer.Data.IsDead = true;
-                Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;
-                killer.RpcMurderPlayerV3(killer);
-                Main.PlayerStates[killer.PlayerId].SetDead();
-                Logger.Info($"{killer.GetRealName()} 击杀了非目标玩家，壮烈牺牲了（bushi）", "FFF");
-                return;
+                killer.RpcMurderPlayerV3(target); // Murder the target only if the setting is on and the target can be killed
+                target.SetRealKiller(killer);
+                target.Data.IsDead = true;
+                Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
             }
+            killer.Data.IsDead = true;
+            Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;
+            killer.RpcMurderPlayerV3(killer);
+            Main.PlayerStates[killer.PlayerId].SetDead();
+            Logger.Info($"{killer.GetRealName()} killed incorrect target => misfire", "FFF");
+            return false;
         }
 
         private static bool IsConvertedMainRole(CustomRoles role)
         {
-            switch (role)
+            return role switch  // Use the switch expression whenever possible instead of the switch statement to improve performance
             {
-                case CustomRoles.Gangster:
-                case CustomRoles.Succubus:
-                case CustomRoles.Romantic:
-                case CustomRoles.RuthlessRomantic:
-                case CustomRoles.VengefulRomantic:
-                case CustomRoles.Sidekick:
-                case CustomRoles.Jackal:
-                case CustomRoles.Virus:
-                case CustomRoles.Infectious:
-                case CustomRoles.Admirer:
-                    return true;
-                default:
-                    break;
-            }
-            return false;
+                CustomRoles.Gangster or
+                CustomRoles.Succubus or
+                CustomRoles.Romantic or
+                CustomRoles.RuthlessRomantic or
+                CustomRoles.VengefulRomantic or
+                CustomRoles.Sidekick or
+                CustomRoles.Jackal or
+                CustomRoles.Virus or
+                CustomRoles.Infectious or
+                CustomRoles.Admirer
+                => true,
+
+                _ => false,
+            };
         }
     }
 }

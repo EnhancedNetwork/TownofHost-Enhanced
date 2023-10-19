@@ -4,6 +4,9 @@ using System.Linq;
 using AmongUs.GameOptions;
 using TOHE.Roles.Crewmate;
 using UnityEngine;
+using System;
+using static TOHE.Translator;
+using TOHE.Roles.Double;
 namespace TOHE.Roles.Neutral;
 
 public static class Pelican
@@ -113,6 +116,11 @@ public static class Pelican
     public static void EatPlayer(PlayerControl pc, PlayerControl target)
     {
         if (pc == null || target == null || !CanEat(pc, target.PlayerId)) return;
+        if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
+        {
+            pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("CantEat")));
+            return;
+        }
         if (!eatenList.ContainsKey(pc.PlayerId)) eatenList.Add(pc.PlayerId, new());
         eatenList[pc.PlayerId].Add(target.PlayerId);
 
