@@ -96,8 +96,10 @@ public static class Judge
 
             if (TryHideMsg.GetBool()) 
             {
-                if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
-                else GuessManager.TryHideMsg();
+                //if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
+                //else GuessManager.TryHideMsg();
+                GuessManager.TryHideMsg();
+                ChatManager.SendPreviousMessagesToAll();
             }
             else if (pc.AmOwner) Utils.SendMessage(originMsg, 255, pc.GetRealName());
 

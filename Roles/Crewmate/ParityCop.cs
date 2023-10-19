@@ -109,9 +109,11 @@ public static class ParityCop
         {
 
             if (TryHideMsg.GetBool())
-            { 
-                if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
-                else TryHideMsgForCompare(); 
+            {
+                //if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
+                //else TryHideMsgForCompare(); 
+                TryHideMsgForCompare();
+                ChatManager.SendPreviousMessagesToAll();
             }
             else if (pc.AmOwner) Utils.SendMessage(originMsg, 255, pc.GetRealName());
 

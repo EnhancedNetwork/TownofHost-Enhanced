@@ -367,7 +367,10 @@ internal class ChatCommands
                     canceled = true;
                     string msgText1 = GetString("PlayerIdList");
                     foreach (var pc in Main.AllPlayerControls)
-                        msgText1 += "\n" + pc.PlayerId.ToString() + " → " + Main.AllPlayerNames[pc.PlayerId];
+                    {
+                        if (pc == null) continue;
+                        msgText1 += "\n" + pc.PlayerId.ToString() + " → " + pc.GetRealName();
+                    }
                     Utils.SendMessage(msgText1, PlayerControl.LocalPlayer.PlayerId);
                     break;
 
@@ -636,7 +639,10 @@ internal class ChatCommands
                     canceled = true;
                     string msgText = GetString("PlayerIdList");
                     foreach (var pc in Main.AllPlayerControls)
-                        msgText += "\n" + pc.PlayerId.ToString() + " → " + Main.AllPlayerNames[pc.PlayerId];
+                    {
+                        if (pc == null) continue;
+                        msgText += "\n" + pc.PlayerId.ToString() + " → " + pc.GetRealName(); 
+                    }
                     Utils.SendMessage(msgText, PlayerControl.LocalPlayer.PlayerId);
                     break;
 
@@ -1377,7 +1383,10 @@ internal class ChatCommands
 
                 string msgText = GetString("PlayerIdList");
                 foreach (var pc in Main.AllPlayerControls)
-                    msgText += "\n" + pc.PlayerId.ToString() + " → " + Main.AllPlayerNames[pc.PlayerId];
+                {
+                    if (pc == null) continue;
+                    msgText += "\n" + pc.PlayerId.ToString() + " → " + pc.GetRealName();
+                }
                 Utils.SendMessage(msgText, player.PlayerId);
                 break;
             case "/mid":
@@ -1396,7 +1405,10 @@ internal class ChatCommands
                 }
                 string msgText1 = GetString("PlayerIdList");
                 foreach (var pc in Main.AllPlayerControls)
-                    msgText1 += "\n" + pc.PlayerId.ToString() + " → " + Main.AllPlayerNames[pc.PlayerId];
+                {
+                    if (pc == null) continue;
+                    msgText1 += "\n" + pc.PlayerId.ToString() + " → " + pc.GetRealName();
+                }
                 Utils.SendMessage(msgText1, player.PlayerId);
                 break;
             case "/ban":
@@ -1795,7 +1807,7 @@ internal class ChatCommands
                 }
                 break;
             case "/rps":
-                canceled = true;
+                //canceled = true;
                 subArgs = args.Length != 2 ? "" : args[1];
 
                 if (!GameStates.IsLobby && player.IsAlive())
@@ -1836,7 +1848,7 @@ internal class ChatCommands
                     break;
                 }
             case "/coinflip":
-                canceled = true;
+                //canceled = true;
 
                 if (!GameStates.IsLobby && player.IsAlive())
                 {
@@ -1852,7 +1864,7 @@ internal class ChatCommands
                     break;
                 }
             case "/gno":
-                canceled = true;
+                //canceled = true;
                 if (!GameStates.IsLobby && player.IsAlive())
                 {
                     Utils.SendMessage(GetString("GNoCommandInfo"), player.PlayerId);

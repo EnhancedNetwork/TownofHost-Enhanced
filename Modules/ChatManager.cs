@@ -108,44 +108,44 @@ namespace TOHE.Modules.ChatManager
 
         public static void SendPreviousMessagesToAll()
         {
-            var rd = IRandom.Instance;
-            CustomRoles[] roles = (CustomRoles[])Enum.GetValues(typeof(CustomRoles));
-            string[] specialTexts = new string[] { "bet", "bt", "guess", "gs", "shoot", "st", "赌", "猜", "审判", "tl", "判", "审", "trial" };
-            int numPlayers = Main.AllAlivePlayerControls.Count();
-            var allAlivePlayers = Main.AllAlivePlayerControls.ToArray();
-            int roleCount = roles.Length;
+            //var rd = IRandom.Instance;
+            //CustomRoles[] roles = (CustomRoles[])Enum.GetValues(typeof(CustomRoles));
+            //string[] specialTexts = new string[] { "bet", "bt", "guess", "gs", "shoot", "st", "赌", "猜", "审判", "tl", "判", "审", "trial" };
+            //int numPlayers = Main.AllAlivePlayerControls.Count();
+            //var allAlivePlayers = Main.AllAlivePlayerControls.ToArray();
+            //int roleCount = roles.Length;
 
-            for (int i = chatHistory.Count; i < 30; i++)
-            {
-                StringBuilder msgBuilder = new();
-                msgBuilder.Append('/');
-                if (rd.Next(1, 100) < 20)
-                {
-                    msgBuilder.Append("id");
-                }
-                else
-                {
-                    msgBuilder.Append(specialTexts[rd.Next(specialTexts.Length)]);
-                    msgBuilder.Append(rd.Next(1, 100) < 50 ? string.Empty : " ");
-                    msgBuilder.Append(rd.Next(15));
-                    msgBuilder.Append(rd.Next(1, 100) < 50 ? string.Empty : " ");
-                    CustomRoles role = roles[rd.Next(roleCount)];
-                    msgBuilder.Append(rd.Next(1, 100) < 50 ? string.Empty : " ");
-                    msgBuilder.Append(Utils.GetRoleName(role));
-                }
-                string msg = msgBuilder.ToString();
+            //for (int i = chatHistory.Count; i < 30; i++)
+            //{
+            //    StringBuilder msgBuilder = new();
+            //    msgBuilder.Append('/');
+            //    if (rd.Next(1, 100) < 20)
+            //    {
+            //        msgBuilder.Append("id");
+            //    }
+            //    else
+            //    {
+            //        msgBuilder.Append(specialTexts[rd.Next(specialTexts.Length)]);
+            //        msgBuilder.Append(rd.Next(1, 100) < 50 ? string.Empty : " ");
+            //        msgBuilder.Append(rd.Next(15));
+            //        msgBuilder.Append(rd.Next(1, 100) < 50 ? string.Empty : " ");
+            //        CustomRoles role = roles[rd.Next(roleCount)];
+            //        msgBuilder.Append(rd.Next(1, 100) < 50 ? string.Empty : " ");
+            //        msgBuilder.Append(Utils.GetRoleName(role));
+            //    }
+            //    string msg = msgBuilder.ToString();
 
-                var player = allAlivePlayers[rd.Next(numPlayers)];
-                DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
-                var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
+            //    var player = allAlivePlayers[rd.Next(numPlayers)];
+            //    DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
+            //    var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
 
-                writer.StartMessage(-1);
-                writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)
-                    .Write(msg)
-                    .EndRpc()
-                    .EndMessage()
-                    .SendMessage();
-            }
+            //    writer.StartMessage(-1);
+            //    writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)
+            //        .Write(msg)
+            //        .EndRpc()
+            //        .EndMessage()
+            //        .SendMessage();
+            //}
 
             for (int i = 0; i < chatHistory.Count; i++)
             {

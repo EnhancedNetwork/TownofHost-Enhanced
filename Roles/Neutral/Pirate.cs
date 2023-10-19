@@ -165,8 +165,10 @@ public static class Pirate
 
             if (TryHideMsg.GetBool())
             {
-                if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
-                else TryHideMsgForDuel();
+                //if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
+                //else TryHideMsgForDuel();
+                TryHideMsgForDuel();
+                ChatManager.SendPreviousMessagesToAll();
             }
             else if (pc.AmOwner) Utils.SendMessage(originMsg, 255, pc.GetRealName());
 

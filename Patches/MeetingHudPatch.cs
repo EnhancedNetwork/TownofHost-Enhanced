@@ -740,7 +740,11 @@ class MeetingHudStartPatch
                 Main.BaitAlive.Add(pc.PlayerId);
             List<string> baitAliveList = new();
             foreach (var whId in Main.BaitAlive)
-                baitAliveList.Add(Main.AllPlayerNames[whId]);
+            {
+                PlayerControl whpc = Utils.GetPlayerById(whId);
+                if (whpc == null) continue;
+                baitAliveList.Add(whpc.GetRealName());
+            }//Main.AllPlayerNames[whId]);
             string separator = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
             AddMsg(string.Format(GetString("BaitAdviceAlive"), string.Join(separator, baitAliveList)), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), GetString("BaitAliveTitle")));
         }
