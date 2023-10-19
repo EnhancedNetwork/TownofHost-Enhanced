@@ -65,7 +65,7 @@ public static class Admirer
     public static bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && AdmirerLimit[player.PlayerId] >= 1;
     public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
-        if (AdmireLimit < 1) return;
+        if (AdmirerLimit[killer.PlayerId] < 1) return;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Succubus), GetString("CantRecruit")));
