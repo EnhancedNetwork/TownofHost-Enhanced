@@ -17,12 +17,6 @@ public static class Pirate
     private static Dictionary<byte, bool> DuelDone = new();
     private static int pirateChose, targetChose;
     public static int NumWin = 0;
-    public static readonly string[] OptionList =
-    {
-        GetString("Rock"),
-        GetString("Paper"),
-        GetString("Scissors")
-    };
 
 
     public static OptionItem SuccessfulDuelsToWin;
@@ -178,7 +172,7 @@ public static class Pirate
                 return true;
             }
 
-            Logger.Info($"{pc.GetNameWithRole()} selected {OptionList[rpsOption]}", "Pirate");
+            Logger.Info($"{pc.GetNameWithRole()} selected {rpsOption}", "Pirate");
 
             if (DuelDone[pc.PlayerId])
             {
@@ -212,8 +206,8 @@ public static class Pirate
                 }
                 _ = new LateTask(() =>
                 {
-                    if (!isUI) Utils.SendMessage(String.Format(GetString("DuelDone"), OptionList[rpsOption]), pc.PlayerId);
-                    else pc.ShowPopUp(String.Format(GetString("DuelDone"), OptionList[rpsOption]));
+                    if (!isUI) Utils.SendMessage(String.Format(GetString("DuelDone"), rpsOption), pc.PlayerId);
+                    else pc.ShowPopUp(String.Format(GetString("DuelDone"), rpsOption));
                 }, 0.2f, "Pirate");
                 DuelDone[pc.PlayerId] = true;
                 return true;
