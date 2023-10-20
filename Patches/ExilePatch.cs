@@ -115,7 +115,7 @@ class ExileControllerWrapUpPatch
         HexMaster.RemoveHexedPlayer();
         //Occultist.RemoveCursedPlayer();
 
-        if (Swapper.Vote.Count > 0 && Swapper.VoteTwo.Count > 0)
+        if (Swapper.Vote.Any() && Swapper.VoteTwo.Any())
         {
             foreach (var swapper in Main.AllAlivePlayerControls)
             {

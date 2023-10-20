@@ -64,7 +64,7 @@ internal class ControllerManagerUpdatePatch
             {
                 var role = PlayerControl.LocalPlayer.GetCustomRole();
                 var lp = PlayerControl.LocalPlayer;
-                if (Main.PlayerStates[lp.PlayerId].SubRoles.Count < 1) return;
+                if (!Main.PlayerStates[lp.PlayerId].SubRoles.Any()) return;
 
                 addDes = new();
                 foreach (var subRole in Main.PlayerStates[lp.PlayerId].SubRoles.Where(x => x is not CustomRoles.Charmed))

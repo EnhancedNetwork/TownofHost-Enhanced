@@ -110,9 +110,11 @@ public static class Vampiress
         var vampiressID = vampiress.PlayerId;
         List<byte> targetList = new(BittenPlayers.Where(b => b.Value.VampiressId == vampiressID).Select(b => b.Key));
 
-        foreach (var targetId in targetList)
+        for (var id = 0; id < targetList.Count; id++)
         {
+            var targetId = targetList[id];
             var bitten = BittenPlayers[targetId];
+
             if (bitten.KillTimer >= KillDelay)
             {
                 var target = Utils.GetPlayerById(targetId);

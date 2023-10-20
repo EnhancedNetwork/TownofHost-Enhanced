@@ -2469,6 +2469,7 @@ class FixedUpdatePatch
                     case CustomRoles.Warlock:
                         if (Main.WarlockTimer.TryGetValue(player.PlayerId, out var warlockTimer))
                         {
+                            var playerId = player.PlayerId;
                             if (player.IsAlive())
                             {
                                 if (warlockTimer >= 1f)
@@ -2476,46 +2477,47 @@ class FixedUpdatePatch
                                     player.RpcResetAbilityCooldown();
                                     Main.isCursed = false;
                                     player.SyncSettings();
-                                    Main.WarlockTimer.Remove(player.PlayerId);
+                                    Main.WarlockTimer.Remove(playerId);
                                 }
                                 else
                                 {
                                     warlockTimer += Time.fixedDeltaTime;
-                                    Main.WarlockTimer[player.PlayerId] = warlockTimer;
+                                    Main.WarlockTimer[playerId] = warlockTimer;
                                 }
                             }
                             else
                             {
-                                Main.WarlockTimer.Remove(player.PlayerId);
+                                Main.WarlockTimer.Remove(playerId);
                             }
                         }
                         break;
 
                     case CustomRoles.Arsonist:
-                        if (Main.ArsonistTimer.TryGetValue(player.PlayerId, out var arsonistTimer))
+                        if (Main.ArsonistTimer.TryGetValue(player.PlayerId, out var arsonistTimerData))
                         {
-                            if (!player.IsAlive() || Pelican.IsEaten(player.PlayerId))
+                            var playerId = player.PlayerId;
+                            if (!player.IsAlive() || Pelican.IsEaten(playerId))
                             {
-                                Main.ArsonistTimer.Remove(player.PlayerId);
-                                Utils.NotifyRoles(SpecifySeer: __instance);
-                                RPC.ResetCurrentDousingTarget(player.PlayerId);
+                                Main.ArsonistTimer.Remove(playerId);
+                                Utils.NotifyRoles(SpecifySeer: player);
+                                RPC.ResetCurrentDousingTarget(playerId);
                             }
                             else
                             {
-                                var (arTarget, arTime) = arsonistTimer;
+                                var (arTarget, arTime) = arsonistTimerData;
 
                                 if (!arTarget.IsAlive())
                                 {
-                                    Main.ArsonistTimer.Remove(player.PlayerId);
+                                    Main.ArsonistTimer.Remove(playerId);
                                 }
                                 else if (arTime >= Options.ArsonistDouseTime.GetFloat())
                                 {
                                     player.SetKillCooldown();
-                                    Main.ArsonistTimer.Remove(player.PlayerId);
-                                    Main.isDoused[(player.PlayerId, arTarget.PlayerId)] = true;
+                                    Main.ArsonistTimer.Remove(playerId);
+                                    Main.isDoused[(playerId, arTarget.PlayerId)] = true;
                                     player.RpcSetDousedPlayer(arTarget, true);
                                     Utils.NotifyRoles(SpecifySeer: player);
-                                    RPC.ResetCurrentDousingTarget(player.PlayerId);
+                                    RPC.ResetCurrentDousingTarget(playerId);
                                 }
                                 else
                                 {
@@ -2524,13 +2526,13 @@ class FixedUpdatePatch
 
                                     if (distance <= range)
                                     {
-                                        Main.ArsonistTimer[player.PlayerId] = (arTarget, arTime + Time.fixedDeltaTime);
+                                        Main.ArsonistTimer[playerId] = (arTarget, arTime + Time.fixedDeltaTime);
                                     }
                                     else
                                     {
-                                        Main.ArsonistTimer.Remove(player.PlayerId);
+                                        Main.ArsonistTimer.Remove(playerId);
                                         Utils.NotifyRoles(SpecifySeer: player);
-                                        RPC.ResetCurrentDousingTarget(player.PlayerId);
+                                        RPC.ResetCurrentDousingTarget(playerId);
 
                                         Logger.Info($"Canceled: {player.GetNameWithRole()}", "Arsonist");
                                     }
@@ -2544,11 +2546,12 @@ class FixedUpdatePatch
                 #region Revolutionist Timer
                 if (Main.RevolutionistTimer.TryGetValue(player.PlayerId, out var revolutionistTimerData))
                 {
-                    if (!player.IsAlive() || Pelican.IsEaten(player.PlayerId))
+                    var playerId = player.PlayerId;
+                    if (!player.IsAlive() || Pelican.IsEaten(playerId))
                     {
-                        Main.RevolutionistTimer.Remove(player.PlayerId);
+                        Main.RevolutionistTimer.Remove(playerId);
                         Utils.NotifyRoles(SpecifySeer: player);
-                        RPC.ResetCurrentDrawTarget(player.PlayerId);
+                        RPC.ResetCurrentDrawTarget(playerId);
                     }
                     else
                     {
@@ -2556,23 +2559,24 @@ class FixedUpdatePatch
 
                         if (!rv_target.IsAlive())
                         {
-                            Main.RevolutionistTimer.Remove(player.PlayerId);
+                            Main.RevolutionistTimer.Remove(playerId);
                         }
                         else if (rv_time >= Options.RevolutionistDrawTime.GetFloat())
                         {
+                            var rvTargetId = rv_target.PlayerId;
                             player.SetKillCooldown();
-                            Main.RevolutionistTimer.Remove(player.PlayerId);
-                            Main.isDraw[(player.PlayerId, rv_target.PlayerId)] = true;
+                            Main.RevolutionistTimer.Remove(playerId);
+                            Main.isDraw[(playerId, rvTargetId)] = true;
                             player.RpcSetDrawPlayer(rv_target, true);
                             Utils.NotifyRoles(SpecifySeer: player);
-                            RPC.ResetCurrentDrawTarget(player.PlayerId);
+                            RPC.ResetCurrentDrawTarget(playerId);
                             if (IRandom.Instance.Next(1, 100) <= Options.RevolutionistKillProbability.GetInt())
                             {
                                 rv_target.SetRealKiller(player);
-                                Main.PlayerStates[rv_target.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;
+                                Main.PlayerStates[rvTargetId].deathReason = PlayerState.DeathReason.Sacrifice;
                                 player.RpcMurderPlayerV3(rv_target);
-                                Main.PlayerStates[rv_target.PlayerId].SetDead();
-                                Logger.Info($"Revolutionist: {player.GetNameWithRole()} killed {rv_target.GetNameWithRole()}", "Revolutionist");
+                                Main.PlayerStates[rvTargetId].SetDead();
+                                Logger.Info($"Revolutionist: {player.GetNameWithRole()} killed by {rv_target.GetNameWithRole()}", "Revolutionist");
                             }
                         }
                         else
@@ -2581,13 +2585,13 @@ class FixedUpdatePatch
                             float dis = Vector2.Distance(player.GetTruePosition(), rv_target.GetTruePosition());
                             if (dis <= range)
                             {
-                                Main.RevolutionistTimer[player.PlayerId] = (rv_target, rv_time + Time.fixedDeltaTime);
+                                Main.RevolutionistTimer[playerId] = (rv_target, rv_time + Time.fixedDeltaTime);
                             }
                             else
                             {
-                                Main.RevolutionistTimer.Remove(player.PlayerId);
+                                Main.RevolutionistTimer.Remove(playerId);
                                 Utils.NotifyRoles(SpecifySeer: player);
-                                RPC.ResetCurrentDrawTarget(player.PlayerId);
+                                RPC.ResetCurrentDrawTarget(playerId);
                                 Logger.Info($"Canceled: {__instance.GetNameWithRole()}", "Revolutionist");
                             }
                         }
@@ -2595,14 +2599,15 @@ class FixedUpdatePatch
                 }
                 if (player.IsDrawDone() && player.IsAlive())
                 {
-                    if (Main.RevolutionistStart.TryGetValue(player.PlayerId, out long startTime))
+                    var playerId = player.PlayerId;
+                    if (Main.RevolutionistStart.TryGetValue(playerId, out long startTime))
                     {
-                        if (Main.RevolutionistLastTime.TryGetValue(player.PlayerId, out long lastTime))
+                        if (Main.RevolutionistLastTime.TryGetValue(playerId, out long lastTime))
                         {
                             long nowtime = Utils.GetTimeStamp();
                             if (lastTime != nowtime)
                             {
-                                Main.RevolutionistLastTime[player.PlayerId] = nowtime;
+                                Main.RevolutionistLastTime[playerId] = nowtime;
                                 lastTime = nowtime;
                             }
                             int time = (int)(lastTime - startTime);
@@ -2611,7 +2616,7 @@ class FixedUpdatePatch
                             
                             if (countdown <= 0)
                             {
-                                Utils.GetDrawPlayerCount(player.PlayerId, out var list);
+                                Utils.GetDrawPlayerCount(playerId, out var list);
 
                                 foreach (var pc in list.Where(x => x != null && x.IsAlive()))
                                 {
@@ -2622,23 +2627,23 @@ class FixedUpdatePatch
                                     Utils.NotifyRoles(SpecifySeer: pc);
                                 }
                                 player.Data.IsDead = true;
-                                Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;
+                                Main.PlayerStates[playerId].deathReason = PlayerState.DeathReason.Sacrifice;
                                 player.RpcMurderPlayerV3(player);
-                                Main.PlayerStates[player.PlayerId].SetDead();
+                                Main.PlayerStates[playerId].SetDead();
                             }
                             else
                             {
-                                Main.RevolutionistCountdown.Add(player.PlayerId, countdown);
+                                Main.RevolutionistCountdown.TryAdd(playerId, countdown);
                             }
                         }
                         else
                         {
-                            Main.RevolutionistLastTime.TryAdd(player.PlayerId, Main.RevolutionistStart[player.PlayerId]);
+                            Main.RevolutionistLastTime.TryAdd(playerId, Main.RevolutionistStart[playerId]);
                         }
                     }
                     else
                     {
-                        Main.RevolutionistStart.TryAdd(player.PlayerId, Utils.GetTimeStamp());
+                        Main.RevolutionistStart.TryAdd(playerId, Utils.GetTimeStamp());
                     }
                 }
                 #endregion
@@ -2740,22 +2745,22 @@ class FixedUpdatePatch
                             break;
 
                         case CustomRoles.Grenadier:
-                            var startGrenadierSkill = false;
-                            var startMadGrenadierSkill = false;
+                            var stopGrenadierSkill = false;
+                            var stopMadGrenadierSkill = false;
 
                             if (Main.GrenadierBlinding.TryGetValue(player.PlayerId, out var grenadierTime) && grenadierTime + Options.GrenadierSkillDuration.GetInt() < Utils.GetTimeStamp())
                             {
                                 Main.GrenadierBlinding.Remove(player.PlayerId);
-                                startGrenadierSkill = true;
+                                stopGrenadierSkill = true;
                             }
 
                             if (Main.MadGrenadierBlinding.TryGetValue(player.PlayerId, out var madGrenadierTime) && madGrenadierTime + Options.GrenadierSkillDuration.GetInt() < Utils.GetTimeStamp())
                             {
                                 Main.MadGrenadierBlinding.Remove(player.PlayerId);
-                                startMadGrenadierSkill = true;
+                                stopMadGrenadierSkill = true;
                             }
 
-                            if (startGrenadierSkill || startMadGrenadierSkill)  
+                            if (stopGrenadierSkill || stopMadGrenadierSkill)  
                             {
                                 if (!Options.DisableShieldAnimations.GetBool())
                                 {

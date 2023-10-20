@@ -10,6 +10,11 @@ using System.Linq;
 using System.Reflection;
 using TOHE.Roles.Neutral;
 using UnityEngine;
+using System.Text;
+using System.Threading.Tasks;
+using System.IO;
+using Hazel;
+using InnerNet;
 
 [assembly: AssemblyFileVersion(TOHE.Main.PluginVersion)]
 [assembly: AssemblyInformationalVersion(TOHE.Main.PluginVersion)]
@@ -232,6 +237,9 @@ public class Main : BasePlugin
 
     public static IEnumerable<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null);
     public static IEnumerable<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId));
+
+    public static List<PlayerControl> AllPlayerControlsList => (List<PlayerControl>)PlayerControl.AllPlayerControls.ToArray().Where(p => p != null);
+    public static List<PlayerControl> AllAlivePlayerControlsList => (List<PlayerControl>)PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId));
 
     public static Main Instance;
 

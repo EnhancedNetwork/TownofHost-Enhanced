@@ -108,43 +108,44 @@ namespace TOHE.Roles.Crewmate
         {
             if (!FarseerTimer.ContainsKey(player.PlayerId)) return;
 
-            if (!player.IsAlive() || Pelican.IsEaten(player.PlayerId))
+            var playerId = player.PlayerId;
+            if (!player.IsAlive() || Pelican.IsEaten(playerId))
             {
-                FarseerTimer.Remove(player.PlayerId);
+                FarseerTimer.Remove(playerId);
                 NotifyRoles(SpecifySeer: player);
-                RPC.ResetCurrentRevealTarget(player.PlayerId);
+                RPC.ResetCurrentRevealTarget(playerId);
             }
             else
             {
-                var ar_target = FarseerTimer[player.PlayerId].Item1;
-                var ar_time = FarseerTimer[player.PlayerId].Item2;
-                if (!ar_target.IsAlive())
+                var (farTarget, farTime) = FarseerTimer[playerId];
+                
+                if (!farTarget.IsAlive())
                 {
-                    FarseerTimer.Remove(player.PlayerId);
+                    FarseerTimer.Remove(playerId);
                 }
-                else if (ar_time >= FarseerRevealTime.GetFloat())
+                else if (farTime >= FarseerRevealTime.GetFloat())
                 {
                     player.SetKillCooldown();
-                    FarseerTimer.Remove(player.PlayerId);
-                    Main.isRevealed[(player.PlayerId, ar_target.PlayerId)] = true;
-                    player.RpcSetRevealtPlayer(ar_target, true);
+                    FarseerTimer.Remove(playerId);
+                    Main.isRevealed[(playerId, farTarget.PlayerId)] = true;
+                    player.RpcSetRevealtPlayer(farTarget, true);
                     NotifyRoles(SpecifySeer: player);
-                    RPC.ResetCurrentRevealTarget(player.PlayerId);
+                    RPC.ResetCurrentRevealTarget(playerId);
                 }
                 else
                 {
 
                     float range = NormalGameOptionsV07.KillDistances[Mathf.Clamp(player.Is(CustomRoles.Reach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
-                    float dis = Vector2.Distance(player.transform.position, ar_target.transform.position);
+                    float dis = Vector2.Distance(player.GetTruePosition(), farTarget.GetTruePosition());
                     if (dis <= range)
                     {
-                        FarseerTimer[player.PlayerId] = (ar_target, ar_time + Time.fixedDeltaTime);
+                        FarseerTimer[playerId] = (farTarget, farTime + Time.fixedDeltaTime);
                     }
                     else
                     {
-                        FarseerTimer.Remove(player.PlayerId);
+                        FarseerTimer.Remove(playerId);
                         NotifyRoles(SpecifySeer: player);
-                        RPC.ResetCurrentRevealTarget(player.PlayerId);
+                        RPC.ResetCurrentRevealTarget(playerId);
 
                         Logger.Info($"Canceled: {player.GetNameWithRole()}", "Farseer");
                     }

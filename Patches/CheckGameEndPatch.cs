@@ -495,7 +495,7 @@ class GameEndChecker
         {
             reason = GameOverReason.ImpostorByKill;
 
-            if (CustomRolesHelper.RoleExist(CustomRoles.Sunnyboy) && Main.AllAlivePlayerControls.Count() > 1) return false;
+            if (CustomRolesHelper.RoleExist(CustomRoles.Sunnyboy) && Main.AllAlivePlayerControls.Any()) return false;
 
             int Imp = Utils.AlivePlayersCount(CountTypes.Impostor);
             int Jackal = Utils.AlivePlayersCount(CountTypes.Jackal);
