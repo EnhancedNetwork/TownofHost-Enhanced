@@ -14,7 +14,7 @@ public abstract class GameOptionsSender
 
     public static void SendAllGameOptions()
     {
-        AllSenders.RemoveAll(s => s == null);
+        AllSenders.RemoveAll(s => s == null || !s.AmValid());
         foreach (var sender in AllSenders)
         {
             if (sender.IsDirty) sender.SendGameOptions();

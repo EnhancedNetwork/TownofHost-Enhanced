@@ -12,7 +12,7 @@ namespace TOHE.Modules.ChatManager
         public static bool cancel = false;
         private static List<Dictionary<byte, string>> chatHistory = new();
         private const int maxHistorySize = 20;
-        public static void resetHistory()
+        public static void ResetHistory()
         {
             chatHistory = new();
         }
