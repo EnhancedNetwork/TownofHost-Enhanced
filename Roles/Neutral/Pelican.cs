@@ -4,6 +4,9 @@ using System.Linq;
 using AmongUs.GameOptions;
 using TOHE.Roles.Crewmate;
 using UnityEngine;
+using System;
+using static TOHE.Translator;
+using TOHE.Roles.Double;
 namespace TOHE.Roles.Neutral;
 
 public static class Pelican
@@ -113,6 +116,11 @@ public static class Pelican
     public static void EatPlayer(PlayerControl pc, PlayerControl target)
     {
         if (pc == null || target == null || !CanEat(pc, target.PlayerId)) return;
+        if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
+        {
+            pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("CantEat")));
+            return;
+        }
         if (!eatenList.ContainsKey(pc.PlayerId)) eatenList.Add(pc.PlayerId, new());
         eatenList[pc.PlayerId].Add(target.PlayerId);
 
@@ -162,7 +170,7 @@ public static class Pelican
             var target = Utils.GetPlayerById(tar);
             var player = Utils.GetPlayerById(pc);
             if (player == null || target == null) continue;
-            target.RpcTeleport(player.transform.position);
+            target.RpcTeleport(player.GetTruePosition());
             Main.AllPlayerSpeed[tar] = Main.AllPlayerSpeed[tar] - 0.5f + originalSpeed[tar];
             ReportDeadBodyPatch.CanReport[tar] = true;
             target.MarkDirtySettings();
@@ -200,7 +208,7 @@ public static class Pelican
                 var target = Utils.GetPlayerById(tar);
                 if (target == null) continue;
                 var pos = GetBlackRoomPS();
-                var dis = Vector2.Distance(pos, target.transform.position);
+                var dis = Vector2.Distance(pos, target.GetTruePosition());
                 if (dis < 1f) continue;
                 target.RpcTeleport(new Vector2 (pos.x, pos.y));
                 Utils.NotifyRoles(SpecifySeer: target, ForceLoop: false);

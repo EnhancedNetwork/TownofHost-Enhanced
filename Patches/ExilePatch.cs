@@ -65,27 +65,43 @@ class ExileControllerWrapUpPatch
             var role = exiled.GetCustomRole();
 
             //判断冤罪师胜利
-            if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId))
+            var pc1 = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId);
+            if (pc1.Any())
             {
+                var AdmiredPc1 = pc1.Where(x => x.Is(CustomRoles.Admired));
                 if (!Options.InnocentCanWinByImp.GetBool() && role.IsImpostor())
                 {
-                    Logger.Info("Exeiled Winner Check", "Innocent");
+                    Logger.Info("Exeiled Winner Check for impostor", "Innocent");
                 }
                 else
                 {
-                    if (DecidedWinner) CustomWinnerHolder.ShiftWinnerAndSetWinner(CustomWinner.Innocent);
-                    else CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Innocent);
-                    Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId)
-                        .Do(x => CustomWinnerHolder.WinnerIds.Add(x.PlayerId));
+                    if (!AdmiredPc1.Any())
+                    {
+                        if (DecidedWinner) CustomWinnerHolder.ShiftWinnerAndSetWinner(CustomWinner.Innocent);
+                        else CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Innocent);
+                        Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId)
+                            .Do(x => CustomWinnerHolder.WinnerIds.Add(x.PlayerId));                       
+                    }
+                    else
+                    {
+                        if (DecidedWinner) CustomWinnerHolder.ShiftWinnerAndSetWinner(CustomWinner.Crewmate);
+                        else CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
+                    }
                     DecidedWinner = true;
                 }
             }
+            //Jester win
             if (Options.MeetingsNeededForJesterWin.GetInt() <= Main.MeetingsPassed)
             {           
                 if (role == CustomRoles.Jester && AmongUsClient.Instance.AmHost)
                 {
-                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Jester);
-                    CustomWinnerHolder.WinnerIds.Add(exiled.PlayerId);
+                    if ((bool)!Utils.GetPlayerById(exiled.PlayerId)?.Is(CustomRoles.Admired))
+                    {
+                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Jester);
+                        CustomWinnerHolder.WinnerIds.Add(exiled.PlayerId);
+                    }
+                    else CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
+
                     foreach (var executioner in Executioner.playerIdList)
                     {
                         var GetValue = Executioner.Target.TryGetValue(executioner, out var targetId);
@@ -97,9 +113,10 @@ class ExileControllerWrapUpPatch
                     }
                     DecidedWinner = true;
                 }
-            }            
+            }
+            //Executioner win
             if (Executioner.CheckExileTarget(exiled, DecidedWinner)) DecidedWinner = true;
-
+            //Terrorist check
             if (role == CustomRoles.Terrorist) Utils.CheckTerroristWin(exiled);
 
             if (role == CustomRoles.Devourer) Devourer.OnDevourerDied(exiled.PlayerId);

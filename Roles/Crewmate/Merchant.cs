@@ -68,6 +68,7 @@ namespace TOHE.Roles.Crewmate
         private static OptionItem OptionCanSellNeutral;
         private static OptionItem OptionSellOnlyHarmfulToEvil;
         private static OptionItem OptionSellOnlyHelpfulToCrew;
+        private static OptionItem OptionSellOnlyEnabledAddons;
 
         private static int GetCurrentAmountOfMoney(byte playerId)
         {
@@ -89,8 +90,9 @@ namespace TOHE.Roles.Crewmate
             OptionCanSellNeutral = BooleanOptionItem.Create(Id + 11, "MerchantSellMixed", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Merchant]);
             OptionSellOnlyHarmfulToEvil = BooleanOptionItem.Create(Id + 13, "MerchantSellHarmfulToEvil", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Merchant]);
             OptionSellOnlyHelpfulToCrew = BooleanOptionItem.Create(Id + 14, "MerchantSellHelpfulToCrew", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Merchant]);
+            OptionSellOnlyEnabledAddons = BooleanOptionItem.Create(Id + 15, "MerchantSellOnlyEnabledAddons",false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Merchant]);
 
-            OverrideTasksData.Create(Id + 15, TabGroup.CrewmateRoles, CustomRoles.Merchant);
+            OverrideTasksData.Create(Id + 16, TabGroup.CrewmateRoles, CustomRoles.Merchant);
         }
         public static void Init()
         {
@@ -115,7 +117,10 @@ namespace TOHE.Roles.Crewmate
             {
                 addons.AddRange(neutralAddons);
             }
-
+            if (OptionSellOnlyEnabledAddons.GetBool())
+            { 
+                addons = addons.Where(role => role.GetMode() != 0).ToList();
+            }
         }
 
         public static void Add(byte playerId)
@@ -132,10 +137,16 @@ namespace TOHE.Roles.Crewmate
             {
                 return;
             }
+            if (!addons.Any())
+            {
+                player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSellFail")));
+                Logger.Info("No addons to sell.", "Merchant");
+                return;
+            }
 
             var rd = IRandom.Instance;
             CustomRoles addon = addons[rd.Next(0, addons.Count)];
-
+            
             List<PlayerControl> AllAlivePlayer =
                 Main.AllAlivePlayerControls.Where(x =>
                     (x.PlayerId != player.PlayerId && !Pelican.IsEaten(x.PlayerId))
@@ -159,7 +170,7 @@ namespace TOHE.Roles.Crewmate
                     )
                 ).ToList();
 
-            if (AllAlivePlayer.Count >= 1)
+            if (AllAlivePlayer.Any())
             {
                 bool helpfulAddon = helpfulAddons.Contains(addon);
                 bool harmfulAddon = !helpfulAddon;
@@ -179,7 +190,7 @@ namespace TOHE.Roles.Crewmate
                     ).ToList();
                 }
 
-                if (AllAlivePlayer.Count == 0)
+                if (!AllAlivePlayer.Any())
                 {
                     player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSellFail")));
                     return;
