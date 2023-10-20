@@ -1,7 +1,7 @@
+using Hazel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Utils;
@@ -12,6 +12,7 @@ namespace TOHE.Roles.Crewmate
     {
         private static readonly int Id = 640400;
         private static List<byte> playerIdList = new();
+        public static bool change = false;
         public static Dictionary<byte, float> UseLimit = new();
         public static Dictionary<byte, long> SpyRedNameList = new();
         public static bool IsEnable = false;
@@ -38,12 +39,55 @@ namespace TOHE.Roles.Crewmate
             UseLimit = new();
             SpyRedNameList = new();
             IsEnable = false;
+            change = false;
         }
         public static void Add(byte playerId)
         {
             playerIdList.Add(playerId);
             UseLimit.Add(playerId, UseLimitOpt.GetInt());
             IsEnable = true;
+        }
+        public static void SendRPC(byte susId)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SpyRedNameSync, SendOption.Reliable, -1);
+            writer.Write(susId);
+            writer.Write(SpyRedNameList[susId].ToString());
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
+        public static void SendAbilityRPC(byte spyId)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SpyAbilitySync, SendOption.Reliable, -1);
+            writer.Write(spyId);
+            writer.Write(UseLimit[spyId]);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+        }
+        public static void SendRPC(byte susId, bool changeColor)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SpyRedNameRemove, SendOption.Reliable, -1);
+            //writer.Write(spyId);
+            writer.Write(susId);
+            writer.Write(changeColor);
+            Logger.Info($"RPC to remove player {susId} from red name list and change `change` to {changeColor}", "Spy");
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
+        public static void ReceiveRPC(MessageReader reader, bool isRemove = false, bool isAbility = false)
+        {
+            if (isAbility)
+            {
+                byte spyId = reader.ReadByte();
+                UseLimit[spyId] = reader.ReadSingle();
+                return;
+            }
+            else if (isRemove)
+            {
+                SpyRedNameList.Remove(reader.ReadByte());
+                change = reader.ReadBoolean();
+                return;
+            }
+            byte susId = reader.ReadByte();
+            string stimeStamp = reader.ReadString();
+            if (long.TryParse(stimeStamp, out long timeStamp)) SpyRedNameList[susId] = timeStamp;
         }
         public static bool OnKillAttempt(PlayerControl killer, PlayerControl target)
         {
@@ -55,7 +99,9 @@ namespace TOHE.Roles.Crewmate
             if (UseLimit[target.PlayerId] >= 1)
             {
                 UseLimit[target.PlayerId] -= 1;
+                SendAbilityRPC(target.PlayerId);
                 SpyRedNameList.TryAdd(killer.PlayerId, GetTimeStamp());
+                SendRPC(killer.PlayerId);
                 if (SpyInteractionBlocked.GetBool()) 
                 { 
                     killer.SetKillCooldown(time: 10f); 
@@ -68,8 +114,7 @@ namespace TOHE.Roles.Crewmate
         {
             if (pc == null) return;
             if (!SpyRedNameList.Any()) return;
-
-            bool change = false;
+            change = false;
 
             foreach (var x in SpyRedNameList)
             {
@@ -79,6 +124,7 @@ namespace TOHE.Roles.Crewmate
                     {
                         SpyRedNameList.Remove(x.Key);
                         change = true;
+                        SendRPC(x.Key, change); //sends the rpc but not received by modded??
                     }
                 }
             }

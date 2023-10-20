@@ -203,8 +203,6 @@ class CheckMurderPatch
         if (Pelican.IsEaten(target.PlayerId))
             return false;
 
-        //阻止对活死人的操作
-
         // 赝品检查
         if (Counterfeiter.OnClientMurder(killer)) return false;
         if (Pursuer.OnClientMurder(killer)) return false;
@@ -412,8 +410,8 @@ class CheckMurderPatch
                     }
                     return false;
                 case CustomRoles.FFF:
-                    FFF.OnCheckMurder(killer, target);
-                    return false;
+                    if (!FFF.OnCheckMurder(killer, target)) return false;
+                    break;
                 case CustomRoles.Gamer:
                     Gamer.CheckGamerMurder(killer, target);
                     return false;
@@ -421,6 +419,11 @@ class CheckMurderPatch
                     DarkHide.OnCheckMurder(killer, target);
                     break;
                 case CustomRoles.Provocateur:
+                    if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
+                    {
+                        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("CantBoom")));
+                        return false;
+                    }
                     Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.PissedOff;
                     killer.RpcMurderPlayerV3(target);
                     killer.RpcMurderPlayerV3(killer);

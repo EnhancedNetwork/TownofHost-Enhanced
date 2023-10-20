@@ -1540,7 +1540,6 @@ static class CustomRolesHelper
 
     public static bool IsConverted(this CustomRoles role)
     {
-
         return (role is CustomRoles.Charmed ||
                 role is CustomRoles.Recruit ||
                 role is CustomRoles.Infected ||
