@@ -47,16 +47,21 @@ namespace TOHE.Roles.Crewmate
             UseLimit.Add(playerId, UseLimitOpt.GetInt());
             IsEnable = true;
         }
-        public static void SendRPC(byte spyId, byte susId)
+        public static void SendRPC(byte susId)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SpyRedNameSync, SendOption.Reliable, -1);
-            writer.Write(spyId);
             writer.Write(susId);
             writer.Write(SpyRedNameList[susId].ToString());
-            writer.Write(UseLimit[spyId]);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
-        
+        public static void SendAbilityRPC(byte spyId)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SpyAbilitySync, SendOption.Reliable, -1);
+            writer.Write(spyId);
+            writer.Write(UseLimit[spyId]);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+        }
         public static void SendRPC(byte susId, bool changeColor)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SpyRedNameRemove, SendOption.Reliable, -1);
@@ -64,20 +69,25 @@ namespace TOHE.Roles.Crewmate
             writer.Write(susId);
             writer.Write(changeColor);
             Logger.Info($"RPC to remove player {susId} from red name list and change `change` to {changeColor}", "Spy");
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
-        public static void ReceiveRPC(MessageReader reader, bool isRemove = false)
+        public static void ReceiveRPC(MessageReader reader, bool isRemove = false, bool isAbility = false)
         {
-            if (isRemove)
+            if (isAbility)
+            {
+                byte spyId = reader.ReadByte();
+                UseLimit[spyId] = reader.ReadSingle();
+                return;
+            }
+            else if (isRemove)
             {
                 SpyRedNameList.Remove(reader.ReadByte());
                 change = reader.ReadBoolean();
                 return;
             }
-            byte spyId = reader.ReadByte();
             byte susId = reader.ReadByte();
             string stimeStamp = reader.ReadString();
             if (long.TryParse(stimeStamp, out long timeStamp)) SpyRedNameList[susId] = timeStamp;
-            UseLimit[spyId] = reader.ReadInt32();
         }
         public static bool OnKillAttempt(PlayerControl killer, PlayerControl target)
         {
@@ -89,8 +99,9 @@ namespace TOHE.Roles.Crewmate
             if (UseLimit[target.PlayerId] >= 1)
             {
                 UseLimit[target.PlayerId] -= 1;
+                SendAbilityRPC(target.PlayerId);
                 SpyRedNameList.TryAdd(killer.PlayerId, GetTimeStamp());
-                SendRPC(target.PlayerId, killer.PlayerId);
+                SendRPC(killer.PlayerId);
                 if (SpyInteractionBlocked.GetBool()) 
                 { 
                     killer.SetKillCooldown(time: 10f); 
