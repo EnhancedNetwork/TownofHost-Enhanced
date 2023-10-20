@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using static TOHE.Options;
@@ -88,7 +89,10 @@ public static class Huntsman
     {
         if (!AmongUsClient.Instance.AmHost) return;
         Targets.Clear();
-        for (var i = 0; i < NumOfTargets.GetInt(); i++)
+        int potentialTargetCount = Main.AllAlivePlayerControls.Count() - 1;
+        if (potentialTargetCount < 0) potentialTargetCount = 0;
+        int maxLimit = Math.Min(potentialTargetCount, NumOfTargets.GetInt());
+        for (var i = 0; i < maxLimit; i++)
         {
             try
             {
