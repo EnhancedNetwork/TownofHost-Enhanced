@@ -1641,7 +1641,7 @@
   "WorkaholicGiveAdviceAlive": "Advice at first meeting if alive, can win after death, ghost tasks ON",
   "DoctorVisibleToEveryone": "Everyone knows who the <color=#80ffdd>Doctor</color> is",
   "GuardSpellTimes": "Amount of Cursed Shields",
-  "killAttacker":  "Kill attacker when ability is remaining",
+  "killAttacker": "Kill attacker when ability is remaining",
   "JinxSpellTimes": "Amount of Jinx Spells",
   "CollectorCollectAmount": "Required number of votes",
   "GlitchCanVote": "Can vote",
@@ -2103,6 +2103,8 @@
   "MerchantSellExperimental": "Can sell <color=#76b8e0>experimental</color> Add-ons",
   "MerchantSellHarmfulToEvil": "Can sell <color=#ff1919>Harmful</color> Add-ons only to <color=#ff1919>Evil</color>",
   "MerchantSellHelpfulToCrew": "Can sell <color=#8cffff>Helpful</color> Add-ons only to <color=#8cffff>Crew</color>",
+  "MerchantSellOnlyEnabledAddons": "Can sell only enabled Add-ons",
+
   "SpiritcallerSpiritMax": "Maximum number of <color=#003366>Evil Spirits</color>",
   "SpiritcallerSpiritAbilityCooldown": "<color=#003366>Evil Spirit</color> ability cooldown",
   "SpiritcallerFreezeTime": "<color=#003366>Evil Spirit</color> ability freeze time",
