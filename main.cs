@@ -10,11 +10,6 @@ using System.Linq;
 using System.Reflection;
 using TOHE.Roles.Neutral;
 using UnityEngine;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using Hazel;
-using InnerNet;
 
 [assembly: AssemblyFileVersion(TOHE.Main.PluginVersion)]
 [assembly: AssemblyInformationalVersion(TOHE.Main.PluginVersion)]
