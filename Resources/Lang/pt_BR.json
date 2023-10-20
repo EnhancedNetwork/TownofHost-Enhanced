@@ -2092,6 +2092,7 @@
   "MerchantSellExperimental": "Pode vender Atributos <color=#76b8e0>Experimentais</color>",
   "MerchantSellHarmfulToEvil": "Pode vender Atributos <color=#ff1919>Prejudiciais</color> apenas para <color=#ff1919>Malvados</color>",
   "MerchantSellHelpfulToCrew": "Pode vender Atributos <color=#8cffff>Prejudiciais</color> apenas para <color=#8cffff>Tripulantes</color>",
+  "MerchantSellOnlyEnabledAddons": "Can sell only enabled Add-ons",
   "SpiritcallerSpiritMax": "Número Máximo de <color=#003366>Espíritos Malignos</color>",
   "SpiritcallerSpiritAbilityCooldown": "Recarga da Habilidade de <color=#003366>Espírito Maligno</color>",
   "SpiritcallerFreezeTime": "Tempo de Habiliade Congelar de <color=#003366>Espírito Maligno</color>",
