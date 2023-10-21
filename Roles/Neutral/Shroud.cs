@@ -127,12 +127,15 @@ public static class Shroud
     public static void MurderShroudedPlayers(PlayerControl shrouded)
     {
         if (!ShroudList.ContainsKey(shrouded.PlayerId)) return;
-
+        byte shroudId = ShroudList[shrouded.PlayerId];
+        PlayerControl shroudPC = Utils.GetPlayerById(shroudId);
+        if (shroudPC == null) return;
+        if (!shroudPC.IsAlive()) return;
         shrouded.RpcMurderPlayerV3(shrouded);
         Main.PlayerStates[shrouded.PlayerId].deathReason = PlayerState.DeathReason.Shrouded;
 
-        ShroudList.Clear();
-        SendRPC(byte.MaxValue, byte.MaxValue, 0);
+        ShroudList.Remove(shrouded.PlayerId);
+        SendRPC(byte.MaxValue, shrouded.PlayerId, 2);
     }
 
     public static string TargetMark(PlayerControl seer, PlayerControl target)
