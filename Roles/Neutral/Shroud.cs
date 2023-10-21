@@ -130,10 +130,11 @@ public static class Shroud
         byte shroudId = ShroudList[shrouded.PlayerId];
         PlayerControl shroudPC = Utils.GetPlayerById(shroudId);
         if (shroudPC == null) return;
-        if (!shroudPC.IsAlive()) return;
-        shrouded.RpcMurderPlayerV3(shrouded);
-        Main.PlayerStates[shrouded.PlayerId].deathReason = PlayerState.DeathReason.Shrouded;
-
+        if (shroudPC.IsAlive())
+        { 
+            shrouded.RpcMurderPlayerV3(shrouded);
+            Main.PlayerStates[shrouded.PlayerId].deathReason = PlayerState.DeathReason.Shrouded;
+        }
         ShroudList.Remove(shrouded.PlayerId);
         SendRPC(byte.MaxValue, shrouded.PlayerId, 2);
     }
