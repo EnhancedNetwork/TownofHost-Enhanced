@@ -647,6 +647,7 @@ class CheckMurderPatch
                 if (!Main.OverDeadPlayerList.Contains(target.PlayerId)) Main.OverDeadPlayerList.Add(target.PlayerId);
                 var ops = target.GetTruePosition();
                 var rd = IRandom.Instance;
+                target.Data.IsDead = true;
                 for (int i = 0; i < 20; i++)
                 {
                     Vector2 location = new(ops.x + ((float)(rd.Next(0, 201) - 100) / 100), ops.y + ((float)(rd.Next(0, 201) - 100) / 100));
@@ -669,9 +670,10 @@ class CheckMurderPatch
                         rp.RpcMurderPlayerV3(rp);
                     }
 
-                    MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.None, -1);
-                    messageWriter.WriteNetObject(target);
-                    AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+                    Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId && !x.AmOwner)
+                        .Do(x => killer.RpcSpecificMurderPlayer(target, x));
+                    //May cause huge rpc workload for host
+                    //Originally clients can only see 1 dead body at a spot.
                 }
                 killer.RpcTeleport(ops);
             }, 0.05f, "OverKiller Murder");
