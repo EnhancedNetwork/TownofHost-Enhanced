@@ -232,6 +232,7 @@ internal class RPCHandlerPatch
                     }, 3f, "Anti-Black Msg SendInGame");
                 }
                 break;
+
             case CustomRPC.VersionCheck:
                 try
                 {
@@ -274,9 +275,11 @@ internal class RPCHandlerPatch
                     }, 1f, "Retry Version Check Task");
                 }
                 break;
+
             case CustomRPC.RequestRetryVersionCheck:
                 RPC.RpcVersionCheck();
                 break;
+
             case CustomRPC.SyncCustomSettings:
                 if (AmongUsClient.Instance.AmHost) break;
 
@@ -285,7 +288,6 @@ internal class RPCHandlerPatch
                 var startAmount = reader.ReadInt32();
                 var lastAmount = reader.ReadInt32();
 
-                var countOptions = listOptions.Count;
                 var countAllOptions = OptionItem.AllOptions.Count;
 
                 // Add Options
@@ -294,6 +296,7 @@ internal class RPCHandlerPatch
                     listOptions.Add(OptionItem.AllOptions[option]);
                 }
 
+                var countOptions = listOptions.Count;
                 Logger.Msg($"StartAmount: {startAmount} - LastAmount: {lastAmount} ({startAmount}/{lastAmount}) :--: ListOptionsCount: {countOptions} - AllOptions: {countAllOptions} ({countOptions}/{countAllOptions})", "SyncCustomSettings");
 
                 // Sync Settings
@@ -302,9 +305,9 @@ internal class RPCHandlerPatch
                     var co = listOptions[optionNumber];
                     co.SetValue(reader.ReadInt32());
                 }
-
                 OptionShower.GetText();
                 break;
+
             case CustomRPC.SetDeathReason:
                 RPC.GetDeathReason(reader);
                 break;
@@ -752,14 +755,13 @@ internal static class RPC
 
         List<OptionItem> listOptions = new();
 
-        var countListOptions = listOptions.Count;
-
         // Add Options
         for (var option = startAmount; option < amountAllOptions && option <= lastAmount; option++)
         {
             listOptions.Add(OptionItem.AllOptions[option]);
         }
-        
+
+        var countListOptions = listOptions.Count;
         Logger.Msg($"StartAmount: {startAmount} - LastAmount: {lastAmount} ({startAmount}/{lastAmount}) :--: ListOptionsCount: {countListOptions} - AllOptions: {amountAllOptions} ({countListOptions}/{amountAllOptions})", "SyncCustomSettings");
 
         // Sync Settings
