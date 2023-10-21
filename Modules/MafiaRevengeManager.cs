@@ -81,7 +81,7 @@ public static class MafiaRevengeManager
             else pc.ShowPopUp(GetString("PestilenceImmune"));
             return true;
         }
-        if ((target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) && Mini.Age < 18)
+        if (target.Is(CustomRoles.NiceMini) && Mini.Age > 18 )
         {
             if (!isUI) Utils.SendMessage(GetString("GuessMini"), pc.PlayerId);
             else pc.ShowPopUp(GetString("GuessMini"));
