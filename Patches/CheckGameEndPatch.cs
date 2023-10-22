@@ -511,9 +511,11 @@ class GameEndChecker
                         continue;
                     case CountTypes.Impostor:
                         impCount++;
+                        impCount += dual;
                         break;
                     case CountTypes.Crew: 
-                        crewCount++; 
+                        crewCount++;
+                        crewCount += dual;
                         break;
                     default:
                         if (neutralRoleCounts.ContainsKey(countType))
