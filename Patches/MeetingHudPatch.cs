@@ -223,45 +223,64 @@ class CheckForEndVotingPatch
                     List<byte> NiceList2 = new();
                     PlayerVoteArea pva = new();
                     var meetingHud = MeetingHud.Instance;
-                    PlayerControl swap1 = null;
-                    foreach (var playerId in Swapper.Vote)
-                    {
-                        var player = Utils.GetPlayerById(playerId);
-                        if (player != null)
+                        PlayerControl swap1 = null;
+                        foreach (var playerId in Swapper.Vote)
                         {
-                            swap1 = player;
-                            break;
+                            var player = Utils.GetPlayerById(playerId);
+                            if (player != null)
+                            {
+                                swap1 = player;
+                                break;
+                            }
                         }
-                    }
-                    PlayerControl swap2 = null;
-                    foreach (var playerId in Swapper.VoteTwo)
-                    {
-                        var player = Utils.GetPlayerById(playerId);
-                        if (player != null)
+                        PlayerControl swap2 = null;
+                        foreach (var playerId in Swapper.VoteTwo)
                         {
-                            swap2 = player;
-                            break;
+                            var player = Utils.GetPlayerById(playerId);
+                            if (player != null)
+                            {
+                                swap2 = player;
+                                break;
+                            }
                         }
-                    }
                     if (swap1 != null && swap2 != null)
                     {
-                        foreach (var playerVoteArea in meetingHud.playerStates)
+                        for (int ia = 0; ia < __instance.playerStates.Length; ia++) //Loops through all players
                         {
-                            if (playerVoteArea.VotedFor != swap1.PlayerId) continue;
+                            PlayerVoteArea playerVoteArea = __instance.playerStates[ia];
                             var voteAreaPlayer = Utils.GetPlayerById(playerVoteArea.TargetPlayerId);
-                            playerVoteArea.UnsetVote();
-                            meetingHud.CastVote(voteAreaPlayer.PlayerId, swap2.PlayerId);
-                            playerVoteArea.VotedFor = swap2.PlayerId;
-                            NiceList1.Add(voteAreaPlayer.PlayerId);
+                            if (playerVoteArea.VotedFor == swap1.PlayerId && !playerVoteArea.AmDead)
+                            {
+                                //playerVoteArea.UnsetVote();
+                                //meetingHud.CastVote(voteAreaPlayer.PlayerId, swap2.PlayerId);
+                                playerVoteArea.VotedFor = swap2.PlayerId;
+                                NiceList1.Add(voteAreaPlayer.PlayerId);
+                            }
                         }
-                        foreach (var playerVoteArea in meetingHud.playerStates)
+                        for (int ia = 0; ia < __instance.playerStates.Length; ia++) //Loops through all players
                         {
-                            if (playerVoteArea.VotedFor != swap2.PlayerId) continue;
+                            PlayerVoteArea playerVoteArea = __instance.playerStates[ia];
                             var voteAreaPlayer = Utils.GetPlayerById(playerVoteArea.TargetPlayerId);
-                            if (NiceList1.Contains(voteAreaPlayer.PlayerId)) continue;
-                            playerVoteArea.UnsetVote();
-                            playerVoteArea.VotedFor = swap1.PlayerId;
-                            meetingHud.CastVote(voteAreaPlayer.PlayerId, swap1.PlayerId);
+                            if (playerVoteArea.VotedFor == swap1.PlayerId && !playerVoteArea.AmDead && !NiceList1.Contains(voteAreaPlayer.PlayerId))
+                            {
+                                //if (NiceList1.Contains(voteAreaPlayer.PlayerId)) continue;
+                                //playerVoteArea.UnsetVote();
+                                playerVoteArea.VotedFor = swap1.PlayerId;
+                                //meetingHud.CastVote(voteAreaPlayer.PlayerId, swap1.PlayerId);
+                                NiceList2.Add(voteAreaPlayer.PlayerId);
+                            }
+                        }
+                        for (int ia = 0; ia < __instance.playerStates.Length; ia++) //Loops through all players
+                        {
+                            PlayerVoteArea playerVoteArea = __instance.playerStates[ia];
+                            var voteAreaPlayer = Utils.GetPlayerById(playerVoteArea.TargetPlayerId);
+                            if (playerVoteArea.VotedFor == swap1.PlayerId && !playerVoteArea.AmDead && !NiceList2.Contains(voteAreaPlayer.PlayerId))
+                            {
+                                //playerVoteArea.UnsetVote();
+                                //meetingHud.CastVote(voteAreaPlayer.PlayerId, swap2.PlayerId);
+                                playerVoteArea.VotedFor = swap2.PlayerId;
+                                NiceList1.Add(voteAreaPlayer.PlayerId);
+                            }
                         }
                         if (Main.SwapSend == false)
                         {
@@ -1250,7 +1269,7 @@ class MeetingHudUpdatePatch
             __instance.playerStates.Where(x => (!Main.PlayerStates.TryGetValue(x.TargetPlayerId, out var ps) || ps.IsDead) && !x.AmDead).Do(x => x.SetDead(x.DidReport, true));
 
             //若玩家死亡则销毁技能按钮
-            if (myRole is CustomRoles.NiceGuesser or CustomRoles.EvilGuesser or CustomRoles.Doomsayer or CustomRoles.Judge or CustomRoles.Councillor or CustomRoles.Guesser && !PlayerControl.LocalPlayer.IsAlive())
+            if (myRole is CustomRoles.NiceGuesser or CustomRoles.EvilGuesser or CustomRoles.Doomsayer or CustomRoles.Judge or CustomRoles.Councillor or CustomRoles.Guesser or CustomRoles.Swapper && !PlayerControl.LocalPlayer.IsAlive())
                 ClearShootButton(__instance, true);
 
             //若黑手党死亡则创建技能按钮
