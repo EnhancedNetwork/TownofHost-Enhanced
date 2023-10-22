@@ -851,8 +851,8 @@ static class ExtendedPlayerControl
             case CustomRoles.Agitater:
                 Agitater.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.Cultivator:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Options.CultivatorKillCooldown.GetFloat();
+            case CustomRoles.Berserker:
+                Main.AllPlayerKillCooldown[player.PlayerId] = Options.BerserkerKillCooldown.GetFloat();
                 break;
             /*    case CustomRoles.Mare:
                     Mare.SetKillCooldown(player.PlayerId);
@@ -1138,7 +1138,6 @@ static class ExtendedPlayerControl
                     {
                         Main.AllPlayerKillCooldown[player.PlayerId] = Mini.MinorCD.GetFloat();
                         Main.EvilMiniKillcooldown[player.PlayerId] = Mini.MinorCD.GetFloat();
-
                     }
                     else if (pc.Is(CustomRoles.EvilMini) && Mini.Age != 18 && Mini.Age != 0)
                     {

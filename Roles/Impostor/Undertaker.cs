@@ -77,7 +77,7 @@ public static class Undertaker
     public static void OnShapeshift(PlayerControl pc, bool IsShapeshifting)
     {
         if (!IsEnable || !pc.IsAlive() || !IsShapeshifting) return;
-        MarkedLocation[pc.PlayerId] = pc.transform.position;
+        MarkedLocation[pc.PlayerId] = pc.GetTruePosition();
         SendRPC(pc.PlayerId);
     }
 
