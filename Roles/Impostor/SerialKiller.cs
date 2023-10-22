@@ -9,7 +9,9 @@ public static class SerialKiller
 {
     private static readonly int Id = 1700;
     public static List<byte> playerIdList = new();
+
     public static bool IsEnable = false;
+    private static float OptTimeLimit;
 
     private static OptionItem KillCooldown;
     private static OptionItem TimeLimit;
@@ -34,11 +36,12 @@ public static class SerialKiller
     {
         playerIdList.Add(serial);
         IsEnable = true;
+        OptTimeLimit = TimeLimit.GetFloat();
     }
     public static void ApplyKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public static void ApplyGameOptions(PlayerControl pc)
     {
-        AURoleOptions.ShapeshifterCooldown = HasKilled(pc) ? TimeLimit.GetFloat() : 255f;
+        AURoleOptions.ShapeshifterCooldown = HasKilled(pc) ? OptTimeLimit : 255f;
         AURoleOptions.ShapeshifterDuration = 1f;
     }
     ///<summary>
@@ -49,6 +52,7 @@ public static class SerialKiller
     public static void OnCheckMurder(PlayerControl killer, bool CanMurder = true)
     {
         if (!killer.Is(CustomRoles.SerialKiller)) return;
+        
         SuicideTimer.Remove(killer.PlayerId);
         if (CanMurder)
             killer.MarkDirtySettings();
@@ -64,20 +68,22 @@ public static class SerialKiller
             SuicideTimer.Remove(player.PlayerId);
             return;
         }
-        if (!SuicideTimer.ContainsKey(player.PlayerId)) //タイマーがない
+
+        if (!SuicideTimer.TryGetValue(player.PlayerId, out var timer))
         {
             SuicideTimer[player.PlayerId] = 0f;
             player.RpcResetAbilityCooldown();
         }
-        else if (SuicideTimer[player.PlayerId] >= TimeLimit.GetFloat())
+        else if (timer >= OptTimeLimit)
         {
-            //自爆時間が来たとき
-            Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;//死因：自殺
-            player.RpcMurderPlayerV3(player);//自殺させる
+            Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
+            player.RpcMurderPlayerV3(player);
             SuicideTimer.Remove(player.PlayerId);
         }
         else
-            SuicideTimer[player.PlayerId] += Time.fixedDeltaTime;//時間をカウント
+        {
+            SuicideTimer[player.PlayerId] += Time.fixedDeltaTime;
+        }
     }
     public static void GetAbilityButtonText(HudManager __instance, PlayerControl pc)
     {
