@@ -1137,7 +1137,6 @@ static class ExtendedPlayerControl
                     {
                         Main.AllPlayerKillCooldown[player.PlayerId] = Mini.MinorCD.GetFloat();
                         Main.EvilMiniKillcooldown[player.PlayerId] = Mini.MinorCD.GetFloat();
-
                     }
                     else if (pc.Is(CustomRoles.EvilMini) && Mini.Age != 18 && Mini.Age != 0)
                     {
