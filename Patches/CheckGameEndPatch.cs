@@ -3,7 +3,6 @@ using HarmonyLib;
 using Hazel;
 using System.Collections.Generic;
 using System.Linq;
-using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
@@ -522,9 +521,9 @@ class GameEndChecker
                             neutralRoleCounts[countType]++;
                         else
                             neutralRoleCounts[countType] = 1;
+                        neutralRoleCounts[countType] += dual;
                         break;
                 }                
-                neutralRoleCounts[countType] += dual;
             }
 
             int totalNKAlive = neutralRoleCounts.Sum(kvp => kvp.Value);
@@ -569,7 +568,7 @@ class GameEndChecker
                     {
                         var winnerRole = winners[0].Key.GetNeutralCustomRoleFromCountType();
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomRolesHelper.GetNeutralCustomWinnerFromRole(winnerRole));
+                        CustomWinnerHolder.ResetAndSetWinner(winnerRole.GetNeutralCustomWinnerFromRole());
                         CustomWinnerHolder.WinnerRoles.Add(winnerRole);
                     }
                     else if (winnnerLength == 0)
