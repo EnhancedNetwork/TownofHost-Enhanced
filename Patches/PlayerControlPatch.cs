@@ -904,7 +904,7 @@ class CheckMurderPatch
         }
         if (target.Is(CustomRoles.EvilMini) && Mini.Age != 18)
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("Cantkillkid")));
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.EvilMini), GetString("Cantkillkid")));
             return false;
         }
         if (killer.Is(CustomRoles.EvilMini) && Mini.Age != 18)
@@ -2754,14 +2754,14 @@ class FixedUpdatePatch
                             }
                             break;
 
-                        case CustomRoles.NiceMini:
+                        case CustomRoles.NiceMini: 
                             if (Mini.Age < 18)
                             {
                                 if (player.IsAlive())
                                 {
                                     if (LastFixedUpdate == Utils.GetTimeStamp()) return;
                                     LastFixedUpdate = Utils.GetTimeStamp();
-                                    Mini.GrowUpTime++;
+                                    Mini.GrowUpTime ++;
                                     if (Mini.GrowUpTime >= Mini.GrowUpDuration.GetInt() / 18)
                                     {
                                         Mini.Age += 1;
@@ -2770,7 +2770,7 @@ class FixedUpdatePatch
                                         Logger.Info($"年龄增加1", "Child");
                                         if (Mini.UpDateAge.GetBool())
                                         {
-                                            player.Notify(GetString("MiniUp"));
+                                            if (player.Is(CustomRoles.NiceMini)) player.Notify(GetString("MiniUp"));
                                         }
                                     }
                                 }
@@ -2787,11 +2787,10 @@ class FixedUpdatePatch
                             {
                                 if (LastFixedUpdate == Utils.GetTimeStamp()) return;
                                 LastFixedUpdate = Utils.GetTimeStamp();
-                                Mini.GrowUpTime++;
+                                Mini.GrowUpTime ++;
                                 if (Main.EvilMiniKillcooldown[player.PlayerId] >= 1f)
                                 {
                                     Main.EvilMiniKillcooldown[player.PlayerId]--;
-
                                 }
                                 if (Mini.GrowUpTime >= Mini.GrowUpDuration.GetInt() / 18)
                                 {
@@ -2806,7 +2805,7 @@ class FixedUpdatePatch
 
                                     if (Mini.UpDateAge.GetBool())
                                     {
-                                        player.Notify(GetString("MiniUp"));
+                                        if (player.Is(CustomRoles.EvilMini)) player.Notify(GetString("MiniUp"));
                                     }
                                     Logger.Info($"重置击杀冷却{Main.EvilMiniKillcooldownf - 1f}", "Child");
                                 }

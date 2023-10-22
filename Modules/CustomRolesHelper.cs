@@ -1045,6 +1045,7 @@ static class CustomRolesHelper
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeOnbound.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeOnbound.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeOnbound.GetBool()))
                     return false;
                 break;
+
             case CustomRoles.Rebound:
                 if (pc.Is(CustomRoles.SuperStar)
                     || (pc.Is(CustomRoles.Doctor) && Options.DoctorVisibleToEveryone.GetBool())
@@ -1451,7 +1452,9 @@ static class CustomRolesHelper
 
             case CustomRoles.Loyal:
                 if (pc.Is(CustomRoles.Madmate) 
-                    || pc.Is(CustomRoles.GuardianAngelTOHE))
+                    || pc.Is(CustomRoles.GuardianAngelTOHE)
+                    || pc.Is(CustomRoles.NiceMini)
+                    || pc.Is(CustomRoles.EvilMini))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor() && !pc.GetCustomRole().IsCrewmate())
                     return false;
