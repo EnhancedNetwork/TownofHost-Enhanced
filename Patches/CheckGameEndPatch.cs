@@ -48,7 +48,7 @@ class GameEndChecker
             {
                 case CustomWinner.Crewmate:
                     Main.AllPlayerControls
-                        .Where(pc => pc.Is(CustomRoleTypes.Crewmate) && !pc.Is(CustomRoles.Madmate) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Charmed) && !pc.Is(CustomRoles.Recruit) && !pc.Is(CustomRoles.Infected) && !pc.Is(CustomRoles.Contagious) && !pc.Is(CustomRoles.EvilSpirit) && !pc.Is(CustomRoles.Recruit))
+                        .Where(pc => pc.Is(CustomRoleTypes.Crewmate) && !pc.Is(CustomRoles.Madmate) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Charmed) && !pc.Is(CustomRoles.Recruit) && !pc.Is(CustomRoles.Infected) && !pc.Is(CustomRoles.Contagious) && !pc.Is(CustomRoles.EvilSpirit) && !pc.Is(CustomRoles.Recruit) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     Main.AllPlayerControls //Add admired players here to avoid bugs
                         .Where(pc => pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
@@ -56,43 +56,43 @@ class GameEndChecker
                     break;
                 case CustomWinner.Impostor:
                     Main.AllPlayerControls
-                        .Where(pc => (pc.Is(CustomRoleTypes.Impostor) || pc.Is(CustomRoles.Madmate) || pc.Is(CustomRoles.Crewpostor) || pc.Is(CustomRoles.Parasite) || pc.Is(CustomRoles.Refugee) || pc.Is(CustomRoles.Convict)) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Charmed) && !pc.Is(CustomRoles.Recruit) && !pc.Is(CustomRoles.Infected) && !pc.Is(CustomRoles.Contagious) && !pc.Is(CustomRoles.EvilSpirit) && !pc.Is(CustomRoles.Recruit) && !pc.Is(CustomRoles.Admired))
+                        .Where(pc => (pc.Is(CustomRoleTypes.Impostor) || pc.Is(CustomRoles.Madmate) || pc.Is(CustomRoles.Crewpostor) || pc.Is(CustomRoles.Parasite) || pc.Is(CustomRoles.Refugee) || pc.Is(CustomRoles.Convict)) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Charmed) && !pc.Is(CustomRoles.Recruit) && !pc.Is(CustomRoles.Infected) && !pc.Is(CustomRoles.Contagious) && !pc.Is(CustomRoles.EvilSpirit) && !pc.Is(CustomRoles.Recruit) && !pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
                 case CustomWinner.Succubus:
                     Main.AllPlayerControls
-                        .Where(pc => pc.Is(CustomRoles.Succubus) || pc.Is(CustomRoles.Charmed) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired))
+                        .Where(pc => (pc.Is(CustomRoles.Succubus) || pc.Is(CustomRoles.Charmed)) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
                 case CustomWinner.CursedSoul:
                     Main.AllPlayerControls
-                        .Where(pc => pc.Is(CustomRoles.CursedSoul) || pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired))
+                        .Where(pc => (pc.Is(CustomRoles.CursedSoul) || pc.Is(CustomRoles.Soulless)) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
                 case CustomWinner.Infectious:
                     Main.AllPlayerControls
-                        .Where(pc => pc.Is(CustomRoles.Infectious) || pc.Is(CustomRoles.Infected) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired))
+                        .Where(pc => (pc.Is(CustomRoles.Infectious) || pc.Is(CustomRoles.Infected)) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
                 case CustomWinner.Virus:
                     Main.AllPlayerControls
-                        .Where(pc => pc.Is(CustomRoles.Virus) || pc.Is(CustomRoles.Contagious) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired))
+                        .Where(pc => (pc.Is(CustomRoles.Virus) || pc.Is(CustomRoles.Contagious)) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
                 case CustomWinner.Jackal:
                     Main.AllPlayerControls
-                        .Where(pc => (pc.Is(CustomRoles.Jackal) || pc.Is(CustomRoles.Sidekick) || pc.Is(CustomRoles.Recruit)) && !pc.Is(CustomRoles.Infected) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired))
+                        .Where(pc => (pc.Is(CustomRoles.Jackal) || pc.Is(CustomRoles.Sidekick) || pc.Is(CustomRoles.Recruit)) && !pc.Is(CustomRoles.Infected) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
                 case CustomWinner.Spiritcaller:
                     Main.AllPlayerControls
-                        .Where(pc => (pc.Is(CustomRoles.Spiritcaller) || pc.Is(CustomRoles.EvilSpirit)))
+                        .Where(pc => (pc.Is(CustomRoles.Spiritcaller) || pc.Is(CustomRoles.EvilSpirit)) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
                 case CustomWinner.RuthlessRomantic:
                     foreach (var pc in Main.AllPlayerControls)
                     {
-                        if (pc.Is(CustomRoles.RuthlessRomantic))
+                        if (pc.Is(CustomRoles.RuthlessRomantic) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         {
                             CustomWinnerHolder.WinnerIds.Add(Romantic.BetPlayer[pc.PlayerId]);
 
@@ -492,9 +492,9 @@ class GameEndChecker
             reason = GameOverReason.ImpostorByKill;
 
             if (CustomRolesHelper.RoleExist(CustomRoles.Sunnyboy) && Main.AllAlivePlayerControls.Count() > 1) return false;
-            var roleCounts = new Dictionary<CountTypes, int>();
+            var neutralRoleCounts = new Dictionary<CountTypes, int>();
             var apcList = Main.AllAlivePlayerControls.ToList();
-            int dual = 0;
+            int dual = 0, impCount = 0, crewCount = 0;
 
             for (int i = 0; i < apcList.Count; i++)
             {
@@ -503,17 +503,29 @@ class GameEndChecker
 
                 dual = pc.Is(CustomRoles.DualPersonality) ? 1 : 0;
                 var countType = Main.PlayerStates[pc.PlayerId].countTypes;
-                if (countType == CountTypes.OutOfGame || countType == CountTypes.None || countType == CountTypes.NWitch) continue;
-
-                if (roleCounts.ContainsKey(countType))
-                    roleCounts[countType]++;
-                else
-                    roleCounts[countType] = 1;
-
-                roleCounts[countType] += dual;
+                switch (countType)
+                {
+                    case CountTypes.OutOfGame:
+                    case CountTypes.None:
+                    case CountTypes.NWitch:
+                        continue;
+                    case CountTypes.Impostor:
+                        impCount++;
+                        break;
+                    case CountTypes.Crew: 
+                        crewCount++; 
+                        break;
+                    default:
+                        if (neutralRoleCounts.ContainsKey(countType))
+                            neutralRoleCounts[countType]++;
+                        else
+                            neutralRoleCounts[countType] = 1;
+                        break;
+                }                
+                neutralRoleCounts[countType] += dual;
             }
 
-            int totalNKAlive = roleCounts.Where(kvp => kvp.Key != CountTypes.Crew && kvp.Key != CountTypes.Impostor).Sum(kvp => kvp.Value);
+            int totalNKAlive = neutralRoleCounts.Sum(kvp => kvp.Value);
 
             if (Main.AllAlivePlayerControls.All(p => p.Is(CustomRoles.Lovers))) // if lover is alive lover wins
             {
@@ -524,18 +536,18 @@ class GameEndChecker
 
             else if (totalNKAlive == 0) // total number of nks alive 0
             {
-                if (roleCounts[CountTypes.Crew] == 0 && roleCounts[CountTypes.Impostor] == 0) // Crew and Imp both 0, everyone is dead
+                if (crewCount == 0 && impCount == 0) // Crew and Imp both 0, everyone is dead
                 {
                     reason = GameOverReason.ImpostorByKill;
                     CustomWinnerHolder.ResetAndSetWinner(CustomWinner.None);
                 }
 
-                else if (roleCounts[CountTypes.Crew] <= roleCounts[CountTypes.Impostor]) // Crew less than or equal to Imps, Imp wins
+                else if (crewCount <= impCount) // Crew less than or equal to Imps, Imp wins
                 {
                     reason = GameOverReason.ImpostorByKill;
                     CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Impostor);
                 }
-                else if (roleCounts[CountTypes.Impostor] == 0) // Remaining Imps are 0, Crew wins (neutral is already dead)
+                else if (impCount == 0) // Remaining Imps are 0, Crew wins (neutral is already dead)
                 {
                     reason = GameOverReason.HumansByVote;
                     CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
@@ -545,19 +557,20 @@ class GameEndChecker
 
             else
             {
-                if (roleCounts[CountTypes.Impostor] >= 1) return false; // Both Imp and NK are alive, the game must continue
-                if (roleCounts[CountTypes.Crew] > totalNKAlive) return false; // Imps are dead, but Crew still outnumbers NK (the game must continue)
+                if (impCount >= 1) return false; // Both Imp and NK are alive, the game must continue
+                if (crewCount > totalNKAlive) return false; // Imps are dead, but Crew still outnumbers NK (the game must continue)
                 else // Imps dead, Crew <= NK, Checking if All nk alive are in 1 team 
                 {
-                    var winners = roleCounts.Where(kvp => kvp.Key != CountTypes.Crew && kvp.Key != CountTypes.Impostor && kvp.Value == totalNKAlive).ToList();
-                    if (winners.Count == 1)
+                    var winners = neutralRoleCounts.Where(kvp => kvp.Value == totalNKAlive).ToList();
+                    var winnnerLength = winners.Count;
+                    if (winnnerLength == 1)
                     {
                         var winnerRole = winners[0].Key.GetNeutralCustomRoleFromCountType();
                         reason = GameOverReason.ImpostorByKill;
                         CustomWinnerHolder.ResetAndSetWinner(CustomRolesHelper.GetNeutralCustomWinnerFromRole(winnerRole));
                         CustomWinnerHolder.WinnerRoles.Add(winnerRole);
                     }
-                    else if (winners.Count == 0)
+                    else if (winnnerLength == 0)
                     {
                         return false; // Not all alive neutrals were in one team
                     }
