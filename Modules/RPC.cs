@@ -131,6 +131,9 @@ enum CustomRPC
     SetTrackerTarget,
     SetSeekerTarget,
     SetSeekerPoints,
+    SpyAbilitySync,
+    SpyRedNameSync,
+    SpyRedNameRemove,
     SetPoliceLimlit,
     SetPotionMaster,
     SetChameleonTimer,
@@ -631,6 +634,15 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetSeekerPoints:
                 Seeker.ReceiveRPC(reader, setTarget: false);
+                break;
+            case CustomRPC.SpyRedNameSync:
+                Spy.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SpyAbilitySync:
+                Spy.ReceiveRPC(reader, isAbility: true);
+                break;
+            case CustomRPC.SpyRedNameRemove:
+                Spy.ReceiveRPC(reader, isRemove: true);
                 break;
             case CustomRPC.RpcPassBomb:
                 Agitater.ReceiveRPC(reader);

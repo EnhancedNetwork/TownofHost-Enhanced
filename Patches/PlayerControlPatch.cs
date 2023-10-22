@@ -204,8 +204,6 @@ class CheckMurderPatch
         if (Pelican.IsEaten(target.PlayerId))
             return false;
 
-        //阻止对活死人的操作
-
         // 赝品检查
         if (Counterfeiter.OnClientMurder(killer)) return false;
         if (Pursuer.OnClientMurder(killer)) return false;
@@ -413,8 +411,8 @@ class CheckMurderPatch
                     }
                     return false;
                 case CustomRoles.FFF:
-                    FFF.OnCheckMurder(killer, target);
-                    return false;
+                    if (!FFF.OnCheckMurder(killer, target)) return false;
+                    break;
                 case CustomRoles.Gamer:
                     Gamer.CheckGamerMurder(killer, target);
                     return false;
@@ -422,6 +420,11 @@ class CheckMurderPatch
                     DarkHide.OnCheckMurder(killer, target);
                     break;
                 case CustomRoles.Provocateur:
+                    if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
+                    {
+                        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("CantBoom")));
+                        return false;
+                    }
                     Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.PissedOff;
                     killer.RpcMurderPlayerV3(target);
                     killer.RpcMurderPlayerV3(killer);
@@ -902,7 +905,7 @@ class CheckMurderPatch
         }
         if (target.Is(CustomRoles.EvilMini) && Mini.Age != 18)
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("Cantkillkid")));
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.EvilMini), GetString("Cantkillkid")));
             return false;
         }
         if (killer.Is(CustomRoles.EvilMini) && Mini.Age != 18)
@@ -2757,14 +2760,14 @@ class FixedUpdatePatch
                             }
                             break;
 
-                        case CustomRoles.NiceMini:
+                        case CustomRoles.NiceMini: 
                             if (Mini.Age < 18)
                             {
                                 if (player.IsAlive())
                                 {
                                     if (LastFixedUpdate == Utils.GetTimeStamp()) return;
                                     LastFixedUpdate = Utils.GetTimeStamp();
-                                    Mini.GrowUpTime++;
+                                    Mini.GrowUpTime ++;
                                     if (Mini.GrowUpTime >= Mini.GrowUpDuration.GetInt() / 18)
                                     {
                                         Mini.Age += 1;
@@ -2773,7 +2776,7 @@ class FixedUpdatePatch
                                         Logger.Info($"年龄增加1", "Child");
                                         if (Mini.UpDateAge.GetBool())
                                         {
-                                            player.Notify(GetString("MiniUp"));
+                                            if (player.Is(CustomRoles.NiceMini)) player.Notify(GetString("MiniUp"));
                                         }
                                     }
                                 }
@@ -2790,11 +2793,10 @@ class FixedUpdatePatch
                             {
                                 if (LastFixedUpdate == Utils.GetTimeStamp()) return;
                                 LastFixedUpdate = Utils.GetTimeStamp();
-                                Mini.GrowUpTime++;
+                                Mini.GrowUpTime ++;
                                 if (Main.EvilMiniKillcooldown[player.PlayerId] >= 1f)
                                 {
                                     Main.EvilMiniKillcooldown[player.PlayerId]--;
-
                                 }
                                 if (Mini.GrowUpTime >= Mini.GrowUpDuration.GetInt() / 18)
                                 {
@@ -2809,7 +2811,7 @@ class FixedUpdatePatch
 
                                     if (Mini.UpDateAge.GetBool())
                                     {
-                                        player.Notify(GetString("MiniUp"));
+                                        if (player.Is(CustomRoles.EvilMini)) player.Notify(GetString("MiniUp"));
                                     }
                                     Logger.Info($"重置击杀冷却{Main.EvilMiniKillcooldownf - 1f}", "Child");
                                 }

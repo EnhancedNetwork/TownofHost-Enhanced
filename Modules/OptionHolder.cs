@@ -231,7 +231,7 @@ public static class Options
     public static OptionItem JackalWinWithSidekick;
     public static OptionItem ArsonistDouseTime;
     public static OptionItem ArsonistCooldown;
-    public static OptionItem ArsonistKeepsGameGoing;
+    //public static OptionItem ArsonistKeepsGameGoing;
     public static OptionItem ArsonistCanIgniteAnytime;
     public static OptionItem ArsonistMinPlayersToIgnite;
     public static OptionItem ArsonistMaxPlayersToIgnite;

@@ -1,4 +1,5 @@
 ﻿using MS.Internal.Xml.XPath;
+using TOHE.Roles.Double;
 using UnityEngine;
 
 using static TOHE.Options;
@@ -106,6 +107,11 @@ public static class Infectious
         if (target.Is(CustomRoles.NSerialKiller)) return true;
 
         if (BiteLimit < 1) return false;
+        if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
+        {
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Succubus), GetString("CantRecruit")));
+            return false;
+        }
         if (DoubleClickKill.GetBool())
         { 
             bool check = killer.CheckDoubleTrigger(target, () => { InfectOrMurder(killer, target); });

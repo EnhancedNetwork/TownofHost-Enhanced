@@ -546,7 +546,7 @@ static class CustomRolesHelper
     }
     public static bool IsSnitchTarget(this CustomRoles role)
     {
-        if (role is CustomRoles.Arsonist && Options.ArsonistKeepsGameGoing.GetBool()) return true;
+        if (role is CustomRoles.Arsonist && Options.ArsonistCanIgniteAnytime.GetBool()) return true;
         return role is
             CustomRoles.Jackal or
             CustomRoles.Doppelganger or
@@ -1047,6 +1047,7 @@ static class CustomRolesHelper
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeOnbound.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeOnbound.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeOnbound.GetBool()))
                     return false;
                 break;
+
             case CustomRoles.Rebound:
                 if (pc.Is(CustomRoles.SuperStar)
                     || (pc.Is(CustomRoles.Doctor) && Options.DoctorVisibleToEveryone.GetBool())
@@ -1454,7 +1455,9 @@ static class CustomRolesHelper
             case CustomRoles.Loyal:
                 if (pc.Is(CustomRoles.Madmate) 
                     || pc.Is(CustomRoles.Oiiai)
-                    || pc.Is(CustomRoles.GuardianAngelTOHE))
+                    || pc.Is(CustomRoles.GuardianAngelTOHE)
+                    || pc.Is(CustomRoles.NiceMini)
+                    || pc.Is(CustomRoles.EvilMini))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor() && !pc.GetCustomRole().IsCrewmate())
                     return false;
@@ -1549,7 +1552,6 @@ static class CustomRolesHelper
 
     public static bool IsConverted(this CustomRoles role)
     {
-
         return (role is CustomRoles.Charmed ||
                 role is CustomRoles.Recruit ||
                 role is CustomRoles.Infected ||

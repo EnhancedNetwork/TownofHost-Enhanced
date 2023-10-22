@@ -96,8 +96,10 @@ public static class Judge
 
             if (TryHideMsg.GetBool()) 
             {
-                if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
-                else GuessManager.TryHideMsg();
+                //if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
+                //else GuessManager.TryHideMsg();
+                GuessManager.TryHideMsg();
+                ChatManager.SendPreviousMessagesToAll();
             }
             else if (pc.AmOwner) Utils.SendMessage(originMsg, 255, pc.GetRealName());
 
@@ -129,7 +131,7 @@ public static class Judge
                     else pc.ShowPopUp(Utils.ColorString(Color.cyan, GetString("MessageFromKPD")) + "\n" + GetString("LaughToWhoTrialSelf"));
                     judgeSuicide = true;
                 }
-                if ((target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) && Mini.Age < 18)
+                if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessMini"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessMini"));
