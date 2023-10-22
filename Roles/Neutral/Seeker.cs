@@ -13,6 +13,8 @@ public static class Seeker
     public static OptionItem PointsToWin;
     private static OptionItem TagCooldownOpt;
 
+    public static int PointsToWinOpt;
+
     public static Dictionary<byte, byte> Targets = new();
     public static Dictionary<byte, int> TotalPoints = new();
     private static float DefaultSpeed = new();
@@ -40,6 +42,7 @@ public static class Seeker
 
         TotalPoints.Add(playerId, 0);
         DefaultSpeed = Main.AllPlayerSpeed[playerId];
+        PointsToWinOpt = PointsToWin.GetInt();
 
         if (AmongUsClient.Instance.AmHost)
             _ = new LateTask(() =>
@@ -113,16 +116,19 @@ public static class Seeker
     public static void OnFixedUpdate(PlayerControl player)
     {
         var targetId = GetTarget(player);
-        if (Main.PlayerStates[targetId].IsDead)
+        var playerState = Main.PlayerStates[targetId];
+        var totalPoints = TotalPoints[targetId];
+
+        if (playerState.IsDead)
         {
             ResetTarget(player);
         }
-
-        if (TotalPoints[player.PlayerId] >= PointsToWin.GetInt())
+        
+        if (totalPoints >= PointsToWinOpt)
         {
-            TotalPoints[player.PlayerId] = PointsToWin.GetInt();
+            TotalPoints[targetId] = PointsToWinOpt;
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Seeker);
-            CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
+            CustomWinnerHolder.WinnerIds.Add(targetId);
         }
     }
     public static byte GetTarget(PlayerControl player)

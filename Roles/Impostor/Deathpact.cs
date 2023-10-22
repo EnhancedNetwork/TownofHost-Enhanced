@@ -221,7 +221,7 @@ namespace TOHE.Roles.Impostor
 
         public static bool IsInActiveDeathpact(PlayerControl player)
         {
-            if (ActiveDeathpacts.Count == 0) return false;
+            if (!ActiveDeathpacts.Any()) return false;
             if (PlayersInDeathpact.Any(a => ActiveDeathpacts.Contains(a.Key) && a.Value.Any(b => b.PlayerId == player.PlayerId))) return true;
             return false;
         }
@@ -246,7 +246,7 @@ namespace TOHE.Roles.Impostor
 
                 otherPlayerNames = otherPlayerNames.Remove(otherPlayerNames.Length - 1);
 
-                int countdown = (int)(DeathpactTime[deathpact.Key] - Utils.GetTimeStamp());
+                int countdown = (int)(DeathpactTime[deathpact.Key] - GetTimeStamp());
 
                 result +=
                     $"{ColorString(GetRoleColor(CustomRoles.Impostor), string.Format(GetString("DeathpactActiveDeathpact"), otherPlayerNames, countdown))}";

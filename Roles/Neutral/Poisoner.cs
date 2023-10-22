@@ -89,9 +89,11 @@ public static class Poisoner
         var poisonerID = poisoner.PlayerId;
         List<byte> targetList = new(PoisonedPlayers.Where(b => b.Value.PoisonerId == poisonerID).Select(b => b.Key));
 
-        foreach (var targetId in targetList)
+        for (var id = 0; id < targetList.Count; id++)
         {
+            var targetId = targetList[id];
             var poisonedPoisoner = PoisonedPlayers[targetId];
+
             if (poisonedPoisoner.KillTimer >= KillDelay)
             {
                 var target = Utils.GetPlayerById(targetId);
