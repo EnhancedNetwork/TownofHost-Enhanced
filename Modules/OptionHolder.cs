@@ -1823,6 +1823,7 @@ public static class Options
         Counterfeiter.SetupCustomOption();
         Jailer.SetupCustomOption();
         Judge.SetupCustomOption();
+        Swapper.SetupCustomOption();
         SwordsMan.SetupCustomOption();
         SetupRoleOptions(8600, TabGroup.CrewmateRoles, CustomRoles.NiceGuesser);
         GGCanGuessTime = IntegerOptionItem.Create(8610, "GuesserCanGuessTimes", new(1, 15, 1), 15, TabGroup.CrewmateRoles, false)
@@ -2564,7 +2565,6 @@ public static class Options
                .SetParent(CustomRoleSpawnChances[CustomRoles.Glitch]); */
         //     Divinator.SetupCustomOption();
         Admirer.SetupCustomOption();
-        Swapper.SetupCustomOption();
         Investigator.SetupCustomOption();
         // 中立
         TextOptionItem.Create(100020, "OtherRoles.NeutralRoles", TabGroup.OtherRoles)
