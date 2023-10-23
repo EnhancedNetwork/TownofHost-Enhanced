@@ -1251,6 +1251,7 @@ public static class Utils
             if (opt.Value.Name == "DisableMiraHQDevices" && !Options.IsActiveMiraHQ) continue;
             if (opt.Value.Name == "DisablePolusDevices" && !Options.IsActivePolus) continue;
             if (opt.Value.Name == "DisableAirshipDevices" && !Options.IsActiveAirship) continue;
+            if (opt.Value.Name == "DisableDleksDevices" && !Options.IsActiveDleks) continue;
             if (opt.Value.Name == "PolusReactorTimeLimit" && !Options.IsActivePolus) continue;
             if (opt.Value.Name == "AirshipReactorTimeLimit" && !Options.IsActiveAirship) continue;
             if (deep > 0)
@@ -2119,6 +2120,7 @@ public static class Utils
                     ((Options.DisableOnSkeld.GetBool() && Options.IsActiveSkeld) ||
                      (Options.DisableOnMira.GetBool() && Options.IsActiveMiraHQ) ||
                      (Options.DisableOnPolus.GetBool() && Options.IsActivePolus) ||
+                     (Options.DisableOnDleks.GetBool() && Options.IsActiveDleks) ||
                      (Options.DisableOnAirship.GetBool() && Options.IsActiveAirship)
                     )))
                     || Camouflager.IsActive))
@@ -2430,6 +2432,7 @@ public static class Utils
                             ((Options.DisableOnSkeld.GetBool() && Options.IsActiveSkeld) ||
                              (Options.DisableOnMira.GetBool() && Options.IsActiveMiraHQ) ||
                              (Options.DisableOnPolus.GetBool() && Options.IsActivePolus) ||
+                             (Options.DisableOnDleks.GetBool() && Options.IsActiveDleks) ||
                              (Options.DisableOnAirship.GetBool() && Options.IsActiveAirship)
                             )))
                             || Camouflager.IsActive))

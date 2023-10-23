@@ -2,7 +2,6 @@ using AmongUs.GameOptions;
 using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using static TOHE.Translator;
@@ -18,6 +17,18 @@ public static class GameSettingMenuPatch
         // Unlocks map/impostor amount changing in online (for testing on your custom servers)
         // オンラインモードで部屋を立て直さなくてもマップを変更できるように変更
         __instance.HideForOnline = new Il2CppReferenceArray<Transform>(0);
+    }
+
+    // add dleks to map selection
+    public static void Postfix([HarmonyArgument(0)] Il2CppReferenceArray<Transform> items)
+    {
+        items
+            .FirstOrDefault(
+                i => i.gameObject.activeSelf && i.name.Equals("MapName", StringComparison.OrdinalIgnoreCase))?
+            .GetComponent<KeyValueOption>()?
+            .Values?
+            // using .Insert will convert managed values and break the struct resulting in crashes
+            .System_Collections_IList_Insert((int)MapNames.Dleks, new Il2CppSystem.Collections.Generic.KeyValuePair<string, int>(Constants.MapNames[(int)MapNames.Dleks], (int)MapNames.Dleks));
     }
 }
 
@@ -58,12 +69,12 @@ public static class GameOptionsMenuPatch
 
         var gameSettingMenu = Object.FindObjectsOfType<GameSettingMenu>().FirstOrDefault();
         if (gameSettingMenu == null) return;
-        List<GameObject> menus = new() { gameSettingMenu.RegularGameSettings, gameSettingMenu.RolesSettings.gameObject };
-        List<SpriteRenderer> highlights = new() { gameSettingMenu.GameSettingsHightlight, gameSettingMenu.RolesSettingsHightlight };
+        System.Collections.Generic.List<GameObject> menus = new() { gameSettingMenu.RegularGameSettings, gameSettingMenu.RolesSettings.gameObject };
+        System.Collections.Generic.List<SpriteRenderer> highlights = new() { gameSettingMenu.GameSettingsHightlight, gameSettingMenu.RolesSettingsHightlight };
 
         var roleTab = GameObject.Find("RoleTab");
         var gameTab = GameObject.Find("GameTab");
-        List<GameObject> tabs = new() { gameTab, roleTab };
+        System.Collections.Generic.List<GameObject> tabs = new() { gameTab, roleTab };
 
         foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
         {
@@ -106,7 +117,7 @@ public static class GameOptionsMenuPatch
                 Object.Destroy(optionBehaviour.gameObject);
             }
 
-            var scOptions = new List<OptionBehaviour>();
+            var scOptions = new System.Collections.Generic.List<OptionBehaviour>();
             foreach (var option in OptionItem.AllOptions)
             {
                 if (option.Tab != tab) continue;

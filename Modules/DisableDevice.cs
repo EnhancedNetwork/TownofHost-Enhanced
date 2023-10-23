@@ -34,7 +34,7 @@ class DisableDevice
             MapNames.Skeld => 1.8f,
             MapNames.Mira => 2.4f,
             MapNames.Polus => 1.8f,
-            //MapNames.Dleks => 1.5f,
+            MapNames.Dleks => 1.5f,
             MapNames.Airship => 1.8f,
             _ => 0.0f
         };
@@ -63,6 +63,7 @@ class DisableDevice
                     switch (Main.NormalOptions.MapId)
                     {
                         case 0:
+                        case 3:
                             if (Options.DisableSkeldAdmin.GetBool())
                                 doComms |= Vector2.Distance(PlayerPos, DevicePos["SkeldAdmin"]) <= UsableDistance();
                             if (Options.DisableSkeldCamera.GetBool())
@@ -145,6 +146,7 @@ public class RemoveDisableDevicesPatch
         switch (Main.NormalOptions.MapId)
         {
             case 0:
+            case 3:
                 if (Options.DisableSkeldAdmin.GetBool())
                     admins[0].gameObject.GetComponent<CircleCollider2D>().enabled = false || ignore;
                 if (Options.DisableSkeldCamera.GetBool())

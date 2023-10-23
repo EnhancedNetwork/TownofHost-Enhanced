@@ -57,6 +57,7 @@ internal class AntiAdminer
                 switch (Main.NormalOptions.MapId)
                 {
                     case 0:
+                    case 3:
                         if (!Options.DisableSkeldAdmin.GetBool())
                             Admin |= Vector2.Distance(PlayerPos, DisableDevice.DevicePos["SkeldAdmin"]) <= DisableDevice.UsableDistance();
                         if (!Options.DisableSkeldCamera.GetBool())

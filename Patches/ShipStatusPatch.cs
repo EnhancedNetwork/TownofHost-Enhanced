@@ -129,7 +129,7 @@ class RepairSystemPatch
         {
             var camerasDisabled = (MapNames)Main.NormalOptions.MapId switch
             {
-                MapNames.Skeld => Options.DisableSkeldCamera.GetBool(),
+                MapNames.Skeld or MapNames.Dleks => Options.DisableSkeldCamera.GetBool(),
                 MapNames.Polus => Options.DisablePolusCamera.GetBool(),
                 MapNames.Airship => Options.DisableAirshipCamera.GetBool(),
                 _ => false,
