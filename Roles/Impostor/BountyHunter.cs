@@ -153,10 +153,10 @@ public static class BountyHunter
 
         var cTargets = new List<PlayerControl>(Main.AllAlivePlayerControls.Where(pc => !pc.Is(CustomRoleTypes.Impostor)));
 
-        if (cTargets.Count() >= 2 && Targets.TryGetValue(player.PlayerId, out var nowTarget))
+        if (cTargets.Count >= 2 && Targets.TryGetValue(player.PlayerId, out var nowTarget))
             cTargets.RemoveAll(x => x.PlayerId == nowTarget); //前回のターゲットは除外
 
-        if (cTargets.Count <= 0)
+        if (!cTargets.Any())
         {
             Logger.Warn("ターゲットの指定に失敗しました:ターゲット候補が存在しません", "BountyHunter");
             return 0xff;

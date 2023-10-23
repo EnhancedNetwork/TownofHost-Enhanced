@@ -103,8 +103,10 @@ public static class President
 
             if (HidePresidentEndCommand.GetBool())
             {
-                if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
-                else TryHideMsgForPresident();
+                //if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
+                //else TryHideMsgForPresident();
+                TryHideMsgForPresident();
+                ChatManager.SendPreviousMessagesToAll();
             }
             else if (pc.AmOwner) Utils.SendMessage(originMsg, 255, pc.GetRealName());
 
@@ -122,8 +124,10 @@ public static class President
 
             if (HidePresidentEndCommand.GetBool())
             {
-                if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
-                else TryHideMsgForPresident();
+                //if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
+                //else TryHideMsgForPresident();
+                TryHideMsgForPresident();
+                ChatManager.SendPreviousMessagesToAll();
             }
             else if (pc.AmOwner) Utils.SendMessage(originMsg, 255, pc.GetRealName());
 

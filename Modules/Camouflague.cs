@@ -40,10 +40,13 @@ public static class Camouflage
     public static bool IsCamouflage;
     public static Dictionary<byte, GameData.PlayerOutfit> PlayerSkins = new();
 
+    public static List<byte> ResetSkinAfterDeathPlayers = new();
+
     public static void Init()
     {
         IsCamouflage = false;
         PlayerSkins.Clear();
+        ResetSkinAfterDeathPlayers = new();
 
         switch (Options.KPDCamouflageMode.GetValue())
         { 

@@ -4,9 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using TOHE.Modules;
 using TOHE.Modules.ChatManager;
-using TOHE.Roles.Crewmate;
 using UnityEngine;
 using static TOHE.Translator;
 using static UnityEngine.ParticleSystem.PlaybackState;
@@ -16,35 +14,37 @@ namespace TOHE.Roles.Crewmate;
 public static class Swapper
 {
     private static readonly int Id = 1986523;
+    public static bool IsEnable = false;
     public static OptionItem SwapMax;
+    public static OptionItem CanSwapSelf;
     public static OptionItem CanStartMeeting;
     public static OptionItem TryHideMsg;
     public static List<byte> playerIdList = new();
-    public static bool IsEnable = false;
     public static List<byte> Vote = new();
     public static List<byte> VoteTwo = new();
     public static Dictionary<byte, int> Swappermax = new();
     public static void SetupCustomOption()
-    {
-        Options.SetupRoleOptions(Id, TabGroup.OtherRoles, CustomRoles.Swapper);
-        SwapMax = IntegerOptionItem.Create(Id + 3, "SwapperMax", new(1, 999, 1), 10, TabGroup.OtherRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Swapper])
+    {   
+        Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Swapper);
+        SwapMax = IntegerOptionItem.Create(Id + 3, "SwapperMax", new(1, 999, 1), 3, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Swapper])
             .SetValueFormat(OptionFormat.Times);
-        CanStartMeeting = BooleanOptionItem.Create(Id + 4, "JesterCanUseButton", false, TabGroup.OtherRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Swapper]);
-        TryHideMsg = BooleanOptionItem.Create(Id + 5, "SwapperTryHideMsg", true, TabGroup.OtherRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Swapper]);
+        CanSwapSelf = BooleanOptionItem.Create(Id + 2, "CanSwapSelfVotes", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Swapper]);
+        CanStartMeeting = BooleanOptionItem.Create(Id + 4, "JesterCanUseButton", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Swapper]);
+        TryHideMsg = BooleanOptionItem.Create(Id + 5, "SwapperTryHideMsg", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Swapper]);
     }
     public static void Init()
     {
         playerIdList = new();
+        IsEnable = false;
         Vote = new();
         VoteTwo = new();
         Swappermax = new();
-        IsEnable = false;
     }
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        Swappermax.TryAdd(playerId, SwapMax.GetInt());
         IsEnable = true;
+        Swappermax.TryAdd(playerId, SwapMax.GetInt());
     }
     public static string GetSwappermax(byte playerId) => Utils.ColorString((Swappermax.TryGetValue(playerId, out var x) && x >= 1) ? Utils.GetRoleColor(CustomRoles.Swapper).ShadeColor(0.25f) : Color.gray, Swappermax.TryGetValue(playerId, out var changermax) ? $"({changermax})" : "Invalid");
     public static bool SwapMsg(PlayerControl pc, string msg, bool isUI = false)
@@ -58,7 +58,7 @@ public static class Swapper
         int operate = 0;
         msg = msg.ToLower().TrimStart().TrimEnd();
         if (CheckCommond(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id")) operate = 1;
-        else if (CheckCommond(ref msg, "sw|换票|换|swap", false)) operate = 2;
+        else if (CheckCommond(ref msg, "sw|换票|换|swap|st", false)) operate = 2;
         else return false;
 
         if (!pc.IsAlive())
@@ -71,15 +71,14 @@ public static class Swapper
         if (operate == 1)
         {
             Utils.SendMessage(GuessManager.GetFormatString(), pc.PlayerId);
-
             return true;
         }
         else if (operate == 2)
         {
             if (TryHideMsg.GetBool())
             {
-                if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
-                else GuessManager.TryHideMsg();
+                GuessManager.TryHideMsg();
+                ChatManager.SendPreviousMessagesToAll();
             }
             else if (pc.AmOwner && !isUI) Utils.SendMessage(originMsg, 255, pc.GetRealName());
 
@@ -101,16 +100,16 @@ public static class Swapper
                 var dp = target;
                 target = dp;
 
-                    if (Vote.Count < 1 && !Vote.Contains(dp.PlayerId) && !VoteTwo.Contains(dp.PlayerId)
-                || Vote.Count < 1 && !Vote.Contains(dp.PlayerId) && !VoteTwo.Contains(dp.PlayerId))
+                if (Vote.Count < 1 && !Vote.Contains(dp.PlayerId) && !VoteTwo.Contains(dp.PlayerId) && CanSwapSelf.GetBool()
+                || Vote.Count < 1 && !Vote.Contains(dp.PlayerId) && !VoteTwo.Contains(dp.PlayerId) && dp != pc && !CanSwapSelf.GetBool())
                 {
                     Vote.Add(dp.PlayerId);
                     if (!isUI) Utils.SendMessage(GetString("Swap1"), pc.PlayerId); 
                     else pc.ShowPopUp(GetString("Swap1"));
                     Logger.Info($"{pc.GetNameWithRole()} 选择 {target.GetNameWithRole()}", "Swapper");
                 }
-                else if (Vote.Count == 1 && VoteTwo.Count < 1 && !Vote.Contains(dp.PlayerId) && !VoteTwo.Contains(dp.PlayerId)
-                || Vote.Count == 1 && VoteTwo.Count < 1 && !Vote.Contains(dp.PlayerId) && !VoteTwo.Contains(dp.PlayerId))
+                else if (Vote.Count == 1 && VoteTwo.Count < 1 && !Vote.Contains(dp.PlayerId) && !VoteTwo.Contains(dp.PlayerId) && CanSwapSelf.GetBool()
+                || Vote.Count == 1 && VoteTwo.Count < 1 && !Vote.Contains(dp.PlayerId) && !VoteTwo.Contains(dp.PlayerId) && dp != pc && !CanSwapSelf.GetBool())
                 {
                     VoteTwo.Add(dp.PlayerId);
                     if (!isUI) Utils.SendMessage(GetString("Swap2"), pc.PlayerId);
@@ -130,6 +129,11 @@ public static class Swapper
                     if (!isUI) Utils.SendMessage(GetString("CancelSwap2"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("CancelSwap2"));
                     Logger.Info($"{pc.GetNameWithRole()} 取消选择 {target.GetNameWithRole()}", "Swapper");
+                }
+                else if (pc == dp && !CanSwapSelf.GetBool())
+                {
+                    if (!isUI) Utils.SendMessage(GetString("CantSwapSelf"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("CantSwapSelf"));
                 }
                 _= new LateTask(() =>
                 {
@@ -230,7 +234,6 @@ public static class Swapper
         
         if (AmongUsClient.Instance.AmHost) SwapMsg(PlayerControl.LocalPlayer, $"/sw {playerId}", true);
         else SendRPC(playerId);
-
         if (PlayerControl.LocalPlayer.Is(CustomRoles.Swapper) && PlayerControl.LocalPlayer.IsAlive())
         {
             CreateSwapperButton(__instance);

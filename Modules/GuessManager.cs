@@ -162,8 +162,10 @@ public static class GuessManager
             (Options.GuesserMode.GetBool() && Options.HideGuesserCommands.GetBool())
             ) 
             {
-                if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
-                else TryHideMsg(); 
+                //if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
+                //else TryHideMsg(); 
+                TryHideMsg();
+                ChatManager.SendPreviousMessagesToAll();
             }
             else if (pc.AmOwner && !isUI) Utils.SendMessage(originMsg, 255, pc.GetRealName());
 
@@ -253,7 +255,7 @@ public static class GuessManager
                         return true;
                     }
                 }
-                if (role == CustomRoles.NiceMini && Mini.Age != 18 || target.Is(CustomRoles.NiceMini) && Mini.Age != 18 )
+                if (pc.Is(CustomRoles.NiceMini) && Mini.Age < 18 )
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessMini"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessMini"));

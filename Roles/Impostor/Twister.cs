@@ -53,8 +53,8 @@ namespace TOHE.Roles.Impostor
 
                 pc.RPCPlayCustomSound("Teleport");
 
-                var originPs = target.transform.position;
-                target.RpcTeleport(pc.transform.position);
+                var originPs = target.GetTruePosition();
+                target.RpcTeleport(pc.GetTruePosition());
                 pc.RpcTeleport(originPs);
 
                 if (!HideTwistedPlayerNames.GetBool())

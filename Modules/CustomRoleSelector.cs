@@ -97,7 +97,7 @@ internal class CustomRoleSelector
                 ImpOnList.Add(CustomRoles.EvilMini);
             }
         }
-        while (MiniRateList.Count ==1)
+        while (MiniRateList.Count == 1)
         {
             var select = MiniRateList[rd.Next(0, MiniRateList.Count)];
             MiniRateList.Remove(select);
