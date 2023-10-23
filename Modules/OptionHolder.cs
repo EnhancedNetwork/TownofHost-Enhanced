@@ -2544,7 +2544,7 @@ public static class Options
                 .SetValueFormat(OptionFormat.Seconds); */
         BallLightning.SetupCustomOption();
         Eraser.SetupCustomOption();
-        SetupRoleOptions(16900, TabGroup.OtherRoles, CustomRoles.OverKiller);
+        OverKiller.SetupCustomOption();
         Disperser.SetupCustomOption();
         Hangman.SetupCustomOption();
         Blackmailer.SetupCustomOption();

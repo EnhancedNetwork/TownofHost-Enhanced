@@ -671,44 +671,6 @@ class CheckMurderPatch
             }
 
         }
-        // 肢解者肢解受害者
-        if (killer.Is(CustomRoles.OverKiller) && killer.PlayerId != target.PlayerId)
-        {
-            Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Dismembered;
-            _ = new LateTask(() =>
-            {
-                if (!Main.OverDeadPlayerList.Contains(target.PlayerId)) Main.OverDeadPlayerList.Add(target.PlayerId);
-                var ops = target.GetTruePosition();
-                var rd = IRandom.Instance;
-                for (int i = 0; i < 20; i++)
-                {
-                    Vector2 location = new(ops.x + ((float)(rd.Next(0, 201) - 100) / 100), ops.y + ((float)(rd.Next(0, 201) - 100) / 100));
-                    location += new Vector2(0, 0.3636f);
-
-                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(target.NetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.None, -1);
-                    NetHelpers.WriteVector2(location, writer);
-                    writer.Write(target.NetTransform.lastSequenceId);
-                    AmongUsClient.Instance.FinishRpcImmediately(writer);
-
-                    target.NetTransform.SnapTo(location);
-                    killer.MurderPlayer(target);
-
-                    if (target.Is(CustomRoles.Avanger))
-                    {
-                        var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId || Pelican.IsEaten(x.PlayerId) || Medic.ProtectList.Contains(x.PlayerId) || target.Is(CustomRoles.Pestilence)).ToList();
-                        var rp = pcList[IRandom.Instance.Next(0, pcList.Count)];
-                        Main.PlayerStates[rp.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
-                        rp.SetRealKiller(target);
-                        rp.RpcMurderPlayerV3(rp);
-                    }
-
-                    MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.None, -1);
-                    messageWriter.WriteNetObject(target);
-                    AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
-                }
-                killer.RpcTeleport(ops);
-            }, 0.05f, "OverKiller Murder");
-        }
 
         if (killer.Is(CustomRoles.Berserker))
         {
@@ -1256,8 +1218,11 @@ class MurderPlayerPatch
         Logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}{(target.protectedByGuardian ? "(Protected)" : "")}", "MurderPlayer");
 
         if (RandomSpawn.CustomNetworkTransformPatch.NumOfTP.TryGetValue(__instance.PlayerId, out var num) && num > 2) RandomSpawn.CustomNetworkTransformPatch.NumOfTP[__instance.PlayerId] = 3;
-        if (!target.protectedByGuardian && !Doppelganger.DoppelVictim.ContainsKey(target.PlayerId))
+        if (!target.protectedByGuardian && !Doppelganger.DoppelVictim.ContainsKey(target.PlayerId) && !Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
+        {
+            Camouflage.ResetSkinAfterDeathPlayers.Add(target.PlayerId);
             Camouflage.RpcSetSkin(target, ForceRevert: true);
+        }
     }
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
     {
@@ -1379,6 +1344,9 @@ class MurderPlayerPatch
                 break;
             case CustomRoles.Wildling:
                 Wildling.OnMurderPlayer(killer, target);
+                break;
+            case CustomRoles.OverKiller:
+                OverKiller.OnMurderPlayer(killer, target);
                 break;
         }
 
