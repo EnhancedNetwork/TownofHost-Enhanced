@@ -27,7 +27,7 @@ public static class Imitator
         "Role.Amnesiac",
     };
 
-    private static int RememberLimit = new();
+    private static Dictionary<byte, int> RememberLimit = new();
 
     public static void SetupCustomOption()
     {
@@ -45,7 +45,7 @@ public static class Imitator
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        RememberLimit = 1;
+        RememberLimit.Add(playerId, 1);
         IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
@@ -53,415 +53,135 @@ public static class Imitator
             Main.ResetCamPlayerList.Add(playerId);
     }
 
-    private static void SendRPC()
+    private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetImitateLimit, SendOption.Reliable, -1);
-        writer.Write(RememberLimit);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRememberLimit, SendOption.Reliable, -1);
+        writer.Write(playerId);
+        writer.Write(RememberLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC(MessageReader reader)
     {
-        RememberLimit = reader.ReadInt32();
+        byte playerId = reader.ReadByte();
+        int Limit = reader.ReadInt32();
+
+        if (!RememberLimit.ContainsKey(playerId))
+        {
+            RememberLimit.Add(playerId, Limit);
+        }
+        else
+        {
+            RememberLimit[playerId] = Limit;
+        }
     }
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = RememberLimit >= 1 ? RememberCooldown.GetFloat() : 300f;
-    public static bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && RememberLimit >= 1;
+    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = RememberLimit[id] >= 1 ? RememberCooldown.GetFloat() : 300f;
+    public static bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && RememberLimit[player.PlayerId] >= 1;
     public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
-        if (RememberLimit < 1) return;
-        if (CanBeRememberedNeutralKiller(target))
+        if (RememberLimit[killer.PlayerId] < 1) return;
+
+        var role = target.GetCustomRole();
+
+        if (role.IsAmneNK() || role.Is(CustomRoles.Jackal) /*|| role.IsAmneMaverick()*/
+            || role.IsImpostor() || role.IsCrewmate() || role.Is(CustomRoles.HexMaster)
+            || role.Is(CustomRoles.Poisoner) || role.Is(CustomRoles.Juggernaut) || role.Is(CustomRoles.BloodKnight))
         {
-            RememberLimit--;
-            SendRPC();
-            killer.RpcSetCustomRole(target.GetCustomRole());
+            RememberLimit[killer.PlayerId]--;
+            SendRPC(killer.PlayerId);
+            killer.RpcSetCustomRole(role);
 
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatedNeutralKiller")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
-            Utils.NotifyRoles();
+            //Do those trash add check here
+            switch (role)
+            {
+                case CustomRoles.Jackal:
+                    Jackal.Add(killer.PlayerId);
+                    break;
+                case CustomRoles.HexMaster:
+                    HexMaster.Add(killer.PlayerId);
+                    break;
+                case CustomRoles.Poisoner:
+                    Poisoner.Add(killer.PlayerId);
+                    break;
+                case CustomRoles.Juggernaut:
+                    Juggernaut.Add(killer.PlayerId);
+                    break;
+                case CustomRoles.BloodKnight:
+                    BloodKnight.Add(killer.PlayerId);
+                    break;
+                case CustomRoles.SabotageMaster:
+                    SabotageMaster.Add(killer.PlayerId);
+                    break;
+                case CustomRoles.Admirer:
+                    Admirer.Add(killer.PlayerId);
+                    break;
+                    //Most of the roles with skill limit need to be added here.
+                    //Niko is not doing this bcz its tooooooo harrrrrdddddddddd
+            }
 
-            killer.ResetKillCooldown();
-            killer.SetKillCooldown();
-            if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-            target.RpcGuardAndKill(killer);
-            target.RpcGuardAndKill(target); 
-
-            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Soulless.ToString(), "Assign " + CustomRoles.Soulless.ToString());
-            Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-            return;
+            if (role.IsImpostor())
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedImpostor")));
+            else if (role.IsCrewmate())
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedCrewmate")));
+            else
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedNeutralKiller")));
         }
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorInvalidTarget")));
-        Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-
-        if (CanBeRememberedJackal(target))
+        else if (role.IsAmneMaverick())
         {
-            RememberLimit--;
-            SendRPC();
-            killer.RpcSetCustomRole(CustomRoles.Sidekick);
-
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatedNeutralKiller")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
-            Utils.NotifyRoles();
-
-            killer.ResetKillCooldown();
-            killer.SetKillCooldown();
-            if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-            target.RpcGuardAndKill(killer);
-            target.RpcGuardAndKill(target);
-
-            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Soulless.ToString(), "Assign " + CustomRoles.Soulless.ToString());
-            Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-            return;
-        }
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorInvalidTarget")));
-        Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-
-        if (CanBeRememberedNeutral(target))
-        {
-            if (IncompatibleNeutralMode.GetValue() == 0)
+            RememberLimit[killer.PlayerId]--;
+            SendRPC(killer.PlayerId);
+            switch (IncompatibleNeutralMode.GetInt())
             {
-                RememberLimit--;
-                SendRPC();
-                killer.RpcSetCustomRole(CustomRoles.Imitator);
-
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatedImitator")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
-                Utils.NotifyRoles();
-
-                Imitator.Add(killer.PlayerId);
-
-                killer.ResetKillCooldown();
-                killer.SetKillCooldown();
-                if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-                target.RpcGuardAndKill(killer);
-                target.RpcGuardAndKill(target);
-
-                Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Soulless.ToString(), "Assign " + CustomRoles.Soulless.ToString());
-                Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-                return;
-            }
-            if (IncompatibleNeutralMode.GetValue() == 1)
-            {
-                RememberLimit--;
-                SendRPC();
-                killer.RpcSetCustomRole(CustomRoles.NWitch);
-
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatedWitch")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
-                Utils.NotifyRoles();
-
-                NWitch.Add(killer.PlayerId);
-
-                killer.ResetKillCooldown();
-                killer.SetKillCooldown();
-                if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-                target.RpcGuardAndKill(killer);
-                target.RpcGuardAndKill(target);
-
-                Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Soulless.ToString(), "Assign " + CustomRoles.Soulless.ToString());
-                Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-                return;
-            }
-            if (IncompatibleNeutralMode.GetValue() == 2)
-            {
-                RememberLimit--;
-                SendRPC();
-                killer.RpcSetCustomRole(CustomRoles.Pursuer);
-
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatedPursuer")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
-                Utils.NotifyRoles();
-
-                Pursuer.Add(killer.PlayerId);
-
-                killer.ResetKillCooldown();
-                killer.SetKillCooldown();
-                if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-                target.RpcGuardAndKill(killer);
-                target.RpcGuardAndKill(target);
-
-                Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Soulless.ToString(), "Assign " + CustomRoles.Soulless.ToString());
-                Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-                return;
-            }
-            if (IncompatibleNeutralMode.GetValue() == 3)
-            {
-                RememberLimit--;
-                SendRPC();
-                killer.RpcSetCustomRole(CustomRoles.Totocalcio);
-
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatedFollower")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
-                Utils.NotifyRoles();
-
-                Totocalcio.Add(killer.PlayerId);
-
-                killer.ResetKillCooldown();
-                killer.SetKillCooldown();
-                if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-                target.RpcGuardAndKill(killer);
-                target.RpcGuardAndKill(target);
-
-                Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Soulless.ToString(), "Assign " + CustomRoles.Soulless.ToString());
-                Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-                return;
-            }
-            if (IncompatibleNeutralMode.GetValue() == 4)
-            {
-                RememberLimit--;
-                SendRPC();
-                killer.RpcSetCustomRole(CustomRoles.Maverick);
-
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatedMaverick")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
-                Utils.NotifyRoles();
-
-
-                killer.ResetKillCooldown();
-                killer.SetKillCooldown();
-                if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-                target.RpcGuardAndKill(killer);
-                target.RpcGuardAndKill(target);
-
-                Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Soulless.ToString(), "Assign " + CustomRoles.Soulless.ToString());
-                Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-                return;
-            }
-            if (IncompatibleNeutralMode.GetValue() == 5)
-            {
-                RememberLimit--;
-                SendRPC();
-                killer.RpcSetCustomRole(CustomRoles.Amnesiac);
-
-                Amnesiac.Add(killer.PlayerId);
-
-
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatedAmnesiac")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
-                Utils.NotifyRoles();
-
-
-                killer.ResetKillCooldown();
-                killer.SetKillCooldown();
-                if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-                target.RpcGuardAndKill(killer);
-                target.RpcGuardAndKill(target);
-
-                Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Soulless.ToString(), "Assign " + CustomRoles.Soulless.ToString());
-                Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-                return;
+                case 0:
+                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedImitator")));
+                    break;
+                case 1:
+                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedWitch")));
+                    killer.RpcSetCustomRole(CustomRoles.NWitch);
+                    NWitch.Add(killer.PlayerId);
+                    break;
+                case 2:
+                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedPursuer")));
+                    killer.RpcSetCustomRole(CustomRoles.Pursuer);
+                    Pursuer.Add(killer.PlayerId);
+                    break;
+                case 3:
+                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedFollower")));
+                    killer.RpcSetCustomRole(CustomRoles.Totocalcio);
+                    Totocalcio.Add(killer.PlayerId);
+                    break;
+                case 4:
+                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedMaverick")));
+                    killer.RpcSetCustomRole(CustomRoles.Maverick);
+                    break;
+                case 5:
+                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedAmnesiac")));
+                    killer.RpcSetCustomRole(CustomRoles.Amnesiac);
+                    Amnesiac.Add(killer.PlayerId);
+                    break;
             }
         }
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorInvalidTarget")));
-        Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-        if (CanBeRememberedImpostor(target))
+        //all the killer notify & setrole should be done above
+        target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorRemembered")));
+
+        if (killer.GetCustomRole() != CustomRoles.Imitator)
         {
-            RememberLimit--;
-            SendRPC();
-            killer.RpcSetCustomRole(CustomRoles.Refugee);
-
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatedImpostor")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
-            Utils.NotifyRoles();
-
             killer.ResetKillCooldown();
-            killer.SetKillCooldown();
-            if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-            target.RpcGuardAndKill(killer);
-            target.RpcGuardAndKill(target);
-
-            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Soulless.ToString(), "Assign " + CustomRoles.Soulless.ToString());
-            Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-            return;
-        }
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorInvalidTarget")));
-        Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-        if (CanBeRememberedCrewmate(target))
-        {
-            RememberLimit--;
-            SendRPC();
-            killer.RpcSetCustomRole(CustomRoles.Sheriff);
-
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatedCrewmate")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
+            killer.SetKillCooldown(forceAnime: true);
+            killer.MarkDirtySettings();
             Utils.NotifyRoles();
-
-            Sheriff.Add(killer.PlayerId);
-
-            killer.ResetKillCooldown();
-            killer.SetKillCooldown();
-            if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-            target.RpcGuardAndKill(killer);
-            target.RpcGuardAndKill(target);
-
-            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Soulless.ToString(), "Assign " + CustomRoles.Soulless.ToString());
-            Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-            return;
+            //if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
+            //target.RpcGuardAndKill(killer);
+            //target.RpcGuardAndKill(target);
         }
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorInvalidTarget")));
-        Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-        if (CanBeRememberedPoisoner(target))
-        {
-            RememberLimit--;
-            SendRPC();
-            killer.RpcSetCustomRole(CustomRoles.Poisoner);
-
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatedNeutralKiller")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
-            Utils.NotifyRoles();
-
-            Poisoner.Add(killer.PlayerId);
-
-            killer.ResetKillCooldown();
-            killer.SetKillCooldown();
-            if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-            target.RpcGuardAndKill(killer);
-            target.RpcGuardAndKill(target);
-
-            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Soulless.ToString(), "Assign " + CustomRoles.Soulless.ToString());
-            Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-            return;
-        }
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorInvalidTarget")));
-        Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-        if (CanBeRememberedJuggernaut(target))
-        {
-            RememberLimit--;
-            SendRPC();
-            killer.RpcSetCustomRole(CustomRoles.Juggernaut);
-
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatedNeutralKiller")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
-            Utils.NotifyRoles();
-
-            Juggernaut.Add(killer.PlayerId);
-
-            killer.ResetKillCooldown();
-            killer.SetKillCooldown();
-            if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-            target.RpcGuardAndKill(killer);
-            target.RpcGuardAndKill(target);
-
-            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Soulless.ToString(), "Assign " + CustomRoles.Soulless.ToString());
-            Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-            return;
-        }
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorInvalidTarget")));
-        Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-        if (CanBeRememberedHexMaster(target))
-        {
-            RememberLimit--;
-            SendRPC();
-            killer.RpcSetCustomRole(CustomRoles.HexMaster);
-
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatedNeutralKiller")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
-            Utils.NotifyRoles();
-
-            HexMaster.Add(killer.PlayerId);
-
-            killer.ResetKillCooldown();
-            killer.SetKillCooldown();
-            if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-            target.RpcGuardAndKill(killer);
-            target.RpcGuardAndKill(target);
-
-            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Soulless.ToString(), "Assign " + CustomRoles.Soulless.ToString());
-            Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-            return;
-        }
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorInvalidTarget")));
-        Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-        //if (CanBeRememberedOccultist(target))
-        //{
-        //    RememberLimit--;
-        //    SendRPC();
-        //    killer.RpcSetCustomRole(CustomRoles.HexMaster);
-
-        //    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatedNeutralKiller")));
-        //    target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
-        //    Utils.NotifyRoles();
-
-        //    HexMaster.Add(killer.PlayerId);
-
-        //    killer.ResetKillCooldown();
-        //    killer.SetKillCooldown();
-        //    if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-        //    target.RpcGuardAndKill(killer);
-        //    target.RpcGuardAndKill(target);
-
-        //    Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Soulless.ToString(), "Assign " + CustomRoles.Soulless.ToString());
-        //    Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-        //    return;
-        //}
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorInvalidTarget")));
-        Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-        if (CanBeRememberedBloodKnight(target))
-        {
-            RememberLimit--;
-            SendRPC();
-            killer.RpcSetCustomRole(CustomRoles.BloodKnight);
-
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatedNeutralKiller")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
-            Utils.NotifyRoles();
-
-            BloodKnight.Add(killer.PlayerId);
-
-            killer.ResetKillCooldown();
-            killer.SetKillCooldown();
-            if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-            target.RpcGuardAndKill(killer);
-            target.RpcGuardAndKill(target);
-
-            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Soulless.ToString(), "Assign " + CustomRoles.Soulless.ToString());
-            Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
-            return;
-        }
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorInvalidTarget")));
-        Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次魅惑机会", "Imitator");
+        Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Soulless.ToString(), "Assign " + CustomRoles.Soulless.ToString());
+        Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次回忆机会", "Imitator");
+        return;
     }
-    public static string GetRememberLimit() => Utils.ColorString(RememberLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Imitator) : Color.gray, $"({RememberLimit})");
-    public static bool CanBeRememberedNeutralKiller(this PlayerControl pc)
-    {
-        return pc != null && ((pc.GetCustomRole().IsAmneNK()));
-    }
-    public static bool CanBeRememberedNeutral(this PlayerControl pc)
-    {
-        return pc != null && ((pc.GetCustomRole().IsAmneMaverick()));
-    }
-    public static bool CanBeRememberedImpostor(this PlayerControl pc)
-    {
-        return pc != null && (pc.GetCustomRole().IsImpostor() || pc.Is(CustomRoles.Madmate));
-    }
-    public static bool CanBeRememberedCrewmate(this PlayerControl pc)
-    {
-        return pc != null && (pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Madmate));
-    }
-    public static bool CanBeRememberedJackal(this PlayerControl pc)
-    {
-        return pc != null && (pc.Is(CustomRoles.Jackal));
-    }
-    public static bool CanBeRememberedHexMaster(this PlayerControl pc)
-    {
-        return pc != null && (pc.Is(CustomRoles.HexMaster));
-    }
-    //public static bool CanBeRememberedOccultist(this PlayerControl pc)
-    //{
-    //    return pc != null && (pc.Is(CustomRoles.Occultist));
-    //}
-    public static bool CanBeRememberedPoisoner(this PlayerControl pc)
-    {
-        return pc != null && (pc.Is(CustomRoles.Poisoner));
-    }
-    public static bool CanBeRememberedJuggernaut(this PlayerControl pc)
-    {
-        return pc != null && (pc.Is(CustomRoles.Juggernaut));
-    }
-    public static bool CanBeRememberedBloodKnight(this PlayerControl pc)
-    {
-        return pc != null && (pc.Is(CustomRoles.BloodKnight));
-    }
+    //public static string GetRememberLimit() => Utils.ColorString(RememberLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Imitator) : Color.gray, $"({RememberLimit})");
     public static bool KnowRole(PlayerControl player, PlayerControl target)
     {
+        if (!playerIdList.Contains(player.PlayerId)) return false; //Add this next time you copy paste
+
         if (player.Is(CustomRoles.Infectious) && target.Is(CustomRoles.Infectious)) return true;
         if (player.Is(CustomRoles.Glitch) && target.Is(CustomRoles.Glitch)) return true;
         if (player.Is(CustomRoles.Wraith) && target.Is(CustomRoles.Wraith)) return true;

@@ -80,7 +80,6 @@ public static class Chronomancer
 
     public static void OnCheckMurder(PlayerControl killer)
     {
-        if (!killer.Is(CustomRoles.Chronomancer)) return;
         long now = Utils.GetTimeStamp();
         if (firstKill[killer.PlayerId] == -1)
         {

@@ -95,10 +95,10 @@ public static class PlagueBearer
 
     public static bool IsPlaguedAll(PlayerControl player)
     {
-
         if (!player.Is(CustomRoles.PlagueBearer)) return false;
-        var count = PlaguedPlayerCount(player.PlayerId);
-        return count.Item1 >= count.Item2;
+        
+        var (countItem1, countItem2) = PlaguedPlayerCount(player.PlayerId);
+        return countItem1 >= countItem2;
     }
 
     public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
@@ -140,19 +140,19 @@ public static class PlagueBearer
     }
     public static void OnFixedUpdate(PlayerControl player)
     {
-        if (IsPlaguedAll(player))
-        {
-            player.RpcSetCustomRole(CustomRoles.Pestilence);
-            Utils.NotifyRoles();
+        if (!IsPlaguedAll(player)) return;
 
-            player.Notify(GetString("PlagueBearerToPestilence"));
-            player.RpcGuardAndKill(player);
+        player.RpcSetCustomRole(CustomRoles.Pestilence);
+        player.Notify(GetString("PlagueBearerToPestilence"));
+        player.RpcGuardAndKill(player);
 
-            if (!PestilenceList.Contains(player.PlayerId))
-                PestilenceList.Add(player.PlayerId);
+        var playerId = player.PlayerId;
 
-            SetKillCooldownPestilence(player.PlayerId);
-            playerIdList.Remove(player.PlayerId);
-        }
+        if (!PestilenceList.Contains(playerId))
+            PestilenceList.Add(playerId);
+
+        SetKillCooldownPestilence(playerId);
+        playerIdList.Remove(playerId);
+
     }
 }

@@ -83,7 +83,6 @@ public static class Jackal
         RecruitLimit = new();
         IsEnable = false;
         ResetKillCooldownWhenSbGetKilled = OptionResetKillCooldownWhenSbGetKilled;
-
     }
     public static void Add(byte playerId)
     {
@@ -145,8 +144,11 @@ public static class Jackal
     {
         if (target.Is(CustomRoles.Pestilence)) return true;
         if (target.Is(CustomRoles.Jackal)) return true;
-        //if (JackalCanAttendant.GetBool() && CanBeAttendant(target) && Mini.Age == 18|| JackalCanAttendant.GetBool() && CanBeAttendant(target) && Mini.Age != 18 && !(target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
-
+        if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
+        {
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Succubus), GetString("CantRecruit")));
+            return false;
+        }
         if (!CanRecruitSidekick.GetBool() || RecruitLimit[killer.PlayerId] < 1) return false;
         
         if (SidekickAssignMode.GetValue() != 2)

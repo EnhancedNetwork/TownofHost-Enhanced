@@ -367,7 +367,10 @@ internal class ChatCommands
                     canceled = true;
                     string msgText1 = GetString("PlayerIdList");
                     foreach (var pc in Main.AllPlayerControls)
-                        msgText1 += "\n" + pc.PlayerId.ToString() + " → " + Main.AllPlayerNames[pc.PlayerId];
+                    {
+                        if (pc == null) continue;
+                        msgText1 += "\n" + pc.PlayerId.ToString() + " → " + pc.GetRealName();
+                    }
                     Utils.SendMessage(msgText1, PlayerControl.LocalPlayer.PlayerId);
                     break;
 
@@ -636,7 +639,10 @@ internal class ChatCommands
                     canceled = true;
                     string msgText = GetString("PlayerIdList");
                     foreach (var pc in Main.AllPlayerControls)
-                        msgText += "\n" + pc.PlayerId.ToString() + " → " + Main.AllPlayerNames[pc.PlayerId];
+                    {
+                        if (pc == null) continue;
+                        msgText += "\n" + pc.PlayerId.ToString() + " → " + pc.GetRealName(); 
+                    }
                     Utils.SendMessage(msgText, PlayerControl.LocalPlayer.PlayerId);
                     break;
 
@@ -755,7 +761,7 @@ internal class ChatCommands
                     {
                         var rand = IRandom.Instance;
                         int botChoice = rand.Next(1, 101);
-                        var coinSide = (botChoice < 51) ? "Heads" : "Tails";
+                        var coinSide = (botChoice < 51) ? GetString("Heads") : GetString("Tails");
                         Utils.SendMessage(String.Format(GetString("CoinFlipResult"),coinSide), PlayerControl.LocalPlayer.PlayerId);
                         break;
                     }
@@ -974,7 +980,7 @@ internal class ChatCommands
             "速度者" or "速度者"=> GetString("Ludopath"),
             "天文學家" or "天文学家"=> GetString("Chronomancer"),
             "設陷者" or "设陷者"=> GetString("Pitfall"),
-            "狂戰士" or "狂战士"=> GetString("Cultivator"),
+            "狂戰士" or "狂战士"=> GetString("Berserker"),
             "預言家" or "预言家"=> GetString("Farseer"),
             "驗屍官" or "验尸官"=> GetString("Bloodhound"),
             "正義追踪者" or "正义追踪者"=> GetString("Tracker"),
@@ -1377,7 +1383,10 @@ internal class ChatCommands
 
                 string msgText = GetString("PlayerIdList");
                 foreach (var pc in Main.AllPlayerControls)
-                    msgText += "\n" + pc.PlayerId.ToString() + " → " + Main.AllPlayerNames[pc.PlayerId];
+                {
+                    if (pc == null) continue;
+                    msgText += "\n" + pc.PlayerId.ToString() + " → " + pc.GetRealName();
+                }
                 Utils.SendMessage(msgText, player.PlayerId);
                 break;
             case "/mid":
@@ -1396,7 +1405,10 @@ internal class ChatCommands
                 }
                 string msgText1 = GetString("PlayerIdList");
                 foreach (var pc in Main.AllPlayerControls)
-                    msgText1 += "\n" + pc.PlayerId.ToString() + " → " + Main.AllPlayerNames[pc.PlayerId];
+                {
+                    if (pc == null) continue;
+                    msgText1 += "\n" + pc.PlayerId.ToString() + " → " + pc.GetRealName();
+                }
                 Utils.SendMessage(msgText1, player.PlayerId);
                 break;
             case "/ban":
@@ -1795,7 +1807,7 @@ internal class ChatCommands
                 }
                 break;
             case "/rps":
-                canceled = true;
+                //canceled = true;
                 subArgs = args.Length != 2 ? "" : args[1];
 
                 if (!GameStates.IsLobby && player.IsAlive())
@@ -1836,7 +1848,7 @@ internal class ChatCommands
                     break;
                 }
             case "/coinflip":
-                canceled = true;
+                //canceled = true;
 
                 if (!GameStates.IsLobby && player.IsAlive())
                 {
@@ -1847,12 +1859,12 @@ internal class ChatCommands
                 {
                     var rand = IRandom.Instance;
                     int botChoice = rand.Next(1,101);
-                    var coinSide = (botChoice < 51) ? "Heads" : "Tails";
+                    var coinSide = (botChoice < 51) ? GetString("Heads") : GetString("Tails");
                     Utils.SendMessage(String.Format(GetString("CoinFlipResult"), coinSide), player.PlayerId);
                     break;
                 }
             case "/gno":
-                canceled = true;
+                //canceled = true;
                 if (!GameStates.IsLobby && player.IsAlive())
                 {
                     Utils.SendMessage(GetString("GNoCommandInfo"), player.PlayerId);
@@ -1911,14 +1923,14 @@ internal class ChatCommands
     }
 }
 [HarmonyPatch(typeof(ChatController), nameof(ChatController.Update))]
-internal class ChatUpdatePatch
+class ChatUpdatePatch
 {
     public static bool DoBlockChat = false;
     public static void Postfix(ChatController __instance)
     {
-        if (!AmongUsClient.Instance.AmHost || Main.MessagesToSend.Count < 1 || (Main.MessagesToSend[0].Item2 == byte.MaxValue && Main.MessageWait.Value > __instance.timeSinceLastMessage)) return;
+        if (!AmongUsClient.Instance.AmHost || !Main.MessagesToSend.Any() || (Main.MessagesToSend[0].Item2 == byte.MaxValue && Main.MessageWait.Value > __instance.timeSinceLastMessage)) return;
         if (DoBlockChat) return;
-        var player = Main.AllAlivePlayerControls.OrderBy(x => x.PlayerId).FirstOrDefault() ?? Main.AllPlayerControls.OrderBy(x => x.PlayerId).FirstOrDefault();
+        var player = Main.AllAlivePlayerControls.OrderBy(x => x.PlayerId).FirstOrDefault();
         if (player == null) return;
         (string msg, byte sendTo, string title) = Main.MessagesToSend[0];
         Main.MessagesToSend.RemoveAt(0);

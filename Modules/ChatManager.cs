@@ -3,22 +3,23 @@ using System.Linq;
 using Hazel;
 using System;
 using TOHE.Roles.Impostor;
+using System.Text;
 
 namespace TOHE.Modules.ChatManager
 {
     public class ChatManager
     {
         public static bool cancel = false;
-        private static List<string> chatHistory = new();
+        private static List<Dictionary<byte, string>> chatHistory = new();
         private const int maxHistorySize = 20;
-        public static void resetHistory()
+        public static void ResetHistory()
         {
             chatHistory = new();
         }
         public static bool CheckCommond(ref string msg, string command, bool exact = true)
         {
             var comList = command.Split('|');
-            for (int i = 0; i < comList.Count(); i++)
+            for (int i = 0; i < comList.Length; i++)
             {
                 if (exact)
                 {
@@ -91,8 +92,11 @@ namespace TOHE.Modules.ChatManager
             else if (operate == 3)
             {
                 message = msg;
-                string chatEntry = $"{player.PlayerId}: {message}";
-                chatHistory.Add(chatEntry);
+                Dictionary<byte, string> newChatEntry = new()
+                {
+                    { player.PlayerId, message }
+                };
+                chatHistory.Add(newChatEntry);
 
                 if (chatHistory.Count > maxHistorySize)
                 {
@@ -104,80 +108,71 @@ namespace TOHE.Modules.ChatManager
 
         public static void SendPreviousMessagesToAll()
         {
-            var rd = IRandom.Instance;
-            string msg;
-            List<CustomRoles> roles = Enum.GetValues(typeof(CustomRoles)).Cast<CustomRoles>().ToList();
-            string[] specialTexts = new string[] { "bet", "bt", "guess", "gs", "shoot", "st", "赌", "猜", "审判", "tl", "判", "审", "trial" };
+            //var rd = IRandom.Instance;
+            //CustomRoles[] roles = (CustomRoles[])Enum.GetValues(typeof(CustomRoles));
+            //string[] specialTexts = new string[] { "bet", "bt", "guess", "gs", "shoot", "st", "赌", "猜", "审判", "tl", "判", "审", "trial" };
+            //int numPlayers = Main.AllAlivePlayerControls.Count();
+            //var allAlivePlayers = Main.AllAlivePlayerControls.ToArray();
+            //int roleCount = roles.Length;
 
-            for (int i = chatHistory.Count; i < 30; i++)
+            //for (int i = chatHistory.Count; i < 30; i++)
+            //{
+            //    StringBuilder msgBuilder = new();
+            //    msgBuilder.Append('/');
+            //    if (rd.Next(1, 100) < 20)
+            //    {
+            //        msgBuilder.Append("id");
+            //    }
+            //    else
+            //    {
+            //        msgBuilder.Append(specialTexts[rd.Next(specialTexts.Length)]);
+            //        msgBuilder.Append(rd.Next(1, 100) < 50 ? string.Empty : " ");
+            //        msgBuilder.Append(rd.Next(15));
+            //        msgBuilder.Append(rd.Next(1, 100) < 50 ? string.Empty : " ");
+            //        CustomRoles role = roles[rd.Next(roleCount)];
+            //        msgBuilder.Append(rd.Next(1, 100) < 50 ? string.Empty : " ");
+            //        msgBuilder.Append(Utils.GetRoleName(role));
+            //    }
+            //    string msg = msgBuilder.ToString();
+
+            //    var player = allAlivePlayers[rd.Next(numPlayers)];
+            //    DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
+            //    var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
+
+            //    writer.StartMessage(-1);
+            //    writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)
+            //        .Write(msg)
+            //        .EndRpc()
+            //        .EndMessage()
+            //        .SendMessage();
+            //}
+
+            for (int i = 0; i < chatHistory.Count; i++)
             {
-                msg = "/";
-                if (rd.Next(1, 100) < 20)
+                var entry = chatHistory[i];
+                var senderId = entry.Keys.First();
+                var senderMessage = entry[senderId];
+                var senderPlayer = Utils.GetPlayerById(senderId);
+                if (senderPlayer == null) continue;
+
+                var playerDead = !senderPlayer.IsAlive();
+                if (playerDead)
                 {
-                    msg += "id";
-                }
-                else
-                {
-                    msg += specialTexts[rd.Next(0, specialTexts.Length - 1)];
-                    msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
-                    msg += rd.Next(0, 15).ToString();
-                    msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
-                    CustomRoles role = roles[rd.Next(0, roles.Count())];
-                    msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
-                    msg += Utils.GetRoleName(role);
+                    senderPlayer.Revive();
                 }
 
-                var player = Main.AllAlivePlayerControls.ToArray()[rd.Next(0, Main.AllAlivePlayerControls.Count())];
-                DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
+                DestroyableSingleton<HudManager>.Instance.Chat.AddChat(senderPlayer, senderMessage);
                 var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
+
                 writer.StartMessage(-1);
-                writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)
-                    .Write(msg)
-                    .EndRpc();
-                writer.EndMessage();
-                writer.SendMessage();
-            }
-
-            foreach (var entry in chatHistory)
-            {
-                var entryParts = entry.Split(':');
-                var senderId = entryParts[0].Trim();
-                var senderMessage = entryParts[1].Trim();
-
-                foreach (var senderPlayer in Main.AllPlayerControls)
+                writer.StartRpc(senderPlayer.NetId, (byte)RpcCalls.SendChat)
+                    .Write(senderMessage)
+                    .EndRpc()
+                    .EndMessage()
+                    .SendMessage();
+                if (playerDead)
                 {
-                    if (senderPlayer.PlayerId.ToString() == senderId)
-                    {
-                        if (!senderPlayer.IsAlive())
-                        {
-                            //var deathReason = (PlayerState.DeathReason)senderPlayer.PlayerId;
-                            senderPlayer.Revive();
-
-
-                            DestroyableSingleton<HudManager>.Instance.Chat.AddChat(senderPlayer, senderMessage);
-
-                            var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
-                            writer.StartMessage(-1);
-                            writer.StartRpc(senderPlayer.NetId, (byte)RpcCalls.SendChat)
-                                .Write(senderMessage)
-                                .EndRpc();
-                            writer.EndMessage();
-                            writer.SendMessage();
-                            senderPlayer.Die(DeathReason.Kill, true);
-                            //Main.PlayerStates[senderPlayer.PlayerId].deathReason = deathReason;
-                        }
-                        else
-                        {
-                            DestroyableSingleton<HudManager>.Instance.Chat.AddChat(senderPlayer, senderMessage);
-                            var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
-                            writer.StartMessage(-1);
-                            writer.StartRpc(senderPlayer.NetId, (byte)RpcCalls.SendChat)
-                                .Write(senderMessage)
-                                .EndRpc();
-                            writer.EndMessage();
-                            writer.SendMessage();
-                        }
-                    }
+                    senderPlayer.Die(DeathReason.Kill, true);
                 }
             }
         }

@@ -7,6 +7,7 @@ using TOHE.Modules;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -411,8 +412,8 @@ public class TaskState
                     var tar1 = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
                     AllAlivePlayer.Remove(tar1);
                     var tar2 = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
-                    var posTar1 = tar1.transform.position;
-                    tar1.RpcTeleport(tar2.transform.position);
+                    var posTar1 = tar1.GetTruePosition();
+                    tar1.RpcTeleport(tar2.GetTruePosition());
                     tar2.RpcTeleport(posTar1);
                     tar1.RPCPlayCustomSound("Teleport");
                     tar2.RPCPlayCustomSound("Teleport");
@@ -506,6 +507,8 @@ public class TaskState
             if (player.Is(CustomRoles.Spy) && player.IsAlive())
             {
                 Spy.UseLimit[player.PlayerId] += Spy.SpyAbilityUseGainWithEachTaskCompleted.GetFloat();
+                Spy.SendAbilityRPC(player.PlayerId);
+
             }
 
             if (player.Is(CustomRoles.Ghoul) && (CompletedTasksCount + 1) >= AllTasksCount && player.IsAlive())
