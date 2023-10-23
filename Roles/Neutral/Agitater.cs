@@ -133,25 +133,29 @@ public static class Agitater
         }
         else
         {
-            Vector2 bloodlustPos = player.transform.position;
+            var playerPos = player.GetTruePosition();
             Dictionary<byte, float> targetDistance = new();
             float dis;
-            foreach (var target in Main.AllPlayerControls)
+
+            foreach (var target in Main.AllAlivePlayerControls)
             {
-                if (!target.IsAlive()) continue;
-                if (target.PlayerId != player.PlayerId && target.PlayerId != LastBombedPlayer && !target.Data.IsDead)
+                if (target.PlayerId != player.PlayerId && target.PlayerId != LastBombedPlayer)
                 {
-                    dis = Vector2.Distance(bloodlustPos, target.transform.position);
+                    dis = Vector2.Distance(playerPos, target.transform.position);
                     targetDistance.Add(target.PlayerId, dis);
                 }
             }
-            if (targetDistance.Count != 0)
+
+            if (targetDistance.Any())
             {
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
-                PlayerControl target = Utils.GetPlayerById(min.Key);
+                var target = Utils.GetPlayerById(min.Key);
                 var KillRange = GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.currentNormalGameOptions.KillDistance, 0, 2)];
+
                 if (min.Value <= KillRange && player.CanMove && target.CanMove)
+                {
                     PassBomb(player, target);
+                }
             }
         }
     }
