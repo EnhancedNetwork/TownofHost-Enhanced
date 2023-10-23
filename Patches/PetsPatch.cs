@@ -7,6 +7,7 @@ public static class PetsPatch
         if (pc == null || !pc.Data.IsDead) return;
         if (!GameStates.IsInGame) return;
         if (!Options.RemovePetsAtDeadPlayers.GetBool()) return;
+        if (pc.CurrentOutfit.PetId == "") return;
 
         var sender = CustomRpcSender.Create(name: "Remove Pet At Dead Player");
 
