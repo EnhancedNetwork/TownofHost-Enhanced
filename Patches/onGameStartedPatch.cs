@@ -183,7 +183,6 @@ internal class ChangeRoleSettings
                 Camouflage.PlayerSkins[pc.PlayerId] = new GameData.PlayerOutfit().Set(outfit.PlayerName, outfit.ColorId, outfit.HatId, outfit.SkinId, outfit.VisorId, outfit.PetId, outfit.NamePlateId);
                 Main.clientIdList.Add(pc.GetClientId());
             }
-            Camouflage.ResetSkinAfterDeathPlayers = new();
             Main.VisibleTasksCount = true;
             if (__instance.AmHost)
             {

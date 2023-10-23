@@ -12,10 +12,6 @@ namespace TOHE.Roles.Impostor
     public static class OverKiller
     {
         private static readonly int Id = 16900;
-
-        public static List<byte> playerIdList = new();
-        public static bool IsEnable = false;
-
         public static void SetupCustomOption()
         {
             SetupRoleOptions(Id, TabGroup.OtherRoles, CustomRoles.OverKiller);

@@ -46,6 +46,7 @@ public static class Camouflage
     {
         IsCamouflage = false;
         PlayerSkins.Clear();
+        ResetSkinAfterDeathPlayers = new();
 
         switch (Options.KPDCamouflageMode.GetValue())
         { 
