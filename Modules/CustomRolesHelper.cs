@@ -1387,7 +1387,8 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Clumsy)
                     || pc.Is(CustomRoles.Wildling)
                     || pc.Is(CustomRoles.EvilDiviner) 
-                    || pc.Is(CustomRoles.Capitalism))
+                    || pc.Is(CustomRoles.Capitalism)
+                    || pc.Is(CustomRoles.OverKiller))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
