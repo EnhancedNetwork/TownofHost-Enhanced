@@ -51,6 +51,34 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
+                    Number = 100004,
+                    Title = "Town of Host: Enhanced v1.1.1",
+                    SubTitle = "★★ A performance update with bug fixes! ★★",
+                    ShortTitle = "TOH: Enhanced v1.1.1",
+                    BeforeNumber = 100003,
+                    Text = "<size=150%>Welcome to TOH: Enhanced v1.1.1!</size>\n" +
+                    "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.1.0\r\n" +
+
+                    "\n<b>【Bug Fixes】</b>" +
+                        "\n     - Fixed bugs with (Evil) Mini not being judgeable or revenged" +
+                        "\n     - Fixed Swapper and several bugs within it, staying experimental" +
+                        "\n     - Fixed Berserker not able to die and spamming errors" +
+                        "\n     - Fixed Mad Nice Mini issues" +
+                        "\n     - Fixed a conflict with Tiebreaker and Void Ballot\n\r" +
+
+                    "\n<b>【Other Fixes】</b>" +
+                        "\n     - Improved overkiller in PlayerControls" +
+                        "\n     - Reworked End Game Checks (again) to optimize it" +
+
+                    "\n\n★ Welcome to Town of Host: Enhanced! ★",
+
+                    Date = "2023-10-23T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
                     Number = 100003,
                     Title = "Town of Host: Enhanced v1.1.0",
                     SubTitle = "★★ An update already?! Wow! ★★",
