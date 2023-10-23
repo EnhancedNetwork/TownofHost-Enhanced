@@ -22,7 +22,7 @@ public class Mini
     private static List<byte> playerIdList = new();
     public static int GrowUpTime = new();
     public static int GrowUp = new();
-    public static int EvilKillCDmin = new();
+    //public static int EvilKillCDmin = new();
     public static int Age = new();
     public static OptionItem GrowUpDuration;
     public static OptionItem EveryoneCanKnowMini;
