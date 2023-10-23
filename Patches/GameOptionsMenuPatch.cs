@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using static TOHE.Translator;
@@ -69,12 +70,12 @@ public static class GameOptionsMenuPatch
 
         var gameSettingMenu = Object.FindObjectsOfType<GameSettingMenu>().FirstOrDefault();
         if (gameSettingMenu == null) return;
-        System.Collections.Generic.List<GameObject> menus = new() { gameSettingMenu.RegularGameSettings, gameSettingMenu.RolesSettings.gameObject };
-        System.Collections.Generic.List<SpriteRenderer> highlights = new() { gameSettingMenu.GameSettingsHightlight, gameSettingMenu.RolesSettingsHightlight };
+        List<GameObject> menus = new() { gameSettingMenu.RegularGameSettings, gameSettingMenu.RolesSettings.gameObject };
+        List<SpriteRenderer> highlights = new() { gameSettingMenu.GameSettingsHightlight, gameSettingMenu.RolesSettingsHightlight };
 
         var roleTab = GameObject.Find("RoleTab");
         var gameTab = GameObject.Find("GameTab");
-        System.Collections.Generic.List<GameObject> tabs = new() { gameTab, roleTab };
+        List<GameObject> tabs = new() { gameTab, roleTab };
 
         foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
         {
@@ -117,7 +118,7 @@ public static class GameOptionsMenuPatch
                 Object.Destroy(optionBehaviour.gameObject);
             }
 
-            var scOptions = new System.Collections.Generic.List<OptionBehaviour>();
+            var scOptions = new List<OptionBehaviour>();
             foreach (var option in OptionItem.AllOptions)
             {
                 if (option.Tab != tab) continue;
