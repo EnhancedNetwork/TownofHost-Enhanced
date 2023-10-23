@@ -38,7 +38,7 @@ internal class EAC
                     string name = sr.ReadString();
                     if (sr.BytesRemaining > 0 && sr.ReadBoolean()) return false;
                     if (
-                        ((name.Contains("<size") || name.Contains("size>")) && name.Contains("?") && !name.Contains("color")) ||
+                        ((name.Contains("<size") || name.Contains("size>")) && name.Contains('?') && !name.Contains("color")) ||
                         name.Length > 160 ||
                         name.Count(f => f.Equals("\"\\n\"")) > 3 ||
                         name.Count(f => f.Equals("\n")) > 3 ||

@@ -12,14 +12,14 @@ namespace TOHE.Modules.ChatManager
         public static bool cancel = false;
         private static List<Dictionary<byte, string>> chatHistory = new();
         private const int maxHistorySize = 20;
-        public static void resetHistory()
+        public static void ResetHistory()
         {
             chatHistory = new();
         }
         public static bool CheckCommond(ref string msg, string command, bool exact = true)
         {
             var comList = command.Split('|');
-            for (int i = 0; i < comList.Count(); i++)
+            for (int i = 0; i < comList.Length; i++)
             {
                 if (exact)
                 {

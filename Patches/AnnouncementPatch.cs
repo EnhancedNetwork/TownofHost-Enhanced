@@ -51,6 +51,87 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
+                    Number = 100004,
+                    Title = "Town of Host: Enhanced v1.1.1",
+                    SubTitle = "★★ A performance update with bug fixes! ★★",
+                    ShortTitle = "TOH: Enhanced v1.1.1",
+                    BeforeNumber = 100003,
+                    Text = "<size=150%>Welcome to TOH: Enhanced v1.1.1!</size>\n" +
+                    "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.1.0\r\n" +
+
+                    "\n<b>【Bug Fixes】</b>" +
+                        "\n     - Fixed bugs with (Evil) Mini not being judgeable or revenged" +
+                        "\n     - Fixed Swapper and several bugs within it, staying experimental" +
+                        "\n     - Fixed Berserker not able to die and spamming errors" +
+                        "\n     - Fixed Mad Nice Mini issues" +
+                        "\n     - Fixed a conflict with Tiebreaker and Void Ballot\n\r" +
+
+                    "\n<b>【Other Fixes】</b>" +
+                        "\n     - Improved overkiller in PlayerControls" +
+                        "\n     - Reworked End Game Checks (again) to optimize it" +
+
+                    "\n\n★ Welcome to Town of Host: Enhanced! ★",
+
+                    Date = "2023-10-23T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
+                    Number = 100003,
+                    Title = "Town of Host: Enhanced v1.1.0",
+                    SubTitle = "★★ An update already?! Wow! ★★",
+                    ShortTitle = "TOH: Enhanced v1.1.0",
+                    BeforeNumber = 100002,
+                    Text = "<size=150%>Welcome to TOH: Enhanced v1.1.0!</size>\n" +
+                    "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.0.1\r\n" +
+
+                    "\n<b>【New Roles/Addons】</b>" +
+                        "\n     - President (Crewmate: Power)" +
+                        "\n     - Spy (Crewmate: Support)" +
+                        "\n     - Vigilante (Crewmate: Killing)\n\r" +
+
+                        "\n     - Rebound (Addons: Mixed)\n\r" +
+
+                    "\n<b>【New Settings】</b>" +
+                        "\n     - Crewpostor: Lunge on kill AND Kill after each x tasks complete" +
+                        "\n     - Deathpact: Players in deathpact can call a meeting" +
+                        "\n     - Twister: Hide who players swap with\n" +
+
+                        "\n     - Deceiver: Loses ability usage on wrongful deceive" +
+                        "\n     - Merchant: Can only sell enabled addons" +
+                        "\n     - Coroner: Inform killer about being tracked\n\r" +
+
+                        "\n     - Infectious: Double Click to Kill/Infect" +
+                        
+                        "\n     - Bewilder: Killer can get bewilder's vision\n\r" +
+
+                    "\n<b>【Removed Roles/Addons】</b>" +
+                        "\n     - Neutral: Occultist\n\r" +
+                        "\n     - Addon: Sunglasses" +
+                        "\n     - Addon: Glow" +
+
+                    "\n<b>【Other Changes】</b>" +
+                        "\n     - New Language Support: Portugese" +
+                        "\n     - New Lobby Games: /rps & /coinflip" +
+                        "\n     - Renamed Agent BACK to Evil Tracker" +
+                        "\n     - Renamed Disruptor BACK to Anti Adminer" +
+                        "\n     - New Camouflage Skins" +
+                        "\n     - Added Default_Template.txt" +
+                        "\n     - Reworked Reverie AND Hater" +
+
+                    "\nSeveral Other Bug Changes (and when I say several, I mean SEVERAL)" +
+
+                    "\n\n★ Welcome to Town of Host: Enhanced! ★",
+
+                    Date = "2023-10-21T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
                     Number = 100002,
                     Title = "Town of Host: Enhanced v1.0.1",
                     SubTitle = "★★ A New Era ★★",

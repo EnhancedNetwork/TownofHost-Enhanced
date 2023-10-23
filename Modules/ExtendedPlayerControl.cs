@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TOHE.Modules;
-using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
@@ -267,16 +266,17 @@ static class ExtendedPlayerControl
         }
         player.ResetKillCooldown();
     }
-    public static void RpcSpecificMurderPlayer(this PlayerControl killer, PlayerControl target = null)
+    public static void RpcSpecificMurderPlayer(this PlayerControl killer, PlayerControl target = null, PlayerControl seer = null)
     {
         if (target == null) target = killer;
-        if (killer.AmOwner)
+        if (seer == null) seer = killer;
+        if (killer.AmOwner && seer.AmOwner)
         {
             killer.MurderPlayer(target);
         }
         else
         {
-            MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable, killer.GetClientId());
+            MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable, seer.GetClientId());
             messageWriter.WriteNetObject(target);
             AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
         }
@@ -1139,7 +1139,6 @@ static class ExtendedPlayerControl
                     {
                         Main.AllPlayerKillCooldown[player.PlayerId] = Mini.MinorCD.GetFloat();
                         Main.EvilMiniKillcooldown[player.PlayerId] = Mini.MinorCD.GetFloat();
-
                     }
                     else if (pc.Is(CustomRoles.EvilMini) && Mini.Age != 18 && Mini.Age != 0)
                     {
@@ -1239,14 +1238,14 @@ static class ExtendedPlayerControl
     public static bool IsDouseDone(this PlayerControl player)
     {
         if (!player.Is(CustomRoles.Arsonist)) return false;
-        var count = Utils.GetDousedPlayerCount(player.PlayerId);
-        return count.Item1 >= count.Item2;
+        var (countItem1, countItem2) = Utils.GetDousedPlayerCount(player.PlayerId);
+        return countItem1 >= countItem2;
     }
     public static bool IsDrawDone(this PlayerControl player)//判断是否拉拢完成
     {
         if (!player.Is(CustomRoles.Revolutionist)) return false;
-        var count = Utils.GetDrawPlayerCount(player.PlayerId, out var _);
-        return count.Item1 >= count.Item2;
+        var (countItem1, countItem2) = Utils.GetDrawPlayerCount(player.PlayerId, out var _);
+        return countItem1 >= countItem2;
     }
     public static void RpcExileV2(this PlayerControl player)
     {
@@ -1428,7 +1427,7 @@ static class ExtendedPlayerControl
     public static bool Is(this PlayerControl target, CustomRoleTypes type) { return target.GetCustomRole().GetCustomRoleTypes() == type; }
     public static bool Is(this PlayerControl target, RoleTypes type) { return target.GetCustomRole().GetRoleTypes() == type; }
     public static bool Is(this PlayerControl target, CountTypes type) { return target.GetCountTypes() == type; }
-    public static bool Is(this CustomRoles playerRole, CustomRoles trueRole) { return playerRole == trueRole; }
+    public static bool Is(this CustomRoles trueRole, CustomRoles checkRole) { return trueRole == checkRole; }
     public static bool IsAlive(this PlayerControl target)
     {
         //ロビーなら生きている
