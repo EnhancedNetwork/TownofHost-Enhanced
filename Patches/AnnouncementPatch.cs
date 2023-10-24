@@ -412,7 +412,7 @@ public class ModNewsHistory
                     ShortTitle = "TOH: Enhanced v1.1.1",
                     BeforeNumber =80006,
                     Text = "<size=150%>欢迎来到TOH: Enhanced v1.1.1!</size>\n" +
-                    "\n<b>【基于】</b>\n - 基于TOH: Enhanced v1.1.0\r\n" +
+                    "\n<b>【基于官方版本】</b>\n - 基于TOH: Enhanced v1.1.0\r\n" +
 
                     "\n<b>【Bug修复】</b>" +
                         "\n     - 修复了（坏）迷你船员不可审判或复仇的bug" +
@@ -441,7 +441,7 @@ public class ModNewsHistory
                     ShortTitle = "TOH: Enhanced v1.1.0",
                     BeforeNumber = 80004,
                     Text = "<size=150%>欢迎来到TOH: Enhanced v1.1.0!</size>\n" +
-                    "\n<b>【基于】</b>\n - 基于TOH: Enhanced v1.0.1\r\n" +
+                    "\n<b>【基于官方版本】</b>\n - 基于TOH: Enhanced v1.0.1\r\n" +
 
                     "\n<b>【新职业/附加职业】</b>" +
                         "\n     - 总统(船员阵营:权力)" +
