@@ -52,7 +52,7 @@ public class FallFromLadder
                     .EndRpc();
                     sender.SendMessage();
                     player.NetTransform.SnapTo(targetPos);
-                    player.MurderPlayer(player);
+                    player.MurderPlayer(player, MurderResultFlags.DecisionByHost);
                     Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Fall;
                     Main.PlayerStates[player.PlayerId].SetDead();
                 }, 0.05f, "LadderFallTask");

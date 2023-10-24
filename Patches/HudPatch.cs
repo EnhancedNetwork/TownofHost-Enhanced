@@ -830,7 +830,7 @@ class RepairSender
     }
     public static void Send()
     {
-        ShipStatus.Instance.RpcRepairSystem((SystemTypes)SystemType, amount);
+        ShipStatus.Instance.RpcUpdateSystem((SystemTypes)SystemType, (byte)amount);
         Reset();
     }
     public static void Reset()

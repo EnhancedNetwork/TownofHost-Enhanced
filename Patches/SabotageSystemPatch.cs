@@ -5,7 +5,7 @@ namespace TOHE;
 //参考
 //https://github.com/Koke1024/Town-Of-Moss/blob/main/TownOfMoss/Patches/MeltDownBoost.cs
 
-[HarmonyPatch(typeof(ReactorSystemType), nameof(ReactorSystemType.Detoriorate))]
+[HarmonyPatch(typeof(ReactorSystemType), nameof(ReactorSystemType.Deteriorate))]
 public static class ReactorSystemTypePatch
 {
     public static void Prefix(ReactorSystemType __instance)
@@ -21,19 +21,19 @@ public static class ReactorSystemTypePatch
         return;
     }
 }
-[HarmonyPatch(typeof(HeliSabotageSystem), nameof(HeliSabotageSystem.Detoriorate))]
+[HarmonyPatch(typeof(HeliSabotageSystem), nameof(HeliSabotageSystem.Deserialize))]
 public static class HeliSabotageSystemPatch
 {
     public static void Prefix(HeliSabotageSystem __instance)
     {
         if (!__instance.IsActive || !Options.SabotageTimeControl.GetBool())
             return;
-        if (AirshipStatus.Instance != null)
+        if (ShipStatus.Instance != null)
             if (__instance.Countdown >= Options.AirshipReactorTimeLimit.GetFloat())
                 __instance.Countdown = Options.AirshipReactorTimeLimit.GetFloat();
     }
 }
-[HarmonyPatch(typeof(SwitchSystem), nameof(SwitchSystem.RepairDamage))]
+/*[HarmonyPatch(typeof(SwitchSystem), nameof(SwitchSystem.UpdateSystem))]
 public static class SwitchSystemRepairDamagePatch
 {
     public static bool Prefix(SwitchSystem __instance, [HarmonyArgument(1)] byte amount)
@@ -59,7 +59,7 @@ public static class SwitchSystemRepairDamagePatch
         }
         return true;
     }
-}
+}*/
 [HarmonyPatch(typeof(ElectricTask), nameof(ElectricTask.Initialize))]
 public static class ElectricTaskInitializePatch
 {
@@ -80,7 +80,7 @@ public static class ElectricTaskCompletePatch
             Utils.NotifyRoles();
     }
 }
-// https://github.com/tukasa0001/TownOfHost/blob/357f7b5523e4bdd0bb58cda1e0ff6cceaa84813d/Patches/SabotageSystemPatch.cs
+/*// https://github.com/tukasa0001/TownOfHost/blob/357f7b5523e4bdd0bb58cda1e0ff6cceaa84813d/Patches/SabotageSystemPatch.cs
 // Method called when sabotage occurs
 [HarmonyPatch(typeof(SabotageSystemType), nameof(SabotageSystemType.RepairDamage))]
 public static class SabotageSystemTypeRepairDamagePatch
@@ -103,4 +103,4 @@ public static class SabotageSystemTypeRepairDamagePatch
         __instance.Timer = modifiedCooldownSec;
         __instance.IsDirty = true;
     }
-}
+}*/

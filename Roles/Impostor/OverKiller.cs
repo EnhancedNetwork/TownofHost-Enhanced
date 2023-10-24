@@ -34,7 +34,7 @@ namespace TOHE.Roles.Impostor
                 {
                     if (GameStates.IsMeeting) break;
                     if (!target.AmOwner)
-                        target.MurderPlayer(target);
+                        target.MurderPlayer(target, MurderResultFlags.DecisionByHost);
                     Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId && !x.AmOwner)
                     .Do(x => target.RpcSpecificMurderPlayer(target, x));
                 }

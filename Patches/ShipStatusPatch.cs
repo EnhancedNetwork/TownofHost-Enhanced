@@ -30,7 +30,7 @@ class ShipFixedUpdatePatch
         }
     }
 }
-[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.RepairSystem))]
+[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.UpdateSystem), typeof(SystemTypes), typeof(PlayerControl), typeof(byte))]
 class RepairSystemPatch
 {
     public static bool IsComms;
@@ -154,10 +154,11 @@ class RepairSystemPatch
     }
     private static void CheckAndOpenDoors(ShipStatus __instance, int amount, params int[] DoorIds)
     {
-        if (DoorIds.Contains(amount)) foreach (var id in DoorIds)
-            {
-                __instance.RpcRepairSystem(SystemTypes.Doors, id);
-            }
+        if (!DoorIds.Contains(amount)) return;
+        foreach (var id in DoorIds)
+        {
+            __instance.RpcUpdateSystem(SystemTypes.Doors, (byte)id);
+        }
     }
 }
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.CloseDoorsOfType))]
@@ -168,7 +169,7 @@ class CloseDoorsPatch
         return !(Options.DisableCloseDoor.GetBool());
     }
 }
-[HarmonyPatch(typeof(SwitchSystem), nameof(SwitchSystem.RepairDamage))]
+/*[HarmonyPatch(typeof(SwitchSystem), nameof(SwitchSystem.RepairDamage))]
 class SwitchSystemRepairPatch
 {
     public static void Postfix(SwitchSystem __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] byte amount)
@@ -187,7 +188,7 @@ class SwitchSystemRepairPatch
             Alchemist.FixNextSabo = false;
         }
     }
-}
+}*/
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Start))]
 class StartPatch
 {
