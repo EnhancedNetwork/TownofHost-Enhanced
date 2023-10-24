@@ -3268,5 +3268,6 @@
   "FFFCanKillEgoist": "Pode matar Egoísta",
   "FFFCanKillInfected": "Pode matar Infectados",
   "FFFCanKillContagious": "Pode matar Time do Vírus",
-  "FFFCanKillAdmired": "Pode matar Admirador"
+  "FFFCanKillAdmired": "Pode matar Admirador",
+  "AutoMuteUs": "Enable it if you use AutoMuteUs"
 }
