@@ -26,7 +26,7 @@ public class OptionBackupData
             }
             else if (name == BoolOptionNames.GhostsDoTasks)
             {
-                AllValues.Add(new BoolOptionBackupValue(name, false));
+                AllValues.Add(new BoolOptionBackupValue(name, true));
             }
 
         }
