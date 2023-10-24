@@ -237,10 +237,10 @@ internal class ControllerManagerUpdatePatch
         //打开飞艇所有的门
         if (GetKeysDown(KeyCode.Return, KeyCode.D, KeyCode.LeftShift) && GameStates.IsInGame)
         {
-            ShipStatus.Instance.RpcRepairSystem(SystemTypes.Doors, 79);
-            ShipStatus.Instance.RpcRepairSystem(SystemTypes.Doors, 80);
-            ShipStatus.Instance.RpcRepairSystem(SystemTypes.Doors, 81);
-            ShipStatus.Instance.RpcRepairSystem(SystemTypes.Doors, 82);
+            ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Doors, 79);
+            ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Doors, 80);
+            ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Doors, 81);
+            ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Doors, 82);
         }
 
         //将击杀冷却设定为0秒
