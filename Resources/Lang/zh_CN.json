@@ -3268,5 +3268,6 @@
   "FFFCanKillEgoist": "FFF能击杀利己主义者",
   "FFFCanKillInfected": "FFF能击杀感染者",
   "FFFCanKillContagious": "FFF能击杀传染性",
-  "FFFCanKillAdmired": "FFF能击杀仰慕者"
+  "FFFCanKillAdmired": "FFF能击杀仰慕者",
+  "AutoMuteUs": "Enable it if you use AutoMuteUs"
 }
