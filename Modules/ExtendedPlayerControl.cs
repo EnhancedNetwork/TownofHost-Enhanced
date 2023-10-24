@@ -639,6 +639,7 @@ static class ExtendedPlayerControl
     }
     public static bool CanUseImpostorVentButton(this PlayerControl pc)
     {
+        if (Main.NormalOptions.MapId == (int)MapNames.Dleks) return false; // vents are broken on dleks and cannot be fixed on host side
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel) return false;
         if (CopyCat.playerIdList.Contains(pc.PlayerId)) return true;
         if (Main.TasklessCrewmate.Contains(pc.PlayerId)) return true;
