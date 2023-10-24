@@ -137,6 +137,16 @@ class RandomSpawn
             return positions.ToArray().OrderBy(_ => Guid.NewGuid()).Take(1).FirstOrDefault().Value;
         }
     }
+
+    public class DleksSpawnMap : SpawnMap
+    {
+        public Dictionary<string, Vector2> positions = new SkeldSpawnMap().positions
+            .ToDictionary(e => e.Key, e => new Vector2(-e.Value.x, e.Value.y));
+        public override Vector2 GetLocation()
+        {
+            return positions.ToArray().OrderBy(_ => Guid.NewGuid()).Take(1).FirstOrDefault().Value;
+        }
+    }
     public class AirshipSpawnMap : SpawnMap
     {
         public Dictionary<string, Vector2> positions = new()

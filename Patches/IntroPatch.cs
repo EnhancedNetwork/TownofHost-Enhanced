@@ -440,6 +440,10 @@ class IntroCutsceneDestroyPatch
                         map = new RandomSpawn.MiraHQSpawnMap();
                         Main.AllPlayerControls.Do(map.RandomTeleport);
                         break;
+                    case 3:
+                        map = new RandomSpawn.DleksSpawnMap();
+                        Main.AllPlayerControls.Do(map.RandomTeleport);
+                        break;
                 }
             }
 
