@@ -406,11 +406,11 @@ public class ModNewsHistory
                 //TOHE v1.1.1
                 var news = new ModNews
                 {
-                    Number = 80007,
+                    Number = 80003,
                     Title = "Town of Host: Enhanced v1.1.1",
                     SubTitle = "★★ 性能更新和bug修复！★★",
                     ShortTitle = "TOH: Enhanced v1.1.1",
-                    BeforeNumber =80006,
+                    BeforeNumber = 80002,
                     Text = "<size=150%>欢迎来到TOH: Enhanced v1.1.1!</size>\n" +
                     "\n<b>【基于官方版本】</b>\n - 基于TOH: Enhanced v1.1.0\r\n" +
 
@@ -435,11 +435,11 @@ public class ModNewsHistory
                 //TOHE v1.1.0
                 var news = new ModNews
                 {
-                    Number = 80005,
+                    Number = 80002,
                     Title = "Town of Host: Enhanced v1.1.0",
                     SubTitle = "★★ 已经更新了？哇哦！ ★★",
                     ShortTitle = "TOH: Enhanced v1.1.0",
-                    BeforeNumber = 80004,
+                    BeforeNumber = 80001,
                     Text = "<size=150%>欢迎来到TOH: Enhanced v1.1.0!</size>\n" +
                     "\n<b>【基于官方版本】</b>\n - 基于TOH: Enhanced v1.0.1\r\n" +
 
@@ -489,11 +489,11 @@ public class ModNewsHistory
                 //TOHE v1.0.1
                 var news = new ModNews
                 {
-                    Number = 80003,
+                    Number = 80001,
                     Title = "Town of Host: Enhanced v1.0.1",
                     SubTitle = "★★ 新时代 ★★",
                     ShortTitle = "TOH: Enhanced v1.0.1",
-                    BeforeNumber = 80002,
+                    BeforeNumber = 80000,
                     Text = "<size=150%>欢迎来到 TOH: Enhanced v1.0.1!</size>\n\n<size=125%>适配 Among Us v2023.7.11 和 v2023.7.12</size>\n" +
                     "\n<b>【基于官方版本】</b>\n - 基于 TOH-RE v3.1.0 (备注可用)\r\n" +
                     "\n<b>【修复】</b>" +
@@ -511,11 +511,10 @@ public class ModNewsHistory
                 // TOHE v1.0.0
                 var news = new ModNews
                 {
-                    Number = 80001,
+                    Number = 80000,
                     Title = "Town of Host: Enhanced v1.0.0",
                     SubTitle = "★★ 新时代 ★★",
                     ShortTitle = "TOH: Enhanced v1.0.0",
-                    BeforeNumber = 80000,
                     Text = "<size=150%>欢迎来到 TOH: Enhanced v1.0.0!</size>" +
                     "\n<b>【基于官方版本】</b>\n - 基于 TOH-RE v3.1.0 (备注可用)\r\n" +
                     "\n<b>【更改/修复】</b>" +
@@ -536,11 +535,11 @@ public class ModNewsHistory
                 // TOHE v1.0.1
                 var news = new ModNews
                 {
-                    Number = 70004,
+                    Number = 70001,
                     Title = "Town of Host: Enhanced v1.0.1",
                     SubTitle = "★★ 新時代 ★★",
                     ShortTitle = "TOH: Enhanced v1.0.1",
-                    BeforeNumber = 70003,
+                    BeforeNumber = 70000,
                     Text = "<size=150%>歡迎來到 TOH: Enhanced v1.0.1!</size>\n\n<size=125%>支援版本 Among Us v2023.7.11、v2023.7.12</size>\n" +
                     "\n<b>【基於版本】</b>\n - 基於TOH-RE v3.1.0 (備註: 目前可以使用)\r\n" +
                     "\n<b>【修復】</b>" +
@@ -557,11 +556,10 @@ public class ModNewsHistory
                 // TOHE v1.0.0
                 var news = new ModNews
                 {
-                    Number = 70002,
+                    Number = 70000,
                     Title = "Town of Host: Enhanced v1.0.0",
                     SubTitle = "★★ 新時代的開始 ★★",
                     ShortTitle = "TOH: Enhanced v1.0.0",
-                    BeforeNumber = 70001,
                     Text = "<size=150%>歡迎來到 TOH: Enhanced v1.0.0!</size>\n\n<size=125%>支援版本 Among Us v2023.7.11、v2023.7.12</size>\n" +
                     "\n<b>【基於版本】</b>\n - 基於TOH-RE v3.1.0 (備註: 目前可以使用)\r\n" +
                     "\n<b>【更改/修復】</b>" +
