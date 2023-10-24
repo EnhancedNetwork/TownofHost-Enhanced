@@ -60,32 +60,32 @@ class GameEndChecker
                     break;
                 case CustomWinner.Succubus:
                     Main.AllPlayerControls
-                        .Where(pc => (pc.Is(CustomRoles.Succubus) || pc.Is(CustomRoles.Charmed)) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                        .Where(pc => (pc.Is(CustomRoles.Charmed)) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
                 case CustomWinner.CursedSoul:
                     Main.AllPlayerControls
-                        .Where(pc => (pc.Is(CustomRoles.CursedSoul) || pc.Is(CustomRoles.Soulless)) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                        .Where(pc => (pc.Is(CustomRoles.Soulless)) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
                 case CustomWinner.Infectious:
                     Main.AllPlayerControls
-                        .Where(pc => (pc.Is(CustomRoles.Infectious) || pc.Is(CustomRoles.Infected)) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                        .Where(pc => (pc.Is(CustomRoles.Infected)) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
                 case CustomWinner.Virus:
                     Main.AllPlayerControls
-                        .Where(pc => (pc.Is(CustomRoles.Virus) || pc.Is(CustomRoles.Contagious)) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                        .Where(pc => (pc.Is(CustomRoles.Contagious)) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
                 case CustomWinner.Jackal:
                     Main.AllPlayerControls
-                        .Where(pc => (pc.Is(CustomRoles.Jackal) || pc.Is(CustomRoles.Sidekick) || pc.Is(CustomRoles.Recruit)) && !pc.Is(CustomRoles.Infected) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                        .Where(pc => (pc.Is(CustomRoles.Sidekick) || pc.Is(CustomRoles.Recruit)) && !pc.Is(CustomRoles.Infected) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
                 case CustomWinner.Spiritcaller:
                     Main.AllPlayerControls
-                        .Where(pc => (pc.Is(CustomRoles.Spiritcaller) || pc.Is(CustomRoles.EvilSpirit)) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                        .Where(pc => (pc.Is(CustomRoles.EvilSpirit)) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
                 case CustomWinner.RuthlessRomantic:
