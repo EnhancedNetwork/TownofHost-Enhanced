@@ -2855,7 +2855,7 @@ public static class Options
         DisableOnPolus = BooleanOptionItem.Create(22213, "DisableOnPolus", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(DisableOnSomeMaps);
-        DisableOnDleks = BooleanOptionItem.Create(22211, "DisableOnDleks", false, TabGroup.GameSettings, false)
+        DisableOnDleks = BooleanOptionItem.Create(22215, "DisableOnDleks", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(DisableOnSomeMaps);
         DisableOnAirship = BooleanOptionItem.Create(22214, "DisableOnAirship", false, TabGroup.GameSettings, false)
