@@ -99,6 +99,7 @@ public static class Pelican
             1 => new Vector2(-11.4f, 8.2f), // MIRA HQ
             2 => new Vector2(42.6f, -19.9f), // Polus
             4 => new Vector2(-16.8f, -6.2f), // Airship
+            5 => new Vector2(-30.3f, -0.6f), // The Fungle
             _ => throw new System.NotImplementedException(),
         };
     }
