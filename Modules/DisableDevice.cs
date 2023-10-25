@@ -24,7 +24,10 @@ class DisableDevice
         ["AirshipCockpitAdmin"] = new Vector2 (-22.32f, 0.91f),
         ["AirshipRecordsAdmin"] = new Vector2 (19.89f, 12.60f),
         ["AirshipCamera"] = new Vector2 (8.10f, -9.63f),
-        ["AirshipVital"] = new Vector2 (25.24f, -7.94f)
+        ["AirshipVital"] = new Vector2 (25.24f, -7.94f),
+        ["FungleCamera"] = new Vector2 (6.20f, 0.10f), //1.8
+        ["FungleVital"] = new Vector2 (-2.50f, -9.80f) //1.3
+            
     };
     public static float UsableDistance()
     {
@@ -36,6 +39,7 @@ class DisableDevice
             MapNames.Polus => 1.8f,
             //MapNames.Dleks => 1.5f,
             MapNames.Airship => 1.8f,
+            MapNames.Fungle => 1.8f,
             _ => 0.0f
         };
     }
