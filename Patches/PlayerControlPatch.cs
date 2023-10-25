@@ -90,9 +90,10 @@ class CheckMurderPatch
         if (target.Data == null // Check if PlayerData is not null
             // Check target status
             || target.inVent
+            || target.inMovingPlat
+          //|| target.CheckUseZipline()
             || target.MyPhysics.Animations.IsPlayingEnterVentAnimation()
             || target.MyPhysics.Animations.IsPlayingAnyLadderAnimation()
-            || target.inMovingPlat
         )
         {
             Logger.Info("The target is in an unkillable state and the kill is canceled", "CheckMurder");
