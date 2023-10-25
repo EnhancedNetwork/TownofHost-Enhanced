@@ -39,7 +39,7 @@ public class Main : BasePlugin
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
     public const string PluginVersion = "1.1.1";
     public const string PluginDisplayVersion = "1.1.1";
-    public static readonly string SupportedVersionAU = "2023.7.11";
+    public static readonly string SupportedVersionAU = "2023.10.24";
     public const bool Canary = false; // Unused variable?
 
     public static readonly bool ShowGitHubButton = true;

@@ -178,7 +178,7 @@ public static class Glitch
         {
             try
             {
-                player.RpcShapeshift(player,false);
+                player.RpcShapeshift(player, false);
                 isShifted = false;
             }
             catch (System.Exception ex)
