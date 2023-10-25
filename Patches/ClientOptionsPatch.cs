@@ -9,6 +9,7 @@ public static class OptionsMenuBehaviourStartPatch
 {
     private static ClientOptionItem UnlockFPS;
     private static ClientOptionItem ShowFPS;
+    private static ClientOptionItem AutoMuteUs;
     private static ClientOptionItem EnableGM;
     private static ClientOptionItem AutoStart;
     private static ClientOptionItem ForceOwnLanguage;
@@ -46,6 +47,10 @@ public static class OptionsMenuBehaviourStartPatch
         if (ShowFPS == null || ShowFPS.ToggleButton == null)
         {
             ShowFPS = ClientOptionItem.Create("ShowFPS", Main.ShowFPS, __instance);
+        }
+        if (AutoMuteUs == null || AutoMuteUs.ToggleButton == null)
+        {
+            AutoMuteUs = ClientOptionItem.Create("AutoMuteUs", Main.AutoMuteUs, __instance);
         }
         if (EnableGM == null || EnableGM.ToggleButton == null)
         {

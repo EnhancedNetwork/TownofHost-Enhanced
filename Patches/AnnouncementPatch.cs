@@ -51,6 +51,87 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
+                    Number = 100004,
+                    Title = "Town of Host: Enhanced v1.1.1",
+                    SubTitle = "★★ A performance update with bug fixes! ★★",
+                    ShortTitle = "TOH: Enhanced v1.1.1",
+                    BeforeNumber = 100003,
+                    Text = "<size=150%>Welcome to TOH: Enhanced v1.1.1!</size>\n" +
+                    "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.1.0\r\n" +
+
+                    "\n<b>【Bug Fixes】</b>" +
+                        "\n     - Fixed bugs with (Evil) Mini not being judgeable or revenged" +
+                        "\n     - Fixed Swapper and several bugs within it, staying experimental" +
+                        "\n     - Fixed Berserker not able to die and spamming errors" +
+                        "\n     - Fixed Mad Nice Mini issues" +
+                        "\n     - Fixed a conflict with Tiebreaker and Void Ballot\n\r" +
+
+                    "\n<b>【Other Fixes】</b>" +
+                        "\n     - Improved overkiller in PlayerControls" +
+                        "\n     - Reworked End Game Checks (again) to optimize it" +
+
+                    "\n\n★ Welcome to Town of Host: Enhanced! ★",
+
+                    Date = "2023-10-23T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
+                    Number = 100003,
+                    Title = "Town of Host: Enhanced v1.1.0",
+                    SubTitle = "★★ An update already?! Wow! ★★",
+                    ShortTitle = "TOH: Enhanced v1.1.0",
+                    BeforeNumber = 100002,
+                    Text = "<size=150%>Welcome to TOH: Enhanced v1.1.0!</size>\n" +
+                    "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.0.1\r\n" +
+
+                    "\n<b>【New Roles/Addons】</b>" +
+                        "\n     - President (Crewmate: Power)" +
+                        "\n     - Spy (Crewmate: Support)" +
+                        "\n     - Vigilante (Crewmate: Killing)\n\r" +
+
+                        "\n     - Rebound (Addons: Mixed)\n\r" +
+
+                    "\n<b>【New Settings】</b>" +
+                        "\n     - Crewpostor: Lunge on kill AND Kill after each x tasks complete" +
+                        "\n     - Deathpact: Players in deathpact can call a meeting" +
+                        "\n     - Twister: Hide who players swap with\n" +
+
+                        "\n     - Deceiver: Loses ability usage on wrongful deceive" +
+                        "\n     - Merchant: Can only sell enabled addons" +
+                        "\n     - Coroner: Inform killer about being tracked\n\r" +
+
+                        "\n     - Infectious: Double Click to Kill/Infect" +
+                        
+                        "\n     - Bewilder: Killer can get bewilder's vision\n\r" +
+
+                    "\n<b>【Removed Roles/Addons】</b>" +
+                        "\n     - Neutral: Occultist\n\r" +
+                        "\n     - Addon: Sunglasses" +
+                        "\n     - Addon: Glow" +
+
+                    "\n<b>【Other Changes】</b>" +
+                        "\n     - New Language Support: Portugese" +
+                        "\n     - New Lobby Games: /rps & /coinflip" +
+                        "\n     - Renamed Agent BACK to Evil Tracker" +
+                        "\n     - Renamed Disruptor BACK to Anti Adminer" +
+                        "\n     - New Camouflage Skins" +
+                        "\n     - Added Default_Template.txt" +
+                        "\n     - Reworked Reverie AND Hater" +
+
+                    "\nSeveral Other Bug Changes (and when I say several, I mean SEVERAL)" +
+
+                    "\n\n★ Welcome to Town of Host: Enhanced! ★",
+
+                    Date = "2023-10-21T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
                     Number = 100002,
                     Title = "Town of Host: Enhanced v1.0.1",
                     SubTitle = "★★ A New Era ★★",
@@ -322,14 +403,97 @@ public class ModNewsHistory
         else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.SChinese)
         {
             {
+                //TOHE v1.1.1
+                var news = new ModNews
+                {
+                    Number = 80003,
+                    Title = "Town of Host: Enhanced v1.1.1",
+                    SubTitle = "★★ 性能更新和bug修复！★★",
+                    ShortTitle = "TOH: Enhanced v1.1.1",
+                    BeforeNumber = 80002,
+                    Text = "<size=150%>欢迎来到TOH: Enhanced v1.1.1!</size>\n" +
+                    "\n<b>【基于官方版本】</b>\n - 基于TOH: Enhanced v1.1.0\r\n" +
+
+                    "\n<b>【Bug修复】</b>" +
+                        "\n     - 修复了（坏）迷你船员不可审判或复仇的bug" +
+                        "\n     - 修复了换票师和其中的几个bug,保持实验性" +
+                        "\n     - 修复了狂战士无法死亡和发送垃圾信息的bug" +
+                        "\n     - 修复了背叛的好迷你船员的bug" +
+                        "\n     - 修复了一个与破平者和无效投票的冲突bug\n\r" +
+
+                    "\n<b>【其它修复】</b>" +
+                        "\n     - 改进了PlayerControls中的overkiller功能" +
+                        "\n     - 重做游戏结束时的检查（再次），以优化它" +
+
+                    "\n\n★ 欢迎来到Town of Host: Enhanced! ★",
+
+                    Date = "2023-10-23T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                //TOHE v1.1.0
+                var news = new ModNews
+                {
+                    Number = 80002,
+                    Title = "Town of Host: Enhanced v1.1.0",
+                    SubTitle = "★★ 已经更新了？哇哦！ ★★",
+                    ShortTitle = "TOH: Enhanced v1.1.0",
+                    BeforeNumber = 80001,
+                    Text = "<size=150%>欢迎来到TOH: Enhanced v1.1.0!</size>\n" +
+                    "\n<b>【基于官方版本】</b>\n - 基于TOH: Enhanced v1.0.1\r\n" +
+
+                    "\n<b>【新职业/附加职业】</b>" +
+                        "\n     - 总统(船员阵营:权力)" +
+                        "\n     - 间谍(船员阵营:支援)" +
+                        "\n     - 义务警长(船员阵营:击杀)\n\r" +
+
+                        "\n     - 回弹者(附加职业:混合)\n\r" +
+
+                    "\n<b>【新设置】</b>" +
+                        "\n     - 船鬼:每完成x(用字母x表示设定的任务数)项任务后，立即瞬移并击杀" +
+                        "\n     - 死亡契约:处于死亡契约中的玩家可以召开紧急会议" +
+                        "\n     - 龙卷风:隐藏玩家的交换对象\n" +
+
+                        "\n     - 赝品商:失去使用错误赝品的技能" +
+                        "\n     - 商人:只能出售已启用的附加职业" +
+                        "\n     - 验尸官:告知带刀玩家已被追踪\n\r" +
+
+                        "\n     - 感染者:双击即可击杀/感染" +
+                        
+                        "\n     - 迷幻者:带刀玩家可以获得迷幻者的视野\n\r" +
+
+                    "\n<b>【已删除的职业/附加职业】</b>" +
+                        "\n     - 中立阵营:神秘主义者\n\r" +
+                        "\n     - 附加职业:眩晕者" +
+                        "\n     - 附加职业:光辉" +
+
+                    "\n<b>【其他变化】</b>" +
+                        "\n     - 支持新语言:葡萄牙语" +
+                        "\n     - 新大厅游戏：/rps &抛硬币" +
+                        "\n     - 将特工更名为邪恶追踪者（仅限英文版本）" +
+                        "\n     - 将破坏者重新命名为反对管理员（仅限英文版本）" +
+                        "\n     - 新迷彩皮肤" +
+                        "\n     - 添加了Default_Template.txt" +
+                        "\n     - 重做遐想者和FFF团" +
+
+                    "\n其他一些Bug更改(当我说几个时,我指的是几个)" +
+
+                    "\n\n★ 欢迎来到Town of Host: Enhanced! ★",
+
+                    Date = "2023-10-21T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
                 //TOHE v1.0.1
                 var news = new ModNews
                 {
-                    Number = 80004,
+                    Number = 80001,
                     Title = "Town of Host: Enhanced v1.0.1",
                     SubTitle = "★★ 新时代 ★★",
                     ShortTitle = "TOH: Enhanced v1.0.1",
-                    BeforeNumber = 80003,
+                    BeforeNumber = 80000,
                     Text = "<size=150%>欢迎来到 TOH: Enhanced v1.0.1!</size>\n\n<size=125%>适配 Among Us v2023.7.11 和 v2023.7.12</size>\n" +
                     "\n<b>【基于官方版本】</b>\n - 基于 TOH-RE v3.1.0 (备注可用)\r\n" +
                     "\n<b>【修复】</b>" +
@@ -347,15 +511,14 @@ public class ModNewsHistory
                 // TOHE v1.0.0
                 var news = new ModNews
                 {
-                    Number = 80002,
+                    Number = 80000,
                     Title = "Town of Host: Enhanced v1.0.0",
                     SubTitle = "★★ 新时代 ★★",
                     ShortTitle = "TOH: Enhanced v1.0.0",
-                    BeforeNumber = 80001,
                     Text = "<size=150%>欢迎来到 TOH: Enhanced v1.0.0!</size>" +
                     "\n<b>【基于官方版本】</b>\n - 基于 TOH-RE v3.1.0 (备注可用)\r\n" +
                     "\n<b>【更改/修复】</b>" +
-                    "\n     - 删除了与 Lounie 的所有关联，自述文件中的信用" +
+                    "\n     - 删除了与 Loonie 的所有关联，自述文件中的信用" +
                     "\n     - 更新了包含所有string/variable" +
                     "\n     - 修复了强盗文本文字" +
                     "\n\n★ 使模组变得更好。欢迎来到 Town of Host: Enhanced！ ★",
@@ -372,11 +535,11 @@ public class ModNewsHistory
                 // TOHE v1.0.1
                 var news = new ModNews
                 {
-                    Number = 70004,
+                    Number = 70001,
                     Title = "Town of Host: Enhanced v1.0.1",
                     SubTitle = "★★ 新時代 ★★",
                     ShortTitle = "TOH: Enhanced v1.0.1",
-                    BeforeNumber = 70003,
+                    BeforeNumber = 70000,
                     Text = "<size=150%>歡迎來到 TOH: Enhanced v1.0.1!</size>\n\n<size=125%>支援版本 Among Us v2023.7.11、v2023.7.12</size>\n" +
                     "\n<b>【基於版本】</b>\n - 基於TOH-RE v3.1.0 (備註: 目前可以使用)\r\n" +
                     "\n<b>【修復】</b>" +
@@ -393,11 +556,10 @@ public class ModNewsHistory
                 // TOHE v1.0.0
                 var news = new ModNews
                 {
-                    Number = 70002,
+                    Number = 70000,
                     Title = "Town of Host: Enhanced v1.0.0",
                     SubTitle = "★★ 新時代的開始 ★★",
                     ShortTitle = "TOH: Enhanced v1.0.0",
-                    BeforeNumber = 70001,
                     Text = "<size=150%>歡迎來到 TOH: Enhanced v1.0.0!</size>\n\n<size=125%>支援版本 Among Us v2023.7.11、v2023.7.12</size>\n" +
                     "\n<b>【基於版本】</b>\n - 基於TOH-RE v3.1.0 (備註: 目前可以使用)\r\n" +
                     "\n<b>【更改/修復】</b>" +

@@ -118,7 +118,7 @@ internal class ChangeRoleSettings
             Main.CrewpostorTasksDone = new();
             Main.ShamanTarget = byte.MaxValue;
             Main.ShamanTargetChoosen = false;
-            ChatManager.resetHistory();
+            ChatManager.ResetHistory();
 
             ReportDeadBodyPatch.CanReport = new();
 

@@ -1729,7 +1729,7 @@ public static class Utils
             {
                 if (!player.IsModClient()) return;
                 {
-                    if (GameStates.IsOnlineGame || GameStates.IsLocalGame)
+                    if ((GameStates.IsOnlineGame || GameStates.IsLocalGame) && !Main.AutoMuteUs.Value)
                         name = $"<color={GetString("HostColor")}>{GetString("HostText")}</color><color={GetString("IconColor")}>{GetString("Icon")}</color><color={GetString("NameColor")}>{name}</color>";
 
                     //name = $"<color=#902efd>{GetString("HostText")}</color><color=#4bf4ff>♥</color>" + name;
@@ -1825,7 +1825,7 @@ public static class Utils
                     }
                 }
             }           
-            if (!name.Contains('\r') && player.FriendCode.GetDevUser().HasTag())
+            if (!name.Contains('\r') && player.FriendCode.GetDevUser().HasTag() && !Main.AutoMuteUs.Value)
             {
                 name = player.FriendCode.GetDevUser().GetTag() + "<size=1.5>" + modtag + "</size>" + name;
             }

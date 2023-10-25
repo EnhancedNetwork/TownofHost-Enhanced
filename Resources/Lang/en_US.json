@@ -2659,7 +2659,9 @@
   "WitnessFoundInnocent": "<color=#00ff00>✓</color>",
   "WitnessFoundKiller": "<color=#ffff00>⚠</color>",
   "SwapperMax": "Maximum swaps",
+  "CanSwapSelfVotes": "Can exchange your own votes.",
   "SwapperTrialMax": "You've reached the maximum amount of swaps!\nYou can't swap votes anymore.",
+  "CantSwapSelf": "Can't exchange of one's own vote",
   "SwapVote": "The votes of <b>{0}</b> and <b>{1}</b> were swapped!",
   "SwapVoteC": "The votes of <b>{0}</b> and <b>{1}</b> were swapped!",
   "SwapDead": "Sorry, you can't swap votes after death.",
@@ -3291,5 +3293,6 @@
   "FFFCanKillEgoist": "Can kill egoist",
   "FFFCanKillInfected": "Can kill infected team",
   "FFFCanKillContagious": "Can kill virus team",
-  "FFFCanKillAdmired": "Can kill admirer"
+  "FFFCanKillAdmired": "Can kill admirer",
+  "AutoMuteUs": "Enable it if you use AutoMuteUs"
 }
