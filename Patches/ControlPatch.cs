@@ -296,6 +296,15 @@ internal class ControllerManagerUpdatePatch
                 }
             }
         }
+      /*if (Input.GetKeyDown(KeyCode.L))
+        {
+            Logger.Info($"{Utils.IsActive(SystemTypes.Reactor)}", "Check SystemType.Reactor");
+            Logger.Info($"{Utils.IsActive(SystemTypes.LifeSupp)}", "Check SystemTypes.LifeSupp");
+            Logger.Info($"{Utils.IsActive(SystemTypes.Laboratory)}", "Check SystemTypes.Laboratory");
+            Logger.Info($"{Utils.IsActive(SystemTypes.Comms)}", "Check SystemTypes.Comms");
+            Logger.Info($"{Utils.IsActive(SystemTypes.Electrical)}", "Check SystemTypes.Electrical");
+            Logger.Info($"{Utils.IsActive(SystemTypes.MushroomMixupSabotage)}", "Check SystemTypes.MushroomMixupSabotage");
+        }*/
         if (Input.GetKeyDown(KeyCode.B))
         {
             foreach (var pc in PlayerControl.AllPlayerControls)
