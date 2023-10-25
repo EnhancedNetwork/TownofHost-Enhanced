@@ -134,26 +134,33 @@ public static class Utils
             Polus        = 2
             Dleks        = 3 (Not used)
             The Airship  = 4
-            Fungle       = 5?
+            Fungle       = 5
         */
+
+        Logger.Info($"{type}", "SystemTypes");
+
         switch (type)
         {
             case SystemTypes.Electrical:
                 {
+                    if (mapId == 5) return false;
                     var SwitchSystem = ShipStatus.Instance.Systems[type].Cast<SwitchSystem>();
                     return SwitchSystem != null && SwitchSystem.IsActive;
                 }
             case SystemTypes.Reactor:
                 {
                     if (mapId == 2) return false;
-                    else if (mapId == 4)
+                    else if (mapId is 4 or 5)
                     {
                         var HeliSabotageSystem = ShipStatus.Instance.Systems[type].Cast<HeliSabotageSystem>();
+                        Logger.Info($"{HeliSabotageSystem != null && HeliSabotageSystem.IsActive}", "SystemTypes1");
                         return HeliSabotageSystem != null && HeliSabotageSystem.IsActive;
                     }
                     else
                     {
+                        Logger.Info($"{type}", "SystemTypes5");
                         var ReactorSystemType = ShipStatus.Instance.Systems[type].Cast<ReactorSystemType>();
+                        Logger.Info($"{ReactorSystemType != null && ReactorSystemType.IsActive}", "SystemTypes2");
                         return ReactorSystemType != null && ReactorSystemType.IsActive;
                     }
                 }
@@ -165,13 +172,13 @@ public static class Utils
                 }
             case SystemTypes.LifeSupp:
                 {
-                    if (mapId is 2 or 4) return false;
+                    if (mapId is 2 or 4 or 5) return false;
                     var LifeSuppSystemType = ShipStatus.Instance.Systems[type].Cast<LifeSuppSystemType>();
                     return LifeSuppSystemType != null && LifeSuppSystemType.IsActive;
                 }
             case SystemTypes.Comms:
                 {
-                    if (mapId == 1)
+                    if (mapId is 1 or 5)
                     {
                         var HqHudSystemType = ShipStatus.Instance.Systems[type].Cast<HqHudSystemType>();
                         return HqHudSystemType != null && HqHudSystemType.IsActive;
@@ -181,6 +188,12 @@ public static class Utils
                         var HudOverrideSystemType = ShipStatus.Instance.Systems[type].Cast<HudOverrideSystemType>();
                         return HudOverrideSystemType != null && HudOverrideSystemType.IsActive;
                     }
+                }
+            case SystemTypes.MushroomMixupSabotage:
+                {
+                    Logger.Info($"{type}", "SystemTypes5");
+                    if (mapId != 5) return false;
+                    return false;
                 }
             default:
                 return false;

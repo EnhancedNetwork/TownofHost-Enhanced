@@ -33,7 +33,7 @@ public static class HeliSabotageSystemPatch
                 __instance.Countdown = Options.AirshipReactorTimeLimit.GetFloat();
     }
 }
-/*[HarmonyPatch(typeof(SwitchSystem), nameof(SwitchSystem.Deteriorate))]
+/*[HarmonyPatch(typeof(SwitchSystem), nameof(SwitchSystem.Deserialize))] // Need to find a way to fix it
 public static class SwitchSystemRepairDamagePatch
 {
     public static bool Prefix(SwitchSystem __instance, [HarmonyArgument(1)] byte amount)
