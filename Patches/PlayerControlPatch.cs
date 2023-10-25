@@ -3606,17 +3606,6 @@ class SetNamePatch
     {
     }
 }
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
-public static class PlayerControlDiePatch
-{
-    //https://github.com/Hyz-sui/TownOfHost-H
-    public static void Postfix(PlayerControl __instance)
-    {
-        if (!AmongUsClient.Instance.AmHost) return;
-
-        __instance.RpcRemovePet();
-    }
-}
 [HarmonyPatch(typeof(GameData), nameof(GameData.CompleteTask))]
 class GameDataCompleteTaskPatch
 {
