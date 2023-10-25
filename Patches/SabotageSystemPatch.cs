@@ -33,7 +33,7 @@ public static class HeliSabotageSystemPatch
                 __instance.Countdown = Options.AirshipReactorTimeLimit.GetFloat();
     }
 }
-/*[HarmonyPatch(typeof(SwitchSystem), nameof(SwitchSystem.UpdateSystem))]
+/*[HarmonyPatch(typeof(SwitchSystem), nameof(SwitchSystem.Serialize))]
 public static class SwitchSystemRepairDamagePatch
 {
     public static bool Prefix(SwitchSystem __instance, [HarmonyArgument(1)] byte amount)
@@ -80,9 +80,9 @@ public static class ElectricTaskCompletePatch
             Utils.NotifyRoles();
     }
 }
-/*// https://github.com/tukasa0001/TownOfHost/blob/357f7b5523e4bdd0bb58cda1e0ff6cceaa84813d/Patches/SabotageSystemPatch.cs
+// https://github.com/tukasa0001/TownOfHost/blob/357f7b5523e4bdd0bb58cda1e0ff6cceaa84813d/Patches/SabotageSystemPatch.cs
 // Method called when sabotage occurs
-[HarmonyPatch(typeof(SabotageSystemType), nameof(SabotageSystemType.RepairDamage))]
+[HarmonyPatch(typeof(SabotageSystemType), nameof(SabotageSystemType.UpdateSystem))] // SetInitialSabotageCooldown not set sabotage cooldown
 public static class SabotageSystemTypeRepairDamagePatch
 {
     private static bool isCooldownModificationEnabled;
@@ -103,4 +103,4 @@ public static class SabotageSystemTypeRepairDamagePatch
         __instance.Timer = modifiedCooldownSec;
         __instance.IsDirty = true;
     }
-}*/
+}

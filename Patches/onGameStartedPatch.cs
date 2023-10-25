@@ -325,7 +325,7 @@ internal class ChangeRoleSettings
             CustomWinnerHolder.Reset();
             AntiBlackout.Reset();
             NameNotifyManager.Reset();
-            /*SabotageSystemTypeRepairDamagePatch.Initialize();*/
+            SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
 
             IRandom.SetInstanceById(Options.RoleAssigningAlgorithm.GetValue());

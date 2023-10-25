@@ -1256,7 +1256,7 @@ static class ExtendedPlayerControl
     {
         if (killer.PlayerId == target.PlayerId && killer.shapeshifting)
         {
-            _ = new LateTask(() => { killer.RpcMurderPlayer(target, true ); }, 1.5f, "Shapeshifting Suicide Delay");
+            _ = new LateTask(() => { killer.RpcMurderPlayer(target, true); }, 1.5f, "Shapeshifting Suicide Delay");
             return;
         }
 
