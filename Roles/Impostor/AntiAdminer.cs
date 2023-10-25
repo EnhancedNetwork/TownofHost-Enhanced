@@ -79,6 +79,12 @@ internal class AntiAdminer
                         if (!Options.DisablePolusVital.GetBool())
                             Vital |= Vector2.Distance(PlayerPos, DisableDevice.DevicePos["PolusVital"]) <= DisableDevice.UsableDistance();
                         break;
+                    case 3:
+                        if (!Options.DisableSkeldAdmin.GetBool())
+                            Admin |= Vector2.Distance(PlayerPos, DisableDevice.DevicePos["DleksAdmin"]) <= DisableDevice.UsableDistance();
+                        if (!Options.DisableSkeldCamera.GetBool())
+                            Camera |= Vector2.Distance(PlayerPos, DisableDevice.DevicePos["DleksCamera"]) <= DisableDevice.UsableDistance();
+                        break;
                     case 4:
                         if (!Options.DisableAirshipCockpitAdmin.GetBool())
                             Admin |= Vector2.Distance(PlayerPos, DisableDevice.DevicePos["AirshipCockpitAdmin"]) <= DisableDevice.UsableDistance();

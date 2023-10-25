@@ -1247,7 +1247,7 @@ public static class Utils
             }
 
             if (opt.Value.Name == "Maximum") continue; //Maximumの項目は飛ばす
-            if (opt.Value.Name == "DisableSkeldDevices" && !Options.IsActiveSkeld) continue;
+            if (opt.Value.Name == "DisableSkeldDevices" && !Options.IsActiveSkeld && !Options.IsActiveDleks) continue;
             if (opt.Value.Name == "DisableMiraHQDevices" && !Options.IsActiveMiraHQ) continue;
             if (opt.Value.Name == "DisablePolusDevices" && !Options.IsActivePolus) continue;
             if (opt.Value.Name == "DisableAirshipDevices" && !Options.IsActiveAirship) continue;
@@ -2119,6 +2119,7 @@ public static class Utils
                     ((Options.DisableOnSkeld.GetBool() && Options.IsActiveSkeld) ||
                      (Options.DisableOnMira.GetBool() && Options.IsActiveMiraHQ) ||
                      (Options.DisableOnPolus.GetBool() && Options.IsActivePolus) ||
+                     (Options.DisableOnDleks.GetBool() && Options.IsActiveDleks) ||
                      (Options.DisableOnAirship.GetBool() && Options.IsActiveAirship)
                     )))
                     || Camouflager.IsActive))
@@ -2430,6 +2431,7 @@ public static class Utils
                             ((Options.DisableOnSkeld.GetBool() && Options.IsActiveSkeld) ||
                              (Options.DisableOnMira.GetBool() && Options.IsActiveMiraHQ) ||
                              (Options.DisableOnPolus.GetBool() && Options.IsActivePolus) ||
+                             (Options.DisableOnDleks.GetBool() && Options.IsActiveDleks) ||
                              (Options.DisableOnAirship.GetBool() && Options.IsActiveAirship)
                             )))
                             || Camouflager.IsActive))

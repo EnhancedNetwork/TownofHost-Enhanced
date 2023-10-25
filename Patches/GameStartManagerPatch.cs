@@ -286,6 +286,7 @@ public class GameStartRandomMap
             if (rand.Next(1, 100) <= Options.SkeldChance.GetInt()) randomMaps.Add(0);
             if (rand.Next(1, 100) <= Options.MiraChance.GetInt()) randomMaps.Add(1);
             if (rand.Next(1, 100) <= Options.PolusChance.GetInt()) randomMaps.Add(2);
+            if (rand.Next(1, 100) <= Options.DleksChance.GetInt()) randomMaps.Add(3);
             if (rand.Next(1, 100) <= Options.AirshipChance.GetInt()) randomMaps.Add(4);
             //if (rand.Next(1, 100) <= Options.FungleChance.GetInt()) randomMaps.Add(5);
         }
@@ -296,6 +297,7 @@ public class GameStartRandomMap
             if (tempRand <= Options.SkeldChance.GetInt()) randomMaps.Add(0);
             if (tempRand <= Options.MiraChance.GetInt()) randomMaps.Add(1);
             if (tempRand <= Options.PolusChance.GetInt()) randomMaps.Add(2);
+            if (tempRand <= Options.DleksChance.GetInt()) randomMaps.Add(3);
             if (tempRand <= Options.AirshipChance.GetInt()) randomMaps.Add(4);
             //if (tempRand <= Options.FungleChance.GetInt()) randomMaps.Add(5);
         }
@@ -312,6 +314,7 @@ public class GameStartRandomMap
             if (Options.SkeldChance.GetInt() > 0) randomMaps.Add(0);
             if (Options.MiraChance.GetInt() > 0) randomMaps.Add(1);
             if (Options.PolusChance.GetInt() > 0) randomMaps.Add(2);
+            if (Options.DleksChance.GetInt() > 0) randomMaps.Add(3);
             if (Options.AirshipChance.GetInt() > 0) randomMaps.Add(4);
             //if (Options.FungleChance.GetInt() > 0) randomMaps.Add(5);
 

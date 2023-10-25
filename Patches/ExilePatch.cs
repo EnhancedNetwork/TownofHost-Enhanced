@@ -251,6 +251,10 @@ class ExileControllerWrapUpPatch
                         map = new RandomSpawn.PolusSpawnMap();
                         Main.AllPlayerControls.Do(map.RandomTeleport);
                         break;
+                    case 3:
+                        map = new RandomSpawn.DleksSpawnMap();
+                        Main.AllPlayerControls.Do(map.RandomTeleport);
+                        break;
                 }
             }
 
