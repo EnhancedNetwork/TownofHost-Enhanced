@@ -17,6 +17,5 @@ class ServerUpdatePatch
             __result += 25;
             Logger.Info($"IsOnlineGame: {__result}", "VersionServer");
         }
-
     }
 }

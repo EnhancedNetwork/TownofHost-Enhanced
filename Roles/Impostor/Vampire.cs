@@ -108,7 +108,9 @@ public static class Vampire
         {
             Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Bite;
             target.SetRealKiller(vampire);
-            target.RpcMurderPlayerV3(target);
+            //target.RpcMurderPlayer(target, true);
+            target.RpcMurderPlayerV2(target);
+
             Medic.IsDead(target);
             Logger.Info($"Vampireに噛まれている{target.name}を自爆させました。", "Vampire");
             if (!isButton && vampire.IsAlive())
