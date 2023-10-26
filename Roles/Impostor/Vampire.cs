@@ -113,7 +113,7 @@ public static class Vampire
             target.RpcMurderPlayerV3(target);
 
             Medic.IsDead(target);
-            Logger.Info($"{target.name} self-kill while being bitten by a vampire.", "Vampire");
+            Logger.Info($"{target.name} self-kill while being bitten by Vampire.", "Vampire");
             if (!isButton && vampire.IsAlive())
             {
                 RPC.PlaySoundRPC(vampire.PlayerId, Sounds.KillSound);

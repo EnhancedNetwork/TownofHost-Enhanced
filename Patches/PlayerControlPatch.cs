@@ -762,7 +762,7 @@ class CheckMurderPatch
 
 
         //==キル処理==
-        __instance.RpcMurderPlayerV2(target);
+        __instance.RpcMurderPlayerV3(target);
         //============
 
         return false;
