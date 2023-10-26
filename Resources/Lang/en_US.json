@@ -1255,7 +1255,7 @@
   "RoleAssigningAlgorithm.MersenneTwister": "MersenneTwister",
   "DisableAirshipMovingPlatform": "Disable Moving Platform (Airship)",
   "AirshipVariableElectrical": "Variable Electrical (Airship)",
-  "ResetDoorsEveryTurns": "Reset Doors After Meeting (Airship/Polus)",
+  "ResetDoorsEveryTurns": "Reset Doors After Meeting (Airship/Polus/Fungle)",
   "DoorsResetMode": "Reset Doors Mode",
   "AllOpen": "All Open",
   "AllClosed": "All Closed",
