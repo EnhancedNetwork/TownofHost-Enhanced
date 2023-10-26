@@ -1222,6 +1222,7 @@
   "DisablePolusVital": "Disable Vitals",
   "DisableAirshipVital": "Disable Vitals",
   "DisableFungleVital": "Disable Vitals",
+  "DisableFungleCamera": "Disable Binoculars",
   "IgnoreConditions": "Ignore Conditions",
   "IgnoreImpostors": "Ignore <color=#ff1919>Impostors</color>",
   "IgnoreNeutrals": "Ignore <color=#7f8c8d>Neutrals</color>",

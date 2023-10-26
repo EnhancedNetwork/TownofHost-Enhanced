@@ -89,6 +89,12 @@ internal class AntiAdminer
                         if (!Options.DisableAirshipVital.GetBool())
                             Vital |= Vector2.Distance(PlayerPos, DisableDevice.DevicePos["AirshipVital"]) <= DisableDevice.UsableDistance();
                         break;
+                    case 5:
+                        if (!Options.DisableFungleCamera.GetBool())
+                            Camera |= Vector2.Distance(PlayerPos, DisableDevice.DevicePos["FungleCamera"]) <= DisableDevice.UsableDistance();
+                        if (!Options.DisableFungleVital.GetBool())
+                            Vital |= Vector2.Distance(PlayerPos, DisableDevice.DevicePos["FungleVital"]) <= DisableDevice.UsableDistance();
+                        break;
                 }
             }
             catch (Exception ex)
