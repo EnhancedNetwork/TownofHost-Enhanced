@@ -53,6 +53,17 @@ class CheckProtectPatch
         return true;
     }
 }
+
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdCheckMurder))]
+class CmdCheckMurderPatch
+{
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
+    {
+        if (!AmongUsClient.Instance.AmHost) return true;
+        return CheckMurderPatch.Prefix(__instance, target);
+    }
+}
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckMurder))]
 class CheckMurderPatch
 {
@@ -161,11 +172,11 @@ class CheckMurderPatch
                 {
                     if (Options.FragileKillerLunge.GetBool())
                     {
-                        killer.RpcMurderPlayer(target, true);
+                        killer.RpcMurderPlayerV3(target);
                     }
                     else
                     {
-                        target.RpcMurderPlayer(target, true);
+                        target.RpcMurderPlayerV3(target);
                     }
                     Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Shattered;
                     target.SetRealKiller(target);
