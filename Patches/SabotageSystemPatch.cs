@@ -1,4 +1,5 @@
 using HarmonyLib;
+using Hazel;
 
 namespace TOHE;
 
@@ -33,12 +34,14 @@ public static class HeliSabotageSystemPatch
                 __instance.Countdown = Options.AirshipReactorTimeLimit.GetFloat();
     }
 }
-/*[HarmonyPatch(typeof(SwitchSystem), nameof(SwitchSystem.Deserialize))] // Need to find a way to fix it
+/*[HarmonyPatch(typeof(SwitchSystem), nameof(SwitchSystem.UpdateSystem))] // Need to find a way to fix it
 public static class SwitchSystemRepairDamagePatch
 {
-    public static bool Prefix(SwitchSystem __instance, [HarmonyArgument(1)] byte amount)
+    public static bool Prefix(SwitchSystem __instance, [HarmonyArgument(1)] MessageReader reader)
     {
         if (!AmongUsClient.Instance.AmHost) return true;
+
+        var amount = reader.FastByte();
 
         if (!amount.HasBit(SwitchSystem.DamageSystem) && Options.BlockDisturbancesToSwitches.GetBool())
         {

@@ -30,7 +30,7 @@ class ShipFixedUpdatePatch
         }
     }
 }
-[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.UpdateSystem), typeof(SystemTypes), typeof(PlayerControl), typeof(byte))]
+[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.UpdateSystem), new Type[] { typeof(SystemTypes), typeof(PlayerControl), typeof(byte) })]
 class RepairSystemPatch
 {
     public static bool IsComms;
@@ -142,6 +142,10 @@ class RepairSystemPatch
     public static void Postfix(ShipStatus __instance)
     {
         Camouflage.CheckCamouflage();
+
+        //if (Utils.IsActive(SystemTypes.MushroomMixupSabotage))
+        //    Utils.NotifyRoles(NoCache: true);
+
     }
     public static void CheckAndOpenDoorsRange(ShipStatus __instance, int amount, int min, int max)
     {
@@ -169,15 +173,19 @@ class CloseDoorsPatch
         return !(Options.DisableCloseDoor.GetBool());
     }
 }
-/*[HarmonyPatch(typeof(SwitchSystem), nameof(SwitchSystem.RepairDamage))]
+/*[HarmonyPatch(typeof(SwitchSystem), nameof(SwitchSystem.UpdateSystem))]
 class SwitchSystemRepairPatch
 {
-    public static void Postfix(SwitchSystem __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] byte amount)
+    public static void Postfix(SwitchSystem __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] MessageReader reader)
     {
+        var amount = reader.FastByte();
+
         if (player.Is(CustomRoles.SabotageMaster))
             SabotageMaster.SwitchSystemRepair(__instance, amount, player.PlayerId);
+
         if (player.Is(CustomRoles.Repairman))
             Repairman.SwitchSystemRepair(__instance, amount);
+
         if (player.Is(CustomRoles.Alchemist) && Alchemist.FixNextSabo == true)
         {
             if (amount is >= 0 and <= 4)

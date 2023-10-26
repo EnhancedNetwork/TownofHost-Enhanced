@@ -2134,6 +2134,10 @@ public static class Utils
                     || Camouflager.IsActive))
                 SelfName = $"<size=0%>{SelfName}</size>";
 
+            // When MushroomMixup Sabotage Is Active
+            //else if (IsActive(SystemTypes.MushroomMixupSabotage))
+            //    SelfName = $"<size=0%>{SelfName}</size>";
+
 
             SelfName = SelfRoleName + "\r\n" + SelfName;
 
