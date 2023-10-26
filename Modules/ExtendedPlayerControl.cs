@@ -193,7 +193,6 @@ static class ExtendedPlayerControl
                 .EndRpc();
             sender.StartRpc(killer.NetId, (byte)RpcCalls.MurderPlayer)
                 .WriteNetObject(target)
-                .Write((byte)MurderResultFlags.DecisionByHost)
                 .EndRpc();
             sender.EndMessage();
             sender.SendMessage();
@@ -278,7 +277,6 @@ static class ExtendedPlayerControl
         {
             MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable, seer.GetClientId());
             messageWriter.WriteNetObject(target);
-            messageWriter.Write((byte)MurderResultFlags.DecisionByHost);
             AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
         }
     }
@@ -1258,22 +1256,21 @@ static class ExtendedPlayerControl
     {
         if (killer.PlayerId == target.PlayerId && killer.shapeshifting)
         {
-            _ = new LateTask(() => { killer.RpcMurderPlayerV2(target, SendOption.Reliable); }, 1.5f, "Shapeshifting Suicide Delay");
+            _ = new LateTask(() => { killer.RpcMurderPlayer(target, true); }, 1.5f, "Shapeshifting Suicide Delay");
             return;
         }
 
-        killer.RpcMurderPlayerV2(target, SendOption.Reliable);
+        killer.RpcMurderPlayer(target, true);
     }
-    public static void RpcMurderPlayerV2(this PlayerControl killer, PlayerControl target, SendOption sendOption = SendOption.None)
+    public static void RpcMurderPlayerV2(this PlayerControl killer, PlayerControl target)
     {
         if (target == null) target = killer;
         if (AmongUsClient.Instance.AmClient)
         {
             killer.MurderPlayer(target, MurderResultFlags.DecisionByHost);
         }
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, sendOption, -1);
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.None, -1);
         messageWriter.WriteNetObject(target);
-        messageWriter.Write((byte)MurderResultFlags.DecisionByHost);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
         Utils.NotifyRoles();
     }
