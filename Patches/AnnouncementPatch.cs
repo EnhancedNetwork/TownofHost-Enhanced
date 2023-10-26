@@ -535,11 +535,11 @@ public class ModNewsHistory
                 // TOHE v1.1.1
                 var news = new ModNews
                 {
-                    Number = 100004,
+                    Number = 70003,
                     Title = "Town of Host: Enhanced v1.1.1",
                     SubTitle = "★★性能與修復Bug的更新! ★★",
                     ShortTitle = "TOH: Enhanced v1.1.1",
-                    BeforeNumber = 100003,
+                    BeforeNumber = 70002,
                     Text = "<size=150%>歡迎來到 TOH: Enhanced v1.1.1!</size>\n" +
                     "\n<b>【基於版本】</b>\n - 基於 TOH: Enhanced v1.1.0\r\n" +
 
@@ -564,11 +564,11 @@ public class ModNewsHistory
                 // TOHE 1.1.0
                 var news = new ModNews
                 {
-                    Number = 70003,
+                    Number = 70002,
                     Title = "Town of Host: Enhanced v1.1.0",
                     SubTitle = "★★ 已經更新啦? 哇喔!★★",
                     ShortTitle = "TOH: Enhanced v1.1.0",
-                    BeforeNumber = 70002,
+                    BeforeNumber = 70001,
                     Text = "<size=150%>歡迎來到 TOH: Enhanced v1.1.0!</size>\n" +
                     "\n<b>【基於版本】</b>\n - 基於 TOH: Enhanced v1.0.1\r\n" +
 
