@@ -49,6 +49,7 @@ public class FallFromLadder
                     .EndRpc();
                     sender.AutoStartRpc(player.NetId, (byte)RpcCalls.MurderPlayer)
                             .WriteNetObject(player)
+                            .Write((byte)MurderResultFlags.DecisionByHost)
                     .EndRpc();
                     sender.SendMessage();
                     player.NetTransform.SnapTo(targetPos);
