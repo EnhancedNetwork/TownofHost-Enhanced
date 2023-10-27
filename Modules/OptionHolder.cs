@@ -3009,12 +3009,6 @@ public static class Options
         DisableFungleVital = BooleanOptionItem.Create(22922, "DisableFungleVital", false, TabGroup.GameSettings, false)
             .SetParent(DisableFungleDevices)
             .SetGameMode(CustomGameMode.Standard);
-        DisableDevicesIgnoreConditions = BooleanOptionItem.Create(22923, "IgnoreConditions", false, TabGroup.GameSettings, false)
-            .SetParent(DisableDevices)
-            .SetGameMode(CustomGameMode.Standard);
-        DisableDevicesIgnoreImpostors = BooleanOptionItem.Create(22924, "IgnoreImpostors", false, TabGroup.GameSettings, false)
-            .SetParent(DisableFungleDevices)
-            .SetGameMode(CustomGameMode.Standard);
         DisableDevicesIgnoreConditions = BooleanOptionItem.Create(22925, "IgnoreConditions", false, TabGroup.GameSettings, false)
             .SetParent(DisableDevices)
             .SetGameMode(CustomGameMode.Standard);
