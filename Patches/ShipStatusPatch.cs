@@ -95,6 +95,13 @@ class RepairSystemPatch
             }
         }
 
+        //if (systemType == SystemTypes.MushroomMixupSabotage && amount == 1)
+        //{
+        //    Utils.NotifyRoles();
+
+        //    Logger.Msg("SystemType: MushroomMixupSabotage", "RepairSystem");
+        //}
+
         if (systemType == SystemTypes.Comms)
             if (player.Is(CustomRoles.Camouflager) && !Camouflager.CanUseCommsSabotage.GetBool()) return false;
 
@@ -142,10 +149,6 @@ class RepairSystemPatch
     public static void Postfix(ShipStatus __instance)
     {
         Camouflage.CheckCamouflage();
-
-        //if (Utils.IsActive(SystemTypes.MushroomMixupSabotage))
-        //    Utils.NotifyRoles(NoCache: true);
-
     }
     public static void CheckAndOpenDoorsRange(ShipStatus __instance, int amount, int min, int max)
     {

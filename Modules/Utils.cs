@@ -2457,6 +2457,9 @@ public static class Utils
                             || Camouflager.IsActive))
                         TargetPlayerName = $"<size=0%>{TargetPlayerName}</size>";
 
+                    // When MushroomMixup Sabotage Is Active
+                    //else if (IsActive(SystemTypes.MushroomMixupSabotage))
+                    //    TargetPlayerName = $"<size=0%>{TargetPlayerName}</size>";
 
                     // Target Name
                     string TargetName = $"{TargetRoleText}{TargetPlayerName}{TargetDeathReason}{TargetMark}";
