@@ -147,10 +147,9 @@ public static class Utils
             case SystemTypes.Reactor:
                 {
                     if (mapId == 2) return false; // if Polus return false
-                    else if (mapId is 4) // Only Airhip
+                    else if (mapId == 4)
                     {
-                        var HeliSabotageSystem = ShipStatus.Instance.Systems[type].Cast<HeliSabotageSystem>();
-                        return HeliSabotageSystem != null && HeliSabotageSystem.IsActive;
+                        return IsActive(SystemTypes.HeliSabotage);
                     }
                     else
                     {
@@ -169,6 +168,12 @@ public static class Utils
                     if (mapId is 2 or 4 or 5) return false; // Only Skeld & Mira HQ
                     var LifeSuppSystemType = ShipStatus.Instance.Systems[type].Cast<LifeSuppSystemType>();
                     return LifeSuppSystemType != null && LifeSuppSystemType.IsActive;
+                }
+            case SystemTypes.HeliSabotage:
+                {
+                    if (mapId != 4) return false;// Only Airhip
+                    var HeliSabotageSystem = ShipStatus.Instance.Systems[type].Cast<HeliSabotageSystem>();
+                    return HeliSabotageSystem != null && HeliSabotageSystem.IsActive;
                 }
             case SystemTypes.Comms:
                 {
@@ -272,8 +277,14 @@ public static class Utils
     {
         //キルフラッシュ(ブラックアウト+リアクターフラッシュ)の処理
         bool ReactorCheck = false; //リアクターフラッシュの確認
-        if (Main.NormalOptions.MapId == 2) ReactorCheck = IsActive(SystemTypes.Laboratory);
-        else ReactorCheck = IsActive(SystemTypes.Reactor);
+
+        var systemtypes = (MapNames)Main.NormalOptions.MapId switch
+        {
+            MapNames.Polus => SystemTypes.Laboratory,
+            MapNames.Airship => SystemTypes.HeliSabotage,
+            _ => SystemTypes.Reactor,
+        };
+        ReactorCheck = IsActive(systemtypes);
 
         var Duration = Options.KillFlashDuration.GetFloat();
         if (ReactorCheck) Duration += 0.2f; //リアクター中はブラックアウトを長くする

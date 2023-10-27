@@ -11,7 +11,7 @@ class DisableDevice
     public static bool DoDisable => Options.DisableDevices.GetBool();
     private static List<byte> DesyncComms = new();
     private static int frame = 0;
-    public static readonly Dictionary<string, Vector2> DevicePos = new ()
+    public static readonly Dictionary<string, Vector2> DevicePos = new()
     {
         ["SkeldAdmin"] = new Vector2 (3.48f, -8.62f),
         ["SkeldCamera"] = new Vector2 (-13.06f, -2.45f),
