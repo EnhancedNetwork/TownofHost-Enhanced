@@ -638,6 +638,9 @@ public static class Options
     public static OptionItem DisableAirshipRecordsAdmin;
     public static OptionItem DisableAirshipCamera;
     public static OptionItem DisableAirshipVital;
+    public static OptionItem DisableFungleDevices;
+    public static OptionItem DisableFungleCamera;
+    public static OptionItem DisableFungleVital;
     public static OptionItem DisableDevicesIgnoreConditions;
     public static OptionItem DisableDevicesIgnoreImpostors;
     public static OptionItem DisableDevicesIgnoreNeutrals;
@@ -2997,19 +3000,28 @@ public static class Options
         DisableAirshipVital = BooleanOptionItem.Create(22919, "DisableAirshipVital", false, TabGroup.GameSettings, false)
             .SetParent(DisableAirshipDevices)
             .SetGameMode(CustomGameMode.Standard);
-        DisableDevicesIgnoreConditions = BooleanOptionItem.Create(22920, "IgnoreConditions", false, TabGroup.GameSettings, false)
+        DisableFungleDevices = BooleanOptionItem.Create(22920, "DisableFungleDevices", false, TabGroup.GameSettings, false)
             .SetParent(DisableDevices)
             .SetGameMode(CustomGameMode.Standard);
-        DisableDevicesIgnoreImpostors = BooleanOptionItem.Create(22921, "IgnoreImpostors", false, TabGroup.GameSettings, false)
+        DisableFungleCamera = BooleanOptionItem.Create(22921, "DisableFungleCamera", false, TabGroup.GameSettings, false)
+            .SetParent(DisableFungleDevices)
+            .SetGameMode(CustomGameMode.Standard);
+        DisableFungleVital = BooleanOptionItem.Create(22922, "DisableFungleVital", false, TabGroup.GameSettings, false)
+            .SetParent(DisableFungleDevices)
+            .SetGameMode(CustomGameMode.Standard);
+        DisableDevicesIgnoreConditions = BooleanOptionItem.Create(22925, "IgnoreConditions", false, TabGroup.GameSettings, false)
+            .SetParent(DisableDevices)
+            .SetGameMode(CustomGameMode.Standard);
+        DisableDevicesIgnoreImpostors = BooleanOptionItem.Create(22926, "IgnoreImpostors", false, TabGroup.GameSettings, false)
             .SetParent(DisableDevicesIgnoreConditions)
             .SetGameMode(CustomGameMode.Standard);
-        DisableDevicesIgnoreNeutrals = BooleanOptionItem.Create(22922, "IgnoreNeutrals", false, TabGroup.GameSettings, false)
+        DisableDevicesIgnoreNeutrals = BooleanOptionItem.Create(22927, "IgnoreNeutrals", false, TabGroup.GameSettings, false)
             .SetParent(DisableDevicesIgnoreConditions)
             .SetGameMode(CustomGameMode.Standard);
-        DisableDevicesIgnoreCrewmates = BooleanOptionItem.Create(22923, "IgnoreCrewmates", false, TabGroup.GameSettings, false)
+        DisableDevicesIgnoreCrewmates = BooleanOptionItem.Create(22928, "IgnoreCrewmates", false, TabGroup.GameSettings, false)
             .SetParent(DisableDevicesIgnoreConditions)
             .SetGameMode(CustomGameMode.Standard);
-        DisableDevicesIgnoreAfterAnyoneDied = BooleanOptionItem.Create(22924, "IgnoreAfterAnyoneDied", false, TabGroup.GameSettings, false)
+        DisableDevicesIgnoreAfterAnyoneDied = BooleanOptionItem.Create(22929, "IgnoreAfterAnyoneDied", false, TabGroup.GameSettings, false)
             .SetParent(DisableDevicesIgnoreConditions)
             .SetGameMode(CustomGameMode.Standard);
 
