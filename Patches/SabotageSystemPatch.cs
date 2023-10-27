@@ -1,6 +1,11 @@
 using HarmonyLib;
 using Hazel;
 
+using TOHE.Roles.Crewmate;
+using TOHE.Roles.Impostor;
+using TOHE.Roles.Neutral;
+using UnityEngine;
+
 namespace TOHE;
 
 //参考
@@ -34,14 +39,50 @@ public static class HeliSabotageSystemPatch
                 __instance.Countdown = Options.AirshipReactorTimeLimit.GetFloat();
     }
 }
-/*[HarmonyPatch(typeof(SwitchSystem), nameof(SwitchSystem.UpdateSystem))] // Need to find a way to fix it
+[HarmonyPatch(typeof(SwitchSystem), nameof(SwitchSystem.UpdateSystem))]
 public static class SwitchSystemRepairDamagePatch
 {
-    public static bool Prefix(SwitchSystem __instance, [HarmonyArgument(1)] MessageReader reader)
+    public static bool Prefix(SwitchSystem __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] MessageReader msgReader)
     {
-        if (!AmongUsClient.Instance.AmHost) return true;
+        if (!AmongUsClient.Instance.AmHost)
+        {
+            return true;
+        }
 
-        var amount = reader.FastByte();
+        var reader = MessageReader.Get(msgReader);
+        var amount = reader.ReadByte();
+
+        // No matter if the blackout sabotage is sounded (beware of misdirection as it flies under the host's name)
+        if (amount.HasBit(SwitchSystem.DamageSystem))
+        {
+            return true;
+        }
+
+        // Broken
+        switch (player.GetCustomRole())
+        {
+            case CustomRoles.SabotageMaster:
+                SabotageMaster.SwitchSystemRepair(__instance, amount, player.PlayerId);
+                break;
+            case CustomRoles.Alchemist when Alchemist.FixNextSabo == true:
+                __instance.ActualSwitches = 0;
+                __instance.ExpectedSwitches = 0;
+                Alchemist.FixNextSabo = false;
+                break;
+        }
+        // Broken
+        if (player.Is(CustomRoles.Repairman))
+            Repairman.SwitchSystemRepair(__instance, amount);
+
+        // Cancel if player can't fix a specific outage on Airship
+        if (Main.NormalOptions.MapId == 4)
+        {
+            var truePosition = player.GetTruePosition();
+            if (Options.DisableAirshipViewingDeckLightsPanel.GetBool() && Vector2.Distance(truePosition, new(-12.93f, -11.28f)) <= 2f) return false;
+            if (Options.DisableAirshipGapRoomLightsPanel.GetBool() && Vector2.Distance(truePosition, new(13.92f, 6.43f)) <= 2f) return false;
+            if (Options.DisableAirshipCargoLightsPanel.GetBool() && Vector2.Distance(truePosition, new(30.56f, 2.12f)) <= 2f) return false;
+        }
+
 
         if (!amount.HasBit(SwitchSystem.DamageSystem) && Options.BlockDisturbancesToSwitches.GetBool())
         {
@@ -62,7 +103,7 @@ public static class SwitchSystemRepairDamagePatch
         }
         return true;
     }
-}*/
+}
 [HarmonyPatch(typeof(ElectricTask), nameof(ElectricTask.Initialize))]
 public static class ElectricTaskInitializePatch
 {
@@ -97,6 +138,64 @@ public static class SabotageSystemTypeRepairDamagePatch
         modifiedCooldownSec = Options.SabotageCooldown.GetFloat();
     }
 
+    public static bool Prefix(SabotageSystemType __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] MessageReader msgReader)
+    {
+        var newReader = MessageReader.Get(msgReader);
+        var amount = newReader.ReadByte();
+        var nextSabotage = (SystemTypes)amount;
+
+        if (Options.DisableSabotage.GetBool())
+        {
+            return false;
+        }
+
+        Logger.Info("Sabotage" + ", PlayerName: " + player.GetNameWithRole() + ", SabotageType: " + nextSabotage.ToString(), "RepairSystem");
+
+        return CanSabotage(player, nextSabotage);
+    }
+    private static bool CanSabotage(PlayerControl player, SystemTypes systemType)
+    {
+        var playerRole = player.GetCustomRole();
+
+        if (systemType == SystemTypes.Comms)
+        {
+            if (playerRole.Is(CustomRoles.Camouflager) && !Camouflager.CanUseCommsSabotage.GetBool()) 
+                return false;
+        }
+
+        if (player.Is(CustomRoleTypes.Impostor) && (player.IsAlive() || !Options.DeadImpCantSabotage.GetBool())) return true;
+
+        switch (playerRole)
+        {
+            case CustomRoles.Jackal when Jackal.CanUseSabotage.GetBool():
+                return true;
+
+            case CustomRoles.Sidekick when Jackal.CanUseSabotageSK.GetBool():
+                return true;
+
+            case CustomRoles.Bandit when Bandit.CanUseSabotage.GetBool():
+                return true;
+
+            case CustomRoles.Glitch:
+                Glitch.Mimic(player);
+                return true;
+
+            case CustomRoles.Parasite when player.IsAlive():
+                return true;
+
+            case CustomRoles.PotionMaster when player.IsAlive():
+                return true;
+
+            case CustomRoles.Refugee when player.IsAlive():
+                return true;
+
+            case CustomRoles.EvilMini when player.IsAlive():
+                return true;
+        }
+
+        return false;
+    }
+
     public static void Postfix(SabotageSystemType __instance)
     {
         if (!isCooldownModificationEnabled || !AmongUsClient.Instance.AmHost)
@@ -105,5 +204,35 @@ public static class SabotageSystemTypeRepairDamagePatch
         }
         __instance.Timer = modifiedCooldownSec;
         __instance.IsDirty = true;
+    }
+
+    [HarmonyPatch(typeof(SecurityCameraSystemType), nameof(SecurityCameraSystemType.UpdateSystem))]
+    public static class SecurityCameraSystemTypeUpdateSystemPatch
+    {
+        public static bool Prefix([HarmonyArgument(1)] MessageReader msgReader)
+        {
+            var newReader = MessageReader.Get(msgReader);
+            var amount = newReader.ReadByte();
+
+            // When the camera is disabled, the vanilla player opens the camera so it does not blink.
+            if (amount == SecurityCameraSystemType.IncrementOp)
+            {
+                var camerasDisabled = (MapNames)Main.NormalOptions.MapId switch
+                {
+                    MapNames.Skeld => Options.DisableSkeldCamera.GetBool(),
+                    MapNames.Polus => Options.DisablePolusCamera.GetBool(),
+                    MapNames.Airship => Options.DisableAirshipCamera.GetBool(),
+                    MapNames.Fungle => Options.DisableFungleBinoculars.GetBool(),
+                    _ => false,
+                };
+                return !camerasDisabled;
+            }
+            return true;
+        }
+        public static void Postfix([HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] MessageReader msgReader)
+        {
+            var newReader = MessageReader.Get(msgReader);
+            var amount = newReader.ReadByte();
+        }
     }
 }

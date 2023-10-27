@@ -88,6 +88,7 @@ public static class Utils
             player.MyPhysics.RpcBootFromVent(0);
         }
 
+
         // Modded
         var playerlastSequenceId = player.NetTransform.lastSequenceId + 8;
         player.NetTransform.SnapTo(location, (ushort)playerlastSequenceId);
@@ -2143,7 +2144,7 @@ public static class Utils
                 SelfName = $"<size=0%>{SelfName}</size>";
 
             // When MushroomMixup Sabotage Is Active
-            //else if (IsActive(SystemTypes.MushroomMixupSabotage))
+            //else if (!CamouflageIsForMeeting && IsActive(SystemTypes.MushroomMixupSabotage))
             //    SelfName = $"<size=0%>{SelfName}</size>";
 
 
@@ -2458,7 +2459,7 @@ public static class Utils
                         TargetPlayerName = $"<size=0%>{TargetPlayerName}</size>";
 
                     // When MushroomMixup Sabotage Is Active
-                    //else if (IsActive(SystemTypes.MushroomMixupSabotage))
+                    //else if (!CamouflageIsForMeeting && IsActive(SystemTypes.MushroomMixupSabotage))
                     //    TargetPlayerName = $"<size=0%>{TargetPlayerName}</size>";
 
                     // Target Name

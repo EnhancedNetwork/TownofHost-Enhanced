@@ -147,6 +147,8 @@ internal class ChangeRoleSettings
             RPC.SyncAllPlayerNames();
 
             Camouflage.Init();
+            //MushroomMixupSabotagePatch.Init();
+
             var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
             if (invalidColor.Any())
             {

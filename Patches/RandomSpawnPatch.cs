@@ -28,7 +28,7 @@ class RandomSpawn
 
                 NumOfTP[player.PlayerId]++;
 
-                if (NumOfTP[player.PlayerId] == 2)
+                if (NumOfTP[player.PlayerId] == 1)
                 {
                     if (Main.NormalOptions.MapId != 4) return; //マップがエアシップじゃなかったらreturn
                     player.RpcResetAbilityCooldown();
