@@ -189,7 +189,7 @@ public class RemoveDisableDevicesPatch
             case 5:
                 if (Options.DisableFungleCamera.GetBool())
                     consoles.DoIf(x => x.name == "BinocularsSecurityConsole", x => x.gameObject.GetComponent<PolygonCollider2D>().enabled = false || ignore);
-                if (Options.DisableFungleCamera.GetBool())
+                if (Options.DisableFungleVital.GetBool())
                     consoles.DoIf(x => x.name == "VitalsConsole", x => x.gameObject.GetComponent<BoxCollider2D>().enabled = false || ignore);
                 break;
         }
