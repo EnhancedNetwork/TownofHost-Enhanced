@@ -844,11 +844,15 @@ public static class Options
     public static OptionItem ApplyDenyNameList;
     public static OptionItem KickPlayerFriendCodeNotExist;
     public static OptionItem KickLowLevelPlayer;
+    public static OptionItem TempBanLowLevelPlayer;
     public static OptionItem ApplyBanList;
     public static OptionItem ApplyModeratorList;
     public static OptionItem ApplyVipList;
     public static OptionItem ApplyAllowList;
     public static OptionItem AutoWarnStopWords;
+
+    public static OptionItem TempBanPlayersWhoKeepQuitting;
+    public static OptionItem QuitTimesTillTempBan;
 
     public static OptionItem MinWaitAutoStart;
     public static OptionItem MaxWaitAutoStart;
@@ -2641,6 +2645,9 @@ public static class Options
         KickLowLevelPlayer = IntegerOptionItem.Create(19300, "KickLowLevelPlayer", new(0, 100, 1), 0, TabGroup.SystemSettings, false)
             .SetValueFormat(OptionFormat.Level)
             .SetHeader(true);
+        TempBanLowLevelPlayer = BooleanOptionItem.Create(44442, "TempBanLowLevelPlayer", false, TabGroup.SystemSettings, false)
+            .SetParent(KickLowLevelPlayer)
+            .SetValueFormat(OptionFormat.Times);
         ApplyAllowList = BooleanOptionItem.Create(19305, "ApplyWhiteList", false, TabGroup.SystemSettings, false);
         KickOtherPlatformPlayer = BooleanOptionItem.Create(19350, "KickOtherPlatformPlayer", false, TabGroup.SystemSettings, false);
         OptKickAndroidPlayer = BooleanOptionItem.Create(19351, "OptKickAndroidPlayer", false, TabGroup.SystemSettings, false)
@@ -2670,6 +2677,11 @@ public static class Options
             .SetValueFormat(OptionFormat.Times);
         AutoKickStartAsBan = BooleanOptionItem.Create(19312, "AutoKickStartAsBan", false, TabGroup.SystemSettings, false)
             .SetParent(AutoKickStart);
+
+        TempBanPlayersWhoKeepQuitting = BooleanOptionItem.Create(44440, "TempBanPlayersWhoKeepQuitting", false, TabGroup.SystemSettings, false);
+        QuitTimesTillTempBan = IntegerOptionItem.Create(44441, "QuitTimesTillTempBan", new(1, 15, 1), 4, TabGroup.SystemSettings, false)
+            .SetParent(TempBanPlayersWhoKeepQuitting)
+            .SetValueFormat(OptionFormat.Times);
         /*      AutoKickStopWords = BooleanOptionItem.Create(19313, "AutoKickStopWords", false, TabGroup.SystemSettings, false);
               AutoKickStopWordsTimes = IntegerOptionItem.Create(19314, "AutoKickStopWordsTimes", new(0, 99, 1), 3, TabGroup.SystemSettings, false)
                   .SetParent(AutoKickStopWords)

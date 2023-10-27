@@ -41,6 +41,7 @@ class OnGameJoinedPatch
             Main.DevRole = new();
             EAC.DeNum = new();
             Main.AllPlayerNames = new();
+            Main.PlayerQuitTimes = new();
 
             if (Main.NormalOptions.KillCooldown == 0f)
                 Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
@@ -109,6 +110,20 @@ class OnPlayerJoinedPatch
             if (Main.SayStartTimes.ContainsKey(client.Id)) Main.SayStartTimes.Remove(client.Id);
             if (Main.SayBanwordsTimes.ContainsKey(client.Id)) Main.SayBanwordsTimes.Remove(client.Id);
             //if (Main.newLobby && Options.ShareLobby.GetBool()) Cloud.ShareLobby();
+            if (client.FriendCode != "")
+            {
+                if (Main.PlayerQuitTimes.ContainsKey(client.FriendCode))
+                {
+                    if (Main.PlayerQuitTimes[client.FriendCode] >= Options.QuitTimesTillTempBan.GetInt())
+                    {
+                        if (!BanManager.TempBanWhiteList.Contains(client.FriendCode))
+                            BanManager.TempBanWhiteList.Add(client.FriendCode);
+                        AmongUsClient.Instance.KickPlayer(client.Id, true);
+                        Logger.SendInGame(string.Format(GetString("Message.TempBannedForSpamQuitting"), client.PlayerName));
+                        Logger.Info($"Temp Ban Player ー {client?.PlayerName}({client.FriendCode}) has been temp banned.", "BAN");
+                    }
+                }
+            }
         }
     }
 }
@@ -208,6 +223,22 @@ class OnPlayerLeftPatch
                 Main.SayStartTimes.Remove(__instance.ClientId);
                 Main.SayBanwordsTimes.Remove(__instance.ClientId);
                 Main.playerVersion.Remove(data?.Character?.PlayerId ?? byte.MaxValue);
+
+                if (GameStates.IsLobby)
+                {
+                    if (data?.FriendCode != "") //Can't do this on players without friendcode
+                    {
+                        if (!Main.PlayerQuitTimes.ContainsKey(data?.FriendCode))
+                            Main.PlayerQuitTimes.Add(data?.FriendCode, 1);
+                        else Main.PlayerQuitTimes[data?.FriendCode]++;
+
+                        if (Main.PlayerQuitTimes[data?.FriendCode] >= Options.QuitTimesTillTempBan.GetInt())
+                        {
+                            BanManager.TempBanWhiteList.Add(data?.FriendCode);
+                            //should ban on player's next join game
+                        }
+                    }
+                }
             }
         }
         catch (Exception error)
