@@ -1,18 +1,19 @@
-using AmongUs.GameOptions;
-using HarmonyLib;
-using Hazel;
-using InnerNet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Hazel;
+using InnerNet;
+using HarmonyLib;
+using UnityEngine;
+using AmongUs.GameOptions;
+
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Impostor;
-using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
+using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -180,7 +181,7 @@ static class ExtendedPlayerControl
         if (killer.AmOwner)
         {
             killer.ProtectPlayer(target, colorId);
-            killer.MurderPlayer(target, MurderResultFlags.DecisionByHost);
+            killer.MurderPlayer(target, ResultFlags);
         }
         // Other Clients
         if (killer.PlayerId != 0)
@@ -193,7 +194,7 @@ static class ExtendedPlayerControl
                 .EndRpc();
             sender.StartRpc(killer.NetId, (byte)RpcCalls.MurderPlayer)
                 .WriteNetObject(target)
-                .Write((byte)MurderResultFlags.DecisionByHost)
+                .Write((byte)ResultFlags)
                 .EndRpc();
             sender.EndMessage();
             sender.SendMessage();
@@ -272,13 +273,13 @@ static class ExtendedPlayerControl
         if (seer == null) seer = killer;
         if (killer.AmOwner && seer.AmOwner)
         {
-            killer.MurderPlayer(target, MurderResultFlags.DecisionByHost);
+            killer.MurderPlayer(target, ResultFlags);
         }
         else
         {
             MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable, seer.GetClientId());
             messageWriter.WriteNetObject(target);
-            messageWriter.Write((byte)MurderResultFlags.DecisionByHost);
+            messageWriter.Write((byte)ResultFlags);
             AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
         }
     }
@@ -1277,11 +1278,11 @@ static class ExtendedPlayerControl
         if (target == null) target = killer;
         if (AmongUsClient.Instance.AmClient)
         {
-            killer.MurderPlayer(target, MurderResultFlags.DecisionByHost);
+            killer.MurderPlayer(target, ResultFlags);
         }
         MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.None, -1);
         messageWriter.WriteNetObject(target);
-        messageWriter.Write((byte)MurderResultFlags.DecisionByHost);
+        messageWriter.Write((byte)ResultFlags);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
         Utils.NotifyRoles();
     }
@@ -1452,4 +1453,6 @@ static class ExtendedPlayerControl
     }
     ///<summary>Is the player currently protected</summary>
     public static bool IsProtected(this PlayerControl self) => self.protectedByGuardianId > -1;
+
+    public const MurderResultFlags ResultFlags = MurderResultFlags.Succeeded | MurderResultFlags.DecisionByHost;
 }

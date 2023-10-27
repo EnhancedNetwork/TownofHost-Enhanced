@@ -50,11 +50,11 @@ public class FallFromLadder
                       .EndRpc();
                     sender.AutoStartRpc(player.NetId, (byte)RpcCalls.MurderPlayer)
                         .WriteNetObject(player)
-                        .Write((byte)MurderResultFlags.DecisionByHost)
+                        .Write((byte)ExtendedPlayerControl.ResultFlags)
                       .EndRpc();
                     sender.SendMessage();
                     player.NetTransform.SnapTo(targetPos);
-                    player.MurderPlayer(player, MurderResultFlags.DecisionByHost);
+                    player.MurderPlayer(player, ExtendedPlayerControl.ResultFlags);
                     Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Fall;
                     Main.PlayerStates[player.PlayerId].SetDead();
                 }, 0.05f, "LadderFallTask");
