@@ -1450,5 +1450,6 @@ static class ExtendedPlayerControl
     {
         return GameStates.InGame || (target != null && (Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote));
     }
-
+    ///<summary>Is the player currently protected</summary>
+    public static bool IsProtected(this PlayerControl self) => self.protectedByGuardianId > -1;
 }
