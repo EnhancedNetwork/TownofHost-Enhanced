@@ -147,7 +147,7 @@ public static class Utils
             case SystemTypes.Reactor:
                 {
                     if (mapId == 2) return false; // if Polus return false
-                    else if (mapId == 4)
+                    else if (mapId is 4) // Only Airhip
                     {
                         return IsActive(SystemTypes.HeliSabotage);
                     }
