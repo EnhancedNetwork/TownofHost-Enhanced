@@ -3299,5 +3299,6 @@
   "FFFCanKillEgoist": "Can kill egoist",
   "FFFCanKillInfected": "Can kill infected team",
   "FFFCanKillContagious": "Can kill virus team",
-  "FFFCanKillAdmired": "Can kill admirer"
+  "FFFCanKillAdmired": "Can kill admirer",
+  "AutoMuteUs": "Enable it if you use AutoMuteUs"
 }
