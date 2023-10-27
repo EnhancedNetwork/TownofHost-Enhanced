@@ -89,14 +89,14 @@ public static class Utils
         }
 
         player.NetTransform.SnapTo(location);
-        var sender = CustomRpcSender.Create("RpcTeleport", sendOption: SendOption.None);
+        var sender = CustomRpcSender.Create("RpcTeleport", sendOption: SendOption.Reliable);
         {
             sender.AutoStartRpc(player.NetTransform.NetId, (byte)RpcCalls.SnapTo);
             {
                 Logger.Info($" {player.NetTransform.NetId}", "Teleport - NetTransform Id");
 
                 NetHelpers.WriteVector2(location, sender.stream);
-                sender.Write(player.NetTransform.lastSequenceId);
+                sender.Write(player.NetTransform.lastSequenceId + 1);
 
                 Logger.Info($" {player.NetTransform.lastSequenceId}", "Teleport - Player NetTransform lastSequenceId - writer");
             }

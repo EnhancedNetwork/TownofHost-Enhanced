@@ -133,6 +133,7 @@ public static class Pelican
         originalSpeed.Add(target.PlayerId, Main.AllPlayerSpeed[target.PlayerId]);
 
         target.RpcTeleport(new Vector2 (GetBlackRoomPS().x, GetBlackRoomPS().y));
+        target.RpcTeleport(new Vector2(GetBlackRoomPS().x + 0.3f, GetBlackRoomPS().y + 0.3f)); //teleport twice so for vanilla clients the eaten player moves
         Main.AllPlayerSpeed[target.PlayerId] = 0.5f;
         ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
         target.MarkDirtySettings();
