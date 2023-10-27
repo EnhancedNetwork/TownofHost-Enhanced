@@ -1,7 +1,6 @@
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
-using System.Numerics;
 using UnityEngine;
 
 namespace TOHE;
@@ -12,12 +11,12 @@ class DisableDevice
     public static bool DoDisable => Options.DisableDevices.GetBool();
     private static List<byte> DesyncComms = new();
     private static int frame = 0;
-    public static readonly Dictionary<string, Vector2> DevicePos = new()
+    public static readonly Dictionary<string, Vector2> DevicePos = new ()
     {
-        ["SkeldAdmin"] = new Vector2 (3.48f, -8.62f),
-        ["SkeldCamera"] = new Vector2 (-13.06f, -2.45f),
-        ["MiraHQAdmin"] = new Vector2 (21.02f, 19.09f),
-        ["MiraHQDoorLog"] = new Vector2 (16.22f, 5.82f),
+        ["SkeldAdmin"] = new (3.48f, -8.62f),
+        ["SkeldCamera"] = new (-13.06f, -2.45f),
+        ["MiraHQAdmin"] = new (21.02f, 19.09f),
+        ["MiraHQDoorLog"] = new (16.22f, 5.82f),
         ["PolusLeftAdmin"] = new Vector2 (22.80f, -21.52f),
         ["PolusRightAdmin"] = new Vector2 (24.66f, -21.52f),
         ["PolusCamera"] = new Vector2 (2.96f, -12.74f),
@@ -100,7 +99,7 @@ class DisableDevice
                                 doComms |= Vector2.Distance(PlayerPos, DevicePos["AirshipVital"]) <= UsableDistance();
                             break;
                         case 5:
-                            if (Options.DisableFungleCamera.GetBool())
+                            if (Options.DisableFungleBinoculars.GetBool())
                                 doComms |= Vector2.Distance(PlayerPos, DevicePos["FungleCamera"]) <= UsableDistance();
                             if (Options.DisableFungleVital.GetBool())
                                 doComms |= Vector2.Distance(PlayerPos, DevicePos["FungleVital"]) <= UsableDistance();
@@ -187,7 +186,7 @@ public class RemoveDisableDevicesPatch
                     consoles.DoIf(x => x.name == "panel_vitals", x => x.gameObject.GetComponent<CircleCollider2D>().enabled = false || ignore);
                 break;
             case 5:
-                if (Options.DisableFungleCamera.GetBool())
+                if (Options.DisableFungleBinoculars.GetBool())
                     consoles.DoIf(x => x.name == "BinocularsSecurityConsole", x => x.gameObject.GetComponent<PolygonCollider2D>().enabled = false || ignore);
                 if (Options.DisableFungleVital.GetBool())
                     consoles.DoIf(x => x.name == "VitalsConsole", x => x.gameObject.GetComponent<BoxCollider2D>().enabled = false || ignore);

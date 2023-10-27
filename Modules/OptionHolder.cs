@@ -639,7 +639,7 @@ public static class Options
     public static OptionItem DisableAirshipCamera;
     public static OptionItem DisableAirshipVital;
     public static OptionItem DisableFungleDevices;
-    public static OptionItem DisableFungleCamera;
+    public static OptionItem DisableFungleBinoculars;
     public static OptionItem DisableFungleVital;
     public static OptionItem DisableDevicesIgnoreConditions;
     public static OptionItem DisableDevicesIgnoreImpostors;
@@ -3003,7 +3003,7 @@ public static class Options
         DisableFungleDevices = BooleanOptionItem.Create(22920, "DisableFungleDevices", false, TabGroup.GameSettings, false)
             .SetParent(DisableDevices)
             .SetGameMode(CustomGameMode.Standard);
-        DisableFungleCamera = BooleanOptionItem.Create(22921, "DisableFungleCamera", false, TabGroup.GameSettings, false)
+        DisableFungleBinoculars = BooleanOptionItem.Create(22921, "DisableFungleBinoculars", false, TabGroup.GameSettings, false)
             .SetParent(DisableFungleDevices)
             .SetGameMode(CustomGameMode.Standard);
         DisableFungleVital = BooleanOptionItem.Create(22922, "DisableFungleVital", false, TabGroup.GameSettings, false)
