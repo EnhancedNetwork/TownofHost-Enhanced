@@ -171,11 +171,11 @@ class CheckMurderPatch
                 {
                     if (Options.FragileKillerLunge.GetBool())
                     {
-                        killer.RpcMurderPlayer(target, true);
+                        killer.RpcMurderPlayerV3(target);
                     }
                     else
                     {
-                        target.RpcMurderPlayer(target, true);
+                        target.RpcMurderPlayerV3(target);
                     }
                     Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Shattered;
                     target.SetRealKiller(target);
