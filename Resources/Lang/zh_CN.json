@@ -3269,5 +3269,5 @@
   "FFFCanKillInfected": "FFF能击杀感染者",
   "FFFCanKillContagious": "FFF能击杀传染性",
   "FFFCanKillAdmired": "FFF能击杀仰慕者",
-  "AutoMuteUs": "Enable it if you use AutoMuteUs"
+  "AutoMuteUs": "大厅中不修改房主名称（兼容AutoMuteUs）"
 }
