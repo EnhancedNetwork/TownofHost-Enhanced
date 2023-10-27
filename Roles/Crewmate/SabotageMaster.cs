@@ -141,7 +141,7 @@ public static class SabotageMaster
 
         if (amount is >= 0 and <= 4)
         {
-            __instance.ActualSwitches = 1;
+            __instance.ActualSwitches = 0;
             __instance.ExpectedSwitches = 0;
             UsedSkillCount[playerId] += UsesUsedWhenFixingLightsOrComms.GetFloat();
             SendRPC(playerId);
