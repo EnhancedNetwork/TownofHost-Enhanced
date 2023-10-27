@@ -16,6 +16,7 @@ public static class Pelican
     public static bool IsEnable = false;
     private static Dictionary<byte, List<byte>> eatenList = new();
     private static readonly Dictionary<byte, float> originalSpeed = new();
+    private static int Count = 0;
     public static OptionItem KillCooldown;
     public static OptionItem HasImpostorVision;
     public static OptionItem CanVent;
@@ -32,6 +33,7 @@ public static class Pelican
         playerIdList = new();
         eatenList = new();
         IsEnable = false;
+        Count = 0;
     }
     public static void Add(byte playerId)
     {
@@ -99,7 +101,7 @@ public static class Pelican
             1 => new Vector2(-11.4f, 8.2f), // MIRA HQ
             2 => new Vector2(42.6f, -19.9f), // Polus
             4 => new Vector2(-16.8f, -6.2f), // Airship
-            5 => new Vector2(-30.3f, -0.6f), // The Fungle
+            5 => new Vector2(9.6f, 23.2f), // The Fungle
             _ => throw new System.NotImplementedException(),
         };
     }
@@ -183,7 +185,6 @@ public static class Pelican
         SyncEatenList(pc);
     }
 
-    private static int Count = 0;
     public static void OnFixedUpdate()
     {
         if (!GameStates.IsInTask)
@@ -200,7 +201,7 @@ public static class Pelican
         
         if (Count > 0) return; 
         
-        Count = 30;
+        Count = 15;
 
         foreach (var pc in eatenList)
         {
@@ -211,7 +212,7 @@ public static class Pelican
                 var pos = GetBlackRoomPS();
                 var dis = Vector2.Distance(pos, target.GetTruePosition());
                 if (dis < 1f) continue;
-                target.RpcTeleport(new Vector2 (pos.x, pos.y));
+                target.RpcTeleport(pos);
                 Utils.NotifyRoles(SpecifySeer: target, ForceLoop: false);
             }
         }

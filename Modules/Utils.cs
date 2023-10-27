@@ -89,20 +89,26 @@ public static class Utils
         }
 
         player.NetTransform.SnapTo(location);
-        var sender = CustomRpcSender.Create("RpcTeleport", sendOption: SendOption.None);
-        {
-            sender.AutoStartRpc(player.NetTransform.NetId, (byte)RpcCalls.SnapTo);
-            {
-                Logger.Info($" {player.NetTransform.NetId}", "Teleport - NetTransform Id");
+        //var sender = CustomRpcSender.Create("RpcTeleport", sendOption: SendOption.Reliable);
+        //{
+        //    sender.AutoStartRpc(player.NetTransform.NetId, (byte)RpcCalls.SnapTo);
+        //    {
+        //        Logger.Info($" {player.NetTransform.NetId}", "Teleport - NetTransform Id");
 
-                NetHelpers.WriteVector2(location, sender.stream);
-                sender.Write(player.NetTransform.lastSequenceId);
+        //        NetHelpers.WriteVector2(location, sender.stream);
+        //        sender.Write(player.NetTransform.lastSequenceId + 1);
 
-                Logger.Info($" {player.NetTransform.lastSequenceId}", "Teleport - Player NetTransform lastSequenceId - writer");
-            }
-            sender.EndRpc();
-        }
-        sender.SendMessage();
+        //        Logger.Info($" {player.NetTransform.lastSequenceId}", "Teleport - Player NetTransform lastSequenceId - writer");
+        //    }
+        //    sender.EndRpc();
+        //}
+        //sender.SendMessage();
+        Logger.Info($" {player.NetTransform.NetId}", "Teleport - NetTransform Id");
+        player.NetTransform.RpcSnapTo(location);
+        Logger.Info($" {player.NetTransform.lastSequenceId}", "Teleport - Player NetTransform lastSequenceId A - writer");
+        player.NetTransform.RpcSnapTo(location);
+        Logger.Info($" {player.NetTransform.lastSequenceId}", "Teleport - Player NetTransform lastSequenceId B - writer");
+        //Temporary solution. sending rpc snapto twice seems to force change vanilla clients position
     }
     public static void RpcRandomVentTeleport(this PlayerControl player)
     {
