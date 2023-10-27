@@ -121,7 +121,7 @@ public class Main : BasePlugin
     public static bool isLoversDead = true;
     public static Dictionary<byte, float> AllPlayerKillCooldown = new();
     public static Dictionary<byte, float> EvilMiniKillcooldown = new();
-    public static Dictionary<byte, long> NiceMiniTime = new();
+    //public static Dictionary<byte, long> NiceMiniTime = new();
     public static float EvilMiniKillcooldownf = new();
     public static Dictionary<byte, Vent> LastEnteredVent = new();
     public static Dictionary<byte, Vector2> LastEnteredVentLocation = new();

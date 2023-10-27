@@ -66,5 +66,5 @@ public class Mini
             Main.ResetCamPlayerList.Add(playerId);
     }
 
-    public static string GetAge(byte playerId) => Utils.ColorString(Color.yellow, Age != 18 ? $"({Age})" : "");
+    public static string GetAge(byte playerId) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), Age != 18 ? $"({Age})" : "");
 }

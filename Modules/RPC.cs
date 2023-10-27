@@ -78,8 +78,8 @@ enum CustomRPC
     SetCounterfeiterSellLimit,
     SetPursuerSellLimit,
     SetMedicalerProtectLimit,
-    SetMiniLimit,
-    SetMiniSellLimit,
+    //SetMiniLimit,
+    //SetMiniSellLimit,
     SetGangsterRecruitLimit,
     SetGhostPlayer,
     SetDarkHiderKillCount,
@@ -140,7 +140,7 @@ enum CustomRPC
     SetImitateLimit,
     SyncNWitch,
     SyncShroud,
-    SyncMiniAge,
+    //SyncMiniAge,
     SyncSabotageMasterSkill,
 }
 public enum Sounds
