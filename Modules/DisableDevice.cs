@@ -13,10 +13,10 @@ class DisableDevice
     private static int frame = 0;
     public static readonly Dictionary<string, Vector2> DevicePos = new ()
     {
-        ["SkeldAdmin"] = new (3.48f, -8.62f),
-        ["SkeldCamera"] = new (-13.06f, -2.45f),
-        ["MiraHQAdmin"] = new (21.02f, 19.09f),
-        ["MiraHQDoorLog"] = new (16.22f, 5.82f),
+        ["SkeldAdmin"] = new Vector2 (3.48f, -8.62f),
+        ["SkeldCamera"] = new Vector2 (-13.06f, -2.45f),
+        ["MiraHQAdmin"] = new Vector2 (21.02f, 19.09f),
+        ["MiraHQDoorLog"] = new Vector2 (16.22f, 5.82f),
         ["PolusLeftAdmin"] = new Vector2 (22.80f, -21.52f),
         ["PolusRightAdmin"] = new Vector2 (24.66f, -21.52f),
         ["PolusCamera"] = new Vector2 (2.96f, -12.74f),
