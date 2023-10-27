@@ -71,6 +71,7 @@ public class Main : BasePlugin
     public static ConfigEntry<int> MessageWait { get; private set; }
     public static ConfigEntry<bool> UnlockFPS { get; private set; }
     public static ConfigEntry<bool> ShowFPS { get; private set; }
+    public static ConfigEntry<bool> AutoMuteUs { get; private set; }
     public static ConfigEntry<bool> EnableGM { get; private set; }
     public static ConfigEntry<bool> AutoStart { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguage { get; private set; }
@@ -274,6 +275,7 @@ public class Main : BasePlugin
         SwitchVanilla = Config.Bind("Client Options", "SwitchVanilla", false);
         VersionCheat = Config.Bind("Client Options", "VersionCheat", false);
         GodMode = Config.Bind("Client Options", "GodMode", false);
+        AutoMuteUs = Config.Bind("Client Options", "AutoMuteUs", false); // The AutoMuteUs bot fails to match the host's name.
 
         Logger = BepInEx.Logging.Logger.CreateLogSource("TOHE");
         TOHE.Logger.Enable();
