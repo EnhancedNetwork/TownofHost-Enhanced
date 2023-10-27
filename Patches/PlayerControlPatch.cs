@@ -2318,8 +2318,9 @@ class FixedUpdatePatch
     private static int LevelKickBufferTime = 20;
     private static Dictionary<int, int> BufferTime = new();
 
-    private static bool CheckAllowList(string friendcode)
+    public static bool CheckAllowList(string friendcode)
     {
+        if (friendcode == "") return false;
         var allowListFilePath = @"./TOHE-DATA/WhiteList.txt";
         if (!File.Exists(allowListFilePath)) File.Create(allowListFilePath).Close();
         var friendcodes = File.ReadAllLines(allowListFilePath);

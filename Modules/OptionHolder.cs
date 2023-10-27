@@ -2680,7 +2680,6 @@ public static class Options
 
         TempBanPlayersWhoKeepQuitting = BooleanOptionItem.Create(44440, "TempBanPlayersWhoKeepQuitting", false, TabGroup.SystemSettings, false);
         QuitTimesTillTempBan = IntegerOptionItem.Create(44441, "QuitTimesTillTempBan", new(1, 15, 1), 4, TabGroup.SystemSettings, false)
-            .SetParent(TempBanPlayersWhoKeepQuitting)
             .SetValueFormat(OptionFormat.Times);
         /*      AutoKickStopWords = BooleanOptionItem.Create(19313, "AutoKickStopWords", false, TabGroup.SystemSettings, false);
               AutoKickStopWordsTimes = IntegerOptionItem.Create(19314, "AutoKickStopWordsTimes", new(0, 99, 1), 3, TabGroup.SystemSettings, false)

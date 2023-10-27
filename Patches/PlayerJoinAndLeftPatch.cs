@@ -110,7 +110,8 @@ class OnPlayerJoinedPatch
             if (Main.SayStartTimes.ContainsKey(client.Id)) Main.SayStartTimes.Remove(client.Id);
             if (Main.SayBanwordsTimes.ContainsKey(client.Id)) Main.SayBanwordsTimes.Remove(client.Id);
             //if (Main.newLobby && Options.ShareLobby.GetBool()) Cloud.ShareLobby();
-            if (client.FriendCode != "")
+            if (client.FriendCode != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
+                && !FixedUpdatePatch.CheckAllowList(client.FriendCode))
             {
                 if (Main.PlayerQuitTimes.ContainsKey(client.FriendCode))
                 {
@@ -226,7 +227,8 @@ class OnPlayerLeftPatch
 
                 if (GameStates.IsLobby)
                 {
-                    if (data?.FriendCode != "") //Can't do this on players without friendcode
+                    if (data?.FriendCode != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
+                        && !FixedUpdatePatch.CheckAllowList(data?.FriendCode)) //Can't do this on players without friendcode
                     {
                         if (!Main.PlayerQuitTimes.ContainsKey(data?.FriendCode))
                             Main.PlayerQuitTimes.Add(data?.FriendCode, 1);
