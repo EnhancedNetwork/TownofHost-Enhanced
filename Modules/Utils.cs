@@ -88,27 +88,18 @@ public static class Utils
             player.MyPhysics.RpcBootFromVent(0);
         }
 
-        player.NetTransform.SnapTo(location);
-        //var sender = CustomRpcSender.Create("RpcTeleport", sendOption: SendOption.Reliable);
-        //{
-        //    sender.AutoStartRpc(player.NetTransform.NetId, (byte)RpcCalls.SnapTo);
-        //    {
-        //        Logger.Info($" {player.NetTransform.NetId}", "Teleport - NetTransform Id");
+        // Modded
+        var playerlastSequenceId = player.NetTransform.lastSequenceId + 8;
+        player.NetTransform.SnapTo(location, (ushort)playerlastSequenceId);
+        Logger.Info($" {(ushort)playerlastSequenceId}", "Teleport - Player NetTransform lastSequenceId + 8 - writer");
 
-        //        NetHelpers.WriteVector2(location, sender.stream);
-        //        sender.Write(player.NetTransform.lastSequenceId + 1);
 
-        //        Logger.Info($" {player.NetTransform.lastSequenceId}", "Teleport - Player NetTransform lastSequenceId - writer");
-        //    }
-        //    sender.EndRpc();
-        //}
-        //sender.SendMessage();
-        Logger.Info($" {player.NetTransform.NetId}", "Teleport - NetTransform Id");
-        player.NetTransform.RpcSnapTo(location);
-        Logger.Info($" {player.NetTransform.lastSequenceId}", "Teleport - Player NetTransform lastSequenceId A - writer");
-        player.NetTransform.RpcSnapTo(location);
-        Logger.Info($" {player.NetTransform.lastSequenceId}", "Teleport - Player NetTransform lastSequenceId B - writer");
-        //Temporary solution. sending rpc snapto twice seems to force change vanilla clients position
+        // Vanilla
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable);
+        NetHelpers.WriteVector2(location, messageWriter);
+        messageWriter.Write(player.NetTransform.lastSequenceId + 10U);
+        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+        Logger.Info($" {player.NetTransform.lastSequenceId + 10U}", "Teleport - Player NetTransform lastSequenceId + 10U - writer");
     }
     public static void RpcRandomVentTeleport(this PlayerControl player)
     {
