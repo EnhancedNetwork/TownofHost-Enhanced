@@ -88,7 +88,6 @@ public static class Utils
             player.MyPhysics.RpcBootFromVent(0);
         }
 
-
         // Modded
         var playerlastSequenceId = player.NetTransform.lastSequenceId + 8;
         player.NetTransform.SnapTo(location, (ushort)playerlastSequenceId);

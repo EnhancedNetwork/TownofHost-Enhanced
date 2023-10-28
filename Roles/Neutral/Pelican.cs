@@ -4,9 +4,9 @@ using System.Linq;
 using AmongUs.GameOptions;
 using TOHE.Roles.Crewmate;
 using UnityEngine;
-using System;
-using static TOHE.Translator;
 using TOHE.Roles.Double;
+using static TOHE.Translator;
+
 namespace TOHE.Roles.Neutral;
 
 public static class Pelican
@@ -90,8 +90,9 @@ public static class Pelican
     public static bool CanEat(PlayerControl pc, byte id)
     {
         if (!pc.Is(CustomRoles.Pelican) || GameStates.IsMeeting) return false;
+
         var target = Utils.GetPlayerById(id);
-        return target != null && target.IsAlive() && !target.inVent && !Medic.ProtectList.Contains(target.PlayerId) && !target.Is(CustomRoles.GM) && !IsEaten(pc, id) && !IsEaten(id);
+        return target != null && target.CanBeTeleported() && !Medic.ProtectList.Contains(target.PlayerId) && !target.Is(CustomRoles.GM) && !IsEaten(pc, id) && !IsEaten(id);
     }
     public static Vector2 GetBlackRoomPS()
     {
@@ -118,7 +119,7 @@ public static class Pelican
     }
     public static void EatPlayer(PlayerControl pc, PlayerControl target)
     {
-        if (pc == null || target == null || !CanEat(pc, target.PlayerId)) return;
+        if (pc == null || target == null || !target.CanBeTeleported()) return;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
             pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("CantEat")));

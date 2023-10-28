@@ -100,8 +100,7 @@ class CheckMurderPatch
         if (target.Data == null // Check if PlayerData is not null
             // Check target status
             || target.inVent
-            || target.inMovingPlat
-            //|| target.CheckUseZipline()
+            || target.inMovingPlat // Moving Platform on Airhip and Zipline on Fungle
             || target.MyPhysics.Animations.IsPlayingEnterVentAnimation()
             || target.MyPhysics.Animations.IsPlayingAnyLadderAnimation()
         )
@@ -710,7 +709,7 @@ class CheckMurderPatch
                 Main.PlayerStates[target.PlayerId].SetDead();
                 target.RpcMurderPlayerV3(target);
                 killer.SetKillCooldownV2();
-                NameNotifyManager.Notify(target, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Berserker), GetString("KilledByBerserker")));
+                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Berserker), GetString("KilledByBerserker")));
                 return false;
             }
             if (Main.BerserkerKillMax[killer.PlayerId] >= Options.BerserkerBomberLevel.GetInt() && Options.BerserkerThreeCanBomber.GetBool())
@@ -1077,10 +1076,12 @@ class CheckMurderPatch
                         {
                             if (!killer.Is(CustomRoles.Pestilence))
                             {
-                                if (Main.TimeMasterBackTrack.ContainsKey(player.PlayerId))
+                                if (Main.TimeMasterBackTrack.TryGetValue(player.PlayerId, out var position))
                                 {
-                                    var position = Main.TimeMasterBackTrack[player.PlayerId];
-                                    player.RpcTeleport(new Vector2(position.x, position.y));
+                                    if (player.CanBeTeleported())
+                                    {
+                                        player.RpcTeleport(position);
+                                    }
                                 }
                             }
                         }
@@ -1615,7 +1616,7 @@ class ShapeshiftPatch
                     {
                         _ = new LateTask(() =>
                         {
-                            if (!(!GameStates.IsInTask || !shapeshifter.IsAlive() || !target.IsAlive() || shapeshifter.inVent || target.inVent))
+                            if (!(!GameStates.IsInTask || !shapeshifter.CanBeTeleported() || !target.CanBeTeleported()))
                             {
                                 var originPs = target.GetTruePosition();
                                 target.RpcTeleport(shapeshifter.GetTruePosition());
@@ -3465,17 +3466,26 @@ class EnterVentPatch
                 Main.TimeMasterNumOfUsed[pc.PlayerId] -= 1;
                 Main.TimeMasterInProtect.Remove(pc.PlayerId);
                 Main.TimeMasterInProtect.Add(pc.PlayerId, Utils.GetTimeStamp());
+
                 if (!pc.IsModClient())
+                {
                     pc.RpcGuardAndKill(pc);
+                }
                 pc.Notify(GetString("TimeMasterOnGuard"), Options.TimeMasterSkillDuration.GetFloat());
+
                 foreach (var player in Main.AllPlayerControls)
                 {
-                    if (Main.TimeMasterBackTrack.ContainsKey(player.PlayerId))
+                    if (Main.TimeMasterBackTrack.TryGetValue(player.PlayerId, out var position))
                     {
-                        var position = Main.TimeMasterBackTrack[player.PlayerId];
-                        player.RpcTeleport(new Vector2 (position.x, position.y));
+                        if (player.CanBeTeleported() || player.PlayerId == pc.PlayerId)
+                        {
+                            player.RpcTeleport(new Vector2(position.x, position.y));
+                        }
                         if (pc != player)
+                        {
                             player?.MyPhysics?.RpcBootFromVent(player.PlayerId);
+                        }
+
                         Main.TimeMasterBackTrack.Remove(player.PlayerId);
                     }
                     else

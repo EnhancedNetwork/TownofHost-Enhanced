@@ -69,7 +69,7 @@ class RandomSpawn
             {
                 var location = GetLocation();
                 Logger.Info($"{player.Data.PlayerName}:{location}", "Spawn Random Location");
-                player.RpcTeleport(new Vector2(location.x, location.y));
+                player.RpcTeleport(location);
             }
             if (selectRand >= 51 && selectRand <= 101)
             {
