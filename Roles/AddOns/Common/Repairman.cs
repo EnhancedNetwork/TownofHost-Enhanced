@@ -49,32 +49,32 @@ public static class Repairman
                 if (!FixesReactors.GetBool()) break;
                 if (amount is 64 or 65)
                 {
-                    ShipStatus.Instance.RpcRepairSystem(SystemTypes.Reactor, 16);
-                    ShipStatus.Instance.RpcRepairSystem(SystemTypes.Reactor, 17);
+                    ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Reactor, 16);
+                    ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Reactor, 17);
                 }
                 break;
             case SystemTypes.Laboratory:
                 if (!FixesReactors.GetBool()) break;
                 if (amount is 64 or 65)
                 {
-                    ShipStatus.Instance.RpcRepairSystem(SystemTypes.Laboratory, 67);
-                    ShipStatus.Instance.RpcRepairSystem(SystemTypes.Laboratory, 66);
+                    ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Laboratory, 67);
+                    ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Laboratory, 66);
                 }
                 break;
             case SystemTypes.LifeSupp:
                 if (!FixesOxygens.GetBool()) break;
                 if (amount is 64 or 65)
                 {
-                    ShipStatus.Instance.RpcRepairSystem(SystemTypes.LifeSupp, 67);
-                    ShipStatus.Instance.RpcRepairSystem(SystemTypes.LifeSupp, 66);
+                    ShipStatus.Instance.RpcUpdateSystem(SystemTypes.LifeSupp, 67);
+                    ShipStatus.Instance.RpcUpdateSystem(SystemTypes.LifeSupp, 66);
                 }
                 break;
             case SystemTypes.Comms:
                 if (!FixesComms.GetBool()) break;
                 if (amount is 64 or 65)
                 {
-                    ShipStatus.Instance.RpcRepairSystem(SystemTypes.Comms, 16);
-                    ShipStatus.Instance.RpcRepairSystem(SystemTypes.Comms, 17);
+                    ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Comms, 16);
+                    ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Comms, 17);
                 }
                 break;
             case SystemTypes.Doors:
