@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using static TOHE.Translator;
+using TOHE.Roles.Crewmate;
 
 namespace TOHE;
 
@@ -32,9 +33,13 @@ class ShipFixedUpdatePatch
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.UpdateSystem), typeof(SystemTypes), typeof(PlayerControl), typeof(MessageReader))]
 public static class MessageReaderUpdateSystemPatch
 {
+    public static void Prefix(ShipStatus __instance, [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
+    {
+        RepairSystemPatch.Prefix(__instance, systemType, player, MessageReader.Get(reader).ReadByte());
+    }
     public static void Postfix(ShipStatus __instance, [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
     {
-        RepairSystemPatch.Postfix();
+        RepairSystemPatch.Postfix(__instance, systemType, player, MessageReader.Get(reader).ReadByte());
     }
 }
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.UpdateSystem), typeof(SystemTypes), typeof(PlayerControl), typeof(byte))]
@@ -72,6 +77,24 @@ class RepairSystemPatch
             return false;
         }
 
+        // Fast fix critical saboatge
+        switch (player.GetCustomRole())
+        {
+            case CustomRoles.SabotageMaster:
+                SabotageMaster.RepairSystem(__instance, systemType, amount, player.PlayerId);
+                break;
+            case CustomRoles.Alchemist when Alchemist.FixNextSabo:
+                Alchemist.RepairSystem(systemType, amount);
+                break;
+        }
+
+        if (systemType == SystemTypes.Electrical && 0 <= amount && amount <= 4 && Main.NormalOptions.MapId == 4)
+        {
+            if (Options.DisableAirshipViewingDeckLightsPanel.GetBool() && Vector2.Distance(player.transform.position, new(-12.93f, -11.28f)) <= 2f) return false;
+            if (Options.DisableAirshipGapRoomLightsPanel.GetBool() && Vector2.Distance(player.transform.position, new(13.92f, 6.43f)) <= 2f) return false;
+            if (Options.DisableAirshipCargoLightsPanel.GetBool() && Vector2.Distance(player.transform.position, new(30.56f, 2.12f)) <= 2f) return false;
+        }
+
         if (player.Is(CustomRoles.Unlucky) && player.IsAlive()
             && (systemType is SystemTypes.Doors))
         {
@@ -86,9 +109,35 @@ class RepairSystemPatch
 
         return true;
     }
-    public static void Postfix()
+
+    // Fast fix lights
+    public static void Postfix(ShipStatus __instance,
+        [HarmonyArgument(0)] SystemTypes systemType,
+        [HarmonyArgument(1)] PlayerControl player,
+        [HarmonyArgument(2)] byte amount)
     {
         Camouflage.CheckCamouflage();
+
+        if (systemType == SystemTypes.Electrical && 0 <= amount && amount <= 4)
+        {
+            var SwitchSystem = ShipStatus.Instance.Systems[SystemTypes.Electrical].Cast<SwitchSystem>();
+            if (SwitchSystem != null && SwitchSystem.IsActive)
+            {
+                switch (player.GetCustomRole())
+                {
+                    case CustomRoles.SabotageMaster:
+                        Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()} instant-fix-lights", "SwitchSystem");
+                        SabotageMaster.SwitchSystemRepair(SwitchSystem, amount, player.PlayerId);
+                        break;
+                    case CustomRoles.Alchemist when Alchemist.FixNextSabo:
+                        Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()} instant-fix-lights", "SwitchSystem");
+                        SwitchSystem.ActualSwitches = 0;
+                        SwitchSystem.ExpectedSwitches = 0;
+                        Alchemist.FixNextSabo = false;
+                        break;
+                }
+            }
+        }
     }
     public static void CheckAndOpenDoorsRange(ShipStatus __instance, int amount, int min, int max)
     {
