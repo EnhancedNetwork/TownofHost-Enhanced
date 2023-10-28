@@ -192,7 +192,7 @@ class RandomSpawn
             ["Dropship"] = new Vector2(-7.8f, 10.6f),
             ["Cafeteria"] = new Vector2(-16.4f, 7.3f),
             ["SplashZone"] = new Vector2(-15.6f, -1.8f),
-            ["Shore"] = new Vector2(22.8f, -0.6f),
+            ["Shore"] = new Vector2(-22.8f, -0.6f),
             ["Kitchen"] = new Vector2(-15.5f, -7.5f),
             ["Dock"] = new Vector2(-23.1f, -7.0f),
             ["Storage"] = new Vector2(1.7f, 4.4f),
