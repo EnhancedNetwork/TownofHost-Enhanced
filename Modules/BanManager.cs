@@ -18,6 +18,7 @@ public static class BanManager
     private static readonly string VIP_LIST_PATH = @"./TOHE-DATA/VIP-List.txt";
     private static readonly string WHITE_LIST_LIST_PATH = @"./TOHE-DATA/WhiteList.txt";
     private static List<string> EACList = new(); // Don't make it read-only
+    public static List<string> TempBanWhiteList = new(); //To prevent writing to ban list
     public static void Init()
     {
         try
@@ -79,7 +80,7 @@ public static class BanManager
     public static void AddBanPlayer(InnerNet.ClientData player)
     {
         if (!AmongUsClient.Instance.AmHost || player == null) return;
-        if (!CheckBanList(player?.FriendCode) && player.FriendCode != "")
+        if (!CheckBanList(player?.FriendCode) && player.FriendCode != "" && !TempBanWhiteList.Contains(player?.FriendCode))
         {
             File.AppendAllText(BAN_LIST_PATH, $"{player.FriendCode},{player.PlayerName}\n");
             Logger.SendInGame(string.Format(GetString("Message.AddedPlayerToBanList"), player.PlayerName));
@@ -142,6 +143,13 @@ public static class BanManager
             AmongUsClient.Instance.KickPlayer(player.Id, true);
             Logger.SendInGame(string.Format(GetString("Message.BanedByEACList"), player.PlayerName));
             Logger.Info($"{player.PlayerName}存在于EAC封禁名单", "BAN");
+            return;
+        }
+        if (TempBanWhiteList.Contains(player?.FriendCode))
+        {
+            AmongUsClient.Instance.KickPlayer(player.Id, true);
+            //This should not happen
+            Logger.Info($"{player.PlayerName} was in temp ban list", "BAN");
             return;
         }
     }

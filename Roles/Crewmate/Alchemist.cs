@@ -125,7 +125,7 @@ namespace TOHE.Roles.Crewmate
                     {
                         var rd = IRandom.Instance;
                         List<PlayerControl> AllAlivePlayer = new();
-                        foreach (var pc in Main.AllAlivePlayerControls.Where(x => !Pelican.IsEaten(x.PlayerId) && !x.inVent && !x.onLadder)) AllAlivePlayer.Add(pc);
+                        foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.CanBeTeleported())) AllAlivePlayer.Add(pc);
                         var tar1 = AllAlivePlayer[player.PlayerId];
                         AllAlivePlayer.Remove(tar1);
                         var tar2 = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
@@ -363,29 +363,29 @@ namespace TOHE.Roles.Crewmate
                 case SystemTypes.Reactor:
                     if (amount is 64 or 65)
                     {
-                        ShipStatus.Instance.RpcRepairSystem(SystemTypes.Reactor, 16);
-                        ShipStatus.Instance.RpcRepairSystem(SystemTypes.Reactor, 17);
+                        ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Reactor, 16);
+                        ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Reactor, 17);
                     }
                     break;
                 case SystemTypes.Laboratory:
                     if (amount is 64 or 65)
                     {
-                        ShipStatus.Instance.RpcRepairSystem(SystemTypes.Laboratory, 67);
-                        ShipStatus.Instance.RpcRepairSystem(SystemTypes.Laboratory, 66);
+                        ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Laboratory, 67);
+                        ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Laboratory, 66);
                     }
                     break;
                 case SystemTypes.LifeSupp:
                     if (amount is 64 or 65)
                     {
-                        ShipStatus.Instance.RpcRepairSystem(SystemTypes.LifeSupp, 67);
-                        ShipStatus.Instance.RpcRepairSystem(SystemTypes.LifeSupp, 66);
+                        ShipStatus.Instance.RpcUpdateSystem(SystemTypes.LifeSupp, 67);
+                        ShipStatus.Instance.RpcUpdateSystem(SystemTypes.LifeSupp, 66);
                     }
                     break;
                 case SystemTypes.Comms:
                     if (amount is 64 or 65)
                     {
-                        ShipStatus.Instance.RpcRepairSystem(SystemTypes.Comms, 16);
-                        ShipStatus.Instance.RpcRepairSystem(SystemTypes.Comms, 17);
+                        ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Comms, 16);
+                        ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Comms, 17);
                     }
                     break;
             }
