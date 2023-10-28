@@ -3765,4 +3765,17 @@ class PlayerControlSetRolePatch
         }
         return true;
     }
+    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckSporeTrigger))]
+    public static class PlayerControlCheckSporeTriggerPatch
+    {
+        public static bool Prefix()
+        {
+            if (AmongUsClient.Instance.AmHost)
+            {
+                return !Options.DisableSporeTriggerOnFungle.GetBool();
+            }
+
+            return true;
+        }
+    }
 }

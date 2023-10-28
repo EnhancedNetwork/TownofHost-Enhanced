@@ -666,8 +666,10 @@ public static class Options
     public static OptionItem SpawnRandomLocation;
     public static OptionItem AirshipAdditionalSpawn;
     public static OptionItem SpawnRandomVents;
+    public static OptionItem MapModification;
     public static OptionItem AirshipVariableElectrical;
     public static OptionItem DisableAirshipMovingPlatform;
+    public static OptionItem DisableSporeTriggerOnFungle;
     public static OptionItem ResetDoorsEveryTurns;
     public static OptionItem DoorsResetMode;
 
@@ -2819,13 +2821,24 @@ public static class Options
         SpawnRandomVents = BooleanOptionItem.Create(22012, "SpawnRandomVents", false, TabGroup.GameSettings, false)
             .SetParent(RandomSpawn);
 
+        MapModification = BooleanOptionItem.Create(22300, "MapModification", false, TabGroup.GameSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(19, 188, 233, byte.MaxValue));
+
         // Airship Variable Electrical
         AirshipVariableElectrical = BooleanOptionItem.Create(22100, "AirshipVariableElectrical", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
+            .SetParent(MapModification)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         //Disable Airship Moving Platform
         DisableAirshipMovingPlatform = BooleanOptionItem.Create(22110, "DisableAirshipMovingPlatform", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
+            .SetParent(MapModification)
+            .SetColor(new Color32(19, 188, 233, byte.MaxValue));
+        //Disable Spore Trigger On Fungle
+        DisableSporeTriggerOnFungle = BooleanOptionItem.Create(22115, "DisableSporeTriggerOnFungle", false, TabGroup.GameSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(MapModification)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
 
         // Reset Doors After Meeting
@@ -2865,7 +2878,7 @@ public static class Options
         DisableOnFungle = BooleanOptionItem.Create(22215, "DisableOnFungle", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(DisableOnSomeMaps);
-        DisableReportWhenCC = BooleanOptionItem.Create(22300, "DisableReportWhenCC", false, TabGroup.GameSettings, false)
+        DisableReportWhenCC = BooleanOptionItem.Create(22222, "DisableReportWhenCC", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(CommsCamouflage);
 
