@@ -63,8 +63,8 @@ public static class SabotageMaster
                 if (SkillLimit.GetFloat() > 0 && UsedSkillCount[playerId] + UsesUsedWhenFixingReactorOrO2.GetFloat() - 1 >= SkillLimit.GetFloat()) break;
                 if (amount is 64 or 65)
                 {
-                    ShipStatus.Instance.RpcRepairSystem(SystemTypes.Reactor, 16);
-                    ShipStatus.Instance.RpcRepairSystem(SystemTypes.Reactor, 17);
+                    ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Reactor, 16);
+                    ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Reactor, 17);
                     UsedSkillCount[playerId] += UsesUsedWhenFixingReactorOrO2.GetFloat();
                     SendRPC(playerId);
                 }
@@ -74,8 +74,8 @@ public static class SabotageMaster
                 if (SkillLimit.GetFloat() > 0 && UsedSkillCount[playerId] + UsesUsedWhenFixingReactorOrO2.GetFloat() - 1 >= SkillLimit.GetFloat()) break;
                 if (amount is 64 or 65)
                 {
-                    ShipStatus.Instance.RpcRepairSystem(SystemTypes.Laboratory, 67);
-                    ShipStatus.Instance.RpcRepairSystem(SystemTypes.Laboratory, 66);
+                    ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Laboratory, 67);
+                    ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Laboratory, 66);
                     UsedSkillCount[playerId] += UsesUsedWhenFixingReactorOrO2.GetFloat();
                     SendRPC(playerId);
                 }
@@ -85,8 +85,8 @@ public static class SabotageMaster
                 if (SkillLimit.GetFloat() > 0 && UsedSkillCount[playerId] + UsesUsedWhenFixingReactorOrO2.GetFloat() - 1 >= SkillLimit.GetFloat()) break;
                 if (amount is 64 or 65)
                 {
-                    ShipStatus.Instance.RpcRepairSystem(SystemTypes.LifeSupp, 67);
-                    ShipStatus.Instance.RpcRepairSystem(SystemTypes.LifeSupp, 66);
+                    ShipStatus.Instance.RpcUpdateSystem(SystemTypes.LifeSupp, 67);
+                    ShipStatus.Instance.RpcUpdateSystem(SystemTypes.LifeSupp, 66);
                     UsedSkillCount[playerId] += UsesUsedWhenFixingReactorOrO2.GetFloat();
                     SendRPC(playerId);
                 }
@@ -96,8 +96,8 @@ public static class SabotageMaster
                 if (SkillLimit.GetFloat() > 0 && UsedSkillCount[playerId] + UsesUsedWhenFixingLightsOrComms.GetFloat() - 1 >= SkillLimit.GetFloat()) break;
                 if (amount is 64 or 65)
                 {
-                    ShipStatus.Instance.RpcRepairSystem(SystemTypes.Comms, 16);
-                    ShipStatus.Instance.RpcRepairSystem(SystemTypes.Comms, 17);
+                    ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Comms, 16);
+                    ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Comms, 17);
                     UsedSkillCount[playerId] += UsesUsedWhenFixingLightsOrComms.GetFloat();
                     SendRPC(playerId);
                 }

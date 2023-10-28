@@ -7,7 +7,6 @@ using System.IO;
 using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
-using InnerNet;
 using UnityEngine;
 using TOHE.Modules;
 using TOHE.Roles.Double;
@@ -53,7 +52,18 @@ class CheckProtectPatch
         return true;
     }
 }
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckMurder))]
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdCheckMurder))] // Modded
+class CmdCheckMurderPatch
+{
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
+    {
+        Logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}", "CmdCheckMurder");
+        
+        if (!AmongUsClient.Instance.AmHost) return true;
+        return CheckMurderPatch.Prefix(__instance, target);
+    }
+}
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckMurder))] // Vanilla
 class CheckMurderPatch
 {
     public static Dictionary<byte, float> TimeSinceLastKill = new();
@@ -90,9 +100,9 @@ class CheckMurderPatch
         if (target.Data == null // Check if PlayerData is not null
             // Check target status
             || target.inVent
+            || target.inMovingPlat // Moving Platform on Airhip and Zipline on Fungle
             || target.MyPhysics.Animations.IsPlayingEnterVentAnimation()
             || target.MyPhysics.Animations.IsPlayingAnyLadderAnimation()
-            || target.inMovingPlat
         )
         {
             Logger.Info("The target is in an unkillable state and the kill is canceled", "CheckMurder");
@@ -114,7 +124,7 @@ class CheckMurderPatch
         var divice = 2000f;
         float minTime = Mathf.Max(0.02f, AmongUsClient.Instance.Ping / divice * 6f); //Ping value is milliseconds (ms), so ÷ 2000
         // No value is stored in TimeSinceLastKill || Stored time is greater than or equal to minTime => Allow kill
-        
+
         //↓ If not permitted
         if (TimeSinceLastKill.TryGetValue(killer.PlayerId, out var time) && time < minTime)
         {
@@ -160,11 +170,11 @@ class CheckMurderPatch
                 {
                     if (Options.FragileKillerLunge.GetBool())
                     {
-                        killer.RpcMurderPlayer(target);
+                        killer.RpcMurderPlayerV3(target);
                     }
                     else
                     {
-                        target.RpcMurderPlayer(target);
+                        target.RpcMurderPlayerV3(target);
                     }
                     Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Shattered;
                     target.SetRealKiller(target);
@@ -699,7 +709,7 @@ class CheckMurderPatch
                 Main.PlayerStates[target.PlayerId].SetDead();
                 target.RpcMurderPlayerV3(target);
                 killer.SetKillCooldownV2();
-                NameNotifyManager.Notify(target, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Berserker), GetString("KilledByBerserker")));
+                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Berserker), GetString("KilledByBerserker")));
                 return false;
             }
             if (Main.BerserkerKillMax[killer.PlayerId] >= Options.BerserkerBomberLevel.GetInt() && Options.BerserkerThreeCanBomber.GetBool())
@@ -1066,10 +1076,12 @@ class CheckMurderPatch
                         {
                             if (!killer.Is(CustomRoles.Pestilence))
                             {
-                                if (Main.TimeMasterBackTrack.ContainsKey(player.PlayerId))
+                                if (Main.TimeMasterBackTrack.TryGetValue(player.PlayerId, out var position))
                                 {
-                                    var position = Main.TimeMasterBackTrack[player.PlayerId];
-                                    player.RpcTeleport(new Vector2(position.x, position.y));
+                                    if (player.CanBeTeleported())
+                                    {
+                                        player.RpcTeleport(position);
+                                    }
                                 }
                             }
                         }
@@ -1215,10 +1227,14 @@ class MurderPlayerPatch
 {
     public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
     {
-        Logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}{(target.protectedByGuardian ? "(Protected)" : "")}", "MurderPlayer");
+        Logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}{(target.IsProtected() ? "(Protected)" : "")}", "MurderPlayer");
 
-        if (RandomSpawn.CustomNetworkTransformPatch.NumOfTP.TryGetValue(__instance.PlayerId, out var num) && num > 2) RandomSpawn.CustomNetworkTransformPatch.NumOfTP[__instance.PlayerId] = 3;
-        if (!target.protectedByGuardian && !Doppelganger.DoppelVictim.ContainsKey(target.PlayerId) && !Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
+        if (RandomSpawn.CustomNetworkTransformPatch.NumOfTP.TryGetValue(__instance.PlayerId, out var num) && num > 2)
+        {
+            RandomSpawn.CustomNetworkTransformPatch.NumOfTP[__instance.PlayerId] = 3;
+        }
+
+        if (!target.IsProtected() && !Doppelganger.DoppelVictim.ContainsKey(target.PlayerId) && !Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
         {
             Camouflage.ResetSkinAfterDeathPlayers.Add(target.PlayerId);
             Camouflage.RpcSetSkin(target, ForceRevert: true);
@@ -1600,7 +1616,7 @@ class ShapeshiftPatch
                     {
                         _ = new LateTask(() =>
                         {
-                            if (!(!GameStates.IsInTask || !shapeshifter.IsAlive() || !target.IsAlive() || shapeshifter.inVent || target.inVent))
+                            if (!(!GameStates.IsInTask || !shapeshifter.CanBeTeleported() || !target.CanBeTeleported()))
                             {
                                 var originPs = target.GetTruePosition();
                                 target.RpcTeleport(shapeshifter.GetTruePosition());
@@ -1722,6 +1738,7 @@ class ReportDeadBodyPatch
                         ((Options.DisableOnSkeld.GetBool() && Options.IsActiveSkeld) ||
                          (Options.DisableOnMira.GetBool() && Options.IsActiveMiraHQ) ||
                          (Options.DisableOnPolus.GetBool() && Options.IsActivePolus) ||
+                         (Options.DisableOnFungle.GetBool() && Options.IsActiveFungle) ||
                          (Options.DisableOnAirship.GetBool() && Options.IsActiveAirship)
                         ))) return false;
             }
@@ -3185,10 +3202,15 @@ class FixedUpdatePatch
                         ((Options.DisableOnSkeld.GetBool() && Options.IsActiveSkeld) ||
                          (Options.DisableOnMira.GetBool() && Options.IsActiveMiraHQ) ||
                          (Options.DisableOnPolus.GetBool() && Options.IsActivePolus) ||
+                         (Options.DisableOnFungle.GetBool() && Options.IsActiveFungle) ||
                          (Options.DisableOnAirship.GetBool() && Options.IsActiveAirship)
                         )))
                         || Camouflager.IsActive)
                     RealName = $"<size=0%>{RealName}</size> ";
+
+                // When MushroomMixup Sabotage Is Active
+                //else if (Utils.IsActive(SystemTypes.MushroomMixupSabotage))
+                //    RealName = $"<size=0%>{RealName}</size> ";
 
 
                 string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target) ? $"({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})" : "";
@@ -3444,17 +3466,26 @@ class EnterVentPatch
                 Main.TimeMasterNumOfUsed[pc.PlayerId] -= 1;
                 Main.TimeMasterInProtect.Remove(pc.PlayerId);
                 Main.TimeMasterInProtect.Add(pc.PlayerId, Utils.GetTimeStamp());
+
                 if (!pc.IsModClient())
+                {
                     pc.RpcGuardAndKill(pc);
+                }
                 pc.Notify(GetString("TimeMasterOnGuard"), Options.TimeMasterSkillDuration.GetFloat());
+
                 foreach (var player in Main.AllPlayerControls)
                 {
-                    if (Main.TimeMasterBackTrack.ContainsKey(player.PlayerId))
+                    if (Main.TimeMasterBackTrack.TryGetValue(player.PlayerId, out var position))
                     {
-                        var position = Main.TimeMasterBackTrack[player.PlayerId];
-                        player.RpcTeleport(new Vector2 (position.x, position.y));
+                        if (player.CanBeTeleported() || player.PlayerId == pc.PlayerId)
+                        {
+                            player.RpcTeleport(new Vector2(position.x, position.y));
+                        }
                         if (pc != player)
+                        {
                             player?.MyPhysics?.RpcBootFromVent(player.PlayerId);
+                        }
+
                         Main.TimeMasterBackTrack.Remove(player.PlayerId);
                     }
                     else
@@ -3606,17 +3637,6 @@ class SetNamePatch
     {
     }
 }
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
-public static class PlayerControlDiePatch
-{
-    //https://github.com/Hyz-sui/TownOfHost-H
-    public static void Postfix(PlayerControl __instance)
-    {
-        if (!AmongUsClient.Instance.AmHost) return;
-
-        __instance.RpcRemovePet();
-    }
-}
 [HarmonyPatch(typeof(GameData), nameof(GameData.CompleteTask))]
 class GameDataCompleteTaskPatch
 {
@@ -3744,5 +3764,32 @@ class PlayerControlSetRolePatch
             }
         }
         return true;
+    }
+    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckSporeTrigger))]
+    public static class PlayerControlCheckSporeTriggerPatch
+    {
+        public static bool Prefix()
+        {
+            if (AmongUsClient.Instance.AmHost)
+            {
+                return !Options.DisableSporeTriggerOnFungle.GetBool();
+            }
+
+            return true;
+        }
+    }
+    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckUseZipline))]
+    public static class PlayerControlCheckUseZiplinePatch
+    {
+        public static bool Prefix([HarmonyArgument(2)] bool fromTop)
+        {
+            if (AmongUsClient.Instance.AmHost)
+            {
+                if (Options.DisableZiplineFromTop.GetBool() && fromTop) return false;
+                if (Options.DisableZiplineFromUnder.GetBool() && !fromTop) return false;
+            }
+
+            return true;
+        }
     }
 }
