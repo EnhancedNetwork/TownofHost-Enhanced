@@ -2335,8 +2335,9 @@ class FixedUpdatePatch
     private static int LevelKickBufferTime = 20;
     private static Dictionary<int, int> BufferTime = new();
 
-    private static bool CheckAllowList(string friendcode)
+    public static bool CheckAllowList(string friendcode)
     {
+        if (friendcode == "") return false;
         var allowListFilePath = @"./TOHE-DATA/WhiteList.txt";
         if (!File.Exists(allowListFilePath)) File.Create(allowListFilePath).Close();
         var friendcodes = File.ReadAllLines(allowListFilePath);
@@ -2410,10 +2411,25 @@ class FixedUpdatePatch
                         if (LevelKickBufferTime <= 0)
                         {
                             LevelKickBufferTime = 20;
-                            AmongUsClient.Instance.KickPlayer(player.GetClientId(), false);
-                            string msg = string.Format(GetString("KickBecauseLowLevel"), player.GetRealName().RemoveHtmlTags());
-                            Logger.SendInGame(msg);
-                            Logger.Info(msg, "Low Level Kick");
+                            if (!Options.TempBanLowLevelPlayer.GetBool())
+                            {
+                                AmongUsClient.Instance.KickPlayer(player.GetClientId(), false);
+                                string msg = string.Format(GetString("KickBecauseLowLevel"), player.GetRealName().RemoveHtmlTags());
+                                Logger.SendInGame(msg);
+                                Logger.Info(msg, "Low Level Kick");
+                            }
+                            else
+                            {
+                                if (player.Data.FriendCode != "")
+                                {
+                                    if (!BanManager.TempBanWhiteList.Contains(player.Data.FriendCode))
+                                        BanManager.TempBanWhiteList.Add(player.Data.FriendCode);
+                                }
+                                string msg = string.Format(GetString("TempBannedBecauseLowLevel"), player.GetRealName().RemoveHtmlTags());
+                                Logger.SendInGame(msg);
+                                AmongUsClient.Instance.KickPlayer(player.GetClientId(), true);
+                                Logger.Info(msg, "Low Level Temp Ban");
+                            }
                         }
                     }
                 }

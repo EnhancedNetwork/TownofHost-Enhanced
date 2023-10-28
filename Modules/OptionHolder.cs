@@ -850,12 +850,18 @@ public static class Options
     public static OptionItem OptKickNintendoPlayer;
     public static OptionItem ApplyDenyNameList;
     public static OptionItem KickPlayerFriendCodeNotExist;
+    public static OptionItem TempBanPlayerFriendCodeNotExist;
+
     public static OptionItem KickLowLevelPlayer;
+    public static OptionItem TempBanLowLevelPlayer;
     public static OptionItem ApplyBanList;
     public static OptionItem ApplyModeratorList;
     public static OptionItem ApplyVipList;
     public static OptionItem ApplyAllowList;
     public static OptionItem AutoWarnStopWords;
+
+    public static OptionItem TempBanPlayersWhoKeepQuitting;
+    public static OptionItem QuitTimesTillTempBan;
 
     public static OptionItem MinWaitAutoStart;
     public static OptionItem MaxWaitAutoStart;
@@ -2648,6 +2654,9 @@ public static class Options
         KickLowLevelPlayer = IntegerOptionItem.Create(19300, "KickLowLevelPlayer", new(0, 100, 1), 0, TabGroup.SystemSettings, false)
             .SetValueFormat(OptionFormat.Level)
             .SetHeader(true);
+        TempBanLowLevelPlayer = BooleanOptionItem.Create(44442, "TempBanLowLevelPlayer", false, TabGroup.SystemSettings, false)
+            .SetParent(KickLowLevelPlayer)
+            .SetValueFormat(OptionFormat.Times);
         ApplyAllowList = BooleanOptionItem.Create(19305, "ApplyWhiteList", false, TabGroup.SystemSettings, false);
         KickOtherPlatformPlayer = BooleanOptionItem.Create(19350, "KickOtherPlatformPlayer", false, TabGroup.SystemSettings, false);
         OptKickAndroidPlayer = BooleanOptionItem.Create(19351, "OptKickAndroidPlayer", false, TabGroup.SystemSettings, false)
@@ -2660,7 +2669,9 @@ public static class Options
             .SetParent(KickOtherPlatformPlayer);
         OptKickNintendoPlayer = BooleanOptionItem.Create(19355, "OptKickNintendoPlayer", false, TabGroup.SystemSettings, false)
             .SetParent(KickOtherPlatformPlayer); //Switch
-        KickPlayerFriendCodeNotExist = BooleanOptionItem.Create(19302, "KickPlayerFriendCodeNotExist", false, TabGroup.SystemSettings, true);
+        KickPlayerFriendCodeNotExist = BooleanOptionItem.Create(19302, "KickPlayerFriendCodeNotExist", true, TabGroup.SystemSettings, false);
+        TempBanPlayerFriendCodeNotExist = BooleanOptionItem.Create(44443, "TempBanPlayerFriendCodeNotExist", false, TabGroup.SystemSettings, false)
+            .SetParent(KickPlayerFriendCodeNotExist);
         ApplyVipList = BooleanOptionItem.Create(19308, "ApplyVipList", true, TabGroup.SystemSettings, false);
         ApplyDenyNameList = BooleanOptionItem.Create(19303, "ApplyDenyNameList", true, TabGroup.SystemSettings, true);
         ApplyBanList = BooleanOptionItem.Create(19304, "ApplyBanList", true, TabGroup.SystemSettings, true);
@@ -2677,6 +2688,11 @@ public static class Options
             .SetValueFormat(OptionFormat.Times);
         AutoKickStartAsBan = BooleanOptionItem.Create(19312, "AutoKickStartAsBan", false, TabGroup.SystemSettings, false)
             .SetParent(AutoKickStart);
+
+        TempBanPlayersWhoKeepQuitting = BooleanOptionItem.Create(44440, "TempBanPlayersWhoKeepQuitting", false, TabGroup.SystemSettings, false);
+        QuitTimesTillTempBan = IntegerOptionItem.Create(44441, "QuitTimesTillTempBan", new(1, 15, 1), 4, TabGroup.SystemSettings, false)
+            .SetValueFormat(OptionFormat.Times)
+            .SetParent(TempBanPlayersWhoKeepQuitting);
         /*      AutoKickStopWords = BooleanOptionItem.Create(19313, "AutoKickStopWords", false, TabGroup.SystemSettings, false);
               AutoKickStopWordsTimes = IntegerOptionItem.Create(19314, "AutoKickStopWordsTimes", new(0, 99, 1), 3, TabGroup.SystemSettings, false)
                   .SetParent(AutoKickStopWords)
