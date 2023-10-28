@@ -119,7 +119,7 @@ internal class AntiAdminer
 
         if (isChange)
         {
-            Utils.NotifyRoles();
+            Utils.NotifyRoles(ForceLoop: false);
             foreach (PlayerControl pc in Main.AllPlayerControls)
                 FixedUpdatePatch.Postfix(pc);
         }
