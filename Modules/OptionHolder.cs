@@ -843,6 +843,8 @@ public static class Options
     public static OptionItem OptKickNintendoPlayer;
     public static OptionItem ApplyDenyNameList;
     public static OptionItem KickPlayerFriendCodeNotExist;
+    public static OptionItem TempBanPlayerFriendCodeNotExist;
+
     public static OptionItem KickLowLevelPlayer;
     public static OptionItem TempBanLowLevelPlayer;
     public static OptionItem ApplyBanList;
@@ -2660,7 +2662,9 @@ public static class Options
             .SetParent(KickOtherPlatformPlayer);
         OptKickNintendoPlayer = BooleanOptionItem.Create(19355, "OptKickNintendoPlayer", false, TabGroup.SystemSettings, false)
             .SetParent(KickOtherPlatformPlayer); //Switch
-        KickPlayerFriendCodeNotExist = BooleanOptionItem.Create(19302, "KickPlayerFriendCodeNotExist", false, TabGroup.SystemSettings, true);
+        KickPlayerFriendCodeNotExist = BooleanOptionItem.Create(19302, "KickPlayerFriendCodeNotExist", true, TabGroup.SystemSettings, false);
+        TempBanPlayerFriendCodeNotExist = BooleanOptionItem.Create(44443, "TempBanPlayerFriendCodeNotExist", false, TabGroup.SystemSettings, false)
+            .SetParent(KickPlayerFriendCodeNotExist);
         ApplyVipList = BooleanOptionItem.Create(19308, "ApplyVipList", true, TabGroup.SystemSettings, false);
         ApplyDenyNameList = BooleanOptionItem.Create(19303, "ApplyDenyNameList", true, TabGroup.SystemSettings, true);
         ApplyBanList = BooleanOptionItem.Create(19304, "ApplyBanList", true, TabGroup.SystemSettings, true);
@@ -2680,7 +2684,8 @@ public static class Options
 
         TempBanPlayersWhoKeepQuitting = BooleanOptionItem.Create(44440, "TempBanPlayersWhoKeepQuitting", false, TabGroup.SystemSettings, false);
         QuitTimesTillTempBan = IntegerOptionItem.Create(44441, "QuitTimesTillTempBan", new(1, 15, 1), 4, TabGroup.SystemSettings, false)
-            .SetValueFormat(OptionFormat.Times);
+            .SetValueFormat(OptionFormat.Times)
+            .SetParent(TempBanPlayersWhoKeepQuitting);
         /*      AutoKickStopWords = BooleanOptionItem.Create(19313, "AutoKickStopWords", false, TabGroup.SystemSettings, false);
               AutoKickStopWordsTimes = IntegerOptionItem.Create(19314, "AutoKickStopWordsTimes", new(0, 99, 1), 3, TabGroup.SystemSettings, false)
                   .SetParent(AutoKickStopWords)

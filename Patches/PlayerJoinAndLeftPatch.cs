@@ -77,9 +77,18 @@ class OnPlayerJoinedPatch
         Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/Platform:{client.PlatformData.Platform}) Joining room", "Session");
         if (AmongUsClient.Instance.AmHost && client.FriendCode == "" && Options.KickPlayerFriendCodeNotExist.GetBool())
         {
-            AmongUsClient.Instance.KickPlayer(client.Id, false);
-            Logger.SendInGame(string.Format(GetString("Message.KickedByNoFriendCode"), client.PlayerName));
-            Logger.Info($"Kicked a player {client?.PlayerName} without a friend code", "Kick");
+            if (!Options.TempBanPlayerFriendCodeNotExist.GetBool())
+            {
+                AmongUsClient.Instance.KickPlayer(client.Id, false);
+                Logger.SendInGame(string.Format(GetString("Message.KickedByNoFriendCode"), client.PlayerName));
+                Logger.Info($"Kicked a player {client?.PlayerName} without a friend code", "Kick");
+            }
+            else
+            {
+                AmongUsClient.Instance.KickPlayer(client.Id, true);
+                Logger.SendInGame(string.Format(GetString("Message.TempBannedByNoFriendCode"), client.PlayerName));
+                Logger.Info($"TempBanned a player {client?.PlayerName} without a friend code", "Temp Ban");
+            }
         }
         Platforms platform = client.PlatformData.Platform;
         if (AmongUsClient.Instance.AmHost && Options.KickOtherPlatformPlayer.GetBool() && platform != Platforms.Unknown)
