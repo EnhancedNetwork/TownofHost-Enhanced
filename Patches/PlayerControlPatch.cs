@@ -3778,4 +3778,18 @@ class PlayerControlSetRolePatch
             return true;
         }
     }
+    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckUseZipline))]
+    public static class PlayerControlCheckUseZiplinePatch
+    {
+        public static bool Prefix([HarmonyArgument(2)] bool fromTop)
+        {
+            if (AmongUsClient.Instance.AmHost)
+            {
+                if (Options.DisableZiplineFromTop.GetBool() && fromTop) return false;
+                if (Options.DisableZiplineFromUnder.GetBool() && !fromTop) return false;
+            }
+
+            return true;
+        }
+    }
 }
