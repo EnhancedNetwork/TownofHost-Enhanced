@@ -250,6 +250,10 @@ class ExileControllerWrapUpPatch
                         map = new RandomSpawn.PolusSpawnMap();
                         Main.AllPlayerControls.Do(map.RandomTeleport);
                         break;
+                    case 5:
+                        map = new RandomSpawn.FungleSpawnMap();
+                        Main.AllPlayerControls.Do(map.RandomTeleport);
+                        break;
                 }
             }
 

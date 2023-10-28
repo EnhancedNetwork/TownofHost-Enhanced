@@ -73,7 +73,7 @@ class RepairSystemPatch
         }
 
         if (player.Is(CustomRoles.Unlucky) && player.IsAlive()
-            && (systemType is SystemTypes.Doors) && amount == 64)
+            && (systemType is SystemTypes.Doors))
         {
             var Ue = IRandom.Instance;
             if (Ue.Next(1, 100) < Options.UnluckySabotageSuicideChance.GetInt())
