@@ -51,6 +51,27 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
+                    Number = 100005,
+                    Title = "Town of Host: Enhanced v1.2.0",
+                    SubTitle = "★★ The Fungle Support! ★★",
+                    ShortTitle = "TOH: Enhanced v1.2.0",
+                    BeforeNumber = 100004,
+                    Text = "<size=150%>Welcome to TOH: Enhanced v1.2.0!</size>\n" +
+                    "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.1.1\r\n" +
+
+                    "\n<b>【Changes】</b>" +
+                        "\n     - Support has been fully added with bug fixes for The Fungle Update" +
+                        "\n     - Added Temp Ban feature for players constantly joining/leaving (trolls)\n\r" +
+
+                    "\n\n★ Welcome to Town of Host: Enhanced: Fungle Edition ★",
+
+                    Date = "2023-10-29T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
                     Number = 100004,
                     Title = "Town of Host: Enhanced v1.1.1",
                     SubTitle = "★★ A performance update with bug fixes! ★★",
