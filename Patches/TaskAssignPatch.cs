@@ -177,7 +177,7 @@ class RpcSetTasksPatch
 
         //割り当て可能なショートタスクのリスト
         Il2CppSystem.Collections.Generic.List<NormalPlayerTask> ShortTasks = new();
-        foreach (var task in ShipStatus.Instance.NormalTasks)
+        foreach (var task in ShipStatus.Instance.ShortTasks)
             ShortTasks.Add(task);
         Shuffle<NormalPlayerTask>(ShortTasks);
 

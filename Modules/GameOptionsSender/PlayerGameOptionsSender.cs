@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using AmongUs.GameOptions;
 using Hazel;
@@ -53,7 +54,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
     {
         for (byte i = 0; i < GameManager.Instance.LogicComponents.Count; i++)
         {
-            if (GameManager.Instance.LogicComponents[i].TryCast<LogicOptions>(out _))
+            if (GameManager.Instance.LogicComponents[(Index)i].TryCast<LogicOptions>(out _))
             {
                 SendOptionsArray(optionArray, i, player.GetClientId());
             }
