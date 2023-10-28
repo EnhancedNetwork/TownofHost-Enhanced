@@ -230,6 +230,7 @@ class ExileControllerWrapUpPatch
                 Shroud.MurderShroudedPlayers(pc);
             }
 
+            Main.MeetingIsStarted = false;
             Main.MeetingsPassed++;
 
             if (Options.RandomSpawn.GetBool())

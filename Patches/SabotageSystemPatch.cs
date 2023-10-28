@@ -74,6 +74,11 @@ public static class SwitchSystemRepairDamagePatch
         if (player.Is(CustomRoles.Repairman))
             Repairman.SwitchSystemRepair(__instance, amount);
 
+        if (player.Is(CustomRoles.Fool))
+        {
+            return false;
+        }
+
         // Cancel if player can't fix a specific outage on Airship
         if (Main.NormalOptions.MapId == 4)
         {
@@ -178,7 +183,7 @@ public static class SabotageSystemTypeRepairDamagePatch
 
             case CustomRoles.Glitch:
                 Glitch.Mimic(player);
-                return true;
+                return false;
 
             case CustomRoles.Parasite when player.IsAlive():
                 return true;

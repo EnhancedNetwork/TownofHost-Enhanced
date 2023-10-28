@@ -59,22 +59,24 @@ class RepairSystemPatch
             return false;
         }
 
-        if (player.Is(CustomRoles.Fool) &&
+        if (player.Is(CustomRoles.Fool) && !Main.MeetingIsStarted && 
+            systemType != SystemTypes.Sabotage &&
             (systemType is
                 SystemTypes.Reactor or
+                SystemTypes.Laboratory or
+                SystemTypes.HeliSabotage or
                 SystemTypes.LifeSupp or
                 SystemTypes.Comms or
                 SystemTypes.Electrical))
-        { 
-            return false; 
+        {
+            return false;
         }
 
-        if (player.Is(CustomRoles.Unlucky) && player.IsAlive() && 
-            (systemType is
-            SystemTypes.Doors))
+        if (player.Is(CustomRoles.Unlucky) && player.IsAlive()
+            && (systemType is SystemTypes.Doors) && amount == 64)
         {
             var Ue = IRandom.Instance;
-            if (Ue.Next(0, 100) < Options.UnluckySabotageSuicideChance.GetInt())
+            if (Ue.Next(1, 100) < Options.UnluckySabotageSuicideChance.GetInt())
             {
                 player.RpcMurderPlayerV3(player);
                 Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
@@ -87,7 +89,6 @@ class RepairSystemPatch
     public static void Postfix()
     {
         Camouflage.CheckCamouflage();
-        //MushroomMixupSabotagePatch.CheckMushroomMixup();
     }
     public static void CheckAndOpenDoorsRange(ShipStatus __instance, int amount, int min, int max)
     {
