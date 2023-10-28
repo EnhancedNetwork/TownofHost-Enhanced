@@ -2201,7 +2201,7 @@
   "ERR-000-910-1": "Test Error Lv.1",
   "ERR-000-920-2": "Test Error Lv.2",
   "ERR-000-930-3": "Test Error Lv.3",
-  "ERR-000-804-1": "TownOfHostEdited does not support the Vanilla HnS, so unloaded.",
+  "ERR-000-804-1": "TownofHost-Enhanced does not support the Vanilla HnS, so unloaded.",
   "ERR-001-000-3": "Main dictionary has duplicated keys.",
   "ERR-002-000-1": "Unsupported Among Us version. Please update Among Us",
   "DefaultSystemMessageTitle": "SYSTEM MESSAGE",
