@@ -116,6 +116,8 @@ class RepairSystemPatch
         [HarmonyArgument(1)] PlayerControl player,
         [HarmonyArgument(2)] byte amount)
     {
+        Camouflage.CheckCamouflage();
+
         if (systemType == SystemTypes.Electrical && 0 <= amount && amount <= 4)
         {
             var SwitchSystem = ShipStatus.Instance.Systems[SystemTypes.Electrical].Cast<SwitchSystem>();
