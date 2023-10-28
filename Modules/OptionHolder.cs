@@ -678,6 +678,7 @@ public static class Options
     public static OptionItem DisableOnMira;
     public static OptionItem DisableOnPolus;
     public static OptionItem DisableOnAirship;
+    public static OptionItem DisableOnFungle;
     public static OptionItem DisableReportWhenCC;
     public static OptionItem SabotageCooldownControl;
     public static OptionItem SabotageCooldown;
@@ -2859,6 +2860,9 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(DisableOnSomeMaps);
         DisableOnAirship = BooleanOptionItem.Create(22214, "DisableOnAirship", false, TabGroup.GameSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(DisableOnSomeMaps);
+        DisableOnFungle = BooleanOptionItem.Create(22215, "DisableOnFungle", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(DisableOnSomeMaps);
         DisableReportWhenCC = BooleanOptionItem.Create(22300, "DisableReportWhenCC", false, TabGroup.GameSettings, false)
