@@ -2641,9 +2641,9 @@
   "WitnessFoundInnocent": "<color=#00ff00>✓</color>",
   "WitnessFoundKiller": "<color=#ffff00>⚠</color>",
   "SwapperMax": "换票师最大换票次数",
-  "CanSwapSelfVotes": "可以交换自身票选",
+  "CanSwapSelfVotes": "可以交换自身票数",
   "SwapperTrialMax": "换票次数达到上限！",
-  "CantSwapSelf": "不可交换自身选票",
+  "CantSwapSelf": "不可以交换自身票数",
   "SwapVote": "<b>{0}</b>和<b>{1}</b>的票数被换票师交换了",
   "SwapVoteC": "成功交换<b>{0}</b>和<b>{1}</b>的票数",
   "SwapDead": "很抱歉，死亡后不能进行换票",
@@ -3268,5 +3268,6 @@
   "FFFCanKillEgoist": "FFF能击杀利己主义者",
   "FFFCanKillInfected": "FFF能击杀感染者",
   "FFFCanKillContagious": "FFF能击杀传染性",
-  "FFFCanKillAdmired": "FFF能击杀仰慕者"
+  "FFFCanKillAdmired": "FFF能击杀仰慕者",
+  "AutoMuteUs": "大厅中不修改房主名称（兼容AutoMuteUs）"
 }
