@@ -83,17 +83,16 @@ class RepairSystemPatch
             case CustomRoles.SabotageMaster:
                 SabotageMaster.RepairSystem(__instance, systemType, amount, player.PlayerId);
                 break;
+            //case CustomRoles.Repairman:
+            //    Repairman.RepairSystem(__instance, systemType, amount);
+            //    break;
             case CustomRoles.Alchemist when Alchemist.FixNextSabo:
                 Alchemist.RepairSystem(systemType, amount);
                 break;
         }
+        if (player.Is(CustomRoles.Repairman))
+            Repairman.RepairSystem(__instance, systemType, amount);
 
-        if (systemType == SystemTypes.Electrical && 0 <= amount && amount <= 4 && Main.NormalOptions.MapId == 4)
-        {
-            if (Options.DisableAirshipViewingDeckLightsPanel.GetBool() && Vector2.Distance(player.transform.position, new(-12.93f, -11.28f)) <= 2f) return false;
-            if (Options.DisableAirshipGapRoomLightsPanel.GetBool() && Vector2.Distance(player.transform.position, new(13.92f, 6.43f)) <= 2f) return false;
-            if (Options.DisableAirshipCargoLightsPanel.GetBool() && Vector2.Distance(player.transform.position, new(30.56f, 2.12f)) <= 2f) return false;
-        }
 
         if (player.Is(CustomRoles.Unlucky) && player.IsAlive()
             && (systemType is SystemTypes.Doors))
@@ -129,6 +128,9 @@ class RepairSystemPatch
                         Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()} instant-fix-lights", "SwitchSystem");
                         SabotageMaster.SwitchSystemRepair(SwitchSystem, amount, player.PlayerId);
                         break;
+                    //case CustomRoles.Repairman:
+                    //    Repairman.SwitchSystemRepair(SwitchSystem, amount);
+                    //    break;
                     case CustomRoles.Alchemist when Alchemist.FixNextSabo:
                         Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()} instant-fix-lights", "SwitchSystem");
                         SwitchSystem.ActualSwitches = 0;
@@ -136,6 +138,8 @@ class RepairSystemPatch
                         Alchemist.FixNextSabo = false;
                         break;
                 }
+                if (player.Is(CustomRoles.Repairman))
+                    Repairman.SwitchSystemRepair(SwitchSystem, amount);
             }
         }
     }
@@ -165,30 +169,6 @@ class CloseDoorsPatch
         return !(Options.DisableCloseDoor.GetBool());
     }
 }
-/*[HarmonyPatch(typeof(SwitchSystem), nameof(SwitchSystem.UpdateSystem))]
-class SwitchSystemRepairPatch
-{
-    public static void Postfix(SwitchSystem __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] MessageReader reader)
-    {
-        var amount = reader.FastByte();
-
-        if (player.Is(CustomRoles.SabotageMaster))
-            SabotageMaster.SwitchSystemRepair(__instance, amount, player.PlayerId);
-
-        if (player.Is(CustomRoles.Repairman))
-            Repairman.SwitchSystemRepair(__instance, amount);
-
-        if (player.Is(CustomRoles.Alchemist) && Alchemist.FixNextSabo == true)
-        {
-            if (amount is >= 0 and <= 4)
-            {
-                __instance.ActualSwitches = 0;
-                __instance.ExpectedSwitches = 0;
-            }
-            Alchemist.FixNextSabo = false;
-        }
-    }
-}*/
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Start))]
 class StartPatch
 {

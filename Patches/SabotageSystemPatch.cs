@@ -58,22 +58,6 @@ public static class SwitchSystemRepairDamagePatch
             return true;
         }
 
-        // Broken
-        switch (player.GetCustomRole())
-        {
-            case CustomRoles.SabotageMaster:
-                SabotageMaster.SwitchSystemRepair(__instance, amount, player.PlayerId);
-                break;
-            case CustomRoles.Alchemist when Alchemist.FixNextSabo == true:
-                __instance.ActualSwitches = 0;
-                __instance.ExpectedSwitches = 0;
-                Alchemist.FixNextSabo = false;
-                break;
-        }
-        // Broken
-        if (player.Is(CustomRoles.Repairman))
-            Repairman.SwitchSystemRepair(__instance, amount);
-
         if (player.Is(CustomRoles.Fool))
         {
             return false;
