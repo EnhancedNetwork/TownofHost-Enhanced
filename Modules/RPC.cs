@@ -302,7 +302,7 @@ internal class RPCHandlerPatch
                 // Sync Settings
                 for (int optionNumber = 0; optionNumber < countOptions; optionNumber++)
                 {
-                    var co = listOptions[optionNumber];
+                    OptionItem co = listOptions[optionNumber];
                     co.SetValue(reader.ReadInt32());
                 }
                 OptionShower.GetText();
@@ -767,7 +767,7 @@ internal static class RPC
         // Sync Settings
         for (var optionNumber = 0; optionNumber < countListOptions; optionNumber++)
         {
-            var opt = listOptions[optionNumber];
+            OptionItem opt = listOptions[optionNumber];
             writer.Write(opt.GetValue());
         }
 

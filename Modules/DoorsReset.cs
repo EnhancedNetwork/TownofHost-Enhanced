@@ -9,8 +9,8 @@ public static class DoorsReset
 
     public static void Initialize()
     {
-        // AirshipとPolus以外は非対応
-        if (((MapNames)Main.NormalOptions.MapId is not (MapNames.Airship or MapNames.Polus)) || Options.DisableCloseDoor.GetBool())
+        // Not supported except Airship, Polus and Fungle
+        if (((MapNames)Main.NormalOptions.MapId is not (MapNames.Airship or MapNames.Polus or MapNames.Fungle)) || Options.DisableCloseDoor.GetBool())
         {
             isEnabled = false;
             return;
@@ -69,7 +69,7 @@ public static class DoorsReset
     /// <summary>Sets the open/close status of the door. Do nothing for doors that cannot be closed by sabotage</summary>
     /// <param name="door">Target door</param>
     /// <param name="isOpen">true for open, false for close</param>
-    private static void SetDoorOpenState(PlainDoor door, bool isOpen)
+    private static void SetDoorOpenState(OpenableDoor door, bool isOpen)
     {
         if (IsValidDoor(door))
         {
@@ -78,14 +78,10 @@ public static class DoorsReset
     }
     /// <summary>Determine if the door is subject to reset</summary>
     /// <returns>true if it is subject to reset</returns>
-    private static bool IsValidDoor(PlainDoor door)
+    private static bool IsValidDoor(OpenableDoor door)
     {
         // Airship lounge toilets and Polus decontamination room doors are not closed
-        if (door.Room is SystemTypes.Lounge or SystemTypes.Decontamination)
-        {
-            return false;
-        }
-        return true;
+        return door.Room is not (SystemTypes.Lounge or SystemTypes.Decontamination);
     }
 
     public enum ResetMode { AllOpen, AllClosed, RandomByDoor, }

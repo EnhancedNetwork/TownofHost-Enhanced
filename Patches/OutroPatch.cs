@@ -94,6 +94,7 @@ class EndGamePatch
         Main.isDoused = new Dictionary<(byte, byte), bool>();
         Main.isDraw = new Dictionary<(byte, byte), bool>();
         Main.isRevealed = new Dictionary<(byte, byte), bool>();
+        Main.PlayerQuitTimes = new();
 
         Main.VisibleTasksCount = false;
         if (AmongUsClient.Instance.AmHost)
