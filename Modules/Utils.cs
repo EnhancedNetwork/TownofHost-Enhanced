@@ -2138,6 +2138,7 @@ public static class Utils
                     ((Options.DisableOnSkeld.GetBool() && Options.IsActiveSkeld) ||
                      (Options.DisableOnMira.GetBool() && Options.IsActiveMiraHQ) ||
                      (Options.DisableOnPolus.GetBool() && Options.IsActivePolus) ||
+                     (Options.DisableOnFungle.GetBool() && Options.IsActiveFungle) ||
                      (Options.DisableOnAirship.GetBool() && Options.IsActiveAirship)
                     )))
                     || Camouflager.IsActive))
@@ -2453,6 +2454,7 @@ public static class Utils
                             ((Options.DisableOnSkeld.GetBool() && Options.IsActiveSkeld) ||
                              (Options.DisableOnMira.GetBool() && Options.IsActiveMiraHQ) ||
                              (Options.DisableOnPolus.GetBool() && Options.IsActivePolus) ||
+                             (Options.DisableOnFungle.GetBool() && Options.IsActiveFungle) ||
                              (Options.DisableOnAirship.GetBool() && Options.IsActiveAirship)
                             )))
                             || Camouflager.IsActive))
