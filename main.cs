@@ -37,8 +37,8 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "1.2.0.12";
-    public const string PluginDisplayVersion = "1.2.0 dev 12";
+    public const string PluginVersion = "1.2.0.13";
+    public const string PluginDisplayVersion = "1.2.0 dev 13";
     public static readonly string SupportedVersionAU = "2023.10.24";
     public const bool Canary = false; // Unused variable?
 

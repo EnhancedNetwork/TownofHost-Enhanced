@@ -76,12 +76,12 @@ public static class Credentials
 #endif
 
 #if CANARY
-            Main.credentialsText += $"\r\n<color=#ffc0cb>Canary </color>({ThisAssembly.Git.Commit})</color>";
+            Main.credentialsText += $"\r\n<color=#ffc0cb>Canary:</color><color=#f34c50>{ThisAssembly.Git.Branch}</color>(<color=#ffc0cb>{ThisAssembly.Git.Commit}</color>)";
             Main.credentialsText += $"\r\n<color=#a54aff>By <color=#ffc0cb>KARPED1EM</color> & </color><color=#f34c50>Moe</color>";
 #endif
 
 #if DEBUG
-            Main.credentialsText += $"\r\n<color=#ffc0cb>Debug </color>({ThisAssembly.Git.Commit})</color>";
+            Main.credentialsText += $"\r\n<color=#ffc0cb>Debug:</color><color=#f34c50>{ThisAssembly.Git.Branch}</color>(<color=#ffc0cb>{ThisAssembly.Git.Commit}</color>)";
             Main.credentialsText += $"\r\n<color=#a54aff>By <color=#ffc0cb>KARPED1EM</color> & </color><color=#f34c50>Moe</color>";
 #endif
 
