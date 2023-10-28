@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -125,6 +125,17 @@ public static class DevManager
         DevUserList.Add(new(code: "bigecho#5256", color: "#0131b4", tag: "Traducteur", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "KevOut")); //kevoutings
         DevUserList.Add(new(code: "fivedogged#3140", color: "#0B1FB8", tag: "Translator", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "Sansationnelle")); //shapmaster
 
+        // Youtubers and Dev (BRASIL)
+        DevUserList.Add(new(code: "tinedpun#6584", color: "null", tag: "null", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null));
+        DevUserList.Add(new(code: "tonalpins#1855", color: "null", tag: "null", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null));
+        DevUserList.Add(new(code: "calmpall#0468", color: "null", tag: "null", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null));
+        DevUserList.Add(new(code: "stoolfoggy#3070", color: "null", tag: "null", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null));
+        DevUserList.Add(new(code: "elatedpity#2202", color: "null", tag: "null", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null));
+        DevUserList.Add(new(code: "grassyprey#9593", color: "null", tag: "null", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null));
+        DevUserList.Add(new(code: "fluelesser#2433", color: "null", tag: "null", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null));
+        DevUserList.Add(new(code: "drivesolar#9523", color: "null", tag: "null", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null));
+        DevUserList.Add(new(code: "traderaser#4755", color: "null", tag: "null", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null));
+        
         // China Up
         DevUserList.Add(new(code: "truantwarm#9165", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "萧暮不姓萧"));
         DevUserList.Add(new(code: "drilldinky#1386", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "爱玩AU的河豚"));
