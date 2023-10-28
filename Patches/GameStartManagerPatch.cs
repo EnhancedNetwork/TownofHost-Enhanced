@@ -278,7 +278,7 @@ public class GameStartRandomMap
             Polus        = 2
             Dleks        = 3 (Not used)
             The Airship  = 4
-            Fungle       = 5?
+            The Fungle   = 5
         */
 
         if (Options.UseMoreRandomMapSelection.GetBool())
@@ -287,7 +287,7 @@ public class GameStartRandomMap
             if (rand.Next(1, 100) <= Options.MiraChance.GetInt()) randomMaps.Add(1);
             if (rand.Next(1, 100) <= Options.PolusChance.GetInt()) randomMaps.Add(2);
             if (rand.Next(1, 100) <= Options.AirshipChance.GetInt()) randomMaps.Add(4);
-            //if (rand.Next(1, 100) <= Options.FungleChance.GetInt()) randomMaps.Add(5);
+            if (rand.Next(1, 100) <= Options.FungleChance.GetInt()) randomMaps.Add(5);
         }
         else
         {
@@ -297,7 +297,7 @@ public class GameStartRandomMap
             if (tempRand <= Options.MiraChance.GetInt()) randomMaps.Add(1);
             if (tempRand <= Options.PolusChance.GetInt()) randomMaps.Add(2);
             if (tempRand <= Options.AirshipChance.GetInt()) randomMaps.Add(4);
-            //if (tempRand <= Options.FungleChance.GetInt()) randomMaps.Add(5);
+            if (tempRand <= Options.FungleChance.GetInt()) randomMaps.Add(5);
         }
 
         if (randomMaps.Any())
@@ -313,7 +313,7 @@ public class GameStartRandomMap
             if (Options.MiraChance.GetInt() > 0) randomMaps.Add(1);
             if (Options.PolusChance.GetInt() > 0) randomMaps.Add(2);
             if (Options.AirshipChance.GetInt() > 0) randomMaps.Add(4);
-            //if (Options.FungleChance.GetInt() > 0) randomMaps.Add(5);
+            if (Options.FungleChance.GetInt() > 0) randomMaps.Add(5);
 
             var mapsId = randomMaps[rand.Next(randomMaps.Count)];
 

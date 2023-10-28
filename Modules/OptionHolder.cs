@@ -66,8 +66,7 @@ public static class Options
     public static bool IsActiveMiraHQ => Main.NormalOptions.MapId == 1; // 1 - MiraHQ
     public static bool IsActivePolus => Main.NormalOptions.MapId == 2; // 2 - Polus
     public static bool IsActiveAirship => Main.NormalOptions.MapId == 4; // 4 - Airship
-
-    //public static bool IsActiveFungle => Main.NormalOptions.MapId == 5; // 5 - Fungle
+    public static bool IsActiveFungle => Main.NormalOptions.MapId == 5; // 5 - The Fungle
 
     // Map not used
     //public static bool IsActiveDleks => Main.NormalOptions.MapId == 3; // 3 - Dleks
@@ -639,6 +638,9 @@ public static class Options
     public static OptionItem DisableAirshipRecordsAdmin;
     public static OptionItem DisableAirshipCamera;
     public static OptionItem DisableAirshipVital;
+    public static OptionItem DisableFungleDevices;
+    public static OptionItem DisableFungleBinoculars;
+    public static OptionItem DisableFungleVital;
     public static OptionItem DisableDevicesIgnoreConditions;
     public static OptionItem DisableDevicesIgnoreImpostors;
     public static OptionItem DisableDevicesIgnoreNeutrals;
@@ -656,8 +658,8 @@ public static class Options
     public static OptionItem MiraChance;
     public static OptionItem PolusChance;
     public static OptionItem AirshipChance;
+    public static OptionItem FungleChance;
 
-    // public static OptionItem FungleChance;
     public static OptionItem UseMoreRandomMapSelection;
     public static OptionItem AddedDleks;
     public static OptionItem RandomSpawn;
@@ -826,7 +828,6 @@ public static class Options
     public static OptionItem SendRoleDescriptionFirstMeeting;
     public static OptionItem RoleAssigningAlgorithm;
     public static OptionItem EndWhenPlayerBug;
-    public static OptionItem RemovePetsAtDeadPlayers;
 
     public static OptionItem EnableUpMode;
     public static OptionItem AutoKickStart;
@@ -2696,8 +2697,6 @@ public static class Options
         EndWhenPlayerBug = BooleanOptionItem.Create(19318, "EndWhenPlayerBug", true, TabGroup.SystemSettings, false)
             .SetHeader(true)
             .SetColor(Color.blue);
-        RemovePetsAtDeadPlayers = BooleanOptionItem.Create(44450, "RemovePetsAtDeadPlayers", true, TabGroup.SystemSettings, false)
-            .SetColor(Color.magenta);
 
         CheatResponses = StringOptionItem.Create(19319, "CheatResponses", CheatResponsesName, 0, TabGroup.SystemSettings, false)
             .SetHeader(true);
@@ -2789,6 +2788,9 @@ public static class Options
             .SetParent(RandomMapsMode)
             .SetValueFormat(OptionFormat.Percent);
         AirshipChance = IntegerOptionItem.Create(19913, "AirshipChance", new(0, 100, 5), 10, TabGroup.GameSettings, false)
+            .SetParent(RandomMapsMode)
+            .SetValueFormat(OptionFormat.Percent);
+        FungleChance = IntegerOptionItem.Create(19922, "FungleChance", new(0, 100, 5), 10, TabGroup.GameSettings, false)
             .SetParent(RandomMapsMode)
             .SetValueFormat(OptionFormat.Percent);
         UseMoreRandomMapSelection = BooleanOptionItem.Create(19920, "UseMoreRandomMapSelection", false, TabGroup.GameSettings, false)
@@ -2998,19 +3000,28 @@ public static class Options
         DisableAirshipVital = BooleanOptionItem.Create(22919, "DisableAirshipVital", false, TabGroup.GameSettings, false)
             .SetParent(DisableAirshipDevices)
             .SetGameMode(CustomGameMode.Standard);
-        DisableDevicesIgnoreConditions = BooleanOptionItem.Create(22920, "IgnoreConditions", false, TabGroup.GameSettings, false)
+        DisableFungleDevices = BooleanOptionItem.Create(22920, "DisableFungleDevices", false, TabGroup.GameSettings, false)
             .SetParent(DisableDevices)
             .SetGameMode(CustomGameMode.Standard);
-        DisableDevicesIgnoreImpostors = BooleanOptionItem.Create(22921, "IgnoreImpostors", false, TabGroup.GameSettings, false)
+        DisableFungleBinoculars = BooleanOptionItem.Create(22921, "DisableFungleBinoculars", false, TabGroup.GameSettings, false)
+            .SetParent(DisableFungleDevices)
+            .SetGameMode(CustomGameMode.Standard);
+        DisableFungleVital = BooleanOptionItem.Create(22922, "DisableFungleVital", false, TabGroup.GameSettings, false)
+            .SetParent(DisableFungleDevices)
+            .SetGameMode(CustomGameMode.Standard);
+        DisableDevicesIgnoreConditions = BooleanOptionItem.Create(22925, "IgnoreConditions", false, TabGroup.GameSettings, false)
+            .SetParent(DisableDevices)
+            .SetGameMode(CustomGameMode.Standard);
+        DisableDevicesIgnoreImpostors = BooleanOptionItem.Create(22926, "IgnoreImpostors", false, TabGroup.GameSettings, false)
             .SetParent(DisableDevicesIgnoreConditions)
             .SetGameMode(CustomGameMode.Standard);
-        DisableDevicesIgnoreNeutrals = BooleanOptionItem.Create(22922, "IgnoreNeutrals", false, TabGroup.GameSettings, false)
+        DisableDevicesIgnoreNeutrals = BooleanOptionItem.Create(22927, "IgnoreNeutrals", false, TabGroup.GameSettings, false)
             .SetParent(DisableDevicesIgnoreConditions)
             .SetGameMode(CustomGameMode.Standard);
-        DisableDevicesIgnoreCrewmates = BooleanOptionItem.Create(22923, "IgnoreCrewmates", false, TabGroup.GameSettings, false)
+        DisableDevicesIgnoreCrewmates = BooleanOptionItem.Create(22928, "IgnoreCrewmates", false, TabGroup.GameSettings, false)
             .SetParent(DisableDevicesIgnoreConditions)
             .SetGameMode(CustomGameMode.Standard);
-        DisableDevicesIgnoreAfterAnyoneDied = BooleanOptionItem.Create(22924, "IgnoreAfterAnyoneDied", false, TabGroup.GameSettings, false)
+        DisableDevicesIgnoreAfterAnyoneDied = BooleanOptionItem.Create(22929, "IgnoreAfterAnyoneDied", false, TabGroup.GameSettings, false)
             .SetParent(DisableDevicesIgnoreConditions)
             .SetGameMode(CustomGameMode.Standard);
 

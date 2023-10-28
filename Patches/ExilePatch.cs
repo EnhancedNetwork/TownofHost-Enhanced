@@ -232,8 +232,6 @@ class ExileControllerWrapUpPatch
 
             Main.MeetingsPassed++;
 
-            pc.RpcRemovePet();
-
             if (Options.RandomSpawn.GetBool())
             {
                 RandomSpawn.SpawnMap map;

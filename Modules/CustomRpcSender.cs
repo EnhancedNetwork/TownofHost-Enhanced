@@ -239,6 +239,7 @@ public static class CustomRpcSenderExtensions
     {
         sender.AutoStartRpc(player.NetId, (byte)RpcCalls.MurderPlayer, targetClientId)
             .WriteNetObject(target)
+            .Write((byte)ExtendedPlayerControl.ResultFlags)
             .EndRpc();
     }
 }

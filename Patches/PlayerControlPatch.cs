@@ -7,7 +7,6 @@ using System.IO;
 using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
-using InnerNet;
 using UnityEngine;
 using TOHE.Modules;
 using TOHE.Roles.Double;
@@ -53,7 +52,18 @@ class CheckProtectPatch
         return true;
     }
 }
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckMurder))]
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdCheckMurder))] // Modded
+class CmdCheckMurderPatch
+{
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
+    {
+        Logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}", "CmdCheckMurder");
+        
+        if (!AmongUsClient.Instance.AmHost) return true;
+        return CheckMurderPatch.Prefix(__instance, target);
+    }
+}
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckMurder))] // Vanilla
 class CheckMurderPatch
 {
     public static Dictionary<byte, float> TimeSinceLastKill = new();
@@ -90,9 +100,10 @@ class CheckMurderPatch
         if (target.Data == null // Check if PlayerData is not null
             // Check target status
             || target.inVent
+            || target.inMovingPlat
+            //|| target.CheckUseZipline()
             || target.MyPhysics.Animations.IsPlayingEnterVentAnimation()
             || target.MyPhysics.Animations.IsPlayingAnyLadderAnimation()
-            || target.inMovingPlat
         )
         {
             Logger.Info("The target is in an unkillable state and the kill is canceled", "CheckMurder");
@@ -114,7 +125,7 @@ class CheckMurderPatch
         var divice = 2000f;
         float minTime = Mathf.Max(0.02f, AmongUsClient.Instance.Ping / divice * 6f); //Ping value is milliseconds (ms), so ÷ 2000
         // No value is stored in TimeSinceLastKill || Stored time is greater than or equal to minTime => Allow kill
-        
+
         //↓ If not permitted
         if (TimeSinceLastKill.TryGetValue(killer.PlayerId, out var time) && time < minTime)
         {
@@ -160,11 +171,11 @@ class CheckMurderPatch
                 {
                     if (Options.FragileKillerLunge.GetBool())
                     {
-                        killer.RpcMurderPlayer(target);
+                        killer.RpcMurderPlayerV3(target);
                     }
                     else
                     {
-                        target.RpcMurderPlayer(target);
+                        target.RpcMurderPlayerV3(target);
                     }
                     Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Shattered;
                     target.SetRealKiller(target);
@@ -1215,10 +1226,14 @@ class MurderPlayerPatch
 {
     public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
     {
-        Logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}{(target.protectedByGuardian ? "(Protected)" : "")}", "MurderPlayer");
+        Logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}{(target.IsProtected() ? "(Protected)" : "")}", "MurderPlayer");
 
-        if (RandomSpawn.CustomNetworkTransformPatch.NumOfTP.TryGetValue(__instance.PlayerId, out var num) && num > 2) RandomSpawn.CustomNetworkTransformPatch.NumOfTP[__instance.PlayerId] = 3;
-        if (!target.protectedByGuardian && !Doppelganger.DoppelVictim.ContainsKey(target.PlayerId) && !Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
+        if (RandomSpawn.CustomNetworkTransformPatch.NumOfTP.TryGetValue(__instance.PlayerId, out var num) && num > 2)
+        {
+            RandomSpawn.CustomNetworkTransformPatch.NumOfTP[__instance.PlayerId] = 3;
+        }
+
+        if (!target.IsProtected() && !Doppelganger.DoppelVictim.ContainsKey(target.PlayerId) && !Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
         {
             Camouflage.ResetSkinAfterDeathPlayers.Add(target.PlayerId);
             Camouflage.RpcSetSkin(target, ForceRevert: true);
@@ -3190,6 +3205,10 @@ class FixedUpdatePatch
                         || Camouflager.IsActive)
                     RealName = $"<size=0%>{RealName}</size> ";
 
+                // When MushroomMixup Sabotage Is Active
+                //else if (Utils.IsActive(SystemTypes.MushroomMixupSabotage))
+                //    RealName = $"<size=0%>{RealName}</size> ";
+
 
                 string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target) ? $"({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})" : "";
 
@@ -3604,17 +3623,6 @@ class SetNamePatch
 {
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] string name)
     {
-    }
-}
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
-public static class PlayerControlDiePatch
-{
-    //https://github.com/Hyz-sui/TownOfHost-H
-    public static void Postfix(PlayerControl __instance)
-    {
-        if (!AmongUsClient.Instance.AmHost) return;
-
-        __instance.RpcRemovePet();
     }
 }
 [HarmonyPatch(typeof(GameData), nameof(GameData.CompleteTask))]

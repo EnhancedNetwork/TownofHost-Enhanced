@@ -487,8 +487,8 @@ public class ModNewsHistory
             }
             {
                 //TOHE v1.0.1
-                   var news = new ModNews
-                   {
+                var news = new ModNews
+                {
                     Number = 80001,
                     Title = "Town of Host: Enhanced v1.0.1",
                     SubTitle = "★★ 新时代 ★★",
@@ -532,91 +532,9 @@ public class ModNewsHistory
         else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.TChinese)
         {
              {
-                // TOHE v1.1.1
+                // TOHE v1.0.1
                 var news = new ModNews
                 {
-                    Number = 70003,
-                    Title = "Town of Host: Enhanced v1.1.1",
-                    SubTitle = "★★性能與修復Bug的更新! ★★",
-                    ShortTitle = "TOH: Enhanced v1.1.1",
-                    BeforeNumber = 70002,
-                    Text = "<size=150%>歡迎來到 TOH: Enhanced v1.1.1!</size>\n" +
-                    "\n<b>【基於版本】</b>\n - 基於 TOH: Enhanced v1.1.0\r\n" +
-
-                    "\n<b>【Bug修復】</b>" +
-                        "\n     - 修復了(壞)迷你船員無法被審判/復仇" +
-                        "\n     - 修復了換票師的數個Bug，目前其仍處於試驗性職業" +
-                        "\n     - 修復了狂戰士無法死亡以及刷頻的問題" +
-                        "\n     - 修復了背叛的好迷你船員的問題" +
-                        "\n     - 修復了一個破平者與虛無的衝突Bug\n\r" +
-
-                    "\n<b>【其他修復】</b>" +
-                        "\n     - 改進了PlayerControls中的overkiller功能" +
-                        "\n     - 重製了結束遊戲檢查(再次)以最佳化它" +
-
-                    "\n\n★ 歡迎來到 Town of Host: Enhanced! ★",
-
-                    Date = "2023-10-23T00:00:00Z"
-                };
-                AllModNews.Add(news);
-            }
-            {
-                // TOHE 1.1.0
-                var news = new ModNews
-                {
-                    Number = 70002,
-                    Title = "Town of Host: Enhanced v1.1.0",
-                    SubTitle = "★★ 已經更新啦? 哇喔!★★",
-                    ShortTitle = "TOH: Enhanced v1.1.0",
-                    BeforeNumber = 70001,
-                    Text = "<size=150%>歡迎來到 TOH: Enhanced v1.1.0!</size>\n" +
-                    "\n<b>【基於版本】</b>\n - 基於 TOH: Enhanced v1.0.1\r\n" +
-
-                    "\n<b>【新職業/附加職業】</b>" +
-                        "\n     - 總統 (船員陣營:權力)" +
-                        "\n     - 間諜 (船員陣營:輔助)" +
-                        "\n     - 義警 (船員陣營:殺人)\n\r" +
-
-                        "\n     - 反擊者 (附加職業:混和)\n\r" +
-
-                    "\n<b>【新設定】</b>" +
-                        "\n     - 船鬼: 每完成(設定數量)任務後，立刻順移殺人" +
-                        "\n     - 簽約人: 被簽約的玩家可以召開會議" +
-                        "\n     - 躁動者: 隱藏玩家的交換對象\n" +
-
-                        "\n     - 贗品商: 失去錯誤使用贗品的技能" +
-                        "\n     - 商人: 只能銷售已開啟的附加職業" +
-                        "\n     - 驗屍官: 告知兇手已被追蹤\n\r" +
-
-                        "\n     - 感染源: 點兩下殺人鍵殺人/感染" +
-                        
-                        "\n     - 迷幻者: 帶刀玩家可以獲得迷患者的視野\n\r" +
-
-                    "\n<b>【刪除的職業/附加職業】</b>" +
-                        "\n     - 中立陣營: 咒魔\n\r" +
-                        "\n     - 附加職業: 太陽眼鏡" +
-                        "\n     - 附加職業: 發光" +
-
-                    "\n<b>【其他更動】</b>" +
-                        "\n     - 增加支援語言: 葡萄牙語" +
-                        "\n     - 新的大廳小遊戲: /rps與/coinflip" +
-                        "\n     - (僅限英語)將【Agent】重命名為【Evil Tracker】" +
-                        "\n     - (僅限英語)將【Disruptor】重命名為【Anti Adminer】" +
-                        "\n     - 新的迷彩皮膚" +
-                        "\n     - 增加了Default_Template.txt(預設模板.txt)" +
-                        "\n     - 重製了遐想者與單身狗" +
-
-                    "\n其他Bug的更動(當我說幾個的時候，我就是指那幾個)" +
-
-                    "\n\n★ 歡迎來到 Town of Host: Enhanced! ★",
-
-                    Date = "2023-10-21T00:00:00Z"
-                };
-                AllModNews.Add(news);
-                }
-                {
-                    var news = new ModNews
-                    {
                     Number = 70001,
                     Title = "Town of Host: Enhanced v1.0.1",
                     SubTitle = "★★ 新時代 ★★",
@@ -627,7 +545,7 @@ public class ModNewsHistory
                     "\n<b>【修復】</b>" +
                     "\n     - 刪除了大廳中的Loonie標誌，並將其更換" +
                     "\n     - 在占卜師中增加了一條更新的線索" +
-                    "\n     - 修復了模板和VIP清單沒有產生的問題" +
+                    "\n     - 修復了模板以及VIP清單沒有產生的問題" +
                     "\n     - 一個新職業的預告...?" +
                     "\n\n★ 歡迎來到 Town of Host: Enhanced! ★",
                     Date = "2023-10-15T00:00:00Z",

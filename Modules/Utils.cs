@@ -88,21 +88,19 @@ public static class Utils
             player.MyPhysics.RpcBootFromVent(0);
         }
 
-        player.NetTransform.SnapTo(location);
-        var sender = CustomRpcSender.Create("RpcTeleport", sendOption: SendOption.None);
-        {
-            sender.AutoStartRpc(player.NetTransform.NetId, (byte)RpcCalls.SnapTo);
-            {
-                Logger.Info($" {player.NetTransform.NetId}", "Teleport - NetTransform Id");
 
-                NetHelpers.WriteVector2(location, sender.stream);
-                sender.Write(player.NetTransform.lastSequenceId);
+        // Modded
+        var playerlastSequenceId = player.NetTransform.lastSequenceId + 8;
+        player.NetTransform.SnapTo(location, (ushort)playerlastSequenceId);
+        Logger.Info($" {(ushort)playerlastSequenceId}", "Teleport - Player NetTransform lastSequenceId + 8 - writer");
 
-                Logger.Info($" {player.NetTransform.lastSequenceId}", "Teleport - Player NetTransform lastSequenceId - writer");
-            }
-            sender.EndRpc();
-        }
-        sender.SendMessage();
+
+        // Vanilla
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable);
+        NetHelpers.WriteVector2(location, messageWriter);
+        messageWriter.Write(player.NetTransform.lastSequenceId + 10U);
+        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+        Logger.Info($" {player.NetTransform.lastSequenceId + 10U}", "Teleport - Player NetTransform lastSequenceId + 10U - writer");
     }
     public static void RpcRandomVentTeleport(this PlayerControl player)
     {
@@ -134,22 +132,25 @@ public static class Utils
             Polus        = 2
             Dleks        = 3 (Not used)
             The Airship  = 4
-            Fungle       = 5?
+            The Fungle   = 5
         */
+
+        //Logger.Info($"{type}", "SystemTypes");
+
         switch (type)
         {
             case SystemTypes.Electrical:
                 {
+                    if (mapId == 5) return false; // if The Fungle return false
                     var SwitchSystem = ShipStatus.Instance.Systems[type].Cast<SwitchSystem>();
                     return SwitchSystem != null && SwitchSystem.IsActive;
                 }
             case SystemTypes.Reactor:
                 {
-                    if (mapId == 2) return false;
-                    else if (mapId == 4)
+                    if (mapId == 2) return false; // if Polus return false
+                    else if (mapId is 4) // Only Airhip
                     {
-                        var HeliSabotageSystem = ShipStatus.Instance.Systems[type].Cast<HeliSabotageSystem>();
-                        return HeliSabotageSystem != null && HeliSabotageSystem.IsActive;
+                        return IsActive(SystemTypes.HeliSabotage);
                     }
                     else
                     {
@@ -159,19 +160,25 @@ public static class Utils
                 }
             case SystemTypes.Laboratory:
                 {
-                    if (mapId != 2) return false;
+                    if (mapId != 2) return false; // Only Polus
                     var ReactorSystemType = ShipStatus.Instance.Systems[type].Cast<ReactorSystemType>();
                     return ReactorSystemType != null && ReactorSystemType.IsActive;
                 }
             case SystemTypes.LifeSupp:
                 {
-                    if (mapId is 2 or 4) return false;
+                    if (mapId is 2 or 4 or 5) return false; // Only Skeld & Mira HQ
                     var LifeSuppSystemType = ShipStatus.Instance.Systems[type].Cast<LifeSuppSystemType>();
                     return LifeSuppSystemType != null && LifeSuppSystemType.IsActive;
                 }
+            case SystemTypes.HeliSabotage:
+                {
+                    if (mapId != 4) return false;// Only Airhip
+                    var HeliSabotageSystem = ShipStatus.Instance.Systems[type].Cast<HeliSabotageSystem>();
+                    return HeliSabotageSystem != null && HeliSabotageSystem.IsActive;
+                }
             case SystemTypes.Comms:
                 {
-                    if (mapId == 1)
+                    if (mapId is 1 or 5) // Only Mira HQ & The Fungle
                     {
                         var HqHudSystemType = ShipStatus.Instance.Systems[type].Cast<HqHudSystemType>();
                         return HqHudSystemType != null && HqHudSystemType.IsActive;
@@ -181,6 +188,12 @@ public static class Utils
                         var HudOverrideSystemType = ShipStatus.Instance.Systems[type].Cast<HudOverrideSystemType>();
                         return HudOverrideSystemType != null && HudOverrideSystemType.IsActive;
                     }
+                }
+            case SystemTypes.MushroomMixupSabotage:
+                {
+                    if (mapId != 5) return false; // Only The Fungle
+                    var MushroomMixupSabotageSystem = ShipStatus.Instance.Systems[type].Cast<MushroomMixupSabotageSystem>();
+                    return MushroomMixupSabotageSystem != null && MushroomMixupSabotageSystem.IsActive;
                 }
             default:
                 return false;
@@ -265,8 +278,14 @@ public static class Utils
     {
         //キルフラッシュ(ブラックアウト+リアクターフラッシュ)の処理
         bool ReactorCheck = false; //リアクターフラッシュの確認
-        if (Main.NormalOptions.MapId == 2) ReactorCheck = IsActive(SystemTypes.Laboratory);
-        else ReactorCheck = IsActive(SystemTypes.Reactor);
+
+        var systemtypes = (MapNames)Main.NormalOptions.MapId switch
+        {
+            MapNames.Polus => SystemTypes.Laboratory,
+            MapNames.Airship => SystemTypes.HeliSabotage,
+            _ => SystemTypes.Reactor,
+        };
+        ReactorCheck = IsActive(systemtypes);
 
         var Duration = Options.KillFlashDuration.GetFloat();
         if (ReactorCheck) Duration += 0.2f; //リアクター中はブラックアウトを長くする
@@ -2124,6 +2143,10 @@ public static class Utils
                     || Camouflager.IsActive))
                 SelfName = $"<size=0%>{SelfName}</size>";
 
+            // When MushroomMixup Sabotage Is Active
+            //else if (!CamouflageIsForMeeting && IsActive(SystemTypes.MushroomMixupSabotage))
+            //    SelfName = $"<size=0%>{SelfName}</size>";
+
 
             SelfName = SelfRoleName + "\r\n" + SelfName;
 
@@ -2435,6 +2458,9 @@ public static class Utils
                             || Camouflager.IsActive))
                         TargetPlayerName = $"<size=0%>{TargetPlayerName}</size>";
 
+                    // When MushroomMixup Sabotage Is Active
+                    //else if (!CamouflageIsForMeeting && IsActive(SystemTypes.MushroomMixupSabotage))
+                    //    TargetPlayerName = $"<size=0%>{TargetPlayerName}</size>";
 
                     // Target Name
                     string TargetName = $"{TargetRoleText}{TargetPlayerName}{TargetDeathReason}{TargetMark}";
