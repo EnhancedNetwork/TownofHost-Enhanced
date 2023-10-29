@@ -664,7 +664,7 @@ class CheckMurderPatch
         {
             if (!target.Is(CustomRoles.Pestilence))
             {
-                target.RpcTeleport(new Vector2(Pelican.GetBlackRoomPS().x, Pelican.GetBlackRoomPS().y));
+                target.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
                 target.SetRealKiller(killer);
                 Main.PlayerStates[target.PlayerId].SetDead();
                 target.RpcMurderPlayerV3(target);
@@ -704,7 +704,7 @@ class CheckMurderPatch
             {
                 killer.RpcTeleport(target.GetTruePosition());
                 RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
-                target.RpcTeleport(new Vector2(Pelican.GetBlackRoomPS().x, Pelican.GetBlackRoomPS().y));
+                target.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
                 target.SetRealKiller(killer);
                 Main.PlayerStates[target.PlayerId].SetDead();
                 target.RpcMurderPlayerV3(target);
