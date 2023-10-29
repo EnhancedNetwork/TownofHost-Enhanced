@@ -1007,7 +1007,8 @@ public static class Options
         OptionSaver.Initialize();
 
         // Preset Option
-        _ = PresetOptionItem.Create(0, TabGroup.SystemSettings)
+        int defaultPresetNumber = OptionSaver.GetDefaultPresetNumber();
+        _ = PresetOptionItem.Create(defaultPresetNumber, TabGroup.SystemSettings)
                 .SetColor(new Color32(255, 235, 4, byte.MaxValue))
                 .SetHeader(true);
 
