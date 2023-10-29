@@ -1235,6 +1235,8 @@
   "DisableAirshipViewingDeckLightsPanel": "Disable Viewing Deck Lights Panel (<color=#ed0007>Airship</color>)",
   "DisableAirshipGapRoomLightsPanel": "Disable Gap Room Lights Panel (<color=#ed0007>Airship</color>)",
   "DisableAirshipCargoLightsPanel": "Disable Cargo Lights Panel (<color=#ed0007>Airship</color>)",
+  "FungleMushroomLimitOverride": "Override Door Open Mushroom Limit (<color=#ffa646>Fungle</color>)",
+  "FungleMushroomLimit": "Door Open Mushroom Limit",
   "RandomSpawn": "Random Spawns Mode",
   "SpawnRandomLocation": "Random Spawns In Locations",
   "AirshipAdditionalSpawn": "Additional Spawn Locations (<color=#ed0007>Airship</color>)",

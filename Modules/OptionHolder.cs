@@ -695,6 +695,8 @@ public static class Options
     public static OptionItem DisableAirshipGapRoomLightsPanel;
     public static OptionItem DisableAirshipCargoLightsPanel;
     public static OptionItem BlockDisturbancesToSwitches;
+    public static OptionItem FungleMushroomLimitOverride;
+    public static OptionItem FungleMushroomLimit;
 
     //Guesser Mode//
     public static OptionItem GuesserMode;
@@ -2957,20 +2959,28 @@ public static class Options
             .SetParent(LightsOutSpecialSettings)
             .SetGameMode(CustomGameMode.Standard);
 
+        FungleMushroomLimitOverride = BooleanOptionItem.Create(22600, "FungleMushroomLimitOverride", false, TabGroup.GameSettings, false)
+            .SetColor(new Color32(243, 96, 96, byte.MaxValue))
+            .SetGameMode(CustomGameMode.Standard);
+        FungleMushroomLimit = IntegerOptionItem.Create(22601, "FungleMushroomLimit", new(1, 6, 1), 6, TabGroup.GameSettings, false)
+            .SetParent(FungleMushroomLimitOverride)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetValueFormat(OptionFormat.None);
+
 
         //禁用相关设定
         TextOptionItem.Create(100026, "MenuTitle.Disable", TabGroup.GameSettings)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
 
-        DisableShieldAnimations = BooleanOptionItem.Create(22601, "DisableShieldAnimations", false, TabGroup.GameSettings, false)
+        DisableShieldAnimations = BooleanOptionItem.Create(22602, "DisableShieldAnimations", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
-        DisableKillAnimationOnGuess = BooleanOptionItem.Create(22602, "DisableKillAnimationOnGuess", false, TabGroup.GameSettings, false)
+        DisableKillAnimationOnGuess = BooleanOptionItem.Create(22603, "DisableKillAnimationOnGuess", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
-        DisableVanillaRoles = BooleanOptionItem.Create(22600, "DisableVanillaRoles", true, TabGroup.GameSettings, false)
+        DisableVanillaRoles = BooleanOptionItem.Create(22604, "DisableVanillaRoles", true, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
         /*     DisableHiddenRoles = BooleanOptionItem.Create(22610, "DisableHiddenRoles", true, TabGroup.GameSettings, false)

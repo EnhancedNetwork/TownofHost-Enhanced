@@ -1,6 +1,6 @@
 using HarmonyLib;
 using Hazel;
-
+using TOHE.Modules;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -147,7 +147,7 @@ public static class SabotageSystemTypeRepairDamagePatch
 
         if (systemType == SystemTypes.Comms)
         {
-            if (playerRole.Is(CustomRoles.Camouflager) && !Camouflager.CanUseCommsSabotage.GetBool()) 
+            if (playerRole.Is(CustomRoles.Camouflager) && !Camouflager.CanUseCommsSabotage.GetBool())
                 return false;
         }
 
@@ -221,6 +221,48 @@ public static class SabotageSystemTypeRepairDamagePatch
         {
             var newReader = MessageReader.Get(msgReader);
             var amount = newReader.ReadByte();
+        }
+    }
+
+    [HarmonyPatch(typeof(MushroomDoorSabotageMinigame), nameof(MushroomDoorSabotageMinigame.UpdateMushroomWhackCount))]
+    public static class MushroomDoorSabotageMinigamePatch
+    {
+        public static int maxMush = 6;
+        public static void Postfix(MushroomDoorSabotageMinigame __instance)
+        {
+            __instance.counterText.text = __instance.mushroomWhackCount + "/" + maxMush;
+            if (__instance.mushroomWhackCount == maxMush)
+            {
+                __instance.Close();
+                SetDoorOpenState(__instance.myDoor, true);
+            }
+        }
+
+        public static bool Prefix(MushroomDoorSabotageMinigame __instance)
+        {
+            //doing that so the limit can be over 6 later
+            __instance.mushroomWhackCount++;
+            return false;
+        }
+
+        private static void SetDoorOpenState(OpenableDoor door, bool isOpen)
+        {
+            if (IsValidDoor(door))
+                door.SetDoorway(isOpen);
+            else
+                Logger.Error("Failed to open door at id " + door.Id, "MushroomDoorSabotageMinigamePatch");
+        }
+
+        private static bool IsValidDoor(OpenableDoor door) { return door.Room is not (SystemTypes.Lounge or SystemTypes.Decontamination); }
+    }
+
+    [HarmonyPatch(typeof(MushroomDoorSabotageMinigame), nameof(MushroomDoorSabotageMinigame.Begin))]
+    public static class MushroomDoorSabotageMinigameBeginPatch
+    {
+        public static void Postfix(MushroomDoorSabotageMinigame __instance)
+        {
+            MushroomDoorSabotageMinigamePatch.maxMush = Options.FungleMushroomLimitOverride.GetBool() ? Options.FungleMushroomLimit.GetInt() : 6;
+            __instance.counterText.text = __instance.mushroomWhackCount + "/" + MushroomDoorSabotageMinigamePatch.maxMush;
         }
     }
 }
