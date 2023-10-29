@@ -632,6 +632,27 @@ public class ModNewsHistory
         else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.TChinese)
         {
              {
+                var news = new ModNews
+                {
+                    Number = 70004,
+                    Title = "Town of Host: Enhanced v1.2.0",
+                    SubTitle = "★★ 支援The Fungle! ★★",
+                    ShortTitle = "TOH: Enhanced v1.2.0",
+                    BeforeNumber = 70003,
+                    Text = "<size=150%>歡迎來到 TOH: Enhanced v1.2.0!</size>\n" +
+                    "\n<b>【基於版本】</b>\n - 基於 TOH: Enhanced v1.1.1\r\n" +
+
+                    "\n<b>【更動】</b>" +
+                        "\n     - 支援最新的The Fungle更新!" +
+                        "\n     - 加入如果有玩家不斷進入並離開房間，則他將會被暫時封禁的機制\n\r" +
+
+                    "\n\n★ 歡迎來到 Town of Host: Enhanced: Fungle版本 ★",
+
+                    Date = "2023-10-29T00:00:00Z"
+                };
+                AllModNews.Add(news);
+             }
+             {
                 // TOHE v1.1.1
                 var news = new ModNews
                 {
