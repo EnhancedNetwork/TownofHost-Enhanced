@@ -508,17 +508,17 @@ public class ModNewsHistory
                 {
                     Number = 80004,
                     Title = "Town of Host: Enhanced v1.2.0",
-                    SubTitle = "★★ The Fungle Support! ★★",
+                    SubTitle = "★★ 支持The Fungle ! ★★",
                     ShortTitle = "TOH: Enhanced v1.2.0",
                     BeforeNumber = 80003,
-                    Text = "<size=150%>Welcome to TOH: Enhanced v1.2.0!</size>\n" +
-                    "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.1.1\r\n" +
+                    Text = "<size=150%>欢迎来到TOH: Enhanced v1.2.0!</size>\n" +
+                    "\n<b>【基于】</b>\n - 基于TOH: Enhanced v1.1.1\r\n" +
 
-                    "\n<b>【Changes】</b>" +
-                        "\n     - Support has been fully added with bug fixes for The Fungle Update" +
-                        "\n     - Added Temp Ban feature for players constantly joining/leaving (trolls)\n\r" +
+                    "\n<b>【挑战】</b>" +
+                        "\n     - 已完全添加支持并修复了 Fungle 更新的错误" +
+                        "\n     - 增加临时封禁功能的玩家不断加入/离开n\r" +
 
-                    "\n\n★ Welcome to Town of Host: Enhanced: Fungle Edition ★",
+                    "\n\n★ 欢迎来到Town of Host: Enhanced: Fungle Edition ★",
 
                     Date = "2023-10-29T00:00:00Z"
                 };
