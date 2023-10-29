@@ -606,7 +606,7 @@ class CheckMurderPatch
         if (killer.Is(CustomRoles.Unlucky))
         {
             var Ue = IRandom.Instance;
-            if (Ue.Next(0, 100) < Options.UnluckyKillSuicideChance.GetInt())
+            if (Ue.Next(1, 100) <= Options.UnluckyKillSuicideChance.GetInt())
             {
                 killer.RpcMurderPlayerV3(killer);
                 Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
@@ -664,7 +664,7 @@ class CheckMurderPatch
         {
             if (!target.Is(CustomRoles.Pestilence))
             {
-                target.RpcTeleport(new Vector2(Pelican.GetBlackRoomPS().x, Pelican.GetBlackRoomPS().y));
+                target.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
                 target.SetRealKiller(killer);
                 Main.PlayerStates[target.PlayerId].SetDead();
                 target.RpcMurderPlayerV3(target);
@@ -704,7 +704,7 @@ class CheckMurderPatch
             {
                 killer.RpcTeleport(target.GetTruePosition());
                 RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
-                target.RpcTeleport(new Vector2(Pelican.GetBlackRoomPS().x, Pelican.GetBlackRoomPS().y));
+                target.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
                 target.SetRealKiller(killer);
                 Main.PlayerStates[target.PlayerId].SetDead();
                 target.RpcMurderPlayerV3(target);
@@ -902,14 +902,14 @@ class CheckMurderPatch
             Jackal.AfterPlayerDiedTask(killer);
 
         //迷你船员岁数检查
-        if (target.Is(CustomRoles.NiceMini) && Mini.Age != 18)
+        if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("Cantkillkid")));
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), GetString("Cantkillkid")));
             return false;
         }
-        if (target.Is(CustomRoles.EvilMini) && Mini.Age != 18)
+        if (target.Is(CustomRoles.EvilMini) && Mini.Age < 18)
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.EvilMini), GetString("Cantkillkid")));
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), GetString("Cantkillkid")));
             return false;
         }
         if (killer.Is(CustomRoles.EvilMini) && Mini.Age != 18)
@@ -2082,7 +2082,7 @@ class ReportDeadBodyPatch
                 if (__instance.Is(CustomRoles.Unlucky) && (target?.Object == null || !target.Object.Is(CustomRoles.Bait)))
                 {
                     var Ue = IRandom.Instance;
-                    if (Ue.Next(0, 100) < Options.UnluckyReportSuicideChance.GetInt())
+                    if (Ue.Next(1, 100) <= Options.UnluckyReportSuicideChance.GetInt())
                     {
                         __instance.RpcMurderPlayerV3(__instance);
                         Main.PlayerStates[__instance.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
@@ -2858,9 +2858,11 @@ class FixedUpdatePatch
                                         Mini.Age += 1;
                                         Mini.GrowUpTime = 0;
                                         player.RpcGuardAndKill();
-                                        Logger.Info($"年龄增加1", "Child");
+                                        Logger.Info($"年龄增加1", "Mini");
                                         if (Mini.UpDateAge.GetBool())
                                         {
+                                            Mini.SendRPC();
+                                            Utils.NotifyRoles();
                                             if (player.Is(CustomRoles.NiceMini)) player.Notify(GetString("MiniUp"));
                                         }
                                     }
@@ -2886,19 +2888,21 @@ class FixedUpdatePatch
                                 if (Mini.GrowUpTime >= Mini.GrowUpDuration.GetInt() / 18)
                                 {
                                     Main.EvilMiniKillcooldownf = Main.EvilMiniKillcooldown[player.PlayerId];
-                                    Logger.Info($"记录击杀冷却{Main.EvilMiniKillcooldownf}", "Child");
+                                    Logger.Info($"记录击杀冷却{Main.EvilMiniKillcooldownf}", "Mini");
                                     Main.AllPlayerKillCooldown[player.PlayerId] = Main.EvilMiniKillcooldownf;
                                     Main.EvilMiniKillcooldown[player.PlayerId] = Main.EvilMiniKillcooldownf;
                                     player.MarkDirtySettings();
                                     Mini.Age += 1;
                                     Mini.GrowUpTime = 0;
-                                    Logger.Info($"年龄增加1", "Child");
-
+                                    Logger.Info($"年龄增加1", "Mini");
+                                    player.SetKillCooldown();
                                     if (Mini.UpDateAge.GetBool())
                                     {
+                                        Mini.SendRPC();
+                                        Utils.NotifyRoles();
                                         if (player.Is(CustomRoles.EvilMini)) player.Notify(GetString("MiniUp"));
                                     }
-                                    Logger.Info($"重置击杀冷却{Main.EvilMiniKillcooldownf - 1f}", "Child");
+                                    Logger.Info($"重置击杀冷却{Main.EvilMiniKillcooldownf - 1f}", "Mini");
                                 }
                             }
                             break;
@@ -3402,7 +3406,7 @@ class EnterVentPatch
         if (pc.Is(CustomRoles.Unlucky))
         {
             var Ue = IRandom.Instance;
-            if (Ue.Next(0, 100) < Options.UnluckyVentSuicideChance.GetInt())
+            if (Ue.Next(1, 100) <= Options.UnluckyVentSuicideChance.GetInt())
             {
                 pc.RpcMurderPlayerV3(pc);
                 Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Suicide;

@@ -429,7 +429,7 @@ public class TaskState
             if (player.Is(CustomRoles.Unlucky) && player.IsAlive())
             {
                 var Ue = IRandom.Instance;
-                if (Ue.Next(0, 100) < Options.UnluckyTaskSuicideChance.GetInt())
+                if (Ue.Next(1, 100) <= Options.UnluckyTaskSuicideChance.GetInt())
                 {
                     player.RpcMurderPlayerV3(player);
                     Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;

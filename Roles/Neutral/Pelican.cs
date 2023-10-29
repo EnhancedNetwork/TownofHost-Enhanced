@@ -94,7 +94,7 @@ public static class Pelican
         var target = Utils.GetPlayerById(id);
         return target != null && target.CanBeTeleported() && !Medic.ProtectList.Contains(target.PlayerId) && !target.Is(CustomRoles.GM) && !IsEaten(pc, id) && !IsEaten(id);
     }
-    public static Vector2 GetBlackRoomPS()
+    public static Vector2 GetBlackRoomPSForPelican()
     {
         return Main.NormalOptions.MapId switch
         {
@@ -133,7 +133,7 @@ public static class Pelican
         originalSpeed.Remove(target.PlayerId);
         originalSpeed.Add(target.PlayerId, Main.AllPlayerSpeed[target.PlayerId]);
 
-        target.RpcTeleport(new Vector2 (GetBlackRoomPS().x, GetBlackRoomPS().y));
+        target.RpcTeleport(GetBlackRoomPSForPelican());
         Main.AllPlayerSpeed[target.PlayerId] = 0.5f;
         ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
         target.MarkDirtySettings();
@@ -210,7 +210,7 @@ public static class Pelican
             {
                 var target = Utils.GetPlayerById(tar);
                 if (target == null) continue;
-                var pos = GetBlackRoomPS();
+                var pos = GetBlackRoomPSForPelican();
                 var dis = Vector2.Distance(pos, target.GetTruePosition());
                 if (dis < 1f) continue;
                 target.RpcTeleport(pos);

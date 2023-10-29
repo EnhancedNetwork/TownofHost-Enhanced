@@ -1399,6 +1399,18 @@ static class ExtendedPlayerControl
         }
         return true;
     }
+    public static Vector2 GetBlackRoomPosition()
+    {
+        return Main.NormalOptions.MapId switch
+        {
+            0 => new Vector2(-27f, 3.3f), // The Skeld
+            1 => new Vector2(-11.4f, 8.2f), // MIRA HQ
+            2 => new Vector2(42.6f, -19.9f), // Polus
+            4 => new Vector2(-16.8f, -6.2f), // Airship
+            5 => new Vector2(10.2f, 18.1f), // The Fungle
+            _ => throw new NotImplementedException(),
+        };
+    }
     public static string GetRoleInfo(this PlayerControl player, bool InfoLong = false)
     {
         var role = player.GetCustomRole();

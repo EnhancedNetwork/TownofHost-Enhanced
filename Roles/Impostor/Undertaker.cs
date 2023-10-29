@@ -42,7 +42,7 @@ public static class Undertaker
     {
         playerIdList.Add(playerId);
         IsEnable = true;
-        MarkedLocation[playerId] = new Vector2(Pelican.GetBlackRoomPS().x, Pelican.GetBlackRoomPS().y);
+        MarkedLocation[playerId] = ExtendedPlayerControl.GetBlackRoomPosition();
         DefaultSpeed = Main.AllPlayerSpeed[playerId];
     }
 
@@ -69,10 +69,11 @@ public static class Undertaker
         byte PlayerId = reader.ReadByte();
         float xLoc = reader.ReadInt32();
         float yLoc = reader.ReadInt32();
+
         if (MarkedLocation.ContainsKey(PlayerId))
             MarkedLocation[PlayerId] = new Vector2(xLoc,yLoc);
         else
-            MarkedLocation.Add(PlayerId, new Vector2(Pelican.GetBlackRoomPS().x, Pelican.GetBlackRoomPS().y));
+            MarkedLocation.Add(PlayerId, ExtendedPlayerControl.GetBlackRoomPosition());
     }
 
     public static void OnShapeshift(PlayerControl pc, bool IsShapeshifting)
@@ -97,7 +98,7 @@ public static class Undertaker
 
     public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
 
-    public static bool HasMarkedLoc(byte playerId) => MarkedLocation[playerId] != new Vector2(Pelican.GetBlackRoomPS().x, Pelican.GetBlackRoomPS().y);
+    public static bool HasMarkedLoc(byte playerId) => MarkedLocation[playerId] != ExtendedPlayerControl.GetBlackRoomPosition();
 
     public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
@@ -119,7 +120,7 @@ public static class Undertaker
             Main.PlayerStates[target.PlayerId].SetDead();
             target.RpcMurderPlayerV3(target);
             killer.SetKillCooldown();
-            MarkedLocation[killer.PlayerId] = new Vector2(Pelican.GetBlackRoomPS().x, Pelican.GetBlackRoomPS().y);
+            MarkedLocation[killer.PlayerId] = ExtendedPlayerControl.GetBlackRoomPosition();
             SendRPC(killer.PlayerId);
             FreezeUndertaker(killer);
             killer.SyncSettings();
@@ -131,7 +132,7 @@ public static class Undertaker
     {
         foreach(var playerId in MarkedLocation.Keys)
         {
-            MarkedLocation[playerId] = new Vector2(Pelican.GetBlackRoomPS().x, Pelican.GetBlackRoomPS().y);
+            MarkedLocation[playerId] = ExtendedPlayerControl.GetBlackRoomPosition();
             Main.AllPlayerSpeed[playerId] = DefaultSpeed;
             SendRPC(playerId);
         }
