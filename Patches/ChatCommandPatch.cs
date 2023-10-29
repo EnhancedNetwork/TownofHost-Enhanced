@@ -1216,7 +1216,6 @@ internal class ChatCommands
                 break;
 
             case "/r":
-                cancelled = true;
                 subArgs = text.Remove(0, 2);
                 SendRolesInfo(subArgs, player.PlayerId, player.FriendCode.GetDevUser().DeBug);
                 break;
@@ -1249,7 +1248,6 @@ internal class ChatCommands
                 break;
 
             case "/up":
-                cancelled = true;
                 subArgs = text.Remove(0, 3);
                 if (!Options.EnableUpMode.GetBool())
                 {
