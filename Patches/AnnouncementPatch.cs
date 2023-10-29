@@ -516,7 +516,7 @@ public class ModNewsHistory
 
                     "\n<b>【挑战】</b>" +
                         "\n     - 已完全添加支持并修复了 Fungle 更新的错误" +
-                        "\n     - 增加临时封禁功能的玩家不断加入/离开n\r" +
+                        "\n     -如果有玩家不断加入/离开，则会暂时封禁该玩家n\r" +
 
                     "\n\n★ 欢迎来到Town of Host: Enhanced: Fungle Edition ★",
 
