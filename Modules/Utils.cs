@@ -29,7 +29,7 @@ public static class Utils
     public static long GetTimeStamp(DateTime? dateTime = null) => (long)((dateTime ?? DateTime.Now).ToUniversalTime() - timeStampStartTime).TotalSeconds;
     public static void ErrorEnd(string text)
     {
-        if (AmongUsClient.Instance.Am)
+        if (AmongUsClient.Instance.AmHost)
         {
             Logger.Fatal($"{text} 错误，触发防黑屏措施", "Anti-black");
             ChatUpdatePatch.DoBlockChat = true;
@@ -54,14 +54,14 @@ public static class Utils
             {
                 _ = new LateTask(() =>
                 {
-                    Logger.SendInGame(GetString("AntiBlackOutRequestToForceEnd"), true);
+                    Logger.SendInGame(GetString("AntiBlackOutRequestHostToForceEnd"), true);
                 }, 3f, "Anti-Black Msg SendInGame");
             }
             else
             {
                 _ = new LateTask(() =>
                 {
-                    Logger.SendInGame(GetString("AntiBlackOutRejectForceEnd"), true);
+                    Logger.SendInGame(GetString("AntiBlackOutHostRejectForceEnd"), true);
                 }, 3f, "Anti-Black Msg SendInGame");
                 _ = new LateTask(() =>
                 {
@@ -476,7 +476,7 @@ public static class Utils
         if (p.Role.IsImpostor)
             hasTasks = false; //タスクはCustomRoleを元に判定する
 
-        if (p.IsDead && Options.GIgnoreTasks.GetBool()) hasTasks = false;
+        if (p.IsDead && Options.GhostIgnoreTasks.GetBool()) hasTasks = false;
         var role = States.MainRole;
         switch (role)
         {
@@ -1165,7 +1165,7 @@ public static class Utils
     public static void CopyCurrentSettings()
     {
         var sb = new StringBuilder();
-        if (Options.HideGameSettings.GetBool() && !AmongUsClient.Instance.Am)
+        if (Options.HideGameSettings.GetBool() && !AmongUsClient.Instance.AmHost)
         {
             ClipboardHelper.PutClipboardString(GetString("Message.HideGameSettings"));
             return;
@@ -1353,7 +1353,7 @@ public static class Utils
         return sb.ToString();
     }
 
-    public static byte MsgToColor(string text, bool is = false)
+    public static byte MsgToColor(string text, bool isHost = false)
     {
         text = text.ToLowerInvariant();
         text = text.Replace("色", string.Empty);
@@ -1554,7 +1554,7 @@ public static class Utils
 
             case "18": case "隐藏": case "?": color = 18; break;
         }
-        return !is && color == 18 ? byte.MaxValue : color is < 0 or > 18 ? byte.MaxValue : Convert.ToByte(color);
+        return !isHost && color == 18 ? byte.MaxValue : color is < 0 or > 18 ? byte.MaxValue : Convert.ToByte(color);
     }
 
     public static void ShowHelpToClient(byte ID)
@@ -1589,7 +1589,7 @@ public static class Utils
             + $"\n  ○ /qt {GetString("Command.quit")}"
        //     + $"\n  ○ /icons {GetString("Command.iconinfo")}"
             + $"\n  ○ /death {GetString("Command.death")}"
-            + "\n\n" + GetString("CommandList")
+            + "\n\n" + GetString("CommandHostList")
             + $"\n  ○ /s {GetString("Command.say")}"
             + $"\n  ○ /rn {GetString("Command.rename")}"
             + $"\n  ○ /xf {GetString("Command.solvecover")}"
@@ -1605,7 +1605,7 @@ public static class Utils
     }
     public static void CheckTerroristWin(GameData.PlayerInfo Terrorist)
     {
-        if (!AmongUsClient.Instance.Am) return;
+        if (!AmongUsClient.Instance.AmHost) return;
         var taskState = GetPlayerById(Terrorist.PlayerId).GetPlayerTaskState();
         if (taskState.IsTaskFinished && (!Main.PlayerStates[Terrorist.PlayerId].IsSuicide() || Options.CanTerroristSuicideWin.GetBool())) //タスクが完了で（自殺じゃない OR 自殺勝ちが許可）されていれば
         {
@@ -1644,7 +1644,7 @@ public static class Utils
     }
     public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "")
     {
-        if (!AmongUsClient.Instance.Am) return;
+        if (!AmongUsClient.Instance.AmHost) return;
         if (title == "") title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
         Main.MessagesToSend.Add((text.RemoveHtmlTagsTemplate(), sendTo, title));
     }
@@ -1726,7 +1726,7 @@ public static class Utils
     }
     public static void ApplySuffix(PlayerControl player)
     {
-        if (!AmongUsClient.Instance.Am || player == null) return;
+        if (!AmongUsClient.Instance.AmHost || player == null) return;
         
         if (!(player.AmOwner || (player.FriendCode.GetDevUser().HasTag())))
         {
@@ -1754,7 +1754,7 @@ public static class Utils
                     if ((GameStates.IsOnlineGame || GameStates.IsLocalGame) && !Main.AutoMuteUs.Value)
                         name = string.Empty;
 
-                    //name = $"<color=#902efd>{GetString("Text")}</color><color=#4bf4ff>♥</color>" + name;
+                    //name = $"<color=#902efd>{GetString("HostText")}</color><color=#4bf4ff>♥</color>" + name;
                 }
             }
             var modtag = "";
@@ -1854,11 +1854,11 @@ public static class Utils
                     SuffixModes.TOHE => name += $"\r\n<color={Main.ModColor}>TOHE v{Main.PluginDisplayVersion}</color>",
                     SuffixModes.Streaming => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Streaming")}</color></size>",
                     SuffixModes.Recording => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Recording")}</color></size>",
-                    SuffixModes.Room => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Room")}</color></size>",
+                    SuffixModes.RoomHost => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.RoomHost")}</color></size>",
                     SuffixModes.OriginalName => name += $"\r\n<size=1.7><color={Main.ModColor}>{DataManager.player.Customization.Name}</color></size>",
                     SuffixModes.DoNotKillMe => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.DoNotKillMe")}</color></size>",
                     SuffixModes.NoAndroidPlz => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.NoAndroidPlz")}</color></size>",
-                    SuffixModes.Auto => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.Auto")}</color></size>",
+                    SuffixModes.AutoHost => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.AutoHost")}</color></size>",
                     _ => name
                 };
             }
@@ -1884,7 +1884,7 @@ public static class Utils
     private static StringBuilder TargetMark = new(20);
     public static void NotifyRoles(bool isForMeeting = false, PlayerControl SpecifySeer = null, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false)
     {
-        if (!AmongUsClient.Instance.Am) return;
+        if (!AmongUsClient.Instance.AmHost) return;
         if (Main.AllPlayerControls == null) return;
 
         //Do not update NotifyRoles during meetings
@@ -1940,7 +1940,7 @@ public static class Utils
             if (Blackmailer.ForBlackmailer.Contains(seer.PlayerId))
                 SelfMark.Append(ColorString(Utils.GetRoleColor(CustomRoles.Blackmailer), "╳")); 
 
-            if (BallLightning.IsEnable && BallLightning.IsG(seer))
+            if (BallLightning.IsEnable && BallLightning.IsGhost(seer))
                 SelfMark.Append(ColorString(GetRoleColor(CustomRoles.BallLightning), "■"));
 
             if (Medic.IsEnable && (Medic.InProtect(seer.PlayerId) || Medic.TempMarkProtected == seer.PlayerId) && (Medic.WhoCanSeeProtect.GetInt() is 0 or 2))
@@ -2211,7 +2211,7 @@ public static class Utils
                     if (target.Is(CustomRoles.Cyber) && Options.CyberKnown.GetBool())
                         TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
 
-                    if (BallLightning.IsEnable && BallLightning.IsG(target))
+                    if (BallLightning.IsEnable && BallLightning.IsGhost(target))
                         TargetMark.Append(ColorString(GetRoleColor(CustomRoles.BallLightning), "■"));
 
                     if (Snitch.IsEnable)
