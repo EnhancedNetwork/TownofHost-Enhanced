@@ -1,10 +1,10 @@
 {
   "LanguageID": "2",
   "TextBelowVersionText": "",
-  "HostText": " ",
+  "HostText": "<color=#000000></color>",
   "HostColor": "#ffffff",
   "IconColor": " ",
-  "Icon": " ",
+  "Icon": "<color=#000000></color>",
   "NameColor": "#ffffff",
   "kofi": "Ko-Fi",
   "GitHub": "GitHub",
