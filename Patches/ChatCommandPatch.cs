@@ -1252,8 +1252,8 @@ internal class ChatCommands
                 if (!Options.EnableUpMode.GetBool())
                 {
                     Utils.SendMessage(string.Format(GetString("Message.YTPlanDisabled"), GetString("EnableYTPlan")), player.PlayerId);
-                    break;
                 }
+                break;
 
             case "/win":
             case "/winner":
