@@ -1216,6 +1216,7 @@ internal class ChatCommands
                 break;
 
             case "/r":
+                cancelled = true;
                 subArgs = text.Remove(0, 2);
                 SendRolesInfo(subArgs, player.PlayerId, player.FriendCode.GetDevUser().DeBug);
                 break;
@@ -1248,15 +1249,11 @@ internal class ChatCommands
                 break;
 
             case "/up":
+                cancelled = true;
                 subArgs = text.Remove(0, 3);
                 if (!Options.EnableUpMode.GetBool())
                 {
                     Utils.SendMessage(string.Format(GetString("Message.YTPlanDisabled"), GetString("EnableYTPlan")), player.PlayerId);
-                    break;
-                }
-                else
-                {
-                    Utils.SendMessage(GetString("Message.OnlyCanBeUsedByHost"), player.PlayerId);
                     break;
                 }
 

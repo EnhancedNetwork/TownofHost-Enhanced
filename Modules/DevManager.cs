@@ -126,15 +126,16 @@ public static class DevManager
         DevUserList.Add(new(code: "fivedogged#3140", color: "#0B1FB8", tag: "Translator", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "Sansationnelle")); //shapmaster
 
         // Youtubers and Dev (BRASIL)
-        DevUserList.Add(new(code: "tinedpun#6584", color: "#0000ff", tag: "Desenvolvedor", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null));
-        DevUserList.Add(new(code: "tonalpins#1855", color: "#ffc0cb", tag: "YouTuber", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null));
-        DevUserList.Add(new(code: "calmpall#0468", color: "#ffc0cb", tag: "YouTuber", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null));
-        DevUserList.Add(new(code: "stoolfoggy#3070", color: "#ffc0cb", tag: "YouTuber", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null));
-        DevUserList.Add(new(code: "elatedpity#2202", color: "#ffc0cb", tag: "YouTuber", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null));
-        DevUserList.Add(new(code: "grassyprey#9593", color: "#ffc0cb", tag: "YouTuber", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null));
-        DevUserList.Add(new(code: "fluelesser#2433", color: "#ffc0cb", tag: "YouTuber", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null));
-        DevUserList.Add(new(code: "drivesolar#9523", color: "#ffc0cb", tag: "YouTuber", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null));
-        DevUserList.Add(new(code: "traderaser#4755", color: "#ffc0cb", tag: "YouTuber", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null));
+        DevUserList.Add(new(code: "tinedpun#6584", color: "#0000ff", tag: "Desenvolvedor", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: null));
+        DevUserList.Add(new(code: "tonalpins#1855", color: "#ffc0cb", tag: "YouTuber", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: null));
+        DevUserList.Add(new(code: "calmpall#0468", color: "#ffc0cb", tag: "YouTuber", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: null));
+        DevUserList.Add(new(code: "stoolfoggy#3070", color: "#ffc0cb", tag: "YouTuber", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: null));
+        DevUserList.Add(new(code: "elatedpity#2202", color: "#ffc0cb", tag: "YouTuber", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: null));
+        DevUserList.Add(new(code: "grassyprey#9593", color: "#ffc0cb", tag: "YouTuber", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: null));
+        DevUserList.Add(new(code: "fluelesser#2433", color: "#ffc0cb", tag: "YouTuber", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: null));
+        DevUserList.Add(new(code: "drivesolar#9523", color: "#ffc0cb", tag: "YouTuber", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: null));
+        DevUserList.Add(new(code: "traderaser#4755", color: "#ffc0cb", tag: "YouTuber", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: null));
+        DevUserList.Add(new(code: "spryvowel#8882", color: "#ffc0cb", tag: "YouTuber", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: null));
         
         // China Up
         DevUserList.Add(new(code: "truantwarm#9165", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "萧暮不姓萧"));
