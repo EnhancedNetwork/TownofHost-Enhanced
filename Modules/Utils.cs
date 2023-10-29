@@ -1046,8 +1046,6 @@ public static class Utils
                     ProgressText.Append(Spy.GetProgressText(playerId, comms));
                     break;
                 case CustomRoles.NiceMini:
-                    ProgressText.Append(Mini.GetAge(playerId));
-                    break;
                 case CustomRoles.EvilMini:
                     ProgressText.Append(Mini.GetAge(playerId));
                     break;

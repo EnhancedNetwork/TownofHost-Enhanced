@@ -902,12 +902,12 @@ class CheckMurderPatch
             Jackal.AfterPlayerDiedTask(killer);
 
         //迷你船员岁数检查
-        if (target.Is(CustomRoles.NiceMini) && Mini.Age != 18)
+        if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
         {
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), GetString("Cantkillkid")));
             return false;
         }
-        if (target.Is(CustomRoles.EvilMini) && Mini.Age != 18)
+        if (target.Is(CustomRoles.EvilMini) && Mini.Age < 18)
         {
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), GetString("Cantkillkid")));
             return false;
@@ -2862,6 +2862,7 @@ class FixedUpdatePatch
                                         if (Mini.UpDateAge.GetBool())
                                         {
                                             Mini.SendRPC();
+                                            Utils.NotifyRoles();
                                             if (player.Is(CustomRoles.NiceMini)) player.Notify(GetString("MiniUp"));
                                         }
                                     }
@@ -2898,6 +2899,7 @@ class FixedUpdatePatch
                                     if (Mini.UpDateAge.GetBool())
                                     {
                                         Mini.SendRPC();
+                                        Utils.NotifyRoles();
                                         if (player.Is(CustomRoles.EvilMini)) player.Notify(GetString("MiniUp"));
                                     }
                                     Logger.Info($"重置击杀冷却{Main.EvilMiniKillcooldownf - 1f}", "Mini");
