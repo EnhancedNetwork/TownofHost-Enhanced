@@ -904,12 +904,12 @@ class CheckMurderPatch
         //迷你船员岁数检查
         if (target.Is(CustomRoles.NiceMini) && Mini.Age != 18)
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("Cantkillkid")));
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), GetString("Cantkillkid")));
             return false;
         }
         if (target.Is(CustomRoles.EvilMini) && Mini.Age != 18)
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.EvilMini), GetString("Cantkillkid")));
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), GetString("Cantkillkid")));
             return false;
         }
         if (killer.Is(CustomRoles.EvilMini) && Mini.Age != 18)
@@ -2858,9 +2858,10 @@ class FixedUpdatePatch
                                         Mini.Age += 1;
                                         Mini.GrowUpTime = 0;
                                         player.RpcGuardAndKill();
-                                        Logger.Info($"年龄增加1", "Child");
+                                        Logger.Info($"年龄增加1", "Mini");
                                         if (Mini.UpDateAge.GetBool())
                                         {
+                                            Mini.SendRPC();
                                             if (player.Is(CustomRoles.NiceMini)) player.Notify(GetString("MiniUp"));
                                         }
                                     }
@@ -2886,19 +2887,20 @@ class FixedUpdatePatch
                                 if (Mini.GrowUpTime >= Mini.GrowUpDuration.GetInt() / 18)
                                 {
                                     Main.EvilMiniKillcooldownf = Main.EvilMiniKillcooldown[player.PlayerId];
-                                    Logger.Info($"记录击杀冷却{Main.EvilMiniKillcooldownf}", "Child");
+                                    Logger.Info($"记录击杀冷却{Main.EvilMiniKillcooldownf}", "Mini");
                                     Main.AllPlayerKillCooldown[player.PlayerId] = Main.EvilMiniKillcooldownf;
                                     Main.EvilMiniKillcooldown[player.PlayerId] = Main.EvilMiniKillcooldownf;
                                     player.MarkDirtySettings();
                                     Mini.Age += 1;
                                     Mini.GrowUpTime = 0;
-                                    Logger.Info($"年龄增加1", "Child");
-
+                                    Logger.Info($"年龄增加1", "Mini");
+                                    player.SetKillCooldown();
                                     if (Mini.UpDateAge.GetBool())
                                     {
+                                        Mini.SendRPC();
                                         if (player.Is(CustomRoles.EvilMini)) player.Notify(GetString("MiniUp"));
                                     }
-                                    Logger.Info($"重置击杀冷却{Main.EvilMiniKillcooldownf - 1f}", "Child");
+                                    Logger.Info($"重置击杀冷却{Main.EvilMiniKillcooldownf - 1f}", "Mini");
                                 }
                             }
                             break;
