@@ -631,7 +631,7 @@ public class ModNewsHistory
            // ====== TChinese ======
         else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.TChinese)
         {
-                 {
+             {
                 var news = new ModNews
                 {
                     Number = 70004,
@@ -651,7 +651,7 @@ public class ModNewsHistory
                     Date = "2023-10-29T00:00:00Z"
                 };
                 AllModNews.Add(news);
-            }
+             }
              {
                 // TOHE v1.1.1
                 var news = new ModNews
