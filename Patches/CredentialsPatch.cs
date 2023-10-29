@@ -73,7 +73,6 @@ public static class Credentials
 
 #if RELEASE
             Main.credentialsText += $"\r\npor <color=#f34c50>Equipe Y10 & </color><color=#32cd32>Dechis</color>";
-#endif";
 #endif
 
 #if CANARY
