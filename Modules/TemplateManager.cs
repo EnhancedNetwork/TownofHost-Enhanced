@@ -55,11 +55,12 @@ public static class TemplateManager
             if (name.Length >= 2)
                 fileName = name switch // https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-lcid/a9eac961-e77d-41a6-90a5-ce1a8b0cdb9c
                 {
-                    "ru" => "Russian",
+                    var lang when lang.StartsWith("ru") => "Russian",
                     "zh-Hans" or "zh" or "zh-CN" or "zn-SG" => "SChinese",
                     "zh-Hant" or "zh-HK" or "zh-MO" or "zh-TW" => "TChinese",
                     "pt-BR" => "Brazilian",
                     "es" or "es-ES" or "es-ES_tradnl" => "Spanish",
+                    var lang when lang.StartsWith("fr") => "French",
                     _ => "English"
                 };
             else fileName = "English";
