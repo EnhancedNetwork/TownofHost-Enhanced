@@ -72,7 +72,7 @@ public static class Credentials
             Main.credentialsText = $"\r\n<color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginDisplayVersion}";
 
 #if RELEASE
-            Main.credentialsText += $"\r\n<color=#a54aff>By <color=#ffc0cb>KARPED1EM</color> & </color><color=#f34c50>Moe</color>";
+            Main.credentialsText += $"\r\npor <color=#000000>Equipe Y9";
 #endif
 
 #if CANARY
