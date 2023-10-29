@@ -806,7 +806,7 @@ public class ModNewsHistory
                 {
                     Number = 100005,
                     Title = "Town of Host: Enhanced v1.2.0",
-                    SubTitle = "★★ Support de The Fungle! ★★",
+                    SubTitle = "★★ Support de \"The Fungle\"! ★★",
                     ShortTitle = "TOH: Enhanced v1.2.0",
                     BeforeNumber = 100004,
                     Text = "<size=150%>Bienvenue sur TOH: Enhanced v1.2.0!</size>\n" +
@@ -827,7 +827,7 @@ public class ModNewsHistory
                 {
                     Number = 100004,
                     Title = "Town of Host: Enhanced v1.1.1",
-                    SubTitle = "★★ A performance update with bug fixes! ★★",
+                    SubTitle = "★★ Une mise à jour de performance avec des corrections de bugs! ★★",
                     ShortTitle = "TOH: Enhanced v1.1.1",
                     BeforeNumber = 100003,
                     Text = "<size=150%>Bienvenue sur TOH: Enhanced v1.1.1!</size>\n" +
@@ -855,7 +855,7 @@ public class ModNewsHistory
                 {
                     Number = 100003,
                     Title = "Town of Host: Enhanced v1.1.0",
-                    SubTitle = "★★ An update already?! Wow! ★★",
+                    SubTitle = "★★ Une mise a jour déjà?! Wow! ★★",
                     ShortTitle = "TOH: Enhanced v1.1.0",
                     BeforeNumber = 100002,
                     Text = "<size=150%>Bienvenue sur TOH: Enhanced v1.1.0!</size>\n" +
@@ -908,7 +908,7 @@ public class ModNewsHistory
                 {
                     Number = 100002,
                     Title = "Town of Host: Enhanced v1.0.1",
-                    SubTitle = "★★ A New Era ★★",
+                    SubTitle = "★★ Une nouvelle ère ★★",
                     ShortTitle = "TOH: Enhanced v1.0.1",
                     BeforeNumber = 100001,
                     Text = "<size=150%>Bienvenue sur TOH: Enhanced v1.0.1!</size>\n\n<size=125%>Support d'Among Us v2023.7.11 et v2023.7.12</size>\n" +
