@@ -102,7 +102,7 @@ class RepairSystemPatch
             && (systemType is SystemTypes.Doors))
         {
             var Ue = IRandom.Instance;
-            if (Ue.Next(1, 100) < Options.UnluckySabotageSuicideChance.GetInt())
+            if (Ue.Next(1, 100) <= Options.UnluckySabotageSuicideChance.GetInt())
             {
                 player.RpcMurderPlayerV3(player);
                 Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;

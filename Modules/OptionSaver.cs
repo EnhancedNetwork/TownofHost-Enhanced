@@ -9,7 +9,18 @@ public static class OptionSaver
 {
     private static readonly DirectoryInfo SaveDataDirectoryInfo = new("./TOHE-DATA/SaveData/");
     private static readonly FileInfo OptionSaverFileInfo = new($"{SaveDataDirectoryInfo.FullName}/Options.json");
+    private static readonly FileInfo DefaultPresetFileInfo = new ($"{SaveDataDirectoryInfo.FullName}/DefaultPreset.txt");
+    private static int DefaultPresetNumber = new();
 
+    public static int GetDefaultPresetNumber()
+    {
+        if (DefaultPresetFileInfo.Exists)
+        {
+            string presetNmber = File.ReadAllText(DefaultPresetFileInfo.FullName);
+            if (int.TryParse(presetNmber, out int number) && number >= 0 && number <= 4) return number;
+        }
+        return 0;
+    }
     public static void Initialize()
     {
         if (!SaveDataDirectoryInfo.Exists)
@@ -20,6 +31,10 @@ public static class OptionSaver
         if (!OptionSaverFileInfo.Exists)
         {
             OptionSaverFileInfo.Create().Dispose();
+        }
+        if (!DefaultPresetFileInfo.Exists)
+        {
+            DefaultPresetFileInfo.Create().Dispose();
         }
     }
     /// <summary>Generate object for json serialization from current options</summary>
@@ -41,6 +56,7 @@ public static class OptionSaver
                 Logger.Warn($"Duplicate preset option ID: {option.Id}", "Option Saver");
             }
         }
+        DefaultPresetNumber = singleOptions[0];
         return new SerializableOptionsData
         {
             Version = Version,
@@ -86,6 +102,7 @@ public static class OptionSaver
 
         var jsonString = JsonSerializer.Serialize(GenerateOptionsData(), new JsonSerializerOptions { WriteIndented = true, });
         File.WriteAllText(OptionSaverFileInfo.FullName, jsonString);
+        File.WriteAllText(DefaultPresetFileInfo.FullName, DefaultPresetNumber.ToString());
     }
     /// <summary>Read options from json file</summary>
     public static void Load()
