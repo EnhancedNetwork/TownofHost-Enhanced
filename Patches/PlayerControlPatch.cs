@@ -606,7 +606,7 @@ class CheckMurderPatch
         if (killer.Is(CustomRoles.Unlucky))
         {
             var Ue = IRandom.Instance;
-            if (Ue.Next(0, 100) < Options.UnluckyKillSuicideChance.GetInt())
+            if (Ue.Next(1, 100) <= Options.UnluckyKillSuicideChance.GetInt())
             {
                 killer.RpcMurderPlayerV3(killer);
                 Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
@@ -2082,7 +2082,7 @@ class ReportDeadBodyPatch
                 if (__instance.Is(CustomRoles.Unlucky) && (target?.Object == null || !target.Object.Is(CustomRoles.Bait)))
                 {
                     var Ue = IRandom.Instance;
-                    if (Ue.Next(0, 100) < Options.UnluckyReportSuicideChance.GetInt())
+                    if (Ue.Next(1, 100) <= Options.UnluckyReportSuicideChance.GetInt())
                     {
                         __instance.RpcMurderPlayerV3(__instance);
                         Main.PlayerStates[__instance.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
@@ -3406,7 +3406,7 @@ class EnterVentPatch
         if (pc.Is(CustomRoles.Unlucky))
         {
             var Ue = IRandom.Instance;
-            if (Ue.Next(0, 100) < Options.UnluckyVentSuicideChance.GetInt())
+            if (Ue.Next(1, 100) <= Options.UnluckyVentSuicideChance.GetInt())
             {
                 pc.RpcMurderPlayerV3(pc);
                 Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
