@@ -621,17 +621,19 @@ internal class ChatCommands
 
                 case "/xf":
                     canceled = true;
-                    if (!GameStates.IsInGame)
+                    if (GameStates.IsLobby)
                     {
                         Utils.SendMessage(GetString("Message.CanNotUseInLobby"), PlayerControl.LocalPlayer.PlayerId);
                         break;
                     }
                     foreach (var pc in Main.AllPlayerControls)
                     {
+                        if (pc.IsAlive()) continue;
+
                         pc.RpcSetNameEx(pc.GetRealName(isMeeting: true));
                     }
                     ChatUpdatePatch.DoBlockChat = false;
-                    Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
+                    //Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
                     Utils.SendMessage(GetString("Message.TryFixName"), PlayerControl.LocalPlayer.PlayerId);
                     break;
 
@@ -1763,13 +1765,19 @@ internal class ChatCommands
                 break;
 
             case "/xf":
-                if (!GameStates.IsInGame)
+                if (GameStates.IsLobby)
                 {
                     Utils.SendMessage(GetString("Message.CanNotUseInLobby"), player.PlayerId);
                     break;
                 }
+                foreach (var pc in Main.AllPlayerControls)
+                {
+                    if (pc.IsAlive()) continue;
+
+                    pc.RpcSetNameEx(pc.GetRealName(isMeeting: true));
+                }
                 ChatUpdatePatch.DoBlockChat = false;
-                Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
+                //Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
                 Utils.SendMessage(GetString("Message.TryFixName"), player.PlayerId);
                 break;
 

@@ -78,8 +78,8 @@ enum CustomRPC
     SetCounterfeiterSellLimit,
     SetPursuerSellLimit,
     SetMedicalerProtectLimit,
-    SetMiniLimit,
-    SetMiniSellLimit,
+    //SetMiniLimit,
+    //SetMiniSellLimit,
     SetGangsterRecruitLimit,
     SetGhostPlayer,
     SetDarkHiderKillCount,
@@ -679,6 +679,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SyncSabotageMasterSkill:
                 SabotageMaster.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SyncMiniAge:
+                Mini.ReceiveRPC(reader);
                 break;
         }
     }
