@@ -1752,7 +1752,7 @@ public static class Utils
                 if (!player.IsModClient()) return;
                 {
                     if ((GameStates.IsOnlineGame || GameStates.IsLocalGame) && !Main.AutoMuteUs.Value)
-                        name = SaveManager.PlayerName;
+                        name = AmongUs.Data.Legacy.LegacySaveManager.PlayerName;
 
                     //name = $"<color=#902efd>{GetString("HostText")}</color><color=#4bf4ff>♥</color>" + name;
                 }
