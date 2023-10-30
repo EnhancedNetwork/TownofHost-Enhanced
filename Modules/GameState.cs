@@ -81,10 +81,13 @@ public class PlayerState
             }
         }
     }
-    public void SetSubRole(CustomRoles role, bool AllReplace = false)
+    public void SetSubRole(CustomRoles role, bool AllReplace = false, PlayerControl pc = null)
     {
         if (role == CustomRoles.Cleansed)
+        {
+            if (pc != null) countTypes = pc.GetCustomRole().GetCountTypes();
             AllReplace = true;
+        }
         if (AllReplace)
             SubRoles.ToArray().Do(role => SubRoles.Remove(role));
 
