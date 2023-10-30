@@ -61,6 +61,7 @@ public static class TemplateManager
                     "pt-BR" => "Brazilian",
                     "es" or "es-ES" or "es-ES_tradnl" => "Spanish",
                     var lang when lang.StartsWith("fr") => "French",
+                    "ja" or "ja-JP" => "Japanese",
                     _ => "English"
                 };
             else fileName = "English";
