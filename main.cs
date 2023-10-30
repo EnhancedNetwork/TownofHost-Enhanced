@@ -83,6 +83,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> EnableRoleSummary { get; private set; }
     public static ConfigEntry<bool> SwitchVanilla { get; private set; }
     public static ConfigEntry<bool> VersionCheat { get; private set; }
+    public static bool IsHostVersionCheating = false;
     public static ConfigEntry<bool> GodMode { get; private set; }
 
     public static Dictionary<byte, PlayerVersion> playerVersion = new();
