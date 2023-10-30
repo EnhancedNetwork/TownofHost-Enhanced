@@ -7,6 +7,7 @@ using TOHE.Modules;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -80,13 +81,10 @@ public class PlayerState
             }
         }
     }
-    public void SetSubRole(CustomRoles role, bool AllReplace = false, PlayerControl pc = null)
+    public void SetSubRole(CustomRoles role, bool AllReplace = false)
     {
         if (role == CustomRoles.Cleansed)
-        { 
-            if (pc != null) countTypes = pc.GetCustomRole().GetCountTypes();
-            AllReplace = true; 
-        }
+            AllReplace = true;
         if (AllReplace)
             SubRoles.ToArray().Do(role => SubRoles.Remove(role));
 
