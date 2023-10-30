@@ -1846,12 +1846,8 @@ public static class Utils
                         else modtag = GradientColorText(startColorCode, endColorCode, GetString("ModTag"));
                     }
                 }
-            }           
-            if (!name.Contains('\r') && player.FriendCode.GetDevUser().HasTag() && !Main.AutoMuteUs.Value)
-            {
-                name = player.FriendCode.GetDevUser().GetTag() + "<size=1.5>" + modtag + "</size>" + name;
             }
-            else if (player.AmOwner)
+            if (player.AmOwner)
             {
                 name = Options.GetSuffixMode() switch
                 {
@@ -1865,6 +1861,11 @@ public static class Utils
                     SuffixModes.AutoHost => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.AutoHost")}</color></size>",
                     _ => name
                 };
+            }
+            
+            if (!name.Contains('\r') && player.FriendCode.GetDevUser().HasTag() && !Main.AutoMuteUs.Value)
+            {
+                name = player.FriendCode.GetDevUser().GetTag() + "<size=1.5>" + modtag + "</size>" + name;
             }
             else name = modtag + name;
         }
