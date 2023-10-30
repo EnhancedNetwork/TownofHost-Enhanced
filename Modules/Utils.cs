@@ -1366,6 +1366,8 @@ public static class Utils
             case "紅":
             case "red":
             case "Red":
+            case "vermelho":
+            case "Vermelho":
             case "крас":
             case "Крас":
             case "красн":
@@ -1379,6 +1381,8 @@ public static class Utils
             case "深蓝":
             case "blue":
             case "Blue":
+            case "azul":
+            case "Azul":
             case "син":
             case "Син":
             case "синий":
@@ -1390,6 +1394,8 @@ public static class Utils
             case "深绿":
             case "green":
             case "Green":
+            case "verde-escuro":
+            case "Verde-Escuro":
             case "Зел":
             case "зел":
             case "Зелёный":
@@ -1401,6 +1407,8 @@ public static class Utils
             case "粉红":
             case "pink":
             case "Pink":
+            case "rosa":
+            case "Rosa":
             case "Роз":
             case "роз":
             case "Розовый":
@@ -1410,6 +1418,8 @@ public static class Utils
             case "橘":
             case "orange":
             case "Orange":
+            case "laranja":
+            case "Laranja":
             case "оранж":
             case "Оранж":
             case "оранжевый":
@@ -1420,6 +1430,8 @@ public static class Utils
             case "黃":
             case "yellow":
             case "Yellow":
+            case "amarelo":
+            case "Amarelo":
             case "Жёлт":
             case "Желт":
             case "жёлт":
@@ -1433,6 +1445,8 @@ public static class Utils
             case "黑":
             case "black":
             case "Black":
+            case "preto":
+            case "Preto":
             case "Чёрн":
             case "Черн":
             case "Чёрный":
@@ -1444,6 +1458,8 @@ public static class Utils
             case "白":
             case "white":
             case "White":
+            case "branco":
+            case "Branco":
             case "Белый":
             case "белый":
                 color = 7; break;
@@ -1451,6 +1467,8 @@ public static class Utils
             case "紫":
             case "purple":
             case "Purple":
+            case "roxo":
+            case "Roxo":
             case "Фиол":
             case "фиол":
             case "Фиолетовый":
@@ -1460,6 +1478,8 @@ public static class Utils
             case "棕":
             case "brown":
             case "Brown":
+            case "marrom":
+            case "Marrom":
             case "Корич":
             case "корич":
             case "Коричневый":
@@ -1469,6 +1489,8 @@ public static class Utils
             case "青":
             case "cyan":
             case "Cyan":
+            case "ciano":
+            case "Ciano":
             case "Голуб":
             case "голуб":
             case "Голубой":
@@ -1480,6 +1502,8 @@ public static class Utils
             case "浅绿":
             case "lime":
             case "Lime":
+            case "verde-claro":
+            case "Verde-Claro":
             case "Лайм":
             case "лайм":
             case "Лаймовый":
@@ -1491,6 +1515,10 @@ public static class Utils
             case "深红":
             case "maroon":
             case "Maroon":
+            case "bordô":
+            case "Bordô":
+            case "vinho":
+            case "Vinho":
             case "Борд":
             case "борд":
             case "Бордовый":
@@ -1502,6 +1530,8 @@ public static class Utils
             case "浅粉":
             case "rose":
             case "Rose":
+            case "rosa-claro":
+            case "Rosa-Claro":
             case "Светло роз":
             case "светло роз":
             case "Светло розовый":
@@ -1526,6 +1556,10 @@ public static class Utils
             case "灰":
             case "gray":
             case "Gray":
+            case "cinza":
+            case "Cinza":
+            case "grey":
+            case "Grey":
             case "Сер":
             case "сер":
             case "Серый":
@@ -1535,6 +1569,8 @@ public static class Utils
             case "茶":
             case "tan":
             case "Tan":
+            case "bege":
+            case "Bege":
             case "Загар":
             case "загар":
             case "Загаровый":
@@ -1544,6 +1580,8 @@ public static class Utils
             case "珊瑚":
             case "coral":
             case "Coral":
+            case "salmão":
+            case "Salmão":
             case "Корал":
             case "корал":
             case "Коралл":
@@ -1551,7 +1589,7 @@ public static class Utils
             case "Коралловый":
             case "коралловый":
                 color = 17; break;
-
+                
             case "18": case "隐藏": case "?": color = 18; break;
         }
         return !isHost && color == 18 ? byte.MaxValue : color is < 0 or > 18 ? byte.MaxValue : Convert.ToByte(color);
