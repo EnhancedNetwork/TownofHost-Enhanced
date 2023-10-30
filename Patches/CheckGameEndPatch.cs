@@ -70,7 +70,7 @@ class GameEndChecker
                     break;
                 case CustomWinner.Infectious:
                     Main.AllPlayerControls
-                        .Where(pc => (pc.Is(CustomRoles.Soulless)) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                        .Where(pc => (pc.Is(CustomRoles.Infected)) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
                 case CustomWinner.Virus:
