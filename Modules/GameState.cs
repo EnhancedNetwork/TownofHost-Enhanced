@@ -7,7 +7,6 @@ using TOHE.Modules;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
