@@ -1223,6 +1223,10 @@ internal class ChatCommands
                 break;
 
             case "/r":
+                if (player.FriendCode.GetDevUser().IsUp)
+                {
+                  canceled = true;
+                }
                 subArgs = text.Remove(0, 2);
                 SendRolesInfo(subArgs, player.PlayerId, player.FriendCode.GetDevUser().DeBug);
                 break;
