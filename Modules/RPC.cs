@@ -136,6 +136,7 @@ enum CustomRPC
     SetPotionMaster,
     SetChameleonTimer,
     SetAdmireLimit,
+    SyncAdmiredList,
     SetRememberLimit,
     SetImitateLimit,
     SyncNWitch,
@@ -476,7 +477,10 @@ internal class RPCHandlerPatch
                 Doppelganger.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetAdmireLimit:
-                Admirer.ReceiveRPC(reader);
+                Admirer.ReceiveRPC(reader, false);
+                break;
+            case CustomRPC.SyncAdmiredList:
+                Admirer.ReceiveRPC(reader, true);
                 break;
             case CustomRPC.SetRememberLimit:
                 Amnesiac.ReceiveRPC(reader);
