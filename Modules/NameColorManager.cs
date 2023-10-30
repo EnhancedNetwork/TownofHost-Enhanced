@@ -116,6 +116,8 @@ public static class NameColorManager
         if (seer.Is(CustomRoles.Infected) && target.Is(CustomRoles.Infected) && Infectious.TargetKnowOtherTarget.GetBool()) color = Main.roleColors[CustomRoles.Infectious];
         //Spy
         if (seer.Is(CustomRoles.Spy) && Spy.SpyRedNameList.ContainsKey(target.PlayerId)) color = "#BA4A00";
+        //Seeker
+        if (seer.Is(CustomRoles.Seeker) && Seeker.Targets.ContainsValue(target.PlayerId)) color = Main.roleColors[CustomRoles.Seeker];
         // Pyromaniac
         if (seer.Is(CustomRoles.Pyromaniac) && Pyromaniac.DousedList.Contains(target.PlayerId)) color = "#BA4A00";
         // Necroview
