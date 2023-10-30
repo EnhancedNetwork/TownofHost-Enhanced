@@ -62,7 +62,7 @@ public static class Admirer
         else AdmirerLimit[playerId] = Limit;
     }
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AdmirerLimit[id] >= 1 ? AdmireCooldown.GetFloat() : 300f;
-    public static bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && AdmirerLimit[player.PlayerId] >= 1;
+    public static bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && (AdmirerLimit.TryGetValue(player.PlayerId, out var x) ? x : 1) >= 1;
     public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
         if (AdmirerLimit[killer.PlayerId] < 1) return;
