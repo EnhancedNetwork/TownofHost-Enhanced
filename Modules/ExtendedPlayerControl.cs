@@ -1153,11 +1153,6 @@ static class ExtendedPlayerControl
                     }
                 }
                 break;
-            case CustomRoles.CrewmateTOHE:
-            case CustomRoles.EngineerTOHE:
-            case CustomRoles.ScientistTOHE:
-                Main.AllPlayerKillCooldown[player.PlayerId] = 300f;
-                break; //In case Oiiai or eraser erased a crew killer's role and it still can kill
         }
         if (player.PlayerId == LastImpostor.currentId)
             LastImpostor.SetKillCooldown();

@@ -111,6 +111,17 @@ class CheckMurderPatch
             Logger.Info("In the meeting, the kill was canceled", "CheckMurder");
             return false;
         }
+       
+        switch (killer.GetCustomRole())
+        {
+            case CustomRoles.CrewmateTOHE:
+            case CustomRoles.EngineerTOHE:
+            case CustomRoles.ScientistTOHE:
+            case CustomRoles.GuardianAngelTOHE:
+                killer.SetKillCooldown(300f);
+                Logger.Info($"{killer.GetNameWithRole} commited murder as crew. Are they erased?", "CheckMurder");
+                return false;
+        }
 
         var divice = 2000f;
         float minTime = Mathf.Max(0.02f, AmongUsClient.Instance.Ping / divice * 6f); //Ping value is milliseconds (ms), so ÷ 2000
