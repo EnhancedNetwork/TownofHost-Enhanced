@@ -910,7 +910,8 @@ public enum CustomRoles
     Repairman,
     Cyber,
     Stubborn,
-    Overclocked
+    Overclocked,
+    Hurried
     // QuickFix
 }
 //WinData
