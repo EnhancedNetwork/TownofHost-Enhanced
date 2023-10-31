@@ -10,7 +10,6 @@ using TOHE.Modules;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -21,6 +20,7 @@ class OnGameJoinedPatch
     {
         while (!Options.IsLoaded) System.Threading.Tasks.Task.Delay(1);
         Logger.Info($"{__instance.GameId} Joining room", "OnGameJoined");
+        Main.IsHostVersionCheating = false;
         Main.playerVersion = new Dictionary<byte, PlayerVersion>();
         if (!Main.VersionCheat.Value) RPC.RpcVersionCheck();
         SoundManager.Instance.ChangeAmbienceVolume(DataManager.Settings.Audio.AmbienceVolume);
