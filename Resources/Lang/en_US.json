@@ -350,6 +350,7 @@
   "Circumvent": "Circumvent",
   "Cyber": "Cyber",
   "Repairman": "Repairman",
+  "Influenced": "Influenced",
   "Prefix.Ntr": "Neptune ",
   "Prefix.Watcher": "Watcher ",
   "Prefix.Overclocked": "Overclocked ",
@@ -406,6 +407,7 @@
   "Prefix.Nimble": "Nimble ",
   "Prefix.Circumvent": "Circumvent ",
   "Prefix.Repairman": "Repairman ",
+  "Prefix.Influenced": "Influenced ",
   "Prefix.Cyber": "Cyber ",
   "PrefixB.Ntr": "(Neptune) ",
   "PrefixB.Watcher": "(Watcher) ",
@@ -464,6 +466,7 @@
   "PrefixB.Circumvent": "(Circumvent) ",
   "PrefixB.Repairman": "(Repairman) ",
   "PrefixB.Cyber": "(Cyber) ",
+  "PrefixB.Influenced": "(Influenced) ",
   "BracketAddons": "Add Brackets To Add-ons",
   "EngineerTOHEInfo": "Use the vents to catch the <color=#ff1919>Impostors</color>",
   "ScientistTOHEInfo": "Access portable vitals from anywhere",
@@ -733,6 +736,7 @@
   "CircumventInfo": "You can no longer vent",
   "RepairmanInfo": "Fix sabotages faster",
   "CyberInfo": "You're popular!",
+  "InfluencedInfo": "You lack decisiveness!",
   "GMInfo": "Spectate the chaos!",
   "NotAssignedInfo": "No assigned role",
   "SunnyboyInfo": "Shine, shine my sunshine!",
@@ -1008,6 +1012,7 @@
   "CircumventInfoLong": "(Add-ons):\nAs the Circumvent, you can't vent.\n\nOnly assigned to Impostors.",
   "NimbleInfoLong": "(Add-ons):\nAs the Nimble, you gain access to the vent button.\n\nOnly assigned to certain crewmates.",
   "RepairmanInfoLong": "(Add-ons):\nAs the Repairman, you can fix most sabotages much faster than other players.",
+  "InfluencedInfoLong": "(Add-ons):\nAs the Influenced, your vote will be forced to the player with the most votes.\nNote that your skill and vote icon still functions on the player you voted at first.",
   "CyberInfoLong": "(Add-ons):\nAs the Cyber, you cannot be killed while in a group.\nAdditionally, your death will be known.",
   "GMInfoLong": "(None):\nThe Game Master is an observer role.\nTheir presence has no effect on the game, and all players know who the Game Master is. The Game Master role will be assigned to the host, who will automatically become a ghost at the start of the game.",
   "SunnyboyInfoLong": "(Neutrals):\nThe Sunnyboy can check the life status of others through the life panel. When the Sunnyboy is alive, the game will not end due to a numerical advantage (for example, the number of Impostors is greater than the crew or there are no survivors). If the Sunnyboy dies at the end of the game, the Sunnyboy will win with the winning team.",
@@ -2902,6 +2907,10 @@
   "CrewCanBeRepairman": "<color=#8cffff>Crewmates</color> can become Repairman",
   "NeutralCanBeRepairman": "<color=#7f8c8d>Neutrals</color> can become Repairman",
 
+  "ImpCanBeInfluenced": "<color=#ff1919>Impostors</color> can become Influenced",
+  "CrewCanBeInfluenced": "<color=#8cffff>Crewmates</color> can become Influenced",
+  "NeutralCanBeInfluenced": "<color=#7f8c8d>Neutrals</color> can become Influenced",
+
   "ImpCanBeBewilder": "<color=#ff1919>Impostors</color> can become <color=#c894f5>Bewilder</color>",
   "CrewCanBeBewilder": "<color=#8cffff>Crewmates</color> can become <color=#c894f5>Bewilder</color>",
   "NeutralCanBeBewilder": "<color=#7f8c8d>Neutrals</color> can become <color=#c894f5>Bewilder</color>",
@@ -3311,5 +3320,6 @@
   "FFFCanKillInfected": "Can kill infected team",
   "FFFCanKillContagious": "Can kill virus team",
   "FFFCanKillAdmired": "Can kill admirer",
-  "AutoMuteUs": "Enable it if you use AutoMuteUs"
+  "AutoMuteUs": "Enable it if you use AutoMuteUs",
+  "InfluencedChangeVote": "oops!You are so influenced by others!\nYou can not contain your fear that you change voted {0}!"
 }
