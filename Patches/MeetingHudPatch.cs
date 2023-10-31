@@ -706,6 +706,8 @@ class MeetingHudStartPatch
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
+        Main.MeetingIsStarted = true;
+
         List<(string, byte, string)> msgToSend = new();
 
         void AddMsg(string text, byte sendTo = 255, string title = "")

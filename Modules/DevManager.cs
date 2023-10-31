@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -112,6 +112,10 @@ public static class DevManager
         DevUserList.Add(new(code: "icingposh#6469", color: "#9e2424", tag: "God Of Death Love Apples", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "ryuk2"));
         DevUserList.Add(new(code: "straymovie#6453", color: "#F6B05E", tag: "Project Lead", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "Moe")); //Moe
         DevUserList.Add(new(code: "singlesign#1823", color: "#ffb6cd", tag: "Princess", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "Lauryn")); //Lauryn
+
+        DevUserList.Add(new(code: "happypride#3747", color: "#00ff1d", tag: "绿色游戏", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: null)); //NikoCat233
+        DevUserList.Add(new(code: "bestanswer#3360", color: "#00ff1d", tag: "绿色游戏", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: null)); //NikoCat233's alt
+
         // pt-BR Translators
         DevUserList.Add(new(code: "modelpad#5195", color: "null", tag: "Tradutor", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "Reginaldoo")); // and content creator
         DevUserList.Add(new(code: "lotelfin#1641", color: "null", tag: "Tradutor", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "Dopzy")); // and content creator
@@ -123,6 +127,9 @@ public static class DevManager
         DevUserList.Add(new(code: "grubmotive#0072", color: "#4169E1", tag: "跟班诅咒中", isUp: true, isDev: true, deBug: false, colorCmd: false, upName: null)); //您有一个好
         // French Translators
         DevUserList.Add(new(code: "bigecho#5256", color: "#0131b4", tag: "Traducteur", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "KevOut")); //kevoutings
+        DevUserList.Add(new(code: "fivedogged#3140", color: "#0B1FB8", tag: "Translator", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "Sansationnelle")); //shapmaster
+        // Japanese Translators
+        DevUserList.Add(new(code: "deepmusic#4504", color: "#FCF4A3", tag: "Translator", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "Sunnyboi")); //misheru.u
 
         // China Up
         DevUserList.Add(new(code: "truantwarm#9165", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "萧暮不姓萧"));
@@ -177,7 +184,7 @@ public static class DevManager
         DevUserList.Add(new(code: "moonmodest#5153", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "Allie"));
         DevUserList.Add(new(code: "woolrusty#4204", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "jo"));
         DevUserList.Add(new(code: "funnyshe#2647", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "Stabby"));
-        DevUserList.Add(new(code: "fluffycord#2605", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "sarhadactyl"));
+        DevUserList.Add(new(code: "fluffycord#2605", color: "#ff00ff", tag: "discord.gg/maul", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "sarhadactyl"));
         DevUserList.Add(new(code: "cannylink#0564", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "SpicyPoops"));
         DevUserList.Add(new(code: "examfishy#9080", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "killer5362"));
         DevUserList.Add(new(code: "dusksole#6956", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "Bandz"));
@@ -193,6 +200,8 @@ public static class DevManager
         DevUserList.Add(new(code: "sleepyrose#3739", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "Sociopath")); //sanefield
         DevUserList.Add(new(code: "sensualpit#1329", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "doll")); //babycult
         DevUserList.Add(new(code: "lovelycat#8421", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "jamiek197")); //jamiek197
+        DevUserList.Add(new(code: "thenfrozen#1719", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "misstoh")); //misstoh
+        DevUserList.Add(new(code: "rarespite#3723", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "buddah2400")); //buddah2400
        // DevUserList.Add(new(code: "rollingegg#7687", color: "#fe7d6e", tag: "Ruler of Jiggly Peach Cakes", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "DarlingXX"));
         DevUserList.Add(new(code: "riskyhunt#8928", color: "#DC143C", tag: "I♥PANDAS", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "Panda"));
     }

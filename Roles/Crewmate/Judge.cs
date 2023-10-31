@@ -63,8 +63,10 @@ public static class Judge
     }
     public static void OnReportDeadBody()
     {
-        TrialLimit.Clear();
-        foreach (var pc in playerIdList) TrialLimit.Add(pc, TrialLimitPerMeeting.GetInt());
+        foreach (var pid in TrialLimit.Keys)
+        {
+            TrialLimit[pid] = TrialLimitPerMeeting.GetInt();
+        }
     }
     public static bool TrialMsg(PlayerControl pc, string msg, bool isUI = false)
     {

@@ -115,9 +115,11 @@ public static class Seeker
 
     public static void OnFixedUpdate(PlayerControl player)
     {
+        if (player == null) return;
         var targetId = GetTarget(player);
+        var seekerId = player.PlayerId;
         var playerState = Main.PlayerStates[targetId];
-        var totalPoints = TotalPoints[targetId];
+        var totalPoints = TotalPoints[seekerId];
 
         if (playerState.IsDead)
         {
@@ -126,9 +128,9 @@ public static class Seeker
         
         if (totalPoints >= PointsToWinOpt)
         {
-            TotalPoints[targetId] = PointsToWinOpt;
+            TotalPoints[seekerId] = PointsToWinOpt;
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Seeker);
-            CustomWinnerHolder.WinnerIds.Add(targetId);
+            CustomWinnerHolder.WinnerIds.Add(seekerId);
         }
     }
     public static byte GetTarget(PlayerControl player)
@@ -160,7 +162,7 @@ public static class Seeker
 
         var cTargets = new List<PlayerControl>(Main.AllAlivePlayerControls.Where(pc => !pc.Is(CustomRoles.Seeker)));
 
-        if (cTargets.Count() >= 2 && Targets.TryGetValue(player.PlayerId, out var nowTarget))
+        if (cTargets.Count >= 2 && Targets.TryGetValue(player.PlayerId, out var nowTarget))
             cTargets.RemoveAll(x => x.PlayerId == nowTarget);
 
         if (cTargets.Count <= 0)
