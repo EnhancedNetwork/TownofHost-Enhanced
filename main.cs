@@ -555,7 +555,7 @@ public class Main : BasePlugin
                 {CustomRoles.Repairman, "#3333ff"},
 
                 {CustomRoles.Cyber, "#F46F4E" },
-
+                {CustomRoles.Hurried, "##136cf0"},
              //   {CustomRoles.QuickFix, "#3333ff"},
 
             };
