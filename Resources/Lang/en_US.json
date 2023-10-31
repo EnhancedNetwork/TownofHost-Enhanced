@@ -2504,7 +2504,7 @@
   "DivinatorCheck.Result0": "<b>{0}</b> is either Crewmate, Engineer, Scientist, Impostor, or Shapeshifter",
   "DivinatorCheck.Result1": "<b>{0}</b> is either Amnesiac, Imitator, Copycat, Bandit, Eraser, Lighter, Refugee, Anti Adminer, Dazzler, Telecommunication, or Grenadier",
   "DivinatorCheck.Result2": "<b>{0}</b> is either Crusader, Overseer, Arsonist, Ninja, Lightning, or Collector",
-  "DivinatorCheck.Result3": "<b>{0}</b> is either Capitalist, Deceiver, Greedy, Witness, Bastion, Merchant, Soul Collector, or Trickster",
+  "DivinatorCheck.Result3": "<b>{0}</b> is either Capitalist, Deceiver, Greedy, Witness, Merchant, Soul Collector, or Trickster",
   "DivinatorCheck.Result4": "<b>{0}</b> is either Pestilence, Plaguebearer, Observer, Blood Knight, Guardian, or Wildling",
   "DivinatorCheck.Result5": "<b>{0}</b> is either Bard, Juggernaut, Reverie, Arrogance, Killing Machine, Berserker, or Butcher",
   "DivinatorCheck.Result6": "<b>{0}</b> is either Coroner, Evil Tracker, Mortician, Seeker, Tracefinder, or Tracker",
