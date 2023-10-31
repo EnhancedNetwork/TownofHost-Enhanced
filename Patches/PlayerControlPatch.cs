@@ -2828,11 +2828,18 @@ class FixedUpdatePatch
                             break;
 
                         case CustomRoles.Mario:
-                            if (Main.MarioVentCount[player.PlayerId] > Options.MarioVentNumWin.GetInt())
+                            if (Main.MarioVentCount[player.PlayerId] >= Options.MarioVentNumWin.GetInt())
                             {
                                 Main.MarioVentCount[player.PlayerId] = Options.MarioVentNumWin.GetInt();
-                                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Mario);
-                                CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
+                                if (!player.Is(CustomRoles.Admired))
+                                {
+                                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Mario);
+                                    CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
+                                }
+                                else
+                                {
+                                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
+                                }
                             }
                             break;
 
