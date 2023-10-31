@@ -126,7 +126,6 @@ internal class ChangeRoleSettings
             Options.UsedButtonCount = 0;
 
             GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor = false;
-            GameOptionsManager.Instance.currentNormalGameOptions.TaskBarMode = (AmongUs.GameOptions.TaskBarMode)2;
             Main.RealOptionsData = new OptionBackupData(GameOptionsManager.Instance.CurrentGameOptions);
 
             Main.introDestroyed = false;

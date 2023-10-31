@@ -173,7 +173,7 @@ public class GameStartManagerPatch
             }
             else
             {
-                if (MatchVersions(0, true) || Main.VersionCheat.Value)
+                if (MatchVersions(0, true) || Main.VersionCheat.Value || Main.IsHostVersionCheating)
                     exitTimer = 0;
                 else
                 {
