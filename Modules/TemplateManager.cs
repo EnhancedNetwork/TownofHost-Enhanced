@@ -59,7 +59,8 @@ public static class TemplateManager
                     "zh-Hans" or "zh" or "zh-CN" or "zn-SG" => "SChinese",
                     "zh-Hant" or "zh-HK" or "zh-MO" or "zh-TW" => "TChinese",
                     "pt-BR" => "Brazilian",
-                    "es" or "es-ES" or "es-ES_tradnl" => "Spanish",
+                    "es-419" => "Latam",
+                    var lang when lang.StartsWith("es") => "Spanish",
                     var lang when lang.StartsWith("fr") => "French",
                     "ja" or "ja-JP" => "Japanese",
                     _ => "English"
