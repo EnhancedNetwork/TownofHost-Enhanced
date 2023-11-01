@@ -2559,6 +2559,8 @@
   "CamouflageMode.Moe": "<color=#ffb347>Moe</color>",
   "CamouflageMode.Pyro": "<color=#ec7578>Pyro</color>",
   "CamouflageMode.ryuk": "<color=#9e2424>ryuk</color>",
+  "CamouflageMode.Gurge44": "<color=#E9F7FF>Gurge44</color>",
+  "CamouflageMode.TommyXL": "<color=#EC7578>TommyXL</color>",
   "DeathCmd.HeyPlayer": "Hey ",
   "DeathCmd.YouAreRole": ", looks like you're the ",
   "DeathCmd.NotDead": "You haven't died yet, this can only be used after you die\n\nCheck back again after you've been brutally <b><color=#ff1919>murdered</color></b>",
