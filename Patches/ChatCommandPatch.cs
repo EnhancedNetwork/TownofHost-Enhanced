@@ -129,10 +129,6 @@ internal class ChatCommands
                     Utils.ShowLastRoles();
                     break;
                 case "/shapeshifter":
-                    if (player.FriendCode.GetDevUser().IsDev)
-                   {
-                    canceled = true;
-                   }
                     canceled = true;
                     player.Object.RpcSetRole(RoleTypes.Shapeshifter);
                     break;
