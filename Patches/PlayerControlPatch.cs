@@ -1768,6 +1768,7 @@ class ReportDeadBodyPatch
                     return false;
                 }
 
+                //Add all the patch bodies here!!!
                 //Vulture ate body can not be reported
                 if (Vulture.UnreportablePlayers.Contains(target.PlayerId)) return false;
                 // 被赌杀的尸体无法被报告 guessed
