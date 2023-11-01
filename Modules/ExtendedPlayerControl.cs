@@ -1,18 +1,19 @@
-using AmongUs.GameOptions;
-using HarmonyLib;
-using Hazel;
-using InnerNet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Hazel;
+using InnerNet;
+using HarmonyLib;
+using UnityEngine;
+using AmongUs.GameOptions;
+
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Impostor;
-using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
+using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -180,7 +181,7 @@ static class ExtendedPlayerControl
         if (killer.AmOwner)
         {
             killer.ProtectPlayer(target, colorId);
-            killer.MurderPlayer(target);
+            killer.MurderPlayer(target, ResultFlags);
         }
         // Other Clients
         if (killer.PlayerId != 0)
@@ -193,6 +194,7 @@ static class ExtendedPlayerControl
                 .EndRpc();
             sender.StartRpc(killer.NetId, (byte)RpcCalls.MurderPlayer)
                 .WriteNetObject(target)
+                .Write((int)ResultFlags)
                 .EndRpc();
             sender.EndMessage();
             sender.SendMessage();
@@ -276,12 +278,13 @@ static class ExtendedPlayerControl
         if (seer == null) seer = killer;
         if (killer.AmOwner && seer.AmOwner)
         {
-            killer.MurderPlayer(target);
+            killer.MurderPlayer(target, ResultFlags);
         }
         else
         {
             MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable, seer.GetClientId());
             messageWriter.WriteNetObject(target);
+            messageWriter.Write((int)ResultFlags);
             AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
         }
     }
@@ -330,7 +333,7 @@ static class ExtendedPlayerControl
     }
     public static void RpcDesyncRepairSystem(this PlayerControl target, SystemTypes systemType, int amount)
     {
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(ShipStatus.Instance.NetId, (byte)RpcCalls.RepairSystem, SendOption.Reliable, target.GetClientId());
+        var messageWriter = AmongUsClient.Instance.StartRpcImmediately(ShipStatus.Instance.NetId, (byte)RpcCalls.UpdateSystem, SendOption.Reliable, target.GetClientId());
         messageWriter.Write((byte)systemType);
         messageWriter.WriteNetObject(target);
         messageWriter.Write((byte)amount);
@@ -412,8 +415,12 @@ static class ExtendedPlayerControl
     {
         if (pc == null || !AmongUsClient.Instance.AmHost || pc.AmOwner) return;
 
-        var systemtypes = SystemTypes.Reactor;
-        if (Main.NormalOptions.MapId == 2) systemtypes = SystemTypes.Laboratory;
+        var systemtypes = (MapNames)Main.NormalOptions.MapId switch
+        {
+            MapNames.Polus => SystemTypes.Laboratory,
+            MapNames.Airship => SystemTypes.HeliSabotage,
+            _ => SystemTypes.Reactor,
+        };
 
         _ = new LateTask(() =>
         {
@@ -435,10 +442,13 @@ static class ExtendedPlayerControl
     public static void ReactorFlash(this PlayerControl pc, float delay = 0f)
     {
         if (pc == null) return;
-        int clientId = pc.GetClientId();
         // Logger.Info($"{pc}", "ReactorFlash");
-        var systemtypes = SystemTypes.Reactor;
-        if (Main.NormalOptions.MapId == 2) systemtypes = SystemTypes.Laboratory;
+        var systemtypes = (MapNames)Main.NormalOptions.MapId switch
+        {
+            MapNames.Polus => SystemTypes.Laboratory,
+            MapNames.Airship => SystemTypes.HeliSabotage,
+            _ => SystemTypes.Reactor,
+        };
         float FlashDuration = Options.KillFlashDuration.GetFloat();
 
         pc.RpcDesyncRepairSystem(systemtypes, 128);
@@ -447,8 +457,9 @@ static class ExtendedPlayerControl
         {
             pc.RpcDesyncRepairSystem(systemtypes, 16);
 
-            if (Main.NormalOptions.MapId == 4) //Airship用
+            if (Main.NormalOptions.MapId == 4) //If Airship
                 pc.RpcDesyncRepairSystem(systemtypes, 17);
+
         }, FlashDuration + delay, "Fix Desync Reactor");
     }
 
@@ -1269,21 +1280,22 @@ static class ExtendedPlayerControl
     {
         if (killer.PlayerId == target.PlayerId && killer.shapeshifting)
         {
-            _ = new LateTask(() => { killer.RpcMurderPlayer(target); }, 1.5f, "Shapeshifting Suicide Delay");
+            _ = new LateTask(() => { killer.RpcMurderPlayer(target, true); }, 1.5f, "Shapeshifting Suicide Delay");
             return;
         }
 
-        killer.RpcMurderPlayer(target);
+        killer.RpcMurderPlayer(target, true);
     }
     public static void RpcMurderPlayerV2(this PlayerControl killer, PlayerControl target)
     {
         if (target == null) target = killer;
         if (AmongUsClient.Instance.AmClient)
         {
-            killer.MurderPlayer(target);
+            killer.MurderPlayer(target, ResultFlags);
         }
         MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.None, -1);
         messageWriter.WriteNetObject(target);
+        messageWriter.Write((int)ResultFlags);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
         Utils.NotifyRoles();
     }
@@ -1343,7 +1355,7 @@ static class ExtendedPlayerControl
 
     public static bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
     {
-        if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM)) return true;
+        if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || (seer.AmOwner && Main.GodMode.Value)) return true;
         else if (seer.Is(CustomRoles.God)) return true;
         else if (Main.VisibleTasksCount && seer.Data.IsDead && Options.GhostCanSeeOtherRoles.GetBool()) return true;
         else if (target.Is(CustomRoles.Gravestone) && target.Data.IsDead) return true;
@@ -1382,6 +1394,34 @@ static class ExtendedPlayerControl
 
 
         else return false;
+    }
+    public static bool CanBeTeleported(this PlayerControl player)
+    {
+        if (player.Data == null // Check if PlayerData is not null
+            || Main.MeetingIsStarted
+            // Check target status
+            || !player.IsAlive()
+            || player.inVent
+            || player.inMovingPlat // Moving Platform on Airhip and Zipline on Fungle
+            || player.MyPhysics.Animations.IsPlayingEnterVentAnimation()
+            || player.onLadder || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation()
+            || Pelican.IsEaten(player.PlayerId))
+        {
+            return false;
+        }
+        return true;
+    }
+    public static Vector2 GetBlackRoomPosition()
+    {
+        return Main.NormalOptions.MapId switch
+        {
+            0 => new Vector2(-27f, 3.3f), // The Skeld
+            1 => new Vector2(-11.4f, 8.2f), // MIRA HQ
+            2 => new Vector2(42.6f, -19.9f), // Polus
+            4 => new Vector2(-16.8f, -6.2f), // Airship
+            5 => new Vector2(10.2f, 18.1f), // The Fungle
+            _ => throw new NotImplementedException(),
+        };
     }
     public static string GetRoleInfo(this PlayerControl player, bool InfoLong = false)
     {
@@ -1452,5 +1492,8 @@ static class ExtendedPlayerControl
     {
         return GameStates.InGame || (target != null && (Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote));
     }
+    ///<summary>Is the player currently protected</summary>
+    public static bool IsProtected(this PlayerControl self) => self.protectedByGuardianId > -1;
 
+    public const MurderResultFlags ResultFlags = MurderResultFlags.Succeeded | MurderResultFlags.DecisionByHost;
 }

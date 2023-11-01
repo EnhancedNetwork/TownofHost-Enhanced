@@ -1,4 +1,5 @@
 ﻿using Hazel;
+using UnityEngine;
 using System.Collections.Generic;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
@@ -15,7 +16,7 @@ public static class Undertaker
     public static OptionItem KillCooldown;
     public static OptionItem FreezeTime;
 
-    public static Dictionary<byte, UnityEngine.Vector2> MarkedLocation = new();
+    public static Dictionary<byte, Vector2> MarkedLocation = new();
     private static float DefaultSpeed = new();
 
     public static void SetupCustomOption()
@@ -41,7 +42,7 @@ public static class Undertaker
     {
         playerIdList.Add(playerId);
         IsEnable = true;
-        MarkedLocation[playerId] = new UnityEngine.Vector2(Pelican.GetBlackRoomPS().x, Pelican.GetBlackRoomPS().y);
+        MarkedLocation[playerId] = ExtendedPlayerControl.GetBlackRoomPosition();
         DefaultSpeed = Main.AllPlayerSpeed[playerId];
     }
 
@@ -68,10 +69,11 @@ public static class Undertaker
         byte PlayerId = reader.ReadByte();
         float xLoc = reader.ReadInt32();
         float yLoc = reader.ReadInt32();
+
         if (MarkedLocation.ContainsKey(PlayerId))
-            MarkedLocation[PlayerId] = new UnityEngine.Vector2(xLoc,yLoc);
+            MarkedLocation[PlayerId] = new Vector2(xLoc,yLoc);
         else
-            MarkedLocation.Add(PlayerId, new UnityEngine.Vector2(Pelican.GetBlackRoomPS().x, Pelican.GetBlackRoomPS().y));
+            MarkedLocation.Add(PlayerId, ExtendedPlayerControl.GetBlackRoomPosition());
     }
 
     public static void OnShapeshift(PlayerControl pc, bool IsShapeshifting)
@@ -96,7 +98,7 @@ public static class Undertaker
 
     public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
 
-    public static bool HasMarkedLoc(byte playerId) => MarkedLocation[playerId] != new UnityEngine.Vector2(Pelican.GetBlackRoomPS().x, Pelican.GetBlackRoomPS().y);
+    public static bool HasMarkedLoc(byte playerId) => MarkedLocation[playerId] != ExtendedPlayerControl.GetBlackRoomPosition();
 
     public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
@@ -111,15 +113,18 @@ public static class Undertaker
 
         if (!HasMarkedLoc(killer.PlayerId)) return true;
 
-        target.RpcTeleport(MarkedLocation[killer.PlayerId]);
-        target.SetRealKiller(killer);
-        Main.PlayerStates[target.PlayerId].SetDead();
-        target.RpcMurderPlayerV3(target);
-        killer.SetKillCooldown();
-        MarkedLocation[killer.PlayerId] = new UnityEngine.Vector2(Pelican.GetBlackRoomPS().x, Pelican.GetBlackRoomPS().y);
-        SendRPC(killer.PlayerId);
-        FreezeUndertaker(killer);
-        killer.SyncSettings();
+        if (target.CanBeTeleported())
+        {
+            target.RpcTeleport(MarkedLocation[killer.PlayerId]);
+            target.SetRealKiller(killer);
+            Main.PlayerStates[target.PlayerId].SetDead();
+            target.RpcMurderPlayerV3(target);
+            killer.SetKillCooldown();
+            MarkedLocation[killer.PlayerId] = ExtendedPlayerControl.GetBlackRoomPosition();
+            SendRPC(killer.PlayerId);
+            FreezeUndertaker(killer);
+            killer.SyncSettings();
+        }
         return false;
     }
     
@@ -127,7 +132,7 @@ public static class Undertaker
     {
         foreach(var playerId in MarkedLocation.Keys)
         {
-            MarkedLocation[playerId] = new UnityEngine.Vector2(Pelican.GetBlackRoomPS().x, Pelican.GetBlackRoomPS().y);
+            MarkedLocation[playerId] = ExtendedPlayerControl.GetBlackRoomPosition();
             Main.AllPlayerSpeed[playerId] = DefaultSpeed;
             SendRPC(playerId);
         }

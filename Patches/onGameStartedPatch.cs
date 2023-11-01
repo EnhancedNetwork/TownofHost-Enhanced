@@ -118,6 +118,7 @@ internal class ChangeRoleSettings
             Main.CrewpostorTasksDone = new();
             Main.ShamanTarget = byte.MaxValue;
             Main.ShamanTargetChoosen = false;
+            Main.MeetingIsStarted = false;
             ChatManager.ResetHistory();
 
             ReportDeadBodyPatch.CanReport = new();
@@ -125,7 +126,6 @@ internal class ChangeRoleSettings
             Options.UsedButtonCount = 0;
 
             GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor = false;
-            GameOptionsManager.Instance.currentNormalGameOptions.TaskBarMode = (AmongUs.GameOptions.TaskBarMode)2;
             Main.RealOptionsData = new OptionBackupData(GameOptionsManager.Instance.CurrentGameOptions);
 
             Main.introDestroyed = false;
@@ -147,6 +147,7 @@ internal class ChangeRoleSettings
             RPC.SyncAllPlayerNames();
 
             Camouflage.Init();
+
             var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
             if (invalidColor.Any())
             {
