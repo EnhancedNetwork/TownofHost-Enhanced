@@ -24,15 +24,14 @@ public class NormalGameOptionsSender : GameOptionsSender
             catch (Exception error)
             {
                 Logger.Fatal(error.ToString(), "NormalGameOptionsSender.IsDirty.Get");
-                return true;
+                return _logicOptions != null && _logicOptions.IsDirty;
             }
         }
         protected set
         {
             try
             {
-                if (_logicOptions != null)
-                    _logicOptions.ClearDirtyFlag();
+                _logicOptions?.ClearDirtyFlag();
             }
             catch (Exception error)
             {
