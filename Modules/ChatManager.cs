@@ -1,9 +1,7 @@
+using Hazel;
 using System.Collections.Generic;
 using System.Linq;
-using Hazel;
-using System;
 using TOHE.Roles.Impostor;
-using System.Text;
 
 namespace TOHE.Modules.ChatManager
 {

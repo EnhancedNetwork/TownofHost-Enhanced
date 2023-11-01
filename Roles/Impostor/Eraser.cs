@@ -111,8 +111,20 @@ internal static class Eraser
         {
             var player = Utils.GetPlayerById(pc);
             if (player == null) continue;
+            if (!Main.ErasedRoleStorage.ContainsKey(player.PlayerId))
+            {
+                Main.ErasedRoleStorage.Add(player.PlayerId, player.GetCustomRole());
+                Logger.Info($"Added {player.GetNameWithRole()} to ErasedRoleStorage", "Eraser");
+            }
+            else
+            {
+                Logger.Info($"Canceled {player.GetNameWithRole()} Eraser bcz already erased.", "Eraser");
+                return;
+            }
             player.RpcSetCustomRole(CustomRolesHelper.GetErasedRole(player.GetCustomRole().GetRoleTypes(), player.GetCustomRole()));
             NameNotifyManager.Notify(player, GetString("LostRoleByEraser"));
+            player.ResetKillCooldown();
+            player.SetKillCooldown();
             Logger.Info($"{player.GetNameWithRole()} 被擦除了", "Eraser");
         }
         Utils.MarkEveryoneDirtySettings();
