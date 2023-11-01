@@ -1,19 +1,18 @@
+using AmongUs.GameOptions;
+using HarmonyLib;
+using Hazel;
+using InnerNet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Hazel;
-using InnerNet;
-using HarmonyLib;
-using UnityEngine;
-using AmongUs.GameOptions;
-
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Impostor;
-using TOHE.Roles.Double;
 using TOHE.Roles.Crewmate;
+using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE;

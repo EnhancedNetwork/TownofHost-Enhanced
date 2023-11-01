@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using static TOHE.Options;
-using System;
 
 namespace TOHE.Roles.Impostor;
 

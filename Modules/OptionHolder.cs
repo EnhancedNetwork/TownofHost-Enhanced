@@ -1,18 +1,16 @@
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using HarmonyLib;
-using UnityEngine;
-
 using TOHE.Modules;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
+using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using TOHE.Roles.Double;
-using TOHE.Roles.AddOns.Common;
+using UnityEngine;
 
 namespace TOHE;
 

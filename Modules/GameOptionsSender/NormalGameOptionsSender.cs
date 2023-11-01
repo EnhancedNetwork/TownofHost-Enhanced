@@ -1,5 +1,5 @@
-using System;
 using AmongUs.GameOptions;
+using System;
 
 namespace TOHE.Modules;
 

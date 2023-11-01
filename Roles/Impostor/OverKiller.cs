@@ -1,11 +1,8 @@
 ﻿using HarmonyLib;
-using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
-using UnityEngine;
 using static TOHE.Options;
-using System.Threading;
 
 namespace TOHE.Roles.Impostor
 {
