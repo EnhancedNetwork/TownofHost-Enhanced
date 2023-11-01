@@ -1,11 +1,8 @@
 ﻿using HarmonyLib;
-using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
-using UnityEngine;
 using static TOHE.Options;
-using System.Threading;
 
 namespace TOHE.Roles.Impostor
 {
@@ -34,7 +31,7 @@ namespace TOHE.Roles.Impostor
                 {
                     if (GameStates.IsMeeting) break;
                     if (!target.AmOwner)
-                        target.MurderPlayer(target);
+                        target.MurderPlayer(target, ExtendedPlayerControl.ResultFlags);
                     Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId && !x.AmOwner)
                     .Do(x => target.RpcSpecificMurderPlayer(target, x));
                 }

@@ -1,6 +1,7 @@
 using System.Linq;
 using AmongUs.Data;
 using HarmonyLib;
+using System.Linq;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -232,9 +233,8 @@ class ExileControllerWrapUpPatch
                 Shroud.MurderShroudedPlayers(pc);
             }
 
+            Main.MeetingIsStarted = false;
             Main.MeetingsPassed++;
-
-            pc.RpcRemovePet();
 
             if (Options.RandomSpawn.GetBool())
             {
@@ -251,6 +251,10 @@ class ExileControllerWrapUpPatch
                         break;
                     case 2:
                         map = new RandomSpawn.PolusSpawnMap();
+                        Main.AllPlayerControls.Do(map.RandomTeleport);
+                        break;
+                    case 5:
+                        map = new RandomSpawn.FungleSpawnMap();
                         Main.AllPlayerControls.Do(map.RandomTeleport);
                         break;
                 }

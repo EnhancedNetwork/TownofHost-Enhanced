@@ -2,18 +2,18 @@ using Assets.CoreScripts;
 using HarmonyLib;
 using Hazel;
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
+using TOHE.Modules.ChatManager;
 using TOHE.Roles.Crewmate;
-using UnityEngine;
-using static TOHE.Translator;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using TOHE.Modules.ChatManager;
+using UnityEngine;
+using static TOHE.Translator;
 
 
 namespace TOHE;
@@ -154,7 +154,7 @@ internal class ChatCommands
                     canceled = true;
                     subArgs = args.Length < 2 ? "" : args[1];
                     Utils.SendMessage(string.Format(GetString("Message.SetLevel"), subArgs), PlayerControl.LocalPlayer.PlayerId);
-                    int.TryParse(subArgs, out int input);
+                    _ = int.TryParse(subArgs, out int input);
                     if (input is < 1 or > 999)
                     {
                         Utils.SendMessage(GetString("Message.AllowLevelRange"), PlayerControl.LocalPlayer.PlayerId);
@@ -205,7 +205,7 @@ internal class ChatCommands
                             cancelVal = "/dis";
                             break;
                     }
-                    ShipStatus.Instance.RpcRepairSystem(SystemTypes.Admin, 0);
+                    ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Admin, 0);
                     break;
 
                 case "/r":
@@ -621,17 +621,19 @@ internal class ChatCommands
 
                 case "/xf":
                     canceled = true;
-                    if (!GameStates.IsInGame)
+                    if (GameStates.IsLobby)
                     {
                         Utils.SendMessage(GetString("Message.CanNotUseInLobby"), PlayerControl.LocalPlayer.PlayerId);
                         break;
                     }
                     foreach (var pc in Main.AllPlayerControls)
                     {
+                        if (pc.IsAlive()) continue;
+
                         pc.RpcSetNameEx(pc.GetRealName(isMeeting: true));
                     }
                     ChatUpdatePatch.DoBlockChat = false;
-                    Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
+                    //Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
                     Utils.SendMessage(GetString("Message.TryFixName"), PlayerControl.LocalPlayer.PlayerId);
                     break;
 
@@ -655,20 +657,25 @@ internal class ChatCommands
                 */
 
                 case "/changerole":
-                    if (!DebugModeManager.AmDebugger) break;
                     canceled = true;
-                    subArgs = text.Remove(0, 8);
-                    var setRole = FixRoleNameInput(subArgs.Trim());
+                    if (!(DebugModeManager.AmDebugger && GameStates.IsInGame)) break;
+                    if (GameStates.IsOnlineGame && !PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug) break;
+                    subArgs = text.Remove(0, 11);
+                    var setRole =  FixRoleNameInput(subArgs).ToLower().Trim().Replace(" ", string.Empty);
+                    Logger.Info(setRole, "changerole Input");
                     foreach (var rl in CustomRolesHelper.AllRoles)
                     {
                         if (rl.IsVanilla()) continue;
-                        var roleName = GetString(rl.ToString()).ToLower().Trim();
-                        if (setRole.Contains(roleName))
+                        var roleName = GetString(rl.ToString()).ToLower().Trim().TrimStart('*').Replace(" ", string.Empty);
+                        //Logger.Info(roleName, "2");
+                        if (setRole == roleName)
                         {
                             PlayerControl.LocalPlayer.RpcSetRole(rl.GetRoleTypes());
                             PlayerControl.LocalPlayer.RpcSetCustomRole(rl);
+                            Utils.SendMessage(string.Format("Debug Set your role to {0}", rl.ToString()), PlayerControl.LocalPlayer.PlayerId);
                             Utils.NotifyRoles();
                             Utils.MarkEveryoneDirtySettings();
+                            break;
                         }
                     }
                     break;
@@ -735,17 +742,17 @@ internal class ChatCommands
                         var rpsList = new List<string> { GetString("Rock"), GetString("Paper"), GetString("Scissors") };
                         if (botChoice == playerChoice)
                         {
-                            Utils.SendMessage(String.Format(GetString("RpsDraw"), rpsList[botChoice]), PlayerControl.LocalPlayer.PlayerId);
+                            Utils.SendMessage(string.Format(GetString("RpsDraw"), rpsList[botChoice]), PlayerControl.LocalPlayer.PlayerId);
                         }
                         else if ((botChoice == 0 && playerChoice == 2) ||
                                  (botChoice == 1 && playerChoice == 0) ||
                                  (botChoice == 2 && playerChoice == 1))
                         {
-                            Utils.SendMessage(String.Format(GetString("RpsLose"), rpsList[botChoice]), PlayerControl.LocalPlayer.PlayerId);
+                            Utils.SendMessage(string.Format(GetString("RpsLose"), rpsList[botChoice]), PlayerControl.LocalPlayer.PlayerId);
                         }
                         else
                         {
-                            Utils.SendMessage(String.Format(GetString("RpsWin"), rpsList[botChoice]), PlayerControl.LocalPlayer.PlayerId);
+                            Utils.SendMessage(string.Format(GetString("RpsWin"), rpsList[botChoice]), PlayerControl.LocalPlayer.PlayerId);
                         }
                         break;
                     }
@@ -762,7 +769,7 @@ internal class ChatCommands
                         var rand = IRandom.Instance;
                         int botChoice = rand.Next(1, 101);
                         var coinSide = (botChoice < 51) ? GetString("Heads") : GetString("Tails");
-                        Utils.SendMessage(String.Format(GetString("CoinFlipResult"),coinSide), PlayerControl.LocalPlayer.PlayerId);
+                        Utils.SendMessage(string.Format(GetString("CoinFlipResult"),coinSide), PlayerControl.LocalPlayer.PlayerId);
                         break;
                     }
                 case "/gno":
@@ -793,27 +800,29 @@ internal class ChatCommands
                             targetNumber = Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0];
                         }
                         Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][1]--;
-                        if (Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][1] == 0)
+                        if (Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][1] == 0 && guessedNo != targetNumber)
                         {
                             Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0] = -1;
                             Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][1] = 7;
                             //targetNumber = Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0];
-                            Utils.SendMessage(String.Format(GetString("GNoLost"), targetNumber), PlayerControl.LocalPlayer.PlayerId);
+                            Utils.SendMessage(string.Format(GetString("GNoLost"), targetNumber), PlayerControl.LocalPlayer.PlayerId);
                             break;
                         }                        
                         else if (guessedNo < targetNumber)
                         {
-                            Utils.SendMessage(String.Format(GetString("GNoLow"), Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][1]), PlayerControl.LocalPlayer.PlayerId);
+                            Utils.SendMessage(string.Format(GetString("GNoLow"), Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][1]), PlayerControl.LocalPlayer.PlayerId);
                             break;
                         }
                         else if (guessedNo > targetNumber)
                         {
-                            Utils.SendMessage(String.Format(GetString("GNoHigh"), Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][1]), PlayerControl.LocalPlayer.PlayerId);
+                            Utils.SendMessage(string.Format(GetString("GNoHigh"), Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][1]), PlayerControl.LocalPlayer.PlayerId);
                             break;
                         }
                         else
                         {
-                            Utils.SendMessage(String.Format(GetString("GNoWon"), Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][1]), PlayerControl.LocalPlayer.PlayerId);
+                            Utils.SendMessage(string.Format(GetString("GNoWon"), Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][1]), PlayerControl.LocalPlayer.PlayerId);
+                            Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0] = -1;
+                            Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][1] = 7;
                             break;
                         }
 
@@ -925,7 +934,7 @@ internal class ChatCommands
             "革命家" or "革命" => GetString("Revolutionist"),
             "fff團" or "fff" or "fff团" => GetString("FFF"),
             "清理工" or "清潔工" or "清洁工" or "清理" or "清洁" => GetString("Cleaner"),
-            "醫生" or "医生"=> GetString("Medicaler"),
+            "醫生" or "医生"=> GetString("Medic"),
             "调查员" or "调查" => GetString("Divinator"),
             "雙重人格" or "双重" or "双人格" or "人格" => GetString("DualPersonality"),
             "玩家" or "玩家"=> GetString("Gamer"),
@@ -937,7 +946,7 @@ internal class ChatCommands
             "呪狼" or "咒狼" => GetString("CursedWolf"),
             "寶箱怪" or "宝箱" => GetString("Mimic"),
             "集票者" or "集票" or "寄票" or "机票" => GetString("Collector"),
-            "活死人" or "活死" => GetString("Glitch"),
+            "缺点者" or "缺点" => GetString("Glitch"),
             "奪魂者" or "多混" or "夺魂" => GetString("ImperiusCurse"),
             "自爆卡車" or "自爆" or "卡车" => GetString("Provocateur"),
             "快槍手" or "快枪" => GetString("QuickShooter"),
@@ -962,7 +971,7 @@ internal class ChatCommands
             "騙術師" or "骗术师"=> GetString("Trickster"),
             "衛道士" or "卫道士"=> GetString("Vindicator"),
             "寄生蟲" or "寄生虫"=> GetString("Parasite"),
-            "抑鬱者" or "抑郁者"=> GetString("Inhibitor"),
+            "抑鬱者" or "抑郁者" or "抑郁"=> GetString("Inhibitor"),
             "破壞者" or "破坏者"=> GetString("Saboteur"),
             "議員" or "议员"=> GetString("Councillor"),
             "眩暈者" or "眩晕者"=> GetString("Dazzler"),
@@ -1097,6 +1106,7 @@ internal class ChatCommands
         foreach (var rl in CustomRolesHelper.AllRoles)
         {
             if (rl.IsVanilla()) continue;
+            if (rl == CustomRoles.Mini) continue;
             var roleName = GetString(rl.ToString());
             if (role == roleName.ToLower().Trim().TrimStart('*').Replace(" ", string.Empty))
             {
@@ -1761,13 +1771,19 @@ internal class ChatCommands
                 break;
 
             case "/xf":
-                if (!GameStates.IsInGame)
+                if (GameStates.IsLobby)
                 {
                     Utils.SendMessage(GetString("Message.CanNotUseInLobby"), player.PlayerId);
                     break;
                 }
+                foreach (var pc in Main.AllPlayerControls)
+                {
+                    if (pc.IsAlive()) continue;
+
+                    pc.RpcSetNameEx(pc.GetRealName(isMeeting: true));
+                }
                 ChatUpdatePatch.DoBlockChat = false;
-                Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
+                //Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
                 Utils.SendMessage(GetString("Message.TryFixName"), player.PlayerId);
                 break;
 
@@ -1833,17 +1849,17 @@ internal class ChatCommands
                     var rpsList = new List<string> { GetString("Rock"), GetString("Paper"), GetString("Scissors") };
                     if (botChoice == playerChoice)
                     {
-                        Utils.SendMessage(String.Format(GetString("RpsDraw"), rpsList[botChoice]), player.PlayerId);
+                        Utils.SendMessage(string.Format(GetString("RpsDraw"), rpsList[botChoice]), player.PlayerId);
                     }
                     else if ((botChoice == 0 && playerChoice == 2) ||
                              (botChoice == 1 && playerChoice == 0) ||
                              (botChoice == 2 && playerChoice == 1))
                     {
-                        Utils.SendMessage(String.Format(GetString("RpsLose"), rpsList[botChoice]), player.PlayerId);
+                        Utils.SendMessage(string.Format(GetString("RpsLose"), rpsList[botChoice]), player.PlayerId);
                     }
                     else
                     {
-                        Utils.SendMessage(String.Format(GetString("RpsWin"), rpsList[botChoice]), player.PlayerId);
+                        Utils.SendMessage(string.Format(GetString("RpsWin"), rpsList[botChoice]), player.PlayerId);
                     }
                     break;
                 }
@@ -1860,7 +1876,7 @@ internal class ChatCommands
                     var rand = IRandom.Instance;
                     int botChoice = rand.Next(1,101);
                     var coinSide = (botChoice < 51) ? GetString("Heads") : GetString("Tails");
-                    Utils.SendMessage(String.Format(GetString("CoinFlipResult"), coinSide), player.PlayerId);
+                    Utils.SendMessage(string.Format(GetString("CoinFlipResult"), coinSide), player.PlayerId);
                     break;
                 }
             case "/gno":
@@ -1891,27 +1907,29 @@ internal class ChatCommands
                         targetNumber = Main.GuessNumber[player.PlayerId][0];
                     }
                     Main.GuessNumber[player.PlayerId][1]--;
-                    if (Main.GuessNumber[player.PlayerId][1] == 0)
+                    if (Main.GuessNumber[player.PlayerId][1] == 0 && guessedNo != targetNumber)
                     {
                         Main.GuessNumber[player.PlayerId][0] = -1;
                         Main.GuessNumber[player.PlayerId][1] = 7;
                         //targetNumber = Main.GuessNumber[player.PlayerId][0];
-                        Utils.SendMessage(String.Format(GetString("GNoLost"), targetNumber), player.PlayerId);
+                        Utils.SendMessage(string.Format(GetString("GNoLost"), targetNumber), player.PlayerId);
                         break;
                     }
                     else if (guessedNo < targetNumber)
                     {
-                        Utils.SendMessage(String.Format(GetString("GNoLow"), Main.GuessNumber[player.PlayerId][1]), player.PlayerId);
+                        Utils.SendMessage(string.Format(GetString("GNoLow"), Main.GuessNumber[player.PlayerId][1]), player.PlayerId);
                         break;
                     }
                     else if (guessedNo > targetNumber)
                     {
-                        Utils.SendMessage(String.Format(GetString("GNoHigh"), Main.GuessNumber[player.PlayerId][1]), player.PlayerId);
+                        Utils.SendMessage(string.Format(GetString("GNoHigh"), Main.GuessNumber[player.PlayerId][1]), player.PlayerId);
                         break;
                     }
                     else
                     {
-                        Utils.SendMessage(String.Format(GetString("GNoWon"), 7-Main.GuessNumber[player.PlayerId][1]), player.PlayerId);
+                        Utils.SendMessage(string.Format(GetString("GNoWon"), 7-Main.GuessNumber[player.PlayerId][1]), player.PlayerId);
+                        Main.GuessNumber[player.PlayerId][0] = -1;
+                        Main.GuessNumber[player.PlayerId][1] = 7;
                         break;
                     }
                 }
@@ -1987,7 +2005,7 @@ internal class RpcSendChatPatch
         if (AmongUsClient.Instance.AmClient && DestroyableSingleton<HudManager>.Instance)
             DestroyableSingleton<HudManager>.Instance.Chat.AddChat(__instance, chatText);
         if (chatText.Contains("who", StringComparison.OrdinalIgnoreCase))
-            DestroyableSingleton<Telemetry>.Instance.SendWho();
+            DestroyableSingleton<UnityTelemetry>.Instance.SendWho();
         MessageWriter messageWriter = AmongUsClient.Instance.StartRpc(__instance.NetId, (byte)RpcCalls.SendChat, SendOption.None);
         messageWriter.Write(chatText);
         messageWriter.EndMessage();

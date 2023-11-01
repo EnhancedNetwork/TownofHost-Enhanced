@@ -5,16 +5,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Modules;
+using TOHE.Modules.ChatManager;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
-using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Crewmate;
+using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Modules.CustomRoleSelector;
 using static TOHE.Translator;
-using TOHE.Roles.Double;
-using TOHE.Modules.ChatManager;
 
 namespace TOHE;
 
@@ -75,6 +75,7 @@ internal class ChangeRoleSettings
             Main.MedusaBodies = new();
             Main.InfectedBodies = new();
             Main.VirusNotify = new();
+            Main.ErasedRoleStorage = new();
 
             Main.LastEnteredVent = new();
             Main.LastEnteredVentLocation = new();
@@ -118,6 +119,7 @@ internal class ChangeRoleSettings
             Main.CrewpostorTasksDone = new();
             Main.ShamanTarget = byte.MaxValue;
             Main.ShamanTargetChoosen = false;
+            Main.MeetingIsStarted = false;
             ChatManager.ResetHistory();
 
             ReportDeadBodyPatch.CanReport = new();
@@ -125,7 +127,6 @@ internal class ChangeRoleSettings
             Options.UsedButtonCount = 0;
 
             GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor = false;
-            GameOptionsManager.Instance.currentNormalGameOptions.TaskBarMode = (AmongUs.GameOptions.TaskBarMode)2;
             Main.RealOptionsData = new OptionBackupData(GameOptionsManager.Instance.CurrentGameOptions);
 
             Main.introDestroyed = false;
@@ -147,6 +148,7 @@ internal class ChangeRoleSettings
             RPC.SyncAllPlayerNames();
 
             Camouflage.Init();
+
             var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
             if (invalidColor.Any())
             {
@@ -320,6 +322,7 @@ internal class ChangeRoleSettings
             Mini.Init();
             Blackmailer.Init();
             Spy.Init();
+            Oiiai.Init();
             FFF.Init();
             
             Instigator.Init();
@@ -639,9 +642,6 @@ internal class SelectRolesPatch
                     case CustomRoles.SabotageMaster:
                         SabotageMaster.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Repairman:
-                        Repairman.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.EvilTracker:
                         EvilTracker.Add(pc.PlayerId);
                         break;
@@ -938,6 +938,13 @@ internal class SelectRolesPatch
                             Main.AwareInteracted[pc.PlayerId] = new();
                             break;
                         // ここに属性のAddを追加
+                        case CustomRoles.Repairman:
+                            Repairman.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.Oiiai:
+                            Oiiai.Add(pc.PlayerId);
+                            break;
+
                         default:
                             break;
                     }

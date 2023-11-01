@@ -7,7 +7,6 @@ using TOHE.Modules;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -81,10 +80,13 @@ public class PlayerState
             }
         }
     }
-    public void SetSubRole(CustomRoles role, bool AllReplace = false)
+    public void SetSubRole(CustomRoles role, bool AllReplace = false, PlayerControl pc = null)
     {
         if (role == CustomRoles.Cleansed)
+        {
+            if (pc != null) countTypes = pc.GetCustomRole().GetCountTypes();
             AllReplace = true;
+        }
         if (AllReplace)
             SubRoles.ToArray().Do(role => SubRoles.Remove(role));
 
@@ -406,7 +408,7 @@ public class TaskState
                 Logger.Info("传送师触发传送:" + player.GetNameWithRole(), "Transporter");
                 var rd = IRandom.Instance;
                 List<PlayerControl> AllAlivePlayer = new();
-                foreach (var pc in Main.AllAlivePlayerControls.Where(x => !Pelican.IsEaten(x.PlayerId) && !x.inVent && !x.onLadder)) AllAlivePlayer.Add(pc);
+                foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.CanBeTeleported())) AllAlivePlayer.Add(pc);
                 if (AllAlivePlayer.Count >= 2)
                 {
                     var tar1 = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
@@ -428,7 +430,7 @@ public class TaskState
             if (player.Is(CustomRoles.Unlucky) && player.IsAlive())
             {
                 var Ue = IRandom.Instance;
-                if (Ue.Next(0, 100) < Options.UnluckyTaskSuicideChance.GetInt())
+                if (Ue.Next(1, 100) <= Options.UnluckyTaskSuicideChance.GetInt())
                 {
                     player.RpcMurderPlayerV3(player);
                     Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;

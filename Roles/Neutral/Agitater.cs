@@ -1,8 +1,8 @@
-﻿using Hazel;
+﻿using AmongUs.GameOptions;
+using Hazel;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using AmongUs.GameOptions;
-using System.Collections.Generic;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
@@ -76,7 +76,7 @@ public static class Agitater
         if (AgitaterAutoReportBait.GetBool() && target.Is(CustomRoles.Bait)) return true;
         if (target.Is(CustomRoles.Pestilence) || (target.Is(CustomRoles.Veteran) && Main.VeteranInProtect.ContainsKey(target.PlayerId)))
         {
-            target.RpcMurderPlayer(killer);
+            target.RpcMurderPlayerV3(killer);
             ResetBomb();
             return false;
         }
@@ -172,7 +172,7 @@ public static class Agitater
 
         if (target.Is(CustomRoles.Pestilence) || (target.Is(CustomRoles.Veteran) && Main.VeteranInProtect.ContainsKey(target.PlayerId)))
         {
-            target.RpcMurderPlayer(player);
+            target.RpcMurderPlayerV3(player);
             ResetBomb();
             return;
         }

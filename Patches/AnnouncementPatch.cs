@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using AmongUs.Data;
+﻿using AmongUs.Data;
 using AmongUs.Data.Player;
 using Assets.InnerNet;
 using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace TOHE;
 
@@ -48,6 +48,27 @@ public class ModNewsHistory
     // ====== English ======
         if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.English)
         {
+            {
+                var news = new ModNews
+                {
+                    Number = 100005,
+                    Title = "Town of Host: Enhanced v1.2.0",
+                    SubTitle = "★★ The Fungle Support! ★★",
+                    ShortTitle = "TOH: Enhanced v1.2.0",
+                    BeforeNumber = 100004,
+                    Text = "<size=150%>Welcome to TOH: Enhanced v1.2.0!</size>\n" +
+                    "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.1.1\r\n" +
+
+                    "\n<b>【Changes】</b>" +
+                        "\n     - Support has been fully added with bug fixes for The Fungle Update" +
+                        "\n     - Added Temp Ban feature for players constantly joining/leaving (trolls)\n\r" +
+
+                    "\n\n★ Welcome to Town of Host: Enhanced: Fungle Edition ★",
+
+                    Date = "2023-10-29T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
             {
                 var news = new ModNews
                 {
@@ -270,6 +291,85 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
+                    Number = 90004,
+                    Title = "Town of Host: Enhanced v1.1.1",
+                    SubTitle = "★★ Обновление с починкой багов и оптимизацией! ★★",
+                    ShortTitle = "TOH: Enhanced v1.1.1",
+                    BeforeNumber = 90003,
+                    Text = "<size=150%>Добро пожаловать в TOH: Enhanced v1.1.1!</size>\n" +
+                    "\n<b>【Основан】</b>\n - Основан на TOH: Enhanced v1.1.0\r\n" +
+
+                    "\n<b>【Исправления】</b>" +
+                        "\n     - Пофикшен баг с (Злым) Мини, где невозможно засудить или отомститьф" +
+                        "\n     - Пофикшен Обменщик и некоторые баги с ним, остается эксперементальным" +
+                        "\n     - Пофикшено бессмертие Берсерка и спамящщие ошибки" +
+                        "\n     - Пофикшен Безумный Добрый Мини" +
+                        "\n     - Пофикшено совмещение Пустого и Решающего\n\r" +
+
+                    "\n<b>【Другие исправления】</b>" +
+                        "\n     - Улучшили Мясника в PlayerControls" +
+                        "\n     - Переработали проверки в Конце Игры (не опять а снова) чтобы их оптимизировать" +
+
+                    "\n\n★ Добро пожаловать в Town of Host: Enhanced! ★",
+
+                    Date = "2023-10-23T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
+                    Number = 90003,
+                    Title = "Town of Host: Enhanced v1.1.0",
+                    SubTitle = "★★ Обновление уже?! Ух ты! ★★",
+                    ShortTitle = "TOH: Enhanced v1.1.0",
+                    BeforeNumber = 90002,
+                    Text = "<size=150%>Добро пожаловать в TOH: Enhanced v1.1.0!</size>\n" +
+                    "\n<b>【Основан】</b>\n - Основан на TOH: Enhanced v1.1.0\r\n" +
+
+                    "\n<b>【Новые Роли/Атрибуты】</b>" +
+                        "\n     - Главарь (Члены Экипажа: Сильный)" +
+                        "\n     - Шпион (Члены Экипажа: Помогающий)" +
+                        "\n     - Линчеватель (Члены Экипажа: Убийца)\n\r" +
+
+                        "\n     - Отскок (Атрибут: Смешанный)\n\r" +
+
+                    "\n<b>【New Settings】</b>" +
+                        "\n     - Двуликий: «Двуликий телепортируется на убийство» и «Количество выполненных заданий для 1 убийства»" +
+                        "\n     - Deathpact: Игроки в активном «заключении договора» могут созвать собрание" +
+                        "\n     - Твистер: Скрыть информацию с кем игроки меняются местами\n" +
+
+                        "\n     - Обманщик: Обманщик теряет способность, если обманывает игрока без кнопки убийства" +
+                        "\n     - Торговец: Продавать только включенные атрибуты" +
+                        "\n     - Коронер: Сообщать убийце что его отслеживают\n\r" +
+
+                        "\n     - Заразный: Двойное нажатие для Убийства/Заражение" +
+
+                        "\n     - Растерянный: Убийца получает дальность обзора Растерянного\n\r" +
+
+                    "\n<b>【Удалённые Роли/Атрибуты】</b>" +
+                        "\n     - Нейтрал: Окультист\n\r" +
+                        "\n     - Атрибут: Солнцезащитный" +
+                        "\n     - Атрибут: Светящийся" +
+
+                    "\n<b>【Другие Изменения】</b>" +
+                        "\n     - Новый поддерживаемый язык: Португальский" +
+                        "\n     - Новые игры в лобби: /rps & /coinflip" +
+                        "\n     - Новый скин у Камуфляжа" +
+                        "\n     - Добавлен «Default_Template.txt»" +
+                        "\n     - Переработан Мечтатель и Бессердечник" +
+
+                    "\nНесколько других исправлений багов (и когда я говорю несколько, я имею в виду НЕСКОЛЬКО)" +
+
+                    "\n\n★ Добро Пожаловать в Town of Host: Enhanced! ★",
+
+                    Date = "2023-10-21T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
                     Number = 90002,
                     Title = "Town of Host: Enhanced v1.0.1",
                     SubTitle = "★★ Новая Эра ★★",
@@ -403,6 +503,28 @@ public class ModNewsHistory
         else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.SChinese)
         {
             {
+                //TOHE v1.2.0
+                var news = new ModNews
+                {
+                    Number = 80004,
+                    Title = "Town of Host: Enhanced v1.2.0",
+                    SubTitle = "★★ 支持The Fungle ! ★★",
+                    ShortTitle = "TOH: Enhanced v1.2.0",
+                    BeforeNumber = 80003,
+                    Text = "<size=150%>欢迎来到TOH: Enhanced v1.2.0!</size>\n" +
+                    "\n<b>【基于】</b>\n - 基于TOH: Enhanced v1.1.1\r\n" +
+
+                    "\n<b>【挑战】</b>" +
+                        "\n     - 已完全添加支持并修复了 Fungle 更新的错误" +
+                        "\n     -如果有玩家不断加入/离开，则会暂时封禁该玩家n\r" +
+
+                    "\n\n★ 欢迎来到Town of Host: Enhanced: Fungle Edition ★",
+
+                    Date = "2023-10-29T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
                 //TOHE v1.1.1
                 var news = new ModNews
                 {
@@ -532,6 +654,27 @@ public class ModNewsHistory
         else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.TChinese)
         {
              {
+                var news = new ModNews
+                {
+                    Number = 70004,
+                    Title = "Town of Host: Enhanced v1.2.0",
+                    SubTitle = "★★ 支援The Fungle! ★★",
+                    ShortTitle = "TOH: Enhanced v1.2.0",
+                    BeforeNumber = 70003,
+                    Text = "<size=150%>歡迎來到 TOH: Enhanced v1.2.0!</size>\n" +
+                    "\n<b>【基於版本】</b>\n - 基於 TOH: Enhanced v1.1.1\r\n" +
+
+                    "\n<b>【更動】</b>" +
+                        "\n     - 支援最新的The Fungle更新!" +
+                        "\n     - 加入如果有玩家不斷進入並離開房間，則他將會被暫時封禁的機制\n\r" +
+
+                    "\n\n★ 歡迎來到 Town of Host: Enhanced: Fungle版本 ★",
+
+                    Date = "2023-10-29T00:00:00Z"
+                };
+                AllModNews.Add(news);
+             }
+             {
                 // TOHE v1.1.1
                 var news = new ModNews
                 {
@@ -651,6 +794,153 @@ public class ModNewsHistory
                     "\n     - 修復了強盜字串" +
                     "\n\n★ 讓模組變得更好了，歡迎來到 Town of Host: Enhanced! ★",
                     Date = "2023-10-15T00:00:00Z",
+                };
+                AllModNews.Add(news);
+            }
+        }
+        // ====== French ======
+        else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.French)
+        {
+            {
+                var news = new ModNews
+                {
+                    Number = 60004,
+                    Title = "Town of Host: Enhanced v1.2.0",
+                    SubTitle = "★★ Support de \"The Fungle\"! ★★",
+                    ShortTitle = "TOH: Enhanced v1.2.0",
+                    BeforeNumber = 60003,
+                    Text = "<size=150%>Bienvenue sur TOH: Enhanced v1.2.0!</size>\n" +
+                    "\n<b>【Base】</b>\n - Basé sur TOH: Enhanced v1.1.1\r\n" +
+
+                    "\n<b>【Changements】</b>" +
+                        "\n     - Le support a été entièrement ajouté avec des bug corrigés pour la mise à jour \"The Fungle\"" +
+                        "\n     - Ajouté une fonctionnalité de bannisement temporaire pour les joueurs qui quittent et rejoignent en permanence (troll)" +
+
+                    "\n\n★ Bienvenue sur Town of Host: Enhanced: Edition Fungle ★",
+
+                    Date = "2023-10-29T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
+                    Number = 60003,
+                    Title = "Town of Host: Enhanced v1.1.1",
+                    SubTitle = "★★ Une mise à jour de performance avec des corrections de bugs! ★★",
+                    ShortTitle = "TOH: Enhanced v1.1.1",
+                    BeforeNumber = 60002,
+                    Text = "<size=150%>Bienvenue sur TOH: Enhanced v1.1.1!</size>\n" +
+                    "\n<b>【Base】</b>\n - Basé sur TOH: Enhanced v1.1.0\r\n" +
+
+                    "\n<b>【Corrections de bugs】</b>" +
+                        "\n     - Correction du (Evil) Mini ne pouvant pas être jugé ou vengé" +
+                        "\n     - Correction de Swapper et de plusieurs bugs qu'il contient, restant expérimental" +
+                        "\n     - Correction du Berserker incapable de mourir et des erreurs de spam" +
+                        "\n     - Correction des problèmes de Mad Nice Mini" +
+                        "\n     - Correction d'un conflit avec le Tiebreaker et le Void Ballot\n\r" +
+
+                    "\n<b>【Autres correctifs】</b>" +
+                        "\n     - Overkiller amélioré dans PlayerControls" +
+                        "\n     - Retravaillé les contrôles de fin de partie (encore) pour l'optimiser" +
+
+                    "\n\n★ Bienvenue sur Town of Host: Enhanced! ★",
+
+                    Date = "2023-10-23T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
+                    Number = 60002,
+                    Title = "Town of Host: Enhanced v1.1.0",
+                    SubTitle = "★★ Une mise a jour déjà?! Wow! ★★",
+                    ShortTitle = "TOH: Enhanced v1.1.0",
+                    BeforeNumber = 60001,
+                    Text = "<size=150%>Bienvenue sur TOH: Enhanced v1.1.0!</size>\n" +
+                    "\n<b>【Base】</b>\n - Basé sur TOH: Enhanced v1.0.1\r\n" +
+
+                    "\n<b>【Nouveaux rôles/addons】</b>" +
+                        "\n     - Président (Crewmate: Power)" +
+                        "\n     - Spy (Crewmate: Support)" +
+                        "\n     - Vigilante (Crewmate: Killing)\n\r" +
+
+                        "\n     - Rebound (Addons: Mixed)\n\r" +
+
+                    "\n<b>【Nouveaux Paramètres】</b>" +
+                        "\n     - Crewpostor: Foncez ET tuer après chaque X tâches terminées" +
+                        "\n     - Deathpact: Les joueurs du Deathpact peuvent faire une réunion" +
+                        "\n     - Twister: Cacher avec les joueurs qui échangent\n" +
+
+                        "\n     - Deceiver: Perd l'utilisation de sa capacité en cas de tromperie injustifiée" +
+                        "\n     - Merchant: Ne peut vendre que des addons activés" +
+                        "\n     - Coroner: Informer le tueur qu'il est suivi\n\r" +
+
+                        "\n     - Infectious: Double-cliquez pour tuer/infecter" +
+
+                        "\n     - Bewilder: Le tueur peut avoir la vision du Bewilder\n\r" +
+
+                    "\n<b>【Rôles/addons supprimés】</b>" +
+                        "\n     - Neutre: Occultist\n\r" +
+                        "\n     - Addon: Sunglasses" +
+                        "\n     - Addon: Glow" +
+
+                    "\n<b>【Autres changemants】</b>" +
+                        "\n     - Nouvelle langue prise en charge : portugais" +
+                        "\n     - Nouveaux jeux de lobby : /rps & /coinflip" +
+                        "\n     - Agent renommé en Evil Tracker" +
+                        "\n     - Disruptor renommé en Anti Adminer" +
+                        "\n     - Nouveaux skins de camouflage" +
+                        "\n     - Nouveau Default_Template.txt" +
+                        "\n     - Reverie ET Hater retravaillés" +
+
+                    "\nPlusieurs autres changements de bugs (et quand je dis plusieurs, ca veux dire PLUSIEURS)" +
+
+                    "\n\n★ Bienvenue sur Town of Host: Enhanced! ★",
+
+                    Date = "2023-10-21T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
+                    Number = 60001,
+                    Title = "Town of Host: Enhanced v1.0.1",
+                    SubTitle = "★★ Une nouvelle ère ★★",
+                    ShortTitle = "TOH: Enhanced v1.0.1",
+                    BeforeNumber = 60000,
+                    Text = "<size=150%>Bienvenue sur TOH: Enhanced v1.0.1!</size>\n\n<size=125%>Support d'Among Us v2023.7.11 et v2023.7.12</size>\n" +
+                    "\n<b>【Base】</b>\n - Basé sur TOH-RE v3.1.0 (Notes Disponibles)\r\n" +
+                    "\n<b>【Correctifs】</b>" +
+                    "\n     - Suppression du logo de Loonie et remplacement de celui-ci" +
+                    "\n     - Ajout d'un indice mis à jour dans Fortune Teller" +
+                    "\n     - Les modèles fixés et la liste VIP ne sont pas générés" +
+                    "\n     - Un nouveau teaser... pour un nouveau rôle... ?" +
+                    "\n\n★ Bienvenue sur Town of Host: Enhanced! ★",
+
+                    Date = "2023-10-5T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
+                    Number = 60000,
+                    Title = "Town of Host: Enhanced v1.0.0",
+                    SubTitle = "★★ A New Era ★★",
+                    ShortTitle = "TOH: Enhanced v1.0.0",
+                    Text = "<size=150%>Bienvenue sur TOH: Enhanced v1.0.0!</size>\n\n<size=125%>Support for Among Us v2023.7.11 and v2023.7.12</size>\n" +
+                    "\n<b>【Base】</b>\n - Basé sur TOH-RE v3.1.0 (Notes Disponibles)\r\n" +
+                    "\n<b>【Modifications/Corrections】</b>" +
+                    "\n     - Suppression de toute association avec Loonie, crédit dans README" +
+                    "\n     - Jailor renommé en Jailer (de rien, ryuk)" +
+                    "\n     - Modèles mis à jour avec toutes les textes/variables" +
+                    "\n     - Texte du Bandit corrigé" +
+                    "\n\n★ Amélioration du mod. Bienvenue sur Town of Host: Enhanced! ★",
+
+                    Date = "2023-10-5T00:00:00Z"
                 };
                 AllModNews.Add(news);
             }

@@ -1,11 +1,10 @@
 ﻿using Hazel;
 using System.Collections.Generic;
 using TOHE.Modules;
-using TOHE.Roles.Neutral;
 using TOHE.Roles.Crewmate;
+using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
-using System.Linq;
 
 namespace TOHE.Roles.Impostor;
 

@@ -10,7 +10,6 @@ using TOHE.Modules;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -21,6 +20,7 @@ class OnGameJoinedPatch
     {
         while (!Options.IsLoaded) System.Threading.Tasks.Task.Delay(1);
         Logger.Info($"{__instance.GameId} Joining room", "OnGameJoined");
+        Main.IsHostVersionCheating = false;
         Main.playerVersion = new Dictionary<byte, PlayerVersion>();
         if (!Main.VersionCheat.Value) RPC.RpcVersionCheck();
         SoundManager.Instance.ChangeAmbienceVolume(DataManager.Settings.Audio.AmbienceVolume);
@@ -41,6 +41,7 @@ class OnGameJoinedPatch
             Main.DevRole = new();
             EAC.DeNum = new();
             Main.AllPlayerNames = new();
+            Main.PlayerQuitTimes = new();
 
             if (Main.NormalOptions.KillCooldown == 0f)
                 Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
@@ -76,9 +77,18 @@ class OnPlayerJoinedPatch
         Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/Platform:{client.PlatformData.Platform}) Joining room", "Session");
         if (AmongUsClient.Instance.AmHost && client.FriendCode == "" && Options.KickPlayerFriendCodeNotExist.GetBool())
         {
-            AmongUsClient.Instance.KickPlayer(client.Id, false);
-            Logger.SendInGame(string.Format(GetString("Message.KickedByNoFriendCode"), client.PlayerName));
-            Logger.Info($"Kicked a player {client?.PlayerName} without a friend code", "Kick");
+            if (!Options.TempBanPlayerFriendCodeNotExist.GetBool())
+            {
+                AmongUsClient.Instance.KickPlayer(client.Id, false);
+                Logger.SendInGame(string.Format(GetString("Message.KickedByNoFriendCode"), client.PlayerName));
+                Logger.Info($"Kicked a player {client?.PlayerName} without a friend code", "Kick");
+            }
+            else
+            {
+                AmongUsClient.Instance.KickPlayer(client.Id, true);
+                Logger.SendInGame(string.Format(GetString("Message.TempBannedByNoFriendCode"), client.PlayerName));
+                Logger.Info($"TempBanned a player {client?.PlayerName} without a friend code", "Temp Ban");
+            }
         }
         Platforms platform = client.PlatformData.Platform;
         if (AmongUsClient.Instance.AmHost && Options.KickOtherPlatformPlayer.GetBool() && platform != Platforms.Unknown)
@@ -109,6 +119,21 @@ class OnPlayerJoinedPatch
             if (Main.SayStartTimes.ContainsKey(client.Id)) Main.SayStartTimes.Remove(client.Id);
             if (Main.SayBanwordsTimes.ContainsKey(client.Id)) Main.SayBanwordsTimes.Remove(client.Id);
             //if (Main.newLobby && Options.ShareLobby.GetBool()) Cloud.ShareLobby();
+            if (client.FriendCode != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
+                && !FixedUpdatePatch.CheckAllowList(client.FriendCode))
+            {
+                if (Main.PlayerQuitTimes.ContainsKey(client.FriendCode))
+                {
+                    if (Main.PlayerQuitTimes[client.FriendCode] >= Options.QuitTimesTillTempBan.GetInt())
+                    {
+                        if (!BanManager.TempBanWhiteList.Contains(client.FriendCode))
+                            BanManager.TempBanWhiteList.Add(client.FriendCode);
+                        AmongUsClient.Instance.KickPlayer(client.Id, true);
+                        Logger.SendInGame(string.Format(GetString("Message.TempBannedForSpamQuitting"), client.PlayerName));
+                        Logger.Info($"Temp Ban Player ー {client?.PlayerName}({client.FriendCode}) has been temp banned.", "BAN");
+                    }
+                }
+            }
         }
     }
 }
@@ -208,6 +233,23 @@ class OnPlayerLeftPatch
                 Main.SayStartTimes.Remove(__instance.ClientId);
                 Main.SayBanwordsTimes.Remove(__instance.ClientId);
                 Main.playerVersion.Remove(data?.Character?.PlayerId ?? byte.MaxValue);
+
+                if (GameStates.IsLobby)
+                {
+                    if (data?.FriendCode != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
+                        && !FixedUpdatePatch.CheckAllowList(data?.FriendCode)) //Can't do this on players without friendcode
+                    {
+                        if (!Main.PlayerQuitTimes.ContainsKey(data?.FriendCode))
+                            Main.PlayerQuitTimes.Add(data?.FriendCode, 1);
+                        else Main.PlayerQuitTimes[data?.FriendCode]++;
+
+                        if (Main.PlayerQuitTimes[data?.FriendCode] >= Options.QuitTimesTillTempBan.GetInt())
+                        {
+                            BanManager.TempBanWhiteList.Add(data?.FriendCode);
+                            //should ban on player's next join game
+                        }
+                    }
+                }
             }
         }
         catch (Exception error)

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 
@@ -89,6 +88,12 @@ internal class AntiAdminer
                         if (!Options.DisableAirshipVital.GetBool())
                             Vital |= Vector2.Distance(PlayerPos, DisableDevice.DevicePos["AirshipVital"]) <= DisableDevice.UsableDistance();
                         break;
+                    case 5:
+                        if (!Options.DisableFungleBinoculars.GetBool())
+                            Camera |= Vector2.Distance(PlayerPos, DisableDevice.DevicePos["FungleCamera"]) <= DisableDevice.UsableDistance();
+                        if (!Options.DisableFungleVital.GetBool())
+                            Vital |= Vector2.Distance(PlayerPos, DisableDevice.DevicePos["FungleVital"]) <= DisableDevice.UsableDistance();
+                        break;
                 }
             }
             catch (Exception ex)
@@ -113,7 +118,7 @@ internal class AntiAdminer
 
         if (isChange)
         {
-            Utils.NotifyRoles();
+            Utils.NotifyRoles(ForceLoop: false);
             foreach (PlayerControl pc in Main.AllPlayerControls)
                 FixedUpdatePatch.Postfix(pc);
         }

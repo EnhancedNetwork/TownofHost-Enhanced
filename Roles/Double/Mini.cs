@@ -1,13 +1,6 @@
-using HarmonyLib;
 using Hazel;
-using MS.Internal.Xml.XPath;
-using Sentry;
 using System.Collections.Generic;
-using System.Linq;
-using TOHE.Roles.Neutral;
 using UnityEngine;
-using static TOHE.RandomSpawn;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Double;
 public class Mini
@@ -65,6 +58,15 @@ public class Mini
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-
-    public static string GetAge(byte playerId) => Utils.ColorString(Color.yellow, Age != 18 ? $"({Age})" : "");
+    public static void SendRPC()
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncMiniAge, SendOption.Reliable, -1);
+        writer.Write(Age);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void ReceiveRPC(MessageReader reader)
+    {
+        Age = reader.ReadInt32();
+    }
+    public static string GetAge(byte playerId) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), Age != 18 ? $"({Age})" : "");
 }

@@ -1,8 +1,8 @@
 using HarmonyLib;
 using System.Text;
 using TMPro;
-using UnityEngine;
 using TOHE.Modules;
+using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -72,17 +72,16 @@ public static class Credentials
             Main.credentialsText = $"\r\n<color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginDisplayVersion}";
 
 #if RELEASE
-            //  Main.credentialsText += $"\r\n<color=#a54aff>Modified by </color><color=#ff3b6f>Moe</color>";
+            Main.credentialsText += $"\r\n<color=#a54aff>By <color=#ffc0cb>KARPED1EM</color> & </color><color=#f34c50>Moe</color>";
+#endif
+
+#if CANARY
+            Main.credentialsText += $"\r\n<color=#ffc0cb>Canary:</color><color=#f34c50>{ThisAssembly.Git.Branch}</color>(<color=#ffc0cb>{ThisAssembly.Git.Commit}</color>)";
             Main.credentialsText += $"\r\n<color=#a54aff>By <color=#ffc0cb>KARPED1EM</color> & </color><color=#f34c50>Moe</color>";
 #endif
 
 #if DEBUG
-         /* string additionalCredentials = GetString("TextBelowVersionText");
-            if (additionalCredentials != null && additionalCredentials != "*TextBelowVersionText")
-            {
-                Main.credentialsText += $"\n{additionalCredentials}";
-            } */
-
+            Main.credentialsText += $"\r\n<color=#ffc0cb>Debug:</color><color=#f34c50>{ThisAssembly.Git.Branch}</color>(<color=#ffc0cb>{ThisAssembly.Git.Commit}</color>)";
             Main.credentialsText += $"\r\n<color=#a54aff>By <color=#ffc0cb>KARPED1EM</color> & </color><color=#f34c50>Moe</color>";
 #endif
 

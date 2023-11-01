@@ -1,6 +1,5 @@
 using HarmonyLib;
 using Il2CppSystem.Text;
-using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using TOHE.Roles.Crewmate;
@@ -830,7 +829,7 @@ class RepairSender
     }
     public static void Send()
     {
-        ShipStatus.Instance.RpcRepairSystem((SystemTypes)SystemType, amount);
+        ShipStatus.Instance.RpcUpdateSystem((SystemTypes)SystemType, (byte)amount);
         Reset();
     }
     public static void Reset()

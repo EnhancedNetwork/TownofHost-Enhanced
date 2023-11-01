@@ -37,9 +37,9 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "1.1.1";
-    public const string PluginDisplayVersion = "1.1.1";
-    public static readonly string SupportedVersionAU = "2023.7.11";
+    public const string PluginVersion = "1.2.1.2";
+    public const string PluginDisplayVersion = "1.2.1 dev 2";
+    public static readonly string SupportedVersionAU = "2023.10.24";
     public const bool Canary = false; // Unused variable?
 
     public static readonly bool ShowGitHubButton = true;
@@ -83,6 +83,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> EnableRoleSummary { get; private set; }
     public static ConfigEntry<bool> SwitchVanilla { get; private set; }
     public static ConfigEntry<bool> VersionCheat { get; private set; }
+    public static bool IsHostVersionCheating = false;
     public static ConfigEntry<bool> GodMode { get; private set; }
 
     public static Dictionary<byte, PlayerVersion> playerVersion = new();
@@ -117,6 +118,7 @@ public class Main : BasePlugin
     public static List<int> clientIdList = new();
     public static List<(string, byte, string)> MessagesToSend = new();
     public static bool isChatCommand = false;
+    public static bool MeetingIsStarted = false;
     public static List<PlayerControl> LoversPlayers = new();
     public static bool isLoversDead = true;
     public static Dictionary<byte, float> AllPlayerKillCooldown = new();
@@ -228,14 +230,15 @@ public class Main : BasePlugin
     public static Dictionary<byte, List<string>> AwareInteracted = new();
     public static byte ShamanTarget = byte.MaxValue;
     public static bool ShamanTargetChoosen = false;
-
-
+    
+    public static Dictionary<byte, CustomRoles> ErasedRoleStorage = new();
+    public static Dictionary<string, int> PlayerQuitTimes = new();
 
     public static IEnumerable<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null);
     public static IEnumerable<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId));
 
-    public static List<PlayerControl> AllPlayerControlsList => (List<PlayerControl>)PlayerControl.AllPlayerControls.ToArray().Where(p => p != null);
-    public static List<PlayerControl> AllAlivePlayerControlsList => (List<PlayerControl>)PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId));
+    //public static List<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null).ToList();
+    //public static List<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId)).ToList();
 
     public static Main Instance;
 
@@ -551,8 +554,9 @@ public class Main : BasePlugin
                 {CustomRoles.Circumvent, "#ff1919"},
                 {CustomRoles.Nimble, "#FFFAA6"},
                 {CustomRoles.Repairman, "#3333ff"},
-
                 {CustomRoles.Cyber, "#F46F4E" },
+                {CustomRoles.Oiiai, "#2bdb2b" },
+                {CustomRoles.Influenced, "#b0006a"},
 
              //   {CustomRoles.QuickFix, "#3333ff"},
 
@@ -909,7 +913,9 @@ public enum CustomRoles
     Repairman,
     Cyber,
     Stubborn,
-    Overclocked
+    Overclocked,
+    Oiiai,
+    Influenced
     // QuickFix
 }
 //WinData

@@ -1,6 +1,5 @@
 using Hazel;
 using System.Collections.Generic;
-using System.Linq;
 using TOHE.Roles.Double;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -19,6 +18,7 @@ public static class Admirer
     public static OptionItem KnowTargetRole;
     public static OptionItem SkillLimit;
     public static Dictionary<byte, int> AdmirerLimit;
+    private static Dictionary<byte, List<byte>> AdmiredList;
 
     public static void SetupCustomOption()
     {
@@ -33,12 +33,14 @@ public static class Admirer
     {
         playerIdList = new();
         AdmirerLimit = new();
+        AdmiredList = new();
         IsEnable = false;
     }
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         AdmirerLimit.Add(playerId, SkillLimit.GetInt());
+        AdmiredList.Add(playerId, new());
         IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
@@ -53,16 +55,36 @@ public static class Admirer
         writer.Write(AdmirerLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+
+    private static void SendRPC(byte playerId, byte targetId)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncAdmiredList, SendOption.Reliable, -1);
+        writer.Write(playerId);
+        writer.Write(targetId);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void ReceiveRPC(MessageReader reader, bool isList)
     {
         byte playerId = reader.ReadByte();
-        int Limit = reader.ReadInt32();
-        if (!AdmirerLimit.ContainsKey(playerId))
-            AdmirerLimit.Add(playerId, Limit);
-        else AdmirerLimit[playerId] = Limit;
+        byte targetId;
+        int Limit;
+        if (!isList)
+        {
+            Limit = reader.ReadInt32();
+            if (!AdmirerLimit.ContainsKey(playerId))
+                AdmirerLimit.Add(playerId, Limit);
+            else AdmirerLimit[playerId] = Limit;
+        }
+        else
+        {
+            targetId = reader.ReadByte();
+            if (!AdmiredList.ContainsKey(playerId))
+                AdmiredList.Add(playerId, new());
+            else AdmiredList[playerId].Add(targetId);
+        }
     }
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AdmirerLimit[id] >= 1 ? AdmireCooldown.GetFloat() : 300f;
-    public static bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && AdmirerLimit[player.PlayerId] >= 1;
+    public static bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && (AdmirerLimit.TryGetValue(player.PlayerId, out var x) ? x : 1) >= 1;
     public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
         if (AdmirerLimit[killer.PlayerId] < 1) return;
@@ -73,129 +95,71 @@ public static class Admirer
         }
         if (!AdmirerLimit.ContainsKey(killer.PlayerId))
             Add(killer.PlayerId);
-        if (AdmirerLimit[killer.PlayerId] < 1) return;
-        if (CanBeAdmired(target))
-        {
-            if (!killer.Is(CustomRoles.Recruit) && !killer.Is(CustomRoles.Charmed) && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious) && !killer.Is(CustomRoles.Admired))
-            {
-                AdmirerLimit[killer.PlayerId]--;
-                SendRPC(killer.PlayerId);
-                target.RpcSetCustomRole(CustomRoles.Admired);
+        if (!AdmiredList.ContainsKey(killer.PlayerId))
+            AdmiredList.Add(killer.PlayerId, new());
 
+        if (AdmirerLimit[killer.PlayerId] < 1) return;
+        if (CanBeAdmired(target, killer))
+        {
+            AdmirerLimit[killer.PlayerId]--;
+            SendRPC(killer.PlayerId); //Sync skill
+            if (KnowTargetRole.GetBool())
+            {
+                AdmiredList[killer.PlayerId].Add(target.PlayerId);
+                SendRPC(killer.PlayerId, target.PlayerId); //Sync playerId list
+            }
+
+            if (!killer.Is(CustomRoles.Madmate) && !killer.Is(CustomRoles.Recruit) && !killer.Is(CustomRoles.Charmed) && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious))
+            {
+                target.RpcSetCustomRole(CustomRoles.Admired);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmirerAdmired")));
                 Utils.NotifyRoles();
-
-                killer.ResetKillCooldown();
-                killer.SetKillCooldown();
-                if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-                target.RpcGuardAndKill(killer);
-                target.RpcGuardAndKill(target);
-
-                Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Admirer.ToString(), "Assign " + CustomRoles.Admirer.ToString());
-                Logger.Info($"{killer.GetNameWithRole()} : 剩余{AdmirerLimit[killer.PlayerId]}次仰慕机会", "Admirer");
-                return;
             }
             else if (killer.Is(CustomRoles.Madmate) && target.CanBeMadmate())
             {
-                AdmirerLimit[killer.PlayerId]--;
-                SendRPC(killer.PlayerId);
                 target.RpcSetCustomRole(CustomRoles.Madmate);
-
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("AdmiredPlayer")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("AdmirerAdmired")));
+                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("AdmirerAdmired")));                
                 Utils.NotifyRoles();
-
-                killer.ResetKillCooldown();
-                killer.SetKillCooldown();
-                if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-                target.RpcGuardAndKill(killer);
-                target.RpcGuardAndKill(target);
-
-                Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Madmate.ToString(), "Assign " + CustomRoles.Madmate.ToString());
-                Logger.Info($"{killer.GetNameWithRole()} : 剩余{AdmirerLimit[killer.PlayerId]}次仰慕机会", "Admirer");
-                return;
             }
             else if (killer.Is(CustomRoles.Recruit) && target.CanBeSidekick())
             {
-                AdmirerLimit[killer.PlayerId]--;
-                SendRPC(killer.PlayerId);
                 target.RpcSetCustomRole(CustomRoles.Recruit);
-
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Recruit), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Recruit), GetString("AdmirerAdmired")));
                 Utils.NotifyRoles();
-
-                killer.ResetKillCooldown();
-                killer.SetKillCooldown();
-                if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-                target.RpcGuardAndKill(killer);
-                target.RpcGuardAndKill(target);
-
-                Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Recruit.ToString(), "Assign " + CustomRoles.Recruit.ToString());
-                Logger.Info($"{killer.GetNameWithRole()} : 剩余{AdmirerLimit[killer.PlayerId]}次仰慕机会", "Admirer");
-                return;
             }
             else if (killer.Is(CustomRoles.Charmed) && target.CanBeCharmed())
             {
-                AdmirerLimit[killer.PlayerId]--;
-                SendRPC(killer.PlayerId);
                 target.RpcSetCustomRole(CustomRoles.Charmed);
-
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Charmed), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Charmed), GetString("AdmirerAdmired")));
                 Utils.NotifyRoles();
-
-                killer.ResetKillCooldown();
-                killer.SetKillCooldown();
-                if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-                target.RpcGuardAndKill(killer);
-                target.RpcGuardAndKill(target);
-
-                Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Charmed.ToString(), "Assign " + CustomRoles.Charmed.ToString());
-                Logger.Info($"{killer.GetNameWithRole()} : 剩余{AdmirerLimit[killer.PlayerId]}次仰慕机会", "Admirer");
-                return;
             }
             else if (killer.Is(CustomRoles.Infected) && target.CanBeInfected())
             {
-                AdmirerLimit[killer.PlayerId]--;
-                SendRPC(killer.PlayerId);
                 target.RpcSetCustomRole(CustomRoles.Infected);
-
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infected), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infected), GetString("AdmirerAdmired")));
                 Utils.NotifyRoles();
-
-                killer.ResetKillCooldown();
-                killer.SetKillCooldown();
-                if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-                target.RpcGuardAndKill(killer);
-                target.RpcGuardAndKill(target);
-
-                Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Infected.ToString(), "Assign " + CustomRoles.Infected.ToString());
-                Logger.Info($"{killer.GetNameWithRole()} : 剩余{AdmirerLimit[killer.PlayerId]}次仰慕机会", "Admirer");
-                return;
             }
             else if (killer.Is(CustomRoles.Contagious) && target.CanBeInfected())
             {
-                AdmirerLimit[killer.PlayerId]--;
-                SendRPC(killer.PlayerId);
                 target.RpcSetCustomRole(CustomRoles.Contagious);
-
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Contagious), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Contagious), GetString("AdmirerAdmired")));
                 Utils.NotifyRoles();
-
-                killer.ResetKillCooldown();
-                killer.SetKillCooldown();
-                if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-                target.RpcGuardAndKill(killer);
-                target.RpcGuardAndKill(target);
-
-                Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Contagious.ToString(), "Assign " + CustomRoles.Contagious.ToString());
-                Logger.Info($"{killer.GetNameWithRole()} : 剩余{AdmirerLimit[killer.PlayerId]}次仰慕机会", "Admirer");
-                return;
             }
+            killer.ResetKillCooldown();
+            killer.SetKillCooldown();
+            if (!DisableShieldAnimations.GetBool()) 
+                killer.RpcGuardAndKill(target);
+            target.RpcGuardAndKill(killer);
+            target.RpcGuardAndKill(target);
+            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Admirer.ToString(), "Assign " + CustomRoles.Admirer.ToString());
+            Logger.Info($"{killer.GetNameWithRole()} : 剩余{AdmirerLimit[killer.PlayerId]}次仰慕机会", "Admirer");
+            return;
         }
         killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmirerInvalidTarget")));
         Logger.Info($"{killer.GetNameWithRole()} : 剩余{AdmirerLimit[killer.PlayerId]}次仰慕机会", "Admirer");
@@ -203,14 +167,25 @@ public static class Admirer
     }
     public static bool KnowRole(PlayerControl player, PlayerControl target)
     {
-        if (player.Is(CustomRoles.Admired) && target.Is(CustomRoles.Admirer)) return true;
-        if (KnowTargetRole.GetBool() && player.Is(CustomRoles.Admirer) && target.Is(CustomRoles.Admired)) return true;
-        return false;
+        if (!KnowTargetRole.GetBool()) return false;
+        if (AdmiredList.ContainsKey(player.PlayerId))
+        {
+            if (AdmiredList[player.PlayerId].Contains(target.PlayerId)) return true;
+            return false;
+        }
+        else if (AdmiredList.ContainsKey(target.PlayerId))
+        {
+            if (AdmiredList[target.PlayerId].Contains(player.PlayerId)) return true;
+            return false;
+        }
+        else return false;
     }
     public static string GetAdmireLimit(byte playerId) => Utils.ColorString(AdmirerLimit[playerId] >= 1 ? Utils.GetRoleColor(CustomRoles.Admirer).ShadeColor(0.25f) : Color.gray, $"({AdmirerLimit[playerId]})");
-    public static bool CanBeAdmired(this PlayerControl pc)
+    public static bool CanBeAdmired(this PlayerControl pc, PlayerControl admirer)
     {
+        if (AdmiredList[admirer.PlayerId].Contains(pc.PlayerId)) return false;
+
         return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() ||
-            (pc.GetCustomRole().IsNeutral())) && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal) && !((pc.Is(CustomRoles.NiceMini) || pc.Is(CustomRoles.EvilMini)) && Mini.Age < 18);
-    }
+            (pc.GetCustomRole().IsNeutral() && !pc.GetCustomRole().IsNK())) && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal) && !((pc.Is(CustomRoles.NiceMini) || pc.Is(CustomRoles.EvilMini)) && Mini.Age < 18);
+    } //Remove !isNk after rework game end check
 }

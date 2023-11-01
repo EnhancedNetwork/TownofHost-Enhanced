@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -191,7 +192,6 @@ class CheckForEndVotingPatch
                         }
                     }
                 }
-
                 // Hide Divinator Vote
                 if (CheckRole(ps.TargetPlayerId, CustomRoles.Divinator) && Divinator.HideVote.GetBool() && Divinator.TempCheckLimit[ps.TargetPlayerId] > 0) continue;
                 // Hide Eraser Vote
@@ -320,6 +320,12 @@ class CheckForEndVotingPatch
             states = statesList.ToArray();
 
             var VotingData = __instance.CustomCalculateVotes();
+
+            if (CustomRoles.Influenced.RoleExist())
+                if (Influenced.CheckVotingData(VotingData)) 
+                    VotingData = __instance.CustomCalculateVotes(); 
+            //Change voting data for influenced once
+
             byte exileId = byte.MaxValue;
             int max = 0;
             voteLog.Info("===决定驱逐玩家处理开始===");
@@ -705,6 +711,8 @@ class MeetingHudStartPatch
     public static void NotifyRoleSkillOnMeetingStart()
     {
         if (!AmongUsClient.Instance.AmHost) return;
+
+        Main.MeetingIsStarted = true;
 
         List<(string, byte, string)> msgToSend = new();
 
