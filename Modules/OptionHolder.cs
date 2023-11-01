@@ -2638,8 +2638,7 @@ public static class Options
         NeutralCanBeFool = BooleanOptionItem.Create(19212, "NeutralCanBeFool", true, TabGroup.OtherRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Fool]);
 
-
-
+        Oiiai.SetupCustomOptions();
         #endregion
 
         #region System Settings

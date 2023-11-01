@@ -319,6 +319,7 @@ static class CustomRolesHelper
             CustomRoles.Overclocked or
             CustomRoles.Stubborn or
             CustomRoles.EvilSpirit or
+            CustomRoles.Oiiai or
             CustomRoles.Influenced;
     }
     
@@ -1462,6 +1463,7 @@ static class CustomRolesHelper
 
             case CustomRoles.Loyal:
                 if (pc.Is(CustomRoles.Madmate) 
+                    || pc.Is(CustomRoles.Oiiai)
                     || pc.Is(CustomRoles.GuardianAngelTOHE)
                     || pc.Is(CustomRoles.Influenced)
                     || pc.Is(CustomRoles.NiceMini)
@@ -1520,6 +1522,12 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Brakar))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Influenced.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Influenced.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Influenced.CanBeOnImp.GetBool()))
+                    return false;
+                break;
+
+            case CustomRoles.Oiiai:
+                if (pc.Is(CustomRoles.Loyal)) return false;
+                if ((pc.GetCustomRole().IsNeutral() && !Oiiai.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsCrewmate() && !Oiiai.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Oiiai.CanBeOnImp.GetBool()))
                     return false;
                 break;
         }

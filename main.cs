@@ -230,8 +230,9 @@ public class Main : BasePlugin
     public static Dictionary<byte, List<string>> AwareInteracted = new();
     public static byte ShamanTarget = byte.MaxValue;
     public static bool ShamanTargetChoosen = false;
+    
+    public static Dictionary<byte, CustomRoles> ErasedRoleStorage = new();
     public static Dictionary<string, int> PlayerQuitTimes = new();
-
 
     public static IEnumerable<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null);
     public static IEnumerable<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId));
@@ -553,8 +554,9 @@ public class Main : BasePlugin
                 {CustomRoles.Circumvent, "#ff1919"},
                 {CustomRoles.Nimble, "#FFFAA6"},
                 {CustomRoles.Repairman, "#3333ff"},
+                {CustomRoles.Cyber, "#F46F4E" },
+                {CustomRoles.Oiiai, "#2bdb2b" },
                 {CustomRoles.Influenced, "#b0006a"},
-                {CustomRoles.Cyber, "#F46F4E"},
 
              //   {CustomRoles.QuickFix, "#3333ff"},
 
@@ -911,6 +913,7 @@ public enum CustomRoles
     Cyber,
     Stubborn,
     Overclocked,
+    Oiiai,
     Influenced
     // QuickFix
 }

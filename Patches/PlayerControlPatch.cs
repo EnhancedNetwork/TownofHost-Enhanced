@@ -15,6 +15,7 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
+using TOHE.Roles.AddOns.Common;
 
 namespace TOHE;
 
@@ -1382,6 +1383,11 @@ class MurderPlayerPatch
                 rp.SetRealKiller(target);
                 rp.RpcMurderPlayerV3(rp);
             }
+        }
+
+        if (target.Is(CustomRoles.Oiiai))
+        {
+            Oiiai.OnMurderPlayer(killer, target);
         }
 
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Mediumshiper)))
@@ -2895,7 +2901,8 @@ class FixedUpdatePatch
                                     Logger.Info($"记录击杀冷却{Main.EvilMiniKillcooldownf}", "Mini");
                                     Main.AllPlayerKillCooldown[player.PlayerId] = Main.EvilMiniKillcooldownf;
                                     Main.EvilMiniKillcooldown[player.PlayerId] = Main.EvilMiniKillcooldownf;
-                                    player.MarkDirtySettings();
+                                    player.ResetKillCooldown();
+                                    player.SetKillCooldown();
                                     Mini.Age += 1;
                                     Mini.GrowUpTime = 0;
                                     Logger.Info($"年龄增加1", "Mini");
@@ -2903,8 +2910,8 @@ class FixedUpdatePatch
                                     if (Mini.UpDateAge.GetBool())
                                     {
                                         Mini.SendRPC();
-                                        Utils.NotifyRoles();
                                         if (player.Is(CustomRoles.EvilMini)) player.Notify(GetString("MiniUp"));
+                                        Utils.NotifyRoles();
                                     }
                                     Logger.Info($"重置击杀冷却{Main.EvilMiniKillcooldownf - 1f}", "Mini");
                                 }

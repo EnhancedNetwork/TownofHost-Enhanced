@@ -75,6 +75,7 @@ internal class ChangeRoleSettings
             Main.MedusaBodies = new();
             Main.InfectedBodies = new();
             Main.VirusNotify = new();
+            Main.ErasedRoleStorage = new();
 
             Main.LastEnteredVent = new();
             Main.LastEnteredVentLocation = new();
@@ -321,6 +322,7 @@ internal class ChangeRoleSettings
             Mini.Init();
             Blackmailer.Init();
             Spy.Init();
+            Oiiai.Init();
             FFF.Init();
             
             CustomWinnerHolder.Reset();
@@ -638,9 +640,6 @@ internal class SelectRolesPatch
                     case CustomRoles.SabotageMaster:
                         SabotageMaster.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Repairman:
-                        Repairman.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.EvilTracker:
                         EvilTracker.Add(pc.PlayerId);
                         break;
@@ -933,6 +932,13 @@ internal class SelectRolesPatch
                             Main.AwareInteracted[pc.PlayerId] = new();
                             break;
                         // ここに属性のAddを追加
+                        case CustomRoles.Repairman:
+                            Repairman.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.Oiiai:
+                            Oiiai.Add(pc.PlayerId);
+                            break;
+
                         default:
                             break;
                     }

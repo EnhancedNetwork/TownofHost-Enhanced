@@ -214,7 +214,12 @@ static class ExtendedPlayerControl
     public static void SetKillCooldown(this PlayerControl player, float time = -1f, PlayerControl target = null, bool forceAnime = false)
     {
         if (player == null) return;
-        if (!player.CanUseKillButton()) return;
+        if (!Main.ErasedRoleStorage.ContainsKey(player.PlayerId))
+        {
+            if (!player.CanUseKillButton()) return;
+        }
+        else if (!HasKillButton(role: Main.ErasedRoleStorage[player.PlayerId]))
+            return;
         if (target == null) target = player;
         if (time >= 0f) Main.AllPlayerKillCooldown[player.PlayerId] = time * 2;
         else Main.AllPlayerKillCooldown[player.PlayerId] *= 2;
@@ -558,11 +563,15 @@ static class ExtendedPlayerControl
             _ => pc.Is(CustomRoleTypes.Impostor),
         };
     }
-    public static bool HasKillButton(this PlayerControl pc)
+    public static bool HasKillButton(PlayerControl pc = null, CustomRoles role = new())
     {
-        if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
+        if (pc != null)
+        {
+            if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
+            role = pc.GetCustomRole();
+        }
 
-        return pc.GetCustomRole() switch
+        return role switch
         {
             CustomRoles.FireWorks => true,
             CustomRoles.Mafia => true,
@@ -1155,16 +1164,20 @@ static class ExtendedPlayerControl
                     {
                         Main.AllPlayerKillCooldown[player.PlayerId] = Main.EvilMiniKillcooldownf;
                         Main.EvilMiniKillcooldown[player.PlayerId] = Main.EvilMiniKillcooldownf;
-                        player.MarkDirtySettings();
                     }
                     else if (pc.Is(CustomRoles.EvilMini) && Mini.Age == 18)
                     {                      
                         Main.AllPlayerKillCooldown[player.PlayerId] = Mini.MajorCD.GetFloat();
-                        player.MarkDirtySettings();
-                        player.SyncSettings();
                     }
                 }
                 break;
+            case CustomRoles.CrewmateTOHE:
+            case CustomRoles.EngineerTOHE:
+            case CustomRoles.ScientistTOHE:
+            case CustomRoles.GuardianAngelTOHE:
+                Main.AllPlayerKillCooldown[player.PlayerId] = 300f;
+                break;
+                //Vanilla imp and ss is done at the beginning of the function
         }
         if (player.PlayerId == LastImpostor.currentId)
             LastImpostor.SetKillCooldown();
