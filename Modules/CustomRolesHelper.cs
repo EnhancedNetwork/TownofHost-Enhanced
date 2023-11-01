@@ -319,7 +319,7 @@ static class CustomRolesHelper
             CustomRoles.Overclocked or
             CustomRoles.Stubborn or
             CustomRoles.EvilSpirit or
-            CustomRoles.Oiiai;
+            CustomRoles.Oiiai or
             CustomRoles.Influenced;
     }
     
