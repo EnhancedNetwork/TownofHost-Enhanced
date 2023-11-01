@@ -1,18 +1,18 @@
 ﻿using HarmonyLib;
 using Hazel;
-using TMPro;
 using System;
-using UnityEngine;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
+using TMPro;
 using TOHE.Modules;
-using TOHE.Roles.Crewmate;
-using TOHE.Roles.Neutral;
-using TOHE.Roles.AddOns.Common;
-using static TOHE.Translator;
-using TOHE.Roles.Double;
 using TOHE.Modules.ChatManager;
+using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.Crewmate;
+using TOHE.Roles.Double;
+using TOHE.Roles.Neutral;
+using UnityEngine;
+using static TOHE.Translator;
 
 namespace TOHE;
 

@@ -1,12 +1,12 @@
+using AmongUs.GameOptions;
 using Hazel;
-using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TOHE.Roles.Crewmate;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
-using TOHE.Roles.Crewmate;
-using AmongUs.GameOptions;
 namespace TOHE.Roles.Neutral;
 
 public static class HexMaster

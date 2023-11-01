@@ -1,8 +1,8 @@
-﻿using Hazel;
+﻿using AmongUs.GameOptions;
+using Hazel;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using AmongUs.GameOptions;
-using System.Collections.Generic;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;

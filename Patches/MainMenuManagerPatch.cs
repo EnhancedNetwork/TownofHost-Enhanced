@@ -1,13 +1,13 @@
-using TMPro;
-using System;
 using HarmonyLib;
-using UnityEngine;
-using System.Linq;
-using UnityEngine.UI;
+using System;
 using System.Collections.Generic;
-using Object = UnityEngine.Object;
-using static TOHE.Translator;
+using System.Linq;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 using static TOHE.Credentials;
+using static TOHE.Translator;
+using Object = UnityEngine.Object;
 
 namespace TOHE;
 
