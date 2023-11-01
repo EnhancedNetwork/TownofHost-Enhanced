@@ -64,6 +64,17 @@ namespace TOHE.Roles.AddOns.Common
                 Logger.Info(killer.GetNameWithRole() + " gets Oiiai addon by " + target.GetNameWithRole(), "Oiiai");
             }
 
+            if (!Main.ErasedRoleStorage.ContainsKey(killer.PlayerId))
+            {
+                Main.ErasedRoleStorage.Add(killer.PlayerId, killer.GetCustomRole());
+                Logger.Info($"Added {killer.GetNameWithRole} to ErasedRoleStorage", "Oiiai");
+            }
+            else
+            {
+                Logger.Info($"Canceled {killer.GetNameWithRole} Oiiai bcz already erased.", "Oiiai");
+                return;
+            }
+
             if (!killer.GetCustomRole().IsNK())
             {
                 //Use eraser here LOL
@@ -74,11 +85,11 @@ namespace TOHE.Roles.AddOns.Common
                 //Typically only NK tiggers this
                 killer.RpcSetCustomRole(NRoleChangeRoles[ChangeNeutralRole.GetValue() - 1]);
             }
-            killer.MarkDirtySettings();
+            killer.ResetKillCooldown();
+            killer.SetKillCooldown();
             killer.Notify(GetString("LostRoleByOiiai"));
             Logger.Info($"{killer.GetRealName()} was OIIAIed", "Oiiai");
         }
-
         private static bool CanGetOiiaied(PlayerControl player)
         {
             if (player.GetCustomRole().IsNK() && ChangeNeutralRole.GetValue() == 0) return false;

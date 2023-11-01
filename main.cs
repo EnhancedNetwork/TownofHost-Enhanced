@@ -228,7 +228,7 @@ public class Main : BasePlugin
     public static byte ShamanTarget = byte.MaxValue;
     public static bool ShamanTargetChoosen = false;
 
-
+    public static Dictionary<byte, CustomRoles> ErasedRoleStorage = new();
 
     public static IEnumerable<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null);
     public static IEnumerable<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId));

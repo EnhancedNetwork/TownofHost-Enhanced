@@ -111,17 +111,6 @@ class CheckMurderPatch
             Logger.Info("In the meeting, the kill was canceled", "CheckMurder");
             return false;
         }
-       
-        switch (killer.GetCustomRole())
-        {
-            case CustomRoles.CrewmateTOHE:
-            case CustomRoles.EngineerTOHE:
-            case CustomRoles.ScientistTOHE:
-            case CustomRoles.GuardianAngelTOHE:
-                killer.SetKillCooldown(300f);
-                Logger.Info($"{killer.GetNameWithRole} commited murder as crew. Are they erased?", "CheckMurder");
-                return false;
-        }
 
         var divice = 2000f;
         float minTime = Mathf.Max(0.02f, AmongUsClient.Instance.Ping / divice * 6f); //Ping value is milliseconds (ms), so ÷ 2000
@@ -2873,7 +2862,8 @@ class FixedUpdatePatch
                                     Logger.Info($"记录击杀冷却{Main.EvilMiniKillcooldownf}", "Child");
                                     Main.AllPlayerKillCooldown[player.PlayerId] = Main.EvilMiniKillcooldownf;
                                     Main.EvilMiniKillcooldown[player.PlayerId] = Main.EvilMiniKillcooldownf;
-                                    player.MarkDirtySettings();
+                                    player.ResetKillCooldown();
+                                    player.SetKillCooldown();
                                     Mini.Age += 1;
                                     Mini.GrowUpTime = 0;
                                     Logger.Info($"年龄增加1", "Child");
@@ -2881,6 +2871,7 @@ class FixedUpdatePatch
                                     if (Mini.UpDateAge.GetBool())
                                     {
                                         if (player.Is(CustomRoles.EvilMini)) player.Notify(GetString("MiniUp"));
+                                        Utils.NotifyRoles();
                                     }
                                     Logger.Info($"重置击杀冷却{Main.EvilMiniKillcooldownf - 1f}", "Child");
                                 }

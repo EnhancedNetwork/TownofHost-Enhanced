@@ -1097,6 +1097,7 @@ internal class ChatCommands
         foreach (var rl in CustomRolesHelper.AllRoles)
         {
             if (rl.IsVanilla()) continue;
+            if (rl == CustomRoles.Mini) continue;
             var roleName = GetString(rl.ToString());
             if (role == roleName.ToLower().Trim().TrimStart('*').Replace(" ", string.Empty))
             {
