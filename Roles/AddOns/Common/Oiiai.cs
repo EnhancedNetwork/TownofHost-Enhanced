@@ -67,11 +67,11 @@ namespace TOHE.Roles.AddOns.Common
             if (!Main.ErasedRoleStorage.ContainsKey(killer.PlayerId))
             {
                 Main.ErasedRoleStorage.Add(killer.PlayerId, killer.GetCustomRole());
-                Logger.Info($"Added {killer.GetNameWithRole} to ErasedRoleStorage", "Oiiai");
+                Logger.Info($"Added {killer.GetNameWithRole()} to ErasedRoleStorage", "Oiiai");
             }
             else
             {
-                Logger.Info($"Canceled {killer.GetNameWithRole} Oiiai bcz already erased.", "Oiiai");
+                Logger.Info($"Canceled {killer.GetNameWithRole()} Oiiai bcz already erased.", "Oiiai");
                 return;
             }
 

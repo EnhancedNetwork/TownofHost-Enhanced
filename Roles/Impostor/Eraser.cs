@@ -115,11 +115,11 @@ internal static class Eraser
             if (!Main.ErasedRoleStorage.ContainsKey(player.PlayerId))
             {
                 Main.ErasedRoleStorage.Add(player.PlayerId, player.GetCustomRole());
-                Logger.Info($"Added {player.GetNameWithRole} to ErasedRoleStorage", "Eraser");
+                Logger.Info($"Added {player.GetNameWithRole()} to ErasedRoleStorage", "Eraser");
             }
             else
             {
-                Logger.Info($"Canceled {player.GetNameWithRole} Eraser bcz already erased.", "Eraser");
+                Logger.Info($"Canceled {player.GetNameWithRole()} Eraser bcz already erased.", "Eraser");
                 return;
             }
             player.RpcSetCustomRole(CustomRolesHelper.GetErasedRole(player.GetCustomRole().GetRoleTypes(), player.GetCustomRole()));
