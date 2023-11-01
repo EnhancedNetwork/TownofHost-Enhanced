@@ -128,10 +128,6 @@ internal class ChatCommands
                     canceled = true;
                     Utils.ShowLastRoles();
                     break;
-                case "/shapeshifter":
-                    canceled = true;
-                    player.Object.RpcSetRole(RoleTypes.Shapeshifter);
-                    break;
 
                 case "/rn":
                 case "/rename":
@@ -210,14 +206,11 @@ internal class ChatCommands
                     ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Admin, 0);
                     break;
 
-               case "/r":
-                if (player.FriendCode.GetDevUser().IsUp)
-                 {
-                  canceled = true;
-                 }
-                  subArgs = text.Remove(0, 2);
-                  SendRolesInfo(subArgs, player.PlayerId, player.FriendCode.GetDevUser().DeBug);
-                break;
+                case "/r":
+                    canceled = true;
+                    subArgs = text.Remove(0, 2);
+                    SendRolesInfo(subArgs, 255, PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug);
+                    break;
 
                 case "/up":
                     canceled = true;
