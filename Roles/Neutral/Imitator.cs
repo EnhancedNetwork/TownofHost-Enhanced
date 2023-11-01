@@ -156,12 +156,30 @@ public static class Imitator
                     Amnesiac.Add(killer.PlayerId);
                     break;
             }
+
+        }
+        else if (role.IsCrewmate())
+        {
+            RememberLimit[killer.PlayerId]--;
+            SendRPC(killer.PlayerId);
+            killer.RpcSetCustomRole(CustomRoles.Sheriff);
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedCrewmate")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
+        }
+        else if (role.IsImpostor())
+        {
+            RememberLimit[killer.PlayerId]--;
+            SendRPC(killer.PlayerId);
+            killer.RpcSetCustomRole(CustomRoles.Refugee);
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedImpostor")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
         }
 
         var killerRole = killer.GetCustomRole();
 
         if (killerRole != CustomRoles.Imitator)
         {
+            killer.ResetKillCooldown();
             killer.SetKillCooldown(forceAnime: true);
 
             Logger.Info("Imitator remembered: " + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString(), "Imitator Assign");
