@@ -75,6 +75,7 @@ internal class ChangeRoleSettings
             Main.MedusaBodies = new();
             Main.InfectedBodies = new();
             Main.VirusNotify = new();
+            Main.ErasedRoleStorage = new();
 
             Main.LastEnteredVent = new();
             Main.LastEnteredVentLocation = new();
