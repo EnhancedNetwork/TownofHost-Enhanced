@@ -2,10 +2,10 @@ using Hazel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Modules.ChatManager;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
-using TOHE.Modules.ChatManager;
 
 namespace TOHE.Roles.Crewmate;
 public static class ParityCop
