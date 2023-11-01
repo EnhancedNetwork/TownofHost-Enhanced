@@ -109,7 +109,7 @@ public static class Imitator
                     BloodKnight.Add(killer.PlayerId);
                     break;
                 case CustomRoles.Sheriff:
-                    BloodKnight.Add(killer.PlayerId);
+                    Sheriff.Add(killer.PlayerId);
                     break;
             }
 
@@ -163,6 +163,7 @@ public static class Imitator
             RememberLimit[killer.PlayerId]--;
             SendRPC(killer.PlayerId);
             killer.RpcSetCustomRole(CustomRoles.Sheriff);
+            Sheriff.Add(killer.PlayerId);
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedCrewmate")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
         }
