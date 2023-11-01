@@ -1244,12 +1244,12 @@ internal class ChatCommands
                     if (!player.FriendCode.GetDevUser().IsUp) break;
                     if (!Options.EnableUpMode.GetBool())
                     {
-                        Utils.SendMessage(string.Format(GetString("Message.YTPlanDisabled"), GetString("EnableYTPlan")), Player.PlayerId);
+                        Utils.SendMessage(string.Format(GetString("Message.YTPlanDisabled"), GetString("EnableYTPlan")), player.PlayerId);
                         break;
                     }
                     if (!GameStates.IsLobby)
                     {
-                        Utils.SendMessage(GetString("Message.OnlyCanUseInLobby"), Player.PlayerId);
+                        Utils.SendMessage(GetString("Message.OnlyCanUseInLobby"), player.PlayerId);
                         break;
                     }
                     SendRolesInfo(subArgs, Player.PlayerId, isUp: true);
@@ -1291,7 +1291,7 @@ internal class ChatCommands
                 }
                 if (!GameStates.IsLobby)
                 {
-                    Utils.SendMessage(GetString("Message.OnlyCanUseInLobby"), Player.PlayerId);
+                    Utils.SendMessage(GetString("Message.OnlyCanUseInLobby"), player.PlayerId);
                     break;
                 }
 
