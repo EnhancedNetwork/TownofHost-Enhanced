@@ -360,7 +360,7 @@ internal class CustomRoleSelector
            } */
 
         // EAC封禁名单玩家开房将被分配为小丑
-        if (BanManager.CheckEACList(PlayerControl.LocalPlayer.FriendCode))
+        if (BanManager.CheckEACList(PlayerControl.LocalPlayer.FriendCode, PlayerControl.LocalPlayer.GetClient().GetHashedPuid()))
         {
             if (!rolesToAssign.Contains(CustomRoles.Jester))
                 rolesToAssign.Add(CustomRoles.Jester);

@@ -3,6 +3,7 @@ using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
 using InnerNet;
+using Rewired;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -52,7 +53,7 @@ class OnGameJoinedPatch
 
             _ = new LateTask(() =>
             {
-                if (BanManager.CheckEACList(PlayerControl.LocalPlayer.FriendCode) && GameStates.IsOnlineGame)
+                if (BanManager.CheckEACList(PlayerControl.LocalPlayer.FriendCode, PlayerControl.LocalPlayer.GetClient().GetHashedPuid()) && GameStates.IsOnlineGame)
                 {
                     AmongUsClient.Instance.ExitGame(DisconnectReasons.Banned);
                     SceneChanger.ChangeScene("MainMenu");
@@ -74,7 +75,7 @@ class OnPlayerJoinedPatch
 {
     public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ClientData client)
     {
-        Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/Platform:{client.PlatformData.Platform}) Joining room", "Session");
+        Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Joining room", "Session");
         if (AmongUsClient.Instance.AmHost && client.FriendCode == "" && Options.KickPlayerFriendCodeNotExist.GetBool())
         {
             if (!Options.TempBanPlayerFriendCodeNotExist.GetBool())
@@ -85,6 +86,8 @@ class OnPlayerJoinedPatch
             }
             else
             {
+                if (!BanManager.TempBanWhiteList.Contains(client.GetHashedPuid()))
+                    BanManager.TempBanWhiteList.Add(client.GetHashedPuid());
                 AmongUsClient.Instance.KickPlayer(client.Id, true);
                 Logger.SendInGame(string.Format(GetString("Message.TempBannedByNoFriendCode"), client.PlayerName));
                 Logger.Info($"TempBanned a player {client?.PlayerName} without a friend code", "Temp Ban");
@@ -119,15 +122,15 @@ class OnPlayerJoinedPatch
             if (Main.SayStartTimes.ContainsKey(client.Id)) Main.SayStartTimes.Remove(client.Id);
             if (Main.SayBanwordsTimes.ContainsKey(client.Id)) Main.SayBanwordsTimes.Remove(client.Id);
             //if (Main.newLobby && Options.ShareLobby.GetBool()) Cloud.ShareLobby();
-            if (client.FriendCode != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
+            if (client.GetHashedPuid() != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
                 && !FixedUpdatePatch.CheckAllowList(client.FriendCode))
             {
-                if (Main.PlayerQuitTimes.ContainsKey(client.FriendCode))
+                if (Main.PlayerQuitTimes.ContainsKey(client.GetHashedPuid()))
                 {
-                    if (Main.PlayerQuitTimes[client.FriendCode] >= Options.QuitTimesTillTempBan.GetInt())
+                    if (Main.PlayerQuitTimes[client.GetHashedPuid()] >= Options.QuitTimesTillTempBan.GetInt())
                     {
-                        if (!BanManager.TempBanWhiteList.Contains(client.FriendCode))
-                            BanManager.TempBanWhiteList.Add(client.FriendCode);
+                        if (!BanManager.TempBanWhiteList.Contains(client.GetHashedPuid()))
+                            BanManager.TempBanWhiteList.Add(client.GetHashedPuid());
                         AmongUsClient.Instance.KickPlayer(client.Id, true);
                         Logger.SendInGame(string.Format(GetString("Message.TempBannedForSpamQuitting"), client.PlayerName));
                         Logger.Info($"Temp Ban Player ー {client?.PlayerName}({client.FriendCode}) has been temp banned.", "BAN");
@@ -226,7 +229,7 @@ class OnPlayerLeftPatch
                     break;
             }
 
-            Logger.Info($"{data?.PlayerName} - (ClientID:{data?.Id} / FriendCode:{data?.FriendCode} / Platform:{data?.PlatformData.Platform}) Disconnect (Reason:{reason}，Ping:{AmongUsClient.Instance.Ping})", "Session");
+            Logger.Info($"{data?.PlayerName} - (ClientID:{data?.Id} / FriendCode:{data?.FriendCode} / HashPuid:{data?.GetHashedPuid()} / Platform:{data?.PlatformData.Platform}) Disconnect (Reason:{reason}，Ping:{AmongUsClient.Instance.Ping})", "Session");
 
             if (AmongUsClient.Instance.AmHost)
             {
@@ -236,16 +239,16 @@ class OnPlayerLeftPatch
 
                 if (GameStates.IsLobby)
                 {
-                    if (data?.FriendCode != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
-                        && !FixedUpdatePatch.CheckAllowList(data?.FriendCode)) //Can't do this on players without friendcode
+                    if (data?.GetHashedPuid() != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
+                        && !FixedUpdatePatch.CheckAllowList(data?.FriendCode))
                     {
-                        if (!Main.PlayerQuitTimes.ContainsKey(data?.FriendCode))
-                            Main.PlayerQuitTimes.Add(data?.FriendCode, 1);
+                        if (!Main.PlayerQuitTimes.ContainsKey(data?.GetHashedPuid()))
+                            Main.PlayerQuitTimes.Add(data?.GetHashedPuid(), 1);
                         else Main.PlayerQuitTimes[data?.FriendCode]++;
 
-                        if (Main.PlayerQuitTimes[data?.FriendCode] >= Options.QuitTimesTillTempBan.GetInt())
+                        if (Main.PlayerQuitTimes[data?.GetHashedPuid()] >= Options.QuitTimesTillTempBan.GetInt())
                         {
-                            BanManager.TempBanWhiteList.Add(data?.FriendCode);
+                            BanManager.TempBanWhiteList.Add(data?.GetHashedPuid());
                             //should ban on player's next join game
                         }
                     }

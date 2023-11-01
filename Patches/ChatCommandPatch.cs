@@ -472,7 +472,8 @@ internal class ChatCommands
 
                     string moderatorFriendCode1 = PlayerControl.LocalPlayer.FriendCode.ToString();
                     string warnedPlayerFriendCode = warnedPlayer.FriendCode.ToString();
-                    string logMessage1 = $"[{DateTime.Now}] {moderatorFriendCode1},{modLogname1} Warned: {warnedPlayerFriendCode},{warnlogname} Reason: {warnReason}";
+                    string warnedPlayerHashPuid = warnedPlayer.GetClient().GetHashedPuid();
+                    string logMessage1 = $"[{DateTime.Now}] {moderatorFriendCode1},{modLogname1} Warned: {warnedPlayerFriendCode},{warnedPlayerHashPuid},{warnlogname} Reason: {warnReason}";
                     File.AppendAllText(modLogFiles, logMessage1 + Environment.NewLine);
 
                     break;
@@ -524,7 +525,8 @@ internal class ChatCommands
 
                     string moderatorFriendCode2 = PlayerControl.LocalPlayer.FriendCode.ToString();
                     string kickedPlayerFriendCode = kickedPlayer.FriendCode.ToString();
-                    string logMessage2 = $"[{DateTime.Now}] {moderatorFriendCode2},{modLogname2} Kicked: {kickedPlayerFriendCode},{kicklogname} Reason: {kickReason}";
+                    string kickedPlayerHashPuid = kickedPlayer.GetClient().GetHashedPuid();
+                    string logMessage2 = $"[{DateTime.Now}] {moderatorFriendCode2},{modLogname2} Kicked: {kickedPlayerFriendCode},{kickedPlayerHashPuid},{kicklogname} Reason: {kickReason}";
                     File.AppendAllText(modLogFiles, logMessage2 + Environment.NewLine);
 
                     break;
@@ -1490,7 +1492,8 @@ internal class ChatCommands
                 string banlogname = Main.AllPlayerNames.TryGetValue(bannedPlayer.PlayerId, out var n11) ? n11 : "";
                 string moderatorFriendCode = player.FriendCode.ToString();
                 string bannedPlayerFriendCode = bannedPlayer.FriendCode.ToString();
-                string logMessage = $"[{DateTime.Now}] {moderatorFriendCode},{modLogname} Banned: {bannedPlayerFriendCode},{banlogname} Reason: {banReason}";
+                string bannedPlayerHashPuid = bannedPlayer.GetClient().GetHashedPuid();
+                string logMessage = $"[{DateTime.Now}] {moderatorFriendCode},{modLogname} Banned: {bannedPlayerFriendCode},{bannedPlayerHashPuid},{banlogname} Reason: {banReason}";
                 File.AppendAllText(modLogFiles, logMessage + Environment.NewLine);
                 break;
             case "/warn":
@@ -1551,7 +1554,8 @@ internal class ChatCommands
                 string warnlogname = Main.AllPlayerNames.TryGetValue(warnedPlayer.PlayerId, out var n12) ? n12 : "";
                 string moderatorFriendCode1 = player.FriendCode.ToString();
                 string warnedPlayerFriendCode = warnedPlayer.FriendCode.ToString();
-                string logMessage1 = $"[{DateTime.Now}] {moderatorFriendCode1},{modLogname1} Warned: {warnedPlayerFriendCode},{warnlogname} Reason: {warnReason}";
+                string warnedPlayerHashPuid = warnedPlayer.GetClient().GetHashedPuid();
+                string logMessage1 = $"[{DateTime.Now}] {moderatorFriendCode1},{modLogname1} Warned: {warnedPlayerFriendCode},{warnedPlayerHashPuid},{warnlogname} Reason: {warnReason}";
                 File.AppendAllText(modLogFiles, logMessage1 + Environment.NewLine);
 
                 break;
@@ -1622,7 +1626,8 @@ internal class ChatCommands
 
                 string moderatorFriendCode2 = player.FriendCode.ToString();
                 string kickedPlayerFriendCode = kickedPlayer.FriendCode.ToString();
-                string logMessage2 = $"[{DateTime.Now}] {moderatorFriendCode2},{modLogname2} Kicked: {kickedPlayerFriendCode},{kicklogname} Reason: {kickReason}";
+                string kickedPlayerHashPuid = kickedPlayer.GetClient().GetHashedPuid();
+                string logMessage2 = $"[{DateTime.Now}] {moderatorFriendCode2},{modLogname2} Kicked: {kickedPlayerFriendCode},{kickedPlayerHashPuid},{kicklogname} Reason: {kickReason}";
                 File.AppendAllText(modLogFiles, logMessage2 + Environment.NewLine);
 
                 break;

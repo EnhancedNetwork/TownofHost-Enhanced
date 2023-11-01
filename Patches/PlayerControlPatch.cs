@@ -2417,10 +2417,10 @@ class FixedUpdatePatch
                             }
                             else
                             {
-                                if (player.Data.FriendCode != "")
+                                if (player.GetClient().ProductUserId != "")
                                 {
-                                    if (!BanManager.TempBanWhiteList.Contains(player.Data.FriendCode))
-                                        BanManager.TempBanWhiteList.Add(player.Data.FriendCode);
+                                    if (!BanManager.TempBanWhiteList.Contains(player.GetClient().ProductUserId))
+                                        BanManager.TempBanWhiteList.Add(player.GetClient().ProductUserId);
                                 }
                                 string msg = string.Format(GetString("TempBannedBecauseLowLevel"), player.GetRealName().RemoveHtmlTags());
                                 Logger.SendInGame(msg);
