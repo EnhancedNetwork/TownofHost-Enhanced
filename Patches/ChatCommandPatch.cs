@@ -2,18 +2,18 @@ using Assets.CoreScripts;
 using HarmonyLib;
 using Hazel;
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
+using TOHE.Modules.ChatManager;
 using TOHE.Roles.Crewmate;
-using UnityEngine;
-using static TOHE.Translator;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using TOHE.Modules.ChatManager;
+using UnityEngine;
+using static TOHE.Translator;
 
 
 namespace TOHE;
@@ -152,7 +152,7 @@ internal class ChatCommands
                     canceled = true;
                     subArgs = args.Length < 2 ? "" : args[1];
                     Utils.SendMessage(string.Format(GetString("Message.SetLevel"), subArgs), PlayerControl.LocalPlayer.PlayerId);
-                    int.TryParse(subArgs, out int input);
+                    _ = int.TryParse(subArgs, out int input);
                     if (input is < 1 or > 999)
                     {
                         Utils.SendMessage(GetString("Message.AllowLevelRange"), PlayerControl.LocalPlayer.PlayerId);
@@ -1104,6 +1104,7 @@ internal class ChatCommands
         foreach (var rl in CustomRolesHelper.AllRoles)
         {
             if (rl.IsVanilla()) continue;
+            if (rl == CustomRoles.Mini) continue;
             var roleName = GetString(rl.ToString());
             if (role == roleName.ToLower().Trim().TrimStart('*').Replace(" ", string.Empty))
             {

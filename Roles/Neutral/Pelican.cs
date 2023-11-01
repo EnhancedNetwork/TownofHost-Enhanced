@@ -1,10 +1,10 @@
-﻿using Hazel;
+﻿using AmongUs.GameOptions;
+using Hazel;
 using System.Collections.Generic;
 using System.Linq;
-using AmongUs.GameOptions;
 using TOHE.Roles.Crewmate;
-using UnityEngine;
 using TOHE.Roles.Double;
+using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;

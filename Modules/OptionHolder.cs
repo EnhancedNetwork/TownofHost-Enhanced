@@ -1,18 +1,16 @@
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using HarmonyLib;
-using UnityEngine;
-
 using TOHE.Modules;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
+using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using TOHE.Roles.Double;
-using TOHE.Roles.AddOns.Common;
+using UnityEngine;
 
 namespace TOHE;
 
@@ -109,7 +107,9 @@ public static class Options
         "CamouflageMode.Lauryn",
         "CamouflageMode.Moe",
         "CamouflageMode.Pyro",
-        "CamouflageMode.ryuk"
+        "CamouflageMode.ryuk",
+        "CamouflageMode.Gurge44",
+        "CamouflageMode.TommyXL"
     };
 
     // 各役職の詳細設定
@@ -2329,6 +2329,8 @@ public static class Options
         NeutralCanBeVoidBallot = BooleanOptionItem.Create(36432, "NeutralCanBeVoidBallot", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.VoidBallot]);
 
+        Influenced.SetupCustomOption();
+
         TextOptionItem.Create(100030, "RoleType.Mixed", TabGroup.Addons) // MIXED
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 154, 206, byte.MaxValue));
@@ -2397,7 +2399,7 @@ public static class Options
         NeutralCanBeGuesser = BooleanOptionItem.Create(19112, "NeutralCanBeGuesser", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Guesser]);
         GCanGuessAdt = BooleanOptionItem.Create(19116, "GCanGuessAdt", false, TabGroup.Addons, false)
-    .SetParent(CustomRoleSpawnChances[CustomRoles.Guesser]);
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Guesser]);
         GCanGuessTaskDoneSnitch = BooleanOptionItem.Create(19117, "GCanGuessTaskDoneSnitch", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Guesser]);
         GTryHideMsg = BooleanOptionItem.Create(19118, "GuesserTryHideMsg", true, TabGroup.Addons, false)
@@ -2636,8 +2638,7 @@ public static class Options
         NeutralCanBeFool = BooleanOptionItem.Create(19212, "NeutralCanBeFool", true, TabGroup.OtherRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Fool]);
 
-
-
+        Oiiai.SetupCustomOptions();
         #endregion
 
         #region System Settings

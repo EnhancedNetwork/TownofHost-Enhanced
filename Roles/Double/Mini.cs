@@ -1,13 +1,6 @@
-using HarmonyLib;
 using Hazel;
-using MS.Internal.Xml.XPath;
-using Sentry;
 using System.Collections.Generic;
-using System.Linq;
-using TOHE.Roles.Neutral;
 using UnityEngine;
-using static TOHE.RandomSpawn;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Double;
 public class Mini
