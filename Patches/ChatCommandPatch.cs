@@ -1250,19 +1250,19 @@ internal class ChatCommands
                 subArgs = args.Length < 2 ? "" : args[1];
                 switch (subArgs)
                 {
-                        case "r":
-                        case "roles":
-                        case "funções":
-                            Utils.ShowActiveRoles(player.PlayerId);
-                            break;
-                        case "a":
-                        case "all":
-                        case "tudo":
-                            Utils.ShowAllActiveSettings(player.PlayerId);
-                            break;
-                        default:
-                            Utils.ShowActiveSettings(player.PlayerId);
-                            break;
+                    case "r":
+                    case "roles":
+                    case "funções":
+                        Utils.ShowActiveRoles(player.PlayerId);
+                        break;
+                    case "a":
+                    case "all":
+                    case "tudo":
+                        Utils.ShowAllActiveSettings(player.PlayerId);
+                        break;
+                    default:
+                        Utils.ShowActiveSettings(player.PlayerId);
+                        break;
                 }
                 break;
 
