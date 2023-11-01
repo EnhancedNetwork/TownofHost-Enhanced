@@ -50,7 +50,7 @@ public static class Camouflage
         switch (Options.KPDCamouflageMode.GetValue())
         { 
             case 0: // Default
-                CamouflageOutfit = new GameData.PlayerOutfit ()
+                CamouflageOutfit = new GameData.PlayerOutfit()
                     .Set("", 15, "", "", "", "", "");
                 break;
 
