@@ -210,14 +210,14 @@ internal class ChatCommands
                     ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Admin, 0);
                     break;
 
-                case "/r":
-                    if (player.FriendCode.GetDevUser().IsUp)
-                    {
-                     canceled = true;
-                    }
-                    subArgs = text.Remove(0, 2);
-                    SendRolesInfo(subArgs, 255, PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug);
-                    break;
+               case "/r":
+                if (player.FriendCode.GetDevUser().IsUp)
+                 {
+                  canceled = true;
+                 }
+                  subArgs = text.Remove(0, 2);
+                  SendRolesInfo(subArgs, player.PlayerId, player.FriendCode.GetDevUser().DeBug);
+                break;
 
                 case "/up":
                     canceled = true;
