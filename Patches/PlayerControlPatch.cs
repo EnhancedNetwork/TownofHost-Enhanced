@@ -2910,7 +2910,6 @@ class FixedUpdatePatch
                                     if (Mini.UpDateAge.GetBool())
                                     {
                                         Mini.SendRPC();
-                                        Utils.NotifyRoles();
                                         if (player.Is(CustomRoles.EvilMini)) player.Notify(GetString("MiniUp"));
                                         Utils.NotifyRoles();
                                     }
