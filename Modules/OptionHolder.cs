@@ -107,7 +107,9 @@ public static class Options
         "CamouflageMode.Lauryn",
         "CamouflageMode.Moe",
         "CamouflageMode.Pyro",
-        "CamouflageMode.ryuk"
+        "CamouflageMode.ryuk",
+        "CamouflageMode.Gurge44",
+        "CamouflageMode.TommyXL"
     };
 
     // 各役職の詳細設定

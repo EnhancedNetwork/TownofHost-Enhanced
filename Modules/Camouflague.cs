@@ -78,9 +78,19 @@ public static class Camouflage
                 CamouflageOutfit = new GameData.PlayerOutfit()
                     .Set("", 17, "hat_pkHW01_Witch", "skin_greedygrampaskin", "visor_Plsno", "pet_Pusheen", "");
                 break;
+
             case 6: // ryuk
                 CamouflageOutfit = new GameData.PlayerOutfit()
                     .Set("", 7, "hat_crownDouble", "skin_D2Saint14", "visor_anime", "pet_Bush", "");
+                break;
+
+            case 7: // Gurge44
+                CamouflageOutfit = new GameData.PlayerOutfit()
+                    .Set("", 7, "hat_pk04_Snowman", "", "", "", "");
+                break;
+            case 8: // TommyXL
+                CamouflageOutfit = new GameData.PlayerOutfit()
+                    .Set("", 17, "hat_baseball_Black", "skin_Scientist-Darkskin", "visor_pusheenSmileVisor", "pet_Pip", "");
                 break;
         }
     }
@@ -116,12 +126,9 @@ public static class Camouflage
 
         var id = target.PlayerId;
 
-        if (IsCamouflage)
+        if (IsCamouflage && Main.PlayerStates[id].IsDead)
         {
-            //コミュサボ中
-
-            //死んでいたら処理しない
-            if (Main.PlayerStates[id].IsDead) return;
+            return;
         }
 
         var newOutfit = CamouflageOutfit;
