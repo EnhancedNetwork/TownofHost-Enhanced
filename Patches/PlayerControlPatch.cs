@@ -1773,7 +1773,18 @@ class ReportDeadBodyPatch
                     
                     return false;
                 }
+
+                //Add all the patch bodies here!!!
+                //Vulture ate body can not be reported
                 if (Vulture.UnreportablePlayers.Contains(target.PlayerId)) return false;
+                // 被赌杀的尸体无法被报告 guessed
+                if (Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Gambled) return false;
+                // 清道夫的尸体无法被报告 scavenger
+                if (killerRole == CustomRoles.Scavenger) return false;
+                // 被清理的尸体无法报告 cleaner
+                if (Main.CleanerBodies.Contains(target.PlayerId)) return false;
+                //Medusa bodies can not be reported
+                if (Main.MedusaBodies.Contains(target.PlayerId)) return false;
 
                 if (__instance.Is(CustomRoles.Vulture))
                 {
@@ -1808,36 +1819,23 @@ class ReportDeadBodyPatch
                 {
                     Main.CleanerBodies.Remove(target.PlayerId);
                     Main.CleanerBodies.Add(target.PlayerId);
-                    __instance.RpcGuardAndKill(__instance);
                     __instance.Notify(GetString("CleanerCleanBody"));
               //      __instance.ResetKillCooldown();
-                    __instance.SetKillCooldownV3(Options.KillCooldownAfterCleaning.GetFloat());
+                    __instance.SetKillCooldownV3(Options.KillCooldownAfterCleaning.GetFloat(), forceAnime: true);
                     Logger.Info($"{__instance.GetRealName()} 清理了 {target.PlayerName} 的尸体", "Cleaner");
                     return false;
                 }
+
                 if (__instance.Is(CustomRoles.Medusa))
                 {
                     Main.MedusaBodies.Remove(target.PlayerId);
                     Main.MedusaBodies.Add(target.PlayerId);
-                    __instance.RpcGuardAndKill(__instance);
                     __instance.Notify(GetString("MedusaStoneBody"));
               //      __instance.ResetKillCooldown();
-                    __instance.SetKillCooldownV3(Medusa.KillCooldownAfterStoneGazing.GetFloat());
+                    __instance.SetKillCooldownV3(Medusa.KillCooldownAfterStoneGazing.GetFloat(), forceAnime: true);
                     Logger.Info($"{__instance.GetRealName()} stoned {target.PlayerName} body", "Medusa");
                     return false;
                 }
-
-
-                // 被赌杀的尸体无法被报告
-                if (Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Gambled) return false;
-
-                // 清道夫的尸体无法被报告
-                if (killerRole == CustomRoles.Scavenger) return false;
-
-                // 被清理的尸体无法报告
-                if (Main.CleanerBodies.Contains(target.PlayerId)) return false;
-
-                if (Main.MedusaBodies.Contains(target.PlayerId)) return false;
 
                 // 胆小鬼不敢报告
                 var tpc = Utils.GetPlayerById(target.PlayerId);
@@ -2000,7 +1998,6 @@ class ReportDeadBodyPatch
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                             Main.TasklessCrewmate.Add(__instance.PlayerId);
                         }
-
                     }
 
                     if (tar.GetCustomRole().IsAmneNK())

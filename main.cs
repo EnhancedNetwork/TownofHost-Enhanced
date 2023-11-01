@@ -556,6 +556,7 @@ public class Main : BasePlugin
                 {CustomRoles.Repairman, "#3333ff"},
                 {CustomRoles.Cyber, "#F46F4E" },
                 {CustomRoles.Oiiai, "#2bdb2b" },
+                {CustomRoles.Influenced, "#b0006a"},
 
              //   {CustomRoles.QuickFix, "#3333ff"},
 
@@ -912,7 +913,8 @@ public enum CustomRoles
     Cyber,
     Stubborn,
     Overclocked,
-    Oiiai
+    Oiiai,
+    Influenced
     // QuickFix
 }
 //WinData
