@@ -3,6 +3,7 @@ using HarmonyLib;
 using Hazel;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
@@ -193,7 +194,7 @@ class GameEndChecker
                 if (CustomRolesHelper.RoleExist(CustomRoles.God))
                 {
                     bool isGodWinConverted = false;
-                    foreach (var x in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.God))
+                    foreach (var x in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.God)))
                     {
                         if (CustomWinnerHolder.CheckForConvertedWinner(x.PlayerId))
                         {
@@ -295,7 +296,6 @@ class GameEndChecker
                     }
                 }
 
-
                 //FFF
                 if (FFF.isWon)
                 {
@@ -331,6 +331,7 @@ class GameEndChecker
                         CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Romantic);
                     }
                 }
+
                 foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.RuthlessRomantic)))
                 {
                     if (Romantic.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget) && (
@@ -396,6 +397,15 @@ class GameEndChecker
                     }
                 }
 
+                //Remove hurried task not done player from winner id
+                foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Hurried)))
+                {
+                    if (!Hurried.CheckWinState(pc) && CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                    {
+                        CustomWinnerHolder.WinnerIds.Remove(pc.PlayerId);
+                        Logger.Info($"Removed {pc.GetNameWithRole()} from winner ids", "Hurried Win Check");
+                    }
+                }
             }
             ShipStatus.Instance.enabled = false;
             StartEndGame(reason);

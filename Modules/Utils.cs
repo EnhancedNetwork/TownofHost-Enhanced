@@ -626,7 +626,8 @@ public static class Utils
             pc.Is(CustomRoles.Egoist) ||
             pc.Is(CustomRoles.DualPersonality) ||
             pc.Is(CustomRoles.Vigilante) ||
-            (pc.Is(CustomRoles.NiceMini) && Mini.Age >= 18)
+            (pc.Is(CustomRoles.NiceMini) && Mini.Age >= 18) ||
+            (pc.Is(CustomRoles.Hurried) && Hurried.CanBeOnMadMate.GetBool())
             );
     }
     public static string GetProgressText(PlayerControl pc)

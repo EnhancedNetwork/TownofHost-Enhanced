@@ -1,5 +1,6 @@
 ﻿using Hazel;
 using System.Collections.Generic;
+using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
@@ -116,6 +117,9 @@ public static class Succubus
     public static bool CanBeCharmed(this PlayerControl pc)
     {
         return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || 
-            (CanCharmNeutral.GetBool() && pc.GetCustomRole().IsNeutral())) && !pc.Is(CustomRoles.Charmed) && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Infectious) && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Succubus);
+            (CanCharmNeutral.GetBool() && pc.GetCustomRole().IsNeutral())) && !pc.Is(CustomRoles.Charmed) 
+            && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Infectious) 
+            && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Succubus)
+            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     }
 }
