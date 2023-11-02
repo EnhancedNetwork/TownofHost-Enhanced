@@ -20,7 +20,6 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
-using TOHE.Roles.AddOns.Common;
 
 namespace TOHE;
 

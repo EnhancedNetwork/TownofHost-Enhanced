@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace TOHE.Roles.AddOns.Common
+namespace TOHE.Roles.AddOns.Crewmate
 {
     public static class Hurried
     {
         private static readonly int Id = 45100;
-        public static List<byte> playerIdList = new();
-        public static bool IsEnable = false;
 
         public static OptionItem CanBeOnMadMate;
         public static OptionItem CanBeOnTaskBasedCrew;
@@ -18,7 +12,7 @@ namespace TOHE.Roles.AddOns.Common
 
         public static void SetupCustomOption()
         {
-            Options.SetupAdtRoleOptions(Id, CustomRoles.Repairman, canSetNum: true);
+            Options.SetupAdtRoleOptions(Id, CustomRoles.Hurried, canSetNum: true);
             CanBeOnMadMate = BooleanOptionItem.Create(Id + 11, "MadmateCanBeHurried", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Hurried]);
             CanBeOnTaskBasedCrew = BooleanOptionItem.Create(Id + 12, "TaskBasedCrewCanBeHurried", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Hurried]);
             CanBeConverted = BooleanOptionItem.Create(Id + 13, "HurriedCanBeConverted", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Hurried]);

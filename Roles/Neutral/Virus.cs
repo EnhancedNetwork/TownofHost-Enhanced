@@ -2,11 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Hazel;
-using TOHE.Roles.AddOns.Common;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using TOHE.Roles.AddOns.Crewmate;
 
 namespace TOHE.Roles.Neutral
 {

@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using System.Linq;
 using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -318,6 +319,7 @@ static class CustomRolesHelper
             CustomRoles.Overclocked or
             CustomRoles.Stubborn or
             CustomRoles.EvilSpirit or
+            CustomRoles.Hurried or
             CustomRoles.Oiiai or
             CustomRoles.Influenced;
     }
@@ -1536,10 +1538,10 @@ static class CustomRolesHelper
 
             case CustomRoles.Hurried:
                 if (pc.Is(CustomRoles.Youtuber) || pc.Is(CustomRoles.Egoist)) return false;
-                if (pc.Is(CustomRoles.Madmate) && Hurried.CanBeOnMadMate.GetBool()) return false;
+                if (pc.Is(CustomRoles.Madmate) && !Hurried.CanBeOnMadMate.GetBool()) return false;
                 if (!pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Madmate)) return false;
                 if (pc.GetCustomRole().IsTasklessCrewmate()) return false;
-                if (pc.GetCustomRole().IsTaskBasedCrewmate() && Hurried.CanBeOnTaskBasedCrew.GetBool()) return false;
+                if (pc.GetCustomRole().IsTaskBasedCrewmate() && !Hurried.CanBeOnTaskBasedCrew.GetBool()) return false;
                 break;
 
         }
