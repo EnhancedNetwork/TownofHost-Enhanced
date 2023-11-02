@@ -2330,6 +2330,7 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.VoidBallot]);
 
         Influenced.SetupCustomOption();
+        Hurried.SetupCustomOption();
 
         TextOptionItem.Create(100030, "RoleType.Mixed", TabGroup.Addons) // MIXED
             .SetGameMode(CustomGameMode.Standard)

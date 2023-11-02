@@ -625,7 +625,8 @@ public static class Utils
          //   pc.Is(CustomRoles.Cyber) ||
             pc.Is(CustomRoles.Egoist) ||
             pc.Is(CustomRoles.DualPersonality) ||
-            pc.Is(CustomRoles.Vigilante)
+            pc.Is(CustomRoles.Vigilante) ||
+            (pc.Is(CustomRoles.Hurried) && Hurried.CanBeOnMadMate.GetBool())
             );
     }
     public static string GetProgressText(PlayerControl pc)
