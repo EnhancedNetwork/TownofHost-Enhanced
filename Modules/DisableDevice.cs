@@ -119,7 +119,7 @@ class DisableDevice
                     DesyncComms.Remove(pc.PlayerId);
                     pc.RpcDesyncRepairSystem(SystemTypes.Comms, 16);
 
-                    if (Main.NormalOptions.MapId == 1)
+                    if (Main.NormalOptions.MapId is 1 or 5) // Mira HQ or The Fungle
                         pc.RpcDesyncRepairSystem(SystemTypes.Comms, 17);
                 }
             }

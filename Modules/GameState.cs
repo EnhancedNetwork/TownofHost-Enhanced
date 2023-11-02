@@ -99,7 +99,7 @@ public class PlayerState
             {
                 0 => CountTypes.OutOfGame,
                 1 => CountTypes.Impostor,
-                2 => CountTypes.Crew,
+                2 => countTypes,
                 _ => throw new NotImplementedException()
             };
             SubRoles.Remove(CustomRoles.Charmed);
@@ -553,14 +553,9 @@ public class TaskState
                         pc.SetRealKiller(player);
                     }
                 }
-                if (!player.Is(CustomRoles.Admired))
+                if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
                 {
                     CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Workaholic); //Workaholic
-                    CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
-                }
-                if (player.Is(CustomRoles.Admired))
-                {
-                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate); //Admired Workaholic
                     CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
                 }
             }

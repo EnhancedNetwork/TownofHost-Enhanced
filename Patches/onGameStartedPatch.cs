@@ -324,14 +324,13 @@ internal class ChangeRoleSettings
             Spy.Init();
             Oiiai.Init();
             FFF.Init();
-            
+            SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
+            DoorsReset.Initialize();
             Instigator.Init();
 
             CustomWinnerHolder.Reset();
             AntiBlackout.Reset();
             NameNotifyManager.Reset();
-            SabotageSystemTypeRepairDamagePatch.Initialize();
-            DoorsReset.Initialize();
 
             IRandom.SetInstanceById(Options.RoleAssigningAlgorithm.GetValue());
 
