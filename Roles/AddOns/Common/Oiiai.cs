@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.AddOns.Common

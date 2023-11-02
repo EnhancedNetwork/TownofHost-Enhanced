@@ -190,6 +190,6 @@ public static class Admirer
         return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() ||
             (pc.GetCustomRole().IsNeutral() && !pc.GetCustomRole().IsNK())) && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal) 
             && !((pc.Is(CustomRoles.NiceMini) || pc.Is(CustomRoles.EvilMini)) && Mini.Age < 18)
-            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && Hurried.CanBeConverted.GetBool());
+            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     } //Remove !isNk after rework game end check
 }

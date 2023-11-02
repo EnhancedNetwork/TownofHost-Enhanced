@@ -174,7 +174,7 @@ namespace TOHE.Roles.Neutral
         {
             return true && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Contagious) && !pc.Is(CustomRoles.Loyal) 
                 && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Succubus) && !pc.Is(CustomRoles.Infectious)
-                && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && Hurried.CanBeConverted.GetBool());
+                && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
         }
     }
 }

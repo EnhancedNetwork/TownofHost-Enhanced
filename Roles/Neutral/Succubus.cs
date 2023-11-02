@@ -123,6 +123,6 @@ public static class Succubus
             (CanCharmNeutral.GetBool() && pc.GetCustomRole().IsNeutral())) && !pc.Is(CustomRoles.Charmed) 
             && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Infectious) 
             && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Succubus)
-            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && Hurried.CanBeConverted.GetBool());
+            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     }
 }
