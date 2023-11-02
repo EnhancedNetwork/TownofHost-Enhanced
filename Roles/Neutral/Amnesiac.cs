@@ -1,9 +1,6 @@
 using Hazel;
 using System.Collections.Generic;
-using TOHE.Roles.Crewmate;
-using UnityEngine;
 using static TOHE.Options;
-using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 

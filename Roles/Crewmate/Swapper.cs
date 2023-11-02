@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
 using UnityEngine;
 using static TOHE.Translator;
-using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TOHE.Roles.Crewmate;
 

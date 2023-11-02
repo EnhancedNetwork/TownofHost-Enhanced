@@ -1,7 +1,7 @@
-using HarmonyLib;
-using Discord;
-using System;
 using AmongUs.Data;
+using Discord;
+using HarmonyLib;
+using System;
 
 namespace TOHE.Patches
 {

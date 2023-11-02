@@ -1,6 +1,6 @@
 using AmongUs.GameOptions;
-using Rewired.Utils.Platforms.Windows;
 using System.Linq;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -303,7 +303,7 @@ static class CustomRolesHelper
             CustomRoles.Onbound or
             CustomRoles.Rebound or
             CustomRoles.Lazy or
-       //     CustomRoles.Reflective or
+            //     CustomRoles.Reflective or
             CustomRoles.Rascal or
             CustomRoles.Contagious or
             CustomRoles.Guesser or
@@ -317,7 +317,9 @@ static class CustomRolesHelper
             CustomRoles.Bloodlust or
             CustomRoles.Overclocked or
             CustomRoles.Stubborn or
-            CustomRoles.EvilSpirit;
+            CustomRoles.EvilSpirit or
+            CustomRoles.Oiiai or
+            CustomRoles.Influenced;
     }
     
     public static bool IsBetrayalAddon(this CustomRoles role)
@@ -1165,6 +1167,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.TicketsStealer)
                     || pc.Is(CustomRoles.Pickpocket) 
                     || pc.Is(CustomRoles.Dictator)
+                    || pc.Is(CustomRoles.Influenced)
                     || pc.Is(CustomRoles.Brakar))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeVoidBallot.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeVoidBallot.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeVoidBallot.GetBool()))
@@ -1284,6 +1287,7 @@ static class CustomRolesHelper
             case CustomRoles.Brakar:
                 if (pc.Is(CustomRoles.Dictator)
                     || pc.Is(CustomRoles.VoidBallot)
+                    || pc.Is(CustomRoles.Influenced)
                     || pc.Is(CustomRoles.GuardianAngelTOHE)) return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeTiebreaker.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeTiebreaker.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeTiebreaker.GetBool())) return false;
                 break;
@@ -1458,7 +1462,9 @@ static class CustomRolesHelper
 
             case CustomRoles.Loyal:
                 if (pc.Is(CustomRoles.Madmate) 
+                    || pc.Is(CustomRoles.Oiiai)
                     || pc.Is(CustomRoles.GuardianAngelTOHE)
+                    || pc.Is(CustomRoles.Influenced)
                     || pc.Is(CustomRoles.NiceMini)
                     || pc.Is(CustomRoles.EvilMini))
                     return false;
@@ -1508,12 +1514,19 @@ static class CustomRolesHelper
                     return false;
                 break;
 
-            case CustomRoles.Sidekick:
-                if (pc.Is(CustomRoles.Jackal) 
-                    || pc.Is(CustomRoles.Madmate) 
-                    || pc.Is(CustomRoles.Egoist))
+            case CustomRoles.Influenced:
+                if (pc.Is(CustomRoles.Dictator)
+                    || pc.Is(CustomRoles.Loyal)
+                    || pc.Is(CustomRoles.VoidBallot)
+                    || pc.Is(CustomRoles.Brakar))
                     return false;
-                if ((pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeSidekick.GetBool()) || (pc.GetCustomRole().IsCrewmate() && !Options.CrewmateCanBeSidekick.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpostorCanBeSidekick.GetBool()))
+                if ((pc.GetCustomRole().IsCrewmate() && !Influenced.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Influenced.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Influenced.CanBeOnImp.GetBool()))
+                    return false;
+                break;
+
+            case CustomRoles.Oiiai:
+                if (pc.Is(CustomRoles.Loyal)) return false;
+                if ((pc.GetCustomRole().IsNeutral() && !Oiiai.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsCrewmate() && !Oiiai.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Oiiai.CanBeOnImp.GetBool()))
                     return false;
                 break;
         }
