@@ -3,6 +3,7 @@ using HarmonyLib;
 using Hazel;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
@@ -42,70 +43,76 @@ class GameEndChecker
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Jackal);
                 CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Jackal);
             }
-
-            switch (CustomWinnerHolder.WinnerTeam)
+            var allPlayerList = Main.AllPlayerControls.ToList();
+            int allPlayerCount = allPlayerList.Count;
+            for (int i = 0; i < allPlayerCount; i++)
             {
-                case CustomWinner.Crewmate:
-                    Main.AllPlayerControls
-                        .Where(pc => pc.Is(CustomRoleTypes.Crewmate) && !pc.Is(CustomRoles.Madmate) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Charmed) && !pc.Is(CustomRoles.Recruit) && !pc.Is(CustomRoles.Infected) && !pc.Is(CustomRoles.Contagious) && !pc.Is(CustomRoles.EvilSpirit) && !pc.Is(CustomRoles.Recruit) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
-                        .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
-                    Main.AllPlayerControls //Add admired players here to avoid bugs
-                        .Where(pc => pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
-                        .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
-                    break;
-                case CustomWinner.Impostor:
-                    Main.AllPlayerControls
-                        .Where(pc => (pc.Is(CustomRoleTypes.Impostor) || pc.Is(CustomRoles.Madmate) || pc.Is(CustomRoles.Crewpostor) || pc.Is(CustomRoles.Parasite) || pc.Is(CustomRoles.Refugee) || pc.Is(CustomRoles.Convict)) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Charmed) && !pc.Is(CustomRoles.Recruit) && !pc.Is(CustomRoles.Infected) && !pc.Is(CustomRoles.Contagious) && !pc.Is(CustomRoles.EvilSpirit) && !pc.Is(CustomRoles.Recruit) && !pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
-                        .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
-                    break;
-                case CustomWinner.Succubus:
-                    Main.AllPlayerControls
-                        .Where(pc => (pc.Is(CustomRoles.Charmed)) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
-                        .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
-                    break;
-                case CustomWinner.CursedSoul:
-                    Main.AllPlayerControls
-                        .Where(pc => (pc.Is(CustomRoles.Soulless)) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
-                        .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
-                    break;
-                case CustomWinner.Infectious:
-                    Main.AllPlayerControls
-                        .Where(pc => (pc.Is(CustomRoles.Infected)) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
-                        .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
-                    break;
-                case CustomWinner.Virus:
-                    Main.AllPlayerControls
-                        .Where(pc => (pc.Is(CustomRoles.Contagious)) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
-                        .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
-                    break;
-                case CustomWinner.Jackal:
-                    Main.AllPlayerControls
-                        .Where(pc => (pc.Is(CustomRoles.Sidekick) || pc.Is(CustomRoles.Recruit)) && !pc.Is(CustomRoles.Infected) && !pc.Is(CustomRoles.Rogue) && !pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
-                        .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
-                    break;
-                case CustomWinner.Spiritcaller:
-                    Main.AllPlayerControls
-                        .Where(pc => (pc.Is(CustomRoles.EvilSpirit)) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
-                        .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
-                    break;
-                case CustomWinner.RuthlessRomantic:
-                    foreach (var pc in Main.AllPlayerControls)
-                    {
-                        if (pc.Is(CustomRoles.RuthlessRomantic) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+
+                var pc = allPlayerList[i];
+                var countType = Main.PlayerStates[pc.PlayerId].countTypes;
+
+                switch (CustomWinnerHolder.WinnerTeam)
+                {
+                    case CustomWinner.Crewmate:
+                        if ((pc.Is(CustomRoleTypes.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless))) ||
+                            pc.Is(CustomRoles.Admired) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                        {
+                            CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                        }
+                        break;
+                    case CustomWinner.Impostor:
+                        if (((pc.Is(CustomRoleTypes.Impostor) || pc.GetCustomRole().IsMadmate()) && (countType == CountTypes.Impostor) || pc.Is(CustomRoles.Soulless))
+                            || pc.Is(CustomRoles.Madmate) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                        {
+                            CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                        }
+                        break;
+                    case CustomWinner.Succubus:
+                        if (pc.Is(CustomRoles.Charmed) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                        {
+                            CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                        }
+                        break;
+                    case CustomWinner.CursedSoul:
+                        if (pc.Is(CustomRoles.Soulless) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                        {
+                            CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                        }
+                        break;
+                    case CustomWinner.Infectious:
+                        if (pc.Is(CustomRoles.Infected) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                        {
+                            CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                        }
+                        break;
+                    case CustomWinner.Virus:
+                        if (pc.Is(CustomRoles.Contagious) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                        {
+                            CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                        }
+                        break;
+                    case CustomWinner.Jackal:
+                        if ((pc.Is(CustomRoles.Sidekick) || pc.Is(CustomRoles.Recruit)) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                        {
+                            CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                        }
+                        break;
+                    case CustomWinner.Spiritcaller:
+                        if (pc.Is(CustomRoles.EvilSpirit) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                        {
+                            CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                        }
+                        break;
+                    case CustomWinner.RuthlessRomantic:
+                        if (pc.Is(CustomRoles.RuthlessRomantic) && !CustomWinnerHolder.WinnerIds.Contains(Romantic.BetPlayer[pc.PlayerId]))
                         {
                             CustomWinnerHolder.WinnerIds.Add(Romantic.BetPlayer[pc.PlayerId]);
-
                         }
-
-                    }
-                    //Main.AllPlayerControls
-                    //    .Where(pc => (pc.Is(CustomRoles.RuthlessRomantic) || (Romantic.BetPlayer.TryGetValue(pc.PlayerId, out var RomanticPartner)) && pc.PlayerId == RomanticPartner))
-                    //    .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
-                    break;
+                        break;
+                }
             }
             if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw and not CustomWinner.None and not CustomWinner.Error)
             {
-
                 //潜藏者抢夺胜利
                 foreach (var pc in Main.AllPlayerControls)
                 {
@@ -268,7 +275,6 @@ class GameEndChecker
                     }
                 }
 
-
                 //FFF
                 if (FFF.isWon)
                 {
@@ -304,6 +310,7 @@ class GameEndChecker
                         CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Romantic);
                     }
                 }
+
                 foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.RuthlessRomantic)))
                 {
                     if (Romantic.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget) && (
@@ -369,6 +376,15 @@ class GameEndChecker
                     }
                 }
 
+                //Remove hurried task not done player from winner id
+                foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Hurried)))
+                {
+                    if (!Hurried.CheckWinState(pc) && CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                    {
+                        CustomWinnerHolder.WinnerIds.Remove(pc.PlayerId);
+                        Logger.Info($"Removed {pc.GetNameWithRole()} from winner ids", "Hurried Win Check");
+                    }
+                }
             }
             ShipStatus.Instance.enabled = false;
             StartEndGame(reason);
