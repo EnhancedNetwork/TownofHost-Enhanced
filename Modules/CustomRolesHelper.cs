@@ -1683,6 +1683,7 @@ static class CustomRolesHelper
            CustomRoles.Refugee => CountTypes.Impostor,
            CustomRoles.Huntsman => CountTypes.Huntsman,
            CustomRoles.Glitch => CountTypes.Glitch,
+           CustomRoles.Convict => CountTypes.Impostor,
           // CustomRoles.Phantom => CountTypes.OutOfGame,
         //   CustomRoles.CursedSoul => CountTypes.OutOfGame, // if they count as OutOfGame, it prevents them from winning lmao
            

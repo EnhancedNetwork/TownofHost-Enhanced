@@ -1635,7 +1635,7 @@
   "MadmateCountMode": "<color=#ff1919>Madmates</color> count as",
   "MadmateCountMode.None": "Nothing",
   "MadmateCountMode.Imp": "<color=#ff1919>Impostors</color>",
-  "MadmateCountMode.Crew": "<color=#8cffff>Crewmates</color>",
+  "MadmateCountMode.Original": "Original Team",
   "SidekickCountMode": "<color=#00b4eb>Sidekicks</color> count as",
   "SidekickCountMode.None": "Nothing",
   "SidekickCountMode.Jackal": "<color=#00b4eb>Jackal</color>",
