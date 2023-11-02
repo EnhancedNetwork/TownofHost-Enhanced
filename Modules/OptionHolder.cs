@@ -1843,7 +1843,6 @@ public static class Options
         Counterfeiter.SetupCustomOption();
         Jailer.SetupCustomOption();
         Judge.SetupCustomOption();
-        Swapper.SetupCustomOption();
         SwordsMan.SetupCustomOption();
         SetupRoleOptions(8600, TabGroup.CrewmateRoles, CustomRoles.NiceGuesser);
         GGCanGuessTime = IntegerOptionItem.Create(8610, "GuesserCanGuessTimes", new(1, 15, 1), 15, TabGroup.CrewmateRoles, false)
@@ -1911,6 +1910,7 @@ public static class Options
         Monarch.SetupCustomOption();
         Farseer.SetupCustomOption();
         President.SetupCustomOption();
+        Swapper.SetupCustomOption();
         Monitor.SetupCustomOption();
         //    ChiefOfPolice.SetupCustomOption();
 
