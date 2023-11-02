@@ -50,6 +50,35 @@ public static class CustomWinnerHolder
         Reset();
         WinnerTeam = winner;
     }
+    public static bool CheckForConvertedWinner(byte playerId)
+    {
+        foreach (var role in Utils.GetPlayerById(playerId).GetCustomSubRoles())
+        {
+            if (!(role == CustomRoles.Madmate || role == CustomRoles.Admired || role.IsConverted())) continue;
+            switch (role)
+            {
+                case CustomRoles.Admired:
+                    ResetAndSetWinner(CustomWinner.Crewmate);
+                    return true;
+                case CustomRoles.Madmate:
+                    ResetAndSetWinner(CustomWinner.Impostor); 
+                    return true;
+                case CustomRoles.Recruit:
+                    ResetAndSetWinner(CustomWinner.Jackal); 
+                    return true;
+                case CustomRoles.Charmed:
+                    ResetAndSetWinner(CustomWinner.Succubus); 
+                    return true;
+                case CustomRoles.Infectious:
+                    ResetAndSetWinner(CustomWinner.Infectious); 
+                    return true;
+                case CustomRoles.Contagious:
+                    ResetAndSetWinner(CustomWinner.Virus); 
+                    return true;
+            }
+        }
+        return false;
+    }
 
     public static MessageWriter WriteTo(MessageWriter writer)
     {

@@ -604,9 +604,9 @@ public static class Utils
         return hasTasks;
     }
 
-    public static bool CanBeMadmate(this PlayerControl pc)
+    public static bool CanBeMadmate(this PlayerControl pc, bool inGame = false)
     {
-        return pc != null && pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Madmate)
+        return pc != null && (pc.GetCustomRole().IsCrewmate() || (pc.GetCustomRole().IsNeutral() && inGame)) && !pc.Is(CustomRoles.Madmate)
         && !(
             (pc.Is(CustomRoles.Sheriff) && !Options.SheriffCanBeMadmate.GetBool()) ||
             (pc.Is(CustomRoles.Mayor) && !Options.MayorCanBeMadmate.GetBool()) ||
@@ -626,6 +626,7 @@ public static class Utils
             pc.Is(CustomRoles.Egoist) ||
             pc.Is(CustomRoles.DualPersonality) ||
             pc.Is(CustomRoles.Vigilante) ||
+            (pc.Is(CustomRoles.NiceMini) && Mini.Age >= 18) ||
             (pc.Is(CustomRoles.Hurried) && Hurried.CanBeOnMadMate.GetBool())
             );
     }
@@ -1673,12 +1674,11 @@ public static class Utils
                     Main.PlayerStates[pc.PlayerId].SetDead();
                 }
             }
-            if (!GetPlayerById(Terrorist.PlayerId).Is(CustomRoles.Admired))
+            if (!CustomWinnerHolder.CheckForConvertedWinner(Terrorist.PlayerId))
             {
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Terrorist);
                 CustomWinnerHolder.WinnerIds.Add(Terrorist.PlayerId);
             }
-            else CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
         }
     }
     public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "")
