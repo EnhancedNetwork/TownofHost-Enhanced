@@ -136,6 +136,7 @@ enum CustomRPC
     SetPotionMaster,
     SetChameleonTimer,
     SetAdmireLimit,
+    SyncAdmiredList,
     SetRememberLimit,
     SetImitateLimit,
     SyncNWitch,
@@ -239,9 +240,13 @@ internal class RPCHandlerPatch
                     Version version = Version.Parse(reader.ReadString());
                     string tag = reader.ReadString();
                     string forkId = reader.ReadString();
+                    bool cheating = reader.ReadBoolean();
                     Main.playerVersion[__instance.PlayerId] = new PlayerVersion(version, tag, forkId);
 
                     if (Main.VersionCheat.Value && __instance.PlayerId == 0) RPC.RpcVersionCheck();
+
+                    if (__instance.GetClientId() == Main.HostClientId && cheating)
+                        Main.IsHostVersionCheating = true;
 
                     if (Main.VersionCheat.Value && AmongUsClient.Instance.AmHost)
                         Main.playerVersion[__instance.PlayerId] = Main.playerVersion[0];
@@ -476,7 +481,10 @@ internal class RPCHandlerPatch
                 Doppelganger.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetAdmireLimit:
-                Admirer.ReceiveRPC(reader);
+                Admirer.ReceiveRPC(reader, false);
+                break;
+            case CustomRPC.SyncAdmiredList:
+                Admirer.ReceiveRPC(reader, true);
                 break;
             case CustomRPC.SetRememberLimit:
                 Amnesiac.ReceiveRPC(reader);
@@ -829,6 +837,7 @@ internal static class RPC
             writer.Write(cheating ? Main.playerVersion[0].version.ToString() : Main.PluginVersion);
             writer.Write(cheating ? Main.playerVersion[0].tag : $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})");
             writer.Write(cheating ? Main.playerVersion[0].forkId : Main.ForkId);
+            writer.Write(cheating);
             writer.EndMessage();
         }
         Main.playerVersion[PlayerControl.LocalPlayer.PlayerId] = new PlayerVersion(Main.PluginVersion, $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})", Main.ForkId);

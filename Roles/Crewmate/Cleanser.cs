@@ -1,7 +1,6 @@
 ﻿using Hazel;
-using UnityEngine;
-using System.Linq;
 using System.Collections.Generic;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 

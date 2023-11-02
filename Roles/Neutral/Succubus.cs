@@ -1,6 +1,6 @@
 ﻿using Hazel;
 using System.Collections.Generic;
-using System.Linq;
+using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
@@ -43,7 +43,10 @@ public static class Succubus
         KnowTargetRole = BooleanOptionItem.Create(Id + 13, "SuccubusKnowTargetRole", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Succubus]);
         TargetKnowOtherTarget = BooleanOptionItem.Create(Id + 14, "SuccubusTargetKnowOtherTarget", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Succubus]);
         CharmedCountMode = StringOptionItem.Create(Id + 17, "CharmedCountMode", charmedCountMode, 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Succubus]);
-        CanCharmNeutral = BooleanOptionItem.Create(Id + 18, "SuccubusCanCharmNeutral", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Succubus]);
+        CanCharmNeutral = BooleanOptionItem.Create(Id + 19, "SuccubusCanCharmNeutral", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Succubus])
+            .SetHidden(true); 
+        //God pls dont again make something like admirer, Niko is tired of toonie moment!
+        //Niko changed id 18 -> 19 because CanCharmNeutral is default true and niko want to force disable it for those who already have a config
     }
     public static void Init()
     {
@@ -117,6 +120,9 @@ public static class Succubus
     public static bool CanBeCharmed(this PlayerControl pc)
     {
         return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || 
-            (CanCharmNeutral.GetBool() && pc.GetCustomRole().IsNeutral())) && !pc.Is(CustomRoles.Charmed) && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Infectious) && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Succubus);
+            (CanCharmNeutral.GetBool() && pc.GetCustomRole().IsNeutral())) && !pc.Is(CustomRoles.Charmed) 
+            && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Infectious) 
+            && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Succubus)
+            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     }
 }

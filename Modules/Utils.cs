@@ -11,7 +11,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using UnityEngine;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
@@ -19,6 +18,7 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -625,7 +625,8 @@ public static class Utils
          //   pc.Is(CustomRoles.Cyber) ||
             pc.Is(CustomRoles.Egoist) ||
             pc.Is(CustomRoles.DualPersonality) ||
-            pc.Is(CustomRoles.Vigilante)
+            pc.Is(CustomRoles.Vigilante) ||
+            (pc.Is(CustomRoles.Hurried) && Hurried.CanBeOnMadMate.GetBool())
             );
     }
     public static string GetProgressText(PlayerControl pc)
@@ -1727,10 +1728,10 @@ public static class Utils
         Color endColor = HexToColor(endColorHex);
 
         int textLength = text.Length;
-        float stepR = (endColor.r - startColor.r) / (float)textLength;
-        float stepG = (endColor.g - startColor.g) / (float)textLength;
-        float stepB = (endColor.b - startColor.b) / (float)textLength;
-        float stepA = (endColor.a - startColor.a) / (float)textLength;
+        float stepR = (endColor.r - startColor.r) / textLength;
+        float stepG = (endColor.g - startColor.g) / textLength;
+        float stepB = (endColor.b - startColor.b) / textLength;
+        float stepA = (endColor.a - startColor.a) / textLength;
 
         string gradientText = "";
 

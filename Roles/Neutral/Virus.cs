@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Hazel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Hazel;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using TOHE.Roles.AddOns.Crewmate;
 
 namespace TOHE.Roles.Neutral
 {
@@ -171,7 +172,9 @@ namespace TOHE.Roles.Neutral
 
         public static bool CanBeInfected(this PlayerControl pc)
         {
-            return true && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Contagious) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Succubus) && !pc.Is(CustomRoles.Infectious);
+            return true && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Contagious) && !pc.Is(CustomRoles.Loyal) 
+                && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Succubus) && !pc.Is(CustomRoles.Infectious)
+                && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
         }
     }
 }

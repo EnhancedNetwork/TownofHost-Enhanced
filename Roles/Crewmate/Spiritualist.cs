@@ -1,6 +1,6 @@
+using Hazel;
 using System.Collections.Generic;
 using System.Linq;
-using Hazel;
 using static TOHE.Options;
 using static TOHE.Translator;
 

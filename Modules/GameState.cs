@@ -7,7 +7,6 @@ using TOHE.Modules;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -81,10 +80,13 @@ public class PlayerState
             }
         }
     }
-    public void SetSubRole(CustomRoles role, bool AllReplace = false)
+    public void SetSubRole(CustomRoles role, bool AllReplace = false, PlayerControl pc = null)
     {
         if (role == CustomRoles.Cleansed)
+        {
+            if (pc != null) countTypes = pc.GetCustomRole().GetCountTypes();
             AllReplace = true;
+        }
         if (AllReplace)
             SubRoles.ToArray().Do(role => SubRoles.Remove(role));
 
@@ -97,7 +99,7 @@ public class PlayerState
             {
                 0 => CountTypes.OutOfGame,
                 1 => CountTypes.Impostor,
-                2 => CountTypes.Crew,
+                2 => countTypes,
                 _ => throw new NotImplementedException()
             };
             SubRoles.Remove(CustomRoles.Charmed);

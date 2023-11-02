@@ -1,14 +1,14 @@
 namespace TOHE.Roles.Crewmate
 {
+    using AmongUs.GameOptions;
     using HarmonyLib;
     using Hazel;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
-    using UnityEngine;
-    using AmongUs.GameOptions;
     using TOHE.Modules;
     using TOHE.Roles.Neutral;
+    using UnityEngine;
     using static TOHE.Options;
     using static TOHE.Translator;
 

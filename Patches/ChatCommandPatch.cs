@@ -2,18 +2,18 @@ using Assets.CoreScripts;
 using HarmonyLib;
 using Hazel;
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
+using TOHE.Modules.ChatManager;
 using TOHE.Roles.Crewmate;
-using UnityEngine;
-using static TOHE.Translator;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using TOHE.Modules.ChatManager;
+using UnityEngine;
+using static TOHE.Translator;
 
 
 namespace TOHE;
@@ -164,7 +164,7 @@ internal class ChatCommands
                     canceled = true;
                     subArgs = args.Length < 2 ? "" : args[1];
                     Utils.SendMessage(string.Format(GetString("Message.SetLevel"), subArgs), PlayerControl.LocalPlayer.PlayerId);
-                    int.TryParse(subArgs, out int input);
+                    _ = int.TryParse(subArgs, out int input);
                     if (input is < 1 or > 999)
                     {
                         Utils.SendMessage(GetString("Message.AllowLevelRange"), PlayerControl.LocalPlayer.PlayerId);
@@ -966,7 +966,7 @@ internal class ChatCommands
             "革命家" or "革命" => GetString("Revolutionist"),
             "fff團" or "fff" or "fff团" => GetString("FFF"),
             "清理工" or "清潔工" or "清洁工" or "清理" or "清洁" => GetString("Cleaner"),
-            "醫生" or "医生"=> GetString("Medicaler"),
+            "醫生" or "医生"=> GetString("Medic"),
             "调查员" or "调查" => GetString("Divinator"),
             "雙重人格" or "双重" or "双人格" or "人格" => GetString("DualPersonality"),
             "玩家" or "玩家"=> GetString("Gamer"),
@@ -978,7 +978,7 @@ internal class ChatCommands
             "呪狼" or "咒狼" => GetString("CursedWolf"),
             "寶箱怪" or "宝箱" => GetString("Mimic"),
             "集票者" or "集票" or "寄票" or "机票" => GetString("Collector"),
-            "活死人" or "活死" => GetString("Glitch"),
+            "缺点者" or "缺点" => GetString("Glitch"),
             "奪魂者" or "多混" or "夺魂" => GetString("ImperiusCurse"),
             "自爆卡車" or "自爆" or "卡车" => GetString("Provocateur"),
             "快槍手" or "快枪" => GetString("QuickShooter"),
@@ -1003,7 +1003,7 @@ internal class ChatCommands
             "騙術師" or "骗术师"=> GetString("Trickster"),
             "衛道士" or "卫道士"=> GetString("Vindicator"),
             "寄生蟲" or "寄生虫"=> GetString("Parasite"),
-            "抑鬱者" or "抑郁者"=> GetString("Inhibitor"),
+            "抑鬱者" or "抑郁者" or "抑郁"=> GetString("Inhibitor"),
             "破壞者" or "破坏者"=> GetString("Saboteur"),
             "議員" or "议员"=> GetString("Councillor"),
             "眩暈者" or "眩晕者"=> GetString("Dazzler"),
@@ -1138,6 +1138,7 @@ internal class ChatCommands
         foreach (var rl in CustomRolesHelper.AllRoles)
         {
             if (rl.IsVanilla()) continue;
+            if (rl == CustomRoles.Mini) continue;
             var roleName = GetString(rl.ToString());
             if (role == roleName.ToLower().Trim().TrimStart('*').Replace(" ", string.Empty))
             {

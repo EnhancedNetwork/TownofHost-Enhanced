@@ -6,11 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using UnityEngine;
 using TOHE.Modules;
 using TOHE.Roles.Neutral;
-using Object = UnityEngine.Object;
+using UnityEngine;
 using static TOHE.Translator;
+using Object = UnityEngine.Object;
 
 namespace TOHE;
 
@@ -173,7 +173,7 @@ public class GameStartManagerPatch
             }
             else
             {
-                if (MatchVersions(0, true) || Main.VersionCheat.Value)
+                if (MatchVersions(0, true) || Main.VersionCheat.Value || Main.IsHostVersionCheating)
                     exitTimer = 0;
                 else
                 {
