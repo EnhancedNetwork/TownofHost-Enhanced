@@ -762,7 +762,7 @@ public static class Options
     {
         "MadmateCountMode.None",
         "MadmateCountMode.Imp",
-        "MadmateCountMode.Crew",
+        "MadmateCountMode.Original",
     };
     public static readonly string[] sidekickCountMode =
     {
