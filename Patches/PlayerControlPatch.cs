@@ -1207,7 +1207,7 @@ class CheckMurderPatch
         }
 
         //首刀叛变
-        if (Options.MadmateSpawnMode.GetInt() == 1 && Main.MadmateNum < CustomRoles.Madmate.GetCount() && Utils.CanBeMadmate(target))
+        if (Options.MadmateSpawnMode.GetInt() == 1 && Main.MadmateNum < CustomRoles.Madmate.GetCount() && Utils.CanBeMadmate(target, true))
         {
             Main.MadmateNum++;
             target.RpcSetCustomRole(CustomRoles.Madmate);
@@ -2853,8 +2853,11 @@ class FixedUpdatePatch
                             if (Vulture.BodyReportCount[player.PlayerId] >= Vulture.NumberOfReportsToWin.GetInt())
                             {
                                 Vulture.BodyReportCount[player.PlayerId] = Vulture.NumberOfReportsToWin.GetInt();
-                                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Vulture);
-                                CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
+                                if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
+                                {
+                                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Vulture);
+                                    CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
+                                }
                             }
                             break;
 

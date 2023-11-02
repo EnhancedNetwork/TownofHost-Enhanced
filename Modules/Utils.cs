@@ -604,9 +604,9 @@ public static class Utils
         return hasTasks;
     }
 
-    public static bool CanBeMadmate(this PlayerControl pc)
+    public static bool CanBeMadmate(this PlayerControl pc, bool inGame = false)
     {
-        return pc != null && pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Madmate)
+        return pc != null && (pc.GetCustomRole().IsCrewmate() || (pc.GetCustomRole().IsNeutral() && inGame)) && !pc.Is(CustomRoles.Madmate)
         && !(
             (pc.Is(CustomRoles.Sheriff) && !Options.SheriffCanBeMadmate.GetBool()) ||
             (pc.Is(CustomRoles.Mayor) && !Options.MayorCanBeMadmate.GetBool()) ||
@@ -625,7 +625,8 @@ public static class Utils
          //   pc.Is(CustomRoles.Cyber) ||
             pc.Is(CustomRoles.Egoist) ||
             pc.Is(CustomRoles.DualPersonality) ||
-            pc.Is(CustomRoles.Vigilante)
+            pc.Is(CustomRoles.Vigilante) ||
+            (pc.Is(CustomRoles.NiceMini) && Mini.Age == 18)
             );
     }
     public static string GetProgressText(PlayerControl pc)

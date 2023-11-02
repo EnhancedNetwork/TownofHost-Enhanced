@@ -229,23 +229,6 @@ public static class Gangster
 
     public static bool CanBeMadmate(this PlayerControl pc)
     {
-        return pc != null && pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Madmate)
-        && !(
-            (pc.Is(CustomRoles.Sheriff) && !SheriffCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.Mayor) && !MayorCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.NiceGuesser) && !NGuesserCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.Judge) && !JudgeCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.Marshall) && !MarshallCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.Farseer) && !FarseerCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.Retributionist) && !RetributionistCanBeMadmate.GetBool()) ||
-            pc.Is(CustomRoles.Snitch) ||
-            pc.Is(CustomRoles.Needy) ||
-            pc.Is(CustomRoles.Lazy) ||
-            pc.Is(CustomRoles.Loyal) ||
-            pc.Is(CustomRoles.CyberStar) ||
-            pc.Is(CustomRoles.Egoist) ||
-            pc.Is(CustomRoles.Vigilante) ||
-            !pc.Is(CustomRoles.NiceMini) && Mini.Age == 18
-            );
+        return Utils.CanBeMadmate(pc, true);
     }
 }
