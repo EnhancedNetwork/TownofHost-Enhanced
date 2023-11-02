@@ -207,10 +207,7 @@ internal class ChatCommands
                     break;
 
                 case "/r":
-                    if (PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsUp)
-                    {
-                     canceled = true;
-                    }
+                    canceled = true;
                     subArgs = text.Remove(0, 2);
                     SendRolesInfo(subArgs, 255, PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug);
                     break;
@@ -1238,23 +1235,6 @@ internal class ChatCommands
                 SendRolesInfo(subArgs, player.PlayerId, player.FriendCode.GetDevUser().DeBug);
                 break;
 
-                case "/up":
-                    canceled = true;
-                    subArgs = text.Remove(0, 3);
-                    if (!player.FriendCode.GetDevUser().IsUp) break;
-                    if (!Options.EnableUpMode.GetBool())
-                    {
-                        Utils.SendMessage(string.Format(GetString("Message.YTPlanDisabled"), GetString("EnableYTPlan")), player.PlayerId);
-                        break;
-                    }
-                    if (!GameStates.IsLobby)
-                    {
-                        Utils.SendMessage(GetString("Message.OnlyCanUseInLobby"), player.PlayerId);
-                        break;
-                    }
-                    SendRolesInfo(subArgs, Player.PlayerId, isUp: true);
-                    break;
-
             case "/h":
             case "/help":
                 Utils.ShowHelpToClient(player.PlayerId);
@@ -1289,9 +1269,9 @@ internal class ChatCommands
                     Utils.SendMessage(string.Format(GetString("Message.YTPlanDisabled"), GetString("EnableYTPlan")), player.PlayerId);
                     break;
                 }
-                if (!GameStates.IsLobby)
+                else
                 {
-                    Utils.SendMessage(GetString("Message.OnlyCanUseInLobby"), player.PlayerId);
+                    Utils.SendMessage(GetString("Message.OnlyCanBeUsedByHost"), player.PlayerId);
                     break;
                 }
 
