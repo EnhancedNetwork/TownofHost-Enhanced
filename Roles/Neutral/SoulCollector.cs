@@ -116,8 +116,11 @@ public static class SoulCollector
             if (SoulCollectorPoints[playerId] >= SoulCollectorPointsOpt.GetInt())
             {
                 SoulCollectorPoints[playerId] = SoulCollectorPointsOpt.GetInt();
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.SoulCollector);
-                CustomWinnerHolder.WinnerIds.Add(playerId);
+                if (!CustomWinnerHolder.CheckForConvertedWinner(playerId))
+                {
+                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.SoulCollector);
+                    CustomWinnerHolder.WinnerIds.Add(playerId);
+                }
             }
         }
     }
