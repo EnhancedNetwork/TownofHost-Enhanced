@@ -341,8 +341,11 @@ public static class GuessManager
 
                     if (Main.MasochistKillMax[target.PlayerId] >= Options.MasochistKillMax.GetInt())
                     {
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Masochist);
-                        CustomWinnerHolder.WinnerIds.Add(target.PlayerId);
+                        if (!CustomWinnerHolder.CheckForConvertedWinner(target.PlayerId))
+                        {
+                            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Masochist);
+                            CustomWinnerHolder.WinnerIds.Add(target.PlayerId);
+                        }
                     }
                     return true;
                 }

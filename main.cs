@@ -556,6 +556,7 @@ public class Main : BasePlugin
                 {CustomRoles.Nimble, "#FFFAA6"},
                 {CustomRoles.Repairman, "#3333ff"},
                 {CustomRoles.Cyber, "#F46F4E" },
+                {CustomRoles.Hurried, "#136cf0"},
                 {CustomRoles.Oiiai, "#2bdb2b" },
                 {CustomRoles.Influenced, "#b0006a"},
 
@@ -915,6 +916,7 @@ public enum CustomRoles
     Cyber,
     Stubborn,
     Overclocked,
+    Hurried,
     Oiiai,
     Influenced
     // QuickFix
