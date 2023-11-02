@@ -104,12 +104,11 @@ public static class Executioner
                 break;
             case "WinCheck":
                 if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) break;
-                if (!Utils.GetPlayerById(executionerId).Is(CustomRoles.Admired))
+                if (!CustomWinnerHolder.CheckForConvertedWinner(executionerId))
                 {           //まだ勝者が設定されていない場合
                     CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Executioner);
                     CustomWinnerHolder.WinnerIds.Add(executionerId);
                 }
-                else CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
                 break;
         }
     }

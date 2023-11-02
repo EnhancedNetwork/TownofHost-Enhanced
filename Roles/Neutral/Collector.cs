@@ -60,16 +60,21 @@ public static class Collector
         var pc = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Collector) && x.IsAlive() && CollectDone(x));
         if (pc.Any())
         {
-            var Admiredpc = pc.Where(x => x.Is(CustomRoles.Admired));
+            bool isWinConverted = false;
+            foreach (var x in pc)
+            {
+                if (CustomWinnerHolder.CheckForConvertedWinner(x.PlayerId))
+                {
+                    isWinConverted = true;
+                    break;
+                }
+            }
             if (check) return true;
-            if (!Admiredpc.Any())
+
+            if (!isWinConverted)
             {
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Collector);
                 foreach (var winner in pc) CustomWinnerHolder.WinnerIds.Add(winner.PlayerId);
-            }
-            else
-            {
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
             }
             return true;
         }

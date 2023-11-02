@@ -118,7 +118,7 @@ public static class Admirer
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmirerAdmired")));
                 Utils.NotifyRoles();
             }
-            else if (killer.Is(CustomRoles.Madmate) && target.CanBeMadmate())
+            else if (killer.Is(CustomRoles.Madmate) && target.CanBeMadmate(inGame: true))
             {
                 target.RpcSetCustomRole(CustomRoles.Madmate);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("AdmiredPlayer")));
@@ -187,9 +187,9 @@ public static class Admirer
     {
         if (AdmiredList[admirer.PlayerId].Contains(pc.PlayerId)) return false;
 
-        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() ||
-            (pc.GetCustomRole().IsNeutral() && !pc.GetCustomRole().IsNK())) && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal) 
+        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral()) 
+            && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal) 
             && !((pc.Is(CustomRoles.NiceMini) || pc.Is(CustomRoles.EvilMini)) && Mini.Age < 18)
             && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
-    } //Remove !isNk after rework game end check
+    }
 }
