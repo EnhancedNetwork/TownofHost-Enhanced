@@ -1634,12 +1634,11 @@ public static class Utils
                     Main.PlayerStates[pc.PlayerId].SetDead();
                 }
             }
-            if (!GetPlayerById(Terrorist.PlayerId).Is(CustomRoles.Admired))
+            if (!CustomWinnerHolder.CheckForConvertedWinner(Terrorist.PlayerId))
             {
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Terrorist);
                 CustomWinnerHolder.WinnerIds.Add(Terrorist.PlayerId);
             }
-            else CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
         }
     }
     public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "")

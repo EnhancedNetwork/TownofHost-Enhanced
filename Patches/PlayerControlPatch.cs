@@ -1091,16 +1091,19 @@ class CheckMurderPatch
                     }
                 break;
             case CustomRoles.Masochist:
-            
-                    killer.SetKillCooldown(target: target, forceAnime: true);
-                    Main.MasochistKillMax[target.PlayerId]++;
-            //    killer.RPCPlayCustomSound("DM");
+
+                killer.SetKillCooldown(target: target, forceAnime: true);
+                Main.MasochistKillMax[target.PlayerId]++;
+                //    killer.RPCPlayCustomSound("DM");
                 target.Notify(string.Format(GetString("MasochistKill"), Main.MasochistKillMax[target.PlayerId]));
-                    if (Main.MasochistKillMax[target.PlayerId] >= Options.MasochistKillMax.GetInt())
+                if (Main.MasochistKillMax[target.PlayerId] >= Options.MasochistKillMax.GetInt())
+                {
+                    if (!CustomWinnerHolder.CheckForConvertedWinner(target.PlayerId))
                     {
                         CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Masochist);
                         CustomWinnerHolder.WinnerIds.Add(target.PlayerId);
                     }
+                }
                 return false;
             case CustomRoles.Berserker:
                 if (Main.BerserkerKillMax[target.PlayerId] >= Options.BerserkerImmortalLevel.GetInt() && Options.BerserkerFourCanNotKill.GetBool())
@@ -1278,8 +1281,12 @@ class MurderPlayerPatch
         if (Main.FirstDied == byte.MaxValue && target.Is(CustomRoles.Youtuber))
         {
             CustomSoundsManager.RPCPlayCustomSoundAll("Congrats");
-            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Youtuber); //UP主被首刀了，哈哈哈哈哈
-            CustomWinnerHolder.WinnerIds.Add(target.PlayerId);
+            if (!CustomWinnerHolder.CheckForConvertedWinner(target.PlayerId))
+            {
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Youtuber); //UP主被首刀了，哈哈哈哈哈
+                CustomWinnerHolder.WinnerIds.Add(target.PlayerId);
+            }
+            //Imagine youtuber is converted
         }
 
         //记录首刀
@@ -2834,14 +2841,10 @@ class FixedUpdatePatch
                             if (Main.MarioVentCount[player.PlayerId] >= Options.MarioVentNumWin.GetInt())
                             {
                                 Main.MarioVentCount[player.PlayerId] = Options.MarioVentNumWin.GetInt();
-                                if (!player.Is(CustomRoles.Admired))
+                                if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
                                 {
                                     CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Mario);
                                     CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
-                                }
-                                else
-                                {
-                                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
                                 }
                             }
                             break;
@@ -2879,7 +2882,8 @@ class FixedUpdatePatch
                                 }
                                 else if (!player.IsAlive())
                                 {
-                                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.NiceMini);
+                                    if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
+                                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.NiceMini);
                                     // CustomWinnerHolder.WinnerIds.Add(mini.PlayerId); // Nice Mini does not win (Crewmates should not solo win unless Egoist)
                                 }
                             }
@@ -3371,8 +3375,11 @@ class EnterVentPatch
             Utils.NotifyRoles(SpecifySeer: pc);
             if (AmongUsClient.Instance.AmHost && Main.MarioVentCount[pc.PlayerId] >= Options.MarioVentNumWin.GetInt())
             {
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Mario); //马里奥这个多动症赢了
-                CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                if (!CustomWinnerHolder.CheckForConvertedWinner(pc.PlayerId))
+                {
+                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Mario); //马里奥这个多动症赢了
+                    CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                }
             }
         }
 
@@ -3582,8 +3589,11 @@ class CoEnterVentPatch
                     }
                 }
                 foreach (var pc in Main.AllPlayerControls) pc.KillFlash();
-                CustomWinnerHolder.ShiftWinnerAndSetWinner(CustomWinner.Arsonist); //焼殺で勝利した人も勝利させる
-                CustomWinnerHolder.WinnerIds.Add(__instance.myPlayer.PlayerId);
+                if (!CustomWinnerHolder.CheckForConvertedWinner(__instance.myPlayer.PlayerId))
+                {
+                    CustomWinnerHolder.ShiftWinnerAndSetWinner(CustomWinner.Arsonist); //焼殺で勝利した人も勝利させる
+                    CustomWinnerHolder.WinnerIds.Add(__instance.myPlayer.PlayerId);
+                }
                 return true;
             }
             else if (Options.ArsonistCanIgniteAnytime.GetBool())
@@ -3603,8 +3613,11 @@ class CoEnterVentPatch
                     }
                     if (Main.AllAlivePlayerControls.Count() == 1)
                     {
-                        CustomWinnerHolder.ShiftWinnerAndSetWinner(CustomWinner.Arsonist); //焼殺で勝利した人も勝利させる
-                        CustomWinnerHolder.WinnerIds.Add(__instance.myPlayer.PlayerId);
+                        if (!CustomWinnerHolder.CheckForConvertedWinner(__instance.myPlayer.PlayerId))
+                        {
+                            CustomWinnerHolder.ShiftWinnerAndSetWinner(CustomWinner.Arsonist); //焼殺で勝利した人も勝利させる
+                            CustomWinnerHolder.WinnerIds.Add(__instance.myPlayer.PlayerId);
+                        }
                     }
                     return true;
                 }
@@ -3613,10 +3626,13 @@ class CoEnterVentPatch
 
         if (AmongUsClient.Instance.IsGameStarted && __instance.myPlayer.IsDrawDone())//完成拉拢任务的玩家跳管后
         {
-            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Revolutionist);//革命者胜利
-            Utils.GetDrawPlayerCount(__instance.myPlayer.PlayerId, out var x);
-            CustomWinnerHolder.WinnerIds.Add(__instance.myPlayer.PlayerId);
-            foreach (var apc in x) CustomWinnerHolder.WinnerIds.Add(apc.PlayerId);//胜利玩家
+            if (!CustomWinnerHolder.CheckForConvertedWinner(__instance.myPlayer.PlayerId))
+            {
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Revolutionist);//革命者胜利
+                Utils.GetDrawPlayerCount(__instance.myPlayer.PlayerId, out var x);
+                CustomWinnerHolder.WinnerIds.Add(__instance.myPlayer.PlayerId);
+                foreach (var apc in x) CustomWinnerHolder.WinnerIds.Add(apc.PlayerId);//胜利玩家
+            }
             return true;
         }
 

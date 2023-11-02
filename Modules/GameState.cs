@@ -552,14 +552,9 @@ public class TaskState
                         pc.SetRealKiller(player);
                     }
                 }
-                if (!player.Is(CustomRoles.Admired))
+                if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
                 {
                     CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Workaholic); //Workaholic
-                    CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
-                }
-                if (player.Is(CustomRoles.Admired))
-                {
-                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate); //Admired Workaholic
                     CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
                 }
             }
