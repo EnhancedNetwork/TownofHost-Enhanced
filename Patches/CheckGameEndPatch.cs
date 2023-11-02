@@ -371,7 +371,7 @@ class GameEndChecker
                 }
 
                 //Remove hurried task not done player from winner id
-                foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Hurried)))
+                foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Hurried)))
                 {
                     if (!Hurried.CheckWinState(pc) && CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                     {
