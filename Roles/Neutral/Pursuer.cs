@@ -61,7 +61,7 @@ public static class Pursuer
         => !Main.PlayerStates[playerId].IsDead
         && SeelLimit.TryGetValue(playerId, out var x) && x >= 1;
     public static string GetSeelLimit(byte playerId) => Utils.ColorString(CanUseKillButton(playerId) ? Utils.GetRoleColor(CustomRoles.Pursuer) : Color.gray, SeelLimit.TryGetValue(playerId, out var x) ? $"({x})" : "Invalid");
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(id) ? PursuerSkillCooldown.GetFloat() : 0f;
+    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(id) ? PursuerSkillCooldown.GetFloat() : 300f;
     public static bool IsClient(byte playerId)
     {
         foreach (var pc in clientList)

@@ -37,8 +37,8 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "1.2.1.4";
-    public const string PluginDisplayVersion = "1.2.1 dev 4";
+    public const string PluginVersion = "1.2.1.2";
+    public const string PluginDisplayVersion = "1.2.1 dev 2";
     public static readonly string SupportedVersionAU = "2023.10.24";
     public const bool Canary = false; // Unused variable?
 
@@ -230,8 +230,9 @@ public class Main : BasePlugin
     public static Dictionary<byte, List<string>> AwareInteracted = new();
     public static byte ShamanTarget = byte.MaxValue;
     public static bool ShamanTargetChoosen = false;
+    
+    public static Dictionary<byte, CustomRoles> ErasedRoleStorage = new();
     public static Dictionary<string, int> PlayerQuitTimes = new();
-
 
     public static IEnumerable<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null);
     public static IEnumerable<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId));
@@ -553,9 +554,11 @@ public class Main : BasePlugin
                 {CustomRoles.Circumvent, "#ff1919"},
                 {CustomRoles.Nimble, "#FFFAA6"},
                 {CustomRoles.Repairman, "#3333ff"},
-
                 {CustomRoles.Cyber, "#F46F4E" },
                 {CustomRoles.Hurried, "##136cf0"},
+                {CustomRoles.Oiiai, "#2bdb2b" },
+                {CustomRoles.Influenced, "#b0006a"},
+
              //   {CustomRoles.QuickFix, "#3333ff"},
 
             };
@@ -911,7 +914,9 @@ public enum CustomRoles
     Cyber,
     Stubborn,
     Overclocked,
-    Hurried
+    Hurried,
+    Oiiai,
+    Influenced
     // QuickFix
 }
 //WinData

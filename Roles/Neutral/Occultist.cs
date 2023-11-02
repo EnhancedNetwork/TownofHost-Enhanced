@@ -223,7 +223,7 @@
 //    }
 //    public static string GetCursedMark(byte target, bool isMeeting)
 //    {
-        
+
 //        if (isMeeting && IsCursed(target))
 //        {
 //            if (!CursesLookLikeSpells.GetBool())
@@ -236,7 +236,7 @@
 //            }
 //        }
 //        return "";
-        
+
 //    }
 //    public static string GetHexModeText(PlayerControl occultist, bool hud, bool isMeeting = false)
 //    {

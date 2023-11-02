@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using Hazel;
-using Rewired.UI.ControlMapper;
 using System;
 using TOHE.Modules;
 using TOHE.Roles.Double;

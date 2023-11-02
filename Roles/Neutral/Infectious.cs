@@ -1,10 +1,8 @@
-﻿using MS.Internal.Xml.XPath;
-using TOHE.Roles.Double;
+﻿using TOHE.Roles.Double;
 using UnityEngine;
 
 using static TOHE.Options;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 

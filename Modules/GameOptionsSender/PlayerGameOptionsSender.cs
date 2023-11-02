@@ -1,14 +1,14 @@
-using System;
-using System.Linq;
 using AmongUs.GameOptions;
 using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem.Linq;
 using InnerNet;
-using Mathf = UnityEngine.Mathf;
+using System;
+using System.Linq;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using Mathf = UnityEngine.Mathf;
 
 namespace TOHE.Modules;
 
