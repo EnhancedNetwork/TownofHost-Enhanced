@@ -62,7 +62,6 @@ public static class BanManager
             while ((line = sr.ReadLine()) != null)
             {
                 if (line == "" || line.StartsWith("#")) continue;
-                // if (line.Contains("actorour#0029")) continue;
                 EACList.Add(line);
             }
 
@@ -99,10 +98,15 @@ public static class BanManager
         if (!AmongUsClient.Instance.AmHost || player == null) return;
         if (!CheckBanList(player?.FriendCode, player?.GetHashedPuid()) && !TempBanWhiteList.Contains(player?.GetHashedPuid()))
         {
-            File.AppendAllText(BAN_LIST_PATH, $"{player.FriendCode},{player?.GetHashedPuid()},{player.PlayerName}\n");
-            Logger.SendInGame(string.Format(GetString("Message.AddedPlayerToBanList"), player.PlayerName));
+            if (player?.GetHashedPuid() != "" && player?.GetHashedPuid() != null)
+            {
+                File.AppendAllText(BAN_LIST_PATH, $"{player.FriendCode},{player?.GetHashedPuid()},{player.PlayerName.RemoveHtmlTags()}\n");
+                Logger.SendInGame(string.Format(GetString("Message.AddedPlayerToBanList"), player.PlayerName));
+            }
+            else Logger.Info($"Failed to add player {player?.PlayerName} to ban list!", "AddBanPlayer");
         }
     }
+    
     public static void CheckDenyNamePlayer(InnerNet.ClientData player)
     {
         if (!AmongUsClient.Instance.AmHost || !Options.ApplyDenyNameList.GetBool()) return;
@@ -115,7 +119,6 @@ public static class BanManager
             while ((line = sr.ReadLine()) != null)
             {
                 if (line == "") continue;
-           //     if (line.Contains("actorour#0029")) continue;
                 if (line.Contains("Amogus"))
                 {
                     AmongUsClient.Instance.KickPlayer(player.Id, false);
@@ -184,7 +187,6 @@ public static class BanManager
             while ((line = sr.ReadLine()) != null)
             {
                 if (line == "") continue;
-                //     if (line.Contains("actorour#0029")) continue;
                 if (!OnlyCheckPuid)
                     if (line.Contains(code)) return true;
                 if (line.Contains(hashedpuid)) return true;

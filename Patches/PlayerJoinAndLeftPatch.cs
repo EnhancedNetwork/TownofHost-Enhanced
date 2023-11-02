@@ -58,6 +58,8 @@ class OnGameJoinedPatch
                     AmongUsClient.Instance.ExitGame(DisconnectReasons.Banned);
                     SceneChanger.ChangeScene("MainMenu");
                 }
+                var client = PlayerControl.LocalPlayer.GetClient();
+                Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Hosted room", "Session");
             }, 1f, "OnGameJoinedPatch");
         }
     }
@@ -244,7 +246,7 @@ class OnPlayerLeftPatch
                     {
                         if (!Main.PlayerQuitTimes.ContainsKey(data?.GetHashedPuid()))
                             Main.PlayerQuitTimes.Add(data?.GetHashedPuid(), 1);
-                        else Main.PlayerQuitTimes[data?.FriendCode]++;
+                        else Main.PlayerQuitTimes[data?.GetHashedPuid()]++;
 
                         if (Main.PlayerQuitTimes[data?.GetHashedPuid()] >= Options.QuitTimesTillTempBan.GetInt())
                         {

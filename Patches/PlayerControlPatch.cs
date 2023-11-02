@@ -2419,8 +2419,8 @@ class FixedUpdatePatch
                             {
                                 if (player.GetClient().ProductUserId != "")
                                 {
-                                    if (!BanManager.TempBanWhiteList.Contains(player.GetClient().ProductUserId))
-                                        BanManager.TempBanWhiteList.Add(player.GetClient().ProductUserId);
+                                    if (!BanManager.TempBanWhiteList.Contains(player.GetClient().GetHashedPuid()))
+                                        BanManager.TempBanWhiteList.Add(player.GetClient().GetHashedPuid());
                                 }
                                 string msg = string.Format(GetString("TempBannedBecauseLowLevel"), player.GetRealName().RemoveHtmlTags());
                                 Logger.SendInGame(msg);
