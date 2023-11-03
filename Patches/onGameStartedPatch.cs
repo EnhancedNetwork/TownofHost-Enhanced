@@ -319,15 +319,16 @@ internal class ChangeRoleSettings
             Pitfall.Init();
             Agitater.Init();
             Swapper.Init();
+            Enigma.Init()
             ChiefOfPolice.Init();
             Mini.Init();
             Blackmailer.Init();
             Spy.Init();
             Oiiai.Init();
             FFF.Init();
+            
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
-            Enigma.Init();
 
             CustomWinnerHolder.Reset();
             AntiBlackout.Reset();
