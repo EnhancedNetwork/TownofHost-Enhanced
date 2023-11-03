@@ -319,13 +319,14 @@ internal class ChangeRoleSettings
             Pitfall.Init();
             Agitater.Init();
             Swapper.Init();
+            Enigma.Init()
             ChiefOfPolice.Init();
             Mini.Init();
             Blackmailer.Init();
             Spy.Init();
             Oiiai.Init();
             FFF.Init();
-
+            
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
 
@@ -927,6 +928,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.FFF:
                         FFF.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Enigma:
+                        Enigma.Add(pc.PlayerId);
                         break;
                 }
                 foreach (var subRole in pc.GetCustomSubRoles())
