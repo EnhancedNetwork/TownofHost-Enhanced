@@ -134,6 +134,8 @@ public static class DevManager
         DevUserList.Add(new(code: "deepmusic#4504", color: "#FCF4A3", tag: "Translator", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "Sunnyboi")); //misheru.u
         // Latam Translators
         DevUserList.Add(new(code: "magicyear#5568", color: "#1F75FE", tag: "Traductor", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "CreepPower")); //creeppower
+        // Sapnsh Translators
+        DevUserList.Add(new(code: "swiftlord#0872", color: "#E64236", tag: "Translator", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "CreepPower")); //creeppower
 
         // China Up
         DevUserList.Add(new(code: "truantwarm#9165", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "萧暮不姓萧"));
