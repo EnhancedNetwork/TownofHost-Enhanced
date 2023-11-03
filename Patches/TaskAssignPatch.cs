@@ -15,7 +15,9 @@ class AddTasksFromListPatch
         if (!AmongUsClient.Instance.AmHost) return;
 
         if (!Options.DisableShortTasks.GetBool() && !Options.DisableCommonTasks.GetBool() && !Options.DisableLongTasks.GetBool() && !Options.DisableOtherTasks.GetBool()) return;
+        
         List<NormalPlayerTask> disabledTasks = new();
+
         for (var i = 0; i < unusedTasks.Count; i++)
         {
             var task = unusedTasks[i];
@@ -73,10 +75,29 @@ class AddTasksFromListPatch
             if (task.TaskType == TaskTypes.FuelEngines && Options.DisableFuelEngines.GetBool()) disabledTasks.Add(task);//FuelEngines task
             if (task.TaskType == TaskTypes.DivertPower && Options.DisableDivertPower.GetBool()) disabledTasks.Add(task);//DivertPower task v1.0a
             if (task.TaskType == TaskTypes.FixWeatherNode && Options.DisableActivateWeatherNodes.GetBool()) disabledTasks.Add(task);//ActivateWeatherNodes task
+            if (task.TaskType == TaskTypes.RoastMarshmallow && Options.DisableRoastMarshmallow.GetBool()) disabledTasks.Add(task);//Roast Marshmallow
+            if (task.TaskType == TaskTypes.CollectSamples && Options.DisableCollectSamples.GetBool()) disabledTasks.Add(task);//Collect Samples
+            if (task.TaskType == TaskTypes.ReplaceParts && Options.DisableReplaceParts.GetBool()) disabledTasks.Add(task);//Replace Parts
+            if (task.TaskType == TaskTypes.CollectVegetables && Options.DisableCollectVegetables.GetBool()) disabledTasks.Add(task);//Collect Vegetables
+            if (task.TaskType == TaskTypes.MineOres && Options.DisableMineOres.GetBool()) disabledTasks.Add(task);//Mine Ores
+            if (task.TaskType == TaskTypes.ExtractFuel && Options.DisableExtractFuel.GetBool()) disabledTasks.Add(task);//Extract Fuel
+            if (task.TaskType == TaskTypes.CatchFish && Options.DisableCatchFish.GetBool()) disabledTasks.Add(task);//Catch Fish
+            if (task.TaskType == TaskTypes.PolishGem && Options.DisablePolishGem.GetBool()) disabledTasks.Add(task);//Polish Gem
+            if (task.TaskType == TaskTypes.HelpCritter && Options.DisableHelpCritter.GetBool()) disabledTasks.Add(task);//Help Critter
+            if (task.TaskType == TaskTypes.HoistSupplies && Options.DisableHoistSupplies.GetBool()) disabledTasks.Add(task);//Hoist Supplies
+            if (task.TaskType == TaskTypes.FixAntenna && Options.DisableFixAntenna.GetBool()) disabledTasks.Add(task);//Fix Antenna
+            if (task.TaskType == TaskTypes.BuildSandcastle && Options.DisableBuildSandcastle.GetBool()) disabledTasks.Add(task);//Build Sandcastle
+            if (task.TaskType == TaskTypes.CrankGenerator && Options.DisableCrankGenerator.GetBool()) disabledTasks.Add(task);//Crank Generator
+            if (task.TaskType == TaskTypes.MonitorMushroom && Options.DisableMonitorMushroom.GetBool()) disabledTasks.Add(task);//Monitor Mushroom
+            if (task.TaskType == TaskTypes.PlayVideogame && Options.DisablePlayVideoGame.GetBool()) disabledTasks.Add(task);//Play Video Game
+            if (task.TaskType == TaskTypes.TuneRadio && Options.DisableFindSignal.GetBool()) disabledTasks.Add(task);//Find Signal
+            if (task.TaskType == TaskTypes.TestFrisbee && Options.DisableThrowFisbee.GetBool()) disabledTasks.Add(task);//Throw Fisbee
+            if (task.TaskType == TaskTypes.LiftWeights && Options.DisableLiftWeights.GetBool()) disabledTasks.Add(task);//Lift Weights
+            if (task.TaskType == TaskTypes.CollectShells && Options.DisableCollectShells.GetBool()) disabledTasks.Add(task);//Collect Shells
         }
         foreach (var task in disabledTasks)
         {
-            Logger.Msg("削除: " + task.TaskType.ToString(), "AddTask");
+            Logger.Msg("Deletion: " + task.TaskType.ToString(), "Disable Tasks");
             unusedTasks.Remove(task);
         }
     }
@@ -85,16 +106,16 @@ class AddTasksFromListPatch
 [HarmonyPatch(typeof(GameData), nameof(GameData.RpcSetTasks))]
 class RpcSetTasksPatch
 {
-    //タスクを割り当ててRPCを送る処理が行われる直前にタスクを上書きするPatch
-    //バニラのタスク割り当て処理自体には干渉しない
+    // Patch to overwrite the task just before the process of allocating the task and sending the RPC is performed
+    // Does not interfere with the vanilla task allocation process itself
     public static void Prefix(GameData __instance,
     [HarmonyArgument(0)] byte playerId,
     [HarmonyArgument(1)] ref Il2CppStructArray<byte> taskTypeIds)
     {
-        //null対策
+        // null measure
         if (Main.RealOptionsData == null)
         {
-            Logger.Warn("警告:RealOptionsDataがnullです。", "RpcSetTasksPatch");
+            Logger.Warn("Warning: RealOptionsData is null", "RpcSetTasksPatch");
             return;
         }
 
@@ -103,21 +124,24 @@ class RpcSetTasksPatch
         if (RoleNullable == null) return;
         CustomRoles role = RoleNullable.Value;
 
-        //デフォルトのタスク数
+        // Default number of tasks
         bool hasCommonTasks = true;
         int NumLongTasks = Main.NormalOptions.NumLongTasks;
         int NumShortTasks = Main.NormalOptions.NumShortTasks;
 
         if (Options.OverrideTasksData.AllData.TryGetValue(role, out var data) && data.doOverride.GetBool())
         {
-            hasCommonTasks = data.assignCommonTasks.GetBool(); // コモンタスク(通常タスク)を割り当てるかどうか
-                                                               // 割り当てる場合でも再割り当てはされず、他のクルーと同じコモンタスクが割り当てられる。
-            NumLongTasks = data.numLongTasks.GetInt(); // 割り当てるロングタスクの数
-            NumShortTasks = data.numShortTasks.GetInt(); // 割り当てるショートタスクの数
-                                                         // ロングとショートは常時再割り当てが行われる。
+            // whether to assign a common task (normal task) or not.
+            // If assigned, it will not be reassigned and the same common task will be assigned as the other crew members.
+            hasCommonTasks = data.assignCommonTasks.GetBool();
+
+            NumLongTasks = data.numLongTasks.GetInt(); // Number of long tasks to assign
+            NumShortTasks = data.numShortTasks.GetInt(); // Number of short tasks to allocate
+
+            // Long and short tasks are always reallocated.
         }
 
-        //背叛告密的任务覆盖
+        // Betrayal of whistleblower mission coverage
         if (pc.Is(CustomRoles.Snitch) && pc.Is(CustomRoles.Madmate))
         {
             hasCommonTasks = false;
@@ -125,7 +149,7 @@ class RpcSetTasksPatch
             NumShortTasks = Options.MadSnitchTasks.GetInt();
         }
 
-        //管理员和摆烂人没有任务
+        // GM - no have tasks, Lazy Gay and Lazy have 1 task
         if (pc.Is(CustomRoles.GM) || pc.Is(CustomRoles.Needy) || pc.Is(CustomRoles.Lazy))
         {
             hasCommonTasks = false;
@@ -133,54 +157,55 @@ class RpcSetTasksPatch
             NumLongTasks = 0;
         }
 
-        //加班狂加班咯~
         if (pc.Is(CustomRoles.Workhorse))
+        {
             (hasCommonTasks, NumLongTasks, NumShortTasks) = Workhorse.TaskData;
+        }
 
-        //资本主义要祸害人咯~
+        // Capitalism is going to wreak havoc on people
         if (Main.CapitalismAssignTask.ContainsKey(playerId))
         {
             NumShortTasks += Main.CapitalismAssignTask[playerId];
             Main.CapitalismAssignTask.Remove(playerId);
         }
 
-        if (taskTypeIds.Count == 0) hasCommonTasks = false; //タスク再配布時はコモンを0に
-        if (!hasCommonTasks && NumLongTasks == 0 && NumShortTasks == 0) NumShortTasks = 1; //タスク0対策
-        if (hasCommonTasks && NumLongTasks == Main.NormalOptions.NumLongTasks && NumShortTasks == Main.NormalOptions.NumShortTasks) return; //変更点がない場合
+        if (taskTypeIds.Count == 0) hasCommonTasks = false; //Common to 0 when redistributing tasks
+        if (!hasCommonTasks && NumLongTasks == 0 && NumShortTasks == 0) NumShortTasks = 1; //Task 0 Measures
+        if (hasCommonTasks && NumLongTasks == Main.NormalOptions.NumLongTasks && NumShortTasks == Main.NormalOptions.NumShortTasks) return; //If there are no changes
 
-        //割り当て可能なタスクのIDが入ったリスト
-        //本来のRpcSetTasksの第二引数のクローン
+        // A list containing the IDs of tasks that can be assigned
+        // Clone of the second argument of the original RpcSetTasks
         Il2CppSystem.Collections.Generic.List<byte> TasksList = new();
         foreach (var num in taskTypeIds)
             TasksList.Add(num);
 
-        //参考:ShipStatus.Begin
-        //不要な割り当て済みのタスクを削除する処理
-        //コモンタスクを割り当てる設定ならコモンタスク以外を削除
-        //コモンタスクを割り当てない設定ならリストを空にする
+        // Reference:ShipStatus.Begin
+        // Deleting unnecessary allocated tasks
+        // Deleting tasks other than common tasks if common tasks are assigned
+        // Empty the list if common tasks are not allocated
         int defaultCommonTasksNum = Main.RealOptionsData.GetInt(Int32OptionNames.NumCommonTasks);
         if (hasCommonTasks) TasksList.RemoveRange(defaultCommonTasksNum, TasksList.Count - defaultCommonTasksNum);
         else TasksList.Clear();
 
-        //割り当て済みのタスクが入れられるHashSet
-        //同じタスクが複数割り当てられるのを防ぐ
+        // A HashSet into which allocated tasks can be placed
+        // Prevents multiple assignments of the same task
         Il2CppSystem.Collections.Generic.HashSet<TaskTypes> usedTaskTypes = new();
         int start2 = 0;
         int start3 = 0;
 
-        //割り当て可能なロングタスクのリスト
+        // List of long tasks that can be assigned
         Il2CppSystem.Collections.Generic.List<NormalPlayerTask> LongTasks = new();
         foreach (var task in ShipStatus.Instance.LongTasks)
             LongTasks.Add(task);
         Shuffle<NormalPlayerTask>(LongTasks);
 
-        //割り当て可能なショートタスクのリスト
+        // List of short tasks that can be assigned
         Il2CppSystem.Collections.Generic.List<NormalPlayerTask> ShortTasks = new();
         foreach (var task in ShipStatus.Instance.ShortTasks)
             ShortTasks.Add(task);
         Shuffle<NormalPlayerTask>(ShortTasks);
 
-        //実際にAmong Us側で使われているタスクを割り当てる関数を使う。
+        // Use the function to assign tasks that are actually used on the Among Us side
         ShipStatus.Instance.AddTasksFromList(
             ref start2,
             NumLongTasks,
@@ -196,7 +221,7 @@ class RpcSetTasksPatch
             ShortTasks
         );
 
-        //タスクのリストを配列(Il2CppStructArray)に変換する
+        // Converts a list of tasks into an array (Il2CppStructArray)
         taskTypeIds = new Il2CppStructArray<byte>(TasksList.Count);
         for (int i = 0; i < TasksList.Count; i++)
         {
