@@ -3722,11 +3722,16 @@ class PlayerControlCompleteTaskPatch
 
         return true;
     }
-    public static void Postfix(PlayerControl __instance)
+    public static void Postfix(PlayerControl __instance, object[] __args)
     {
         var pc = __instance;
         Snitch.OnCompleteTask(pc);
-
+        int taskIndex = Convert.ToInt32(__args[0]);
+        if (pc != null)
+        {
+            var playerTask = pc.myTasks[taskIndex];
+            Taskinator.OnTasKComplete(pc, playerTask);
+        }
         var isTaskFinish = pc.GetPlayerTaskState().IsTaskFinished;
         if (isTaskFinish && pc.Is(CustomRoles.Snitch) && pc.Is(CustomRoles.Madmate))
         {

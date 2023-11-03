@@ -1940,6 +1940,8 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shaman])
             .SetValueFormat(OptionFormat.Seconds);
 
+        Taskinator.SetupCustomOption();
+
         NWitch.SetupCustomOption();
         /*  SetupSingleRoleOptions(6050530, TabGroup.NeutralRoles, CustomRoles.NWitch, 1, zeroOne: false);
           ControlCooldown = FloatOptionItem.Create(6050532, "ControlCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false)
