@@ -1301,9 +1301,11 @@ static class ExtendedPlayerControl
     }
     public static bool RpcCheckAndMurder(this PlayerControl killer, PlayerControl target, bool check = false) => CheckMurderPatch.RpcCheckAndMurder(killer, target, check);
     public static void NoCheckStartMeeting(this PlayerControl reporter, GameData.PlayerInfo target, bool force = false)
-    { /*サボタージュ中でも関係なしに会議を起こせるメソッド
-        targetがnullの場合はボタンとなる*/
+    { 
+        //Method that can cause a meeting to occur regardless of whether it is in sabotage.
+        //If target is null, it becomes a button.
         if (Options.DisableMeeting.GetBool() && !force) return;
+
         ReportDeadBodyPatch.AfterReportTasks(reporter, target);
         MeetingRoomManager.Instance.AssignSelf(reporter, target);
         DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(reporter);
