@@ -1232,15 +1232,34 @@ class CheckShapeshiftPatch
 {
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, bool shouldAnimate)
     {
-        if (__instance.Is(CustomRoles.Deathpact) || __instance.Is(CustomRoles.Devourer) || __instance.Is(CustomRoles.Dazzler))
+        bool cancelShapeshift = false;
+        switch (__instance.GetCustomRole())
         {
-            if (__instance.Is(CustomRoles.Devourer))
-            {
+            case CustomRoles.Dazzler:
+                Dazzler.OnShapeshift(__instance, target);
+                cancelShapeshift = true;
+                break;
+            case CustomRoles.Devourer:
                 Devourer.OnShapeshift(__instance, target);
-            }
+                cancelShapeshift = true;
+                break;
+            case CustomRoles.Deathpact:
+                Deathpact.OnShapeshift(__instance, target);
+                cancelShapeshift = true;
+                break;
+            case CustomRoles.Hacker:
+                Hacker.OnShapeshift(__instance, true, target);
+                cancelShapeshift = true;
+                break;
+            case CustomRoles.Pitfall:
+                Pitfall.OnShapeshift(__instance);
+                cancelShapeshift = true;
+                break;
+        }
 
+        if (cancelShapeshift)
+        {
             __instance.RpcResetAbilityCooldown();
-
             return false;
         }
 
