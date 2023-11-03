@@ -125,6 +125,8 @@ class ExileControllerWrapUpPatch
             if (Lawyer.CheckExileTarget(exiled, DecidedWinner)) DecidedWinner = false;
 
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist) Main.PlayerStates[exiled.PlayerId].SetDead();
+
+            Instigator.OnPlayerExile(exiled);
         }
         if (AmongUsClient.Instance.AmHost && Main.IsFixedCooldown)
             Main.RefixCooldownDelay = Options.DefaultKillCooldown - 3f;

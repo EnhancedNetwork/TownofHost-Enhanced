@@ -101,6 +101,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
             case CustomRoles.EngineerTOHE:
             case CustomRoles.Phantom:
             case CustomRoles.Crewpostor:
+            case CustomRoles.Taskinator:
           //  case CustomRoles.Jester:
             case CustomRoles.Monitor:
                 AURoleOptions.EngineerCooldown = 0f;

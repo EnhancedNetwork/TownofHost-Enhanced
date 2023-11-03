@@ -144,8 +144,14 @@ internal class ControllerManagerUpdatePatch
         //强制结束会议或召开会议
         if (GetKeysDown(KeyCode.Return, KeyCode.M, KeyCode.LeftShift) && GameStates.IsInGame)
         {
-            if (GameStates.IsMeeting) MeetingHud.Instance.RpcClose();
-            else PlayerControl.LocalPlayer.NoCheckStartMeeting(null, true);
+            if (GameStates.IsMeeting)
+            {
+                MeetingHud.Instance.RpcClose();
+            }
+            else
+            {
+                PlayerControl.LocalPlayer.NoCheckStartMeeting(null, force: true);
+            }
         }
         //立即开始        
         if (Input.GetKeyDown(KeyCode.LeftShift) && GameStates.IsCountDown && !HudManager.Instance.Chat.IsOpenOrOpening)
@@ -205,7 +211,7 @@ internal class ControllerManagerUpdatePatch
             Utils.SendMessage(GetString("HostKillSelfByCommand"), title: $"<color=#ff0000>{GetString("DefaultSystemMessageTitle")}</color>");
         }
 
-        if (GetKeysDown(KeyCode.Return, KeyCode.G, KeyCode.LeftShift) && GameStates.IsInGame && PlayerControl.LocalPlayer.FriendCode == "gnuedaphic#7196")
+        if (GetKeysDown(KeyCode.Return, KeyCode.G, KeyCode.LeftShift) && GameStates.IsInGame && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug)
         {
             HudManager.Instance.StartCoroutine(HudManager.Instance.CoFadeFullScreen(Color.clear, Color.black));
             HudManager.Instance.StartCoroutine(DestroyableSingleton<HudManager>.Instance.CoShowIntro());
