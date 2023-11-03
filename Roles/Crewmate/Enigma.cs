@@ -127,7 +127,7 @@ namespace TOHE.Roles.Crewmate
                 if (showStageClue && clues.Any(a => a.ClueStage == stage))
                     clues = clues.Where(a => a.ClueStage == stage).ToList();
 
-                EnigmaClue clue = clues[rd.Next(0, clues.Count - 1)];
+                EnigmaClue clue = clues[rd.Next(0, clues.Count)];
                 title = clue.Title;
                 msg = clue.GetMessage(killer, showStageClue);
 
@@ -258,7 +258,7 @@ namespace TOHE.Roles.Crewmate
             public override string GetMessage(PlayerControl killer, bool showStageClue)
             {
                 string killerName = killer.GetRealName();
-                string letter = killerName[rd.Next(0, killerName.Length - 1)].ToString().ToLower();
+                string letter = killerName[rd.Next(0, killerName.Length)].ToString().ToLower();
 
                 switch (this.ClueStage)
                 {
@@ -297,7 +297,7 @@ namespace TOHE.Roles.Crewmate
                 string tmpName = killerName.Replace(letter, string.Empty);
                 if (!string.IsNullOrEmpty(tmpName))
                 {
-                    letter2 = tmpName[rd.Next(0, tmpName.Length - 1)].ToString().ToLower();
+                    letter2 = tmpName[rd.Next(0, tmpName.Length)].ToString().ToLower();
                 }
 
                 return string.Format(GetString("EnigmaClueName3"), letter, letter2);
@@ -306,9 +306,9 @@ namespace TOHE.Roles.Crewmate
             private string GetRandomLetter(PlayerControl killer, string letter)
             {
                 var alivePlayers = Main.AllAlivePlayerControls.Where(a => a.PlayerId != killer.PlayerId).ToList();
-                var rndPlayer = alivePlayers[rd.Next(0, alivePlayers.Count - 1)];
+                var rndPlayer = alivePlayers[rd.Next(0, alivePlayers.Count)];
                 string rndPlayerName = rndPlayer.GetRealName().Replace(letter, "");
-                string letter2 = rndPlayerName[rd.Next(0, rndPlayerName.Length - 1)].ToString().ToLower();
+                string letter2 = rndPlayerName[rd.Next(0, rndPlayerName.Length)].ToString().ToLower();
                 return letter2;
             }
         }
