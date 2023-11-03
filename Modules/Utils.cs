@@ -80,6 +80,7 @@ public static class Utils
     }
     public static void RpcTeleport(this PlayerControl player, Vector2 location)
     {
+        Logger.Info($" {player.GetRealName()}", "Teleport - Player Real Name");
         Logger.Info($" {player.PlayerId}", "Teleport - Player Id");
         Logger.Info($" {location}", "Teleport - Location");
 
@@ -89,17 +90,24 @@ public static class Utils
         }
 
         // Modded
-        var playerlastSequenceId = player.NetTransform.lastSequenceId + 8;
-        player.NetTransform.SnapTo(location, (ushort)playerlastSequenceId);
-        Logger.Info($" {(ushort)playerlastSequenceId}", "Teleport - Player NetTransform lastSequenceId + 8 - writer");
-
+        if (AmongUsClient.Instance.AmHost)
+        {
+            var playerlastSequenceId = (int)player.NetTransform.lastSequenceId;
+            playerlastSequenceId += 10;
+            player.NetTransform.SnapTo(location, (ushort)playerlastSequenceId);
+            Logger.Info($" {player.GetRealName()} - {player.NetTransform.lastSequenceId}", "Teleport - Player NetTransform lastSequenceId - SnapTo");
+            Logger.Info($" {(ushort)playerlastSequenceId}", "Teleport - Player NetTransform lastSequenceId + 10 - SnapTo");
+        }
 
         // Vanilla
         MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable);
         NetHelpers.WriteVector2(location, messageWriter);
-        messageWriter.Write(player.NetTransform.lastSequenceId + 10U);
+        messageWriter.Write(player.NetTransform.lastSequenceId + 100U);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
-        Logger.Info($" {player.NetTransform.lastSequenceId + 10U}", "Teleport - Player NetTransform lastSequenceId + 10U - writer");
+
+        var temp = (uint)player.NetTransform.lastSequenceId;
+        temp += 100U;
+        Logger.Info($"lastSequenceId: {player.NetTransform.lastSequenceId} - lastSequenceId + 100U: {temp}", "Teleport - Player NetTransform lastSequenceId - writer");
     }
     public static void RpcRandomVentTeleport(this PlayerControl player)
     {
