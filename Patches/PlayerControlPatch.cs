@@ -1156,6 +1156,63 @@ class CheckMurderPatch
                     return false;
                 }
                 break;
+            case CustomRoles.XiaoMu:
+                var Fg = IRandom.Instance;
+                int xiaomu = Fg.Next(1, 3);
+                    if (xiaomu == 1)
+                    {
+                        if (killer.PlayerId != target.PlayerId || target.GetRealKiller()?.GetCustomRole() is CustomRoles.Swooper)
+                        {
+                            NameNotifyManager.Notify(killer, Utils.ColorString(Utils.GetRoleColor(CustomRoles.XiaoMu), GetString("YouKillXiaoMu1")));
+                            killer.RPCPlayCustomSound("Congrats");
+                            target.RPCPlayCustomSound("Congrats");
+                            float delay;
+                            if (Options.BaitDelayMax.GetFloat() < Options.BaitDelayMin.GetFloat()) delay = 0f;
+                            else delay = IRandom.Instance.Next((int)Options.BaitDelayMin.GetFloat(), (int)Options.BaitDelayMax.GetFloat() + 1);
+                            delay = Math.Max(delay, 0.15f);
+                            if (delay > 0.15f && Options.BaitDelayNotify.GetBool()) killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), string.Format(GetString("KillBaitNotify"), (int)delay)), delay);
+                            Logger.Info($"{killer.GetNameWithRole()} 击杀萧暮自动报告 => {target.GetNameWithRole()}", "XiaoMu");
+                            _ = new LateTask(() => { if (GameStates.IsInTask) killer.CmdReportDeadBody(target.Data); }, delay, "Bait Self Report");
+                        }
+                    }
+                    else if (xiaomu == 2)
+                    {
+                        Logger.Info($"{killer.GetNameWithRole()} 击杀了萧暮触发原地不能动 => {target.GetNameWithRole()}", "XiaoMu");
+                        NameNotifyManager.Notify(killer, Utils.ColorString(Utils.GetRoleColor(CustomRoles.XiaoMu), GetString("YouKillXiaoMu2")));
+                        var tmpSpeed1 = Main.AllPlayerSpeed[killer.PlayerId];
+                        Main.AllPlayerSpeed[killer.PlayerId] = Main.MinSpeed;
+                        ReportDeadBodyPatch.CanReport[killer.PlayerId] = false;
+                        killer.MarkDirtySettings();
+                        _ = new LateTask(() =>
+                        {
+                            Main.AllPlayerSpeed[killer.PlayerId] = Main.AllPlayerSpeed[killer.PlayerId] - Main.MinSpeed + tmpSpeed1;
+                            ReportDeadBodyPatch.CanReport[killer.PlayerId] = true;
+                            killer.MarkDirtySettings();
+                            RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
+                        }, Options.TrapperBlockMoveTime.GetFloat(), "Trapper BlockMove");
+                    }
+                    else if (xiaomu == 3)
+                    {
+                        Logger.Info($"{killer.GetNameWithRole()} 击杀了萧暮触发cd114514 => {target.GetNameWithRole()}", "XiaoMu");
+                        Main.AllPlayerKillCooldown[killer.PlayerId] = 114514f;
+                        NameNotifyManager.Notify(killer, Utils.ColorString(Utils.GetRoleColor(CustomRoles.XiaoMu), GetString("YouKillXiaoMu3")));
+                    }
+                    else if (xiaomu == 4)
+                    {
+                        Logger.Info($"{killer.GetNameWithRole()} 击杀了萧暮触发随机复仇 => {target.GetNameWithRole()}", "XiaoMu");
+                        NameNotifyManager.Notify(killer, Utils.ColorString(Utils.GetRoleColor(CustomRoles.XiaoMu), GetString("YouKillXiaoMu4")));
+                        {
+                            var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId).ToList();
+                            var rp = pcList[IRandom.Instance.Next(0, pcList.Count)];
+                            if (!rp.Is(CustomRoles.Pestilence))
+                            {
+                                Main.PlayerStates[rp.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
+                                rp.SetRealKiller(target);
+                                rp.RpcMurderPlayerV3(rp);
+                            }
+                        }
+                    }
+                    break;
         }
 
         //保镖保护

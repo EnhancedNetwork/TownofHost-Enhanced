@@ -134,7 +134,7 @@ public static class Swapper
                     if (!isUI) Utils.SendMessage(GetString("CantSwapSelf"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("CantSwapSelf"));
                 }
-                _= new LateTask(() =>
+                _ = new LateTask(() =>
                 {
                         if (Vote.Count > 0 && VoteTwo.Count > 0)
                         {

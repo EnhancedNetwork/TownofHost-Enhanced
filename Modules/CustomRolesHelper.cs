@@ -152,6 +152,7 @@ static class CustomRolesHelper
                 CustomRoles.EvilMini => CustomRoles.Impostor,
                 CustomRoles.Blackmailer => CustomRoles.Shapeshifter,
                 CustomRoles.Spy => CustomRoles.Crewmate,
+                CustomRoles.XiaoMu => CustomRoles.Crewmate,
 
                 _ => role.IsImpostor() ? CustomRoles.Impostor : CustomRoles.Crewmate,
             };
@@ -997,6 +998,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Unreportable)
                     || pc.Is(CustomRoles.Burst)
                     || pc.Is(CustomRoles.NiceMini)
+                    || pc.Is(CustomRoles.XiaoMu)
                     || (pc.Is(CustomRoles.Onbound) && Options.BaitNotification.GetBool())
                     || (pc.Is(CustomRoles.Rebound) && Options.BaitNotification.GetBool())
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
@@ -1008,6 +1010,7 @@ static class CustomRolesHelper
             case CustomRoles.Trapper:
                 if (pc.Is(CustomRoles.Bait)
                     || pc.Is(CustomRoles.Burst)
+                    || pc.Is(CustomRoles.XiaoMu)
                     || pc.Is(CustomRoles.GuardianAngelTOHE)) 
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeTrapper.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeTrapper.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeTrapper.GetBool()))
@@ -1222,6 +1225,7 @@ static class CustomRolesHelper
             case CustomRoles.Bewilder:
                 if (pc.Is(CustomRoles.Torch)
                     //|| pc.Is(CustomRoles.Sunglasses)
+                    || pc.Is(CustomRoles.XiaoMu)
                     || pc.Is(CustomRoles.Lighter)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
@@ -1241,6 +1245,7 @@ static class CustomRolesHelper
 
             case CustomRoles.Unlucky:
                 if (pc.Is(CustomRoles.Luckey)
+                    || pc.Is(CustomRoles.Mario)
                     || pc.Is(CustomRoles.Lucky))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeUnlucky.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeUnlucky.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeUnlucky.GetBool()))
@@ -1295,6 +1300,7 @@ static class CustomRolesHelper
             case CustomRoles.Youtuber:
                 if (pc.Is(CustomRoles.Madmate)
                     || pc.Is(CustomRoles.NiceMini)
+                    || pc.Is(CustomRoles.XiaoMu)
                     || pc.Is(CustomRoles.Sheriff)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
@@ -1441,6 +1447,7 @@ static class CustomRolesHelper
 
             case CustomRoles.Avanger:
                 if (pc.Is(CustomRoles.Burst)
+                    || pc.Is(CustomRoles.XiaoMu)
                     || pc.Is(CustomRoles.NiceMini))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeAvanger.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeAvanger.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeAvanger.GetBool()))

@@ -1688,6 +1688,11 @@ public static class Options
         TransporterTasks = OverrideTasksData.Create(6211, TabGroup.CrewmateRoles, CustomRoles.Transporter);
 
         /*
+         * XiaoMu
+         */
+        SetupRoleOptions(1039845, TabGroup.CrewmateRoles, CustomRoles.XiaoMu);
+        
+        /*
          * SUPPORT ROLES
          */
         TextOptionItem.Create(100007, "RoleType.CrewSupport", TabGroup.CrewmateRoles)
