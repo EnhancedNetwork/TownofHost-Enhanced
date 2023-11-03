@@ -412,6 +412,7 @@ public class Main : BasePlugin
                 {CustomRoles.NiceMini, "#edc240" },
                 {CustomRoles.Spy, "#34495E"},
                 {CustomRoles.XiaoMu,"#FFA500" },
+                {CustomRoles.Enigma, "#676798"},
                 //第三陣営役職
                 {CustomRoles.Arsonist, "#ff6633"},
                 {CustomRoles.Pyromaniac, "#fc8a4c"},
@@ -471,6 +472,7 @@ public class Main : BasePlugin
                 {CustomRoles.Pickpocket, "#47008B"},
                 {CustomRoles.Traitor, "#BA2E05"},
                 {CustomRoles.Vulture, "#556B2F"},
+                {CustomRoles.Taskinator, "#4737ae"},
                 {CustomRoles.Medusa, "#9900CC"},
                 {CustomRoles.Spiritcaller, "#003366"},
                 {CustomRoles.EvilSpirit, "#003366"},
@@ -695,6 +697,7 @@ public enum CustomRoles
     Pitfall,
     EvilMini,
     Blackmailer,
+    Instigator,
     // Flashbang,
     //Crewmate(Vanilla)
     Engineer,
@@ -773,6 +776,7 @@ public enum CustomRoles
     NiceMini,
     Spy,
     XiaoMu,
+    Enigma,
 
     //Neutral
     Arsonist,
@@ -838,6 +842,7 @@ public enum CustomRoles
     Werewolf,
     Necromancer,
     Huntsman,
+    Taskinator,
     //Occultist,
     Imitator,
    //two-way camp
@@ -1010,6 +1015,7 @@ public enum AdditionalWinners
     Phantom = CustomRoles.Phantom,
     Maverick = CustomRoles.Maverick,
     Shaman = CustomRoles.Shaman,
+    Taskinator = CustomRoles.Taskinator,
  //   NiceMini = CustomRoles.NiceMini,
  //   Baker = CustomRoles.Baker,
 }

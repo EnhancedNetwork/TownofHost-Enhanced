@@ -88,6 +88,7 @@ enum CustomRPC
     SetCursedWolfSpellCount,
     SetJinxSpellCount,
     SetCollectorVotes,
+    TaskinatorMarkedTask,
     SetSwapperVotes,
     SetQuickShooterShotLimit,
     SetEraseLimit,
@@ -522,6 +523,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetCollectorVotes:
                 Collector.ReceiveRPC(reader);
+                break;
+            case CustomRPC.TaskinatorMarkedTask:
+                Taskinator.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetQuickShooterShotLimit:
                 QuickShooter.ReceiveRPC(reader);
@@ -1103,6 +1107,9 @@ internal static class RPC
             case CustomRoles.Collector:
                 Collector.Add(targetId);
                 break;
+            case CustomRoles.Taskinator:
+                Taskinator.Add(targetId);
+                break;
             case CustomRoles.CursedWolf:
                 Main.CursedWolfSpellCount[targetId] = Options.GuardSpellTimes.GetInt();
                 break;
@@ -1325,6 +1332,12 @@ internal static class RPC
                 break;
             case CustomRoles.Spy:
                 Spy.Add(targetId);
+                break;
+            case CustomRoles.Enigma:
+                Enigma.Add(targetId);
+                break;
+            case CustomRoles.Instigator:
+                Instigator.Add(targetId);
                 break;
         }
         HudManager.Instance.SetHudActive(true);
