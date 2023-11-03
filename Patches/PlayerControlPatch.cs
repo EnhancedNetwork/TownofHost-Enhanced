@@ -1339,7 +1339,8 @@ class MurderPlayerPatch
             killer.TrapperKilled(target);
 
         Main.AllKillers.Remove(killer.PlayerId);
-        Main.AllKillers.Add(killer.PlayerId, Utils.GetTimeStamp());
+        if (!killer.Is(CustomRoles.Trickster))
+            Main.AllKillers.Add(killer.PlayerId, Utils.GetTimeStamp());
 
         switch (target.GetCustomRole())
         {
