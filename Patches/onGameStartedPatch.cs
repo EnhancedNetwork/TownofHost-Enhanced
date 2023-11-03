@@ -326,6 +326,7 @@ internal class ChangeRoleSettings
             Spy.Init();
             Oiiai.Init();
             FFF.Init();
+            Instigator.Init();
             
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
@@ -923,6 +924,10 @@ internal class SelectRolesPatch
                     case CustomRoles.Spy:
                         Spy.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.Instigator:
+                        Instigator.Add(pc.PlayerId);
+                        break;
+
                     case CustomRoles.Crewpostor:
                         Main.CrewpostorTasksDone[pc.PlayerId] = 0;
                         break;

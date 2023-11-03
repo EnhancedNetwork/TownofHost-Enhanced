@@ -696,6 +696,7 @@ public enum CustomRoles
     Pitfall,
     EvilMini,
     Blackmailer,
+    Instigator,
     // Flashbang,
     //Crewmate(Vanilla)
     Engineer,

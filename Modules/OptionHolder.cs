@@ -1266,6 +1266,11 @@ public static class Options
             .SetValueFormat(OptionFormat.Seconds);
 
         /*
+         * Instigator
+         */
+        Instigator.SetupCustomOption();
+
+        /*
          * Ludopath
          */
         SetupRoleOptions(10125, TabGroup.ImpostorRoles, CustomRoles.Ludopath);
