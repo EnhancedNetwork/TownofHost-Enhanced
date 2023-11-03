@@ -1226,6 +1226,21 @@ class CheckMurderPatch
         return true;
     }
 }
+
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckShapeshift))]
+class CheckShapeshiftPatch
+{
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, bool shouldAnimate)
+    {
+        if (__instance.Is(CustomRoles.Deathpact) || __instance.Is(CustomRoles.Devourer) || __instance.Is(CustomRoles.Dazzler))
+        {
+            return false;
+        }
+
+        return true;
+    }
+}
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
 class MurderPlayerPatch
 {
