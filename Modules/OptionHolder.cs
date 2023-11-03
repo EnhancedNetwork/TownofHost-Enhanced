@@ -1690,7 +1690,7 @@ public static class Options
         /*
          * XiaoMu
          */
-        SetupRoleOptions(1039845, TabGroup.CrewmateRoles, CustomRoles.XiaoMu);
+        SetupRoleOptions(7200, TabGroup.CrewmateRoles, CustomRoles.XiaoMu);
         
         /*
          * SUPPORT ROLES

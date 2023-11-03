@@ -1156,10 +1156,11 @@ class CheckMurderPatch
                     return false;
                 }
                 break;
+            //击杀萧暮
             case CustomRoles.XiaoMu:
                 var Fg = IRandom.Instance;
-                int xiaomu = Fg.Next(1, 3);
-                    if (xiaomu == 1)
+                int XiaoMu = Fg.Next(1, 4);
+                    if (XiaoMu == 1)
                     {
                         if (killer.PlayerId != target.PlayerId || target.GetRealKiller()?.GetCustomRole() is CustomRoles.Swooper)
                         {
@@ -1175,7 +1176,7 @@ class CheckMurderPatch
                             _ = new LateTask(() => { if (GameStates.IsInTask) killer.CmdReportDeadBody(target.Data); }, delay, "Bait Self Report");
                         }
                     }
-                    else if (xiaomu == 2)
+                    else if (XiaoMu == 2)
                     {
                         Logger.Info($"{killer.GetNameWithRole()} 击杀了萧暮触发原地不能动 => {target.GetNameWithRole()}", "XiaoMu");
                         NameNotifyManager.Notify(killer, Utils.ColorString(Utils.GetRoleColor(CustomRoles.XiaoMu), GetString("YouKillXiaoMu2")));
@@ -1191,13 +1192,13 @@ class CheckMurderPatch
                             RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
                         }, Options.TrapperBlockMoveTime.GetFloat(), "Trapper BlockMove");
                     }
-                    else if (xiaomu == 3)
+                    else if (XiaoMu == 3)
                     {
-                        Logger.Info($"{killer.GetNameWithRole()} 击杀了萧暮触发cd114514 => {target.GetNameWithRole()}", "XiaoMu");
-                        Main.AllPlayerKillCooldown[killer.PlayerId] = 114514f;
+                        Logger.Info($"{killer.GetNameWithRole()} 击杀了萧暮触发CD 90 => {target.GetNameWithRole()}", "XiaoMu");
+                        Main.AllPlayerKillCooldown[killer.PlayerId] = 90f;
                         NameNotifyManager.Notify(killer, Utils.ColorString(Utils.GetRoleColor(CustomRoles.XiaoMu), GetString("YouKillXiaoMu3")));
                     }
-                    else if (xiaomu == 4)
+                    else if (XiaoMu == 4)
                     {
                         Logger.Info($"{killer.GetNameWithRole()} 击杀了萧暮触发随机复仇 => {target.GetNameWithRole()}", "XiaoMu");
                         NameNotifyManager.Notify(killer, Utils.ColorString(Utils.GetRoleColor(CustomRoles.XiaoMu), GetString("YouKillXiaoMu4")));
@@ -1212,7 +1213,7 @@ class CheckMurderPatch
                             }
                         }
                     }
-                    break;
+                break;
         }
 
         //保镖保护
