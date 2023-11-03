@@ -325,9 +325,10 @@ internal class ChangeRoleSettings
             Spy.Init();
             Oiiai.Init();
             FFF.Init();
+            Instigator.Init();
+            
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
-            Instigator.Init();
 
             CustomWinnerHolder.Reset();
             AntiBlackout.Reset();
