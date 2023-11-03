@@ -215,7 +215,8 @@ public static class Divinator
                 CustomRoles.Virus or
                 CustomRoles.Monarch or
                 CustomRoles.Revolutionist or
-                CustomRoles.Succubus
+                CustomRoles.Succubus or
+                CustomRoles.Enigma
                 => "Result15",
 
                 CustomRoles.Innocent or

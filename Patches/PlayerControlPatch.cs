@@ -1339,7 +1339,8 @@ class MurderPlayerPatch
             killer.TrapperKilled(target);
 
         Main.AllKillers.Remove(killer.PlayerId);
-        Main.AllKillers.Add(killer.PlayerId, Utils.GetTimeStamp());
+        if (!killer.Is(CustomRoles.Trickster))
+            Main.AllKillers.Add(killer.PlayerId, Utils.GetTimeStamp());
 
         switch (target.GetCustomRole())
         {
@@ -2286,6 +2287,7 @@ class ReportDeadBodyPatch
         if (Mortician.IsEnable) Mortician.OnReportDeadBody(player, target);
         if (Mediumshiper.IsEnable) Mediumshiper.OnReportDeadBody(target);
         if (Spiritualist.IsEnable) Spiritualist.OnReportDeadBody(target);
+        if (Enigma.IsEnable) Enigma.OnReportDeadBody(player, target);
 
         foreach (var pid in Main.AwareInteracted.Keys)
         {

@@ -154,6 +154,7 @@ static class CustomRolesHelper
                 CustomRoles.EvilMini => CustomRoles.Impostor,
                 CustomRoles.Blackmailer => CustomRoles.Shapeshifter,
                 CustomRoles.Spy => CustomRoles.Crewmate,
+                CustomRoles.Enigma => CustomRoles.Crewmate,
                 CustomRoles.Instigator => CustomRoles.Impostor,
 
                 _ => role.IsImpostor() ? CustomRoles.Impostor : CustomRoles.Crewmate,
@@ -1097,6 +1098,8 @@ static class CustomRolesHelper
                 break;
 
             case CustomRoles.Cyber:
+                if (pc.Is(CustomRoles.Doppelganger))
+                    return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeCyber.GetBool()) 
                     || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeCyber.GetBool()) 
                     || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeCyber.GetBool()))
