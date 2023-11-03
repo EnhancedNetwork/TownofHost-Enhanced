@@ -208,6 +208,7 @@ public static class DevManager
         DevUserList.Add(new(code: "rarespite#3723", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "buddah2400")); //buddah2400
         DevUserList.Add(new(code: "famousdove#2275", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "mina")); //mina_xo
         DevUserList.Add(new(code: "alertfive#4882", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "EnemyFighter")); //misterenemyfighter
+        DevUserList.Add(new(code: "primebulb#9031", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "CultAnxi")); //CultAnxi
        // DevUserList.Add(new(code: "rollingegg#7687", color: "#fe7d6e", tag: "Ruler of Jiggly Peach Cakes", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "DarlingXX"));
         DevUserList.Add(new(code: "riskyhunt#8928", color: "#DC143C", tag: "I♥PANDAS", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "Panda"));
     }
