@@ -2725,11 +2725,11 @@ class FixedUpdatePatch
                     if (Puppeteer.IsEnable)
                         Puppeteer.OnFixedUpdate(player);
 
-                    if (Shroud.IsEnable)
-                        Shroud.OnFixedUpdate(player);
-
                     if (NWitch.IsEnable)
                         NWitch.OnFixedUpdate(player);
+
+                    if (Shroud.IsEnable)
+                        Shroud.OnFixedUpdate(player);
 
                     if (Spiritcaller.IsEnable)
                         Spiritcaller.OnFixedUpdate(player);

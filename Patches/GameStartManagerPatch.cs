@@ -119,13 +119,11 @@ public class GameStartManagerPatch
                     Main.updateTime = 0;
                     if (((GameData.Instance.PlayerCount >= minPlayer && timer <= minWait) || timer <= maxWait) && !GameStates.IsCountDown)
                     {
-                        var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
+                        var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToList();
 
                         if (invalidColor.Any())
                         {
-                            Main.AllPlayerControls
-                                .Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId)
-                                .Do(p => AmongUsClient.Instance.KickPlayer(p.GetClientId(), false));
+                            invalidColor.Do(p => AmongUsClient.Instance.KickPlayer(p.GetClientId(), false));
 
                             Logger.SendInGame(GetString("Error.InvalidColorPreventStart"));
                             var msg = GetString("Error.InvalidColor");
@@ -234,7 +232,7 @@ public class GameStartRandomMap
 {
     public static bool Prefix(GameStartManager __instance)
     {
-        var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
+        var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToList();
         if (invalidColor.Any())
         {
             Logger.SendInGame(GetString("Error.InvalidColorPreventStart"));

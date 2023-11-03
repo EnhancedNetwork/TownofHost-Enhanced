@@ -79,7 +79,7 @@ static class ExtendedPlayerControl
         return player == null || player.Object == null ? CustomRoles.Crewmate : player.Object.GetCustomRole();
     }
     /// <summary>
-    /// ※サブロールは取得できません。
+    /// Only roles (no add-ons)
     /// </summary>
     public static CustomRoles GetCustomRole(this PlayerControl player)
     {
@@ -89,7 +89,7 @@ static class ExtendedPlayerControl
             var callerMethod = caller.GetMethod();
             string callerMethodName = callerMethod.Name;
             string callerClassName = callerMethod.DeclaringType.FullName;
-            Logger.Warn(callerClassName + "." + callerMethodName + "がCustomRoleを取得しようとしましたが、対象がnullでした。", "GetCustomRole");
+            Logger.Warn(callerClassName + "." + callerMethodName + "tried to retrieve CustomRole, but the target was null", "Get CustomRole");
             return CustomRoles.Crewmate;
         }
         var GetValue = Main.PlayerStates.TryGetValue(player.PlayerId, out var State);
@@ -101,7 +101,7 @@ static class ExtendedPlayerControl
     {
         if (player == null)
         {
-            Logger.Warn("CustomSubRoleを取得しようとしましたが、対象がnullでした。", "getCustomSubRole");
+            Logger.Warn("tried to get CustomSubRole, but the target was null", "Get CustomSubRole");
             return new() { CustomRoles.NotAssigned };
         }
         return Main.PlayerStates[player.PlayerId].SubRoles;
@@ -122,8 +122,10 @@ static class ExtendedPlayerControl
     }
     public static void RpcSetNameEx(this PlayerControl player, string name)
     {
-        foreach (var seer in Main.AllPlayerControls)
+        int allPlayerControlsCount = Main.AllPlayerControls.Count;
+        for (int item = 0; item < allPlayerControlsCount; item++)
         {
+            PlayerControl seer = Main.AllPlayerControls[item];
             Main.LastNotifyNames[(player.PlayerId, seer.PlayerId)] = name;
         }
         HudManagerPatch.LastSetNameDesyncCount++;
@@ -174,7 +176,7 @@ static class ExtendedPlayerControl
         if (target == null) target = killer;
         if (!forObserver && !MeetingStates.FirstMeeting)
             Main.AllPlayerControls
-                .Where(x => x.Is(CustomRoles.Observer) && killer.PlayerId != x.PlayerId)
+                .Where(x => x.Is(CustomRoles.Observer) && killer.PlayerId != x.PlayerId).ToList()
                 .Do(x => x.RpcGuardAndKill(target, colorId, true));
         
         // Host
@@ -302,8 +304,8 @@ static class ExtendedPlayerControl
     }
     public static void RpcResetAbilityCooldown(this PlayerControl target)
     {
-        if (!AmongUsClient.Instance.AmHost) return; //ホスト以外が実行しても何も起こさない
-        Logger.Info($"アビリティクールダウンのリセット:{target.name}({target.PlayerId})", "RpcResetAbilityCooldown");
+        if (!AmongUsClient.Instance.AmHost) return; // Nothing happens when run by anyone other than the host.
+        Logger.Info($"Ability cooldown reset: {target.name}({target.PlayerId})", "RpcResetAbilityCooldown");
         if (target.Is(CustomRoles.Glitch))
         {
             Glitch.LastHack = Utils.GetTimeStamp();
@@ -313,22 +315,22 @@ static class ExtendedPlayerControl
         }
         else if (PlayerControl.LocalPlayer == target)
         {
-            //targetがホストだった場合
+            //if target is the host
             PlayerControl.LocalPlayer.Data.Role.SetCooldown();
         }
         else
         {
-            //targetがホスト以外だった場合
+            // target is other than the host
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(target.NetId, (byte)RpcCalls.ProtectPlayer, SendOption.None, target.GetClientId());
             writer.WriteNetObject(target);
             writer.Write(0);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
         /*
-            プレイヤーがバリアを張ったとき、そのプレイヤーの役職に関わらずアビリティーのクールダウンがリセットされます。
-            ログの追加により無にバリアを張ることができなくなったため、代わりに自身に0秒バリアを張るように変更しました。
-            この変更により、役職としての守護天使が無効化されます。
-            ホストのクールダウンは直接リセットします。
+            When a player puts up a barrier, the cooldown of the ability is reset regardless of the player's position.
+            Due to the addition of logs, it is no longer possible to put up a barrier to nothing, so we have changed it to put up a 0 second barrier to oneself instead.
+            This change disables guardian angel as a position.
+            The cooldown of the host resets directly.
         */
     }
     public static void RpcDesyncRepairSystem(this PlayerControl target, SystemTypes systemType, int amount)
@@ -469,7 +471,7 @@ static class ExtendedPlayerControl
     }
     public static bool CanUseKillButton(this PlayerControl pc)
     {
-        int playerCount = Main.AllAlivePlayerControls.Count();
+        int playerCount = Main.AllAlivePlayerControls.Count;
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
         if (Mastermind.ManipulatedPlayers.ContainsKey(pc.PlayerId)) return true;
 
@@ -1152,8 +1154,11 @@ static class ExtendedPlayerControl
                 ChiefOfPolice.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.EvilMini:
-                foreach (var pc in Main.AllPlayerControls)
+                int allPlayerControlsCount = Main.AllPlayerControls.Count;
+                for (int item = 0; item < allPlayerControlsCount; item++)
                 {
+                    PlayerControl pc = Main.AllPlayerControls[item];
+
                     if (pc.Is(CustomRoles.EvilMini) && Mini.Age == 0)
                     {
                         Main.AllPlayerKillCooldown[player.PlayerId] = Mini.MinorCD.GetFloat();

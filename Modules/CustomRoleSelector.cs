@@ -19,7 +19,7 @@ internal class CustomRoleSelector
         // 开始职业抽取
         RoleResult = new();
         var rd = IRandom.Instance;
-        int playerCount = Main.AllAlivePlayerControls.Count();
+        int playerCount = Main.AllAlivePlayerControls.Count;
         int optImpNum = Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors);
         int optNonNeutralKillingNum = 0;
         int optNeutralKillingNum = 0;
@@ -399,13 +399,13 @@ internal class CustomRoleSelector
             }
         }
 
-        var AllPlayer = Main.AllAlivePlayerControls.ToList();
+        var AllPlayer = Main.AllAlivePlayerControls;
 
         while (AllPlayer.Any() && rolesToAssign.Any())
         {
             PlayerControl delPc = null;
             foreach (var pc in AllPlayer)
-                foreach (var dr in Main.DevRole.Where(x => pc.PlayerId == x.Key))
+                foreach (var dr in Main.DevRole.Where(x => pc.PlayerId == x.Key).ToList())
                 {
                     if (dr.Key == PlayerControl.LocalPlayer.PlayerId && Main.EnableGM.Value) continue;
                     var id = rolesToAssign.IndexOf(dr.Value);

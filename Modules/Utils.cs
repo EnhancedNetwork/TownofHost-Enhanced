@@ -248,8 +248,11 @@ public static class Utils
     public static void TargetDies(PlayerControl killer, PlayerControl target)
     {
         if (!target.Data.IsDead || GameStates.IsMeeting) return;
-        foreach (var seer in Main.AllPlayerControls)
+
+        int allPlayerControlsCount = Main.AllPlayerControls.Count;
+        for (int item = 0; item < allPlayerControlsCount; item++)
         {
+            PlayerControl seer = Main.AllPlayerControls[item];
             if (KillFlashCheck(killer, target, seer))
             {
                 seer.KillFlash();
@@ -339,8 +342,9 @@ public static class Utils
     }
     public static string GetRoleMode(CustomRoles role, bool parentheses = true)
     {
-        if (Options.HideGameSettings.GetBool() && Main.AllPlayerControls.Count() > 1)
+        if (Options.HideGameSettings.GetBool() && Main.AllPlayerControls.Count > 1)
             return string.Empty;
+
         string mode = role.GetMode() switch
         {
             0 => GetString("RoleOffNoColor"),
@@ -1657,8 +1661,11 @@ public static class Utils
         var taskState = GetPlayerById(Terrorist.PlayerId).GetPlayerTaskState();
         if (taskState.IsTaskFinished && (!Main.PlayerStates[Terrorist.PlayerId].IsSuicide() || Options.CanTerroristSuicideWin.GetBool())) //タスクが完了で（自殺じゃない OR 自殺勝ちが許可）されていれば
         {
-            foreach (var pc in Main.AllPlayerControls)
+            int allPlayerControlsCount = Main.AllPlayerControls.Count;
+            for (int item = 0; item < allPlayerControlsCount; item++)
             {
+                PlayerControl pc = Main.AllPlayerControls[item];
+
                 if (pc.Is(CustomRoles.Terrorist))
                 {
                     if (Main.PlayerStates[pc.PlayerId].deathReason == PlayerState.DeathReason.Vote)
@@ -1955,8 +1962,11 @@ public static class Utils
 
         //seer: player who updates the nickname/role/mark
         //target: seer updates nickname/role/mark of other targets
-        foreach (var seer in seerList)
+        int seerListCount = seerList.Count;
+        for (int item = 0; item < seerListCount; item++)
         {
+            PlayerControl seer = seerList[item];
+
             // Do nothing when the seer is not present in the game
             if (seer == null || seer.Data.Disconnected) continue;
             
@@ -2213,8 +2223,12 @@ public static class Utils
             if (seer.Data.IsDead || !seer.IsAlive()
                 || NoCache
                 || ForceLoop)
-                foreach (var target in Main.AllPlayerControls)
+            {
+                int allPlayerControlsCount = Main.AllPlayerControls.Count;
+                for (int item1 = 0; item1 < allPlayerControlsCount; item1++)
                 {
+                    PlayerControl target = Main.AllPlayerControls[item1];
+
                     // if the target is the seer itself, do nothing
                     if (target.PlayerId == seer.PlayerId) continue;
 
@@ -2222,14 +2236,14 @@ public static class Utils
 
                     seerRole = seer.GetCustomRole();
 
-                // ====== Add TargetMark for target ======
+                    // ====== Add TargetMark for target ======
 
                     TargetMark.Clear();
 
                     if (isForMeeting)
                     {
                         TargetMark.Append(Witch.GetSpelledMark(target.PlayerId, true));
-                        
+
                         TargetMark.Append(HexMaster.GetHexedMark(target.PlayerId, true));
 
                         //TargetMark.Append(Occultist.GetCursedMark(target.PlayerId, true));
@@ -2237,7 +2251,7 @@ public static class Utils
                         if (Pirate.IsEnable)
                             TargetMark.Append(Pirate.GetPlunderedMark(target.PlayerId, true));
 
-                        if (!seer.Is(CustomRoles.Shroud) && target.IsAlive()) 
+                        if (!seer.Is(CustomRoles.Shroud) && target.IsAlive())
                             TargetMark.Append(Shroud.GetShroudMark(target.PlayerId, true));
                     }
                     if (target.Is(CustomRoles.NiceMini) && Mini.EveryoneCanKnowMini.GetBool())
@@ -2248,7 +2262,7 @@ public static class Utils
 
                     if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate) && target.GetPlayerTaskState().IsTaskFinished)
                         TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Impostor), "★"));
-                    
+
                     if (seer.Is(CustomRoleTypes.Crewmate) && target.Is(CustomRoles.Marshall) && target.GetPlayerTaskState().IsTaskFinished)
                         TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Marshall), "★"));
 
@@ -2278,7 +2292,7 @@ public static class Utils
 
                     if (Lawyer.IsEnable)
                         TargetMark.Append(Lawyer.LawyerMark(seer, target));
-                    
+
                     if (Deathpact.IsEnable)
                         TargetMark.Append(Deathpact.GetDeathpactMark(seer, target));
 
@@ -2351,7 +2365,7 @@ public static class Utils
                     }
 
 
-                // ====== Seer know target role ======
+                    // ====== Seer know target role ======
 
                     string TargetRoleText = ExtendedPlayerControl.KnowRoleTarget(seer, target)
                             ? $"<size={fontSize}>{target.GetDisplayRoleName(seer.PlayerId != target.PlayerId && !seer.Data.IsDead)}{GetProgressText(target)}</size>\r\n" : "";
@@ -2364,7 +2378,7 @@ public static class Utils
                     }
 
 
-                // ====== Target player name ======
+                    // ====== Target player name ======
 
                     string TargetPlayerName = target.GetRealName(isForMeeting);
 
@@ -2404,10 +2418,10 @@ public static class Utils
                             if (seer.IsAlive() && target.IsAlive())
                                 TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + TargetPlayerName;
                             break;
-                    
+
                     }
 
-                  // ========= Only During Meeting =========
+                    // ========= Only During Meeting =========
                     if (isForMeeting)
                     {
                         switch (seerRole)
@@ -2484,11 +2498,11 @@ public static class Utils
 
                     TargetPlayerName = TargetPlayerName.ApplyNameColorData(seer, target, isForMeeting);
 
-                // ====== Add TargetSuffix for target (TargetSuffix visible ​​only to the seer) ======
+                    // ====== Add TargetSuffix for target (TargetSuffix visible ​​only to the seer) ======
                     TargetSuffix.Clear();
 
-                
-                // ====== Target Death Reason for target (Death Reason visible ​​only to the seer) ======
+
+                    // ====== Target Death Reason for target (Death Reason visible ​​only to the seer) ======
                     string TargetDeathReason = "";
                     if (seer.KnowDeathReason(target))
                         TargetDeathReason = $"({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))})";
@@ -2523,6 +2537,7 @@ public static class Utils
 
                     logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":END");
                 }
+            }
 
             logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":END");
         }
@@ -2609,11 +2624,15 @@ public static class Utils
             case CustomRoles.CyberStar:
                 if (GameStates.IsMeeting)
                 {
-                    //网红死亡消息提示
-                    foreach (var pc in Main.AllPlayerControls)
+                    //Death Message
+                    int allPlayerControlsCount = Main.AllPlayerControls.Count;
+                    for (int item = 0; item < allPlayerControlsCount; item++)
                     {
+                        PlayerControl pc = Main.AllPlayerControls[item];
+
                         if (!Options.ImpKnowCyberStarDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
                         if (!Options.NeutralKnowCyberStarDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
+
                         SendMessage(string.Format(GetString("CyberStarDead"), target.GetRealName()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.CyberStar), GetString("CyberStarNewsTitle")));
                     }
                 }
@@ -2639,17 +2658,21 @@ public static class Utils
             switch (subRole)
             {
                 case CustomRoles.Cyber:
-                if (GameStates.IsMeeting)
-                {
-                    //网红死亡消息提示
-                    foreach (var pc in Main.AllPlayerControls)
+                    if (GameStates.IsMeeting)
                     {
-                        if (!Options.ImpKnowCyberDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
-                        if (!Options.NeutralKnowCyberDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
-                        if (!Options.CrewKnowCyberDead.GetBool() && pc.GetCustomRole().IsCrewmate()) continue;
-                        SendMessage(string.Format(GetString("CyberDead"), target.GetRealName()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Cyber), GetString("CyberNewsTitle")));
+                        //Death Message
+                        int allPlayerControlsCount = Main.AllPlayerControls.Count;
+                        for (int item = 0; item < allPlayerControlsCount; item++)
+                        {
+                            PlayerControl pc = Main.AllPlayerControls[item];
+                        
+                            if (!Options.ImpKnowCyberDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
+                            if (!Options.NeutralKnowCyberDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
+                            if (!Options.CrewKnowCyberDead.GetBool() && pc.GetCustomRole().IsCrewmate()) continue;
+
+                            SendMessage(string.Format(GetString("CyberDead"), target.GetRealName()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Cyber), GetString("CyberNewsTitle")));
+                        }
                     }
-                }
                 break;    
             } 
         if (Romantic.BetPlayer.ContainsValue(target.PlayerId))
@@ -2739,12 +2762,16 @@ public static class Utils
     {
         int draw = 0;
         int all = Options.RevolutionistDrawCount.GetInt();
-        int max = Main.AllAlivePlayerControls.Count();
+        int max = Main.AllAlivePlayerControls.Count;
         if (!Main.PlayerStates[playerId].IsDead) max--;
         winnerList = new();
         if (all > max) all = max;
-        foreach (var pc in Main.AllPlayerControls)
+
+        int allPlayerControlsCount = Main.AllPlayerControls.Count;
+        for (int item = 0; item < allPlayerControlsCount; item++)
         {
+            PlayerControl pc = Main.AllPlayerControls[item];
+
             if (Main.isDraw.TryGetValue((playerId, pc.PlayerId), out var isDraw) && isDraw)
             {
                 winnerList.Add(pc);

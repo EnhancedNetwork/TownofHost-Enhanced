@@ -54,8 +54,11 @@ public static class AntiBlackout
             int numCrewmates = 0;
             int numImpostors = 0;
 
-            foreach (var pc in Main.AllPlayerControls)
+            int allPlayerControlsCount = Main.AllPlayerControls.Count;
+            for (int item = 0; item < allPlayerControlsCount; item++)
             {
+                PlayerControl pc = Main.AllPlayerControls[item];
+
                 if (pc.Data.Role.IsImpostor) numImpostors++;
                 else numCrewmates++;
             }
@@ -71,8 +74,11 @@ public static class AntiBlackout
         {
             int numNeutrals = 0;
 
-            foreach (var pc in Main.AllPlayerControls)
+            int allPlayerControlsCount = Main.AllPlayerControls.Count;
+            for (int item = 0; item < allPlayerControlsCount; item++)
             {
+                PlayerControl pc = Main.AllPlayerControls[item];
+
                 if ((pc.GetCustomRole().IsNK() && !pc.Is(CustomRoles.Arsonist))) numNeutrals++;
                 else if (pc.Is(CustomRoles.Arsonist) && Options.ArsonistCanIgniteAnytime.GetBool()) numNeutrals++;
                 else if (pc.Is(CustomRoles.Succubus)) numNeutrals++;

@@ -255,7 +255,7 @@ internal class ChatCommands
                     canceled = true;
                     subArgs = args.Length < 2 ? "" : args[1];
                     Utils.SendMessage(GetString("Message.MaxPlayers") + subArgs);
-                    var numbereer = System.Convert.ToByte(subArgs);
+                    var numbereer = Convert.ToByte(subArgs);
                     GameOptionsManager.Instance.currentNormalGameOptions.MaxPlayers = numbereer;
                     break;
 
@@ -390,8 +390,11 @@ internal class ChatCommands
                 case "/mid":
                     canceled = true;
                     string msgText1 = GetString("PlayerIdList");
-                    foreach (var pc in Main.AllPlayerControls)
+                    int allPlayerControlsCount1 = Main.AllPlayerControls.Count;
+                    for (int item1 = 0; item1 < allPlayerControlsCount1; item1++)
                     {
+                        PlayerControl pc = Main.AllPlayerControls[item1];
+
                         if (pc == null) continue;
                         msgText1 += "\n" + pc.PlayerId.ToString() + " → " + pc.GetRealName();
                     }
@@ -656,8 +659,10 @@ internal class ChatCommands
                         Utils.SendMessage(GetString("Message.CanNotUseInLobby"), PlayerControl.LocalPlayer.PlayerId);
                         break;
                     }
-                    foreach (var pc in Main.AllPlayerControls)
+                    int allPlayerControlsCount2 = Main.AllPlayerControls.Count;
+                    for (int item2 = 0; item2 < allPlayerControlsCount2; item2++)
                     {
+                        PlayerControl pc = Main.AllPlayerControls[item2];
                         if (pc.IsAlive()) continue;
 
                         pc.RpcSetNameEx(pc.GetRealName(isMeeting: true));
@@ -670,8 +675,11 @@ internal class ChatCommands
                 case "/id":
                     canceled = true;
                     string msgText = GetString("PlayerIdList");
-                    foreach (var pc in Main.AllPlayerControls)
+                    int allPlayerControlsCount3 = Main.AllPlayerControls.Count;
+                    for (int item3 = 0; item3 < allPlayerControlsCount3; item3++)
                     {
+                        PlayerControl pc = Main.AllPlayerControls[item3];
+
                         if (pc == null) continue;
                         msgText += "\n" + pc.PlayerId.ToString() + " → " + pc.GetRealName(); 
                     }
@@ -1443,8 +1451,11 @@ internal class ChatCommands
                 if (Options.ApplyModeratorList.GetValue() == 0 || !Utils.IsPlayerModerator(player.FriendCode)) break;
 
                 string msgText = GetString("PlayerIdList");
-                foreach (var pc in Main.AllPlayerControls)
+                int allPlayerControlsCount4 = Main.AllPlayerControls.Count;
+                for (int item4 = 0; item4 < allPlayerControlsCount4; item4++)
                 {
+                    PlayerControl pc = Main.AllPlayerControls[item4];
+
                     if (pc == null) continue;
                     msgText += "\n" + pc.PlayerId.ToString() + " → " + pc.GetRealName();
                 }
@@ -1465,8 +1476,10 @@ internal class ChatCommands
                     break;
                 }
                 string msgText1 = GetString("PlayerIdList");
-                foreach (var pc in Main.AllPlayerControls)
+                int allPlayerControlsCount5 = Main.AllPlayerControls.Count;
+                for (int item5 = 0; item5 < allPlayerControlsCount5; item5++)
                 {
+                    PlayerControl pc = Main.AllPlayerControls[item5];
                     if (pc == null) continue;
                     msgText1 += "\n" + pc.PlayerId.ToString() + " → " + pc.GetRealName();
                 }
@@ -1830,8 +1843,10 @@ internal class ChatCommands
                     Utils.SendMessage(GetString("Message.CanNotUseInLobby"), player.PlayerId);
                     break;
                 }
-                foreach (var pc in Main.AllPlayerControls)
+                int allPlayerControlsCount6 = Main.AllPlayerControls.Count;
+                for (int item6 = 0; item6 < allPlayerControlsCount6; item6++)
                 {
+                    PlayerControl pc = Main.AllPlayerControls[item6];
                     if (pc.IsAlive()) continue;
 
                     pc.RpcSetNameEx(pc.GetRealName(isMeeting: true));

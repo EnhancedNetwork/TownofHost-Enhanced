@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using HarmonyLib;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TOHE.Roles.Neutral;
@@ -15,6 +16,7 @@ class SetUpRoleTextPatch
     public static void Postfix(IntroCutscene __instance)
     {
         if (!GameStates.IsModHost) return;
+
         _ = new LateTask(() =>
         {
             CustomRoles role = PlayerControl.LocalPlayer.GetCustomRole();
@@ -45,27 +47,33 @@ class CoBeginPatch
     public static void Prefix()
     {
         var logger = Logger.Handler("Info");
-        logger.Info("------------显示名称------------");
+        logger.Info("------------Player Names------------");
         foreach (var pc in Main.AllPlayerControls)
         {
             logger.Info($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc.name.PadRightV2(20)}:{pc.cosmetics.nameText.text}({Palette.ColorNames[pc.Data.DefaultOutfit.ColorId].ToString().Replace("Color", "")})");
             pc.cosmetics.nameText.text = pc.name;
         }
-        logger.Info("------------职业分配------------");
+        logger.Info("------------Roles / Add-ons------------");
         foreach (var pc in Main.AllPlayerControls)
         {
             logger.Info($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc?.Data?.PlayerName?.PadRightV2(20)}:{pc.GetAllRoleName().RemoveHtmlTags()}");
         }
-        logger.Info("------------运行环境------------");
+        logger.Info("------------Player Platforms------------");
         foreach (var pc in Main.AllPlayerControls)
         {
             try
             {
                 var text = pc.AmOwner ? "[*]" : "   ";
                 text += $"{pc.PlayerId,-2}:{pc.Data?.PlayerName?.PadRightV2(20)}:{pc.GetClient()?.PlatformData?.Platform.ToString()?.Replace("Standalone", ""),-11}";
+
                 if (Main.playerVersion.TryGetValue(pc.PlayerId, out PlayerVersion pv))
+                {
                     text += $":Mod({pv.forkId}/{pv.version}:{pv.tag})";
-                else text += ":Vanilla";
+                }
+                else
+                {
+                    text += ":Vanilla";
+                }
                 logger.Info(text);
             }
             catch (Exception ex)
@@ -73,16 +81,45 @@ class CoBeginPatch
                 Logger.Exception(ex, "Platform");
             }
         }
-        logger.Info("------------基本设置------------");
-        var tmp = GameOptionsManager.Instance.CurrentGameOptions.ToHudString(GameData.Instance ? GameData.Instance.PlayerCount : 10).Split("\r\n").Skip(1);
-        foreach (var t in tmp) logger.Info(t);
-        logger.Info("------------详细设置------------");
-        foreach (var o in OptionItem.AllOptions)
-            if (!o.IsHiddenOn(Options.CurrentGameMode) && (o.Parent == null ? !o.GetString().Equals("0%") : o.Parent.GetBool()))
-                logger.Info($"{(o.Parent == null ? o.GetName(true, true).RemoveHtmlTags().PadRightV2(40) : $"┗ {o.GetName(true, true).RemoveHtmlTags()}".PadRightV2(41))}:{o.GetString().RemoveHtmlTags()}");
-        logger.Info("-------------其它信息-------------");
-        logger.Info($"玩家人数: {Main.AllPlayerControls.Count()}");
-        Main.AllPlayerControls.Do(x => Main.PlayerStates[x.PlayerId].InitTask(x));
+
+        logger.Info("------------Vanilla Settings------------");
+        var tmp = GameOptionsManager.Instance.CurrentGameOptions.ToHudString(GameData.Instance ? GameData.Instance.PlayerCount : 10).Split("\r\n").Skip(1).ToList();
+        int tmpCount = tmp.Count;
+
+        for (int item = 0; item < tmpCount; item++)
+        {
+            string text = tmp[item];
+            logger.Info(text);
+        }
+
+
+        logger.Info("------------Mod Settings------------");
+        List<OptionItem> allOptionsList = OptionItem.AllOptions.ToList();
+        var allOptionsCount = OptionItem.AllOptions.Count;
+
+        for (int itemOpt = 0; itemOpt < allOptionsCount; itemOpt++)
+        {
+            OptionItem option = allOptionsList[itemOpt];
+            if (!option.IsHiddenOn(Options.CurrentGameMode) && (option.Parent == null ? !option.GetString().Equals("0%") : option.Parent.GetBool()))
+            {
+                logger.Info($"{(option.Parent == null
+                    ? option.GetName(true, true).RemoveHtmlTags().PadRightV2(40)
+                    : $"┗ {option.GetName(true, true).RemoveHtmlTags()}".PadRightV2(41))}:{option.GetString().RemoveHtmlTags()}");
+            }
+        }
+
+
+        logger.Info("-------------Other Information-------------");
+        logger.Info($"Number players: {Main.AllPlayerControls.Count}");
+
+        int allPlayerControlsCount = Main.AllPlayerControls.Count;
+        for (int number = 0; number < allPlayerControlsCount; number++)
+        {
+            PlayerControl player = Main.AllPlayerControls[number];
+
+            Main.PlayerStates[player.PlayerId].InitTask(player);
+        }
+
         GameData.Instance.RecomputeTaskCounts();
         TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
 
