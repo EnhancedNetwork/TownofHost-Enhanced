@@ -126,7 +126,7 @@ public static class DevManager
         DevUserList.Add(new(code: "grubmotive#0072", color: "#4169E1", tag: "跟班诅咒中", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "ninyouyigehao")); //您有一个好
         //TChinese translation
         DevUserList.Add(new(code: "richgaff#1771", color: "#F76C05", tag: "TChinese Translator", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: null)); //FlyFlyTurtle
-        DevUserList.Add(new(code: "eastbutton#6692", color: "#27E878", tag: "#Dev", isUp: false, isDev: true, deBug: false, colorCmd: false, upName: null)); //柚子(Pomelo)
+        DevUserList.Add(new(code: "eastbutton#6692", color: "#27E878", tag: "#Dev", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: null)); //柚子(Pomelo)
         // French Translators
         DevUserList.Add(new(code: "bigecho#5256", color: "#0131b4", tag: "Traducteur", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "KevOut")); //kevoutings
         DevUserList.Add(new(code: "fivedogged#3140", color: "#0B1FB8", tag: "Translator", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "Sansationnelle")); //shapmaster
