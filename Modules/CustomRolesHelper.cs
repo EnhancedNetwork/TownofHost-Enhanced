@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using System.Linq;
 using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -319,6 +320,7 @@ static class CustomRolesHelper
             CustomRoles.Overclocked or
             CustomRoles.Stubborn or
             CustomRoles.EvilSpirit or
+            CustomRoles.Hurried or
             CustomRoles.Oiiai or
             CustomRoles.Influenced;
     }
@@ -945,7 +947,9 @@ static class CustomRolesHelper
             CustomRoles.Guardian or
             CustomRoles.Merchant or
             CustomRoles.Mayor or
-            CustomRoles.Transporter;
+            CustomRoles.Transporter or
+            CustomRoles.Retributionist or
+            CustomRoles.Alchemist;
     }
 
     public static bool IsNotKnightable(this CustomRoles role)
@@ -1302,6 +1306,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.NiceMini)
                     || pc.Is(CustomRoles.XiaoMu)
                     || pc.Is(CustomRoles.Sheriff)
+                    || pc.Is(CustomRoles.Hurried)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
                 if (!pc.GetCustomRole().IsCrewmate())
@@ -1311,6 +1316,7 @@ static class CustomRolesHelper
             case CustomRoles.Egoist:
                 if (pc.Is(CustomRoles.Sidekick)
                     || pc.Is(CustomRoles.Madmate)
+                    || pc.Is(CustomRoles.Hurried)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
                 if (pc.GetCustomRole().IsNeutral())
@@ -1536,6 +1542,15 @@ static class CustomRolesHelper
                 if ((pc.GetCustomRole().IsNeutral() && !Oiiai.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsCrewmate() && !Oiiai.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Oiiai.CanBeOnImp.GetBool()))
                     return false;
                 break;
+
+            case CustomRoles.Hurried:
+                if (pc.Is(CustomRoles.Youtuber) || pc.Is(CustomRoles.Egoist)) return false;
+                if (pc.Is(CustomRoles.Madmate) && !Hurried.CanBeOnMadMate.GetBool()) return false;
+                if (!pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Madmate)) return false;
+                if (pc.GetCustomRole().IsTasklessCrewmate()) return false;
+                if (pc.GetCustomRole().IsTaskBasedCrewmate() && !Hurried.CanBeOnTaskBasedCrew.GetBool()) return false;
+                break;
+
         }
 
         // Code not used:

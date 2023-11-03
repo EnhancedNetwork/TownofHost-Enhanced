@@ -127,8 +127,11 @@ public static class Pirate
         if (NumWin >= SuccessfulDuelsToWin.GetInt())
         {
             NumWin = SuccessfulDuelsToWin.GetInt();
-            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Pirate);
-            CustomWinnerHolder.WinnerIds.Add(pirateId);
+            if (!CustomWinnerHolder.CheckForConvertedWinner(pirateId))
+            {
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Pirate);
+                CustomWinnerHolder.WinnerIds.Add(pirateId);
+            }
         }
         DuelDone.Clear();
         PirateTarget = byte.MaxValue;
