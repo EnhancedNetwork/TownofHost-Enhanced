@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -120,10 +120,13 @@ public static class DevManager
         DevUserList.Add(new(code: "lotelfin#1641", color: "null", tag: "Tradutor", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "Dopzy")); // and content creator
         DevUserList.Add(new(code: "maltyhoney#2924", color: "null", tag: "Tradutor", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "TonyStark"));
         DevUserList.Add(new(code: "mimerecord#9638", color: "null", tag: "Tradutor", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "Arc"));
-        // Chinese translation
+        // SChinese translation
         DevUserList.Add(new(code: "cloakhazy#9133", color: "#87CEFA", tag: "我是崽子吖awa", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "LezaiYa")); //乐崽吖
         DevUserList.Add(new(code: "drawncod#3642", color: "#00FFFF", tag: "简中翻译人员", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "crewcyan")); //船员小青
         DevUserList.Add(new(code: "grubmotive#0072", color: "#4169E1", tag: "跟班诅咒中", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "ninyouyigehao")); //您有一个好
+        //TChinese translation
+        DevUserList.Add(new(code: "richgaff#1771", color: "#F76C05", tag: "TChinese Translator", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: null)); //FlyFlyTurtle
+        DevUserList.Add(new(code: "eastbutton#6692", color: "#27E878", tag: "#Dev", isUp: false, isDev: true, deBug: false, colorCmd: false, upName: null)); //柚子(Pomelo)
         // French Translators
         DevUserList.Add(new(code: "bigecho#5256", color: "#0131b4", tag: "Traducteur", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "KevOut")); //kevoutings
         DevUserList.Add(new(code: "fivedogged#3140", color: "#0B1FB8", tag: "Translator", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "Sansationnelle")); //shapmaster
