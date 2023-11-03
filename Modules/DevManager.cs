@@ -150,6 +150,7 @@ public static class DevManager
         DevUserList.Add(new(code: "traderaser#4755", color: "#ffc0cb", tag: "YouTuber", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "gabrielzin"));
         DevUserList.Add(new(code: "spryvowel#8882", color: "#ffc0cb", tag: "YouTuber", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "Felx"));
         DevUserList.Add(new(code: "muzzlefawn#7540", color: "#ffc0cb", tag: "YouTuber", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "CouthMalfy"));
+
         DevUserList.Add(new(code: "famedfun#8888", color: "#ffc0cb", tag: "Youtuber", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "PH Gaming"));
         
         // China Up
