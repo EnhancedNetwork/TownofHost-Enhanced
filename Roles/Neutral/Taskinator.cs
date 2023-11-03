@@ -22,7 +22,7 @@ public static class Taskinator
         Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Taskinator);
         TaskMarkPerRoundOpt = IntegerOptionItem.Create(Id + 10, "TaskMarkPerRound", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Taskinator])
             .SetValueFormat(OptionFormat.Votes);
-        Options.OverrideTasksData.Create(Id + 11, TabGroup.CrewmateRoles, CustomRoles.Taskinator);
+        Options.OverrideTasksData.Create(Id + 11, TabGroup.NeutralRoles, CustomRoles.Taskinator);
     }
 
     public static void Init()
