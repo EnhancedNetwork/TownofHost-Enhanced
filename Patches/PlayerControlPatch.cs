@@ -1162,7 +1162,7 @@ class CheckMurderPatch
             //击杀萧暮
             case CustomRoles.XiaoMu:
                 var Fg = IRandom.Instance;
-                int XiaoMu = Fg.Next(1, 4);
+                int XiaoMu = Fg.Next(1, 5);
                     if (XiaoMu == 1)
                     {
                         if (killer.PlayerId != target.PlayerId || target.GetRealKiller()?.GetCustomRole() is CustomRoles.Swooper)
@@ -1181,7 +1181,7 @@ class CheckMurderPatch
                     }
                     else if (XiaoMu == 2)
                     {
-                        Logger.Info($"{killer.GetNameWithRole()} 击杀了萧暮触发原地不能动 => {target.GetNameWithRole()}", "XiaoMu");
+                        Logger.Info($"{killer.GetNameWithRole()} 击杀了萧暮触发暂时无法移动 => {target.GetNameWithRole()}", "XiaoMu");
                         NameNotifyManager.Notify(killer, Utils.ColorString(Utils.GetRoleColor(CustomRoles.XiaoMu), GetString("YouKillXiaoMu2")));
                         var tmpSpeed1 = Main.AllPlayerSpeed[killer.PlayerId];
                         Main.AllPlayerSpeed[killer.PlayerId] = Main.MinSpeed;
@@ -1197,8 +1197,9 @@ class CheckMurderPatch
                     }
                     else if (XiaoMu == 3)
                     {
-                        Logger.Info($"{killer.GetNameWithRole()} 击杀了萧暮触发CD 90 => {target.GetNameWithRole()}", "XiaoMu");
-                        Main.AllPlayerKillCooldown[killer.PlayerId] = 90f;
+                        Logger.Info($"{killer.GetNameWithRole()} 击杀了萧暮凶手CD变成600 => {target.GetNameWithRole()}", "XiaoMu");
+                        Main.AllPlayerKillCooldown[killer.PlayerId] = 600f;
+                        killer.SyncSettings();
                         NameNotifyManager.Notify(killer, Utils.ColorString(Utils.GetRoleColor(CustomRoles.XiaoMu), GetString("YouKillXiaoMu3")));
                     }
                     else if (XiaoMu == 4)
