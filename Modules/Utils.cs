@@ -80,6 +80,7 @@ public static class Utils
     }
     public static void RpcTeleport(this PlayerControl player, Vector2 location)
     {
+        Logger.Info($" {player.GetRealName()}", "Teleport - Player Real Name");
         Logger.Info($" {player.PlayerId}", "Teleport - Player Id");
         Logger.Info($" {location}", "Teleport - Location");
 
@@ -89,17 +90,24 @@ public static class Utils
         }
 
         // Modded
-        var playerlastSequenceId = player.NetTransform.lastSequenceId + 8;
-        player.NetTransform.SnapTo(location, (ushort)playerlastSequenceId);
-        Logger.Info($" {(ushort)playerlastSequenceId}", "Teleport - Player NetTransform lastSequenceId + 8 - writer");
-
+        if (AmongUsClient.Instance.AmHost)
+        {
+            var playerlastSequenceId = (int)player.NetTransform.lastSequenceId;
+            playerlastSequenceId += 10;
+            player.NetTransform.SnapTo(location, (ushort)playerlastSequenceId);
+            Logger.Info($" {player.GetRealName()} - {player.NetTransform.lastSequenceId}", "Teleport - Player NetTransform lastSequenceId - SnapTo");
+            Logger.Info($" {(ushort)playerlastSequenceId}", "Teleport - Player NetTransform lastSequenceId + 10 - SnapTo");
+        }
 
         // Vanilla
         MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable);
         NetHelpers.WriteVector2(location, messageWriter);
-        messageWriter.Write(player.NetTransform.lastSequenceId + 10U);
+        messageWriter.Write(player.NetTransform.lastSequenceId + 100U);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
-        Logger.Info($" {player.NetTransform.lastSequenceId + 10U}", "Teleport - Player NetTransform lastSequenceId + 10U - writer");
+
+        var temp = (uint)player.NetTransform.lastSequenceId;
+        temp += 100U;
+        Logger.Info($"lastSequenceId: {player.NetTransform.lastSequenceId} - lastSequenceId + 100U: {temp}", "Teleport - Player NetTransform lastSequenceId - writer");
     }
     public static void RpcRandomVentTeleport(this PlayerControl player)
     {
@@ -567,6 +575,7 @@ public static class Utils
             case CustomRoles.Sunnyboy:
             case CustomRoles.Convict:
             case CustomRoles.Opportunist:
+            case CustomRoles.Taskinator:
             case CustomRoles.Phantom:
                 if (ForRecompute)
                     hasTasks = false;
@@ -976,6 +985,9 @@ public static class Utils
                     break;
                 case CustomRoles.Collector:
                     ProgressText.Append(Collector.GetProgressText(playerId));
+                    break;
+                case CustomRoles.Taskinator:
+                    ProgressText.Append(Taskinator.GetProgressText(playerId));
                     break;
                 case CustomRoles.Eraser:
                     ProgressText.Append(Eraser.GetProgressText(playerId));
@@ -2468,7 +2480,9 @@ public static class Utils
                         {
                             if (seer.IsAlive() && target.IsAlive())
                             {
-                                if (seer.Is(CustomRoles.NiceGuesser) || seer.Is(CustomRoles.EvilGuesser) || seer.Is(CustomRoles.Guesser))
+                                Logger.Warn($"Guesser condtion {(seer.Is(CustomRoles.Guesser) && !seer.Is(CustomRoles.ParityCop) && !seer.Is(CustomRoles.Swapper) && !seer.Is(CustomRoles.Lookout))}", "ID BUG");
+                                if (seer.Is(CustomRoles.NiceGuesser) || seer.Is(CustomRoles.EvilGuesser) || 
+                                    (seer.Is(CustomRoles.Guesser) && !seer.Is(CustomRoles.ParityCop) && !seer.Is(CustomRoles.Swapper) && !seer.Is(CustomRoles.Lookout)))
                                     TargetPlayerName = ColorString(GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + TargetPlayerName;
                             }
                         }
@@ -2567,6 +2581,7 @@ public static class Utils
         SerialKiller.AfterMeetingTasks();
         Spiritualist.AfterMeetingTasks();
         Vulture.AfterMeetingTasks();
+        Taskinator.AfterMeetingTasks();
         //Baker.AfterMeetingTasks();
         Jailer.AfterMeetingTasks();
         CopyCat.AfterMeetingTasks();  //all crew after meeting task should be before this
