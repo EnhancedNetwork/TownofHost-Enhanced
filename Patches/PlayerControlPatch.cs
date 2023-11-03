@@ -1234,6 +1234,13 @@ class CheckShapeshiftPatch
     {
         if (__instance.Is(CustomRoles.Deathpact) || __instance.Is(CustomRoles.Devourer) || __instance.Is(CustomRoles.Dazzler))
         {
+            if (__instance.Is(CustomRoles.Devourer))
+            {
+                Devourer.OnShapeshift(__instance, target);
+            }
+
+            __instance.RpcResetAbilityCooldown();
+
             return false;
         }
 
