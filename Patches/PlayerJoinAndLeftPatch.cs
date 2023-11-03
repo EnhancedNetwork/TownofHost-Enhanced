@@ -59,7 +59,7 @@ class OnGameJoinedPatch
                     SceneChanger.ChangeScene("MainMenu");
                 }
                 var client = PlayerControl.LocalPlayer.GetClient();
-                Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Hosted room", "Session");
+                Logger.Info($"{client.PlayerName.RemoveHtmlTags()}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Hosted room", "Session");
             }, 1f, "OnGameJoinedPatch");
         }
     }
@@ -78,7 +78,7 @@ class OnPlayerJoinedPatch
     public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ClientData client)
     {
         Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Joining room", "Session");
-        if (AmongUsClient.Instance.AmHost && client.FriendCode == "" && Options.KickPlayerFriendCodeNotExist.GetBool())
+        if (AmongUsClient.Instance.AmHost && client.FriendCode == "" && Options.KickPlayerFriendCodeNotExist.GetBool() && !GameStates.IsLocalGame)
         {
             if (!Options.TempBanPlayerFriendCodeNotExist.GetBool())
             {
@@ -96,7 +96,7 @@ class OnPlayerJoinedPatch
             }
         }
         Platforms platform = client.PlatformData.Platform;
-        if (AmongUsClient.Instance.AmHost && Options.KickOtherPlatformPlayer.GetBool() && platform != Platforms.Unknown)
+        if (AmongUsClient.Instance.AmHost && Options.KickOtherPlatformPlayer.GetBool() && platform != Platforms.Unknown && !GameStates.IsLocalGame)
         {
             if ((platform == Platforms.Android && Options.OptKickAndroidPlayer.GetBool()) ||
                 (platform == Platforms.IPhone && Options.OptKickIphonePlayer.GetBool()) ||
@@ -125,7 +125,7 @@ class OnPlayerJoinedPatch
             if (Main.SayBanwordsTimes.ContainsKey(client.Id)) Main.SayBanwordsTimes.Remove(client.Id);
             //if (Main.newLobby && Options.ShareLobby.GetBool()) Cloud.ShareLobby();
             if (client.GetHashedPuid() != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
-                && !FixedUpdatePatch.CheckAllowList(client.FriendCode))
+                && !FixedUpdatePatch.CheckAllowList(client.FriendCode) && !GameStates.IsLocalGame)
             {
                 if (Main.PlayerQuitTimes.ContainsKey(client.GetHashedPuid()))
                 {
@@ -239,7 +239,7 @@ class OnPlayerLeftPatch
                 Main.SayBanwordsTimes.Remove(__instance.ClientId);
                 Main.playerVersion.Remove(data?.Character?.PlayerId ?? byte.MaxValue);
 
-                if (GameStates.IsLobby)
+                if (GameStates.IsLobby && !GameStates.IsLocalGame)
                 {
                     if (data?.GetHashedPuid() != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
                         && !FixedUpdatePatch.CheckAllowList(data?.FriendCode))
