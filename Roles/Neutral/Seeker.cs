@@ -129,8 +129,11 @@ public static class Seeker
         if (totalPoints >= PointsToWinOpt)
         {
             TotalPoints[seekerId] = PointsToWinOpt;
-            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Seeker);
-            CustomWinnerHolder.WinnerIds.Add(seekerId);
+            if (!CustomWinnerHolder.CheckForConvertedWinner(seekerId))
+            {
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Seeker);
+                CustomWinnerHolder.WinnerIds.Add(seekerId);
+            }
         }
     }
     public static byte GetTarget(PlayerControl player)

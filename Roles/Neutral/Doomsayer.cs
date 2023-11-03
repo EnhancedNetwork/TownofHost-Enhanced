@@ -102,8 +102,11 @@ public static class Doomsayer
 
         GuessingToWin[doomsayer.PlayerId] = DoomsayerAmountOfGuessesToWin.GetInt();
         GuessesCount = DoomsayerAmountOfGuessesToWin.GetInt();
-        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Doomsayer);
-        CustomWinnerHolder.WinnerIds.Add(doomsayer.PlayerId);
+        if (!CustomWinnerHolder.CheckForConvertedWinner(doomsayer.PlayerId))
+        {
+            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Doomsayer);
+            CustomWinnerHolder.WinnerIds.Add(doomsayer.PlayerId);
+        }
     }
     public static void OnReportDeadBody()
     {

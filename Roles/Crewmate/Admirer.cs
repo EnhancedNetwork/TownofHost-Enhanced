@@ -1,5 +1,6 @@
 using Hazel;
 using System.Collections.Generic;
+using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -109,14 +110,15 @@ public static class Admirer
                 SendRPC(killer.PlayerId, target.PlayerId); //Sync playerId list
             }
 
-            if (!killer.Is(CustomRoles.Madmate) && !killer.Is(CustomRoles.Recruit) && !killer.Is(CustomRoles.Charmed) && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious))
+            if (!killer.Is(CustomRoles.Madmate) && !killer.Is(CustomRoles.Recruit) && !killer.Is(CustomRoles.Charmed) 
+                && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious))
             {
                 target.RpcSetCustomRole(CustomRoles.Admired);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmirerAdmired")));
                 Utils.NotifyRoles();
             }
-            else if (killer.Is(CustomRoles.Madmate) && target.CanBeMadmate())
+            else if (killer.Is(CustomRoles.Madmate) && target.CanBeMadmate(inGame: true))
             {
                 target.RpcSetCustomRole(CustomRoles.Madmate);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("AdmiredPlayer")));
@@ -185,7 +187,9 @@ public static class Admirer
     {
         if (AdmiredList[admirer.PlayerId].Contains(pc.PlayerId)) return false;
 
-        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() ||
-            (pc.GetCustomRole().IsNeutral() && !pc.GetCustomRole().IsNK())) && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal) && !((pc.Is(CustomRoles.NiceMini) || pc.Is(CustomRoles.EvilMini)) && Mini.Age < 18);
-    } //Remove !isNk after rework game end check
+        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral()) 
+            && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal) 
+            && !((pc.Is(CustomRoles.NiceMini) || pc.Is(CustomRoles.EvilMini)) && Mini.Age < 18)
+            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
+    }
 }

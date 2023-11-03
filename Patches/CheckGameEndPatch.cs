@@ -3,6 +3,7 @@ using HarmonyLib;
 using Hazel;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
@@ -119,8 +120,11 @@ class GameEndChecker
                         && ((CustomWinnerHolder.WinnerTeam == CustomWinner.Impostor && !reason.Equals(GameOverReason.ImpostorBySabotage)) || CustomWinnerHolder.WinnerTeam == CustomWinner.DarkHide
                         || (CustomWinnerHolder.WinnerTeam == CustomWinner.Crewmate && !reason.Equals(GameOverReason.HumansByTask) && (DarkHide.IsWinKill[pc.PlayerId] == true && DarkHide.SnatchesWin.GetBool()))))
                     {
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.DarkHide);
-                        CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                        if (!CustomWinnerHolder.CheckForConvertedWinner(pc.PlayerId))
+                        {
+                            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.DarkHide);
+                            CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                        }
                     }
                 }
                 foreach (var pc in Main.AllPlayerControls)
@@ -129,8 +133,11 @@ class GameEndChecker
                         && (((CustomWinnerHolder.WinnerTeam == CustomWinner.Impostor || CustomWinnerHolder.WinnerTeam == CustomWinner.Crewmate || CustomWinnerHolder.WinnerTeam == CustomWinner.Jackal || CustomWinnerHolder.WinnerTeam == CustomWinner.BloodKnight || CustomWinnerHolder.WinnerTeam == CustomWinner.SerialKiller || CustomWinnerHolder.WinnerTeam == CustomWinner.Juggernaut || CustomWinnerHolder.WinnerTeam == CustomWinner.Bandit || CustomWinnerHolder.WinnerTeam == CustomWinner.Doppelganger || CustomWinnerHolder.WinnerTeam == CustomWinner.PotionMaster || CustomWinnerHolder.WinnerTeam == CustomWinner.Poisoner || CustomWinnerHolder.WinnerTeam == CustomWinner.Succubus || CustomWinnerHolder.WinnerTeam == CustomWinner.Infectious || CustomWinnerHolder.WinnerTeam == CustomWinner.Jinx || CustomWinnerHolder.WinnerTeam == CustomWinner.Virus || CustomWinnerHolder.WinnerTeam == CustomWinner.Arsonist || CustomWinnerHolder.WinnerTeam == CustomWinner.Pelican || CustomWinnerHolder.WinnerTeam == CustomWinner.Wraith || CustomWinnerHolder.WinnerTeam == CustomWinner.Agitater || CustomWinnerHolder.WinnerTeam == CustomWinner.Pestilence || CustomWinnerHolder.WinnerTeam == CustomWinner.Bandit || CustomWinnerHolder.WinnerTeam == CustomWinner.Rogue || CustomWinnerHolder.WinnerTeam == CustomWinner.Spiritcaller ) && (Options.PhantomSnatchesWin.GetBool()))))  //|| CustomWinnerHolder.WinnerTeam == CustomWinner.Occultist
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Phantom);
-                        CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                        if (!CustomWinnerHolder.CheckForConvertedWinner(pc.PlayerId))
+                        {
+                            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Phantom);
+                            CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                        }
                     }
                 }
                 foreach (var pc in Main.AllPlayerControls)
@@ -139,9 +146,13 @@ class GameEndChecker
                         && (((CustomWinnerHolder.WinnerTeam == CustomWinner.Impostor || CustomWinnerHolder.WinnerTeam == CustomWinner.Crewmate || CustomWinnerHolder.WinnerTeam == CustomWinner.Jackal || CustomWinnerHolder.WinnerTeam == CustomWinner.BloodKnight || CustomWinnerHolder.WinnerTeam == CustomWinner.SerialKiller || CustomWinnerHolder.WinnerTeam == CustomWinner.Juggernaut || CustomWinnerHolder.WinnerTeam == CustomWinner.Bandit || CustomWinnerHolder.WinnerTeam == CustomWinner.Doppelganger || CustomWinnerHolder.WinnerTeam == CustomWinner.PotionMaster || CustomWinnerHolder.WinnerTeam == CustomWinner.Poisoner || CustomWinnerHolder.WinnerTeam == CustomWinner.Succubus || CustomWinnerHolder.WinnerTeam == CustomWinner.Infectious || CustomWinnerHolder.WinnerTeam == CustomWinner.Jinx || CustomWinnerHolder.WinnerTeam == CustomWinner.Virus || CustomWinnerHolder.WinnerTeam == CustomWinner.Arsonist || CustomWinnerHolder.WinnerTeam == CustomWinner.Pelican || CustomWinnerHolder.WinnerTeam == CustomWinner.Wraith || CustomWinnerHolder.WinnerTeam == CustomWinner.Agitater || CustomWinnerHolder.WinnerTeam == CustomWinner.Pestilence || CustomWinnerHolder.WinnerTeam == CustomWinner.Bandit || CustomWinnerHolder.WinnerTeam == CustomWinner.Rogue || CustomWinnerHolder.WinnerTeam == CustomWinner.Jester || CustomWinnerHolder.WinnerTeam == CustomWinner.Executioner)))) // || CustomWinnerHolder.WinnerTeam == CustomWinner.Occultist
                     {
                         reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.CursedSoul);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Soulless);
-                        CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                        if (!CustomWinnerHolder.CheckForConvertedWinner(pc.PlayerId))
+                        {
+                            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.CursedSoul);
+                            CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Soulless);
+                            CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                        }
+                        else CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Soulless);
                     }
                 }
 
@@ -182,10 +193,21 @@ class GameEndChecker
                 //神抢夺胜利
                 if (CustomRolesHelper.RoleExist(CustomRoles.God))
                 {
-                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.God);
-                    Main.AllPlayerControls
-                        .Where(p => p.Is(CustomRoles.God) && p.IsAlive())
-                        .Do(p => CustomWinnerHolder.WinnerIds.Add(p.PlayerId));
+                    bool isGodWinConverted = false;
+                    foreach (var x in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.God)))
+                    {
+                        if (CustomWinnerHolder.CheckForConvertedWinner(x.PlayerId))
+                        {
+                            isGodWinConverted = true;
+                            break;
+                        }
+                    }
+                    if (!isGodWinConverted) {
+                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.God);
+                        Main.AllPlayerControls
+                            .Where(p => p.Is(CustomRoles.God) && p.IsAlive())
+                            .Do(p => CustomWinnerHolder.WinnerIds.Add(p.PlayerId));
+                    }
                 }
 
                 //恋人抢夺胜利
@@ -274,7 +296,6 @@ class GameEndChecker
                     }
                 }
 
-
                 //FFF
                 if (FFF.isWon)
                 {
@@ -310,6 +331,7 @@ class GameEndChecker
                         CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Romantic);
                     }
                 }
+
                 foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.RuthlessRomantic)))
                 {
                     if (Romantic.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget) && (
@@ -375,6 +397,15 @@ class GameEndChecker
                     }
                 }
 
+                //Remove hurried task not done player from winner id
+                foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Hurried)))
+                {
+                    if (!Hurried.CheckWinState(pc) && CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                    {
+                        CustomWinnerHolder.WinnerIds.Remove(pc.PlayerId);
+                        Logger.Info($"Removed {pc.GetNameWithRole()} from winner ids", "Hurried Win Check");
+                    }
+                }
             }
             ShipStatus.Instance.enabled = false;
             StartEndGame(reason);
