@@ -575,6 +575,7 @@ public static class Utils
             case CustomRoles.Sunnyboy:
             case CustomRoles.Convict:
             case CustomRoles.Opportunist:
+            case CustomRoles.Taskinator:
             case CustomRoles.Phantom:
                 if (ForRecompute)
                     hasTasks = false;
@@ -984,6 +985,9 @@ public static class Utils
                     break;
                 case CustomRoles.Collector:
                     ProgressText.Append(Collector.GetProgressText(playerId));
+                    break;
+                case CustomRoles.Taskinator:
+                    ProgressText.Append(Taskinator.GetProgressText(playerId));
                     break;
                 case CustomRoles.Eraser:
                     ProgressText.Append(Eraser.GetProgressText(playerId));
@@ -2575,6 +2579,7 @@ public static class Utils
         SerialKiller.AfterMeetingTasks();
         Spiritualist.AfterMeetingTasks();
         Vulture.AfterMeetingTasks();
+        Taskinator.AfterMeetingTasks();
         //Baker.AfterMeetingTasks();
         Jailer.AfterMeetingTasks();
         CopyCat.AfterMeetingTasks();  //all crew after meeting task should be before this

@@ -470,6 +470,7 @@ public class Main : BasePlugin
                 {CustomRoles.Pickpocket, "#47008B"},
                 {CustomRoles.Traitor, "#BA2E05"},
                 {CustomRoles.Vulture, "#556B2F"},
+                {CustomRoles.Taskinator, "#4737ae"},
                 {CustomRoles.Medusa, "#9900CC"},
                 {CustomRoles.Spiritcaller, "#003366"},
                 {CustomRoles.EvilSpirit, "#003366"},
@@ -836,6 +837,7 @@ public enum CustomRoles
     Werewolf,
     Necromancer,
     Huntsman,
+    Taskinator,
     //Occultist,
     Imitator,
    //two-way camp
@@ -1008,6 +1010,7 @@ public enum AdditionalWinners
     Phantom = CustomRoles.Phantom,
     Maverick = CustomRoles.Maverick,
     Shaman = CustomRoles.Shaman,
+    Taskinator = CustomRoles.Taskinator,
  //   NiceMini = CustomRoles.NiceMini,
  //   Baker = CustomRoles.Baker,
 }
