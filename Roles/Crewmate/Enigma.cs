@@ -9,6 +9,7 @@ namespace TOHE.Roles.Crewmate
     {
         private static readonly int Id = 8460;
         private static List<byte> playerIdList = new();
+        public static bool IsEnable = false;
         private static Dictionary<byte, List<EnigmaClue>> ShownClues = new();
 
         public static OptionItem EnigmaClueStage1Tasks;
@@ -69,6 +70,7 @@ namespace TOHE.Roles.Crewmate
         public static void Init()
         {
             playerIdList = new();
+            IsEnable = false;
             ShownClues = new();
             MsgToSend = new();
             MsgToSendTitle = new();
@@ -76,9 +78,9 @@ namespace TOHE.Roles.Crewmate
         public static void Add(byte playerId)
         {
             playerIdList.Add(playerId);
+            IsEnable = true;
             ShownClues.Add(playerId, new List<EnigmaClue>());
         }
-        public static bool IsEnable => playerIdList.Count > 0;
 
         public static void OnReportDeadBody(PlayerControl player, GameData.PlayerInfo targetInfo)
         {
