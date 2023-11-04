@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using System;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -17,13 +18,21 @@ public static class OptionShower
     }
     public static string GetTextNoFresh()
     {
-        if (currentPage == 0 && DelayInUpdate >= 50)
+        try
         {
-            DelayInUpdate = 0;
-            GetText();
+            if (currentPage > 0 && DelayInUpdate >= 50)
+            {
+                DelayInUpdate = 0;
+                GetText();
+            }
+            DelayInUpdate++;
+            return $"{pages[currentPage]}{GetString("PressTabToNextPage")}({currentPage + 1}/{pages.Count})";
         }
-        DelayInUpdate++;
-        return $"{pages[currentPage]}{GetString("PressTabToNextPage")}({currentPage + 1}/{pages.Count})";
+        catch (Exception error)
+        {
+            Logger.Warn(error.ToString(), "GetTextNoFresh()");
+            return GetText();
+        }
     }
     public static string GetText()
     {
