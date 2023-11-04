@@ -181,6 +181,7 @@ class CheckMurderPatch
                     target.SetRealKiller(target);
                     target.SetRealKiller(killer);
                     killer.ResetKillCooldown();
+                    killer.SetKillCooldown();
                     return false;
                 }
                 break;

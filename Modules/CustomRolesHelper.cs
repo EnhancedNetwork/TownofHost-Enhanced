@@ -620,15 +620,15 @@ static class CustomRolesHelper
     public static bool IsUsingPetSystem(this CustomRoles role)
     {
         return role is
-            CustomRoles.Vampire or
-            CustomRoles.Vampiress or
-            CustomRoles.Witch or //女巫
+            //CustomRoles.Vampire or
+            //CustomRoles.Vampiress or
+            CustomRoles.Witch or //女巫 //db
             CustomRoles.Warlock or //术士
-            CustomRoles.Puppeteer or //傀儡师
-            CustomRoles.Mastermind or //策划者
+            CustomRoles.Puppeteer or //傀儡师 //db
+            CustomRoles.Mastermind or //策划者 //db
             CustomRoles.Gangster or //歹徒
             CustomRoles.BallLightning or //球闪
-            CustomRoles.EvilDiviner or //军师
+            CustomRoles.EvilDiviner or //军师 //db
 
             CustomRoles.Sheriff or //For public protocol support
             CustomRoles.Vigilante or //义务警
@@ -649,7 +649,7 @@ static class CustomRolesHelper
             CustomRoles.Agitater or //煽动者
             CustomRoles.Bandit or //强盗
             CustomRoles.Seeker or //搜寻者
-            CustomRoles.HexMaster or //巫师
+            CustomRoles.HexMaster or //巫师 db
             CustomRoles.Shaman or //萨满
             CustomRoles.Jackal or
             CustomRoles.Poisoner or //投毒者
@@ -666,10 +666,14 @@ static class CustomRolesHelper
             CustomRoles.Provocateur or //自爆卡车
             CustomRoles.Totocalcio or //赌徒
             CustomRoles.Succubus or //魅魔
-            //CustomRoles.Baker or
-            //CustomRoles.Famine or //面包饥荒
+                                    //CustomRoles.Baker or
+                                    //CustomRoles.Famine or //面包饥荒
             CustomRoles.Imitator or
-            CustomRoles.Shroud; //裹尸布
+            CustomRoles.Shroud or //裹尸布
+            CustomRoles.Glitch or //db
+            CustomRoles.Infectious or //db
+            CustomRoles.PotionMaster or //db
+            CustomRoles.Pyromaniac; //db
     }
     public static bool IsImpostor(this CustomRoles role) // IsImp
     {

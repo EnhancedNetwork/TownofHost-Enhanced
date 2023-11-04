@@ -1097,6 +1097,28 @@ public static class Utils
             return "Error2";
         }
     }
+
+    public static PlayerControl GetClosestPlayer(PlayerControl player, bool checkRange = false)
+    {
+        float range = NormalGameOptionsV07.KillDistances[Mathf.Clamp(player.Is(CustomRoles.Reach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
+        PlayerControl closestPlayer = null;
+        float closestDistance = float.MaxValue;
+        foreach (var x in Main.AllAlivePlayerControls.Where(x => x.PlayerId != player.PlayerId && !Pelican.IsEaten(x.PlayerId)))
+        {
+            float distance = Vector2.Distance(player.GetTruePosition(), x.GetTruePosition());
+            if (checkRange)
+            {
+                if (distance > range) 
+                    continue;
+            }
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestPlayer = x;
+            }
+        }
+        return closestPlayer;
+    }
     public static void ShowActiveSettingsHelp(byte PlayerId = byte.MaxValue)
     {
         SendMessage(GetString("CurrentActiveSettingsHelp") + ":", PlayerId);
