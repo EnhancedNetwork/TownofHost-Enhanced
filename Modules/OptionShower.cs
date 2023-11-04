@@ -10,13 +10,19 @@ public static class OptionShower
 {
     public static int currentPage = 0;
     public static List<string> pages = new();
+    private static int DelayInUpdate = 0;
     static OptionShower()
     {
 
     }
     public static string GetTextNoFresh()
     {
-        if (pages.Count < 3) GetText();
+        if (currentPage == 0 && DelayInUpdate >= 50)
+        {
+            DelayInUpdate = 0;
+            GetText();
+        }
+        DelayInUpdate++;
         return $"{pages[currentPage]}{GetString("PressTabToNextPage")}({currentPage + 1}/{pages.Count})";
     }
     public static string GetText()
@@ -61,7 +67,7 @@ public static class OptionShower
                 string ruleFooter = Utils.ColorString(Palette.ImpostorRed.ShadeColor(-0.5f), "┗ ");
             }
 
-            foreach (var opt in OptionItem.AllOptions.Where(x => x.Id >= 99999 && !x.IsHiddenOn(Options.CurrentGameMode) && x.Parent == null && !x.IsText))
+            foreach (var opt in OptionItem.AllOptions.Where(x => x.Id >= 59999 && !x.IsHiddenOn(Options.CurrentGameMode) && x.Parent == null && !x.IsText).ToHashSet())
             {
                 if (opt.IsHeader) sb.Append('\n');
                 sb.Append($"{opt.GetName()}: {opt.GetString()}\n");

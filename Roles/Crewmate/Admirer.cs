@@ -11,7 +11,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class Admirer
 {
-    private static readonly int Id = 30000;
+    private static readonly int Id = 24800;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

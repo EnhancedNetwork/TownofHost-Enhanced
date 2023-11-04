@@ -108,7 +108,7 @@ public static class OptionSaver
     public static void Load()
     {
         var jsonString = File.ReadAllText(OptionSaverFileInfo.FullName);
-        // 空なら読み込まず，デフォルト値をセーブする
+        // if empty, do not read, save default value
         if (jsonString.Length <= 0)
         {
             Logger.Info("Save default value as option data is empty", "Option Saver");
@@ -129,5 +129,5 @@ public static class OptionSaver
     }
 
     /// <summary>Raise the number here when making incompatible changes to the format of an option (e.g., changing the number of presets)</summary>
-    public static readonly int Version = 0;
+    public static readonly int Version = 1;
 }

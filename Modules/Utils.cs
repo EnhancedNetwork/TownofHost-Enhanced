@@ -1217,7 +1217,7 @@ public static class Utils
         }
 
         var sb = new StringBuilder();
-        sb.AppendFormat("\n{0}: {1}", GetRoleName(CustomRoles.GM), Options.EnableGM.GetString().RemoveHtmlTags());
+        //sb.AppendFormat("\n{0}: {1}", GetRoleName(CustomRoles.GM), Main.EnableGM.ToString().RemoveHtmlTags());
 
         List<string> impsb = new();
         List<string> neutralsb = new();

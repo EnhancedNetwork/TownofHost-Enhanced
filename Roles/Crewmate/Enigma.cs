@@ -7,7 +7,7 @@ namespace TOHE.Roles.Crewmate
 {
     public class Enigma
     {
-        private static readonly int Id = 8460;
+        private static readonly int Id = 8100;
         private static List<byte> playerIdList = new();
         public static bool IsEnable = false;
         private static Dictionary<byte, List<EnigmaClue>> ShownClues = new();

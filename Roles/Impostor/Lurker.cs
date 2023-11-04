@@ -5,7 +5,7 @@ namespace TOHE.Roles.Impostor
 {
     public static class Lurker
     {
-        private static readonly int Id = 2100;
+        private static readonly int Id = 1900;
         public static List<byte> playerIdList = new();
         public static bool IsEnable = false;
 

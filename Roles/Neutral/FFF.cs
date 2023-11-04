@@ -6,7 +6,7 @@ namespace TOHE.Roles.Neutral
 {
     public static class FFF
     {
-        private static readonly int Id = 11300;
+        private static readonly int Id = 12900;
         public static List<byte> playerIdList = new();
         public static bool IsEnable = false;
 

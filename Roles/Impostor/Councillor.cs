@@ -13,7 +13,7 @@ namespace TOHE.Roles.Impostor;
 
 public static class Councillor
 {
-    private static readonly int Id = 900;
+    private static readonly int Id = 1000;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

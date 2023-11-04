@@ -4,7 +4,7 @@ using static TOHE.Options;
 namespace TOHE.Roles.Impostor;
 public static class Chronomancer
 {
-    private static readonly int Id = 33420;
+    private static readonly int Id = 900;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

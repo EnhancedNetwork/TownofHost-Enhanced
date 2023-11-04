@@ -9,7 +9,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class CursedSoul
 {
-    private static readonly int Id = 10500;
+    private static readonly int Id = 14000;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

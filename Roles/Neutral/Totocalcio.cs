@@ -11,7 +11,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Totocalcio
 {
-    private static readonly int Id = 9800;
+    private static readonly int Id = 12800;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

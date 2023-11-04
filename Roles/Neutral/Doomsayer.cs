@@ -6,7 +6,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Doomsayer
 {
-    private static readonly int Id = 27000;
+    private static readonly int Id = 14100;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

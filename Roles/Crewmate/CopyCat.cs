@@ -6,7 +6,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class CopyCat
 {
-    private static readonly int Id = 31000;
+    private static readonly int Id = 11500;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
