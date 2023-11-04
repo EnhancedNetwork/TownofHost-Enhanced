@@ -7,7 +7,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class Counterfeiter
 {
-    private static readonly int Id = 8500;
+    private static readonly int Id = 10500;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

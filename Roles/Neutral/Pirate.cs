@@ -10,7 +10,7 @@ using static TOHE.Translator;
 namespace TOHE.Roles.Neutral;
 public static class Pirate
 {
-    private static readonly int Id = 32000;
+    private static readonly int Id = 15000;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
     public static byte PirateTarget;

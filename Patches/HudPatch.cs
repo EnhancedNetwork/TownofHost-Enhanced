@@ -20,7 +20,7 @@ class HudManagerPatch
     public static int LastFPS = 0;
     public static int NowFrameCount = 0;
     public static float FrameRateTimer = 0.0f;
-    public static TMPro.TextMeshPro LowerInfoText;
+    public static TextMeshPro LowerInfoText;
     public static GameObject TempLowerInfoText;
     public static void Postfix(HudManager __instance)
     {
@@ -53,7 +53,7 @@ class HudManagerPatch
         if (GameStates.IsLobby)
         {
             var POM = GameObject.Find("PlayerOptionsMenu(Clone)");
-            __instance.GameSettings.text = POM != null ? "" : OptionShower.GetText();
+            __instance.GameSettings.text = POM != null ? "" : OptionShower.GetTextNoFresh(); //OptionShower.GetText();
             __instance.GameSettings.fontSizeMin =
             __instance.GameSettings.fontSizeMax = 1.1f;
         }

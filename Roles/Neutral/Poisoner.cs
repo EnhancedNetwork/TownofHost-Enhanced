@@ -21,7 +21,7 @@ public static class Poisoner
         }
     }
 
-    private static readonly int Id = 12700;
+    private static readonly int Id = 17500;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
     private static OptionItem OptionKillDelay;

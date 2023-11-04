@@ -6,7 +6,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Collector
 {
-    private static readonly int Id = 11100;
+    private static readonly int Id = 14700;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

@@ -13,7 +13,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Jackal
 {
-    private static readonly int Id = 12100;
+    private static readonly int Id = 16700;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

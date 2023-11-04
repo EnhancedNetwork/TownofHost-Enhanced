@@ -20,8 +20,7 @@ public static class FireWorks
         CanUseKill = Initial | FireEnd
     }
 
-    private static readonly int Id = 2800;
-    private static List<byte> playerIdList = new();
+    private static readonly int Id = 3200;
     public static bool IsEnable = false;
 
     private static OptionItem FireWorksCount;
@@ -47,7 +46,6 @@ public static class FireWorks
 
     public static void Init()
     {
-        playerIdList = new();
         IsEnable = false;
         nowFireWorksCount = new();
         fireWorksPosition = new();

@@ -7,7 +7,7 @@ using static TOHE.Options;
 namespace TOHE.Roles.Neutral;
 public static class Doppelganger
 {
-    private static readonly int Id = 194200;
+    private static readonly int Id = 25000;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

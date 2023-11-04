@@ -6,7 +6,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class Crusader
 {
-    private static readonly int Id = 20050;
+    private static readonly int Id = 10400;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

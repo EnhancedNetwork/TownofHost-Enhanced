@@ -7,7 +7,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class Sheriff
 {
-    private static readonly int Id = 8800;
+    private static readonly int Id = 11200;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

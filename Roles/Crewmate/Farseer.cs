@@ -12,7 +12,7 @@ namespace TOHE.Roles.Crewmate
 {
     public static class Farseer
     {
-        private static readonly int Id = 9700;
+        private static readonly int Id = 12200;
 
         private static readonly string fontSize = "1.5";
         public static bool IsEnable = false;

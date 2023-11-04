@@ -120,15 +120,16 @@ internal class ControllerManagerUpdatePatch
         //重新加载自定义翻译
         if (GetKeysDown(KeyCode.F5, KeyCode.T))
         {
-            Logger.Info("加载自定义翻译文件", "KeyCommand");
+            Logger.Info("Reloaded Custom Translation File Colors", "KeyCommand");
             LoadLangs();
             Logger.SendInGame("Reloaded Custom Translation File");
         }
         if (GetKeysDown(KeyCode.F5, KeyCode.X))
         {
-            Logger.Info("导出自定义翻译文件", "KeyCommand");
+            Logger.Info("Exported Custom Translation and Role File", "KeyCommand");
             ExportCustomTranslation();
-            Logger.SendInGame("Exported Custom Translation File");
+            Main.ExportCustomRoleColors();
+            Logger.SendInGame("Exported Custom Translation and Role File");
         }
         //日志文件转储
         if (GetKeysDown(KeyCode.F1, KeyCode.LeftControl))

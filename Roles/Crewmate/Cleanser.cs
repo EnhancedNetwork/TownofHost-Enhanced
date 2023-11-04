@@ -7,7 +7,7 @@ using static TOHE.Translator;
 namespace TOHE.Roles.Crewmate;
 public static class Cleanser
 {
-    private static readonly int Id = 23420;
+    private static readonly int Id = 6600;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

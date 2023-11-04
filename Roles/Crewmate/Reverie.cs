@@ -6,7 +6,7 @@ namespace TOHE;
 
 public static class Reverie
 {
-    private static readonly int Id = 1153;
+    private static readonly int Id = 11100;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

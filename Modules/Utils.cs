@@ -636,7 +636,7 @@ public static class Utils
             pc.Is(CustomRoles.DualPersonality) ||
             pc.Is(CustomRoles.Vigilante) ||
             (pc.Is(CustomRoles.NiceMini) && Mini.Age >= 18) ||
-            (pc.Is(CustomRoles.Hurried) && Hurried.CanBeOnMadMate.GetBool())
+            (pc.Is(CustomRoles.Hurried) && !Hurried.CanBeOnMadMate.GetBool())
             );
     }
     public static string GetProgressText(PlayerControl pc)
@@ -1217,7 +1217,7 @@ public static class Utils
         }
 
         var sb = new StringBuilder();
-        sb.AppendFormat("\n{0}: {1}", GetRoleName(CustomRoles.GM), Options.EnableGM.GetString().RemoveHtmlTags());
+        //sb.AppendFormat("\n{0}: {1}", GetRoleName(CustomRoles.GM), Main.EnableGM.ToString().RemoveHtmlTags());
 
         List<string> impsb = new();
         List<string> neutralsb = new();

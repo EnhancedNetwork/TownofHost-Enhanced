@@ -6,7 +6,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class NSerialKiller
 {
-    private static readonly int Id = 12800;
+    private static readonly int Id = 17900;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

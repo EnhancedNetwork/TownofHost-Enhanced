@@ -7,7 +7,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Gamer
 {
-    private static readonly int Id = 10600;
+    private static readonly int Id = 16200;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
