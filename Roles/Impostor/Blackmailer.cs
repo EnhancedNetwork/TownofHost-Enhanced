@@ -5,7 +5,7 @@ namespace TOHE.Roles.Impostor;
 
 public static class Blackmailer
 {
-    private static readonly int Id = 1658974;
+    private static readonly int Id = 1658;
     private static List<byte> playerIdList = new();
     public static OptionItem SkillCooldown;
     //public static OptionItem BlackmailerMax;

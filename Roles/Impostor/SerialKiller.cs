@@ -6,7 +6,7 @@ namespace TOHE.Roles.Impostor;
 
 public static class SerialKiller
 {
-    private static readonly int Id = 1700;
+    private static readonly int Id = 1701;
     public static List<byte> playerIdList = new();
 
     public static bool IsEnable = false;

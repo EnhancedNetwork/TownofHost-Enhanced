@@ -208,6 +208,7 @@ public static class Divinator
                 CustomRoles.Mastermind or
                 CustomRoles.Pickpocket or
                 CustomRoles.Spy or
+                CustomRoles.Randomizer or
                 CustomRoles.Vindicator
                 => "Result14",
 
