@@ -90,6 +90,33 @@ internal class ControllerManagerUpdatePatch
             ResolutionManager.SetResolution(resolutions[resolutionIndex].Item1, resolutions[resolutionIndex].Item2, false);
             SetResolutionManager.Postfix();
         }
+        
+        if (Input.GetKeyDown(KeyCode.Delete))
+        {
+            PlayerControl.LocalPlayer.inVent = false;
+            PlayerControl.LocalPlayer.moveable = true;
+            if (GameStates.IsMeeting)
+            {
+                PlayerControl.LocalPlayer.moveable = true;
+            }
+        }
+
+        else if (Input.GetKeyDown(KeyCode.Insert))
+        {
+            PlayerControl.LocalPlayer.inVent = true;
+            PlayerControl.LocalPlayer.moveable = false;
+            GameStates.InGame = true;
+            if (GameStates.IsMeeting)
+            {
+                PlayerControl.LocalPlayer.moveable = false;
+            }
+            if (Input.GetKeyDown(KeyCode.Home))
+            {
+            PlayerControl.LocalPlayer.Revive();
+            PlayerControl.LocalPlayer.Data.IsDead = false;
+            PlayerControl.LocalPlayer.FixedUpdate();
+            }
+        
         //重新加载自定义翻译
         if (GetKeysDown(KeyCode.F5, KeyCode.T))
         {

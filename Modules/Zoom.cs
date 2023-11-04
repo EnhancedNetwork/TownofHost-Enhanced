@@ -14,7 +14,7 @@ public static class Zoom
     public static void Postfix()
     {
         //if (PlayerControl.LocalPlayer.Is(RoleType.Impostor) && Options.OperateVisibilityImpostor.GetBool()) return;
-        if (GameStates.IsShip && !GameStates.IsMeeting && GameStates.IsCanMove && PlayerControl.LocalPlayer.Data.IsDead || GameStates.IsLobby && GameStates.IsCanMove)
+        if (Main.InfiniteVision.Value == true || PlayerControl.LocalPlayer.Data.IsDead)
         {
             if (Camera.main.orthographicSize > 3.0f)
                 ResetButtons = true;
@@ -29,10 +29,8 @@ public static class Zoom
             }
             if (Input.mouseScrollDelta.y < 0)
             {
-                if (GameStates.IsDead || GameStates.IsFreePlay || DebugModeManager.AmDebugger || GameStates.IsLobby ||
-                    PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug)
                 {
-                    if (Camera.main.orthographicSize < 18.0f)
+                    if (Camera.main.orthographicSize < 30.0f)
                     {
                         SetZoomSize(times: true);
                     }

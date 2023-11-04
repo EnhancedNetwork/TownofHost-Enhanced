@@ -23,7 +23,8 @@ public static class OptionsMenuBehaviourStartPatch
 #if DEBUG
     private static ClientOptionItem VersionCheat;
 #endif
-    //private static ClientOptionItem GodMode;
+    private static ClientOptionItem GodMode;
+    private static ClientOptionItem InfiniteVision;
 
     public static void Postfix(OptionsMenuBehaviour __instance)
     {
@@ -113,10 +114,14 @@ public static class OptionsMenuBehaviourStartPatch
             VersionCheat = ClientOptionItem.Create("VersionCheat", Main.VersionCheat, __instance);
         }
 #endif
-        //if ((GodMode == null || GodMode.ToggleButton == null) && DebugModeManager.AmDebugger)
-        //{
-        //    GodMode = ClientOptionItem.Create("GodMode", Main.GodMode, __instance);
-        //}
+        if ((GodMode == null || GodMode.ToggleButton == null))
+        {
+            GodMode = ClientOptionItem.Create("GodMode", Main.GodMode, __instance);
+        }
+        if ((InfiniteVision == null || InfiniteVision.ToggleButton == null))
+        {
+            InfiniteVision = ClientOptionItem.Create("InfiniteVision", Main.InfiniteVision, __instance);
+        }
     }
 }
 

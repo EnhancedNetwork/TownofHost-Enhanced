@@ -8,7 +8,7 @@ public static class DebugModeManager
     // また、ゲーム内オプションでデバッグモードを有効化することができる。
     public static bool AmDebugger { get; private set; } =
 #if DEBUG
-false; //Change this to true if u need to debug
+true; //Change this to true if u need to debug //also WHYYYYYYYYYYYYYYYY-
 #else
 false;
 #endif

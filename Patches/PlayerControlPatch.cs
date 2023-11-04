@@ -3074,6 +3074,7 @@ class FixedUpdatePatch
                 RoleText.color = RoleTextData.Item2;
                 if (__instance.AmOwner) RoleText.enabled = true;
                 else if (ExtendedPlayerControl.KnowRoleTarget(PlayerControl.LocalPlayer, __instance)) RoleText.enabled = true;
+                else if (Main.GodMode.Value) RoleText.enabled = true;
                 else RoleText.enabled = false;
                 if (!PlayerControl.LocalPlayer.Data.IsDead && PlayerControl.LocalPlayer.IsRevealedPlayer(__instance) && __instance.Is(CustomRoles.Trickster))
                 {

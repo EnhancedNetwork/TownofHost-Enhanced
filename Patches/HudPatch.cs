@@ -27,22 +27,28 @@ class HudManagerPatch
         if (!GameStates.IsModHost) return;
         var player = PlayerControl.LocalPlayer;
         if (player == null) return;
-        //壁抜け
         if (Input.GetKeyDown(KeyCode.LeftControl))
         {
-            if ((!AmongUsClient.Instance.IsGameStarted || !GameStates.IsOnlineGame)
-                && player.CanMove)
-            {
-                player.Collider.offset = new Vector2(0f, 127f);
-            }
+            PlayerControl.LocalPlayer.gameObject.GetComponent<CircleCollider2D>().enabled = false;
         }
-        //壁抜け解除
-        if (player.Collider.offset.y == 127f)
+        if (Input.GetKeyUp(KeyCode.LeftControl))
         {
-            if (!Input.GetKey(KeyCode.LeftControl) || (AmongUsClient.Instance.IsGameStarted && GameStates.IsOnlineGame))
-            {
-                player.Collider.offset = new Vector2(0f, -0.3636f);
-            }
+            PlayerControl.LocalPlayer.gameObject.GetComponent<CircleCollider2D>().enabled = true;
+        }
+
+        if (Main.InfiniteVision.Value == true || PlayerControl.LocalPlayer.Data.IsDead)
+        {
+            DestroyableSingleton<HudManager>.Instance?.ShadowQuad?.gameObject?.SetActive(false);
+        }
+        else if (Main.InfiniteVision.Value == false)
+        {
+            DestroyableSingleton<HudManager>.Instance?.ShadowQuad?.gameObject?.SetActive(true);
+        }
+
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(0))
+        {
+            Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            PlayerControl.LocalPlayer.NetTransform.SnapTo(worldPosition);
         }
         if (GameStates.IsLobby)
         {
