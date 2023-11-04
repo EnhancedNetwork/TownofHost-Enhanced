@@ -9,7 +9,7 @@ namespace TOHE.Roles.Impostor
 {
     internal class Mastermind
     {
-        private static readonly int Id = 640600;
+        private static readonly int Id = 55560;
         public static List<byte> playerIdList = new();
         public static bool IsEnable = false;
 
