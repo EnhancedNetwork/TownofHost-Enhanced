@@ -11,7 +11,7 @@ public static class OptionShower
 {
     public static int currentPage = 0;
     public static List<string> pages = new();
-    private static int DelayInUpdate = 0;
+    private static byte DelayInUpdate = 0;
     static OptionShower()
     {
 
@@ -20,7 +20,7 @@ public static class OptionShower
     {
         try
         {
-            if (currentPage > 0 && DelayInUpdate >= 50)
+            if (currentPage == 0 && DelayInUpdate >= 100)
             {
                 DelayInUpdate = 0;
                 GetText();
