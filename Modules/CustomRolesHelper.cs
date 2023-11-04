@@ -1261,7 +1261,7 @@ static class CustomRolesHelper
             case CustomRoles.Unlucky:
                 if (pc.Is(CustomRoles.Luckey)
                     || pc.Is(CustomRoles.Mario)
-                    || pc.Is(CustomRoles.Lucky))
+                    || pc.Is(CustomRoles.Lucky)
                     || pc.Is(CustomRoles.Lucky)
                     || pc.Is(CustomRoles.Mario)
                     || pc.Is(CustomRoles.Taskinator))
