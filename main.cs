@@ -339,7 +339,7 @@ public class Main : BasePlugin
                 }
             }
 
-            foreach (var role in Enum.GetValues(typeof(CustomRoles)).Cast<CustomRoles>())
+            foreach (var role in EnumHelper.GetAllValues<CustomRoles>())
             {
                 switch (role.GetCustomRoleTypes())
                 {
