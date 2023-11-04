@@ -216,6 +216,7 @@ public static class Options
     public static OptionItem MinerSSDuration;
     public static OptionItem MinerSSCD;
     public static OptionItem TrapperBlockMoveTime;
+    public static OptionItem BecomeTrapperBlockMoveTime;
     public static OptionItem DetectiveCanknowKiller;
     public static OptionItem TransporterTeleportMax;
     public static OptionItem CanTerroristSuicideWin;
@@ -488,7 +489,10 @@ public static class Options
     public static OptionItem NeutralCanBeBait;
     public static OptionItem BaitDelayMin;
     public static OptionItem BaitDelayMax;
+    public static OptionItem BecomeBaitDelayMin;
+    public static OptionItem BecomeBaitDelayMax;
     public static OptionItem BaitDelayNotify;
+    public static OptionItem BecomeBaitDelayNotify;
     public static OptionItem ImpCanBeTrapper;
     public static OptionItem CrewCanBeTrapper;
     public static OptionItem NeutralCanBeTrapper;
@@ -1266,6 +1270,11 @@ public static class Options
             .SetValueFormat(OptionFormat.Seconds);
 
         /*
+         * Instigator
+         */
+        Instigator.SetupCustomOption();
+
+        /*
          * Ludopath
          */
         SetupRoleOptions(10125, TabGroup.ImpostorRoles, CustomRoles.Ludopath);
@@ -1713,6 +1722,22 @@ public static class Options
         TransporterTasks = OverrideTasksData.Create(6211, TabGroup.CrewmateRoles, CustomRoles.Transporter);
 
         /*
+         * Randomizer
+         */
+        SetupRoleOptions(6240, TabGroup.CrewmateRoles, CustomRoles.Randomizer);
+        BecomeBaitDelayNotify = BooleanOptionItem.Create(6245, "BecomeBaitDelayNotify", false, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer]);
+        BecomeBaitDelayMin = FloatOptionItem.Create(6246, "BaitDelayMin", new(0f, 5f, 1f), 0f, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
+            .SetValueFormat(OptionFormat.Seconds);
+        BecomeBaitDelayMax = FloatOptionItem.Create(6247, "BaitDelayMax", new(0f, 10f, 1f), 0f, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
+            .SetValueFormat(OptionFormat.Seconds);
+        BecomeTrapperBlockMoveTime = FloatOptionItem.Create(6248, "BecomeTrapperBlockMoveTime", new(1f, 180f, 1f), 5f, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
+            .SetValueFormat(OptionFormat.Seconds);
+        
+        /*
          * SUPPORT ROLES
          */
         TextOptionItem.Create(100007, "RoleType.CrewSupport", TabGroup.CrewmateRoles)
@@ -1743,6 +1768,7 @@ public static class Options
 
         
         Divinator.SetupCustomOption(); // Fortune Teller
+        Enigma.SetupCustomOption();
         SetupRoleOptions(6800, TabGroup.CrewmateRoles, CustomRoles.Grenadier);
         GrenadierSkillCooldown = FloatOptionItem.Create(6810, "GrenadierSkillCooldown", new(1f, 180f, 1f), 25f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Grenadier])
@@ -1958,6 +1984,8 @@ public static class Options
         VoodooCooldown = FloatOptionItem.Create(22430, "VoodooCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shaman])
             .SetValueFormat(OptionFormat.Seconds);
+
+        Taskinator.SetupCustomOption();
 
         NWitch.SetupCustomOption();
         /*  SetupSingleRoleOptions(6050530, TabGroup.NeutralRoles, CustomRoles.NWitch, 1, zeroOne: false);
