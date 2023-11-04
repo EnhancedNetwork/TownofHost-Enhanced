@@ -6,8 +6,10 @@ using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 
@@ -329,7 +331,37 @@ public class Main : BasePlugin
         ExceptionMessage = "";
         try
         {
-            roleColors = new Dictionary<CustomRoles, string>()
+            Dictionary<CustomRoles, string> roleColors = new Dictionary<CustomRoles, string>();
+            var assembly = Assembly.GetExecutingAssembly();
+            string resourceName = "TOHE.Resources.TOHE.roleColor.json";
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            {
+                if (stream != null)
+                {
+                    using (StreamReader reader = new StreamReader(stream))
+                    {
+                        string jsonData = reader.ReadToEnd();
+                        Dictionary<string, string> jsonDict = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonData);
+                        foreach (var kvp in jsonDict)
+                        {
+                            if (Enum.TryParse<CustomRoles>(kvp.Key, out CustomRoles role))
+                            {
+                                roleColors[role] = kvp.Value;
+                            }
+                            else
+                            {
+                                // Handle invalid or unrecognized enum keys
+                                TOHE.Logger.Warn($"Invalid enum key: {kvp.Key}", "Reading Role Colors");
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    TOHE.Logger.Warn($"Embedded resource not found.", "Reading Role Colors");
+                }
+            }
+            /*roleColors = new Dictionary<CustomRoles, string>()
             {
                 //バニラ役職
                 {CustomRoles.Crewmate, "#8cffff"},
@@ -486,7 +518,7 @@ public class Main : BasePlugin
                 {CustomRoles.SoulCollector, "#A675A1"},
                 {CustomRoles.Imitator, "#B3D94C"},
                 {CustomRoles.Doppelganger,"#f6f4a3" },
-            
+
                 // GM
                 {CustomRoles.GM, "#ff5b70"},
                 //サブ役職
@@ -528,7 +560,7 @@ public class Main : BasePlugin
                 {CustomRoles.Lucky, "#b8d7a3"},
                 {CustomRoles.Unlucky, "#d7a3a3"},
                 {CustomRoles.DoubleShot, "#19fa8d"},
-     //           {CustomRoles.Reflective, "#FFD700"},
+        //           {CustomRoles.Reflective, "#FFD700"},
                 {CustomRoles.Rascal, "#990000"},
                 {CustomRoles.Soulless, "#531269"},
                 {CustomRoles.Gravestone, "#2EA8E7"},
@@ -561,9 +593,9 @@ public class Main : BasePlugin
                 {CustomRoles.Oiiai, "#2bdb2b" },
                 {CustomRoles.Influenced, "#b0006a"},
 
-             //   {CustomRoles.QuickFix, "#3333ff"},
+                //   {CustomRoles.QuickFix, "#3333ff"},
 
-            };
+            };*/
             foreach (var role in Enum.GetValues(typeof(CustomRoles)).Cast<CustomRoles>())
             {
                 switch (role.GetCustomRoleTypes())
