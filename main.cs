@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.Json;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -109,6 +110,7 @@ public class Main : BasePlugin
     public static Dictionary<byte, Color32> PlayerColors = new();
     public static Dictionary<byte, PlayerState.DeathReason> AfterMeetingDeathPlayers = new();
     public static Dictionary<CustomRoles, string> roleColors;
+    const string LANGUAGE_FOLDER_NAME = "Language";
     public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable() || CustomRoles.Vampiress.IsEnable();
     public static float RefixCooldownDelay = 0f;
     public static GameData.PlayerInfo LastVotedPlayerInfo;
@@ -258,6 +260,166 @@ public class Main : BasePlugin
         TName_Snacks_CN[IRandom.Instance.Next(0, TName_Snacks_CN.Count)] :
         TName_Snacks_EN[IRandom.Instance.Next(0, TName_Snacks_EN.Count)];
 
+    private static void CreateTemplateRoleColorFile()
+    {
+        var sb = new StringBuilder();
+        foreach (var title in roleColors) sb.Append($"{title.Key}:\n");
+        File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/templateRoleColor.dat", sb.ToString());
+    }
+    public static void LoadCustomRoleColor()
+    {
+        const string filename = "RoleColor.dat";
+        string path = @$"./{LANGUAGE_FOLDER_NAME}/{filename}";
+        if (File.Exists(path))
+        {
+            TOHE.Logger.Info($"Load custom Role Color file：{filename}", "LoadCustomRoleColor");
+            using StreamReader sr = new(path, Encoding.GetEncoding("UTF-8"));
+            string text;
+            string[] tmp = Array.Empty<string>();
+            while ((text = sr.ReadLine()) != null)
+            {
+                tmp = text.Split(":");
+                if (tmp.Length > 1 && tmp[1] != "")
+                {
+                    try
+                    {
+                        if (Enum.TryParse<CustomRoles>(tmp[0], out CustomRoles role))
+                        {
+                            var color = tmp[1].Trim().TrimStart('#');
+                            if (Utils.CheckColorHex(color))
+                            { 
+                                roleColors[role] = "#"+color;
+                            }
+                            else TOHE.Logger.Error($"Invalid Hexcolor #{color}", "LoadCustomRoleColor");
+                        }
+                    }
+                    catch (KeyNotFoundException)
+                    {
+                        TOHE.Logger.Warn($"Invalid Key：{tmp[0]}", "LoadCustomTranslation");
+                    }
+                }
+            }
+        }
+        else
+        {
+            TOHE.Logger.Error($"File not found：{filename}", "LoadCustomTranslation");
+        }
+    }
+    public static void LoadRoleColors()
+    {
+        try
+        {
+            roleColors = new();
+            var assembly = Assembly.GetExecutingAssembly();
+            string resourceName = "TOHE.Resources.roleColor.json";
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            {
+                if (stream != null)
+                {
+                    using (StreamReader reader = new StreamReader(stream))
+                    {
+                        string jsonData = reader.ReadToEnd();
+                        Dictionary<string, string> jsonDict = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonData);
+                        foreach (var kvp in jsonDict)
+                        {
+                            if (Enum.TryParse<CustomRoles>(kvp.Key, out CustomRoles role))
+                            {
+                                roleColors[role] = kvp.Value;
+                            }
+                            else
+                            {
+                                // Handle invalid or unrecognized enum keys
+                                TOHE.Logger.Error($"Invalid enum key: {kvp.Key}", "Reading Role Colors");
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    TOHE.Logger.Error($"Embedded resource not found.", "Reading Role Colors");
+                }
+            }
+
+            foreach (var role in Enum.GetValues(typeof(CustomRoles)).Cast<CustomRoles>())
+            {
+                switch (role.GetCustomRoleTypes())
+                {
+                    case CustomRoleTypes.Impostor:
+                        roleColors.TryAdd(role, "#ff1919");
+                        break;
+                    default:
+                        break;
+                }
+            }
+            CreateTemplateRoleColorFile();
+            if (File.Exists(@$"./{LANGUAGE_FOLDER_NAME}/RoleColor.dat"))
+            {
+                UpdateCustomTranslation();
+                LoadCustomRoleColor(); 
+            }
+        }
+        catch (ArgumentException ex)
+        {
+            TOHE.Logger.Error("错误：字典出现重复项", "LoadDictionary");
+            TOHE.Logger.Exception(ex, "LoadDictionary");
+            hasArgumentException = true;
+            ExceptionMessage = ex.Message;
+            ExceptionMessageIsShown = false;
+        }
+    }
+    static void UpdateCustomTranslation()
+    {
+        string path = @$"./{LANGUAGE_FOLDER_NAME}/RoleColor.dat";
+        if (File.Exists(path))
+        {
+            TOHE.Logger.Info("Updating Custom Role Colors", "UpdateRoleColors");
+            try
+            {
+                List<string> roleList = new();
+                using (StreamReader reader = new(path, Encoding.GetEncoding("UTF-8")))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        // Split the line by ':' to get the first part
+                        string[] parts = line.Split(':');
+
+                        // Check if there is at least one part before ':'
+                        if (parts.Length >= 1)
+                        {
+                            // Trim any leading or trailing spaces and add it to the list
+                            string role = parts[0].Trim();
+                            roleList.Add(role);
+                        }
+                    }
+                }
+                var sb = new StringBuilder();
+                foreach (var templateRole in roleColors.Keys)
+                {
+                    if (!roleList.Contains(templateRole.ToString())) sb.Append($"{templateRole}:\n");
+                }
+                using FileStream fileStream = new(path, FileMode.Append, FileAccess.Write);
+                using StreamWriter writer = new(fileStream);
+                writer.WriteLine(sb.ToString());
+
+            }
+            catch (Exception e)
+            {
+                TOHE.Logger.Error("An error occurred: " + e.Message, "UpdateRoleColors");
+            }
+        }
+    }
+
+    public static void ExportCustomRoleColors()
+    {
+        var sb = new StringBuilder();
+        foreach (var kvp in roleColors)
+        {
+            sb.Append($"{kvp.Key.ToString()}:{kvp.Value}\n");
+        }
+        File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/export_RoleColor.dat", sb.ToString());
+    }
+
     public override void Load()
     {
         Instance = this;
@@ -330,59 +492,8 @@ public class Main : BasePlugin
 
         hasArgumentException = false;
         ExceptionMessage = "";
-        try
-        {
-            roleColors = new();
-            var assembly = Assembly.GetExecutingAssembly();
-            string resourceName = "TOHE.Resources.roleColor.json";
-            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-            {
-                if (stream != null)
-                {
-                    using (StreamReader reader = new StreamReader(stream))
-                    {
-                        string jsonData = reader.ReadToEnd();
-                        Dictionary<string, string> jsonDict = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonData);
-                        foreach (var kvp in jsonDict)
-                        {
-                            if (Enum.TryParse<CustomRoles>(kvp.Key, out CustomRoles role))
-                            {
-                                roleColors[role] = kvp.Value;
-                            }
-                            else
-                            {
-                                // Handle invalid or unrecognized enum keys
-                                TOHE.Logger.Error($"Invalid enum key: {kvp.Key}", "Reading Role Colors");
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    TOHE.Logger.Error($"Embedded resource not found.", "Reading Role Colors");
-                }
-            }
-            
-            foreach (var role in Enum.GetValues(typeof(CustomRoles)).Cast<CustomRoles>())
-            {
-                switch (role.GetCustomRoleTypes())
-                {
-                    case CustomRoleTypes.Impostor:
-                        roleColors.TryAdd(role, "#ff1919");
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-        catch (ArgumentException ex)
-        {
-            TOHE.Logger.Error("错误：字典出现重复项", "LoadDictionary");
-            TOHE.Logger.Exception(ex, "LoadDictionary");
-            hasArgumentException = true;
-            ExceptionMessage = ex.Message;
-            ExceptionMessageIsShown = false;
-        }
+
+        LoadRoleColors(); //loads all the role colors from default and then tries to load custom colors if any.
 
         CustomWinnerHolder.Reset();
         ServerAddManager.Init();
