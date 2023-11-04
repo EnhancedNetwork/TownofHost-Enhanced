@@ -19,11 +19,12 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem ShowTextOverlay;
     private static ClientOptionItem ModeForSmallScreen;
     private static ClientOptionItem EnableRoleSummary;
+    private static ClientOptionItem UsePetSystem;
     private static ClientOptionItem SwitchVanilla;
 #if DEBUG
     private static ClientOptionItem VersionCheat;
+    private static ClientOptionItem GodMode;
 #endif
-    //private static ClientOptionItem GodMode;
 
     public static void Postfix(OptionsMenuBehaviour __instance)
     {
@@ -98,6 +99,10 @@ public static class OptionsMenuBehaviourStartPatch
         {
             EnableRoleSummary = ClientOptionItem.Create("EnableRoleSummary", Main.EnableRoleSummary, __instance);
         }
+        if ((UsePetSystem == null || UsePetSystem.ToggleButton == null) && DebugModeManager.AmDebugger)
+        {
+            UsePetSystem = ClientOptionItem.Create("UsePetSystem", Main.UsePetSystem, __instance);
+        }
         if (SwitchVanilla == null || SwitchVanilla.ToggleButton == null)
         {
             SwitchVanilla = ClientOptionItem.Create("SwitchVanilla", Main.SwitchVanilla, __instance, SwitchVanillaButtonToggle);
@@ -112,11 +117,11 @@ public static class OptionsMenuBehaviourStartPatch
         {
             VersionCheat = ClientOptionItem.Create("VersionCheat", Main.VersionCheat, __instance);
         }
+        if ((GodMode == null || GodMode.ToggleButton == null) && DebugModeManager.AmDebugger)
+        {
+            GodMode = ClientOptionItem.Create("GodMode", Main.GodMode, __instance);
+        }
 #endif
-        //if ((GodMode == null || GodMode.ToggleButton == null) && DebugModeManager.AmDebugger)
-        //{
-        //    GodMode = ClientOptionItem.Create("GodMode", Main.GodMode, __instance);
-        //}
     }
 }
 

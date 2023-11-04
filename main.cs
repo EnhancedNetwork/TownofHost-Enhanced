@@ -72,6 +72,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> UnlockFPS { get; private set; }
     public static ConfigEntry<bool> ShowFPS { get; private set; }
     public static ConfigEntry<bool> AutoMuteUs { get; private set; }
+    public static ConfigEntry<bool> UsePetSystem { get; private set; }
     public static ConfigEntry<bool> EnableGM { get; private set; }
     public static ConfigEntry<bool> AutoStart { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguage { get; private set; }
@@ -279,6 +280,7 @@ public class Main : BasePlugin
         VersionCheat = Config.Bind("Client Options", "VersionCheat", false);
         GodMode = Config.Bind("Client Options", "GodMode", false);
         AutoMuteUs = Config.Bind("Client Options", "AutoMuteUs", false); // The AutoMuteUs bot fails to match the host's name.
+        UsePetSystem = Config.Bind("Client Options", "UsePetSystem", false);
 
         Logger = BepInEx.Logging.Logger.CreateLogSource("TOHE");
         TOHE.Logger.Enable();
@@ -825,7 +827,7 @@ public enum CustomRoles
     Traitor,
     Vulture,
     PlagueBearer,
-    Pestilence,
+    Pestilence, //WTF is this a addon?
     Medusa,
     Sidekick,
     Spiritcaller,

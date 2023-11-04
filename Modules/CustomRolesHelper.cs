@@ -609,6 +609,61 @@ static class CustomRolesHelper
         return role is
             CustomRoles.Mini;
     }
+
+    public static bool IsUsingPetSystem(this CustomRoles role)
+    {
+        return role is
+            CustomRoles.Vampire or
+            CustomRoles.Vampiress or
+            CustomRoles.Witch or //女巫
+            CustomRoles.Warlock or //术士
+            CustomRoles.Puppeteer or //傀儡师
+            CustomRoles.Mastermind or //策划者
+            CustomRoles.Gangster or //歹徒
+            CustomRoles.BallLightning or //球闪
+            CustomRoles.EvilDiviner or //军师
+
+            CustomRoles.Sheriff or //For public protocol support
+            CustomRoles.Vigilante or //义务警
+            CustomRoles.Jailer or //狱警
+            CustomRoles.Counterfeiter or //赝品
+            CustomRoles.Witness or //目击者
+            CustomRoles.Medic or
+            CustomRoles.Monarch or //君主
+            CustomRoles.CopyCat or
+            CustomRoles.Deputy or //捕快
+            CustomRoles.Investigator or //研究者
+            CustomRoles.Admirer or
+            CustomRoles.Crusader or
+            CustomRoles.ChiefOfPolice or
+
+            CustomRoles.Arsonist or //纵火
+                                    //CustomRoles.Pyromaniac or 焚烧狂
+            CustomRoles.Agitater or //煽动者
+            CustomRoles.Bandit or //强盗
+            CustomRoles.Seeker or //搜寻者
+            CustomRoles.HexMaster or //巫师
+            CustomRoles.Shaman or //萨满
+            CustomRoles.Jackal or
+            CustomRoles.Poisoner or //投毒者
+            CustomRoles.NWitch or //巫婆
+            CustomRoles.PlagueBearer or //瘟疫
+            CustomRoles.Innocent or //冤罪师
+            CustomRoles.Pelican or
+            CustomRoles.Revolutionist or //革命
+            CustomRoles.Infectious or //感染
+            CustomRoles.FFF or
+            //CustomRoles.Pursuer or 空包弹
+            CustomRoles.Pirate or
+            //CustomRoles.Gamer or
+            CustomRoles.Provocateur or //自爆卡车
+            CustomRoles.Totocalcio or //赌徒
+            CustomRoles.Succubus or //魅魔
+            //CustomRoles.Baker or
+            //CustomRoles.Famine or //面包饥荒
+            CustomRoles.Imitator or
+            CustomRoles.Shroud; //裹尸布
+    }
     public static bool IsImpostor(this CustomRoles role) // IsImp
     {
         return role is
