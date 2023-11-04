@@ -1165,17 +1165,17 @@ class CheckMurderPatch
                 int XiaoMu = Fg.Next(1, 5);
                     if (XiaoMu == 1)
                     {
-                        if (killer.PlayerId != target.PlayerId || target.GetRealKiller()?.GetCustomRole() is CustomRoles.Swooper)
+                        if (killer.PlayerId != target.PlayerId || (target.GetRealKiller()?.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Wraith) || !killer.Is(CustomRoles.Oblivious) || (killer.Is(CustomRoles.Oblivious) && !Options.ObliviousBaitImmune.GetBool()))
                         {
-                            NameNotifyManager.Notify(killer, Utils.ColorString(Utils.GetRoleColor(CustomRoles.XiaoMu), GetString("YouKillXiaoMu1")));
                             killer.RPCPlayCustomSound("Congrats");
                             target.RPCPlayCustomSound("Congrats");
                             float delay;
-                            if (Options.BaitDelayMax.GetFloat() < Options.BaitDelayMin.GetFloat()) delay = 0f;
-                            else delay = IRandom.Instance.Next((int)Options.BaitDelayMin.GetFloat(), (int)Options.BaitDelayMax.GetFloat() + 1);
+                            if (Options.BecomeBaitDelayMax.GetFloat() < Options.BecomeBaitDelayMin.GetFloat()) delay = 0f;
+                            else delay = IRandom.Instance.Next((int)Options.BecomeBaitDelayMin.GetFloat(), (int)Options.BecomeBaitDelayMax.GetFloat() + 1);
                             delay = Math.Max(delay, 0.15f);
                             if (delay > 0.15f && Options.BaitDelayNotify.GetBool()) killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), string.Format(GetString("KillBaitNotify"), (int)delay)), delay);
-                            Logger.Info($"{killer.GetNameWithRole()} 击杀萧暮自动报告 => {target.GetNameWithRole()}", "XiaoMu");
+                            Logger.Info($"{killer.GetNameWithRole()} 击杀了萧暮触发自动报告 => {target.GetNameWithRole()}", "XiaoMu");
+                            NameNotifyManager.Notify(killer, Utils.ColorString(Utils.GetRoleColor(CustomRoles.XiaoMu), GetString("YouKillXiaoMu1")));
                             _ = new LateTask(() => { if (GameStates.IsInTask) killer.CmdReportDeadBody(target.Data); }, delay, "Bait Self Report");
                         }
                     }
@@ -1183,24 +1183,24 @@ class CheckMurderPatch
                     {
                         Logger.Info($"{killer.GetNameWithRole()} 击杀了萧暮触发暂时无法移动 => {target.GetNameWithRole()}", "XiaoMu");
                         NameNotifyManager.Notify(killer, Utils.ColorString(Utils.GetRoleColor(CustomRoles.XiaoMu), GetString("YouKillXiaoMu2")));
-                        var tmpSpeed1 = Main.AllPlayerSpeed[killer.PlayerId];
-                        Main.AllPlayerSpeed[killer.PlayerId] = Main.MinSpeed;
+                        var tmpSpeed = Main.AllPlayerSpeed[killer.PlayerId];
+                        Main.AllPlayerSpeed[killer.PlayerId] = Main.MinSpeed;    //tmpSpeedで後ほど値を戻すので代入しています。
                         ReportDeadBodyPatch.CanReport[killer.PlayerId] = false;
                         killer.MarkDirtySettings();
                         _ = new LateTask(() =>
                         {
-                            Main.AllPlayerSpeed[killer.PlayerId] = Main.AllPlayerSpeed[killer.PlayerId] - Main.MinSpeed + tmpSpeed1;
+                            Main.AllPlayerSpeed[killer.PlayerId] = Main.AllPlayerSpeed[killer.PlayerId] - Main.MinSpeed + tmpSpeed;
                             ReportDeadBodyPatch.CanReport[killer.PlayerId] = true;
                             killer.MarkDirtySettings();
                             RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
-                        }, Options.TrapperBlockMoveTime.GetFloat(), "Trapper BlockMove");
+                        }, Options.BecomeTrapperBlockMoveTime.GetFloat(), "Trapper BlockMove");
                     }
                     else if (XiaoMu == 3)
                     {
-                        Logger.Info($"{killer.GetNameWithRole()} 击杀了萧暮凶手CD变成600 => {target.GetNameWithRole()}", "XiaoMu");
+                        Logger.Info($"{killer.GetNameWithRole()} 击杀了萧暮触发凶手CD变成600 => {target.GetNameWithRole()}", "XiaoMu");
+                        NameNotifyManager.Notify(killer, Utils.ColorString(Utils.GetRoleColor(CustomRoles.XiaoMu), GetString("YouKillXiaoMu3")));
                         Main.AllPlayerKillCooldown[killer.PlayerId] = 600f;
                         killer.SyncSettings();
-                        NameNotifyManager.Notify(killer, Utils.ColorString(Utils.GetRoleColor(CustomRoles.XiaoMu), GetString("YouKillXiaoMu3")));
                     }
                     else if (XiaoMu == 4)
                     {

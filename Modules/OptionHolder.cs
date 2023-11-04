@@ -216,6 +216,7 @@ public static class Options
     public static OptionItem MinerSSDuration;
     public static OptionItem MinerSSCD;
     public static OptionItem TrapperBlockMoveTime;
+    public static OptionItem BecomeTrapperBlockMoveTime;
     public static OptionItem DetectiveCanknowKiller;
     public static OptionItem TransporterTeleportMax;
     public static OptionItem CanTerroristSuicideWin;
@@ -488,7 +489,10 @@ public static class Options
     public static OptionItem NeutralCanBeBait;
     public static OptionItem BaitDelayMin;
     public static OptionItem BaitDelayMax;
+    public static OptionItem BecomeBaitDelayMin;
+    public static OptionItem BecomeBaitDelayMax;
     public static OptionItem BaitDelayNotify;
+    public static OptionItem BecomeBaitDelayNotify;
     public static OptionItem ImpCanBeTrapper;
     public static OptionItem CrewCanBeTrapper;
     public static OptionItem NeutralCanBeTrapper;
@@ -1697,6 +1701,19 @@ public static class Options
          * XiaoMu
          */
         SetupRoleOptions(7200, TabGroup.CrewmateRoles, CustomRoles.XiaoMu);
+        BecomeBaitDelayNotify = BooleanOptionItem.Create(7203, "BecomeBaitDelayNotify", false, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.XiaoMu]);
+        BaitCanBeReportedUnderAllConditions = BooleanOptionItem.Create(7024, "BecomeBaitCanBeReportedUnderAllConditions", false, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.XiaoMu]);
+        BecomeBaitDelayMin = FloatOptionItem.Create(13713, "BaitDelayMin", new(0f, 5f, 1f), 0f, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.XiaoMu])
+            .SetValueFormat(OptionFormat.Seconds);
+        BecomeBaitDelayMax = FloatOptionItem.Create(13714, "BaitDelayMax", new(0f, 10f, 1f), 0f, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.XiaoMu])
+            .SetValueFormat(OptionFormat.Seconds);
+        BecomeTrapperBlockMoveTime = FloatOptionItem.Create(7205, "BecomeTrapperBlockMoveTime", new(1f, 180f, 1f), 5f, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.XiaoMu])
+            .SetValueFormat(OptionFormat.Seconds);
         
         /*
          * SUPPORT ROLES
