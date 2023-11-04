@@ -459,7 +459,7 @@ class CheckForEndVotingPatch
         int impnum = 0;
         int neutralnum = 0;
 
-        if (CustomRolesHelper.RoleExist(CustomRoles.Bard))
+        if (CustomRoles.Bard.RoleExist())
         {
             Main.BardCreations++;
             try { name = ModUpdater.Get("https://v1.hitokoto.cn/?encode=text"); }
@@ -510,14 +510,14 @@ class CheckForEndVotingPatch
         var DecidedWinner = false;
 
         //迷你船员长大前被驱逐抢夺胜利
-        if (crole == CustomRoles.NiceMini && Mini.Age !< 18)
+        if (crole.Is(CustomRoles.NiceMini) && Mini.Age !< 18)
         {
             name = string.Format(GetString("ExiledNiceMini"), realName, coloredRole);
             DecidedWinner = true;
         }
 
         //小丑胜利
-        if (crole == CustomRoles.Jester)
+        if (crole.Is(CustomRoles.Jester))
         {
             name = string.Format(GetString("ExiledJester"), realName, coloredRole);
             DecidedWinner = true;
@@ -567,8 +567,12 @@ class CheckForEndVotingPatch
             _ = new LateTask(() =>
             {
                 Main.DoBlockNameChange = true;
-                if (GameStates.IsInGame) player.RpcSetName(name);
+                if (GameStates.IsInGame)
+                {
+                    player.RpcSetName(name);
+                }
             }, 3.0f, "Change Exiled Player Name");
+            
             _ = new LateTask(() =>
             {
                 if (GameStates.IsInGame && !player.Data.Disconnected)
@@ -682,15 +686,19 @@ static class ExtendedMeetingHud
                     ) VoteNum += Options.VindicatorAdditionalVote.GetInt();
                 if (Options.DualVotes.GetBool())
                 { 
-                if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.DualPersonality)
-                    && ps.TargetPlayerId != ps.VotedFor
-                    ) VoteNum += VoteNum;
+                    if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.DualPersonality)
+                        && ps.TargetPlayerId != ps.VotedFor
+                        ) VoteNum += VoteNum;
                 }
                 //窃票者附加票数
                 if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.TicketsStealer))
+                {
                     VoteNum += (int)(Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == ps.TargetPlayerId) * Options.TicketsPerKill.GetFloat());
+                }
                 if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Pickpocket))
+                {
                     VoteNum += (int)(Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == ps.TargetPlayerId) * Pickpocket.VotesPerKill.GetFloat());
+                }
 
                 // 主动叛变模式下自票无效
                 if (ps.TargetPlayerId == ps.VotedFor && Options.MadmateSpawnMode.GetInt() == 2) VoteNum = 0;
@@ -776,8 +784,12 @@ class MeetingHudStartPatch
             AddMsg(string.Format(GetString("BaitAdviceAlive"), string.Join(separator, baitAliveList)), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), GetString("BaitAliveTitle")));
         }
         string MimicMsg = "";
-        foreach (var pc in Main.AllPlayerControls)
+        var allPlayerControlsList = Main.AllPlayerControls;
+        int allPlayerControlsCount = allPlayerControlsList.Count;
+        for (int item = 0; item < allPlayerControlsCount; item++)
         {
+            PlayerControl pc = allPlayerControlsList[item];
+
             //黑手党死后技能提示
             if (pc.Is(CustomRoles.Mafia) && !pc.IsAlive())
                 AddMsg(GetString("MafiaDeadMsg"), pc.PlayerId);
@@ -832,8 +844,14 @@ class MeetingHudStartPatch
         if (MimicMsg != "")
         {
             MimicMsg = GetString("MimicDeadMsg") + "\n" + MimicMsg;
-            foreach (var ipc in Main.AllPlayerControls.Where(x => x.GetCustomRole().IsImpostorTeam()))
-                AddMsg(MimicMsg, ipc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mimic), GetString("MimicMsgTitle")));
+
+            var isImpostorTeamList = Main.AllPlayerControls.Where(x => x.GetCustomRole().IsImpostorTeam()).ToList();
+            int isImpostorTeamCount = isImpostorTeamList.Count;
+            for (int item = 0; item < isImpostorTeamCount; item++)
+            {
+                PlayerControl imp = isImpostorTeamList[item];
+                AddMsg(MimicMsg, imp.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mimic), GetString("MimicMsgTitle")));
+            }
         }
 
         msgToSend.Do(x => Logger.Info($"To:{x.Item2} {x.Item3} => {x.Item1}", "Skill Notice OnMeeting Start"));
@@ -852,7 +870,7 @@ class MeetingHudStartPatch
     }
     public static void Prefix(MeetingHud __instance)
     {
-        Logger.Info("------------会议开始------------", "Phase");
+        Logger.Info("------------Opening of the session------------", "Phase");
         ChatUpdatePatch.DoBlockChat = true;
         GameStates.AlreadyDied |= !Utils.IsAllAlive;
         Main.AllPlayerControls.Do(x => ReportDeadBodyPatch.WaitReport[x.PlayerId].Clear());
@@ -949,8 +967,11 @@ class MeetingHudStartPatch
         {
             _ = new LateTask(() =>
             {
-                foreach (var pc in Main.AllPlayerControls)
+                var allPlayerControlsList = Main.AllPlayerControls;
+                int allPlayerControlsCount = allPlayerControlsList.Count;
+                for (int item = 0; item < allPlayerControlsCount; item++)
                 {
+                    PlayerControl pc = allPlayerControlsList[item];
                     pc.RpcSetNameEx(pc.GetRealName(isMeeting: true));
                 }
                 ChatUpdatePatch.DoBlockChat = false;

@@ -149,7 +149,7 @@ internal class ChangeRoleSettings
 
             Camouflage.Init();
 
-            var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
+            var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
             if (invalidColor.Any())
             {
                 var msg = GetString("Error.InvalidColor");

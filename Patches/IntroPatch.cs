@@ -19,7 +19,8 @@ class SetUpRoleTextPatch
 
         _ = new LateTask(() =>
         {
-            CustomRoles role = PlayerControl.LocalPlayer.GetCustomRole();
+            PlayerControl localPlayer = PlayerControl.LocalPlayer;
+            CustomRoles role = localPlayer.GetCustomRole();
 
             if (!role.IsVanilla())
             {
@@ -27,18 +28,18 @@ class SetUpRoleTextPatch
                 __instance.RoleText.text = Utils.GetRoleName(role);
                 __instance.RoleText.color = Utils.GetRoleColor(role);
                 __instance.RoleBlurbText.color = Utils.GetRoleColor(role);
-                __instance.RoleBlurbText.text = PlayerControl.LocalPlayer.GetRoleInfo();
+                __instance.RoleBlurbText.text = localPlayer.GetRoleInfo();
             }
 
-            foreach (var subRole in Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SubRoles)
+            foreach (var subRole in Main.PlayerStates[localPlayer.PlayerId].SubRoles.ToArray())
                 __instance.RoleBlurbText.text += "\n" + Utils.ColorString(Utils.GetRoleColor(subRole), GetString($"{subRole}Info"));
 
-            if (!PlayerControl.LocalPlayer.Is(CustomRoles.Lovers) && !PlayerControl.LocalPlayer.Is(CustomRoles.Ntr) && CustomRolesHelper.RoleExist(CustomRoles.Ntr))
+            if (!localPlayer.Is(CustomRoles.Lovers) && !localPlayer.Is(CustomRoles.Ntr) && CustomRoles.Ntr.RoleExist())
                 __instance.RoleBlurbText.text += "\n" + Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), GetString($"{CustomRoles.Lovers}Info"));
 
-            __instance.RoleText.text += Utils.GetSubRolesText(PlayerControl.LocalPlayer.PlayerId, false, true);
+            __instance.RoleText.text += Utils.GetSubRolesText(localPlayer.PlayerId, false, true);
 
-        }, 0.01f, "Override Role Text");
+        }, 0.0001f, "Override Role Text");
     }
 }
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.CoBegin))]
@@ -47,19 +48,27 @@ class CoBeginPatch
     public static void Prefix()
     {
         var logger = Logger.Handler("Info");
+        Utils.NotifyRoles();
+
+        var allPlayerControlsArray = Main.AllPlayerControls.ToArray();
+
         logger.Info("------------Player Names------------");
-        foreach (var pc in Main.AllPlayerControls)
+        foreach ( var pc in allPlayerControlsArray)
         {
             logger.Info($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc.name.PadRightV2(20)}:{pc.cosmetics.nameText.text}({Palette.ColorNames[pc.Data.DefaultOutfit.ColorId].ToString().Replace("Color", "")})");
             pc.cosmetics.nameText.text = pc.name;
         }
+
+
         logger.Info("------------Roles / Add-ons------------");
-        foreach (var pc in Main.AllPlayerControls)
+        foreach (var pc in allPlayerControlsArray)
         {
             logger.Info($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc?.Data?.PlayerName?.PadRightV2(20)}:{pc.GetAllRoleName().RemoveHtmlTags()}");
         }
+
+
         logger.Info("------------Player Platforms------------");
-        foreach (var pc in Main.AllPlayerControls)
+        foreach (var pc in allPlayerControlsArray)
         {
             try
             {
@@ -82,24 +91,89 @@ class CoBeginPatch
             }
         }
 
-        logger.Info("------------Vanilla Settings------------");
-        var tmp = GameOptionsManager.Instance.CurrentGameOptions.ToHudString(GameData.Instance ? GameData.Instance.PlayerCount : 10).Split("\r\n").Skip(1).ToList();
-        int tmpCount = tmp.Count;
+        //var allPlayerControlsList = Main.AllPlayerControls;
+        //int allPlayerControlsCount = allPlayerControlsList.Count;
 
-        for (int item = 0; item < tmpCount; item++)
+        //logger.Info("------------Player Names------------");
+        //for (int item = 0; item < allPlayerControlsCount; item++)
+        //{
+        //    PlayerControl pc = allPlayerControlsList[item];
+        //    logger.Info($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc.name.PadRightV2(20)}:{pc.cosmetics.nameText.text}({Palette.ColorNames[pc.Data.DefaultOutfit.ColorId].ToString().Replace("Color", "")})");
+        //    pc.cosmetics.nameText.text = pc.name;
+        //}
+
+
+        //logger.Info("------------Roles / Add-ons------------");
+        //for (int item = 0; item < allPlayerControlsCount; item++)
+        //{
+        //    PlayerControl pc = allPlayerControlsList[item];
+        //    logger.Info($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc?.Data?.PlayerName?.PadRightV2(20)}:{pc.GetAllRoleName().RemoveHtmlTags()}");
+        //}
+
+
+        //logger.Info("------------Player Platforms------------");
+        //for (int item = 0; item < allPlayerControlsCount; item++)
+        //{
+        //    try
+        //    {
+        //        PlayerControl pc = allPlayerControlsList[item];
+        //        var text = pc.AmOwner ? "[*]" : "   ";
+        //        text += $"{pc.PlayerId,-2}:{pc.Data?.PlayerName?.PadRightV2(20)}:{pc.GetClient()?.PlatformData?.Platform.ToString()?.Replace("Standalone", ""),-11}";
+
+        //        if (Main.playerVersion.TryGetValue(pc.PlayerId, out PlayerVersion pv))
+        //        {
+        //            text += $":Mod({pv.forkId}/{pv.version}:{pv.tag})";
+        //        }
+        //        else
+        //        {
+        //            text += ":Vanilla";
+        //        }
+        //        logger.Info(text);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.Exception(ex, "Platform");
+        //    }
+        //}
+
+        //logger.Info("------------Vanilla Settings------------");
+        //var tmp = GameOptionsManager.Instance.CurrentGameOptions.ToHudString(GameData.Instance ? GameData.Instance.PlayerCount : 10).Split("\r\n").Skip(1).ToList();
+        //int tmpCount = tmp.Count;
+
+        //for (int item = 0; item < tmpCount; item++)
+        //{
+        //    string text = tmp[item];
+        //    logger.Info(text);
+        //}
+
+
+        //logger.Info("------------Mod Settings------------");
+        //List<OptionItem> allOptionsList = OptionItem.AllOptions.ToList();
+        //var allOptionsCount = OptionItem.AllOptions.Count;
+
+        //for (int itemOpt = 0; itemOpt < allOptionsCount; itemOpt++)
+        //{
+        //    OptionItem option = allOptionsList[itemOpt];
+        //    if (!option.IsHiddenOn(Options.CurrentGameMode) && (option.Parent == null ? !option.GetString().Equals("0%") : option.Parent.GetBool()))
+        //    {
+        //        logger.Info($"{(option.Parent == null
+        //            ? option.GetName(true, true).RemoveHtmlTags().PadRightV2(40)
+        //            : $"┗ {option.GetName(true, true).RemoveHtmlTags()}".PadRightV2(41))}:{option.GetString().RemoveHtmlTags()}");
+        //    }
+        //}
+
+        logger.Info("------------Vanilla Settings------------");
+        var tmp = GameOptionsManager.Instance.CurrentGameOptions.ToHudString(GameData.Instance ? GameData.Instance.PlayerCount : 10).Split("\r\n").Skip(1).ToArray();
+        foreach (var text in tmp)
         {
-            string text = tmp[item];
             logger.Info(text);
         }
 
 
         logger.Info("------------Mod Settings------------");
-        List<OptionItem> allOptionsList = OptionItem.AllOptions.ToList();
-        var allOptionsCount = OptionItem.AllOptions.Count;
-
-        for (int itemOpt = 0; itemOpt < allOptionsCount; itemOpt++)
+        var allOptionsArray = OptionItem.AllOptions.ToArray();
+        foreach (var option in allOptionsArray)
         {
-            OptionItem option = allOptionsList[itemOpt];
             if (!option.IsHiddenOn(Options.CurrentGameMode) && (option.Parent == null ? !option.GetString().Equals("0%") : option.Parent.GetBool()))
             {
                 logger.Info($"{(option.Parent == null
@@ -108,22 +182,24 @@ class CoBeginPatch
             }
         }
 
-
         logger.Info("-------------Other Information-------------");
-        logger.Info($"Number players: {Main.AllPlayerControls.Count}");
-
-        int allPlayerControlsCount = Main.AllPlayerControls.Count;
-        for (int number = 0; number < allPlayerControlsCount; number++)
+        logger.Info($"Number players: {allPlayerControlsArray.Length}");
+        foreach (var player in allPlayerControlsArray)
         {
-            PlayerControl player = Main.AllPlayerControls[number];
-
             Main.PlayerStates[player.PlayerId].InitTask(player);
         }
 
+        //logger.Info($"Number players: {allPlayerControlsCount}");
+
+        //for (int item = 0; item < allPlayerControlsCount; item++)
+        //{
+        //    PlayerControl player = allPlayerControlsList[item];
+
+        //    Main.PlayerStates[player.PlayerId].InitTask(player);
+        //}
+
         GameData.Instance.RecomputeTaskCounts();
         TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
-
-        Utils.NotifyRoles();
 
         GameStates.InGame = true;
     }
@@ -137,15 +213,15 @@ class BeginCrewmatePatch
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
-    //        __instance.BeginImpostor(teamToDisplay);
-    //        __instance.overlayHandle.color = new Color32(127, 140, 141, byte.MaxValue);
+            //__instance.BeginImpostor(teamToDisplay);
+            //__instance.overlayHandle.color = new Color32(127, 140, 141, byte.MaxValue);
         }
         if (PlayerControl.LocalPlayer.Is(CustomRoleTypes.Neutral) && !PlayerControl.LocalPlayer.Is(CustomRoles.Crewpostor))
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
-     //       __instance.BeginImpostor(teamToDisplay);
-     //       __instance.overlayHandle.color = new Color32(127, 140, 141, byte.MaxValue);
+            //__instance.BeginImpostor(teamToDisplay);
+            //__instance.overlayHandle.color = new Color32(127, 140, 141, byte.MaxValue);
         }
         else if (PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
         {
@@ -159,58 +235,58 @@ class BeginCrewmatePatch
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
-    //        __instance.BeginImpostor(teamToDisplay);
-      //      __instance.overlayHandle.color = Palette.ImpostorRed;
+            //__instance.BeginImpostor(teamToDisplay);
+            //__instance.overlayHandle.color = Palette.ImpostorRed;
             return false;
         }
          else if (PlayerControl.LocalPlayer.Is(CustomRoles.Parasite))
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
-    //        __instance.BeginImpostor(teamToDisplay);
-      //      __instance.overlayHandle.color = Palette.ImpostorRed;
+            //__instance.BeginImpostor(teamToDisplay);
+            //__instance.overlayHandle.color = Palette.ImpostorRed;
             return false;
         }
          else if (PlayerControl.LocalPlayer.GetCustomRole().IsMadmate())
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
-          //  __instance.BeginImpostor(teamToDisplay);
-        //    __instance.overlayHandle.color = Palette.ImpostorRed;
+            //__instance.BeginImpostor(teamToDisplay);
+            //__instance.overlayHandle.color = Palette.ImpostorRed;
             return false;
         }
         if (PlayerControl.LocalPlayer.Is(CustomRoles.Executioner))
+        {
+            var exeTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+            exeTeam.Add(PlayerControl.LocalPlayer);
+            foreach (var execution in Executioner.Target.Values)
             {
-                var exeTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
-                exeTeam.Add(PlayerControl.LocalPlayer);
-                foreach (var execution in Executioner.Target)
-                {
-                    PlayerControl executing = Utils.GetPlayerById(execution.Value);
-                    exeTeam.Add(executing);
-                }
-                teamToDisplay = exeTeam;
+                PlayerControl executing = Utils.GetPlayerById(execution);
+                exeTeam.Add(executing);
             }
+            teamToDisplay = exeTeam;
+        }
         if (PlayerControl.LocalPlayer.Is(CustomRoles.Lawyer))
+        {
+            var lawyerTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+            lawyerTeam.Add(PlayerControl.LocalPlayer);
+            foreach (var help in Lawyer.Target.Values)
             {
-                var lawyerTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
-                lawyerTeam.Add(PlayerControl.LocalPlayer);
-                foreach (var help in Lawyer.Target)
-                {
-                    PlayerControl helping = Utils.GetPlayerById(help.Value);
-                    lawyerTeam.Add(helping);
-                }
-                teamToDisplay = lawyerTeam;
+                PlayerControl helping = Utils.GetPlayerById(help);
+                lawyerTeam.Add(helping);
             }
+            teamToDisplay = lawyerTeam;
+        }
         if (PlayerControl.LocalPlayer.Is(CustomRoles.NSerialKiller))
+        {
+            var serialkillerTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+            serialkillerTeam.Add(PlayerControl.LocalPlayer);
+            foreach (var ar in PlayerControl.AllPlayerControls)
             {
-                var serialkillerTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
-                serialkillerTeam.Add(PlayerControl.LocalPlayer);
-                foreach (var ar in PlayerControl.AllPlayerControls)
-                {
-                    if (ar.Is(CustomRoles.NSerialKiller) && ar != PlayerControl.LocalPlayer)
-                        serialkillerTeam.Add(ar);
-                }
-                teamToDisplay = serialkillerTeam;
+                if (ar.Is(CustomRoles.NSerialKiller) && ar != PlayerControl.LocalPlayer)
+                    serialkillerTeam.Add(ar);
+            }
+            teamToDisplay = serialkillerTeam;
         }
        
         return true;
@@ -414,7 +490,10 @@ class BeginImpostorPatch
         {
             yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             yourTeam.Add(PlayerControl.LocalPlayer);
-            foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner)) yourTeam.Add(pc);
+            foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner).ToList())
+            {
+                yourTeam.Add(pc);
+            }
             __instance.BeginCrewmate(yourTeam);
             __instance.overlayHandle.color = Palette.CrewmateBlue;
             return false;
@@ -423,7 +502,10 @@ class BeginImpostorPatch
         {
             yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             yourTeam.Add(PlayerControl.LocalPlayer);
-            foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner)) yourTeam.Add(pc);
+            foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner).ToList())
+            {
+                yourTeam.Add(pc);
+            }
             __instance.BeginCrewmate(yourTeam);
             __instance.overlayHandle.color = new Color32(127, 140, 141, byte.MaxValue);
             return false;
