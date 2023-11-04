@@ -1398,7 +1398,8 @@ class MurderPlayerPatch
             killer.TrapperKilled(target);
 
         Main.AllKillers.Remove(killer.PlayerId);
-        Main.AllKillers.Add(killer.PlayerId, Utils.GetTimeStamp());
+        if (!killer.Is(CustomRoles.Trickster))
+            Main.AllKillers.Add(killer.PlayerId, Utils.GetTimeStamp());
 
         switch (target.GetCustomRole())
         {
@@ -2345,6 +2346,7 @@ class ReportDeadBodyPatch
         if (Mortician.IsEnable) Mortician.OnReportDeadBody(player, target);
         if (Mediumshiper.IsEnable) Mediumshiper.OnReportDeadBody(target);
         if (Spiritualist.IsEnable) Spiritualist.OnReportDeadBody(target);
+        if (Enigma.IsEnable) Enigma.OnReportDeadBody(player, target);
 
         foreach (var pid in Main.AwareInteracted.Keys)
         {
@@ -2489,10 +2491,10 @@ class FixedUpdatePatch
                             }
                             else
                             {
-                                if (player.Data.FriendCode != "")
+                                if (player.GetClient().ProductUserId != "")
                                 {
-                                    if (!BanManager.TempBanWhiteList.Contains(player.Data.FriendCode))
-                                        BanManager.TempBanWhiteList.Add(player.Data.FriendCode);
+                                    if (!BanManager.TempBanWhiteList.Contains(player.GetClient().GetHashedPuid()))
+                                        BanManager.TempBanWhiteList.Add(player.GetClient().GetHashedPuid());
                                 }
                                 string msg = string.Format(GetString("TempBannedBecauseLowLevel"), player.GetRealName().RemoveHtmlTags());
                                 Logger.SendInGame(msg);
@@ -3781,11 +3783,16 @@ class PlayerControlCompleteTaskPatch
 
         return true;
     }
-    public static void Postfix(PlayerControl __instance)
+    public static void Postfix(PlayerControl __instance, object[] __args)
     {
         var pc = __instance;
         Snitch.OnCompleteTask(pc);
-
+        int taskIndex = Convert.ToInt32(__args[0]);
+        if (pc != null)
+        {
+            var playerTask = pc.myTasks[taskIndex];
+            Taskinator.OnTasKComplete(pc, playerTask);
+        }
         var isTaskFinish = pc.GetPlayerTaskState().IsTaskFinished;
         if (isTaskFinish && pc.Is(CustomRoles.Snitch) && pc.Is(CustomRoles.Madmate))
         {
