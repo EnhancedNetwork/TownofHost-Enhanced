@@ -135,7 +135,7 @@ public static class DevManager
         // Latam Translators
         DevUserList.Add(new(code: "magicyear#5568", color: "#1F75FE", tag: "Traductor", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "CreepPower")); //creeppower
        // Spanish Translators
-        DevUserList.Add(new(code: "Swiftlord#0872", color: "#E64236", tag: "Translator", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "Dawson")); //butwhatabout
+        DevUserList.Add(new(code: "swiftlord#0872", color: "#E64236", tag: "Translator", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "Dawson")); //butwhatabout
 
         // China Up
         DevUserList.Add(new(code: "truantwarm#9165", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "萧暮不姓萧"));
