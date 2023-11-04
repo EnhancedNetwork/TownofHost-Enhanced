@@ -8,7 +8,7 @@ namespace TOHE.Roles.Crewmate
 {
     public static class Tracker
     {
-        private static readonly int Id = 8300;
+        private static readonly int Id = 10000;
         private static List<byte> playerIdList = new();
         public static bool IsEnable = false;
 

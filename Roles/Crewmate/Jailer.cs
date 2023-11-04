@@ -7,7 +7,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class Jailer
 {
-    private static readonly int Id = 63420;
+    private static readonly int Id = 10600;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

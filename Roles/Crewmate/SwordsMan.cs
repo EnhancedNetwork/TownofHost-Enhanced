@@ -6,7 +6,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class SwordsMan
 {
-    private static readonly int Id = 9000;
+    private static readonly int Id = 10800;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

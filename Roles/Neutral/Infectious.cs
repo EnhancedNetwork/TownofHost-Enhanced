@@ -8,7 +8,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Infectious
 {
-    private static readonly int Id = 12000;
+    private static readonly int Id = 16600;
     public static bool IsEnable = false;
 
     private static int BiteLimit;

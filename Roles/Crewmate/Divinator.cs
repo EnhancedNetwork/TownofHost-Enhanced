@@ -6,7 +6,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class Divinator
 {
-    private static readonly int Id = 6700;
+    private static readonly int Id = 8000;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

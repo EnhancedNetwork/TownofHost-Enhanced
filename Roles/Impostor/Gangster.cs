@@ -8,7 +8,7 @@ namespace TOHE.Roles.Impostor;
 
 public static class Gangster
 {
-    private static readonly int Id = 2900;
+    private static readonly int Id = 3300;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

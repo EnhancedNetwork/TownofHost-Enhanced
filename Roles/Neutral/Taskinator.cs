@@ -7,7 +7,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Taskinator
 {
-    private static readonly int Id = 8670;
+    private static readonly int Id = 13700;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

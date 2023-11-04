@@ -11,7 +11,7 @@ namespace TOHE.Roles.Impostor;
 
 public static class Sniper
 {
-    private static readonly int Id = 1900;
+    private static readonly int Id = 2400;
     private static List<byte> PlayerIdList = new();
     public static bool IsEnable = false;
 

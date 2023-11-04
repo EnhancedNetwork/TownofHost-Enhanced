@@ -21,7 +21,7 @@ public static class Vampire
         }
     }
 
-    private static readonly int Id = 4500;
+    private static readonly int Id = 5000;
     private static readonly List<byte> PlayerIdList = new();
     public static bool IsEnable = false;
 
