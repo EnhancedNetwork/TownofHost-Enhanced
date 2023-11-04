@@ -411,7 +411,7 @@ public class Main : BasePlugin
                 {CustomRoles.ChiefOfPolice,"#f8cd46"},
                 {CustomRoles.NiceMini, "#edc240" },
                 {CustomRoles.Spy, "#34495E"},
-                {CustomRoles.XiaoMu,"#FFA500" },
+                {CustomRoles.Randomizer,"#FFA500" },
                 {CustomRoles.Enigma, "#676798"},
                 //第三陣営役職
                 {CustomRoles.Arsonist, "#ff6633"},
@@ -775,7 +775,7 @@ public enum CustomRoles
     ChiefOfPolice,
     NiceMini,
     Spy,
-    XiaoMu,
+    Randomizer,
     Enigma,
 
     //Neutral

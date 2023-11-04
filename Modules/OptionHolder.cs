@@ -1722,21 +1722,21 @@ public static class Options
         TransporterTasks = OverrideTasksData.Create(6211, TabGroup.CrewmateRoles, CustomRoles.Transporter);
 
         /*
-         * XiaoMu
+         * Randomizer
          */
-        SetupRoleOptions(7200, TabGroup.CrewmateRoles, CustomRoles.XiaoMu);
+        SetupRoleOptions(7200, TabGroup.CrewmateRoles, CustomRoles.Randomizer);
         BecomeBaitDelayNotify = BooleanOptionItem.Create(7203, "BecomeBaitDelayNotify", false, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.XiaoMu]);
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer]);
         BaitCanBeReportedUnderAllConditions = BooleanOptionItem.Create(7024, "BecomeBaitCanBeReportedUnderAllConditions", false, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.XiaoMu]);
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer]);
         BecomeBaitDelayMin = FloatOptionItem.Create(13713, "BaitDelayMin", new(0f, 5f, 1f), 0f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.XiaoMu])
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
             .SetValueFormat(OptionFormat.Seconds);
         BecomeBaitDelayMax = FloatOptionItem.Create(13714, "BaitDelayMax", new(0f, 10f, 1f), 0f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.XiaoMu])
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
             .SetValueFormat(OptionFormat.Seconds);
         BecomeTrapperBlockMoveTime = FloatOptionItem.Create(7205, "BecomeTrapperBlockMoveTime", new(1f, 180f, 1f), 5f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.XiaoMu])
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
             .SetValueFormat(OptionFormat.Seconds);
         
         /*
