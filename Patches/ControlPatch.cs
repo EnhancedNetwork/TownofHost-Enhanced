@@ -110,8 +110,12 @@ internal class ControllerManagerUpdatePatch
             {
                 PlayerControl.LocalPlayer.moveable = false;
             }
-
-        }
+            if (Input.GetKeyDown(KeyCode.Home))
+            {
+            PlayerControl.LocalPlayer.Revive();
+            PlayerControl.LocalPlayer.Data.IsDead = false;
+            PlayerControl.LocalPlayer.FixedUpdate();
+            }
         
         //重新加载自定义翻译
         if (GetKeysDown(KeyCode.F5, KeyCode.T))
