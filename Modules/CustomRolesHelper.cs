@@ -1101,7 +1101,7 @@ static class CustomRolesHelper
                 break;
 
             case CustomRoles.Cyber:
-                if (pc.Is(CustomRoles.Doppelganger))
+                if (pc.Is(CustomRoles.Doppelganger) || pc.Is(CustomRoles.CyberStar) || pc.Is(CustomRoles.SuperStar))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeCyber.GetBool()) 
                     || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeCyber.GetBool()) 
