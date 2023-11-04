@@ -10,13 +10,19 @@ public static class OptionShower
 {
     public static int currentPage = 0;
     public static List<string> pages = new();
+    private static int DelayInUpdate = 0;
     static OptionShower()
     {
 
     }
     public static string GetTextNoFresh()
     {
-        if (pages.Count < 3) GetText();
+        if (currentPage == 0 && DelayInUpdate >= 50)
+        {
+            DelayInUpdate = 0;
+            GetText();
+        }
+        DelayInUpdate++;
         return $"{pages[currentPage]}{GetString("PressTabToNextPage")}({currentPage + 1}/{pages.Count})";
     }
     public static string GetText()
