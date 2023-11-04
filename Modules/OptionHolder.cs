@@ -1724,18 +1724,16 @@ public static class Options
         /*
          * Randomizer
          */
-        SetupRoleOptions(7200, TabGroup.CrewmateRoles, CustomRoles.Randomizer);
-        BecomeBaitDelayNotify = BooleanOptionItem.Create(7203, "BecomeBaitDelayNotify", false, TabGroup.CrewmateRoles, false)
+        SetupRoleOptions(6240, TabGroup.CrewmateRoles, CustomRoles.Randomizer);
+        BecomeBaitDelayNotify = BooleanOptionItem.Create(6245, "BecomeBaitDelayNotify", false, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer]);
-        BaitCanBeReportedUnderAllConditions = BooleanOptionItem.Create(7024, "BecomeBaitCanBeReportedUnderAllConditions", false, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer]);
-        BecomeBaitDelayMin = FloatOptionItem.Create(13713, "BaitDelayMin", new(0f, 5f, 1f), 0f, TabGroup.CrewmateRoles, false)
+        BecomeBaitDelayMin = FloatOptionItem.Create(6246, "BaitDelayMin", new(0f, 5f, 1f), 0f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
             .SetValueFormat(OptionFormat.Seconds);
-        BecomeBaitDelayMax = FloatOptionItem.Create(13714, "BaitDelayMax", new(0f, 10f, 1f), 0f, TabGroup.CrewmateRoles, false)
+        BecomeBaitDelayMax = FloatOptionItem.Create(6247, "BaitDelayMax", new(0f, 10f, 1f), 0f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
             .SetValueFormat(OptionFormat.Seconds);
-        BecomeTrapperBlockMoveTime = FloatOptionItem.Create(7205, "BecomeTrapperBlockMoveTime", new(1f, 180f, 1f), 5f, TabGroup.CrewmateRoles, false)
+        BecomeTrapperBlockMoveTime = FloatOptionItem.Create(6248, "BecomeTrapperBlockMoveTime", new(1f, 180f, 1f), 5f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
             .SetValueFormat(OptionFormat.Seconds);
         

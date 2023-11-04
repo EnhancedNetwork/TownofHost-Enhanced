@@ -1582,7 +1582,6 @@
   "BaitNotification": "在第一次会议上显示<color=#00f7ff>诱饵</color>",
   "BaitAdviceAlive": "<b>{0}</b> 是超级大奖！\n赶紧击杀大奖去领取奖励doge",
   "BaitCanBeReportedUnderAllConditions": "在任何情况下都可以强制报告诱饵尸体",
-  "BecomeBaitCanBeReportedUnderAllConditions": "当萧暮成为诱饵时，在任何情况下都可以强制报告尸体",
   "CounterfeiterSkillCooldown": "贩卖赝品冷却",
   "CounterfeiterSkillLimitTimes": "贩卖赝品次数上限",
   "CounterfeiterAbilityLost": "如果赝品商在没有击杀按钮的情况下给玩家赝品，则无法使用技能",
