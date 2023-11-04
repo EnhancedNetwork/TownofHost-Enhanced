@@ -7,7 +7,7 @@ namespace TOHE.Roles.AddOns.Crewmate;
 
 public static class Workhorse
 {
-    private static readonly int Id = 23800;
+    private static readonly int Id = 23730;
     public static Color RoleColor = Utils.GetRoleColor(CustomRoles.Workhorse);
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
