@@ -4,7 +4,6 @@ using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
-using Il2CppSystem.Security.Cryptography;
 using System;
 using System.Collections.Generic;
 using System.IO;
