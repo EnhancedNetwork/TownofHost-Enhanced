@@ -19,7 +19,7 @@ public static class Admirer
     public static OptionItem KnowTargetRole;
     public static OptionItem SkillLimit;
     public static Dictionary<byte, int> AdmirerLimit;
-    private static Dictionary<byte, List<byte>> AdmiredList;
+    public static Dictionary<byte, List<byte>> AdmiredList;
 
     public static void SetupCustomOption()
     {
@@ -185,7 +185,12 @@ public static class Admirer
     public static string GetAdmireLimit(byte playerId) => Utils.ColorString(AdmirerLimit[playerId] >= 1 ? Utils.GetRoleColor(CustomRoles.Admirer).ShadeColor(0.25f) : Color.gray, $"({AdmirerLimit[playerId]})");
     public static bool CanBeAdmired(this PlayerControl pc, PlayerControl admirer)
     {
-        if (AdmiredList[admirer.PlayerId].Contains(pc.PlayerId)) return false;
+        if (AdmiredList.ContainsKey(admirer.PlayerId))
+        {
+            if (AdmiredList[admirer.PlayerId].Contains(pc.PlayerId))
+                return false;
+        }
+        else AdmiredList.Add(admirer.PlayerId, new());
 
         return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral()) 
             && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal) 
