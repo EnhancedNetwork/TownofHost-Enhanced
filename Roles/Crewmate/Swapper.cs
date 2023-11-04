@@ -12,7 +12,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class Swapper
 {
-    private static readonly int Id = 86787;
+    private static readonly int Id = 1986523;
     public static bool IsEnable = false;
     public static OptionItem SwapMax;
     public static OptionItem CanSwapSelf;

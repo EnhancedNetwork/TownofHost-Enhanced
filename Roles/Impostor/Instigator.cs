@@ -6,7 +6,7 @@ namespace TOHE.Roles.Impostor
 {
     public class Instigator
     {
-        private static readonly int Id = 8999;
+        private static readonly int Id = 2121212;
         public static List<byte> playerIdList = new();
         public static bool IsEnable = false;
 

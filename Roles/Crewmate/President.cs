@@ -9,7 +9,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class President
 {
-    private static readonly int Id = 7980;
+    private static readonly int Id = 4391357;
     public static bool IsEnable = false;
 
     public static Dictionary<byte, int> EndLimit;

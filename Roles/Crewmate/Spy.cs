@@ -10,7 +10,7 @@ namespace TOHE.Roles.Crewmate
 {
     public static class Spy
     {
-        private static readonly int Id = 6404;
+        private static readonly int Id = 640400;
         private static List<byte> playerIdList = new();
         public static bool change = false;
         public static Dictionary<byte, float> UseLimit = new();
