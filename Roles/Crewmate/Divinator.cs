@@ -208,6 +208,7 @@ public static class Divinator
                 CustomRoles.Mastermind or
                 CustomRoles.Pickpocket or
                 CustomRoles.Spy or
+                CustomRoles.Randomizer or
                 CustomRoles.Vindicator
                 => "Result14",
 
@@ -215,7 +216,8 @@ public static class Divinator
                 CustomRoles.Virus or
                 CustomRoles.Monarch or
                 CustomRoles.Revolutionist or
-                CustomRoles.Succubus
+                CustomRoles.Succubus or
+                CustomRoles.Enigma
                 => "Result15",
 
                 CustomRoles.Innocent or
@@ -231,7 +233,8 @@ public static class Divinator
                 CustomRoles.Jester or
                 CustomRoles.Lurker or
                 CustomRoles.Swapper or
-                CustomRoles.Sunnyboy
+                CustomRoles.Sunnyboy or
+                CustomRoles.Instigator
                 => "Result17",
 
                 CustomRoles.Mafia or
@@ -329,6 +332,7 @@ public static class Divinator
                 => "Result28",
 
                 CustomRoles.Crewpostor or
+                CustomRoles.Taskinator or
                 CustomRoles.Marshall or
                 CustomRoles.Workaholic or
                 CustomRoles.Phantom or

@@ -300,6 +300,7 @@ public class PlayerState
         Drained,
         Shattered,
         Trap,
+        Retribution,
 
         etc = -1,
     }

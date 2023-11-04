@@ -240,6 +240,11 @@ class GameEndChecker
                         CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
                         CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Shaman);
                     }
+                    if (pc.Is(CustomRoles.Taskinator) && pc.IsAlive() && CustomWinnerHolder.WinnerTeam != CustomWinner.Crewmate)
+                    {
+                        CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                        CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Taskinator);
+                    }
                     //Witch
                     if (pc.Is(CustomRoles.NWitch) && pc.IsAlive() && CustomWinnerHolder.WinnerTeam != CustomWinner.Crewmate && CustomWinnerHolder.WinnerTeam != CustomWinner.Lovers)
                     {
