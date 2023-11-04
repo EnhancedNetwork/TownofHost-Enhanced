@@ -216,6 +216,7 @@ public static class Options
     public static OptionItem MinerSSDuration;
     public static OptionItem MinerSSCD;
     public static OptionItem TrapperBlockMoveTime;
+    public static OptionItem BecomeTrapperBlockMoveTime;
     public static OptionItem DetectiveCanknowKiller;
     public static OptionItem TransporterTeleportMax;
     public static OptionItem CanTerroristSuicideWin;
@@ -488,7 +489,10 @@ public static class Options
     public static OptionItem NeutralCanBeBait;
     public static OptionItem BaitDelayMin;
     public static OptionItem BaitDelayMax;
+    public static OptionItem BecomeBaitDelayMin;
+    public static OptionItem BecomeBaitDelayMax;
     public static OptionItem BaitDelayNotify;
+    public static OptionItem BecomeBaitDelayNotify;
     public static OptionItem ImpCanBeTrapper;
     public static OptionItem CrewCanBeTrapper;
     public static OptionItem NeutralCanBeTrapper;
@@ -1717,6 +1721,22 @@ public static class Options
             .SetValueFormat(OptionFormat.Times);
         TransporterTasks = OverrideTasksData.Create(6211, TabGroup.CrewmateRoles, CustomRoles.Transporter);
 
+        /*
+         * Randomizer
+         */
+        SetupRoleOptions(6240, TabGroup.CrewmateRoles, CustomRoles.Randomizer);
+        BecomeBaitDelayNotify = BooleanOptionItem.Create(6245, "BecomeBaitDelayNotify", false, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer]);
+        BecomeBaitDelayMin = FloatOptionItem.Create(6246, "BaitDelayMin", new(0f, 5f, 1f), 0f, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
+            .SetValueFormat(OptionFormat.Seconds);
+        BecomeBaitDelayMax = FloatOptionItem.Create(6247, "BaitDelayMax", new(0f, 10f, 1f), 0f, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
+            .SetValueFormat(OptionFormat.Seconds);
+        BecomeTrapperBlockMoveTime = FloatOptionItem.Create(6248, "BecomeTrapperBlockMoveTime", new(1f, 180f, 1f), 5f, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
+            .SetValueFormat(OptionFormat.Seconds);
+        
         /*
          * SUPPORT ROLES
          */
