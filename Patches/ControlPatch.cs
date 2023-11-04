@@ -353,6 +353,7 @@ internal class ControllerManagerUpdatePatch
         }
         //マスゲーム用コード終わり
     }
+}        
 
     private static bool GetKeysDown(params KeyCode[] keys)
     {
