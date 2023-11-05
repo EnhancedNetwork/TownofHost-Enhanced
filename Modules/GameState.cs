@@ -522,10 +522,8 @@ public class TaskState
             
             if (player.Is(CustomRoles.Ghoul) && (CompletedTasksCount + 1) >= AllTasksCount && !player.IsAlive())
             {
-                int allPlayerControlsCount = Main.AllPlayerControls.Count;
-                for (int item = 0; item < allPlayerControlsCount; item++)
+                foreach (var pc in Main.AllPlayerControls)
                 {
-                    PlayerControl pc = Main.AllPlayerControls[item];
                     if (!pc.Is(CustomRoles.Pestilence))
                     {
                         if (Main.KillGhoul.Contains(pc.PlayerId) && player.PlayerId != pc.PlayerId && pc.IsAlive())

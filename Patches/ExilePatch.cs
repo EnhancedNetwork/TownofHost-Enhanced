@@ -64,7 +64,7 @@ class ExileControllerWrapUpPatch
             var role = exiled.GetCustomRole();
 
             //判断冤罪师胜利
-            var pcList = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId).ToList();
+            var pcList = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId).ToArray();
             if (pcList.Any())
             {
                 if (!Options.InnocentCanWinByImp.GetBool() && role.IsImpostor())
@@ -74,11 +74,8 @@ class ExileControllerWrapUpPatch
                 else
                 {
                     bool isInnocentWinConverted = false;
-                    var pcListCount = pcList.Count;
-                    for (int item = 0; item < pcListCount; item++)
+                    foreach (var Innocent in pcList)
                     {
-                        PlayerControl Innocent = pcList[item];
-
                         if (CustomWinnerHolder.CheckForConvertedWinner(Innocent.PlayerId))
                         {
                             isInnocentWinConverted = true;
@@ -160,12 +157,7 @@ class ExileControllerWrapUpPatch
         if (HexMaster.IsEnable)
             HexMaster.RemoveHexedPlayer();
 
-        //var allPlayerControls = Main.AllPlayerControls;
-        //int allPlayerControlsCount = Main.AllPlayerControls.Count;
-        //for (int item = 0; item < allPlayerControlsCount; item++)
-
-        var allPlayerControlsArray = Main.AllPlayerControls.ToArray();
-        foreach (var player in allPlayerControlsArray)
+        foreach (var player in Main.AllPlayerControls)
         {
             //PlayerControl player = allPlayerControls[item];
             CustomRoles playerRole = player.GetCustomRole(); // Only roles (no add-ons)

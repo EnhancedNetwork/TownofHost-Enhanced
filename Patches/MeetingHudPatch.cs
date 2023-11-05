@@ -590,7 +590,7 @@ class CheckForEndVotingPatch
     }
     public static bool CheckRole(byte id, CustomRoles role)
     {
-        var player = Main.AllPlayerControls.Where(pc => pc.PlayerId == id).FirstOrDefault();
+        var player = Main.AllPlayerControls.FirstOrDefault(pc => pc.PlayerId == id);
         return player != null && player.Is(role);
     }
     public static void TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason deathReason, params byte[] playerIds)
@@ -609,12 +609,11 @@ class CheckForEndVotingPatch
         Virus.OnCheckForEndVoting(deathReason, playerIds);
         foreach (var playerId in playerIds)
         {
-        //    Baker.OnCheckForEndVoting(playerId);
-            
-            //Loversの後追い
-            if (CustomRoles.Lovers.IsEnable() && !Main.isLoversDead && Main.LoversPlayers.Find(lp => lp.PlayerId == playerId) != null)
+            if (CustomRoles.Lovers.IsEnable() && !Main.isLoversDead && Main.LoversPlayers.Any(lp => lp.PlayerId == playerId))
+            {
                 FixedUpdatePatch.LoversSuicide(playerId, true);
-            //道連れチェック
+            }
+
             RevengeOnExile(playerId, deathReason);
         }
     }
@@ -729,7 +728,7 @@ class MeetingHudStartPatch
 
         //首次会议技能提示
         if (Options.SendRoleDescriptionFirstMeeting.GetBool() && MeetingStates.FirstMeeting)
-            foreach (var pc in Main.AllAlivePlayerControls.Where(x => !x.IsModClient()))
+            foreach (var pc in Main.AllAlivePlayerControls.Where(x => !x.IsModClient()).ToArray())
             {
                 var role = pc.GetCustomRole();
                 var sb = new StringBuilder();
@@ -760,36 +759,38 @@ class MeetingHudStartPatch
         //工作狂的生存技巧
         if (MeetingStates.FirstMeeting && CustomRoles.Workaholic.RoleExist() && Options.WorkaholicGiveAdviceAlive.GetBool() && !Options.WorkaholicCannotWinAtDeath.GetBool() && !Options.GhostIgnoreTasks.GetBool())
         {
-            foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Workaholic)))
+            foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Workaholic)).ToArray())
+            {
                 Main.WorkaholicAlive.Add(pc.PlayerId);
+            }
             List<string> workaholicAliveList = new();
-            foreach (var whId in Main.WorkaholicAlive)
+            foreach (var whId in Main.WorkaholicAlive.ToArray())
+            {
                 workaholicAliveList.Add(Main.AllPlayerNames[whId]);
+            }
             string separator = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
             AddMsg(string.Format(GetString("WorkaholicAdviceAlive"), string.Join(separator, workaholicAliveList)), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Workaholic), GetString("WorkaholicAliveTitle")));
         }
         //Bait Notify
         if (MeetingStates.FirstMeeting && CustomRoles.Bait.RoleExist() && Options.BaitNotification.GetBool())
         {
-            foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Bait)))
+            foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Bait)).ToArray())
+            {
                 Main.BaitAlive.Add(pc.PlayerId);
+            }
             List<string> baitAliveList = new();
-            foreach (var whId in Main.BaitAlive)
+            foreach (var whId in Main.BaitAlive.ToArray())
             {
                 PlayerControl whpc = Utils.GetPlayerById(whId);
                 if (whpc == null) continue;
                 baitAliveList.Add(whpc.GetRealName());
-            }//Main.AllPlayerNames[whId]);
+            }
             string separator = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
             AddMsg(string.Format(GetString("BaitAdviceAlive"), string.Join(separator, baitAliveList)), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), GetString("BaitAliveTitle")));
         }
         string MimicMsg = "";
-        var allPlayerControlsList = Main.AllPlayerControls;
-        int allPlayerControlsCount = allPlayerControlsList.Count;
-        for (int item = 0; item < allPlayerControlsCount; item++)
+        foreach (var pc in Main.AllPlayerControls)
         {
-            PlayerControl pc = allPlayerControlsList[item];
-
             //黑手党死后技能提示
             if (pc.Is(CustomRoles.Mafia) && !pc.IsAlive())
                 AddMsg(GetString("MafiaDeadMsg"), pc.PlayerId);
@@ -845,11 +846,9 @@ class MeetingHudStartPatch
         {
             MimicMsg = GetString("MimicDeadMsg") + "\n" + MimicMsg;
 
-            var isImpostorTeamList = Main.AllPlayerControls.Where(x => x.GetCustomRole().IsImpostorTeam()).ToList();
-            int isImpostorTeamCount = isImpostorTeamList.Count;
-            for (int item = 0; item < isImpostorTeamCount; item++)
+            var isImpostorTeamList = Main.AllPlayerControls.Where(x => x.GetCustomRole().IsImpostorTeam()).ToArray();
+            foreach (var imp in isImpostorTeamList)
             {
-                PlayerControl imp = isImpostorTeamList[item];
                 AddMsg(MimicMsg, imp.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mimic), GetString("MimicMsgTitle")));
             }
         }
@@ -967,11 +966,8 @@ class MeetingHudStartPatch
         {
             _ = new LateTask(() =>
             {
-                var allPlayerControlsList = Main.AllPlayerControls;
-                int allPlayerControlsCount = allPlayerControlsList.Count;
-                for (int item = 0; item < allPlayerControlsCount; item++)
+                foreach (var pc in Main.AllPlayerControls)
                 {
-                    PlayerControl pc = allPlayerControlsList[item];
                     pc.RpcSetNameEx(pc.GetRealName(isMeeting: true));
                 }
                 ChatUpdatePatch.DoBlockChat = false;

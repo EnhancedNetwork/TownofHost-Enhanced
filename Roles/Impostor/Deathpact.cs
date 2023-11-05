@@ -112,7 +112,7 @@ namespace TOHE.Roles.Impostor
                     continue;
                 }
 
-                foreach (var otherPlayerInPact in PlayersInDeathpact[pc.PlayerId].Where(a => a.PlayerId != player.PlayerId))
+                foreach (var otherPlayerInPact in PlayersInDeathpact[pc.PlayerId].Where(a => a.PlayerId != player.PlayerId).ToArray())
                 {
                     TargetArrow.Add(player.PlayerId, otherPlayerInPact.PlayerId);
                 }
@@ -165,7 +165,7 @@ namespace TOHE.Roles.Impostor
             foreach (var player in PlayersInDeathpact[deathpact.PlayerId])
             {
                 float range = NormalGameOptionsV07.KillDistances[Mathf.Clamp(player.Is(CustomRoles.Reach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
-                foreach (var otherPlayerInPact in PlayersInDeathpact[deathpact.PlayerId].Where(a => a.PlayerId != player.PlayerId))
+                foreach (var otherPlayerInPact in PlayersInDeathpact[deathpact.PlayerId].Where(a => a.PlayerId != player.PlayerId).ToArray())
                 {
                     float dis = Vector2.Distance(player.transform.position, otherPlayerInPact.transform.position);
                     cancelDeathpact = cancelDeathpact && (dis <= range);
@@ -200,10 +200,10 @@ namespace TOHE.Roles.Impostor
             if (!IsInActiveDeathpact(seer)) return "";
 
             string arrows = string.Empty;
-            var activeDeathpactsForPlayer = PlayersInDeathpact.Where(a => ActiveDeathpacts.Contains(a.Key) && a.Value.Any(b => b.PlayerId == seer.PlayerId));
+            var activeDeathpactsForPlayer = PlayersInDeathpact.Where(a => ActiveDeathpacts.Contains(a.Key) && a.Value.Any(b => b.PlayerId == seer.PlayerId)).ToArray();
             foreach (var deathpact in activeDeathpactsForPlayer)
             {
-                foreach (var otherPlayerInPact in deathpact.Value.Where(a => a.PlayerId != seer.PlayerId))
+                foreach (var otherPlayerInPact in deathpact.Value.Where(a => a.PlayerId != seer.PlayerId).ToArray())
                 {
                     var arrow = TargetArrow.GetArrows(seer, otherPlayerInPact.PlayerId);
                     arrows += ColorString(GetRoleColor(CustomRoles.Crewmate), arrow); 
@@ -235,11 +235,11 @@ namespace TOHE.Roles.Impostor
         {
             string result = string.Empty;
 
-            var activeDeathpactsForPlayer = PlayersInDeathpact.Where(a => ActiveDeathpacts.Contains(a.Key) && a.Value.Any(b => b.PlayerId == player.PlayerId));
+            var activeDeathpactsForPlayer = PlayersInDeathpact.Where(a => ActiveDeathpacts.Contains(a.Key) && a.Value.Any(b => b.PlayerId == player.PlayerId)).ToArray();
             foreach (var deathpact in activeDeathpactsForPlayer)
             {
                 string otherPlayerNames = string.Empty;
-                foreach (var otherPlayerInPact in deathpact.Value.Where(a => a.PlayerId != player.PlayerId))
+                foreach (var otherPlayerInPact in deathpact.Value.Where(a => a.PlayerId != player.PlayerId).ToArray())
                 {
                     otherPlayerNames += otherPlayerInPact.name.ToUpper() + ",";
                 }
@@ -261,7 +261,7 @@ namespace TOHE.Roles.Impostor
             {
                 foreach (var player in PlayersInDeathpact[deathpact])
                 {
-                    foreach (var otherPlayerInPact in PlayersInDeathpact[deathpact].Where(a => a.PlayerId != player.PlayerId))
+                    foreach (var otherPlayerInPact in PlayersInDeathpact[deathpact].Where(a => a.PlayerId != player.PlayerId).ToArray())
                     {
                         TargetArrow.Remove(player.PlayerId, otherPlayerInPact.PlayerId);
                     }

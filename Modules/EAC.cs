@@ -108,7 +108,7 @@ internal class EAC
                 case RpcCalls.CheckColor:
                     var color = sr.ReadByte();
                     if (pc.Data.DefaultOutfit.ColorId != -1 &&
-                        (Main.AllPlayerControls.Where(x => x.Data.DefaultOutfit.ColorId == color).ToArray().Length >= 5
+                        (Main.AllPlayerControls.Count(x => x.Data.DefaultOutfit.ColorId == color) >= 5
                         || !GameStates.IsLobby || color < 0 || color > 18))
                     {
                         WarnHost();

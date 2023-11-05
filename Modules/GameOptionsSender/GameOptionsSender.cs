@@ -17,11 +17,17 @@ public abstract class GameOptionsSender
     public static void SendAllGameOptions()
     {
         AllSenders.RemoveAll(s => !s.AmValid()); // .AmValid() has a virtual property, so it doesn't always return true
-        foreach (var sender in AllSenders)
+        AllSenders.ForEach(sender =>
         {
             if (sender.IsDirty) sender.SendGameOptions();
             sender.IsDirty = false;
-        }
+        });
+
+        //foreach (var sender in AllSenders)
+        //{
+        //    if (sender.IsDirty) sender.SendGameOptions();
+        //    sender.IsDirty = false;
+        //}
     }
     #endregion
 

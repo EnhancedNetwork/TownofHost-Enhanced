@@ -67,10 +67,14 @@ internal class ControllerManagerUpdatePatch
                 if (!Main.PlayerStates[lp.PlayerId].SubRoles.Any()) return;
 
                 addDes = new();
-                foreach (var subRole in Main.PlayerStates[lp.PlayerId].SubRoles.Where(x => x is not CustomRoles.Charmed))
+                foreach (var subRole in Main.PlayerStates[lp.PlayerId].SubRoles.Where(x => x is not CustomRoles.Charmed).ToArray())
+                {
                     addDes.Add(GetString($"{subRole}") + Utils.GetRoleMode(subRole) + GetString($"{subRole}InfoLong"));
+                }
                 if (CustomRolesHelper.RoleExist(CustomRoles.Ntr) && (role is not CustomRoles.GM and not CustomRoles.Ntr))
+                {
                     addDes.Add(GetString($"Lovers") + Utils.GetRoleMode(CustomRoles.Lovers) + GetString($"LoversInfoLong"));
+                }
 
                 addonIndex++;
                 if (addonIndex >= addDes.Count) addonIndex = 0;
@@ -157,7 +161,7 @@ internal class ControllerManagerUpdatePatch
         //立即开始        
         if (Input.GetKeyDown(KeyCode.LeftShift) && GameStates.IsCountDown && !HudManager.Instance.Chat.IsOpenOrOpening)
         {
-            var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToList();
+            var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
             if (invalidColor.Any())
             {
                 GameStartManager.Instance.ResetStartState(); //Hope this works
@@ -331,7 +335,7 @@ internal class ControllerManagerUpdatePatch
     {
         if (keys.Any(k => Input.GetKeyDown(k)) && keys.All(k => Input.GetKey(k)))
         {
-            Logger.Info($"快捷键：{keys.Where(k => Input.GetKeyDown(k)).First()} in [{string.Join(",", keys)}]", "GetKeysDown");
+            Logger.Info($"快捷键：{keys.First(k => Input.GetKeyDown(k))} in [{string.Join(",", keys)}]", "GetKeysDown");
             return true;
         }
         return false;

@@ -442,13 +442,13 @@ public class PlayerGameOptionsSender : GameOptionsSender
 
         }
 
-        if (Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Bewilder) && !x.IsAlive() && (x.GetRealKiller()?.PlayerId == player.PlayerId && Options.KillerGetBewilderVision.GetBool()) && !x.Is(CustomRoles.Hangman)).Any())
+        if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Bewilder) && !x.IsAlive() && (x.GetRealKiller()?.PlayerId == player.PlayerId && Options.KillerGetBewilderVision.GetBool()) && !x.Is(CustomRoles.Hangman)))
         {
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, Options.BewilderVision.GetFloat());
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.BewilderVision.GetFloat());
         }
-        if (Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Ghoul) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId).Any())
+        if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Ghoul) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId))
         {
             Main.KillGhoul.Add(player.PlayerId);
         }
@@ -501,7 +501,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
         Spiritcaller.ReduceVision(opt, player);
         Pitfall.SetPitfallTrapVision(opt, player);
 
-        foreach (var subRole in Main.PlayerStates[player.PlayerId].SubRoles)
+        foreach (var subRole in Main.PlayerStates[player.PlayerId].SubRoles.ToArray())
         {
             switch (subRole)
             {

@@ -159,7 +159,7 @@ public static class Executioner
     }
     public static bool CheckExileTarget(GameData.PlayerInfo exiled, bool DecidedWinner, bool Check = false)
     {
-        foreach (var kvp in Target.Where(x => x.Value == exiled.PlayerId))
+        foreach (var kvp in Target.Where(x => x.Value == exiled.PlayerId).ToArray())
         {
             var executioner = Utils.GetPlayerById(kvp.Key);
             if (executioner == null || !executioner.IsAlive() || executioner.Data.Disconnected) continue;

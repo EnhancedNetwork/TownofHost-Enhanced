@@ -114,7 +114,8 @@ public static class BallLightning
                 deList.Add(gs.PlayerId);
                 continue;
             }
-            foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.PlayerId != gs.PlayerId && x.IsAlive() && !x.Is(CustomRoles.BallLightning) && !IsGhost(x) && !Pelican.IsEaten(x.PlayerId)))
+            var allAlivePlayerControls = Main.AllAlivePlayerControls.Where(x => x.PlayerId != gs.PlayerId && x.IsAlive() && !x.Is(CustomRoles.BallLightning) && !IsGhost(x) && !Pelican.IsEaten(x.PlayerId)).ToArray();
+            foreach (var pc in allAlivePlayerControls)
             {
                 var pos = gs.transform.position;
                 var dis = Vector2.Distance(pos, pc.transform.position);
