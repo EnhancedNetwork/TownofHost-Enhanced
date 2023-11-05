@@ -7,7 +7,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class Oracle
 {
-    private static readonly int Id = 7600;
+    private static readonly int Id = 9100;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

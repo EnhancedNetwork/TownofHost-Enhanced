@@ -8,7 +8,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Executioner
 {
-    private static readonly int Id = 10700;
+    private static readonly int Id = 14200;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
     public static byte WinnerID;

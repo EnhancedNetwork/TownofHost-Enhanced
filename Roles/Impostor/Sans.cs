@@ -6,7 +6,7 @@ namespace TOHE;
 
 public static class Sans
 {
-    private static readonly int Id = 600;
+    private static readonly int Id = 500;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

@@ -9,7 +9,7 @@ namespace TOHE.Roles.Neutral
 {
     public static class PotionMaster
     {
-        private static readonly int Id = 13000;
+        private static readonly int Id = 17700;
         public static List<byte> playerIdList = new();
         public static bool IsEnable = false;
 

@@ -9,7 +9,7 @@ namespace TOHE.Roles.Impostor;
 // 贡献：https://github.com/Yumenopai/TownOfHost_Y/tree/AntiAdminer
 internal class AntiAdminer
 {
-    private static readonly int Id = 2300;
+    private static readonly int Id = 2800;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

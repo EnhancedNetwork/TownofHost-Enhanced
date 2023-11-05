@@ -8,7 +8,7 @@ namespace TOHE.Roles.Impostor
 {
     public static class EvilDiviner
     {
-        private static readonly int Id = 2700;
+        private static readonly int Id = 3100;
         public static List<byte> playerIdList = new();
         public static bool IsEnable = false;
 

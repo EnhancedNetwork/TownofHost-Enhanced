@@ -10,7 +10,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Succubus
 {
-    private static readonly int Id = 11200;
+    private static readonly int Id = 14800;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

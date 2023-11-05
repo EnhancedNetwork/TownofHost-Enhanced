@@ -5,7 +5,7 @@ namespace TOHE.Roles.Impostor;
 
 public static class Hangman
 {
-    private static readonly int Id = 1400;
+    private static readonly int Id = 24500;
     public static bool IsEnable = false;
 
     private static OptionItem ShapeshiftCooldown;

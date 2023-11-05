@@ -9,7 +9,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class Medic
 {
-    private static readonly int Id = 7100;
+    private static readonly int Id = 8600;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

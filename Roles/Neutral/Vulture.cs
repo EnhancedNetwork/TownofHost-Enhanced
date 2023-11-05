@@ -9,7 +9,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Vulture
 {
-    private static readonly int Id = 11600;
+    private static readonly int Id = 15600;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

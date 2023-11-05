@@ -253,6 +253,8 @@ public class SabotageSystemPatch
         {
             var playerRole = player.GetCustomRole();
 
+            if (player.Is(CustomRoles.Minimalism)) return false;
+
             if (systemType == SystemTypes.Comms)
             {
                 if (playerRole.Is(CustomRoles.Camouflager) && !Camouflager.CanUseCommsSabotage.GetBool())

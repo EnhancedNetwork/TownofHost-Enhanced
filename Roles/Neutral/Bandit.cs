@@ -8,7 +8,7 @@ using static TOHE.Options;
 namespace TOHE.Roles.Neutral;
 public static class Bandit
 {
-    private static readonly int Id = 184200;
+    private static readonly int Id = 16000;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
