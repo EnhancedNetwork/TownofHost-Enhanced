@@ -18,10 +18,10 @@ namespace TOHE.Roles.Impostor
 
         private static OptionItem KillCooldown;
         private static OptionItem ShapeshiftCooldown;
-    //    private static OptionItem ShapeshiftDuration;
         private static OptionItem CauseVision;
         private static OptionItem DazzleLimit;
         private static OptionItem ResetDazzledVisionOnDeath;
+        public static OptionItem ShowShapeshiftAnimation;
 
         public static void SetupCustomOption()
         {
@@ -30,13 +30,12 @@ namespace TOHE.Roles.Impostor
                 .SetValueFormat(OptionFormat.Seconds);
             ShapeshiftCooldown = FloatOptionItem.Create(Id + 11, "DazzleCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler])
                 .SetValueFormat(OptionFormat.Seconds);
-       //     ShapeshiftDuration = FloatOptionItem.Create(Id + 12, "ShapeshiftDuration", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler])
-         //       .SetValueFormat(OptionFormat.Seconds);
             CauseVision = FloatOptionItem.Create(Id + 13, "DazzlerCauseVision", new(0f, 5f, 0.05f), 0.65f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler])
                 .SetValueFormat(OptionFormat.Multiplier);
             DazzleLimit = IntegerOptionItem.Create(Id + 14, "DazzlerDazzleLimit", new(1, 15, 1), 3, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler])
                 .SetValueFormat(OptionFormat.Times);
             ResetDazzledVisionOnDeath = BooleanOptionItem.Create(Id + 15, "DazzlerResetDazzledVisionOnDeath", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler]);
+            ShowShapeshiftAnimation = BooleanOptionItem.Create(Id + 16, "ShowShapeshiftAnimation", false, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler]);
         }
 
         public static void Init()

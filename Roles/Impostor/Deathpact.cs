@@ -22,7 +22,6 @@ namespace TOHE.Roles.Impostor
 
         private static OptionItem KillCooldown;
         private static OptionItem ShapeshiftCooldown;
-  //      private static OptionItem ShapeshiftDuration;
         private static OptionItem DeathpactDuration;
         private static OptionItem NumberOfPlayersInPact;
         private static OptionItem ShowArrowsToOtherPlayersInPact;
@@ -30,6 +29,7 @@ namespace TOHE.Roles.Impostor
         private static OptionItem VisionWhileInPact;
         private static OptionItem KillDeathpactPlayersOnMeeting;
         public static OptionItem PlayersInDeathpactCanCallMeeting;
+        public static OptionItem ShowShapeshiftAnimation;
 
         public static void SetupCustomOption()
         {
@@ -38,8 +38,6 @@ namespace TOHE.Roles.Impostor
                 .SetValueFormat(OptionFormat.Seconds);
             ShapeshiftCooldown = FloatOptionItem.Create(Id + 11, "DeathPactCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact])
                 .SetValueFormat(OptionFormat.Seconds);
-         //   ShapeshiftDuration = FloatOptionItem.Create(Id + 12, "ShapeshiftDuration", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact])
-          //      .SetValueFormat(OptionFormat.Seconds);
             DeathpactDuration = FloatOptionItem.Create(Id + 13, "DeathpactDuration", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact])
                 .SetValueFormat(OptionFormat.Seconds);
             NumberOfPlayersInPact = IntegerOptionItem.Create(Id + 14, "DeathpactNumberOfPlayersInPact", new(2, 5, 1), 2, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact])
@@ -50,6 +48,7 @@ namespace TOHE.Roles.Impostor
                 .SetValueFormat(OptionFormat.Multiplier);
             KillDeathpactPlayersOnMeeting = BooleanOptionItem.Create(Id + 18, "DeathpactKillPlayersInDeathpactOnMeeting", false, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact]);
             PlayersInDeathpactCanCallMeeting = BooleanOptionItem.Create(Id + 19, "DeathpactPlayersInDeathpactCanCallMeeting", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact]);
+            ShowShapeshiftAnimation = BooleanOptionItem.Create(Id + 20, "ShowShapeshiftAnimation", false, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact]);
         }
 
         public static void Init()

@@ -19,8 +19,8 @@ namespace TOHE.Roles.Impostor
         private static OptionItem ReduceKillCooldown;
         private static OptionItem MinKillCooldown;
         private static OptionItem ShapeshiftCooldown;
-     //   private static OptionItem ShapeshiftDuration;
         public static OptionItem HideNameOfConsumedPlayer;
+        public static OptionItem ShowShapeshiftAnimation;
 
         public static Dictionary<byte, List<byte>> PlayerSkinsCosumed = new();
 
@@ -37,9 +37,8 @@ namespace TOHE.Roles.Impostor
                 .SetValueFormat(OptionFormat.Seconds);
             ShapeshiftCooldown = FloatOptionItem.Create(Id + 14, "DevourCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Devourer])
                 .SetValueFormat(OptionFormat.Seconds);
-       //     ShapeshiftDuration = FloatOptionItem.Create(Id + 15, "ShapeshiftDuration", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Devourer])
-         //       .SetValueFormat(OptionFormat.Seconds);
             HideNameOfConsumedPlayer = BooleanOptionItem.Create(Id + 16, "DevourerHideNameConsumed", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Devourer]);
+            ShowShapeshiftAnimation = BooleanOptionItem.Create(Id + 17, "ShowShapeshiftAnimation", false, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Devourer]);
         }
         public static void Init()
         {

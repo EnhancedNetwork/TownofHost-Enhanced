@@ -3012,6 +3012,7 @@
   "CouncillorCanMurderMadmate": "Can Murder <color=#ff1919>Madmates</color>",
   "CouncillorCanMurderImpostor": "Can Murder <color=#ff1919>Impostors</color>",
   "CouncillorTryHideMsg": "Try to hide Councillor's commands",
+  "ShowShapeshiftAnimation": "Show Shapeshift Animation on Ability use",
   "DazzlerDazzled": "You were dazzled by the Dazzler!",
   "DazzlerCauseVision": "Reduced vision",
   "DazzlerDazzleLimit": "Max number of players affected by reduced vision",

@@ -1310,38 +1310,31 @@ class CheckShapeshiftPatch
 {
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, bool shouldAnimate)
     {
-        bool cancelShapeshift = false;
+        bool showShapeshiftAnimation = true;
         switch (__instance.GetCustomRole())
         {
             case CustomRoles.Dazzler:
-                Dazzler.OnShapeshift(__instance, target);
-                cancelShapeshift = true;
+                showShapeshiftAnimation = Dazzler.ShowShapeshiftAnimation.GetBool();
+                if (!showShapeshiftAnimation) Dazzler.OnShapeshift(__instance, target);
                 break;
             case CustomRoles.Devourer:
-                Devourer.OnShapeshift(__instance, target);
-                cancelShapeshift = true;
+                showShapeshiftAnimation = Devourer.ShowShapeshiftAnimation.GetBool();
+                if (!showShapeshiftAnimation) Devourer.OnShapeshift(__instance, target);
                 break;
             case CustomRoles.Deathpact:
-                Deathpact.OnShapeshift(__instance, target);
-                cancelShapeshift = true;
-                break;
-            case CustomRoles.Hacker:
-                Hacker.OnShapeshift(__instance, true, target);
-                cancelShapeshift = true;
+                showShapeshiftAnimation = Deathpact.ShowShapeshiftAnimation.GetBool();
+                if (!showShapeshiftAnimation) Deathpact.OnShapeshift(__instance, target);
                 break;
             case CustomRoles.Pitfall:
-                Pitfall.OnShapeshift(__instance);
-                cancelShapeshift = true;
+                showShapeshiftAnimation = Pitfall.ShowShapeshiftAnimation.GetBool();
+                if (!showShapeshiftAnimation) Pitfall.OnShapeshift(__instance);
                 break;
         }
 
-        if (cancelShapeshift)
-        {
+        if (!showShapeshiftAnimation)
             __instance.RpcResetAbilityCooldown();
-            return false;
-        }
 
-        return true;
+        return showShapeshiftAnimation;
     }
 
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, bool shouldAnimate)
