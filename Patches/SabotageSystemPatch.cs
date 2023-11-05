@@ -120,11 +120,22 @@ public class SabotageSystemPatch
             }
         }
     }
+    [HarmonyPatch(typeof(MushroomMixupSabotageSystem), nameof(MushroomMixupSabotageSystem.UpdateSystem))]
+    public static class MushroomMixupSabotageSystemUpdateSystemPatch
+    {
+        public static void Postfix()
+        {
+            // Need for display/hiding player names if player is desync Impostor
+            Utils.NotifyRoles(ForceLoop: true);
+        }
+    }
     [HarmonyPatch(typeof(MushroomMixupSabotageSystem), nameof(MushroomMixupSabotageSystem.Deteriorate))]
     private static class MushroomMixupSabotageSystemPatch
     {
-        private static void Prefix(MushroomMixupSabotageSystem __instance)
+        private static void Prefix(MushroomMixupSabotageSystem __instance, ref bool __state)
         {
+            __state = __instance.IsActive;
+
             if (!Options.SabotageTimeControl.GetBool()) return;
             if ((MapNames)Main.NormalOptions.MapId is not MapNames.Fungle) return;
 
@@ -144,6 +155,15 @@ public class SabotageSystemPatch
 
             // Set duration Mushroom Mixup (The Fungle)
             __instance.currentSecondsUntilHeal = Options.FungleMushroomMixupDuration.GetFloat();
+        }
+        public static void Postfix(MushroomMixupSabotageSystem __instance, bool __state)
+        {
+            // if Mushroom Mixup Sabotage is active
+            if (__instance.IsActive != __state)
+            {
+                // Need for display/hiding player names if player is desync Impostor
+                Utils.NotifyRoles(ForceLoop: true);
+            }
         }
     }
     [HarmonyPatch(typeof(SwitchSystem), nameof(SwitchSystem.UpdateSystem))]
