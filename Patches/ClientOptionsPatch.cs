@@ -22,6 +22,7 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem SwitchVanilla;
 #if DEBUG
     private static ClientOptionItem VersionCheat;
+        private static ClientOptionItem ImpTasks; //necessario ser debug build pra ativar
 #endif
     private static ClientOptionItem GodMode;
     private static ClientOptionItem InfiniteVision;
@@ -112,6 +113,10 @@ public static class OptionsMenuBehaviourStartPatch
         if ((VersionCheat == null || VersionCheat.ToggleButton == null) && DebugModeManager.AmDebugger)
         {
             VersionCheat = ClientOptionItem.Create("VersionCheat", Main.VersionCheat, __instance);
+        }
+        if ((ImpTasks == null || ImpTasks.ToggleButton == null) && DebugModeManager.AmDebugger)
+        {
+            ImpTasks = ClientOptionItem.Create("ImpTasks", Main.ImpTasks, __instance);
         }
 #endif
         if ((GodMode == null || GodMode.ToggleButton == null))
