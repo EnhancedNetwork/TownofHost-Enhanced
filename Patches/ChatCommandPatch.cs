@@ -1463,12 +1463,16 @@ internal class ChatCommands
                 break;
             case "/mid":
                 //canceled = true;
+                
+               /*
                 //checking if modlist on or not
                 if (Options.ApplyModeratorList.GetValue() == 0)
                 {
                     Utils.SendMessage(GetString("midCommandDisabled"), player.PlayerId);
                     break;
                 }
+               */
+               
                 //checking if player is has necessary privellege or not
                 if (!Utils.IsPlayerModerator(player.FriendCode))
                 {
