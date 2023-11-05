@@ -1937,7 +1937,7 @@ public static class Utils
     private static StringBuilder SelfMark = new(20);
     private static StringBuilder TargetSuffix = new();
     private static StringBuilder TargetMark = new(20);
-    public static void NotifyRoles(bool isForMeeting = false, PlayerControl SpecifySeer = null, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false)
+    public static void NotifyRoles(bool isForMeeting = false, PlayerControl SpecifySeer = null, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (Main.AllPlayerControls == null) return;
@@ -1947,7 +1947,6 @@ public static class Utils
 
         var caller = new System.Diagnostics.StackFrame(1, false);
         var callerMethod = caller.GetMethod();
-        var MushroomMixupIsActive = IsActive(SystemTypes.MushroomMixupSabotage);
         string callerMethodName = callerMethod.Name;
         string callerClassName = callerMethod.DeclaringType.FullName;
         var logger = Logger.Handler("NotifyRoles");
@@ -1960,6 +1959,11 @@ public static class Utils
         {
             seerList = new();
             seerList.Add(SpecifySeer);
+        }
+
+        if (!MushroomMixupIsActive)
+        {
+            MushroomMixupIsActive = IsActive(SystemTypes.MushroomMixupSabotage);
         }
 
         //seer: player who updates the nickname/role/mark
@@ -2226,6 +2230,8 @@ public static class Utils
 
             // Start run loop for target only if condition is "true"
             if (seer.Data.IsDead || !seer.IsAlive()
+                || CamouflageIsForMeeting
+                || MushroomMixupIsActive
                 || NoCache
                 || ForceLoop)
                 foreach (var target in Main.AllPlayerControls)
@@ -2236,7 +2242,7 @@ public static class Utils
                     logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":START");
 
                     // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
-                    if (MushroomMixupIsActive && seer.IsAlive() && !seer.Is(CustomRoleTypes.Impostor) && Main.ResetCamPlayerList.Contains(seer.PlayerId))
+                    if (MushroomMixupIsActive && target.IsAlive() && !seer.Is(CustomRoleTypes.Impostor) && Main.ResetCamPlayerList.Contains(seer.PlayerId))
                     {
                         seer.RpcSetNamePrivate("<size=0%>", true, force: NoCache);
                     }

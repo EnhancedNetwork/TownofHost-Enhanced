@@ -126,7 +126,9 @@ public class SabotageSystemPatch
         public static void Postfix()
         {
             // Need for display/hiding player names if player is desync Impostor
-            Utils.NotifyRoles(ForceLoop: true);
+
+            Logger.Info($" IsActive", "MushroomMixupSabotageSystem.UpdateSystem.Postfix");
+            Utils.NotifyRoles(ForceLoop: true, MushroomMixupIsActive: true);
         }
     }
     [HarmonyPatch(typeof(MushroomMixupSabotageSystem), nameof(MushroomMixupSabotageSystem.Deteriorate))]
@@ -161,6 +163,8 @@ public class SabotageSystemPatch
             // if Mushroom Mixup Sabotage is end
             if (__instance.IsActive != __state && !Main.MeetingIsStarted)
             {
+                Logger.Info($" IsEnd", "MushroomMixupSabotageSystem.Deteriorate.Postfix");
+
                 _ = new LateTask(() =>
                 {
                     // After MushroomMixup sabotage, shapeshift cooldown sets to 0
