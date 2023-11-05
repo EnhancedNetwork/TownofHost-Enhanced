@@ -142,6 +142,10 @@ class ExileControllerWrapUpPatch
                 DecidedWinner = false;
             }
 
+            if (role == CustomRoles.Devourer) Devourer.OnDevourerDied(exiled.PlayerId);
+
+            if (Lawyer.CheckExileTarget(exiled, DecidedWinner)) DecidedWinner = false;
+
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist) Main.PlayerStates[exiled.PlayerId].SetDead();
 
             Instigator.OnPlayerExile(exiled);

@@ -187,6 +187,7 @@ static class CustomRolesHelper
             CustomRoles.Jailer => RoleTypes.Impostor,
             CustomRoles.Crusader => RoleTypes.Impostor,
             CustomRoles.Seeker => RoleTypes.Impostor,
+            CustomRoles.Pixie => RoleTypes.Impostor,
             CustomRoles.Pirate => RoleTypes.Impostor,
             CustomRoles.CopyCat => RoleTypes.Impostor,
             CustomRoles.Imitator => RoleTypes.Impostor,
@@ -397,6 +398,7 @@ static class CustomRolesHelper
             CustomRoles.SoulCollector or
             CustomRoles.Pirate or
             CustomRoles.Seeker or
+            CustomRoles.Pixie or
             CustomRoles.Romantic or
             CustomRoles.RuthlessRomantic or
             CustomRoles.VengefulRomantic or
@@ -494,6 +496,7 @@ static class CustomRolesHelper
             CustomRoles.Sunnyboy or
             CustomRoles.Masochist or
             CustomRoles.Seeker or
+            CustomRoles.Pixie or
             CustomRoles.Collector or
             CustomRoles.Succubus or
             CustomRoles.Phantom or
@@ -526,6 +529,7 @@ static class CustomRolesHelper
             CustomRoles.God or
             CustomRoles.Romantic or
             CustomRoles.VengefulRomantic or
+            CustomRoles.Pixie or
             CustomRoles.Sunnyboy;
     }
     public static bool IsNE(this CustomRoles role)
@@ -735,6 +739,7 @@ static class CustomRolesHelper
             CustomRoles.Pestilence or
             CustomRoles.Pirate or
             CustomRoles.Seeker or
+            CustomRoles.Pixie or
         //    CustomRoles.Sidekick or
             CustomRoles.Poisoner or
             CustomRoles.NSerialKiller or
@@ -898,6 +903,7 @@ static class CustomRolesHelper
             CustomRoles.Romantic or
             CustomRoles.RuthlessRomantic or
             CustomRoles.VengefulRomantic or
+            CustomRoles.Pixie or
             CustomRoles.Seeker;
     }
     public static bool IsMadmate(this CustomRoles role)
@@ -924,6 +930,7 @@ static class CustomRolesHelper
             CustomRoles.Totocalcio or
             CustomRoles.Provocateur or
             CustomRoles.DarkHide or
+            CustomRoles.Pixie or
             CustomRoles.Seeker;
     }
     public static bool IsTasklessCrewmate(this CustomRoles role)

@@ -311,6 +311,7 @@ internal class ChangeRoleSettings
             Reverie.Init();
             Doomsayer.Init();
             Pirate.Init();
+            Pixie.Init();
             Shroud.Init();
             Werewolf.Init();
             Necromancer.Init();
@@ -902,6 +903,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Pirate:
                         Pirate.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Pixie:
+                        Pixie.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Chronomancer:
                         Chronomancer.Add(pc.PlayerId);

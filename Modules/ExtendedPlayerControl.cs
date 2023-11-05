@@ -553,6 +553,7 @@ static class ExtendedPlayerControl
             CustomRoles.PlagueBearer => pc.IsAlive(),
             CustomRoles.Pestilence => pc.IsAlive(),
             CustomRoles.Pirate => pc.IsAlive(),
+            CustomRoles.Pixie => pc.IsAlive(),
             CustomRoles.Seeker => pc.IsAlive(),
             CustomRoles.Agitater => pc.IsAlive(),
             CustomRoles.ChiefOfPolice => ChiefOfPolice.CanUseKillButton(pc.PlayerId),
@@ -648,6 +649,7 @@ static class ExtendedPlayerControl
             CustomRoles.PlagueBearer => true,
             CustomRoles.Pestilence => true,
             CustomRoles.Pirate => true,
+            CustomRoles.Pixie => true,
             CustomRoles.Seeker => true,
             CustomRoles.Agitater => true,
             CustomRoles.ChiefOfPolice => true,
@@ -748,6 +750,7 @@ static class ExtendedPlayerControl
             CustomRoles.Sheriff or
             CustomRoles.Crusader or
             CustomRoles.Pirate or
+            CustomRoles.Pixie or
             CustomRoles.CopyCat or
             CustomRoles.CursedSoul or
             CustomRoles.Admirer or
@@ -1114,6 +1117,9 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Pirate:
                 Pirate.SetKillCooldown(player.PlayerId);
+                break;
+            case CustomRoles.Pixie:
+                Pixie.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Deputy:
                 Deputy.SetKillCooldown(player.PlayerId);

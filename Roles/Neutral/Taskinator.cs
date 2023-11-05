@@ -52,6 +52,7 @@ public static class Taskinator
         {            
             writer.Write(TaskMarkPerRound[taskinatorID]);   
         }
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC(MessageReader reader)
     {
