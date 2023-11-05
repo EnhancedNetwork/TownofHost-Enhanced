@@ -2080,7 +2080,7 @@ public static class Options
         OppoImmuneToAttacksWhenTasksDone = BooleanOptionItem.Create(13302, "ImmuneToAttacksWhenTasksDone", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Opportunist]);
         OpportunistTasks = OverrideTasksData.Create(13303, TabGroup.NeutralRoles, CustomRoles.Opportunist);
-
+        Pixie.SetupCustomOption();
         Pursuer.SetupCustomOption();
 
         Romantic.SetupCustomOption();

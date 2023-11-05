@@ -734,6 +734,7 @@ public enum CustomRoles
     Maverick,
     CursedSoul,
     Pirate,
+    Pixie,
     PotionMaster,
     Pickpocket,
     Traitor,
@@ -924,6 +925,7 @@ public enum AdditionalWinners
     Maverick = CustomRoles.Maverick,
     Shaman = CustomRoles.Shaman,
     Taskinator = CustomRoles.Taskinator,
+    Pixie = CustomRoles.Pixie,
  //   NiceMini = CustomRoles.NiceMini,
  //   Baker = CustomRoles.Baker,
 }

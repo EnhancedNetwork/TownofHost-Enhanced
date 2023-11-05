@@ -71,6 +71,7 @@ enum CustomRPC
     SetJailerExeLimit,
     SetCleanserCleanLimit,
     SetSoulCollectorLimit,
+    SetPixieTargets,
     SetPelicanEtenNum,
     SwordsManKill,
     SetAlchemistTimer,
@@ -682,6 +683,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetSoulCollectorLimit:
                 SoulCollector.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SetPixieTargets:
+                Pixie.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetSwapperVotes:
                 Swapper.ReceiveRPC(reader, __instance);
@@ -1308,6 +1312,9 @@ internal static class RPC
                 break;
             case CustomRoles.Pirate:
                 Pirate.Add(targetId);
+                break;
+            case CustomRoles.Pixie:
+                Pixie.Add(targetId);
                 break;
             case CustomRoles.Seeker:
                 Seeker.Add(targetId);
