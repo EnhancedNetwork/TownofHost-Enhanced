@@ -121,30 +121,42 @@ class ExileControllerWrapUpPatch
                     DecidedWinner = true;
                 }
             }
+
             //Executioner check win
             if (Executioner.CheckExileTarget(exiled, DecidedWinner))
             {
                 DecidedWinner = true;
             }
+
             //Terrorist check win
             if (role.Is(CustomRoles.Terrorist))
             {
                 Utils.CheckTerroristWin(exiled);
             }
+
             //Devourer check win
             if (role.Is(CustomRoles.Devourer))
             {
                 Devourer.OnDevourerDied(exiled.PlayerId);
             }
+
             //Lawyer check win
             if (Lawyer.CheckExileTarget(exiled, DecidedWinner))
             {
                 DecidedWinner = false;
             }
 
-            if (role == CustomRoles.Devourer) Devourer.OnDevourerDied(exiled.PlayerId);
+            if (role.Is(CustomRoles.Devourer))
+            {
+                Devourer.OnDevourerDied(exiled.PlayerId);
+            }
 
-            if (Lawyer.CheckExileTarget(exiled, DecidedWinner)) DecidedWinner = false;
+            if (Lawyer.CheckExileTarget(exiled, DecidedWinner))
+            {
+                DecidedWinner = false;
+            }
+
+            Pixie.CheckExileTarget(exiled);
 
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist) Main.PlayerStates[exiled.PlayerId].SetDead();
 
