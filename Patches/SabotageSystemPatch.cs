@@ -1,6 +1,6 @@
 using HarmonyLib;
 using Hazel;
-
+using System.Linq;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -158,9 +158,19 @@ public class SabotageSystemPatch
         }
         public static void Postfix(MushroomMixupSabotageSystem __instance, bool __state)
         {
-            // if Mushroom Mixup Sabotage is active
-            if (__instance.IsActive != __state)
+            // if Mushroom Mixup Sabotage is end
+            if (__instance.IsActive != __state && !Main.MeetingIsStarted)
             {
+                _ = new LateTask(() =>
+                {
+                    // After MushroomMixup sabotage, shapeshift cooldown sets to 0
+                    foreach (var pc in Main.AllAlivePlayerControls.ToArray())
+                    {
+                        // Reset Ability Cooldown To Default For Alive Players
+                        pc.RpcResetAbilityCooldown();
+                    }
+                }, 1.2f, "Reset Ability Cooldown Arter Mushroom Mixup");
+
                 // Need for display/hiding player names if player is desync Impostor
                 Utils.NotifyRoles(ForceLoop: true);
             }

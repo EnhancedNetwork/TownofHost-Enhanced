@@ -2398,7 +2398,7 @@ class ReportDeadBodyPatch
         Main.RevolutionistLastTime.Clear();
 
         Main.AllPlayerControls
-            .Where(pc => Main.CheckShapeshift.ContainsKey(pc.PlayerId) && !Doppelganger.DoppelVictim.Keys.Contains(pc.PlayerId))
+            .Where(pc => Main.CheckShapeshift.ContainsKey(pc.PlayerId) && !Doppelganger.DoppelVictim.ContainsKey(pc.PlayerId))
             .Do(pc => Camouflage.RpcSetSkin(pc, RevertToDefault: true));
 
         MeetingTimeManager.OnReportDeadBody();
