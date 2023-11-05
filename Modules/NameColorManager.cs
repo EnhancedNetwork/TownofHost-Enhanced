@@ -118,6 +118,8 @@ public static class NameColorManager
         if (seer.Is(CustomRoles.Spy) && Spy.SpyRedNameList.ContainsKey(target.PlayerId)) color = "#BA4A00";
         //Seeker
         if (seer.Is(CustomRoles.Seeker) && Seeker.Targets.ContainsValue(target.PlayerId)) color = Main.roleColors[CustomRoles.Seeker];
+        //Pixie
+        if (seer.Is(CustomRoles.Pixie) && Pixie.PixieTargets[seer.PlayerId].Contains(target.PlayerId)) color = Main.roleColors[CustomRoles.Pixie];
         // Pyromaniac
         if (seer.Is(CustomRoles.Pyromaniac) && Pyromaniac.DousedList.Contains(target.PlayerId)) color = "#BA4A00";
         // Necroview

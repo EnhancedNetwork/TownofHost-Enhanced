@@ -425,6 +425,9 @@ class CheckMurderPatch
                     if (!Pirate.OnCheckMurder(killer, target))
                         return false;
                     break;
+                case CustomRoles.Pixie:
+                    Pixie.OnCheckMurder(killer, target);
+                    return false;
 
                 case CustomRoles.Arsonist:
                     killer.SetKillCooldown(Options.ArsonistDouseTime.GetFloat());

@@ -517,6 +517,7 @@ public static class Utils
             case CustomRoles.Refugee:
             case CustomRoles.Jester:
             case CustomRoles.Pirate:
+            case CustomRoles.Pixie:
             case CustomRoles.NWitch:
             case CustomRoles.Shroud:
             case CustomRoles.Mario:
@@ -676,6 +677,9 @@ public static class Utils
                     break;
                 case CustomRoles.SoulCollector:
                     ProgressText.Append(SoulCollector.GetProgressText(playerId));
+                    break;
+                case CustomRoles.Pixie:
+                    ProgressText.Append(Pixie.GetProgressText(playerId));
                     break;
                 case CustomRoles.Sheriff:
                     if (Sheriff.ShowShotLimit.GetBool()) ProgressText.Append(Sheriff.GetShotLimit(playerId));

@@ -1028,7 +1028,7 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 25800 lasted id for roles/add-ons (Next use 25900)
+        // 25900 lasted id for roles/add-ons (Next use 26000)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
         // Start Load Settings
@@ -2080,7 +2080,7 @@ public static class Options
         OppoImmuneToAttacksWhenTasksDone = BooleanOptionItem.Create(13302, "ImmuneToAttacksWhenTasksDone", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Opportunist]);
         OpportunistTasks = OverrideTasksData.Create(13303, TabGroup.NeutralRoles, CustomRoles.Opportunist);
-
+        Pixie.SetupCustomOption();
         Pursuer.SetupCustomOption();
 
         Romantic.SetupCustomOption();

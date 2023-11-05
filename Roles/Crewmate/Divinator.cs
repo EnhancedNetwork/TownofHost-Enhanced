@@ -225,6 +225,7 @@ public static class Divinator
                 CustomRoles.Inhibitor or
                 CustomRoles.SabotageMaster or
                 CustomRoles.Shaman or
+                CustomRoles.Pixie or
                 CustomRoles.Saboteur
                 => "Result16",
 
