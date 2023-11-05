@@ -11,7 +11,7 @@ public class DevUser
     public string Tag { get; set; }
     public bool IsUp { get; set; }
     public bool IsDev { get; set; }
-    public bool isMod { get; set; }
+    public bool IsMod { get; set; }
     public bool DeBug { get; set; }
     public bool ColorCmd { get; set; }
     public string UpName { get; set; }
