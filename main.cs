@@ -40,8 +40,8 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "1.2.1.2";
-    public const string PluginDisplayVersion = "1.2.1 dev 2";
+    public const string PluginVersion = "1.2.1.3";
+    public const string PluginDisplayVersion = "1.2.1 dev 3";
     public static readonly string SupportedVersionAU = "2023.10.24";
     public const bool Canary = false; // Unused variable?
 
@@ -736,6 +736,7 @@ public enum CustomRoles
     Maverick,
     CursedSoul,
     Pirate,
+    Pixie,
     PotionMaster,
     Pickpocket,
     Traitor,
@@ -926,6 +927,7 @@ public enum AdditionalWinners
     Maverick = CustomRoles.Maverick,
     Shaman = CustomRoles.Shaman,
     Taskinator = CustomRoles.Taskinator,
+    Pixie = CustomRoles.Pixie,
  //   NiceMini = CustomRoles.NiceMini,
  //   Baker = CustomRoles.Baker,
 }
