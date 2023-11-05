@@ -1509,7 +1509,7 @@ internal class ChatCommands
                 */
 
                 // Check if the player has the necessary privileges to use the command
-                if (player.FriendCode.GetDevUser().IsDev)
+                if (player.FriendCode.GetDevUser().IsMod)
                 {
                     Utils.SendMessage(GetString("BanCommandNoAccess"), player.PlayerId);
                     break;
@@ -1650,7 +1650,7 @@ internal class ChatCommands
                */
                 
                 // Check if the player has the necessary privileges to use the command
-                if (player.FriendCode.GetDevUser().IsDev)
+                if (player.FriendCode.GetDevUser().IsMod)
                 {
                     Utils.SendMessage(GetString("KickCommandNoAccess"), player.PlayerId);
                     break;
