@@ -1486,12 +1486,15 @@ internal class ChatCommands
             case "/ban":
             case "/banir":
                 //canceled = true;
+                
+               /*
                 // Check if the ban command is enabled in the settings
                 if (Options.ApplyModeratorList.GetValue() == 0)
                 {
                     Utils.SendMessage(GetString("BanCommandDisabled"), player.PlayerId);
                     break;
                 }
+                */
 
                 // Check if the player has the necessary privileges to use the command
                 if (!Utils.IsPlayerModerator(player.FriendCode))
@@ -1624,13 +1627,16 @@ internal class ChatCommands
                 break;
             case "/kick":
             case "/expulsar":
-                // Check if the kick command is enabled in the settings
+            
+               /*
+                Check if the kick command is enabled in the settings
                 if (Options.ApplyModeratorList.GetValue() == 0)
                 {
                     Utils.SendMessage(GetString("KickCommandDisabled"), player.PlayerId);
                     break;
                 }
-
+               */
+                
                 // Check if the player has the necessary privileges to use the command
                 if (!Utils.IsPlayerModerator(player.FriendCode))
                 {
