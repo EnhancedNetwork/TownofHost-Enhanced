@@ -22,16 +22,10 @@ public static class ParityCop
     public static OptionItem ParityCheckLimitPerMeeting;
     private static OptionItem ParityCheckTargetKnow;
     private static OptionItem ParityCheckOtherTargetKnow;
-    public static OptionItem ParityCheckEgoistCountType;
     public static OptionItem ParityCheckBaitCountType;
     public static OptionItem ParityCheckRevealTargetTeam;
     public static OptionItem ParityAbilityUseGainWithEachTaskCompleted;
 
-    public static readonly string[] pcEgoistCountMode =
-{
-        "EgoistCountMode.Original",
-        "EgoistCountMode.Neutral",
-    };
 
     public static void SetupCustomOption()
     {
@@ -42,7 +36,6 @@ public static class ParityCop
             .SetValueFormat(OptionFormat.Times);
         ParityCheckLimitPerMeeting = IntegerOptionItem.Create(Id + 12, "ParityCheckLimitPerMeeting", new(1, 20, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ParityCop])
             .SetValueFormat(OptionFormat.Times);
-        ParityCheckEgoistCountType = StringOptionItem.Create(Id + 13, "ParityCheckEgoistickCountMode", pcEgoistCountMode, 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ParityCop]);
         ParityCheckBaitCountType = BooleanOptionItem.Create(Id + 14, "ParityCheckBaitCountMode", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ParityCop]);
         ParityCheckTargetKnow = BooleanOptionItem.Create(Id + 15, "ParityCheckTargetKnow", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ParityCop]);
         ParityCheckOtherTargetKnow = BooleanOptionItem.Create(Id + 16, "ParityCheckOtherTargetKnow", false, TabGroup.CrewmateRoles, false).SetParent(ParityCheckTargetKnow);
@@ -51,11 +44,6 @@ public static class ParityCop
             .SetParent(CustomRoleSpawnChances[CustomRoles.ParityCop])
             .SetValueFormat(OptionFormat.Times);
         OverrideTasksData.Create(Id + 20, TabGroup.CrewmateRoles, CustomRoles.ParityCop);
-    }
-    public static int ParityCheckEgoistInt()
-    {
-        if (ParityCheckEgoistCountType.GetString() == "EgoistCountMode.Original") return 0;
-        else return 1;
     }
     public static void Init()
     {

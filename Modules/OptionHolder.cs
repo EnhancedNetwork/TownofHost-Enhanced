@@ -932,6 +932,7 @@ public static class Options
     public static OptionItem ImpCanBeEgoist;
     public static OptionItem ImpEgoistVisibalToAllies;
     public static OptionItem CrewCanBeEgoist;
+    public static OptionItem EgoistCountAsConverted;
     public static OptionItem TicketsPerKill;
     public static OptionItem ImpCanBeDualPersonality;
     public static OptionItem CrewCanBeDualPersonality;
@@ -2748,7 +2749,9 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.Egoist]);
         ImpEgoistVisibalToAllies = BooleanOptionItem.Create(23505, "ImpEgoistVisibalToAllies", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Egoist]);
-        
+        EgoistCountAsConverted = BooleanOptionItem.Create(23506, "EgoistCountAsConverted", true, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Egoist]);
+
         SetupLoversRoleOptionsToggle(23600);
         
         SetupAdtRoleOptions(23700, CustomRoles.Reach, canSetNum: true);

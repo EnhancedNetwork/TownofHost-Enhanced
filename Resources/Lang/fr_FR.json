@@ -2813,7 +2813,6 @@
   "ParityCopTryHideMsg": "Cacher les commandes de l'<color=#0D57AF>Inspecteur</color>.",
   "MaxParityCheckLimit": "Nombre maximum d'inspections par partie",
   "ParityCheckLimitPerMeeting": "Inspections maximales par réunion",
-  "ParityCheckEgoistickCountMode": "<color=#5600ff>Egoïste</color> compte pour",
   "ParityCheckTargetKnow": "Les cibles savent qu'elles ont été contrôlées par <color=#0D57AF>Inspecteur</color>.",
   "ParityCheckOtherTargetKnow": "Les cibles savent avec qui elles ont été contrôlées",
   "ParityCopDead": "Vous ne pouvez pas utiliser votre pouvoir après la mort",
