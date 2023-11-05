@@ -425,6 +425,9 @@ class CheckMurderPatch
                     if (!Pirate.OnCheckMurder(killer, target))
                         return false;
                     break;
+                case CustomRoles.Pixie:
+                    Pixie.OnCheckMurder(killer, target);
+                    return false;
 
                 case CustomRoles.Arsonist:
                     killer.SetKillCooldown(Options.ArsonistDouseTime.GetFloat());
@@ -1159,6 +1162,81 @@ class CheckMurderPatch
                     return false;
                 }
                 break;
+            //击杀萧暮
+            case CustomRoles.Randomizer:
+                var Fg = IRandom.Instance;
+                int Randomizer = Fg.Next(1, 5);
+                if (Randomizer == 1)
+                {
+                    if (killer.PlayerId != target.PlayerId || (target.GetRealKiller()?.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Wraith) || !killer.Is(CustomRoles.Oblivious) || (killer.Is(CustomRoles.Oblivious) && !Options.ObliviousBaitImmune.GetBool()))
+                    {
+                        killer.RPCPlayCustomSound("Congrats");
+                        target.RPCPlayCustomSound("Congrats");
+
+                        float delay;
+                        if (Options.BecomeBaitDelayMax.GetFloat() < Options.BecomeBaitDelayMin.GetFloat())
+                        {
+                            delay = 0f;
+                        }
+                        else
+                        {
+                            delay = IRandom.Instance.Next((int)Options.BecomeBaitDelayMin.GetFloat(), (int)Options.BecomeBaitDelayMax.GetFloat() + 1);
+                        }
+                        delay = Math.Max(delay, 0.15f);
+                        if (delay > 0.15f && Options.BecomeBaitDelayNotify.GetBool())
+                        {
+                            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), string.Format(GetString("KillBaitNotify"), (int)delay)), delay);
+                        }
+
+                        Logger.Info($"{killer.GetNameWithRole()} 击杀了萧暮触发自动报告 => {target.GetNameWithRole()}", "Randomizer");
+
+                        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Randomizer), GetString("YouKillRandomizer1")));
+
+                        _ = new LateTask(() => 
+                        { 
+                            if (GameStates.IsInTask) killer.CmdReportDeadBody(target.Data); 
+                        }, delay, "Bait Self Report");
+                    }
+                }
+                else if (Randomizer == 2)
+                {
+                    Logger.Info($"{killer.GetNameWithRole()} 击杀了萧暮触发暂时无法移动 => {target.GetNameWithRole()}", "Randomizer");
+                    NameNotifyManager.Notify(killer, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Randomizer), GetString("YouKillRandomizer2")));
+                    var tmpSpeed = Main.AllPlayerSpeed[killer.PlayerId];
+                    Main.AllPlayerSpeed[killer.PlayerId] = Main.MinSpeed;    //tmpSpeedで後ほど値を戻すので代入しています。
+                    ReportDeadBodyPatch.CanReport[killer.PlayerId] = false;
+                    killer.MarkDirtySettings();
+                    _ = new LateTask(() =>
+                    {
+                        Main.AllPlayerSpeed[killer.PlayerId] = Main.AllPlayerSpeed[killer.PlayerId] - Main.MinSpeed + tmpSpeed;
+                        ReportDeadBodyPatch.CanReport[killer.PlayerId] = true;
+                        killer.MarkDirtySettings();
+                        RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
+                    }, Options.BecomeTrapperBlockMoveTime.GetFloat(), "Trapper BlockMove");
+                }
+                else if (Randomizer == 3)
+                {
+                    Logger.Info($"{killer.GetNameWithRole()} 击杀了萧暮触发凶手CD变成600 => {target.GetNameWithRole()}", "Randomizer");
+                    NameNotifyManager.Notify(killer, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Randomizer), GetString("YouKillRandomizer3")));
+                    Main.AllPlayerKillCooldown[killer.PlayerId] = 600f;
+                    killer.SyncSettings();
+                }
+                else if (Randomizer == 4)
+                {
+                    Logger.Info($"{killer.GetNameWithRole()} 击杀了萧暮触发随机复仇 => {target.GetNameWithRole()}", "Randomizer");
+                    NameNotifyManager.Notify(killer, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Randomizer), GetString("YouKillRandomizer4")));
+                    {
+                        var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId).ToList();
+                        var rp = pcList[IRandom.Instance.Next(0, pcList.Count)];
+                        if (!rp.Is(CustomRoles.Pestilence))
+                        {
+                            Main.PlayerStates[rp.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
+                            rp.SetRealKiller(target);
+                            rp.RpcMurderPlayerV3(rp);
+                        }
+                    }
+                }
+                break;
         }
 
         //保镖保护
@@ -1399,7 +1477,8 @@ class MurderPlayerPatch
             killer.TrapperKilled(target);
 
         Main.AllKillers.Remove(killer.PlayerId);
-        Main.AllKillers.Add(killer.PlayerId, Utils.GetTimeStamp());
+        if (!killer.Is(CustomRoles.Trickster))
+            Main.AllKillers.Add(killer.PlayerId, Utils.GetTimeStamp());
 
         switch (target.GetCustomRole())
         {
@@ -2346,6 +2425,7 @@ class ReportDeadBodyPatch
         if (Mortician.IsEnable) Mortician.OnReportDeadBody(player, target);
         if (Mediumshiper.IsEnable) Mediumshiper.OnReportDeadBody(target);
         if (Spiritualist.IsEnable) Spiritualist.OnReportDeadBody(target);
+        if (Enigma.IsEnable) Enigma.OnReportDeadBody(player, target);
 
         foreach (var pid in Main.AwareInteracted.Keys)
         {
@@ -2378,7 +2458,7 @@ class ReportDeadBodyPatch
         Main.RevolutionistLastTime.Clear();
 
         Main.AllPlayerControls
-            .Where(pc => Main.CheckShapeshift.ContainsKey(pc.PlayerId) && !Doppelganger.DoppelVictim.Keys.Contains(pc.PlayerId))
+            .Where(pc => Main.CheckShapeshift.ContainsKey(pc.PlayerId) && !Doppelganger.DoppelVictim.ContainsKey(pc.PlayerId))
             .Do(pc => Camouflage.RpcSetSkin(pc, RevertToDefault: true));
 
         MeetingTimeManager.OnReportDeadBody();
@@ -3824,6 +3904,53 @@ class PlayerControlRemoveProtectionPatch
         Logger.Info($"{__instance.GetNameWithRole()}", "RemoveProtection");
     }
 }
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MixUpOutfit))]
+public static class PlayerControlMixupOutfitPatch
+{
+    public static void Postfix(PlayerControl __instance)
+    {
+        if (!__instance.IsAlive())
+        {
+            return;
+        }
+        
+        // if player is Desync Impostor and the vanilla sees player as Imposter, the vanilla process does not hide your name, so the other person's name is hidden
+        if (PlayerControl.LocalPlayer.Data.Role.IsImpostor &&  // Impostor with vanilla
+            !PlayerControl.LocalPlayer.Is(CustomRoleTypes.Impostor) &&  // Not an Impostor
+            Main.ResetCamPlayerList.Contains(PlayerControl.LocalPlayer.PlayerId))  // Desync Impostor
+        {
+            // Hide names
+            __instance.cosmetics.ToggleNameVisible(false);
+        }
+    }
+}
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckSporeTrigger))]
+public static class PlayerControlCheckSporeTriggerPatch
+{
+    public static bool Prefix()
+    {
+        if (AmongUsClient.Instance.AmHost)
+        {
+            return !Options.DisableSporeTriggerOnFungle.GetBool();
+        }
+
+        return true;
+    }
+}
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckUseZipline))]
+public static class PlayerControlCheckUseZiplinePatch
+{
+    public static bool Prefix([HarmonyArgument(2)] bool fromTop)
+    {
+        if (AmongUsClient.Instance.AmHost && Options.DisableZiplineOnFungle.GetBool())
+        {
+            if (Options.DisableZiplineFromTop.GetBool() && fromTop) return false;
+            if (Options.DisableZiplineFromUnder.GetBool() && !fromTop) return false;
+        }
+
+        return true;
+    }
+}
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetRole))]
 class PlayerControlSetRolePatch
 {
@@ -3879,32 +4006,5 @@ class PlayerControlSetRolePatch
             }
         }
         return true;
-    }
-    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckSporeTrigger))]
-    public static class PlayerControlCheckSporeTriggerPatch
-    {
-        public static bool Prefix()
-        {
-            if (AmongUsClient.Instance.AmHost)
-            {
-                return !Options.DisableSporeTriggerOnFungle.GetBool();
-            }
-
-            return true;
-        }
-    }
-    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckUseZipline))]
-    public static class PlayerControlCheckUseZiplinePatch
-    {
-        public static bool Prefix([HarmonyArgument(2)] bool fromTop)
-        {
-            if (AmongUsClient.Instance.AmHost)
-            {
-                if (Options.DisableZiplineFromTop.GetBool() && fromTop) return false;
-                if (Options.DisableZiplineFromUnder.GetBool() && !fromTop) return false;
-            }
-
-            return true;
-        }
     }
 }

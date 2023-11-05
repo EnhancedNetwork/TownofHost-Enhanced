@@ -5,7 +5,7 @@ using UnityEngine;
 namespace TOHE.Roles.Double;
 public class Mini
 {
-    private static readonly int Id = 7565376;
+    private static readonly int Id = 7000;
     public static bool IsEvilMini = false;
     public static void SetMiniTeam(float EvilMiniRate)
     {

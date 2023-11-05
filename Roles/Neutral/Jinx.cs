@@ -6,7 +6,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Jinx
 {
-    private static readonly int Id = 12200;
+    private static readonly int Id = 16800;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

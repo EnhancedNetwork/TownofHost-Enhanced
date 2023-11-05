@@ -382,7 +382,7 @@ class BeginImpostorPatch
             __instance.overlayHandle.color = Palette.CrewmateBlue;
             return false;
         }
-        else if (role is CustomRoles.Romantic or CustomRoles.Doppelganger or CustomRoles.Pyromaniac or CustomRoles.Huntsman or CustomRoles.RuthlessRomantic or CustomRoles.VengefulRomantic or CustomRoles.NSerialKiller or CustomRoles.Jackal or CustomRoles.Seeker or CustomRoles.Agitater or CustomRoles.CursedSoul or CustomRoles.Pirate or CustomRoles.Amnesiac or CustomRoles.Arsonist or CustomRoles.Sidekick or CustomRoles.Innocent or CustomRoles.Pelican or CustomRoles.Pursuer or CustomRoles.Revolutionist or CustomRoles.FFF or CustomRoles.Gamer or CustomRoles.Glitch or CustomRoles.Juggernaut or CustomRoles.DarkHide or CustomRoles.Provocateur or CustomRoles.BloodKnight or CustomRoles.NSerialKiller or CustomRoles.Werewolf or CustomRoles.Maverick or CustomRoles.NWitch or CustomRoles.Shroud or CustomRoles.Totocalcio or CustomRoles.Succubus or CustomRoles.Pelican or CustomRoles.Infectious or CustomRoles.Virus or CustomRoles.Pickpocket or CustomRoles.Traitor or CustomRoles.PlagueBearer or CustomRoles.Pestilence or CustomRoles.Spiritcaller or CustomRoles.Necromancer or CustomRoles.Medusa or CustomRoles.HexMaster or CustomRoles.Wraith or CustomRoles.Jinx or CustomRoles.Poisoner or CustomRoles.PotionMaster) //or CustomRoles.Occultist 
+        else if (role is CustomRoles.Romantic or CustomRoles.Doppelganger or CustomRoles.Pyromaniac or CustomRoles.Huntsman or CustomRoles.RuthlessRomantic or CustomRoles.VengefulRomantic or CustomRoles.NSerialKiller or CustomRoles.Jackal or CustomRoles.Seeker or CustomRoles.Pixie or CustomRoles.Agitater or CustomRoles.CursedSoul or CustomRoles.Pirate or CustomRoles.Amnesiac or CustomRoles.Arsonist or CustomRoles.Sidekick or CustomRoles.Innocent or CustomRoles.Pelican or CustomRoles.Pursuer or CustomRoles.Revolutionist or CustomRoles.FFF or CustomRoles.Gamer or CustomRoles.Glitch or CustomRoles.Juggernaut or CustomRoles.DarkHide or CustomRoles.Provocateur or CustomRoles.BloodKnight or CustomRoles.NSerialKiller or CustomRoles.Werewolf or CustomRoles.Maverick or CustomRoles.NWitch or CustomRoles.Shroud or CustomRoles.Totocalcio or CustomRoles.Succubus or CustomRoles.Pelican or CustomRoles.Infectious or CustomRoles.Virus or CustomRoles.Pickpocket or CustomRoles.Traitor or CustomRoles.PlagueBearer or CustomRoles.Pestilence or CustomRoles.Spiritcaller or CustomRoles.Necromancer or CustomRoles.Medusa or CustomRoles.HexMaster or CustomRoles.Wraith or CustomRoles.Jinx or CustomRoles.Poisoner or CustomRoles.PotionMaster) //or CustomRoles.Occultist 
         {
             yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             yourTeam.Add(PlayerControl.LocalPlayer);
@@ -438,6 +438,10 @@ class IntroCutsceneDestroyPatch
                         break;
                     case 1:
                         map = new RandomSpawn.MiraHQSpawnMap();
+                        Main.AllPlayerControls.Do(map.RandomTeleport);
+                        break;
+                    case 2:
+                        map = new RandomSpawn.PolusSpawnMap();
                         Main.AllPlayerControls.Do(map.RandomTeleport);
                         break;
                     case 5:

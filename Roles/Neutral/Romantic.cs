@@ -11,7 +11,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Romantic
 {
-    private static readonly int Id = 9850;
+    private static readonly int Id = 13500;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

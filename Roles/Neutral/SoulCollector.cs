@@ -6,7 +6,7 @@ using static TOHE.Translator;
 namespace TOHE.Roles.Neutral;
 public static class SoulCollector
 {
-    private static readonly int Id = 34420;
+    private static readonly int Id = 15300;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

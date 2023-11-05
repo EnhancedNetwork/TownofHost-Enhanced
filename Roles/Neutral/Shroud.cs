@@ -9,7 +9,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Shroud
 {
-    private static readonly int Id = 10320;
+    private static readonly int Id = 18000;
     public static bool IsEnable = false;
 
     public static Dictionary<byte, byte> ShroudList = new();

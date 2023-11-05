@@ -7,7 +7,7 @@ using static TOHE.Options;
 namespace TOHE.Roles.Crewmate;
 public static class Tracefinder
 {
-    private static readonly int Id = 6100;
+    private static readonly int Id = 7300;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

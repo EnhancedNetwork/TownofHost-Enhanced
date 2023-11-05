@@ -6,7 +6,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Werewolf
 {
-    private static readonly int Id = 12850;
+    private static readonly int Id = 18400;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
     

@@ -8,7 +8,7 @@ namespace TOHE.Roles.Impostor
 {
     public static class OverKiller
     {
-        private static readonly int Id = 16900;
+        private static readonly int Id = 24300;
         public static void SetupCustomOption()
         {
             SetupRoleOptions(Id, TabGroup.OtherRoles, CustomRoles.OverKiller);

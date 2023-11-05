@@ -9,7 +9,7 @@
 
     public static class Bloodhound
     {
-        private static readonly int Id = 6400;
+        private static readonly int Id = 7700;
         private static List<byte> playerIdList = new();
         public static bool IsEnable = false;
 

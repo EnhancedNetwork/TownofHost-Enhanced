@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using System;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -10,14 +11,28 @@ public static class OptionShower
 {
     public static int currentPage = 0;
     public static List<string> pages = new();
+    private static byte DelayInUpdate = 0;
     static OptionShower()
     {
 
     }
     public static string GetTextNoFresh()
     {
-        if (pages.Count < 3) GetText();
-        return $"{pages[currentPage]}{GetString("PressTabToNextPage")}({currentPage + 1}/{pages.Count})";
+        try
+        {
+            if (currentPage == 0 && DelayInUpdate >= 100)
+            {
+                DelayInUpdate = 0;
+                GetText();
+            }
+            DelayInUpdate++;
+            return $"{pages[currentPage]}{GetString("PressTabToNextPage")}({currentPage + 1}/{pages.Count})";
+        }
+        catch (Exception error)
+        {
+            Logger.Warn(error.ToString(), "GetTextNoFresh()");
+            return GetText();
+        }
     }
     public static string GetText()
     {
@@ -61,7 +76,7 @@ public static class OptionShower
                 string ruleFooter = Utils.ColorString(Palette.ImpostorRed.ShadeColor(-0.5f), "┗ ");
             }
 
-            foreach (var opt in OptionItem.AllOptions.Where(x => x.Id >= 99999 && !x.IsHiddenOn(Options.CurrentGameMode) && x.Parent == null && !x.IsText))
+            foreach (var opt in OptionItem.AllOptions.Where(x => x.Id >= 59999 && !x.IsHiddenOn(Options.CurrentGameMode) && x.Parent == null && !x.IsText).ToHashSet())
             {
                 if (opt.IsHeader) sb.Append('\n');
                 sb.Append($"{opt.GetName()}: {opt.GetString()}\n");

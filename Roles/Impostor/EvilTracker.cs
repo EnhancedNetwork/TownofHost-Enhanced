@@ -11,7 +11,7 @@ namespace TOHE.Roles.Impostor;
 
 public static class EvilTracker
 {
-    private static readonly int Id = 500;
+    private static readonly int Id = 1400;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

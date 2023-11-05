@@ -6,7 +6,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Maverick
 {
-    private static readonly int Id = 10000;
+    private static readonly int Id = 13200;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

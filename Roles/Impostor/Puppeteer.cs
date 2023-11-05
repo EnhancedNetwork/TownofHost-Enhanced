@@ -14,7 +14,7 @@ namespace TOHE.Roles.Impostor;
 
 public static class Puppeteer
 {
-    private static readonly int Id = 3900;
+    private static readonly int Id = 4300;
     public static bool IsEnable = false;
 
     public static Dictionary<byte, byte> PuppeteerList = new();

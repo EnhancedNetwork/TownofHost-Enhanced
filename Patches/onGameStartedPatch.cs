@@ -311,6 +311,7 @@ internal class ChangeRoleSettings
             Reverie.Init();
             Doomsayer.Init();
             Pirate.Init();
+            Pixie.Init();
             Shroud.Init();
             Werewolf.Init();
             Necromancer.Init();
@@ -319,13 +320,15 @@ internal class ChangeRoleSettings
             Pitfall.Init();
             Agitater.Init();
             Swapper.Init();
+            Enigma.Init();
             ChiefOfPolice.Init();
             Mini.Init();
             Blackmailer.Init();
             Spy.Init();
             Oiiai.Init();
             FFF.Init();
-
+            Instigator.Init();
+            
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
 
@@ -901,6 +904,9 @@ internal class SelectRolesPatch
                     case CustomRoles.Pirate:
                         Pirate.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.Pixie:
+                        Pixie.Add(pc.PlayerId);
+                        break;
                     case CustomRoles.Chronomancer:
                         Chronomancer.Add(pc.PlayerId);
                         break;
@@ -922,11 +928,18 @@ internal class SelectRolesPatch
                     case CustomRoles.Spy:
                         Spy.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.Instigator:
+                        Instigator.Add(pc.PlayerId);
+                        break;
+
                     case CustomRoles.Crewpostor:
                         Main.CrewpostorTasksDone[pc.PlayerId] = 0;
                         break;
                     case CustomRoles.FFF:
                         FFF.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Enigma:
+                        Enigma.Add(pc.PlayerId);
                         break;
                 }
                 foreach (var subRole in pc.GetCustomSubRoles())

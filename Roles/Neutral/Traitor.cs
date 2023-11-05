@@ -6,7 +6,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Traitor
 {
-    private static readonly int Id = 13100;
+    private static readonly int Id = 18200;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

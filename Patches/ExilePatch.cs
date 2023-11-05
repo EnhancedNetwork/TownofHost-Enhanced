@@ -123,8 +123,11 @@ class ExileControllerWrapUpPatch
             if (role == CustomRoles.Devourer) Devourer.OnDevourerDied(exiled.PlayerId);
 
             if (Lawyer.CheckExileTarget(exiled, DecidedWinner)) DecidedWinner = false;
+            Pixie.CheckExileTarget(exiled);
 
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist) Main.PlayerStates[exiled.PlayerId].SetDead();
+
+            Instigator.OnPlayerExile(exiled);
         }
         if (AmongUsClient.Instance.AmHost && Main.IsFixedCooldown)
             Main.RefixCooldownDelay = Options.DefaultKillCooldown - 3f;

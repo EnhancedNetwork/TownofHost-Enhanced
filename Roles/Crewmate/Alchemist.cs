@@ -14,7 +14,7 @@ namespace TOHE.Roles.Crewmate
 
     public static class Alchemist
     {
-        private static readonly int Id = 5250;
+        private static readonly int Id = 6400;
         private static List<byte> playerIdList = new();
 
         public static Dictionary<byte, byte> BloodlustList = new();
