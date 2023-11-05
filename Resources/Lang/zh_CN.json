@@ -2818,7 +2818,6 @@
   "ParityCopTryHideMsg": "尝试混淆<color=#0D57AF>检查员</color>指令",
   "MaxParityCheckLimit": "每场游戏的最大检查次数",
   "ParityCheckLimitPerMeeting": "每次会议的最大检查次数",
-  "ParityCheckEgoistickCountMode": "<color=#5600ff>利己主义者</color>视为",
   "ParityCheckTargetKnow": "目标知道他们被<color=#0D57AF>检查员</color>检查过",
   "ParityCheckOtherTargetKnow": "目标知道他们被检查的玩家",
   "ParityCopDead": "死后不能使用你的技能",

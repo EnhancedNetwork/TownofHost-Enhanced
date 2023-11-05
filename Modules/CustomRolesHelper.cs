@@ -1611,7 +1611,7 @@ static class CustomRolesHelper
                 role is CustomRoles.Infected ||
                 role is CustomRoles.Contagious ||
                 role is CustomRoles.Lovers ||
-                ((role is CustomRoles.Egoist) && (ParityCop.ParityCheckEgoistInt() == 1)));
+                (role is CustomRoles.Egoist && Options.EgoistCountAsConverted.GetBool()));
     }
     public static bool IsRevealingRole(this CustomRoles role, PlayerControl target)
     {

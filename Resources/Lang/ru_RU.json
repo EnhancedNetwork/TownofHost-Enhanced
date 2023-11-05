@@ -2813,7 +2813,6 @@
   "ParityCopTryHideMsg": "Скрыть команду <color=#0D57AF>Инспектора</color>",
   "MaxParityCheckLimit": "Максимум проверок за всю игру",
   "ParityCheckLimitPerMeeting": "Максимум проверок за встречу",
-  "ParityCheckEgoistickCountMode": "<color=#5600ff>Эгоист</color> считается как",
   "ParityCheckTargetKnow": "Цели могут знать что их проверил <color=#0D57AF>Инспектор</color>.",
   "ParityCheckOtherTargetKnow": "Цели могут знать с кем их проверили",
   "ParityCopDead": "Вы не можете использовать свою способность после смерти",

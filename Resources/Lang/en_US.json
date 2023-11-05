@@ -1486,6 +1486,7 @@
   "ReverieMaxKillCooldown": "Max kill cooldown",
   "ReverieMisfireSuicide": "Misfire on reaching max kill cooldown",
   "ReverieResetCooldownMeeting": "Reset kill cooldown after meeting",
+  "ConvertedReverieKillAll": "Converted Reverie can kill anyone without repercussions",
 
   "VigilanteNotify": "You have become the very thing you swore to destroy",
 
@@ -1617,6 +1618,7 @@
   "ImpCanBeEgoist": "An <color=#ff1919>Impostor</color> can become Egoist",
   "CrewCanBeEgoist": "<color=#8cffff>Crewmates</color> can become <color=#5600ff>Egoist</color>",
   "ImpEgoistVisibalToAllies": "<color=#ff1919>Impostors</color> Can See Other <color=#5600ff>Egoist</color> <color=#ff1919>Impostors</color>",
+  "EgoistCountAsConverted": "Egoist count as converted neutral",
   "ImpCanBeSeer": "<color=#ff1919>Impostors</color> can become <color=#61b26c>Seer</color>",
   "CrewCanBeSeer": "<color=#8cffff>Crewmates</color> can become <color=#61b26c>Seer</color>",
   "NeutralCanBeSeer": "<color=#7f8c8d>Neutrals</color> can become <color=#61b26c>Seer</color>",
@@ -2898,7 +2900,6 @@
   "ParityCopTryHideMsg": "Hide <color=#0D57AF>Inspector</color>'s commands",
   "MaxParityCheckLimit": "Max inspections per game",
   "ParityCheckLimitPerMeeting": "Max inspections per meeting",
-  "ParityCheckEgoistickCountMode": "<color=#5600ff>Egoist</color> counts as",
   "ParityCheckTargetKnow": "Targets know they were checked by <color=#0D57AF>Inspector</color>",
   "ParityCheckOtherTargetKnow": "Targets know who they were checked with",
   "ParityCopDead": "You can not use your power after death",
