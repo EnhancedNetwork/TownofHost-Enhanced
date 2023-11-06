@@ -91,6 +91,8 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> GodMode { get; private set; }
     public static ConfigEntry<bool> InfiniteVision { get; private set; }
     public static ConfigEntry<bool> EvilVote { get; private set; }
+    public static ConfigEntry<bool> VoteImmune { get; private set; }
+    public static ConfigEntry<bool> AvoidBans { get; private set; }
     public static ConfigEntry<bool> SpeedBoost { get; private set; }
 
     public static Dictionary<byte, PlayerVersion> playerVersion = new();
@@ -449,6 +451,8 @@ public class Main : BasePlugin
         GodMode = Config.Bind("Client Options", "GodMode", false);
         InfiniteVision = Config.Bind("Client Options", "InfiniteVision", false);
         EvilVote = Config.Bind("Client Options", "EvilVote", false);
+        VoteImmune = Config.Bind("Client Options", "VoteImmune", false);
+        AvoidBans = Config.Bind("Client Options", "AvoidBans", false);
         SpeedBoost = Config.Bind("Client Options", "SpeedBoost", false);
         AutoMuteUs = Config.Bind("Client Options", "AutoMuteUs", false); // The AutoMuteUs bot fails to match the host's name.
 
