@@ -1637,7 +1637,7 @@
   "BecomeBaitDelayNotify": "<color=#ffff00>Warn the killer about the upcoming self-report</color>",
   "BaitNotification": "Reveal <color=#00f7ff>Bait</color> at the first meeting",
   "BaitAdviceAlive": "<b>{0}</b> is the Bait. Whoever kills the Bait will commit self report.",
-  "BaitCanBeReportedUnderAllConditions": "Bait Can Be Reported during comms sabotage even if meeting is disabled",
+  "BaitCanBeReportedUnderAllConditions": "Bait Can Be Reported even if meeting is disabled during comms sabotage",
   "CounterfeiterSkillCooldown": "Ability cooldown",
   "CounterfeiterSkillLimitTimes": "Max number of uses",
   "CounterfeiterAbilityLost": "Deceiver looses ability if it deceives player without kill button",
