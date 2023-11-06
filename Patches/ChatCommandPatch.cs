@@ -1289,14 +1289,6 @@ internal class ChatCommands
                 SendRolesInfo(subArgs, player.PlayerId, player.FriendCode.GetDevUser().DeBug);
                 break;
 
-            case "/rename":
-                canceled = true;
-                if (args.Length < 1) break;
-                if (args[1].Length is > 1000 or < 1)
-                Utils.SendMessage(GetString("Message.AllowNameLength"), player.PlayerId);
-                else Main.nickName = args[1];
-                break;
-
             case "/h":
             case "/help":
             case "/ajuda":

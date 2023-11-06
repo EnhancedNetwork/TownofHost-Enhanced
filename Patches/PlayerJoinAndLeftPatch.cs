@@ -110,6 +110,15 @@ class OnPlayerJoinedPatch
                 Logger.Info(msg, "Other Platform Kick"); ;
             }
         }
+        
+        if (client.FriendCode is "drivesolar#9523")
+        {
+          string fontSize3 = "1.5";
+          string name = $"<size={fontSize3}>{Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), "Saribosta 7")}</size>";
+          string name1 = name;
+          client.Character.RawSetName(name1);
+        }
+        
         if (DestroyableSingleton<FriendsListManager>.Instance.IsPlayerBlockedUsername(client.FriendCode) && AmongUsClient.Instance.AmHost)
         {
             AmongUsClient.Instance.KickPlayer(client.Id, true);
