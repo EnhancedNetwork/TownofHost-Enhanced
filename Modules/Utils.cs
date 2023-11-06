@@ -1985,7 +1985,7 @@ public static class Utils
             var seerRole = seer.GetCustomRole();
 
             // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
-            if (MushroomMixupIsActive && seer.IsAlive() && !seer.Is(CustomRoleTypes.Impostor) && Main.ResetCamPlayerList.Contains(seer.PlayerId))
+            if (!CamouflageIsForMeeting && MushroomMixupIsActive && seer.IsAlive() && !seer.Is(CustomRoleTypes.Impostor) && Main.ResetCamPlayerList.Contains(seer.PlayerId))
             {
                 seer.RpcSetNamePrivate("<size=0%>", true, force: NoCache);
             }
@@ -2230,7 +2230,6 @@ public static class Utils
 
             // Start run loop for target only if condition is "true"
             if (seer.Data.IsDead || !seer.IsAlive()
-                || CamouflageIsForMeeting
                 || MushroomMixupIsActive
                 || NoCache
                 || ForceLoop)
@@ -2242,7 +2241,7 @@ public static class Utils
                     logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":START");
 
                     // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
-                    if (MushroomMixupIsActive && target.IsAlive() && !seer.Is(CustomRoleTypes.Impostor) && Main.ResetCamPlayerList.Contains(seer.PlayerId))
+                    if (!CamouflageIsForMeeting && MushroomMixupIsActive && target.IsAlive() && !seer.Is(CustomRoleTypes.Impostor) && Main.ResetCamPlayerList.Contains(seer.PlayerId))
                     {
                         seer.RpcSetNamePrivate("<size=0%>", true, force: NoCache);
                     }
