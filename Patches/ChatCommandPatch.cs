@@ -1545,13 +1545,15 @@ internal class ChatCommands
                     break;
                 }
 
+              /*
                 // Prevent moderators from baning other moderators
                 if (Utils.IsPlayerModerator(bannedPlayer.FriendCode))
                 {
                     Utils.SendMessage(GetString("BanCommandBanMod"), player.PlayerId);
                     break;
                 }
-
+              */
+              
                 // Ban the specified player
                 AmongUsClient.Instance.KickPlayer(bannedPlayer.GetClientId(), true);
                 string bannedPlayerName = bannedPlayer.GetRealName();
@@ -1676,12 +1678,14 @@ internal class ChatCommands
                     break;
                 }
 
+              /*
                 // Prevent moderators from kicking other moderators
                 if (Utils.IsPlayerModerator(kickedPlayer.FriendCode))
                 {
                     Utils.SendMessage(GetString("KickCommandKickMod"), player.PlayerId);
                     break;
                 }
+              */
 
                 // Kick the specified player
                 AmongUsClient.Instance.KickPlayer(kickedPlayer.GetClientId(), false);
