@@ -2398,7 +2398,7 @@ class ReportDeadBodyPatch
         Main.RevolutionistLastTime.Clear();
 
         Main.AllPlayerControls
-            .Where(pc => Main.CheckShapeshift.ContainsKey(pc.PlayerId) && !Doppelganger.DoppelVictim.Keys.Contains(pc.PlayerId))
+            .Where(pc => Main.CheckShapeshift.ContainsKey(pc.PlayerId) && !Doppelganger.DoppelVictim.ContainsKey(pc.PlayerId))
             .Do(pc => Camouflage.RpcSetSkin(pc, RevertToDefault: true));
 
         MeetingTimeManager.OnReportDeadBody();
@@ -3844,6 +3844,53 @@ class PlayerControlRemoveProtectionPatch
         Logger.Info($"{__instance.GetNameWithRole()}", "RemoveProtection");
     }
 }
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MixUpOutfit))]
+public static class PlayerControlMixupOutfitPatch
+{
+    public static void Postfix(PlayerControl __instance)
+    {
+        if (!__instance.IsAlive())
+        {
+            return;
+        }
+        
+        // if player is Desync Impostor and the vanilla sees player as Imposter, the vanilla process does not hide your name, so the other person's name is hidden
+        if (PlayerControl.LocalPlayer.Data.Role.IsImpostor &&  // Impostor with vanilla
+            !PlayerControl.LocalPlayer.Is(CustomRoleTypes.Impostor) &&  // Not an Impostor
+            Main.ResetCamPlayerList.Contains(PlayerControl.LocalPlayer.PlayerId))  // Desync Impostor
+        {
+            // Hide names
+            __instance.cosmetics.ToggleNameVisible(false);
+        }
+    }
+}
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckSporeTrigger))]
+public static class PlayerControlCheckSporeTriggerPatch
+{
+    public static bool Prefix()
+    {
+        if (AmongUsClient.Instance.AmHost)
+        {
+            return !Options.DisableSporeTriggerOnFungle.GetBool();
+        }
+
+        return true;
+    }
+}
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckUseZipline))]
+public static class PlayerControlCheckUseZiplinePatch
+{
+    public static bool Prefix([HarmonyArgument(2)] bool fromTop)
+    {
+        if (AmongUsClient.Instance.AmHost && Options.DisableZiplineOnFungle.GetBool())
+        {
+            if (Options.DisableZiplineFromTop.GetBool() && fromTop) return false;
+            if (Options.DisableZiplineFromUnder.GetBool() && !fromTop) return false;
+        }
+
+        return true;
+    }
+}
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetRole))]
 class PlayerControlSetRolePatch
 {
@@ -3899,32 +3946,5 @@ class PlayerControlSetRolePatch
             }
         }
         return true;
-    }
-    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckSporeTrigger))]
-    public static class PlayerControlCheckSporeTriggerPatch
-    {
-        public static bool Prefix()
-        {
-            if (AmongUsClient.Instance.AmHost)
-            {
-                return !Options.DisableSporeTriggerOnFungle.GetBool();
-            }
-
-            return true;
-        }
-    }
-    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckUseZipline))]
-    public static class PlayerControlCheckUseZiplinePatch
-    {
-        public static bool Prefix([HarmonyArgument(2)] bool fromTop)
-        {
-            if (AmongUsClient.Instance.AmHost)
-            {
-                if (Options.DisableZiplineFromTop.GetBool() && fromTop) return false;
-                if (Options.DisableZiplineFromUnder.GetBool() && !fromTop) return false;
-            }
-
-            return true;
-        }
     }
 }

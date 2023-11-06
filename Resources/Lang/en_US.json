@@ -960,7 +960,7 @@
   "WerewolfInfoLong": "(Neutrals):\nAs the Werewolf, you can kill much like any killer.\nHowever, when you kill, any nearby players also die.\nAny player who dies to this will have their death reason as Mauled.\n\nTo balance this, you have a higher kill cooldown than anyone else.",
   "ShamanInfoLong": "(Neutrals):\nAs the Shaman, you can use your kill button to select a voodoo doll once every round. All the interactions with you using kill button will be deflected to the voodoo doll and the voodoo doll will destroy.\n\nIf you survive till the end, you win with the winning team",
   "SeekerInfoLong": "(Neutrals):\nAs the seeker, use your kill button to tag the target. If seeker tags wrong player a point is deducted and if seeker tags correct player a point will be added.\nAdditionally, the seeker will not be able to move for 5 seconds after every meeting and after getting a new target\n\n The seeker needs to collect certain number of points set by the host to win",
-  "PixieInfoLong": "(Neutrals):\nAs the Pixie, Mark upto x amount of targets each round by using kill button on them. When the meeting starts, your job is to have one of the marked targets ejected. If unsuccessful you will suicide, except if you didn't mark any targets or all the targets are dead. The selected targets resets to 0 after the meeting ends. If you succeed you will gain a point. You see all your targets in colored names.\n\n You win with the winning team when you have certain amounts of points set by the host.",
+  "PixieInfoLong": "(Neutrals):\nAs the Pixie, Mark upto x amount of targets each round by using kill button on them. When the meeting starts, your job is to have one of the marked targets ejected. If unsuccessful you will suicide, except if you didn't mark any targets or all the targets are dead. The selected targets resets to 0 after the meeting ends. If you succeed you will gain a point. You see all your targets in colored names.\n\nYou win with the winning team when you have certain amounts of points set by the host.",
   "OccultistInfoLong": "(Neutrals):\nAs the Occultist, you can curse players or kill them.\nCursing a player works the same as spelling as a Spellcaster.",
   "SoulCollectorInfoLong": "(Neutrals):\nAs a Soul Collector, you vote players to predict their death. If the prediction is correct and the target dies in the next round you collect their soul. \n\nYou win by collecting configurable number of souls set by the host",
   "RomanticInfoLong": "(Neutrals):\nThe Romantic can pick their lover partner using their kill button (this can be done at any point of the game). Once they've picked their partner, they can use their kill button to give their partner a temporary shield which protects them from attacks. If their lover partner dies, the Romantic's role will change according to the following conditions:\n1. If their partner was an Impostor, the Romantic becomes the Refugee\n2. If their partner was a Neutral Killer, then they become Ruthless Romantic.\n3. If their partner was a Crewmate or a non-killing neutral, the Romantic becomes the Vengeful Romantic. \n\nThe Romantic wins with the winning team if their partner wins.\nNote : If your role changes your win condition will be changed accordingly",
@@ -1486,6 +1486,7 @@
   "ReverieMaxKillCooldown": "Max kill cooldown",
   "ReverieMisfireSuicide": "Misfire on reaching max kill cooldown",
   "ReverieResetCooldownMeeting": "Reset kill cooldown after meeting",
+  "ConvertedReverieKillAll": "Converted Reverie can kill anyone without repercussions",
 
   "VigilanteNotify": "You have become the very thing you swore to destroy",
 
@@ -1617,6 +1618,7 @@
   "ImpCanBeEgoist": "An <color=#ff1919>Impostor</color> can become Egoist",
   "CrewCanBeEgoist": "<color=#8cffff>Crewmates</color> can become <color=#5600ff>Egoist</color>",
   "ImpEgoistVisibalToAllies": "<color=#ff1919>Impostors</color> Can See Other <color=#5600ff>Egoist</color> <color=#ff1919>Impostors</color>",
+  "EgoistCountAsConverted": "Egoist count as converted neutral",
   "ImpCanBeSeer": "<color=#ff1919>Impostors</color> can become <color=#61b26c>Seer</color>",
   "CrewCanBeSeer": "<color=#8cffff>Crewmates</color> can become <color=#61b26c>Seer</color>",
   "NeutralCanBeSeer": "<color=#7f8c8d>Neutrals</color> can become <color=#61b26c>Seer</color>",
@@ -2898,7 +2900,6 @@
   "ParityCopTryHideMsg": "Hide <color=#0D57AF>Inspector</color>'s commands",
   "MaxParityCheckLimit": "Max inspections per game",
   "ParityCheckLimitPerMeeting": "Max inspections per meeting",
-  "ParityCheckEgoistickCountMode": "<color=#5600ff>Egoist</color> counts as",
   "ParityCheckTargetKnow": "Targets know they were checked by <color=#0D57AF>Inspector</color>",
   "ParityCheckOtherTargetKnow": "Targets know who they were checked with",
   "ParityCopDead": "You can not use your power after death",
@@ -3235,7 +3236,7 @@
   "SeekerNotify": "Your target is <b>{0}</b>",
   "SeekerTargetNotify": "You are Seekers target!! Hide before they tag you",
 
-  "PixiePointsToWin": "Number of points reqired to win",
+  "PixiePointsToWin": "Number of points required to win",
   "MaxTargets": "Maximum number of targets per round",
   "MarkCooldown": "Mark cooldown",
   "PixieSuicide": "Pixie suicides if target is not voted out",
