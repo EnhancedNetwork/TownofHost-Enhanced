@@ -85,9 +85,11 @@ public static class Credentials
         {
             Main.credentialsText = $"\r\n<color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginDisplayVersion}";
 
+/*
 #if RELEASE
             Main.credentialsText += $"\r\npor <color=#f34c50>Equipe Y12 & </color><color=#32cd32>Dechis</color>";
 #endif
+*/
 
 #if CANARY
             Main.credentialsText += $"\r\n<color=#ffc0cb>Canary:</color><color=#f34c50>{ThisAssembly.Git.Branch}</color>(<color=#ffc0cb>{ThisAssembly.Git.Commit}</color>)";
