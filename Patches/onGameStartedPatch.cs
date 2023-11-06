@@ -1159,7 +1159,7 @@ internal class SelectRolesPatch
     }
     private static void AssignSubRoles(CustomRoles role, int RawCount = -1)
     {
-        var allPlayers = Main.AllAlivePlayerControls.Where(x => CustomRolesHelper.CheckAddonConfilct(role, x)).ToArray();
+        var allPlayers = Main.AllAlivePlayerControls.Where(x => CustomRolesHelper.CheckAddonConfilct(role, x)).ToList();
         var count = Math.Clamp(RawCount, 0, allPlayers.Count);
         if (RawCount == -1) count = Math.Clamp(role.GetCount(), 0, allPlayers.Count);
         if (count <= 0) return;
