@@ -101,7 +101,7 @@ namespace TOHE.Roles.Impostor
 
             if (player.GetCustomRole().IsImpostor())
             {
-                var traps = Traps.Where(a => a.PitfallPlayerId == player.PlayerId && a.IsActive);
+                var traps = Traps.Where(a => a.PitfallPlayerId == player.PlayerId && a.IsActive).ToArray();
                 foreach (var trap in traps)
                 {
                     trap.Timer += Time.fixedDeltaTime;
@@ -111,7 +111,7 @@ namespace TOHE.Roles.Impostor
 
             Vector2 position = player.transform.position;
 
-            foreach (var trap in Traps.Where(a => a.IsActive))
+            foreach (var trap in Traps.Where(a => a.IsActive).ToArray())
             {
                 if (trap.PlayersTrapped.Contains(player.PlayerId))
                 {

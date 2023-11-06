@@ -122,7 +122,7 @@ public abstract class OptionItem
 
     public OptionItem SetParent(OptionItem parent) => Do(i =>
     {
-        foreach (var role in Options.CustomRoleSpawnChances.Where(x => x.Value.Name == parent.Name))
+        foreach (var role in Options.CustomRoleSpawnChances.Where(x => x.Value.Name == parent.Name).ToArray())
         {
             var roleName = Translator.GetString(Enum.GetName(typeof(CustomRoles), role.Key));
             ReplacementDictionary ??= new();

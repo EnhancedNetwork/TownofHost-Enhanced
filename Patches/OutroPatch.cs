@@ -74,7 +74,7 @@ class EndGamePatch
         {
             if (CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId)) winner.Add(pc);
         }
-        foreach (var team in CustomWinnerHolder.WinnerRoles)
+        foreach (var team in CustomWinnerHolder.WinnerRoles.ToArray())
         {
             winner.AddRange(Main.AllPlayerControls.Where(p => p.Is(team) && !winner.Contains(p)));
         }

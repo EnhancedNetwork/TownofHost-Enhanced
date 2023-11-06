@@ -354,7 +354,7 @@ class CheckForEndVotingPatch
             if (tie) //破平者判断
             {
                 byte target = byte.MaxValue;
-                foreach (var data in VotingData.Where(x => x.Key < 15 && x.Value == max))
+                foreach (var data in VotingData.Where(x => x.Key < 15 && x.Value == max).ToArray())
                 {
                     if (Main.BrakarVoteFor.Contains(data.Key))
                     {

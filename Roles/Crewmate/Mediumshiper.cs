@@ -44,7 +44,7 @@ public static class Mediumshiper
     {
         ContactPlayer = new();
         if (target == null) return;
-        foreach (var pc in Main.AllAlivePlayerControls.Where(x => playerIdList.Contains(x.PlayerId) && x.PlayerId != target.PlayerId))
+        foreach (var pc in Main.AllAlivePlayerControls.Where(x => playerIdList.Contains(x.PlayerId) && x.PlayerId != target.PlayerId).ToArray())
         {
             if (ContactLimit[pc.PlayerId] < 1) continue;
             ContactLimit[pc.PlayerId] -= 1;

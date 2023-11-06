@@ -316,7 +316,7 @@ internal class CustomRoleSelector
         {
             PlayerControl delPc = null;
             foreach (var pc in AllPlayer)
-                foreach (var dr in Main.DevRole.Where(x => pc.PlayerId == x.Key).ToList())
+                foreach (var dr in Main.DevRole.Where(x => pc.PlayerId == x.Key).ToArray())
                 {
                     if (dr.Key == PlayerControl.LocalPlayer.PlayerId && Main.EnableGM.Value) continue;
                     var id = rolesToAssign.IndexOf(dr.Value);

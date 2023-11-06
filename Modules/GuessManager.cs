@@ -835,7 +835,7 @@ public static class GuessManager
     public static void TryHideMsg()
     {
         ChatUpdatePatch.DoBlockChat = true;
-        List<CustomRoles> roles = CustomRolesHelper.AllRoles.Where(x => x is not CustomRoles.NotAssigned).ToList();
+        var roles = CustomRolesHelper.AllRoles.Where(x => x is not CustomRoles.NotAssigned).ToArray();
         var rd = IRandom.Instance;
         string msg;
         string[] command = new string[] { "bet", "bt", "guess", "gs", "shoot", "st", "赌", "猜", "审判", "tl", "判", "审" };
@@ -852,11 +852,11 @@ public static class GuessManager
                 msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
                 msg += rd.Next(0, 15).ToString();
                 msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
-                CustomRoles role = roles[rd.Next(0, roles.Count)];
+                CustomRoles role = roles[rd.Next(0, roles.Length)];
                 msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
                 msg += Utils.GetRoleName(role);
             }
-            var player = Main.AllAlivePlayerControls.ToArray()[rd.Next(0, Main.AllAlivePlayerControls.Count())];
+            var player = Main.AllAlivePlayerControls[rd.Next(0, Main.AllAlivePlayerControls.Length)];
             DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
             var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
             writer.StartMessage(-1);

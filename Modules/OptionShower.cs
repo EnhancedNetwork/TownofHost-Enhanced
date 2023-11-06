@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using System;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -28,9 +27,9 @@ public static class OptionShower
             DelayInUpdate++;
             return $"{pages[currentPage]}{GetString("PressTabToNextPage")}({currentPage + 1}/{pages.Count})";
         }
-        catch (Exception error)
+        catch
         {
-            Logger.Warn(error.ToString(), "GetTextNoFresh()");
+            //Logger.Warn(error.ToString(), "GetTextNoFresh()");
             return GetText();
         }
     }
@@ -76,7 +75,7 @@ public static class OptionShower
                 string ruleFooter = Utils.ColorString(Palette.ImpostorRed.ShadeColor(-0.5f), "┗ ");
             }
 
-            foreach (var opt in OptionItem.AllOptions.Where(x => x.Id >= 59999 && !x.IsHiddenOn(Options.CurrentGameMode) && x.Parent == null && !x.IsText).ToHashSet())
+            foreach (var opt in OptionItem.AllOptions.Where(x => x.Id > 59999 && !x.IsHiddenOn(Options.CurrentGameMode) && x.Parent == null && !x.IsText).ToHashSet())
             {
                 if (opt.IsHeader) sb.Append('\n');
                 sb.Append($"{opt.GetName()}: {opt.GetString()}\n");

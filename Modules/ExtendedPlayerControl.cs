@@ -174,7 +174,7 @@ static class ExtendedPlayerControl
         if (target == null) target = killer;
         if (!forObserver && !MeetingStates.FirstMeeting)
             Main.AllPlayerControls
-                .Where(x => x.Is(CustomRoles.Observer) && killer.PlayerId != x.PlayerId).ToList()
+                .Where(x => x.Is(CustomRoles.Observer) && killer.PlayerId != x.PlayerId)
                 .Do(x => x.RpcGuardAndKill(target, colorId, true));
         
         // Host

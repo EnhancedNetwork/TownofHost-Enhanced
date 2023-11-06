@@ -392,7 +392,7 @@ internal class SelectRolesPatch
             Dictionary<(byte, byte), RoleTypes> rolesMap = new();
 
             // 注册反职业
-            foreach (var kv in RoleResult.Where(x => x.Value.IsDesyncRole()))
+            foreach (var kv in RoleResult.Where(x => x.Value.IsDesyncRole()).ToArray())
                 AssignDesyncRole(kv.Value, kv.Key, senders, rolesMap, BaseRole: kv.Value.GetDYRole());
 
 
@@ -416,7 +416,7 @@ internal class SelectRolesPatch
             List<(PlayerControl, RoleTypes)> newList = new();
             foreach (var sd in RpcSetRoleReplacer.StoragedData)
             {
-                var kp = RoleResult.Where(x => x.Key.PlayerId == sd.Item1.PlayerId).FirstOrDefault();
+                var kp = RoleResult.FirstOrDefault(x => x.Key.PlayerId == sd.Item1.PlayerId);
                 newList.Add((sd.Item1, kp.Value.GetRoleTypes()));
                 if (sd.Item2 == kp.Value.GetRoleTypes())
                     Logger.Warn($"注册原版职业 => {sd.Item1.GetRealName()}: {sd.Item2}", "Override Role Select");
@@ -1029,7 +1029,7 @@ internal class SelectRolesPatch
             rolesMap[(player.PlayerId, target.PlayerId)] = player.PlayerId != target.PlayerId ? othersRole : selfRole;
 
         //他者視点
-        foreach (var seer in Main.AllPlayerControls.Where(x => player.PlayerId != x.PlayerId))
+        foreach (var seer in Main.AllPlayerControls.Where(x => player.PlayerId != x.PlayerId).ToArray())
             rolesMap[(seer.PlayerId, player.PlayerId)] = othersRole;
 
         RpcSetRoleReplacer.OverriddenSenderList.Add(senders[player.PlayerId]);
@@ -1159,7 +1159,7 @@ internal class SelectRolesPatch
     }
     private static void AssignSubRoles(CustomRoles role, int RawCount = -1)
     {
-        var allPlayers = Main.AllAlivePlayerControls.Where(x => CustomRolesHelper.CheckAddonConfilct(role, x)).ToList();
+        var allPlayers = Main.AllAlivePlayerControls.Where(x => CustomRolesHelper.CheckAddonConfilct(role, x)).ToArray();
         var count = Math.Clamp(RawCount, 0, allPlayers.Count);
         if (RawCount == -1) count = Math.Clamp(role.GetCount(), 0, allPlayers.Count);
         if (count <= 0) return;

@@ -324,7 +324,7 @@ class BeginCrewmatePatch
         switch (role)
         {
             case CustomRoles.Terrorist:
-                var sound = ShipStatus.Instance.CommonTasks.Where(task => task.TaskType == TaskTypes.FixWiring).FirstOrDefault()
+                var sound = ShipStatus.Instance.CommonTasks.FirstOrDefault(task => task.TaskType == TaskTypes.FixWiring)
                 .MinigamePrefab.OpenSound;
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = sound;
                 break;
@@ -490,7 +490,7 @@ class BeginImpostorPatch
         {
             yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             yourTeam.Add(PlayerControl.LocalPlayer);
-            foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner).ToList())
+            foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner).ToArray())
             {
                 yourTeam.Add(pc);
             }
@@ -502,7 +502,7 @@ class BeginImpostorPatch
         {
             yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             yourTeam.Add(PlayerControl.LocalPlayer);
-            foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner).ToList())
+            foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner).ToArray())
             {
                 yourTeam.Add(pc);
             }
