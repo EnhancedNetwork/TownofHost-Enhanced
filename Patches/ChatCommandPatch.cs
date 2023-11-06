@@ -1459,7 +1459,19 @@ internal class ChatCommands
                 }
                 break;
             case "/id":
-                if (Options.ApplyModeratorList.GetValue() == 0 || player.FriendCode.GetDevUser().IsMod)) break;
+            /*
+                if (Options.ApplyModeratorList.GetValue() == 0)
+                 {
+                 Utils.SendMessage(GetString("idCommandDisabled"), player.PlayerId);
+                  break;
+                 }
+            */
+              
+                if (player.FriendCode.GetDevUser().IsMod)
+                {
+                    Utils.SendMessage(GetString("idCommandNoAccess"), player.PlayerId);
+                    break;
+                }
 
                 string msgText = GetString("PlayerIdList");
                 foreach (var pc in Main.AllPlayerControls)
@@ -1481,7 +1493,7 @@ internal class ChatCommands
                */
                
                 //checking if player is has necessary privellege or not
-                if (player.FriendCode.GetDevUser().IsMod))
+                if (player.FriendCode.GetDevUser().IsMod)
                 {
                     Utils.SendMessage(GetString("midCommandNoAccess"), player.PlayerId);
                     break;
@@ -1544,12 +1556,14 @@ internal class ChatCommands
                     break;
                 }
 
+                /*
                 // Prevent moderators from baning other moderators
                 if (Utils.IsPlayerModerator(bannedPlayer.FriendCode))
                 {
                     Utils.SendMessage(GetString("BanCommandBanMod"), player.PlayerId);
                     break;
                 }
+                */
 
                 // Ban the specified player
                 AmongUsClient.Instance.KickPlayer(bannedPlayer.GetClientId(), true);
@@ -1675,12 +1689,14 @@ internal class ChatCommands
                     break;
                 }
 
+                /*
                 // Prevent moderators from kicking other moderators
                 if (Utils.IsPlayerModerator(kickedPlayer.FriendCode))
                 {
                     Utils.SendMessage(GetString("KickCommandKickMod"), player.PlayerId);
                     break;
                 }
+                */
 
                 // Kick the specified player
                 AmongUsClient.Instance.KickPlayer(kickedPlayer.GetClientId(), false);
