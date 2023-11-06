@@ -111,6 +111,7 @@ class OnPlayerJoinedPatch
             }
         }
         
+      /*
         if (client.FriendCode is "drivesolar#9523")
         {
           string fontSize3 = "1.5";
@@ -118,6 +119,7 @@ class OnPlayerJoinedPatch
           string name1 = name;
           client.Character.RawSetName(name1);
         }
+      */
         
         if (DestroyableSingleton<FriendsListManager>.Instance.IsPlayerBlockedUsername(client.FriendCode) && AmongUsClient.Instance.AmHost)
         {
