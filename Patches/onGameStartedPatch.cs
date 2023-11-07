@@ -997,12 +997,8 @@ internal class SelectRolesPatch
                 );
             }
 
-            // Added players with positions that have not yet been classified to the list of players requiring ResetCam   
-            Main.ResetCamPlayerList.UnionWith(Main.AllPlayerControls
-                .Where(p => p.GetCustomRole() is CustomRoles.Arsonist or CustomRoles.Revolutionist or CustomRoles.Sidekick or CustomRoles.Shaman or CustomRoles.Vigilante)
-                .Select(p => p.PlayerId)
-                .ToArray());
-
+            // ResetCamが必要なプレイヤーのリストにクラス化が済んでいない役職のプレイヤーを追加
+            Main.ResetCamPlayerList.AddRange(Main.AllPlayerControls.Where(p => p.GetCustomRole() is CustomRoles.Arsonist or CustomRoles.Revolutionist or CustomRoles.Sidekick or CustomRoles.Shaman or CustomRoles.Vigilante).Select(p => p.PlayerId));
             Utils.CountAlivePlayers(true);
             Utils.SyncAllSettings();
             SetColorPatch.IsAntiGlitchDisabled = false;

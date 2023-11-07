@@ -72,7 +72,7 @@ enum CustomRPC
     SetCleanserCleanLimit,
     SetSoulCollectorLimit,
     SetPixieTargets,
-    SetPelicanEtenNum,
+    SetPelicanEatenNum,
     SwordsManKill,
     SetAlchemistTimer,
     UndertakerLocationSync,
@@ -440,7 +440,7 @@ internal class RPCHandlerPatch
             case CustomRPC.SetGamerHealth:
                 Gamer.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetPelicanEtenNum:
+            case CustomRPC.SetPelicanEatenNum:
                 Pelican.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetDoomsayerProgress:
