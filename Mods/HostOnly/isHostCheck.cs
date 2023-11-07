@@ -1,3 +1,4 @@
+/*
 using HarmonyLib;
 
 namespace TOHE;
@@ -13,3 +14,4 @@ public static class isHostCheck
         isHost = AmongUsClient.Instance.AmHost;
     }
 }
+*/
