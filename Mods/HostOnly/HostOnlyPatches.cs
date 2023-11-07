@@ -1,4 +1,4 @@
-/*
+
 using HarmonyLib;
 
 namespace TOHE;
@@ -75,4 +75,3 @@ public static class HostOnly_CastVotePrefix
         }
     }
 }
-*/
