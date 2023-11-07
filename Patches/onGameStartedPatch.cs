@@ -1037,7 +1037,7 @@ internal class SelectRolesPatch
         player.SetRole(othersRole);
         player.Data.IsDead = true;
 
-        Logger.Info($"注册模组职业：{player?.Data?.PlayerName} => {role}", "AssignRoles");
+        Logger.Info($"Registered Role： {player?.Data?.PlayerName} => {role}", "AssignRoles");
     }
     public static void MakeDesyncSender(Dictionary<byte, CustomRpcSender> senders, Dictionary<(byte, byte), RoleTypes> rolesMap)
     {
@@ -1060,7 +1060,7 @@ internal class SelectRolesPatch
         SetColorPatch.IsAntiGlitchDisabled = true;
 
         Main.PlayerStates[player.PlayerId].SetMainRole(role);
-        Logger.Info($"注册模组职业：{player?.Data?.PlayerName} => {role}", "AssignRoles");
+        Logger.Info($"Registered Role： {player?.Data?.PlayerName} => {role}", "AssignRoles");
 
         SetColorPatch.IsAntiGlitchDisabled = false;
     }
@@ -1153,7 +1153,7 @@ internal class SelectRolesPatch
             Main.LoversPlayers.Add(player);
             allPlayers.Remove(player);
             Main.PlayerStates[player.PlayerId].SetSubRole(role);
-            Logger.Info("注册恋人:" + player?.Data?.PlayerName + " = " + player.GetCustomRole().ToString() + " + " + role.ToString(), "AssignLovers");
+            Logger.Info($"Registered Lovers: {player?.Data?.PlayerName} = {player.GetCustomRole()} + {role}", "Assign Lovers");
         }
         RPC.SyncLoversPlayers();
     }
@@ -1167,7 +1167,7 @@ internal class SelectRolesPatch
         {
             var player = allPlayers[IRandom.Instance.Next(0, allPlayers.Count)];
             Main.PlayerStates[player.PlayerId].SetSubRole(role);
-            Logger.Info("注册附加职业:" + player?.Data?.PlayerName + " = " + player.GetCustomRole().ToString() + " + " + role.ToString(), "Assign " + role.ToString());
+            Logger.Info($"Registered Add-on: {player?.Data?.PlayerName} = {player.GetCustomRole()} + {role}", $"Assign {role}");
         }
     }
 
@@ -1177,7 +1177,7 @@ internal class SelectRolesPatch
         public static bool doReplace = false;
         public static Dictionary<byte, CustomRpcSender> senders;
         public static List<(PlayerControl, RoleTypes)> StoragedData = new();
-        // 役職Desyncなど別の処理でSetRoleRpcを書き込み済みなため、追加の書き込みが不要なSenderのリスト
+        // List of Senders that do not require additional writing because SetRoleRpc has already been written by another process such as Position Desync
         public static List<CustomRpcSender> OverriddenSenderList;
         public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] RoleTypes roleType)
         {
