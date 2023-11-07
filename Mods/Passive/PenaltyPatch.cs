@@ -1,4 +1,4 @@
-/*
+
 using HarmonyLib;
 
 namespace TOHE;
@@ -18,4 +18,3 @@ public static class Passive_BanGetterPrefix
         return false;
     }
 }
-*/
