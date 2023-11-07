@@ -22,7 +22,6 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem SwitchVanilla;
 #if DEBUG
     private static CheatSettings VersionCheat;
-    private static CheatSettings ImpTasks;
     private static CheatSettings GodMode;
     private static CheatSettings InfiniteVision;
     private static CheatSettings EvilVote;
@@ -113,14 +112,11 @@ public static class OptionsMenuBehaviourStartPatch
                 Main.Instance.Unload();
             }
         }
-#if DEBUG
+#if mac
             if ((VersionCheat == null || VersionCheat.ToggleButton == null) && DebugModeManager.AmDebugger)
             {
             VersionCheat = CheatSettings.Create("VersionCheat", Main.VersionCheat, __instance);
             }
-            if ((ImpTasks == null || ImpTasks.ToggleButton == null) && DebugModeManager.AmDebugger)
-            {
-            ImpTasks = CheatSettings.Create("ImpTasks", Main.ImpTasks, __instance);
             if ((GodMode == null || GodMode.ToggleButton == null))
             {
                 GodMode = CheatSettings.Create("GodMode", Main.GodMode, __instance);

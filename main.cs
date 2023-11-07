@@ -87,7 +87,6 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> SwitchVanilla { get; private set; }
     public static ConfigEntry<bool> VersionCheat { get; private set; }
     public static bool IsHostVersionCheating = false;
-    public static ConfigEntry<bool> ImpTasks { get; private set; }
     public static ConfigEntry<bool> GodMode { get; private set; }
     public static ConfigEntry<bool> InfiniteVision { get; private set; }
     public static ConfigEntry<bool> EvilVote { get; private set; }
@@ -447,7 +446,6 @@ public class Main : BasePlugin
         EnableRoleSummary = Config.Bind("Client Options", "EnableRoleSummary", false); // Reverted to false due to it now being a setting to revert the summary change
         SwitchVanilla = Config.Bind("Client Options", "SwitchVanilla", false);
         VersionCheat = Config.Bind("Client Options", "VersionCheat", false);
-        ImpTasks = Config.Bind("Client Options", "ImpTasks", false);
         GodMode = Config.Bind("Client Options", "GodMode", false);
         InfiniteVision = Config.Bind("Client Options", "InfiniteVision", false);
         EvilVote = Config.Bind("Client Options", "EvilVote", false);

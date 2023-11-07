@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 
 namespace TOHE;
 
@@ -8,7 +8,7 @@ public static class HostOnly_GodmodePostfix
     //Postfix patch of PlayerPhysics.LateUpdate to revive LocalPlayer when CheatSettings.godMode enabled
     public static void Postfix(PlayerPhysics __instance)
     {
-        if(Main.GodMode.Value == true){
+        if(Main.GodMode.Value == false){
             if (__instance.myPlayer.Data.IsDead && __instance.AmOwner){
                 __instance.myPlayer.Revive();
             }
@@ -22,7 +22,7 @@ public static class HostOnly_CastVotePrefix
     //Prefix patch of MeetingHud.CastVote
     public static bool Prefix(byte srcPlayerId, byte suspectPlayerId, MeetingHud __instance)
     {
-        if (Main.EvilVote.Value == true)
+        if (Main.EvilVote.Value == false)
         {
             //Detects votes from LocalPlayer
             if (PlayerControl.LocalPlayer.PlayerId == srcPlayerId)
@@ -60,7 +60,7 @@ public static class HostOnly_CastVotePrefix
 
                 //PlayerControl.LocalPlayer.MyPhysics.Speed is the base speed of a player
                 //Among Us uses this value with the associated game setting to calculate the TrueSpeed of the player
-                if (Main.SpeedBoost.Value == true)
+                if (Main.SpeedBoost.Value == false)
                 {
                     PlayerControl.LocalPlayer.MyPhysics.Speed = 2.5f * 2;
                 }
