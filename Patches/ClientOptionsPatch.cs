@@ -112,7 +112,7 @@ public static class OptionsMenuBehaviourStartPatch
                 Main.Instance.Unload();
             }
         }
-#if mac
+#if DEBUG
             if ((VersionCheat == null || VersionCheat.ToggleButton == null) && DebugModeManager.AmDebugger)
             {
             VersionCheat = CheatSettings.Create("VersionCheat", Main.VersionCheat, __instance);
