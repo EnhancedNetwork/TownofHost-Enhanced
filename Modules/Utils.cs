@@ -594,7 +594,7 @@ public static class Utils
                 break;
         }
 
-        foreach (var subRole in States.SubRoles)
+        foreach (var subRole in States.SubRoles.ToArray())
             switch (subRole)
             {
                 case CustomRoles.Madmate:
@@ -606,7 +606,7 @@ public static class Utils
                 case CustomRoles.Contagious:
                 case CustomRoles.Soulless:
                 case CustomRoles.Rascal:
-                    //ラバーズはタスクを勝利用にカウントしない
+                    //Lovers don't count the task as a win
                     hasTasks &= !ForRecompute;
                     break;
             }
@@ -646,7 +646,7 @@ public static class Utils
     {
         try
         {
-            if (!Main.playerVersion.ContainsKey(0)) return ""; //ホストがMODを入れていなければ未記入を返す
+            if (!Main.playerVersion.ContainsKey(0)) return string.Empty; //ホストがMODを入れていなければ未記入を返す
             var taskState = pc.GetPlayerTaskState();
             var Comms = false;
             if (taskState.hasTasks)
@@ -1160,12 +1160,12 @@ public static class Utils
         var sb = new StringBuilder();
 
         sb.Append(GetString("Settings")).Append(':');
-        foreach (var role in Options.CustomRoleCounts)
+        foreach (var role in Options.CustomRoleCounts.Keys.ToArray())
         {
-            if (!role.Key.IsEnable()) continue;
-            string mode = role.Key.GetMode() == 1 ? GetString("RoleRateNoColor") : GetString("RoleOnNoColor");
-            sb.Append($"\n【{GetRoleName(role.Key)}:{mode} ×{role.Key.GetCount()}】\n");
-            ShowChildrenSettings(Options.CustomRoleSpawnChances[role.Key], ref sb);
+            if (!role.IsEnable()) continue;
+            string mode = role.GetMode() == 1 ? GetString("RoleRateNoColor") : GetString("RoleOnNoColor");
+            sb.Append($"\n【{GetRoleName(role)}:{mode} ×{role.GetCount()}】\n");
+            ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref sb);
             var text = sb.ToString();
             sb.Clear().Append(text.RemoveHtmlTags());
         }
@@ -1191,12 +1191,12 @@ public static class Utils
             return;
         }
         sb.Append($"━━━━━━━━━━━━【{GetString("Roles")}】━━━━━━━━━━━━");
-        foreach (var role in Options.CustomRoleCounts)
+        foreach (var role in Options.CustomRoleCounts.Keys.ToArray())
         {
-            if (!role.Key.IsEnable()) continue;
-            string mode = role.Key.GetMode() == 1 ? GetString("RoleRateNoColor") : GetString("RoleOnNoColor");
-            sb.Append($"\n【{GetRoleName(role.Key)}:{mode} ×{role.Key.GetCount()}】\n");
-            ShowChildrenSettings(Options.CustomRoleSpawnChances[role.Key], ref sb);
+            if (!role.IsEnable()) continue;
+            string mode = role.GetMode() == 1 ? GetString("RoleRateNoColor") : GetString("RoleOnNoColor");
+            sb.Append($"\n【{GetRoleName(role)}:{mode} ×{role.GetCount()}】\n");
+            ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref sb);
             var text = sb.ToString();
             sb.Clear().Append(text.RemoveHtmlTags());
         }
@@ -1222,19 +1222,11 @@ public static class Utils
             return;
         }
 
-        var sb = new StringBuilder();
-        //sb.AppendFormat("\n{0}: {1}", GetRoleName(CustomRoles.GM), Main.EnableGM.ToString().RemoveHtmlTags());
-
         List<string> impsb = new();
         List<string> neutralsb = new();
         List<string> crewsb = new();
         List<string> addonsb = new();
 
-        //var impsb = new StringBuilder();
-        //var neutralsb = new StringBuilder();
-        //var crewsb = new StringBuilder();
-        //var addonsb = new StringBuilder();
-        //int headCount = -1;
         foreach (var role in CustomRolesHelper.AllRoles)
         {
             string mode = role.GetMode() == 1 ? GetString("RoleRateNoColor") : GetString("RoleOnNoColor");
@@ -1246,20 +1238,8 @@ public static class Utils
                 else if (role.IsImpostor() || role.IsMadmate()) impsb.Add(roleDisplay);
                 else if (role.IsNeutral()) neutralsb.Add(roleDisplay);
             }
-            
-            
-            //headCount++;
-            //if (role.IsImpostor() && headCount == 0) sb.Append("\n\n● " + GetString("TabGroup.ImpostorRoles"));
-            //else if (role.IsCrewmate() && headCount == 1) sb.Append("\n\n● " + GetString("TabGroup.CrewmateRoles"));
-            //else if (role.IsNeutral() && headCount == 2) sb.Append("\n\n● " + GetString("TabGroup.NeutralRoles"));
-            //else if (role.IsAdditionRole() && headCount == 3) sb.Append("\n\n● " + GetString("TabGroup.Addons"));
-            //else headCount--;
-
-            //string mode = role.GetMode() == 1 ? GetString("RoleRateNoColor") : GetString("RoleOnNoColor");
-            //if (role.IsEnable()) sb.AppendFormat("\n{0}:{1} x{2}", GetRoleName(role), $"{mode}", role.GetCount());
         }
-        //  SendMessage(sb.ToString(), PlayerId);
-        //    SendMessage(sb.Append("\n.").ToString(), PlayerId, "<color=#ff5b70>【 ★ Roles ★ 】</color>");
+
         impsb.Sort();
         crewsb.Sort();
         neutralsb.Sort();
@@ -1269,14 +1249,6 @@ public static class Utils
         SendMessage(string.Join("", crewsb) + "\n.", PlayerId, ColorString(GetRoleColor(CustomRoles.Crewmate), GetString("CrewmateRoles")));
         SendMessage(string.Join("", neutralsb) + "\n.", PlayerId, GetString("NeutralRoles"));
         SendMessage(string.Join("", addonsb) + "\n.", PlayerId, GetString("AddonRoles"));
-        
-
-        //SendMessage(impsb.Append("\n.").ToString(), PlayerId, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ImpostorRoles")));
-        //SendMessage(crewsb.Append("\n.").ToString(), PlayerId, ColorString(Utils.GetRoleColor(CustomRoles.Crewmate), GetString("CrewmateRoles")));
-        //SendMessage(neutralsb.Append("\n.").ToString(), PlayerId, GetString("NeutralRoles"));
-        //SendMessage(addonsb.Append("\n.").ToString(), PlayerId, GetString("AddonRoles"));
-        //foreach (string roleList in sb.ToString().Split("\n\n●"))
-        //    SendMessage("\n\n●" + roleList + "\n\n.", PlayerId);
     }
     public static void ShowChildrenSettings(OptionItem option, ref StringBuilder sb, int deep = 0, bool command = false)
     {
@@ -1315,13 +1287,13 @@ public static class Utils
 
         sb.Append(GetString("PlayerInfo")).Append(':');
         List<byte> cloneRoles = new(Main.PlayerStates.Keys);
-        foreach (var id in Main.winnerList)
+        foreach (var id in Main.winnerList.ToArray())
         {
             if (EndGamePatch.SummaryText[id].Contains("<INVALID:NotAssigned>")) continue;
             sb.Append($"\n★ ").Append(EndGamePatch.SummaryText[id].RemoveHtmlTags());
             cloneRoles.Remove(id);
         }
-        foreach (var id in cloneRoles)
+        foreach (var id in cloneRoles.ToArray())
         {
             if (EndGamePatch.SummaryText[id].Contains("<INVALID:NotAssigned>")) continue;
             sb.Append($"\n　").Append(EndGamePatch.SummaryText[id].RemoveHtmlTags());
@@ -1354,7 +1326,7 @@ public static class Utils
         var SubRoles = Main.PlayerStates[id].SubRoles;
         if (!SubRoles.Any() && intro == false) return "";
         var sb = new StringBuilder();
-        foreach (var role in SubRoles)
+        foreach (var role in SubRoles.ToArray())
         {
             if (role is CustomRoles.NotAssigned or
                         CustomRoles.LastImpostor) continue;
@@ -1771,8 +1743,7 @@ public static class Utils
 
     private static Color HexToColor(string hex)
     {
-        Color color = new();
-        _ = ColorUtility.TryParseHtmlString("#" + hex, out color);
+        _ = ColorUtility.TryParseHtmlString("#" + hex, out var color);
         return color;
     }
 
@@ -1952,7 +1923,7 @@ public static class Utils
         string callerMethodName = callerMethod.Name;
         string callerClassName = callerMethod.DeclaringType.FullName;
         var logger = Logger.Handler("NotifyRoles");
-        logger.Info("NotifyRolesが" + callerClassName + "." + callerMethodName + "から呼び出されました");
+        logger.Info("NotifyRoles was called from " + callerClassName + "." + callerMethodName);
         HudManagerPatch.NowCallNotifyRolesCount++;
         HudManagerPatch.LastSetNameDesyncCount = 0;
 
@@ -2564,7 +2535,7 @@ public static class Utils
     {
         if (Options.DiseasedCDReset.GetBool())
         {
-            foreach (var pid in Main.KilledDiseased.Keys)
+            foreach (var pid in Main.KilledDiseased.Keys.ToArray())
             {
                 Main.KilledDiseased[pid] = 0;
                 var kdpc = GetPlayerById(pid);
@@ -2576,7 +2547,7 @@ public static class Utils
 
         if (Options.AntidoteCDReset.GetBool())
         {
-            foreach (var pid in Main.KilledAntidote.Keys)
+            foreach (var pid in Main.KilledAntidote.Keys.ToArray())
             {
                 Main.KilledAntidote[pid] = 0;
                 var kapc = GetPlayerById(pid);
@@ -2613,6 +2584,7 @@ public static class Utils
 
         if (Options.AirshipVariableElectrical.GetBool())
             AirshipElectricalDoors.Initialize();
+
         DoorsReset.ResetDoors();
 
     }
@@ -2660,8 +2632,9 @@ public static class Utils
                 break;
         }
 
-            var States = Main.PlayerStates[target.PlayerId];
-                foreach (var subRole in States.SubRoles)
+        var States = Main.PlayerStates[target.PlayerId];
+        foreach (var subRole in States.SubRoles.ToArray())
+        {
             switch (subRole)
             {
                 case CustomRoles.Cyber:
@@ -2677,10 +2650,13 @@ public static class Utils
                             SendMessage(string.Format(GetString("CyberDead"), target.GetRealName()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Cyber), GetString("CyberNewsTitle")));
                         }
                     }
-                break;    
-            } 
+                    break;
+            }
+        }
+
         if (Romantic.BetPlayer.ContainsValue(target.PlayerId))
             Romantic.ChangeRole(target.PlayerId);
+
         if (Lawyer.Target.ContainsValue(target.PlayerId))
             Lawyer.ChangeRoleByTarget(target);
 
@@ -2697,7 +2673,7 @@ public static class Utils
         int AliveImpostorCount = Main.AllAlivePlayerControls.Count(pc => pc.Is(CustomRoleTypes.Impostor));
         if (Main.AliveImpostorCount != AliveImpostorCount)
         {
-            Logger.Info("存活内鬼人数:" + AliveImpostorCount + "人", "CountAliveImpostors");
+            Logger.Info("Number Impostor left: " + AliveImpostorCount, "CountAliveImpostors");
             Main.AliveImpostorCount = AliveImpostorCount;
             LastImpostor.SetSubRole();
         }
@@ -2852,7 +2828,7 @@ public static class Utils
         }
         catch
         {
-            Logger.Error($"读入Texture失败：{path}", "LoadImage");
+            Logger.Error($"Failed to read Texture： {path}", "LoadSprite");
         }
         return null;
     }
@@ -2869,7 +2845,7 @@ public static class Utils
         }
         catch
         {
-            Logger.Error($"读入Texture失败：{path}", "LoadImage");
+            Logger.Error($"Failed to read Texture： {path}", "LoadTextureFromResources");
         }
         return null;
     }
@@ -2886,41 +2862,6 @@ public static class Utils
         float G = (color.g + Weight) / (Darkness + 1);
         float B = (color.b + Weight) / (Darkness + 1);
         return new Color(R, G, B, color.a);
-    }
-
-    /// <summary>
-    /// 乱数の簡易的なヒストグラムを取得する関数
-    /// <params name="nums">生成した乱数を格納したint配列</params>
-    /// <params name="scale">ヒストグラムの倍率 大量の乱数を扱う場合、この値を下げることをお勧めします。</params>
-    /// </summary>
-    public static string WriteRandomHistgram(int[] nums, float scale = 1.0f)
-    {
-        int[] countData = new int[nums.Max() + 1];
-        foreach (var num in nums)
-        {
-            if (0 <= num) countData[num]++;
-        }
-        StringBuilder sb = new();
-        for (int i = 0; i < countData.Length; i++)
-        {
-            // 倍率適用
-            countData[i] = (int)(countData[i] * scale);
-
-            // 行タイトル
-            sb.AppendFormat("{0:D2}", i).Append(" : ");
-
-            // ヒストグラム部分
-            for (int j = 0; j < countData[i]; j++)
-                sb.Append('|');
-
-            // 改行
-            sb.Append('\n');
-        }
-
-        // その他の情報
-        sb.Append("最大数 - 最小数: ").Append(countData.Max() - countData.Min());
-
-        return sb.ToString();
     }
 
     public static bool TryCast<T>(this Il2CppObjectBase obj, out T casted)

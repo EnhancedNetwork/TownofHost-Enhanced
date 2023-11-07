@@ -26,7 +26,7 @@ static class TargetArrow
         }
     }
 
-    static Dictionary<ArrowInfo, string> TargetArrows = new();
+    static readonly Dictionary<ArrowInfo, string> TargetArrows = new();
     static readonly string[] Arrows = {
         "↑",
         "↗",

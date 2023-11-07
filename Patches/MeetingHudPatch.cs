@@ -32,7 +32,7 @@ class CheckForEndVotingPatch
         {
             List<MeetingHud.VoterState> statesList = new();
             MeetingHud.VoterState[] states;
-            foreach (var pva in __instance.playerStates)
+            foreach (var pva in __instance.playerStates.ToArray())
             {
                 if (pva == null) continue;
                 PlayerControl pc = Utils.GetPlayerById(pva.TargetPlayerId);
@@ -131,7 +131,7 @@ class CheckForEndVotingPatch
                     }
                 }
             }
-            foreach (var ps in __instance.playerStates)
+            foreach (var ps in __instance.playerStates.ToArray())
             {
                 if (shouldSkip) break; //Meeting Skip with vote counting on keystroke (m + delete)
 
@@ -142,9 +142,8 @@ class CheckForEndVotingPatch
             GameData.PlayerInfo exiledPlayer = PlayerControl.LocalPlayer.Data;
             bool tie = false;
 
-            for (var i = 0; i < __instance.playerStates.Length; i++)
+            foreach (var ps in __instance.playerStates.ToArray())
             {
-                PlayerVoteArea ps = __instance.playerStates[i];
                 if (ps == null) continue;
                 voteLog.Info(string.Format("{0,-2}{1}:{2,-3}{3}", ps.TargetPlayerId, Utils.PadRightV2($"({Utils.GetVoteName(ps.TargetPlayerId)})", 40), ps.VotedFor, $"({Utils.GetVoteName(ps.VotedFor)})"));
                 var voter = Utils.GetPlayerById(ps.TargetPlayerId);
@@ -224,7 +223,7 @@ class CheckForEndVotingPatch
                     PlayerVoteArea pva = new();
                     var meetingHud = MeetingHud.Instance;
                         PlayerControl swap1 = null;
-                        foreach (var playerId in Swapper.Vote)
+                        foreach (var playerId in Swapper.Vote.ToArray())
                         {
                             var player = Utils.GetPlayerById(playerId);
                             if (player != null)
@@ -234,7 +233,7 @@ class CheckForEndVotingPatch
                             }
                         }
                         PlayerControl swap2 = null;
-                        foreach (var playerId in Swapper.VoteTwo)
+                        foreach (var playerId in Swapper.VoteTwo.ToArray())
                         {
                             var player = Utils.GetPlayerById(playerId);
                             if (player != null)
@@ -245,9 +244,8 @@ class CheckForEndVotingPatch
                         }
                     if (swap1 != null && swap2 != null)
                     {
-                        for (int ia = 0; ia < __instance.playerStates.Length; ia++) //Loops through all players
+                        foreach (var playerVoteArea in __instance.playerStates.ToArray())
                         {
-                            PlayerVoteArea playerVoteArea = __instance.playerStates[ia];
                             var voteAreaPlayer = Utils.GetPlayerById(playerVoteArea.TargetPlayerId);
                             if (playerVoteArea.VotedFor == swap1.PlayerId && !playerVoteArea.AmDead)
                             {
@@ -257,9 +255,8 @@ class CheckForEndVotingPatch
                                 NiceList1.Add(voteAreaPlayer.PlayerId);
                             }
                         }
-                        for (int ia = 0; ia < __instance.playerStates.Length; ia++) //Loops through all players
+                        foreach (var playerVoteArea in __instance.playerStates.ToArray()) //Loops through all players
                         {
-                            PlayerVoteArea playerVoteArea = __instance.playerStates[ia];
                             var voteAreaPlayer = Utils.GetPlayerById(playerVoteArea.TargetPlayerId);
                             if (playerVoteArea.VotedFor == swap1.PlayerId && !playerVoteArea.AmDead && !NiceList1.Contains(voteAreaPlayer.PlayerId))
                             {
@@ -270,9 +267,8 @@ class CheckForEndVotingPatch
                                 NiceList2.Add(voteAreaPlayer.PlayerId);
                             }
                         }
-                        for (int ia = 0; ia < __instance.playerStates.Length; ia++) //Loops through all players
+                        foreach (var playerVoteArea in __instance.playerStates.ToArray()) //Loops through all players
                         {
-                            PlayerVoteArea playerVoteArea = __instance.playerStates[ia];
                             var voteAreaPlayer = Utils.GetPlayerById(playerVoteArea.TargetPlayerId);
                             if (playerVoteArea.VotedFor == swap1.PlayerId && !playerVoteArea.AmDead && !NiceList2.Contains(voteAreaPlayer.PlayerId))
                             {
@@ -328,7 +324,7 @@ class CheckForEndVotingPatch
 
             byte exileId = byte.MaxValue;
             int max = 0;
-            voteLog.Info("===决定驱逐玩家处理开始===");
+            voteLog.Info("===Decision to expel player processing begins===");
             foreach (var data in VotingData)
             {
                 voteLog.Info($"{data.Key}({Utils.GetVoteName(data.Key)}):{data.Value}票");
@@ -368,7 +364,7 @@ class CheckForEndVotingPatch
                 }
                 if (target != byte.MaxValue)
                 {
-                    Logger.Info("破平者覆盖驱逐玩家", "Brakar Vote");
+                    Logger.Info("Flat breakers cover expulsion of players", "Brakar Vote");
                     exiledPlayer = Utils.GetPlayerInfoById(target);
                     tie = false;
                     braked = true;
@@ -404,7 +400,7 @@ class CheckForEndVotingPatch
             //RPC
             if (AntiBlackout.NeutralOverrideExiledPlayer || AntiBlackout.ImpostorOverrideExiledPlayer)
             {
-                __instance.RpcVotingComplete(states.ToArray(), null, true);
+                __instance.RpcVotingComplete(states, null, true);
                 ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiledPlayer;
                 if (exiledPlayer != null)
                 {
@@ -412,7 +408,7 @@ class CheckForEndVotingPatch
                     ConfirmEjections(exiledPlayer, true);
                 }
             }
-            else __instance.RpcVotingComplete(states.ToArray(), exiledPlayer, tie); // Normal processing
+            else __instance.RpcVotingComplete(states, exiledPlayer, tie); // Normal processing
 
             CheckForDeathOnExile(PlayerState.DeathReason.Vote, exileId);
 
@@ -645,14 +641,13 @@ static class ExtendedMeetingHud
 {
     public static Dictionary<byte, int> CustomCalculateVotes(this MeetingHud __instance)
     {
-        Logger.Info("===计算票数处理开始===", "Vote");
+        Logger.Info("===Start of vote counting processing===", "Vote");
         Dictionary<byte, int> dic = new();
         Main.BrakarVoteFor = new();
         Collector.CollectorVoteFor = new();
         //| 投票された人 | 投票された回数 |
-        for (int i = 0; i < __instance.playerStates.Length; i++)
+        foreach (var ps in __instance.playerStates.ToArray())
         {
-            PlayerVoteArea ps = __instance.playerStates[i];//该玩家面板里的所有会议中的玩家
             if (ps == null) continue;
             if (ps.VotedFor is not 252 and not byte.MaxValue and not 254)//该玩家面板里是否投了该玩家
             {
@@ -737,7 +732,7 @@ class MeetingHudStartPatch
                     Utils.ShowChildrenSettings(opt, ref sb, command: true);
                 var txt = sb.ToString();
                 sb.Clear().Append(txt.RemoveHtmlTags());
-                foreach (var subRole in Main.PlayerStates[pc.PlayerId].SubRoles)
+                foreach (var subRole in Main.PlayerStates[pc.PlayerId].SubRoles.ToArray())
                     sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleMode(subRole) + GetString($"{subRole}InfoLong"));
                 if (CustomRolesHelper.RoleExist(CustomRoles.Ntr) && (role is not CustomRoles.GM and not CustomRoles.Ntr))
                     sb.Append($"\n\n" + GetString($"Lovers") + Utils.GetRoleMode(CustomRoles.Lovers) + GetString($"LoversInfoLong"));
@@ -884,7 +879,7 @@ class MeetingHudStartPatch
         GuessManager.textTemplate = UnityEngine.Object.Instantiate(__instance.playerStates[0].NameText);
         GuessManager.textTemplate.enabled = false;
 
-        foreach (var pva in __instance.playerStates)
+        foreach (var pva in __instance.playerStates.ToArray())
         {
             var pc = Utils.GetPlayerById(pva.TargetPlayerId);
             if (pc == null) continue;
@@ -974,7 +969,7 @@ class MeetingHudStartPatch
             }, 3f, "SetName To Chat");
         }
 
-        foreach (var pva in __instance.playerStates)
+        foreach (var pva in __instance.playerStates.ToArray())
         {
             if (pva == null) continue;
             PlayerControl seer = PlayerControl.LocalPlayer;
@@ -1152,7 +1147,7 @@ class MeetingHudStartPatch
 
             bool isLover = false;
 
-            foreach (var SeerSubRole in seer.GetCustomSubRoles())
+            foreach (var SeerSubRole in seer.GetCustomSubRoles().ToArray())
             {
                 switch (SeerSubRole)
                 {
@@ -1163,7 +1158,7 @@ class MeetingHudStartPatch
                 }
             }
 
-            foreach (var TargetSubRole in target.GetCustomSubRoles())
+            foreach (var TargetSubRole in target.GetCustomSubRoles().ToArray())
             {
                 switch (TargetSubRole)
                 {

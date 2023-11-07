@@ -452,14 +452,6 @@ public class PlayerGameOptionsSender : GameOptionsSender
         {
             Main.KillGhoul.Add(player.PlayerId);
         }
-   /*     if (Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Diseased) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId).Any())
-        {
-            Main.AllPlayerKillCooldown[player.PlayerId] *= Options.DiseasedMultiplier.GetFloat();
-            player.SetKillCooldownV3();
-            player.ResetKillCooldown();
-        //    player.SyncSettings();
-        } */
-
         if (
             (Main.GrenadierBlinding.Any() &&
             (player.GetCustomRole().IsImpostor() ||
@@ -554,7 +546,9 @@ public class PlayerGameOptionsSender : GameOptionsSender
 
         state.taskState.hasTasks = Utils.HasTasks(player.Data, false);
         if (Options.GhostCanSeeOtherVotes.GetBool() && player.Data.IsDead)
+        {
             opt.SetBool(BoolOptionNames.AnonymousVotes, false);
+        }
         if (Options.AdditionalEmergencyCooldown.GetBool() &&
             Options.AdditionalEmergencyCooldownThreshold.GetInt() <= Utils.AllAlivePlayersCount)
         {
@@ -566,6 +560,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
         {
             opt.SetInt(Int32OptionNames.EmergencyCooldown, 3600);
         }
+
         MeetingTimeManager.ApplyGameOptions(opt);
 
         AURoleOptions.ShapeshifterCooldown = Mathf.Max(1f, AURoleOptions.ShapeshifterCooldown);

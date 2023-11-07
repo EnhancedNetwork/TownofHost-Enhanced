@@ -89,7 +89,7 @@ static class ExtendedPlayerControl
             var callerMethod = caller.GetMethod();
             string callerMethodName = callerMethod.Name;
             string callerClassName = callerMethod.DeclaringType.FullName;
-            Logger.Warn(callerClassName + "." + callerMethodName + "tried to retrieve CustomRole, but the target was null", "Get CustomRole");
+            Logger.Warn(callerClassName + "." + callerMethodName + "tried to retrieve CustomRole, but the target was null", "GetCustomRole");
             return CustomRoles.Crewmate;
         }
         var GetValue = Main.PlayerStates.TryGetValue(player.PlayerId, out var State);
@@ -101,7 +101,7 @@ static class ExtendedPlayerControl
     {
         if (player == null)
         {
-            Logger.Warn("tried to get CustomSubRole, but the target was null", "Get CustomSubRole");
+            Logger.Warn("tried to get CustomSubRole, but the target was null", "GetCustomSubRole");
             return new() { CustomRoles.NotAssigned };
         }
         return Main.PlayerStates[player.PlayerId].SubRoles;
@@ -114,7 +114,7 @@ static class ExtendedPlayerControl
             var callerMethod = caller.GetMethod();
             string callerMethodName = callerMethod.Name;
             string callerClassName = callerMethod.DeclaringType.FullName;
-            Logger.Warn(callerClassName + "." + callerMethodName + "がCountTypesを取得しようとしましたが、対象がnullでした。", "GetCountTypes");
+            Logger.Warn(callerClassName + "." + callerMethodName + "tried to get CountTypes, but the target was null", "GetCountTypes");
             return CountTypes.None;
         }
 
@@ -381,8 +381,8 @@ static class ExtendedPlayerControl
     }
     public static string GetSubRoleName(this PlayerControl player, bool forUser = false)
     {
-        var SubRoles = Main.PlayerStates[player.PlayerId].SubRoles;
-        if (!SubRoles.Any()) return "";
+        var SubRoles = Main.PlayerStates[player.PlayerId].SubRoles.ToArray();
+        if (!SubRoles.Any()) return string.Empty;
         var sb = new StringBuilder();
         foreach (var role in SubRoles)
         {
@@ -1251,9 +1251,9 @@ static class ExtendedPlayerControl
     }
     public static void TrapperKilled(this PlayerControl killer, PlayerControl target)
     {
-        Logger.Info($"{target?.Data?.PlayerName}はTrapperだった", "Trapper");
+        Logger.Info($"{target?.Data?.PlayerName} was Trapper", "Trapper");
         var tmpSpeed = Main.AllPlayerSpeed[killer.PlayerId];
-        Main.AllPlayerSpeed[killer.PlayerId] = Main.MinSpeed;    //tmpSpeedで後ほど値を戻すので代入しています。
+        Main.AllPlayerSpeed[killer.PlayerId] = Main.MinSpeed;
         ReportDeadBodyPatch.CanReport[killer.PlayerId] = false;
         killer.MarkDirtySettings();
         _ = new LateTask(() =>
@@ -1270,7 +1270,7 @@ static class ExtendedPlayerControl
         var (countItem1, countItem2) = Utils.GetDousedPlayerCount(player.PlayerId);
         return countItem1 >= countItem2;
     }
-    public static bool IsDrawDone(this PlayerControl player)//判断是否拉拢完成
+    public static bool IsDrawDone(this PlayerControl player)
     {
         if (!player.Is(CustomRoles.Revolutionist)) return false;
         var (countItem1, countItem2) = Utils.GetDrawPlayerCount(player.PlayerId, out var _);
@@ -1335,7 +1335,7 @@ static class ExtendedPlayerControl
         var rangePlayersIL = RoleBehaviour.GetTempPlayerList();
         List<PlayerControl> rangePlayers = new();
         player.Data.Role.GetPlayersInAbilityRangeSorted(rangePlayersIL, ignoreColliders);
-        foreach (var pc in rangePlayersIL)
+        foreach (var pc in rangePlayersIL.ToArray())
         {
             if (predicate(pc)) rangePlayers.Add(pc);
         }
@@ -1470,7 +1470,7 @@ static class ExtendedPlayerControl
     public static PlainShipRoom GetPlainShipRoom(this PlayerControl pc)
     {
         if (!pc.IsAlive() || Pelican.IsEaten(pc.PlayerId)) return null;
-        var Rooms = ShipStatus.Instance.AllRooms;
+        var Rooms = ShipStatus.Instance.AllRooms.ToArray();
         if (Rooms == null) return null;
         foreach (var room in Rooms)
         {

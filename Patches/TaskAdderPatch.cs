@@ -13,7 +13,7 @@ class ShowFolderPatch
     {
         if (__instance.Root == taskFolder && CustomRolesFolder == null)
         {
-            TaskFolder rolesFolder = UnityEngine.Object.Instantiate<TaskFolder>(
+            TaskFolder rolesFolder = Object.Instantiate<TaskFolder>(
                 __instance.RootFolderPrefab,
                 __instance.transform
             );
@@ -31,7 +31,7 @@ class ShowFolderPatch
         float maxHeight = 0f;
         if (CustomRolesFolder != null && CustomRolesFolder.FolderName == taskFolder.FolderName)
         {
-            var crewBehaviour = DestroyableSingleton<RoleManager>.Instance.AllRoles.Where(role => role.Role == RoleTypes.Crewmate).FirstOrDefault();
+            var crewBehaviour = DestroyableSingleton<RoleManager>.Instance.AllRoles.FirstOrDefault(role => role.Role == RoleTypes.Crewmate);
             foreach (var cRole in CustomRolesHelper.AllRoles)
             {
                 /*if(cRole == CustomRoles.Crewmate ||

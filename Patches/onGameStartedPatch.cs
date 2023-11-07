@@ -414,14 +414,14 @@ internal class SelectRolesPatch
         try
         {
             List<(PlayerControl, RoleTypes)> newList = new();
-            foreach (var sd in RpcSetRoleReplacer.StoragedData)
+            foreach (var sd in RpcSetRoleReplacer.StoragedData.ToArray())
             {
                 var kp = RoleResult.FirstOrDefault(x => x.Key.PlayerId == sd.Item1.PlayerId);
                 newList.Add((sd.Item1, kp.Value.GetRoleTypes()));
                 if (sd.Item2 == kp.Value.GetRoleTypes())
-                    Logger.Warn($"注册原版职业 => {sd.Item1.GetRealName()}: {sd.Item2}", "Override Role Select");
+                    Logger.Warn($"Registered original Role => {sd.Item1.GetRealName()}: {sd.Item2}", "Override Role Select");
                 else
-                    Logger.Warn($"覆盖原版职业 => {sd.Item1.GetRealName()}: {sd.Item2} => {kp.Value.GetRoleTypes()}", "Override Role Select");
+                    Logger.Warn($"Coverage of original Role => {sd.Item1.GetRealName()}: {sd.Item2} => {kp.Value.GetRoleTypes()}", "Override Role Select");
             }
             if (Main.EnableGM.Value) newList.Add((PlayerControl.LocalPlayer, RoleTypes.Crewmate));
             RpcSetRoleReplacer.StoragedData = newList;
@@ -488,7 +488,7 @@ internal class SelectRolesPatch
             {
                 ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
 
-                foreach (var subRole in pair.Value.SubRoles)
+                foreach (var subRole in pair.Value.SubRoles.ToArray())
                     ExtendedPlayerControl.RpcSetCustomRole(pair.Key, subRole);
             }
 
@@ -942,7 +942,7 @@ internal class SelectRolesPatch
                         Enigma.Add(pc.PlayerId);
                         break;
                 }
-                foreach (var subRole in pc.GetCustomSubRoles())
+                foreach (var subRole in pc.GetCustomSubRoles().ToArray())
                 {
                     switch (subRole)
                     {
@@ -1084,13 +1084,13 @@ internal class SelectRolesPatch
                     int playerCID = player.GetClientId();
                     sender.RpcSetRole(player, BaseRole, playerCID);
                     //Desyncする人視点で他プレイヤーを科学者にするループ
-                    foreach (var pc in PlayerControl.AllPlayerControls)
+                    foreach (var pc in PlayerControl.AllPlayerControls.ToArray())
                     {
                         if (pc == player) continue;
                         sender.RpcSetRole(pc, RoleTypes.Scientist, playerCID);
                     }
                     //他視点でDesyncする人の役職を科学者にするループ
-                    foreach (var pc in PlayerControl.AllPlayerControls)
+                    foreach (var pc in PlayerControl.AllPlayerControls.ToArray())
                     {
                         if (pc == player) continue;
                         if (pc.PlayerId == 0) player.SetRole(RoleTypes.Scientist); //ホスト視点用

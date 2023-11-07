@@ -27,7 +27,7 @@ public static class GameOptionsMenuPatch
 {
     public static void Postfix(GameOptionsMenu __instance)
     {
-        foreach (var ob in __instance.Children)
+        foreach (var ob in __instance.Children.ToArray())
         {
             switch (ob.Title)
             {
@@ -191,8 +191,7 @@ public class GameOptionsMenuUpdatePatch
         if (__instance.transform.parent.parent.name == "Game Settings") return;
         foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
         {
-            string tabcolor = "";
-            tabcolor = tab switch
+            string tabcolor = tab switch
             {
                 TabGroup.SystemSettings => Main.ModColor,
                 TabGroup.GameSettings => "#59ef83",
@@ -214,7 +213,7 @@ public class GameOptionsMenuUpdatePatch
             float numItems = __instance.Children.Length;
             var offset = 2.7f;
 
-            foreach (var option in OptionItem.AllOptions)
+            foreach (var option in OptionItem.AllOptions.ToArray())
             {
                 if (tab != option.Tab) continue;
                 if (option?.OptionBehaviour == null || option.OptionBehaviour.gameObject == null) continue;
@@ -368,7 +367,7 @@ public static class RolesSettingsMenuPatch
 {
     public static void Postfix(RolesSettingsMenu __instance)
     {
-        foreach (var ob in __instance.Children)
+        foreach (var ob in __instance.Children.ToArray())
         {
             switch (ob.Title)
             {

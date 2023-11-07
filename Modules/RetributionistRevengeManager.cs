@@ -96,13 +96,13 @@ public static class RetributionistRevengeManager
             else pc.ShowPopUp(GetString("RetributionistKillDead"));
             return true;
         }
-        if (target.Is(CustomRoles.Pestilence))
+        else if (target.Is(CustomRoles.Pestilence))
         {
             if (!isUI) Utils.SendMessage(GetString("PestilenceImmune"), pc.PlayerId);
             else pc.ShowPopUp(GetString("PestilenceImmune"));
             return true;
         }
-        if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18 )
+        else if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18 )
         {
             if (!isUI) Utils.SendMessage(GetString("GuessMini"), pc.PlayerId);
             else pc.ShowPopUp(GetString("GuessMini"));
@@ -175,7 +175,7 @@ public static class RetributionistRevengeManager
     }
     public static void CreateJudgeButton(MeetingHud __instance)
     {
-        foreach (var pva in __instance.playerStates)
+        foreach (var pva in __instance.playerStates.ToArray())
         {
             var pc = Utils.GetPlayerById(pva.TargetPlayerId);
             if (pc == null || !pc.IsAlive()) continue;

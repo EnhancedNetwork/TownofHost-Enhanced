@@ -3437,7 +3437,7 @@ class EnterVentPatch
             pc?.MyPhysics?.RpcBootFromVent(__instance.Id);            
         } */
 
-        if (pc.Is(CustomRoles.Paranoia))
+        else if (pc.Is(CustomRoles.Paranoia))
         {
             if (Main.ParaUsedButtonCount.TryGetValue(pc.PlayerId, out var count) && count < Options.ParanoiaNumOfUseButton.GetInt())
             {
@@ -3454,7 +3454,7 @@ class EnterVentPatch
             }
         }
 
-        if (pc.Is(CustomRoles.Mario))
+        else if (pc.Is(CustomRoles.Mario))
         {
             Main.MarioVentCount.TryAdd(pc.PlayerId, 0);
             Main.MarioVentCount[pc.PlayerId]++;
@@ -3717,7 +3717,7 @@ class CoEnterVentPatch
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Revolutionist);//革命者胜利
                 Utils.GetDrawPlayerCount(__instance.myPlayer.PlayerId, out var x);
                 CustomWinnerHolder.WinnerIds.Add(__instance.myPlayer.PlayerId);
-                foreach (var apc in x) CustomWinnerHolder.WinnerIds.Add(apc.PlayerId);//胜利玩家
+                foreach (var apc in x.ToArray()) CustomWinnerHolder.WinnerIds.Add(apc.PlayerId);//胜利玩家
             }
             return true;
         }
@@ -3775,7 +3775,7 @@ class GameDataCompleteTaskPatch
 {
     public static void Postfix(PlayerControl pc)
     {
-        Logger.Info($"TaskComplete:{pc.GetNameWithRole()}", "CompleteTask");
+        Logger.Info($"Task Complete: {pc.GetNameWithRole()}", "CompleteTask");
         Main.PlayerStates[pc.PlayerId].UpdateTask(pc);
         Utils.NotifyRoles();
     }

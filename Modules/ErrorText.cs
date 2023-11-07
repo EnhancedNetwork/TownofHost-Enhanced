@@ -87,7 +87,7 @@ public class ErrorText : MonoBehaviour
     {
         string text = "";
         int maxLevel = 0;
-        foreach (var err in AllErrors)
+        foreach (var err in AllErrors.ToArray())
         {
             text += $"{err}: {err.Message}\n";
             if (maxLevel < err.ErrorLevel) maxLevel = err.ErrorLevel;

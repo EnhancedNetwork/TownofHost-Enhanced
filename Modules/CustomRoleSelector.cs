@@ -359,7 +359,7 @@ internal class CustomRoleSelector
         addEngineerNum = 0;
         addScientistNum = 0;
         addShapeshifterNum = 0;
-        foreach (var role in AllRoles)
+        foreach (var role in AllRoles.ToArray())
         {
             switch (CustomRolesHelper.GetVNRole(role))
             {

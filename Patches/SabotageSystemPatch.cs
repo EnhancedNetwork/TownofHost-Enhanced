@@ -127,8 +127,11 @@ public class SabotageSystemPatch
         {
             Logger.Info($" IsActive", "MushroomMixupSabotageSystem.UpdateSystem.Postfix");
 
-            // Need for display/hiding player names if player is desync Impostor
-            Utils.NotifyRoles(ForceLoop: true, MushroomMixupIsActive: true);
+            foreach (var pc in Main.AllAlivePlayerControls.Where(player => !player.Is(CustomRoleTypes.Impostor) && Main.ResetCamPlayerList.Contains(player.PlayerId)).ToArray())
+            {
+                // Need for hiding player names if player is desync Impostor
+                Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true, MushroomMixupIsActive: true);
+            }
         }
     }
     [HarmonyPatch(typeof(MushroomMixupSabotageSystem), nameof(MushroomMixupSabotageSystem.Deteriorate))]
@@ -168,15 +171,18 @@ public class SabotageSystemPatch
                 _ = new LateTask(() =>
                 {
                     // After MushroomMixup sabotage, shapeshift cooldown sets to 0
-                    foreach (var pc in Main.AllAlivePlayerControls.ToArray())
+                    foreach (var pc in Main.AllAlivePlayerControls)
                     {
                         // Reset Ability Cooldown To Default For Alive Players
                         pc.RpcResetAbilityCooldown();
                     }
                 }, 1.2f, "Reset Ability Cooldown Arter Mushroom Mixup");
 
-                // Need for display/hiding player names if player is desync Impostor
-                Utils.NotifyRoles(ForceLoop: true);
+                foreach (var pc in Main.AllAlivePlayerControls.Where(player => !player.Is(CustomRoleTypes.Impostor) && Main.ResetCamPlayerList.Contains(player.PlayerId)).ToArray())
+                {
+                    // Need for display player names if player is desync Impostor
+                    Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true);
+                }
             }
         }
     }
@@ -298,7 +304,7 @@ public class SabotageSystemPatch
 
             if (player.Is(CustomRoles.Minimalism)) return false;
 
-            if (systemType == SystemTypes.Comms)
+            if (systemType is SystemTypes.Comms)
             {
                 if (playerRole.Is(CustomRoles.Camouflager) && !Camouflager.CanUseCommsSabotage.GetBool())
                     return false;
@@ -337,21 +343,15 @@ public class SabotageSystemPatch
             return false;
         }
 
-        public static void Postfix(SabotageSystemType __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] MessageReader msgReader)
+        public static void Postfix(SabotageSystemType __instance, bool __runOriginal)
         {
-            byte amount;
-            {
-                var newReader = MessageReader.Get(msgReader);
-                amount = newReader.ReadByte();
-                newReader.Recycle();
-            }
-            var nextSabotage = (SystemTypes)amount;
-
-            if (!AmongUsClient.Instance.AmHost || !isCooldownModificationEnabled || !CanSabotage(player, nextSabotage))
+            // __runOriginal - the result that was returned from Prefix
+            if (!AmongUsClient.Instance.AmHost || !(isCooldownModificationEnabled && __runOriginal))
             {
                 return;
             }
 
+            // Set cooldown sabotages
             __instance.Timer = modifiedCooldownSec;
             __instance.IsDirty = true;
         }

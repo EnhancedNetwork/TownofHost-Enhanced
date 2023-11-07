@@ -91,77 +91,6 @@ class CoBeginPatch
             }
         }
 
-        //var allPlayerControlsList = Main.AllPlayerControls;
-        //int allPlayerControlsCount = allPlayerControlsList.Count;
-
-        //logger.Info("------------Player Names------------");
-        //for (int item = 0; item < allPlayerControlsCount; item++)
-        //{
-        //    PlayerControl pc = allPlayerControlsList[item];
-        //    logger.Info($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc.name.PadRightV2(20)}:{pc.cosmetics.nameText.text}({Palette.ColorNames[pc.Data.DefaultOutfit.ColorId].ToString().Replace("Color", "")})");
-        //    pc.cosmetics.nameText.text = pc.name;
-        //}
-
-
-        //logger.Info("------------Roles / Add-ons------------");
-        //for (int item = 0; item < allPlayerControlsCount; item++)
-        //{
-        //    PlayerControl pc = allPlayerControlsList[item];
-        //    logger.Info($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc?.Data?.PlayerName?.PadRightV2(20)}:{pc.GetAllRoleName().RemoveHtmlTags()}");
-        //}
-
-
-        //logger.Info("------------Player Platforms------------");
-        //for (int item = 0; item < allPlayerControlsCount; item++)
-        //{
-        //    try
-        //    {
-        //        PlayerControl pc = allPlayerControlsList[item];
-        //        var text = pc.AmOwner ? "[*]" : "   ";
-        //        text += $"{pc.PlayerId,-2}:{pc.Data?.PlayerName?.PadRightV2(20)}:{pc.GetClient()?.PlatformData?.Platform.ToString()?.Replace("Standalone", ""),-11}";
-
-        //        if (Main.playerVersion.TryGetValue(pc.PlayerId, out PlayerVersion pv))
-        //        {
-        //            text += $":Mod({pv.forkId}/{pv.version}:{pv.tag})";
-        //        }
-        //        else
-        //        {
-        //            text += ":Vanilla";
-        //        }
-        //        logger.Info(text);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Logger.Exception(ex, "Platform");
-        //    }
-        //}
-
-        //logger.Info("------------Vanilla Settings------------");
-        //var tmp = GameOptionsManager.Instance.CurrentGameOptions.ToHudString(GameData.Instance ? GameData.Instance.PlayerCount : 10).Split("\r\n").Skip(1).ToList();
-        //int tmpCount = tmp.Count;
-
-        //for (int item = 0; item < tmpCount; item++)
-        //{
-        //    string text = tmp[item];
-        //    logger.Info(text);
-        //}
-
-
-        //logger.Info("------------Mod Settings------------");
-        //List<OptionItem> allOptionsList = OptionItem.AllOptions.ToList();
-        //var allOptionsCount = OptionItem.AllOptions.Count;
-
-        //for (int itemOpt = 0; itemOpt < allOptionsCount; itemOpt++)
-        //{
-        //    OptionItem option = allOptionsList[itemOpt];
-        //    if (!option.IsHiddenOn(Options.CurrentGameMode) && (option.Parent == null ? !option.GetString().Equals("0%") : option.Parent.GetBool()))
-        //    {
-        //        logger.Info($"{(option.Parent == null
-        //            ? option.GetName(true, true).RemoveHtmlTags().PadRightV2(40)
-        //            : $"┗ {option.GetName(true, true).RemoveHtmlTags()}".PadRightV2(41))}:{option.GetString().RemoveHtmlTags()}");
-        //    }
-        //}
-
         logger.Info("------------Vanilla Settings------------");
         var tmp = GameOptionsManager.Instance.CurrentGameOptions.ToHudString(GameData.Instance ? GameData.Instance.PlayerCount : 10).Split("\r\n").Skip(1).ToArray();
         foreach (var text in tmp)
@@ -188,15 +117,6 @@ class CoBeginPatch
         {
             Main.PlayerStates[player.PlayerId].InitTask(player);
         }
-
-        //logger.Info($"Number players: {allPlayerControlsCount}");
-
-        //for (int item = 0; item < allPlayerControlsCount; item++)
-        //{
-        //    PlayerControl player = allPlayerControlsList[item];
-
-        //    Main.PlayerStates[player.PlayerId].InitTask(player);
-        //}
 
         GameData.Instance.RecomputeTaskCounts();
         TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
@@ -231,7 +151,7 @@ class BeginCrewmatePatch
             __instance.overlayHandle.color = Palette.ImpostorRed;
             return false;
         }
-         else if (PlayerControl.LocalPlayer.Is(CustomRoles.Crewpostor))
+        else if (PlayerControl.LocalPlayer.Is(CustomRoles.Crewpostor))
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
@@ -239,7 +159,7 @@ class BeginCrewmatePatch
             //__instance.overlayHandle.color = Palette.ImpostorRed;
             return false;
         }
-         else if (PlayerControl.LocalPlayer.Is(CustomRoles.Parasite))
+        else if (PlayerControl.LocalPlayer.Is(CustomRoles.Parasite))
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
@@ -247,7 +167,7 @@ class BeginCrewmatePatch
             //__instance.overlayHandle.color = Palette.ImpostorRed;
             return false;
         }
-         else if (PlayerControl.LocalPlayer.GetCustomRole().IsMadmate())
+        else if (PlayerControl.LocalPlayer.GetCustomRole().IsMadmate())
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
