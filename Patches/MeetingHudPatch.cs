@@ -899,7 +899,7 @@ class MeetingHudStartPatch
                 roleTextMeeting.text = Tracker.GetArrowAndLastRoom(PlayerControl.LocalPlayer, pc);
                 roleTextMeeting.enabled = true;
             }
-            if (Main.GodMode.Value)
+            if (Main.GodMode.Value == true)
             {
                 roleTextMeeting.enabled = true;
             } 
