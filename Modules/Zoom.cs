@@ -14,13 +14,11 @@ public static class Zoom
     public static void Postfix()
     {
         //if (PlayerControl.LocalPlayer.Is(RoleType.Impostor) && Options.OperateVisibilityImpostor.GetBool()) return;
-        
-        /*
+
         if (Main.InfiniteVision.Value == true || PlayerControl.LocalPlayer.Data.IsDead)
         {
             if (Camera.main.orthographicSize > 3.0f)
                 ResetButtons = true;
-        */
          
             if (Input.mouseScrollDelta.y > 0)
             {

@@ -86,11 +86,11 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> EnableRoleSummary { get; private set; }
     public static ConfigEntry<bool> SwitchVanilla { get; private set; }
     public static ConfigEntry<bool> VersionCheat { get; private set; }
+    public static ConfigEntry<bool> InfiniteVision { get; private set; }
     public static bool IsHostVersionCheating = false;
     
    /*
     public static ConfigEntry<bool> GodMode { get; private set; }
-    public static ConfigEntry<bool> InfiniteVision { get; private set; }
     public static ConfigEntry<bool> EvilVote { get; private set; }
     public static ConfigEntry<bool> VoteImmune { get; private set; }
     public static ConfigEntry<bool> AvoidBans { get; private set; }
@@ -450,10 +450,10 @@ public class Main : BasePlugin
         ModeForSmallScreen = Config.Bind("Client Options", "ModeForSmallScreen", false);
         EnableRoleSummary = Config.Bind("Client Options", "EnableRoleSummary", false); // Reverted to false due to it now being a setting to revert the summary change
         SwitchVanilla = Config.Bind("Client Options", "SwitchVanilla", false);
+        InfiniteVision = Config.Bind("Client Options", "InfiniteVision", false);
         
         /*
         GodMode = Config.Bind("Client Options", "GodMode", true);
-        InfiniteVision = Config.Bind("Client Options", "InfiniteVision", true);
         EvilVote = Config.Bind("Client Options", "EvilVote", true);
         VoteImmune = Config.Bind("Client Options", "VoteImmune", true);
         AvoidBans = Config.Bind("Client Options", "AvoidBans", true);

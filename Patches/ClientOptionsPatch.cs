@@ -21,10 +21,10 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem EnableRoleSummary;
     private static ClientOptionItem SwitchVanilla;
     private static ClientOptionItem VersionCheat;
+    private static ClientOptionItem InfiniteVision;
     /*
 #if DEBUG
     private static CheatSettings GodMode;
-    private static CheatSettings InfiniteVision;
     private static CheatSettings EvilVote;
     private static CheatSettings VoteImmune;
     private static CheatSettings AvoidBans;
@@ -118,16 +118,16 @@ public static class OptionsMenuBehaviourStartPatch
         {
           VersionCheat = ClientOptionItem.Create("VersionCheat", Main.VersionCheat, __instance);
         }
+        if ((InfiniteVision == null || InfiniteVision.ToggleButton == null))
+        {
+          InfiniteVision = ClientOptionItem.Create("InfiniteVision", Main.InfiniteVision, __instance);
+        }
             
           /*
           #if DEBUG
             if ((GodMode == null || GodMode.ToggleButton == null))
             {
                 GodMode = CheatSettings.Create("GodMode", Main.GodMode, __instance);
-            }
-            if ((InfiniteVision == null || InfiniteVision.ToggleButton == null))
-            {
-                InfiniteVision = CheatSettings.Create("InfiniteVision", Main.InfiniteVision, __instance);
             }
             if ((EvilVote == null || EvilVote.ToggleButton == null))
             {
