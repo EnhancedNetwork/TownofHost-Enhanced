@@ -40,7 +40,7 @@ public static class OptionsMenuBehaviourStartPatch
         {
             Main.ResetOptions = false;
             Main.VersionCheat.Value = false;
-            //Main.GodMode.Value = false;
+            Main.GodMode.Value = false;
         }
 
         if (UnlockFPS == null || UnlockFPS.ToggleButton == null)
