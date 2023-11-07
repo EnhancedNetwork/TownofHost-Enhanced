@@ -20,9 +20,9 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem ModeForSmallScreen;
     private static ClientOptionItem EnableRoleSummary;
     private static ClientOptionItem SwitchVanilla;
-    private static ClientOptionItem VersionCheat;
-    private static ClientOptionItem InfiniteVision;
-    /*
+    private static CheatSettings VersionCheat;
+    private static CheatSettings InfiniteVision;
+    
 #if DEBUG
     private static CheatSettings GodMode;
     private static CheatSettings EvilVote;
@@ -30,7 +30,6 @@ public static class OptionsMenuBehaviourStartPatch
     private static CheatSettings AvoidBans;
     private static CheatSettings SpeedBoost;
 #endif
-    */
 
     public static void Postfix(OptionsMenuBehaviour __instance)
     {
@@ -116,14 +115,13 @@ public static class OptionsMenuBehaviourStartPatch
         }
         if ((VersionCheat == null || VersionCheat.ToggleButton == null) && DebugModeManager.AmDebugger)
         {
-          VersionCheat = ClientOptionItem.Create("VersionCheat", Main.VersionCheat, __instance);
+          VersionCheat = CheatSettings.Create("VersionCheat", Main.VersionCheat, __instance);
         }
         if ((InfiniteVision == null || InfiniteVision.ToggleButton == null))
         {
-          InfiniteVision = ClientOptionItem.Create("InfiniteVision", Main.InfiniteVision, __instance);
+          InfiniteVision = CheatSettings.Create("InfiniteVision", Main.InfiniteVision, __instance);
         }
             
-          /*
           #if DEBUG
             if ((GodMode == null || GodMode.ToggleButton == null))
             {
@@ -147,7 +145,6 @@ public static class OptionsMenuBehaviourStartPatch
             }
         }
 #endif
-*/
     }
 }
 
