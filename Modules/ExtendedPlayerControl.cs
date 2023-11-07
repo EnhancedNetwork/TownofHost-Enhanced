@@ -1363,7 +1363,7 @@ static class ExtendedPlayerControl
 
     public static bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
     {
-        if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || (seer.AmOwner/* && Main.GodMode.Value*/)) return true;
+        if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || (seer.AmOwner && Main.GodMode.Value)) return true;
         else if (seer.Is(CustomRoles.God)) return true;
         else if (Main.VisibleTasksCount && seer.Data.IsDead && Options.GhostCanSeeOtherRoles.GetBool()) return true;
         else if (target.Is(CustomRoles.Gravestone) && target.Data.IsDead) return true;
