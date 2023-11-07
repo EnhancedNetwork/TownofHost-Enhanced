@@ -35,7 +35,8 @@ class HudManagerPatch
         {
             PlayerControl.LocalPlayer.gameObject.GetComponent<CircleCollider2D>().enabled = true;
         }
-
+        
+        /*
         if (Main.InfiniteVision.Value == true || PlayerControl.LocalPlayer.Data.IsDead)
         {
             DestroyableSingleton<HudManager>.Instance?.ShadowQuad?.gameObject?.SetActive(false);
@@ -44,7 +45,8 @@ class HudManagerPatch
         {
             DestroyableSingleton<HudManager>.Instance?.ShadowQuad?.gameObject?.SetActive(true);
         }
-
+        */
+        
         if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(0))
         {
             Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
