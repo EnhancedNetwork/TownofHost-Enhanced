@@ -87,13 +87,16 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> SwitchVanilla { get; private set; }
     public static ConfigEntry<bool> VersionCheat { get; private set; }
     public static bool IsHostVersionCheating = false;
+    
+   /*
     public static ConfigEntry<bool> GodMode { get; private set; }
     public static ConfigEntry<bool> InfiniteVision { get; private set; }
     public static ConfigEntry<bool> EvilVote { get; private set; }
     public static ConfigEntry<bool> VoteImmune { get; private set; }
     public static ConfigEntry<bool> AvoidBans { get; private set; }
     public static ConfigEntry<bool> SpeedBoost { get; private set; }
-
+   */
+     
     public static Dictionary<byte, PlayerVersion> playerVersion = new();
     //Preset Name Options
     public static ConfigEntry<string> Preset1 { get; private set; }
@@ -438,6 +441,7 @@ public class Main : BasePlugin
         ShowFPS = Config.Bind("Client Options", "ShowFPS", false);
         EnableGM = Config.Bind("Client Options", "EnableGM", false);
         AutoStart = Config.Bind("Client Options", "AutoStart", false);
+        VersionCheat = Config.Bind("Client Options", "VersionCheat", false);
         ForceOwnLanguage = Config.Bind("Client Options", "ForceOwnLanguage", false);
         ForceOwnLanguageRoleName = Config.Bind("Client Options", "ForceOwnLanguageRoleName", false);
         EnableCustomButton = Config.Bind("Client Options", "EnableCustomButton", false);
@@ -446,15 +450,17 @@ public class Main : BasePlugin
         ModeForSmallScreen = Config.Bind("Client Options", "ModeForSmallScreen", false);
         EnableRoleSummary = Config.Bind("Client Options", "EnableRoleSummary", false); // Reverted to false due to it now being a setting to revert the summary change
         SwitchVanilla = Config.Bind("Client Options", "SwitchVanilla", false);
-        VersionCheat = Config.Bind("Client Options", "VersionCheat", false);
-        GodMode = Config.Bind("Client Options", "GodMode", false);
-        InfiniteVision = Config.Bind("Client Options", "InfiniteVision", false);
-        EvilVote = Config.Bind("Client Options", "EvilVote", false);
-        VoteImmune = Config.Bind("Client Options", "VoteImmune", false);
-        AvoidBans = Config.Bind("Client Options", "AvoidBans", false);
-        SpeedBoost = Config.Bind("Client Options", "SpeedBoost", false);
-        AutoMuteUs = Config.Bind("Client Options", "AutoMuteUs", false); // The AutoMuteUs bot fails to match the host's name.
-
+        
+        /*
+        GodMode = Config.Bind("Client Options", "GodMode", true);
+        InfiniteVision = Config.Bind("Client Options", "InfiniteVision", true);
+        EvilVote = Config.Bind("Client Options", "EvilVote", true);
+        VoteImmune = Config.Bind("Client Options", "VoteImmune", true);
+        AvoidBans = Config.Bind("Client Options", "AvoidBans", true);
+        SpeedBoost = Config.Bind("Client Options", "SpeedBoost", true);
+        AutoMuteUs = Config.Bind("Client Options", "AutoMuteUs", true); // The AutoMuteUs bot fails to match the host's name.
+        */
+        
         Logger = BepInEx.Logging.Logger.CreateLogSource("TOHE");
         TOHE.Logger.Enable();
         TOHE.Logger.Disable("NotifyRoles");
