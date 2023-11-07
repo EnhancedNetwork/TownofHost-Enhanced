@@ -355,6 +355,7 @@ public class Main : BasePlugin
                         break;
                 }
             }
+            if (!Directory.Exists(LANGUAGE_FOLDER_NAME)) Directory.CreateDirectory(LANGUAGE_FOLDER_NAME);
             CreateTemplateRoleColorFile();
             if (File.Exists(@$"./{LANGUAGE_FOLDER_NAME}/RoleColor.dat"))
             {
