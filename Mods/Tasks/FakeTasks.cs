@@ -20,7 +20,6 @@ public static class Console_UsePrefix
         }
         
         }
-        else
         {
             foreach (var console in consoles)
             {
