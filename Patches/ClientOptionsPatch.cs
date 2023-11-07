@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace TOHE;
 
-//��Դ��https://github.com/tukasa0001/TownOfHost/pull/1265
+//https://github.com/tukasa0001/TownOfHost/pull/1265
 [HarmonyPatch(typeof(OptionsMenuBehaviour), nameof(OptionsMenuBehaviour.Start))]
 public static class OptionsMenuBehaviourStartPatch
 {
@@ -146,7 +146,6 @@ public static class OptionsMenuBehaviourStartPatch
         }
 #endif
     }
-}
 
 [HarmonyPatch(typeof(OptionsMenuBehaviour), nameof(OptionsMenuBehaviour.Close))]
 public static class OptionsMenuBehaviourClosePatch
