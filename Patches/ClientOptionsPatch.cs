@@ -20,11 +20,12 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem ModeForSmallScreen;
     private static ClientOptionItem EnableRoleSummary;
     private static ClientOptionItem SwitchVanilla;
-    private static CheatSettings VersionCheat;
-    private static CheatSettings InfiniteVision;
     
 #if DEBUG
+    private static CheatSettings VersionCheat;
+    private static CheatSettings InfiniteVision;
     private static CheatSettings GodMode;
+    private static CheatSettings ImpTasks;    
     private static CheatSettings EvilVote;
     private static CheatSettings VoteImmune;
     private static CheatSettings AvoidBans;
@@ -113,19 +114,23 @@ public static class OptionsMenuBehaviourStartPatch
                 Main.Instance.Unload();
             }
         }
-        if ((VersionCheat == null || VersionCheat.ToggleButton == null) && DebugModeManager.AmDebugger)
-        {
-          VersionCheat = CheatSettings.Create("VersionCheat", Main.VersionCheat, __instance);
-        }
-        if ((InfiniteVision == null || InfiniteVision.ToggleButton == null))
-        {
-          InfiniteVision = CheatSettings.Create("InfiniteVision", Main.InfiniteVision, __instance);
-        }
             
           #if DEBUG
+            if ((VersionCheat == null || VersionCheat.ToggleButton == null) && DebugModeManager.AmDebugger)
+            {
+                VersionCheat = CheatSettings.Create("VersionCheat", Main.VersionCheat, __instance);
+            }
+            if ((InfiniteVision == null || InfiniteVision.ToggleButton == null))
+            {
+                InfiniteVision = CheatSettings.Create("InfiniteVision", Main.InfiniteVision, __instance);
+            }
             if ((GodMode == null || GodMode.ToggleButton == null))
             {
                 GodMode = CheatSettings.Create("GodMode", Main.GodMode, __instance);
+            }
+            if ((ImpTasks == null || ImpTasks.ToggleButton == null))
+            {
+            ImpTasks = CheatSettings.Create("ImpTasks", Main.ImpTasks, __instance);
             }
             if ((EvilVote == null || EvilVote.ToggleButton == null))
             {
