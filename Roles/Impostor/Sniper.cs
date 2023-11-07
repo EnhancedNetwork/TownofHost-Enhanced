@@ -83,7 +83,7 @@ public static class Sniper
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SniperSync, Hazel.SendOption.Reliable, -1);
         writer.Write(playerId);
         var snList = shotNotify[playerId];
-        writer.Write(snList.Count());
+        writer.Write(snList.Count);
         foreach (var sn in snList)
         {
             writer.Write(sn);

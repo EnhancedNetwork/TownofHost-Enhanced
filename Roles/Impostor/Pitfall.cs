@@ -75,8 +75,8 @@ namespace TOHE.Roles.Impostor
             Traps = Traps.Where(a => a.IsActive).ToList();
 
             Vector2 position = shapeshifter.transform.position;
-            var playerTraps = Traps.Where(a => a.PitfallPlayerId == shapeshifter.PlayerId);
-            if (playerTraps.Count() >= MaxTrapCount.GetInt())
+            var playerTraps = Traps.Where(a => a.PitfallPlayerId == shapeshifter.PlayerId).ToArray();
+            if (playerTraps.Length >= MaxTrapCount.GetInt())
             {
                 var trap = playerTraps.First();
                 trap.Location = position;

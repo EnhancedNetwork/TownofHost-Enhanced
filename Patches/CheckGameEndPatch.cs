@@ -535,7 +535,7 @@ class GameEndChecker
         {
             reason = GameOverReason.ImpostorByKill;
 
-            if (CustomRoles.Sunnyboy.RoleExist() && Main.AllAlivePlayerControls.Count() > 1) return false;
+            if (CustomRoles.Sunnyboy.RoleExist() && Main.AllAlivePlayerControls.Length > 1) return false;
             var neutralRoleCounts = new Dictionary<CountTypes, int>();
             var apcList = Main.AllAlivePlayerControls.ToArray();
             int dual = 0, impCount = 0, crewCount = 0;

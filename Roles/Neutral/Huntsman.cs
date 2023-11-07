@@ -89,7 +89,7 @@ public static class Huntsman
     {
         if (!AmongUsClient.Instance.AmHost) return;
         Targets.Clear();
-        int potentialTargetCount = Main.AllAlivePlayerControls.Count() - 1;
+        int potentialTargetCount = Main.AllAlivePlayerControls.Length - 1;
         if (potentialTargetCount < 0) potentialTargetCount = 0;
         int maxLimit = Math.Min(potentialTargetCount, NumOfTargets.GetInt());
         for (var i = 0; i < maxLimit; i++)

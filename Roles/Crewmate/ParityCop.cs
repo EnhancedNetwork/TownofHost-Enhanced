@@ -290,17 +290,17 @@ public static class ParityCop
     public static bool CheckCommond(ref string msg, string command, bool exact = true)
     {
         var comList = command.Split('|');
-        for (int i = 0; i < comList.Count(); i++)
+        foreach (var comm in comList)
         {
             if (exact)
             {
-                if (msg == "/" + comList[i]) return true;
+                if (msg == "/" + comm) return true;
             }
             else
             {
-                if (msg.StartsWith("/" + comList[i]))
+                if (msg.StartsWith("/" + comm))
                 {
-                    msg = msg.Replace("/" + comList[i], string.Empty);
+                    msg = msg.Replace("/" + comm, string.Empty);
                     return true;
                 }
             }
@@ -330,7 +330,7 @@ public static class ParityCop
                 msg += rd.Next(0, 15).ToString();
 
             }
-            var player = Main.AllAlivePlayerControls.ToArray()[rd.Next(0, Main.AllAlivePlayerControls.Count())];
+            var player = Main.AllAlivePlayerControls.ToArray()[rd.Next(0, Main.AllAlivePlayerControls.Length)];
             DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
             var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
             writer.StartMessage(-1);

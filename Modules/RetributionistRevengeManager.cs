@@ -25,7 +25,7 @@ public static class RetributionistRevengeManager
             else pc.ShowPopUp(GetString("RetributionistKillDisable"));
             return true;
         }
-        int playerCount = Main.AllAlivePlayerControls.Count();
+        int playerCount = Main.AllAlivePlayerControls.Length;
         {
             if (playerCount <= Options.MinimumPlayersAliveToRetri.GetInt())
             {
