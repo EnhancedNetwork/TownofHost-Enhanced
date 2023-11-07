@@ -9,7 +9,7 @@ public static class HostOnly_GodmodePostfix
     //Postfix patch of PlayerPhysics.LateUpdate to revive LocalPlayer when CheatSettings.godMode enabled
     public static void Postfix(PlayerPhysics __instance)
     {
-        if(Main.GodMode.Value == false){
+        if(Main.GodMode.Value == true){
             if (__instance.myPlayer.Data.IsDead && __instance.AmOwner){
                 __instance.myPlayer.Revive();
             }
@@ -23,7 +23,7 @@ public static class HostOnly_CastVotePrefix
     //Prefix patch of MeetingHud.CastVote
     public static bool Prefix(byte srcPlayerId, byte suspectPlayerId, MeetingHud __instance)
     {
-        if (Main.EvilVote.Value == false)
+        if (Main.EvilVote.Value == true)
         {
             //Detects votes from LocalPlayer
             if (PlayerControl.LocalPlayer.PlayerId == srcPlayerId)
@@ -45,6 +45,14 @@ public static class HostOnly_CastVotePrefix
 
                 return false; //Skips original method
             }
+            else if (Main.VoteImmune.Value == true)
+            {
+                if (PlayerControl.LocalPlayer.PlayerId == suspectPlayerId)
+                {
+                    __instance.CastVote(srcPlayerId, (byte)254); //Redirects all votes to LocalPlayer so that they skip instead
+                    return false; //Skips original method
+                }
+            }
         }
         return true;
     }
@@ -61,7 +69,7 @@ public static class HostOnly_CastVotePrefix
 
                 //PlayerControl.LocalPlayer.MyPhysics.Speed is the base speed of a player
                 //Among Us uses this value with the associated game setting to calculate the TrueSpeed of the player
-                if (Main.SpeedBoost.Value == false)
+                if (Main.SpeedBoost.Value == true)
                 {
                     PlayerControl.LocalPlayer.MyPhysics.Speed = 2.5f * 2;
                 }
