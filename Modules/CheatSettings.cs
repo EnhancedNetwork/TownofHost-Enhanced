@@ -1,4 +1,4 @@
-/*
+
 using BepInEx.Configuration;
 using System;
 using UnityEngine;
@@ -123,4 +123,3 @@ public class CheatSettings
         ToggleButton.Rollover?.ChangeOutColor(color);
     }
 }
-*/
