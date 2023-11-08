@@ -28,23 +28,13 @@ public static class Credentials
             if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.English)
             {
                 var ping = AmongUsClient.Instance.Ping;
-                string pingcolor = "#ff4500";
-                if (ping < 30) pingcolor = "#44dfcc";
-                else if (ping < 100) pingcolor = "#7bc690";
-                else if (ping < 200) pingcolor = "#f3920e";
-                else if (ping < 400) pingcolor = "#ff146e";
-                sb.Append($"\r\n").Append($"<color={pingcolor}>Ping: {ping} ms</color>");
+                sb.Append($"\r\n").Append($"Ping: {ping} ms");
             }
 
             else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.Brazilian)
             {
                 var ping = AmongUsClient.Instance.Ping;
-                string pingcolor = "#ff4500";
-                if (ping < 30) pingcolor = "#44dfcc";
-                else if (ping < 100) pingcolor = "#7bc690";
-                else if (ping < 200) pingcolor = "#f3920e";
-                else if (ping < 400) pingcolor = "#ff146e";
-                sb.Append($"\r\n").Append($"<color={pingcolor}>Latência: {ping} ms</color>");
+                sb.Append($"\r\n").Append($"Latência: {ping} ms");
             }
 
             if (!GameStates.IsModHost) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("Warning.NoModHost")));
