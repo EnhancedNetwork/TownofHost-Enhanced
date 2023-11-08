@@ -73,6 +73,7 @@ public static class Credentials
 
 #if RELEASE
             Main.credentialsText += $"\r\n<color=#a54aff>By <color=#ffc0cb>KARPED1EM</color> & </color><color=#f34c50>Moe</color>";
+            Logger.Info($"v{Main.PluginVersion}, {ThisAssembly.Git.Branch}:({ThisAssembly.Git.Commit})", "TOHE version");
 #endif
 
 #if CANARY
