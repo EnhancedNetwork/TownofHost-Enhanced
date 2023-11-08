@@ -134,9 +134,11 @@ public static class DevManager
         DevUserList.Add(new(code: "deepmusic#4504", color: "#FCF4A3", tag: "Translator", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "Sunnyboi")); //misheru.u
         // Latam Translators
         DevUserList.Add(new(code: "magicyear#5568", color: "#1F75FE", tag: "Traductor", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "CreepPower")); //creeppower
-       // Spanish Translators
+        // Spanish Translators
         DevUserList.Add(new(code: "swiftlord#0872", color: "#E64236", tag: "Translator", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "Dawson")); //butwhatabout
-
+        // Italian Translators
+        DevUserList.Add(new(code: "fastgecko#5461", color: "00ff00", tag: "Translator", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "MATTIX606")); //mattix606
+        DevUserList.Add(new(code: "beechary#2537", color: "#009900", tag: "Translator", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "BaphoJack")); //baphojack
         // China Up
         DevUserList.Add(new(code: "truantwarm#9165", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "萧暮不姓萧"));
         DevUserList.Add(new(code: "drilldinky#1386", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "爱玩AU的河豚"));
@@ -213,7 +215,7 @@ public static class DevManager
         DevUserList.Add(new(code: "primebulb#9031", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "CultAnxi")); //CultAnxi
         DevUserList.Add(new(code: "peakbass#6507", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "Vulcan")); //.vulcan.is.a.star.
         // DevUserList.Add(new(code: "rollingegg#7687", color: "#fe7d6e", tag: "Ruler of Jiggly Peach Cakes", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "DarlingXX"));
-        DevUserList.Add(new(code: "riskyhunt#8928", color: "#DC143C", tag: "I♥PANDAS", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "Panda"));
+        DevUserList.Add(new(code: "riskyhunt#8928", color: "null", tag: "null", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "Panda"));
     }
     public static bool IsDevUser(this string code) => DevUserList.Any(x => x.Code == code);
     public static DevUser GetDevUser(this string code) => code.IsDevUser() ? DevUserList.Find(x => x.Code == code) : DefaultDevUser;

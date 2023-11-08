@@ -448,6 +448,7 @@ public class TaskState
             if (player.Is(CustomRoles.Divinator) && player.IsAlive())
             {
                 Divinator.CheckLimit[player.PlayerId] += Divinator.AbilityUseGainWithEachTaskCompleted.GetFloat();
+                Divinator.SendRPC(player.PlayerId);
             }
             if (player.Is(CustomRoles.Veteran) && player.IsAlive())
             {
@@ -476,14 +477,17 @@ public class TaskState
             if (player.Is(CustomRoles.Mediumshiper) && player.IsAlive())
             {
                 Mediumshiper.ContactLimit[player.PlayerId] += Mediumshiper.MediumAbilityUseGainWithEachTaskCompleted.GetFloat();
+                Mediumshiper.SendRPC(player.PlayerId);
             }
             if (player.Is(CustomRoles.ParityCop) && player.IsAlive())
             {
                 ParityCop.MaxCheckLimit[player.PlayerId] += ParityCop.ParityAbilityUseGainWithEachTaskCompleted.GetFloat();
+                ParityCop.SendRPC(player.PlayerId, 2);
             }
             if (player.Is(CustomRoles.Oracle) && player.IsAlive())
             {
                 Oracle.CheckLimit[player.PlayerId] += Oracle.OracleAbilityUseGainWithEachTaskCompleted.GetFloat();
+                Oracle.SendRPC(player.PlayerId);
             }
     /*        if (player.Is(CustomRoles.Cleanser) && player.IsAlive())
             {
@@ -497,14 +501,17 @@ public class TaskState
             if (player.Is(CustomRoles.Tracker) && player.IsAlive())
             {
                 Tracker.TrackLimit[player.PlayerId] += Tracker.TrackerAbilityUseGainWithEachTaskCompleted.GetFloat();
+                Tracker.SendRPC(2, player.PlayerId);
             }
             if (player.Is(CustomRoles.Bloodhound) && player.IsAlive())
             {
                 Bloodhound.UseLimit[player.PlayerId] += Bloodhound.BloodhoundAbilityUseGainWithEachTaskCompleted.GetFloat();
+                Bloodhound.SendRPCLimit(player.PlayerId, operate:2);
             }
             if (player.Is(CustomRoles.Chameleon) && player.IsAlive())
             {
                 Chameleon.UseLimit[player.PlayerId] += Chameleon.ChameleonAbilityUseGainWithEachTaskCompleted.GetFloat();
+                Chameleon.SendRPC(player, isLimit: true);
             }
             if (player.Is(CustomRoles.Spy) && player.IsAlive())
             {
