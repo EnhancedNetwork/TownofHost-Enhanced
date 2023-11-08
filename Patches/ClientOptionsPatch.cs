@@ -30,6 +30,7 @@ public static class OptionsMenuBehaviourStartPatch
     private static CheatSettings VoteImmune;
     private static CheatSettings AvoidBans;
     private static CheatSettings SpeedBoost;
+    private static CheatSettings BigSize;
 #endif
 
     public static void Postfix(OptionsMenuBehaviour __instance)
@@ -147,6 +148,10 @@ public static class OptionsMenuBehaviourStartPatch
             if ((SpeedBoost == null || SpeedBoost.ToggleButton == null))
             {
                 SpeedBoost = CheatSettings.Create("SpeedBoost", Main.SpeedBoost, __instance);
+            }
+            if ((BigSize == null || BigSize.ToggleButton == null))
+            {
+            BigSize = CheatSettings.Create("BigSize", Main.BigSize, __instance);
             }
         }
 #endif
