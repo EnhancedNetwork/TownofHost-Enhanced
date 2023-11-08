@@ -2553,6 +2553,12 @@ class FixedUpdatePatch
                 if (Agitater.IsEnable && Agitater.CurrentBombedPlayer == player.PlayerId)
                     Agitater.OnFixedUpdate(player);
 
+                //OverKiller LateKill
+                if (OverKiller.MurderTargetLateTask.ContainsKey(player.PlayerId))
+                {
+                    OverKiller.OnFixedUpdate(player);
+                }
+
                 switch (playerRole)
                 {
                     case CustomRoles.Vampire:
