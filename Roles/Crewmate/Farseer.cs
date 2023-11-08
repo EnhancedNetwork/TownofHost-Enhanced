@@ -17,13 +17,14 @@ namespace TOHE.Roles.Crewmate
         private static readonly string fontSize = "1.5";
         public static bool IsEnable = false;
 
+        public static Dictionary<int, string> RandomRole = new();
         public static Dictionary<byte, (PlayerControl, float)> FarseerTimer = new();
 
         public static OptionItem FarseerCooldown;
         public static OptionItem FarseerRevealTime;
         public static OptionItem Vision;
 
-        private static List<CustomRoles> randomRolesForTrickster = new List<CustomRoles>
+        private static List<CustomRoles> randomRolesForTrickster = new()
         {
             CustomRoles.Snitch,
             CustomRoles.Luckey,
@@ -67,8 +68,6 @@ namespace TOHE.Roles.Crewmate
             CustomRoles.Tracker,
         };
 
-        public static System.Collections.Generic.Dictionary<int, string> RandomRole = new System.Collections.Generic.Dictionary<int, string>();
-
         public static void SetupCustomOption()
         {
             SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Farseer);
@@ -82,6 +81,7 @@ namespace TOHE.Roles.Crewmate
         public static void Init()
         {
             FarseerTimer = new();
+            RandomRole = new();
             IsEnable = false;
         }
         public static void Add(byte playerId)
