@@ -1490,6 +1490,7 @@ class MurderPlayerPatch
 
         if (Lawyer.Target.ContainsValue(target.PlayerId))
             Lawyer.ChangeRoleByTarget(target);
+
         Hacker.AddDeadBody(target);
         Mortician.OnPlayerDead(target);
         Bloodhound.OnPlayerDead(target);
@@ -2285,7 +2286,7 @@ class ReportDeadBodyPatch
                     }
                     Main.DetectiveNotify.Add(player.PlayerId, msg);
                 }
-                if (player.Is(CustomRoles.Sleuth) && player.PlayerId != target.PlayerId)
+                else if (player.Is(CustomRoles.Sleuth) && player.PlayerId != target.PlayerId)
                 {
                     string msg;
                     msg = string.Format(GetString("SleuthNoticeVictim"), tpc.GetRealName(), tpc.GetDisplayRoleName());
@@ -2299,7 +2300,8 @@ class ReportDeadBodyPatch
                 }
             }
 
-            if (Main.InfectedBodies.Contains(target.PlayerId)) Virus.OnKilledBodyReport(player);
+            if (Virus.IsEnable && Main.InfectedBodies.Contains(target.PlayerId))
+                Virus.OnKilledBodyReport(player);
         }
 
         Main.LastVotedPlayerInfo = null;
@@ -2400,9 +2402,9 @@ class ReportDeadBodyPatch
 
         MeetingTimeManager.OnReportDeadBody();
 
-        Utils.NotifyRoles(isForMeeting: true, NoCache: true, CamouflageIsForMeeting: true);
+        Utils.DoNotifyRoles(isForMeeting: true, NoCache: true, CamouflageIsForMeeting: true);
 
-        Utils.SyncAllSettings();
+        _ = new LateTask(Utils.SyncAllSettings, 3f, "Sync all settings after report");
     }
     public static async void ChangeLocalNameAndRevert(string name, int time)
     {

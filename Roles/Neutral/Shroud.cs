@@ -117,6 +117,7 @@ public static class Shroud
                         ShroudList.Remove(shroud.PlayerId);
                         SendRPC(byte.MaxValue, shroud.PlayerId, 2);
                         Utils.NotifyRoles(SpecifySeer: shroud);
+                        Utils.NotifyRoles(Utils.GetPlayerById(shroudId));
                     }
                 }
             }

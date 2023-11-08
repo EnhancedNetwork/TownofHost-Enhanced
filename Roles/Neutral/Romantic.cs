@@ -219,8 +219,6 @@ public static class Romantic
             }, 0.2f, "Convert to Vengeful Romantic");
         }
 
-        Utils.NotifyRoles();
-
         Utils.GetPlayerById(Romantic).ResetKillCooldown();
         Utils.GetPlayerById(Romantic).SetKillCooldown();
     }

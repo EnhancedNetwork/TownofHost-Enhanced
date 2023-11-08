@@ -11,6 +11,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
@@ -1910,25 +1911,34 @@ public static class Utils
     private static StringBuilder SelfMark = new(20);
     private static StringBuilder TargetSuffix = new();
     private static StringBuilder TargetMark = new(20);
-    public static void NotifyRoles(bool isForMeeting = false, PlayerControl SpecifySeer = null, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
+    public static async void NotifyRoles(bool isForMeeting = false, PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (Main.AllPlayerControls == null) return;
+        await DoNotifyRoles(isForMeeting, SpecifySeer, SpecifyTarget, NoCache, ForceLoop, CamouflageIsForMeeting, MushroomMixupIsActive);
+    }
+    public static Task DoNotifyRoles(bool isForMeeting = false, PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
+    {
+        if (!AmongUsClient.Instance.AmHost) return Task.CompletedTask;
+        if (Main.AllPlayerControls == null) return Task.CompletedTask;
 
         //Do not update NotifyRoles during meetings
-        if (GameStates.IsMeeting) return;
+        if (GameStates.IsMeeting) return Task.CompletedTask;
 
         var caller = new System.Diagnostics.StackFrame(1, false);
         var callerMethod = caller.GetMethod();
         string callerMethodName = callerMethod.Name;
         string callerClassName = callerMethod.DeclaringType.FullName;
         var logger = Logger.Handler("NotifyRoles");
-        logger.Info("NotifyRoles was called from " + callerClassName + "." + callerMethodName);
+        Logger.Info($" Was called from: {callerClassName}.{callerMethodName}", "NotifyRoles", force: true);
+        
         HudManagerPatch.NowCallNotifyRolesCount++;
         HudManagerPatch.LastSetNameDesyncCount = 0;
 
         PlayerControl[] seerList = SpecifySeer != null 
             ? (new PlayerControl[] { SpecifySeer }) 
+            : Main.AllPlayerControls;
+
+        PlayerControl[] targetList = SpecifyTarget != null
+            ? (new PlayerControl[] { SpecifyTarget })
             : Main.AllPlayerControls;
 
         if (!MushroomMixupIsActive)
@@ -1966,7 +1976,7 @@ public static class Utils
 
                 // ====== Add SelfMark for seer ======
 
-                if (seer.Is(CustomRoles.Lovers) || CustomRoles.Ntr.RoleExist())
+                if (seer.Is(CustomRoles.Lovers) /* || CustomRoles.Ntr.RoleExist() */)
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Lovers), "♥"));
 
                 if (seer.Is(CustomRoles.SuperStar) && Options.EveryOneKnowSuperStar.GetBool())
@@ -1976,7 +1986,7 @@ public static class Utils
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
 
                 if (Blackmailer.ForBlackmailer.Contains(seer.PlayerId))
-                    SelfMark.Append(ColorString(Utils.GetRoleColor(CustomRoles.Blackmailer), "╳"));
+                    SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Blackmailer), "╳"));
 
                 if (BallLightning.IsEnable && BallLightning.IsGhost(seer))
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.BallLightning), "■"));
@@ -1984,19 +1994,24 @@ public static class Utils
                 if (Medic.IsEnable && (Medic.InProtect(seer.PlayerId) || Medic.TempMarkProtected == seer.PlayerId) && (Medic.WhoCanSeeProtect.GetInt() is 0 or 2))
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Medic), "✚"));
 
+                if (Snitch.IsEnable)
+                    SelfMark.Append(Snitch.GetWarningArrow(seer));
 
-                SelfMark.Append(Snitch.GetWarningArrow(seer));
+                if (Gamer.IsEnable)
+                    SelfMark.Append(Gamer.TargetMark(seer, seer));
 
-                SelfMark.Append(Gamer.TargetMark(seer, seer));
+                if (Sniper.IsEnable)
+                    SelfMark.Append(Sniper.GetShotNotify(seer.PlayerId));
 
-                SelfMark.Append(Sniper.GetShotNotify(seer.PlayerId));
 
 
                 // ====== Add SelfSuffix for seer ======
 
                 SelfSuffix.Clear();
 
-                SelfSuffix.Append(Deathpact.GetDeathpactPlayerArrow(seer));
+                if (Deathpact.IsEnable)
+                    SelfSuffix.Append(Deathpact.GetDeathpactPlayerArrow(seer));
+
 
                 if (!isForMeeting) // Only during game
                 {
@@ -2096,9 +2111,11 @@ public static class Utils
                     if (seer.PlayerId == Pirate.PirateTarget)
                         SelfMark.Append(Pirate.GetPlunderedMark(seer.PlayerId, true));
 
-                    SelfMark.Append(Witch.GetSpelledMark(seer.PlayerId, true));
+                    if (Witch.IsEnable)
+                        SelfMark.Append(Witch.GetSpelledMark(seer.PlayerId, true));
 
-                    SelfMark.Append(HexMaster.GetHexedMark(seer.PlayerId, true));
+                    if (HexMaster.IsEnable)
+                        SelfMark.Append(HexMaster.GetHexedMark(seer.PlayerId, true));
 
                     //SelfMark.Append(Occultist.GetCursedMark(seer.PlayerId, true));
                 }
@@ -2168,9 +2185,13 @@ public static class Utils
                     SelfName = name;
 
                 // Devourer
-                bool playerDevoured = Devourer.HideNameOfConsumedPlayer.GetBool() && Devourer.PlayerSkinsCosumed.Any(a => a.Value.Contains(seer.PlayerId));
-                if (playerDevoured && !CamouflageIsForMeeting)
-                    SelfName = GetString("DevouredName");
+                if (Devourer.IsEnable)
+                {
+                    bool playerDevoured = Devourer.HideNameOfConsumedPlayer.GetBool() && Devourer.PlayerSkinsCosumed.Any(a => a.Value.Contains(seer.PlayerId));
+                    
+                    if (playerDevoured && !CamouflageIsForMeeting)
+                        SelfName = GetString("DevouredName");
+                }
 
                 // Camouflage
                 if (!CamouflageIsForMeeting && ((IsActive(SystemTypes.Comms) && Camouflage.IsActive) || Camouflager.AbilityActivated))
@@ -2192,7 +2213,7 @@ public static class Utils
                 || NoCache
                 || ForceLoop)
             {
-                foreach (var target in Main.AllPlayerControls)
+                foreach (var target in targetList)
                 {
                     // if the target is the seer itself, do nothing
                     if (target.PlayerId == seer.PlayerId) continue;
@@ -2214,16 +2235,19 @@ public static class Utils
 
                         if (isForMeeting)
                         {
-                            TargetMark.Append(Witch.GetSpelledMark(target.PlayerId, true));
+                            if (Witch.IsEnable)
+                                TargetMark.Append(Witch.GetSpelledMark(target.PlayerId, true));
 
-                            TargetMark.Append(HexMaster.GetHexedMark(target.PlayerId, true));
+                            if (HexMaster.IsEnable)
+                                TargetMark.Append(HexMaster.GetHexedMark(target.PlayerId, true));
 
-                            //TargetMark.Append(Occultist.GetCursedMark(target.PlayerId, true));
+                            //if (Occultist.IsEnable)
+                            //    TargetMark.Append(Occultist.GetCursedMark(target.PlayerId, true));
 
                             if (Pirate.IsEnable)
                                 TargetMark.Append(Pirate.GetPlunderedMark(target.PlayerId, true));
 
-                            if (!seer.Is(CustomRoles.Shroud) && target.IsAlive())
+                            if (Shroud.IsEnable && !seer.Is(CustomRoles.Shroud) && target.IsAlive())
                                 TargetMark.Append(Shroud.GetShroudMark(target.PlayerId, true));
                         }
 
@@ -2505,6 +2529,7 @@ public static class Utils
 
             logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":END");
         }
+        return Task.CompletedTask;
     }
     public static void MarkEveryoneDirtySettings()
     {
@@ -2577,7 +2602,7 @@ public static class Utils
         switch (target.GetCustomRole())
         {
             case CustomRoles.Terrorist:
-                Logger.Info(target?.Data?.PlayerName + "はTerroristだった", "MurderPlayer");
+                Logger.Info(target?.Data?.PlayerName + " was Terrorist", "AfterPlayerDeathTasks");
                 CheckTerroristWin(target.Data);
                 break;
             case CustomRoles.Lawyer:
