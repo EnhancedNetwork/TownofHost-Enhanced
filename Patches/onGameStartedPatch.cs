@@ -533,7 +533,7 @@ internal class SelectRolesPatch
                         TimeThief.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Camouflager:
-                        Camouflager.Add(pc.PlayerId);
+                        Camouflager.Add();
                         break;
                     case CustomRoles.Puppeteer:
                         Puppeteer.Add(pc.PlayerId);

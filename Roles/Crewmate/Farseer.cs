@@ -184,8 +184,8 @@ namespace TOHE.Roles.Crewmate
             var NonCompleteColor = Color.yellow;
             var NormalColor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
 
-            TextColor = Camouflager.IsActive ? Color.gray : NormalColor;
-            string Completed = Camouflager.IsActive ? "?" : $"{taskState.CompletedTasksCount}";
+            TextColor = Camouflager.AbilityActivated ? Color.gray : NormalColor;
+            string Completed = Camouflager.AbilityActivated ? "?" : $"{taskState.CompletedTasksCount}";
 
             return $" <size={fontSize}>" + ColorString(TextColor, $"({Completed}/{taskState.AllTasksCount})") + "</size>\r\n";
         }

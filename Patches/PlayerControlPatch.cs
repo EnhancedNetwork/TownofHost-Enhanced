@@ -1500,10 +1500,14 @@ class MurderPlayerPatch
         Utils.AfterPlayerDeathTasks(target);
 
         Main.PlayerStates[target.PlayerId].SetDead();
-        target.SetRealKiller(killer, true); //既に追加されてたらスキップ
+        target.SetRealKiller(killer, true);
         Utils.CountAlivePlayers(true);
 
-        Camouflager.isDead(target);
+        if (Camouflager.AbilityActivated && target.Is(CustomRoles.Camouflager))
+        {
+            Camouflager.IsDead();
+        }
+
         Utils.TargetDies(__instance, target);
 
         if (Options.LowLoadMode.GetBool())
@@ -1822,17 +1826,10 @@ class ReportDeadBodyPatch
             if (!(target != null && target.Object.Is(CustomRoles.Bait) && Options.BaitCanBeReportedUnderAllConditions.GetBool()))
             {
                 // Camouflager
-                if (Camouflager.DisableReportWhenCamouflageIsActive.GetBool() && Camouflager.IsActive && !(Utils.IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool())) return false;
+                if (Camouflager.DisableReportWhenCamouflageIsActive.GetBool() && Camouflager.AbilityActivated && !(Utils.IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool())) return false;
 
                 // Comms Camouflage
-                if (Options.DisableReportWhenCC.GetBool() && Utils.IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool() &&
-                    !(Options.DisableOnSomeMaps.GetBool() &&
-                        ((Options.DisableOnSkeld.GetBool() && Options.IsActiveSkeld) ||
-                         (Options.DisableOnMira.GetBool() && Options.IsActiveMiraHQ) ||
-                         (Options.DisableOnPolus.GetBool() && Options.IsActivePolus) ||
-                         (Options.DisableOnFungle.GetBool() && Options.IsActiveFungle) ||
-                         (Options.DisableOnAirship.GetBool() && Options.IsActiveAirship)
-                        ))) return false;
+                if (Options.DisableReportWhenCC.GetBool() && Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive) return false;
             }
 
             if (Deathpact.IsEnable && !Deathpact.PlayersInDeathpactCanCallMeeting.GetBool() && Deathpact.IsInActiveDeathpact(__instance)) return false;
@@ -3318,15 +3315,7 @@ class FixedUpdatePatch
                     RealName = GetString("DevouredName");
 
                 // Camouflage
-                if ((Utils.IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool() &&
-                    !(Options.DisableOnSomeMaps.GetBool() &&
-                        ((Options.DisableOnSkeld.GetBool() && Options.IsActiveSkeld) ||
-                         (Options.DisableOnMira.GetBool() && Options.IsActiveMiraHQ) ||
-                         (Options.DisableOnPolus.GetBool() && Options.IsActivePolus) ||
-                         (Options.DisableOnFungle.GetBool() && Options.IsActiveFungle) ||
-                         (Options.DisableOnAirship.GetBool() && Options.IsActiveAirship)
-                        )))
-                        || Camouflager.IsActive)
+                if ((Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive) || Camouflager.AbilityActivated)
                     RealName = $"<size=0%>{RealName}</size> ";
 
                 // When MushroomMixup Sabotage Is Active

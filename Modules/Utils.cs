@@ -652,7 +652,7 @@ public static class Utils
             if (taskState.hasTasks)
             {
                 if (IsActive(SystemTypes.Comms)) Comms = true;
-                if (Camouflager.IsActive) Comms = true;
+                if (Camouflager.AbilityActivated) Comms = true;
                 //if (PlayerControl.LocalPlayer.myTasks.ToArray().Any(x => x.TaskType == TaskTypes.FixComms)) Comms = true;
             }
             return GetProgressText(pc.PlayerId, Comms);
@@ -2173,15 +2173,7 @@ public static class Utils
                     SelfName = GetString("DevouredName");
 
                 // Camouflage
-                if (!CamouflageIsForMeeting && ((IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool() &&
-                    !(Options.DisableOnSomeMaps.GetBool() &&
-                        ((Options.DisableOnSkeld.GetBool() && Options.IsActiveSkeld) ||
-                         (Options.DisableOnMira.GetBool() && Options.IsActiveMiraHQ) ||
-                         (Options.DisableOnPolus.GetBool() && Options.IsActivePolus) ||
-                         (Options.DisableOnFungle.GetBool() && Options.IsActiveFungle) ||
-                         (Options.DisableOnAirship.GetBool() && Options.IsActiveAirship)
-                        )))
-                        || Camouflager.IsActive))
+                if (!CamouflageIsForMeeting && ((IsActive(SystemTypes.Comms) && Camouflage.IsActive) || Camouflager.AbilityActivated))
                     SelfName = $"<size=0%>{SelfName}</size>";
 
 
@@ -2497,20 +2489,12 @@ public static class Utils
                             TargetPlayerName = GetString("DevouredName");
 
                         // Camouflage
-                        if (!CamouflageIsForMeeting && ((IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool() &&
-                            !(Options.DisableOnSomeMaps.GetBool() &&
-                                ((Options.DisableOnSkeld.GetBool() && Options.IsActiveSkeld) ||
-                                 (Options.DisableOnMira.GetBool() && Options.IsActiveMiraHQ) ||
-                                 (Options.DisableOnPolus.GetBool() && Options.IsActivePolus) ||
-                                 (Options.DisableOnFungle.GetBool() && Options.IsActiveFungle) ||
-                                 (Options.DisableOnAirship.GetBool() && Options.IsActiveAirship)
-                                )))
-                                || Camouflager.IsActive))
+                        if (!CamouflageIsForMeeting && ((IsActive(SystemTypes.Comms) && Camouflage.IsActive) || Camouflager.AbilityActivated))
                             TargetPlayerName = $"<size=0%>{TargetPlayerName}</size>";
 
                         // Target Name
                         string TargetName = $"{TargetRoleText}{TargetPlayerName}{TargetDeathReason}{TargetMark}";
-                        TargetName += (TargetSuffix.ToString() == "" ? "" : ("\r\n" + TargetSuffix.ToString()));
+                        TargetName += TargetSuffix.ToString() == "" ? "" : ("\r\n" + TargetSuffix.ToString());
 
                         target.RpcSetNamePrivate(TargetName, true, seer, force: NoCache);
                     }

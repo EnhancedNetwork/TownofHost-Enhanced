@@ -603,6 +603,7 @@ class CheckForEndVotingPatch
         HexMaster.OnCheckForEndVoting(deathReason, playerIds);
         //Occultist.OnCheckForEndVoting(deathReason, playerIds);
         Virus.OnCheckForEndVoting(deathReason, playerIds);
+
         foreach (var playerId in playerIds)
         {
             if (CustomRoles.Lovers.IsEnable() && !Main.isLoversDead && Main.LoversPlayers.Any(lp => lp.PlayerId == playerId))
@@ -617,13 +618,13 @@ class CheckForEndVotingPatch
     {
         var player = Utils.GetPlayerById(playerId);
         if (player == null) return;
-        var target = PickRevengeTarget(player, deathReason);
+        var target = PickRevengeTarget(player);
         if (target == null) return;
         TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Revenge, target.PlayerId);
         target.SetRealKiller(player);
-        Logger.Info($"{player.GetNameWithRole()}の道連れ先:{target.GetNameWithRole()}", "RevengeOnExile");
+        Logger.Info($"{player.GetNameWithRole()} revenge:{target.GetNameWithRole()}", "RevengeOnExile");
     }
-    private static PlayerControl PickRevengeTarget(PlayerControl exiledplayer, PlayerState.DeathReason deathReason)//道連れ先選定
+    private static PlayerControl PickRevengeTarget(PlayerControl exiledplayer)//道連れ先選定
     {
         List<PlayerControl> TargetList = new();
         foreach (var candidate in Main.AllAlivePlayerControls)
