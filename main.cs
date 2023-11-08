@@ -94,6 +94,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> VoteImmune { get; private set; }
     public static ConfigEntry<bool> AvoidBans { get; private set; }
     public static ConfigEntry<bool> SpeedBoost { get; private set; }
+    public static ConfigEntry<bool> BigSize { get; private set; }
      
     public static Dictionary<byte, PlayerVersion> playerVersion = new();
     //Preset Name Options
