@@ -11,6 +11,7 @@
         <Configurations>Debug;Release;Canary</Configurations>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Optimize>True</Optimize>
+        <AssemblyVersion>1.1.2.1.2</AssemblyVersion>
     </PropertyGroup>
     
     <ItemGroup>
