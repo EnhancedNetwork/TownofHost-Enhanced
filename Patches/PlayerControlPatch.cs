@@ -1308,7 +1308,7 @@ class CheckMurderPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckShapeshift))]
 class CheckShapeshiftPatch
 {
-    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, bool shouldAnimate)
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool shouldAnimate)
     {
         bool showShapeshiftAnimation = true;
         switch (__instance.GetCustomRole())
@@ -1333,27 +1333,22 @@ class CheckShapeshiftPatch
 
         if (!showShapeshiftAnimation)
             __instance.RpcResetAbilityCooldown();
+        
+        Logger.Info($"{__instance?.GetNameWithRole()} => {target?.GetNameWithRole()}", "CheckShapeshiftPatch");
+        Logger.Info($"showShapeshiftAnimation: {showShapeshiftAnimation}", "CheckShapeshiftPatch");
 
         return showShapeshiftAnimation;
-    }
-
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, bool shouldAnimate)
-    {
-        
     }
 }
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdCheckShapeshift))]
 class CmdCheckShapeshiftPatch
 {
-    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, bool shouldAnimate)
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool shouldAnimate)
     {
-        return CheckShapeshiftPatch.Prefix(__instance, target, shouldAnimate);
-    }
+        Logger.Info($"{__instance?.GetNameWithRole()} => {target?.GetNameWithRole()}", "CmdCheckShapeshiftPatch");
 
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, bool shouldAnimate)
-    {
-        CheckShapeshiftPatch.Postfix(__instance, target, shouldAnimate);
+        return CheckShapeshiftPatch.Prefix(__instance, target, shouldAnimate);
     }
 }
 
