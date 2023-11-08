@@ -89,7 +89,7 @@ public static class Utils
             player.MyPhysics.RpcBootFromVent(0);
         }
 
-        // Modded
+        // Host side
         if (AmongUsClient.Instance.AmHost)
         {
             var playerlastSequenceId = (int)player.NetTransform.lastSequenceId;
@@ -99,7 +99,7 @@ public static class Utils
             Logger.Info($" {(ushort)playerlastSequenceId}", "Teleport - Player NetTransform lastSequenceId + 10 - SnapTo");
         }
 
-        // Vanilla
+        // For Client side
         MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable);
         NetHelpers.WriteVector2(location, messageWriter);
         messageWriter.Write(player.NetTransform.lastSequenceId + 100U);
@@ -2615,6 +2615,7 @@ public static class Utils
         Main.ShamanTarget = byte.MaxValue;
         Main.ShamanTargetChoosen = false;
         Main.BurstBodies.Clear();
+        OverKiller.MurderTargetLateTask = new();
 
 
         if (Options.AirshipVariableElectrical.GetBool())

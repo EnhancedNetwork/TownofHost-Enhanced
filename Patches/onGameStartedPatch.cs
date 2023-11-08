@@ -328,6 +328,7 @@ internal class ChangeRoleSettings
             Oiiai.Init();
             FFF.Init();
             Instigator.Init();
+            OverKiller.Init();
             
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
