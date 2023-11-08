@@ -1,3 +1,4 @@
+using Hazel;
 using System.Collections.Generic;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -16,7 +17,7 @@ public static class Divinator
     public static OptionItem ShowSpecificRole;
     public static OptionItem AbilityUseGainWithEachTaskCompleted;
 
-    public static List<byte> didVote = new();
+    public static HashSet<byte> didVote = new();
     public static Dictionary<byte, float> CheckLimit = new();
     public static Dictionary<byte, float> TempCheckLimit = new();
 
@@ -45,6 +46,42 @@ public static class Divinator
         CheckLimit.TryAdd(playerId, CheckLimitOpt.GetInt());
         IsEnable = true;
     }
+
+    public static void SendRPC(byte playerId, bool isTemp = false, bool voted = false)
+    {
+        MessageWriter writer;
+        if (!isTemp)
+        {
+            writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDivinatorLimit, SendOption.Reliable, -1);
+            writer.Write(playerId);
+            writer.Write(CheckLimit[playerId]);
+            writer.Write(voted);
+        }
+        else
+        {
+            writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDivinatorTempLimit, SendOption.Reliable, -1);
+            writer.Write(playerId);
+            writer.Write(TempCheckLimit[playerId]);
+        }
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void ReceiveRPC(MessageReader reader, bool isTemp = false)
+    {
+        byte playerId = reader.ReadByte();
+        float limit = reader.ReadSingle();
+        if (!isTemp)
+        {
+            CheckLimit[playerId] = limit;
+            bool voted = reader.ReadBoolean();
+            if (voted && !didVote.Contains(playerId)) didVote.Add(playerId);
+        }
+        else
+        {
+            TempCheckLimit[playerId] = limit;
+            didVote.Remove(playerId);
+        }
+    }
+
     public static void OnVote(PlayerControl player, PlayerControl target)
     {
         if (player == null || target == null) return;
@@ -58,6 +95,7 @@ public static class Divinator
         }
 
         CheckLimit[player.PlayerId] -= 1;
+        SendRPC(player.PlayerId, voted: true);
 
         if (player.PlayerId == target.PlayerId)
         {
@@ -501,9 +539,10 @@ public static class Divinator
     public static void OnReportDeadBody()
     {
         didVote.Clear();
-        foreach (var divinatorId in playerIdList)
+        foreach (var divinatorId in CheckLimit.Keys)
         {
             TempCheckLimit[divinatorId] = CheckLimit[divinatorId];
+            SendRPC(divinatorId, isTemp: true);
         }
     }
 }

@@ -53,12 +53,12 @@ public static class Pixie
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = PixieMarkCD.GetFloat();
 
 
-    public static void SendRPC(byte pixieId, int operate, byte targetId = 0xff)
+    public static void SendRPC(byte pixieId, bool operate, byte targetId = 0xff)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetPixieTargets, SendOption.Reliable, -1);
         writer.Write(pixieId);
         writer.Write(operate);
-        if (operate == 0)
+        if (!operate)
         {
             writer.Write(targetId);
         }
@@ -72,8 +72,8 @@ public static class Pixie
     public static void ReceiveRPC(MessageReader reader)
     {
         byte pixieId = reader.ReadByte();
-        int operate = reader.ReadInt32();
-        if (operate == 0)
+        bool operate = reader.ReadBoolean();
+        if (!operate)
         {
             if (!PixieTargets.ContainsKey(pixieId)) PixieTargets[pixieId] = new();
             byte targetId = reader.ReadByte();
@@ -106,7 +106,7 @@ public static class Pixie
             return;
         }
         PixieTargets[killerId].Add(targetId);
-        SendRPC(killerId, targetId, 0);
+        SendRPC(killerId, false, targetId);
         if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(killer);
         SetKillCooldown(killer.PlayerId);
         return;
@@ -134,7 +134,7 @@ public static class Pixie
                 Logger.Info($"{pc.GetNameWithRole()} committed suicide because target not exiled and target(s) were alive during ejection", "Pixie");
             }
             PixieTargets[pixieId].Clear();
-            SendRPC(pixieId, 1);
+            SendRPC(pixieId, true);
         }
     }
 

@@ -1,3 +1,4 @@
+using Hazel;
 using System.Collections.Generic;
 using System.Linq;
 using static TOHE.Options;
@@ -51,6 +52,30 @@ public static class Oracle
         CheckLimit.TryAdd(playerId, CheckLimitOpt.GetInt());
         IsEnable = true;
     }
+    public static void SendRPC(byte playerId, bool isTemp = false)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetOracleLimit, SendOption.Reliable, -1);
+        writer.Write(playerId);
+        writer.Write(isTemp);
+        if (!isTemp) writer.Write(CheckLimit[playerId]);
+        else writer.Write(TempCheckLimit[playerId]);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void ReceiveRPC(MessageReader reader)
+    {
+        byte pid = reader.ReadByte();
+        bool isTemp = reader.ReadBoolean();
+        if (!isTemp)
+        {
+            float checkLimit = reader.ReadSingle();
+            CheckLimit[pid] = checkLimit;
+        }
+        else
+        {
+            float tempLimit = reader.ReadSingle();
+            TempCheckLimit[pid] = tempLimit;
+        }
+    }
     public static void OnVote(PlayerControl player, PlayerControl target)
     {
         if (player == null || target == null) return;
@@ -64,6 +89,7 @@ public static class Oracle
         }
 
         CheckLimit[player.PlayerId] -= 1;
+        SendRPC(player.PlayerId);
 
         if (player.PlayerId == target.PlayerId)
         {
@@ -231,9 +257,10 @@ public static class Oracle
     public static void OnReportDeadBody()
     {
         didVote.Clear();
-        foreach (var oracleId in playerIdList)
+        foreach (var oracleId in CheckLimit.Keys)
         {
             TempCheckLimit[oracleId] = CheckLimit[oracleId];
+            SendRPC(oracleId, isTemp: true);
         }
     }
 }
