@@ -54,23 +54,37 @@ namespace TOHE.Roles.Crewmate
             TrackerTarget.Add(playerId, new List<byte>());
             IsEnable = true;
         }
-        public static void SendRPC(byte trackerId = byte.MaxValue, byte targetId = byte.MaxValue)
+        public static void SendRPC(int operate, byte trackerId = byte.MaxValue, byte targetId = byte.MaxValue)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetTrackerTarget, SendOption.Reliable, -1);
             writer.Write(trackerId);
-            writer.Write(targetId);
+            writer.Write(operate);
+            if (operate == 0) writer.Write(targetId);
+            if (operate == 2) writer.Write(TrackLimit[targetId]);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
         public static void ReceiveRPC(MessageReader reader)
         {
+
             byte trackerId = reader.ReadByte();
-            byte targetId = reader.ReadByte();
+            int operate = reader.ReadInt32();
+            if (operate == 0)
+            {
+                byte targetId = reader.ReadByte();
 
-            TrackLimit[trackerId]--;
-
-            TrackerTarget[trackerId].Add(targetId);
-            TargetArrow.Add(trackerId, targetId);
-
+                TrackLimit[trackerId]--;
+                TrackerTarget[trackerId].Add(targetId);
+                TargetArrow.Add(trackerId, targetId);
+            }
+            if (operate == 1)
+            {
+                TempTrackLimit[trackerId] = TrackLimit[trackerId];
+            }
+            if (operate == 2)
+            {
+                float limit = reader.ReadSingle();
+                TrackLimit[trackerId] = limit;
+            }
         }
         public static string GetTargetMark(PlayerControl seer, PlayerControl target) => !(seer == null || target == null) && TrackerTarget.ContainsKey(seer.PlayerId) && TrackerTarget[seer.PlayerId].Contains(target.PlayerId) ? Utils.ColorString(seer.GetRoleColor(), "◀") : "";
 
@@ -86,7 +100,7 @@ namespace TOHE.Roles.Crewmate
             TrackerTarget[player.PlayerId].Add(target.PlayerId);
             TargetArrow.Add(player.PlayerId, target.PlayerId);
 
-            SendRPC(player.PlayerId, target.PlayerId);
+            SendRPC(0,player.PlayerId, target.PlayerId);
         }
 
         public static void OnReportDeadBody()
@@ -94,6 +108,7 @@ namespace TOHE.Roles.Crewmate
             foreach (var trackerId in playerIdList) 
             {
                 TempTrackLimit[trackerId] = TrackLimit[trackerId];
+                SendRPC(1, trackerId);
             }
         }
 

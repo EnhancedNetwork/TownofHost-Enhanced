@@ -6,6 +6,7 @@ using TOHE.Modules.ChatManager;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate;
 public static class ParityCop
@@ -60,11 +61,51 @@ public static class ParityCop
         RoundCheckLimit.Add(playerId, ParityCheckLimitPerMeeting.GetInt());
         IsEnable = true;
     }
+    public static void SendRPC(byte playerId, int operate)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetParityCopLimit, SendOption.Reliable, -1);
+        writer.Write(playerId);
+        writer.Write(operate);
+        // reset round limit
+        if (operate == 0) writer.Write(RoundCheckLimit[playerId]);
+        // reduce the limits
+        if (operate == 1)
+        {
+            writer.Write(RoundCheckLimit[playerId]);
+            writer.Write(MaxCheckLimit[playerId]);
+        }
+        // increase limit
+        if (operate == 3) writer.Write(MaxCheckLimit[playerId]);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void ReceiveRPC(MessageReader reader)
+    {
+        byte pid = reader.ReadByte();
+        int operate = reader.ReadInt32();
+        if (operate == 0)
+        {
+            int roundLimit = reader.ReadInt32();
+            RoundCheckLimit[pid] = roundLimit;
+        }
+        if (operate == 1)
+        {
+            int roundLimit = reader.ReadInt32();
+            float maxLimit = reader.ReadSingle();
+            RoundCheckLimit[pid] = roundLimit;
+            MaxCheckLimit[pid] = maxLimit;
+        }
+        if (operate == 2)
+        {
+            float maxLimit = reader.ReadSingle();
+            MaxCheckLimit[pid] = maxLimit;
+        }
+    }
     public static void OnReportDeadBody()
     {
         foreach (var pid in RoundCheckLimit.Keys)
         {
             RoundCheckLimit[pid] = ParityCheckLimitPerMeeting.GetInt();
+            SendRPC(pid, 0);
         }
     }
 
@@ -240,6 +281,7 @@ public static class ParityCop
                     }
                     MaxCheckLimit[pc.PlayerId] -= 1;
                     RoundCheckLimit[pc.PlayerId]--;
+                    SendRPC(pc.PlayerId, 1);
                 }
             }
         }

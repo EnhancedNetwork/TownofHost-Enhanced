@@ -72,6 +72,12 @@ enum CustomRPC
     SetCleanserCleanLimit,
     SetSoulCollectorLimit,
     SetPixieTargets,
+    SetDivinatorLimit,
+    SetDivinatorTempLimit,
+    SetBloodhoundLimit,
+    SetParityCopLimit,
+    SetOracleLimit,
+    SetMediumLimit,
     SetPelicanEatenNum,
     SwordsManKill,
     SetAlchemistTimer,
@@ -686,6 +692,24 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetPixieTargets:
                 Pixie.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SetDivinatorTempLimit:
+                Divinator.ReceiveRPC(reader, isTemp: true);
+                break;
+            case CustomRPC.SetDivinatorLimit:
+                Divinator.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SetMediumLimit:
+                Mediumshiper.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SetParityCopLimit:
+                ParityCop.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SetOracleLimit:
+                Oracle.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SetBloodhoundLimit:
+                Bloodhound.ReceiveRPCLimit(reader);
                 break;
             case CustomRPC.SetSwapperVotes:
                 Swapper.ReceiveRPC(reader, __instance);
