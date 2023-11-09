@@ -42,15 +42,6 @@ class CheckProtectPatch
             return true;
         }
 
-        if (Main.BigSize.Value == true)
-        {
-            PlayerControl.LocalPlayer.transform.localScale = new UnityEngine.Vector3(5f, 5f, 5f);
-        }
-        else
-        {
-            PlayerControl.LocalPlayer.transform.localScale = new UnityEngine.Vector3(1f, 1f, 1f);
-        }
-        
         if (__instance.Is(CustomRoles.Sheriff))
         {
             if (__instance.Data.IsDead)
