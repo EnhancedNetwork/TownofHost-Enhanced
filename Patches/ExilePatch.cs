@@ -292,16 +292,19 @@ class ExileControllerWrapUpPatch
                 {
                     var player = Utils.GetPlayerById(x.Key);
                     var state = Main.PlayerStates[x.Key];
+                    
                     Logger.Info($"{player.GetNameWithRole()} died with {x.Value}", "AfterMeetingDeath");
+                    
                     state.deathReason = x.Value;
                     state.SetDead();
                     player?.RpcExileV2();
+
                     if (x.Value == PlayerState.DeathReason.Suicide)
                         player?.SetRealKiller(player, true);
+
                     if (Main.ResetCamPlayerList.Contains(x.Key))
                         player?.ResetPlayerCam(1f);
-                    if (Executioner.Target.ContainsValue(x.Key))
-                        Executioner.ChangeRoleByTarget(player);
+
                     Utils.AfterPlayerDeathTasks(player);
                 });
                 Main.AfterMeetingDeathPlayers.Clear();

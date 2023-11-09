@@ -134,7 +134,6 @@ public static class Executioner
         Utils.GetPlayerById(Executioner).RpcSetCustomRole(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]);
         Target.Remove(Executioner);
         SendRPC(Executioner);
-        Utils.NotifyRoles();
     }
     public static void ChangeRole(PlayerControl executioner)
     {
