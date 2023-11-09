@@ -52,22 +52,37 @@ public static class Chameleon
         UseLimit.Add(playerId, UseLimitOpt.GetInt());
         IsEnable = true;
     }
-    private static void SendRPC(PlayerControl pc)
+    public static void SendRPC(PlayerControl pc, bool isLimit = false)
     {
-        if (pc.AmOwner) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetChameleonTimer, SendOption.Reliable, pc.GetClientId());
-        writer.Write((InvisTime.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
-        writer.Write((lastTime.TryGetValue(pc.PlayerId, out var y) ? y : -1).ToString());
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        writer.Write(pc.PlayerId);
+        writer.Write(isLimit);
+        if (isLimit) writer.Write(UseLimit[pc.PlayerId]);
+        else 
+        { 
+            writer.Write((InvisTime.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
+            writer.Write((lastTime.TryGetValue(pc.PlayerId, out var y) ? y : -1).ToString());
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
     }
     public static void ReceiveRPC(MessageReader reader)
     {
-        InvisTime = new();
-        lastTime = new();
-        long invis = long.Parse(reader.ReadString());
-        long last = long.Parse(reader.ReadString());
-        if (invis > 0) InvisTime.Add(PlayerControl.LocalPlayer.PlayerId, invis);
-        if (last > 0) lastTime.Add(PlayerControl.LocalPlayer.PlayerId, last);
+        byte pid = reader.ReadByte();
+        bool isLimit = reader.ReadBoolean();
+        if (isLimit)
+        {
+            float limit = reader.ReadSingle();
+            UseLimit[pid] = limit;
+        }
+        else 
+        { 
+            InvisTime = new();
+            lastTime = new();
+            long invis = long.Parse(reader.ReadString());
+            long last = long.Parse(reader.ReadString());
+            if (invis > 0) InvisTime.Add(pid, invis);
+            if (last > 0) lastTime.Add(pid, last);
+        }
     }
     public static bool CanGoInvis(byte id)
         => GameStates.IsInTask && !InvisTime.ContainsKey(id) && !lastTime.ContainsKey(id);
@@ -149,6 +164,7 @@ public static class Chameleon
                     NameNotifyManager.Notify(pc, GetString("ChameleonInvisState"), ChameleonDuration.GetFloat());
 
                     UseLimit[pc.PlayerId] -= 1;
+                    SendRPC(pc, isLimit: true);
                 }
                 else
                 {

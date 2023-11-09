@@ -378,6 +378,7 @@ internal class CustomRoleSelector
         {
             CustomRoles role = (CustomRoles)Enum.Parse(typeof(CustomRoles), cr.ToString());
             if (!role.IsAdditionRole()) continue;
+            if (role.Is(CustomRoles.Mare) && Options.IsActiveFungle) continue;
             if (role is CustomRoles.Madmate && Options.MadmateSpawnMode.GetInt() != 0) continue;
             if (role is CustomRoles.Lovers or CustomRoles.LastImpostor or CustomRoles.Workhorse) continue;
             AddonRolesList.Add(role);

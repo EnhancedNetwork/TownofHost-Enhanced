@@ -90,7 +90,7 @@ public static class Utils
             player.MyPhysics.RpcBootFromVent(0);
         }
 
-        // Modded
+        // Host side
         if (AmongUsClient.Instance.AmHost)
         {
             var playerlastSequenceId = (int)player.NetTransform.lastSequenceId;
@@ -100,7 +100,7 @@ public static class Utils
             Logger.Info($" {(ushort)playerlastSequenceId}", "Teleport - Player NetTransform lastSequenceId + 10 - SnapTo");
         }
 
-        // Vanilla
+        // For Client side
         MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable);
         NetHelpers.WriteVector2(location, messageWriter);
         messageWriter.Write(player.NetTransform.lastSequenceId + 100U);
@@ -2589,6 +2589,7 @@ public static class Utils
         Main.ShamanTarget = byte.MaxValue;
         Main.ShamanTargetChoosen = false;
         Main.BurstBodies.Clear();
+        OverKiller.MurderTargetLateTask = new();
 
 
         if (Options.AirshipVariableElectrical.GetBool())
@@ -2604,6 +2605,13 @@ public static class Utils
             case CustomRoles.Terrorist:
                 Logger.Info(target?.Data?.PlayerName + " was Terrorist", "AfterPlayerDeathTasks");
                 CheckTerroristWin(target.Data);
+                break;
+            case CustomRoles.Executioner:
+                if (Executioner.Target.ContainsKey(target.PlayerId))
+                {
+                    Executioner.Target.Remove(target.PlayerId);
+                    Executioner.SendRPC(target.PlayerId);
+                }
                 break;
             case CustomRoles.Lawyer:
                 if (Lawyer.Target.ContainsKey(target.PlayerId))
@@ -2647,21 +2655,22 @@ public static class Utils
             switch (subRole)
             {
                 case CustomRoles.Cyber:
-                    if (GameStates.IsMeeting)
+            if (GameStates.IsMeeting)
+            {
+                    //网红死亡消息提示
+                    foreach (var pc in Main.AllPlayerControls)
                     {
-                        //Death Message
-                        foreach (var pc in Main.AllPlayerControls)
-                        {
-                            if (!Options.ImpKnowCyberDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
-                            if (!Options.NeutralKnowCyberDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
-                            if (!Options.CrewKnowCyberDead.GetBool() && pc.GetCustomRole().IsCrewmate()) continue;
-
-                            SendMessage(string.Format(GetString("CyberDead"), target.GetRealName()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Cyber), GetString("CyberNewsTitle")));
-                        }
+                        if (!Options.ImpKnowCyberDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
+                        if (!Options.NeutralKnowCyberDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
+                        if (!Options.CrewKnowCyberDead.GetBool() && pc.GetCustomRole().IsCrewmate()) continue;
+                        SendMessage(string.Format(GetString("CyberDead"), target.GetRealName()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Cyber), GetString("CyberNewsTitle")));
                     }
-                    break;
             }
+                break;    
         }
+
+        if (Executioner.Target.ContainsValue(target.PlayerId))
+            Executioner.ChangeRoleByTarget(target);
 
         if (Romantic.BetPlayer.ContainsValue(target.PlayerId))
             Romantic.ChangeRole(target.PlayerId);

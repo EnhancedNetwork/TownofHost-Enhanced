@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TOHE.Roles.Neutral;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.AddOns.Common
@@ -82,8 +83,14 @@ namespace TOHE.Roles.AddOns.Common
             }
             else
             {
+                int changeValue = ChangeNeutralRole.GetValue();
+
+                if (changeValue != 0) { 
                 //Typically only NK tiggers this
-                killer.RpcSetCustomRole(NRoleChangeRoles[ChangeNeutralRole.GetValue() - 1]);
+                    killer.RpcSetCustomRole(NRoleChangeRoles[changeValue-1]);
+                    if (changeValue == 1) Amnesiac.Add(killer.PlayerId);
+                    else if (changeValue == 2) Imitator.Add(killer.PlayerId);
+                }
             }
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
