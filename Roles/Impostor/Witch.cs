@@ -115,7 +115,7 @@ public static class Witch
         {
             SpellMode[playerId] = !SpellMode[playerId];
             SendRPC(false, playerId);
-            Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(playerId), ForceLoop: true);
+            Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(playerId));
         }
     }
     public static bool HaveSpelledPlayer()
