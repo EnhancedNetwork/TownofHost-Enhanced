@@ -108,7 +108,5 @@ public static class Huntsman
                 break;
             }
         }
-
-        Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(playerIdList[0]));
     }
 }

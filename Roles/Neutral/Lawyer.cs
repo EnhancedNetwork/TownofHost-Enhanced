@@ -135,7 +135,7 @@ public static class Lawyer
         Utils.GetPlayerById(Lawyer).RpcSetCustomRole(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]);
         Target.Remove(Lawyer);
         SendRPC(Lawyer);
-        Utils.NotifyRoles();
+        Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(Lawyer));
     }
     public static bool KnowRole(PlayerControl player, PlayerControl target)
     {

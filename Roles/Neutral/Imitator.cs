@@ -188,7 +188,7 @@ public static class Imitator
             Logger.Info("Imitator remembered: " + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString(), "Imitator Assign");
             Logger.Info($"{killer.GetNameWithRole()} : {RememberLimit} remember limits left", "Imitator");
 
-            Utils.NotifyRoles(SpecifySeer: killer, ForceLoop: false);
+            Utils.NotifyRoles(SpecifySeer: killer);
         }
         else if (killerRole == CustomRoles.Imitator)
         {

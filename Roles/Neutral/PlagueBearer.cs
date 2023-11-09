@@ -108,9 +108,12 @@ public static class PlagueBearer
             return false;
         }
         PlaguedList[killer.PlayerId].Add(target.PlayerId);
+
         Utils.NotifyRoles(SpecifySeer: killer);
+
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
+
         Logger.Msg($"kill cooldown {PlagueBearerCD[killer.PlayerId]}", "PlagueBearer");
         return false;
     }

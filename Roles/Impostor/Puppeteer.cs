@@ -66,20 +66,6 @@ public static class Puppeteer
                 break;
         }
     }
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
-    {
-        if (target.Is(CustomRoles.Needy) || target.Is(CustomRoles.Lazy) || Medic.ProtectList.Contains(target.PlayerId)) return false;
-
-        PuppeteerList[target.PlayerId] = killer.PlayerId;
-        SendRPC(killer.PlayerId, target.PlayerId, 1);
-
-        killer.SetKillCooldown();
-        killer.RPCPlayCustomSound("Line");
-
-        Utils.NotifyRoles(SpecifySeer: killer);
-
-        return false;
-    }
     public static bool OnCheckPuppet(PlayerControl killer, PlayerControl target)
     {
         if (target.Is(CustomRoles.Needy) || target.Is(CustomRoles.Lazy) || Medic.ProtectList.Contains(target.PlayerId)) return false;
@@ -87,9 +73,9 @@ public static class Puppeteer
             {         
                 PuppeteerList[target.PlayerId] = killer.PlayerId;
                 killer.SetKillCooldown();
-                Utils.NotifyRoles(SpecifySeer: killer);
                 SendRPC(killer.PlayerId, target.PlayerId, 1);
                 killer.RPCPlayCustomSound("Line");
+                Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
             }
 
         );
@@ -136,7 +122,9 @@ public static class Puppeteer
                         Utils.MarkEveryoneDirtySettings();
                         PuppeteerList.Remove(puppet.PlayerId);
                         SendRPC(byte.MaxValue, puppet.PlayerId, 2);
-                        Utils.NotifyRoles(SpecifySeer: puppet);
+                        //Utils.NotifyRoles(SpecifySeer: puppet);
+                        Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(puppeteerId), SpecifyTarget: puppet, ForceLoop: true);
+
                         if (!puppet.Is(CustomRoles.Pestilence) && PuppeteerDoubleKills.GetBool())
                         {
                             puppet.RpcMurderPlayerV3(puppet);

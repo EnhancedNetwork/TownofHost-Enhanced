@@ -110,7 +110,7 @@ public static class Tracefinder
                     SendRPC(pc, true, target.transform.position);
                 }
             }
-        }, delay);
+        }, delay, "Get Arrow Tracefinder");
 
         Utils.NotifyRoles();
     }

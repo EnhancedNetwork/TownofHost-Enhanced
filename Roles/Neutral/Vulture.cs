@@ -128,7 +128,7 @@ public static class Vulture
 
         Vector2 pos = target.transform.position;
         float minDis = float.MaxValue;
-        string minName = "";
+
         foreach (var pc in Main.AllAlivePlayerControls)
         {
             if (pc.PlayerId == target.PlayerId) continue;
@@ -136,11 +136,10 @@ public static class Vulture
             if (dis < minDis && dis < 1.5f)
             {
                 minDis = dis;
-                minName = pc.GetRealName();
             }
         }
 
-        foreach (var pc in playerIdList)
+        foreach (var pc in playerIdList.ToArray())
         {
             var player = Utils.GetPlayerById(pc);
             if (player == null || !player.IsAlive()) continue;

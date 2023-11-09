@@ -81,13 +81,21 @@ public static class Utils
     }
     public static void RpcTeleport(this PlayerControl player, Vector2 location)
     {
-        Logger.Info($" {player.GetRealName()}", "Teleport - Player Real Name");
-        Logger.Info($" {player.PlayerId}", "Teleport - Player Id");
-        Logger.Info($" {location}", "Teleport - Location");
+        Logger.Info($" {player.GetNameWithRole().RemoveHtmlTags()} => {location}", "RpcTeleport");
+        Logger.Info($" Player Id: {player.PlayerId}", "RpcTeleport");
 
-        if (player.inVent)
+        if (player.inVent
+            || player.MyPhysics.Animations.IsPlayingEnterVentAnimation())
         {
+            Logger.Info($"Target: ({player.GetNameWithRole().RemoveHtmlTags()}) in vent", "RpcTeleport");
             player.MyPhysics.RpcBootFromVent(0);
+        }
+
+        if (player.onLadder
+            || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+        {
+            Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) is in on Ladder", "RpcTeleport");
+            return;
         }
 
         // Host side
@@ -96,8 +104,6 @@ public static class Utils
             var playerlastSequenceId = (int)player.NetTransform.lastSequenceId;
             playerlastSequenceId += 10;
             player.NetTransform.SnapTo(location, (ushort)playerlastSequenceId);
-            Logger.Info($" {player.GetRealName()} - {player.NetTransform.lastSequenceId}", "Teleport - Player NetTransform lastSequenceId - SnapTo");
-            Logger.Info($" {(ushort)playerlastSequenceId}", "Teleport - Player NetTransform lastSequenceId + 10 - SnapTo");
         }
 
         // For Client side
@@ -105,10 +111,6 @@ public static class Utils
         NetHelpers.WriteVector2(location, messageWriter);
         messageWriter.Write(player.NetTransform.lastSequenceId + 100U);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
-
-        var temp = (uint)player.NetTransform.lastSequenceId;
-        temp += 100U;
-        Logger.Info($"lastSequenceId: {player.NetTransform.lastSequenceId} - lastSequenceId + 100U: {temp}", "Teleport - Player NetTransform lastSequenceId - writer");
     }
     public static void RpcRandomVentTeleport(this PlayerControl player)
     {
@@ -1913,6 +1915,12 @@ public static class Utils
     private static StringBuilder TargetMark = new(20);
     public static async void NotifyRoles(bool isForMeeting = false, PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
+        var caller = new System.Diagnostics.StackFrame(1, false);
+        var callerMethod = caller.GetMethod();
+        string callerMethodName = callerMethod.Name;
+        string callerClassName = callerMethod.DeclaringType.FullName;
+        Logger.Info($" Was called from: {callerClassName}.{callerMethodName}", "NotifyRoles", force: true);
+
         await DoNotifyRoles(isForMeeting, SpecifySeer, SpecifyTarget, NoCache, ForceLoop, CamouflageIsForMeeting, MushroomMixupIsActive);
     }
     public static Task DoNotifyRoles(bool isForMeeting = false, PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
@@ -1923,13 +1931,8 @@ public static class Utils
         //Do not update NotifyRoles during meetings
         if (GameStates.IsMeeting) return Task.CompletedTask;
 
-        var caller = new System.Diagnostics.StackFrame(1, false);
-        var callerMethod = caller.GetMethod();
-        string callerMethodName = callerMethod.Name;
-        string callerClassName = callerMethod.DeclaringType.FullName;
-        var logger = Logger.Handler("NotifyRoles");
-        Logger.Info($" Was called from: {callerClassName}.{callerMethodName}", "NotifyRoles", force: true);
-        
+        var logger = Logger.Handler("DoNotifyRoles");
+
         HudManagerPatch.NowCallNotifyRolesCount++;
         HudManagerPatch.LastSetNameDesyncCount = 0;
 
