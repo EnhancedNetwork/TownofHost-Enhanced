@@ -3,7 +3,6 @@ using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
 using InnerNet;
-using Rewired;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -60,6 +59,7 @@ class OnGameJoinedPatch
                 }
                 var client = PlayerControl.LocalPlayer.GetClient();
                 Logger.Info($"{client.PlayerName.RemoveHtmlTags()}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Hosted room", "Session");
+                DBQueries.InsertData();
             }, 1f, "OnGameJoinedPatch");
         }
     }
