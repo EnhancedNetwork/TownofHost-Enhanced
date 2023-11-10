@@ -7,13 +7,13 @@ public static class Captain
 {
     public static Dictionary<byte, int> CaptainVotes = new();
     public static OptionItem CaptainAbilityUses;
+    public static readonly int Id = 26000;
     public static OptionItem CaptainDies;
     public static bool IsEnable = false;
 
-
     public static void SetupCustomOption()
     {
-        Options.SetupRoleOptions(26000, TabGroup.CrewmateRoles, CustomRoles.Captain);
+        Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Captain);
         CaptainAbilityUses = IntegerOptionItem.Create(26002, "CaptainAbilityUses", new(1, 20, 1), 3, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Captain])
             .SetValueFormat(OptionFormat.Votes);

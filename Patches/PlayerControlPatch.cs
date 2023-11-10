@@ -1703,6 +1703,9 @@ class ShapeshiftPatch
                 case CustomRoles.Assassin:
                     Assassin.OnShapeshift(shapeshifter, shapeshifting);
                     break;
+                case CustomRoles.Grappler:
+                    Grappler.OnShapeshift(shapeshifter, target, shapeshifting);
+                    break;
                 case CustomRoles.ImperiusCurse:
                     if (shapeshifting)
                     {

@@ -1306,6 +1306,11 @@ public static class Options
         QuickShooter.SetupCustomOption();
 
         /*
+         * Grappler
+         */
+        Grappler.SetupCustomOption();
+
+        /*
          * Saboteur
          */
         SetupRoleOptions(2300, TabGroup.ImpostorRoles, CustomRoles.Saboteur);

@@ -194,6 +194,7 @@ class ExileControllerWrapUpPatch
                 CustomRoles.Devourer or
                 CustomRoles.Nuker or
                 CustomRoles.Assassin or
+                CustomRoles.Grappler or
                 CustomRoles.Camouflager or
                 CustomRoles.Disperser or
                 CustomRoles.Escapee or

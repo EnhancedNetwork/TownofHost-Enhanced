@@ -578,6 +578,7 @@ public enum CustomRoles
     ImperiusCurse,
     QuickShooter,
     Eraser,
+    Grappler,
     OverKiller,
     Hangman,
     Bard,

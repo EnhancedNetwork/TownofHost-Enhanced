@@ -376,6 +376,9 @@ public class PlayerGameOptionsSender : GameOptionsSender
             case CustomRoles.Camouflager:
                 Camouflager.ApplyGameOptions();
                 break;
+            case CustomRoles.Grappler:
+                Grappler.ApplyGameOptions();
+                break;
             case CustomRoles.Assassin:
                 Assassin.ApplyGameOptions();
                 break;

@@ -73,6 +73,7 @@ static class CustomRolesHelper
                 CustomRoles.Miner => CustomRoles.Shapeshifter,
                 CustomRoles.Psychic => CustomRoles.Crewmate,
                 CustomRoles.Needy => CustomRoles.Crewmate,
+                CustomRoles.Captain => CustomRoles.Crewmate,
                 CustomRoles.Twister => CustomRoles.Shapeshifter,
                 CustomRoles.SuperStar => CustomRoles.Crewmate,
                 CustomRoles.Hacker => CustomRoles.Shapeshifter,
@@ -120,6 +121,7 @@ static class CustomRolesHelper
                 CustomRoles.Eraser => CustomRoles.Impostor,
                 CustomRoles.OverKiller => CustomRoles.Impostor,
                 CustomRoles.Hangman => CustomRoles.Shapeshifter,
+                CustomRoles.Grappler => CustomRoles.Shapeshifter,
                 CustomRoles.Sunnyboy => CustomRoles.Scientist,
                 CustomRoles.Phantom => Options.PhantomCanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
                 CustomRoles.Judge => CustomRoles.Crewmate,
@@ -634,6 +636,7 @@ static class CustomRolesHelper
             CustomRoles.Vampire or
             CustomRoles.Vampiress or
             CustomRoles.Witch or
+            CustomRoles.Grappler or
             CustomRoles.Vindicator or
             CustomRoles.ShapeMaster or
             CustomRoles.Zombie or
