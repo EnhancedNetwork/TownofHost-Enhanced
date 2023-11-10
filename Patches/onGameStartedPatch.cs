@@ -215,6 +215,7 @@ internal class ChangeRoleSettings
             Sheriff.Init();
             CopyCat.Init();
             Cleanser.Init();
+            Captain.Init();
             SwordsMan.Init();
             EvilTracker.Init();
             Snitch.Init();
@@ -593,6 +594,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Jackal:
                         Jackal.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Captain:
+                        Captain.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Sidekick:
                         Sidekick.Add(pc.PlayerId);

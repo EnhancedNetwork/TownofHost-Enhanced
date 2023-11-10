@@ -684,6 +684,9 @@ public static class Utils
                 case CustomRoles.Sheriff:
                     if (Sheriff.ShowShotLimit.GetBool()) ProgressText.Append(Sheriff.GetShotLimit(playerId));
                     break;
+                case CustomRoles.Captain:
+                    ProgressText.Append(Captain.GetUses(playerId));
+                    break;
                 case CustomRoles.President:
                     ProgressText.Append(President.GetEndLimit(playerId));
                     break;

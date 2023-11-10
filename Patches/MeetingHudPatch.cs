@@ -52,36 +52,70 @@ class CheckForEndVotingPatch
                     }
                 }
 
-                //催眠师催眠
-
-                if (pc.Is(CustomRoles.Dictator) && pva.DidVote && pc.PlayerId != pva.VotedFor && pva.VotedFor < 253 && !pc.Data.IsDead)
+                //Captain and Dictator votes
+                if (pva.DidVote && pc.PlayerId != pva.VotedFor && pva.VotedFor < 253 && !pc.Data.IsDead)
                 {
-                    var voteTarget = Utils.GetPlayerById(pva.VotedFor);
-                    TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Suicide, pc.PlayerId);
-                    statesList.Add(new()
+                    var target = Utils.GetPlayerById(pva.VotedFor);
+                    switch (Main.PlayerStates[pc.PlayerId].MainRole)
                     {
-                        VoterId = pva.TargetPlayerId,
-                        VotedForId = pva.VotedFor
-                    });
-                    states = statesList.ToArray();
+                        case CustomRoles.Dictator:
+                            TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Suicide, pc.PlayerId);
+                            statesList.Add(new()
+                            {
+                                VoterId = pva.TargetPlayerId,
+                                VotedForId = pva.VotedFor
+                            });
+                            states = statesList.ToArray();
 
-                    if (AntiBlackout.NeutralOverrideExiledPlayer || AntiBlackout.ImpostorOverrideExiledPlayer)
-                    {
-                        __instance.RpcVotingComplete(states.ToArray(), null, true);
-                        ExileControllerWrapUpPatch.AntiBlackout_LastExiled = voteTarget.Data;
-                        AntiBlackout.ShowExiledInfo = true;
-                        ConfirmEjections(voteTarget.Data, true);
+                            if (AntiBlackout.NeutralOverrideExiledPlayer || AntiBlackout.ImpostorOverrideExiledPlayer)
+                            {
+                                __instance.RpcVotingComplete(states.ToArray(), null, true);
+                                ExileControllerWrapUpPatch.AntiBlackout_LastExiled = target.Data;
+                                AntiBlackout.ShowExiledInfo = true;
+                                ConfirmEjections(target.Data, true);
+                            }
+                            else __instance.RpcVotingComplete(states.ToArray(), target.Data, false);
+
+                            Logger.Info($"{target.GetNameWithRole()} Exiled by Dictator", "Dictator");
+                            CheckForDeathOnExile(PlayerState.DeathReason.Vote, pva.VotedFor);
+                            Logger.Info("Dictator Vote，Force End Meeting", "Special Phase");
+                            target.SetRealKiller(pc);
+                            Main.LastVotedPlayerInfo = target.Data;
+                            if (Main.LastVotedPlayerInfo != null)
+                                ConfirmEjections(Main.LastVotedPlayerInfo);
+                            break;
+                        case CustomRoles.Captain:
+                            if (Captain.CaptainVotes[pc.PlayerId] >= 1)
+                            {
+                                statesList.Add(new()
+                                {
+                                    VoterId = pva.TargetPlayerId,
+                                    VotedForId = pva.VotedFor
+                                });
+                                states = statesList.ToArray();
+
+                                if (AntiBlackout.NeutralOverrideExiledPlayer || AntiBlackout.ImpostorOverrideExiledPlayer)
+                                {
+                                    __instance.RpcVotingComplete(states.ToArray(), null, true);
+                                    ExileControllerWrapUpPatch.AntiBlackout_LastExiled = target.Data;
+                                    AntiBlackout.ShowExiledInfo = true;
+                                    ConfirmEjections(target.Data, true);
+                                }
+                                else __instance.RpcVotingComplete(states.ToArray(), target.Data, false);
+
+                                Logger.Info($"{target.GetNameWithRole()} Exiled by Captain", "Captain");
+                                CheckForDeathOnExile(PlayerState.DeathReason.Vote, pva.VotedFor);
+                                Logger.Info("Captain Vote，Force End Meeting", "Special Phase");
+                                target.SetRealKiller(pc);
+                                Main.LastVotedPlayerInfo = target.Data;
+                                if (Main.LastVotedPlayerInfo != null)
+                                    ConfirmEjections(Main.LastVotedPlayerInfo);
+                                Captain.CaptainVotes[pc.PlayerId]--;
+                                if (Captain.CaptainVotes[pc.PlayerId] == 1 && Captain.CaptainDies.GetBool())
+                                    TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Suicide, pc.PlayerId);
+                            }
+                            break;
                     }
-                    else __instance.RpcVotingComplete(states.ToArray(), voteTarget.Data, false); //通常処理
-
-                    Logger.Info($"{voteTarget.GetNameWithRole()} 被独裁者驱逐", "Dictator");
-                    CheckForDeathOnExile(PlayerState.DeathReason.Vote, pva.VotedFor);
-                    Logger.Info("独裁投票，会议强制结束", "Special Phase");
-                    voteTarget.SetRealKiller(pc);
-                    Main.LastVotedPlayerInfo = voteTarget.Data;
-                    if (Main.LastVotedPlayerInfo != null)
-                        ConfirmEjections(Main.LastVotedPlayerInfo);
-                    return true;
                 }
 
                 if (pva.DidVote && pva.VotedFor < 253 && !pc.Data.IsDead)

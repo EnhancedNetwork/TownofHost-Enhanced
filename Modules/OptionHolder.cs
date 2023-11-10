@@ -2047,7 +2047,10 @@ public static class Options
         MayorRevealWhenDoneTasks = BooleanOptionItem.Create(12006, "MayorRevealWhenDoneTasks", false, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Mayor]);
         MayorTasks = OverrideTasksData.Create(12007, TabGroup.CrewmateRoles, CustomRoles.Mayor);
-        
+
+        //captain
+        Captain.SetupCustomOption();
+
         Monarch.SetupCustomOption();
         
         Farseer.SetupCustomOption();
