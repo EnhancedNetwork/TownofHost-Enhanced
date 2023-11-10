@@ -1243,13 +1243,13 @@ class MeetingHudUpdatePatch
     public static void Postfix(MeetingHud __instance)
     {
         //Meeting Skip with vote counting on keystroke (m + delete)
-        if (AmongUsClient.Instance.AmHost && Input.GetKeyDown(KeyCode.F6))
+        if (Input.GetKeyDown(KeyCode.F6))
         {
             __instance.CheckForEndVoting();
         }
         //
 
-        if (AmongUsClient.Instance.AmHost && Input.GetMouseButtonUp(1) && Input.GetKey(KeyCode.LeftControl))
+        if (Input.GetMouseButtonUp(1) && Input.GetKey(KeyCode.LeftControl))
         {
             __instance.playerStates.DoIf(x => x.HighlightedFX.enabled, x =>
             {
