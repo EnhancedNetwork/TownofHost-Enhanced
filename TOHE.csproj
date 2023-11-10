@@ -15,12 +15,12 @@
     
     <ItemGroup>
         <EmbeddedResource Include=".\Resources\**" />
-    </ItemGroup>
-    
+    </ItemGroup>  
+	
     <ItemGroup>
-      <None Remove="dbConfig.json" />
+        <EmbeddedResource Include="dbConfig.json" />
     </ItemGroup>
-    
+	    
     <ItemGroup>
         <PackageReference Include="AmongUs.GameLibs.Steam" Version="2023.10.24" PrivateAssets="all" />
 		<PackageReference Include="BepInEx.IL2CPP.MSBuild" Version="2.1.0-rc.1">
@@ -43,10 +43,6 @@
         <PackageReference Include="MySql.Data" Version="8.0.32.1" />
         <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
         <PackageReference Include="System.Security.Permissions" Version="7.0.0" />
-    </ItemGroup>
-    
-    <ItemGroup>
-      <EmbeddedResource Include="dbConfig.json" />
     </ItemGroup>
     
   <Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">

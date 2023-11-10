@@ -45,7 +45,8 @@ class DBQueries
         var config = Config.LoadConfig("dbConfig.json");
         /*
          1. Json file should be named `dbConfig.json` and should be present in ROOT FOLDER
-         2. Json file format :-
+         2. Ensure that `dbConfig.json` build action is set to Embed Resource
+         3. Json file format :-
             {
               "Database": {
                 "Server": "your-server",
