@@ -1,18 +1,66 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Data;
+using System.IO;
+using System.Reflection;
+using System.Text.Json;
 namespace TOHE;
 
+public class Config
+{
+    public DatabaseConfig Database { get; set; }
+
+    public static Config LoadConfig(string resourceName)
+    {
+        Assembly assembly = Assembly.GetExecutingAssembly();
+        string resourcePath = $"{assembly.GetName().Name}.{resourceName}";
+        using (Stream stream = assembly.GetManifestResourceStream(resourcePath))
+        {
+            if (stream == null)
+            {
+                throw new ArgumentException($"Resource {resourcePath} not found in assembly.");
+            }
+
+            using (StreamReader reader = new(stream))
+            {
+                string json = reader.ReadToEnd();
+                return JsonSerializer.Deserialize<Config>(json);
+            }
+        }
+    }
+}
+
+public class DatabaseConfig
+{
+    public string Server { get; set; }
+    public string DatabaseName { get; set; }
+    public string UserName { get; set; }
+    public string Password { get; set; }
+}
 
 class DBQueries
 {
     public static void InsertData()
     {
+        var config = Config.LoadConfig("dbConfig.json");
+        /*
+         Json file should be present in ROOT FOLDER
+         Json file format :-
+            {
+              "Database": {
+                "Server": "your-server",
+                "DatabaseName": "your-database",
+                "UserName": "your-username",
+                "Password": "your-password"
+              }
+            }
+         */
         var dbCon = DBConnection.Instance();
-        dbCon.Server = ""; // server name
-        dbCon.DatabaseName = ""; // database name
-        dbCon.UserName = ""; // usernmae
-        dbCon.Password = ""; // password
+        dbCon.Server = config.Database.Server;
+        dbCon.DatabaseName = config.Database.DatabaseName;
+        dbCon.UserName = config.Database.UserName;
+        dbCon.Password = config.Database.Password;
+
 
         if (dbCon.IsConnect())
         {
