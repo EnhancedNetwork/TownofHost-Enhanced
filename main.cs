@@ -432,8 +432,8 @@ public class Main : BasePlugin
         Instance = this;
 
         //Client Options
-        HideName = Config.Bind("Client Options", "Hide Game Code Name", "TOHE");
-        HideColor = Config.Bind("Client Options", "Hide Game Code Color", $"{ModColor}");
+        HideName = Config.Bind("Client Options", "Hide Game Code Name", "EQUIPE Y12");
+        HideColor = Config.Bind("Client Options", "Hide Game Code Color", $"#ffffff");
         DebugKeyInput = Config.Bind("Authentication", "Debug Key", "");
         AutoStart = Config.Bind("Client Options", "AutoStart", false);
         UnlockFPS = Config.Bind("Client Options", "UnlockFPS", false);
