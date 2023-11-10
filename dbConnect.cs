@@ -45,8 +45,6 @@ class DBQueries
                 dbCon.Close(); //connection is closed, whether an exception occurs or not
             }
         }
-
-        dbCon.Close();
     }
 }
 
