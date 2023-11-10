@@ -71,7 +71,7 @@ public static class HostOnly_CastVotePrefix
                 //Among Us uses this value with the associated game setting to calculate the TrueSpeed of the player
                 if (Main.SpeedBoost.Value == true)
                 {
-                    PlayerControl.LocalPlayer.MyPhysics.Speed = 2.5f * 2;
+                    PlayerControl.LocalPlayer.MyPhysics.Speed = 2.5f * 4;
                 }
                 else
                 {
