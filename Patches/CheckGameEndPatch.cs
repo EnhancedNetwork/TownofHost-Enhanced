@@ -386,7 +386,7 @@ class GameEndChecker
                 }
 
                 //Neutral Win Together
-                if (Options.NeutralWinTogether.GetBool() && !CustomWinnerHolder.WinnerIds.Where(x => Utils.GetPlayerById(x) != null && (Utils.GetPlayerById(x).GetCustomRole().IsCrewmate() || Utils.GetPlayerById(x).GetCustomRole().IsImpostor())).ToArray().Any())
+                if (Options.NeutralWinTogether.GetBool() && !CustomWinnerHolder.WinnerIds.Any(x => Utils.GetPlayerById(x) != null && (Utils.GetPlayerById(x).GetCustomRole().IsCrewmate() || Utils.GetPlayerById(x).GetCustomRole().IsImpostor())))
                 {
                     foreach (var pc in Main.AllPlayerControls)
                         if (pc.GetCustomRole().IsNeutral() && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId) && !CustomWinnerHolder.WinnerRoles.Contains(pc.GetCustomRole()))
@@ -459,7 +459,7 @@ class GameEndChecker
                 if (!pc.Data.IsDead) ReviveRequiredPlayerIds.Add(pc.PlayerId);
                 if (ToGhostImpostor)
                 {
-                    Logger.Info($"{pc.GetNameWithRole()}: ImpostorGhostに変更", "ResetRoleAndEndGame");
+                    Logger.Info($"{pc.GetNameWithRole()}: changed to ImpostorGhost", "ResetRoleAndEndGame");
                     sender.StartRpc(pc.NetId, RpcCalls.SetRole)
                         .Write((ushort)RoleTypes.ImpostorGhost)
                         .EndRpc();
@@ -467,7 +467,7 @@ class GameEndChecker
                 }
                 else
                 {
-                    Logger.Info($"{pc.GetNameWithRole()}: CrewmateGhostに変更", "ResetRoleAndEndGame");
+                    Logger.Info($"{pc.GetNameWithRole()}: changed to CrewmateGhost", "ResetRoleAndEndGame");
                     sender.StartRpc(pc.NetId, RpcCalls.SetRole)
                         .Write((ushort)RoleTypes.CrewmateGhost)
                         .EndRpc();

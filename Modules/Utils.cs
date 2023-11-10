@@ -1757,7 +1757,7 @@ public static class Utils
     }
     public static void ApplySuffix(PlayerControl player)
     {
-        if (!AmongUsClient.Instance.AmHost || player == null) return;
+        if (!AmongUsClient.Instance.AmHost || player == null || Main.AutoMuteUs.Value) return;
         
         if (!(player.AmOwner || (player.FriendCode.GetDevUser().HasTag())))
         {
@@ -1782,7 +1782,7 @@ public static class Utils
             {
                 if (!player.IsModClient()) return;
                 {
-                    if ((GameStates.IsOnlineGame || GameStates.IsLocalGame) && !Main.AutoMuteUs.Value)
+                    if (GameStates.IsOnlineGame || GameStates.IsLocalGame)
                         name = $"<color={GetString("HostColor")}>{GetString("HostText")}</color><color={GetString("IconColor")}>{GetString("Icon")}</color><color={GetString("NameColor")}>{name}</color>";
 
                     //name = $"<color=#902efd>{GetString("HostText")}</color><color=#4bf4ff>♥</color>" + name;
@@ -1894,7 +1894,7 @@ public static class Utils
                 };
             }
             
-            if (!name.Contains('\r') && player.FriendCode.GetDevUser().HasTag() && !Main.AutoMuteUs.Value)
+            if (!name.Contains('\r') && player.FriendCode.GetDevUser().HasTag())
             {
                 name = player.FriendCode.GetDevUser().GetTag() + "<size=1.5>" + modtag + "</size>" + name;
             }
@@ -1915,11 +1915,17 @@ public static class Utils
     private static StringBuilder TargetMark = new(20);
     public static async void NotifyRoles(bool isForMeeting = false, PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
-        var caller = new System.Diagnostics.StackFrame(1, false);
-        var callerMethod = caller.GetMethod();
-        string callerMethodName = callerMethod.Name;
-        string callerClassName = callerMethod.DeclaringType.FullName;
-        Logger.Info($" Was called from: {callerClassName}.{callerMethodName}", "NotifyRoles", force: true);
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (Main.AllPlayerControls == null) return;
+
+        //Do not update NotifyRoles during meetings
+        if (GameStates.IsMeeting) return;
+
+        //var caller = new System.Diagnostics.StackFrame(1, false);
+        //var callerMethod = caller.GetMethod();
+        //string callerMethodName = callerMethod.Name;
+        //string callerClassName = callerMethod.DeclaringType.FullName;
+        //Logger.Info($" Was called from: {callerClassName}.{callerMethodName}", "NotifyRoles", force: true);
 
         await DoNotifyRoles(isForMeeting, SpecifySeer, SpecifyTarget, NoCache, ForceLoop, CamouflageIsForMeeting, MushroomMixupIsActive);
     }
@@ -1931,7 +1937,9 @@ public static class Utils
         //Do not update NotifyRoles during meetings
         if (GameStates.IsMeeting) return Task.CompletedTask;
 
-        var logger = Logger.Handler("DoNotifyRoles");
+        Logger.Info($" START", "DoNotifyRoles", force: true);
+
+        //var logger = Logger.Handler("DoNotifyRoles");
 
         HudManagerPatch.NowCallNotifyRolesCount++;
         HudManagerPatch.LastSetNameDesyncCount = 0;
@@ -1963,7 +1971,7 @@ public static class Utils
             string fontSize = "1.5";
             if (isForMeeting && (seer.GetClient().PlatformData.Platform == Platforms.Playstation || seer.GetClient().PlatformData.Platform == Platforms.Switch)) fontSize = "70%";
             
-            logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":START");
+            //logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":START");
 
             var seerRole = seer.GetCustomRole();
 
@@ -2034,17 +2042,7 @@ public static class Utils
                             break;
 
                         case CustomRoles.AntiAdminer:
-                            if (AntiAdminer.IsAdminWatch)
-                                SelfSuffix.Append("<color=#ff1919>⚠</color>").Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), GetString("AdminWarning")));
-
-                            if (AntiAdminer.IsVitalWatch)
-                                SelfSuffix.Append("<color=#ff1919>⚠</color>").Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), GetString("VitalsWarning")));
-
-                            if (AntiAdminer.IsDoorLogWatch)
-                                SelfSuffix.Append("<color=#ff1919>⚠</color>").Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), GetString("DoorlogWarning")));
-
-                            if (AntiAdminer.IsCameraWatch)
-                                SelfSuffix.Append("<color=#ff1919>⚠</color>").Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), GetString("CameraWarning")));
+                            SelfSuffix.Append(AntiAdminer.GetSuffix());
                             break;
 
                         case CustomRoles.Snitch:
@@ -2072,17 +2070,7 @@ public static class Utils
                             break;
 
                         case CustomRoles.Monitor:
-                            if (Monitor.IsAdminWatch)
-                                SelfSuffix.Append("<color=#7223DA>★</color>").Append(ColorString(GetRoleColor(CustomRoles.Monitor), GetString("AdminWarning")));
-
-                            if (Monitor.IsVitalWatch)
-                                SelfSuffix.Append("<color=#7223DA>★</color>").Append(ColorString(GetRoleColor(CustomRoles.Monitor), GetString("VitalsWarning")));
-
-                            if (Monitor.IsDoorLogWatch)
-                                SelfSuffix.Append("<color=#7223DA>★</color>").Append(ColorString(GetRoleColor(CustomRoles.Monitor), GetString("DoorlogWarning")));
-
-                            if (Monitor.IsCameraWatch)
-                                SelfSuffix.Append("<color=#7223DA>★</color>").Append(ColorString(GetRoleColor(CustomRoles.Monitor), GetString("CameraWarning")));
+                            SelfSuffix.Append(Monitor.GetSuffix());
                             break;
 
                         case CustomRoles.Vulture:
@@ -2221,7 +2209,7 @@ public static class Utils
                     // if the target is the seer itself, do nothing
                     if (target.PlayerId == seer.PlayerId) continue;
 
-                    logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":START");
+                    //logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":START");
 
                     // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
                     if (!CamouflageIsForMeeting && MushroomMixupIsActive && target.IsAlive() && !seer.Is(CustomRoleTypes.Impostor) && Main.ResetCamPlayerList.Contains(seer.PlayerId))
@@ -2526,12 +2514,13 @@ public static class Utils
                         target.RpcSetNamePrivate(TargetName, true, seer, force: NoCache);
                     }
 
-                    logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":END");
+                    //logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":END");
                 }
             }
 
-            logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":END");
+            //logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":END");
         }
+        Logger.Info($" END", "DoNotifyRoles", force: true);
         return Task.CompletedTask;
     }
     public static void MarkEveryoneDirtySettings()

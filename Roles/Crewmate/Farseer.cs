@@ -144,7 +144,7 @@ namespace TOHE.Roles.Crewmate
                     else
                     {
                         FarseerTimer.Remove(playerId);
-                        NotifyRoles(SpecifySeer: player);
+                        NotifyRoles(SpecifySeer: player, SpecifyTarget: farTarget, ForceLoop: true);
                         RPC.ResetCurrentRevealTarget(playerId);
 
                         Logger.Info($"Canceled: {player.GetNameWithRole()}", "Farseer");

@@ -265,7 +265,7 @@ class ExileControllerWrapUpPatch
         Utils.CountAlivePlayers(true);
         Utils.AfterMeetingTasks();
         Utils.SyncAllSettings();
-        Utils.NotifyRoles();
+        Utils.NotifyRoles(ForceLoop: true);
     }
 
     static void WrapUpFinalizer(GameData.PlayerInfo exiled)
