@@ -170,6 +170,9 @@ class ExileControllerWrapUpPatch
         if (Witch.IsEnable) 
             Witch.RemoveSpelledPlayer();
 
+        if (HexMaster.IsEnable)
+            HexMaster.RemoveHexedPlayer();
+
         if (Swapper.Vote.Any() && Swapper.VoteTwo.Any())
         {
             foreach (var swapper in Main.AllAlivePlayerControls)
