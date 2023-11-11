@@ -19,7 +19,7 @@ internal class CustomRoleSelector
         // 开始职业抽取
         RoleResult = new();
         var rd = IRandom.Instance;
-        int playerCount = Main.AllAlivePlayerControls.Count();
+        int playerCount = Main.AllAlivePlayerControls.Length;
         int optImpNum = Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors);
         int optNonNeutralKillingNum = 0;
         int optNeutralKillingNum = 0;
@@ -58,6 +58,7 @@ internal class CustomRoleSelector
         {
             var role = (CustomRoles)Enum.Parse(typeof(CustomRoles), cr.ToString());
             if (role.IsVanilla() || role.IsAdditionRole()) continue;
+            if (role is CustomRoles.DarkHide && Options.IsActiveFungle) continue;
             if (role is CustomRoles.GM or CustomRoles.NotAssigned) continue;
             for (int i = 0; i < role.GetCount(); i++)
                 roleList.Add(role);
@@ -316,7 +317,7 @@ internal class CustomRoleSelector
         {
             PlayerControl delPc = null;
             foreach (var pc in AllPlayer)
-                foreach (var dr in Main.DevRole.Where(x => pc.PlayerId == x.Key))
+                foreach (var dr in Main.DevRole.Where(x => pc.PlayerId == x.Key).ToArray())
                 {
                     if (dr.Key == PlayerControl.LocalPlayer.PlayerId && Main.EnableGM.Value) continue;
                     var id = rolesToAssign.IndexOf(dr.Value);
@@ -359,7 +360,7 @@ internal class CustomRoleSelector
         addEngineerNum = 0;
         addScientistNum = 0;
         addShapeshifterNum = 0;
-        foreach (var role in AllRoles)
+        foreach (var role in AllRoles.ToArray())
         {
             switch (CustomRolesHelper.GetVNRole(role))
             {

@@ -51,9 +51,8 @@ public class ClientOptionItem
                 UiElement[] selectableButtons = optionsMenuBehaviour.ControllerSelectable.ToArray();
                 PassiveButton leaveButton = null;
                 PassiveButton returnButton = null;
-                for (int i = 0; i < selectableButtons.Length; i++)
+                foreach (var button in selectableButtons)
                 {
-                    var button = selectableButtons[i];
                     if (button == null) continue;
 
                     if (button.name == "LeaveGameButton")

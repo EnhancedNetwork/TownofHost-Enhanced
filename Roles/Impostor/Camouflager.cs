@@ -5,7 +5,6 @@ namespace TOHE.Roles.Impostor
     public static class Camouflager
     {
         private static readonly int Id = 2900;
-        public static List<byte> playerIdList = new();
         public static bool IsEnable = false;
 
         private static OptionItem CamouflageCooldown;
@@ -13,7 +12,7 @@ namespace TOHE.Roles.Impostor
         public static OptionItem CanUseCommsSabotage;
         public static OptionItem DisableReportWhenCamouflageIsActive;
 
-        public static bool IsActive;
+        public static bool AbilityActivated;
 
         public static void SetupCustomOption()
         {
@@ -28,13 +27,11 @@ namespace TOHE.Roles.Impostor
         }
         public static void Init()
         {
-            playerIdList = new();
-            IsActive = false;
+            AbilityActivated = false;
             IsEnable = false;
         }
-        public static void Add(byte playerId)
+        public static void Add()
         {
-            playerIdList.Add(playerId);
             IsEnable = true;
         }
 
@@ -45,24 +42,23 @@ namespace TOHE.Roles.Impostor
         }
         public static void OnShapeshift()
         {
-            IsActive = true;
+            AbilityActivated = true;
             Camouflage.CheckCamouflage();
         }
         public static void OnReportDeadBody()
         {
-            IsActive = false;
-            Camouflage.CheckCamouflage();
+            ClaerCamouflage();
         }
-        public static void isDead(PlayerControl target)
+        public static void IsDead()
         {
-            if (!target.Data.IsDead || GameStates.IsMeeting) return;
+            if (GameStates.IsMeeting) return;
 
-            if(target.Is(CustomRoles.Camouflager) && target.Data.IsDead)
-            {
-                IsActive = false;
-                Camouflage.CheckCamouflage();
-                Utils.NotifyRoles();
-            }
+            ClaerCamouflage();
+        }
+        private static void ClaerCamouflage()
+        {
+            AbilityActivated = false;
+            Camouflage.CheckCamouflage();
         }
     }
 }

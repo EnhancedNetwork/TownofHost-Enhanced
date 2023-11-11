@@ -100,8 +100,13 @@ public static class Totocalcio
         if (!BetTimes.TryGetValue(killer.PlayerId, out var times) || times < 1) return false;
 
         BetTimes[killer.PlayerId]--;
+
         if (BetPlayer.TryGetValue(killer.PlayerId, out var originalTarget) && Utils.GetPlayerById(originalTarget) != null)
-            Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(originalTarget));
+        {
+            Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: Utils.GetPlayerById(originalTarget), ForceLoop: true);
+            Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(originalTarget), SpecifyTarget: killer, ForceLoop: true);
+        }
+        
         BetPlayer.Remove(killer.PlayerId);
         BetPlayer.Add(killer.PlayerId, target.PlayerId);
         SendRPC(killer.PlayerId);
@@ -111,10 +116,11 @@ public static class Totocalcio
         killer.RPCPlayCustomSound("Bet");
 
         killer.Notify(GetString("TotocalcioBetPlayer"));
+
         if (BetTargetKnowTotocalcio.GetBool())
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Totocalcio), GetString("TotocalcioBetOnYou")));
 
-        Logger.Info($"赌徒下注：{killer.GetNameWithRole()} => {target.GetNameWithRole()}", "Totocalcio");
+        Logger.Info($" {killer.GetNameWithRole()} => {target.GetNameWithRole()}", "Totocalcio");
         return false;
     }
     public static string TargetMark(PlayerControl seer, PlayerControl target)

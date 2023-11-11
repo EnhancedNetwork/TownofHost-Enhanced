@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using TOHE.Roles.Neutral;
 using UnityEngine;
+using static TOHE.Utils;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
@@ -118,9 +121,21 @@ internal class AntiAdminer
 
         if (isChange)
         {
-            Utils.NotifyRoles(ForceLoop: false);
-            foreach (PlayerControl pc in Main.AllPlayerControls)
-                FixedUpdatePatch.Postfix(pc);
+            foreach (var pc in playerIdList.ToArray())
+            {
+                var antiAdminer = GetPlayerById(pc);
+                NotifyRoles(SpecifySeer: antiAdminer, ForceLoop: false);
+            }
         }
+    }
+    public static string GetSuffix()
+    {
+        StringBuilder sb = new();
+        if (IsAdminWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), "⚠")).Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), GetString("AdminWarning")));
+        if (IsVitalWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), "⚠")).Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), GetString("VitalsWarning")));
+        if (IsDoorLogWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), "⚠")).Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), GetString("DoorlogWarning")));
+        if (IsCameraWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), "⚠")).Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), GetString("CameraWarning")));
+
+        return sb.ToString();
     }
 }

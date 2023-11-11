@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System.Collections.Generic;
+using System.Linq;
 using TOHE.Roles.AddOns.Crewmate;
 
 namespace TOHE;
@@ -95,7 +96,7 @@ class AddTasksFromListPatch
             if (task.TaskType == TaskTypes.LiftWeights && Options.DisableLiftWeights.GetBool()) disabledTasks.Add(task);//Lift Weights
             if (task.TaskType == TaskTypes.CollectShells && Options.DisableCollectShells.GetBool()) disabledTasks.Add(task);//Collect Shells
         }
-        foreach (var task in disabledTasks)
+        foreach (var task in disabledTasks.ToArray())
         {
             Logger.Msg("Deletion: " + task.TaskType.ToString(), "Disable Tasks");
             unusedTasks.Remove(task);
@@ -195,13 +196,13 @@ class RpcSetTasksPatch
 
         // List of long tasks that can be assigned
         Il2CppSystem.Collections.Generic.List<NormalPlayerTask> LongTasks = new();
-        foreach (var task in ShipStatus.Instance.LongTasks)
+        foreach (var task in ShipStatus.Instance.LongTasks.ToArray())
             LongTasks.Add(task);
         Shuffle<NormalPlayerTask>(LongTasks);
 
         // List of short tasks that can be assigned
         Il2CppSystem.Collections.Generic.List<NormalPlayerTask> ShortTasks = new();
-        foreach (var task in ShipStatus.Instance.ShortTasks)
+        foreach (var task in ShipStatus.Instance.ShortTasks.ToArray())
             ShortTasks.Add(task);
         Shuffle<NormalPlayerTask>(ShortTasks);
 

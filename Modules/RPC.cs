@@ -297,6 +297,7 @@ internal class RPCHandlerPatch
                 if (AmongUsClient.Instance.AmHost) break;
 
                 List<OptionItem> listOptions = new();
+                List<OptionItem> allOptionsList = OptionItem.AllOptions.ToList();
 
                 var startAmount = reader.ReadInt32();
                 var lastAmount = reader.ReadInt32();
@@ -306,17 +307,16 @@ internal class RPCHandlerPatch
                 // Add Options
                 for (var option = startAmount; option < countAllOptions && option <= lastAmount; option++)
                 {
-                    listOptions.Add(OptionItem.AllOptions[option]);
+                    listOptions.Add(allOptionsList[option]);
                 }
 
                 var countOptions = listOptions.Count;
                 Logger.Msg($"StartAmount: {startAmount} - LastAmount: {lastAmount} ({startAmount}/{lastAmount}) :--: ListOptionsCount: {countOptions} - AllOptions: {countAllOptions} ({countOptions}/{countAllOptions})", "SyncCustomSettings");
 
                 // Sync Settings
-                for (int optionNumber = 0; optionNumber < countOptions; optionNumber++)
+                foreach (var option in listOptions.ToArray())
                 {
-                    OptionItem co = listOptions[optionNumber];
-                    co.SetValue(reader.ReadInt32());
+                    option.SetValue(reader.ReadPackedInt32());
                 }
                 OptionShower.GetText();
                 break;
@@ -797,21 +797,21 @@ internal static class RPC
         writer.Write(lastAmount);
 
         List<OptionItem> listOptions = new();
+        List<OptionItem> allOptionsList = OptionItem.AllOptions.ToList();
 
         // Add Options
         for (var option = startAmount; option < amountAllOptions && option <= lastAmount; option++)
         {
-            listOptions.Add(OptionItem.AllOptions[option]);
+            listOptions.Add(allOptionsList[option]);
         }
 
         var countListOptions = listOptions.Count;
         Logger.Msg($"StartAmount: {startAmount} - LastAmount: {lastAmount} ({startAmount}/{lastAmount}) :--: ListOptionsCount: {countListOptions} - AllOptions: {amountAllOptions} ({countListOptions}/{amountAllOptions})", "SyncCustomSettings");
 
         // Sync Settings
-        for (var optionNumber = 0; optionNumber < countListOptions; optionNumber++)
+        foreach (var option in listOptions.ToArray())
         {
-            OptionItem opt = listOptions[optionNumber];
-            writer.Write(opt.GetValue());
+            writer.WritePacked(option.GetValue());
         }
 
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -1004,7 +1004,7 @@ internal static class RPC
             //    Occultist.Add(targetId);
             //    break;
             case CustomRoles.Camouflager:
-                Camouflager.Add(targetId);
+                Camouflager.Add();
                 break;
             case CustomRoles.Jackal:
                 Jackal.Add(targetId);
@@ -1402,7 +1402,7 @@ internal static class RPC
         try
         {
             target = targetClientId < 0 ? "All" : AmongUsClient.Instance.GetClient(targetClientId).PlayerName;
-            from = Main.AllPlayerControls.Where(c => c.NetId == targetNetId).FirstOrDefault()?.Data?.PlayerName;
+            from = Main.AllPlayerControls.FirstOrDefault(c => c.NetId == targetNetId)?.Data?.PlayerName;
         }
         catch { }
         Logger.Info($"FromNetID:{targetNetId}({from}) TargetClientID:{targetClientId}({target}) CallID:{callId}({rpcName})", "SendRPC");

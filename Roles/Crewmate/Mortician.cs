@@ -72,7 +72,7 @@ public static class Mortician
         }
 
         lastPlayerName.TryAdd(target.PlayerId, minName);
-        foreach (var pc in playerIdList)
+        foreach (var pc in playerIdList.ToArray())
         {
             var player = Utils.GetPlayerById(pc);
             if (player == null || !player.IsAlive()) continue;
@@ -82,7 +82,7 @@ public static class Mortician
     }
     public static void OnReportDeadBody(PlayerControl pc, GameData.PlayerInfo target)
     {
-        foreach (var apc in playerIdList)
+        foreach (var apc in playerIdList.ToArray())
         {
             LocateArrow.RemoveAllTarget(apc);
             SendRPC(apc, false);

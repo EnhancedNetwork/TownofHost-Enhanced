@@ -958,7 +958,7 @@ public class ModNewsHistory
 
         List<Announcement> FinalAllNews = new();
         AllModNews.Do(n => FinalAllNews.Add(n.ToAnnouncement()));
-        foreach (var news in aRange)
+        foreach (var news in aRange.ToArray())
         {
             if (!AllModNews.Any(x => x.Number == news.Number))
                 FinalAllNews.Add(news);

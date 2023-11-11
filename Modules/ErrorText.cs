@@ -50,7 +50,7 @@ public class ErrorText : MonoBehaviour
     public void Update()
     {
         AllErrors.ForEach(err => err.IncreaseTimer());
-        var ToRemove = AllErrors.Where(err => err.ErrorLevel <= 1 && 30f < err.Timer);
+        var ToRemove = AllErrors.Where(err => err.ErrorLevel <= 1 && 30f < err.Timer).ToArray();
         if (ToRemove.Any())
         {
             AllErrors.RemoveAll(err => ToRemove.Contains(err));
@@ -87,7 +87,7 @@ public class ErrorText : MonoBehaviour
     {
         string text = "";
         int maxLevel = 0;
-        foreach (var err in AllErrors)
+        foreach (var err in AllErrors.ToArray())
         {
             text += $"{err}: {err.Message}\n";
             if (maxLevel < err.ErrorLevel) maxLevel = err.ErrorLevel;
