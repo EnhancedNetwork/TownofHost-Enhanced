@@ -202,16 +202,6 @@ class ExileControllerWrapUpPatch
                     Main.CursedPlayers[player.PlayerId] = null;
                     Main.isCurseAndKill[player.PlayerId] = false;
                     break;
-
-                case CustomRoles.Swapper:
-                    if (Swapper.Vote.Any() && Swapper.VoteTwo.Any())
-                    {
-                        Swapper.Swappermax[player.PlayerId]--;
-                        Swapper.Vote.Clear();
-                        Swapper.VoteTwo.Clear();
-                        Main.SwapSend = false;
-                    }
-                    break;
             }
 
             if (Infectious.IsEnable)
