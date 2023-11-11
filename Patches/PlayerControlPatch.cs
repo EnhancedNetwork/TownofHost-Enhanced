@@ -1332,6 +1332,9 @@ class MurderPlayerPatch
         PlayerControl killer = __instance;
         bool needUpadteNotifyRoles = true;
 
+        if (Pelican.IsEnable && target.Is(CustomRoles.Pelican)) 
+            Pelican.OnPelicanDied(target.PlayerId);
+
         if (Main.GodfatherTarget.Contains(target.PlayerId) && !(killer.GetCustomRole().IsImpostor() || killer.GetCustomRole().IsMadmate() || killer.Is(CustomRoles.Madmate)))
         {
             if (Options.GodfatherChangeOpt.GetValue() == 0) killer.RpcSetCustomRole(CustomRoles.Refugee);

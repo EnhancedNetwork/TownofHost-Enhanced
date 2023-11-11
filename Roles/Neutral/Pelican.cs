@@ -186,12 +186,11 @@ public static class Pelican
             
             RPC.PlaySoundRPC(tar, Sounds.TaskComplete);
             
-            Utils.NotifyRoles(SpecifySeer: target);
-            
             Logger.Info($"{Utils.GetPlayerById(pc).GetRealName()} dead, player return back: {target.GetRealName()}", "Pelican");
         }
         eatenList.Remove(pc);
         SyncEatenList(pc);
+        Utils.NotifyRoles();
     }
 
     public static void OnFixedUpdate()
