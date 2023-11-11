@@ -173,6 +173,20 @@ class ExileControllerWrapUpPatch
         if (HexMaster.IsEnable)
             HexMaster.RemoveHexedPlayer();
 
+        if (Swapper.Vote.Any() && Swapper.VoteTwo.Any())
+        {
+            foreach (var swapper in Main.AllAlivePlayerControls)
+            {
+                if (swapper.Is(CustomRoles.Swapper))
+                {
+                    Swapper.Swappermax[swapper.PlayerId]--;
+                    Swapper.Vote.Clear();
+                    Swapper.VoteTwo.Clear();
+                    Main.SwapSend = false;
+                }
+            }
+        }
+        
         foreach (var player in Main.AllPlayerControls)
         {
             //PlayerControl player = allPlayerControls[item];
@@ -180,23 +194,6 @@ class ExileControllerWrapUpPatch
 
             switch (playerRole)
             {
-                case CustomRoles.EvilMini:
-                    if (Mini.Age < 18)
-                    {
-                        Main.AllPlayerKillCooldown[player.PlayerId] = Mini.MinorCD.GetFloat() + 2f;
-                        Main.EvilMiniKillcooldown[player.PlayerId] = Mini.MinorCD.GetFloat() + 2f;
-                        Main.EvilMiniKillcooldownf = Mini.MinorCD.GetFloat();
-                        player.MarkDirtySettings();
-                        player.SetKillCooldown();
-                    }
-                    else if (Mini.Age == 18)
-                    {
-                        Main.AllPlayerKillCooldown[player.PlayerId] = Mini.MajorCD.GetFloat();
-                        player.MarkDirtySettings();
-                        player.SetKillCooldown();
-                    }
-                    break;
-
                 case CustomRoles.Mayor when Options.MayorHasPortableButton.GetBool():
                     player.RpcResetAbilityCooldown();
                     break;
@@ -204,16 +201,6 @@ class ExileControllerWrapUpPatch
                 case CustomRoles.Warlock:
                     Main.CursedPlayers[player.PlayerId] = null;
                     Main.isCurseAndKill[player.PlayerId] = false;
-                    break;
-
-                case CustomRoles.Swapper:
-                    if (Swapper.Vote.Any() && Swapper.VoteTwo.Any())
-                    {
-                        Swapper.Swappermax[player.PlayerId]--;
-                        Swapper.Vote.Clear();
-                        Swapper.VoteTwo.Clear();
-                        Main.SwapSend = false;
-                    }
                     break;
             }
 
