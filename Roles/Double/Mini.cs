@@ -100,13 +100,16 @@ public class Mini
             if (player.Is(CustomRoles.EvilMini))
             {
                 player.ResetKillCooldown();
+                player.SyncSettings();
+                //Only sync settings so evil mini's age updates upon next kill attempt or after meeting
             }
 
             if (player.Is(CustomRoles.NiceMini))
                 player.RpcGuardAndKill();
-            else if (player.Is(CustomRoles.EvilMini))
-                player.SetKillCooldown(forceAnime: true);
-            //Kill cool down is synced here
+            /*Dont show guard animation for evil mini,
+            this would simply stop them from murdering.
+            Imagine reseting kill cool down every 20 seconds
+            and evil mini can never kill before age 18*/
 
             if (UpDateAge.GetBool())
             {
