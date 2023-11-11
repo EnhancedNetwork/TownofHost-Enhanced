@@ -3157,19 +3157,34 @@ class FixedUpdatePatch
                     }
                 }
 
-                Mark.Append(Snitch.GetWarningMark(seer, target));
-                Mark.Append(Marshall.GetWarningMark(seer, target));
-                Mark.Append(Executioner.TargetMark(seer, target));
-                Mark.Append(Gamer.TargetMark(seer, target));
-                Mark.Append(Totocalcio.TargetMark(seer, target));
-                Mark.Append(Romantic.TargetMark(seer, target));
-                Mark.Append(Lawyer.LawyerMark(seer, target));
-                Mark.Append(Snitch.GetWarningArrow(seer, target));
+                if (Snitch.IsEnable)
+                {
+                    Mark.Append(Snitch.GetWarningMark(seer, target));
+                    Mark.Append(Snitch.GetWarningArrow(seer, target));
+                }
 
-                if (seer.Is(CustomRoles.EvilTracker))
+                if (Marshall.IsEnable)
+                    Mark.Append(Marshall.GetWarningMark(seer, target));
+
+                if (Executioner.IsEnable)
+                    Mark.Append(Executioner.TargetMark(seer, target));
+
+                if (Gamer.IsEnable)
+                    Mark.Append(Gamer.TargetMark(seer, target));
+
+                if (Totocalcio.IsEnable)
+                    Mark.Append(Totocalcio.TargetMark(seer, target));
+
+                if (Romantic.IsEnable)
+                    Mark.Append(Romantic.TargetMark(seer, target));
+
+                if (Lawyer.IsEnable)
+                    Mark.Append(Lawyer.LawyerMark(seer, target));
+
+                if (EvilTracker.IsEnable && seer.Is(CustomRoles.EvilTracker))
                     Mark.Append(EvilTracker.GetTargetMark(seer, target));
 
-                if (seer.Is(CustomRoles.Tracker))
+                if (Tracker.IsEnable && seer.Is(CustomRoles.Tracker))
                     Mark.Append(Tracker.GetTargetMark(seer, target));
 
                 if (target.Is(CustomRoles.SuperStar) && Options.EveryOneKnowSuperStar.GetBool())
@@ -3178,7 +3193,7 @@ class FixedUpdatePatch
                 if (target.Is(CustomRoles.Cyber) && Options.CyberKnown.GetBool())
                     Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), "★"));
 
-                if (BallLightning.IsGhost(target))
+                if (BallLightning.IsEnable && BallLightning.IsGhost(target))
                     Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.BallLightning), "■"));
 
 
@@ -3233,17 +3248,24 @@ class FixedUpdatePatch
                         Mark.Append(Shroud.TargetMark(seer, target));
                         break;
                 }
-                if (target.Is(CustomRoles.NiceMini) && Mini.EveryoneCanKnowMini.GetBool())
-                    Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), Mini.Age != 18 && Mini.UpDateAge.GetBool() ? $"({Mini.Age})" : ""));
 
-                if (target.Is(CustomRoles.EvilMini) && Mini.EveryoneCanKnowMini.GetBool())
-                    Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), Mini.Age != 18 && Mini.UpDateAge.GetBool() ? $"({Mini.Age})" : ""));
-                    
-                if ((Medic.WhoCanSeeProtect.GetInt() is 0 or 2) && seer.PlayerId == target.PlayerId && (Medic.InProtect(seer.PlayerId) || Medic.TempMarkProtected == seer.PlayerId))
-                    Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Medic)}>✚</color>");
+                if (Mini.IsEnable && Mini.EveryoneCanKnowMini.GetBool())
+                {
+                    if (target.Is(CustomRoles.NiceMini))
+                        Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), Mini.Age != 18 && Mini.UpDateAge.GetBool() ? $"({Mini.Age})" : ""));
 
-                if (seer.Data.IsDead && Medic.InProtect(target.PlayerId) && !seer.Is(CustomRoles.Medic))
-                    Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Medic)}>✚</color>");
+                    else if (target.Is(CustomRoles.EvilMini))
+                        Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), Mini.Age != 18 && Mini.UpDateAge.GetBool() ? $"({Mini.Age})" : ""));
+                }
+                
+                if (Medic.IsEnable)
+                {
+                    if ((Medic.WhoCanSeeProtect.GetInt() is 0 or 2) && seer.PlayerId == target.PlayerId && (Medic.InProtect(seer.PlayerId) || Medic.TempMarkProtected == seer.PlayerId))
+                        Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Medic)}>✚</color>");
+
+                    if (!seer.IsAlive() && Medic.InProtect(target.PlayerId) && !seer.Is(CustomRoles.Medic))
+                        Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Medic)}>✚</color>");
+                }
 
                 if (Sniper.IsEnable && target.AmOwner)
                     Mark.Append(Sniper.GetShotNotify(target.PlayerId));
@@ -3265,19 +3287,38 @@ class FixedUpdatePatch
                     Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
                 }
 
+                if (Snitch.IsEnable)
+                    Suffix.Append(Snitch.GetSnitchArrow(seer, target));
 
-                Suffix.Append(Snitch.GetSnitchArrow(seer, target));
-                Suffix.Append(BountyHunter.GetTargetArrow(seer, target));
-                Suffix.Append(Mortician.GetTargetArrow(seer, target));
-                Suffix.Append(EvilTracker.GetTargetArrow(seer, target));
-                Suffix.Append(Bloodhound.GetTargetArrow(seer, target));
-                Suffix.Append(Tracker.GetTrackerArrow(seer, target));
-                Suffix.Append(Deathpact.GetDeathpactPlayerArrow(seer, target));
-                Suffix.Append(Deathpact.GetDeathpactMark(seer, target));
-                Suffix.Append(Spiritualist.GetSpiritualistArrow(seer, target));
-                Suffix.Append(Tracefinder.GetTargetArrow(seer, target));
+                if (BountyHunter.IsEnable)
+                    Suffix.Append(BountyHunter.GetTargetArrow(seer, target));
 
-                if (Vulture.ArrowsPointingToDeadBody.GetBool())
+                if (Mortician.IsEnable)
+                    Suffix.Append(Mortician.GetTargetArrow(seer, target));
+                
+                if (EvilTracker.IsEnable)
+                    Suffix.Append(EvilTracker.GetTargetArrow(seer, target));
+
+                if (Tracker.IsEnable)
+                    Suffix.Append(Tracker.GetTrackerArrow(seer, target));
+
+                if (Bloodhound.IsEnable)
+                    Suffix.Append(Bloodhound.GetTargetArrow(seer, target));
+
+
+                if (Deathpact.IsEnable)
+                {
+                    Suffix.Append(Deathpact.GetDeathpactPlayerArrow(seer, target));
+                    Suffix.Append(Deathpact.GetDeathpactMark(seer, target));
+                }
+
+                if (Spiritualist.IsEnable)
+                    Suffix.Append(Spiritualist.GetSpiritualistArrow(seer, target));
+
+                if (Tracefinder.IsEnable)
+                    Suffix.Append(Tracefinder.GetTargetArrow(seer, target));
+
+                if (Vulture.IsEnable && Vulture.ArrowsPointingToDeadBody.GetBool())
                     Suffix.Append(Vulture.GetTargetArrow(seer, target));
 
                 if (GameStates.IsInTask)
@@ -3310,9 +3351,12 @@ class FixedUpdatePatch
                     Mark = isBlocked ? "(true)" : "(false)";}*/
 
                 // Devourer
-                bool targetDevoured = Devourer.HideNameOfConsumedPlayer.GetBool() && Devourer.PlayerSkinsCosumed.Any(a => a.Value.Contains(target.PlayerId));
-                if (targetDevoured)
-                    RealName = GetString("DevouredName");
+                if (Devourer.IsEnable)
+                {
+                    bool targetDevoured = Devourer.HideNameOfConsumedPlayer.GetBool() && Devourer.PlayerSkinsCosumed.Any(a => a.Value.Contains(target.PlayerId));
+                    if (targetDevoured)
+                        RealName = GetString("DevouredName");
+                }
 
                 // Camouflage
                 if ((Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive) || Camouflager.AbilityActivated)

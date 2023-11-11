@@ -1937,8 +1937,6 @@ public static class Utils
         //Do not update NotifyRoles during meetings
         if (GameStates.IsMeeting) return Task.CompletedTask;
 
-        Logger.Info($" START", "DoNotifyRoles", force: true);
-
         //var logger = Logger.Handler("DoNotifyRoles");
 
         HudManagerPatch.NowCallNotifyRolesCount++;
@@ -1957,6 +1955,7 @@ public static class Utils
             MushroomMixupIsActive = IsActive(SystemTypes.MushroomMixupSabotage);
         }
 
+        Logger.Info($" START - Count Seers: {seerList.Length}", "DoNotifyRoles", force: true);
         //seer: player who updates the nickname/role/mark
         //target: seer updates nickname/role/mark of other targets
         foreach (var seer in seerList)
@@ -2099,7 +2098,7 @@ public static class Utils
                             SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Shroud), "◈"));
                     }
 
-                    if (seer.PlayerId == Pirate.PirateTarget)
+                    if (Pirate.IsEnable && seer.PlayerId == Pirate.PirateTarget)
                         SelfMark.Append(Pirate.GetPlunderedMark(seer.PlayerId, true));
 
                     if (Witch.IsEnable)
@@ -2204,6 +2203,7 @@ public static class Utils
                 || NoCache
                 || ForceLoop)
             {
+                Logger.Info($" Loop for Targets - Count Targets: {targetList.Length}", "DoNotifyRoles", force: true);
                 foreach (var target in targetList)
                 {
                     // if the target is the seer itself, do nothing
@@ -2242,11 +2242,14 @@ public static class Utils
                                 TargetMark.Append(Shroud.GetShroudMark(target.PlayerId, true));
                         }
 
-                        if (target.Is(CustomRoles.NiceMini) && Mini.EveryoneCanKnowMini.GetBool())
-                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Mini), Mini.Age != 18 && Mini.UpDateAge.GetBool() ? $"({Mini.Age})" : ""));
+                        if (Mini.IsEnable && Mini.EveryoneCanKnowMini.GetBool())
+                        {
+                            if (target.Is(CustomRoles.NiceMini))
+                                TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Mini), Mini.Age != 18 && Mini.UpDateAge.GetBool() ? $"({Mini.Age})" : ""));
 
-                        if (target.Is(CustomRoles.EvilMini) && Mini.EveryoneCanKnowMini.GetBool())
-                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Mini), Mini.Age != 18 && Mini.UpDateAge.GetBool() ? $"({Mini.Age})" : ""));
+                            else if (target.Is(CustomRoles.EvilMini))
+                                TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Mini), Mini.Age != 18 && Mini.UpDateAge.GetBool() ? $"({Mini.Age})" : ""));
+                        }
 
                         if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate) && target.GetPlayerTaskState().IsTaskFinished)
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Impostor), "★"));
@@ -2299,13 +2302,16 @@ public static class Utils
                         }
 
 
-                        if (seer.Is(CustomRoles.Medic) && (Medic.WhoCanSeeProtect.GetInt() is 0 or 1) && (Medic.InProtect(target.PlayerId) || Medic.TempMarkProtected == target.PlayerId))
+                        if (Medic.IsEnable)
                         {
-                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Medic), "✚"));
-                        }
-                        else if (seer.Data.IsDead && !seer.Is(CustomRoles.Medic) && (Medic.InProtect(target.PlayerId) || Medic.TempMarkProtected == target.PlayerId))
-                        {
-                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Medic), "✚"));
+                            if (seer.Is(CustomRoles.Medic) && (Medic.WhoCanSeeProtect.GetInt() is 0 or 1) && (Medic.InProtect(target.PlayerId) || Medic.TempMarkProtected == target.PlayerId))
+                            {
+                                TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Medic), "✚"));
+                            }
+                            else if (!seer.IsAlive() && !seer.Is(CustomRoles.Medic) && (Medic.InProtect(target.PlayerId) || Medic.TempMarkProtected == target.PlayerId))
+                            {
+                                TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Medic), "✚"));
+                            }
                         }
 
                         switch (seerRole)
@@ -2359,7 +2365,7 @@ public static class Utils
                                 ? $"<size={fontSize}>{target.GetDisplayRoleName(seer.PlayerId != target.PlayerId && !seer.Data.IsDead)}{GetProgressText(target)}</size>\r\n" : "";
 
 
-                        if (!seer.Data.IsDead && seer.IsRevealedPlayer(target) && target.Is(CustomRoles.Trickster))
+                        if (seer.IsAlive() && seer.IsRevealedPlayer(target) && target.Is(CustomRoles.Trickster))
                         {
                             TargetRoleText = Farseer.RandomRole[seer.PlayerId];
                             TargetRoleText += Farseer.GetTaskState();
@@ -2499,9 +2505,12 @@ public static class Utils
 
 
                         // Devourer
-                        bool targetDevoured = Devourer.HideNameOfConsumedPlayer.GetBool() && Devourer.PlayerSkinsCosumed.Any(a => a.Value.Contains(target.PlayerId));
-                        if (targetDevoured && !CamouflageIsForMeeting)
-                            TargetPlayerName = GetString("DevouredName");
+                        if (Devourer.IsEnable)
+                        {
+                            bool targetDevoured = Devourer.HideNameOfConsumedPlayer.GetBool() && Devourer.PlayerSkinsCosumed.Any(a => a.Value.Contains(target.PlayerId));
+                            if (targetDevoured && !CamouflageIsForMeeting)
+                                TargetPlayerName = GetString("DevouredName");
+                        }
 
                         // Camouflage
                         if (!CamouflageIsForMeeting && ((IsActive(SystemTypes.Comms) && Camouflage.IsActive) || Camouflager.AbilityActivated))

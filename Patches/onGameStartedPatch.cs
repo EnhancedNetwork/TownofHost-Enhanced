@@ -15,6 +15,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Modules.CustomRoleSelector;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -932,7 +933,12 @@ internal class SelectRolesPatch
                     case CustomRoles.Instigator:
                         Instigator.Add(pc.PlayerId);
                         break;
-
+                    case CustomRoles.NiceMini:
+                        Mini.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.EvilMini:
+                        Mini.Add(pc.PlayerId);
+                        break;
                     case CustomRoles.Crewpostor:
                         Main.CrewpostorTasksDone[pc.PlayerId] = 0;
                         break;

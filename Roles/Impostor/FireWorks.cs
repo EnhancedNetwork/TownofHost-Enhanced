@@ -154,7 +154,7 @@ public static class FireWorks
                 break;
         }
         SendRPC(pc.PlayerId);
-        Utils.NotifyRoles();
+        Utils.NotifyRoles(ForceLoop: true);
     }
 
     public static string GetStateText(PlayerControl pc, bool isLocal = true)
@@ -167,7 +167,7 @@ public static class FireWorks
             Logger.Info("爆破準備OK", "FireWorks");
             state[pc.PlayerId] = FireWorksState.ReadyFire;
             SendRPC(pc.PlayerId);
-            Utils.NotifyRoles();
+            Utils.NotifyRoles(SpecifySeer: pc);
         }
         switch (state[pc.PlayerId])
         {
