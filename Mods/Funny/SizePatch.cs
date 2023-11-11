@@ -16,7 +16,7 @@ namespace TOHE
             if (Main.BigSize.Value == true)
             {
                 //Set sprite scale
-            PlayerControl.LocalPlayer.transform.localScale = new Vector3 (5f, 5f, 1f);
+            PlayerControl.LocalPlayer.transform.localScale = new Vector3 (1.5f, 1.5f, 1f);
             }
             else
             {
