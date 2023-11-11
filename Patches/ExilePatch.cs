@@ -149,24 +149,6 @@ class ExileControllerWrapUpPatch
                 }
             }
         }
-
-        foreach (var pc in Main.AllAlivePlayerControls)
-        {
-            if (pc.Is(CustomRoles.EvilMini) && Mini.Age != 18)
-            {
-                Main.AllPlayerKillCooldown[pc.PlayerId] = Mini.MinorCD.GetFloat() + 2f;
-                Main.EvilMiniKillcooldown[pc.PlayerId] = Mini.MinorCD.GetFloat() + 2f;
-                Main.EvilMiniKillcooldownf = Mini.MinorCD.GetFloat();
-                pc.MarkDirtySettings();
-                pc.SetKillCooldown();
-            }
-            else if (pc.Is(CustomRoles.EvilMini) && Mini.Age == 18)
-            {
-                Main.AllPlayerKillCooldown[pc.PlayerId] = Mini.MajorCD.GetFloat();
-                pc.MarkDirtySettings();
-                pc.SetKillCooldown();
-            }
-        }
         
         foreach (var pc in Main.AllPlayerControls)
         {

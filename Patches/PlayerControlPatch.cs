@@ -916,22 +916,6 @@ class CheckMurderPatch
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), GetString("Cantkillkid")));
             return false;
         }
-        if (killer.Is(CustomRoles.EvilMini) && Mini.Age != 18)
-        {
-            Main.EvilMiniKillcooldown[killer.PlayerId] = Mini.MinorCD.GetFloat();
-            Main.AllPlayerKillCooldown[killer.PlayerId] = Mini.MinorCD.GetFloat();
-            Main.EvilMiniKillcooldownf = Mini.MinorCD.GetFloat();
-            killer.MarkDirtySettings();
-            killer.SetKillCooldown();
-            return true;
-        }
-        if (killer.Is(CustomRoles.EvilMini) && Mini.Age == 18)
-        {
-            Main.AllPlayerKillCooldown[killer.PlayerId] = Mini.MajorCD.GetFloat();
-            killer.MarkDirtySettings();
-            killer.SetKillCooldown();
-            return true;
-        }
 
     /*    if (target.Is(CustomRoles.BoobyTrap) && Options.TrapOnlyWorksOnTheBodyBoobyTrap.GetBool() && !GameStates.IsMeeting)
         {
@@ -2530,6 +2514,12 @@ class FixedUpdatePatch
 
             var playerRole = player.GetCustomRole();
 
+            if (player.Is(CustomRoles.NiceMini) || player.Is(CustomRoles.EvilMini))
+            {
+                if (!player.Data.IsDead)
+                    Mini.OnFixedUpdate(player);
+            } //Mini's count down needs to be done outside if intask if we are counting meeting time
+
             if (GameStates.IsInTask)
             {
                 if (ReportDeadBodyPatch.CanReport[__instance.PlayerId] && ReportDeadBodyPatch.WaitReport[__instance.PlayerId].Any())
@@ -2793,11 +2783,6 @@ class FixedUpdatePatch
                     case CustomRoles.Pelican:
                         Pelican.OnFixedUpdate();
                         break;
-
-                    case CustomRoles.Mini:
-                        Mini.OnFixedUpdate(player);
-                        break;
-
 
                     case CustomRoles.Spy:
                         Spy.OnFixedUpdate(player);
