@@ -112,7 +112,7 @@ public static class BountyHunter
             if (ChangeTimer[player.PlayerId] >= TargetChangeTime)//時間経過でターゲットをリセットする処理
             {
                 ResetTarget(player);//ターゲットの選びなおし
-                Utils.NotifyRoles(SpecifySeer: player);
+                Utils.NotifyRoles(SpecifySeer: player, ForceLoop: true);
             }
             if (ChangeTimer[player.PlayerId] >= 0)
                 ChangeTimer[player.PlayerId] += Time.fixedDeltaTime;
@@ -122,7 +122,7 @@ public static class BountyHunter
             {
                 ResetTarget(player);
                 Logger.Info($"{player.GetNameWithRole()}のターゲットが無効だったため、ターゲットを更新しました", "BountyHunter");
-                Utils.NotifyRoles(SpecifySeer: player);
+                Utils.NotifyRoles(SpecifySeer: player, ForceLoop: true);
             }
         }
     }

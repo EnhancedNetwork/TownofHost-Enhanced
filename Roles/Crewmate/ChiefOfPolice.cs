@@ -75,7 +75,6 @@ public static class ChiefOfPolice
             }
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), GetString("SheriffSuccessfullyRecruited")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), GetString("BeSheriffByPolice")));
-            Utils.NotifyRoles();
 
             killer.ResetKillCooldown();
             killer.SetKillCooldown();

@@ -109,12 +109,10 @@ namespace TOHE.Roles.Neutral
             {
                 target.RpcSetCustomRole(CustomRoles.Contagious);
 
-                Utils.NotifyRoles();
-
                 Main.VirusNotify.Add(target.PlayerId, GetString("VirusNoticeMessage"));
             }
 
-            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Contagious.ToString(), "Assign " + CustomRoles.Contagious.ToString());
+            Logger.Info("Setting up a career:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Contagious.ToString(), "Assign " + CustomRoles.Contagious.ToString());
         }
 
         public static void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)

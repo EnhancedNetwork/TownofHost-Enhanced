@@ -107,7 +107,7 @@ internal static class Eraser
     {
         if (!IsEnable) return;
 
-        foreach (var pc in PlayerToErase)
+        foreach (var pc in PlayerToErase.ToArray())
         {
             var player = Utils.GetPlayerById(pc);
             if (player == null) continue;
@@ -122,10 +122,10 @@ internal static class Eraser
                 return;
             }
             player.RpcSetCustomRole(CustomRolesHelper.GetErasedRole(player.GetCustomRole().GetRoleTypes(), player.GetCustomRole()));
-            NameNotifyManager.Notify(player, GetString("LostRoleByEraser"));
+            player.Notify(GetString("LostRoleByEraser"));
             player.ResetKillCooldown();
             player.SetKillCooldown();
-            Logger.Info($"{player.GetNameWithRole()} 被擦除了", "Eraser");
+            Logger.Info($"{player.GetNameWithRole()} Erase by Eraser", "Eraser");
         }
         Utils.MarkEveryoneDirtySettings();
     }

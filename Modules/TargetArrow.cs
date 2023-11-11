@@ -26,7 +26,7 @@ static class TargetArrow
         }
     }
 
-    static Dictionary<ArrowInfo, string> TargetArrows = new();
+    static readonly Dictionary<ArrowInfo, string> TargetArrows = new();
     static readonly string[] Arrows = {
         "↑",
         "↗",
@@ -64,7 +64,7 @@ static class TargetArrow
     {
         var arrowInfo = new ArrowInfo(seer, target);
         var removeList = new List<ArrowInfo>(TargetArrows.Keys.Where(k => k.Equals(arrowInfo)));
-        foreach (var a in removeList)
+        foreach (var a in removeList.ToArray())
         {
             TargetArrows.Remove(a);
         }
@@ -76,7 +76,7 @@ static class TargetArrow
     public static void RemoveAllTarget(byte seer)
     {
         var removeList = new List<ArrowInfo>(TargetArrows.Keys.Where(k => k.From == seer));
-        foreach (var arrowInfo in removeList)
+        foreach (var arrowInfo in removeList.ToArray())
         {
             TargetArrows.Remove(arrowInfo);
         }
@@ -89,7 +89,7 @@ static class TargetArrow
     public static string GetArrows(PlayerControl seer, params byte[] targets)
     {
         var arrows = "";
-        foreach (var arrowInfo in TargetArrows.Keys.Where(ai => ai.From == seer.PlayerId && targets.Contains(ai.To)))
+        foreach (var arrowInfo in TargetArrows.Keys.Where(ai => ai.From == seer.PlayerId && targets.Contains(ai.To)).ToArray())
         {
             arrows += TargetArrows[arrowInfo];
         }
@@ -111,7 +111,7 @@ static class TargetArrow
         if (!arrowList.Any()) return;
 
         var update = false;
-        foreach (var arrowInfo in arrowList)
+        foreach (var arrowInfo in arrowList.ToArray())
         {
             var targetId = arrowInfo.To;
             var target = Utils.GetPlayerById(targetId);

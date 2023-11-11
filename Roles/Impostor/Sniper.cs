@@ -83,7 +83,7 @@ public static class Sniper
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SniperSync, Hazel.SendOption.Reliable, -1);
         writer.Write(playerId);
         var snList = shotNotify[playerId];
-        writer.Write(snList.Count());
+        writer.Write(snList.Count);
         foreach (var sn in snList)
         {
             writer.Write(sn);
@@ -228,23 +228,26 @@ public static class Sniper
             var snipedTarget = targets.OrderBy(c => c.Value).First().Key;
             snipeTarget[sniperId] = snipedTarget.PlayerId;
             snipedTarget.CheckMurder(snipedTarget);
-            //あたった通知
-            if (!Options.DisableShieldAnimations.GetBool()) sniper.RpcGuardAndKill();
-            else sniper.SetKillCooldown();
+
+            if (!Options.DisableShieldAnimations.GetBool())
+                sniper.RpcGuardAndKill();
+            else
+                sniper.SetKillCooldown();
+
             snipeTarget[sniperId] = 0x7F;
 
-            //スナイプが起きたことを聞こえそうな対象に通知したい
             targets.Remove(snipedTarget);
             var snList = shotNotify[sniperId];
             snList.Clear();
+
             foreach (var otherPc in targets.Keys)
             {
                 snList.Add(otherPc.PlayerId);
                 Utils.NotifyRoles(SpecifySeer: otherPc);
             }
             SendRPC(sniperId);
-            _ = new LateTask(
-                () =>
+
+            _ = new LateTask(() =>
                 {
                     snList.Clear();
                     foreach (var otherPc in targets.Keys)
@@ -253,8 +256,7 @@ public static class Sniper
                     }
                     SendRPC(sniperId);
                 },
-                0.5f, "Sniper shot Notify"
-                );
+                0.5f, "Sniper shot Notify");
         }
     }
     public static void OnFixedUpdate(PlayerControl pc)

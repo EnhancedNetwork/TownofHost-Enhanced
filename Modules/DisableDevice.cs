@@ -48,6 +48,7 @@ class DisableDevice
         if (frame != 0) return;
 
         if (!DoDisable) return;
+
         foreach (var pc in Main.AllPlayerControls)
         {
             try

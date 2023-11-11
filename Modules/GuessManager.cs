@@ -33,17 +33,17 @@ public static class GuessManager
     public static bool CheckCommond(ref string msg, string command, bool exact = true)
     {
         var comList = command.Split('|');
-        for (int i = 0; i < comList.Count(); i++)
+        foreach(string comm in comList)
         {
             if (exact)
             {
-                if (msg == "/" + comList[i]) return true;
+                if (msg == "/" + comm) return true;
             }
             else
             {
-                if (msg.StartsWith("/" + comList[i]))
+                if (msg.StartsWith("/" + comm))
                 {
-                    msg = msg.Replace("/" + comList[i], string.Empty);
+                    msg = msg.Replace("/" + comm, string.Empty);
                     return true;
                 }
             }
@@ -77,9 +77,9 @@ public static class GuessManager
     private static bool ComfirmIncludeMsg(string msg, string key)
     {
         var keys = key.Split('|');
-        for (int i = 0; i < keys.Count(); i++)
+        foreach (string str in keys)
         {
-            if (msg.Contains(keys[i])) return true;
+            if (msg.Contains(str)) return true;
         }
         return false;
     }
@@ -738,7 +738,7 @@ public static class GuessManager
         voteArea.Overlay.color = Color.white;
         voteArea.XMark.gameObject.SetActive(true);
         voteArea.XMark.transform.localScale = Vector3.one;
-        foreach (var playerVoteArea in meetingHud.playerStates)
+        foreach (var playerVoteArea in meetingHud.playerStates.ToArray())
         {
             if (playerVoteArea.VotedFor != pc.PlayerId) continue;
             playerVoteArea.UnsetVote();
@@ -777,7 +777,7 @@ public static class GuessManager
         voteArea.Overlay.color = Color.white;
         voteArea.XMark.gameObject.SetActive(true);
         voteArea.XMark.transform.localScale = Vector3.one;
-        foreach (var playerVoteArea in meetingHud.playerStates)
+        foreach (var playerVoteArea in meetingHud.playerStates.ToArray())
         {
             if (playerVoteArea.VotedFor != pc.PlayerId) continue;
             playerVoteArea.UnsetVote();
@@ -835,7 +835,7 @@ public static class GuessManager
     public static void TryHideMsg()
     {
         ChatUpdatePatch.DoBlockChat = true;
-        List<CustomRoles> roles = CustomRolesHelper.AllRoles.Where(x => x is not CustomRoles.NotAssigned).ToList();
+        var roles = CustomRolesHelper.AllRoles.Where(x => x is not CustomRoles.NotAssigned).ToArray();
         var rd = IRandom.Instance;
         string msg;
         string[] command = new string[] { "bet", "bt", "guess", "gs", "shoot", "st", "赌", "猜", "审判", "tl", "判", "审" };
@@ -852,11 +852,11 @@ public static class GuessManager
                 msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
                 msg += rd.Next(0, 15).ToString();
                 msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
-                CustomRoles role = roles[rd.Next(0, roles.Count)];
+                CustomRoles role = roles[rd.Next(0, roles.Length)];
                 msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
                 msg += Utils.GetRoleName(role);
             }
-            var player = Main.AllAlivePlayerControls.ToArray()[rd.Next(0, Main.AllAlivePlayerControls.Count())];
+            var player = Main.AllAlivePlayerControls[rd.Next(0, Main.AllAlivePlayerControls.Length)];
             DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
             var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
             writer.StartMessage(-1);
@@ -916,7 +916,7 @@ public static class GuessManager
     public static void CreateGuesserButton(MeetingHud __instance)
     {
 
-        foreach (var pva in __instance.playerStates)
+        foreach (var pva in __instance.playerStates.ToArray())
         {
             var pc = Utils.GetPlayerById(pva.TargetPlayerId);
             if (pc == null || !pc.IsAlive()) continue;
@@ -947,7 +947,7 @@ public static class GuessManager
         foreach (var RoleButton in RoleButtons)
         {
             int index = 0;
-            foreach (var RoleBtn in RoleButton.Value)
+            foreach (var RoleBtn in RoleButton.Value.ToArray())
             {
                 if (RoleBtn == null) continue;
                 index++;
