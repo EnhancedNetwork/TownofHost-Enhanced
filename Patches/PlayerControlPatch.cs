@@ -2949,12 +2949,15 @@ class FixedUpdatePatch
                                 }
                             }
                             break;
-
+                    
                         case CustomRoles.NiceMini: 
                             if (Mini.Age < 18)
                             {
                                 if (player.IsAlive())
                                 {
+                                    if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
+                                    if (!player.Is(CustomRoles.NiceMini)) return;
+                                    if (Mini.Age >= 18 || (!Mini.CountMeetingTime.GetBool() && GameStates.IsMeeting)) return;
                                     if (LastFixedUpdate == Utils.GetTimeStamp()) return;
                                     LastFixedUpdate = Utils.GetTimeStamp();
                                     Mini.GrowUpTime ++;
@@ -2972,11 +2975,13 @@ class FixedUpdatePatch
                                         }
                                     }
                                 }
-                                else if (!player.IsAlive())
+                                if (!player.IsAlive())
                                 {
                                     if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
                                         CustomWinnerHolder.ResetAndSetWinner(CustomWinner.NiceMini);
-                                    // CustomWinnerHolder.WinnerIds.Add(mini.PlayerId); // Nice Mini does not win (Crewmates should not solo win unless Egoist)
+                                        CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
+                                        // ↑ This code will show the mini winning player on the checkout screen, Tommy you shouldn't comment it out!
+                                        return;
                                 }
                             }
                             break;
@@ -2984,13 +2989,16 @@ class FixedUpdatePatch
                         case CustomRoles.EvilMini:
                             if (Mini.Age < 18)
                             {
-                                if (LastFixedUpdate == Utils.GetTimeStamp()) return;
-                                LastFixedUpdate = Utils.GetTimeStamp();
-                                Mini.GrowUpTime ++;
                                 if (Main.EvilMiniKillcooldown[player.PlayerId] >= 1f)
                                 {
                                     Main.EvilMiniKillcooldown[player.PlayerId]--;
                                 }
+                                if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
+                                if (!player.Is(CustomRoles.EvilMini)) return;
+                                if (Mini.Age >= 18 || (!Mini.CountMeetingTime.GetBool() && GameStates.IsMeeting)) return;
+                                if (LastFixedUpdate == Utils.GetTimeStamp()) return;
+                                LastFixedUpdate = Utils.GetTimeStamp();
+                                Mini.GrowUpTime ++;
                                 if (Mini.GrowUpTime >= Mini.GrowUpDuration.GetInt() / 18)
                                 {
                                     Main.EvilMiniKillcooldownf = Main.EvilMiniKillcooldown[player.PlayerId];
@@ -3002,19 +3010,17 @@ class FixedUpdatePatch
                                     Mini.Age += 1;
                                     Mini.GrowUpTime = 0;
                                     Logger.Info($"年龄增加1", "Mini");
-                                    player.SetKillCooldown();
                                     if (Mini.UpDateAge.GetBool())
                                     {
                                         Mini.SendRPC();
-                                        if (player.Is(CustomRoles.EvilMini)) player.Notify(GetString("MiniUp"));
                                         Utils.NotifyRoles();
+                                        if (player.Is(CustomRoles.EvilMini)) player.Notify(GetString("MiniUp"));
                                     }
                                     Logger.Info($"重置击杀冷却{Main.EvilMiniKillcooldownf - 1f}", "Mini");
                                 }
                             }
                             break;
                     }
-
 
                     if (Options.LadderDeath.GetBool() && player.IsAlive()) 
                         FallFromLadder.FixedUpdate(player);
@@ -3233,10 +3239,10 @@ class FixedUpdatePatch
                         break;
                 }
                 if (target.Is(CustomRoles.NiceMini) && Mini.EveryoneCanKnowMini.GetBool())
-                    Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), Mini.Age != 18 && Mini.UpDateAge.GetBool() ? $"({Mini.Age})" : ""));
+                    Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), Mini.Age != 18 ? $"({Mini.Age})" : ""));
 
                 if (target.Is(CustomRoles.EvilMini) && Mini.EveryoneCanKnowMini.GetBool())
-                    Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), Mini.Age != 18 && Mini.UpDateAge.GetBool() ? $"({Mini.Age})" : ""));
+                    Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), Mini.Age != 18 ? $"({Mini.Age})" : ""));
                     
                 if ((Medic.WhoCanSeeProtect.GetInt() is 0 or 2) && seer.PlayerId == target.PlayerId && (Medic.InProtect(seer.PlayerId) || Medic.TempMarkProtected == seer.PlayerId))
                     Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Medic)}>✚</color>");

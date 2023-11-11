@@ -3140,6 +3140,7 @@
   "CantRecruit": "你不能招募没有长大的迷你船员.",
   "ExiledNiceMini": "<b>{0}</b> 还只是个孩子啊~\n你们不能对孩子那么残忍~",
   "MiniUp": "你长大了一岁！",
+  "CountMeetingTime": "会议时间可以持续成长",
   "YouKillRandomizer1": "你击杀了萧暮，触发了自动报告",
   "YouKillRandomizer2": "你击杀了萧暮，触发了无法移动",
   "YouKillRandomizer3": "你击杀了萧暮，你的CD变成600秒",
