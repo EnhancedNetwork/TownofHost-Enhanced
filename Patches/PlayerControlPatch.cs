@@ -916,22 +916,6 @@ class CheckMurderPatch
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), GetString("Cantkillkid")));
             return false;
         }
-        if (killer.Is(CustomRoles.EvilMini) && Mini.Age != 18)
-        {
-            Main.EvilMiniKillcooldown[killer.PlayerId] = Mini.MinorCD.GetFloat();
-            Main.AllPlayerKillCooldown[killer.PlayerId] = Mini.MinorCD.GetFloat();
-            Main.EvilMiniKillcooldownf = Mini.MinorCD.GetFloat();
-            killer.MarkDirtySettings();
-            killer.SetKillCooldown();
-            return true;
-        }
-        if (killer.Is(CustomRoles.EvilMini) && Mini.Age == 18)
-        {
-            Main.AllPlayerKillCooldown[killer.PlayerId] = Mini.MajorCD.GetFloat();
-            killer.MarkDirtySettings();
-            killer.SetKillCooldown();
-            return true;
-        }
 
     /*    if (target.Is(CustomRoles.BoobyTrap) && Options.TrapOnlyWorksOnTheBodyBoobyTrap.GetBool() && !GameStates.IsMeeting)
         {
@@ -2417,7 +2401,7 @@ class ReportDeadBodyPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
 class FixedUpdatePatch
 {
-    private static long LastFixedUpdate = new();
+    //private static long LastFixedUpdate = new(); //Doesn't seem to be working.
     private static StringBuilder Mark = new(20);
     private static StringBuilder Suffix = new(120);
     private static int LevelKickBufferTime = 20;
@@ -2527,6 +2511,12 @@ class FixedUpdatePatch
                 DoubleTrigger.OnFixedUpdate(player);
 
             var playerRole = player.GetCustomRole();
+
+            if (player.Is(CustomRoles.NiceMini) || player.Is(CustomRoles.EvilMini))
+            {
+                if (!player.Data.IsDead)
+                    Mini.OnFixedUpdate(player);
+            } //Mini's count down needs to be done outside if intask if we are counting meeting time
 
             if (GameStates.IsInTask)
             {
@@ -2947,78 +2937,7 @@ class FixedUpdatePatch
                                 }
                             }
                             break;
-
-                        case CustomRoles.NiceMini: 
-                            if (Mini.Age < 18)
-                            {
-                                if (player.IsAlive())
-                                {
-                                    if (LastFixedUpdate == Utils.GetTimeStamp()) return;
-                                    LastFixedUpdate = Utils.GetTimeStamp();
-                                    Mini.GrowUpTime++;
-                                    if (Mini.GrowUpTime >= Mini.GrowUpDuration.GetInt() / 18)
-                                    {
-                                        Mini.Age += 1;
-                                        Mini.GrowUpTime = 0;
-                                        player.RpcGuardAndKill();
-                                        Logger.Info($"年龄增加1", "Mini");
-                                        if (Mini.UpDateAge.GetBool())
-                                        {
-                                            Mini.SendRPC();
-                                            Utils.NotifyRoles(SpecifyTarget: player, ForceLoop: true);
-                                            if (player.Is(CustomRoles.NiceMini))
-                                            {
-                                                player.Notify(GetString("MiniUp"));
-                                            }
-                                        }
-                                    }
-                                }
-                                else if (!player.IsAlive())
-                                {
-                                    if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
-                                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.NiceMini);
-                                    // CustomWinnerHolder.WinnerIds.Add(mini.PlayerId); // Nice Mini does not win (Crewmates should not solo win unless Egoist)
-                                }
-                            }
-                            break;
-
-                        case CustomRoles.EvilMini:
-                            if (Mini.Age < 18)
-                            {
-                                if (LastFixedUpdate == Utils.GetTimeStamp()) return;
-                                LastFixedUpdate = Utils.GetTimeStamp();
-                                Mini.GrowUpTime++;
-                                if (Main.EvilMiniKillcooldown[player.PlayerId] >= 1f)
-                                {
-                                    Main.EvilMiniKillcooldown[player.PlayerId]--;
-                                }
-                                if (Mini.GrowUpTime >= Mini.GrowUpDuration.GetInt() / 18)
-                                {
-                                    Main.EvilMiniKillcooldownf = Main.EvilMiniKillcooldown[player.PlayerId];
-                                    Logger.Info($"记录击杀冷却{Main.EvilMiniKillcooldownf}", "Mini");
-                                    Main.AllPlayerKillCooldown[player.PlayerId] = Main.EvilMiniKillcooldownf;
-                                    Main.EvilMiniKillcooldown[player.PlayerId] = Main.EvilMiniKillcooldownf;
-                                    player.ResetKillCooldown();
-                                    player.SetKillCooldown();
-                                    Mini.Age += 1;
-                                    Mini.GrowUpTime = 0;
-                                    Logger.Info($"年龄增加1", "Mini");
-                                    player.SetKillCooldown();
-                                    if (Mini.UpDateAge.GetBool())
-                                    {
-                                        Mini.SendRPC();
-                                        Utils.NotifyRoles(SpecifyTarget: player, ForceLoop: true);
-                                        if (player.Is(CustomRoles.EvilMini))
-                                        {
-                                            player.Notify(GetString("MiniUp"));
-                                        }
-                                    }
-                                    Logger.Info($"重置击杀冷却{Main.EvilMiniKillcooldownf - 1f}", "Mini");
-                                }
-                            }
-                            break;
                     }
-
 
                     if (Options.LadderDeath.GetBool() && player.IsAlive()) 
                         FallFromLadder.FixedUpdate(player);
