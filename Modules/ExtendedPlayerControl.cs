@@ -1158,23 +1158,7 @@ static class ExtendedPlayerControl
                 ChiefOfPolice.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.EvilMini:
-                foreach (var pc in Main.AllPlayerControls)
-                {
-                    if (pc.Is(CustomRoles.EvilMini) && Mini.Age == 0)
-                    {
-                        Main.AllPlayerKillCooldown[player.PlayerId] = Mini.MinorCD.GetFloat();
-                        Main.EvilMiniKillcooldown[player.PlayerId] = Mini.MinorCD.GetFloat();
-                    }
-                    else if (pc.Is(CustomRoles.EvilMini) && Mini.Age != 18 && Mini.Age != 0)
-                    {
-                        Main.AllPlayerKillCooldown[player.PlayerId] = Main.EvilMiniKillcooldownf;
-                        Main.EvilMiniKillcooldown[player.PlayerId] = Main.EvilMiniKillcooldownf;
-                    }
-                    else if (pc.Is(CustomRoles.EvilMini) && Mini.Age == 18)
-                    {                      
-                        Main.AllPlayerKillCooldown[player.PlayerId] = Mini.MajorCD.GetFloat();
-                    }
-                }
+                Main.AllPlayerKillCooldown[player.PlayerId] = Mini.GetKillCoolDown();
                 break;
             case CustomRoles.CrewmateTOHE:
             case CustomRoles.EngineerTOHE:
