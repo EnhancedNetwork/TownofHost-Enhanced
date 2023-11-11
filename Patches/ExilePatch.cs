@@ -184,31 +184,13 @@ class ExileControllerWrapUpPatch
             }
         }
         
-        foreach (var pc in Main.AllPlayerControls)
-        
+        foreach (var player in Main.AllPlayerControls)
         {
             //PlayerControl player = allPlayerControls[item];
             CustomRoles playerRole = player.GetCustomRole(); // Only roles (no add-ons)
 
             switch (playerRole)
             {
-                case CustomRoles.EvilMini:
-                    if (Mini.Age < 18)
-                    {
-                        Main.AllPlayerKillCooldown[player.PlayerId] = Mini.MinorCD.GetFloat() + 2f;
-                        Main.EvilMiniKillcooldown[player.PlayerId] = Mini.MinorCD.GetFloat() + 2f;
-                        Main.EvilMiniKillcooldownf = Mini.MinorCD.GetFloat();
-                        player.MarkDirtySettings();
-                        player.SetKillCooldown();
-                    }
-                    else if (Mini.Age == 18)
-                    {
-                        Main.AllPlayerKillCooldown[player.PlayerId] = Mini.MajorCD.GetFloat();
-                        player.MarkDirtySettings();
-                        player.SetKillCooldown();
-                    }
-                    break;
-
                 case CustomRoles.Mayor when Options.MayorHasPortableButton.GetBool():
                     player.RpcResetAbilityCooldown();
                     break;
