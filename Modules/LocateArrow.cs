@@ -25,7 +25,7 @@ static class LocateArrow
         }
     }
 
-    static Dictionary<ArrowInfo, string> LocateArrows = new();
+    static readonly Dictionary<ArrowInfo, string> LocateArrows = new();
     static readonly string[] Arrows = {
         "↑",
         "↗",
@@ -63,7 +63,7 @@ static class LocateArrow
     {
         var arrowInfo = new ArrowInfo(seer, locate);
         var removeList = new List<ArrowInfo>(LocateArrows.Keys.Where(k => k.Equals(arrowInfo)));
-        foreach (var a in removeList)
+        foreach (var a in removeList.ToArray())
         {
             LocateArrows.Remove(a);
         }
@@ -75,7 +75,7 @@ static class LocateArrow
     public static void RemoveAllTarget(byte seer)
     {
         var removeList = new List<ArrowInfo>(LocateArrows.Keys.Where(k => k.From == seer));
-        foreach (var arrowInfo in removeList)
+        foreach (var arrowInfo in removeList.ToArray())
         {
             LocateArrows.Remove(arrowInfo);
         }
@@ -88,7 +88,7 @@ static class LocateArrow
     public static string GetArrows(PlayerControl seer)
     {
         var arrows = "";
-        foreach (var arrowInfo in LocateArrows.Keys.Where(ai => ai.From == seer.PlayerId))
+        foreach (var arrowInfo in LocateArrows.Keys.Where(ai => ai.From == seer.PlayerId).ToArray())
         {
             arrows += LocateArrows[arrowInfo];
         }
@@ -110,7 +110,7 @@ static class LocateArrow
         if (!arrowList.Any()) return;
 
         var update = false;
-        foreach (var arrowInfo in arrowList)
+        foreach (var arrowInfo in arrowList.ToArray())
         {
             var loc = arrowInfo.To;
             if (seerIsDead)

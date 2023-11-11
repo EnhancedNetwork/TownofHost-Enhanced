@@ -675,7 +675,7 @@ class SetHudActivePatch
             
         }
 
-        foreach (var subRole in Main.PlayerStates[player.PlayerId].SubRoles)
+        foreach (var subRole in Main.PlayerStates[player.PlayerId].SubRoles.ToArray())
         {
             switch (subRole)
             {

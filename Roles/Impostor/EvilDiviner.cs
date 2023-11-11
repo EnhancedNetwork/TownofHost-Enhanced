@@ -97,7 +97,7 @@ namespace TOHE.Roles.Impostor
                 DivinationCount[killer.PlayerId]--;
                 DivinationTarget[killer.PlayerId].Add(target.PlayerId);
                 Logger.Info($"{killer.GetNameWithRole()}：占った 占い先→{target.GetNameWithRole()} || 残り{DivinationCount[killer.PlayerId]}回", "EvilDiviner");
-                Utils.NotifyRoles(SpecifySeer: killer);
+                Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
 
                 SendRPC(killer.PlayerId, target.PlayerId);
                 //キルクールの適正化

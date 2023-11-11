@@ -105,13 +105,12 @@ namespace TOHE.Roles.Neutral
             {
                 RitualCount[killer.PlayerId]--;
                 RitualTarget[killer.PlayerId].Add(target.PlayerId);
-                Logger.Info($"{killer.GetNameWithRole()}：占った 占い先→{target.GetNameWithRole()} || 残り{RitualCount[killer.PlayerId]}回", "PotionMaster");
+                Logger.Info($"{killer.GetNameWithRole()}: Divined divination destination -> {target.GetNameWithRole()} || remaining {RitualCount[killer.PlayerId]} times", "PotionMaster");
+                
                 Utils.NotifyRoles(SpecifySeer: killer);
-
                 SendRPC(killer.PlayerId, target.PlayerId);
-                //キルクールの適正化
+
                 killer.SetKillCooldown();
-                //killer.RpcGuardAndKill(target);
             }
         }
         public static bool IsShowTargetRole(PlayerControl seer, PlayerControl target)
