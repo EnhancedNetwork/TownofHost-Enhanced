@@ -17,7 +17,7 @@ public class Mini
     public static int GrowUpTime = new();
     public static int GrowUp = new();
     //public static int EvilKillCDmin = new();
-    //private static long LastFixedUpdate = new();
+    private static long LastFixedUpdate = new();
     public static int Age = new();
     public static OptionItem GrowUpDuration;
     public static OptionItem EveryoneCanKnowMini;
@@ -71,5 +71,76 @@ public class Mini
     {
         Age = reader.ReadInt32();
     }
+    public static void OnFixedUpdate(PlayerControl player)
+    {
+        // NiceMini
+        if (Age < 18)
+        {
+            if (player.IsAlive())
+            {
+                if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
+                if (!player.Is(CustomRoles.NiceMini) || !IsEnable ) return;
+                if (Age >= 18 || (!CountMeetingTime.GetBool() && GameStates.IsMeeting)) return;
+                if (LastFixedUpdate == Utils.GetTimeStamp()) return;
+                LastFixedUpdate = Utils.GetTimeStamp();
+                GrowUpTime ++;
+                if (GrowUpTime >= GrowUpDuration.GetInt() / 18)
+                {
+                    Age += 1;
+                    GrowUpTime = 0;
+                    player.RpcGuardAndKill();
+                    Logger.Info($"年龄增加1", "Mini");
+                    if (UpDateAge.GetBool())
+                    {
+                        SendRPC();
+                        Utils.NotifyRoles();
+                        if (player.Is(CustomRoles.NiceMini)) player.Notify(GetString("MiniUp"));
+                    }
+                }
+            }
+            if (!player.IsAlive())
+            {
+                if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
+                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.NiceMini);
+                    CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
+                    // ↑ This code will show the mini winning player on the checkout screen, Tommy you shouldn't comment it out!
+                    return;
+            }
+        }
+
+        // EvilMini
+        if (Age < 18)
+        {
+            if (Main.EvilMiniKillcooldown[player.PlayerId] >= 1f)
+            {
+                Main.EvilMiniKillcooldown[player.PlayerId]--;
+            }
+            if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
+            if (!player.Is(CustomRoles.EvilMini) || !IsEnable ) return;
+            if (Age >= 18 || (!CountMeetingTime.GetBool() && GameStates.IsMeeting)) return;
+            if (LastFixedUpdate == Utils.GetTimeStamp()) return;
+            LastFixedUpdate = Utils.GetTimeStamp();
+            GrowUpTime ++;
+            if (GrowUpTime >= GrowUpDuration.GetInt() / 18)
+            {
+                Main.EvilMiniKillcooldownf = Main.EvilMiniKillcooldown[player.PlayerId];
+                Logger.Info($"记录击杀冷却{Main.EvilMiniKillcooldownf}", "Mini");
+                Main.AllPlayerKillCooldown[player.PlayerId] = Main.EvilMiniKillcooldownf;
+                Main.EvilMiniKillcooldown[player.PlayerId] = Main.EvilMiniKillcooldownf;
+                player.MarkDirtySettings();
+                Age += 1;
+                GrowUpTime = 0;
+                Logger.Info($"年龄增加1", "Mini");
+                if (UpDateAge.GetBool())
+                {
+                    SendRPC();
+                    Utils.NotifyRoles();
+                    if (player.Is(CustomRoles.EvilMini)) player.Notify(GetString("MiniUp"));
+                }
+                Logger.Info($"重置击杀冷却{Main.EvilMiniKillcooldownf - 1f}", "Mini");
+            }
+        }
+    }
+                        
     public static string GetAge(byte playerId) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), Age != 18 ? $"({Age})" : "");
 }
