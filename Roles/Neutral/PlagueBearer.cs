@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Hazel;
+﻿using Hazel;
+using System.Collections.Generic;
 using TOHE.Roles.Impostor;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -8,7 +7,7 @@ using static TOHE.Translator;
 namespace TOHE.Roles.Neutral;
 public static class PlagueBearer
 {
-    private static readonly int Id = 26000;
+    private static readonly int Id = 17600;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
     public static Dictionary<byte, List<byte>> PlaguedList = new();

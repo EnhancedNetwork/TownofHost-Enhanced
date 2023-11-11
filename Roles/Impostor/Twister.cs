@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Modules;
-using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -10,7 +9,7 @@ namespace TOHE.Roles.Impostor
 {
     public static class Twister
     {
-        private static readonly int Id = 4400;
+        private static readonly int Id = 5700;
 
         private static OptionItem ShapeshiftCooldown;
         private static OptionItem ShapeshiftDuration;

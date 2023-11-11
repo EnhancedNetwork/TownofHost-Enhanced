@@ -1,8 +1,8 @@
 using AmongUs.GameOptions;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using TOHE.Roles.Crewmate;
+using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
@@ -21,7 +21,7 @@ public static class Poisoner
         }
     }
 
-    private static readonly int Id = 12700;
+    private static readonly int Id = 17500;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
     private static OptionItem OptionKillDelay;

@@ -9,7 +9,7 @@ namespace TOHE.Roles.Impostor;
 
 public static class Hacker
 {
-    private static readonly int Id = 2200;
+    private static readonly int Id = 5300;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

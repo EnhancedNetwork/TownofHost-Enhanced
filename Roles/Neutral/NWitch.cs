@@ -1,16 +1,15 @@
-using Hazel;
-using UnityEngine;
-using System.Linq;
 using AmongUs.GameOptions;
+using Hazel;
 using System.Collections.Generic;
-
+using System.Linq;
+using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
 
 public static class NWitch
 {
-    private static readonly int Id = 10300;
+    private static readonly int Id = 13800;
     public static bool IsEnable = false;
 
     public static Dictionary<byte, byte> TaglockedList = new();

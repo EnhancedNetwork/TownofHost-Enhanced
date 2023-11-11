@@ -1,6 +1,5 @@
 ﻿using Hazel;
 using System.Collections.Generic;
-using System.Linq;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
@@ -10,7 +9,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class Monarch
 {
-    private static readonly int Id = 9600;
+    private static readonly int Id = 12100;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

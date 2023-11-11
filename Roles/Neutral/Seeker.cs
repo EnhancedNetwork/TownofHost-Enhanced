@@ -1,12 +1,12 @@
 ﻿using Hazel;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 public static class Seeker
 {
-    private static readonly int Id = 34000;
+    private static readonly int Id = 14600;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -129,8 +129,11 @@ public static class Seeker
         if (totalPoints >= PointsToWinOpt)
         {
             TotalPoints[seekerId] = PointsToWinOpt;
-            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Seeker);
-            CustomWinnerHolder.WinnerIds.Add(seekerId);
+            if (!CustomWinnerHolder.CheckForConvertedWinner(seekerId))
+            {
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Seeker);
+                CustomWinnerHolder.WinnerIds.Add(seekerId);
+            }
         }
     }
     public static byte GetTarget(PlayerControl player)

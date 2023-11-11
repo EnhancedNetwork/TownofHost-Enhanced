@@ -238,22 +238,7 @@ internal class CustomRoleSelector
         if (NSerialKiller.HasSerialKillerBuddy.GetBool() && rolesToAssign.Contains(CustomRoles.NSerialKiller))
         {
             if (rd.Next(0, 100) < NSerialKiller.ChanceToSpawn.GetInt()) rolesToAssign.Add(CustomRoles.NSerialKiller);
-         //   if (rd.Next(0, 100) < NSerialKiller.ChanceToSpawnAnother.GetInt()) rolesToAssign.Add(CustomRoles.NSerialKiller);
-        }
-
-        if (CustomRoles.Autopsy.IsEnable() && CustomRoles.Doctor.IsEnable() || 
-        CustomRoles.Lucky.IsEnable() && CustomRoles.Luckey.IsEnable() ||
-        CustomRoles.Sleuth.IsEnable() && CustomRoles.Detective.IsEnable() ||
-        CustomRoles.Cyber.IsEnable() && CustomRoles.SuperStar.IsEnable() ||
-        CustomRoles.Cyber.IsEnable() && CustomRoles.CyberStar.IsEnable() ||
-        CustomRoles.Repairman.IsEnable() && CustomRoles.SabotageMaster.IsEnable() ||
-        CustomRoles.Lazy.IsEnable() && CustomRoles.Needy.IsEnable())
-        {
-            _ = new LateTask(() =>
-                {
-                    Logger.SendInGame(GetString("IncompatibleRoleSet"));
-                }, 3f, "Incompatible Role Set Info");
-
+            //if (rd.Next(0, 100) < NSerialKiller.ChanceToSpawnAnother.GetInt()) rolesToAssign.Add(CustomRoles.NSerialKiller);
         }
 
         if (Options.NeutralKillingRolesMaxPlayer.GetInt() > 1 && !Options.TemporaryAntiBlackoutFix.GetBool())
@@ -264,80 +249,6 @@ internal class CustomRoleSelector
                 }, 4f, "Neutral Killing Blackout Warning");
 
         }
-
-        if (CustomRoles.Autopsy.IsEnable())
-        {
-                if (rolesToAssign.Contains(CustomRoles.Doctor))
-                    {
-                        rolesToAssign.Remove(CustomRoles.Doctor);
-                        rolesToAssign.Add(CustomRoles.ScientistTOHE);
-                        Logger.Warn($"Doctor -> Scientist", "Incompatible Role Set");
-                    }
-        }
-        if (CustomRoles.Cyber.IsEnable())
-        {
-                if (rolesToAssign.Contains(CustomRoles.SuperStar))
-                    {
-                        rolesToAssign.Remove(CustomRoles.SuperStar);
-                        rolesToAssign.Add(CustomRoles.CrewmateTOHE);
-                        Logger.Warn($"Super Star -> Crewmate", "Incompatible Role Set");
-                    }
-        }
-        if (CustomRoles.Cyber.IsEnable())
-        {
-                if (rolesToAssign.Contains(CustomRoles.CyberStar))
-                    {
-                        rolesToAssign.Remove(CustomRoles.CyberStar);
-                        rolesToAssign.Add(CustomRoles.CrewmateTOHE);
-                        Logger.Warn($"Celebrity -> Crewmate", "Incompatible Role Set");
-                    }
-        }
-        if (CustomRoles.Lazy.IsEnable())
-        {
-                if (rolesToAssign.Contains(CustomRoles.Needy))
-                    {
-                        rolesToAssign.Remove(CustomRoles.Needy);
-                        rolesToAssign.Add(CustomRoles.CrewmateTOHE);
-                        Logger.Warn($"Lazy Guy -> Crewmate", "Incompatible Role Set");
-                    }
-        }
-
-        if (CustomRoles.Lucky.IsEnable())
-        {
-                if (rolesToAssign.Contains(CustomRoles.Luckey))
-                    {
-                        rolesToAssign.Remove(CustomRoles.Luckey);
-                        rolesToAssign.Add(CustomRoles.CrewmateTOHE);
-                        Logger.Warn($"Luckey -> Crewmate", "Incompatible Role Set");
-                    }
-        }
-        if (CustomRoles.Sleuth.IsEnable())
-        {
-                if (rolesToAssign.Contains(CustomRoles.Detective))
-                    {
-                        rolesToAssign.Remove(CustomRoles.Detective);
-                        rolesToAssign.Add(CustomRoles.CrewmateTOHE);
-                        Logger.Warn($"Detective -> Crewmate", "Incompatible Role Set");
-                    }
-        }
-        if (CustomRoles.Repairman.IsEnable())
-        {
-                if (rolesToAssign.Contains(CustomRoles.SabotageMaster))
-                    {
-                        rolesToAssign.Remove(CustomRoles.SabotageMaster);
-                        rolesToAssign.Add(CustomRoles.EngineerTOHE);
-                        Logger.Warn($"Mechanic -> Engineer", "Incompatible Role Set");
-                    }
-        }
-    /*    if (CustomRoles.Tricky.IsEnable())
-        {
-                if (rolesToAssign.Contains(CustomRoles.Trickster))
-                    {
-                        rolesToAssign.Remove(CustomRoles.Trickster);
-                        rolesToAssign.Add(CustomRoles.ImpostorTOHE);
-                        Logger.Warn($"Trickster -> Impostor", "Incompatible Role Set");
-                    }
-        } */
 
         if (Romantic.IsEnable)
         {
@@ -360,7 +271,7 @@ internal class CustomRoleSelector
            } */
 
         // EAC封禁名单玩家开房将被分配为小丑
-        if (BanManager.CheckEACList(PlayerControl.LocalPlayer.FriendCode))
+        if (BanManager.CheckEACList(PlayerControl.LocalPlayer.FriendCode, PlayerControl.LocalPlayer.GetClient().GetHashedPuid()))
         {
             if (!rolesToAssign.Contains(CustomRoles.Jester))
                 rolesToAssign.Add(CustomRoles.Jester);
@@ -467,6 +378,7 @@ internal class CustomRoleSelector
         {
             CustomRoles role = (CustomRoles)Enum.Parse(typeof(CustomRoles), cr.ToString());
             if (!role.IsAdditionRole()) continue;
+            if (role.Is(CustomRoles.Mare) && Options.IsActiveFungle) continue;
             if (role is CustomRoles.Madmate && Options.MadmateSpawnMode.GetInt() != 0) continue;
             if (role is CustomRoles.Lovers or CustomRoles.LastImpostor or CustomRoles.Workhorse) continue;
             AddonRolesList.Add(role);

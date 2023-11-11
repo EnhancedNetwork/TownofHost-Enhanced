@@ -1,12 +1,12 @@
+using AmongUs.GameOptions;
 using Hazel;
-using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TOHE.Roles.Crewmate;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
-using TOHE.Roles.Crewmate;
-using AmongUs.GameOptions;
 namespace TOHE.Roles.Neutral;
 
 public static class HexMaster
@@ -22,7 +22,7 @@ public static class HexMaster
         "TriggerKill", "TriggerVent","TriggerDouble"
     };
 
-    private static readonly int Id = 11900;
+    private static readonly int Id = 16400;
     private static Color RoleColorHex = Utils.GetRoleColor(CustomRoles.HexMaster);
     private static Color RoleColorSpell = Utils.GetRoleColor(CustomRoles.Impostor);
 

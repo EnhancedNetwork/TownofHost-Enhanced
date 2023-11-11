@@ -71,7 +71,14 @@ enum CustomRPC
     SetJailerExeLimit,
     SetCleanserCleanLimit,
     SetSoulCollectorLimit,
-    SetPelicanEtenNum,
+    SetPixieTargets,
+    SetDivinatorLimit,
+    SetDivinatorTempLimit,
+    SetBloodhoundLimit,
+    SetParityCopLimit,
+    SetOracleLimit,
+    SetMediumLimit,
+    SetPelicanEatenNum,
     SwordsManKill,
     SetAlchemistTimer,
     UndertakerLocationSync,
@@ -88,6 +95,7 @@ enum CustomRPC
     SetCursedWolfSpellCount,
     SetJinxSpellCount,
     SetCollectorVotes,
+    TaskinatorMarkedTask,
     SetSwapperVotes,
     SetQuickShooterShotLimit,
     SetEraseLimit,
@@ -438,7 +446,7 @@ internal class RPCHandlerPatch
             case CustomRPC.SetGamerHealth:
                 Gamer.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetPelicanEtenNum:
+            case CustomRPC.SetPelicanEatenNum:
                 Pelican.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetDoomsayerProgress:
@@ -522,6 +530,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetCollectorVotes:
                 Collector.ReceiveRPC(reader);
+                break;
+            case CustomRPC.TaskinatorMarkedTask:
+                Taskinator.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetQuickShooterShotLimit:
                 QuickShooter.ReceiveRPC(reader);
@@ -678,6 +689,27 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetSoulCollectorLimit:
                 SoulCollector.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SetPixieTargets:
+                Pixie.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SetDivinatorTempLimit:
+                Divinator.ReceiveRPC(reader, isTemp: true);
+                break;
+            case CustomRPC.SetDivinatorLimit:
+                Divinator.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SetMediumLimit:
+                Mediumshiper.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SetParityCopLimit:
+                ParityCop.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SetOracleLimit:
+                Oracle.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SetBloodhoundLimit:
+                Bloodhound.ReceiveRPCLimit(reader);
                 break;
             case CustomRPC.SetSwapperVotes:
                 Swapper.ReceiveRPC(reader, __instance);
@@ -1103,6 +1135,9 @@ internal static class RPC
             case CustomRoles.Collector:
                 Collector.Add(targetId);
                 break;
+            case CustomRoles.Taskinator:
+                Taskinator.Add(targetId);
+                break;
             case CustomRoles.CursedWolf:
                 Main.CursedWolfSpellCount[targetId] = Options.GuardSpellTimes.GetInt();
                 break;
@@ -1302,6 +1337,9 @@ internal static class RPC
             case CustomRoles.Pirate:
                 Pirate.Add(targetId);
                 break;
+            case CustomRoles.Pixie:
+                Pixie.Add(targetId);
+                break;
             case CustomRoles.Seeker:
                 Seeker.Add(targetId);
                 break;
@@ -1325,6 +1363,12 @@ internal static class RPC
                 break;
             case CustomRoles.Spy:
                 Spy.Add(targetId);
+                break;
+            case CustomRoles.Enigma:
+                Enigma.Add(targetId);
+                break;
+            case CustomRoles.Instigator:
+                Instigator.Add(targetId);
                 break;
         }
         HudManager.Instance.SetHudActive(true);

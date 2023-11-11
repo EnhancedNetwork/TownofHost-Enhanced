@@ -2,7 +2,6 @@
 using Hazel;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.Crewmate;
@@ -14,7 +13,7 @@ namespace TOHE.Roles.Impostor;
 
 public static class Councillor
 {
-    private static readonly int Id = 900;
+    private static readonly int Id = 1000;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -123,7 +122,7 @@ public static class Councillor
                     else pc.ShowPopUp(Utils.ColorString(Color.cyan, GetString("MessageFromKPD")) + "\n" + GetString("LaughToWhoMurderSelf"));
                     CouncillorSuicide = true;
                 }
-                if ((target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) && Mini.Age < 18)
+                if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessMini"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessMini"));

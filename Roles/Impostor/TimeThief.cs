@@ -1,11 +1,10 @@
 using System.Collections.Generic;
-using System.Linq;
 
 namespace TOHE.Roles.Impostor;
 
 public static class TimeThief
 {
-    private static readonly int Id = 3300;
+    private static readonly int Id = 3700;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

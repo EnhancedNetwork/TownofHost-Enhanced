@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using Hazel;
+﻿using Hazel;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TOHE.Roles.Neutral;
 
 public static class Doomsayer
 {
-    private static readonly int Id = 27000;
+    private static readonly int Id = 14100;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -102,8 +102,11 @@ public static class Doomsayer
 
         GuessingToWin[doomsayer.PlayerId] = DoomsayerAmountOfGuessesToWin.GetInt();
         GuessesCount = DoomsayerAmountOfGuessesToWin.GetInt();
-        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Doomsayer);
-        CustomWinnerHolder.WinnerIds.Add(doomsayer.PlayerId);
+        if (!CustomWinnerHolder.CheckForConvertedWinner(doomsayer.PlayerId))
+        {
+            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Doomsayer);
+            CustomWinnerHolder.WinnerIds.Add(doomsayer.PlayerId);
+        }
     }
     public static void OnReportDeadBody()
     {

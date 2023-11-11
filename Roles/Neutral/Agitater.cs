@@ -1,14 +1,14 @@
-﻿using Hazel;
+﻿using AmongUs.GameOptions;
+using Hazel;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using AmongUs.GameOptions;
-using System.Collections.Generic;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 public static class Agitater
 {
-    private static readonly int Id = 12420;
+    private static readonly int Id = 15800;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

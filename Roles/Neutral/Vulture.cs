@@ -1,16 +1,15 @@
-using Hazel;
-using UnityEngine;
 using AmongUs.GameOptions;
+using Hazel;
 using System.Collections.Generic;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
-using System.Linq;
 
 namespace TOHE.Roles.Neutral;
 
 public static class Vulture
 {
-    private static readonly int Id = 11600;
+    private static readonly int Id = 15600;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

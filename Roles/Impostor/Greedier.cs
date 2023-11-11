@@ -7,7 +7,7 @@ namespace TOHE;
 // 来源：https://github.com/Yumenopai/TownOfHost_Y
 public static class Greedier
 {
-    private static readonly int Id = 1300;
+    private static readonly int Id = 1500;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

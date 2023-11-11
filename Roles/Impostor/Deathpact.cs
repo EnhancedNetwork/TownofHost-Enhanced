@@ -1,6 +1,6 @@
+using AmongUs.GameOptions;
 using System.Collections.Generic;
 using System.Linq;
-using AmongUs.GameOptions;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Options;
@@ -11,7 +11,7 @@ namespace TOHE.Roles.Impostor
 {
     public static class Deathpact
     {
-        private static readonly int Id = 1100;
+        private static readonly int Id = 1200;
         public static List<byte> playerIdList = new();
         public static bool IsEnable = false;
 

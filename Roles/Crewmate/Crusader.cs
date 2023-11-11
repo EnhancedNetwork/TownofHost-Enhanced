@@ -1,13 +1,12 @@
 using Hazel;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace TOHE.Roles.Crewmate;
 
 public static class Crusader
 {
-    private static readonly int Id = 20050;
+    private static readonly int Id = 10400;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -55,7 +54,7 @@ public static class Crusader
     public static bool CanUseKillButton(byte playerId)
         => !Main.PlayerStates[playerId].IsDead
         && (CrusaderLimit.TryGetValue(playerId, out var x) ? x : 1) >= 1;
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(id) ? CurrentKillCooldown[id] : 0f;
+    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(id) ? CurrentKillCooldown[id] : 300f;
     public static string GetSkillLimit(byte playerId) => Utils.ColorString(CanUseKillButton(playerId) ? Utils.GetRoleColor(CustomRoles.Crusader).ShadeColor(0.25f) : Color.gray, CrusaderLimit.TryGetValue(playerId, out var constableLimit) ? $"({constableLimit})" : "Invalid");
     public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {

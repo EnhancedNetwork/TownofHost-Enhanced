@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -7,7 +6,7 @@ namespace TOHE.Roles.Impostor;
 
 public static class SerialKiller
 {
-    private static readonly int Id = 1700;
+    private static readonly int Id = 2000;
     public static List<byte> playerIdList = new();
 
     public static bool IsEnable = false;

@@ -1,14 +1,14 @@
-using System;
-using System.Linq;
 using AmongUs.GameOptions;
 using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem.Linq;
 using InnerNet;
-using Mathf = UnityEngine.Mathf;
+using System;
+using System.Linq;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using Mathf = UnityEngine.Mathf;
 
 namespace TOHE.Modules;
 
@@ -101,6 +101,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
             case CustomRoles.EngineerTOHE:
             case CustomRoles.Phantom:
             case CustomRoles.Crewpostor:
+            case CustomRoles.Taskinator:
           //  case CustomRoles.Jester:
             case CustomRoles.Monitor:
                 AURoleOptions.EngineerCooldown = 0f;
@@ -144,7 +145,6 @@ public class PlayerGameOptionsSender : GameOptionsSender
             case CustomRoles.Jailer:
             case CustomRoles.SwordsMan:
             case CustomRoles.Arsonist:
-       //     case CustomRoles.Minimalism:
             case CustomRoles.Innocent:
             case CustomRoles.Revolutionist:
             case CustomRoles.Medic:
@@ -175,6 +175,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
                 opt.SetVision(Virus.ImpostorVision.GetBool());
                 break;
             case CustomRoles.Zombie:
+            case CustomRoles.Minimalism:
                 opt.SetFloat(FloatOptionNames.ImpostorLightMod, 0.2f);
                 break;
             case CustomRoles.Doctor:

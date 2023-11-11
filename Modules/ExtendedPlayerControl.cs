@@ -1,19 +1,18 @@
+using AmongUs.GameOptions;
+using HarmonyLib;
+using Hazel;
+using InnerNet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Hazel;
-using InnerNet;
-using HarmonyLib;
-using UnityEngine;
-using AmongUs.GameOptions;
-
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Impostor;
-using TOHE.Roles.Double;
 using TOHE.Roles.Crewmate;
+using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -29,7 +28,8 @@ static class ExtendedPlayerControl
         else if (role >= CustomRoles.NotAssigned)   //500:NoSubRole 501~:SubRole
         {
             if (!Cleanser.CleansedCanGetAddon.GetBool() && player.Is(CustomRoles.Cleansed)) return;
-            Main.PlayerStates[player.PlayerId].SetSubRole(role);
+            if (role == CustomRoles.Cleansed) Main.PlayerStates[player.PlayerId].SetSubRole(role, pc: player);
+            else Main.PlayerStates[player.PlayerId].SetSubRole(role);            
             //if (role == CustomRoles.Cleanser) Main.PlayerStates[player.PlayerId].SetSubRole(role, AllReplace:true);
             //else Main.PlayerStates[player.PlayerId].SetSubRole(role);
         }
@@ -213,7 +213,12 @@ static class ExtendedPlayerControl
     public static void SetKillCooldown(this PlayerControl player, float time = -1f, PlayerControl target = null, bool forceAnime = false)
     {
         if (player == null) return;
-        if (!player.CanUseKillButton()) return;
+        if (!Main.ErasedRoleStorage.ContainsKey(player.PlayerId))
+        {
+            if (!player.CanUseKillButton()) return;
+        }
+        else if (!HasKillButton(role: Main.ErasedRoleStorage[player.PlayerId]))
+            return;
         if (target == null) target = player;
         if (time >= 0f) Main.AllPlayerKillCooldown[player.PlayerId] = time * 2;
         else Main.AllPlayerKillCooldown[player.PlayerId] *= 2;
@@ -548,6 +553,7 @@ static class ExtendedPlayerControl
             CustomRoles.PlagueBearer => pc.IsAlive(),
             CustomRoles.Pestilence => pc.IsAlive(),
             CustomRoles.Pirate => pc.IsAlive(),
+            CustomRoles.Pixie => pc.IsAlive(),
             CustomRoles.Seeker => pc.IsAlive(),
             CustomRoles.Agitater => pc.IsAlive(),
             CustomRoles.ChiefOfPolice => ChiefOfPolice.CanUseKillButton(pc.PlayerId),
@@ -557,11 +563,15 @@ static class ExtendedPlayerControl
             _ => pc.Is(CustomRoleTypes.Impostor),
         };
     }
-    public static bool HasKillButton(this PlayerControl pc)
+    public static bool HasKillButton(PlayerControl pc = null, CustomRoles role = new())
     {
-        if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
+        if (pc != null)
+        {
+            if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
+            role = pc.GetCustomRole();
+        }
 
-        return pc.GetCustomRole() switch
+        return role switch
         {
             CustomRoles.FireWorks => true,
             CustomRoles.Mafia => true,
@@ -639,6 +649,7 @@ static class ExtendedPlayerControl
             CustomRoles.PlagueBearer => true,
             CustomRoles.Pestilence => true,
             CustomRoles.Pirate => true,
+            CustomRoles.Pixie => true,
             CustomRoles.Seeker => true,
             CustomRoles.Agitater => true,
             CustomRoles.ChiefOfPolice => true,
@@ -739,6 +750,7 @@ static class ExtendedPlayerControl
             CustomRoles.Sheriff or
             CustomRoles.Crusader or
             CustomRoles.Pirate or
+            CustomRoles.Pixie or
             CustomRoles.CopyCat or
             CustomRoles.CursedSoul or
             CustomRoles.Admirer or
@@ -1106,6 +1118,9 @@ static class ExtendedPlayerControl
             case CustomRoles.Pirate:
                 Pirate.SetKillCooldown(player.PlayerId);
                 break;
+            case CustomRoles.Pixie:
+                Pixie.SetKillCooldown(player.PlayerId);
+                break;
             case CustomRoles.Deputy:
                 Deputy.SetKillCooldown(player.PlayerId);
                 break;
@@ -1154,16 +1169,20 @@ static class ExtendedPlayerControl
                     {
                         Main.AllPlayerKillCooldown[player.PlayerId] = Main.EvilMiniKillcooldownf;
                         Main.EvilMiniKillcooldown[player.PlayerId] = Main.EvilMiniKillcooldownf;
-                        player.MarkDirtySettings();
                     }
                     else if (pc.Is(CustomRoles.EvilMini) && Mini.Age == 18)
                     {                      
                         Main.AllPlayerKillCooldown[player.PlayerId] = Mini.MajorCD.GetFloat();
-                        player.MarkDirtySettings();
-                        player.SyncSettings();
                     }
                 }
                 break;
+            case CustomRoles.CrewmateTOHE:
+            case CustomRoles.EngineerTOHE:
+            case CustomRoles.ScientistTOHE:
+            case CustomRoles.GuardianAngelTOHE:
+                Main.AllPlayerKillCooldown[player.PlayerId] = 300f;
+                break;
+                //Vanilla imp and ss is done at the beginning of the function
         }
         if (player.PlayerId == LastImpostor.currentId)
             LastImpostor.SetKillCooldown();
@@ -1288,9 +1307,11 @@ static class ExtendedPlayerControl
     }
     public static bool RpcCheckAndMurder(this PlayerControl killer, PlayerControl target, bool check = false) => CheckMurderPatch.RpcCheckAndMurder(killer, target, check);
     public static void NoCheckStartMeeting(this PlayerControl reporter, GameData.PlayerInfo target, bool force = false)
-    { /*サボタージュ中でも関係なしに会議を起こせるメソッド
-        targetがnullの場合はボタンとなる*/
+    { 
+        //Method that can cause a meeting to occur regardless of whether it is in sabotage.
+        //If target is null, it becomes a button.
         if (Options.DisableMeeting.GetBool() && !force) return;
+
         ReportDeadBodyPatch.AfterReportTasks(reporter, target);
         MeetingRoomManager.Instance.AssignSelf(reporter, target);
         DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(reporter);

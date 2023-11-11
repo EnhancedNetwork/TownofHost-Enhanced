@@ -5,16 +5,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Modules;
+using TOHE.Modules.ChatManager;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
-using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Crewmate;
+using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Modules.CustomRoleSelector;
 using static TOHE.Translator;
-using TOHE.Roles.Double;
-using TOHE.Modules.ChatManager;
 
 namespace TOHE;
 
@@ -75,6 +75,7 @@ internal class ChangeRoleSettings
             Main.MedusaBodies = new();
             Main.InfectedBodies = new();
             Main.VirusNotify = new();
+            Main.ErasedRoleStorage = new();
 
             Main.LastEnteredVent = new();
             Main.LastEnteredVentLocation = new();
@@ -238,6 +239,7 @@ internal class ChangeRoleSettings
             DarkHide.Init();
             Greedier.Init();
             Collector.Init();
+            Taskinator.Init();
             QuickShooter.Init();
             Camouflager.Init();
             Divinator.Init();
@@ -309,6 +311,7 @@ internal class ChangeRoleSettings
             Reverie.Init();
             Doomsayer.Init();
             Pirate.Init();
+            Pixie.Init();
             Shroud.Init();
             Werewolf.Init();
             Necromancer.Init();
@@ -317,17 +320,22 @@ internal class ChangeRoleSettings
             Pitfall.Init();
             Agitater.Init();
             Swapper.Init();
+            Enigma.Init();
             ChiefOfPolice.Init();
             Mini.Init();
             Blackmailer.Init();
             Spy.Init();
+            Oiiai.Init();
             FFF.Init();
+            Instigator.Init();
+            OverKiller.Init();
             
+            SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
+            DoorsReset.Initialize();
+
             CustomWinnerHolder.Reset();
             AntiBlackout.Reset();
             NameNotifyManager.Reset();
-            SabotageSystemTypeRepairDamagePatch.Initialize();
-            DoorsReset.Initialize();
 
             IRandom.SetInstanceById(Options.RoleAssigningAlgorithm.GetValue());
 
@@ -638,9 +646,6 @@ internal class SelectRolesPatch
                     case CustomRoles.SabotageMaster:
                         SabotageMaster.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Repairman:
-                        Repairman.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.EvilTracker:
                         EvilTracker.Add(pc.PlayerId);
                         break;
@@ -703,6 +708,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Collector:
                         Collector.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Taskinator:
+                        Taskinator.Add(pc.PlayerId);
                         break;
                     case CustomRoles.CursedWolf:
                         Main.CursedWolfSpellCount[pc.PlayerId] = Options.GuardSpellTimes.GetInt();
@@ -897,6 +905,9 @@ internal class SelectRolesPatch
                     case CustomRoles.Pirate:
                         Pirate.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.Pixie:
+                        Pixie.Add(pc.PlayerId);
+                        break;
                     case CustomRoles.Chronomancer:
                         Chronomancer.Add(pc.PlayerId);
                         break;
@@ -918,11 +929,18 @@ internal class SelectRolesPatch
                     case CustomRoles.Spy:
                         Spy.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.Instigator:
+                        Instigator.Add(pc.PlayerId);
+                        break;
+
                     case CustomRoles.Crewpostor:
                         Main.CrewpostorTasksDone[pc.PlayerId] = 0;
                         break;
                     case CustomRoles.FFF:
                         FFF.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Enigma:
+                        Enigma.Add(pc.PlayerId);
                         break;
                 }
                 foreach (var subRole in pc.GetCustomSubRoles())
@@ -933,6 +951,13 @@ internal class SelectRolesPatch
                             Main.AwareInteracted[pc.PlayerId] = new();
                             break;
                         // ここに属性のAddを追加
+                        case CustomRoles.Repairman:
+                            Repairman.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.Oiiai:
+                            Oiiai.Add(pc.PlayerId);
+                            break;
+
                         default:
                             break;
                     }
@@ -974,7 +999,7 @@ internal class SelectRolesPatch
             }
 
             // ResetCamが必要なプレイヤーのリストにクラス化が済んでいない役職のプレイヤーを追加
-            Main.ResetCamPlayerList.AddRange(Main.AllPlayerControls.Where(p => p.GetCustomRole() is CustomRoles.Arsonist or CustomRoles.Revolutionist or CustomRoles.Sidekick or CustomRoles.Shaman or CustomRoles.Vigilante).Select(p => p.PlayerId));
+            Main.ResetCamPlayerList.AddRange(Main.AllPlayerControls.Where(p => p.GetCustomRole() is CustomRoles.Arsonist or CustomRoles.Revolutionist or CustomRoles.Sidekick or CustomRoles.Shaman or CustomRoles.Vigilante or CustomRoles.Witness or CustomRoles.Innocent).Select(p => p.PlayerId));
             Utils.CountAlivePlayers(true);
             Utils.SyncAllSettings();
             SetColorPatch.IsAntiGlitchDisabled = false;

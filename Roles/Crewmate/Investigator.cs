@@ -1,6 +1,5 @@
 using Hazel;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -9,7 +8,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class Investigator
 {
-    private static readonly int Id = 6550;
+    private static readonly int Id = 24900;
     private static List<byte> playerIdList = new();
     public static Dictionary<byte, byte> InvestigatedList = new();
     public static bool IsEnable = false;

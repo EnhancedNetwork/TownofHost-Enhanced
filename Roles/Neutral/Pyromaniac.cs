@@ -7,7 +7,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Pyromaniac
 {
-    private static readonly int Id = 128020;
+    private static readonly int Id = 17800;
     public static List<byte> playerIdList = new();
     public static List<byte> DousedList = new();
     public static bool IsEnable = false;

@@ -1,16 +1,14 @@
-﻿using MS.Internal.Xml.XPath;
-using TOHE.Roles.Double;
+﻿using TOHE.Roles.Double;
 using UnityEngine;
 
 using static TOHE.Options;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
 public static class Infectious
 {
-    private static readonly int Id = 12000;
+    private static readonly int Id = 16600;
     public static bool IsEnable = false;
 
     private static int BiteLimit;

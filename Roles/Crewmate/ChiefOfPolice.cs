@@ -1,7 +1,5 @@
 using Hazel;
 using System.Collections.Generic;
-using TOHE.Modules;
-using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -9,7 +7,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class ChiefOfPolice
 {
-    private static readonly int Id = 1748596;
+    private static readonly int Id = 12600;
     private static List<byte> playerIdList = new();
     public static Dictionary<byte, int> PoliceLimit = new();
     public static bool IsEnable = false;

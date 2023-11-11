@@ -1,14 +1,13 @@
 using System;
-using System.Linq;
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Crewmate;
 
 public static class Workhorse
 {
-    private static readonly int Id = 15700;
+    private static readonly int Id = 23730;
     public static Color RoleColor = Utils.GetRoleColor(CustomRoles.Workhorse);
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;

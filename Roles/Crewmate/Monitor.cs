@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 
@@ -10,7 +9,7 @@ namespace TOHE.Roles.Crewmate;
 // 贡献：https://github.com/Yumenopai/TownOfHost_Y/tree/Monitor
 internal class Monitor
 {
-    private static readonly int Id = 2350;
+    private static readonly int Id = 12500;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

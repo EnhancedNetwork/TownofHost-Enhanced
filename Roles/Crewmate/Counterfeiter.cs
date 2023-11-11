@@ -1,5 +1,4 @@
 ﻿using Hazel;
-using System.Linq;
 using System.Collections.Generic;
 using TOHE.Modules;
 using UnityEngine;
@@ -8,7 +7,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class Counterfeiter
 {
-    private static readonly int Id = 8500;
+    private static readonly int Id = 10500;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -65,7 +64,7 @@ public static class Counterfeiter
         => !Main.PlayerStates[playerId].IsDead
         && SeelLimit.TryGetValue(playerId, out var x) && x >= 1;
     public static string GetSeelLimit(byte playerId) => Utils.ColorString(CanUseKillButton(playerId) ? Utils.GetRoleColor(CustomRoles.Counterfeiter).ShadeColor(0.25f) : Color.gray, SeelLimit.TryGetValue(playerId, out var x) ? $"({x})" : "Invalid");
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(id) ? CounterfeiterSkillCooldown.GetFloat() : 0f;
+    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(id) ? CounterfeiterSkillCooldown.GetFloat() : 300f;
     public static bool IsClient(byte playerId)
     {
         foreach (var pc in clientList)

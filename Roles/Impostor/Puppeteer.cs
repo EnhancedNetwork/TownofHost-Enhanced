@@ -1,12 +1,11 @@
-﻿using Hazel;
-using UnityEngine;
-using System.Linq;
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
+using Hazel;
 using System.Collections.Generic;
-
-using TOHE.Roles.Neutral;
+using System.Linq;
 using TOHE.Modules;
 using TOHE.Roles.Crewmate;
+using TOHE.Roles.Neutral;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -15,7 +14,7 @@ namespace TOHE.Roles.Impostor;
 
 public static class Puppeteer
 {
-    private static readonly int Id = 3900;
+    private static readonly int Id = 4300;
     public static bool IsEnable = false;
 
     public static Dictionary<byte, byte> PuppeteerList = new();

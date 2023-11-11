@@ -1,14 +1,13 @@
 ﻿using Hazel;
-using UnityEngine;
 using System.Collections.Generic;
 using TOHE.Roles.Crewmate;
-using TOHE.Roles.Neutral;
+using UnityEngine;
 
 namespace TOHE.Roles.Impostor;
 
 public static class Undertaker
 {
-    private static readonly int Id = 21420;
+    private static readonly int Id = 4900;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

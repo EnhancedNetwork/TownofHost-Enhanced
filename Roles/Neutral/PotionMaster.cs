@@ -1,17 +1,15 @@
-using System.Collections.Generic;
-using System.Linq;
 using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
+using System.Collections.Generic;
 using UnityEngine;
-
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral
 {
     public static class PotionMaster
     {
-        private static readonly int Id = 13000;
+        private static readonly int Id = 17700;
         public static List<byte> playerIdList = new();
         public static bool IsEnable = false;
 

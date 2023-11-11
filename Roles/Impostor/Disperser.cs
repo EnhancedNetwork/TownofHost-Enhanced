@@ -1,5 +1,4 @@
 ﻿using TOHE.Modules;
-using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -8,7 +7,7 @@ namespace TOHE.Roles.Impostor;
 
 public static class Disperser
 {
-    private static readonly int Id = 17000;
+    private static readonly int Id = 24400;
 
     private static OptionItem DisperserShapeshiftCooldown;
     private static OptionItem DisperserShapeshiftDuration;

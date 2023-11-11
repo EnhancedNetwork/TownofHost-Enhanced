@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -41,7 +42,7 @@ class CheckForEndVotingPatch
                 //主动叛变
                 if (pva.DidVote && pc.PlayerId == pva.VotedFor && pva.VotedFor < 253 && !pc.Data.IsDead)
                 {
-                    if (Options.MadmateSpawnMode.GetInt() == 2 && Main.MadmateNum < CustomRoles.Madmate.GetCount() && Utils.CanBeMadmate(pc))
+                    if (Options.MadmateSpawnMode.GetInt() == 2 && Main.MadmateNum < CustomRoles.Madmate.GetCount() && Utils.CanBeMadmate(pc, true))
                     {
                         Main.MadmateNum++;
                         pc.RpcSetCustomRole(CustomRoles.Madmate);
@@ -191,7 +192,6 @@ class CheckForEndVotingPatch
                         }
                     }
                 }
-
                 // Hide Divinator Vote
                 if (CheckRole(ps.TargetPlayerId, CustomRoles.Divinator) && Divinator.HideVote.GetBool() && Divinator.TempCheckLimit[ps.TargetPlayerId] > 0) continue;
                 // Hide Eraser Vote
@@ -320,6 +320,12 @@ class CheckForEndVotingPatch
             states = statesList.ToArray();
 
             var VotingData = __instance.CustomCalculateVotes();
+
+            if (CustomRoles.Influenced.RoleExist())
+                if (Influenced.CheckVotingData(VotingData)) 
+                    VotingData = __instance.CustomCalculateVotes(); 
+            //Change voting data for influenced once
+
             byte exileId = byte.MaxValue;
             int max = 0;
             voteLog.Info("===决定驱逐玩家处理开始===");
@@ -819,6 +825,8 @@ class MeetingHudStartPatch
                 AddMsg(string.Format(GetString("MediumshipNotifyTarget"), Main.AllPlayerNames[Mediumshiper.ContactPlayer[pc.PlayerId]]), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mediumshiper), GetString("MediumshipTitle")));
             if (Main.VirusNotify.ContainsKey(pc.PlayerId))
                 AddMsg(Main.VirusNotify[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Virus), GetString("VirusNoticeTitle")));
+            if (Enigma.MsgToSend.ContainsKey(pc.PlayerId))
+                AddMsg(Enigma.MsgToSend[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Enigma), Enigma.MsgToSendTitle[pc.PlayerId]));
         }
         //宝箱怪的消息（合并）
         if (MimicMsg != "")
@@ -838,6 +846,7 @@ class MeetingHudStartPatch
         Main.DetectiveNotify.Clear();
         Main.SleuthNotify.Clear();
         Main.VirusNotify.Clear();
+        Enigma.MsgToSend.Clear();
         Mortician.msgToSend.Clear();
         Pirate.OnMeetingStart();
     }

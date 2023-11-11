@@ -9,7 +9,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class Psychic
 {
-    private static readonly int Id = 7900;
+    private static readonly int Id = 9400;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

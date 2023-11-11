@@ -1,18 +1,18 @@
 ﻿using HarmonyLib;
 using Hazel;
-using TMPro;
 using System;
-using UnityEngine;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
+using TMPro;
 using TOHE.Modules;
-using TOHE.Roles.Crewmate;
-using TOHE.Roles.Neutral;
-using TOHE.Roles.AddOns.Common;
-using static TOHE.Translator;
-using TOHE.Roles.Double;
 using TOHE.Modules.ChatManager;
+using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.Crewmate;
+using TOHE.Roles.Double;
+using TOHE.Roles.Neutral;
+using UnityEngine;
+using static TOHE.Translator;
 
 namespace TOHE;
 
@@ -341,8 +341,11 @@ public static class GuessManager
 
                     if (Main.MasochistKillMax[target.PlayerId] >= Options.MasochistKillMax.GetInt())
                     {
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Masochist);
-                        CustomWinnerHolder.WinnerIds.Add(target.PlayerId);
+                        if (!CustomWinnerHolder.CheckForConvertedWinner(target.PlayerId))
+                        {
+                            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Masochist);
+                            CustomWinnerHolder.WinnerIds.Add(target.PlayerId);
+                        }
                     }
                     return true;
                 }
@@ -634,7 +637,7 @@ public static class GuessManager
 
                             _ = new LateTask(() =>
                             {
-                                Utils.SendMessage(string.Format(GetString("DoomsayerGuessCountMsg"), Doomsayer.GuessesCount), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doomsayer), GetString("DoomsayerGuessCountTitle")));
+                                Utils.SendMessage(string.Format(GetString("DoomsayerGuessCountMsg"), Doomsayer.GuessingToWin[pc.PlayerId]), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doomsayer), GetString("DoomsayerGuessCountTitle")));
                             }, 0.7f, "Doomsayer Guess Msg 1");
                         }
 

@@ -1,11 +1,10 @@
 using AmongUs.Data;
 using HarmonyLib;
 using System.Linq;
-
-using TOHE.Roles.Impostor;
 using TOHE.Roles.Crewmate;
-using TOHE.Roles.Neutral;
 using TOHE.Roles.Double;
+using TOHE.Roles.Impostor;
+using TOHE.Roles.Neutral;
 
 namespace TOHE;
 
@@ -68,24 +67,27 @@ class ExileControllerWrapUpPatch
             var pc1 = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId);
             if (pc1.Any())
             {
-                var AdmiredPc1 = pc1.Where(x => x.Is(CustomRoles.Admired));
                 if (!Options.InnocentCanWinByImp.GetBool() && role.IsImpostor())
                 {
                     Logger.Info("Exeiled Winner Check for impostor", "Innocent");
                 }
                 else
                 {
-                    if (!AdmiredPc1.Any())
+                    bool isInnocentWinConverted = false;
+                    foreach (var x in pc1)
+                    {
+                        if (CustomWinnerHolder.CheckForConvertedWinner(x.PlayerId))
+                        {
+                            isInnocentWinConverted = true;
+                            break;
+                        }
+                    }
+                    if (!isInnocentWinConverted)
                     {
                         if (DecidedWinner) CustomWinnerHolder.ShiftWinnerAndSetWinner(CustomWinner.Innocent);
                         else CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Innocent);
                         Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId)
-                            .Do(x => CustomWinnerHolder.WinnerIds.Add(x.PlayerId));                       
-                    }
-                    else
-                    {
-                        if (DecidedWinner) CustomWinnerHolder.ShiftWinnerAndSetWinner(CustomWinner.Crewmate);
-                        else CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
+                            .Do(x => CustomWinnerHolder.WinnerIds.Add(x.PlayerId));
                     }
                     DecidedWinner = true;
                 }
@@ -95,12 +97,11 @@ class ExileControllerWrapUpPatch
             {           
                 if (role == CustomRoles.Jester && AmongUsClient.Instance.AmHost)
                 {
-                    if ((bool)!Utils.GetPlayerById(exiled.PlayerId)?.Is(CustomRoles.Admired))
+                    if (!CustomWinnerHolder.CheckForConvertedWinner(exiled.PlayerId))
                     {
                         CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Jester);
                         CustomWinnerHolder.WinnerIds.Add(exiled.PlayerId);
                     }
-                    else CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
 
                     foreach (var executioner in Executioner.playerIdList)
                     {
@@ -122,8 +123,11 @@ class ExileControllerWrapUpPatch
             if (role == CustomRoles.Devourer) Devourer.OnDevourerDied(exiled.PlayerId);
 
             if (Lawyer.CheckExileTarget(exiled, DecidedWinner)) DecidedWinner = false;
+            Pixie.CheckExileTarget(exiled);
 
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist) Main.PlayerStates[exiled.PlayerId].SetDead();
+
+            Instigator.OnPlayerExile(exiled);
         }
         if (AmongUsClient.Instance.AmHost && Main.IsFixedCooldown)
             Main.RefixCooldownDelay = Options.DefaultKillCooldown - 3f;
@@ -288,16 +292,19 @@ class ExileControllerWrapUpPatch
                 {
                     var player = Utils.GetPlayerById(x.Key);
                     var state = Main.PlayerStates[x.Key];
+                    
                     Logger.Info($"{player.GetNameWithRole()} died with {x.Value}", "AfterMeetingDeath");
+                    
                     state.deathReason = x.Value;
                     state.SetDead();
                     player?.RpcExileV2();
+
                     if (x.Value == PlayerState.DeathReason.Suicide)
                         player?.SetRealKiller(player, true);
+
                     if (Main.ResetCamPlayerList.Contains(x.Key))
                         player?.ResetPlayerCam(1f);
-                    if (Executioner.Target.ContainsValue(x.Key))
-                        Executioner.ChangeRoleByTarget(player);
+
                     Utils.AfterPlayerDeathTasks(player);
                 });
                 Main.AfterMeetingDeathPlayers.Clear();

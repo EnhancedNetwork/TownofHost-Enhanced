@@ -1,20 +1,20 @@
 namespace TOHE.Roles.Crewmate
 {
+    using AmongUs.GameOptions;
     using HarmonyLib;
     using Hazel;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
-    using UnityEngine;
-    using AmongUs.GameOptions;
     using TOHE.Modules;
     using TOHE.Roles.Neutral;
+    using UnityEngine;
     using static TOHE.Options;
     using static TOHE.Translator;
 
     public static class Alchemist
     {
-        private static readonly int Id = 5250;
+        private static readonly int Id = 6400;
         private static List<byte> playerIdList = new();
 
         public static Dictionary<byte, byte> BloodlustList = new();

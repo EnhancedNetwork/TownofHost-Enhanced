@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using static TOHE.Options;
 
 namespace TOHE;
 
 public static class Juggernaut
 {
-    private static readonly int Id = 12300;
+    private static readonly int Id = 16900;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

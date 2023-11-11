@@ -7,7 +7,6 @@ using TOHE.Modules;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -81,10 +80,13 @@ public class PlayerState
             }
         }
     }
-    public void SetSubRole(CustomRoles role, bool AllReplace = false)
+    public void SetSubRole(CustomRoles role, bool AllReplace = false, PlayerControl pc = null)
     {
         if (role == CustomRoles.Cleansed)
+        {
+            if (pc != null) countTypes = pc.GetCustomRole().GetCountTypes();
             AllReplace = true;
+        }
         if (AllReplace)
             SubRoles.ToArray().Do(role => SubRoles.Remove(role));
 
@@ -97,7 +99,7 @@ public class PlayerState
             {
                 0 => CountTypes.OutOfGame,
                 1 => CountTypes.Impostor,
-                2 => CountTypes.Crew,
+                2 => countTypes,
                 _ => throw new NotImplementedException()
             };
             SubRoles.Remove(CustomRoles.Charmed);
@@ -298,6 +300,7 @@ public class PlayerState
         Drained,
         Shattered,
         Trap,
+        Retribution,
 
         etc = -1,
     }
@@ -445,6 +448,7 @@ public class TaskState
             if (player.Is(CustomRoles.Divinator) && player.IsAlive())
             {
                 Divinator.CheckLimit[player.PlayerId] += Divinator.AbilityUseGainWithEachTaskCompleted.GetFloat();
+                Divinator.SendRPC(player.PlayerId);
             }
             if (player.Is(CustomRoles.Veteran) && player.IsAlive())
             {
@@ -473,14 +477,17 @@ public class TaskState
             if (player.Is(CustomRoles.Mediumshiper) && player.IsAlive())
             {
                 Mediumshiper.ContactLimit[player.PlayerId] += Mediumshiper.MediumAbilityUseGainWithEachTaskCompleted.GetFloat();
+                Mediumshiper.SendRPC(player.PlayerId);
             }
             if (player.Is(CustomRoles.ParityCop) && player.IsAlive())
             {
                 ParityCop.MaxCheckLimit[player.PlayerId] += ParityCop.ParityAbilityUseGainWithEachTaskCompleted.GetFloat();
+                ParityCop.SendRPC(player.PlayerId, 2);
             }
             if (player.Is(CustomRoles.Oracle) && player.IsAlive())
             {
                 Oracle.CheckLimit[player.PlayerId] += Oracle.OracleAbilityUseGainWithEachTaskCompleted.GetFloat();
+                Oracle.SendRPC(player.PlayerId);
             }
     /*        if (player.Is(CustomRoles.Cleanser) && player.IsAlive())
             {
@@ -494,14 +501,17 @@ public class TaskState
             if (player.Is(CustomRoles.Tracker) && player.IsAlive())
             {
                 Tracker.TrackLimit[player.PlayerId] += Tracker.TrackerAbilityUseGainWithEachTaskCompleted.GetFloat();
+                Tracker.SendRPC(2, player.PlayerId);
             }
             if (player.Is(CustomRoles.Bloodhound) && player.IsAlive())
             {
                 Bloodhound.UseLimit[player.PlayerId] += Bloodhound.BloodhoundAbilityUseGainWithEachTaskCompleted.GetFloat();
+                Bloodhound.SendRPCLimit(player.PlayerId, operate:2);
             }
             if (player.Is(CustomRoles.Chameleon) && player.IsAlive())
             {
                 Chameleon.UseLimit[player.PlayerId] += Chameleon.ChameleonAbilityUseGainWithEachTaskCompleted.GetFloat();
+                Chameleon.SendRPC(player, isLimit: true);
             }
             if (player.Is(CustomRoles.Spy) && player.IsAlive())
             {
@@ -550,14 +560,9 @@ public class TaskState
                         pc.SetRealKiller(player);
                     }
                 }
-                if (!player.Is(CustomRoles.Admired))
+                if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
                 {
                     CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Workaholic); //Workaholic
-                    CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
-                }
-                if (player.Is(CustomRoles.Admired))
-                {
-                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate); //Admired Workaholic
                     CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
                 }
             }

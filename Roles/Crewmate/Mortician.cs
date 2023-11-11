@@ -1,13 +1,12 @@
 ﻿using Hazel;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
 public static class Mortician
 {
-    private static readonly int Id = 7400;
+    private static readonly int Id = 8900;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

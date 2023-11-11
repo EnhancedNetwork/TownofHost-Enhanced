@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using TOHE.Roles.Crewmate;
+﻿using TOHE.Roles.Crewmate;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
 public static class Hangman
 {
-    private static readonly int Id = 1400;
+    private static readonly int Id = 24500;
     public static bool IsEnable = false;
 
     private static OptionItem ShapeshiftCooldown;

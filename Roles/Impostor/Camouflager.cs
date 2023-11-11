@@ -1,11 +1,10 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace TOHE.Roles.Impostor
 {
     public static class Camouflager
     {
-        private static readonly int Id = 2500;
+        private static readonly int Id = 2900;
         public static List<byte> playerIdList = new();
         public static bool IsEnable = false;
 

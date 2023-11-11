@@ -1,6 +1,6 @@
+using Hazel;
 using System.Collections.Generic;
 using System.Linq;
-using Hazel;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -8,7 +8,7 @@ namespace TOHE.Roles.Crewmate
 {
     internal class Spiritualist
     {
-        private static readonly int Id = 8100;
+        private static readonly int Id = 9600;
         private static List<byte> playerIdList = new();
         public static bool IsEnable = false;
 

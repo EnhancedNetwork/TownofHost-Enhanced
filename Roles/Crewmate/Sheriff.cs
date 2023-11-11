@@ -1,5 +1,4 @@
 using Hazel;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,7 +7,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class Sheriff
 {
-    private static readonly int Id = 8800;
+    private static readonly int Id = 11200;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -116,7 +115,7 @@ public static class Sheriff
         else
             ShotLimit.Add(SheriffId, ShotLimitOpt.GetInt());
     }
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(id) ? CurrentKillCooldown[id] : 0f;
+    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(id) ? CurrentKillCooldown[id] : 300f;
     public static bool CanUseKillButton(byte playerId)
         => !Main.PlayerStates[playerId].IsDead
         && (CanKillAllAlive.GetBool() || GameStates.AlreadyDied)

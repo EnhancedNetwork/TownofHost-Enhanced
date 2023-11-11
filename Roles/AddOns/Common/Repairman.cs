@@ -4,7 +4,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class Repairman
 {
-    private static readonly int Id = 7050;
+    private static readonly int Id = 19900;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

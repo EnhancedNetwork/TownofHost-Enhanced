@@ -12,7 +12,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Wraith
 {
-    private static readonly int Id = 13300;
+    private static readonly int Id = 18500;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
