@@ -185,10 +185,7 @@ class ExileControllerWrapUpPatch
         }
         
         foreach (var pc in Main.AllPlayerControls)
-        if (HexMaster.IsEnable)
-            HexMaster.RemoveHexedPlayer();
-
-        foreach (var player in Main.AllPlayerControls)
+        
         {
             //PlayerControl player = allPlayerControls[item];
             CustomRoles playerRole = player.GetCustomRole(); // Only roles (no add-ons)
