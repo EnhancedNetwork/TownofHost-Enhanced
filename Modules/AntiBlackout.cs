@@ -95,7 +95,7 @@ public static class AntiBlackout
             return;
         }
         isDeadCache.Clear();
-        foreach (var info in GameData.Instance.AllPlayers)
+        foreach (var info in GameData.Instance.AllPlayers.ToArray())
         {
             if (info == null) continue;
             isDeadCache[info.PlayerId] = (info.IsDead, info.Disconnected);
@@ -108,7 +108,7 @@ public static class AntiBlackout
     public static void RestoreIsDead(bool doSend = true, [CallerMemberName] string callerMethodName = "")
     {
         logger.Info($"RestoreIsDead is called from {callerMethodName}");
-        foreach (var info in GameData.Instance.AllPlayers)
+        foreach (var info in GameData.Instance.AllPlayers.ToArray())
         {
             if (info == null) continue;
             if (isDeadCache.TryGetValue(info.PlayerId, out var val))

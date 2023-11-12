@@ -120,7 +120,7 @@ public static class EvilTracker
         SetTarget(shapeshifter.PlayerId, target.PlayerId);
         Logger.Info($"{shapeshifter.GetNameWithRole()}のターゲットを{target.GetNameWithRole()}に設定", "EvilTrackerTarget");
         shapeshifter.MarkDirtySettings();
-        Utils.NotifyRoles();
+        Utils.NotifyRoles(SpecifySeer: shapeshifter, SpecifyTarget: target, ForceLoop: true);
     }
     public static void AfterMeetingTasks()
     {

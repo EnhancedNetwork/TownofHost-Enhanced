@@ -115,7 +115,6 @@ public static class Admirer
                 target.RpcSetCustomRole(CustomRoles.Admired);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmirerAdmired")));
-                Utils.NotifyRoles();
             }
             else if (killer.Is(CustomRoles.Madmate) && target.CanBeMadmate(inGame: true))
             {
@@ -123,7 +122,6 @@ public static class Admirer
                 target.RpcSetCustomRole(CustomRoles.Madmate);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("AdmirerAdmired")));
-                Utils.NotifyRoles();
             }
             else if (killer.Is(CustomRoles.Recruit) && target.CanBeSidekick())
             {
@@ -131,7 +129,6 @@ public static class Admirer
                 target.RpcSetCustomRole(CustomRoles.Recruit);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Recruit), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Recruit), GetString("AdmirerAdmired")));
-                Utils.NotifyRoles();
             }
             else if (killer.Is(CustomRoles.Charmed) && target.CanBeCharmed())
             {
@@ -139,7 +136,6 @@ public static class Admirer
                 target.RpcSetCustomRole(CustomRoles.Charmed);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Charmed), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Charmed), GetString("AdmirerAdmired")));
-                Utils.NotifyRoles();
             }
             else if (killer.Is(CustomRoles.Infected) && target.CanBeInfected())
             {
@@ -147,7 +143,6 @@ public static class Admirer
                 target.RpcSetCustomRole(CustomRoles.Infected);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infected), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infected), GetString("AdmirerAdmired")));
-                Utils.NotifyRoles();
             }
             else if (killer.Is(CustomRoles.Contagious) && target.CanBeInfected())
             {
@@ -155,7 +150,6 @@ public static class Admirer
                 target.RpcSetCustomRole(CustomRoles.Contagious);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Contagious), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Contagious), GetString("AdmirerAdmired")));
-                Utils.NotifyRoles();
             }
             else goto AdmirerFailed;
 

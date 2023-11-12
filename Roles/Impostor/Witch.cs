@@ -143,6 +143,7 @@ public static class Witch
             SendRPC(true, killer.PlayerId, target.PlayerId);
             killer.SetKillCooldown();
             killer.RPCPlayCustomSound("Curse");
+            Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
         }
     }
     public static void RemoveSpelledPlayer()

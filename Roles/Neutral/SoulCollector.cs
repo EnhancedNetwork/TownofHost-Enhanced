@@ -1,5 +1,6 @@
 using Hazel;
 using System.Collections.Generic;
+using System.Linq;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -101,8 +102,7 @@ public static class SoulCollector
 
     public static void OnPlayerDead(PlayerControl deadPlayer)
     {
-        if (!IsEnable) return;
-        foreach (var playerId in SoulCollectorTarget.Keys)
+        foreach (var playerId in SoulCollectorTarget.Keys.ToArray())
         {
             var targetId = SoulCollectorTarget[playerId];
             if (targetId == byte.MaxValue) continue;

@@ -117,21 +117,18 @@ public class Main : BasePlugin
     public static float RefixCooldownDelay = 0f;
     public static GameData.PlayerInfo LastVotedPlayerInfo;
     public static string LastVotedPlayer;
-    public static List<byte> ResetCamPlayerList = new();
-    public static List<byte> winnerList = new();
-    public static List<byte> ForCrusade = new();
-    public static List<byte> KillGhoul = new();
-    public static List<string> winnerNameList = new();
-    public static List<int> clientIdList = new();
+    public static HashSet<byte> ResetCamPlayerList = new();
+    public static HashSet<byte> winnerList = new();
+    public static HashSet<byte> ForCrusade = new();
+    public static HashSet<byte> KillGhoul = new();
+    public static HashSet<string> winnerNameList = new();
+    public static HashSet<int> clientIdList = new();
     public static List<(string, byte, string)> MessagesToSend = new();
     public static bool isChatCommand = false;
     public static bool MeetingIsStarted = false;
-    public static List<PlayerControl> LoversPlayers = new();
+    public static HashSet<PlayerControl> LoversPlayers = new();
     public static bool isLoversDead = true;
     public static Dictionary<byte, float> AllPlayerKillCooldown = new();
-    public static Dictionary<byte, float> EvilMiniKillcooldown = new();
-    public static Dictionary<byte, long> NiceMiniTime = new();
-    public static float EvilMiniKillcooldownf = new();
     public static Dictionary<byte, Vent> LastEnteredVent = new();
     public static Dictionary<byte, Vector2> LastEnteredVentLocation = new();
     public static Dictionary<byte, Vector2> TimeMasterBackTrack = new();
@@ -241,11 +238,15 @@ public class Main : BasePlugin
     public static Dictionary<byte, CustomRoles> ErasedRoleStorage = new();
     public static Dictionary<string, int> PlayerQuitTimes = new();
 
-    public static IEnumerable<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null);
-    public static IEnumerable<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId));
+    //public static IEnumerable<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null);
+    //public static IEnumerable<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId));
 
     //public static List<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null).ToList();
     //public static List<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId)).ToList();
+
+    // Seems this better (if use foreach)
+    public static PlayerControl[] AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null).ToArray();
+    public static PlayerControl[] AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId)).ToArray();
 
     public static Main Instance;
 

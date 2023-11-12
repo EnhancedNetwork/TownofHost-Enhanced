@@ -32,7 +32,7 @@ class CheckForEndVotingPatch
         {
             List<MeetingHud.VoterState> statesList = new();
             MeetingHud.VoterState[] states;
-            foreach (var pva in __instance.playerStates)
+            foreach (var pva in __instance.playerStates.ToArray())
             {
                 if (pva == null) continue;
                 PlayerControl pc = Utils.GetPlayerById(pva.TargetPlayerId);
@@ -47,8 +47,8 @@ class CheckForEndVotingPatch
                         Main.MadmateNum++;
                         pc.RpcSetCustomRole(CustomRoles.Madmate);
                         ExtendedPlayerControl.RpcSetCustomRole(pc.PlayerId, CustomRoles.Madmate);
-                        Utils.NotifyRoles(true, pc, true);
-                        Logger.Info("设置职业:" + pc?.Data?.PlayerName + " = " + pc.GetCustomRole().ToString() + " + " + CustomRoles.Madmate.ToString(), "Assign " + CustomRoles.Madmate.ToString());
+                        Utils.NotifyRoles(isForMeeting: true, SpecifySeer: pc, NoCache: true);
+                        Logger.Info("Setting up a career:" + pc?.Data?.PlayerName + " = " + pc.GetCustomRole().ToString() + " + " + CustomRoles.Madmate.ToString(), "Assign " + CustomRoles.Madmate.ToString());
                     }
                 }
 
@@ -131,7 +131,7 @@ class CheckForEndVotingPatch
                     }
                 }
             }
-            foreach (var ps in __instance.playerStates)
+            foreach (var ps in __instance.playerStates.ToArray())
             {
                 if (shouldSkip) break; //Meeting Skip with vote counting on keystroke (m + delete)
 
@@ -142,9 +142,8 @@ class CheckForEndVotingPatch
             GameData.PlayerInfo exiledPlayer = PlayerControl.LocalPlayer.Data;
             bool tie = false;
 
-            for (var i = 0; i < __instance.playerStates.Length; i++)
+            foreach (var ps in __instance.playerStates.ToArray())
             {
-                PlayerVoteArea ps = __instance.playerStates[i];
                 if (ps == null) continue;
                 voteLog.Info(string.Format("{0,-2}{1}:{2,-3}{3}", ps.TargetPlayerId, Utils.PadRightV2($"({Utils.GetVoteName(ps.TargetPlayerId)})", 40), ps.VotedFor, $"({Utils.GetVoteName(ps.VotedFor)})"));
                 var voter = Utils.GetPlayerById(ps.TargetPlayerId);
@@ -224,7 +223,7 @@ class CheckForEndVotingPatch
                     PlayerVoteArea pva = new();
                     var meetingHud = MeetingHud.Instance;
                         PlayerControl swap1 = null;
-                        foreach (var playerId in Swapper.Vote)
+                        foreach (var playerId in Swapper.Vote.ToArray())
                         {
                             var player = Utils.GetPlayerById(playerId);
                             if (player != null)
@@ -234,7 +233,7 @@ class CheckForEndVotingPatch
                             }
                         }
                         PlayerControl swap2 = null;
-                        foreach (var playerId in Swapper.VoteTwo)
+                        foreach (var playerId in Swapper.VoteTwo.ToArray())
                         {
                             var player = Utils.GetPlayerById(playerId);
                             if (player != null)
@@ -245,9 +244,8 @@ class CheckForEndVotingPatch
                         }
                     if (swap1 != null && swap2 != null)
                     {
-                        for (int ia = 0; ia < __instance.playerStates.Length; ia++) //Loops through all players
+                        foreach (var playerVoteArea in __instance.playerStates.ToArray())
                         {
-                            PlayerVoteArea playerVoteArea = __instance.playerStates[ia];
                             var voteAreaPlayer = Utils.GetPlayerById(playerVoteArea.TargetPlayerId);
                             if (playerVoteArea.VotedFor == swap1.PlayerId && !playerVoteArea.AmDead)
                             {
@@ -257,9 +255,8 @@ class CheckForEndVotingPatch
                                 NiceList1.Add(voteAreaPlayer.PlayerId);
                             }
                         }
-                        for (int ia = 0; ia < __instance.playerStates.Length; ia++) //Loops through all players
+                        foreach (var playerVoteArea in __instance.playerStates.ToArray()) //Loops through all players
                         {
-                            PlayerVoteArea playerVoteArea = __instance.playerStates[ia];
                             var voteAreaPlayer = Utils.GetPlayerById(playerVoteArea.TargetPlayerId);
                             if (playerVoteArea.VotedFor == swap1.PlayerId && !playerVoteArea.AmDead && !NiceList1.Contains(voteAreaPlayer.PlayerId))
                             {
@@ -270,9 +267,8 @@ class CheckForEndVotingPatch
                                 NiceList2.Add(voteAreaPlayer.PlayerId);
                             }
                         }
-                        for (int ia = 0; ia < __instance.playerStates.Length; ia++) //Loops through all players
+                        foreach (var playerVoteArea in __instance.playerStates.ToArray()) //Loops through all players
                         {
-                            PlayerVoteArea playerVoteArea = __instance.playerStates[ia];
                             var voteAreaPlayer = Utils.GetPlayerById(playerVoteArea.TargetPlayerId);
                             if (playerVoteArea.VotedFor == swap1.PlayerId && !playerVoteArea.AmDead && !NiceList2.Contains(voteAreaPlayer.PlayerId))
                             {
@@ -328,7 +324,7 @@ class CheckForEndVotingPatch
 
             byte exileId = byte.MaxValue;
             int max = 0;
-            voteLog.Info("===决定驱逐玩家处理开始===");
+            voteLog.Info("===Decision to expel player processing begins===");
             foreach (var data in VotingData)
             {
                 voteLog.Info($"{data.Key}({Utils.GetVoteName(data.Key)}):{data.Value}票");
@@ -354,7 +350,7 @@ class CheckForEndVotingPatch
             if (tie) //破平者判断
             {
                 byte target = byte.MaxValue;
-                foreach (var data in VotingData.Where(x => x.Key < 15 && x.Value == max))
+                foreach (var data in VotingData.Where(x => x.Key < 15 && x.Value == max).ToArray())
                 {
                     if (Main.BrakarVoteFor.Contains(data.Key))
                     {
@@ -368,7 +364,7 @@ class CheckForEndVotingPatch
                 }
                 if (target != byte.MaxValue)
                 {
-                    Logger.Info("破平者覆盖驱逐玩家", "Brakar Vote");
+                    Logger.Info("Flat breakers cover expulsion of players", "Brakar Vote");
                     exiledPlayer = Utils.GetPlayerInfoById(target);
                     tie = false;
                     braked = true;
@@ -404,7 +400,7 @@ class CheckForEndVotingPatch
             //RPC
             if (AntiBlackout.NeutralOverrideExiledPlayer || AntiBlackout.ImpostorOverrideExiledPlayer)
             {
-                __instance.RpcVotingComplete(states.ToArray(), null, true);
+                __instance.RpcVotingComplete(states, null, true);
                 ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiledPlayer;
                 if (exiledPlayer != null)
                 {
@@ -412,7 +408,7 @@ class CheckForEndVotingPatch
                     ConfirmEjections(exiledPlayer, true);
                 }
             }
-            else __instance.RpcVotingComplete(states.ToArray(), exiledPlayer, tie); // Normal processing
+            else __instance.RpcVotingComplete(states, exiledPlayer, tie); // Normal processing
 
             CheckForDeathOnExile(PlayerState.DeathReason.Vote, exileId);
 
@@ -459,7 +455,7 @@ class CheckForEndVotingPatch
         int impnum = 0;
         int neutralnum = 0;
 
-        if (CustomRolesHelper.RoleExist(CustomRoles.Bard))
+        if (CustomRoles.Bard.RoleExist())
         {
             Main.BardCreations++;
             try { name = ModUpdater.Get("https://v1.hitokoto.cn/?encode=text"); }
@@ -510,14 +506,14 @@ class CheckForEndVotingPatch
         var DecidedWinner = false;
 
         //迷你船员长大前被驱逐抢夺胜利
-        if (crole == CustomRoles.NiceMini && Mini.Age !< 18)
+        if (crole.Is(CustomRoles.NiceMini) && Mini.Age !< 18)
         {
             name = string.Format(GetString("ExiledNiceMini"), realName, coloredRole);
             DecidedWinner = true;
         }
 
         //小丑胜利
-        if (crole == CustomRoles.Jester)
+        if (crole.Is(CustomRoles.Jester))
         {
             name = string.Format(GetString("ExiledJester"), realName, coloredRole);
             DecidedWinner = true;
@@ -567,8 +563,12 @@ class CheckForEndVotingPatch
             _ = new LateTask(() =>
             {
                 Main.DoBlockNameChange = true;
-                if (GameStates.IsInGame) player.RpcSetName(name);
+                if (GameStates.IsInGame)
+                {
+                    player.RpcSetName(name);
+                }
             }, 3.0f, "Change Exiled Player Name");
+            
             _ = new LateTask(() =>
             {
                 if (GameStates.IsInGame && !player.Data.Disconnected)
@@ -586,7 +586,7 @@ class CheckForEndVotingPatch
     }
     public static bool CheckRole(byte id, CustomRoles role)
     {
-        var player = Main.AllPlayerControls.Where(pc => pc.PlayerId == id).FirstOrDefault();
+        var player = Main.AllPlayerControls.FirstOrDefault(pc => pc.PlayerId == id);
         return player != null && player.Is(role);
     }
     public static void TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason deathReason, params byte[] playerIds)
@@ -603,14 +603,14 @@ class CheckForEndVotingPatch
         HexMaster.OnCheckForEndVoting(deathReason, playerIds);
         //Occultist.OnCheckForEndVoting(deathReason, playerIds);
         Virus.OnCheckForEndVoting(deathReason, playerIds);
+
         foreach (var playerId in playerIds)
         {
-        //    Baker.OnCheckForEndVoting(playerId);
-            
-            //Loversの後追い
-            if (CustomRoles.Lovers.IsEnable() && !Main.isLoversDead && Main.LoversPlayers.Find(lp => lp.PlayerId == playerId) != null)
+            if (CustomRoles.Lovers.IsEnable() && !Main.isLoversDead && Main.LoversPlayers.Any(lp => lp.PlayerId == playerId))
+            {
                 FixedUpdatePatch.LoversSuicide(playerId, true);
-            //道連れチェック
+            }
+
             RevengeOnExile(playerId, deathReason);
         }
     }
@@ -618,13 +618,13 @@ class CheckForEndVotingPatch
     {
         var player = Utils.GetPlayerById(playerId);
         if (player == null) return;
-        var target = PickRevengeTarget(player, deathReason);
+        var target = PickRevengeTarget(player);
         if (target == null) return;
         TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Revenge, target.PlayerId);
         target.SetRealKiller(player);
-        Logger.Info($"{player.GetNameWithRole()}の道連れ先:{target.GetNameWithRole()}", "RevengeOnExile");
+        Logger.Info($"{player.GetNameWithRole()} revenge:{target.GetNameWithRole()}", "RevengeOnExile");
     }
-    private static PlayerControl PickRevengeTarget(PlayerControl exiledplayer, PlayerState.DeathReason deathReason)//道連れ先選定
+    private static PlayerControl PickRevengeTarget(PlayerControl exiledplayer)//道連れ先選定
     {
         List<PlayerControl> TargetList = new();
         foreach (var candidate in Main.AllAlivePlayerControls)
@@ -642,14 +642,13 @@ static class ExtendedMeetingHud
 {
     public static Dictionary<byte, int> CustomCalculateVotes(this MeetingHud __instance)
     {
-        Logger.Info("===计算票数处理开始===", "Vote");
+        Logger.Info("===Start of vote counting processing===", "Vote");
         Dictionary<byte, int> dic = new();
         Main.BrakarVoteFor = new();
         Collector.CollectorVoteFor = new();
         //| 投票された人 | 投票された回数 |
-        for (int i = 0; i < __instance.playerStates.Length; i++)
+        foreach (var ps in __instance.playerStates.ToArray())
         {
-            PlayerVoteArea ps = __instance.playerStates[i];//该玩家面板里的所有会议中的玩家
             if (ps == null) continue;
             if (ps.VotedFor is not 252 and not byte.MaxValue and not 254)//该玩家面板里是否投了该玩家
             {
@@ -682,15 +681,19 @@ static class ExtendedMeetingHud
                     ) VoteNum += Options.VindicatorAdditionalVote.GetInt();
                 if (Options.DualVotes.GetBool())
                 { 
-                if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.DualPersonality)
-                    && ps.TargetPlayerId != ps.VotedFor
-                    ) VoteNum += VoteNum;
+                    if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.DualPersonality)
+                        && ps.TargetPlayerId != ps.VotedFor
+                        ) VoteNum += VoteNum;
                 }
                 //窃票者附加票数
                 if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.TicketsStealer))
+                {
                     VoteNum += (int)(Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == ps.TargetPlayerId) * Options.TicketsPerKill.GetFloat());
+                }
                 if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Pickpocket))
+                {
                     VoteNum += (int)(Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == ps.TargetPlayerId) * Pickpocket.VotesPerKill.GetFloat());
+                }
 
                 // 主动叛变模式下自票无效
                 if (ps.TargetPlayerId == ps.VotedFor && Options.MadmateSpawnMode.GetInt() == 2) VoteNum = 0;
@@ -721,7 +724,7 @@ class MeetingHudStartPatch
 
         //首次会议技能提示
         if (Options.SendRoleDescriptionFirstMeeting.GetBool() && MeetingStates.FirstMeeting)
-            foreach (var pc in Main.AllAlivePlayerControls.Where(x => !x.IsModClient()))
+            foreach (var pc in Main.AllAlivePlayerControls.Where(x => !x.IsModClient()).ToArray())
             {
                 var role = pc.GetCustomRole();
                 var sb = new StringBuilder();
@@ -730,7 +733,7 @@ class MeetingHudStartPatch
                     Utils.ShowChildrenSettings(opt, ref sb, command: true);
                 var txt = sb.ToString();
                 sb.Clear().Append(txt.RemoveHtmlTags());
-                foreach (var subRole in Main.PlayerStates[pc.PlayerId].SubRoles)
+                foreach (var subRole in Main.PlayerStates[pc.PlayerId].SubRoles.ToArray())
                     sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleMode(subRole) + GetString($"{subRole}InfoLong"));
                 if (CustomRolesHelper.RoleExist(CustomRoles.Ntr) && (role is not CustomRoles.GM and not CustomRoles.Ntr))
                     sb.Append($"\n\n" + GetString($"Lovers") + Utils.GetRoleMode(CustomRoles.Lovers) + GetString($"LoversInfoLong"));
@@ -752,26 +755,32 @@ class MeetingHudStartPatch
         //工作狂的生存技巧
         if (MeetingStates.FirstMeeting && CustomRoles.Workaholic.RoleExist() && Options.WorkaholicGiveAdviceAlive.GetBool() && !Options.WorkaholicCannotWinAtDeath.GetBool() && !Options.GhostIgnoreTasks.GetBool())
         {
-            foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Workaholic)))
+            foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Workaholic)).ToArray())
+            {
                 Main.WorkaholicAlive.Add(pc.PlayerId);
+            }
             List<string> workaholicAliveList = new();
-            foreach (var whId in Main.WorkaholicAlive)
+            foreach (var whId in Main.WorkaholicAlive.ToArray())
+            {
                 workaholicAliveList.Add(Main.AllPlayerNames[whId]);
+            }
             string separator = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
             AddMsg(string.Format(GetString("WorkaholicAdviceAlive"), string.Join(separator, workaholicAliveList)), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Workaholic), GetString("WorkaholicAliveTitle")));
         }
         //Bait Notify
         if (MeetingStates.FirstMeeting && CustomRoles.Bait.RoleExist() && Options.BaitNotification.GetBool())
         {
-            foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Bait)))
+            foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Bait)).ToArray())
+            {
                 Main.BaitAlive.Add(pc.PlayerId);
+            }
             List<string> baitAliveList = new();
-            foreach (var whId in Main.BaitAlive)
+            foreach (var whId in Main.BaitAlive.ToArray())
             {
                 PlayerControl whpc = Utils.GetPlayerById(whId);
                 if (whpc == null) continue;
                 baitAliveList.Add(whpc.GetRealName());
-            }//Main.AllPlayerNames[whId]);
+            }
             string separator = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
             AddMsg(string.Format(GetString("BaitAdviceAlive"), string.Join(separator, baitAliveList)), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), GetString("BaitAliveTitle")));
         }
@@ -832,8 +841,12 @@ class MeetingHudStartPatch
         if (MimicMsg != "")
         {
             MimicMsg = GetString("MimicDeadMsg") + "\n" + MimicMsg;
-            foreach (var ipc in Main.AllPlayerControls.Where(x => x.GetCustomRole().IsImpostorTeam()))
-                AddMsg(MimicMsg, ipc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mimic), GetString("MimicMsgTitle")));
+
+            var isImpostorTeamList = Main.AllPlayerControls.Where(x => x.GetCustomRole().IsImpostorTeam()).ToArray();
+            foreach (var imp in isImpostorTeamList)
+            {
+                AddMsg(MimicMsg, imp.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mimic), GetString("MimicMsgTitle")));
+            }
         }
 
         msgToSend.Do(x => Logger.Info($"To:{x.Item2} {x.Item3} => {x.Item1}", "Skill Notice OnMeeting Start"));
@@ -852,7 +865,7 @@ class MeetingHudStartPatch
     }
     public static void Prefix(MeetingHud __instance)
     {
-        Logger.Info("------------会议开始------------", "Phase");
+        Logger.Info("------------Opening of the session------------", "Phase");
         ChatUpdatePatch.DoBlockChat = true;
         GameStates.AlreadyDied |= !Utils.IsAllAlive;
         Main.AllPlayerControls.Do(x => ReportDeadBodyPatch.WaitReport[x.PlayerId].Clear());
@@ -867,7 +880,7 @@ class MeetingHudStartPatch
         GuessManager.textTemplate = UnityEngine.Object.Instantiate(__instance.playerStates[0].NameText);
         GuessManager.textTemplate.enabled = false;
 
-        foreach (var pva in __instance.playerStates)
+        foreach (var pva in __instance.playerStates.ToArray())
         {
             var pc = Utils.GetPlayerById(pva.TargetPlayerId);
             if (pc == null) continue;
@@ -957,7 +970,7 @@ class MeetingHudStartPatch
             }, 3f, "SetName To Chat");
         }
 
-        foreach (var pva in __instance.playerStates)
+        foreach (var pva in __instance.playerStates.ToArray())
         {
             if (pva == null) continue;
             PlayerControl seer = PlayerControl.LocalPlayer;
@@ -1135,7 +1148,7 @@ class MeetingHudStartPatch
 
             bool isLover = false;
 
-            foreach (var SeerSubRole in seer.GetCustomSubRoles())
+            foreach (var SeerSubRole in seer.GetCustomSubRoles().ToArray())
             {
                 switch (SeerSubRole)
                 {
@@ -1146,7 +1159,7 @@ class MeetingHudStartPatch
                 }
             }
 
-            foreach (var TargetSubRole in target.GetCustomSubRoles())
+            foreach (var TargetSubRole in target.GetCustomSubRoles().ToArray())
             {
                 switch (TargetSubRole)
                 {

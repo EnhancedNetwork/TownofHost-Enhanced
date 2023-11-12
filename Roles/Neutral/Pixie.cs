@@ -115,7 +115,7 @@ public static class Pixie
     public static void CheckExileTarget(GameData.PlayerInfo exiled)
     {
         if (!IsEnable) return;
-        foreach (var pixieId in  PixieTargets.Keys)
+        foreach (var pixieId in  PixieTargets.Keys.ToArray())
         {
             var pc = Utils.GetPlayerById(pixieId);
             if (!PixieTargets[pixieId].Any()) continue;

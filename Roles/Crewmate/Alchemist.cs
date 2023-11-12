@@ -7,6 +7,7 @@ namespace TOHE.Roles.Crewmate
     using System.Linq;
     using System.Text;
     using TOHE.Modules;
+    using TOHE.Roles.Impostor;
     using TOHE.Roles.Neutral;
     using UnityEngine;
     using static TOHE.Options;
@@ -125,7 +126,10 @@ namespace TOHE.Roles.Crewmate
                     {
                         var rd = IRandom.Instance;
                         List<PlayerControl> AllAlivePlayer = new();
-                        foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.CanBeTeleported())) AllAlivePlayer.Add(pc);
+                        foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.CanBeTeleported()).ToArray())
+                        {
+                            AllAlivePlayer.Add(pc);
+                        }
                         var tar1 = AllAlivePlayer[player.PlayerId];
                         AllAlivePlayer.Remove(tar1);
                         var tar2 = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
@@ -216,8 +220,7 @@ namespace TOHE.Roles.Crewmate
                             player.MarkDirtySettings();
                             target.MarkDirtySettings();
                             BloodlustList.Remove(player.PlayerId);
-                            Utils.NotifyRoles(SpecifySeer: player);
-                            Utils.NotifyRoles(SpecifySeer: target);
+                            Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(bloodlustId), SpecifyTarget: player, ForceLoop: true);
                         }
                     }
                 }

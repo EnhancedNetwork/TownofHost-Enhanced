@@ -124,7 +124,7 @@
         {
             if (!ArrowsPointingToDeadBody.GetBool()) return;
 
-            foreach (var pc in playerIdList)
+            foreach (var pc in playerIdList.ToArray())
             {
                 var player = Utils.GetPlayerById(pc);
                 if (player == null || !player.IsAlive()) continue;
