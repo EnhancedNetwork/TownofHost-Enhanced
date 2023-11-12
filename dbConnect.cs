@@ -40,7 +40,7 @@ public class DatabaseConfig
 
 class DBQueries
 {
-    public static void InsertData()
+    public static bool DevAccess(string friendCode)
     {
         var config = Config.LoadConfig("dbConfig.json");
         /*
@@ -62,38 +62,79 @@ class DBQueries
         dbCon.UserName = config.Database.UserName;
         dbCon.Password = config.Database.Password;
 
-
         if (dbCon.IsConnect())
         {
             try
             {
-                // Define your INSERT INTO query
-                string insertQuery = "INSERT INTO LoggedIn (friendcode, userName, version_number, gitLink, isDirty, time) " +
-                                 "VALUES (@friendcode, @userName, @version_number, @gitLink, @isDirty, @time)";
-                using (var cmd = new MySqlCommand(insertQuery, dbCon.Connection))
+                // SELECT query to check dev access
+                string selectQuery = "SELECT COUNT(*) FROM Role_Table WHERE friendcode = @friendcode AND NOT (type = 's_it' OR type = 's_br' OR type LIKE 't_%');";
+                using (var cmd = new MySqlCommand(selectQuery, dbCon.Connection))
                 {
-                    // Set the values for the parameters in the query
-                    cmd.Parameters.AddWithValue("@friendcode", $"{PlayerControl.LocalPlayer.FriendCode}");
-                    cmd.Parameters.AddWithValue("@userName", $"{Main.AllPlayerNames[PlayerControl.LocalPlayer.PlayerId]}");
-                    cmd.Parameters.AddWithValue("@version_number", $"{Main.PluginVersion}");
-                    cmd.Parameters.AddWithValue("@gitLink", $"{ThisAssembly.Git.RepositoryUrl}");
-                    cmd.Parameters.AddWithValue("@isDirty", $"{(ThisAssembly.Git.IsDirty ? 1 : 0)}");
-                    cmd.Parameters.AddWithValue("@time", $"{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}");
+                    // Set the value for the parameter in the query
+                    cmd.Parameters.AddWithValue("@friendcode", friendCode);
 
-                    // Execute the INSERT query
-                    cmd.ExecuteNonQuery();
+                    // Execute the SELECT query
+                    int count = Convert.ToInt32(cmd.ExecuteScalar());
+
+                    // If count is greater than 0, the friend code exists
+                    return count > 0;
                 }
             }
             catch (Exception ex)
             {
                 // Handle exceptions, logging error
-                Logger.Error("Error: " + ex.Message,"dbConnet");
+                Logger.Error("Error: " + ex.Message, "dbConnect");
+                return false; // Return false in case of an exception
             }
             finally
             {
-                dbCon.Close(); //connection is closed, whether an exception occurs or not
+                dbCon.Close(); // Connection is closed, whether an exception occurs or not
             }
         }
+
+        return false; // Return false if the database connection is not established
+    }
+    public static bool CanaryAccess(string friendCode)
+    {
+        var config = Config.LoadConfig("dbConfig.json");
+
+        var dbCon = DBConnection.Instance();
+        dbCon.Server = config.Database.Server;
+        dbCon.DatabaseName = config.Database.DatabaseName;
+        dbCon.UserName = config.Database.UserName;
+        dbCon.Password = config.Database.Password;
+
+        if (dbCon.IsConnect())
+        {
+            try
+            {
+                // SELECT query to check canary access
+                string selectQuery = "SELECT COUNT(*) FROM Role_Table WHERE friendcode = @friendcode";
+                using (var cmd = new MySqlCommand(selectQuery, dbCon.Connection))
+                {
+                    // Set the value for the parameter in the query
+                    cmd.Parameters.AddWithValue("@friendcode", friendCode);
+
+                    // Execute the SELECT query
+                    int count = Convert.ToInt32(cmd.ExecuteScalar());
+
+                    // If count is greater than 0, the friend code exists
+                    return count > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions, logging error
+                Logger.Error("Error: " + ex.Message, "dbConnect");
+                return false; // Return false in case of an exception
+            }
+            finally
+            {
+                dbCon.Close(); // Connection is closed, whether an exception occurs or not
+            }
+        }
+
+        return false; // Return false if the database connection is not established
     }
 }
 

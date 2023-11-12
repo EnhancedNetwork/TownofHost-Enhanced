@@ -43,7 +43,10 @@ public class Main : BasePlugin
     public const string PluginVersion = "1.2.1.4";
     public const string PluginDisplayVersion = "1.2.1 dev 4";
     public static readonly string SupportedVersionAU = "2023.10.24";
-    public const bool Canary = false; // Unused variable?
+    /******************* Change one of the three variables to true before making a release. *******************/
+    public const bool Canary = false; // Unused variable? ---- not unused anymore :)
+    public const bool fullRelease = false;
+    public const bool devRelease = true;
 
     public static readonly bool ShowGitHubButton = true;
     public static readonly bool ShowKofiButton = true;
