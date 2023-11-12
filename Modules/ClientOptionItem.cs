@@ -63,7 +63,7 @@ public class ClientOptionItem
                 var generalTab = mouseMoveToggle.transform.parent.parent.parent;
 
                 var modOptionsButton = Object.Instantiate(mouseMoveToggle, generalTab);
-                modOptionsButton.transform.localPosition = new (-1.4f, -2.411f, -1f);
+                modOptionsButton.transform.localPosition = leaveButton?.transform?.localPosition ?? new(0f, -2.4f, 1f);
                 modOptionsButton.name = "TOHEOptions";
                 modOptionsButton.Text.text = Translator.GetString("TOHEOptions");
                 modOptionsButton.Background.color = new Color32(255, 192, 203, byte.MaxValue);
@@ -73,6 +73,11 @@ public class ClientOptionItem
                 {
                     CustomBackground.gameObject.SetActive(true);
                 }));
+
+                if (leaveButton != null)
+                    leaveButton.transform.localPosition = new(-1.35f, -2.411f, -1f);
+                if (returnButton != null)
+                    returnButton.transform.localPosition = new(1.35f, -2.411f, -1f);
             }
 
             // ボタン生成
