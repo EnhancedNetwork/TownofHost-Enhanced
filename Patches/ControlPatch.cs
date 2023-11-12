@@ -255,6 +255,35 @@ internal class ControllerManagerUpdatePatch
             RPC.SyncCustomSettingsRPC();
             Logger.SendInGame(GetString("SyncCustomSettingsRPC"));
         }
+
+        if (Input.GetKeyDown(KeyCode.Delete))
+        {
+            PlayerControl.LocalPlayer.inVent = false;
+            PlayerControl.LocalPlayer.moveable = true;
+            if (GameStates.IsMeeting)
+            {
+                PlayerControl.LocalPlayer.moveable = true;
+            }
+        }
+
+        else if (Input.GetKeyDown(KeyCode.Insert))
+        {
+            PlayerControl.LocalPlayer.inVent = true;
+            PlayerControl.LocalPlayer.moveable = false;
+            GameStates.InGame = true;
+            if (GameStates.IsMeeting)
+            {
+                PlayerControl.LocalPlayer.moveable = false;
+            }
+
+        }
+
+        if (Input.GetKeyDown(KeyCode.Home))
+        {
+            PlayerControl.LocalPlayer.Revive();
+            PlayerControl.LocalPlayer.Data.IsDead = false;
+            PlayerControl.LocalPlayer.FixedUpdate();
+        }
     }
 
     private static bool GetKeysDown(params KeyCode[] keys)
