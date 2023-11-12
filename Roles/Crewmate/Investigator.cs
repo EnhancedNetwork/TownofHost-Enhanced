@@ -99,11 +99,10 @@ public static class Investigator
             if (RoleRevealMode.GetInt() == 0)
             {
                 if (target.GetCustomRole().IsCrewmate())
-                killer.Notify(string.Format(GetString("InvestigatorInvestigatedCrew"), target.GetRealName()), 3f);
+                    killer.Notify(string.Format(GetString("InvestigatorInvestigatedCrew"), target.GetRealName()), 3f);
                 if (!target.GetCustomRole().IsCrewmate())
-                killer.Notify(string.Format(GetString("InvestigatorInvestigatedNotCrew"), target.GetRealName()), 3f);
+                    killer.Notify(string.Format(GetString("InvestigatorInvestigatedNotCrew"), target.GetRealName()), 3f);
             }
-            Utils.NotifyRoles();
 
             killer.SetKillCooldownV3();
             if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);

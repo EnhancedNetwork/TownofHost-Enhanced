@@ -34,7 +34,7 @@ public class BoolOptionBackupValue : OptionBackupValueBase<BoolOptionNames, bool
     public BoolOptionBackupValue(BoolOptionNames name, bool value) : base(name, value) { }
     public override void Restore(IGameOptions option)
     {
-        if (OptionName != BoolOptionNames.GhostsDoTasks)
+        if (OptionName is not BoolOptionNames.GhostsDoTasks)
             option.SetBool(OptionName, Value);
     }
 }

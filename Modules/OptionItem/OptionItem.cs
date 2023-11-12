@@ -10,9 +10,9 @@ public abstract class OptionItem
 {
     #region static
     public static IReadOnlyList<OptionItem> AllOptions => _allOptions;
-    private static List<OptionItem> _allOptions = new(1024);
+    private static readonly List<OptionItem> _allOptions = new(1024);
     public static IReadOnlyDictionary<int, OptionItem> FastOptions => _fastOptions;
-    private static Dictionary<int, OptionItem> _fastOptions = new(1024);
+    private static readonly Dictionary<int, OptionItem> _fastOptions = new(1024);
     public static int CurrentPreset { get; set; }
     #endregion
 
@@ -122,7 +122,7 @@ public abstract class OptionItem
 
     public OptionItem SetParent(OptionItem parent) => Do(i =>
     {
-        foreach (var role in Options.CustomRoleSpawnChances.Where(x => x.Value.Name == parent.Name))
+        foreach (var role in Options.CustomRoleSpawnChances.Where(x => x.Value.Name == parent.Name).ToArray())
         {
             var roleName = Translator.GetString(Enum.GetName(typeof(CustomRoles), role.Key));
             ReplacementDictionary ??= new();
@@ -234,7 +234,7 @@ public abstract class OptionItem
     {
         CurrentPreset = Math.Clamp(newPreset, 0, NumPresets - 1);
 
-        foreach (var op in AllOptions)
+        foreach (var op in AllOptions.ToArray())
             op.Refresh();
 
         SyncAllOptions();
@@ -242,7 +242,7 @@ public abstract class OptionItem
     public static void SyncAllOptions(int targetId = -1)
     {
         if (
-            Main.AllPlayerControls.Count() <= 1 ||
+            Main.AllPlayerControls.Length <= 1 ||
             AmongUsClient.Instance.AmHost == false ||
             PlayerControl.LocalPlayer == null
         ) return;

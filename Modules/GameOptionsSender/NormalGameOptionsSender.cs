@@ -15,7 +15,7 @@ public class NormalGameOptionsSender : GameOptionsSender
             {
                 if (_logicOptions == null || !GameManager.Instance.LogicComponents.Contains(_logicOptions))
                 {
-                    foreach (var glc in GameManager.Instance?.LogicComponents)
+                    foreach (var glc in GameManager.Instance?.LogicComponents.ToArray())
                         if (glc.TryCast<LogicOptions>(out var lo))
                             _logicOptions = lo;
                 }

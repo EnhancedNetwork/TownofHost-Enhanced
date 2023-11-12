@@ -80,7 +80,7 @@ internal class ChatCommands
             case "/versão":
                 canceled = true;
                 string version_text = "";
-                foreach (var kvp in Main.playerVersion.OrderBy(pair => pair.Key))
+                foreach (var kvp in Main.playerVersion.OrderBy(pair => pair.Key).ToArray())
                 {
                     version_text += $"{kvp.Key}:{Main.AllPlayerNames[kvp.Key]}:{kvp.Value.forkId}/{kvp.Value.version}({kvp.Value.tag})\n";
                 }
@@ -255,7 +255,7 @@ internal class ChatCommands
                     canceled = true;
                     subArgs = args.Length < 2 ? "" : args[1];
                     Utils.SendMessage(GetString("Message.MaxPlayers") + subArgs);
-                    var numbereer = System.Convert.ToByte(subArgs);
+                    var numbereer = Convert.ToByte(subArgs);
                     GameOptionsManager.Instance.currentNormalGameOptions.MaxPlayers = numbereer;
                     break;
 
@@ -359,7 +359,7 @@ internal class ChatCommands
                             Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref sb, command: true);
                         var txt = sb.ToString();
                         sb.Clear().Append(txt.RemoveHtmlTags());
-                        foreach (var subRole in Main.PlayerStates[lp.PlayerId].SubRoles)
+                        foreach (var subRole in Main.PlayerStates[lp.PlayerId].SubRoles.ToArray())
                             sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleMode(subRole) + GetString($"{subRole}InfoLong"));
                         if (CustomRolesHelper.RoleExist(CustomRoles.Ntr) && (role is not CustomRoles.GM and not CustomRoles.Ntr))
                             sb.Append($"\n\n" + GetString($"Lovers") + Utils.GetRoleMode(CustomRoles.Lovers) + GetString($"LoversInfoLong"));
@@ -713,7 +713,7 @@ internal class ChatCommands
                             PlayerControl.LocalPlayer.RpcSetRole(rl.GetRoleTypes());
                             PlayerControl.LocalPlayer.RpcSetCustomRole(rl);
                             Utils.SendMessage(string.Format("Debug Set your role to {0}", rl.ToString()), PlayerControl.LocalPlayer.PlayerId);
-                            Utils.NotifyRoles();
+                            Utils.NotifyRoles(ForceLoop: true);
                             Utils.MarkEveryoneDirtySettings();
                             break;
                         }
@@ -1306,7 +1306,7 @@ internal class ChatCommands
                         Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref sb, command: true);
                     var txt = sb.ToString();
                     sb.Clear().Append(txt.RemoveHtmlTags());
-                    foreach (var subRole in Main.PlayerStates[player.PlayerId].SubRoles)
+                    foreach (var subRole in Main.PlayerStates[player.PlayerId].SubRoles.ToArray())
                         sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleMode(subRole) + GetString($"{subRole}InfoLong"));
                     if (CustomRolesHelper.RoleExist(CustomRoles.Ntr) && (role is not CustomRoles.GM and not CustomRoles.Ntr))
                         sb.Append($"\n\n" + GetString($"Lovers") + Utils.GetRoleMode(CustomRoles.Lovers) + GetString($"LoversInfoLong"));
@@ -1594,7 +1594,6 @@ internal class ChatCommands
                     break;
                 }
                 // warn the specified player
-                string textToSend2 = "";
                 string warnReason = "Reason : Not specified\n";
                 string warnedPlayerName = warnedPlayer.GetRealName();
                 //textToSend2 = $" {warnedPlayerName} {GetString("WarnCommandWarned")} ~{player.name}";
@@ -1606,8 +1605,7 @@ internal class ChatCommands
                 {
                     Utils.SendMessage("Use /warn [id] [reason] in future. \nExample :-\n /warn 5 lava chatting", player.PlayerId);
                 }
-                textToSend2 = $" {warnedPlayerName} {GetString("WarnCommandWarned")} {warnReason} ~{player.name}";
-                Utils.SendMessage(textToSend2);
+                Utils.SendMessage($" {warnedPlayerName} {GetString("WarnCommandWarned")} {warnReason} ~{player.name}");
                 //string moderatorName1 = player.GetRealName().ToString();
                 //int startIndex1 = moderatorName1.IndexOf("♥</color>") + "♥</color>".Length;
                 //moderatorName1 = moderatorName1.Substring(startIndex1);

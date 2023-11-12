@@ -135,7 +135,7 @@ public static class Lawyer
         Utils.GetPlayerById(Lawyer).RpcSetCustomRole(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]);
         Target.Remove(Lawyer);
         SendRPC(Lawyer);
-        Utils.NotifyRoles();
+        Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(Lawyer));
     }
     public static bool KnowRole(PlayerControl player, PlayerControl target)
     {
@@ -174,7 +174,7 @@ public static class Lawyer
     {
         if (!IsEnable) return false;
 
-        foreach (var kvp in Target.Where(x => x.Value == exiled.PlayerId))
+        foreach (var kvp in Target.Where(x => x.Value == exiled.PlayerId).ToArray())
         {
             var lawyer = Utils.GetPlayerById(kvp.Key);
             if (lawyer == null || lawyer.Data.Disconnected) continue;

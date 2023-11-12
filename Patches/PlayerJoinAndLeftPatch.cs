@@ -5,6 +5,7 @@ using Hazel;
 using InnerNet;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
 using TOHE.Roles.Crewmate;
@@ -152,29 +153,48 @@ class OnPlayerLeftPatch
             if (GameStates.IsInGame)
             {
                 if (data.Character.Is(CustomRoles.Lovers) && !data.Character.Data.IsDead)
+                {
                     foreach (var lovers in Main.LoversPlayers.ToArray())
                     {
                         Main.isLoversDead = true;
                         Main.LoversPlayers.Remove(lovers);
                         Main.PlayerStates[lovers.PlayerId].RemoveSubRole(CustomRoles.Lovers);
                     }
+                }
+
                 if (data.Character.Is(CustomRoles.Executioner) && Executioner.Target.ContainsKey(data.Character.PlayerId))
+                {
                     Executioner.ChangeRole(data.Character);
-                if (Executioner.Target.ContainsValue(data.Character.PlayerId))
+                }
+                else if (Executioner.Target.ContainsValue(data.Character.PlayerId))
+                {
                     Executioner.ChangeRoleByTarget(data.Character);
+                }
+                
                 if (data.Character.Is(CustomRoles.Lawyer) && Lawyer.Target.ContainsKey(data.Character.PlayerId))
+                {
                     Lawyer.ChangeRole(data.Character);
+                }
                 if (Lawyer.Target.ContainsValue(data.Character.PlayerId))
+                {
                     Lawyer.ChangeRoleByTarget(data.Character);
+                }
+
                 if (data.Character.Is(CustomRoles.Pelican))
+                {
                     Pelican.OnPelicanDied(data.Character.PlayerId);
+                }
                 if (Spiritualist.SpiritualistTarget == data.Character.PlayerId)
+                {
                     Spiritualist.RemoveTarget();
+                }
+
                 if (Main.PlayerStates[data.Character.PlayerId].deathReason == PlayerState.DeathReason.etc) // If no cause of death was established
                 {
                     Main.PlayerStates[data.Character.PlayerId].deathReason = PlayerState.DeathReason.Disconnected;
                     Main.PlayerStates[data.Character.PlayerId].SetDead();
                 }
+
                 AntiBlackout.OnDisconnect(data.Character.Data);
                 PlayerGameOptionsSender.RemoveSender(data.Character);
             }

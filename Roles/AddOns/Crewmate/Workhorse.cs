@@ -74,7 +74,7 @@ public static class Workhorse
             Add(pc.PlayerId);
             GameData.Instance.RpcSetTasks(pc.PlayerId, Array.Empty<byte>()); //タスクを再配布
             pc.SyncSettings();
-            Utils.NotifyRoles();
+            Utils.NotifyRoles(SpecifySeer: pc);
         }
 
         return true;

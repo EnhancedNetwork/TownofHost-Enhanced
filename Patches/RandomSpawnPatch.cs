@@ -18,7 +18,7 @@ class RandomSpawn
             if (position == new Vector2(-25f, 40f)) return; //If it's the first spring, RETURN
             if (GameStates.IsInTask)
             {
-                var player = Main.AllPlayerControls.Where(p => p.NetTransform == __instance).FirstOrDefault();
+                var player = Main.AllPlayerControls.FirstOrDefault(p => p.NetTransform == __instance);
                 if (player == null)
                 {
                     Logger.Warn("Player is null", "RandomSpawn");
