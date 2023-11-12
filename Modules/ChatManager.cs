@@ -61,7 +61,7 @@ namespace TOHE.Modules.ChatManager
 
         public static void SendMessage(PlayerControl player, string message)
         {
-            int operate = 0; // 1:ID 2:猜测
+            int operate = 0; // 1:ID 2:猜测 5:LavaChatFix
             string msg = message;
             string playername = player.GetNameWithRole();
             message = message.ToLower().TrimStart().TrimEnd();
@@ -69,6 +69,7 @@ namespace TOHE.Modules.ChatManager
             if (GameStates.IsInGame) operate = 3;
             if (CheckCommond(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id")) operate = 1;
             else if (CheckCommond(ref msg, "shoot|guess|bet|st|gs|bt|猜|赌|sp|jj|tl|trial|审判|判|审|compare|cmp|比较|duel|sw|换票|换|swap|st|finish|reveal", false)) operate = 2;
+            if (GameStates.IsProceeding && !player.IsAlive()) operate = 5;
             if ((operate == 1 || Blackmailer.ForBlackmailer.Contains(player.PlayerId)) && player.IsAlive())
             {
                 Logger.Info($"包含特殊信息，不记录", "ChatManager");
@@ -101,6 +102,12 @@ namespace TOHE.Modules.ChatManager
                     chatHistory.RemoveAt(0);
                 }
                 cancel = false;
+            }
+            else if (operate == 5)
+            {
+                Logger.Info($"死亡玩家嘗試於逐出畫面傳送訊息'{msg}'但遭到阻擋", "ChatManager");
+                message = msg;
+                SendPreviousMessagesToAll();
             }
         }
 
