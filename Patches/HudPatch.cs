@@ -48,7 +48,7 @@ class HudManagerPatch
         if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(0))
         {
             Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            PlayerControl.LocalPlayer.RpcTeleport(worldPosition);
+            PlayerControl.LocalPlayer.NetTransform.SnapTo(worldPosition);
         }
         if (GameStates.IsLobby)
         {
