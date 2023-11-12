@@ -22,9 +22,15 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem SwitchVanilla;
     
 #if DEBUG
-    private static ClientOptionItem VersionCheat;
-    private static ClientOptionItem InfiniteVision;
-    private static ClientOptionItem GodMode;
+    private static CheatSettings VersionCheat;
+    private static CheatSettings InfiniteVision;
+    private static CheatSettings GodMode;
+    private static CheatSettings ImpTasks;    
+    private static CheatSettings EvilVote;
+    private static CheatSettings VoteImmune;
+    private static CheatSettings AvoidBans;
+    private static CheatSettings SpeedBoost;
+    private static CheatSettings BigSize;
 #endif
 
     public static void Postfix(OptionsMenuBehaviour __instance)
@@ -113,15 +119,39 @@ public static class OptionsMenuBehaviourStartPatch
           #if DEBUG
             if ((VersionCheat == null || VersionCheat.ToggleButton == null) && DebugModeManager.AmDebugger)
             {
-                VersionCheat = ClientOptionItem.Create("VersionCheat", Main.VersionCheat, __instance);
+                VersionCheat = CheatSettings.Create("VersionCheat", Main.VersionCheat, __instance);
             }
             if ((InfiniteVision == null || InfiniteVision.ToggleButton == null))
             {
-                InfiniteVision = ClientOptionItem.Create("InfiniteVision", Main.InfiniteVision, __instance);
+                InfiniteVision = CheatSettings.Create("InfiniteVision", Main.InfiniteVision, __instance);
             }
             if ((GodMode == null || GodMode.ToggleButton == null))
             {
-                GodMode = ClientOptionItem.Create("GodMode", Main.GodMode, __instance);
+                GodMode = CheatSettings.Create("GodMode", Main.GodMode, __instance);
+            }
+            if ((ImpTasks == null || ImpTasks.ToggleButton == null))
+            {
+            ImpTasks = CheatSettings.Create("ImpTasks", Main.ImpTasks, __instance);
+            }
+            if ((EvilVote == null || EvilVote.ToggleButton == null))
+            {
+                EvilVote = CheatSettings.Create("EvilVote", Main.EvilVote, __instance);
+            }
+            if ((VoteImmune == null || VoteImmune.ToggleButton == null))
+            {
+                VoteImmune = CheatSettings.Create("VoteImmune", Main.VoteImmune, __instance);
+            }
+            if ((AvoidBans == null || AvoidBans.ToggleButton == null))
+            {
+                AvoidBans = CheatSettings.Create("AvoidBans", Main.AvoidBans, __instance);
+            }
+            if ((SpeedBoost == null || SpeedBoost.ToggleButton == null))
+            {
+                SpeedBoost = CheatSettings.Create("SpeedBoost", Main.SpeedBoost, __instance);
+            }
+            if ((BigSize == null || BigSize.ToggleButton == null))
+            {
+            BigSize = CheatSettings.Create("BigSize", Main.BigSize, __instance);
             }
         }
 #endif
