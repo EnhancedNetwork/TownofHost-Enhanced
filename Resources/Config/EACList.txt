@@ -66,6 +66,11 @@ clayrymole#8193,joseph0809
 lawnhoppy#4726,封禁
 larkyprow#0965,9eb11d42b,hacker
 rapidmatch#3120,7a320d676,rawpotato6
+panslushy#9362,34aaba1bd,No one
+socialnest#0628,2dc0c9013,ROFL
+cleflilac#3550,006aacb0a,ABNO
+storeroan#0331,8d1febcb5,Night_瓜
+53b5b1a76,Cheifalike //Android No friendcode hacker
 
 ## Griefer
 setmolar#4374,藏族顶针
@@ -76,6 +81,7 @@ epicdoer#2966,毛泽车
 ternaryjog#6069,习皇帝万岁
 bigtunnel#1506,카제하야가꿈 //Discrimination against Chinese
 feeprim#7337,Athena //Racism
+sassycalf#9283,db2adda95,Caesar
 
 ## 冒充开发者
 polkaoval#0453,自作Modな橋本環奈
