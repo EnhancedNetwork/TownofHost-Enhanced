@@ -300,6 +300,7 @@ public class PlayerState
         Drained,
         Shattered,
         Trap,
+        Retribution,
 
         etc = -1,
     }
@@ -404,10 +405,9 @@ public class TaskState
             && player.Is(CustomRoles.Transporter)
             && ((CompletedTasksCount + 1) <= Options.TransporterTeleportMax.GetInt()))
             {
-                Logger.Info("传送师触发传送:" + player.GetNameWithRole(), "Transporter");
+                Logger.Info("Transporter: " + player.GetNameWithRole() + " completed the task", "Transporter");
                 var rd = IRandom.Instance;
-                List<PlayerControl> AllAlivePlayer = new();
-                foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.CanBeTeleported())) AllAlivePlayer.Add(pc);
+                List<PlayerControl> AllAlivePlayer = Main.AllAlivePlayerControls.Where(x => x.CanBeTeleported()).ToList();
                 if (AllAlivePlayer.Count >= 2)
                 {
                     var tar1 = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
@@ -416,12 +416,13 @@ public class TaskState
                     var posTar1 = tar1.GetTruePosition();
                     tar1.RpcTeleport(tar2.GetTruePosition());
                     tar2.RpcTeleport(posTar1);
+                    AllAlivePlayer.Clear();
                     tar1.RPCPlayCustomSound("Teleport");
                     tar2.RPCPlayCustomSound("Teleport");
                     tar1.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Transporter), string.Format(Translator.GetString("TeleportedByTransporter"), tar2.GetRealName())));
                     tar2.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Transporter), string.Format(Translator.GetString("TeleportedByTransporter"), tar1.GetRealName())));
                 }
-                else if (player.Is(CustomRoles.Transporter))
+                else
                 {
                     player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), string.Format(Translator.GetString("ErrorTeleport"), player.GetRealName())));
                 }
@@ -447,6 +448,7 @@ public class TaskState
             if (player.Is(CustomRoles.Divinator) && player.IsAlive())
             {
                 Divinator.CheckLimit[player.PlayerId] += Divinator.AbilityUseGainWithEachTaskCompleted.GetFloat();
+                Divinator.SendRPC(player.PlayerId);
             }
             if (player.Is(CustomRoles.Veteran) && player.IsAlive())
             {
@@ -475,14 +477,17 @@ public class TaskState
             if (player.Is(CustomRoles.Mediumshiper) && player.IsAlive())
             {
                 Mediumshiper.ContactLimit[player.PlayerId] += Mediumshiper.MediumAbilityUseGainWithEachTaskCompleted.GetFloat();
+                Mediumshiper.SendRPC(player.PlayerId);
             }
             if (player.Is(CustomRoles.ParityCop) && player.IsAlive())
             {
                 ParityCop.MaxCheckLimit[player.PlayerId] += ParityCop.ParityAbilityUseGainWithEachTaskCompleted.GetFloat();
+                ParityCop.SendRPC(player.PlayerId, 2);
             }
             if (player.Is(CustomRoles.Oracle) && player.IsAlive())
             {
                 Oracle.CheckLimit[player.PlayerId] += Oracle.OracleAbilityUseGainWithEachTaskCompleted.GetFloat();
+                Oracle.SendRPC(player.PlayerId);
             }
     /*        if (player.Is(CustomRoles.Cleanser) && player.IsAlive())
             {
@@ -496,14 +501,17 @@ public class TaskState
             if (player.Is(CustomRoles.Tracker) && player.IsAlive())
             {
                 Tracker.TrackLimit[player.PlayerId] += Tracker.TrackerAbilityUseGainWithEachTaskCompleted.GetFloat();
+                Tracker.SendRPC(2, player.PlayerId);
             }
             if (player.Is(CustomRoles.Bloodhound) && player.IsAlive())
             {
                 Bloodhound.UseLimit[player.PlayerId] += Bloodhound.BloodhoundAbilityUseGainWithEachTaskCompleted.GetFloat();
+                Bloodhound.SendRPCLimit(player.PlayerId, operate:2);
             }
             if (player.Is(CustomRoles.Chameleon) && player.IsAlive())
             {
                 Chameleon.UseLimit[player.PlayerId] += Chameleon.ChameleonAbilityUseGainWithEachTaskCompleted.GetFloat();
+                Chameleon.SendRPC(player, isLimit: true);
             }
             if (player.Is(CustomRoles.Spy) && player.IsAlive())
             {
@@ -518,6 +526,7 @@ public class TaskState
                 player.RpcMurderPlayerV3(player);
                 Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
             }, 0.2f, "Ghoul Suicide");
+            
             if (player.Is(CustomRoles.Ghoul) && (CompletedTasksCount + 1) >= AllTasksCount && !player.IsAlive())
             {
                 foreach (var pc in Main.AllPlayerControls)
@@ -578,36 +587,33 @@ public class TaskState
                 }
                 else
                 {
-
+                    list = list.OrderBy(x => Vector2.Distance(player.transform.position, x.transform.position)).ToList();
+                    var target = list[0];
+                    
+                    if (!target.Is(CustomRoles.Pestilence))
                     {
-                        list = list.OrderBy(x => Vector2.Distance(player.transform.position, x.transform.position)).ToList();
-                            var target = list[0];
-                        if (!target.Is(CustomRoles.Pestilence))
-                        {
-                            if (!Options.CrewpostorLungeKill.GetBool())
-                            { 
-                                target.SetRealKiller(player);
-                                target.RpcCheckAndMurder(target);
-                                player.RpcGuardAndKill();
-                                Logger.Info("No lunge mode kill", "Crewpostor");
-                            }
-                            else
-                            {
-                                target.SetRealKiller(player);
-                                player.RpcMurderPlayerV3(target);
-                                player.RpcGuardAndKill();
-                                Logger.Info("lunge mode kill", "Crewpostor");
-
-                            }
-                            Logger.Info($"Crewpostor completed task to kill：{player.GetNameWithRole()} => {target.GetNameWithRole()}", "Crewpostor");
-                        }
-                        if (target.Is(CustomRoles.Pestilence))
-                        {
-                            player.SetRealKiller(target);
-                            target.RpcMurderPlayerV3(player);
+                        if (!Options.CrewpostorLungeKill.GetBool())
+                        { 
+                            target.SetRealKiller(player);
+                            target.RpcCheckAndMurder(target);
                             player.RpcGuardAndKill();
-                            Logger.Info($"Crewpostor tried to kill pestilence (reflected back)：{target.GetNameWithRole()} => {player.GetNameWithRole()}", "Pestilence Reflect");
+                            Logger.Info("No lunge mode kill", "Crewpostor");
                         }
+                        else
+                        {
+                            target.SetRealKiller(player);
+                            player.RpcMurderPlayerV3(target);
+                            player.RpcGuardAndKill();
+                            Logger.Info("lunge mode kill", "Crewpostor");
+                        }
+                        Logger.Info($"Crewpostor completed task to kill：{player.GetNameWithRole()} => {target.GetNameWithRole()}", "Crewpostor");
+                    }
+                    if (target.Is(CustomRoles.Pestilence))
+                    {
+                        player.SetRealKiller(target);
+                        target.RpcMurderPlayerV3(player);
+                        player.RpcGuardAndKill();
+                        Logger.Info($"Crewpostor tried to kill pestilence (reflected back)：{target.GetNameWithRole()} => {player.GetNameWithRole()}", "Pestilence Reflect");
                     }
                 }
             } 

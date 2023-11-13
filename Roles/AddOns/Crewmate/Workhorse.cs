@@ -7,7 +7,7 @@ namespace TOHE.Roles.AddOns.Crewmate;
 
 public static class Workhorse
 {
-    private static readonly int Id = 15700;
+    private static readonly int Id = 23730;
     public static Color RoleColor = Utils.GetRoleColor(CustomRoles.Workhorse);
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
@@ -74,7 +74,7 @@ public static class Workhorse
             Add(pc.PlayerId);
             GameData.Instance.RpcSetTasks(pc.PlayerId, Array.Empty<byte>()); //タスクを再配布
             pc.SyncSettings();
-            Utils.NotifyRoles();
+            Utils.NotifyRoles(SpecifySeer: pc);
         }
 
         return true;

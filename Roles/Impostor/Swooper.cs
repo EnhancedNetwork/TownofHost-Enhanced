@@ -11,7 +11,7 @@ namespace TOHE.Roles.Impostor;
 
 public static class Swooper
 {
-    private static readonly int Id = 4200;
+    private static readonly int Id = 4700;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -73,7 +73,7 @@ public static class Swooper
 
         lastTime = new();
         InvisTime = new();
-        foreach (var pc in Main.AllAlivePlayerControls.Where(x => playerIdList.Contains(x.PlayerId)))
+        foreach (var pc in Main.AllAlivePlayerControls.Where(x => playerIdList.Contains(x.PlayerId)).ToArray())
         {
             lastTime.Add(pc.PlayerId, Utils.GetTimeStamp());
             SendRPC(pc);

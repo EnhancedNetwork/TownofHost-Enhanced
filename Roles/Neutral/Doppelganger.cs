@@ -7,7 +7,7 @@ using static TOHE.Options;
 namespace TOHE.Roles.Neutral;
 public static class Doppelganger
 {
-    private static readonly int Id = 194200;
+    private static readonly int Id = 25000;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -128,8 +128,7 @@ public static class Doppelganger
 
     public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
-
-        if (killer == null || target == null || !IsEnable || Camouflage.IsCamouflage || Camouflager.IsActive) return;
+        if (killer == null || target == null || !IsEnable || Camouflage.IsCamouflage || Camouflager.AbilityActivated) return;
         if (Main.CheckShapeshift.TryGetValue(target.PlayerId, out bool isShapeshifitng) && isShapeshifitng)
         {
             Logger.Info("Target was shapeshifting", "Doppelganger");
@@ -165,7 +164,7 @@ public static class Doppelganger
         Logger.Info("Changed killer skin", "Doppelganger");
 
         SendRPC(killer.PlayerId);
-        Utils.NotifyRoles();
+        Utils.NotifyRoles(ForceLoop: true);
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
         return;

@@ -59,7 +59,7 @@ public static class MainMenuManagerPatch
 
         leftPanel.gameObject.GetComponent<SpriteRenderer>().enabled = false;
         leftPanel.gameObject.FindChild<SpriteRenderer>("Divider").enabled = false;
-        leftPanel.GetComponentsInChildren<SpriteRenderer>(true).Where(r => r.name == "Shine").ForEach(r => r.enabled = false);
+        leftPanel.GetComponentsInChildren<SpriteRenderer>(true).Where(r => r.name == "Shine").ToList().ForEach(r => r.enabled = false);
 
         GameObject splashArt = new("SplashArt");
         splashArt.transform.position = new Vector3(0, 0f, 600f); //= new Vector3(0, 0.40f, 600f);

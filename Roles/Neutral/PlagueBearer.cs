@@ -7,7 +7,7 @@ using static TOHE.Translator;
 namespace TOHE.Roles.Neutral;
 public static class PlagueBearer
 {
-    private static readonly int Id = 26000;
+    private static readonly int Id = 17600;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
     public static Dictionary<byte, List<byte>> PlaguedList = new();
@@ -108,9 +108,12 @@ public static class PlagueBearer
             return false;
         }
         PlaguedList[killer.PlayerId].Add(target.PlayerId);
+
         Utils.NotifyRoles(SpecifySeer: killer);
+
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
+
         Logger.Msg($"kill cooldown {PlagueBearerCD[killer.PlayerId]}", "PlagueBearer");
         return false;
     }

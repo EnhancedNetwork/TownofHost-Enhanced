@@ -9,7 +9,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Imitator
 {
-    private static readonly int Id = 35050;
+    private static readonly int Id = 13000;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -188,7 +188,7 @@ public static class Imitator
             Logger.Info("Imitator remembered: " + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString(), "Imitator Assign");
             Logger.Info($"{killer.GetNameWithRole()} : {RememberLimit} remember limits left", "Imitator");
 
-            Utils.NotifyRoles(SpecifySeer: killer, ForceLoop: false);
+            Utils.NotifyRoles(SpecifySeer: killer);
         }
         else if (killerRole == CustomRoles.Imitator)
         {

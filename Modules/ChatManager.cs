@@ -17,17 +17,17 @@ namespace TOHE.Modules.ChatManager
         public static bool CheckCommond(ref string msg, string command, bool exact = true)
         {
             var comList = command.Split('|');
-            for (int i = 0; i < comList.Length; i++)
+            foreach (string comm in comList)
             {
                 if (exact)
                 {
-                    if (msg == "/" + comList[i]) return true;
+                    if (msg == "/" + comm) return true;
                 }
                 else
                 {
-                    if (msg.StartsWith("/" + comList[i]))
+                    if (msg.StartsWith("/" + comm))
                     {
-                        msg = msg.Replace("/" + comList[i], string.Empty);
+                        msg = msg.Replace("/" + comm, string.Empty);
                         return true;
                     }
                 }
@@ -175,6 +175,7 @@ namespace TOHE.Modules.ChatManager
                     .EndRpc()
                     .EndMessage()
                     .SendMessage();
+
                 if (playerDead)
                 {
                     senderPlayer.Die(DeathReason.Kill, true);

@@ -7,7 +7,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class ChiefOfPolice
 {
-    private static readonly int Id = 1748596;
+    private static readonly int Id = 12600;
     private static List<byte> playerIdList = new();
     public static Dictionary<byte, int> PoliceLimit = new();
     public static bool IsEnable = false;
@@ -75,7 +75,6 @@ public static class ChiefOfPolice
             }
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), GetString("SheriffSuccessfullyRecruited")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), GetString("BeSheriffByPolice")));
-            Utils.NotifyRoles();
 
             killer.ResetKillCooldown();
             killer.SetKillCooldown();

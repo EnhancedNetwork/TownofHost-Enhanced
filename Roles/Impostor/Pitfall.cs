@@ -10,7 +10,7 @@ namespace TOHE.Roles.Impostor
 {
     public static class Pitfall
     {
-        private static readonly int Id = 8050;
+        private static readonly int Id = 5600;
 
         public static List<byte> playerIdList = new();
         public static bool IsEnable = false;
@@ -75,8 +75,8 @@ namespace TOHE.Roles.Impostor
             Traps = Traps.Where(a => a.IsActive).ToList();
 
             Vector2 position = shapeshifter.transform.position;
-            var playerTraps = Traps.Where(a => a.PitfallPlayerId == shapeshifter.PlayerId);
-            if (playerTraps.Count() >= MaxTrapCount.GetInt())
+            var playerTraps = Traps.Where(a => a.PitfallPlayerId == shapeshifter.PlayerId).ToArray();
+            if (playerTraps.Length >= MaxTrapCount.GetInt())
             {
                 var trap = playerTraps.First();
                 trap.Location = position;
@@ -101,7 +101,7 @@ namespace TOHE.Roles.Impostor
 
             if (player.GetCustomRole().IsImpostor())
             {
-                var traps = Traps.Where(a => a.PitfallPlayerId == player.PlayerId && a.IsActive);
+                var traps = Traps.Where(a => a.PitfallPlayerId == player.PlayerId && a.IsActive).ToArray();
                 foreach (var trap in traps)
                 {
                     trap.Timer += Time.fixedDeltaTime;
@@ -111,7 +111,7 @@ namespace TOHE.Roles.Impostor
 
             Vector2 position = player.transform.position;
 
-            foreach (var trap in Traps.Where(a => a.IsActive))
+            foreach (var trap in Traps.Where(a => a.IsActive).ToArray())
             {
                 if (trap.PlayersTrapped.Contains(player.PlayerId))
                 {

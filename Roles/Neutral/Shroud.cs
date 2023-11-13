@@ -9,7 +9,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Shroud
 {
-    private static readonly int Id = 10320;
+    private static readonly int Id = 18000;
     public static bool IsEnable = false;
 
     public static Dictionary<byte, byte> ShroudList = new();
@@ -73,7 +73,7 @@ public static class Shroud
 
         killer.SetKillCooldown();
 
-        Utils.NotifyRoles(SpecifySeer: killer);
+        Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
 
         return false;
     }
@@ -116,7 +116,8 @@ public static class Shroud
                         Utils.MarkEveryoneDirtySettings();
                         ShroudList.Remove(shroud.PlayerId);
                         SendRPC(byte.MaxValue, shroud.PlayerId, 2);
-                        Utils.NotifyRoles(SpecifySeer: shroud);
+                        //Utils.NotifyRoles(SpecifySeer: shroud);
+                        Utils.NotifyRoles(Utils.GetPlayerById(shroudId), SpecifyTarget: shroud, ForceLoop: true);
                     }
                 }
             }

@@ -3,8 +3,10 @@ using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
 using InnerNet;
+using Rewired;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
 using TOHE.Roles.Crewmate;
@@ -52,11 +54,13 @@ class OnGameJoinedPatch
 
             _ = new LateTask(() =>
             {
-                if (BanManager.CheckEACList(PlayerControl.LocalPlayer.FriendCode) && GameStates.IsOnlineGame)
+                if (BanManager.CheckEACList(PlayerControl.LocalPlayer.FriendCode, PlayerControl.LocalPlayer.GetClient().GetHashedPuid()) && GameStates.IsOnlineGame)
                 {
                     AmongUsClient.Instance.ExitGame(DisconnectReasons.Banned);
                     SceneChanger.ChangeScene("MainMenu");
                 }
+                var client = PlayerControl.LocalPlayer.GetClient();
+                Logger.Info($"{client.PlayerName.RemoveHtmlTags()}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Hosted room", "Session");
             }, 1f, "OnGameJoinedPatch");
         }
     }
@@ -74,8 +78,8 @@ class OnPlayerJoinedPatch
 {
     public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ClientData client)
     {
-        Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/Platform:{client.PlatformData.Platform}) Joining room", "Session");
-        if (AmongUsClient.Instance.AmHost && client.FriendCode == "" && Options.KickPlayerFriendCodeNotExist.GetBool())
+        Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Joining room", "Session");
+        if (AmongUsClient.Instance.AmHost && client.FriendCode == "" && Options.KickPlayerFriendCodeNotExist.GetBool() && !GameStates.IsLocalGame)
         {
             if (!Options.TempBanPlayerFriendCodeNotExist.GetBool())
             {
@@ -85,13 +89,15 @@ class OnPlayerJoinedPatch
             }
             else
             {
+                if (!BanManager.TempBanWhiteList.Contains(client.GetHashedPuid()))
+                    BanManager.TempBanWhiteList.Add(client.GetHashedPuid());
                 AmongUsClient.Instance.KickPlayer(client.Id, true);
                 Logger.SendInGame(string.Format(GetString("Message.TempBannedByNoFriendCode"), client.PlayerName));
                 Logger.Info($"TempBanned a player {client?.PlayerName} without a friend code", "Temp Ban");
             }
         }
         Platforms platform = client.PlatformData.Platform;
-        if (AmongUsClient.Instance.AmHost && Options.KickOtherPlatformPlayer.GetBool() && platform != Platforms.Unknown)
+        if (AmongUsClient.Instance.AmHost && Options.KickOtherPlatformPlayer.GetBool() && platform != Platforms.Unknown && !GameStates.IsLocalGame)
         {
             if ((platform == Platforms.Android && Options.OptKickAndroidPlayer.GetBool()) ||
                 (platform == Platforms.IPhone && Options.OptKickIphonePlayer.GetBool()) ||
@@ -119,15 +125,15 @@ class OnPlayerJoinedPatch
             if (Main.SayStartTimes.ContainsKey(client.Id)) Main.SayStartTimes.Remove(client.Id);
             if (Main.SayBanwordsTimes.ContainsKey(client.Id)) Main.SayBanwordsTimes.Remove(client.Id);
             //if (Main.newLobby && Options.ShareLobby.GetBool()) Cloud.ShareLobby();
-            if (client.FriendCode != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
-                && !FixedUpdatePatch.CheckAllowList(client.FriendCode))
+            if (client.GetHashedPuid() != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
+                && !FixedUpdatePatch.CheckAllowList(client.FriendCode) && !GameStates.IsLocalGame)
             {
-                if (Main.PlayerQuitTimes.ContainsKey(client.FriendCode))
+                if (Main.PlayerQuitTimes.ContainsKey(client.GetHashedPuid()))
                 {
-                    if (Main.PlayerQuitTimes[client.FriendCode] >= Options.QuitTimesTillTempBan.GetInt())
+                    if (Main.PlayerQuitTimes[client.GetHashedPuid()] >= Options.QuitTimesTillTempBan.GetInt())
                     {
-                        if (!BanManager.TempBanWhiteList.Contains(client.FriendCode))
-                            BanManager.TempBanWhiteList.Add(client.FriendCode);
+                        if (!BanManager.TempBanWhiteList.Contains(client.GetHashedPuid()))
+                            BanManager.TempBanWhiteList.Add(client.GetHashedPuid());
                         AmongUsClient.Instance.KickPlayer(client.Id, true);
                         Logger.SendInGame(string.Format(GetString("Message.TempBannedForSpamQuitting"), client.PlayerName));
                         Logger.Info($"Temp Ban Player ー {client?.PlayerName}({client.FriendCode}) has been temp banned.", "BAN");
@@ -147,29 +153,48 @@ class OnPlayerLeftPatch
             if (GameStates.IsInGame)
             {
                 if (data.Character.Is(CustomRoles.Lovers) && !data.Character.Data.IsDead)
+                {
                     foreach (var lovers in Main.LoversPlayers.ToArray())
                     {
                         Main.isLoversDead = true;
                         Main.LoversPlayers.Remove(lovers);
                         Main.PlayerStates[lovers.PlayerId].RemoveSubRole(CustomRoles.Lovers);
                     }
+                }
+
                 if (data.Character.Is(CustomRoles.Executioner) && Executioner.Target.ContainsKey(data.Character.PlayerId))
+                {
                     Executioner.ChangeRole(data.Character);
-                if (Executioner.Target.ContainsValue(data.Character.PlayerId))
+                }
+                else if (Executioner.Target.ContainsValue(data.Character.PlayerId))
+                {
                     Executioner.ChangeRoleByTarget(data.Character);
+                }
+                
                 if (data.Character.Is(CustomRoles.Lawyer) && Lawyer.Target.ContainsKey(data.Character.PlayerId))
+                {
                     Lawyer.ChangeRole(data.Character);
+                }
                 if (Lawyer.Target.ContainsValue(data.Character.PlayerId))
+                {
                     Lawyer.ChangeRoleByTarget(data.Character);
+                }
+
                 if (data.Character.Is(CustomRoles.Pelican))
+                {
                     Pelican.OnPelicanDied(data.Character.PlayerId);
+                }
                 if (Spiritualist.SpiritualistTarget == data.Character.PlayerId)
+                {
                     Spiritualist.RemoveTarget();
+                }
+
                 if (Main.PlayerStates[data.Character.PlayerId].deathReason == PlayerState.DeathReason.etc) // If no cause of death was established
                 {
                     Main.PlayerStates[data.Character.PlayerId].deathReason = PlayerState.DeathReason.Disconnected;
                     Main.PlayerStates[data.Character.PlayerId].SetDead();
                 }
+
                 AntiBlackout.OnDisconnect(data.Character.Data);
                 PlayerGameOptionsSender.RemoveSender(data.Character);
             }
@@ -226,7 +251,7 @@ class OnPlayerLeftPatch
                     break;
             }
 
-            Logger.Info($"{data?.PlayerName} - (ClientID:{data?.Id} / FriendCode:{data?.FriendCode} / Platform:{data?.PlatformData.Platform}) Disconnect (Reason:{reason}，Ping:{AmongUsClient.Instance.Ping})", "Session");
+            Logger.Info($"{data?.PlayerName} - (ClientID:{data?.Id} / FriendCode:{data?.FriendCode} / HashPuid:{data?.GetHashedPuid()} / Platform:{data?.PlatformData.Platform}) Disconnect (Reason:{reason}，Ping:{AmongUsClient.Instance.Ping})", "Session");
 
             if (AmongUsClient.Instance.AmHost)
             {
@@ -234,18 +259,18 @@ class OnPlayerLeftPatch
                 Main.SayBanwordsTimes.Remove(__instance.ClientId);
                 Main.playerVersion.Remove(data?.Character?.PlayerId ?? byte.MaxValue);
 
-                if (GameStates.IsLobby)
+                if (GameStates.IsLobby && !GameStates.IsLocalGame)
                 {
-                    if (data?.FriendCode != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
-                        && !FixedUpdatePatch.CheckAllowList(data?.FriendCode)) //Can't do this on players without friendcode
+                    if (data?.GetHashedPuid() != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
+                        && !FixedUpdatePatch.CheckAllowList(data?.FriendCode))
                     {
-                        if (!Main.PlayerQuitTimes.ContainsKey(data?.FriendCode))
-                            Main.PlayerQuitTimes.Add(data?.FriendCode, 1);
-                        else Main.PlayerQuitTimes[data?.FriendCode]++;
+                        if (!Main.PlayerQuitTimes.ContainsKey(data?.GetHashedPuid()))
+                            Main.PlayerQuitTimes.Add(data?.GetHashedPuid(), 1);
+                        else Main.PlayerQuitTimes[data?.GetHashedPuid()]++;
 
-                        if (Main.PlayerQuitTimes[data?.FriendCode] >= Options.QuitTimesTillTempBan.GetInt())
+                        if (Main.PlayerQuitTimes[data?.GetHashedPuid()] >= Options.QuitTimesTillTempBan.GetInt())
                         {
-                            BanManager.TempBanWhiteList.Add(data?.FriendCode);
+                            BanManager.TempBanWhiteList.Add(data?.GetHashedPuid());
                             //should ban on player's next join game
                         }
                     }

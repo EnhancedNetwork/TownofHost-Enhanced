@@ -8,7 +8,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Executioner
 {
-    private static readonly int Id = 10700;
+    private static readonly int Id = 14200;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
     public static byte WinnerID;
@@ -134,7 +134,7 @@ public static class Executioner
         Utils.GetPlayerById(Executioner).RpcSetCustomRole(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]);
         Target.Remove(Executioner);
         SendRPC(Executioner);
-        Utils.NotifyRoles();
+        Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(Executioner));
     }
     public static void ChangeRole(PlayerControl executioner)
     {
@@ -159,7 +159,7 @@ public static class Executioner
     }
     public static bool CheckExileTarget(GameData.PlayerInfo exiled, bool DecidedWinner, bool Check = false)
     {
-        foreach (var kvp in Target.Where(x => x.Value == exiled.PlayerId))
+        foreach (var kvp in Target.Where(x => x.Value == exiled.PlayerId).ToArray())
         {
             var executioner = Utils.GetPlayerById(kvp.Key);
             if (executioner == null || !executioner.IsAlive() || executioner.Data.Disconnected) continue;

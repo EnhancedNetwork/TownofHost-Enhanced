@@ -7,7 +7,7 @@ namespace TOHE;
 // 来源：https://github.com/Yumenopai/TownOfHost_Y
 public static class Greedier
 {
-    private static readonly int Id = 1300;
+    private static readonly int Id = 1500;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -57,7 +57,7 @@ public static class Greedier
     }
     public static void OnReportDeadBody()
     {
-        foreach (var pc in Main.AllAlivePlayerControls.Where(x => playerIdList.Contains(x.PlayerId)))
+        foreach (var pc in Main.AllAlivePlayerControls.Where(x => playerIdList.Contains(x.PlayerId)).ToArray())
         {
             IsOdd[pc.PlayerId] = true;
             SendRPC(pc.PlayerId);

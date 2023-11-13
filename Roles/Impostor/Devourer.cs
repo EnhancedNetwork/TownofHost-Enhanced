@@ -11,7 +11,7 @@ namespace TOHE.Roles.Impostor
         static GameData.PlayerOutfit ConsumedOutfit = new GameData.PlayerOutfit().Set("", 15, "", "", "visor_Crack", "", "");
         private static Dictionary<byte, GameData.PlayerOutfit> OriginalPlayerSkins = new();
 
-        private static readonly int Id = 3550;
+        private static readonly int Id = 5500;
         public static List<byte> playerIdList = new();
         public static bool IsEnable = false;
 
@@ -79,7 +79,6 @@ namespace TOHE.Roles.Impostor
                 PlayerSkinsCosumed[pc.PlayerId].Add(target.PlayerId);
                 pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Devourer), GetString("DevourerEatenSkin")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Devourer), GetString("EatenByDevourer")));
-                Utils.NotifyRoles();
 
                 OriginalPlayerSkins.Add(target.PlayerId, Camouflage.PlayerSkins[target.PlayerId]);
                 Camouflage.PlayerSkins[target.PlayerId] = ConsumedOutfit;

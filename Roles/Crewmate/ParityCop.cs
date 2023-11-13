@@ -6,11 +6,12 @@ using TOHE.Modules.ChatManager;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate;
 public static class ParityCop
 {
-    private static readonly int Id = 6900;
+    private static readonly int Id = 8300;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -22,16 +23,10 @@ public static class ParityCop
     public static OptionItem ParityCheckLimitPerMeeting;
     private static OptionItem ParityCheckTargetKnow;
     private static OptionItem ParityCheckOtherTargetKnow;
-    public static OptionItem ParityCheckEgoistCountType;
     public static OptionItem ParityCheckBaitCountType;
     public static OptionItem ParityCheckRevealTargetTeam;
     public static OptionItem ParityAbilityUseGainWithEachTaskCompleted;
 
-    public static readonly string[] pcEgoistCountMode =
-{
-        "EgoistCountMode.Original",
-        "EgoistCountMode.Neutral",
-    };
 
     public static void SetupCustomOption()
     {
@@ -42,7 +37,6 @@ public static class ParityCop
             .SetValueFormat(OptionFormat.Times);
         ParityCheckLimitPerMeeting = IntegerOptionItem.Create(Id + 12, "ParityCheckLimitPerMeeting", new(1, 20, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ParityCop])
             .SetValueFormat(OptionFormat.Times);
-        ParityCheckEgoistCountType = StringOptionItem.Create(Id + 13, "ParityCheckEgoistickCountMode", pcEgoistCountMode, 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ParityCop]);
         ParityCheckBaitCountType = BooleanOptionItem.Create(Id + 14, "ParityCheckBaitCountMode", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ParityCop]);
         ParityCheckTargetKnow = BooleanOptionItem.Create(Id + 15, "ParityCheckTargetKnow", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ParityCop]);
         ParityCheckOtherTargetKnow = BooleanOptionItem.Create(Id + 16, "ParityCheckOtherTargetKnow", false, TabGroup.CrewmateRoles, false).SetParent(ParityCheckTargetKnow);
@@ -51,11 +45,6 @@ public static class ParityCop
             .SetParent(CustomRoleSpawnChances[CustomRoles.ParityCop])
             .SetValueFormat(OptionFormat.Times);
         OverrideTasksData.Create(Id + 20, TabGroup.CrewmateRoles, CustomRoles.ParityCop);
-    }
-    public static int ParityCheckEgoistInt()
-    {
-        if (ParityCheckEgoistCountType.GetString() == "EgoistCountMode.Original") return 0;
-        else return 1;
     }
     public static void Init()
     {
@@ -72,11 +61,51 @@ public static class ParityCop
         RoundCheckLimit.Add(playerId, ParityCheckLimitPerMeeting.GetInt());
         IsEnable = true;
     }
+    public static void SendRPC(byte playerId, int operate)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetParityCopLimit, SendOption.Reliable, -1);
+        writer.Write(playerId);
+        writer.Write(operate);
+        // reset round limit
+        if (operate == 0) writer.Write(RoundCheckLimit[playerId]);
+        // reduce the limits
+        if (operate == 1)
+        {
+            writer.Write(RoundCheckLimit[playerId]);
+            writer.Write(MaxCheckLimit[playerId]);
+        }
+        // increase limit
+        if (operate == 3) writer.Write(MaxCheckLimit[playerId]);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void ReceiveRPC(MessageReader reader)
+    {
+        byte pid = reader.ReadByte();
+        int operate = reader.ReadInt32();
+        if (operate == 0)
+        {
+            int roundLimit = reader.ReadInt32();
+            RoundCheckLimit[pid] = roundLimit;
+        }
+        if (operate == 1)
+        {
+            int roundLimit = reader.ReadInt32();
+            float maxLimit = reader.ReadSingle();
+            RoundCheckLimit[pid] = roundLimit;
+            MaxCheckLimit[pid] = maxLimit;
+        }
+        if (operate == 2)
+        {
+            float maxLimit = reader.ReadSingle();
+            MaxCheckLimit[pid] = maxLimit;
+        }
+    }
     public static void OnReportDeadBody()
     {
         foreach (var pid in RoundCheckLimit.Keys)
         {
             RoundCheckLimit[pid] = ParityCheckLimitPerMeeting.GetInt();
+            SendRPC(pid, 0);
         }
     }
 
@@ -252,6 +281,7 @@ public static class ParityCop
                     }
                     MaxCheckLimit[pc.PlayerId] -= 1;
                     RoundCheckLimit[pc.PlayerId]--;
+                    SendRPC(pc.PlayerId, 1);
                 }
             }
         }
@@ -302,17 +332,17 @@ public static class ParityCop
     public static bool CheckCommond(ref string msg, string command, bool exact = true)
     {
         var comList = command.Split('|');
-        for (int i = 0; i < comList.Count(); i++)
+        foreach (var comm in comList)
         {
             if (exact)
             {
-                if (msg == "/" + comList[i]) return true;
+                if (msg == "/" + comm) return true;
             }
             else
             {
-                if (msg.StartsWith("/" + comList[i]))
+                if (msg.StartsWith("/" + comm))
                 {
-                    msg = msg.Replace("/" + comList[i], string.Empty);
+                    msg = msg.Replace("/" + comm, string.Empty);
                     return true;
                 }
             }
@@ -342,7 +372,7 @@ public static class ParityCop
                 msg += rd.Next(0, 15).ToString();
 
             }
-            var player = Main.AllAlivePlayerControls.ToArray()[rd.Next(0, Main.AllAlivePlayerControls.Count())];
+            var player = Main.AllAlivePlayerControls.ToArray()[rd.Next(0, Main.AllAlivePlayerControls.Length)];
             DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
             var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
             writer.StartMessage(-1);

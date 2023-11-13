@@ -1,6 +1,9 @@
 ﻿using Hazel;
 using System.Collections.Generic;
+using TOHE.Roles.AddOns.Crewmate;
+using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
+using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -8,7 +11,7 @@ namespace TOHE.Roles.Impostor;
 
 public static class Gangster
 {
-    private static readonly int Id = 2900;
+    private static readonly int Id = 3300;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -69,166 +72,108 @@ public static class Gangster
     }
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanRecruit(id) ? KillCooldown.GetFloat() : Options.DefaultKillCooldown;
     public static bool CanRecruit(byte id) => RecruitLimit.TryGetValue(id, out var x) && x > 0;
-    public static void SetKillButtonText(byte plaeryId)
+    public static void SetKillButtonText(byte playerId)
     {
-        if (CanRecruit(plaeryId))
+        if (CanRecruit(playerId))
             HudManager.Instance.KillButton.OverrideText(GetString("GangsterButtonText"));
         else
             HudManager.Instance.KillButton.OverrideText(GetString("KillButtonText"));
     }
     public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
-        if (RecruitLimit[killer.PlayerId] < 1) return false;
+        if (RecruitLimit[killer.PlayerId] < 1)
+        {
+            if (killer.AmOwner)
+            {
+                HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
+            } //Why do we even need this?
+            return false;
+        }
+
         if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
         {
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("CantRecruit")));
             return false;
         }
-        else if (CanBeMadmate(target) && Mini.Age == 18 || CanBeMadmate(target) && !target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
+
+        if (CanBeGansterRecruit(target))
         {
-            if (!killer.Is(CustomRoles.Recruit) && !killer.Is(CustomRoles.Charmed) && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious) && !killer.Is(CustomRoles.Admired))
+            if (!killer.Is(CustomRoles.Admired) && !killer.Is(CustomRoles.Recruit) && !killer.Is(CustomRoles.Charmed)
+                && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious) && target.CanBeMadmate(inGame: true))
             {
-                RecruitLimit[killer.PlayerId]--;
-                SendRPC(killer.PlayerId);
+                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Madmate.ToString(), "Ganster Assign");
                 target.RpcSetCustomRole(CustomRoles.Madmate);
-
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("GangsterSuccessfullyRecruited")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("BeRecruitedByGangster")));
-                Utils.NotifyRoles();
-
-                killer.ResetKillCooldown();
-                killer.SetKillCooldown();
-                if (!Options.DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-                target.RpcGuardAndKill(killer);
-                target.RpcGuardAndKill(target);
-
-                Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Madmate.ToString(), "Assign " + CustomRoles.Madmate.ToString());
-                if (RecruitLimit[killer.PlayerId] < 0)
-                    HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
-                Logger.Info($"{killer.GetNameWithRole()} : 剩余{RecruitLimit[killer.PlayerId]}次招募机会", "Gangster");
-                return true;
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("GangsterSuccessfullyRecruited")));
+                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("BeRecruitedByGangster")));
             }
-            if (killer.Is(CustomRoles.Recruit))
+            else if (killer.Is(CustomRoles.Admired) && target.CanBeAdmired(killer))
             {
-                RecruitLimit[killer.PlayerId]--;
-                SendRPC(killer.PlayerId);
-                target.RpcSetCustomRole(CustomRoles.Recruit);
-
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Recruit), GetString("GangsterSuccessfullyRecruited")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Recruit), GetString("BeRecruitedByGangster")));
-                Utils.NotifyRoles();
-
-                killer.ResetKillCooldown();
-                killer.SetKillCooldown();
-                if (!Options.DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-                target.RpcGuardAndKill(killer);
-                target.RpcGuardAndKill(target);
-
-                Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Recruit.ToString(), "Assign " + CustomRoles.Recruit.ToString());
-                if (RecruitLimit[killer.PlayerId] < 0)
-                    HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
-                Logger.Info($"{killer.GetNameWithRole()} : 剩余{RecruitLimit[killer.PlayerId]}次招募机会", "Gangster");
-                return true;
-            }
-            if (killer.Is(CustomRoles.Admired))
-            {
-                RecruitLimit[killer.PlayerId]--;
-                SendRPC(killer.PlayerId);
+                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Admired.ToString(), "Ganster Assign");
                 target.RpcSetCustomRole(CustomRoles.Admired);
-
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admired), GetString("GangsterSuccessfullyRecruited")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admired), GetString("BeRecruitedByGangster")));
-                Utils.NotifyRoles();
-
-                killer.ResetKillCooldown();
-                killer.SetKillCooldown();
-                if (!Options.DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-                target.RpcGuardAndKill(killer);
-                target.RpcGuardAndKill(target);
-
-                Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Admired.ToString(), "Assign " + CustomRoles.Admired.ToString());
-                if (RecruitLimit[killer.PlayerId] < 0)
-                    HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
-                Logger.Info($"{killer.GetNameWithRole()} : 剩余{RecruitLimit[killer.PlayerId]}次招募机会", "Gangster");
-                return true;
+                Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
+                Admirer.SendRPC(killer.PlayerId, target.PlayerId);
             }
-            if (killer.Is(CustomRoles.Charmed))
+            else if (killer.Is(CustomRoles.Recruit) && target.CanBeSidekick())
             {
-                RecruitLimit[killer.PlayerId]--;
-                SendRPC(killer.PlayerId);
+                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Recruit.ToString(), "Ganster Assign");
+                target.RpcSetCustomRole(CustomRoles.Recruit);
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Recruit), GetString("GangsterSuccessfullyRecruited")));
+                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Recruit), GetString("BeRecruitedByGangster")));
+            }
+            else if (killer.Is(CustomRoles.Charmed) && target.CanBeCharmed())
+            {
+                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Charmed.ToString(), "Ganster Assign");
                 target.RpcSetCustomRole(CustomRoles.Charmed);
-
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Charmed), GetString("GangsterSuccessfullyRecruited")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Charmed), GetString("BeRecruitedByGangster")));
-                Utils.NotifyRoles();
-
-                killer.ResetKillCooldown();
-                killer.SetKillCooldown();
-                if (!Options.DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-                target.RpcGuardAndKill(killer);
-                target.RpcGuardAndKill(target);
-
-                Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Charmed.ToString(), "Assign " + CustomRoles.Charmed.ToString());
-                if (RecruitLimit[killer.PlayerId] < 0)
-                    HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
-                Logger.Info($"{killer.GetNameWithRole()} : 剩余{RecruitLimit[killer.PlayerId]}次招募机会", "Gangster");
-                return true;
             }
-            if (killer.Is(CustomRoles.Infected))
+            else if (killer.Is(CustomRoles.Infected) && target.CanBeInfected())
             {
-                RecruitLimit[killer.PlayerId]--;
-                SendRPC(killer.PlayerId);
+                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Infected.ToString(), "Ganster Assign");
                 target.RpcSetCustomRole(CustomRoles.Infected);
-
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infected), GetString("GangsterSuccessfullyRecruited")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infected), GetString("BeRecruitedByGangster")));
-                Utils.NotifyRoles();
-
-                killer.ResetKillCooldown();
-                killer.SetKillCooldown();
-                if (!Options.DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-                target.RpcGuardAndKill(killer);
-                target.RpcGuardAndKill(target);
-
-                Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Infected.ToString(), "Assign " + CustomRoles.Infected.ToString());
-                if (RecruitLimit[killer.PlayerId] < 0)
-                    HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
-                Logger.Info($"{killer.GetNameWithRole()} : 剩余{RecruitLimit[killer.PlayerId]}次招募机会", "Gangster");
-                return true;
             }
-            if (killer.Is(CustomRoles.Contagious))
+            else if (killer.Is(CustomRoles.Contagious) && target.CanBeInfected())
             {
-                RecruitLimit[killer.PlayerId]--;
-                SendRPC(killer.PlayerId);
+                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Contagious.ToString(), "Ganster Assign");
                 target.RpcSetCustomRole(CustomRoles.Contagious);
-
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Contagious), GetString("GangsterSuccessfullyRecruited")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Contagious), GetString("BeRecruitedByGangster")));
-                Utils.NotifyRoles();
-
-                killer.ResetKillCooldown();
-                killer.SetKillCooldown();
-                if (!Options.DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-                target.RpcGuardAndKill(killer);
-                target.RpcGuardAndKill(target);
-
-                Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Contagious.ToString(), "Assign " + CustomRoles.Contagious.ToString());
-                if (RecruitLimit[killer.PlayerId] < 0)
-                    HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
-                Logger.Info($"{killer.GetNameWithRole()} : 剩余{RecruitLimit[killer.PlayerId]}次招募机会", "Gangster");
-                return true;
             }
+            else goto GangsterFailed;
+
+            RecruitLimit[killer.PlayerId]--;
+
+            killer.RpcGuardAndKill(target);
+            target.RpcGuardAndKill(killer);
+
+            killer.ResetKillCooldown();
+            killer.SetKillCooldown(forceAnime: true);
+            target.ResetKillCooldown();
+            target.SetKillCooldown(forceAnime: true);
+
+            Logger.Info($"{killer.GetNameWithRole()} : 剩余{RecruitLimit[killer.PlayerId]}次招募机会", "Gangster");
+            SendRPC(killer.PlayerId);
+            return true;
         }
-        if (RecruitLimit[killer.PlayerId] < 0)
-            HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
+    GangsterFailed:
         killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("GangsterRecruitmentFailure")));
         Logger.Info($"{killer.GetNameWithRole()} : 剩余{RecruitLimit[killer.PlayerId]}次招募机会", "Gangster");
+        SendRPC(killer.PlayerId);
+        Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
+        Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
         return false;
     }
     public static string GetRecruitLimit(byte playerId) => Utils.ColorString(CanRecruit(playerId) ? Utils.GetRoleColor(CustomRoles.Gangster).ShadeColor(0.25f) : Color.gray, RecruitLimit.TryGetValue(playerId, out var recruitLimit) ? $"({recruitLimit})" : "Invalid");
 
-    public static bool CanBeMadmate(this PlayerControl pc)
+    public static bool CanBeGansterRecruit(PlayerControl pc)
     {
-        return Utils.CanBeMadmate(pc, true);
+        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral())
+            && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal)
+            && !((pc.Is(CustomRoles.NiceMini) || pc.Is(CustomRoles.EvilMini)) && Mini.Age < 18)
+            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     }
 }

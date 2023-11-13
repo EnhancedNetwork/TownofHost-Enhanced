@@ -22,7 +22,7 @@ public static class Witch
         "TriggerKill", "TriggerVent","TriggerDouble"
     };
 
-    private static readonly int Id = 2000;
+    private static readonly int Id = 2500;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -143,6 +143,7 @@ public static class Witch
             SendRPC(true, killer.PlayerId, target.PlayerId);
             killer.SetKillCooldown();
             killer.RPCPlayCustomSound("Curse");
+            Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
         }
     }
     public static void RemoveSpelledPlayer()

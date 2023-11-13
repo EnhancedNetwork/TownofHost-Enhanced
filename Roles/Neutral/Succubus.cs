@@ -10,7 +10,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Succubus
 {
-    private static readonly int Id = 11200;
+    private static readonly int Id = 14800;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -90,7 +90,9 @@ public static class Succubus
 
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Succubus), GetString("SuccubusCharmedPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Succubus), GetString("CharmedBySuccubus")));
-            Utils.NotifyRoles();
+            
+            Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
+            Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
 
             killer.ResetKillCooldown();
             killer.SetKillCooldown();

@@ -67,10 +67,14 @@ internal class ControllerManagerUpdatePatch
                 if (!Main.PlayerStates[lp.PlayerId].SubRoles.Any()) return;
 
                 addDes = new();
-                foreach (var subRole in Main.PlayerStates[lp.PlayerId].SubRoles.Where(x => x is not CustomRoles.Charmed))
+                foreach (var subRole in Main.PlayerStates[lp.PlayerId].SubRoles.Where(x => x is not CustomRoles.Charmed).ToArray())
+                {
                     addDes.Add(GetString($"{subRole}") + Utils.GetRoleMode(subRole) + GetString($"{subRole}InfoLong"));
+                }
                 if (CustomRolesHelper.RoleExist(CustomRoles.Ntr) && (role is not CustomRoles.GM and not CustomRoles.Ntr))
+                {
                     addDes.Add(GetString($"Lovers") + Utils.GetRoleMode(CustomRoles.Lovers) + GetString($"LoversInfoLong"));
+                }
 
                 addonIndex++;
                 if (addonIndex >= addDes.Count) addonIndex = 0;
@@ -93,15 +97,16 @@ internal class ControllerManagerUpdatePatch
         //重新加载自定义翻译
         if (GetKeysDown(KeyCode.F5, KeyCode.T))
         {
-            Logger.Info("加载自定义翻译文件", "KeyCommand");
+            Logger.Info("Reloaded Custom Translation File Colors", "KeyCommand");
             LoadLangs();
             Logger.SendInGame("Reloaded Custom Translation File");
         }
         if (GetKeysDown(KeyCode.F5, KeyCode.X))
         {
-            Logger.Info("导出自定义翻译文件", "KeyCommand");
+            Logger.Info("Exported Custom Translation and Role File", "KeyCommand");
             ExportCustomTranslation();
-            Logger.SendInGame("Exported Custom Translation File");
+            Main.ExportCustomRoleColors();
+            Logger.SendInGame("Exported Custom Translation and Role File");
         }
         //日志文件转储
         if (GetKeysDown(KeyCode.F1, KeyCode.LeftControl))
@@ -144,13 +149,19 @@ internal class ControllerManagerUpdatePatch
         //强制结束会议或召开会议
         if (GetKeysDown(KeyCode.Return, KeyCode.M, KeyCode.LeftShift) && GameStates.IsInGame)
         {
-            if (GameStates.IsMeeting) MeetingHud.Instance.RpcClose();
-            else PlayerControl.LocalPlayer.NoCheckStartMeeting(null, true);
+            if (GameStates.IsMeeting)
+            {
+                MeetingHud.Instance.RpcClose();
+            }
+            else
+            {
+                PlayerControl.LocalPlayer.NoCheckStartMeeting(null, force: true);
+            }
         }
         //立即开始        
         if (Input.GetKeyDown(KeyCode.LeftShift) && GameStates.IsCountDown && !HudManager.Instance.Chat.IsOpenOrOpening)
         {
-            var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
+            var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
             if (invalidColor.Any())
             {
                 GameStartManager.Instance.ResetStartState(); //Hope this works
@@ -205,7 +216,7 @@ internal class ControllerManagerUpdatePatch
             Utils.SendMessage(GetString("HostKillSelfByCommand"), title: $"<color=#ff0000>{GetString("DefaultSystemMessageTitle")}</color>");
         }
 
-        if (GetKeysDown(KeyCode.Return, KeyCode.G, KeyCode.LeftShift) && GameStates.IsInGame && PlayerControl.LocalPlayer.FriendCode == "gnuedaphic#7196")
+        if (GetKeysDown(KeyCode.Return, KeyCode.G, KeyCode.LeftShift) && GameStates.IsInGame && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug)
         {
             HudManager.Instance.StartCoroutine(HudManager.Instance.CoFadeFullScreen(Color.clear, Color.black));
             HudManager.Instance.StartCoroutine(DestroyableSingleton<HudManager>.Instance.CoShowIntro());
@@ -324,7 +335,7 @@ internal class ControllerManagerUpdatePatch
     {
         if (keys.Any(k => Input.GetKeyDown(k)) && keys.All(k => Input.GetKey(k)))
         {
-            Logger.Info($"快捷键：{keys.Where(k => Input.GetKeyDown(k)).First()} in [{string.Join(",", keys)}]", "GetKeysDown");
+            Logger.Info($"快捷键：{keys.First(k => Input.GetKeyDown(k))} in [{string.Join(",", keys)}]", "GetKeysDown");
             return true;
         }
         return false;

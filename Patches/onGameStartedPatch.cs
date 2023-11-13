@@ -15,6 +15,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Modules.CustomRoleSelector;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -149,7 +150,7 @@ internal class ChangeRoleSettings
 
             Camouflage.Init();
 
-            var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
+            var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
             if (invalidColor.Any())
             {
                 var msg = GetString("Error.InvalidColor");
@@ -239,6 +240,7 @@ internal class ChangeRoleSettings
             DarkHide.Init();
             Greedier.Init();
             Collector.Init();
+            Taskinator.Init();
             QuickShooter.Init();
             Camouflager.Init();
             Divinator.Init();
@@ -310,6 +312,7 @@ internal class ChangeRoleSettings
             Reverie.Init();
             Doomsayer.Init();
             Pirate.Init();
+            Pixie.Init();
             Shroud.Init();
             Werewolf.Init();
             Necromancer.Init();
@@ -318,13 +321,16 @@ internal class ChangeRoleSettings
             Pitfall.Init();
             Agitater.Init();
             Swapper.Init();
+            Enigma.Init();
             ChiefOfPolice.Init();
             Mini.Init();
             Blackmailer.Init();
             Spy.Init();
             Oiiai.Init();
             FFF.Init();
-
+            Instigator.Init();
+            OverKiller.Init();
+            
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
 
@@ -388,7 +394,7 @@ internal class SelectRolesPatch
             Dictionary<(byte, byte), RoleTypes> rolesMap = new();
 
             // 注册反职业
-            foreach (var kv in RoleResult.Where(x => x.Value.IsDesyncRole()))
+            foreach (var kv in RoleResult.Where(x => x.Value.IsDesyncRole()).ToArray())
                 AssignDesyncRole(kv.Value, kv.Key, senders, rolesMap, BaseRole: kv.Value.GetDYRole());
 
 
@@ -410,14 +416,14 @@ internal class SelectRolesPatch
         try
         {
             List<(PlayerControl, RoleTypes)> newList = new();
-            foreach (var sd in RpcSetRoleReplacer.StoragedData)
+            foreach (var sd in RpcSetRoleReplacer.StoragedData.ToArray())
             {
-                var kp = RoleResult.Where(x => x.Key.PlayerId == sd.Item1.PlayerId).FirstOrDefault();
+                var kp = RoleResult.FirstOrDefault(x => x.Key.PlayerId == sd.Item1.PlayerId);
                 newList.Add((sd.Item1, kp.Value.GetRoleTypes()));
                 if (sd.Item2 == kp.Value.GetRoleTypes())
-                    Logger.Warn($"注册原版职业 => {sd.Item1.GetRealName()}: {sd.Item2}", "Override Role Select");
+                    Logger.Warn($"Registered original Role => {sd.Item1.GetRealName()}: {sd.Item2}", "Override Role Select");
                 else
-                    Logger.Warn($"覆盖原版职业 => {sd.Item1.GetRealName()}: {sd.Item2} => {kp.Value.GetRoleTypes()}", "Override Role Select");
+                    Logger.Warn($"Coverage of original Role => {sd.Item1.GetRealName()}: {sd.Item2} => {kp.Value.GetRoleTypes()}", "Override Role Select");
             }
             if (Main.EnableGM.Value) newList.Add((PlayerControl.LocalPlayer, RoleTypes.Crewmate));
             RpcSetRoleReplacer.StoragedData = newList;
@@ -484,7 +490,7 @@ internal class SelectRolesPatch
             {
                 ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
 
-                foreach (var subRole in pair.Value.SubRoles)
+                foreach (var subRole in pair.Value.SubRoles.ToArray())
                     ExtendedPlayerControl.RpcSetCustomRole(pair.Key, subRole);
             }
 
@@ -529,7 +535,7 @@ internal class SelectRolesPatch
                         TimeThief.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Camouflager:
-                        Camouflager.Add(pc.PlayerId);
+                        Camouflager.Add();
                         break;
                     case CustomRoles.Puppeteer:
                         Puppeteer.Add(pc.PlayerId);
@@ -703,6 +709,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Collector:
                         Collector.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Taskinator:
+                        Taskinator.Add(pc.PlayerId);
                         break;
                     case CustomRoles.CursedWolf:
                         Main.CursedWolfSpellCount[pc.PlayerId] = Options.GuardSpellTimes.GetInt();
@@ -897,6 +906,9 @@ internal class SelectRolesPatch
                     case CustomRoles.Pirate:
                         Pirate.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.Pixie:
+                        Pixie.Add(pc.PlayerId);
+                        break;
                     case CustomRoles.Chronomancer:
                         Chronomancer.Add(pc.PlayerId);
                         break;
@@ -918,14 +930,26 @@ internal class SelectRolesPatch
                     case CustomRoles.Spy:
                         Spy.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.Instigator:
+                        Instigator.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.NiceMini:
+                        Mini.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.EvilMini:
+                        Mini.Add(pc.PlayerId);
+                        break;
                     case CustomRoles.Crewpostor:
                         Main.CrewpostorTasksDone[pc.PlayerId] = 0;
                         break;
                     case CustomRoles.FFF:
                         FFF.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.Enigma:
+                        Enigma.Add(pc.PlayerId);
+                        break;
                 }
-                foreach (var subRole in pc.GetCustomSubRoles())
+                foreach (var subRole in pc.GetCustomSubRoles().ToArray())
                 {
                     switch (subRole)
                     {
@@ -980,8 +1004,12 @@ internal class SelectRolesPatch
                 );
             }
 
-            // ResetCamが必要なプレイヤーのリストにクラス化が済んでいない役職のプレイヤーを追加
-            Main.ResetCamPlayerList.AddRange(Main.AllPlayerControls.Where(p => p.GetCustomRole() is CustomRoles.Arsonist or CustomRoles.Revolutionist or CustomRoles.Sidekick or CustomRoles.Shaman or CustomRoles.Vigilante).Select(p => p.PlayerId));
+            // Added players with positions that have not yet been classified to the list of players requiring ResetCam   
+            Main.ResetCamPlayerList.UnionWith(Main.AllPlayerControls
+                .Where(p => p.GetCustomRole() is CustomRoles.Arsonist or CustomRoles.Revolutionist or CustomRoles.Sidekick or CustomRoles.Shaman or CustomRoles.Vigilante or CustomRoles.Witness or CustomRoles.Innocent)
+                .Select(p => p.PlayerId)
+                .ToArray());
+
             Utils.CountAlivePlayers(true);
             Utils.SyncAllSettings();
             SetColorPatch.IsAntiGlitchDisabled = false;
@@ -1008,7 +1036,7 @@ internal class SelectRolesPatch
             rolesMap[(player.PlayerId, target.PlayerId)] = player.PlayerId != target.PlayerId ? othersRole : selfRole;
 
         //他者視点
-        foreach (var seer in Main.AllPlayerControls.Where(x => player.PlayerId != x.PlayerId))
+        foreach (var seer in Main.AllPlayerControls.Where(x => player.PlayerId != x.PlayerId).ToArray())
             rolesMap[(seer.PlayerId, player.PlayerId)] = othersRole;
 
         RpcSetRoleReplacer.OverriddenSenderList.Add(senders[player.PlayerId]);
@@ -1016,7 +1044,7 @@ internal class SelectRolesPatch
         player.SetRole(othersRole);
         player.Data.IsDead = true;
 
-        Logger.Info($"注册模组职业：{player?.Data?.PlayerName} => {role}", "AssignRoles");
+        Logger.Info($"Registered Role： {player?.Data?.PlayerName} => {role}", "AssignRoles");
     }
     public static void MakeDesyncSender(Dictionary<byte, CustomRpcSender> senders, Dictionary<(byte, byte), RoleTypes> rolesMap)
     {
@@ -1039,7 +1067,7 @@ internal class SelectRolesPatch
         SetColorPatch.IsAntiGlitchDisabled = true;
 
         Main.PlayerStates[player.PlayerId].SetMainRole(role);
-        Logger.Info($"注册模组职业：{player?.Data?.PlayerName} => {role}", "AssignRoles");
+        Logger.Info($"Registered Role： {player?.Data?.PlayerName} => {role}", "AssignRoles");
 
         SetColorPatch.IsAntiGlitchDisabled = false;
     }
@@ -1063,13 +1091,13 @@ internal class SelectRolesPatch
                     int playerCID = player.GetClientId();
                     sender.RpcSetRole(player, BaseRole, playerCID);
                     //Desyncする人視点で他プレイヤーを科学者にするループ
-                    foreach (var pc in PlayerControl.AllPlayerControls)
+                    foreach (var pc in PlayerControl.AllPlayerControls.ToArray())
                     {
                         if (pc == player) continue;
                         sender.RpcSetRole(pc, RoleTypes.Scientist, playerCID);
                     }
                     //他視点でDesyncする人の役職を科学者にするループ
-                    foreach (var pc in PlayerControl.AllPlayerControls)
+                    foreach (var pc in PlayerControl.AllPlayerControls.ToArray())
                     {
                         if (pc == player) continue;
                         if (pc.PlayerId == 0) player.SetRole(RoleTypes.Scientist); //ホスト視点用
@@ -1132,7 +1160,7 @@ internal class SelectRolesPatch
             Main.LoversPlayers.Add(player);
             allPlayers.Remove(player);
             Main.PlayerStates[player.PlayerId].SetSubRole(role);
-            Logger.Info("注册恋人:" + player?.Data?.PlayerName + " = " + player.GetCustomRole().ToString() + " + " + role.ToString(), "AssignLovers");
+            Logger.Info($"Registered Lovers: {player?.Data?.PlayerName} = {player.GetCustomRole()} + {role}", "Assign Lovers");
         }
         RPC.SyncLoversPlayers();
     }
@@ -1146,7 +1174,7 @@ internal class SelectRolesPatch
         {
             var player = allPlayers[IRandom.Instance.Next(0, allPlayers.Count)];
             Main.PlayerStates[player.PlayerId].SetSubRole(role);
-            Logger.Info("注册附加职业:" + player?.Data?.PlayerName + " = " + player.GetCustomRole().ToString() + " + " + role.ToString(), "Assign " + role.ToString());
+            Logger.Info($"Registered Add-on: {player?.Data?.PlayerName} = {player.GetCustomRole()} + {role}", $"Assign {role}");
         }
     }
 
@@ -1156,7 +1184,7 @@ internal class SelectRolesPatch
         public static bool doReplace = false;
         public static Dictionary<byte, CustomRpcSender> senders;
         public static List<(PlayerControl, RoleTypes)> StoragedData = new();
-        // 役職Desyncなど別の処理でSetRoleRpcを書き込み済みなため、追加の書き込みが不要なSenderのリスト
+        // List of Senders that do not require additional writing because SetRoleRpc has already been written by another process such as Position Desync
         public static List<CustomRpcSender> OverriddenSenderList;
         public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] RoleTypes roleType)
         {

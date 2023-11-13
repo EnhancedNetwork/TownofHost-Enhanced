@@ -1,12 +1,13 @@
 using Hazel;
 using System.Collections.Generic;
+using System.Linq;
 using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 public static class SoulCollector
 {
-    private static readonly int Id = 34420;
+    private static readonly int Id = 15300;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -101,8 +102,7 @@ public static class SoulCollector
 
     public static void OnPlayerDead(PlayerControl deadPlayer)
     {
-        if (!IsEnable) return;
-        foreach (var playerId in SoulCollectorTarget.Keys)
+        foreach (var playerId in SoulCollectorTarget.Keys.ToArray())
         {
             var targetId = SoulCollectorTarget[playerId];
             if (targetId == byte.MaxValue) continue;

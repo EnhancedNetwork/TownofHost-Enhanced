@@ -9,7 +9,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class Monarch
 {
-    private static readonly int Id = 9600;
+    private static readonly int Id = 12100;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -71,7 +71,6 @@ public static class Monarch
 
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Monarch), GetString("MonarchKnightedPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Monarch), GetString("KnightedByMonarch")));
-            Utils.NotifyRoles();
 
             killer.ResetKillCooldown();
             killer.SetKillCooldown();

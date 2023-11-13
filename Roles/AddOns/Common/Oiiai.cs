@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using TOHE.Roles.Neutral;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.AddOns.Common
 {
     public static class Oiiai
     {
-        private static readonly int Id = 7150;
+        private static readonly int Id = 25700;
         public static List<byte> playerIdList = new();
         public static bool IsEnable = false;
 
@@ -82,8 +83,14 @@ namespace TOHE.Roles.AddOns.Common
             }
             else
             {
+                int changeValue = ChangeNeutralRole.GetValue();
+
+                if (changeValue != 0) { 
                 //Typically only NK tiggers this
-                killer.RpcSetCustomRole(NRoleChangeRoles[ChangeNeutralRole.GetValue() - 1]);
+                    killer.RpcSetCustomRole(NRoleChangeRoles[changeValue-1]);
+                    if (changeValue == 1) Amnesiac.Add(killer.PlayerId);
+                    else if (changeValue == 2) Imitator.Add(killer.PlayerId);
+                }
             }
             killer.ResetKillCooldown();
             killer.SetKillCooldown();

@@ -7,7 +7,7 @@ using static TOHE.Options;
 namespace TOHE.Roles.Crewmate;
 public static class Tracefinder
 {
-    private static readonly int Id = 6100;
+    private static readonly int Id = 7300;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -108,11 +108,10 @@ public static class Tracefinder
                     if (player == null || !player.IsAlive()) continue;
                     LocateArrow.Add(pc, target.transform.position);
                     SendRPC(pc, true, target.transform.position);
+                    Utils.NotifyRoles(SpecifySeer: player);
                 }
             }
-        }, delay);
-
-        Utils.NotifyRoles();
+        }, delay, "Get Arrow Tracefinder");
     }
     public static string GetTargetArrow(PlayerControl seer, PlayerControl target = null)
     {

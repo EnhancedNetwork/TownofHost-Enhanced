@@ -6,8 +6,11 @@ using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
+using System.Text.Json;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 
@@ -37,8 +40,8 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "1.2.1.2";
-    public const string PluginDisplayVersion = "1.2.1 dev 2";
+    public const string PluginVersion = "1.2.1.4";
+    public const string PluginDisplayVersion = "1.2.1 dev 4";
     public static readonly string SupportedVersionAU = "2023.10.24";
     public const bool Canary = false; // Unused variable?
 
@@ -106,25 +109,23 @@ public class Main : BasePlugin
     public static Dictionary<byte, Color32> PlayerColors = new();
     public static Dictionary<byte, PlayerState.DeathReason> AfterMeetingDeathPlayers = new();
     public static Dictionary<CustomRoles, string> roleColors;
+    const string LANGUAGE_FOLDER_NAME = "Language";
     public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable() || CustomRoles.Vampiress.IsEnable();
     public static float RefixCooldownDelay = 0f;
     public static GameData.PlayerInfo LastVotedPlayerInfo;
     public static string LastVotedPlayer;
-    public static List<byte> ResetCamPlayerList = new();
-    public static List<byte> winnerList = new();
-    public static List<byte> ForCrusade = new();
-    public static List<byte> KillGhoul = new();
-    public static List<string> winnerNameList = new();
-    public static List<int> clientIdList = new();
+    public static HashSet<byte> ResetCamPlayerList = new();
+    public static HashSet<byte> winnerList = new();
+    public static HashSet<byte> ForCrusade = new();
+    public static HashSet<byte> KillGhoul = new();
+    public static HashSet<string> winnerNameList = new();
+    public static HashSet<int> clientIdList = new();
     public static List<(string, byte, string)> MessagesToSend = new();
     public static bool isChatCommand = false;
     public static bool MeetingIsStarted = false;
-    public static List<PlayerControl> LoversPlayers = new();
+    public static HashSet<PlayerControl> LoversPlayers = new();
     public static bool isLoversDead = true;
     public static Dictionary<byte, float> AllPlayerKillCooldown = new();
-    public static Dictionary<byte, float> EvilMiniKillcooldown = new();
-    public static Dictionary<byte, long> NiceMiniTime = new();
-    public static float EvilMiniKillcooldownf = new();
     public static Dictionary<byte, Vent> LastEnteredVent = new();
     public static Dictionary<byte, Vector2> LastEnteredVentLocation = new();
     public static Dictionary<byte, Vector2> TimeMasterBackTrack = new();
@@ -234,11 +235,15 @@ public class Main : BasePlugin
     public static Dictionary<byte, CustomRoles> ErasedRoleStorage = new();
     public static Dictionary<string, int> PlayerQuitTimes = new();
 
-    public static IEnumerable<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null);
-    public static IEnumerable<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId));
+    //public static IEnumerable<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null);
+    //public static IEnumerable<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId));
 
     //public static List<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null).ToList();
     //public static List<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId)).ToList();
+
+    // Seems this better (if use foreach)
+    public static PlayerControl[] AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null).ToArray();
+    public static PlayerControl[] AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId)).ToArray();
 
     public static Main Instance;
 
@@ -254,6 +259,167 @@ public class Main : BasePlugin
     public static string Get_TName_Snacks => TranslationController.Instance.currentLanguage.languageID is SupportedLangs.SChinese or SupportedLangs.TChinese ?
         TName_Snacks_CN[IRandom.Instance.Next(0, TName_Snacks_CN.Count)] :
         TName_Snacks_EN[IRandom.Instance.Next(0, TName_Snacks_EN.Count)];
+
+    private static void CreateTemplateRoleColorFile()
+    {
+        var sb = new StringBuilder();
+        foreach (var title in roleColors) sb.Append($"{title.Key}:\n");
+        File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/templateRoleColor.dat", sb.ToString());
+    }
+    public static void LoadCustomRoleColor()
+    {
+        const string filename = "RoleColor.dat";
+        string path = @$"./{LANGUAGE_FOLDER_NAME}/{filename}";
+        if (File.Exists(path))
+        {
+            TOHE.Logger.Info($"Load custom Role Color file：{filename}", "LoadCustomRoleColor");
+            using StreamReader sr = new(path, Encoding.GetEncoding("UTF-8"));
+            string text;
+            string[] tmp = Array.Empty<string>();
+            while ((text = sr.ReadLine()) != null)
+            {
+                tmp = text.Split(":");
+                if (tmp.Length > 1 && tmp[1] != "")
+                {
+                    try
+                    {
+                        if (Enum.TryParse<CustomRoles>(tmp[0], out CustomRoles role))
+                        {
+                            var color = tmp[1].Trim().TrimStart('#');
+                            if (Utils.CheckColorHex(color))
+                            { 
+                                roleColors[role] = "#"+color;
+                            }
+                            else TOHE.Logger.Error($"Invalid Hexcolor #{color}", "LoadCustomRoleColor");
+                        }
+                    }
+                    catch (KeyNotFoundException)
+                    {
+                        TOHE.Logger.Warn($"Invalid Key：{tmp[0]}", "LoadCustomTranslation");
+                    }
+                }
+            }
+        }
+        else
+        {
+            TOHE.Logger.Error($"File not found：{filename}", "LoadCustomTranslation");
+        }
+    }
+    public static void LoadRoleColors()
+    {
+        try
+        {
+            roleColors = new();
+            var assembly = Assembly.GetExecutingAssembly();
+            string resourceName = "TOHE.Resources.roleColor.json";
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            {
+                if (stream != null)
+                {
+                    using (StreamReader reader = new StreamReader(stream))
+                    {
+                        string jsonData = reader.ReadToEnd();
+                        Dictionary<string, string> jsonDict = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonData);
+                        foreach (var kvp in jsonDict)
+                        {
+                            if (Enum.TryParse<CustomRoles>(kvp.Key, out CustomRoles role))
+                            {
+                                roleColors[role] = kvp.Value;
+                            }
+                            else
+                            {
+                                // Handle invalid or unrecognized enum keys
+                                TOHE.Logger.Error($"Invalid enum key: {kvp.Key}", "Reading Role Colors");
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    TOHE.Logger.Error($"Embedded resource not found.", "Reading Role Colors");
+                }
+            }
+
+            foreach (var role in EnumHelper.GetAllValues<CustomRoles>())
+            {
+                switch (role.GetCustomRoleTypes())
+                {
+                    case CustomRoleTypes.Impostor:
+                        roleColors.TryAdd(role, "#ff1919");
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (!Directory.Exists(LANGUAGE_FOLDER_NAME)) Directory.CreateDirectory(LANGUAGE_FOLDER_NAME);
+            CreateTemplateRoleColorFile();
+            if (File.Exists(@$"./{LANGUAGE_FOLDER_NAME}/RoleColor.dat"))
+            {
+                UpdateCustomTranslation();
+                LoadCustomRoleColor(); 
+            }
+        }
+        catch (ArgumentException ex)
+        {
+            TOHE.Logger.Error("错误：字典出现重复项", "LoadDictionary");
+            TOHE.Logger.Exception(ex, "LoadDictionary");
+            hasArgumentException = true;
+            ExceptionMessage = ex.Message;
+            ExceptionMessageIsShown = false;
+        }
+    }
+    static void UpdateCustomTranslation()
+    {
+        string path = @$"./{LANGUAGE_FOLDER_NAME}/RoleColor.dat";
+        if (File.Exists(path))
+        {
+            TOHE.Logger.Info("Updating Custom Role Colors", "UpdateRoleColors");
+            try
+            {
+                List<string> roleList = new();
+                using (StreamReader reader = new(path, Encoding.GetEncoding("UTF-8")))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        // Split the line by ':' to get the first part
+                        string[] parts = line.Split(':');
+
+                        // Check if there is at least one part before ':'
+                        if (parts.Length >= 1)
+                        {
+                            // Trim any leading or trailing spaces and add it to the list
+                            string role = parts[0].Trim();
+                            roleList.Add(role);
+                        }
+                    }
+                }
+                var sb = new StringBuilder();
+                foreach (var templateRole in roleColors.Keys)
+                {
+                    if (!roleList.Contains(templateRole.ToString())) sb.Append($"{templateRole}:\n");
+                }
+                using FileStream fileStream = new(path, FileMode.Append, FileAccess.Write);
+                using StreamWriter writer = new(fileStream);
+                writer.WriteLine(sb.ToString());
+
+            }
+            catch (Exception e)
+            {
+                TOHE.Logger.Error("An error occurred: " + e.Message, "UpdateRoleColors");
+            }
+        }
+    }
+
+    public static void ExportCustomRoleColors()
+    {
+        var sb = new StringBuilder();
+        foreach (var kvp in roleColors)
+        {
+            sb.Append($"{kvp.Key.ToString()}:{kvp.Value}\n");
+        }
+        File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/export_RoleColor.dat", sb.ToString());
+    }
 
     public override void Load()
     {
@@ -327,261 +493,8 @@ public class Main : BasePlugin
 
         hasArgumentException = false;
         ExceptionMessage = "";
-        try
-        {
-            roleColors = new Dictionary<CustomRoles, string>()
-            {
-                //バニラ役職
-                {CustomRoles.Crewmate, "#8cffff"},
-                {CustomRoles.Engineer, "#8cffff"},
-                {CustomRoles.Scientist, "#8cffff"},
-                {CustomRoles.GuardianAngel, "#ffffff"},
-                // Special impostor roles
-                {CustomRoles.EvilMini, "#FF1919" },
-                // Probability roles
-                {CustomRoles.Mini, "#dddddd" },
-                // Vanilla Remakes
-                {CustomRoles.CrewmateTOHE, "#8cffff"},
-                {CustomRoles.EngineerTOHE, "#FF6A00"},
-                {CustomRoles.ScientistTOHE, "#8ee98e"},
-                {CustomRoles.GuardianAngelTOHE, "#77e6d1"},
-                //特殊クルー役職
-                {CustomRoles.Luckey, "#b8d7a3" },
-                {CustomRoles.President, "#00ffac"},
-                {CustomRoles.Needy, "#a4dffe"},
-                {CustomRoles.SabotageMaster, "#3333ff"},
-                {CustomRoles.Snitch, "#b8fb4f"},
-                {CustomRoles.Marshall, "#5573aa"},
-                {CustomRoles.Mayor, "#204d42"},
-                {CustomRoles.Bastion, "#696969"},
-                {CustomRoles.Paranoia, "#c993f5"},
-                {CustomRoles.Psychic, "#6F698C"},
-                {CustomRoles.Cleanser,"#98FF98" },
-                {CustomRoles.Sheriff, "#ffb347"},
-                {CustomRoles.Vigilante, "#9900CC"},
-                {CustomRoles.CopyCat, "#ffb2ab"},
-                {CustomRoles.SuperStar, "#f6f657"},
-                {CustomRoles.CyberStar, "#ee4a55" },
-                {CustomRoles.SpeedBooster, "#00ffff"},
-                {CustomRoles.Doctor, "#80ffdd"},
-                {CustomRoles.Dictator, "#df9b00"},
-                {CustomRoles.Detective, "#7160e8" },
-                {CustomRoles.NiceGuesser, "#f0e68c"},
-                {CustomRoles.SwordsMan, "#7a7a7a"},
-                {CustomRoles.Transporter, "#42D1FF"},
-                {CustomRoles.TimeManager, "#6495ed"},
-                {CustomRoles.Veteran, "#a77738"},
-                {CustomRoles.Bodyguard, "#185abd"},
-                {CustomRoles.Counterfeiter, "#BE29EC"},
-                {CustomRoles.Witness, "#e70052"},
-                {CustomRoles.Grenadier, "#3c4a16"},
-                {CustomRoles.Lighter, "#eee5be"},
-                {CustomRoles.TaskManager, "#00ffa5" },
-                {CustomRoles.Medic, "#00ff97"},
-                {CustomRoles.Divinator, "#882c83"},
-                {CustomRoles.Glitch, "#39FF14"},
-                {CustomRoles.Judge, "#f8d85a"},
-                {CustomRoles.Lookout, "#2a52be"},
-                {CustomRoles.Mortician, "#333c49"},
-                {CustomRoles.Mediumshiper, "#a200ff"},
-                {CustomRoles.Observer, "#a8e0fa"},
-                {CustomRoles.DovesOfNeace, "#007FFF"},
-                {CustomRoles.Monarch, "#FFA500"},
-                {CustomRoles.Bloodhound, "#8B0000"},
-                {CustomRoles.Tracker, "#3CB371"},
-                {CustomRoles.Merchant, "#D27D2D"},
-                {CustomRoles.Retributionist, "#228B22"},
-                {CustomRoles.Alchemist, "#a058bf"},
-                {CustomRoles.Deputy, "#df9026"},
-                {CustomRoles.Investigator, "#007FFF"},
-                {CustomRoles.Jailer,"#aa900d"},
-                {CustomRoles.Guardian, "#2E8B57"},
-                {CustomRoles.Addict, "#008000"},
-                {CustomRoles.Tracefinder, "#0066CC"},
-                {CustomRoles.Oracle, "#6666FF"},
-                {CustomRoles.Spiritualist, "#669999"},
-                {CustomRoles.Chameleon, "#01C834"},
-                {CustomRoles.ParityCop, "#0D57AF"},
-                {CustomRoles.Admirer, "#ee43c3"},
-                {CustomRoles.TimeMaster, "#44baff"},
-                {CustomRoles.Crusader, "#C65C39"},
-                {CustomRoles.Reverie, "#00BFFF"},
-                {CustomRoles.Monitor, "#7223DA"},
-                {CustomRoles.Swapper, "#66E666"},
-                {CustomRoles.ChiefOfPolice,"#f8cd46"},
-                {CustomRoles.NiceMini, "#edc240" },
-                {CustomRoles.Spy, "#34495E"},
-                //第三陣営役職
-                {CustomRoles.Arsonist, "#ff6633"},
-                {CustomRoles.Pyromaniac, "#fc8a4c"},
-                {CustomRoles.Agitater, "#F4A460"},
-                {CustomRoles.Bandit, "#8B008B"},
-                {CustomRoles.PlagueBearer,"#e5f6b4"},
-                {CustomRoles.Pestilence,"#343136"},
-                {CustomRoles.Jester, "#ec62a5"},
-                {CustomRoles.Terrorist, "#00e600"},
-                {CustomRoles.Executioner, "#c0c0c0"},
-                {CustomRoles.Lawyer, "#008080"},
-                {CustomRoles.God, "#f96464"},
-                {CustomRoles.Opportunist, "#4dff4d"},
-                {CustomRoles.Shaman, "#50c878"},
-                {CustomRoles.Mario, "#ff6201"},
-                {CustomRoles.Jackal, "#00b4eb"},
-                {CustomRoles.Sidekick, "#00b4eb"},
-                {CustomRoles.Innocent, "#8f815e"},
-                {CustomRoles.Pelican, "#34c84b"},
-                {CustomRoles.Revolutionist, "#ba4d06"},
-                {CustomRoles.FFF, "#414b66"},
-                {CustomRoles.Konan, "#4d4dff"},
-                {CustomRoles.Gamer, "#68bc71"},
-                {CustomRoles.DarkHide, "#483d8b"},
-                {CustomRoles.Workaholic, "#008b8b"},
-                {CustomRoles.Collector, "#9d8892"},
-                {CustomRoles.Provocateur, "#74ba43"},
-                {CustomRoles.Sunnyboy, "#ff9902"},
-                {CustomRoles.Poisoner, "#478800"},
-                {CustomRoles.Huntsman, "#ad8739"},
-                {CustomRoles.Necromancer, "#9C87AB"},
-                {CustomRoles.NWitch, "#BF5FFF"},
-                {CustomRoles.Totocalcio, "#ff9409"},
-                {CustomRoles.Romantic, "#FF1493"},
-                {CustomRoles.VengefulRomantic, "#8B0000"},
-                {CustomRoles.RuthlessRomantic, "#D2691E"},
-                {CustomRoles.Succubus, "#cf6acd"},
-                {CustomRoles.HexMaster, "#ff00ff"},
-                //{CustomRoles.Occultist, "#375d91"},
-                {CustomRoles.Wraith, "#4B0082"},
-                {CustomRoles.NSerialKiller, "#233fcc"},
-                {CustomRoles.BloodKnight, "#630000"},
-                {CustomRoles.Juggernaut, "#A41342"},
-                {CustomRoles.Parasite, "#ff1919"},
-                {CustomRoles.Crewpostor, "#ff1919"},
-                {CustomRoles.Refugee, "#ff1919"},
-                {CustomRoles.Infectious, "#7B8968"},
-                {CustomRoles.Virus, "#2E8B57"},
-                {CustomRoles.Farseer, "#BA55D3"},
-                {CustomRoles.Pursuer, "#617218"},
-                {CustomRoles.Phantom, "#662962"},
-                {CustomRoles.Jinx, "#ed2f91"},
-                {CustomRoles.Maverick, "#781717"},
-                {CustomRoles.CursedSoul, "#531269"},
-                {CustomRoles.PotionMaster, "#663399"},
-        //        {CustomRoles.Sorcerer, "#663399"},
-                {CustomRoles.Pickpocket, "#47008B"},
-                {CustomRoles.Traitor, "#BA2E05"},
-                {CustomRoles.Vulture, "#556B2F"},
-                {CustomRoles.Medusa, "#9900CC"},
-                {CustomRoles.Spiritcaller, "#003366"},
-                {CustomRoles.EvilSpirit, "#003366"},
-                {CustomRoles.Convict, "#ff1919"},
-                {CustomRoles.Amnesiac, "#7FBFFF"},
-                {CustomRoles.Doomsayer, "#14f786"},
-                {CustomRoles.Masochist, "#684405"},
-                {CustomRoles.Pirate, "#EDC240"},
-                {CustomRoles.Shroud, "#6697FF"},
-                {CustomRoles.Werewolf, "#191970"},
-                {CustomRoles.Seeker, "#ffaa00"},
-                {CustomRoles.SoulCollector, "#A675A1"},
-                {CustomRoles.Imitator, "#B3D94C"},
-                {CustomRoles.Doppelganger,"#f6f4a3" },
-            
-                // GM
-                {CustomRoles.GM, "#ff5b70"},
-                //サブ役職
-                {CustomRoles.NotAssigned, "#ffffff"},
-                {CustomRoles.LastImpostor, "#ff1919"},
-                {CustomRoles.Lovers, "#ff9ace"},
-                {CustomRoles.Ntr, "#00a4ff"},
-                {CustomRoles.Madmate, "#ff1919"},
-                {CustomRoles.Watcher, "#800080"},
-                {CustomRoles.Flashman, "#ff8400"},
-                {CustomRoles.Torch, "#eee5be"},
-                {CustomRoles.Seer, "#61b26c"},
-                {CustomRoles.Brakar, "#1447af"},
-                {CustomRoles.Oblivious, "#424242"},
-                {CustomRoles.Bewilder, "#c894f5"},
-                //{CustomRoles.Sunglasses, "#E7C12B"},
-                {CustomRoles.Workhorse, "#00ffff"},
-                {CustomRoles.Fool, "#e6e7ff"},
-                {CustomRoles.Avanger, "#ffab1c"},
-                {CustomRoles.Youtuber, "#fb749b"},
-                {CustomRoles.Egoist, "#5600ff"},
-                {CustomRoles.TicketsStealer, "#ff1919"},
-                {CustomRoles.DualPersonality, "#3a648f"},
-                {CustomRoles.Mimic, "#ff1919"},
-                {CustomRoles.Guesser, "#f8cd46"},
-                {CustomRoles.Necroview, "#663399"},
-                {CustomRoles.Reach, "#74ba43"},
-                {CustomRoles.Charmed, "#cf6acd"},
-                {CustomRoles.Cleansed,"#98FF98"},
-                {CustomRoles.Bait, "#00f7ff"},
-                {CustomRoles.Trapper, "#5a8fd0"},
-                {CustomRoles.Infected, "#7B8968"},
-                {CustomRoles.Onbound, "#BAAAE9"},
-                {CustomRoles.Rebound, "#56b5ff"},
-                {CustomRoles.Knighted, "#FFA500"},
-                {CustomRoles.Contagious, "#2E8B57"},
-                {CustomRoles.Unreportable, "#FF6347"},
-                {CustomRoles.Rogue, "#696969"},
-                {CustomRoles.Lucky, "#b8d7a3"},
-                {CustomRoles.Unlucky, "#d7a3a3"},
-                {CustomRoles.DoubleShot, "#19fa8d"},
-     //           {CustomRoles.Reflective, "#FFD700"},
-                {CustomRoles.Rascal, "#990000"},
-                {CustomRoles.Soulless, "#531269"},
-                {CustomRoles.Gravestone, "#2EA8E7"},
-                {CustomRoles.Lazy, "#a4dffe"},
-                {CustomRoles.Autopsy, "#80ffdd"},
-                {CustomRoles.Loyal, "#B71556"},
-                {CustomRoles.Visionary, "#ff1919"},
-                {CustomRoles.Recruit, "#00b4eb"},
-                {CustomRoles.Admired, "#ee43c3"},
-                //{CustomRoles.Glow, "#E2F147"},
-                {CustomRoles.Diseased, "#AAAAAA"},
-                {CustomRoles.Antidote,"#FF9876"},
-                {CustomRoles.VoidBallot,"#FF3399"},
-                {CustomRoles.Aware,"#4B0082"},
-                {CustomRoles.Stubborn,"#FF5733"},
-                {CustomRoles.Fragile,"#D3D3D3"},
-                {CustomRoles.Burst, "#B619B9"},
-                {CustomRoles.Bloodlust, "#691a2e"},
-                {CustomRoles.Overclocked, "#C4AD2C"},
-                {CustomRoles.Swift, "#ff1919"},
-                {CustomRoles.Mare, "#ff1919"},
-                {CustomRoles.Ghoul, "#B22222"},
-                {CustomRoles.Sleuth, "#803333" },
-                {CustomRoles.Clumsy, "#ff1919"},
-                {CustomRoles.Circumvent, "#ff1919"},
-                {CustomRoles.Nimble, "#FFFAA6"},
-                {CustomRoles.Repairman, "#3333ff"},
-                {CustomRoles.Cyber, "#F46F4E" },
-                {CustomRoles.Hurried, "#136cf0"},
-                {CustomRoles.Oiiai, "#2bdb2b" },
-                {CustomRoles.Influenced, "#b0006a"},
 
-             //   {CustomRoles.QuickFix, "#3333ff"},
-
-            };
-            foreach (var role in Enum.GetValues(typeof(CustomRoles)).Cast<CustomRoles>())
-            {
-                switch (role.GetCustomRoleTypes())
-                {
-                    case CustomRoleTypes.Impostor:
-                        roleColors.TryAdd(role, "#ff1919");
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-        catch (ArgumentException ex)
-        {
-            TOHE.Logger.Error("错误：字典出现重复项", "LoadDictionary");
-            TOHE.Logger.Exception(ex, "LoadDictionary");
-            hasArgumentException = true;
-            ExceptionMessage = ex.Message;
-            ExceptionMessageIsShown = false;
-        }
+        LoadRoleColors(); //loads all the role colors from default and then tries to load custom colors if any.
 
         CustomWinnerHolder.Reset();
         ServerAddManager.Init();
@@ -694,6 +607,7 @@ public enum CustomRoles
     Pitfall,
     EvilMini,
     Blackmailer,
+    Instigator,
     // Flashbang,
     //Crewmate(Vanilla)
     Engineer,
@@ -771,6 +685,8 @@ public enum CustomRoles
     ChiefOfPolice,
     NiceMini,
     Spy,
+    Randomizer,
+    Enigma,
 
     //Neutral
     Arsonist,
@@ -820,6 +736,7 @@ public enum CustomRoles
     Maverick,
     CursedSoul,
     Pirate,
+    Pixie,
     PotionMaster,
     Pickpocket,
     Traitor,
@@ -836,6 +753,7 @@ public enum CustomRoles
     Werewolf,
     Necromancer,
     Huntsman,
+    Taskinator,
     //Occultist,
     Imitator,
    //two-way camp
@@ -1008,6 +926,8 @@ public enum AdditionalWinners
     Phantom = CustomRoles.Phantom,
     Maverick = CustomRoles.Maverick,
     Shaman = CustomRoles.Shaman,
+    Taskinator = CustomRoles.Taskinator,
+    Pixie = CustomRoles.Pixie,
  //   NiceMini = CustomRoles.NiceMini,
  //   Baker = CustomRoles.Baker,
 }

@@ -9,7 +9,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class Medic
 {
-    private static readonly int Id = 7100;
+    private static readonly int Id = 8600;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -170,7 +170,7 @@ public static class Medic
         killer.RpcGuardAndKill(target);
         killer.SetKillCooldown(ResetCooldown.GetFloat());
 
-        Utils.NotifyRoles(SpecifySeer: target);
+        Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: target, ForceLoop: true);
 
         switch (KnowShieldBroken.GetInt())
         {
@@ -185,9 +185,6 @@ public static class Medic
             case 2:
                 target.RpcGuardAndKill(target);
                 Main.AllPlayerControls.Where(x => ProtectList.Contains(x.PlayerId)).Do(x => x.Notify(Translator.GetString("MedicKillerTryBrokenShieldTargetForTarget")));
-                break;
-            default:
-                Utils.NotifyRoles();
                 break;
         }
 
@@ -216,6 +213,6 @@ public static class Medic
         {
             TempMarkProtected = byte.MaxValue;
         }
-        Utils.NotifyRoles();
+        Utils.NotifyRoles(ForceLoop: true);
     }
 }

@@ -6,7 +6,7 @@ namespace TOHE.Roles.Crewmate
 {
     public static class Addict
     {
-        private static readonly int Id = 5200;
+        private static readonly int Id = 6300;
         private static List<byte> playerIdList = new();
         public static bool IsEnable = false;
 

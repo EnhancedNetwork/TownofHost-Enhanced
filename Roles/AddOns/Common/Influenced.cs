@@ -6,7 +6,7 @@ namespace TOHE.Roles.AddOns.Common
 {
     public static class Influenced
     {
-        private static readonly int Id = 45000;
+        private static readonly int Id = 21200;
         public static OptionItem CanBeOnCrew;
         public static OptionItem CanBeOnImp;
         public static OptionItem CanBeOnNeutral;

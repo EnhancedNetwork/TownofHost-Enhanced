@@ -34,18 +34,28 @@ static class PlayerOutfitExtension
 }
 public static class Camouflage
 {
+    public static bool IsCamouflage;
+
     static GameData.PlayerOutfit CamouflageOutfit = new GameData.PlayerOutfit().Set("", 15, "", "", "", "", ""); // Default
 
-    public static bool IsCamouflage;
-    public static Dictionary<byte, GameData.PlayerOutfit> PlayerSkins = new();
-
     public static List<byte> ResetSkinAfterDeathPlayers = new();
+    public static Dictionary<byte, GameData.PlayerOutfit> PlayerSkins = new();
+    public static bool IsActive;
 
     public static void Init()
     {
         IsCamouflage = false;
         PlayerSkins.Clear();
         ResetSkinAfterDeathPlayers = new();
+
+        IsActive = Options.CommsCamouflage.GetBool() && !(Options.DisableOnSomeMaps.GetBool() &&
+            (
+            (Options.DisableOnSkeld.GetBool() && Options.IsActiveSkeld) ||
+            (Options.DisableOnMira.GetBool() && Options.IsActiveMiraHQ) ||
+            (Options.DisableOnPolus.GetBool() && Options.IsActivePolus) ||
+            (Options.DisableOnFungle.GetBool() && Options.IsActiveFungle) ||
+            (Options.DisableOnAirship.GetBool() && Options.IsActiveAirship)
+            ));
 
         switch (Options.KPDCamouflageMode.GetValue())
         { 
@@ -100,15 +110,7 @@ public static class Camouflage
 
         var oldIsCamouflage = IsCamouflage;
 
-        IsCamouflage = (Utils.IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool()
-            && !(Options.DisableOnSomeMaps.GetBool() &&
-            ((Options.DisableOnSkeld.GetBool() && Options.IsActiveSkeld) ||
-             (Options.DisableOnMira.GetBool() && Options.IsActiveMiraHQ) ||
-             (Options.DisableOnPolus.GetBool() && Options.IsActivePolus) ||
-             (Options.DisableOnFungle.GetBool() && Options.IsActiveFungle) ||
-             (Options.DisableOnAirship.GetBool() && Options.IsActiveAirship)
-            )))
-            || Camouflager.IsActive;
+        IsCamouflage = (Utils.IsActive(SystemTypes.Comms) && IsActive) || Camouflager.AbilityActivated;
 
         if (oldIsCamouflage != IsCamouflage)
         {
@@ -158,6 +160,9 @@ public static class Camouflage
                 newOutfit = PlayerSkins[id];
             }
         }
+        // if the current Outfit is the same, return it
+        if (newOutfit.Compare(target.Data.DefaultOutfit)) return;
+
         Logger.Info($"newOutfit={newOutfit.GetString()}", "RpcSetSkin");
 
         var sender = CustomRpcSender.Create(name: $"Camouflage.RpcSetSkin({target.Data.PlayerName})");

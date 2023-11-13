@@ -7,7 +7,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Pyromaniac
 {
-    private static readonly int Id = 128020;
+    private static readonly int Id = 17800;
     public static List<byte> playerIdList = new();
     public static List<byte> DousedList = new();
     public static bool IsEnable = false;
@@ -63,7 +63,12 @@ public static class Pyromaniac
         }
         else
         {
-            return killer.CheckDoubleTrigger(target, () => { DousedList.Add(target.PlayerId); killer.SetKillCooldown(DouseCooldown.GetFloat()); Utils.NotifyRoles(SpecifySeer: killer); });
+            return killer.CheckDoubleTrigger(target, () => 
+            { 
+                DousedList.Add(target.PlayerId);
+                killer.SetKillCooldown(DouseCooldown.GetFloat());
+                Utils.NotifyRoles(SpecifySeer: killer); 
+            });
         }
     }
 }

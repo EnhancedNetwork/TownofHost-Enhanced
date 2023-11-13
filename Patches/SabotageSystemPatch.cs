@@ -1,6 +1,6 @@
 using HarmonyLib;
 using Hazel;
-
+using System.Linq;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -120,11 +120,27 @@ public class SabotageSystemPatch
             }
         }
     }
+    [HarmonyPatch(typeof(MushroomMixupSabotageSystem), nameof(MushroomMixupSabotageSystem.UpdateSystem))]
+    public static class MushroomMixupSabotageSystemUpdateSystemPatch
+    {
+        public static void Postfix()
+        {
+            Logger.Info($" IsActive", "MushroomMixupSabotageSystem.UpdateSystem.Postfix");
+
+            foreach (var pc in Main.AllAlivePlayerControls.Where(player => !player.Is(CustomRoleTypes.Impostor) && Main.ResetCamPlayerList.Contains(player.PlayerId)).ToArray())
+            {
+                // Need for hiding player names if player is desync Impostor
+                Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true, MushroomMixupIsActive: true);
+            }
+        }
+    }
     [HarmonyPatch(typeof(MushroomMixupSabotageSystem), nameof(MushroomMixupSabotageSystem.Deteriorate))]
     private static class MushroomMixupSabotageSystemPatch
     {
-        private static void Prefix(MushroomMixupSabotageSystem __instance)
+        private static void Prefix(MushroomMixupSabotageSystem __instance, ref bool __state)
         {
+            __state = __instance.IsActive;
+
             if (!Options.SabotageTimeControl.GetBool()) return;
             if ((MapNames)Main.NormalOptions.MapId is not MapNames.Fungle) return;
 
@@ -145,19 +161,47 @@ public class SabotageSystemPatch
             // Set duration Mushroom Mixup (The Fungle)
             __instance.currentSecondsUntilHeal = Options.FungleMushroomMixupDuration.GetFloat();
         }
+        public static void Postfix(MushroomMixupSabotageSystem __instance, bool __state)
+        {
+            // if Mushroom Mixup Sabotage is end
+            if (__instance.IsActive != __state && !Main.MeetingIsStarted)
+            {
+                Logger.Info($" IsEnd", "MushroomMixupSabotageSystem.Deteriorate.Postfix");
+
+                _ = new LateTask(() =>
+                {
+                    // After MushroomMixup sabotage, shapeshift cooldown sets to 0
+                    foreach (var pc in Main.AllAlivePlayerControls)
+                    {
+                        // Reset Ability Cooldown To Default For Alive Players
+                        pc.RpcResetAbilityCooldown();
+                    }
+                }, 1.2f, "Reset Ability Cooldown Arter Mushroom Mixup");
+
+                foreach (var pc in Main.AllAlivePlayerControls.Where(player => !player.Is(CustomRoleTypes.Impostor) && Main.ResetCamPlayerList.Contains(player.PlayerId)).ToArray())
+                {
+                    // Need for display player names if player is desync Impostor
+                    Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true);
+                }
+            }
+        }
     }
     [HarmonyPatch(typeof(SwitchSystem), nameof(SwitchSystem.UpdateSystem))]
     private static class SwitchSystemRepairDamagePatch
     {
         private static bool Prefix(SwitchSystem __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] MessageReader msgReader)
         {
+            byte amount;
+            {
+                var newReader = MessageReader.Get(msgReader);
+                amount = newReader.ReadByte();
+                newReader.Recycle();
+            }
+
             if (!AmongUsClient.Instance.AmHost)
             {
                 return true;
             }
-
-            var reader = MessageReader.Get(msgReader);
-            var amount = reader.ReadByte();
 
             // No matter if the blackout sabotage is sounded (beware of misdirection as it flies under the host's name)
             if (amount.HasBit(SwitchSystem.DamageSystem))
@@ -180,7 +224,7 @@ public class SabotageSystemPatch
             }
 
 
-            if (!amount.HasBit(SwitchSystem.DamageSystem) && Options.BlockDisturbancesToSwitches.GetBool())
+            if (Options.BlockDisturbancesToSwitches.GetBool())
             {
                 // Shift 1 to the left by amount
                 // Each digit corresponds to each switch
@@ -197,27 +241,28 @@ public class SabotageSystemPatch
                     return false;
                 }
             }
+
             return true;
         }
     }
     [HarmonyPatch(typeof(ElectricTask), nameof(ElectricTask.Initialize))]
-    private static class ElectricTaskInitializePatch
+    public static class ElectricTaskInitializePatch
     {
-        private static void Postfix()
+        public static void Postfix()
         {
             Utils.MarkEveryoneDirtySettings();
             if (!GameStates.IsMeeting)
-                Utils.NotifyRoles();
+                Utils.NotifyRoles(ForceLoop: true);
         }
     }
     [HarmonyPatch(typeof(ElectricTask), nameof(ElectricTask.Complete))]
-    private static class ElectricTaskCompletePatch
+    public static class ElectricTaskCompletePatch
     {
-        private static void Postfix()
+        public static void Postfix()
         {
             Utils.MarkEveryoneDirtySettings();
             if (!GameStates.IsMeeting)
-                Utils.NotifyRoles();
+                Utils.NotifyRoles(ForceLoop: true);
         }
     }
     // https://github.com/tukasa0001/TownOfHost/blob/357f7b5523e4bdd0bb58cda1e0ff6cceaa84813d/Patches/SabotageSystemPatch.cs
@@ -234,10 +279,14 @@ public class SabotageSystemPatch
             modifiedCooldownSec = Options.SabotageCooldown.GetFloat();
         }
 
-        private static bool Prefix(SabotageSystemType __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] MessageReader msgReader)
+        private static bool Prefix([HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] MessageReader msgReader)
         {
-            var newReader = MessageReader.Get(msgReader);
-            var amount = newReader.ReadByte();
+            byte amount;
+            {
+                var newReader = MessageReader.Get(msgReader);
+                amount = newReader.ReadByte();
+                newReader.Recycle();
+            }
             var nextSabotage = (SystemTypes)amount;
 
             if (Options.DisableSabotage.GetBool())
@@ -253,7 +302,9 @@ public class SabotageSystemPatch
         {
             var playerRole = player.GetCustomRole();
 
-            if (systemType == SystemTypes.Comms)
+            if (player.Is(CustomRoles.Minimalism)) return false;
+
+            if (systemType is SystemTypes.Comms)
             {
                 if (playerRole.Is(CustomRoles.Camouflager) && !Camouflager.CanUseCommsSabotage.GetBool())
                     return false;
@@ -292,12 +343,15 @@ public class SabotageSystemPatch
             return false;
         }
 
-        private static void Postfix(SabotageSystemType __instance)
+        public static void Postfix(SabotageSystemType __instance, bool __runOriginal)
         {
-            if (!isCooldownModificationEnabled || !AmongUsClient.Instance.AmHost)
+            // __runOriginal - the result that was returned from Prefix
+            if (!AmongUsClient.Instance.AmHost || !(isCooldownModificationEnabled && __runOriginal))
             {
                 return;
             }
+
+            // Set cooldown sabotages
             __instance.Timer = modifiedCooldownSec;
             __instance.IsDirty = true;
         }
@@ -307,8 +361,12 @@ public class SabotageSystemPatch
         {
             private static bool Prefix([HarmonyArgument(1)] MessageReader msgReader)
             {
-                var newReader = MessageReader.Get(msgReader);
-                var amount = newReader.ReadByte();
+                byte amount;
+                {
+                    var newReader = MessageReader.Get(msgReader);
+                    amount = newReader.ReadByte();
+                    newReader.Recycle();
+                }
 
                 // When the camera is disabled, the vanilla player opens the camera so it does not blink.
                 if (amount == SecurityCameraSystemType.IncrementOp)
@@ -323,11 +381,6 @@ public class SabotageSystemPatch
                     return !camerasDisabled;
                 }
                 return true;
-            }
-            private static void Postfix([HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] MessageReader msgReader)
-            {
-                var newReader = MessageReader.Get(msgReader);
-                var amount = newReader.ReadByte();
             }
         }
     }

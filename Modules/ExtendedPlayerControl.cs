@@ -60,7 +60,7 @@ static class ExtendedPlayerControl
     {
         try
         {
-            var client = AmongUsClient.Instance.allClients.ToArray().Where(cd => cd.Character.PlayerId == player.PlayerId).FirstOrDefault();
+            var client = AmongUsClient.Instance.allClients.ToArray().FirstOrDefault(cd => cd.Character.PlayerId == player.PlayerId);
             return client;
         }
         catch
@@ -79,7 +79,7 @@ static class ExtendedPlayerControl
         return player == null || player.Object == null ? CustomRoles.Crewmate : player.Object.GetCustomRole();
     }
     /// <summary>
-    /// ※サブロールは取得できません。
+    /// Only roles (no add-ons)
     /// </summary>
     public static CustomRoles GetCustomRole(this PlayerControl player)
     {
@@ -89,7 +89,7 @@ static class ExtendedPlayerControl
             var callerMethod = caller.GetMethod();
             string callerMethodName = callerMethod.Name;
             string callerClassName = callerMethod.DeclaringType.FullName;
-            Logger.Warn(callerClassName + "." + callerMethodName + "がCustomRoleを取得しようとしましたが、対象がnullでした。", "GetCustomRole");
+            Logger.Warn(callerClassName + "." + callerMethodName + "tried to retrieve CustomRole, but the target was null", "GetCustomRole");
             return CustomRoles.Crewmate;
         }
         var GetValue = Main.PlayerStates.TryGetValue(player.PlayerId, out var State);
@@ -101,7 +101,7 @@ static class ExtendedPlayerControl
     {
         if (player == null)
         {
-            Logger.Warn("CustomSubRoleを取得しようとしましたが、対象がnullでした。", "getCustomSubRole");
+            Logger.Warn("tried to get CustomSubRole, but the target was null", "GetCustomSubRole");
             return new() { CustomRoles.NotAssigned };
         }
         return Main.PlayerStates[player.PlayerId].SubRoles;
@@ -114,7 +114,7 @@ static class ExtendedPlayerControl
             var callerMethod = caller.GetMethod();
             string callerMethodName = callerMethod.Name;
             string callerClassName = callerMethod.DeclaringType.FullName;
-            Logger.Warn(callerClassName + "." + callerMethodName + "がCountTypesを取得しようとしましたが、対象がnullでした。", "GetCountTypes");
+            Logger.Warn(callerClassName + "." + callerMethodName + "tried to get CountTypes, but the target was null", "GetCountTypes");
             return CountTypes.None;
         }
 
@@ -302,8 +302,8 @@ static class ExtendedPlayerControl
     }
     public static void RpcResetAbilityCooldown(this PlayerControl target)
     {
-        if (!AmongUsClient.Instance.AmHost) return; //ホスト以外が実行しても何も起こさない
-        Logger.Info($"アビリティクールダウンのリセット:{target.name}({target.PlayerId})", "RpcResetAbilityCooldown");
+        if (!AmongUsClient.Instance.AmHost) return; // Nothing happens when run by anyone other than the host.
+        Logger.Info($"Ability cooldown reset: {target.name}({target.PlayerId})", "RpcResetAbilityCooldown");
         if (target.Is(CustomRoles.Glitch))
         {
             Glitch.LastHack = Utils.GetTimeStamp();
@@ -313,22 +313,22 @@ static class ExtendedPlayerControl
         }
         else if (PlayerControl.LocalPlayer == target)
         {
-            //targetがホストだった場合
+            //if target is the host
             PlayerControl.LocalPlayer.Data.Role.SetCooldown();
         }
         else
         {
-            //targetがホスト以外だった場合
+            // target is other than the host
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(target.NetId, (byte)RpcCalls.ProtectPlayer, SendOption.None, target.GetClientId());
             writer.WriteNetObject(target);
             writer.Write(0);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
         /*
-            プレイヤーがバリアを張ったとき、そのプレイヤーの役職に関わらずアビリティーのクールダウンがリセットされます。
-            ログの追加により無にバリアを張ることができなくなったため、代わりに自身に0秒バリアを張るように変更しました。
-            この変更により、役職としての守護天使が無効化されます。
-            ホストのクールダウンは直接リセットします。
+            When a player puts up a barrier, the cooldown of the ability is reset regardless of the player's position.
+            Due to the addition of logs, it is no longer possible to put up a barrier to nothing, so we have changed it to put up a 0 second barrier to oneself instead.
+            This change disables guardian angel as a position.
+            The cooldown of the host resets directly.
         */
     }
     public static void RpcDesyncRepairSystem(this PlayerControl target, SystemTypes systemType, int amount)
@@ -381,8 +381,8 @@ static class ExtendedPlayerControl
     }
     public static string GetSubRoleName(this PlayerControl player, bool forUser = false)
     {
-        var SubRoles = Main.PlayerStates[player.PlayerId].SubRoles;
-        if (!SubRoles.Any()) return "";
+        var SubRoles = Main.PlayerStates[player.PlayerId].SubRoles.ToArray();
+        if (!SubRoles.Any()) return string.Empty;
         var sb = new StringBuilder();
         foreach (var role in SubRoles)
         {
@@ -469,7 +469,7 @@ static class ExtendedPlayerControl
     }
     public static bool CanUseKillButton(this PlayerControl pc)
     {
-        int playerCount = Main.AllAlivePlayerControls.Count();
+        int playerCount = Main.AllAlivePlayerControls.Length;
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
         if (Mastermind.ManipulatedPlayers.ContainsKey(pc.PlayerId)) return true;
 
@@ -553,6 +553,7 @@ static class ExtendedPlayerControl
             CustomRoles.PlagueBearer => pc.IsAlive(),
             CustomRoles.Pestilence => pc.IsAlive(),
             CustomRoles.Pirate => pc.IsAlive(),
+            CustomRoles.Pixie => pc.IsAlive(),
             CustomRoles.Seeker => pc.IsAlive(),
             CustomRoles.Agitater => pc.IsAlive(),
             CustomRoles.ChiefOfPolice => ChiefOfPolice.CanUseKillButton(pc.PlayerId),
@@ -648,6 +649,7 @@ static class ExtendedPlayerControl
             CustomRoles.PlagueBearer => true,
             CustomRoles.Pestilence => true,
             CustomRoles.Pirate => true,
+            CustomRoles.Pixie => true,
             CustomRoles.Seeker => true,
             CustomRoles.Agitater => true,
             CustomRoles.ChiefOfPolice => true,
@@ -748,6 +750,7 @@ static class ExtendedPlayerControl
             CustomRoles.Sheriff or
             CustomRoles.Crusader or
             CustomRoles.Pirate or
+            CustomRoles.Pixie or
             CustomRoles.CopyCat or
             CustomRoles.CursedSoul or
             CustomRoles.Admirer or
@@ -1115,6 +1118,9 @@ static class ExtendedPlayerControl
             case CustomRoles.Pirate:
                 Pirate.SetKillCooldown(player.PlayerId);
                 break;
+            case CustomRoles.Pixie:
+                Pixie.SetKillCooldown(player.PlayerId);
+                break;
             case CustomRoles.Deputy:
                 Deputy.SetKillCooldown(player.PlayerId);
                 break;
@@ -1152,23 +1158,7 @@ static class ExtendedPlayerControl
                 ChiefOfPolice.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.EvilMini:
-                foreach (var pc in Main.AllPlayerControls)
-                {
-                    if (pc.Is(CustomRoles.EvilMini) && Mini.Age == 0)
-                    {
-                        Main.AllPlayerKillCooldown[player.PlayerId] = Mini.MinorCD.GetFloat();
-                        Main.EvilMiniKillcooldown[player.PlayerId] = Mini.MinorCD.GetFloat();
-                    }
-                    else if (pc.Is(CustomRoles.EvilMini) && Mini.Age != 18 && Mini.Age != 0)
-                    {
-                        Main.AllPlayerKillCooldown[player.PlayerId] = Main.EvilMiniKillcooldownf;
-                        Main.EvilMiniKillcooldown[player.PlayerId] = Main.EvilMiniKillcooldownf;
-                    }
-                    else if (pc.Is(CustomRoles.EvilMini) && Mini.Age == 18)
-                    {                      
-                        Main.AllPlayerKillCooldown[player.PlayerId] = Mini.MajorCD.GetFloat();
-                    }
-                }
+                Main.AllPlayerKillCooldown[player.PlayerId] = Mini.GetKillCoolDown();
                 break;
             case CustomRoles.CrewmateTOHE:
             case CustomRoles.EngineerTOHE:
@@ -1245,9 +1235,9 @@ static class ExtendedPlayerControl
     }
     public static void TrapperKilled(this PlayerControl killer, PlayerControl target)
     {
-        Logger.Info($"{target?.Data?.PlayerName}はTrapperだった", "Trapper");
+        Logger.Info($"{target?.Data?.PlayerName} was Trapper", "Trapper");
         var tmpSpeed = Main.AllPlayerSpeed[killer.PlayerId];
-        Main.AllPlayerSpeed[killer.PlayerId] = Main.MinSpeed;    //tmpSpeedで後ほど値を戻すので代入しています。
+        Main.AllPlayerSpeed[killer.PlayerId] = Main.MinSpeed;
         ReportDeadBodyPatch.CanReport[killer.PlayerId] = false;
         killer.MarkDirtySettings();
         _ = new LateTask(() =>
@@ -1264,7 +1254,7 @@ static class ExtendedPlayerControl
         var (countItem1, countItem2) = Utils.GetDousedPlayerCount(player.PlayerId);
         return countItem1 >= countItem2;
     }
-    public static bool IsDrawDone(this PlayerControl player)//判断是否拉拢完成
+    public static bool IsDrawDone(this PlayerControl player)
     {
         if (!player.Is(CustomRoles.Revolutionist)) return false;
         var (countItem1, countItem2) = Utils.GetDrawPlayerCount(player.PlayerId, out var _);
@@ -1301,9 +1291,11 @@ static class ExtendedPlayerControl
     }
     public static bool RpcCheckAndMurder(this PlayerControl killer, PlayerControl target, bool check = false) => CheckMurderPatch.RpcCheckAndMurder(killer, target, check);
     public static void NoCheckStartMeeting(this PlayerControl reporter, GameData.PlayerInfo target, bool force = false)
-    { /*サボタージュ中でも関係なしに会議を起こせるメソッド
-        targetがnullの場合はボタンとなる*/
+    { 
+        //Method that can cause a meeting to occur regardless of whether it is in sabotage.
+        //If target is null, it becomes a button.
         if (Options.DisableMeeting.GetBool() && !force) return;
+
         ReportDeadBodyPatch.AfterReportTasks(reporter, target);
         MeetingRoomManager.Instance.AssignSelf(reporter, target);
         DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(reporter);
@@ -1327,7 +1319,7 @@ static class ExtendedPlayerControl
         var rangePlayersIL = RoleBehaviour.GetTempPlayerList();
         List<PlayerControl> rangePlayers = new();
         player.Data.Role.GetPlayersInAbilityRangeSorted(rangePlayersIL, ignoreColliders);
-        foreach (var pc in rangePlayersIL)
+        foreach (var pc in rangePlayersIL.ToArray())
         {
             if (predicate(pc)) rangePlayers.Add(pc);
         }
@@ -1462,7 +1454,7 @@ static class ExtendedPlayerControl
     public static PlainShipRoom GetPlainShipRoom(this PlayerControl pc)
     {
         if (!pc.IsAlive() || Pelican.IsEaten(pc.PlayerId)) return null;
-        var Rooms = ShipStatus.Instance.AllRooms;
+        var Rooms = ShipStatus.Instance.AllRooms.ToArray();
         if (Rooms == null) return null;
         foreach (var room in Rooms)
         {

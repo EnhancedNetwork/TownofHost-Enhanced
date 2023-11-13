@@ -7,7 +7,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Pursuer
 {
-    private static readonly int Id = 10200;
+    private static readonly int Id = 13400;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
     private static Dictionary<byte, List<byte>> clientList = new();
@@ -74,16 +74,25 @@ public static class Pursuer
     public static void SeelToClient(PlayerControl pc, PlayerControl target)
     {
         if (pc == null || target == null || !pc.Is(CustomRoles.Pursuer)) return;
+        
         SeelLimit[pc.PlayerId]--;
         SendRPC(pc.PlayerId);
-        if (!clientList.ContainsKey(pc.PlayerId)) clientList.Add(pc.PlayerId, new());
+        
+        if (!clientList.ContainsKey(pc.PlayerId))
+            clientList.Add(pc.PlayerId, new());
+
         clientList[pc.PlayerId].Add(target.PlayerId);
-        if (!Options.DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);
+
+        if (!Options.DisableShieldAnimations.GetBool())
+            pc.RpcGuardAndKill(pc);
+
         notActiveList.Add(pc.PlayerId);
+
         pc.SetKillCooldown();
         pc.RPCPlayCustomSound("Bet");
+
         Utils.NotifyRoles(SpecifySeer: pc);
-        Logger.Info($"赝品商 {pc.GetRealName()} 将赝品卖给了 {target.GetRealName()}", "Pursuer");
+        Logger.Info($"Counterfeiters {pc.GetRealName()} sell counterfeits to {target.GetRealName()}", "Pursuer");
     }
     public static bool OnClientMurder(PlayerControl pc)
     {
