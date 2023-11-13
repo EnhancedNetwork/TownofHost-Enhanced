@@ -253,12 +253,12 @@ class OnPlayerLeftPatch
 
             Logger.Info($"{data?.PlayerName} - (ClientID:{data?.Id} / FriendCode:{data?.FriendCode} / HashPuid:{data?.GetHashedPuid()} / Platform:{data?.PlatformData.Platform}) Disconnect (Reason:{reason}，Ping:{AmongUsClient.Instance.Ping})", "Session");
 
+            Main.playerVersion.Remove(data?.Character?.PlayerId ?? byte.MaxValue);
             if (AmongUsClient.Instance.AmHost)
             {
                 Main.SayStartTimes.Remove(__instance.ClientId);
                 Main.SayBanwordsTimes.Remove(__instance.ClientId);
-                Main.playerVersion.Remove(data?.Character?.PlayerId ?? byte.MaxValue);
-
+                
                 if (GameStates.IsLobby && !GameStates.IsLocalGame)
                 {
                     if (data?.GetHashedPuid() != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
