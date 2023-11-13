@@ -17,18 +17,9 @@ public static class Console_UsePrefix
         {
             // Set AllowImpostor to true for each Console instance
             console.AllowImpostor = true;
-        }
-        
-        }
-        {
-            foreach (var console in consoles)
-            {
-                // Set AllowImpostor to true for each Console instance
-                return;
-            }
-
-        }
-
+        }      
     }
+
+}
 
 }
