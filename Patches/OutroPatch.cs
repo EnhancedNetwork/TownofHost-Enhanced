@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TOHE.Modules;
+using TOHE.Modules.ChatManager;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -95,6 +96,7 @@ class EndGamePatch
         Main.isDraw = new Dictionary<(byte, byte), bool>();
         Main.isRevealed = new Dictionary<(byte, byte), bool>();
         Main.PlayerQuitTimes = new();
+        ChatManager.ChatSentBySystem = new();
 
         Main.VisibleTasksCount = false;
         if (AmongUsClient.Instance.AmHost)

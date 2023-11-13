@@ -1675,12 +1675,13 @@ public static class Utils
             }
         }
     }
-    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "")
+    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (title == "") title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
         Main.MessagesToSend.Add((text.RemoveHtmlTagsTemplate(), sendTo, title));
-        ChatManager.AddToHostMessage(text.RemoveHtmlTagsTemplate());
+        if (!logforChatManager)
+            ChatManager.AddToHostMessage(text.RemoveHtmlTagsTemplate());
     }
     public static bool IsPlayerModerator(string friendCode)
     {
