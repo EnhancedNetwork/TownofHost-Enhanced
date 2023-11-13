@@ -306,7 +306,7 @@ internal class ChatCommands
                 case "/d":
                 case "/death":
                 case "/morto":
-                    //canceled = true;
+                    canceled = true;
                     Logger.Info($"PlayerControl.LocalPlayer.PlayerId: {PlayerControl.LocalPlayer.PlayerId}", "/death command");
                     if (GameStates.IsLobby)
                     {
@@ -314,34 +314,37 @@ internal class ChatCommands
                         Utils.SendMessage(text: GetString("Message.CanNotUseInLobby"), sendTo: PlayerControl.LocalPlayer.PlayerId);
                         break;
                     }
-                    if (PlayerControl.LocalPlayer.IsAlive())
+                    else if (PlayerControl.LocalPlayer.IsAlive())
                     {
                         Logger.Info("IsAlive", "/death command");
                         Utils.SendMessage(text: GetString("DeathCmd.HeyPlayer") + "<b>" + PlayerControl.LocalPlayer.GetRealName() + "</b>" + GetString("DeathCmd.YouAreRole") + "<b>" + $"<color={Utils.GetRoleColorCode(PlayerControl.LocalPlayer.GetCustomRole())}>{Utils.GetRoleName(PlayerControl.LocalPlayer.GetCustomRole())}</color>" + "</b>\n\n" + GetString("DeathCmd.NotDead"), sendTo: PlayerControl.LocalPlayer.PlayerId);
                         break;
                     }
-                    if (Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].deathReason == PlayerState.DeathReason.Vote)
+                    else if (Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].deathReason == PlayerState.DeathReason.Vote)
                     {
                         Logger.Info("DeathReason.Vote", "/death command");
                         Utils.SendMessage(text: GetString("DeathCmd.YourName") + "<b>" + PlayerControl.LocalPlayer.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.YourRole") + "<b>" + $"<color={Utils.GetRoleColorCode(PlayerControl.LocalPlayer.GetCustomRole())}>{Utils.GetRoleName(PlayerControl.LocalPlayer.GetCustomRole())}</color>" + "</b>" + "\n\r" + GetString("DeathCmd.Ejected"), sendTo: PlayerControl.LocalPlayer.PlayerId);
                         break;
                     }
-                    if (Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].deathReason == PlayerState.DeathReason.Shrouded)
+                    else if (Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].deathReason == PlayerState.DeathReason.Shrouded)
                     {
                         Logger.Info("DeathReason.Shrouded", "/death command");
                         Utils.SendMessage(text: GetString("DeathCmd.YourName") + "<b>" + PlayerControl.LocalPlayer.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.YourRole") + "<b>" + $"<color={Utils.GetRoleColorCode(PlayerControl.LocalPlayer.GetCustomRole())}>{Utils.GetRoleName(PlayerControl.LocalPlayer.GetCustomRole())}</color>" + "</b>" + "\n\r" + GetString("DeathCmd.Shrouded"), sendTo: PlayerControl.LocalPlayer.PlayerId);
                         break;
                     }
-                    if (Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].deathReason == PlayerState.DeathReason.FollowingSuicide)
+                    else if (Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].deathReason == PlayerState.DeathReason.FollowingSuicide)
                     {
                         Logger.Info("DeathReason.FollowingSuicide", "/death command");
                         Utils.SendMessage(text: GetString("DeathCmd.YourName") + "<b>" + PlayerControl.LocalPlayer.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.YourRole") + "<b>" + $"<color={Utils.GetRoleColorCode(PlayerControl.LocalPlayer.GetCustomRole())}>{Utils.GetRoleName(PlayerControl.LocalPlayer.GetCustomRole())}</color>" + "</b>" + "\n\r" + GetString("DeathCmd.Lovers"), sendTo: PlayerControl.LocalPlayer.PlayerId);
                         break;
                     }
-                    Logger.Info("GetRealKiller()", "/death command");
-                    var killer = PlayerControl.LocalPlayer.GetRealKiller();
-                    Utils.SendMessage(text: GetString("DeathCmd.YourName") + "<b>" + PlayerControl.LocalPlayer.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.YourRole") + "<b>" + $"<color={Utils.GetRoleColorCode(PlayerControl.LocalPlayer.GetCustomRole())}>{Utils.GetRoleName(PlayerControl.LocalPlayer.GetCustomRole())}</color>" + "</b>" + "\n\r" + GetString("DeathCmd.DeathReason") + "<b>" + Utils.GetVitalText(PlayerControl.LocalPlayer.PlayerId) + "</b>" + "\n\r" + "</b>" + "\n\r" + GetString("DeathCmd.KillerName") + "<b>" + killer.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.KillerRole") + "<b>" + $"<color={Utils.GetRoleColorCode(killer.GetCustomRole())}>{Utils.GetRoleName(killer.GetCustomRole())}</color>" + "</b>", sendTo: PlayerControl.LocalPlayer.PlayerId);
-                    break;
+                    else
+                    {
+                        Logger.Info("GetRealKiller()", "/death command");
+                        var killer = PlayerControl.LocalPlayer.GetRealKiller();
+                        Utils.SendMessage(text: GetString("DeathCmd.YourName") + "<b>" + PlayerControl.LocalPlayer.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.YourRole") + "<b>" + $"<color={Utils.GetRoleColorCode(PlayerControl.LocalPlayer.GetCustomRole())}>{Utils.GetRoleName(PlayerControl.LocalPlayer.GetCustomRole())}</color>" + "</b>" + "\n\r" + GetString("DeathCmd.DeathReason") + "<b>" + Utils.GetVitalText(PlayerControl.LocalPlayer.PlayerId) + "</b>" + "\n\r" + "</b>" + "\n\r" + GetString("DeathCmd.KillerName") + "<b>" + killer.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.KillerRole") + "<b>" + $"<color={Utils.GetRoleColorCode(killer.GetCustomRole())}>{Utils.GetRoleName(killer.GetCustomRole())}</color>" + "</b>", sendTo: PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
 
 
                 case "/m":
@@ -887,7 +890,6 @@ internal class ChatCommands
     Skip:
         if (canceled)
         {
-
             Logger.Info("Command Canceled", "ChatCommand");
             __instance.freeChatField.textArea.Clear();
             __instance.freeChatField.textArea.SetText(cancelVal);
@@ -1374,30 +1376,32 @@ internal class ChatCommands
                     Utils.SendMessage(GetString("Message.CanNotUseInLobby"), player.PlayerId);
                     break;
                 }
-                if (player.IsAlive())
+                else if (player.IsAlive())
                 {
                     Utils.SendMessage(GetString("DeathCmd.HeyPlayer") + "<b>" + player.GetRealName() + "</b>" + GetString("DeathCmd.YouAreRole") + "<b>" + $"<color={Utils.GetRoleColorCode(player.GetCustomRole())}>{Utils.GetRoleName(player.GetCustomRole())}</color>" + "</b>\n\n" + GetString("DeathCmd.NotDead"), player.PlayerId);
                     break;
                 }
-                if (Main.PlayerStates[player.PlayerId].deathReason == PlayerState.DeathReason.Vote)
+                else if (Main.PlayerStates[player.PlayerId].deathReason == PlayerState.DeathReason.Vote)
                 {
                     Utils.SendMessage(GetString("DeathCmd.YourName") + "<b>" + player.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.YourRole") + "<b>" + $"<color={Utils.GetRoleColorCode(player.GetCustomRole())}>{Utils.GetRoleName(player.GetCustomRole())}</color>" + "</b>" + "\n\r" + GetString("DeathCmd.Ejected"), player.PlayerId);
                     break;
                 }
-                if (Main.PlayerStates[player.PlayerId].deathReason == PlayerState.DeathReason.Shrouded)
+                else if (Main.PlayerStates[player.PlayerId].deathReason == PlayerState.DeathReason.Shrouded)
                 {
                     Utils.SendMessage(GetString("DeathCmd.YourName") + "<b>" + player.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.YourRole") + "<b>" + $"<color={Utils.GetRoleColorCode(player.GetCustomRole())}>{Utils.GetRoleName(player.GetCustomRole())}</color>" + "</b>" + "\n\r" + GetString("DeathCmd.Shrouded"), player.PlayerId);
                     break;
                 }
-                if (Main.PlayerStates[player.PlayerId].deathReason == PlayerState.DeathReason.FollowingSuicide)
+                else if (Main.PlayerStates[player.PlayerId].deathReason == PlayerState.DeathReason.FollowingSuicide)
                 {
                     Utils.SendMessage(GetString("DeathCmd.YourName") + "<b>" + player.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.YourRole") + "<b>" + $"<color={Utils.GetRoleColorCode(player.GetCustomRole())}>{Utils.GetRoleName(player.GetCustomRole())}</color>" + "</b>" + "\n\r" + GetString("DeathCmd.Lovers"), player.PlayerId);
                     break;
                 }
-
-                var killer = player.GetRealKiller();
-                Utils.SendMessage(GetString("DeathCmd.YourName") + "<b>" + player.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.YourRole") + "<b>" + $"<color={Utils.GetRoleColorCode(player.GetCustomRole())}>{Utils.GetRoleName(player.GetCustomRole())}</color>" + "</b>" + "\n\r" + GetString("DeathCmd.DeathReason") + "<b>" + Utils.GetVitalText(player.PlayerId) + "</b>" + "\n\r" + "</b>" + "\n\r" + GetString("DeathCmd.KillerName") + "<b>" + killer.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.KillerRole") + "<b>" + $"<color={Utils.GetRoleColorCode(killer.GetCustomRole())}>{Utils.GetRoleName(killer.GetCustomRole())}</color>" + "</b>", player.PlayerId);
-                break;
+                else
+                {
+                    var killer = player.GetRealKiller();
+                    Utils.SendMessage(GetString("DeathCmd.YourName") + "<b>" + player.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.YourRole") + "<b>" + $"<color={Utils.GetRoleColorCode(player.GetCustomRole())}>{Utils.GetRoleName(player.GetCustomRole())}</color>" + "</b>" + "\n\r" + GetString("DeathCmd.DeathReason") + "<b>" + Utils.GetVitalText(player.PlayerId) + "</b>" + "\n\r" + "</b>" + "\n\r" + GetString("DeathCmd.KillerName") + "<b>" + killer.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.KillerRole") + "<b>" + $"<color={Utils.GetRoleColorCode(killer.GetCustomRole())}>{Utils.GetRoleName(killer.GetCustomRole())}</color>" + "</b>", player.PlayerId);
+                    break;
+                }
 
             case "/t":
             case "/template":
