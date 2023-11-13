@@ -116,7 +116,7 @@ namespace TOHE.Modules.ChatManager
             }
             else if (operate == 5)
             {
-                Logger.Info($"系统消息{msg}，不记录", "ChatManager");
+                Logger.Info($"system message{msg}，不记录", "ChatManager");
                 message = msg;
                 cancel = true;
             }

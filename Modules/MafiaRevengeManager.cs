@@ -116,7 +116,7 @@ public static class MafiaRevengeManager
                 Main.PlayerStates[target.PlayerId].SetDead();
             }
 
-            _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("MafiaKillSucceed"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mafia), GetString("MafiaRevengeTitle"))); }, 0.6f, "Mafia Kill");
+            _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("MafiaKillSucceed"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mafia), GetString("MafiaRevengeTitle")), true); }, 0.6f, "Mafia Kill");
 
         }, 0.2f, "Mafia Kill");
         return true;
