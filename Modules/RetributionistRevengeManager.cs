@@ -137,7 +137,7 @@ public static class RetributionistRevengeManager
                 Main.PlayerStates[target.PlayerId].SetDead();
             }
 
-            _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("RetributionistKillSucceed"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Retributionist), GetString("RetributionistRevengeTitle"))); }, 0.6f, "Retributionist Kill");
+            _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("RetributionistKillSucceed"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Retributionist), GetString("RetributionistRevengeTitle")), true); }, 0.6f, "Retributionist Kill");
 
         }, 0.2f, "Retributionist Kill");
         return true;

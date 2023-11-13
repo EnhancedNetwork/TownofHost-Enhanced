@@ -182,7 +182,7 @@ public static class Judge
 
                     Utils.NotifyRoles(isForMeeting: false, NoCache: true);
 
-                    _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("TrialKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Judge), GetString("TrialKillTitle"))); }, 0.6f, "Guess Msg");
+                    _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("TrialKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Judge), GetString("TrialKillTitle")), true); }, 0.6f, "Guess Msg");
 
                 }, 0.2f, "Trial Kill");
             }
