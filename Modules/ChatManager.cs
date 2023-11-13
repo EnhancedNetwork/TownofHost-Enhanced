@@ -1,6 +1,9 @@
 using Hazel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using TOHE.Roles.Impostor;
 
 namespace TOHE.Modules.ChatManager
@@ -10,6 +13,7 @@ namespace TOHE.Modules.ChatManager
         public static bool cancel = false;
         private static List<Dictionary<byte, string>> chatHistory = new();
         private const int maxHistorySize = 20;
+        public static List<string> ChatSentBySystem = new();
         public static void ResetHistory()
         {
             chatHistory = new();
@@ -59,6 +63,27 @@ namespace TOHE.Modules.ChatManager
             return false;
         }
 
+        public static string getTextHash(string text)
+        {
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                // get sha-256 hash
+                byte[] sha256Bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(text));
+                string sha256Hash = BitConverter.ToString(sha256Bytes).Replace("-", "").ToLower();
+
+                // pick front 5 and last 4
+                return string.Concat(sha256Hash.AsSpan(0, 5), sha256Hash.AsSpan(sha256Hash.Length - 4));
+            }
+        }
+
+        public static void AddToHostMessage(string text)
+        {
+            if (text != "")
+            {
+                ChatSentBySystem.Add(getTextHash(text));
+            }
+        }
+
         public static void SendMessage(PlayerControl player, string message)
         {
             int operate = 0; // 1:ID 2:猜测
@@ -69,6 +94,8 @@ namespace TOHE.Modules.ChatManager
             if (GameStates.IsInGame) operate = 3;
             if (CheckCommond(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id")) operate = 1;
             else if (CheckCommond(ref msg, "shoot|guess|bet|st|gs|bt|猜|赌|sp|jj|tl|trial|审判|判|审|compare|cmp|比较|duel|sw|换票|换|swap|st|finish|reveal", false)) operate = 2;
+            else if (ChatSentBySystem.Contains(getTextHash(msg))) operate = 5;
+            
             if ((operate == 1 || Blackmailer.ForBlackmailer.Contains(player.PlayerId)) && player.IsAlive())
             {
                 Logger.Info($"包含特殊信息，不记录", "ChatManager");
@@ -86,6 +113,12 @@ namespace TOHE.Modules.ChatManager
                 Logger.Info($"指令{msg}，不记录", "ChatManager");
                 message = msg;
                 SendPreviousMessagesToAll();
+            }
+            else if (operate == 5)
+            {
+                Logger.Info($"系统消息{msg}，不记录", "ChatManager");
+                message = msg;
+                cancel = true;
             }
             else if (operate == 3)
             {
