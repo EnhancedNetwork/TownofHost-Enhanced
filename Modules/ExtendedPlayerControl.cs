@@ -272,11 +272,9 @@ static class ExtendedPlayerControl
         }
         player.ResetKillCooldown();
     }
-    public static void RpcSpecificMurderPlayer(this PlayerControl killer, PlayerControl target = null, PlayerControl seer = null)
+    public static void RpcSpecificMurderPlayer(this PlayerControl killer, PlayerControl target, PlayerControl seer)
     {
-        if (target == null) target = killer;
-        if (seer == null) seer = killer;
-        if (killer.AmOwner && seer.AmOwner)
+        if (seer.AmOwner)
         {
             killer.MurderPlayer(target, ResultFlags);
         }
@@ -287,7 +285,7 @@ static class ExtendedPlayerControl
             messageWriter.Write((int)ResultFlags);
             AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
         }
-    }
+    } //Must provide seer, target
     [Obsolete]
     public static void RpcSpecificProtectPlayer(this PlayerControl killer, PlayerControl target = null, int colorId = 0)
     {
@@ -429,7 +427,7 @@ static class ExtendedPlayerControl
 
         _ = new LateTask(() =>
         {
-            pc.RpcSpecificMurderPlayer();
+            pc.RpcSpecificMurderPlayer(pc, pc);
         }, 0.2f + delay, "Murder To Reset Cam");
 
         _ = new LateTask(() =>

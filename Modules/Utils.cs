@@ -13,6 +13,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TOHE.Modules;
+using TOHE.Modules.ChatManager;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
@@ -1674,11 +1675,13 @@ public static class Utils
             }
         }
     }
-    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "")
+    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (title == "") title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
         Main.MessagesToSend.Add((text.RemoveHtmlTagsTemplate(), sendTo, title));
+        if (!logforChatManager)
+            ChatManager.AddToHostMessage(text.RemoveHtmlTagsTemplate());
     }
     public static bool IsPlayerModerator(string friendCode)
     {

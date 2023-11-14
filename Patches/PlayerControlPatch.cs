@@ -1439,10 +1439,11 @@ class MurderPlayerPatch
 
         if (target.Is(CustomRoles.Avanger))
         {
-            var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId).ToList();
-            var rp = pcList[IRandom.Instance.Next(0, pcList.Count)];
-            if (!rp.Is(CustomRoles.Pestilence))
+            var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId && !Pelican.IsEaten(x.PlayerId) && !Medic.ProtectList.Contains(x.PlayerId) 
+            && !x.Is(CustomRoles.Pestilence) && !x.Is(CustomRoles.Masochist) && !((x.Is(CustomRoles.NiceMini) || x.Is(CustomRoles.EvilMini)) && Mini.Age < 18)).ToList();
+            if (pcList.Any())
             {
+                PlayerControl rp = pcList[IRandom.Instance.Next(0, pcList.Count)];
                 Main.PlayerStates[rp.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
                 rp.SetRealKiller(target);
                 rp.RpcMurderPlayerV3(rp);
