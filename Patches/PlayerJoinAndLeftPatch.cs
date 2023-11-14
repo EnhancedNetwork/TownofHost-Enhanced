@@ -59,18 +59,18 @@ class OnGameJoinedPatch
                     SceneChanger.ChangeScene("MainMenu");
                 }
                 
-                else if (Main.Canary && !DBQueries.CanaryAccess(PlayerControl.LocalPlayer.FriendCode))
-                {
-                    AmongUsClient.Instance.ExitGame(DisconnectReasons.Banned);
-                    SceneChanger.ChangeScene("MainMenu");
-                    Logger.Warn("Banned because no access to canary", "dbConnect");
-                }
-                else if (Main.devRelease && !DBQueries.DevAccess(PlayerControl.LocalPlayer.FriendCode))
-                {
-                    AmongUsClient.Instance.ExitGame(DisconnectReasons.Banned);
-                    SceneChanger.ChangeScene("MainMenu");
-                    Logger.Warn("Banned because no access to canary", "dbConnect");
-                }
+                //else if (Main.Canary && !DBQueries.CanaryAccess(PlayerControl.LocalPlayer.FriendCode))
+                //{
+                //    AmongUsClient.Instance.ExitGame(DisconnectReasons.Banned);
+                //    SceneChanger.ChangeScene("MainMenu");
+                //    Logger.Warn("Banned because no access to canary", "dbConnect");
+                //}
+                //else if (Main.devRelease && !DBQueries.DevAccess(PlayerControl.LocalPlayer.FriendCode))
+                //{
+                //    AmongUsClient.Instance.ExitGame(DisconnectReasons.Banned);
+                //    SceneChanger.ChangeScene("MainMenu");
+                //    Logger.Warn("Banned because no access to canary", "dbConnect");
+                //}
                 var client = PlayerControl.LocalPlayer.GetClient();
                 Logger.Info($"{client.PlayerName.RemoveHtmlTags()}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Hosted room", "Session");
             }, 1f, "OnGameJoinedPatch");
