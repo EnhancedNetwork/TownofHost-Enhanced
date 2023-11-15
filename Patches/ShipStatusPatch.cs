@@ -63,6 +63,12 @@ class RepairSystemPatch
 
         if (!AmongUsClient.Instance.AmHost) return true;
 
+        if (EAC.SabotageSystemCheck(player, systemType, amount))
+        {
+            Logger.Info("EAC action patch sabotage", "ShipStatus.UpdateSystem");
+            return false;
+        } //IDK why return false here can not patch the sabotage
+
         if (Options.DisableSabotage.GetBool() && systemType == SystemTypes.Sabotage)
         {
             return false;
@@ -80,7 +86,6 @@ class RepairSystemPatch
         {
             return false;
         }
-
         // Fast fix critical saboatge
         switch (player.GetCustomRole())
         {

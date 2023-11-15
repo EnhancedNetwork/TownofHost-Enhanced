@@ -281,20 +281,26 @@ public class SabotageSystemPatch
 
         private static bool Prefix([HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] MessageReader msgReader)
         {
-            byte amount;
+            byte systemtype, amount;
             {
                 var newReader = MessageReader.Get(msgReader);
+                systemtype = newReader.ReadByte();
                 amount = newReader.ReadByte();
                 newReader.Recycle();
             }
-            var nextSabotage = (SystemTypes)amount;
+            var nextSabotage = (SystemTypes)systemtype;
 
             if (Options.DisableSabotage.GetBool())
             {
                 return false;
             }
 
-            Logger.Info("Sabotage" + ", PlayerName: " + player.GetNameWithRole() + ", SabotageType: " + nextSabotage.ToString(), "RepairSystem");
+            Logger.Info("Sabotage" + ", PlayerName: " + player.GetNameWithRole() + ", SabotageType: " + nextSabotage.ToString() + ", amount: " + amount.ToString(), "SabotageSystemType");
+            if (EAC.SabotageSystemCheck(player, nextSabotage, amount))
+            {
+                Logger.Info("EAC action patch Sabotage", "SabotageSystemType.UpdateSystem");
+                return false;
+            }
 
             return CanSabotage(player, nextSabotage);
         }
