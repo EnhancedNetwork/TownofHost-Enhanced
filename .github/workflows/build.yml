@@ -29,11 +29,11 @@ jobs:
           dotnet-version: 6.x
 
       - name: Build
-        run: dotnet build TOHE.csproj --configuration Release
+        run: dotnet build TOHE.csproj --configuration Debug
 
       - name: Upload TownofHost-Enhanced
         uses: actions/upload-artifact@v2
         with:
           name: TOHE.dll
-          path: bin/Release/net6.0/TOHE.dll
+          path: bin/Debug/net6.0/TOHE.dll
 

@@ -100,8 +100,15 @@ public class GameStartManagerPatch
             // Lobby code
             if (DataManager.Settings.Gameplay.StreamerMode)
             {
+                if (!AmongUs.Data.DataManager.Settings.Gameplay.StreamerMode) { return; }
                 __instance.GameRoomNameCode.color = new(255, 255, 255, 0);
                 GameStartManagerStartPatch.HideName.enabled = true;
+                __instance.GameRoomNameInfo.text = "Original por <color=#ffc0cb>KARPED1EM</color> e </color><color=#f34c50>Moe</color>";
+
+                if (!AmongUs.Data.DataManager.Settings.Gameplay.StreamerMode) { return; }
+                TextMeshPro textoadicional = __instance.GameRoomButton.transform.GetChild(1).GetComponent<TextMeshPro>();
+                textoadicional.text = "Modificado por";
+                textoadicional.ForceMeshUpdate(false, false);
             }
             else
             {
