@@ -114,6 +114,10 @@ public class GameStartManagerPatch
             {
                 __instance.GameRoomNameCode.color = new(255, 255, 255, 255);
                 GameStartManagerStartPatch.HideName.enabled = false;
+                __instance.GameRoomNameInfo.text = "Clique Para Copiar";
+                TextMeshPro textoadicional = __instance.GameRoomButton.transform.GetChild(1).GetComponent<TextMeshPro>();
+                textoadicional.text = "Código";
+                textoadicional.ForceMeshUpdate(false, false);
             }
             if (!AmongUsClient.Instance.AmHost || !GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame) return; // Not host or no instance or LocalGame
             update = GameData.Instance.PlayerCount != __instance.LastPlayerCount;
