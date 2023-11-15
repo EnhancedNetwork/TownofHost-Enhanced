@@ -281,11 +281,10 @@ public class SabotageSystemPatch
 
         private static bool Prefix([HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] MessageReader msgReader)
         {
-            byte systemtype, amount;
+            byte systemtype;
             {
                 var newReader = MessageReader.Get(msgReader);
                 systemtype = newReader.ReadByte();
-                amount = newReader.ReadByte();
                 newReader.Recycle();
             }
             var nextSabotage = (SystemTypes)systemtype;
@@ -295,13 +294,13 @@ public class SabotageSystemPatch
                 return false;
             }
 
-            Logger.Info("Sabotage" + ", PlayerName: " + player.GetNameWithRole() + ", SabotageType: " + nextSabotage.ToString() + ", amount: " + amount.ToString(), "SabotageSystemType");
-            if (EAC.SabotageSystemCheck(player, nextSabotage, amount))
+            Logger.Info("Sabotage" + ", PlayerName: " + player.GetNameWithRole() + ", SabotageType: " + nextSabotage.ToString(), "SabotageSystemType");
+            if (EAC.SabotageSystemCheck(player, nextSabotage, 0))
             {
                 Logger.Info("EAC action patch Sabotage", "SabotageSystemType.UpdateSystem");
                 return false;
             }
-
+            if (CanSabotage(player, nextSabotage) && !player.AmOwner && !player.IsModClient()) EAC.SabotageWhiteList.Add(player.PlayerId, nextSabotage);
             return CanSabotage(player, nextSabotage);
         }
         private static bool CanSabotage(PlayerControl player, SystemTypes systemType)

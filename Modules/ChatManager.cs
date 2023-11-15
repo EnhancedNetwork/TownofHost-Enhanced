@@ -191,7 +191,6 @@ namespace TOHE.Modules.ChatManager
                 {
                     senderPlayer.Revive();
                 }
-
                 DestroyableSingleton<HudManager>.Instance.Chat.AddChat(senderPlayer, senderMessage);
                 var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
 

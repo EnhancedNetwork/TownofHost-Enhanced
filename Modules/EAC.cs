@@ -86,47 +86,11 @@ internal class EAC
                     }
                     break;
                 case RpcCalls.StartMeeting:
-                    {
-                        if (MeetingTimes.TryGetValue(pc.PlayerId, out int meetingtimes))
-                        {
-                            MeetingTimes[pc.PlayerId] = meetingtimes + 1;
-                        }
-                        else MeetingTimes.Add(pc.PlayerId, 1);
-                    }
-                    if ((GameStates.IsMeeting && MeetingTimes[pc.PlayerId] > 3) || GameStates.IsLobby)
-                    {
                         WarnHost();
                         Report(pc, "非法召集会议");
-                        TempBanCheat(pc, "非法召集会议");
+                        TempBanCheat(pc, "非法召集会议"); //Client doesnt use start meeting to call meeting
                         Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法召集会议：【null】，已驳回", "EAC");
                         return true;
-                    }
-                    break;
-                case RpcCalls.ReportDeadBody:
-                    {
-                        if (MeetingTimes.TryGetValue(pc.PlayerId, out int meetingtimes))
-                        {
-                            MeetingTimes[pc.PlayerId] = meetingtimes + 1;
-                        }
-                        else MeetingTimes.Add(pc.PlayerId, 1);
-                    }
-                    if ((GameStates.IsMeeting && MeetingTimes[pc.PlayerId] > 6) || GameStates.IsLobby)
-                    {
-                        WarnHost();
-                        Report(pc, "非法报告尸体");
-                        TempBanCheat(pc, "非法报告尸体");
-                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法报告尸体次数过多，已驳回", "EAC");
-                        return true;
-                    }
-                    var p1 = Utils.GetPlayerById(sr.ReadByte());
-                    if (p1 != null && p1.IsAlive() && !p1.Is(CustomRoles.Paranoia) && !p1.Is(CustomRoles.GM))
-                    {
-                        WarnHost();
-                        Report(pc, "非法报告尸体");
-                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法报告尸体：【{p1?.GetNameWithRole() ?? "null"}】，已驳回", "EAC");
-                        return true;
-                    }
-                    break;
                 case RpcCalls.SetColor:
                 case RpcCalls.CheckColor:
                     var color = sr.ReadByte();
@@ -262,6 +226,8 @@ internal class EAC
         WarnHost(-1);
         return false;
     }
+
+    public static Dictionary<byte, SystemTypes> SabotageWhiteList = new();
     public static bool SabotageSystemCheck(PlayerControl player, SystemTypes systemType, byte amount)
     {
         Logger.Info("Sabotage" + ", PlayerName: " + player.GetNameWithRole() + ", SabotageType: " + systemType.ToString() + ", amount: " + amount.ToString(), "EAC");
@@ -295,11 +261,19 @@ internal class EAC
                 }
             }
         }
-        else if (((amount < 30 || amount > 80) &&
-            (systemType == SystemTypes.Reactor || systemType == SystemTypes.Laboratory || systemType == SystemTypes.HeliSabotage
-            || systemType == SystemTypes.LifeSupp || systemType == SystemTypes.Comms))
-            || (systemType == SystemTypes.Electrical && amount > 10)) //Normal player wont use these amount to sabotage
+        else if (amount > 100 || (systemType == SystemTypes.Comms && amount == 16) 
+            || (systemType == SystemTypes.LifeSupp && amount == 16)
+            || (systemType == SystemTypes.Electrical && amount > 10)
+            || (systemType == SystemTypes.MushroomMixupSabotage && amount > 5)) //In case the player directly send update system rpc
         {
+            if (SabotageWhiteList.ContainsKey(player.PlayerId))
+            {
+                if (SabotageWhiteList[player.PlayerId] == systemType)
+                {
+                    SabotageWhiteList.Remove(player.PlayerId);
+                    return false;
+                }
+            } //If the sabotage is checked by host
             WarnHost();
             Report(player, "Bad Sabotage C");
             TempBanCheat(player, "Bad Sabotage C");
@@ -316,6 +290,10 @@ internal class EAC
             Logger.Fatal($"玩家【{player.GetClientId()}:{player.GetRealName()}】Bad Sabotage D，已驳回", "EAC");
             return true;
         }
+
+        if (SabotageWhiteList.ContainsKey(player.PlayerId))
+            SabotageWhiteList.Remove(player.PlayerId);
+
         return false;
     }
     public static void Report(PlayerControl pc, string reason)

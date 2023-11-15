@@ -1333,6 +1333,7 @@ class MeetingHudOnDestroyPatch
 
             Main.LastVotedPlayerInfo = null;
             EAC.MeetingTimes = new();
+            EAC.SabotageWhiteList = new();
         }
     }
 }

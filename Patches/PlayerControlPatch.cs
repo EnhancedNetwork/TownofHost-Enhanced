@@ -1784,6 +1784,50 @@ class ReportDeadBodyPatch
 
         Logger.Info($"{__instance.GetNameWithRole()} => {target?.Object?.GetNameWithRole() ?? "null"}", "ReportDeadBody");
 
+        if (AmongUsClient.Instance.AmHost)
+        {
+            if (EAC.MeetingTimes.TryGetValue(__instance.PlayerId, out int meetingtimes))
+            {
+                EAC.MeetingTimes[__instance.PlayerId] = meetingtimes + 1;
+            }
+            else EAC.MeetingTimes.Add(__instance.PlayerId, 1);
+
+            if (!GameStates.IsInGame)
+            {
+                EAC.WarnHost();
+                EAC.Report(__instance, "非法报告尸体A");
+                EAC.TempBanCheat(__instance, "非法报告尸体A");
+                Logger.Fatal($"玩家【{__instance.GetClientId()}:{__instance.GetRealName()}】非法报告尸体A，已驳回", "EAC");
+                return false;
+            }
+
+            if (EAC.MeetingTimes[__instance.PlayerId] >= 7)
+            {
+                EAC.WarnHost();
+                EAC.Report(__instance, "非法报告尸体B");
+                EAC.TempBanCheat(__instance, "非法报告尸体B");
+                Logger.Fatal($"玩家【{__instance.GetClientId()}:{__instance.GetRealName()}】非法报告尸体B，已驳回", "EAC");
+                return false;
+            } //Normal a single can only be reported by a player once
+
+            if (GameStates.IsMeeting && EAC.MeetingTimes[__instance.PlayerId] >= 3)
+            {
+                EAC.WarnHost();
+                EAC.Report(__instance, "非法报告尸体B");
+                EAC.TempBanCheat(__instance, "非法报告尸体B");
+                Logger.Fatal($"玩家【{__instance.GetClientId()}:{__instance.GetRealName()}】非法报告尸体B，已驳回", "EAC");
+                return false;
+            }
+
+            if (target != null && !target.IsDead && target.GetCustomRole() != CustomRoles.Paranoia)
+            {
+                EAC.WarnHost();
+                EAC.Report(__instance, "非法报告尸体C");
+                Logger.Fatal($"玩家【{__instance.GetClientId()}:{__instance.GetRealName()}】非法报告尸体C，已驳回", "EAC");
+                return false;
+            }
+        }
+
         foreach (var kvp in Main.PlayerStates)
         {
             var pc = Utils.GetPlayerById(kvp.Key);
