@@ -295,12 +295,18 @@ public class SabotageSystemPatch
             }
 
             Logger.Info("Sabotage" + ", PlayerName: " + player.GetNameWithRole() + ", SabotageType: " + nextSabotage.ToString(), "SabotageSystemType");
-            if (EAC.SabotageSystemCheck(player, nextSabotage, 0))
+            if (!player.AmOwner && !player.IsModClient() && CanSabotage(player, nextSabotage))
             {
-                Logger.Info("EAC action patch Sabotage", "SabotageSystemType.UpdateSystem");
-                return false;
+                if (EAC.SabotageWhiteList.ContainsKey(player.PlayerId))
+                    EAC.SabotageWhiteList.Remove(player.PlayerId);
+
+                EAC.SabotageWhiteList.Add(player.PlayerId, nextSabotage);
             }
-            if (CanSabotage(player, nextSabotage) && !player.AmOwner && !player.IsModClient()) EAC.SabotageWhiteList.Add(player.PlayerId, nextSabotage);
+            //if (EAC.SabotageSystemCheck(player, nextSabotage, 8)) //8 here simply tell eac what this check is
+            //{
+            //    Logger.Info("EAC action patch Sabotage", "SabotageSystemType.UpdateSystem");
+            //    return false;
+            //}
             return CanSabotage(player, nextSabotage);
         }
         private static bool CanSabotage(PlayerControl player, SystemTypes systemType)

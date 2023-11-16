@@ -231,18 +231,18 @@ internal class EAC
     public static bool SabotageSystemCheck(PlayerControl player, SystemTypes systemType, byte amount)
     {
         Logger.Info("Sabotage" + ", PlayerName: " + player.GetNameWithRole() + ", SabotageType: " + systemType.ToString() + ", amount: " + amount.ToString(), "EAC");
-        var playerDataRole = player.Data.Role.Role;
         if (player.AmOwner || !AmongUsClient.Instance.AmHost) return false;
         if (player.IsModClient()) return false;
-        if (systemType == SystemTypes.Sabotage)
+        if (systemType == SystemTypes.Sabotage) //Vanilla sabotage using buttons
         {
-            if (playerDataRole != RoleTypes.Impostor && playerDataRole != RoleTypes.Shapeshifter
-                && playerDataRole != RoleTypes.ImpostorGhost)
+            if (player.GetCustomRole().GetVNRole() != CustomRoles.Impostor && player.GetCustomRole().GetVNRole() != CustomRoles.Shapeshifter
+                && player.GetCustomRole().GetDYRole() != RoleTypes.Impostor && player.GetCustomRole().GetDYRole() != RoleTypes.Shapeshifter)
             {
                 if (Main.ErasedRoleStorage.ContainsKey(player.PlayerId))
                 {
-                    var originRoleType = CustomRolesHelper.GetRoleTypes(Main.ErasedRoleStorage[player.PlayerId]);
-                    if (originRoleType != RoleTypes.Impostor && originRoleType != RoleTypes.Shapeshifter)
+                    var originRole = Main.ErasedRoleStorage[player.PlayerId];
+                    if (originRole.GetVNRole() != CustomRoles.Impostor && originRole.GetVNRole() != CustomRoles.Shapeshifter
+                        && originRole.GetDYRole() != RoleTypes.Impostor && originRole.GetDYRole() != RoleTypes.Shapeshifter)
                     {
                         WarnHost();
                         Report(player, "Bad Sabotage A");
@@ -260,27 +260,143 @@ internal class EAC
                     return true;
                 }
             }
-        }
-        else if (amount > 100 || (systemType == SystemTypes.Comms && amount == 16) 
-            || (systemType == SystemTypes.LifeSupp && amount == 16)
-            || (systemType == SystemTypes.Electrical && amount > 10)
-            || (systemType == SystemTypes.MushroomMixupSabotage && amount > 5)) //In case the player directly send update system rpc
+        } //Cheat directly send 128 systemtype rpc
+        /*//else if (amount == 8)
+        //{
+        //    if (SabotageWhiteList.ContainsKey(player.PlayerId))
+        //    {
+        //        if (SabotageWhiteList[player.PlayerId] == systemType)
+        //        {
+        //            return false;
+        //        } //Remove the list upon 128 check
+        //    } //If the sabotage is checked by host
+        //    else
+        //    {
+        //        WarnHost();
+        //        Report(player, "Bad Sabotage E");
+        //        //TempBanCheat(player, "Bad Sabotage E");
+        //        Logger.Fatal($"玩家【{player.GetClientId()}:{player.GetRealName()}】Bad Sabotage E，已驳回", "EAC");
+        //        if (SabotageWhiteList.ContainsKey(player.PlayerId))
+        //            SabotageWhiteList.Remove(player.PlayerId);
+        //        return true;
+        //    }
+        //} //Check in sabotage system update sabotage bruhhh/ Cant read byte there
+        */
+        else if (systemType == SystemTypes.LifeSupp)
         {
-            if (SabotageWhiteList.ContainsKey(player.PlayerId))
+            if (Main.NormalOptions.MapId != 0 && Main.NormalOptions.MapId != 3) goto YesCheat;
+            else if (amount >= 100)
             {
-                if (SabotageWhiteList[player.PlayerId] == systemType)
+                if (SabotageWhiteList.ContainsKey(player.PlayerId))
                 {
-                    SabotageWhiteList.Remove(player.PlayerId);
-                    return false;
-                }
-            } //If the sabotage is checked by host
-            WarnHost();
-            Report(player, "Bad Sabotage C");
-            TempBanCheat(player, "Bad Sabotage C");
-            Logger.Fatal($"玩家【{player.GetClientId()}:{player.GetRealName()}】Bad Sabotage C，已驳回", "EAC");
-            return true;
+                    if (SabotageWhiteList[player.PlayerId] == systemType)
+                    {
+                        SabotageWhiteList.Remove(player.PlayerId);
+                        return false;
+                    }
+                } //If the sabotage is checked by host
+                else goto YesCheat;
+            }
+            else if (amount != 64 && amount != 65) goto YesCheat;
         }
-
+        else if (systemType == SystemTypes.Comms)
+        {
+            if (amount == 0)
+            {
+                if (Main.NormalOptions.MapId == 1 || Main.NormalOptions.MapId == 5) goto YesCheat;
+            }
+            else if (amount > 100)
+            {
+                if (SabotageWhiteList.ContainsKey(player.PlayerId))
+                {
+                    if (SabotageWhiteList[player.PlayerId] == systemType)
+                    {
+                        SabotageWhiteList.Remove(player.PlayerId);
+                        return false;
+                    }
+                } //If the sabotage is checked by host
+                else goto YesCheat;
+            }
+            else if (amount == 64 || amount == 65 || amount == 32 || amount == 33 || amount == 16 || amount == 17)
+            {
+                if (!(Main.NormalOptions.MapId == 1 || Main.NormalOptions.MapId == 5)) goto YesCheat;
+            }
+            else goto YesCheat;
+        }
+        else if (systemType == SystemTypes.Electrical)
+        {
+            if (Main.NormalOptions.MapId == 5) goto YesCheat;
+            if (amount > 10) //0 - 4 normal lights, > 50 sabotage
+            {
+                if (SabotageWhiteList.ContainsKey(player.PlayerId))
+                {
+                    if (SabotageWhiteList[player.PlayerId] == systemType)
+                    {
+                        SabotageWhiteList.Remove(player.PlayerId);
+                        return false;
+                    }
+                } //If the sabotage is checked by host
+                else goto YesCheat;
+            }
+        }
+        else if (systemType == SystemTypes.Laboratory)
+        {
+            if (Main.NormalOptions.MapId != 2) goto YesCheat;
+            if (amount > 100)
+            {
+                if (SabotageWhiteList.ContainsKey(player.PlayerId))
+                {
+                    if (SabotageWhiteList[player.PlayerId] == systemType)
+                    {
+                        SabotageWhiteList.Remove(player.PlayerId);
+                        return false;
+                    }
+                } //If the sabotage is checked by host
+                else goto YesCheat;
+            }
+            else if (!(amount == 64 || amount == 65 || amount == 32 || amount == 33)) goto YesCheat;
+        }
+        else if (systemType == SystemTypes.Reactor)
+        {
+            if (Main.NormalOptions.MapId == 2 || Main.NormalOptions.MapId == 4) goto YesCheat;
+            if (amount > 100)
+            {
+                if (SabotageWhiteList.ContainsKey(player.PlayerId))
+                {
+                    if (SabotageWhiteList[player.PlayerId] == systemType)
+                    {
+                        SabotageWhiteList.Remove(player.PlayerId);
+                        return false;
+                    }
+                } //If the sabotage is checked by host
+                else goto YesCheat;
+            }
+            else if (!(amount == 64 || amount == 65 || amount == 32 || amount == 33)) goto YesCheat;
+            //Airship use heli sabotage /Other use 64,65 | 32,33
+        }
+        else if (systemType == SystemTypes.HeliSabotage)
+        {
+            if (Main.NormalOptions.MapId != 4) goto YesCheat;
+            if (amount > 100)
+            {
+                if (SabotageWhiteList.ContainsKey(player.PlayerId))
+                {
+                    if (SabotageWhiteList[player.PlayerId] == systemType)
+                    {
+                        SabotageWhiteList.Remove(player.PlayerId);
+                        return false;
+                    }
+                } //If the sabotage is checked by host
+                else goto YesCheat;
+            }
+            else if (!(amount == 64 || amount == 65 || amount == 16 || amount == 17 || amount == 32 || amount == 33)) goto YesCheat;
+        }
+        else if (systemType == SystemTypes.MushroomMixupSabotage)
+        {
+            if (Main.NormalOptions.MapId != 5) goto YesCheat;
+            if (amount > 5) goto YesCheat; //Only 0 1 here
+        }
+        
         if (!GameStates.IsInGame || GameStates.IsMeeting)
         {
             WarnHost();
@@ -295,6 +411,17 @@ internal class EAC
             SabotageWhiteList.Remove(player.PlayerId);
 
         return false;
+
+    YesCheat:
+        {
+            WarnHost();
+            Report(player, "Bad Sabotage C");
+            //TempBanCheat(player, "Bad Sabotage C");
+            Logger.Fatal($"玩家【{player.GetClientId()}:{player.GetRealName()}】Bad Sabotage C，已驳回", "EAC");
+            if (SabotageWhiteList.ContainsKey(player.PlayerId))
+                SabotageWhiteList.Remove(player.PlayerId);
+            return true;
+        }
     }
     public static void Report(PlayerControl pc, string reason)
     {
