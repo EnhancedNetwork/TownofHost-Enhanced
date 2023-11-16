@@ -282,6 +282,7 @@ internal class EAC
         //    }
         //} //Check in sabotage system update sabotage bruhhh/ Cant read byte there
         */
+        //Following is amount check
         else if (systemType == SystemTypes.LifeSupp)
         {
             if (Main.NormalOptions.MapId != 0 && Main.NormalOptions.MapId != 3) goto YesCheat;
@@ -416,7 +417,7 @@ internal class EAC
         {
             WarnHost();
             Report(player, "Bad Sabotage C");
-            //TempBanCheat(player, "Bad Sabotage C");
+            TempBanCheat(player, "Bad Sabotage C");
             Logger.Fatal($"玩家【{player.GetClientId()}:{player.GetRealName()}】Bad Sabotage C，已驳回", "EAC");
             if (SabotageWhiteList.ContainsKey(player.PlayerId))
                 SabotageWhiteList.Remove(player.PlayerId);
@@ -448,7 +449,7 @@ internal class EAC
         BanManager.TempBanWhiteList.Add(pc.GetClient().GetHashedPuid());
         AmongUsClient.Instance.KickPlayer(pc.GetClientId(), true);
         Logger.Warn(msg, "EAC");
-        Logger.SendInGame(msg);
+        //Logger.SendInGame(msg);
     }
     public static void HandleCheat(PlayerControl pc, string text)
     {

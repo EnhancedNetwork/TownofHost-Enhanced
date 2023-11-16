@@ -1808,7 +1808,7 @@ class ReportDeadBodyPatch
                 EAC.TempBanCheat(__instance, "非法报告尸体B");
                 Logger.Fatal($"玩家【{__instance.GetClientId()}:{__instance.GetRealName()}】非法报告尸体B，已驳回", "EAC");
                 return false;
-            } //Normal a single can only be reported by a player once
+            } //Normal a single body can only be reported by a player once
 
             if (GameStates.IsMeeting && EAC.MeetingTimes[__instance.PlayerId] >= 3)
             {
