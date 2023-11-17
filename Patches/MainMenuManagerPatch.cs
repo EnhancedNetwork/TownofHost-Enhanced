@@ -34,7 +34,7 @@ public static class MainMenuManagerPatch
             if (RunLoginPatch.isAllowedOnline && !Main.hasAccess)
             {
                 var PlayLocalButton = __instance.playLocalButton;
-                PlayLocalButton.gameObject.SetActive(false);
+                if (PlayLocalButton != null) PlayLocalButton.gameObject.SetActive(false);
 
                 PlayOnlineButton.gameObject.SetActive(false);
                 DisconnectPopup.Instance.ShowCustom(GetString("NoAccess"));
