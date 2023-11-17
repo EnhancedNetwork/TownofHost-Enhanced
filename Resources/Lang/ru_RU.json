@@ -3430,5 +3430,6 @@
   "FFFCanKillContagious": "Может убить заразных",
   "FFFCanKillAdmired": "Может убить поклонного",
   "AutoMuteUs": "Включите, если используете AutoMuteUs",
+  "HorseMode": "Enable to become a horse",
   "InfluencedChangeVote": "Упс!\nТы видишь что остальные голосуют за {0}, и ты проголосовал за него!"
 }
