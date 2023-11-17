@@ -10,6 +10,7 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem UnlockFPS;
     private static ClientOptionItem ShowFPS;
     private static ClientOptionItem AutoMuteUs;
+    private static ClientOptionItem HorseMode;
     private static ClientOptionItem EnableGM;
     private static ClientOptionItem AutoStart;
     private static ClientOptionItem ForceOwnLanguage;
@@ -61,6 +62,10 @@ public static class OptionsMenuBehaviourStartPatch
         if (AutoMuteUs == null || AutoMuteUs.ToggleButton == null)
         {
             AutoMuteUs = ClientOptionItem.Create("AutoMuteUs", Main.AutoMuteUs, __instance);
+        }
+        if (HorseMode == null || HorseMode.ToggleButton == null)
+        {
+            HorseMode = ClientOptionItem.Create("HorseMode", Main.HorseMode, __instance, () => HorseModePatch.isHorseMode = !HorseModePatch.isHorseMode);
         }
         if (EnableGM == null || EnableGM.ToggleButton == null)
         {
