@@ -110,7 +110,7 @@ internal class EAC
                     {
                         WarnHost();
                         Report(pc, "非法击杀");
-                        TempBanCheat(pc, "非法报告尸体");
+                        TempBanCheat(pc, "大厅非法击杀");
                         Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】大厅非法击杀，已驳回", "EAC");
                         return true;
                     }
@@ -118,7 +118,7 @@ internal class EAC
                     {
                         WarnHost();
                         Report(pc, "非法击杀");
-                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法击杀，已驳回", "EAC");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】死人非法击杀，已驳回", "EAC");
                         return true;
                     }
                     break;
@@ -230,7 +230,8 @@ internal class EAC
     public static Dictionary<byte, SystemTypes> SabotageWhiteList = new();
     public static bool SabotageSystemCheck(PlayerControl player, SystemTypes systemType, byte amount)
     {
-        Logger.Info("Sabotage" + ", PlayerName: " + player.GetNameWithRole() + ", SabotageType: " + systemType.ToString() + ", amount: " + amount.ToString(), "EAC");
+        var Mapid = Main.NormalOptions.MapId;
+        //Logger.Info("Sabotage" + ", PlayerName: " + player.GetNameWithRole() + ", SabotageType: " + systemType.ToString() + ", amount: " + amount.ToString(), "EAC");
         if (player.AmOwner || !AmongUsClient.Instance.AmHost) return false;
         if (player.IsModClient()) return false;
         if (systemType == SystemTypes.Sabotage) //Vanilla sabotage using buttons
@@ -285,7 +286,7 @@ internal class EAC
         //Following is amount check
         else if (systemType == SystemTypes.LifeSupp)
         {
-            if (Main.NormalOptions.MapId != 0 && Main.NormalOptions.MapId != 3) goto YesCheat;
+            if (Mapid != 0 && Mapid != 1 && Mapid != 3) goto YesCheat;
             else if (amount >= 100)
             {
                 if (SabotageWhiteList.ContainsKey(player.PlayerId))
@@ -304,7 +305,7 @@ internal class EAC
         {
             if (amount == 0)
             {
-                if (Main.NormalOptions.MapId == 1 || Main.NormalOptions.MapId == 5) goto YesCheat;
+                if (Mapid == 1 || Mapid == 5) goto YesCheat;
             }
             else if (amount > 100)
             {
@@ -320,13 +321,13 @@ internal class EAC
             }
             else if (amount == 64 || amount == 65 || amount == 32 || amount == 33 || amount == 16 || amount == 17)
             {
-                if (!(Main.NormalOptions.MapId == 1 || Main.NormalOptions.MapId == 5)) goto YesCheat;
+                if (!(Mapid == 1 || Mapid == 5)) goto YesCheat;
             }
             else goto YesCheat;
         }
         else if (systemType == SystemTypes.Electrical)
         {
-            if (Main.NormalOptions.MapId == 5) goto YesCheat;
+            if (Mapid == 5) goto YesCheat;
             if (amount > 10) //0 - 4 normal lights, > 50 sabotage
             {
                 if (SabotageWhiteList.ContainsKey(player.PlayerId))
@@ -342,7 +343,7 @@ internal class EAC
         }
         else if (systemType == SystemTypes.Laboratory)
         {
-            if (Main.NormalOptions.MapId != 2) goto YesCheat;
+            if (Mapid != 2) goto YesCheat;
             if (amount > 100)
             {
                 if (SabotageWhiteList.ContainsKey(player.PlayerId))
@@ -359,7 +360,7 @@ internal class EAC
         }
         else if (systemType == SystemTypes.Reactor)
         {
-            if (Main.NormalOptions.MapId == 2 || Main.NormalOptions.MapId == 4) goto YesCheat;
+            if (Mapid == 2 || Mapid == 4) goto YesCheat;
             if (amount > 100)
             {
                 if (SabotageWhiteList.ContainsKey(player.PlayerId))
@@ -377,7 +378,7 @@ internal class EAC
         }
         else if (systemType == SystemTypes.HeliSabotage)
         {
-            if (Main.NormalOptions.MapId != 4) goto YesCheat;
+            if (Mapid != 4) goto YesCheat;
             if (amount > 100)
             {
                 if (SabotageWhiteList.ContainsKey(player.PlayerId))
@@ -394,16 +395,15 @@ internal class EAC
         }
         else if (systemType == SystemTypes.MushroomMixupSabotage)
         {
-            if (Main.NormalOptions.MapId != 5) goto YesCheat;
+            if (Mapid != 5) goto YesCheat;
             if (amount > 5) goto YesCheat; //Only 0 1 here
         }
         
-        if (!GameStates.IsInGame || GameStates.IsMeeting)
+        if (!GameStates.IsInGame || GameStates.IsVoting)
         {
             WarnHost();
             Report(player, "Bad Sabotage D");
-            if ((GameStates.IsVoting || GameStates.IsLobby))
-                TempBanCheat(player, "Bad Sabotage D");
+            TempBanCheat(player, "Bad Sabotage D");
             Logger.Fatal($"玩家【{player.GetClientId()}:{player.GetRealName()}】Bad Sabotage D，已驳回", "EAC");
             return true;
         }
