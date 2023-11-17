@@ -767,10 +767,10 @@
   "GuardianAngelTOHEInfoLong": "(Coéquipiers):\\n En tant qu'ange gardien, vous êtes le premier coéquipier à être mort et vous pouvez donner des boucliers temporaires aux coéquipiers.",
   "ImpostorTOHEInfoLong": "(Imposteurs):\\nEn tant qu'Imposteur, votre but est tout simplement de tuer les Coéquipiers.\\nVous pouvez saboter et entrer dans les conduits.",
   "CrewmateTOHEInfoLong": "(Coéquipiers):\nEn tant que Coéquipier, vous devrez vous débarrasser des Imposteurs.\nIls peuvent aussi gagner s'ils finissent toutes leurs tâches.",
-  "BountyHunterInfoLong": "(Impostors):\nAs the Bounty Hunter, if you kill your assigned Target (indicated by the arrow, if you have one), your next kill cooldown will be shortened.\nIf you kill anyone other than your target, your next kill cooldown will be increased.The Target swaps after a certain amount of time.",
-  "FireWorksInfoLong": "(Impostors):\nAs the Fireworker, you can Shapeshift to place Fireworks, up to the max amount set by host.\nWhen you are the last Impostor and all Fireworks have been placed, shapeshift again to detonate them and kill everyone in their radius, including you.\nIf you kill all players with your Fireworks, it's considered an Impostor victory.",
-  "SerialKillerInfoLong": "(Impostors):\nAs the Mercenary, you must kill within your Deadline shown by your Shapeshift cooldown (which you cannot use). If you fail to kill, you die.",
-  "ShapeMasterInfoLong": "(Impostors):\nAs the Shapemaster, you have no Shapeshift cooldown.",
+  "BountyHunterInfoLong": "(Imposteur)\\n En tant que chasseur de prime, si vous tuer votre cible assignée (indiqué par une flèche, si vous en avez une), votre prochain temps de recharge pour tuer sera plus court\\n Si vous tuer une autre personne que votre cible, votre prochain temps de recharge pour tuer sera accru.\\n Votre cible sera changé après une certaine periode de temps.",
+  "FireWorksInfoLong": "(Imposteurs):\\n En tant qu'artificier, vous pouvez vous métamorphosez pour poser des feux d'artifice, jusqu'au nombre maximum mis par l'hôte.\\n Quand vous êtes le dernier imposteur et que touts les artifices ont été placé, métamorphosé vous encore pour exploser touts les artifices et tuer tout le monde dans à leur porté, vous incluant.\\nSi vous tuer touts les joueurs avec vos feux d'artifice, cela est considéré comme une victoire des imposteurs.",
+  "SerialKillerInfoLong": "(Imposteurs):\\n En tant qu'Imposteur, vous devez tuer avant que le minuteur affiché par votre temps de recharge de la métamorphose (que vous ne pouvez pas utiliser) soit à 0. Si vous ne réussissez pas à tuer, vous mourrez.",
+  "ShapeMasterInfoLong": "(Imposteurs):\\n En tant que maitre de la métamorphose, vous n'avez pas de temps d'attente pour vous métamorphoser.",
   "VampireInfoLong": "(Impostors):\nAs the Vampire, your kills are delayed. If a meeting is called first, your target still dies. If you bite a Bait, you kill normally and report the body.",
   "VampiressInfoLong": "(Impostors):\nAs the Vampiress, you can Bite players like a Vampire (single click) or kill normally (double click).",
   "WarlockInfoLong": "(Impostors):\nAs the Warlock, you can Curse up to one other player at a time.\nWhen you Shapeshift, if you have Cursed a player, they kill the nearest person, which, depending on settings, can include you or other Impostors.\nYou can kill normally while Shapeshifted.",
@@ -3430,5 +3430,6 @@
   "FFFCanKillContagious": "Peut tuer l'équipe des virus",
   "FFFCanKillAdmired": "Peut tuer l'admirateur",
   "AutoMuteUs": "Activez-le si vous utilisez AutoMuteUs",
+  "HorseMode": "Enable to become a horse",
   "InfluencedChangeVote": "Oops ! Vous êtes influencé par les autres !\\n Vous ne pouvez pas contenir votre peur et que vous votez {0} à la place !"
 }
