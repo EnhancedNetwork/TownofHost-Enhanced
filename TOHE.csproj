@@ -40,9 +40,6 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="MySql.Data" Version="8.0.32.1" />
-        <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
-        <PackageReference Include="System.Security.Permissions" Version="7.0.0" />
     </ItemGroup>
     
   <Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">

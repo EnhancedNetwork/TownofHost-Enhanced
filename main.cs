@@ -48,6 +48,8 @@ public class Main : BasePlugin
     public const bool fullRelease = false;
     public const bool devRelease = true;
 
+    public static bool hasAccess = true;
+
     public static readonly bool ShowGitHubButton = true;
     public static readonly bool ShowKofiButton = true;
     public static readonly string GitHubInviteUrl = "https://github.com/0xDrMoe/TownofHost-Enhanced";
