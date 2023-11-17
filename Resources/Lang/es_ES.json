@@ -3430,5 +3430,6 @@
   "FFFCanKillContagious": "Puede matar al equipo del Virus",
   "FFFCanKillAdmired": "Puede matar a los Admiradores",
   "AutoMuteUs": "Activa esta opción si usas AutoMuteUs",
+  "HorseMode": "Enable to become a horse",
   "InfluencedChangeVote": "¡Uy! ¡Fuiste influenciado por los otros!\n¡No pudiste contener tu miedo y voto ha cambiado {0}!"
 }
