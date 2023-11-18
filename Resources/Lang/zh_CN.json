@@ -1036,7 +1036,7 @@
   "CircumventInfoLong": "(附加职业):\n规避者无法无法使用通风管，且只能分配给内鬼阵营",
   "NimbleInfoLong": "(附加职业):\n敏捷的你可以使用通风管",
   "RepairmanInfoLong": "(附加职业):\n维修员可以比其他玩家更快地修复大多数破坏",
-  "InfluencedInfoLong": "(附加职业):\n影响者的投票将被强制投给票数最多的玩家。\n注意：影响者的技能和投票图标仍对最初投票的玩家有效。",
+  "InfluencedInfoLong": "(Add-ons):\nAs the Influenced, your vote will be forced to the player with the most votes.\nNote that your skill and vote icon still functions on the player you voted at first\nCollector cannot become influenced.",
   "CyberInfoLong": "(附加职业):\n网络员在自己的阵营中不会被击杀。\n此外，你的死亡还将被告知",
   "HurriedInfoLong": "(附加职业):\n焦急者必须完成所有的任务才能跟随所在阵营获胜。\n因为急着做任务，所以不会被仰慕、招募、魅惑或变成叛徒等",
   "OiiaiInfoLong": "(附加职业):\nOiiai死亡时，会让击杀Oiiai的玩家忘记他们的身份。\n根据房主设定，你可以将Oiiai传递给杀死你的人。",
