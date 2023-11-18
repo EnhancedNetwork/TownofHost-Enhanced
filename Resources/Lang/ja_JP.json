@@ -1036,7 +1036,7 @@
   "CircumventInfoLong": "(アドオン):\nサーカムヴェントとして、ベントを使用できません。\nインポスターにのみ割り当てられます。",
   "NimbleInfoLong": "(アドオン):\n器用な役割として、あなたはベントボタンにアクセスできます。\nこの能力は一部のクルーメイトにのみ与えられます。",
   "RepairmanInfoLong": "(アドオン):\nリペアマンとして、他のプレイヤーよりもずっと早くほとんどのサボタージュを修理できます。",
-  "InfluencedInfoLong": "(アドオン):\nインフルエンスを受けた場合、あなたの投票は最も多くの投票を得たプレイヤーに強制されます。最初に投票したプレイヤーに対して、あなたのスキルと投票アイコンは依然として機能することに注意してください。",
+  "InfluencedInfoLong": "(Add-ons):\nAs the Influenced, your vote will be forced to the player with the most votes.\nNote that your skill and vote icon still functions on the player you voted at first\nCollector cannot become influenced.",
   "CyberInfoLong": "(アドオン):\nサイバーとして、グループにいる間は殺されません。\nさらに、あなたの死は周知されます。",
   "HurriedInfoLong": "(アドオン):\n急いでいる場合、チームと一緒に勝つためにすべてのタスクを完了する必要があります！ タスクに失敗した場合、負けます。\n急いでいると、マッドメイト、チャームされたりしないように目標に急ぎます。",
   "OiiaiInfoLong": "(アドオン):\nオイアイ猫として、死亡した場合、殺害者が自分の役割を忘れるようになります。さらに、設定によっては、オイアイ猫を殺害者に渡すことができます。",
