@@ -81,7 +81,7 @@ public class PlayerState
         }
         if (role == CustomRoles.Opportunist)
         {
-            if (Options.OppoImmuneToAttacksWhenTasksDone.GetBool() && pc != null && !pc.Data.IsDead)
+            if (Options.OppoImmuneToAttacksWhenTasksDone.GetBool() && pc != null && pc.IsAlive())
             {
                 var taskState = pc.GetPlayerTaskState();
                 taskState.CompletedTasksCount = 0;
