@@ -170,9 +170,8 @@ namespace TOHE.Roles.Neutral
 
         public static bool CanBeInfected(this PlayerControl pc)
         {
-            return true && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Contagious) && !pc.Is(CustomRoles.Loyal) 
-                && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Succubus) && !pc.Is(CustomRoles.Infectious)
-                && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
+            return true && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Contagious) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Infectious) && !pc.Is(CustomRoles.Infected)
+                && !(pc.Is(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
         }
     }
 }

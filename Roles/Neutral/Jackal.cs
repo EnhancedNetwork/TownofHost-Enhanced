@@ -3,6 +3,7 @@ using HarmonyLib;
 using Hazel;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Modules;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -152,7 +153,7 @@ public static class Jackal
         }
         if (!CanRecruitSidekick.GetBool() || RecruitLimit[killer.PlayerId] < 1) return false;
         
-        if (SidekickAssignMode.GetValue() != 2)
+        if (SidekickAssignMode.GetValue() != 2 && ConvertManager.GetConvertSubRole(killer, CustomRoles.Recruit) == CustomRoles.Recruit)
         {
             if (CanBeSidekick(target))
             {
@@ -174,7 +175,8 @@ public static class Jackal
                 killer.SetKillCooldown();
                 if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
                 target.RpcGuardAndKill(killer);
-                target.RpcGuardAndKill(target);
+                target.ResetKillCooldown();
+                target.SetKillCooldown(forceAnime: true);
 
                 Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Sidekick.ToString(), "Assign " + CustomRoles.Sidekick.ToString());
                 
@@ -187,25 +189,27 @@ public static class Jackal
         }
         if (SidekickAssignMode.GetValue() != 1)
         {
-            if (!target.GetCustomRole().IsNeutral() && !target.Is(CustomRoles.Sidekick) && !target.Is(CustomRoles.Recruit) && !target.Is(CustomRoles.Loyal) && !target.Is(CustomRoles.Admired))
+            var ConvertSubRole = ConvertManager.GetConvertSubRole(killer, CustomRoles.Recruit);
+
+            if (ConvertManager.CanBeConvertSubRole(target, ConvertSubRole, killer))
             {
                 RecruitLimit[killer.PlayerId]--;
                 SendRPC(killer.PlayerId);
-                target.RpcSetCustomRole(CustomRoles.Recruit);
+                Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + ConvertSubRole.ToString(), "Jackal Assign");
+                target.RpcSetCustomRole(ConvertSubRole);
 
                 Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
                 Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
 
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(ConvertSubRole), GetString("GangsterSuccessfullyRecruited")));
+                target.Notify(Utils.ColorString(Utils.GetRoleColor(ConvertSubRole), GetString("BeRecruitedByJackal")));
 
                 killer.ResetKillCooldown();
-                killer.SetKillCooldown();
+                killer.SetKillCooldown(forceAnime: true);
                 if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
                 target.RpcGuardAndKill(killer);
-                target.RpcGuardAndKill(target);
-
-                Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Sidekick.ToString(), "Assign " + CustomRoles.Sidekick.ToString());
+                target.ResetKillCooldown();
+                target.SetKillCooldown(forceAnime: true);
                 
                 if (RecruitLimit[killer.PlayerId] < 0)
                     HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
@@ -217,7 +221,6 @@ public static class Jackal
         if (RecruitLimit[killer.PlayerId] < 0)
             HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
         
-        //killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterRecruitmentFailure")));
         Logger.Info($"{killer.GetNameWithRole()} : 剩余{RecruitLimit[killer.PlayerId]}次招募机会", "Jackal");
         return false;
     }
@@ -226,9 +229,8 @@ public static class Jackal
     public static bool CanBeSidekick(this PlayerControl pc)
     {
         return pc != null && !pc.Is(CustomRoles.Sidekick) && !pc.Is(CustomRoles.Recruit) 
-            && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Rascal) && !pc.Is(CustomRoles.Madmate) 
-            && !pc.Is(CustomRoles.Charmed) && !pc.Is(CustomRoles.Infected) && !pc.Is(CustomRoles.DualPersonality) 
+            && !pc.Is(CustomRoles.Loyal)&& !pc.Is(CustomRoles.Infected) && !pc.Is(CustomRoles.DualPersonality) 
             && !pc.Is(CustomRoles.Contagious) && pc.GetCustomRole().IsAbleToBeSidekicked() 
-            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
+            && !(pc.Is(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     }
 }

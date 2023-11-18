@@ -1,5 +1,6 @@
 ﻿using Hazel;
 using System.Collections.Generic;
+using TOHE.Modules;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -82,14 +83,16 @@ public static class Succubus
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Succubus), GetString("CantRecruit")));
             return;
         }
-        else if (CanBeCharmed(target) && Mini.Age == 18 || CanBeCharmed(target) && Mini.Age < 18 && !(target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
+        var ConvertSubRole = ConvertManager.GetConvertSubRole(killer, CustomRoles.Charmed);
+        if (ConvertManager.CanBeConvertSubRole(target, ConvertSubRole, killer))
         {
             CharmLimit--;
             SendRPC();
-            target.RpcSetCustomRole(CustomRoles.Charmed);
+            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + ConvertSubRole.ToString(), "Succubus Assign");
+            target.RpcSetCustomRole(ConvertSubRole);
 
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Succubus), GetString("SuccubusCharmedPlayer")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Succubus), GetString("CharmedBySuccubus")));
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(ConvertSubRole), GetString("SuccubusCharmedPlayer")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(ConvertSubRole), GetString("CharmedBySuccubus")));
             
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
             Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
@@ -98,13 +101,14 @@ public static class Succubus
             killer.SetKillCooldown();
             if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
             target.RpcGuardAndKill(killer);
-            target.RpcGuardAndKill(target);
+            target.ResetKillCooldown();
+            target.SetKillCooldown(forceAnime: true);
 
             Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Charmed.ToString(), "Assign " + CustomRoles.Charmed.ToString());
             Logger.Info($"{killer.GetNameWithRole()} : 剩余{CharmLimit}次魅惑机会", "Succubus");
             return;
         }
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Succubus), GetString("SuccubusInvalidTarget")));
+        killer.Notify(Utils.ColorString(Utils.GetRoleColor(ConvertSubRole), GetString("SuccubusInvalidTarget")));
         Logger.Info($"{killer.GetNameWithRole()} : 剩余{CharmLimit}次魅惑机会", "Succubus");
         return;
     }
@@ -119,9 +123,7 @@ public static class Succubus
     public static bool CanBeCharmed(this PlayerControl pc)
     {
         return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || 
-            (CanCharmNeutral.GetBool() && pc.GetCustomRole().IsNeutral())) && !pc.Is(CustomRoles.Charmed) 
-            && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Infectious) 
-            && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Succubus)
-            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
+            (CanCharmNeutral.GetBool() && pc.GetCustomRole().IsNeutral())) && !pc.Is(CustomRoles.Charmed) && !pc.Is(CustomRoles.Loyal)
+            && !(pc.Is(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     }
 }

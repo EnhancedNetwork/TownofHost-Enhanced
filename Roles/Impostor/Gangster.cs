@@ -1,5 +1,6 @@
 ﻿using Hazel;
 using System.Collections.Generic;
+using TOHE.Modules;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
@@ -90,60 +91,20 @@ public static class Gangster
             return false;
         }
 
-        if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
+        if ((target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) && Mini.Age < 18)
         {
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("CantRecruit")));
             return false;
         }
 
-        if (CanBeGansterRecruit(target))
+        var ConvertSubRole = ConvertManager.GetConvertSubRole(killer, CustomRoles.Madmate);
+
+        if (ConvertManager.CanBeConvertSubRole(target, ConvertSubRole, killer))
         {
-            if (!killer.Is(CustomRoles.Admired) && !killer.Is(CustomRoles.Recruit) && !killer.Is(CustomRoles.Charmed)
-                && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious) && target.CanBeMadmate(inGame: true))
-            {
-                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Madmate.ToString(), "Ganster Assign");
-                target.RpcSetCustomRole(CustomRoles.Madmate);
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("GangsterSuccessfullyRecruited")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("BeRecruitedByGangster")));
-            }
-            else if (killer.Is(CustomRoles.Admired) && target.CanBeAdmired(killer))
-            {
-                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Admired.ToString(), "Ganster Assign");
-                target.RpcSetCustomRole(CustomRoles.Admired);
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admired), GetString("GangsterSuccessfullyRecruited")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admired), GetString("BeRecruitedByGangster")));
-                Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
-                Admirer.SendRPC(killer.PlayerId, target.PlayerId);
-            }
-            else if (killer.Is(CustomRoles.Recruit) && target.CanBeSidekick())
-            {
-                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Recruit.ToString(), "Ganster Assign");
-                target.RpcSetCustomRole(CustomRoles.Recruit);
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Recruit), GetString("GangsterSuccessfullyRecruited")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Recruit), GetString("BeRecruitedByGangster")));
-            }
-            else if (killer.Is(CustomRoles.Charmed) && target.CanBeCharmed())
-            {
-                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Charmed.ToString(), "Ganster Assign");
-                target.RpcSetCustomRole(CustomRoles.Charmed);
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Charmed), GetString("GangsterSuccessfullyRecruited")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Charmed), GetString("BeRecruitedByGangster")));
-            }
-            else if (killer.Is(CustomRoles.Infected) && target.CanBeInfected())
-            {
-                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Infected.ToString(), "Ganster Assign");
-                target.RpcSetCustomRole(CustomRoles.Infected);
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infected), GetString("GangsterSuccessfullyRecruited")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infected), GetString("BeRecruitedByGangster")));
-            }
-            else if (killer.Is(CustomRoles.Contagious) && target.CanBeInfected())
-            {
-                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Contagious.ToString(), "Ganster Assign");
-                target.RpcSetCustomRole(CustomRoles.Contagious);
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Contagious), GetString("GangsterSuccessfullyRecruited")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Contagious), GetString("BeRecruitedByGangster")));
-            }
-            else goto GangsterFailed;
+            Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + ConvertSubRole.ToString(), "Gangster Assign");
+            target.RpcSetCustomRole(ConvertSubRole);
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(ConvertSubRole), GetString("GangsterSuccessfullyRecruited")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(ConvertSubRole), GetString("BeRecruitedByGangster")));
 
             RecruitLimit[killer.PlayerId]--;
 
@@ -159,13 +120,14 @@ public static class Gangster
             SendRPC(killer.PlayerId);
             return true;
         }
-    GangsterFailed:
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("GangsterRecruitmentFailure")));
-        Logger.Info($"{killer.GetNameWithRole()} : 剩余{RecruitLimit[killer.PlayerId]}次招募机会", "Gangster");
-        SendRPC(killer.PlayerId);
-        Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
-        Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
-        return false;
+        else
+        {
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("GangsterRecruitmentFailure")));
+            Logger.Info($"{killer.GetNameWithRole()} : 剩余{RecruitLimit[killer.PlayerId]}次招募机会", "Gangster");
+            SendRPC(killer.PlayerId);
+            Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
+            return false;
+        }
     }
     public static string GetRecruitLimit(byte playerId) => Utils.ColorString(CanRecruit(playerId) ? Utils.GetRoleColor(CustomRoles.Gangster).ShadeColor(0.25f) : Color.gray, RecruitLimit.TryGetValue(playerId, out var recruitLimit) ? $"({recruitLimit})" : "Invalid");
 
@@ -174,6 +136,6 @@ public static class Gangster
         return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral())
             && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal)
             && !((pc.Is(CustomRoles.NiceMini) || pc.Is(CustomRoles.EvilMini)) && Mini.Age < 18)
-            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
+            && !(pc.Is(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     }
 }

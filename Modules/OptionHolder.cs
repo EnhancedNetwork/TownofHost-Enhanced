@@ -125,6 +125,7 @@ public static class Options
     public static OptionItem KillFlashDuration;
     //public static OptionItem ShareLobby;
     //public static OptionItem ShareLobbyMinPlayer;
+    public static OptionItem UseSuperbConvertSystem;
     public static OptionItem DisableShieldAnimations;
     public static OptionItem DisableKillAnimationOnGuess;
     public static OptionItem DisableVanillaRoles;
@@ -3673,8 +3674,6 @@ public static class Options
             .SetValueFormat(OptionFormat.Seconds)
             .SetParent(FixFirstKillCooldown);
 
-
-
         // 首刀保护
         ShieldPersonDiedFirst = BooleanOptionItem.Create(60780, "ShieldPersonDiedFirst", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
@@ -3686,6 +3685,10 @@ public static class Options
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
 
+        //使用更逆天的招募转换
+        UseSuperbConvertSystem = BooleanOptionItem.Create(60795, "UseSuperbConvertSystem", false, TabGroup.GameSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
         // 幽灵相关设定
         TextOptionItem.Create(10000032, "MenuTitle.Ghost", TabGroup.GameSettings)
             .SetGameMode(CustomGameMode.Standard)

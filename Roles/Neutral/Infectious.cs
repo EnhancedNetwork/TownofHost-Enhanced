@@ -14,7 +14,7 @@ public static class Infectious
     private static int BiteLimit;
 
     public static OptionItem BiteCooldown;
-   // public static OptionItem BiteCooldownIncrese;
+    // public static OptionItem BiteCooldownIncrese;
     public static OptionItem BiteMax;
     public static OptionItem KnowTargetRole;
     public static OptionItem TargetKnowOtherTarget;
@@ -22,7 +22,7 @@ public static class Infectious
     public static OptionItem CanVent;
     public static OptionItem DoubleClickKill;
     public static OptionItem HideBittenRolesOnEject;
-    
+
 
     public static void SetupCustomOption()
     {
@@ -34,9 +34,9 @@ public static class Infectious
         KnowTargetRole = BooleanOptionItem.Create(Id + 13, "InfectiousKnowTargetRole", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);
         TargetKnowOtherTarget = BooleanOptionItem.Create(Id + 14, "InfectiousTargetKnowOtherTarget", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);
         HasImpostorVision = BooleanOptionItem.Create(Id + 15, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);
-        CanVent = BooleanOptionItem.Create(Id + 17, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);        
-        DoubleClickKill = BooleanOptionItem.Create(Id + 18, "DoubleClickKill", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);        
-    
+        CanVent = BooleanOptionItem.Create(Id + 17, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);
+        DoubleClickKill = BooleanOptionItem.Create(Id + 18, "DoubleClickKill", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);
+
     }
     public static void Init()
     {
@@ -116,7 +116,7 @@ public static class Infectious
             return false;
         }
         if (DoubleClickKill.GetBool())
-        { 
+        {
             bool check = killer.CheckDoubleTrigger(target, () => { InfectOrMurder(killer, target); });
             //Logger.Warn("VALUE OF CHECK IS")
             if (check)
@@ -130,7 +130,7 @@ public static class Infectious
         {
             return InfectOrMurder(killer, target);
         }
-        
+
     }
     public static void MurderInfectedPlayers()
     {
@@ -153,7 +153,7 @@ public static class Infectious
     public static string GetBiteLimit() => Utils.ColorString(BiteLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Infectious).ShadeColor(0.25f) : Color.gray, $"({BiteLimit})");
     public static bool CanBeBitten(this PlayerControl pc)
     {
-        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNK()) && !pc.Is(CustomRoles.Infected) && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Succubus) && !pc.Is(CustomRoles.Infectious) && !pc.Is(CustomRoles.Virus)
+        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral()) && !pc.Is(CustomRoles.Infected) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Infectious) && !pc.Is(CustomRoles.Virus)
         && !(
             false
             );

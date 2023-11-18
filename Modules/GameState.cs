@@ -53,7 +53,7 @@ public class PlayerState
                 _ => CustomRoles.Crewmate,
             };
     }
-    public void SetMainRole(CustomRoles role)
+    public void SetMainRole(CustomRoles role, PlayerControl pc = null)
     {
         MainRole = role;
         countTypes = role.GetCountTypes();
@@ -77,6 +77,17 @@ public class PlayerState
             if (!Options.ArsonistCanIgniteAnytime.GetBool())
             {
                 countTypes = CountTypes.Crew;
+            }
+        }
+        if (role == CustomRoles.Opportunist)
+        {
+            if (Options.OppoImmuneToAttacksWhenTasksDone.GetBool() && pc != null && !pc.Data.IsDead)
+            {
+                var taskState = pc.GetPlayerTaskState();
+                taskState.CompletedTasksCount = 0;
+                GameData.Instance.RpcSetTasks(pc.PlayerId, new byte[0]);
+                pc.RpcGuardAndKill();
+                Logger.Info("Reset task states upon become opportunist", "SetMainRole");
             }
         }
     }

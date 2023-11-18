@@ -267,6 +267,14 @@ class CheckMurderPatch
         if (targetRole.Is(CustomRoles.Spy) && !Spy.OnKillAttempt(killer, target))
             return false;
 
+        if (targetRole.Is(CustomRoles.Opportunist))
+        {
+            if (Options.OppoImmuneToAttacksWhenTasksDone.GetBool() && target.GetPlayerTaskState().IsTaskFinished)
+            {
+                return false;
+            }
+        }
+
         if (Alchemist.IsProtected && targetRole.Is(CustomRoles.Alchemist))
         {
             killer.SetKillCooldown(time: 5f);
@@ -798,16 +806,9 @@ class CheckMurderPatch
         // Romantic partner is protected
         if (Romantic.BetPlayer.ContainsValue(target.PlayerId) && Romantic.isPartnerProtected) return false;
 
-        if (Options.OppoImmuneToAttacksWhenTasksDone.GetBool())
-        {
-            if (target.Is(CustomRoles.Opportunist) && target.AllTasksCompleted())
-            return false;
-        }
-
         // Monarch immune to kills when a living player is knighted
         if (target.Is(CustomRoles.Monarch) && CustomRoles.Knighted.RoleExist())
             return false;
-
 
         // Traitor can't kill Impostors but Impostors can kill it
         if (killer.Is(CustomRoles.Traitor) && target.Is(CustomRoleTypes.Impostor))

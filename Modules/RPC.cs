@@ -58,6 +58,7 @@ enum CustomRPC
     SyncNameNotify,
     ShowPopUp,
     KillFlash,
+    SetPlayerConvert,
 
     //Roles
     SetDrawPlayer,
@@ -656,6 +657,9 @@ internal class RPCHandlerPatch
             case CustomRPC.KillFlash:
                 Utils.FlashColor(new(1f, 0f, 0f, 0.3f));
                 if (Constants.ShouldPlaySfx()) RPC.PlaySound(PlayerControl.LocalPlayer.PlayerId, Sounds.KillSound);
+                break;
+            case CustomRPC.SetPlayerConvert:
+                ConvertManager.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetBloodhoundArrow:
                 Bloodhound.ReceiveRPC(reader);
