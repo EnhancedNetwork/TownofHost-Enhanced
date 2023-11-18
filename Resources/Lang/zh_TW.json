@@ -1036,7 +1036,7 @@
   "CircumventInfoLong": "(附加職業):\n規避者無法使用管道，該附加職業僅會分配給偽裝者。",
   "NimbleInfoLong": "(附加職業):\n敏捷的你可以使用通風口，該職業僅會分配給某些船員。",
   "RepairmanInfoLong": "(附加職業):\n維修員可以更快的修理破壞。",
-  "InfluencedInfoLong": "(附加職業):\n順從者的投票將被強制投給票數最多的玩家。\n注意：順從者的技能和投票圖示仍對最初投票的玩家有效。",
+  "InfluencedInfoLong": "(Add-ons):\nAs the Influenced, your vote will be forced to the player with the most votes.\nNote that your skill and vote icon still functions on the player you voted at first\nCollector cannot become influenced.",
   "CyberInfoLong": "(附加職業):\n名人無法被己方陣營玩家殺死，此外，你的死亡將被公布。",
   "HurriedInfoLong": "(附加職業):\n焦急者必須完成所有的任務才能跟隨所在陣營獲勝。如果遊戲結束時你沒有完成所有任務，你則失敗。\\n由於你急著做任務，所以你不會被仰慕、招募、魅惑或成為叛徒",
   "OiiaiInfoLong": "(附加職業):\n當Oiiai死後，將會讓兇手忘記他們的職業。\n此外，依據房主設定，你可能會在被殺害時將Oiiai轉交給兇手。",
