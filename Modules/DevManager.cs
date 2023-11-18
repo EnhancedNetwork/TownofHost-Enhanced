@@ -130,6 +130,7 @@ public static class DevManager
         // French Translators
         DevUserList.Add(new(code: "bigecho#5256", color: "#0131b4", tag: "Traducteur", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "KevOut")); //kevoutings
         DevUserList.Add(new(code: "fivedogged#3140", color: "#0B1FB8", tag: "Translator", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "Sansationnelle")); //shapmaster
+        DevUserList.Add(new(code: "trebleneck#7849", color: "#167eea", tag: "Translator", isUp: true, isDev: true, deBug: false, colorCmd: true, upName: "Furo")); //Furo
         // Japanese Translators
         DevUserList.Add(new(code: "deepmusic#4504", color: "#FCF4A3", tag: "Translator", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "Sunnyboi")); //misheru.u
         // Latam Translators
