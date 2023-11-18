@@ -1036,7 +1036,7 @@
   "CircumventInfoLong": "(Modificatori):\nCome Claustrofobico, non puoi usare i condotti.\n\nPuò essere assegnato solo agli Impostori.",
   "NimbleInfoLong": "(Modificatore):\nCome Agile, guadagni l'accesso all'utilizzo dei condotti.\n\nPuò essere assegnato solo a certi astronauti.",
   "RepairmanInfoLong": "(Modificatori):\nCome Riparatore, puoi riparare i sabotaggi molto più velocemente rispetto agli altri giocatori.",
-  "InfluencedInfoLong": "(Modificatori):\nCome l'Influenzato, il tuo voto verrà dato obbligatoriamente al giocatore col maggior numero di voti.\nRicorda che le tue abilità e l'icona del tuo voto funzioneranno sempre sul giocatore che hai votato per primo.",
+  "InfluencedInfoLong": "(Add-ons):\nAs the Influenced, your vote will be forced to the player with the most votes.\nNote that your skill and vote icon still functions on the player you voted at first\nCollector cannot become influenced.",
   "CyberInfoLong": "(Modificatori):\nCome Cyber, non puoi essere ucciso quando sei in gruppo.\nIn più, la tua morte sarà notificata.",
   "HurriedInfoLong": "(Modificatori):\nCome Frettoloso, devi finire tutti i tuoi incarichi per vincere con la tua squadra! Se fallisci nel completare i tuoi incarichi, perdi. Il Frettoloso si concentra sul suo obiettivo quindi non potrà diventare Follenauta, essere affascinato, ecc.",
   "OiiaiInfoLong": "(Modificatori):\nCome Oiiai, quando morirai, farai dimenticare al tuo assassino il suo ruolo.\nInoltre, potresti trasmettere Oiiai all'assassino, a seconda delle impostazioni.",
