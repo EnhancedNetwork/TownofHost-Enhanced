@@ -15,11 +15,10 @@
     
     <ItemGroup>
         <EmbeddedResource Include=".\Resources\**" />
-    </ItemGroup>  
-	
-    <ItemGroup>
-        <EmbeddedResource Include="dbConfig.json" />
     </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="token.env" />
+	</ItemGroup>
 	    
     <ItemGroup>
         <PackageReference Include="AmongUs.GameLibs.Steam" Version="2023.10.24" PrivateAssets="all" />
