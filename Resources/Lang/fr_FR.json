@@ -1036,7 +1036,7 @@
   "CircumventInfoLong": "(Add-ons):\\nEn tant que Circumvent, vous ne pouvez pas vous vent.\\n-Seulement assigné aux Imposteurs.",
   "NimbleInfoLong": "(Add-ons):\\nEn tant que Nimble, vous avez accès au bouton d'aération. \\n-Seulement assigné à certains Coéquipiers.",
   "RepairmanInfoLong": "(Add-ons):\\nEn tant que Réparateur, vous pouvez réparer la plupart des sabotages beaucoup plus rapidement que les autres joueurs.",
-  "InfluencedInfoLong": "(modifieurs):\\n En tant qu'influencé, vous serez forcé à voter le joueur avec le plus de vote.\\n Noté que vos compétences et que vos icônes de votes fonctionnera sur le joueur que vous avez voté en premier.",
+  "InfluencedInfoLong": "(Add-ons):\nAs the Influenced, your vote will be forced to the player with the most votes.\nNote that your skill and vote icon still functions on the player you voted at first\nCollector cannot become influenced.",
   "CyberInfoLong": "(Add-ons):\\nEn tant que Cyber, vous ne pouvez pas être tué lorsque vous êtes dans un groupe.\\nEn outre, votre mort sera connue.",
   "HurriedInfoLong": "(Add-ons):\nEn tant que pressé, vous devez terminer toutes vos tâches pour gagner avec votre équipe ! Si vous échouez dans vos tâches, vous perdez.\nHurried se dépêche d'atteindre son but pour ne pas être fou, charmé ou autre.",
   "OiiaiInfoLong": "(Add-ons):\nAs the Oiiai, when you die, you will make your killer forget their role.\nAdditionally, you may pass Oiiai on to the killer, depending on settings.",
