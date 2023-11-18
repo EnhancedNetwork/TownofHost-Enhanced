@@ -1036,7 +1036,7 @@
   "CircumventInfoLong": "(Complementos): \nEl Pesado no puedes usar las ventilaciones. Solo asignado a Impostores.",
   "NimbleInfoLong": "(Complementos): \nEl Ágil obtiene acceso al botón de los conductos. \nSolo asignado a ciertos tripulantes.",
   "RepairmanInfoLong": "(Complementos): \nEl Reparador puede arreglar la mayoría de sabotajes en tiempo récord.",
-  "InfluencedInfoLong": "(Complementos): \nEl Influenciado siempre votará por el jugador con el mayor número de votos.\nNota: Tu habilidad e ícono de voto aún afectarán al jugador que hayas votado primero.",
+  "InfluencedInfoLong": "(Add-ons):\nAs the Influenced, your vote will be forced to the player with the most votes.\nNote that your skill and vote icon still functions on the player you voted at first\nCollector cannot become influenced.",
   "CyberInfoLong": "(Complementos): \nEl Cyber es tan popular que no puede ser asesinado con gente alrededor.\nAdicionalmente, todo el mundo será notificado cuando mueras.",
   "HurriedInfoLong": "(Complementos):\nEl Apresurado debe terminar todas sus tareas para ganar con su equipo. Si no lo haces, te quedarás en tierra.\nIntentar reclutarlo es una pérdida de tiempo porque tiene otras cosas que hacer.",
   "OiiaiInfoLong": "(Complementos):\nEl Oiiai hará que su asesino olvide su rol.\nTambién puedes pasar el Oiiai a tu asesino dependiendo de las opciones.",
