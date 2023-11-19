@@ -1,5 +1,4 @@
 using Hazel;
-using Il2CppSystem.Collections.Generic;
 using LibCpp2IL.Elf;
 using System.Collections.Generic;
 using TOHE.Modules;
@@ -22,14 +21,14 @@ public static class Admirer
     public static OptionItem KnowTargetRole;
     public static OptionItem SkillLimit;
     public static Dictionary<byte, int> AdmirerLimit;
-    public static Dictionary<byte, List<byte>> AdmiredList;
 
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.OtherRoles, CustomRoles.Admirer);
         AdmireCooldown = FloatOptionItem.Create(Id + 10, "AdmireCooldown", new(1f, 180f, 1f), 5f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Admirer])
             .SetValueFormat(OptionFormat.Seconds);
-        KnowTargetRole = BooleanOptionItem.Create(Id + 11, "AdmirerKnowTargetRole", true, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Admirer]);
+        KnowTargetRole = BooleanOptionItem.Create(Id + 11, "AdmirerKnowTargetRole", true, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Admirer])
+            .SetHidden(true);
         SkillLimit = IntegerOptionItem.Create(Id + 12, "AdmirerSkillLimit", new(0, 100, 1), 1, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Admirer])
             .SetValueFormat(OptionFormat.Times);
     }
@@ -37,14 +36,12 @@ public static class Admirer
     {
         playerIdList = new();
         AdmirerLimit = new();
-        AdmiredList = new();
         IsEnable = false;
     }
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         AdmirerLimit.Add(playerId, SkillLimit.GetInt());
-        AdmiredList.Add(playerId, new());
         IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
@@ -59,33 +56,13 @@ public static class Admirer
         writer.Write(AdmirerLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-
-    public static void SendRPC(byte playerId, byte targetId)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncAdmiredList, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.Write(targetId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-    public static void ReceiveRPC(MessageReader reader, bool isList)
+    public static void ReceiveRPC(MessageReader reader)
     {
         byte playerId = reader.ReadByte();
-        byte targetId;
-        int Limit;
-        if (!isList)
-        {
-            Limit = reader.ReadInt32();
-            if (!AdmirerLimit.ContainsKey(playerId))
-                AdmirerLimit.Add(playerId, Limit);
-            else AdmirerLimit[playerId] = Limit;
-        }
-        else
-        {
-            targetId = reader.ReadByte();
-            if (!AdmiredList.ContainsKey(playerId))
-                AdmiredList.Add(playerId, new());
-            else AdmiredList[playerId].Add(targetId);
-        }
+        int Limit = reader.ReadInt32();
+        if (!AdmirerLimit.ContainsKey(playerId))
+            AdmirerLimit.Add(playerId, Limit);
+        else AdmirerLimit[playerId] = Limit;
     }
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AdmirerLimit[id] >= 1 ? AdmireCooldown.GetFloat() : 300f;
     public static bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && (AdmirerLimit.TryGetValue(player.PlayerId, out var x) ? x : 1) >= 1;
@@ -104,6 +81,7 @@ public static class Admirer
             AdmirerLimit[killer.PlayerId]--;
             Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + convertSubRole.ToString(), "Admirer Assign");
             target.RpcSetCustomRole(convertSubRole);
+            ConvertManager.SetPlayerConverted(killer, target, convertSubRole);
             SendRPC(killer.PlayerId); //Sync skill
             killer.ResetKillCooldown();
             killer.SetKillCooldown(forceAnime: !DisableShieldAnimations.GetBool());
@@ -120,7 +98,8 @@ public static class Admirer
             return;
         }
     }
-    public static bool KnowRole(PlayerControl player, PlayerControl target) //Admirer knows target's role
+
+    /*public static bool KnowRole(PlayerControl player, PlayerControl target) //Admirer knows target's role
     {
         if (!KnowTargetRole.GetBool()) return false;
 
@@ -135,9 +114,9 @@ public static class Admirer
         {
             if (ConvertManager.KnowRole(player, target)) return true;
         }
-        
+
         return false;
-    }
+    }*/
     public static string GetAdmireLimit(byte playerId) => Utils.ColorString(AdmirerLimit[playerId] >= 1 ? Utils.GetRoleColor(CustomRoles.Admirer).ShadeColor(0.25f) : Color.gray, $"({AdmirerLimit[playerId]})");
     public static bool CanBeAdmired(this PlayerControl pc, PlayerControl admirer)
     {

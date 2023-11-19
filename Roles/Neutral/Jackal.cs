@@ -161,6 +161,7 @@ public static class Jackal
                 SendRPC(killer.PlayerId);
                 //if (!AttendantCantRoles.GetBool() && Mini.Age == 18 || !AttendantCantRoles.GetBool() &&  Mini.Age != 18 && !(target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
                 target.RpcSetCustomRole(CustomRoles.Sidekick);
+                ConvertManager.SetPlayerConverted(killer, target, CustomRoles.Recruit);
 
                 if (!Main.ResetCamPlayerList.Contains(target.PlayerId))
                     Main.ResetCamPlayerList.Add(target.PlayerId);
@@ -197,6 +198,7 @@ public static class Jackal
                 SendRPC(killer.PlayerId);
                 Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + ConvertSubRole.ToString(), "Jackal Assign");
                 target.RpcSetCustomRole(ConvertSubRole);
+                ConvertManager.SetPlayerConverted(killer, target, ConvertSubRole);
 
                 Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
                 Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);

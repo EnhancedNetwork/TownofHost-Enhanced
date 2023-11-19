@@ -14,7 +14,7 @@ namespace TOHE.Modules
      * Niko cant understand the conditions of virus and infectious
      * So currently these 2 roles are not supported by convert Manager
      * 
-     * Used by Gangster, Admirer, Jackal, Succubus
+     * Used by Gangster, Admirer, Jackal
      */
     public static class ConvertManager
     {
@@ -60,6 +60,9 @@ namespace TOHE.Modules
             if (target.Is(CustomRoles.Loyal) || target.Is(CustomRoles.Soulless)) return false;
             if ((target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) && Mini.Age < 18) return false;
             if (target.Is(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool()) return false;
+
+            if (target.Is(CustomRoles.Succubus) || target.Is(CustomRoles.Virus) || target.Is(CustomRoles.Infectious)) return false;
+            //Ban these three role until i fix it
 
             if (killer != null)
             {
@@ -125,8 +128,7 @@ namespace TOHE.Modules
                 }
                 return;
             }
-
-            /*
+            
             if (AmongUsClient.Instance.AmHost)
             {
                 if (AlreadyConverted.Count > 0)
@@ -155,7 +157,7 @@ namespace TOHE.Modules
                 }
                 Utils.NotifyRoles();
             }
-            */
+            
         }
 
         public static void SendRPC(byte killer, byte target, CustomRoles customRoles)

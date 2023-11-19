@@ -25,6 +25,7 @@ public static class Gangster
     public static OptionItem MarshallCanBeMadmate;
     public static OptionItem FarseerCanBeMadmate;
     public static OptionItem RetributionistCanBeMadmate;
+    public static OptionItem NeutralCanBeMadmate;
 
     public static Dictionary<byte, int> RecruitLimit = new();
 
@@ -43,7 +44,7 @@ public static class Gangster
         MarshallCanBeMadmate = BooleanOptionItem.Create(Id + 18, "GanMarshallCanBeMadmate", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Gangster]);
         FarseerCanBeMadmate = BooleanOptionItem.Create(Id + 19, "GanFarseerCanBeMadmate", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Gangster]);
         RetributionistCanBeMadmate = BooleanOptionItem.Create(Id + 20, "GanRetributionistCanBeMadmate", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Gangster]);
-
+        NeutralCanBeMadmate = BooleanOptionItem.Create(Id + 21, "GanNeutralCanBeMadmate", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Gangster]);
     }
     public static void Init()
     {
@@ -103,6 +104,7 @@ public static class Gangster
         {
             Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + ConvertSubRole.ToString(), "Gangster Assign");
             target.RpcSetCustomRole(ConvertSubRole);
+            ConvertManager.SetPlayerConverted(killer, target, ConvertSubRole);
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(ConvertSubRole), GetString("GangsterSuccessfullyRecruited")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(ConvertSubRole), GetString("BeRecruitedByGangster")));
 
@@ -133,8 +135,8 @@ public static class Gangster
 
     public static bool CanBeGansterRecruit(PlayerControl pc)
     {
-        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral())
-            && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal)
+        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral() && NeutralCanBeMadmate.GetBool())
+            && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Loyal)
             && !((pc.Is(CustomRoles.NiceMini) || pc.Is(CustomRoles.EvilMini)) && Mini.Age < 18)
             && !(pc.Is(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     }

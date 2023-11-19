@@ -3689,13 +3689,11 @@ public static class Options
         //使用更逆天的招募转换
         UseSuperbConvertSystem = BooleanOptionItem.Create(60795, "UseSuperbConvertSystem", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(193, 255, 209, byte.MaxValue))
-            .SetHidden(true);
+            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
 
         SuperbConvertDeadPlayer = BooleanOptionItem.Create(60796, "SuperbConvertDeadPlayer", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(193, 255, 209, byte.MaxValue))
-            .SetHidden(true);
+            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
         // 幽灵相关设定
         TextOptionItem.Create(10000032, "MenuTitle.Ghost", TabGroup.GameSettings)
             .SetGameMode(CustomGameMode.Standard)
