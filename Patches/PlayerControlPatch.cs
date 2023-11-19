@@ -1788,7 +1788,10 @@ class ReportDeadBodyPatch
         {
             if (EAC.MeetingTimes.TryGetValue(__instance.PlayerId, out int meetingtimes))
             {
-                EAC.MeetingTimes[__instance.PlayerId] = meetingtimes + 1;
+                if (!Main.OverDeadPlayerList.Contains(target.PlayerId))
+                {
+                    EAC.MeetingTimes[__instance.PlayerId] = meetingtimes + 1;
+                }
             }
             else EAC.MeetingTimes.Add(__instance.PlayerId, 1);
 
@@ -1801,7 +1804,7 @@ class ReportDeadBodyPatch
                 return false;
             }
 
-            if (EAC.MeetingTimes[__instance.PlayerId] >= 7)
+            if (EAC.MeetingTimes[__instance.PlayerId] >= 8)
             {
                 EAC.WarnHost();
                 EAC.Report(__instance, "非法报告尸体B");
