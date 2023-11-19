@@ -125,6 +125,8 @@ internal class ChangeRoleSettings
 
             ReportDeadBodyPatch.CanReport = new();
 
+            ConvertManager.AlreadyConverted = new();
+
             Options.UsedButtonCount = 0;
 
             GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor = false;

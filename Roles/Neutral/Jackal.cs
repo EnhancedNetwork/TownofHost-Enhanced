@@ -155,7 +155,7 @@ public static class Jackal
         
         if (SidekickAssignMode.GetValue() != 2 && ConvertManager.GetConvertSubRole(killer, CustomRoles.Recruit) == CustomRoles.Recruit)
         {
-            if (CanBeSidekick(target))
+            if (CanBeSidekick(target) && ConvertManager.CanBeConvertSubRole(target, CustomRoles.Recruit, killer))
             {
                 RecruitLimit[killer.PlayerId]--;
                 SendRPC(killer.PlayerId);

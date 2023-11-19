@@ -76,7 +76,9 @@ namespace TOHE.Modules
             switch (subRole)
             {
                 case CustomRoles.Admired:
-                    break; //重写
+                    if (Admirer.CanBeAdmired(target))
+                        return true;
+                    break;
                 case CustomRoles.Madmate:
                     if (Utils.CanBeMadmate(target, inGame: true))
                         goto Succeed;
@@ -128,7 +130,7 @@ namespace TOHE.Modules
                 }
                 return;
             }
-            
+
             if (AmongUsClient.Instance.AmHost)
             {
                 if (AlreadyConverted.Count > 0)
@@ -157,7 +159,7 @@ namespace TOHE.Modules
                 }
                 Utils.NotifyRoles();
             }
-            
+
         }
 
         public static void SendRPC(byte killer, byte target, CustomRoles customRoles)
@@ -201,6 +203,6 @@ namespace TOHE.Modules
 
             return false;
         }
-        
+
     }
 }
