@@ -1185,6 +1185,11 @@ static class ExtendedPlayerControl
             Main.AllPlayerKillCooldown[player.PlayerId] = kcd;
             Logger.Info($"kill cd of player set to {Main.AllPlayerKillCooldown[player.PlayerId]}", "Antidote");
         }
+        if (Main.AllPlayerKillCooldown[player.PlayerId] == 0)
+        {
+            if (player.Is(CustomRoles.Chronomancer)) return;
+            Main.AllPlayerKillCooldown[player.PlayerId] = 0.3f;
+        }
     }
     public static bool IsNonCrewSheriff(this PlayerControl sheriff)
     {
