@@ -12,6 +12,7 @@ namespace TOHE.Modules
 {
     /*
      * Niko cant understand the conditions of virus and infectious
+     * Also Niko dont know how to set know role target for succubus
      * So currently these 2 roles are not supported by convert Manager
      * 
      * Used by Gangster, Admirer, Jackal

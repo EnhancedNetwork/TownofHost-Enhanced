@@ -3000,6 +3000,7 @@
   "GanMarshallCanBeMadmate": "<color=#5573AA>Marshall</color> can be converted",
   "GanRetributionistCanBeMadmate": "<color=#228B22>Retributionist</color> can be converted",
   "GanFarseerCanBeMadmate": "<color=#BA55D3>Overseer</color> can be converted",
+  "GanNeutralCanBeMadmate": "<color=#7f8c8d>Neutrals</color> can be converted",
   "RascalAppearAsMadmate": "Appear As <color=#ff1919>Madmate</color> On Ejection",
   "CouncillorDead": "Sorry, you can't murder from the dead.",
   "CouncillorMurderMax": "Sorry, you've reached the maximum amount of murders.",
@@ -3459,5 +3460,7 @@
   "FFFCanKillAdmired": "Can kill admirer",
   "AutoMuteUs": "Enable it if you use AutoMuteUs",
   "HorseMode": "Enable to become a horse",
+  "UseSuperbConvertSystem": "[UnStable] When a recruiter switches teams, all their recruited players follow suit.",
+  "SuperbConvertDeadPlayer": "Also convert dead players",
   "InfluencedChangeVote": "oops!You are so influenced by others!\nYou can not contain your fear that you change voted {0}!"
 }

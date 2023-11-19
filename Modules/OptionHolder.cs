@@ -3693,7 +3693,8 @@ public static class Options
 
         SuperbConvertDeadPlayer = BooleanOptionItem.Create(60796, "SuperbConvertDeadPlayer", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
+            .SetColor(new Color32(193, 255, 209, byte.MaxValue))
+            .SetParent(UseSuperbConvertSystem);
         // 幽灵相关设定
         TextOptionItem.Create(10000032, "MenuTitle.Ghost", TabGroup.GameSettings)
             .SetGameMode(CustomGameMode.Standard)
