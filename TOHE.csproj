@@ -15,11 +15,10 @@
     
     <ItemGroup>
         <EmbeddedResource Include=".\Resources\**" />
-    </ItemGroup>  
-	
-    <ItemGroup>
-        <EmbeddedResource Include="dbConfig.json" />
     </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="token.env" />
+	</ItemGroup>
 	    
     <ItemGroup>
         <PackageReference Include="AmongUs.GameLibs.Steam" Version="2023.10.24" PrivateAssets="all" />
@@ -40,9 +39,6 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="MySql.Data" Version="8.0.32.1" />
-        <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
-        <PackageReference Include="System.Security.Permissions" Version="7.0.0" />
     </ItemGroup>
     
   <Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">

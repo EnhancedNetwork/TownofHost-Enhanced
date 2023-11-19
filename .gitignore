@@ -4,7 +4,7 @@
 /.editorconfig
 /.vscode
 /.idea
-dbConfig.json
+token.env
 FodyWeavers.xsd
 TOHE.sln
 .vscode/settings.json
