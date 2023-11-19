@@ -1026,7 +1026,7 @@ static class ExtendedPlayerControl
                 Pursuer.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.FFF:
-                Main.AllPlayerKillCooldown[player.PlayerId] = 0f;
+                Main.AllPlayerKillCooldown[player.PlayerId] = 1f;
                 break;
             case CustomRoles.Medusa:
                 Medusa.SetKillCooldown(player.PlayerId);
