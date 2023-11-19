@@ -28,6 +28,18 @@ public static class MainMenuManagerPatch
         __instance.playButton.transform.gameObject.SetActive(Options.IsLoaded);
         if (TitleLogoPatch.LoadingHint != null)
             TitleLogoPatch.LoadingHint.SetActive(!Options.IsLoaded);
+        var PlayOnlineButton = __instance.PlayOnlineButton;
+        if (PlayOnlineButton != null)
+        {
+            if (RunLoginPatch.isAllowedOnline && !Main.hasAccess)
+            {
+                var PlayLocalButton = __instance.playLocalButton;
+                if (PlayLocalButton != null) PlayLocalButton.gameObject.SetActive(false);
+
+                PlayOnlineButton.gameObject.SetActive(false);
+                DisconnectPopup.Instance.ShowCustom(GetString("NoAccess"));
+            }
+        }
     }
 
     [HarmonyPatch(nameof(MainMenuManager.Start)), HarmonyPostfix, HarmonyPriority(Priority.Normal)]
