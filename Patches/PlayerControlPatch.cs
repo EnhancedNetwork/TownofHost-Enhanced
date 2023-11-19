@@ -1813,7 +1813,7 @@ class ReportDeadBodyPatch
                 return false;
             } //Normal a single body can only be reported by a player once
 
-            if (GameStates.IsMeeting && EAC.MeetingTimes[__instance.PlayerId] >= 3)
+            if (GameStates.IsMeeting && EAC.MeetingTimes[__instance.PlayerId] >= 5)
             {
                 EAC.WarnHost();
                 EAC.Report(__instance, "非法报告尸体B");
