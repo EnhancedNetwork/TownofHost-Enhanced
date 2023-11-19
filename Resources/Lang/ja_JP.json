@@ -3292,6 +3292,7 @@
   "TranRU": "ロシア語",
   "TranCHT": "中文 (繁體)",
   "OnlyShowPart": "一部のみ表示",
+  "NoAccess": "Unauthorized Access!!!\n\n Please open up a ticket in the discord server to know more (discord.gg/tohe)",
   "DCNotify.Hacking": "ハッキングで<color=#ff1919>禁止</color>されました。やめてください。",
   "DCNotify.Banned": "これは間違いだった場合はホストに連絡してください。あなたはこのロビーから<color=#ff1919>禁止</color>されました。",
   "DCNotify.Kicked": "あなたはこのロビーから<color=#ffff00>キック</color>されました。再参加することはできます。",

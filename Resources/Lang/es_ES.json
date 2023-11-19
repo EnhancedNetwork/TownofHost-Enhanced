@@ -3292,6 +3292,7 @@
   "TranRU": "Ruso",
   "TranCHT": "Chino (Tradicional)",
   "OnlyShowPart": "Solo mostrar parte",
+  "NoAccess": "Unauthorized Access!!!\n\n Please open up a ticket in the discord server to know more (discord.gg/tohe)",
   "DCNotify.Hacking": "Has sido <color=#ff1919>baneado</color> por usar hacks.\n\nPor favor, para.",
   "DCNotify.Banned": "Fuiste <color=#ff1919>baneado</color> de esta partida.\n\nPregúntale al Anfitrión. Quizá esto sea un error.",
   "DCNotify.Kicked": "Fuiste <color=#ffff00>expulsado</color> de esta partida.\n\nAún hay esperanza para volver.",

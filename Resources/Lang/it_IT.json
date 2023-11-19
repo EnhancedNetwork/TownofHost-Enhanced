@@ -1,5 +1,5 @@
 {
-  "LanguageID": "11",
+  "LanguageID": "10",
   "TextBelowVersionText": "",
   "HostText": "Host",
   "HostColor": "#902efd",
@@ -1036,7 +1036,7 @@
   "CircumventInfoLong": "(Modificatori):\nCome Claustrofobico, non puoi usare i condotti.\n\nPuò essere assegnato solo agli Impostori.",
   "NimbleInfoLong": "(Modificatore):\nCome Agile, guadagni l'accesso all'utilizzo dei condotti.\n\nPuò essere assegnato solo a certi astronauti.",
   "RepairmanInfoLong": "(Modificatori):\nCome Riparatore, puoi riparare i sabotaggi molto più velocemente rispetto agli altri giocatori.",
-  "InfluencedInfoLong": "(Add-ons):\nAs the Influenced, your vote will be forced to the player with the most votes.\nNote that your skill and vote icon still functions on the player you voted at first\nCollector cannot become influenced.",
+  "InfluencedInfoLong": "(Modificatori):\nCome l'Influenzato, il tuo voto verrà dato obbligatoriamente al giocatore col maggior numero di voti.\nRicorda che le tue abilità e l'icona del tuo voto funzioneranno sempre sul giocatore che hai votato per primo.\nIl Collezionista non potrà diventare influenzato.",
   "CyberInfoLong": "(Modificatori):\nCome Cyber, non puoi essere ucciso quando sei in gruppo.\nIn più, la tua morte sarà notificata.",
   "HurriedInfoLong": "(Modificatori):\nCome Frettoloso, devi finire tutti i tuoi incarichi per vincere con la tua squadra! Se fallisci nel completare i tuoi incarichi, perdi. Il Frettoloso si concentra sul suo obiettivo quindi non potrà diventare Follenauta, essere affascinato, ecc.",
   "OiiaiInfoLong": "(Modificatori):\nCome Oiiai, quando morirai, farai dimenticare al tuo assassino il suo ruolo.\nInoltre, potresti trasmettere Oiiai all'assassino, a seconda delle impostazioni.",
@@ -3292,6 +3292,7 @@
   "TranRU": "Russo",
   "TranCHT": "Cinese Tradizionale",
   "OnlyShowPart": "Mostrato solo parzialmente",
+  "NoAccess": "Accesso non Autorizzato!!!\n\n Per favore apri un ticket nel server Discord per saperne di più (discord.gg/tohe)",
   "DCNotify.Hacking": "Sei stato <color=#ff1919>bannato</color> per hacking.\n\nPer favore smettila.",
   "DCNotify.Banned": "Sei stato <color=#ff1919>bannato</color> da questa lobby.\n\nContatta l'host se è stato uno sbaglio.",
   "DCNotify.Kicked": "Sei stato <color=#ffff00>espulso</color> da questa lobby.\n\nPuoi comunque riunirti.",
@@ -3430,6 +3431,6 @@
   "FFFCanKillContagious": "Può uccidere squadra virus",
   "FFFCanKillAdmired": "Può uccidere Ammiratore",
   "AutoMuteUs": "Abilita se usi AutoMuteUs",
-  "HorseMode": "Enable to become a horse",
+  "HorseMode": "Attiva per diventare un cavallo",
   "InfluencedChangeVote": "Oops! Sei così influenzato dagli altri!\nNon riesci a contenere la tua paura e alla fine voti {0}!"
 }
