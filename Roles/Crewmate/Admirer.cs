@@ -123,13 +123,19 @@ public static class Admirer
     public static bool KnowRole(PlayerControl player, PlayerControl target) //Admirer knows target's role
     {
         if (!KnowTargetRole.GetBool()) return false;
-        if (!player.Is(CustomRoles.Admirer)) return false;
 
-        if (ConvertManager.AlreadyConverted.ContainsKey(player.PlayerId) && player.Is(CustomRoles.Admirer))
+        if ((player.Is(CustomRoles.Admirer) || player.Is(CustomRoles.Admirer))
+            && (target.Is(CustomRoles.Admirer) && target.Is(CustomRoles.Admired)))
         {
-            if (ConvertManager.AlreadyConverted[player.PlayerId].Contains(target.PlayerId)) return true;
+            if (ConvertManager.GetConvertSubRole(player, CustomRoles.Admired) == ConvertManager.GetConvertSubRole(target, CustomRoles.Admired))
+                return true;
         }
 
+        if (player.Is(CustomRoles.Admirer) || target.Is(CustomRoles.Admirer))
+        {
+            if (ConvertManager.KnowRole(player, target)) return true;
+        }
+        
         return false;
     }
     public static string GetAdmireLimit(byte playerId) => Utils.ColorString(AdmirerLimit[playerId] >= 1 ? Utils.GetRoleColor(CustomRoles.Admirer).ShadeColor(0.25f) : Color.gray, $"({AdmirerLimit[playerId]})");
