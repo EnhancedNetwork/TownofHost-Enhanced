@@ -125,7 +125,7 @@ namespace TOHE.Modules.ChatManager
                 if (GameStates.IsExilling)
                 {
                     Logger.Info($"死亡玩家嘗試於逐出畫面傳送訊息但遭到阻擋", "ChatManager");
-                    new LateTask(() => { SendPreviousMessagesToAll(); }, 0.01f);
+                    new LateTask(() => { SendPreviousMessagesToAll(); }, 7f);
                     return;
                 }
                 message = msg;
@@ -134,7 +134,6 @@ namespace TOHE.Modules.ChatManager
                         { player.PlayerId, message }
                     };
                 chatHistory.Add(newChatEntry);
-                Logger.Info($"saved message","ChatManager");
 
                 if (chatHistory.Count > maxHistorySize)
                     {
