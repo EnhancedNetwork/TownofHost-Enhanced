@@ -34,10 +34,16 @@ namespace TOHE.Roles.Impostor
 
             if (target.Is(CustomRoles.Avanger))
             {
-                var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId || Pelican.IsEaten(x.PlayerId) || Medic.ProtectList.Contains(x.PlayerId) || target.Is(CustomRoles.Pestilence));
-                pcList.Do(x => x.SetRealKiller(target));
-                pcList.Do(x => Main.PlayerStates[x.PlayerId].deathReason = PlayerState.DeathReason.Revenge);
-                pcList.Do(x => x.RpcMurderPlayerV3(x));
+                var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId); //No need to do extra check cause nobody is winning
+                pcList.Do(x =>
+                {
+                    x.Data.IsDead = true;
+                    x.SetRealKiller(target);
+                    Main.PlayerStates[x.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
+                    target.RpcSpecificMurderPlayer(x, x);
+                });
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.None);
+                return;
             }
 
             _ = new LateTask(() =>

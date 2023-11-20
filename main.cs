@@ -40,10 +40,15 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "1.2.1.4";
-    public const string PluginDisplayVersion = "1.2.1 dev 4";
+    public const string PluginVersion = "1.2.1.5";
+    public const string PluginDisplayVersion = "1.2.1 Canary 1";
     public static readonly string SupportedVersionAU = "2023.10.24";
-    public const bool Canary = false; // Unused variable?
+    /******************* Change one of the three variables to true before making a release. *******************/
+    public const bool Canary = true; // Unused variable? ---- not unused anymore :)
+    public const bool fullRelease = false;
+    public const bool devRelease = false;
+
+    public static bool hasAccess = true;
 
     public static readonly bool ShowGitHubButton = true;
     public static readonly bool ShowKofiButton = true;
@@ -75,6 +80,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> UnlockFPS { get; private set; }
     public static ConfigEntry<bool> ShowFPS { get; private set; }
     public static ConfigEntry<bool> AutoMuteUs { get; private set; }
+    public static ConfigEntry<bool> HorseMode { get; private set; }
     public static ConfigEntry<bool> EnableGM { get; private set; }
     public static ConfigEntry<bool> AutoStart { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguage { get; private set; }
@@ -432,6 +438,7 @@ public class Main : BasePlugin
         AutoStart = Config.Bind("Client Options", "AutoStart", false);
         UnlockFPS = Config.Bind("Client Options", "UnlockFPS", false);
         ShowFPS = Config.Bind("Client Options", "ShowFPS", false);
+        HorseMode = Config.Bind("Client Options", "HorseMode", false);
         EnableGM = Config.Bind("Client Options", "EnableGM", false);
         AutoStart = Config.Bind("Client Options", "AutoStart", false);
         ForceOwnLanguage = Config.Bind("Client Options", "ForceOwnLanguage", false);

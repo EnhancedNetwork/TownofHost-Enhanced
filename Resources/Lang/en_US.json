@@ -1036,7 +1036,7 @@
   "CircumventInfoLong": "(Add-ons):\nAs the Circumvent, you can't vent.\n\nOnly assigned to Impostors.",
   "NimbleInfoLong": "(Add-ons):\nAs the Nimble, you gain access to the vent button.\n\nOnly assigned to certain crewmates.",
   "RepairmanInfoLong": "(Add-ons):\nAs the Repairman, you can fix most sabotages much faster than other players.",
-  "InfluencedInfoLong": "(Add-ons):\nAs the Influenced, your vote will be forced to the player with the most votes.\nNote that your skill and vote icon still functions on the player you voted at first.",
+  "InfluencedInfoLong": "(Add-ons):\nAs the Influenced, your vote will be forced to the player with the most votes.\nNote that your skill and vote icon still functions on the player you voted at first\nCollector cannot become influenced.",
   "CyberInfoLong": "(Add-ons):\nAs the Cyber, you cannot be killed while in a group.\nAdditionally, your death will be known.",
   "HurriedInfoLong": "(Add-ons):\nAs the hurried, you must finish all your tasks to win with your team! If you failed with your tasks, you lose.\nHurried hurries to his goal so it won't get madmate,charmed or so.",
   "OiiaiInfoLong": "(Add-ons):\nAs the Oiiai, when you die, you will make your killer forget their role.\nAdditionally, you may pass Oiiai on to the killer, depending on settings.",
@@ -3320,6 +3320,7 @@
   "TranRU": "Russian",
   "TranCHT": "Chinese Traditional",
   "OnlyShowPart": "Shown only part",
+  "NoAccess": "Unauthorized Access!!!\n\n Please open up a ticket in the discord server to know more (discord.gg/tohe)",
   "DCNotify.Hacking": "You were <color=#ff1919>banned</color> for hacking.\n\nPlease stop.",
   "DCNotify.Banned": "You were <color=#ff1919>banned</color> from this lobby.\n\nContact the host if this was a mistake.",
   "DCNotify.Kicked": "You were <color=#ffff00>kicked</color> from this lobby.\n\nYou may still rejoin.",
@@ -3458,5 +3459,6 @@
   "FFFCanKillContagious": "Can kill virus team",
   "FFFCanKillAdmired": "Can kill admirer",
   "AutoMuteUs": "Enable it if you use AutoMuteUs",
+  "HorseMode": "Enable to become a horse",
   "InfluencedChangeVote": "oops!You are so influenced by others!\nYou can not contain your fear that you change voted {0}!"
 }
