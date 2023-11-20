@@ -1036,7 +1036,7 @@
   "CircumventInfoLong": "(Atributos):\nComo Claustrofóbico, você não pode ventar. Atribuído somente a Impostores.",
   "NimbleInfoLong": "(Atributos):\n★O Ágil tem acesso as ventilações. \n★Apenas atribuido para certos tripulantes.",
   "RepairmanInfoLong": "(Atributos):Como Reparador, você pode consertar a maioria das sabotagens muito mais rápido do que os outros jogadores.",
-  "InfluencedInfoLong": "(Add-ons):\nAs the Influenced, your vote will be forced to the player with the most votes.\nNote that your skill and vote icon still functions on the player you voted at first\nCollector cannot become influenced.",
+  "InfluencedInfoLong": "(Atributos):\nComo o Influenciado, seu voto será forçado ao jogador com a maior quantidade de votos.\nNota: Seu ícone de habilidade e voto ainda aparecerá no jogador que você votou inicialmente.",
   "CyberInfoLong": "(Atributos):\nComo Cibernético, você não pode ser morto enquanto estiver em um grupo.\nAlém disso, sua morte será conhecida.",
   "HurriedInfoLong": "(Atributos):\nvocê deve concluir todas as suas tarefas para vencer com sua equipe! Se falhar em suas tarefas, você perderá.",
   "OiiaiInfoLong": "(Atributos):\\nComo Borracha, você apagará a função principal do seu assassino.\\nAdicionalmente, a Borracha poderá passar para o assassino.\\nUm jogador pode apenas ser apagado uma vez (incluindo a Borracha).",
@@ -3292,7 +3292,7 @@
   "TranRU": "Russo",
   "TranCHT": "Chinês tradicional",
   "OnlyShowPart": "Mostrar apenas parte",
-  "NoAccess": "Unauthorized Access!!!\n\n Please open up a ticket in the discord server to know more (discord.gg/tohe)",
+  "NoAccess": "Acesso não autorizado!!!\n\n Por favor, abra um ticket no servidor discord para saber mais (discord.gg/tohe)",
   "DCNotify.Hacking": "Você foi <color=#ff1919>banido</color> por uso hack.\n\nPor favor pare.",
   "DCNotify.Banned": "Você foi <color=#ff1919>banido</color> dessa sala.\n\nConfira com o Anfitrião se foi um erro.",
   "DCNotify.Kicked": "Você foi <color=#ffff00>expulso</color> dessa sala.\n\nVocê pode entrar novamente.",
@@ -3431,6 +3431,6 @@
   "FFFCanKillContagious": "Pode matar Time do Vírus",
   "FFFCanKillAdmired": "Pode matar Admirador",
   "AutoMuteUs": "Habilitar se você usa AutoMuteUs",
-  "HorseMode": "Enable to become a horse",
+  "HorseMode": "Ative para virar um cavalo",
   "InfluencedChangeVote": "oops! Você é tão influenciado pelos outros!\n Você não pode conter seu peso e votar {0} no lugar!"
 }
