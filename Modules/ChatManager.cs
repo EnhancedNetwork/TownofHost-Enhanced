@@ -61,15 +61,14 @@ namespace TOHE.Modules.ChatManager
 
         public static void SendMessage(PlayerControl player, string message)
         {
-            int operate = 0; // 1:ID 2:猜测 5:LavaChatFix
+            int operate = 0; // 1:ID 2:猜测
             string msg = message;
             string playername = player.GetNameWithRole();
             message = message.ToLower().TrimStart().TrimEnd();
-            if (!player.IsAlive() || !AmongUsClient.Instance.AmHost) return;
+
             if (GameStates.IsInGame) operate = 3;
             if (CheckCommond(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id")) operate = 1;
             else if (CheckCommond(ref msg, "shoot|guess|bet|st|gs|bt|猜|赌|sp|jj|tl|trial|审判|判|审|compare|cmp|比较|duel|sw|换票|换|swap|st|finish|reveal", false)) operate = 2;
-            if (GameStates.IsProceeding && !player.IsAlive()) operate = 5;
             if ((operate == 1 || Blackmailer.ForBlackmailer.Contains(player.PlayerId)) && player.IsAlive())
             {
                 Logger.Info($"包含特殊信息，不记录", "ChatManager");
@@ -90,26 +89,27 @@ namespace TOHE.Modules.ChatManager
             }
             else if (operate == 3)
             {
+                if (GameStates.IsExilling)
+                {
+                    Logger.Info($"死亡玩家嘗試於逐出畫面傳送訊息但遭到阻擋", "ChatManager");
+                    new LateTask(() => { SendPreviousMessagesToAll(); }, 0.01f);
+                    return;
+                }
                 message = msg;
                 Dictionary<byte, string> newChatEntry = new()
-                {
-                    { player.PlayerId, message }
-                };
+                    {
+                        { player.PlayerId, message }
+                    };
                 chatHistory.Add(newChatEntry);
+                Logger.Info($"saved message","ChatManager");
 
                 if (chatHistory.Count > maxHistorySize)
-                {
-                    chatHistory.RemoveAt(0);
+                    {
+                        chatHistory.RemoveAt(0);
+                    }
+                    cancel = false;
                 }
-                cancel = false;
             }
-            else if (operate == 5)
-            {
-                Logger.Info($"死亡玩家嘗試於逐出畫面傳送訊息'{msg}'但遭到阻擋", "ChatManager");
-                message = msg;
-                SendPreviousMessagesToAll();
-            }
-        }
 
         public static void SendPreviousMessagesToAll()
         {
@@ -159,6 +159,7 @@ namespace TOHE.Modules.ChatManager
                 var senderMessage = entry[senderId];
                 var senderPlayer = Utils.GetPlayerById(senderId);
                 if (senderPlayer == null) continue;
+                if (GameStates.IsExilling) return;
 
                 var playerDead = !senderPlayer.IsAlive();
                 if (playerDead)
