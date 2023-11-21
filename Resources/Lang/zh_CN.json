@@ -3292,7 +3292,7 @@
   "TranRU": "俄语",
   "TranCHT": "繁体中文",
   "OnlyShowPart": "仅显示部分",
-  "NoAccess": "未经授权的访问\n你是不是没有经过授权就构建dll？\n请在 discord 服务器（discord.gg/tohe）上开票以了解更多信息。\n",
+  "NoAccess": "未经授权的访问\n你可能使用了泄露的dll/自行构建/没有链接你的Discord账户\n如有疑问，请在discord上开票(discord.gg/tohe)",
   "DCNotify.Hacking": "你被树懒超级无敌的反作弊系统踢了\r\n（树懒还在持续发疯）",
   "DCNotify.Banned": "你被该房间<color=#ff1919>封禁</color>\n\n如果这是个错误，请联系房主",
   "DCNotify.Kicked": "你被该房间<color=#ffff00>踢出</color>\n\n你仍然可以重新加入",
