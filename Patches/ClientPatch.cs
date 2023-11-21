@@ -89,6 +89,7 @@ internal class RunLoginPatch
         if (ClickCount >= 10) ModUpdater.forceUpdate = false;
 #endif
     }
+
     public static void Postfix(ref bool canOnline)
     {
         isAllowedOnline = canOnline;
