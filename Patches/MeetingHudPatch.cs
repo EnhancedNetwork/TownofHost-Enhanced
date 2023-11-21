@@ -915,9 +915,8 @@ class MeetingHudStartPatch
             if (Main.GodMode.Value == true)
             {
                 roleTextMeeting.enabled = true;
-            } 
+            }
         }
-
         if (Options.SyncButtonMode.GetBool())
         {
             Utils.SendMessage(string.Format(GetString("Message.SyncButtonLeft"), Options.SyncedButtonCount.GetFloat() - Options.UsedButtonCount));
@@ -1257,12 +1256,14 @@ class MeetingHudUpdatePatch
     {
         //Meeting Skip with vote counting on keystroke (m + delete)
         if (Input.GetKeyDown(KeyCode.F6))
+        if (AmongUsClient.Instance.AmHost && Input.GetKeyDown(KeyCode.F6))
         {
             __instance.CheckForEndVoting();
         }
         //
 
         if (Input.GetMouseButtonUp(1) && Input.GetKey(KeyCode.LeftControl))
+        if (AmongUsClient.Instance.AmHost && Input.GetMouseButtonUp(1) && Input.GetKey(KeyCode.LeftControl))
         {
             __instance.playerStates.DoIf(x => x.HighlightedFX.enabled, x =>
             {

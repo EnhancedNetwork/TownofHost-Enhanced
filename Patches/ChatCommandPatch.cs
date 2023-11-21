@@ -134,7 +134,6 @@ internal class ChatCommands
                     canceled = true;
                     Utils.ShowLastRoles();
                     break;
-
                 case "/rn":
                 case "/rename":
                 case "/renomear":
@@ -1463,7 +1462,7 @@ internal class ChatCommands
                  }
             */
               
-                if (player.FriendCode.GetDevUser().IsMod)
+                if (!player.FriendCode.GetDevUser().IsMod)
                 {
                     Utils.SendMessage(GetString("idCommandNoAccess"), player.PlayerId);
                     break;
@@ -1489,7 +1488,7 @@ internal class ChatCommands
                */
                
                 //checking if player is has necessary privellege or not
-                if (player.FriendCode.GetDevUser().IsMod)
+                if (!player.FriendCode.GetDevUser().IsMod)
                 {
                     Utils.SendMessage(GetString("midCommandNoAccess"), player.PlayerId);
                     break;
@@ -1505,7 +1504,6 @@ internal class ChatCommands
             case "/ban":
             case "/banir":
                 //canceled = true;
-                
                /*
                 // Check if the ban command is enabled in the settings
                 if (Options.ApplyModeratorList.GetValue() == 0)
@@ -1516,7 +1514,7 @@ internal class ChatCommands
                 */
 
                 // Check if the player has the necessary privileges to use the command
-                if (player.FriendCode.GetDevUser().IsMod)
+                if (!player.FriendCode.GetDevUser().IsMod)
                 {
                     Utils.SendMessage(GetString("BanCommandNoAccess"), player.PlayerId);
                     break;
@@ -1538,29 +1536,26 @@ internal class ChatCommands
                     Utils.SendMessage(GetString("BanCommandInvalidID"), player.PlayerId);
                     break;
                 }
-
+              /*
                 if (banPlayerId == 0)
                 {
                     Utils.SendMessage(GetString("BanCommandBanHost"), player.PlayerId);
                     break;
                 }
-
+              */
                 var bannedPlayer = Utils.GetPlayerById(banPlayerId);
                 if (bannedPlayer == null)
                 {
                     Utils.SendMessage(GetString("BanCommandInvalidID"), player.PlayerId);
                     break;
                 }
-
-                /*
+                
                 // Prevent moderators from baning other moderators
                 if (Utils.IsPlayerModerator(bannedPlayer.FriendCode))
                 {
                     Utils.SendMessage(GetString("BanCommandBanMod"), player.PlayerId);
                     break;
                 }
-                */
-
                 // Ban the specified player
                 AmongUsClient.Instance.KickPlayer(bannedPlayer.GetClientId(), true);
                 string bannedPlayerName = bannedPlayer.GetRealName();
@@ -1646,9 +1641,8 @@ internal class ChatCommands
                 break;
             case "/kick":
             case "/expulsar":
-            
                /*
-                Check if the kick command is enabled in the settings
+                // Check if the kick command is enabled in the settings
                 if (Options.ApplyModeratorList.GetValue() == 0)
                 {
                     Utils.SendMessage(GetString("KickCommandDisabled"), player.PlayerId);
@@ -1657,7 +1651,7 @@ internal class ChatCommands
                */
                 
                 // Check if the player has the necessary privileges to use the command
-                if (player.FriendCode.GetDevUser().IsMod)
+                if (!player.FriendCode.GetDevUser().IsMod)
                 {
                     Utils.SendMessage(GetString("KickCommandNoAccess"), player.PlayerId);
                     break;
@@ -1669,13 +1663,13 @@ internal class ChatCommands
                     Utils.SendMessage(GetString("KickCommandInvalidID"), player.PlayerId);
                     break;
                 }
-
+              /*
                 if (kickPlayerId == 0)
                 {
                     Utils.SendMessage(GetString("KickCommandKickHost"), player.PlayerId);
                     break;
                 }
-
+              */
                 var kickedPlayer = Utils.GetPlayerById(kickPlayerId);
                 if (kickedPlayer == null)
                 {
@@ -1683,14 +1677,12 @@ internal class ChatCommands
                     break;
                 }
 
-                /*
                 // Prevent moderators from kicking other moderators
                 if (Utils.IsPlayerModerator(kickedPlayer.FriendCode))
                 {
                     Utils.SendMessage(GetString("KickCommandKickMod"), player.PlayerId);
                     break;
                 }
-                */
 
                 // Kick the specified player
                 AmongUsClient.Instance.KickPlayer(kickedPlayer.GetClientId(), false);

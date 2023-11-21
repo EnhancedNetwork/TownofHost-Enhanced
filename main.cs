@@ -40,11 +40,15 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "1.2.1.4";
-    public const string PluginDisplayVersion = "1.2.1 dev 4";
+    public const string PluginVersion = "1.2.1.5";
+    public const string PluginDisplayVersion = "1.2.1 Canary 1";
     public static readonly string SupportedVersionAU = "2023.10.24";
-    public const bool Canary = false; // Unused variable?
+    /******************* Change one of the three variables to true before making a release. *******************/
+    public const bool Canary = true; // Unused variable? ---- not unused anymore :)
+    public const bool fullRelease = false;
+    public const bool devRelease = false;
 
+    public static bool hasAccess = true;
     public static readonly bool ShowGitHubButton = true;
     public static readonly bool ShowKofiButton = true;
     public static readonly string GitHubInviteUrl = "https://github.com/0xDrMoe/TownofHost-Enhanced";
@@ -75,6 +79,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> UnlockFPS { get; private set; }
     public static ConfigEntry<bool> ShowFPS { get; private set; }
     public static ConfigEntry<bool> AutoMuteUs { get; private set; }
+    public static ConfigEntry<bool> HorseMode { get; private set; }
     public static ConfigEntry<bool> EnableGM { get; private set; }
     public static ConfigEntry<bool> AutoStart { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguage { get; private set; }
@@ -95,7 +100,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> AvoidBans { get; private set; }
     public static ConfigEntry<bool> SpeedBoost { get; private set; }
     public static ConfigEntry<bool> BigSize { get; private set; }
-     
+    
     public static Dictionary<byte, PlayerVersion> playerVersion = new();
     //Preset Name Options
     public static ConfigEntry<string> Preset1 { get; private set; }
@@ -439,9 +444,9 @@ public class Main : BasePlugin
         AutoStart = Config.Bind("Client Options", "AutoStart", false);
         UnlockFPS = Config.Bind("Client Options", "UnlockFPS", false);
         ShowFPS = Config.Bind("Client Options", "ShowFPS", false);
+        HorseMode = Config.Bind("Client Options", "HorseMode", false);
         EnableGM = Config.Bind("Client Options", "EnableGM", false);
         AutoStart = Config.Bind("Client Options", "AutoStart", false);
-        VersionCheat = Config.Bind("Client Options", "VersionCheat", false);
         ForceOwnLanguage = Config.Bind("Client Options", "ForceOwnLanguage", false);
         ForceOwnLanguageRoleName = Config.Bind("Client Options", "ForceOwnLanguageRoleName", false);
         EnableCustomButton = Config.Bind("Client Options", "EnableCustomButton", false);
@@ -459,7 +464,7 @@ public class Main : BasePlugin
         SpeedBoost = Config.Bind("Client Options", "SpeedBoost", false);
         BigSize = Config.Bind("Client Options", "BigSize", false);
         AutoMuteUs = Config.Bind("Client Options", "AutoMuteUs", false); // The AutoMuteUs bot fails to match the host's name.
-        
+       
         Logger = BepInEx.Logging.Logger.CreateLogSource("TOHE");
         TOHE.Logger.Enable();
         TOHE.Logger.Disable("NotifyRoles");

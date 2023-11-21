@@ -1036,7 +1036,7 @@
   "CircumventInfoLong": "(附加職業):\n規避者無法使用管道，該附加職業僅會分配給偽裝者。",
   "NimbleInfoLong": "(附加職業):\n敏捷的你可以使用通風口，該職業僅會分配給某些船員。",
   "RepairmanInfoLong": "(附加職業):\n維修員可以更快的修理破壞。",
-  "InfluencedInfoLong": "(附加職業):\n順從者的投票將被強制投給票數最多的玩家。\n注意：順從者的技能和投票圖示仍對最初投票的玩家有效。",
+  "InfluencedInfoLong": "(附加職業):\n順從者的投票將被強制投給票數最多的玩家。\n請注意: \n1. 順從者的技能和投票圖示仍對最初投票的玩家有效。\n2. 集票者無法成為順從者。",
   "CyberInfoLong": "(附加職業):\n名人無法被己方陣營玩家殺死，此外，你的死亡將被公布。",
   "HurriedInfoLong": "(附加職業):\n焦急者必須完成所有的任務才能跟隨所在陣營獲勝。如果遊戲結束時你沒有完成所有任務，你則失敗。\\n由於你急著做任務，所以你不會被仰慕、招募、魅惑或成為叛徒",
   "OiiaiInfoLong": "(附加職業):\n當Oiiai死後，將會讓兇手忘記他們的職業。\n此外，依據房主設定，你可能會在被殺害時將Oiiai轉交給兇手。",
@@ -1476,7 +1476,7 @@
   "SheriffCanKillMadmate": "可以執法<color=#ff1919>叛徒</color>",
   "SheriffCanKillInfected": "可以執法<color=#7B8968>被感染</color>的玩家",
   "SheriffCanKillContagious": "可執法<color=#2E8B57>被傳染</color>的玩家",
-  "SheriffSetMadCanKill": "單獨設定<color=#ff1919>背叛的警長</color>可以執法的目標(預設全開)",
+  "SheriffSetMadCanKill": "允許非<color=#8cffff>船員陣營</color>的<color=#f8cd46>警長</color>隨意執法",
   "SheriffMadCanKillImp": "背叛後可以執法<color=#ff1919>偽裝者陣營</color>",
   "SheriffMadCanKillNeutral": "背叛後可以執法<color=#7f8c8d>中立陣營</color>",
   "SheriffMadCanKillCrew": "背叛後可以執法<color=#8cffff>船員陣營</color>",
@@ -3292,6 +3292,7 @@
   "TranRU": "俄語",
   "TranCHT": "繁體中文",
   "OnlyShowPart": "僅顯示部分",
+  "NoAccess": "Unauthorized Access!!!\n\n Please open up a ticket in the discord server to know more (discord.gg/tohe)",
   "DCNotify.Hacking": "您被Innersloth的反作弊系統踢出了\r\n(Innersloth還在持續發瘋)",
   "DCNotify.Banned": "您被該房間封禁",
   "DCNotify.Kicked": "您被該房間踢出",
@@ -3430,5 +3431,6 @@
   "FFFCanKillContagious": "單身狗能殺死受傳染者",
   "FFFCanKillAdmired": "單身狗能殺死被仰慕者",
   "AutoMuteUs": "大廳中不修改玩家名稱（以兼容AutoMuteUs）",
+  "HorseMode": "變成一隻馬",
   "InfluencedChangeVote": "你受到了他人的影響\n於是你跟隨大多數人一起投票給了 {0}！"
 }

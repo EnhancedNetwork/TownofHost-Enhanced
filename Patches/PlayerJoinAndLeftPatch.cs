@@ -121,7 +121,7 @@ class OnPlayerJoinedPatch
           client.Character.RawSetName(name1);
         }
       */
-        
+      
         if (DestroyableSingleton<FriendsListManager>.Instance.IsPlayerBlockedUsername(client.FriendCode) && AmongUsClient.Instance.AmHost)
         {
             AmongUsClient.Instance.KickPlayer(client.Id, true);

@@ -109,6 +109,8 @@ public class GameStartManagerPatch
                 TextMeshPro textoadicional = __instance.GameRoomButton.transform.GetChild(1).GetComponent<TextMeshPro>();
                 textoadicional.text = "Modificado por";
                 textoadicional.ForceMeshUpdate(false, false);
+                __instance.GameRoomNameCode.color = new(255, 255, 255, 0);
+                GameStartManagerStartPatch.HideName.enabled = true;
             }
             else
             {

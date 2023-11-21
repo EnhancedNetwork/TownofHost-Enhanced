@@ -1036,7 +1036,7 @@
   "CircumventInfoLong": "(Атрибут)\nРасстройчивый не может вентоваться.\n\nНазначается только Предателям.",
   "NimbleInfoLong": "(Атрибут)\nКак Шустрый, вы получаете доступ к кнопке вентиляции.\n\nДоступно только некоторым Членам Экипажа.",
   "RepairmanInfoLong": "(Атрибут):\nМеханик может чинить большинство саботажей гораздо быстрее, чем другие игроки",
-  "InfluencedInfoLong": "(Атрибут):\nКак Влиятельный, ваш голос перенаправляется к человеку с самым большим количеством голосов.\nСпособности будут активированы на игроке за которого вы проголосовали.",
+  "InfluencedInfoLong": "(Add-ons):\nAs the Influenced, your vote will be forced to the player with the most votes.\nNote that your skill and vote icon still functions on the player you voted at first\nCollector cannot become influenced.",
   "CyberInfoLong": "(Атрибут):\nЗнаменитого нельзя убить, пока он находится в группе игроков.\nКроме того, о его смерти узнают все",
   "HurriedInfoLong": "(Атрибут):\nКак опоздавший, вам нужно успеть сделать свои задания, чтобы победить со своей командой! Если вы не успеете их сделать, вы проиграете.",
   "OiiaiInfoLong": "(Add-ons):\nAs the Oiiai, when you die, you will make your killer forget their role.\nAdditionally, you may pass Oiiai on to the killer, depending on settings.",
@@ -3292,6 +3292,7 @@
   "TranRU": "Русский Переводчик",
   "TranCHT": "Традиционный Китайский",
   "OnlyShowPart": "Показана только часть",
+  "NoAccess": "Unauthorized Access!!!\n\n Please open up a ticket in the discord server to know more (discord.gg/tohe)",
   "DCNotify.Hacking": "Вы были <color=#ff1919>забанены</color> за читерство.",
   "DCNotify.Banned": "Вам запрещено входить в эту комнату",
   "DCNotify.Kicked": "Вас кикнули из комнаты",
@@ -3430,5 +3431,6 @@
   "FFFCanKillContagious": "Может убить заразных",
   "FFFCanKillAdmired": "Может убить поклонного",
   "AutoMuteUs": "Включите, если используете AutoMuteUs",
+  "HorseMode": "Enable to become a horse",
   "InfluencedChangeVote": "Упс!\nТы видишь что остальные голосуют за {0}, и ты проголосовал за него!"
 }

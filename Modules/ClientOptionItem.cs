@@ -1,4 +1,4 @@
-﻿using BepInEx.Configuration;
+using BepInEx.Configuration;
 using System;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -73,6 +73,10 @@ public class ClientOptionItem
                 {
                     CustomBackground.gameObject.SetActive(true);
                 }));
+                if (leaveButton != null)
+                    leaveButton.transform.localPosition = new(-1.35f, -2.411f, -1f);
+                if (returnButton != null)
+                    returnButton.transform.localPosition = new(1.35f, -2.411f, -1f);
             }
 
             // ボタン生成

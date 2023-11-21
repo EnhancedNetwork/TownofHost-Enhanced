@@ -1036,7 +1036,7 @@
   "CircumventInfoLong": "(Agregados):\nCon el agregado de \"Pesado\", no puedes usar ductos.\n\nSolo se puede asignar a Impostores.",
   "NimbleInfoLong": "(Agregados):\nCon el agregado de \"Ágil\", tienes acceso al voton de usar ducto.\n\nSólo se puede asignar a ciertos tripulantes.",
   "RepairmanInfoLong": "(Agregados):\nCon el agregado de \"Reparador\", puedes reparar sabotajes mucho más rapido que otros jugadores.",
-  "InfluencedInfoLong": "(Agregados)\nCon el agregado de Influenciado, tu voto será forzado a cambiar para el jugador con más votos.\nTen en cuenta que tu habilidad y el ícono de votar funciona en el jugador que votaste al inicio.",
+  "InfluencedInfoLong": "(Add-ons):\nAs the Influenced, your vote will be forced to the player with the most votes.\nNote that your skill and vote icon still functions on the player you voted at first\nCollector cannot become influenced.",
   "CyberInfoLong": "(Agregados):\nCon el agregado de \"Cyber\", no puedes ser asesinado si estás en grupo.\nAdicionalmente, tu muerte lo sabrán todos los jugadores.",
   "HurriedInfoLong": "(Add-ons):\nAs the hurried, you must finish all your tasks to win with your team! If you failed with your tasks, you lose.\nHurried hurries to his goal so it won't get madmate,charmed or so.",
   "OiiaiInfoLong": "(Add-ons):\nAs the Oiiai, when you die, you will make your killer forget their role.\nAdditionally, you may pass Oiiai on to the killer, depending on settings.",
@@ -3292,6 +3292,7 @@
   "TranRU": "Ruso",
   "TranCHT": "Chino (Tradicional)",
   "OnlyShowPart": "Se muestra solo una parte",
+  "NoAccess": "Unauthorized Access!!!\n\n Please open up a ticket in the discord server to know more (discord.gg/tohe)",
   "DCNotify.Hacking": "Estas <color=#ff1919>vetado</color> por uso ed hacks.",
   "DCNotify.Banned": "Estas <color=#ff1919>vetado</color> de este lobby.\n\nContacta al anfitrión si crees que fue un error.",
   "DCNotify.Kicked": "Fuiste <color=#ffff00>expulsado</color> de este lobby.\n\nPuedes reconectarte.",
@@ -3430,5 +3431,6 @@
   "FFFCanKillContagious": "Puede matar al equipo del virus",
   "FFFCanKillAdmired": "Puede matar admiradores",
   "AutoMuteUs": "Permitirlo si usas AutoMuteUs",
+  "HorseMode": "Enable to become a horse",
   "InfluencedChangeVote": "¡Oops! ¡Eres influenciado por otros!\n¡No pudiste contener tu miedo que cambiaste el voto a {0}!"
 }

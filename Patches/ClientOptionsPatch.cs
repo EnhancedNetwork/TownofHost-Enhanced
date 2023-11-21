@@ -10,6 +10,7 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem UnlockFPS;
     private static ClientOptionItem ShowFPS;
     private static ClientOptionItem AutoMuteUs;
+    private static ClientOptionItem HorseMode;
     private static ClientOptionItem EnableGM;
     private static ClientOptionItem AutoStart;
     private static ClientOptionItem ForceOwnLanguage;
@@ -20,7 +21,6 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem ModeForSmallScreen;
     private static ClientOptionItem EnableRoleSummary;
     private static ClientOptionItem SwitchVanilla;
-    
 #if DEBUG
     private static CheatSettings VersionCheat;
     private static CheatSettings InfiniteVision;
@@ -61,6 +61,10 @@ public static class OptionsMenuBehaviourStartPatch
         if (AutoMuteUs == null || AutoMuteUs.ToggleButton == null)
         {
             AutoMuteUs = ClientOptionItem.Create("AutoMuteUs", Main.AutoMuteUs, __instance);
+        }
+        if (HorseMode == null || HorseMode.ToggleButton == null)
+        {
+            HorseMode = ClientOptionItem.Create("HorseMode", Main.HorseMode, __instance, () => HorseModePatch.isHorseMode = !HorseModePatch.isHorseMode);
         }
         if (EnableGM == null || EnableGM.ToggleButton == null)
         {
@@ -115,7 +119,6 @@ public static class OptionsMenuBehaviourStartPatch
                 Main.Instance.Unload();
             }
         }
-            
           #if DEBUG
             if ((VersionCheat == null || VersionCheat.ToggleButton == null) && DebugModeManager.AmDebugger)
             {
@@ -156,7 +159,6 @@ public static class OptionsMenuBehaviourStartPatch
         }
 #endif
     }
-
 [HarmonyPatch(typeof(OptionsMenuBehaviour), nameof(OptionsMenuBehaviour.Close))]
 public static class OptionsMenuBehaviourClosePatch
 {
