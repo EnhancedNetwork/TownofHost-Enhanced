@@ -119,7 +119,7 @@ public static class OptionsMenuBehaviourStartPatch
                 Main.Instance.Unload();
             }
         }
-          #if DEBUG
+#if DEBUG
             if ((VersionCheat == null || VersionCheat.ToggleButton == null) && DebugModeManager.AmDebugger)
             {
                 VersionCheat = CheatSettings.Create("VersionCheat", Main.VersionCheat, __instance);
@@ -159,14 +159,15 @@ public static class OptionsMenuBehaviourStartPatch
         }
 #endif
     }
-[HarmonyPatch(typeof(OptionsMenuBehaviour), nameof(OptionsMenuBehaviour.Close))]
-public static class OptionsMenuBehaviourClosePatch
-{
-    public static void Postfix()
+    [HarmonyPatch(typeof(OptionsMenuBehaviour), nameof(OptionsMenuBehaviour.Close))]
+    public static class OptionsMenuBehaviourClosePatch
     {
-        if (ClientOptionItem.CustomBackground != null)
+        public static void Postfix()
         {
-            ClientOptionItem.CustomBackground.gameObject.SetActive(false);
+            if (ClientOptionItem.CustomBackground != null)
+            {
+                ClientOptionItem.CustomBackground.gameObject.SetActive(false);
+            }
         }
     }
 }
