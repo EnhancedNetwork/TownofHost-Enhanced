@@ -170,4 +170,3 @@ public static class OptionsMenuBehaviourStartPatch
             }
         }
     }
-}
