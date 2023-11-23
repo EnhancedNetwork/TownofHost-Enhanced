@@ -2619,6 +2619,8 @@
   "GNoLow": "Oh, you're really nailing this! It's so low, I almost need a shovel to dig it up!\nYou have <color=#ff0000>{0} guesses</color> left!",
   "GNoHigh": "Oh, absolutely! You're getting warmer. In fact, it's so high, I need a telescope to see it from here! \nYou have <color=#ff0000>{0} guesses</color> left!",
   "GNoWon": "Oh, how did you ever figure that out? It's almost like you're a mind reader! Congratulations, you're a genius! You found the secret number with <color=#00ff00>{0} guesses</color> left!",
+  "RandCommandInfo": "<b>This Command can only be used when in lobby or after you die.</b>\n\ntype <b>/rand X Y</b> to get a number between X and Y, inclusive. \nX and Y can be any number between 0 and 2147483647, including both numbers.\nX must be less than Y.\n\nExample:- <b>/rand 0 99</b>",
+  "RandResult": "Congratulations, your random number is {0}! Wasn't that fun?",
   "ChanceToMiss": "Chance to miss a kill",
   "ImpCanBeClumsy": "<color=#ff1919>Impostors</color> can become Clumsy",
   "NeutralCanBeClumsy": "<color=#7f8c8d>Neutral Killers</color> can become Clumsy",
