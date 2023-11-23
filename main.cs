@@ -510,6 +510,7 @@ public class Main : BasePlugin
         TemplateManager.Init();
         //SpamManager.Init();
         DevManager.Init();
+        dbConnect.GetRoleTable();
         Cloud.Init();
 
         IRandom.SetInstance(new NetRandomWrapper());
