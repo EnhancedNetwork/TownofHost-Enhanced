@@ -1036,7 +1036,7 @@
   "CircumventInfoLong": "(Атрибут)\nРасстройчивый не может вентоваться.\n\nНазначается только Предателям.",
   "NimbleInfoLong": "(Атрибут)\nКак Шустрый, вы получаете доступ к кнопке вентиляции.\n\nДоступно только некоторым Членам Экипажа.",
   "RepairmanInfoLong": "(Атрибут):\nМеханик может чинить большинство саботажей гораздо быстрее, чем другие игроки",
-  "InfluencedInfoLong": "(Add-ons):\nAs the Influenced, your vote will be forced to the player with the most votes.\nNote that your skill and vote icon still functions on the player you voted at first\nCollector cannot become influenced.",
+  "InfluencedInfoLong": "(Add-ons):\nAs the Influenced, your vote will be forced to the player with the most votes.\nInfluenced vote won't be counted while choosing the exiled player'\nNote that your vote skill still functions on the player you voted first\nIf all the alive players are Influenced,then the vote result won't shift\nCollector cannot become influenced.",
   "CyberInfoLong": "(Атрибут):\nЗнаменитого нельзя убить, пока он находится в группе игроков.\nКроме того, о его смерти узнают все",
   "HurriedInfoLong": "(Атрибут):\nКак опоздавший, вам нужно успеть сделать свои задания, чтобы победить со своей командой! Если вы не успеете их сделать, вы проиграете.",
   "OiiaiInfoLong": "(Add-ons):\nAs the Oiiai, when you die, you will make your killer forget their role.\nAdditionally, you may pass Oiiai on to the killer, depending on settings.",
