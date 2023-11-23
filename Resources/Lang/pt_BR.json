@@ -2619,6 +2619,8 @@
   "GNoLow": "Oh, você está realmente acertando em cheio! É tão baixo que quase preciso de uma pá para desenterrá-lo!\nVocê tem <color=#ff0000>{0} adivinhações</color> restantes!",
   "GNoHigh": "Com certeza! Você está ficando mais quente. Na verdade, está tão alto que preciso de um telescópio para vê-lo daqui! \nVocê tem <color=#ff0000>{0} adivinhações</color> restantes!",
   "GNoWon": "Ah, como você descobriu isso? É quase como se você fosse um leitor de mentes! Parabéns, você é um gênio! Você encontrou o número secreto com <color=#00ff00>{0} palpites</color> restantes!",
+  "RandCommandInfo": "<b>This Command can only be used when in lobby or after you die.</b>\n\ntype <b>/rand X Y</b> to get a number between X and Y, inclusive. \nX and Y can be any number between 0 and 2147483647, including both numbers.\nX must be less than Y.\n\nExample:- <b>/rand 0 99</b>",
+  "RandResult": "Congratulations, your random number is {0}! Wasn't that fun?",
   "ChanceToMiss": "Chance de errar um abate",
   "ImpCanBeClumsy": "<color=#ff1919>Impostors</color> podem ser o Desajeitado",
   "NeutralCanBeClumsy": "<color=#7f8c8d>Neutros Assassinos</color> Desajeitado",
