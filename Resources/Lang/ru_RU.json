@@ -2619,6 +2619,8 @@
   "GNoLow": "О, ты действительно в этом разбираешься! Он такой низкий, что мне почти нужна лопата, чтобы его выкопать!\nУ вас осталось <color=#ff0000>{0} догадок</color>!",
   "GNoHigh": "О, совершенно! Тебе становится теплее. На самом деле, он настолько высок, что мне нужен телескоп, чтобы увидеть его отсюда!\nУ вас осталось <color=#ff0000>{0} догадок</color>!",
   "GNoWon": "Ох, как ты это вообще догадался? Это почти как будто ты читаешь мысли! Поздравляю, ты гений! Вы нашли секретный номер, оставив <color=#00ff00>{0} предположений</color>!",
+  "RandCommandInfo": "<b>This Command can only be used when in lobby or after you die.</b>\n\ntype <b>/rand X Y</b> to get a number between X and Y, inclusive. \nX and Y can be any number between 0 and 2147483647, including both numbers.\nX must be less than Y.\n\nExample:- <b>/rand 0 99</b>",
+  "RandResult": "Congratulations, your random number is {0}! Wasn't that fun?",
   "ChanceToMiss": "Шанс упустить добычу",
   "ImpCanBeClumsy": "<color=#ff1919>Предатели</color> могут стать <color=#FF1919>Неуклюжими</color>",
   "NeutralCanBeClumsy": "<color=#7f8c8d>Нейтральные Убийцы</color> могут стать <color=#FF1919>Неуклюжими</color>",
