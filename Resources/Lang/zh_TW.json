@@ -2619,6 +2619,8 @@
   "GNoLow": "哦，你真會說! 它太低了，我甚至需要一把鏟子才能把它挖出來!\n剩餘<color=#ff0000>{0} 次猜測機會</color>!",
   "GNoHigh": "哦，你越來越暖和了，事實上，它已經很高了，我甚至需要一台望遠鏡才能從這裡看到它!\n剩餘<color=#ff0000>{0} 次猜測機會</color>!",
   "GNoWon": "哦，你怎麼找到的? 你就像是一個讀心術者! 恭喜你，你是個天才，你剩餘<color=#00ff00>{0} 次猜測機會</color>找到了秘密數字!",
+  "RandCommandInfo": "<b>This Command can only be used when in lobby or after you die.</b>\n\ntype <b>/rand X Y</b> to get a number between X and Y, inclusive. \nX and Y can be any number between 0 and 2147483647, including both numbers.\nX must be less than Y.\n\nExample:- <b>/rand 0 99</b>",
+  "RandResult": "Congratulations, your random number is {0}! Wasn't that fun?",
   "ChanceToMiss": "錯過殺人的機率",
   "ImpCanBeClumsy": "<color=#ff1919>偽裝者</color>可以成為笨拙",
   "NeutralCanBeClumsy": "<color=#7f8c8d>帶刀中立</color>可以成為笨拙",
