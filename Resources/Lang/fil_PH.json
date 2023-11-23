@@ -1036,7 +1036,7 @@
   "CircumventInfoLong": "(Add-ons):\nAs the Circumvent, you can't vent.\n\nOnly assigned to Impostors.",
   "NimbleInfoLong": "(Add-ons):\nAs the Nimble, you gain access to the vent button.\n\nOnly assigned to certain crewmates.",
   "RepairmanInfoLong": "(Add-ons):\nAs the Repairman, you can fix most sabotages much faster than other players.",
-  "InfluencedInfoLong": "(Add-ons):\nAs the Influenced, your vote will be forced to the player with the most votes.\nNote that your skill and vote icon still functions on the player you voted at first\nCollector cannot become influenced.",
+  "InfluencedInfoLong": "(Add-ons):\nAs the Influenced, your vote will be forced to the player with the most votes.\nInfluenced vote won't be counted while choosing the exiled player'\nNote that your vote skill still functions on the player you voted first\nIf all the alive players are Influenced,then the vote result won't shift\nCollector cannot become influenced.",
   "CyberInfoLong": "(Add-ons):\nAs the Cyber, you cannot be killed while in a group.\nAdditionally, your death will be known.",
   "HurriedInfoLong": "(Add-ons):\nAs the hurried, you must finish all your tasks to win with your team! If you failed with your tasks, you lose.\nHurried hurries to his goal so it won't get madmate,charmed or so.",
   "OiiaiInfoLong": "(Add-ons):\nAs the Oiiai, when you die, you will make your killer forget their role.\nAdditionally, you may pass Oiiai on to the killer, depending on settings.",
