@@ -1026,7 +1026,7 @@ static class ExtendedPlayerControl
                 Pursuer.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.FFF:
-                Main.AllPlayerKillCooldown[player.PlayerId] = 0f;
+                Main.AllPlayerKillCooldown[player.PlayerId] = 1f;
                 break;
             case CustomRoles.Medusa:
                 Medusa.SetKillCooldown(player.PlayerId);
@@ -1184,6 +1184,11 @@ static class ExtendedPlayerControl
             if (kcd < 0) kcd = 0;
             Main.AllPlayerKillCooldown[player.PlayerId] = kcd;
             Logger.Info($"kill cd of player set to {Main.AllPlayerKillCooldown[player.PlayerId]}", "Antidote");
+        }
+        if (Main.AllPlayerKillCooldown[player.PlayerId] == 0)
+        {
+            if (player.Is(CustomRoles.Chronomancer)) return;
+            Main.AllPlayerKillCooldown[player.PlayerId] = 0.3f;
         }
     }
     public static bool IsNonCrewSheriff(this PlayerControl sheriff)
