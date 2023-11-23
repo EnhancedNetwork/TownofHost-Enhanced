@@ -40,13 +40,13 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "1.2.1.5";
-    public const string PluginDisplayVersion = "1.2.1 Canary 1";
+    public const string PluginVersion = "1.2.1.6";
+    public const string PluginDisplayVersion = "1.2.1 dev 5";
     public static readonly string SupportedVersionAU = "2023.10.24";
     /******************* Change one of the three variables to true before making a release. *******************/
-    public const bool Canary = true; // Unused variable? ---- not unused anymore :)
+    public const bool Canary = false; // Unused variable? ---- not unused anymore :)
     public const bool fullRelease = false;
-    public const bool devRelease = false;
+    public const bool devRelease = true;
 
     public static bool hasAccess = true;
 
