@@ -2619,6 +2619,8 @@
   "GNoLow": "Oh, tu t'en sors vraiment bien ! Ton nombre est bas comme la tranche d'âge préférée de Norman ! Il te reste <color=#ff0000>{0} essais</color> !",
   "GNoHigh": "Oh, absolument ! Vous vous réchauffez. En fait, elle est si haute que j'ai besoin d'un télescope pour la voir d'ici ! \\Il vous reste <color=#ff0000>{0} suppositions</color> !",
   "GNoWon": "Oh, comment avez-vous fait pour comprendre cela ? On dirait presque que tu lis dans les pensées ! Félicitations, vous êtes un génie ! Vous avez trouvé le numéro secret avec <color=#00ff00>{0} suppositions</color> restantes !",
+  "RandCommandInfo": "<b>This Command can only be used when in lobby or after you die.</b>\n\ntype <b>/rand X Y</b> to get a number between X and Y, inclusive. \nX and Y can be any number between 0 and 2147483647, including both numbers.\nX must be less than Y.\n\nExample:- <b>/rand 0 99</b>",
+  "RandResult": "Congratulations, your random number is {0}! Wasn't that fun?",
   "ChanceToMiss": "Chance de rater un kill",
   "ImpCanBeClumsy": "<color=#ff1919>Les imposteurs</color> peuvent devenir maladroits",
   "NeutralCanBeClumsy": "<color=#7f8c8d>Les tueurs neutres</color> peuvent devenir maladroits",
