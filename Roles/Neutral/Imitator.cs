@@ -74,7 +74,7 @@ public static class Imitator
         }
     }
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = RememberLimit[id] >= 1 ? RememberCooldown.GetFloat() : 300f;
-    public static bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && RememberLimit[player.PlayerId] >= 1;
+    public static bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && (!RememberLimit.TryGetValue(player.PlayerId, out var x) || x > 0);
     public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
         if (RememberLimit[killer.PlayerId] < 1) return;
