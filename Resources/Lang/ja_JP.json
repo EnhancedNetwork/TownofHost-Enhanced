@@ -2619,6 +2619,8 @@
   "GNoLow": "あなたは本当にうまくやっています！ それは非常に低いので、掘り起こすためにシャベルが必要かもしれません！\n<color=#ff0000>{0} 回の予想</color> が残っています！",
   "GNoHigh": "ああ、もちろんです！あなたは暖かくなっています。実際、それは非常に高いので、ここから見るために望遠鏡が必要です！残りの <color=#ff0000>{0} 回の推測</color> があります！",
   "GNoWon": "ああ、どうやってそれを見つけたのですか？まるであなたが心を読む能力を持っているかのようです！おめでとう、あなたは天才です！ <color=#00ff00>{0} 回の推測</color> を残して秘密の数字を見つけました！",
+  "RandCommandInfo": "<b>This Command can only be used when in lobby or after you die.</b>\n\ntype <b>/rand X Y</b> to get a number between X and Y, inclusive. \nX and Y can be any number between 0 and 2147483647, including both numbers.\nX must be less than Y.\n\nExample:- <b>/rand 0 99</b>",
+  "RandResult": "Congratulations, your random number is {0}! Wasn't that fun?",
   "ChanceToMiss": "キルをミスする確率",
   "ImpCanBeClumsy": "<color=#ff1919>インポスター</color> はふざけ者になれます。",
   "NeutralCanBeClumsy": "<color=#7f8c8d>ニュートラルキラー</color>は不器用である。",
