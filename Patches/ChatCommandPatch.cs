@@ -50,6 +50,7 @@ internal class ChatCommands
 
         //if (text.Length >= 3) if (text[..2] == "/r" && text[..3] != "/rn" && text[..3] != "/rs") args[0] = "/r";
         if (text.Length >= 4) if (text[..3] == "/up") args[0] = "/up";
+        if (text.Length >= 4) if (text[..3] == "/dev") args[0] = "/dev";
         if (GuessManager.GuesserMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Judge.TrialMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (President.EndMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
@@ -251,6 +252,19 @@ internal class ChatCommands
                     }
                     SendRolesInfo(subArgs, PlayerControl.LocalPlayer.PlayerId, isUp: true);
                     break;
+
+                case "/dev" :
+                    canceled = true;
+                    subArgs = text.Remove(0, 4);
+                    if (!PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsDev) break;
+                    if (!Options.EnableDevMode.GetBool())
+                    {
+                        Utils.SendMessage(string.Format(GetString("Message.DevlanDisabled"), GetString("EnableDevPlan")), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    SendRolesInfo(subArgs, PlayerControl.LocalPlayer.PlayerId, isDev: true);
+                    break;
+                    
                 case "/setplayers":
                 case "/maxjogadores":
                     canceled = true;
@@ -1166,6 +1180,7 @@ internal class ChatCommands
         role = role.Trim().ToLower();
         if (role.StartsWith("/r")) role.Replace("/r", string.Empty);
         if (role.StartsWith("/up")) role.Replace("/up", string.Empty);
+        if (role.StartsWith("/dev")) role.Replace("/dev", string.Empty);
         if (role.EndsWith("\r\n")) role.Replace("\r\n", string.Empty);
         if (role.EndsWith("\n")) role.Replace("\n", string.Empty);
 
@@ -1195,6 +1210,11 @@ internal class ChatCommands
                         if (devMark == "▲") Utils.SendMessage(string.Format(GetString("Message.YTPlanSelected"), roleName), playerId);
                         else Utils.SendMessage(string.Format(GetString("Message.YTPlanSelectFailed"), roleName), playerId);
                     }
+                    if (isDev)
+                    {
+                        if (devMark == "▲") Utils.SendMessage(string.Format(GetString("Message.DevlanSelected"), roleName), playerId);
+                        else Utils.SendMessage(string.Format(GetString("Message.DevlanSelectFailed"), roleName), playerId);
+                    }
                     if (devMark == "▲")
                     {
                         byte pid = playerId == 255 ? (byte)0 : playerId;
@@ -1202,6 +1222,7 @@ internal class ChatCommands
                         Main.DevRole.Add(pid, rl);
                     }
                     if (isUp) return;
+                    if (isDev) return;
                 }
                 var sb = new StringBuilder();
                 sb.Append(devMark + roleName + Utils.GetRoleMode(rl) + GetString($"{rl}InfoLong"));
@@ -1216,6 +1237,9 @@ internal class ChatCommands
             }
         }
         if (isUp) Utils.SendMessage(GetString("Message.YTPlanCanNotFindRoleThePlayerEnter"), playerId);
+        else Utils.SendMessage(GetString("Message.CanNotFindRoleThePlayerEnter"), playerId);
+
+        if (isDev) Utils.SendMessage(GetString("Message.DevlanCanNotFindRoleThePlayerEnter"), playerId);
         else Utils.SendMessage(GetString("Message.CanNotFindRoleThePlayerEnter"), playerId);
         return;
     }
@@ -1354,6 +1378,19 @@ internal class ChatCommands
                 else
                 {
                     Utils.SendMessage(GetString("Message.OnlyCanBeUsedByHost"), player.PlayerId);
+                    break;
+                }
+
+            case "/dev":
+                subArgs = text.Remove(0, 4);
+                if (!Options.EnableDevMode.GetBool())
+                {
+                    Utils.SendMessage(string.Format(GetString("Message.DevlanDisabled"), GetString("EnableDevPlan")), player.PlayerId);
+                    break;
+                }
+                else
+                {
+                    Utils.SendMessage(GetString("Message.OnlyCanBeUsedByDev"), player.PlayerId);
                     break;
                 }
 

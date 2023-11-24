@@ -382,6 +382,16 @@ class CreatePlayerPatch
                     }
                 }, 3.3f, "DisplayUpWarnning");
             }
+            if (PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsDev && Options.EnableDevMode.GetBool())
+            {
+                _ = new LateTask(() =>
+                {
+                    if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
+                    {
+                        Main.isChatCommand = true;
+                    }
+                }, 3.3f, "DisplayDevWarnning");
+            }
         }
     }
 }
