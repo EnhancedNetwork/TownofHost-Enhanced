@@ -3371,6 +3371,18 @@ class SetColorPatch
     }
 }
 
+[HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoExitVent))]
+class CoExitVentPatch
+{
+    public static void Postfix(PlayerPhysics __instance, [HarmonyArgument(0)] int id)
+    {
+        _ = new LateTask(() =>
+        {
+            Mole.OnExitVent(__instance.myPlayer, id);
+        }, 0.1f);
+    }
+}
+
 [HarmonyPatch(typeof(Vent), nameof(Vent.EnterVent))]
 class EnterVentPatch
 {

@@ -678,6 +678,7 @@ public enum CustomRoles
     Investigator,
     Guardian,
     Addict,
+    Mole,
     Tracefinder,
     Oracle,
     Spiritualist,

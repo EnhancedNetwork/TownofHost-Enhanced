@@ -414,6 +414,10 @@ public class PlayerGameOptionsSender : GameOptionsSender
                 AURoleOptions.EngineerCooldown = Addict.VentCooldown.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 1;
                 break;
+            case CustomRoles.Mole:
+                AURoleOptions.EngineerCooldown = Mole.VentCooldown.GetFloat();
+                AURoleOptions.EngineerInVentMaxTime = 1;
+                break;
             case CustomRoles.Mario:
                 AURoleOptions.EngineerCooldown = Options.MarioVentCD.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 1;

@@ -413,6 +413,10 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.AbilityButton.OverrideText(GetString("AddictVentButtonText"));
                         break;
+                    case CustomRoles.Mole:
+                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
+                        __instance.AbilityButton.OverrideText(GetString("MoleVentButtonText"));
+                        break;
                     case CustomRoles.Dazzler:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.AbilityButton.OverrideText(GetString("DazzleButtonText"));
