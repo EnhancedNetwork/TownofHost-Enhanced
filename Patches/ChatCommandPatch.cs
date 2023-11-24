@@ -50,7 +50,7 @@ internal class ChatCommands
 
         //if (text.Length >= 3) if (text[..2] == "/r" && text[..3] != "/rn" && text[..3] != "/rs") args[0] = "/r";
         if (text.Length >= 4) if (text[..3] == "/up") args[0] = "/up";
-        if (text.Length >= 4) if (text[..3] == "/dev") args[0] = "/dev";
+        if (text.Length >= 5) if (text[..4] == "/dev") args[0] = "/dev";
         if (GuessManager.GuesserMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Judge.TrialMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (President.EndMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
