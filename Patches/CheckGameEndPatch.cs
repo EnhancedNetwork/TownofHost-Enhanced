@@ -57,7 +57,7 @@ class GameEndChecker
                         }
                         break;
                     case CustomWinner.Impostor:
-                        if (((pc.Is(CustomRoleTypes.Impostor) || pc.GetCustomRole().IsMadmate()) && (countType == CountTypes.Impostor) || pc.Is(CustomRoles.Soulless))
+                        if (((pc.Is(CustomRoleTypes.Impostor) || pc.GetCustomRole().IsMadmate()) && (countType == CountTypes.Impostor || pc.Is(CustomRoles.Soulless)))
                             || pc.Is(CustomRoles.Madmate) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         {
                             CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
