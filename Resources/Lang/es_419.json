@@ -1219,6 +1219,8 @@
   "AutoDisplayKillLog": "Mostrar registro de muertes",
   "AutoDisplayLastRoles": "Mostrar últimos roles",
   "AutoDisplayLastResult": "Mostrar resultados automáticamente",
+  "HideExileChat": "Hide exile (lava) chat",
+  "ExileSpamMsg": "Someone is trying to be a smart ass by lava chatting",
   "EnableYTPlan": "Activar plan de Youtuber",
   "KickLowLevelPlayer": "Expulsar jugadores con un nivel menor al nivel",
   "TempBanLowLevelPlayer": "Vetar temporalmente jugador de bajo nivel",
