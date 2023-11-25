@@ -262,6 +262,11 @@ internal class ChatCommands
                         Utils.SendMessage(string.Format(GetString("Message.DevlanDisabled"), GetString("EnableDevPlan")), PlayerControl.LocalPlayer.PlayerId);
                         break;
                     }
+                    if (!GameStates.IsLobby)
+                    {
+                        Utils.SendMessage(GetString("Message.OnlyCanUseInLobby"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
                     SendRolesInfo(subArgs, PlayerControl.LocalPlayer.PlayerId, isDev: true);
                     break;
                     
