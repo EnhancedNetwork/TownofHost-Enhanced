@@ -1219,6 +1219,8 @@
   "AutoDisplayKillLog": "結束後自動顯示殺人紀錄",
   "AutoDisplayLastRoles": "結束後自動顯示上局職業",
   "AutoDisplayLastResult": "結束後自動顯示最終結果",
+  "HideExileChat": "隱藏逐出動畫時死亡玩家的聊天欄",
+  "ExileSpamMsg": "有人試圖透過在逐出時發言進行場外行為",
   "EnableYTPlan": "启用创作者保护计划",
   "KickLowLevelPlayer": "踢出沒有達到指定等級的玩家",
   "TempBanLowLevelPlayer": "暫時封禁低等級的玩家",
