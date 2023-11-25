@@ -933,6 +933,13 @@ internal class ChatCommands
             // 繁体中文由阿龙等人制作
             // GM
             "GM(遊戲大師)" or "管理员" or "gm" => GetString("GM"),
+            // 原版职业
+            "船員" or "船员" => GetString("CrewmateTOHE"),
+            "工程師" or "工程师" => GetString("EngineerTOHE"),
+            "科學家" or "科学家" => GetString("ScientistTOHE"),
+            "守護天使" or "守护天使" => GetString("GuardianAngelTOHE"),
+            "偽裝者" or "内鬼" => GetString("ImpostorTOHE"),
+            "變形者" or "变形者" => GetString("ShapeshifterTOHE"),
             // 隐藏职业
             "陽光開朗大男孩" or "阳光开朗大男孩" => GetString("Sunnyboy"),
             "吟遊詩人" or "吟游诗人" => GetString("Bard"),
