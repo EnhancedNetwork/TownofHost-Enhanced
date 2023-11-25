@@ -850,6 +850,7 @@ public static class Options
     public static OptionItem AutoDisplayLastRoles;
     public static OptionItem AutoDisplayKillLog;
     public static OptionItem AutoDisplayLastResult;
+    public static OptionItem HideExileChat;
     public static OptionItem SuffixMode;
     public static OptionItem HideGameSettings;
     public static OptionItem FormatNameMode;
@@ -2942,6 +2943,9 @@ public static class Options
             .SetHeader(true);
         AutoDisplayLastRoles = BooleanOptionItem.Create(60280, "AutoDisplayLastRoles", true, TabGroup.SystemSettings, false);
         AutoDisplayLastResult = BooleanOptionItem.Create(60290, "AutoDisplayLastResult", true, TabGroup.SystemSettings, false);
+
+        HideExileChat = BooleanOptionItem.Create(60295, "HideExileChat", true, TabGroup.SystemSettings, false)
+            .SetHeader(true);
 
         SuffixMode = StringOptionItem.Create(60300, "SuffixMode", suffixModes, 0, TabGroup.SystemSettings, true)
             .SetHeader(true);
