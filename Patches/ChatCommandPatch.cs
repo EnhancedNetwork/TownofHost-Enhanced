@@ -2022,7 +2022,7 @@ internal class ChatCommands
                     }
                     else
                     {
-                        Utils.SendMessage(string.Format(GetString("GNoWon"), 7-Main.GuessNumber[player.PlayerId][1]), player.PlayerId);
+                        Utils.SendMessage(string.Format(GetString("GNoWon"), Main.GuessNumber[player.PlayerId][1]), player.PlayerId);
                         Main.GuessNumber[player.PlayerId][0] = -1;
                         Main.GuessNumber[player.PlayerId][1] = 7;
                         break;
