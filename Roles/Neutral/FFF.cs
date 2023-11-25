@@ -99,8 +99,8 @@ namespace TOHE.Roles.Neutral
             }
             killer.Data.IsDead = true;
             Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;
-            Main.PlayerStates[killer.PlayerId].SetDead();
             killer.RpcMurderPlayerV3(killer);
+            Main.PlayerStates[killer.PlayerId].SetDead();
             Logger.Info($"{killer.GetRealName()} killed incorrect target => misfire", "FFF");
             return false;
         }
