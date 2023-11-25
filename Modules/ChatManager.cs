@@ -134,7 +134,7 @@ namespace TOHE.Modules.ChatManager
                 }
                 if (!player.IsAlive()) return;
                 message = msg;
-                Logger.Warn($"Logging msg : {message}","Checking Exile");
+                //Logger.Warn($"Logging msg : {message}","Checking Exile");
                 Dictionary<byte, string> newChatEntry = new()
                     {
                         { player.PlayerId, message }
