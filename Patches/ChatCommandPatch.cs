@@ -933,6 +933,10 @@ internal class ChatCommands
             // 繁体中文由阿龙等人制作
             // GM
             "GM(遊戲大師)" or "管理员" or "gm" => GetString("GM"),
+            // 隐藏职业
+            "陽光開朗大男孩" or "阳光开朗大男孩" => GetString("Sunnyboy"),
+            "吟遊詩人" or "吟游诗人" => GetString("Bard"),
+            "核爆者" or "核武器" => GetString("Nuker"),
             // 内鬼阵营
             "賞金獵人" or "赏金" => GetString("BountyHunter"),
             "煙火工匠" or "烟花商人" or "烟花爆破者" or "烟花" => GetString("FireWorks"),
@@ -1003,8 +1007,11 @@ internal class ChatCommands
             "勒索者" => GetString("Blackmailer"),
             "教唆者" => GetString("Instigator"),
             // 船员阵营
+            "" or "" => GetString(""),
             // 中立阵营
+            "" or "" => GetString(""),
             // 附加职业
+            "" or "" => GetString(""),
             _ => text,
         };
     }
