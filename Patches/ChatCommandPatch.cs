@@ -928,9 +928,13 @@ internal class ChatCommands
         text = text.Replace("着", "者").Trim().ToLower();
         return text switch
         {
-            // 最前面的为繁体中文，第二个为简体中文，后面为别名
+            // 第一个为繁体中文，第二个为简体中文，后面为别名
             // 也有可能第一个都是 简体/繁体 中文
             // 繁体中文由阿龙等人制作
+
+            // If you need to remove the roles, please delete them directly instead of commenting them out
+            // 如果需要删除职业，请直接删掉，而不是注释掉
+
             // GM
             "GM(遊戲大師)" or "管理员" or "gm" => GetString("GM"),
             // 原版职业
@@ -1014,11 +1018,79 @@ internal class ChatCommands
             "勒索者" => GetString("Blackmailer"),
             "教唆者" => GetString("Instigator"),
             // 船员阵营
-            "" or "" => GetString(""),
+            "幸運兒" or "幸运儿" => GetString("Luckey"),
+            "擺爛人" or "摆烂人" => GetString("Needy"),
+            "大明星" => GetString("SuperStar"),
+            "網紅" or "网红" => GetString("CyberStar"),
+            "清洗者" => GetString("Cleanser"),
+            "俠客" or "侠客" => GetString("SwordsMan"),
+            "市長" or "市长" => GetString("Mayor"),
+            "被害妄想症" => GetString("Paranoia"),
+            "愚者" => GetString("Psychic"),
+            "修理工" => GetString("SabotageMaster"),
+            "警長" or "警长" => GetString("Sheriff"),
+            "義警" or "义务警员" => GetString("Vigilante"),
+            "監禁者" or "狱警" => GetString("Jailer"),
+            "模仿者" or "模仿猫" => GetString("CopyCat"),
+            "告密者" => GetString("Snitch"),
+            "展現者" or "展现者" => GetString("Marshall"),
+            "增速師" or "增速者" => GetString("SpeedBooster"),
+            "法醫" or "法医" => GetString("Doctor"),
+            "獨裁主義者" or "独裁者" => GetString("Dictator"),
+            "偵探" or "侦探" => GetString("Detective"),
+            "正義賭怪" or "正义赌怪" => GetString("NiceGuesser"),
+            "傳送師" or "传送师" => GetString("Transporter"),
+            "時間大師" or "时间操控者" => GetString("TimeManager"),
+            "老兵" => GetString("Veteran"),
+            "埋雷兵" => GetString("Bastion"),
+            "保鑣" or "保镖" => GetString("Bodyguard"),
+            "贗品商" or "赝品商" => GetString("Counterfeiter"),
+            "擲彈兵" or "掷雷兵" => GetString("Grenadier"),
+            "軍醫" or "医生" => GetString("Medic"),
+            "占卜師" or "调查员" => GetString("Divinator"),
+            "法官" or "正义法官" => GetString("Judge"),
+            "殯葬師" or "入殓师" => GetString("Mortician"),
+            "通靈師" or "通灵师" => GetString("Mediumshiper"),
+            "和平之鴿" or "和平之鸽" => GetString("DovesOfNeace"),
+            "窺視者" or "观察者" => GetString("Observer"),
+            "君主" => GetString("Monarch"),
+            "預言家" or "预言家" => GetString("Farseer"),
+            "驗屍官" or "验尸官" => GetString("Bloodhound"),
+            "正義的追蹤者" or "正义追踪者" => GetString("Tracker"),
+            "商人" => GetString("Merchant"),
+            "總統" or "总统" => GetString("President"),
+            "報應者" or "惩罚者" => GetString("Retributionist"),
+            "捕快" => GetString("Deputy"),
+            "算命師" or "研究者" => GetString("Investigator"),
+            "守護者" or "守护者" => GetString("Guardian"),
+            "賢者" or "瘾君子" => GetString("Addict"),
+            "藥劑師" or "炼金术士" => GetString("Alchemist"),
+            "尋跡者" or "寻迹者" => GetString("Tracefinder"),
+            "先知" or "神谕" => GetString("Oracle"),
+            "靈魂論者" or "灵魂论者" => GetString("Spiritualist"),
+            "變色龍" or "变色龙" => GetString("Chameleon"),
+            "檢查員" or "检查员" => GetString("ParityCop"),
+            "仰慕者" => GetString("Admirer"),
+            "時間之主" or "时间之主" => GetString("TimeMaster"),
+            "十字軍" or "十字军" => GetString("Crusader"),
+            "遐想者" => GetString("Reverie"),
+            "瞭望者" => GetString("Lookout"),
+            "通訊員" or "通信员" => GetString("Monitor"),
+            "執燈人" or "执灯人" => GetString("Lighter"),
+            "任務管理員" or "任务管理者" => GetString("TaskManager"),
+            "目擊者" or "目击者" => GetString("Witness"),
+            "換票師" or "换票师" => GetString("Swapper"),
+            "警察局長" or "警察局长" => GetString("ChiefOfPolice"),
+            "好迷你船員" or "好迷你船员" => GetString("NiceMini"),
+            "間諜" or "间谍" => GetString("Spy"),
+            "隨機者" or "萧暮" => GetString("Randomizer"),
+            "猜想者" => GetString("Enigma"),
             // 中立阵营
             "" or "" => GetString(""),
             // 附加职业
             "" or "" => GetString(""),
+            // 随机阵营职业
+            "迷你船員" or "迷你船员" => GetString("Mini"),
             _ => text,
         };
     }
