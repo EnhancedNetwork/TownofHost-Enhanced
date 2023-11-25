@@ -254,6 +254,22 @@ static class CustomRolesHelper
             _ => RoleTypes.GuardianAngel
         };
     }
+
+    public static bool HasImpKillButton(this PlayerControl player, bool considerVanillaShift = false)
+    {
+        if (player == null) return false;
+        var customRole = player.GetCustomRole();
+        bool hostSideHasKillButton = customRole.GetDYRole() == RoleTypes.Impostor || customRole.GetVNRole() == CustomRoles.Impostor || customRole.GetVNRole() == CustomRoles.Shapeshifter;
+
+        if (player.IsModClient() || (!considerVanillaShift && !player.IsModClient()))
+            return hostSideHasKillButton;
+
+        bool vanillaSideHasKillButton = Main.ErasedRoleStorage.TryGetValue(player.PlayerId, out var erasedRole) ?
+                                         (erasedRole.GetDYRole() == RoleTypes.Impostor || erasedRole.GetVNRole() == CustomRoles.Impostor || erasedRole.GetVNRole() == CustomRoles.Shapeshifter) : hostSideHasKillButton;
+
+        return vanillaSideHasKillButton;
+    }
+    //This is a overall check for vanilla clients to see if they are imp basis
     public static bool IsAdditionRole(this CustomRoles role)
     {
         return role is
