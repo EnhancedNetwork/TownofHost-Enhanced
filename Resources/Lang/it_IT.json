@@ -2709,7 +2709,7 @@
   "ImpCanBeAware": "Gli <color=#ff1919>Impostori</color> possono essere <color=#4B0082>Attento</color>",
   "NeutralCanBeAware": "I <color=#7f8c8d>Neutrali</color> possono essere <color=#4B0082>Attento</color>",
   "CrewCanBeAware": "Gli <color=#8cffff>Astronauti</color> possono essere <color=#4B0082>Attento</color>",
-  "AwareKnowRole": "Conosce il ruolo del giocatore",
+  "AwareKnowRole": "Knows the role of player",
   "AwareInteracted": "{0} ha provato a rivelare il tuo ruolo.",
   "AwareTitle": "MESSAGGIO ATTENZIONE",
   "LighterVentButtonText": "Illumina",
