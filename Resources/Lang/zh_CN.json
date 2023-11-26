@@ -2709,7 +2709,7 @@
   "ImpCanBeAware": "<color=#ff1919>内鬼阵营</color>可以成为<color=#4B0082>意识到</color>",
   "NeutralCanBeAware": "<color=#7f8c8d>中立阵营</color>可以成为<color=#4B0082>意识到</color>",
   "CrewCanBeAware": "<color=#8cffff>船员阵营</color>可以成为<color=#4B0082>意识到</color>",
-  "AwareKnowRole": "确定玩家的身份",
+  "AwareKnowRole": "Knows the role of player",
   "AwareInteracted": "{0} 试图揭示你的身份",
   "AwareTitle": "[ ★ 警告信息 ★ ]",
   "LighterVentButtonText": "点灯",
