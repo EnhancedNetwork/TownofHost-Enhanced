@@ -2709,7 +2709,7 @@
   "ImpCanBeAware": "<color=#ff1919>Imposteurs</color> peut devenir <color=#4B0082>Aware</color>",
   "NeutralCanBeAware": "<color=#7f8c8d>Neutres</color> peut devenir <color=#4B0082>Averti</color>",
   "CrewCanBeAware": "<color=#8cffff>Coéquipiers</color> peuvent devenir <color=#4B0082>Aware</color>",
-  "AwareKnowRole": "Révèle le rôle du joueur",
+  "AwareKnowRole": "Knows the role of player",
   "AwareInteracted": "{0} a essayé de révéler son rôle.",
   "AwareTitle": "MESSAGE DE PRISE DE CONSCIENCE",
   "LighterVentButtonText": "Léger",
