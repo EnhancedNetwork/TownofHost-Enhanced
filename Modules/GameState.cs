@@ -450,9 +450,8 @@ public class TaskState
                 var Ue = IRandom.Instance;
                 if (Ue.Next(1, 100) <= Options.UnluckyTaskSuicideChance.GetInt())
                 {
-                    player.RpcMurderPlayerV3(player);
                     Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-
+                    player.RpcMurderPlayerV3(player);
                 }
             }
             if (player.Is(CustomRoles.Bloodlust) && player.IsAlive() && !Alchemist.BloodlustList.ContainsKey(player.PlayerId))
@@ -541,8 +540,9 @@ public class TaskState
             if (player.Is(CustomRoles.Ghoul) && (CompletedTasksCount + 1) >= AllTasksCount && player.IsAlive())
             _ = new LateTask(() =>
             {
-                player.RpcMurderPlayerV3(player);
                 Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
+                player.RpcMurderPlayerV3(player);
+                
             }, 0.2f, "Ghoul Suicide");
             
             if (player.Is(CustomRoles.Ghoul) && (CompletedTasksCount + 1) >= AllTasksCount && !player.IsAlive())
@@ -553,8 +553,9 @@ public class TaskState
                     {
                         if (Main.KillGhoul.Contains(pc.PlayerId) && player.PlayerId != pc.PlayerId && pc.IsAlive())
                         {
+                            Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                             player.RpcMurderPlayerV3(pc);
-                            Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Kill;                        
+                                                   
                         }
                     }
 

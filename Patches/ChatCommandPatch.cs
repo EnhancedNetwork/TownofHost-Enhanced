@@ -611,8 +611,9 @@ internal class ChatCommands
                     {
                         player.Data.IsDead = true;
                         Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.etc;
-                        player.RpcExileV2();
                         Main.PlayerStates[player.PlayerId].SetDead();
+                        player.RpcExileV2();
+                       
                         if (player.AmOwner) Utils.SendMessage(GetString("HostKillSelfByCommand"), title: $"<color=#ff0000>{GetString("DefaultSystemMessageTitle")}</color>");
                         else Utils.SendMessage(string.Format(GetString("Message.Executed"), player.Data.PlayerName));
                     }
@@ -2022,7 +2023,7 @@ internal class ChatCommands
                     }
                     else
                     {
-                        Utils.SendMessage(string.Format(GetString("GNoWon"), 7-Main.GuessNumber[player.PlayerId][1]), player.PlayerId);
+                        Utils.SendMessage(string.Format(GetString("GNoWon"), Main.GuessNumber[player.PlayerId][1]), player.PlayerId);
                         Main.GuessNumber[player.PlayerId][0] = -1;
                         Main.GuessNumber[player.PlayerId][1] = 7;
                         break;

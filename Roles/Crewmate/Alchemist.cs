@@ -116,9 +116,9 @@ namespace TOHE.Roles.Crewmate
                     player.MyPhysics.RpcBootFromVent(ventId);
                     _ = new LateTask(() =>
                     {
+                        Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Poison;
                         player.SetRealKiller(player);
                         player.RpcMurderPlayerV3(player);
-                        Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Poison;
                     }, 1f);
                     break;
                 case 3: // TP to random player
