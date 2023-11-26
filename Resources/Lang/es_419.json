@@ -2709,7 +2709,7 @@
   "ImpCanBeAware": "Los <color=#ff1919>Impostores</color> pueden ser <color=#4B0082>Precavidos</color>",
   "NeutralCanBeAware": "Los <color=#7f8c8d>Neutrales</color> pueden ser <color=#4B0082>Precavidos</color>",
   "CrewCanBeAware": "Los <color=#8cffff>Tripulantes</color> pueden ser <color=#4B0082>Precavidos</color>",
-  "AwareKnowRole": "Conoce el rol del jugador",
+  "AwareKnowRole": "Knows the role of player",
   "AwareInteracted": "{0} intentó revelar tu rol.",
   "AwareTitle": "MENSAJE DEL PRECAVIDO",
   "LighterVentButtonText": "Encender",
