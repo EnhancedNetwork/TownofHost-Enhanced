@@ -1193,7 +1193,7 @@ internal class ChatCommands
             "魅魔小弟" => GetString("Charmed"),
             "乾淨" or "干净" => GetString("Cleansed"),
             "誘餌" or "诱饵" => GetString("Bait"),
-            "設陷者" or "陷阱师" => GetString("Trapper"),
+            "陷阱師" or "陷阱师" => GetString("Trapper"),
             "被感染" or "感染" => GetString("Infected"),
             "防賭" or "不可被赌" => GetString("Onbound"),
             "反擊者" or "回弹者" or "回弹" => GetString("Rebound"),
