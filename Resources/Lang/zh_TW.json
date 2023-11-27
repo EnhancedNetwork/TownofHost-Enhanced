@@ -1544,7 +1544,7 @@
   "LoverKnowRoles": "戀人可以知道對方的職業",
   "TrapperBlockMoveTime": "兇手無法移動的時間",
   "BecomeTrapperBlockMoveTime": "兇手無法移動的時間",
-  "ImpCanBeTrapper": "<color=#ff1919>偽裝者</color>可以成為<color=#5a8fd0>設陷者</color>",
+  "ImpCanBeTrapper": "<color=#ff1919>偽裝者</color>可以成為<color=#5a8fd0>陷阱師</color>",
   "CrewCanBeTrapper": "<color=#8cffff>船員</color>可以成為<color=#5a8fd0>陷阱師</color>",
   "NeutralCanBeTrapper": "<color=#7f8c8d>中立</color>可以成為<color=#5a8fd0>陷阱師</color>",
   "ImpCanBeRogue": "<color=#ff1919>偽裝者</color>可以成為<color=#696969>盜賊</color>",
