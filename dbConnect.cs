@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
-using System.Threading.Tasks;
 using System.IO;
 using System.Reflection;
 namespace TOHE;
 
 public class dbConnect
 {
-    public static async Task<Dictionary<string, object>> GetUserInfoByFriendCode(string friendCode)
+    private static Dictionary<string, string> userType = new();
+    public static string getToken()
     {
         string apiToken = "";
         Assembly assembly = Assembly.GetExecutingAssembly();
@@ -38,36 +38,71 @@ public class dbConnect
             if (stream == null || apiToken == "")
             {
                 Logger.Warn("Embedded resource not found.", "apiToken");
-                return null;
             }
+        }
+        return apiToken;
+    }
+    public static void GetRoleTable()
+    {
+        userType = new();
+        string apiToken = getToken();
+        if (apiToken == "")
+        {
+            Logger.Warn("Embedded resource not found.", "apiToken");
+            return;
         }
         using (var httpClient = new HttpClient())
         {
-            string encodedFriendCode = Uri.EscapeDataString(friendCode);
             string apiUrl = "https://api.tohre.dev"; // Replace with your actual API URL
-            string endpoint = $"{apiUrl}/userInfo?token={apiToken}&friendcode={encodedFriendCode}";
+            string endpoint = $"{apiUrl}/userInfo?token={apiToken}";
 
             try
             {
-                var response = await httpClient.GetAsync(endpoint);
+                var response = httpClient.GetAsync(endpoint).Result;
 
                 if (response.IsSuccessStatusCode)
                 {
-                    using (var responseStream = await response.Content.ReadAsStreamAsync())
+                    using (var responseStream = response.Content.ReadAsStreamAsync().Result)
                     {
-                        return await JsonSerializer.DeserializeAsync<Dictionary<string, object>>(responseStream);
+                        try
+                        {
+                            var userList = JsonSerializer.DeserializeAsync<List<Dictionary<string, JsonElement>>>(responseStream).Result;
+                            foreach (var user in userList)
+                            {
+                                if (!DevManager.IsDevUser(user["friendcode"].ToString()))
+                                {
+                                    DevManager.DevUserList.Add(new(
+                                        code: user["friendcode"].ToString(),
+                                        color: user["color"].ToString(),
+                                        tag: user["overhead_tag"].ToString(),
+                                        isUp: user["isUP"].GetInt32() == 1,
+                                        isDev: user["isDev"].GetInt32() == 1,
+                                        deBug: user["debug"].GetInt32() == 1,
+                                        colorCmd: user["colorCmd"].GetInt32() == 1,
+                                        upName: user["name"].ToString()));
+
+                                }
+                                userType[user["friendcode"].ToString()] = user["type"].ToString();
+                            }
+                        }
+                        catch (JsonException jsonEx)
+                        {
+                            // If deserialization as a list fails, try deserializing as a single JSON object
+                            Logger.Error($"Error deserializing JSON: {jsonEx.Message}", "dbConnect");
+                            return;
+                        }
                     }
                 }
                 else
                 {
-                    Logger.Error($"No user found with friendcode : {friendCode}", "dbConnect");
-                    return null;
+                    Logger.Error($"Error in fetching the User List, Success status code is false", "dbConnect");
+                    return;
                 }
             }
             catch (Exception ex)
             {
                 Logger.Error($"error: {ex}", "dbConnect");
-                return null;
+                return;
             }
         }
     }

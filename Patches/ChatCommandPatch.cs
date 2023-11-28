@@ -38,6 +38,7 @@ internal class ChatCommands
         ChatControllerUpdatePatch.CurrentHistorySelection = ChatHistory.Count;
         string[] args = text.Split(' ');
         string subArgs = "";
+        string subArgs2 = "";
         var canceled = false;
         var cancelVal = "";
         Main.isChatCommand = true;
@@ -874,6 +875,30 @@ internal class ChatCommands
                         }
 
                     }
+                    case "/rand":
+                        canceled = true;
+                        subArgs = args.Length != 3 ? "" : args[1];
+                        subArgs2 = args.Length != 3 ? "" : args[2];
+
+                        if (!GameStates.IsLobby && PlayerControl.LocalPlayer.IsAlive())
+                        {
+                            Utils.SendMessage(GetString("RandCommandInfo"), PlayerControl.LocalPlayer.PlayerId);
+                            break;
+                        }
+                        if (subArgs == "" || !int.TryParse(subArgs, out int playerChoice1) || subArgs2 == "" || !int.TryParse(subArgs2, out int playerChoice2))
+                        {
+                            Utils.SendMessage(GetString("RandCommandInfo"), PlayerControl.LocalPlayer.PlayerId);
+                            break;
+                        }
+                        else
+                        {
+                            var rand = IRandom.Instance;
+                            int botResult = Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0];
+                            Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0] = rand.Next(playerChoice1, playerChoice2);
+                            botResult = Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0];
+                            Utils.SendMessage(string.Format(GetString("RandResult"), Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0]), PlayerControl.LocalPlayer.PlayerId);
+                            break;
+                        }
 
                 default:
                     Main.isChatCommand = false;
@@ -1204,6 +1229,7 @@ internal class ChatCommands
         //if (!text.StartsWith("/")) return;
         string[] args = text.Split(' ');
         string subArgs = "";
+        string subArgs2 = "";
         //if (text.Length >= 3) if (text[..2] == "/r" && text[..3] != "/rn") args[0] = "/r";
         //   if (SpamManager.CheckSpam(player, text)) return;
         if (GuessManager.GuesserMsg(player, text)) { canceled = true; return; }
@@ -2020,8 +2046,32 @@ internal class ChatCommands
                         break;
                     }
                 }
+            case "/rand":
+                subArgs = args.Length != 3 ? "" : args[1];
+                subArgs2 = args.Length != 3 ? "" : args[2];
 
-                default:
+                if (!GameStates.IsLobby && player.IsAlive())
+                {
+                    Utils.SendMessage(GetString("RandCommandInfo"), player.PlayerId);
+                    break;
+                }
+                if (subArgs == "" || !int.TryParse(subArgs, out int playerChoice1) || subArgs2 == "" || !int.TryParse(subArgs2, out int playerChoice2))
+                {
+                    Utils.SendMessage(GetString("RandCommandInfo"), player.PlayerId);
+                    break;
+                }
+                else
+                {
+                    var rand = IRandom.Instance;
+                    int botResult = Main.GuessNumber[player.PlayerId][0];
+                    Main.GuessNumber[player.PlayerId][0] = rand.Next(playerChoice1, playerChoice2);
+                    botResult = Main.GuessNumber[player.PlayerId][0];
+                    Utils.SendMessage(string.Format(GetString("RandResult"), Main.GuessNumber[player.PlayerId][0]), player.PlayerId);
+                    break;
+                }
+
+
+            default:
                 if (SpamManager.CheckSpam(player, text)) return;
                 break;
         }

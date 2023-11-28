@@ -18,12 +18,14 @@ namespace TOHE.Roles.AddOns.Common
             CanBeOnCrew = BooleanOptionItem.Create(Id + 11, "CrewCanBeInfluenced", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Influenced]);
             CanBeOnNeutral = BooleanOptionItem.Create(Id + 12, "NeutralCanBeInfluenced", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Influenced]);
         }
-        public static bool CheckVotingData(Dictionary<byte, int> VotingData)
-        {
+        public static void ChangeVotingData(Dictionary<byte, int> VotingData)
+        { 
+            //The incoming votedata does not count influenced votes
             List<byte> playerIdList = new();
             Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Influenced))
                 .Do(x => playerIdList.Add(x.PlayerId));
-            if (!playerIdList.Any()) return false;
+            if (!playerIdList.Any()) return;
+            if (playerIdList.Count >= Main.AllAlivePlayerControls.Length) return;
             int max = 0;
             bool tie = false;
             byte exileId = byte.MaxValue;
@@ -46,23 +48,18 @@ namespace TOHE.Roles.AddOns.Common
                 }
                 //voteLog.Info($"驱逐ID: {exileId}, 最大: {max}票");
             }
-            if (tie) return false;
+            if (tie) return;
 
-            bool didChange = false;
             foreach (var playerId in playerIdList)
             {
-                if (exileId == playerId) continue;
-                PlayerVoteArea pva = MeetingHud.Instance.playerStates[playerId];
-                if (pva.VotedFor != exileId)
+                PlayerVoteArea pva = CheckForEndVotingPatch.GetPlayerVoteArea(playerId);
+                if (pva != null && pva.VotedFor != exileId)
                 {
                     pva.VotedFor = exileId;
-                    didChange = true;
-                    Logger.Info($"changed influenced {pva.TargetPlayerId} vote target to {exileId}", "InfluencedChangeVote");
-                }                
+                    CheckForEndVotingPatch.ReturnChangedPva(pva);
+                    Logger.Info($"changed influenced {playerId} {pva.TargetPlayerId} vote target to {exileId}", "InfluencedChangeVote");
+                }
             }
-
-            if (didChange) return true;
-            else return false;
         }
     }
 }

@@ -90,7 +90,7 @@ namespace TOHE.Modules.ChatManager
             string msg = message;
             string playername = player.GetNameWithRole();
             message = message.ToLower().TrimStart().TrimEnd();
-            if (!player.IsAlive() || !AmongUsClient.Instance.AmHost) return;
+
             if (GameStates.IsInGame) operate = 3;
             if (CheckCommond(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id")) operate = 1;
             else if (CheckCommond(ref msg, "shoot|guess|bet|st|gs|bt|猜|赌|sp|jj|tl|trial|审判|判|审|compare|cmp|比较|duel|sw|换票|换|swap|st|finish|reveal", false)) operate = 2;
@@ -122,20 +122,26 @@ namespace TOHE.Modules.ChatManager
             }
             else if (operate == 3)
             {
+                if (GameStates.IsExilling)
+                {
+                    Logger.Info($"死亡玩家嘗試於逐出畫面傳送訊息但遭到阻擋", "ChatManager");
+                    new LateTask(() => { SendPreviousMessagesToAll(); }, 7f);
+                    return;
+                }
                 message = msg;
                 Dictionary<byte, string> newChatEntry = new()
-                {
-                    { player.PlayerId, message }
-                };
+                    {
+                        { player.PlayerId, message }
+                    };
                 chatHistory.Add(newChatEntry);
 
                 if (chatHistory.Count > maxHistorySize)
-                {
-                    chatHistory.RemoveAt(0);
+                    {
+                        chatHistory.RemoveAt(0);
+                    }
+                    cancel = false;
                 }
-                cancel = false;
             }
-        }
 
         public static void SendPreviousMessagesToAll()
         {
@@ -185,6 +191,7 @@ namespace TOHE.Modules.ChatManager
                 var senderMessage = entry[senderId];
                 var senderPlayer = Utils.GetPlayerById(senderId);
                 if (senderPlayer == null) continue;
+                if (GameStates.IsExilling) return;
 
                 var playerDead = !senderPlayer.IsAlive();
                 if (playerDead)

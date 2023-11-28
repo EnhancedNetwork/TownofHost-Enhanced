@@ -2297,6 +2297,7 @@ class ReportDeadBodyPatch
         Main.Lighter.Clear();
         Main.AllKillers.Clear();
         Main.GodfatherTarget.Clear();
+        OverKiller.MurderTargetLateTask.Clear();
 
         if (Options.BombsClearAfterMeeting.GetBool())
         {
