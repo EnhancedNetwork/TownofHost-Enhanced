@@ -161,4 +161,3 @@ public static class OptionsMenuBehaviourClosePatch
             ClientOptionItem.CustomBackground.gameObject.SetActive(false);
         }
     }
-}
