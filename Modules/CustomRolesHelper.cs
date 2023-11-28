@@ -182,6 +182,8 @@ static class CustomRolesHelper
     {
         return role switch
         {
+            //FFA
+            CustomRoles.Killer => RoleTypes.Impostor,
             //Standard
             CustomRoles.Sheriff => RoleTypes.Impostor,
             CustomRoles.Vigilante => RoleTypes.Impostor,
@@ -714,6 +716,9 @@ static class CustomRolesHelper
     public static bool IsNeutral(this CustomRoles role)
     {
         return role is
+            //FFA
+            CustomRoles.Killer or
+            //Standard
             CustomRoles.Jester or
             CustomRoles.Opportunist or
             CustomRoles.Mario or
@@ -867,6 +872,9 @@ static class CustomRolesHelper
     public static bool IsNeutralWithGuessAccess(this CustomRoles role)
     {
         return role is
+            //FFA
+            CustomRoles.Killer or
+            //Standard
             CustomRoles.Jester or
             CustomRoles.Opportunist or
             CustomRoles.Mario or

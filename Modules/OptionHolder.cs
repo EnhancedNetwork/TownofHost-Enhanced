@@ -18,6 +18,7 @@ namespace TOHE;
 public enum CustomGameMode
 {
     Standard = 0x01,
+    FFA = 0x02,
     All = int.MaxValue
 }
 
@@ -51,12 +52,14 @@ public static class Options
     public static CustomGameMode CurrentGameMode
         => GameMode.GetInt() switch
         {
+            1 => CustomGameMode.FFA,
             _ => CustomGameMode.Standard
         };
 
     public static readonly string[] gameModes =
     {
-        "Standard"
+        "Standard",
+        "FFA"
     };
 
     // MapActive
@@ -1045,7 +1048,6 @@ public static class Options
 
         // Game Mode
         GameMode = StringOptionItem.Create(60000, "GameMode", gameModes, 0, TabGroup.GameSettings, false)
-            .SetHidden(true)
             .SetHeader(true);
 
         #region Roles/Add-ons Settings
@@ -2982,6 +2984,9 @@ public static class Options
         #endregion 
 
         #region Game Settings
+
+        //FFA
+        FFAManager.SetupCustomOption();
 
         //驱逐相关设定
         TextOptionItem.Create(10000024, "MenuTitle.Ejections", TabGroup.GameSettings)

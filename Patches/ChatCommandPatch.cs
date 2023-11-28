@@ -1165,6 +1165,11 @@ internal class ChatCommands
     }
     public static void SendRolesInfo(string role, byte playerId, bool isDev = false, bool isUp = false)
     {
+        if (Options.CurrentGameMode == CustomGameMode.FFA)
+        {
+            Utils.SendMessage(GetString("ModeDescribe.FFA"), playerId);
+            return;
+        }
         role = role.Trim().ToLower();
         if (role.StartsWith("/r")) role.Replace("/r", string.Empty);
         if (role.StartsWith("/up")) role.Replace("/up", string.Empty);
