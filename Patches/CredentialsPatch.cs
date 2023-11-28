@@ -25,19 +25,8 @@ public static class Credentials
 
             sb.Append(Main.credentialsText);
 
-            if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.English)
-            {
-                var ping = AmongUsClient.Instance.Ping;
-                sb.Append($"\r\n").Append($"Ping: {ping} ms");
-            }
-
-            else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.Brazilian)
-            {
-                var ping = AmongUsClient.Instance.Ping;
-                sb.Append($"\r\n").Append($"Latência: {ping} ms");
-            }
-
-            if (!GameStates.IsModHost) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("Warning.NoModHost")));
+            var ping = AmongUsClient.Instance.Ping;
+            sb.Append($"\r\n").Append($"Ping: {ping} ms");
 
             if (Main.ShowFPS.Value)
             {
@@ -73,7 +62,23 @@ public static class Credentials
         static TextMeshPro SpecialEventText;
         private static void Postfix(VersionShower __instance)
         {
+            Main.credentialsText = $"\r\n<color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginDisplayVersion}";
             var buildtype = "";
+
+#if RELEASE
+            Main.credentialsText += $"\r\n<color=#a54aff>By <color=#ffc0cb>KARPED1EM</color> & </color><color=#f34c50>Moe</color>";
+            buildtype = "Release";
+#endif
+
+#if CANARY
+            Main.credentialsText += $"\r\n<color=#a54aff>By <color=#ffc0cb>KARPED1EM</color> & </color><color=#f34c50>Moe</color>";
+            buildtype = "Canary";
+#endif
+
+#if DEBUG
+            Main.credentialsText += $"\r\n<color=#a54aff>By <color=#ffc0cb>KARPED1EM</color> & </color><color=#f34c50>Moe</color>";
+            buildtype = "Debug";
+#endif
             
             Logger.Info($"v{Main.PluginVersion}, {buildtype}:{ThisAssembly.Git.Branch}:({ThisAssembly.Git.Commit}), link [{ThisAssembly.Git.RepositoryUrl}], dirty: [{ThisAssembly.Git.IsDirty}]", "TOHE version");
 

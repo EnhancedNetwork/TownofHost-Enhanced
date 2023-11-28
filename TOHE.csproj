@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
@@ -11,6 +11,8 @@
         <Configurations>Debug;Release;Canary</Configurations>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Optimize>True</Optimize>
+        <AssemblyVersion>1.2.0</AssemblyVersion>
+		<LangVersion>preview</LangVersion>
     </PropertyGroup>
     
     <ItemGroup>

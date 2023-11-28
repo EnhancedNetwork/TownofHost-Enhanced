@@ -21,17 +21,14 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem ModeForSmallScreen;
     private static ClientOptionItem EnableRoleSummary;
     private static ClientOptionItem SwitchVanilla;
-#if DEBUG
     private static CheatSettings VersionCheat;
     private static CheatSettings InfiniteVision;
     private static CheatSettings GodMode;
     private static CheatSettings ImpTasks;    
     private static CheatSettings EvilVote;
     private static CheatSettings VoteImmune;
-    private static CheatSettings AvoidBans;
     private static CheatSettings SpeedBoost;
     private static CheatSettings BigSize;
-#endif
 
     public static void Postfix(OptionsMenuBehaviour __instance)
     {
@@ -64,7 +61,7 @@ public static class OptionsMenuBehaviourStartPatch
         }
         if (HorseMode == null || HorseMode.ToggleButton == null)
         {
-            HorseMode = ClientOptionItem.Create("HorseMode", Main.HorseMode, __instance, () => HorseModePatch.isHorseMode = !HorseModePatch.isHorseMode);
+            HorseMode = ClientOptionItem.Create("HorseMode", Main.HorseMode, __instance);
         }
         if (EnableGM == null || EnableGM.ToggleButton == null)
         {
@@ -119,7 +116,6 @@ public static class OptionsMenuBehaviourStartPatch
                 Main.Instance.Unload();
             }
         }
-#if DEBUG
             if ((VersionCheat == null || VersionCheat.ToggleButton == null) && DebugModeManager.AmDebugger)
             {
                 VersionCheat = CheatSettings.Create("VersionCheat", Main.VersionCheat, __instance);
@@ -144,10 +140,6 @@ public static class OptionsMenuBehaviourStartPatch
             {
                 VoteImmune = CheatSettings.Create("VoteImmune", Main.VoteImmune, __instance);
             }
-            if ((AvoidBans == null || AvoidBans.ToggleButton == null))
-            {
-                AvoidBans = CheatSettings.Create("AvoidBans", Main.AvoidBans, __instance);
-            }
             if ((SpeedBoost == null || SpeedBoost.ToggleButton == null))
             {
                 SpeedBoost = CheatSettings.Create("SpeedBoost", Main.SpeedBoost, __instance);
@@ -157,17 +149,16 @@ public static class OptionsMenuBehaviourStartPatch
             BigSize = CheatSettings.Create("BigSize", Main.BigSize, __instance);
             }
         }
-#endif
     }
-    [HarmonyPatch(typeof(OptionsMenuBehaviour), nameof(OptionsMenuBehaviour.Close))]
-    public static class OptionsMenuBehaviourClosePatch
+
+[HarmonyPatch(typeof(OptionsMenuBehaviour), nameof(OptionsMenuBehaviour.Close))]
+public static class OptionsMenuBehaviourClosePatch
+{
+    public static void Postfix()
     {
-        public static void Postfix()
+        if (ClientOptionItem.CustomBackground != null)
         {
-            if (ClientOptionItem.CustomBackground != null)
-            {
-                ClientOptionItem.CustomBackground.gameObject.SetActive(false);
-            }
+            ClientOptionItem.CustomBackground.gameObject.SetActive(false);
         }
     }
 }

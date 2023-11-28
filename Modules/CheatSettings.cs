@@ -1,12 +1,11 @@
-
-using BepInEx.Configuration;
+﻿using BepInEx.Configuration;
 using System;
+using System.Drawing;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace TOHE;
 
-//来源：https://github.com/tukasa0001/TownOfHost/pull/1265
 public class CheatSettings
 {
     public ConfigEntry<bool> Config;
@@ -25,7 +24,7 @@ public class CheatSettings
         {
             Config = config;
 
-            var basebutton = optionsMenuBehaviour.DisableMouseMovement;
+            var mouseMoveToggle = optionsMenuBehaviour.DisableMouseMovement;
 
             // 1つ目のボタンの生成時に背景も生成
             if (CustomBackground == null)
@@ -37,7 +36,7 @@ public class CheatSettings
                 CustomBackground.transform.localPosition += Vector3.back * 8;
                 CustomBackground.gameObject.SetActive(false);
 
-                var closeButton = Object.Instantiate(basebutton, CustomBackground.transform);
+                var closeButton = Object.Instantiate(mouseMoveToggle, CustomBackground.transform);
                 closeButton.transform.localPosition = new(1.3f, -2.3f, -6f);
                 closeButton.name = "Back";
                 closeButton.Text.text = Translator.GetString("Back");
@@ -52,9 +51,8 @@ public class CheatSettings
                 UiElement[] selectableButtons = optionsMenuBehaviour.ControllerSelectable.ToArray();
                 PassiveButton leaveButton = null;
                 PassiveButton returnButton = null;
-                for (int i = 0; i < selectableButtons.Length; i++)
+                foreach (var button in selectableButtons)
                 {
-                    var button = selectableButtons[i];
                     if (button == null) continue;
 
                     if (button.name == "LeaveGameButton")
@@ -62,10 +60,10 @@ public class CheatSettings
                     else if (button.name == "ReturnToGameButton")
                         returnButton = button.GetComponent<PassiveButton>();
                 }
-                var generalTab = basebutton.transform.parent.parent.parent;
+                var generalTab = mouseMoveToggle.transform.parent.parent.parent;
 
-                var CheatOptionsButton = Object.Instantiate(basebutton, generalTab);
-                CheatOptionsButton.transform.localPosition = new (1.2f, -2.411f, -1f);
+                var CheatOptionsButton = Object.Instantiate(mouseMoveToggle, generalTab);
+                CheatOptionsButton.transform.localPosition = new(1.2f, -2.411f, -1f);
                 CheatOptionsButton.name = "Cheats";
                 CheatOptionsButton.Text.text = Translator.GetString("Cheats");
                 CheatOptionsButton.Background.color = new Color32(255, 192, 203, byte.MaxValue);
@@ -74,17 +72,16 @@ public class CheatSettings
                 modOptionsPassiveButton.OnClick.AddListener(new Action(() =>
                 {
                     CustomBackground.gameObject.SetActive(true);
-
-                    if (leaveButton != null)
-                        leaveButton.transform.localPosition = new(-1.35f, -1.821f, -1f);
-                    if (returnButton != null)
-                        returnButton.transform.localPosition = new(1.35f, -1.821f, -1f);
                 }));
 
+                if (leaveButton != null)
+                    leaveButton.transform.localPosition = new(-1.35f, -1.821f, -1f);
+                if (returnButton != null)
+                    returnButton.transform.localPosition = new(1.35f, -1.821f, -1f);
             }
 
             // ボタン生成
-            ToggleButton = Object.Instantiate(basebutton, CustomBackground.transform);
+            ToggleButton = Object.Instantiate(mouseMoveToggle, CustomBackground.transform);
             ToggleButton.transform.localPosition = new Vector3(
                 // 現在のオプション数を基に位置を計算
                 numOptions % 2 == 0 ? -1.3f : 1.3f,
@@ -106,20 +103,16 @@ public class CheatSettings
     }
 
     public static CheatSettings Create(
-        string name,
-        ConfigEntry<bool> config,
-        OptionsMenuBehaviour optionsMenuBehaviour,
-        Action additionalOnClickAction = null)
+        string name2,
+        ConfigEntry<bool> config2,
+        OptionsMenuBehaviour optionsMenuBehaviour2,
+        Action additionalOnClickAction2 = null)
     {
-        return new(name, config, optionsMenuBehaviour, additionalOnClickAction);
+        return new(name2, config2, optionsMenuBehaviour2, additionalOnClickAction2);
     }
 
     public void UpdateToggle()
     {
-        if (ToggleButton == null) return;
 
-        var color = Config.Value ? new Color32(255, 192, 203, byte.MaxValue) : new Color32(77, 77, 77, byte.MaxValue);
-        ToggleButton.Background.color = color;
-        ToggleButton.Rollover?.ChangeOutColor(color);
     }
 }

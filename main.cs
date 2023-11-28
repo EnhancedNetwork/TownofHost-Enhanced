@@ -40,16 +40,15 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "1.2.1.5";
-    public const string PluginDisplayVersion = "1.2.1 Canary 1";
+    public const string PluginVersion = "1.2.0";
+    public const string PluginDisplayVersion = "1.2.0";
     public static readonly string SupportedVersionAU = "2023.10.24";
     /******************* Change one of the three variables to true before making a release. *******************/
     public const bool Canary = false; // Unused variable? ---- not unused anymore :)
-    public const bool fullRelease = false;
-    public const bool devRelease = true;
+    public const bool fullRelease = true;
+    public const bool devRelease = false;
 
     public static bool hasAccess = true;
-
     public static readonly bool ShowGitHubButton = true;
     public static readonly bool ShowKofiButton = true;
     public static readonly string GitHubInviteUrl = "https://github.com/0xDrMoe/TownofHost-Enhanced";
@@ -98,7 +97,6 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> ImpTasks { get; private set; }
     public static ConfigEntry<bool> EvilVote { get; private set; }
     public static ConfigEntry<bool> VoteImmune { get; private set; }
-    public static ConfigEntry<bool> AvoidBans { get; private set; }
     public static ConfigEntry<bool> SpeedBoost { get; private set; }
     public static ConfigEntry<bool> BigSize { get; private set; }
     
@@ -439,8 +437,8 @@ public class Main : BasePlugin
         Instance = this;
 
         //Client Options
-        HideName = Config.Bind("Client Options", "Hide Game Code Name", "EQUIPE Y12");
-        HideColor = Config.Bind("Client Options", "Hide Game Code Color", $"#ffffff");
+        HideName = Config.Bind("Client Options", "Hide Game Code Name", "TOHE");
+        HideColor = Config.Bind("Client Options", "Hide Game Code Color", $"#ffc0cb");
         DebugKeyInput = Config.Bind("Authentication", "Debug Key", "");
         AutoStart = Config.Bind("Client Options", "AutoStart", false);
         UnlockFPS = Config.Bind("Client Options", "UnlockFPS", false);
@@ -461,7 +459,6 @@ public class Main : BasePlugin
         ImpTasks = Config.Bind("Client Options", "ImpTasks", false);
         EvilVote = Config.Bind("Client Options", "EvilVote", false);
         VoteImmune = Config.Bind("Client Options", "VoteImmune", false);
-        AvoidBans = Config.Bind("Client Options", "AvoidBans", false);
         SpeedBoost = Config.Bind("Client Options", "SpeedBoost", false);
         BigSize = Config.Bind("Client Options", "BigSize", false);
         AutoMuteUs = Config.Bind("Client Options", "AutoMuteUs", false); // The AutoMuteUs bot fails to match the host's name.
