@@ -138,8 +138,8 @@ public static class Infectious
         {
             if (alivePlayer.Is(CustomRoles.Infected))
             {
-                alivePlayer.RpcMurderPlayerV3(alivePlayer);
                 Main.PlayerStates[alivePlayer.PlayerId].deathReason = PlayerState.DeathReason.Infected;
+                alivePlayer.RpcMurderPlayerV3(alivePlayer);
             }
         }
     }
