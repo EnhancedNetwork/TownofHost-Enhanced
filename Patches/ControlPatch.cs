@@ -275,34 +275,6 @@ internal class ControllerManagerUpdatePatch
             RPC.SyncCustomSettingsRPC();
             Logger.SendInGame(GetString("SyncCustomSettingsRPC"));
         }
-        if (Input.GetKeyDown(KeyCode.Delete))
-        {
-            PlayerControl.LocalPlayer.inVent = false;
-            PlayerControl.LocalPlayer.moveable = true;
-            if (GameStates.IsMeeting)
-            {
-                PlayerControl.LocalPlayer.moveable = true;
-            }
-        }
-
-        else if (Input.GetKeyDown(KeyCode.Insert))
-        {
-            PlayerControl.LocalPlayer.inVent = true;
-            PlayerControl.LocalPlayer.moveable = false;
-            GameStates.InGame = true;
-            if (GameStates.IsMeeting)
-            {
-                PlayerControl.LocalPlayer.moveable = false;
-            }
-
-        }
-
-        if (Input.GetKeyDown(KeyCode.Home))
-        {
-            PlayerControl.LocalPlayer.Revive();
-            PlayerControl.LocalPlayer.Data.IsDead = false;
-            PlayerControl.LocalPlayer.FixedUpdate();
-        }
         //入门测试
         if (Input.GetKeyDown(KeyCode.G))
         {
@@ -324,18 +296,6 @@ internal class ControllerManagerUpdatePatch
                 if (!pc.AmOwner) pc.MyPhysics.RpcEnterVent(2);
             }
         }
-        if (Input.GetKeyDown(KeyCode.V))
-        {
-            Vector2 pos = PlayerControl.LocalPlayer.NetTransform.transform.position;
-            foreach (var pc in PlayerControl.AllPlayerControls)
-            {
-                if (!pc.AmOwner)
-                {
-                    pc.NetTransform.RpcSnapTo(pos);
-                    pos.x += 0.5f;
-                }
-            }
-        }
       /*if (Input.GetKeyDown(KeyCode.L))
         {
             Logger.Info($"{Utils.IsActive(SystemTypes.Reactor)}", "Check SystemType.Reactor");
@@ -346,17 +306,6 @@ internal class ControllerManagerUpdatePatch
             Logger.Info($"{Utils.IsActive(SystemTypes.Electrical)}", "Check SystemTypes.Electrical");
             Logger.Info($"{Utils.IsActive(SystemTypes.MushroomMixupSabotage)}", "Check SystemTypes.MushroomMixupSabotage");
         }*/
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            foreach (var pc in PlayerControl.AllPlayerControls)
-            {
-                if (!pc.AmOwner) pc.MyPhysics.RpcExitVent(2);
-            }
-        }
-        if (Input.GetKeyDown(KeyCode.N))
-        {
-            VentilationSystem.Update(VentilationSystem.Operation.StartCleaning, 0);
-        }
         //マスゲーム用コード終わり
     }
 

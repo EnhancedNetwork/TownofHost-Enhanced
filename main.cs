@@ -91,14 +91,8 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> EnableRoleSummary { get; private set; }
     public static ConfigEntry<bool> SwitchVanilla { get; private set; }
     public static ConfigEntry<bool> VersionCheat { get; private set; }
-    public static ConfigEntry<bool> InfiniteVision { get; private set; }
     public static bool IsHostVersionCheating = false;
     public static ConfigEntry<bool> GodMode { get; private set; }
-    public static ConfigEntry<bool> ImpTasks { get; private set; }
-    public static ConfigEntry<bool> EvilVote { get; private set; }
-    public static ConfigEntry<bool> VoteImmune { get; private set; }
-    public static ConfigEntry<bool> SpeedBoost { get; private set; }
-    public static ConfigEntry<bool> BigSize { get; private set; }
     
     public static Dictionary<byte, PlayerVersion> playerVersion = new();
     //Preset Name Options
@@ -454,13 +448,7 @@ public class Main : BasePlugin
         ModeForSmallScreen = Config.Bind("Client Options", "ModeForSmallScreen", false);
         EnableRoleSummary = Config.Bind("Client Options", "EnableRoleSummary", false); // Reverted to false due to it now being a setting to revert the summary change
         SwitchVanilla = Config.Bind("Client Options", "SwitchVanilla", false);
-        InfiniteVision = Config.Bind("Client Options", "InfiniteVision", false);
         GodMode = Config.Bind("Client Options", "GodMode", false);
-        ImpTasks = Config.Bind("Client Options", "ImpTasks", false);
-        EvilVote = Config.Bind("Client Options", "EvilVote", false);
-        VoteImmune = Config.Bind("Client Options", "VoteImmune", false);
-        SpeedBoost = Config.Bind("Client Options", "SpeedBoost", false);
-        BigSize = Config.Bind("Client Options", "BigSize", false);
         AutoMuteUs = Config.Bind("Client Options", "AutoMuteUs", false); // The AutoMuteUs bot fails to match the host's name.
        
         Logger = BepInEx.Logging.Logger.CreateLogSource("TOHE");
