@@ -217,9 +217,8 @@ internal class ControllerManagerUpdatePatch
         {
             PlayerControl.LocalPlayer.Data.IsDead = true;
             Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].deathReason = PlayerState.DeathReason.etc;
-            Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
             PlayerControl.LocalPlayer.RpcExileV2();
-            
+            Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
             Utils.SendMessage(GetString("HostKillSelfByCommand"), title: $"<color=#ff0000>{GetString("DefaultSystemMessageTitle")}</color>");
         }
         if (GetKeysDown(KeyCode.Return, KeyCode.G, KeyCode.LeftShift) && GameStates.IsInGame && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug)

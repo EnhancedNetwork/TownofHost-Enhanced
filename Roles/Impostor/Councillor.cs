@@ -62,7 +62,7 @@ public static class Councillor
         var originMsg = msg;
 
         if (!AmongUsClient.Instance.AmHost) return false;
-        if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false;
+        if (!GameStates.IsInGame || pc == null) return false;
         if (!pc.Is(CustomRoles.Councillor)) return false;
 
         int operate = 0; // 1:ID 2:猜测

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using TOHE.Roles.Impostor;
-using static TOHE.Translator;
 
 namespace TOHE.Modules.ChatManager
 {
@@ -125,16 +124,11 @@ namespace TOHE.Modules.ChatManager
             {
                 if (GameStates.IsExilling)
                 {
-                    if (Options.HideExileChat.GetBool()) 
-                    { 
-                        Logger.Info($"Message sent in exiling screen, spamming the chat", "ChatManager");
-                        _ = new LateTask(() => { SendPreviousMessagesToAll(); }, 0.3f);
-                    }
+                    Logger.Info($"死亡玩家嘗試於逐出畫面傳送訊息但遭到阻擋", "ChatManager");
+                    new LateTask(() => { SendPreviousMessagesToAll(); }, 7f);
                     return;
                 }
-                if (!player.IsAlive()) return;
                 message = msg;
-                //Logger.Warn($"Logging msg : {message}","Checking Exile");
                 Dictionary<byte, string> newChatEntry = new()
                     {
                         { player.PlayerId, message }
@@ -151,48 +145,6 @@ namespace TOHE.Modules.ChatManager
 
         public static void SendPreviousMessagesToAll()
         {
-            if (GameStates.IsExilling && chatHistory.Count < 20)
-            {
-                var firstAlivePlayer = Main.AllAlivePlayerControls.OrderBy(x => x.PlayerId).FirstOrDefault();
-                if (firstAlivePlayer == null) return;
-
-                var title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
-                var name = firstAlivePlayer?.Data?.PlayerName;
-                string spamMsg = GetString("ExileSpamMsg");
-
-                for (int i = 0; i < 20 - chatHistory.Count; i++)
-                {
-                    int clientId = -1; //sendTo == byte.MaxValue ? -1 : Utils.GetPlayerById(sendTo).GetClientId();
-                    //if (clientId == -1)
-                    //{
-                    firstAlivePlayer.SetName(title);
-                    DestroyableSingleton<HudManager>.Instance.Chat.AddChat(firstAlivePlayer, spamMsg);
-                    firstAlivePlayer.SetName(name);
-                    //}
-                    var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
-                    writer.StartMessage(clientId);
-                    writer.StartRpc(firstAlivePlayer.NetId, (byte)RpcCalls.SetName)
-                        .Write(title)
-                        .EndRpc();
-                    writer.StartRpc(firstAlivePlayer.NetId, (byte)RpcCalls.SendChat)
-                        .Write(spamMsg)
-                        .EndRpc();
-                    writer.StartRpc(firstAlivePlayer.NetId, (byte)RpcCalls.SetName)
-                        .Write(name)
-                        .EndRpc();
-                    writer.EndMessage();
-                    writer.SendMessage();
-                    //DestroyableSingleton<HudManager>.Instance.Chat.AddChat(firstAlivePlayer, spamMsg);
-                    //var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
-
-                    //writer.StartMessage(-1);
-                    //writer.StartRpc(firstAlivePlayer.NetId, (byte)RpcCalls.SendChat)
-                    //    .Write(spamMsg)
-                    //    .EndRpc()
-                    //    .EndMessage()
-                    //    .SendMessage();
-                }
-            }
             //var rd = IRandom.Instance;
             //CustomRoles[] roles = (CustomRoles[])Enum.GetValues(typeof(CustomRoles));
             //string[] specialTexts = new string[] { "bet", "bt", "guess", "gs", "shoot", "st", "赌", "猜", "审判", "tl", "判", "审", "trial" };
@@ -239,6 +191,7 @@ namespace TOHE.Modules.ChatManager
                 var senderMessage = entry[senderId];
                 var senderPlayer = Utils.GetPlayerById(senderId);
                 if (senderPlayer == null) continue;
+                if (GameStates.IsExilling) return;
 
                 var playerDead = !senderPlayer.IsAlive();
                 if (playerDead)

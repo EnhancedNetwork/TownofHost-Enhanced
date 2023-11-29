@@ -213,10 +213,12 @@ static class ExtendedPlayerControl
     public static void SetKillCooldown(this PlayerControl player, float time = -1f, PlayerControl target = null, bool forceAnime = false)
     {
         if (player == null) return;
-
-        if (!player.HasImpKillButton(considerVanillaShift: true)) return;
-        if (player.HasImpKillButton(false) && !player.CanUseKillButton()) return;
-
+        if (!Main.ErasedRoleStorage.ContainsKey(player.PlayerId))
+        {
+            if (!player.CanUseKillButton()) return;
+        }
+        else if (!HasKillButton(role: Main.ErasedRoleStorage[player.PlayerId]))
+            return;
         if (target == null) target = player;
         if (time >= 0f) Main.AllPlayerKillCooldown[player.PlayerId] = time * 2;
         else Main.AllPlayerKillCooldown[player.PlayerId] *= 2;
@@ -1156,6 +1158,13 @@ static class ExtendedPlayerControl
             case CustomRoles.EvilMini:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Mini.GetKillCoolDown();
                 break;
+            case CustomRoles.CrewmateTOHE:
+            case CustomRoles.EngineerTOHE:
+            case CustomRoles.ScientistTOHE:
+            case CustomRoles.GuardianAngelTOHE:
+                Main.AllPlayerKillCooldown[player.PlayerId] = 300f;
+                break;
+                //Vanilla imp and ss is done at the beginning of the function
         }
         if (player.PlayerId == LastImpostor.currentId)
             LastImpostor.SetKillCooldown();
@@ -1176,8 +1185,6 @@ static class ExtendedPlayerControl
             Main.AllPlayerKillCooldown[player.PlayerId] = kcd;
             Logger.Info($"kill cd of player set to {Main.AllPlayerKillCooldown[player.PlayerId]}", "Antidote");
         }
-        if (!player.HasImpKillButton(considerVanillaShift: false))
-            Main.AllPlayerKillCooldown[player.PlayerId] = 300f;
         if (Main.AllPlayerKillCooldown[player.PlayerId] == 0)
         {
             if (player.Is(CustomRoles.Chronomancer)) return;

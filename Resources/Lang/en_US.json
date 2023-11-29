@@ -1219,10 +1219,6 @@
   "AutoDisplayKillLog": "Display Kill-log",
   "AutoDisplayLastRoles": "Display Last Roles",
   "AutoDisplayLastResult": "Auto Display Last Result",
-
-  "HideExileChat": "Hide exile (lava) chat",
-  "ExileSpamMsg": "Someone is trying to be a smart ass by lava chatting",
-
   "EnableYTPlan": "Enable Youtuber Plan",
   "KickLowLevelPlayer": "Kick players whose level is lower than",
   "TempBanLowLevelPlayer": "Temporarily ban low-level players",
@@ -2643,7 +2639,7 @@
 
   "RandCommandInfo": "<b>This Command can only be used when in lobby or after you die.</b>\n\ntype <b>/rand X Y</b> to get a number between X and Y, inclusive. \nX and Y can be any number between 0 and 2147483647, including both numbers.\nX must be less than Y.\n\nExample:- <b>/rand 0 99</b>",
   "RandResult": "Congratulations, your random number is {0}! Wasn't that fun?",
-
+  
   "ChanceToMiss": "Chance to miss a kill",
   "ImpCanBeClumsy": "<color=#ff1919>Impostors</color> can become Clumsy",
   "NeutralCanBeClumsy": "<color=#7f8c8d>Neutral Killers</color> can become Clumsy",
@@ -2730,7 +2726,7 @@
   "ImpCanBeAware": "<color=#ff1919>Impostors</color> can become <color=#4B0082>Aware</color>",
   "NeutralCanBeAware": "<color=#7f8c8d>Neutrals</color> can become <color=#4B0082>Aware</color>",
   "CrewCanBeAware": "<color=#8cffff>Crewmates</color> can become <color=#4B0082>Aware</color>",
-  "AwareKnowRole": "Knows the role of player",
+  "AwareKnowRole": "Konws the role of player",
   "AwareInteracted": "{0} tried to reveal your role.",
   "AwareTitle": "AWARE MESSAGE",
   "LighterVentButtonText": "Light",

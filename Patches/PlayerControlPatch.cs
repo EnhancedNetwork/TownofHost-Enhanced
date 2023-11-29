@@ -134,74 +134,75 @@ class CheckMurderPatch
         }
         TimeSinceLastKill[killer.PlayerId] = 0f;
 
-        if (target.Is(CustomRoles.Diseased))
+        switch (targetRole)
         {
-            if (Main.KilledDiseased.ContainsKey(killer.PlayerId))
-            {
-                // Key already exists, update the value
-                Main.KilledDiseased[killer.PlayerId] += 1;
-            }
-            else
-            {
-                // Key doesn't exist, add the key-value pair
-                Main.KilledDiseased.Add(killer.PlayerId, 1);
-            }
-        }
-        if (target.Is(CustomRoles.Antidote))
-        {
-            if (Main.KilledAntidote.ContainsKey(killer.PlayerId))
-            {
-                // Key already exists, update the value
-                Main.KilledAntidote[killer.PlayerId] += 1;
-                // Main.AllPlayerKillCooldown.TryGetValue(killer.PlayerId, out float kcd) ? (kcd - Options.AntidoteCDOpt.GetFloat() > 0 ? kcd - Options.AntidoteCDOpt.GetFloat() : 0f) : 0f;
-            }
-            else
-            {
-                // Key doesn't exist, add the key-value pair
-                Main.KilledAntidote.Add(killer.PlayerId, 1);
-                // Main.AllPlayerKillCooldown.TryGetValue(killer.PlayerId, out float kcd) ? (kcd - Options.AntidoteCDOpt.GetFloat() > 0 ? kcd - Options.AntidoteCDOpt.GetFloat() : 0f) : 0f);
-            }
-        }
-        if (target.Is(CustomRoles.Fragile))
-        {
-            if ((killerRole.IsImpostorTeamV3() && Options.ImpCanKillFragile.GetBool()) ||
-                (killerRole.IsNeutral() && Options.NeutralCanKillFragile.GetBool()) ||
-                (killerRole.IsCrewmate() && Options.CrewCanKillFragile.GetBool()))
-            {
-                Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Shattered;
-                target.SetRealKiller(killer);
-                if (Options.FragileKillerLunge.GetBool())
+            case CustomRoles.Diseased:
+                if (Main.KilledDiseased.ContainsKey(killer.PlayerId))
                 {
-                    killer.RpcMurderPlayerV3(target);
+                    // Key already exists, update the value
+                    Main.KilledDiseased[killer.PlayerId] += 1;
                 }
                 else
                 {
-                    target.RpcMurderPlayerV3(target);
+                    // Key doesn't exist, add the key-value pair
+                    Main.KilledDiseased.Add(killer.PlayerId, 1);
                 }
-                killer.ResetKillCooldown();
-                return false;
-            }
-        }
-        if (target.Is(CustomRoles.Aware))
-        {
-            switch (killerRole)
-            {
-                case CustomRoles.EvilDiviner:
-                case CustomRoles.Farseer:
-                    if (!Main.AwareInteracted.ContainsKey(target.PlayerId))
+                break;
+
+            case CustomRoles.Antidote:
+                if (Main.KilledAntidote.ContainsKey(killer.PlayerId))
+                {
+                    // Key already exists, update the value
+                    Main.KilledAntidote[killer.PlayerId] += 1;
+                    // Main.AllPlayerKillCooldown.TryGetValue(killer.PlayerId, out float kcd) ? (kcd - Options.AntidoteCDOpt.GetFloat() > 0 ? kcd - Options.AntidoteCDOpt.GetFloat() : 0f) : 0f;
+                }
+                else
+                {
+                    // Key doesn't exist, add the key-value pair
+                    Main.KilledAntidote.Add(killer.PlayerId, 1);
+                    // Main.AllPlayerKillCooldown.TryGetValue(killer.PlayerId, out float kcd) ? (kcd - Options.AntidoteCDOpt.GetFloat() > 0 ? kcd - Options.AntidoteCDOpt.GetFloat() : 0f) : 0f);
+                }
+                break;
+
+            case CustomRoles.Fragile:
+                if ((killerRole.IsImpostorTeamV3() && Options.ImpCanKillFragile.GetBool()) ||
+                    (killerRole.IsNeutral() && Options.NeutralCanKillFragile.GetBool()) ||
+                    (killerRole.IsCrewmate() && Options.CrewCanKillFragile.GetBool()))
+                {
+                    if (Options.FragileKillerLunge.GetBool())
                     {
-                        Main.AwareInteracted.Add(target.PlayerId, new());
+                        killer.RpcMurderPlayerV3(target);
                     }
-                    if (!Main.AwareInteracted[target.PlayerId].Contains(Utils.GetRoleName(killerRole)))
+                    else
                     {
-                        Main.AwareInteracted[target.PlayerId].Add(Utils.GetRoleName(killerRole));
+                        target.RpcMurderPlayerV3(target);
                     }
-                    break;
-            }
-        }
-        switch (targetRole)
-        {
-             case CustomRoles.Shaman:
+                    Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Shattered;
+                    target.SetRealKiller(target);
+                    target.SetRealKiller(killer);
+                    killer.ResetKillCooldown();
+                    return false;
+                }
+                break;
+
+            case CustomRoles.Aware:
+                switch (killerRole)
+                {
+                    case CustomRoles.EvilDiviner:
+                    case CustomRoles.Farseer:
+                        if (!Main.AwareInteracted.ContainsKey(target.PlayerId))
+                        {
+                            Main.AwareInteracted.Add(target.PlayerId, new());
+                        }
+                        if (!Main.AwareInteracted[target.PlayerId].Contains(Utils.GetRoleName(killerRole)))
+                        {
+                            Main.AwareInteracted[target.PlayerId].Add(Utils.GetRoleName(killerRole));
+                        }
+                        break;
+                }
+                break;
+
+            case CustomRoles.Shaman:
                 if (Main.ShamanTarget != byte.MaxValue && target.IsAlive())
                 {
                     target = Utils.GetPlayerById(Main.ShamanTarget);
@@ -611,9 +612,8 @@ class CheckMurderPatch
             var Ue = IRandom.Instance;
             if (Ue.Next(1, 100) <= Options.UnluckyKillSuicideChance.GetInt())
             {
-                Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
                 killer.RpcMurderPlayerV3(killer);
-                
+                Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
                 return false;
             }
         }
@@ -953,11 +953,10 @@ class CheckMurderPatch
                 }
                 if (player.Is(CustomRoles.Crusader) && player.IsAlive() && killer.Is(CustomRoles.Pestilence))
                 {
-                    Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.PissedOff;
                     killer.RpcMurderPlayerV3(player);
                     Main.ForCrusade.Remove(target.PlayerId);
                     target.RpcGuardAndKill(killer);
-                    
+                    Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.PissedOff;
                     return false;
                 }
             }
@@ -1384,9 +1383,9 @@ class MurderPlayerPatch
                 {
                     if (!killer.inVent && !killer.Data.IsDead && !GameStates.IsMeeting)
                     {
-                        Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
                         target.RpcMurderPlayerV3(killer);
                         killer.SetRealKiller(target);
+                        Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
                     }
                     else
                     {
@@ -2156,8 +2155,8 @@ class ReportDeadBodyPatch
                     var Ue = IRandom.Instance;
                     if (Ue.Next(1, 100) <= Options.UnluckyReportSuicideChance.GetInt())
                     {
-                        Main.PlayerStates[__instance.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
                         __instance.RpcMurderPlayerV3(__instance);
+                        Main.PlayerStates[__instance.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
                         return false;
                     }
                 }   
@@ -3471,8 +3470,8 @@ class EnterVentPatch
             var Ue = IRandom.Instance;
             if (Ue.Next(1, 100) <= Options.UnluckyVentSuicideChance.GetInt())
             {
-                Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
                 pc.RpcMurderPlayerV3(pc);
+                Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
             }
         }
         if (pc.Is(CustomRoles.Grenadier))
@@ -3610,9 +3609,8 @@ class CoEnterVentPatch
                         pc.SetRealKiller(bastion);
                         bastion.Notify(GetString("BastionNotify"));
                         pc.Notify(GetString("EnteredBombedVent"));
-                        
-                        Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
                         pc.RpcMurderPlayerV3(pc);
+                        Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
                         Main.BombedVents.Remove(id);}
                 }, 0.5f, "Player bombed by Bastion");
                 return true;
