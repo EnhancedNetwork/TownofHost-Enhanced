@@ -164,10 +164,6 @@ public static class DevManager
         //// pt-BR Translators
         //DevUserList.Add(new(code: "modelpad#5195", color: "null", tag: "Tradutor", isUp: true, isDev: false, deBug: false, colorCmd: false, upName: "Reginaldoo")); // and content creator
         //DevUserList.Add(new(code: "mimerecord#9638", color: "null", tag: "Tradutor", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "Arc"));
-        //// SChinese translation
-        //DevUserList.Add(new(code: "drawncod#3642", color: "#00FFFF", tag: "简中翻译人员", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "crewcyan")); //船员小青
-        //// French Translators
-        //DevUserList.Add(new(code: "bigecho#5256", color: "#0131b4", tag: "Traducteur", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "KevOut")); //kevoutings
         //// Latam Translators
         //DevUserList.Add(new(code: "magicyear#5568", color: "#1F75FE", tag: "Traductor", isUp: false, isDev: false, deBug: false, colorCmd: false, upName: "CreepPower")); //creeppower
         //// China Up

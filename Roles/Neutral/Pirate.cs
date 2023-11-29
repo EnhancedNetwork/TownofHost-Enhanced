@@ -142,7 +142,7 @@ public static class Pirate
     {
         var originMsg = msg;
         if (!AmongUsClient.Instance.AmHost) return false;
-        if (!GameStates.IsInGame || pc == null) return false;
+        if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false;
         if (!pc.Is(CustomRoles.Pirate) && PirateTarget != pc.PlayerId) return false;
 
 
