@@ -61,6 +61,8 @@ class HudManagerPatch
 
         if (SetHudActivePatch.IsActive)
         {
+            if (Options.CurrentGameMode == CustomGameMode.FFA)
+                LowerInfoText.text = FFAManager.GetHudText();
             if (player.IsAlive())
             {
                 //MOD入り用のボタン下テキスト変更
@@ -462,9 +464,6 @@ class HudManagerPatch
                 }
                 switch (Options.CurrentGameMode)
                 {
-                    case CustomGameMode.FFA:
-                        LowerInfoText.text = FFAManager.GetHudText();
-                        break;
                     case CustomGameMode.Standard:
                         LowerInfoText.text = player.GetCustomRole() switch
                         {

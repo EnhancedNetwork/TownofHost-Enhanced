@@ -3617,15 +3617,12 @@ class CoEnterVentPatch
         if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenTwoPlayersAlive.GetBool() && Main.AllAlivePlayerControls.Length <= 2)
         {
             var pc = __instance?.myPlayer;
-            if (pc?.killTimer <= 0)
+            _ = new LateTask(() =>
             {
-                _ = new LateTask(() =>
-                {
-                    pc?.Notify(GetString("FFA-NoVentingBecauseTwoPlayers"), 7f);
-                    pc?.MyPhysics?.RpcBootFromVent(id);
-                }, 0.5f);
-                return true;
-            }
+                pc?.Notify(GetString("FFA-NoVentingBecauseTwoPlayers"), 7f);
+                pc?.MyPhysics?.RpcBootFromVent(id);
+            }, 0.5f);
+            return true;
         }
         if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenKCDIsUp.GetBool() && __instance.myPlayer.killTimer <= 0)
         {
