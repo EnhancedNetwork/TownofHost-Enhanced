@@ -21,7 +21,9 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem ModeForSmallScreen;
     private static ClientOptionItem EnableRoleSummary;
     private static ClientOptionItem SwitchVanilla;
+#if DEBUG
     private static ClientOptionItem VersionCheat;
+#endif
     private static ClientOptionItem GodMode;
 
     public static void Postfix(OptionsMenuBehaviour __instance)
@@ -110,11 +112,13 @@ public static class OptionsMenuBehaviourStartPatch
                 Main.Instance.Unload();
             }
         }
+#if DEBUG
         if ((VersionCheat == null || VersionCheat.ToggleButton == null) && DebugModeManager.AmDebugger)
         {
             VersionCheat = ClientOptionItem.Create("VersionCheat", Main.VersionCheat, __instance);
         }
-        if ((GodMode == null || GodMode.ToggleButton == null))
+#endif
+        if ((GodMode == null || GodMode.ToggleButton == null) && DebugModeManager.AmDebugger)
         {
             GodMode = ClientOptionItem.Create("GodMode", Main.GodMode, __instance);
         }
