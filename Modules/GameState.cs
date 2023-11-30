@@ -57,6 +57,7 @@ public class PlayerState
     {
         MainRole = role;
         countTypes = role.GetCountTypes();
+        var pc = Utils.GetPlayerById(PlayerId);
         if (role == CustomRoles.DarkHide)
         {
             if (!DarkHide.SnatchesWin.GetBool())
@@ -77,6 +78,23 @@ public class PlayerState
             if (!Options.ArsonistCanIgniteAnytime.GetBool())
             {
                 countTypes = CountTypes.Crew;
+            }
+        }
+        if (role == CustomRoles.Opportunist)
+        {
+            if (AmongUsClient.Instance.AmHost)
+            {
+                if (!pc.HasImpKillButton(considerVanillaShift: true))
+                {
+                    var taskstate = pc.GetPlayerTaskState();
+                    if (taskstate != null)
+                    {
+                        GameData.Instance.RpcSetTasks(pc.PlayerId, new byte[0]);
+                        taskstate.CompletedTasksCount = 0;
+                        taskstate.AllTasksCount = pc.Data.Tasks.Count;
+                        taskstate.hasTasks = true;
+                    }
+                }
             }
         }
     }
