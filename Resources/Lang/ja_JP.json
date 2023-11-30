@@ -2709,7 +2709,7 @@
   "ImpCanBeAware": "<color=#ff1919>インポスター</color> は <color=#4B0082>アウェア</color> になれます。",
   "NeutralCanBeAware": "<color=#7f8c8d>ニュートラル</color> は <color=#4B0082>アウェア</color> になれます。",
   "CrewCanBeAware": "<color=#8cffff>クルーメイト</color> は <color=#4B0082>アウェア</color> になれます",
-  "AwareKnowRole": "Knows the role of player",
+  "AwareKnowRole": "プレイヤーの役割を知っている",
   "AwareInteracted": "{0} があなたの役職を明らかにしようとしました。",
   "AwareTitle": "意識メッセージ",
   "LighterVentButtonText": "光",
