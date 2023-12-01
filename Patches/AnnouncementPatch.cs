@@ -85,7 +85,7 @@ public class ModNewsHistory
                         "\n     - Role colors now modifiable via RoleColor.dat (By: ryuk)" +
                         "\n     - Updated Dev Tags (By: FuroYT)" +
                         "\n     - Vector and Unlucky no longer compatible (By: ryuk)" +
-                        "\n     - Vulture can now eat cleaned/medusa bodies (By: NikoCat223)\r\n" +
+                        "\n     - Vulture now can not eat cleaned/medusa bodies (By: NikoCat223)\r\n" +
 
                     "\n<b>【Bug Fixes】</b>" +
                         "\n     - Fixed Death Reason Inconsistency (By: ryuk)" +
@@ -393,7 +393,7 @@ public class ModNewsHistory
                         "\n     - Цвета ролей теперь можно изменить в файле «RoleColor.dat» (Автор: ryuk)" +
                         "\n     - Обновленны теги разработчиков (Автор: FuroYT)" +
                         "\n     - Вектор и Неудачный больше не совместимы (Автор: ryuk)" +
-                        "\n     - Стервятник теперь может есть очищенные/каменные трупы (Автор: NikoCat223)\r\n" +
+                        "\n     - Стервятник теперь не может есть очищенные/каменные трупы (Автор: NikoCat223)\r\n" +
 
                     "\n<b>【Исправления багов】</b>" +
                         "\n     - Исправлена синхронизация причины смерти у игроков с модом (Автор: ryuk)" +
