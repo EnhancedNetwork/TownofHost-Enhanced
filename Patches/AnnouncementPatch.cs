@@ -882,7 +882,75 @@ public class ModNewsHistory
         // ====== TChinese ======
         else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.TChinese)
         {
+            var news = new ModNews
             {
+                Number = 70005,
+                Title = "Town of Host: Enhanced v1.3.0",
+                SubTitle = "★★ 新職業? 附加職業? Bug修復?! ★★",
+                ShortTitle = "TOH: Enhanced v1.3.0",
+                BeforeNumber = 70004,
+                Text = "<size=150%>歡迎來到 TOH: Enhanced v1.3.0!</size>\n" +
+                    "\n<b>【基於版本】</b>\n - 基於 TOH: Enhanced v1.2.0\r\n" +
+
+                    "\n<b>【新職業/附加職業】(5個主職業，3個附加職業</i></b>" +
+                        "\n     - 教唆者 (擊殺類偽裝者 By: papercut)" +
+                        "\n     - 猜想者 (支援類船員 - By: papercut)" +
+                        "\n     - 精靈 (友善類中立 - By: ryuk, 想法: Azanthiel)" +
+                        "\n     - 搗蛋鬼 (友善類中立 - By: ryuk, 想法: Dx)" +
+                        "\n     - 隨機者 (基礎船員 - 想法以及代碼by: Night, 改進by: LezaiYa" +
+                        "\n     - 順從者 (有害類附加職業 - By: NikoCat223)" +
+                        "\n     - 焦急者 (有害類附加職業 - By: NikoCat223)" +
+                        "\n     - Oiiai (試驗性附加職業 - By: NikoCat223)\r\n" +
+
+                    "\n<b>【新設定】</b>" +
+                        "\n     - 新增了攔截逐出畫面死人討論的機制(By: 阿龍, 修復並改進by: ryuk)" +
+                        "\n     - 陣營轉換後的遐想者可以不受限制的擊殺任何人 (By: ryuk)" +
+                        "\n     - 計算迷你船員於會議中的成長時間 (By: LezaiYa, NikoCat233)" +
+                        "\n     - 利己主義者視為中立 (By: ryuk)" +
+                        "\n     - 新增新迷彩皮膚(By: TommyXL)\r\n" +
+
+                    "\n<b>【更動】</b>" +
+                        "\n     - 分身者無法同時成為名人 (By: ryuk)" +
+                        "\n     - 改進封禁系統 (By: NikoCat223)" +
+                        "\n     - 大幅改進了源代碼庫 (By: TommyXL)" +
+                        "\n     - 改進了同步設定 (By: TommyXL)" +
+                        "\n     - 獵夢者與潛藏者不會在Fungle地圖中被分配 (By: TommyXL)" +
+                        "\n     - 刪除了不兼容的職業分配 (By: NikoCat223)" +
+                        "\n     - 職業顏色現在可以於RoleColor.dat中修改 (By: ryuk)" +
+                        "\n     - 更新開發者標籤 (By: FuroYT)" +
+                        "\n     - 瑪利歐不再能同時成為倒楣蛋 (By: ryuk)" +
+                        "\n     - 禿鷲現在無法吃被清理/石化的屍體 (By: NikoCat223)\r\n" +
+
+                    "\n<b>【Bug修復】</b>" +
+                        "\n     - 修復了房主與模組客戶端死因不一致的問題 (By: ryuk)" +
+                        "\n     - 修復了顯示ID職業的雙重ID的問題 (By: ryuk)" +
+                        "\n     - <b>修復了房主使用/death指令會被所有玩家看到的問題 (By: NikoCat223)</b>" +
+                        "\n     - 修復了設定被覆蓋或重置的問題\n<b>必須玩一到兩場遊戲</b> (By: ryuk)" +
+                        "\n     - 修復了數個職業，附加職業和傳送問題 (By: NikoCat223, ryuk, TommyXL)\r\n" +
+
+                    "\n<b>【支援新語言】</b>" +
+                        "\n     - 法語 (By: FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                        "\n     - 日語 (By: Sunnyboi)" +
+                        "\n     - 拉丁美洲 (By: CreepPower)" +
+                        "\n     - 義大利文 (By: alot, Baphojack, Mattix606)" +
+                        "\n     - 西班牙文 (By: xxSShadow)" +
+                        "\n     - 繁體中文 (By: 柚子, FlyFlyTurtle)" +
+                        "\n<b>在我們的官網上查看所有翻譯人員</b>\r\n" +
+
+                    "\n<b>【其他雜項修復】</b>\r\n" +
+
+                    "\n<b> 現在頭頂標籤與權限使用Discord機器人完成</b>" +
+                    "\n加入我們的Discord(discord.gg/tohe)以了解更多資訊" +
+                    "\n此外，更新時所有設定將會被重置(很抱歉，但這是必要的)" +
+
+
+                    "\n\n★ 歡迎來到 Town of Host: Enhanced v1.3.0 ★",
+
+                Date = "2023-12-1T03:00:00Z"
+            };
+            AllModNews.Add(news);
+        }
+        {
                 var news = new ModNews
                 {
                     Number = 70004,
@@ -895,7 +963,7 @@ public class ModNewsHistory
 
                     "\n<b>【更動】</b>" +
                         "\n     - 支援最新的The Fungle更新!" +
-                        "\n     - 加入如果有玩家不斷進入並離開房間，則他將會被暫時封禁的機制\n\r" +
+                        "\n     - 加入反覆進出會被暫時封禁的機制\n\r" +
 
                     "\n\n★ 歡迎來到 Town of Host: Enhanced: Fungle版本 ★",
 
