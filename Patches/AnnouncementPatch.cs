@@ -606,7 +606,7 @@ public class ModNewsHistory
                         "\n     - 现在可通过 RoleColor.dat 修改职业颜色 (By: ryuk)" +
                         "\n     - 更新开发人员标签 (By: FuroYT)" +
                         "\n     - 马里奥和倒霉蛋不再兼容 (By: ryuk)" +
-                        "\n     - 秃鹫现在可以吃被美杜莎石化的尸体了 (By: NikoCat223)\r\n" +
+                        "\n     - 秃鹫不能吃被清理工清理和美杜莎石化的尸体了 (By: NikoCat223)\r\n" +
 
                     "\n<b>【Bug修复】</b>" +
                         "\n     - 修复了死亡原因不一致Bug (By: ryuk)" +
