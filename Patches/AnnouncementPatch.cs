@@ -569,20 +569,87 @@ public class ModNewsHistory
         else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.SChinese)
         {
             {
-                //TOHE v1.2.0
+                // TOHE 1.3.0
+                var news = new ModNews
+                {
+                    Number = 80005,
+                    Title = "Town of Host: Enhanced v1.3.0",
+                    SubTitle = "★★ 新职业？附加职业？Bug修复？ ★★",
+                    ShortTitle = "TOH: Enhanced v1.3.0",
+                    BeforeNumber = 80004,
+                    Text = "<size=150%>欢迎来到 TOH: Enhanced v1.3.0！</size>\n" +
+                    "\n<b>【基于官方版本】</b>\n - 基于 TOH: Enhanced v1.2.0\r\n" +
+
+                    "\n<b>【新职业/附加职业】(4个职业, 2个附加职业)</i></b>" +
+                        "\n     - 教唆者 (击杀类内鬼- By: papercut)" +
+                        "\n     - 猜想者 (支援类船员 - By: papercut)" +
+                        "\n     - 小精灵 (友好类中立 - By: ryuk, 想法: Azanthiel)" +
+                        "\n     - 任务执行者 (友好类中立 - By: ryuk, 想法: Dx)" +
+                        "\n     - 影响者 (有害类附加 - By: NikoCat223)" +
+                        "\n     - Oiiai (实验性附加 - By: NikoCat223)\r\n" +
+
+                    "\n<b>【新设置】</b>" +
+                        "\n     - 在驱逐聊天时上添加了防垃圾邮件功能 (By: ryuk)" +
+                        "\n     - 改装后的叛徒击杀而不受影响 (By: ryuk)" +
+                        "\n     - 计算会议中的成长时间 (By: LezaiYa, NikoCat233)" +
+                        "\n     - 利己主义者算作中立 (By: ryuk)" +
+                        "\n     - 添加新迷彩皮肤 (By: TommyXL)\r\n" +
+
+                    "\n<b>【其他变化】</b>" +
+                        "\n     - 网络员和分身者不兼容 (By: ryuk)" +
+                        "\n     - 改进封禁（EAC）系统 (By: NikoCat223)" +
+                        "\n     - 大幅改进源代码库 (By: TommyXL)" +
+                        "\n     - 梦魇和潜藏者在真菌密林反概率（？） (By: TommyXL)" +
+                        "\n     - 删除了不兼容的职业分配 (By: NikoCat223)" +
+                        "\n     - 现在可通过 RoleColor.dat 修改职业颜色 (By: ryuk)" +
+                        "\n     - 更新开发人员标签 (By: FuroYT)" +
+                        "\n     - 马里奥和倒霉蛋不再兼容 (By: ryuk)" +
+                        "\n     - 秃鹫现在可以吃被美杜莎石化的尸体了 (By: NikoCat223)\r\n" +
+
+                    "\n<b>【Bug修复】</b>" +
+                        "\n     - 修复了死亡原因不一致Bug (By: ryuk)" +
+                        "\n     - 修复了获得双重 ID 的职业的双重 ID 的Bug (By: ryuk)" +
+                        "\n     - <b>修复了所有玩家都能房主/死亡的Bug (By: NikoCat223)</b>" +
+                        "\n     - 修复了设置覆盖和重置的Bug\n<b>必须玩一到两场游戏</b> (By: ryuk)" +
+                        "\n     - 修复了多个职业、附加职业和传送错误 (By: NikoCat223, ryuk, TommyXL)\r\n" +
+
+                    "\n<b>【新语言】</b>" +
+                        "\n     - 法语 (By: FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                        "\n     - 日语 (By: Sunnyboi)" +
+                        "\n     - 拉丁美洲 (By: CreepPowe)" +
+                        "\n     - 意大利语 (By: alot, Baphojack, Mattix606)" +
+                        "\n     - 西班牙语 (By: xxSShadow)" +
+                        "\n     - 繁体中文 (By: FlyFlyTurtle, Pomelo_)" +
+                        "\n<b> 在我们的网站上查看我们所有的翻译人员</b>\r\n" +
+
+                    "\n<b>【若干其他杂项修复和伪装选项】</b>\r\n" +
+
+                    "\n<b> 注意：现在使用 Discord 机器人来完成开发标签和权限设置</b>" +
+                    "\n加入讨论组了解更多信息，请访问：discord.gg/tohe" +
+                    "\n此外，更新时将重置所有设置" +
+
+
+                    "\n\n★ 欢迎来到 Town of Host: Enhanced v1.3.0 ★",
+
+                    Date = "2023-12-1T03:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                // TOHE v1.2.0
                 var news = new ModNews
                 {
                     Number = 80004,
                     Title = "Town of Host: Enhanced v1.2.0",
-                    SubTitle = "★★ 支持The Fungle ! ★★",
+                    SubTitle = "★★ 支持真菌密林 ! ★★",
                     ShortTitle = "TOH: Enhanced v1.2.0",
                     BeforeNumber = 80003,
                     Text = "<size=150%>欢迎来到TOH: Enhanced v1.2.0!</size>\n" +
-                    "\n<b>【基于】</b>\n - 基于TOH: Enhanced v1.1.1\r\n" +
+                    "\n<b>【基于官方版本】</b>\n - 基于TOH: Enhanced v1.1.1\r\n" +
 
-                    "\n<b>【挑战】</b>" +
+                    "\n<b>【其他变化】</b>" +
                         "\n     - 已完全添加支持并修复了 Fungle 更新的错误" +
-                        "\n     -如果有玩家不断加入/离开，则会暂时封禁该玩家n\r" +
+                        "\n     - 如果有玩家不断加入/离开，则会暂时封禁该玩家\n\r" +
 
                     "\n\n★ 欢迎来到Town of Host: Enhanced: Fungle Edition ★",
 
@@ -591,7 +658,7 @@ public class ModNewsHistory
                 AllModNews.Add(news);
             }
             {
-                //TOHE v1.1.1
+                // TOHE v1.1.1
                 var news = new ModNews
                 {
                     Number = 80003,
@@ -620,7 +687,7 @@ public class ModNewsHistory
                 AllModNews.Add(news);
             }
             {
-                //TOHE v1.1.0
+                // TOHE v1.1.0
                 var news = new ModNews
                 {
                     Number = 80002,
@@ -628,15 +695,15 @@ public class ModNewsHistory
                     SubTitle = "★★ 已经更新了？哇哦！ ★★",
                     ShortTitle = "TOH: Enhanced v1.1.0",
                     BeforeNumber = 80001,
-                    Text = "<size=150%>欢迎来到TOH: Enhanced v1.1.0!</size>\n" +
+                    Text = "<size=150%>欢迎来到TOH: Enhanced v1.1.0！</size>\n" +
                     "\n<b>【基于官方版本】</b>\n - 基于TOH: Enhanced v1.0.1\r\n" +
 
                     "\n<b>【新职业/附加职业】</b>" +
-                        "\n     - 总统(船员阵营:权力)" +
-                        "\n     - 间谍(船员阵营:支援)" +
-                        "\n     - 义务警长(船员阵营:击杀)\n\r" +
+                        "\n     - 总统(船员阵营：权力)" +
+                        "\n     - 间谍(船员阵营：支援)" +
+                        "\n     - 义务警长(船员阵营：击杀)\n\r" +
 
-                        "\n     - 回弹者(附加职业:混合)\n\r" +
+                        "\n     - 回弹者(附加：混合)\n\r" +
 
                     "\n<b>【新设置】</b>" +
                         "\n     - 船鬼:每完成x(用字母x表示设定的任务数)项任务后，立即瞬移并击杀" +
@@ -674,7 +741,7 @@ public class ModNewsHistory
                 AllModNews.Add(news);
             }
             {
-                //TOHE v1.0.1
+                // TOHE v1.0.1
                 var news = new ModNews
                 {
                     Number = 80001,
@@ -682,14 +749,14 @@ public class ModNewsHistory
                     SubTitle = "★★ 新时代 ★★",
                     ShortTitle = "TOH: Enhanced v1.0.1",
                     BeforeNumber = 80000,
-                    Text = "<size=150%>欢迎来到 TOH: Enhanced v1.0.1!</size>\n\n<size=125%>适配 Among Us v2023.7.11 和 v2023.7.12</size>\n" +
-                 "\n<b>【基于官方版本】</b>\n - 基于 TOH-RE v3.1.0 (备注可用)\r\n" +
-                 "\n<b>【修复】</b>" +
-                 "\n     - 移除Loonie的logo，并将其取代" +
-                 "\n     - 在调查员中添加了一条更新的线索" +
-                 "\n     - 修复了无法生成 模板文件 和 VIP 列表的问题" +
-                 "\n     - 新角色......的新戏弄？" +
-                 "\n\n★ 欢迎来到 Town of Host: Enhanced! ★",
+                    Text = "<size=150%>欢迎来到 TOH: Enhanced v1.0.1！</size>\n\n<size=125%>适配 Among Us v2023.7.11 和 v2023.7.12</size>\n" +
+                    "\n<b>【基于官方版本】</b>\n - 基于 TOH-RE v3.1.0 (备注可用)\r\n" +
+                    "\n<b>【修复】</b>" +
+                    "\n     - 移除Loonie的logo，并将其取代" +
+                    "\n     - 在调查员中添加了一条更新的线索" +
+                    "\n     - 修复了无法生成 模板文件 和 VIP 列表的问题" +
+                    "\n     - 新角色......的新戏弄？" +
+                    "\n\n★ 欢迎来到 Town of Host: Enhanced! ★",
 
                     Date = "2023-10-5T00:00:00Z"
                 };
@@ -832,13 +899,13 @@ public class ModNewsHistory
                     ShortTitle = "TOH: Enhanced v1.0.1",
                     BeforeNumber = 70000,
                     Text = "<size=150%>歡迎來到 TOH: Enhanced v1.0.1!</size>\n\n<size=125%>支援版本 Among Us v2023.7.11、v2023.7.12</size>\n" +
-                "\n<b>【基於版本】</b>\n - 基於TOH-RE v3.1.0 (備註: 目前可以使用)\r\n" +
-                "\n<b>【修復】</b>" +
-                "\n     - 刪除了大廳中的Loonie標誌，並將其更換" +
-                "\n     - 在占卜師中增加了一條更新的線索" +
-                "\n     - 修復了模板和VIP清單沒有產生的問題" +
-                "\n     - 一個新職業的預告...?" +
-                "\n\n★ 歡迎來到 Town of Host: Enhanced! ★",
+                    "\n<b>【基於版本】</b>\n - 基於TOH-RE v3.1.0 (備註: 目前可以使用)\r\n" +
+                    "\n<b>【修復】</b>" +
+                    "\n     - 刪除了大廳中的Loonie標誌，並將其更換" +
+                    "\n     - 在占卜師中增加了一條更新的線索" +
+                    "\n     - 修復了模板和VIP清單沒有產生的問題" +
+                    "\n     - 一個新職業的預告...?" +
+                    "\n\n★ 歡迎來到 Town of Host: Enhanced! ★",
                     Date = "2023-10-15T00:00:00Z",
                 };
                 AllModNews.Add(news);
