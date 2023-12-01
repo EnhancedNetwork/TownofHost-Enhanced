@@ -289,14 +289,14 @@ internal class ControllerManagerUpdatePatch
         }
 
         //マスゲーム用コード
-        if (Input.GetKeyDown(KeyCode.C))
+        if (Input.GetKeyDown(KeyCode.C) && !GameStates.IsLobby)
         {
             foreach (var pc in PlayerControl.AllPlayerControls)
             {
                 if (!pc.AmOwner) pc.MyPhysics.RpcEnterVent(2);
             }
         }
-        if (Input.GetKeyDown(KeyCode.V))
+        if (Input.GetKeyDown(KeyCode.V) && !GameStates.IsLobby)
         {
             Vector2 pos = PlayerControl.LocalPlayer.NetTransform.transform.position;
             foreach (var pc in PlayerControl.AllPlayerControls)
@@ -308,16 +308,16 @@ internal class ControllerManagerUpdatePatch
                 }
             }
         }
-      /*if (Input.GetKeyDown(KeyCode.L))
-        {
-            Logger.Info($"{Utils.IsActive(SystemTypes.Reactor)}", "Check SystemType.Reactor");
-            Logger.Info($"{Utils.IsActive(SystemTypes.LifeSupp)}", "Check SystemTypes.LifeSupp");
-            Logger.Info($"{Utils.IsActive(SystemTypes.Laboratory)}", "Check SystemTypes.Laboratory");
-            Logger.Info($"{Utils.IsActive(SystemTypes.HeliSabotage)}", "Check SystemTypes.HeliSabotage");
-            Logger.Info($"{Utils.IsActive(SystemTypes.Comms)}", "Check SystemTypes.Comms");
-            Logger.Info($"{Utils.IsActive(SystemTypes.Electrical)}", "Check SystemTypes.Electrical");
-            Logger.Info($"{Utils.IsActive(SystemTypes.MushroomMixupSabotage)}", "Check SystemTypes.MushroomMixupSabotage");
-        }*/
+        /*if (Input.GetKeyDown(KeyCode.L))
+          {
+              Logger.Info($"{Utils.IsActive(SystemTypes.Reactor)}", "Check SystemType.Reactor");
+              Logger.Info($"{Utils.IsActive(SystemTypes.LifeSupp)}", "Check SystemTypes.LifeSupp");
+              Logger.Info($"{Utils.IsActive(SystemTypes.Laboratory)}", "Check SystemTypes.Laboratory");
+              Logger.Info($"{Utils.IsActive(SystemTypes.HeliSabotage)}", "Check SystemTypes.HeliSabotage");
+              Logger.Info($"{Utils.IsActive(SystemTypes.Comms)}", "Check SystemTypes.Comms");
+              Logger.Info($"{Utils.IsActive(SystemTypes.Electrical)}", "Check SystemTypes.Electrical");
+              Logger.Info($"{Utils.IsActive(SystemTypes.MushroomMixupSabotage)}", "Check SystemTypes.MushroomMixupSabotage");
+          }*/
         if (Input.GetKeyDown(KeyCode.B))
         {
             foreach (var pc in PlayerControl.AllPlayerControls)
