@@ -1102,6 +1102,75 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
+                    Number = 100006,
+                    Title = "Town of Host: Enhanced v1.3.0",
+                   SubTitle = "★★ Nouveau Rôles? Modifieurs? Correctifs de bugs?! ★★",
+                    ShortTitle = "TOH: Enhanced v1.3.0",
+                    BeforeNumber = 100005,
+                    Text = "<size=150%>Bienvenue sur TOH: Enhanced v1.3.0!</size>\n" +
+                       "\n<b>【Base】</b>\n - Basé sur TOH: Enhanced v1.2.0\r\n" +
+
+                           "\n<b>【Nouveau Rôles/Modifieurs】(5 rôles, 3 Modifieurs)</i></b>" +
+                            "\n     - Culpabiliseur (Imposteur tueur - Par: papercut)" +
+                            "\n     - Énigme (Coéquipier de support - Par: papercut)" +
+                            "\n     - Fée (Bénin Neutre - Par : ryuk, Idée : Azanthiel)" +
+                            "\n     - Taskinateur (Bénin Neutre - Par : ryuk, Idée : Dx)" +
+                            "\n     - Hasardeux (Coéquipier Basique - Idée et codé par : Night, Amélioré par : LezaiYa)" +
+                            "\n     - Influencé (Modifieur Nuisible - Par: NikoCat223)" +
+                            "\n     - Pressé (Modifieur Nuisible - Par: NikoCat223)" +
+                            "\n     - Oiiai (Modifieur Experimental - Par: NikoCat223)\r\n" +
+
+                       "\n<b>【Nouveaux Paramètres】</b>" +
+                            "\n     - Ajout d'une fonctionnalité d'anti-spam pendant l'éjection (Par : Broke his pc's stupid, réglé par : ryuk)" +
+                            "\n     - Le rêveur converti peut tuer n'importe qui sans répercussions (Par: ryuk)" +
+                            "\n     - Compte le temps pendant la réunion pour grandir (Pour le Mini) (Par: LezaiYa, NikoCat233)" +
+                            "\n     - L'Égoïste compte comme un neutre converti (Par: ryuk)" +
+                            "\n     - Nouveaux skins de camouflage ajoutés (Par: TommyXL)\r\n" +
+
+                        "\n<b>【Changements】</b>" +
+                            "\n     - Incompatibilité entre Cyber et Sosie (Par: ryuk)" +
+                            "\n     - Système de bannissement amélioré (Par: NikoCat223)" +
+                            "\n     - Base de code considérablement améliorée (Par: TommyXL)" +
+                            "\n     - Paramètres de synchronisation améliorés (Par: TommyXL)" +
+                            "\n     - Anti-spawn pour le Cauchemar et Harceleur sur The Fungle (Par: TommyXL)" +
+                            "\n     - Attribution de rôle incompatible supprimée (Par: NikoCat223)" +
+                            "\n     - Couleurs des rôles désormais modifiables via RoleColor.dat (Par: ryuk)" +
+                            "\n     - Tags de dévelopeurs mis à jour (Par: FuroYT)" +
+                            "\n     - Vecteur et Malchanceux ne sont plus compatibles (Par: ryuk)" +
+                            "\n     - Le vautour ne peut plus manger les corps des nettoyés/méduses (Par: NikoCat223)\r\n" +
+
+                        "\n<b>【Corrections de bugs】</b>" +
+                            "\n     - Corrigé les raisons de morts incorrectes (Par: ryuk)" +
+                            "\n     - Corrigé les double IDs pour les rôles qui en ont accès (Par: ryuk)" +
+                            "\n     - <b>Corrigé /death de l'hôte qui s'affiche pour tous les joueurs (Par: NikoCat223)</b>" +
+                            "\n     - Corrigé les options qui se réinitialisent ou écrasé\n<b>Vous devez jouer une partie ou deux</b> (Par: ryuk)" +
+                            "\n     - Corrigé plein de rôles, Modifieurs, et bugs de téléportations (Par: NikoCat223, ryuk, TommyXL)\r\n" +
+
+                        "\n<b>【Nouvelles langues】</b>" +
+                            "\n     - Français (Par: FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                            "\n     - Japonais (Par: Sunnyboi)" +
+                            "\n     - Latino-américain (Par: CreepPower)" +
+                            "\n     - Italien (Par: alot, Baphojack, Mattix606)" +
+                            "\n     - Espagnol (Par: xxSShadow)" +
+                            "\n     - Chinois traditionnel (Par: FlyFlyTurtle, Pomelo_)" +
+                            "\n<b> Découvrez tous nos traducteurs sur notre site Web</b>\r\n" +
+
+                       "\n<b>【Plusieurs autres correctifs divers】</b>\r\n" +
+
+                        "\n<b> Note: Les tags spéciaux, et les permissions se font maintenant en utilisant un bot Discord.</b>" +
+                        "\nRejoignez le serveur Discord pour plus d'informations sur discord.gg/tohe" +
+                        "\nAdditionnelement, toutes les options seront réinitialisées avec cette mise à jour. (Désolé, c'était néssaisaire)" +
+
+
+                        "\n\n★ Bienvenue sur Town of Host: Enhanced v1.3.0 ★",
+
+                    Date = "2023-12-1T03:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
                     Number = 60004,
                     Title = "Town of Host: Enhanced v1.2.0",
                     SubTitle = "★★ Support de \"The Fungle\"! ★★",
