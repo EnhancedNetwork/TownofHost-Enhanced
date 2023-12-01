@@ -882,14 +882,15 @@ public class ModNewsHistory
         // ====== TChinese ======
         else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.TChinese)
         {
-            var news = new ModNews
             {
-                Number = 70005,
-                Title = "Town of Host: Enhanced v1.3.0",
-                SubTitle = "★★ 新職業? 附加職業? Bug修復?! ★★",
-                ShortTitle = "TOH: Enhanced v1.3.0",
-                BeforeNumber = 70004,
-                Text = "<size=150%>歡迎來到 TOH: Enhanced v1.3.0!</size>\n" +
+                var news = new ModNews
+                {
+                    Number = 70005,
+                    Title = "Town of Host: Enhanced v1.3.0",
+                    SubTitle = "★★ 新職業? 附加職業? Bug修復?! ★★",
+                    ShortTitle = "TOH: Enhanced v1.3.0",
+                    BeforeNumber = 70004,
+                    Text = "<size=150%>歡迎來到 TOH: Enhanced v1.3.0!</size>\n" +
                     "\n<b>【基於版本】</b>\n - 基於 TOH: Enhanced v1.2.0\r\n" +
 
                     "\n<b>【新職業/附加職業】(5個主職業，3個附加職業</i></b>" +
@@ -946,11 +947,11 @@ public class ModNewsHistory
 
                     "\n\n★ 歡迎來到 Town of Host: Enhanced v1.3.0 ★",
 
-                Date = "2023-12-1T03:00:00Z"
-            };
-            AllModNews.Add(news);
-        }
-        {
+                    Date = "2023-12-1T03:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
                 var news = new ModNews
                 {
                     Number = 70004,
@@ -959,13 +960,13 @@ public class ModNewsHistory
                     ShortTitle = "TOH: Enhanced v1.2.0",
                     BeforeNumber = 70003,
                     Text = "<size=150%>歡迎來到 TOH: Enhanced v1.2.0!</size>\n" +
-                    "\n<b>【基於版本】</b>\n - 基於 TOH: Enhanced v1.1.1\r\n" +
+                        "\n<b>【基於版本】</b>\n - 基於 TOH: Enhanced v1.1.1\r\n" +
 
-                    "\n<b>【更動】</b>" +
+                        "\n<b>【更動】</b>" +
                         "\n     - 支援最新的The Fungle更新!" +
                         "\n     - 加入反覆進出會被暫時封禁的機制\n\r" +
 
-                    "\n\n★ 歡迎來到 Town of Host: Enhanced: Fungle版本 ★",
+                        "\n\n★ 歡迎來到 Town of Host: Enhanced: Fungle版本 ★",
 
                     Date = "2023-10-29T00:00:00Z"
                 };
@@ -1063,13 +1064,13 @@ public class ModNewsHistory
                     ShortTitle = "TOH: Enhanced v1.0.1",
                     BeforeNumber = 70000,
                     Text = "<size=150%>歡迎來到 TOH: Enhanced v1.0.1!</size>\n\n<size=125%>支援版本 Among Us v2023.7.11、v2023.7.12</size>\n" +
-                    "\n<b>【基於版本】</b>\n - 基於TOH-RE v3.1.0 (備註: 目前可以使用)\r\n" +
-                    "\n<b>【修復】</b>" +
-                    "\n     - 刪除了大廳中的Loonie標誌，並將其更換" +
-                    "\n     - 在占卜師中增加了一條更新的線索" +
-                    "\n     - 修復了模板和VIP清單沒有產生的問題" +
-                    "\n     - 一個新職業的預告...?" +
-                    "\n\n★ 歡迎來到 Town of Host: Enhanced! ★",
+                "\n<b>【基於版本】</b>\n - 基於TOH-RE v3.1.0 (備註: 目前可以使用)\r\n" +
+                "\n<b>【修復】</b>" +
+                "\n     - 刪除了大廳中的Loonie標誌，並將其更換" +
+                "\n     - 在占卜師中增加了一條更新的線索" +
+                "\n     - 修復了模板和VIP清單沒有產生的問題" +
+                "\n     - 一個新職業的預告...?" +
+                "\n\n★ 歡迎來到 Town of Host: Enhanced! ★",
                     Date = "2023-10-15T00:00:00Z",
                 };
                 AllModNews.Add(news);
