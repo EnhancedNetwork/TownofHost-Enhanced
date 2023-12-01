@@ -66,6 +66,7 @@ public class ModNewsHistory
                         "\n     - Taskinator (Benign Neutral - By: ryuk, Idea: Dx)" +
                         "\n     - Randomizer (Basic Crewmate - Idea and coded by: Night, Improved by: LezaiYa" +
                         "\n     - Influenced (Harmful Addon - By: NikoCat223)" +
+                        "\n     - Hurried (Harmful Addon - By: NikoCat223)" +
                         "\n     - Oiiai (Experimental Addon - By: NikoCat223)\r\n" +
 
                     "\n<b>【New Settings】</b>" +
@@ -678,6 +679,7 @@ public class ModNewsHistory
                         "\n     - 任务执行者 (友好类中立 - By: ryuk, 想法: Dx)" +
                         "\n     - 萧暮 (简单类船员 - 想法和编码 by: Night, 改进 by: LezaiYa" +
                         "\n     - 影响者 (有害类附加 - By: NikoCat223)" +
+                        "\n     - 焦急者 (有害类附加 - By: NikoCat223)" +
                         "\n     - Oiiai (实验性附加 - By: NikoCat223)\r\n" +
 
                     "\n<b>【新设置】</b>" +
