@@ -45,27 +45,72 @@ public class ModNewsHistory
     // When creating new news, you can not delete old news 
     public static void Init()
     {
-    // ====== English ======
+        // ====== English ======
         if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.English)
         {
             {
                 var news = new ModNews
                 {
                     Number = 100006,
-                    Title = "Town of Host: Enhanced v1.2.1",
-                    SubTitle = "★★ The Fungle Support! ★★",
-                    ShortTitle = "TOH: Enhanced v1.2.1",
+                    Title = "Town of Host: Enhanced v1.3.0",
+                    SubTitle = "★★ New Roles? Addons? Bug Fixes?! ★★",
+                    ShortTitle = "TOH: Enhanced v1.3.0",
                     BeforeNumber = 100005,
-                    Text = "<size=150%>Welcome to TOH: Enhanced v1.2.1!</size>\n" +
+                    Text = "<size=150%>Welcome to TOH: Enhanced v1.3.0!</size>\n" +
                     "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.2.0\r\n" +
 
+                    "\n<b>【New Roles/Addons】(4 roles, 2 Addons)</i></b>" +
+                        "\n     - Instigator (Killing Impostor- By: papercut)" +
+                        "\n     - Enigma (Support Crewmate - By: papercut)" +
+                        "\n     - Pixie (Benign Neutral - By: ryuk, Idea: Azanthiel)" +
+                        "\n     - Taskinator (Benign Neutral - By: ryuk, Idea: Dx)" +
+                        "\n     - Influenced (Harmful Addon - By: NikoCat223)" +
+                        "\n     - Oiiai (Experimental Addon - By: NikoCat223)\r\n" +
+
+                    "\n<b>【New Settings】</b>" +
+                        "\n     - Added anti-spam feature on Lava Chat (By: ryuk)" +
+                        "\n     - Converted Madmate kill without repercussions (By: ryuk)" +
+                        "\n     - Count grow up time in meeting (By: LezaiYa, NikoCat233)" +
+                        "\n     - Egoist Count as Converted Neutral (By: ryuk)" +
+                        "\n     - New Camouflage Skins added (By: TommyXL)\r\n" +
+
                     "\n<b>【Changes】</b>" +
-                        "\n     - Support has been fully added with bug fixes for The Fungle Update" +
-                        "\n     - Added Temp Ban feature for players constantly joining/leaving (trolls)\n\r" +
+                        "\n     - Cyber and Doppleganger incompatibility (By: ryuk)" +
+                        "\n     - Improved Ban System (By: NikoCat223)" +
+                        "\n     - Improved Codebase Significantly (By: TommyXL)" +
+                        "\n     - Mare and Stalker anti-spawn on The Fungle (By: TommyXL)" +
+                        "\n     - Removed Incompatible Role Assignment (By: NikoCat223)" +
+                        "\n     - Role colors now modifiable via RoleColor.dat (By: ryuk)" +
+                        "\n     - Updated Dev Tags (By: FuroYT)" +
+                        "\n     - Vector and Unlucky no longer compatible (By: ryuk)" +
+                        "\n     - Vulture can now eat cleaned/medusa bodies (By: NikoCat223)\r\n" +
 
-                    "\n\n★ Welcome to Town of Host: Enhanced: Fungle Edition ★",
+                    "\n<b>【Bug Fixes】</b>" +
+                        "\n     - Fixed Death Reason Inconsistency (By: ryuk)" +
+                        "\n     - Fixed Double IDs for roles that get them (By: ryuk)" +
+                        "\n     - <b>Fixed /death by host showing to all players (By: NikoCat223)</b>" +
+                        "\n     - Fixed settings overrides and resets\n<b>Must play one or two games</b> (By: ryuk)" +
+                        "\n     - Fixed several roles, addons, teleport bugs (By: NikoCat223, ryuk, TommyXL)\r\n" +
 
-                    Date = "2023-11-30T00:00:00Z"
+                    "\n<b>【New Languages】</b>" +
+                        "\n     - French (By: FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                        "\n     - Japanese (By: Sunnyboi)" +
+                        "\n     - Latin American (By: CreepPowe)" +
+                        "\n     - Italian (By: alot, Baphojack, Mattix606)" +
+                        "\n     - Spanish (By: xxSShadow)" +
+                        "\n     - Traditional Chinese (By: FlyFlyTurtle, Pomelo_)" +
+                        "\n<b> Check out all of our translators on our website</b>\r\n" +
+
+                    "\n<b>【Several Other Misc Fixes and Camouflage Options】</b>\r\n" +
+
+                    "\n<b> Note: Overhead tags, and permissions are now done using Discord Bot.</b>" +
+                    "\nJoin the Discord for more information at discord.gg/tohe" +
+                    "\nAdditionally, ALL SETTINGS will be reset on update." +
+
+
+                    "\n\n★ Welcome to Town of Host: Enhanced v1.3.0 ★",
+
+                    Date = "2023-12-1T03:00:00Z"
                 };
                 AllModNews.Add(news);
             }
@@ -146,7 +191,7 @@ public class ModNewsHistory
                         "\n     - Coroner: Inform killer about being tracked\n\r" +
 
                         "\n     - Infectious: Double Click to Kill/Infect" +
-                        
+
                         "\n     - Bewilder: Killer can get bewilder's vision\n\r" +
 
                     "\n<b>【Removed Roles/Addons】</b>" +
@@ -306,7 +351,7 @@ public class ModNewsHistory
                 AllModNews.Add(news);
             }
         }
-    // ====== Russian ======
+        // ====== Russian ======
         else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.Russian)
         {
             {
@@ -520,7 +565,7 @@ public class ModNewsHistory
                 AllModNews.Add(news);
             }
         }
-    // ====== SChinese ======
+        // ====== SChinese ======
         else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.SChinese)
         {
             {
@@ -603,7 +648,7 @@ public class ModNewsHistory
                         "\n     - 验尸官:告知带刀玩家已被追踪\n\r" +
 
                         "\n     - 感染者:双击即可击杀/感染" +
-                        
+
                         "\n     - 迷幻者:带刀玩家可以获得迷幻者的视野\n\r" +
 
                     "\n<b>【已删除的职业/附加职业】</b>" +
@@ -630,21 +675,21 @@ public class ModNewsHistory
             }
             {
                 //TOHE v1.0.1
-                   var news = new ModNews
-                   {
+                var news = new ModNews
+                {
                     Number = 80001,
                     Title = "Town of Host: Enhanced v1.0.1",
                     SubTitle = "★★ 新时代 ★★",
                     ShortTitle = "TOH: Enhanced v1.0.1",
                     BeforeNumber = 80000,
                     Text = "<size=150%>欢迎来到 TOH: Enhanced v1.0.1!</size>\n\n<size=125%>适配 Among Us v2023.7.11 和 v2023.7.12</size>\n" +
-                    "\n<b>【基于官方版本】</b>\n - 基于 TOH-RE v3.1.0 (备注可用)\r\n" +
-                    "\n<b>【修复】</b>" +
-                    "\n     - 移除Loonie的logo，并将其取代" +
-                    "\n     - 在调查员中添加了一条更新的线索" +
-                    "\n     - 修复了无法生成 模板文件 和 VIP 列表的问题" +
-                    "\n     - 新角色......的新戏弄？" +
-                    "\n\n★ 欢迎来到 Town of Host: Enhanced! ★",
+                 "\n<b>【基于官方版本】</b>\n - 基于 TOH-RE v3.1.0 (备注可用)\r\n" +
+                 "\n<b>【修复】</b>" +
+                 "\n     - 移除Loonie的logo，并将其取代" +
+                 "\n     - 在调查员中添加了一条更新的线索" +
+                 "\n     - 修复了无法生成 模板文件 和 VIP 列表的问题" +
+                 "\n     - 新角色......的新戏弄？" +
+                 "\n\n★ 欢迎来到 Town of Host: Enhanced! ★",
 
                     Date = "2023-10-5T00:00:00Z"
                 };
@@ -671,10 +716,10 @@ public class ModNewsHistory
                 AllModNews.Add(news);
             }
         }
-           // ====== TChinese ======
+        // ====== TChinese ======
         else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.TChinese)
         {
-             {
+            {
                 var news = new ModNews
                 {
                     Number = 70004,
@@ -694,8 +739,8 @@ public class ModNewsHistory
                     Date = "2023-10-29T00:00:00Z"
                 };
                 AllModNews.Add(news);
-             }
-             {
+            }
+            {
                 // TOHE v1.1.1
                 var news = new ModNews
                 {
@@ -753,7 +798,7 @@ public class ModNewsHistory
                         "\n     - 驗屍官: 告知兇手已被追蹤\n\r" +
 
                         "\n     - 感染源: 點兩下殺人鍵殺人/感染" +
-                        
+
                         "\n     - 迷幻者: 帶刀玩家可以獲得迷患者的視野\n\r" +
 
                     "\n<b>【刪除的職業/附加職業】</b>" +
@@ -777,23 +822,23 @@ public class ModNewsHistory
                     Date = "2023-10-21T00:00:00Z"
                 };
                 AllModNews.Add(news);
-                }
+            }
+            {
+                var news = new ModNews
                 {
-                    var news = new ModNews
-                    {
                     Number = 70001,
                     Title = "Town of Host: Enhanced v1.0.1",
                     SubTitle = "★★ 新時代 ★★",
                     ShortTitle = "TOH: Enhanced v1.0.1",
                     BeforeNumber = 70000,
                     Text = "<size=150%>歡迎來到 TOH: Enhanced v1.0.1!</size>\n\n<size=125%>支援版本 Among Us v2023.7.11、v2023.7.12</size>\n" +
-                    "\n<b>【基於版本】</b>\n - 基於TOH-RE v3.1.0 (備註: 目前可以使用)\r\n" +
-                    "\n<b>【修復】</b>" +
-                    "\n     - 刪除了大廳中的Loonie標誌，並將其更換" +
-                    "\n     - 在占卜師中增加了一條更新的線索" +
-                    "\n     - 修復了模板和VIP清單沒有產生的問題" +
-                    "\n     - 一個新職業的預告...?" +
-                    "\n\n★ 歡迎來到 Town of Host: Enhanced! ★",
+                "\n<b>【基於版本】</b>\n - 基於TOH-RE v3.1.0 (備註: 目前可以使用)\r\n" +
+                "\n<b>【修復】</b>" +
+                "\n     - 刪除了大廳中的Loonie標誌，並將其更換" +
+                "\n     - 在占卜師中增加了一條更新的線索" +
+                "\n     - 修復了模板和VIP清單沒有產生的問題" +
+                "\n     - 一個新職業的預告...?" +
+                "\n\n★ 歡迎來到 Town of Host: Enhanced! ★",
                     Date = "2023-10-15T00:00:00Z",
                 };
                 AllModNews.Add(news);
