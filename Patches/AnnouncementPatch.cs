@@ -684,8 +684,8 @@ public class ModNewsHistory
                         "\n     - Oiiai (实验性附加 - By: NikoCat223)\r\n" +
 
                     "\n<b>【新设置】</b>" +
-                        "\n     - 在驱逐聊天时上添加了防垃圾邮件功能 (By: 阿龙, 修复 by: ryuk)" +
-                        "\n     - 更改后遐想者击杀任何人而不受影响 (By: ryuk)" +
+                        "\n     - 添加了防止已死玩家在播放驱逐动画时发消息的功能 (By: 阿龙, 修复 by: ryuk)" +
+                        "\n     - 阵营转换后遐想者击杀任何人而不受影响 (By: ryuk)" +
                         "\n     - 计算会议中的成长时间（迷你船员） (By: LezaiYa, NikoCat233)" +
                         "\n     - 利己主义者算作中立 (By: ryuk)" +
                         "\n     - 添加新迷彩皮肤 (By: TommyXL)\r\n" +
@@ -695,7 +695,7 @@ public class ModNewsHistory
                         "\n     - 改进封禁系统 (By: NikoCat223)" +
                         "\n     - 大幅改进源代码库 (By: TommyXL)" +
                         "\n     - 改进了同步设置 (By: TommyXL)" +
-                        "\n     - 梦魇和潜藏者在真菌密林反概率（？） (By: TommyXL)" +
+                        "\n     - 梦魇和潜藏者不会在真菌密林分配 (By: TommyXL)" +
                         "\n     - 删除了不兼容的职业分配 (By: NikoCat223)" +
                         "\n     - 现在可通过 RoleColor.dat 修改职业颜色 (By: ryuk)" +
                         "\n     - 更新开发人员标签 (By: FuroYT)" +
@@ -703,9 +703,9 @@ public class ModNewsHistory
                         "\n     - 秃鹫不能吃被清理工清理和美杜莎石化的尸体了 (By: NikoCat223)\r\n" +
 
                     "\n<b>【Bug修复】</b>" +
-                        "\n     - 修复了死亡原因不一致Bug (By: ryuk)" +
-                        "\n     - 修复了获得双重 ID 的职业的双重 ID 的Bug (By: ryuk)" +
-                        "\n     - <b>修复了所有玩家都能房主/死亡的Bug (By: NikoCat223)</b>" +
+                        "\n     - 修复了模组房主和客户端显示死亡原因不一致Bug (By: ryuk)" +
+                        "\n     - 修复了显示 ID 职业的双重 ID 的Bug (By: ryuk)" +
+                        "\n     - <b>修复了所有玩家都能看到房主/death指令的Bug (By: NikoCat223)</b>" +
                         "\n     - 修复了设置覆盖和重置的Bug\n<b>必须玩一到两场游戏</b> (By: ryuk)" +
                         "\n     - 修复了多个职业、附加职业和传送错误 (By: NikoCat223, ryuk, TommyXL)\r\n" +
 
@@ -721,7 +721,7 @@ public class ModNewsHistory
                     "\n<b>【若干其他杂项修复】</b>\r\n" +
 
                     "\n<b> 注意：现在使用 Discord 机器人来完成开发标签和权限设置</b>" +
-                    "\n加入讨论组了解更多信息，请访问：discord.gg/tohe" +
+                    "\n加入我们的Discord了解更多信息，请访问：discord.gg/tohe" +
                     "\n此外，更新时将重置所有设置（对不起，这是必要的）" +
 
 
