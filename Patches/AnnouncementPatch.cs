@@ -676,26 +676,28 @@ public class ModNewsHistory
                         "\n     - 猜想者 (支援类船员 - By: papercut)" +
                         "\n     - 小精灵 (友好类中立 - By: ryuk, 想法: Azanthiel)" +
                         "\n     - 任务执行者 (友好类中立 - By: ryuk, 想法: Dx)" +
+                        "\n     - 萧暮 (简单类船员 - 想法和编码 by: Night, 改进 by: LezaiYa" +
                         "\n     - 影响者 (有害类附加 - By: NikoCat223)" +
                         "\n     - Oiiai (实验性附加 - By: NikoCat223)\r\n" +
 
                     "\n<b>【新设置】</b>" +
-                        "\n     - 在驱逐聊天时上添加了防垃圾邮件功能 (By: Broke his pc's stupid, fixed by: ryuk)" +
-                        "\n     - 改装后的叛徒击杀而不受影响 (By: ryuk)" +
-                        "\n     - 计算会议中的成长时间 (By: LezaiYa, NikoCat233)" +
+                        "\n     - 在驱逐聊天时上添加了防垃圾邮件功能 (By: 阿龙, 修复 by: ryuk)" +
+                        "\n     - 更改后遐想者击杀任何人而不受影响 (By: ryuk)" +
+                        "\n     - 计算会议中的成长时间（迷你船员） (By: LezaiYa, NikoCat233)" +
                         "\n     - 利己主义者算作中立 (By: ryuk)" +
                         "\n     - 添加新迷彩皮肤 (By: TommyXL)\r\n" +
 
                     "\n<b>【其他变化】</b>" +
                         "\n     - 网络员和分身者不兼容 (By: ryuk)" +
-                        "\n     - 改进封禁（EAC）系统 (By: NikoCat223)" +
+                        "\n     - 改进封禁系统 (By: NikoCat223)" +
                         "\n     - 大幅改进源代码库 (By: TommyXL)" +
+                        "\n     - 改进了同步设置 (By: TommyXL)" +
                         "\n     - 梦魇和潜藏者在真菌密林反概率（？） (By: TommyXL)" +
                         "\n     - 删除了不兼容的职业分配 (By: NikoCat223)" +
                         "\n     - 现在可通过 RoleColor.dat 修改职业颜色 (By: ryuk)" +
                         "\n     - 更新开发人员标签 (By: FuroYT)" +
                         "\n     - 马里奥和倒霉蛋不再兼容 (By: ryuk)" +
-                        "\n     - 秃鹫现在可以吃被美杜莎石化的尸体了 (By: NikoCat223)\r\n" +
+                        "\n     - 秃鹫不能吃被清理工清理和美杜莎石化的尸体了 (By: NikoCat223)\r\n" +
 
                     "\n<b>【Bug修复】</b>" +
                         "\n     - 修复了死亡原因不一致Bug (By: ryuk)" +
@@ -713,11 +715,11 @@ public class ModNewsHistory
                         "\n     - 繁体中文 (By: FlyFlyTurtle, Pomelo_)" +
                         "\n<b> 在我们的网站上查看我们所有的翻译人员</b>\r\n" +
 
-                    "\n<b>【若干其他杂项修复和伪装选项】</b>\r\n" +
+                    "\n<b>【若干其他杂项修复】</b>\r\n" +
 
                     "\n<b> 注意：现在使用 Discord 机器人来完成开发标签和权限设置</b>" +
                     "\n加入讨论组了解更多信息，请访问：discord.gg/tohe" +
-                    "\n此外，更新时将重置所有设置" +
+                    "\n此外，更新时将重置所有设置（对不起，这是必要的）" +
 
 
                     "\n\n★ 欢迎来到 Town of Host: Enhanced v1.3.0 ★",
