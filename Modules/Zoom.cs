@@ -1,4 +1,4 @@
-using HarmonyLib;
+﻿/*using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,12 +14,11 @@ public static class Zoom
     public static void Postfix()
     {
         //if (PlayerControl.LocalPlayer.Is(RoleType.Impostor) && Options.OperateVisibilityImpostor.GetBool()) return;
-
-        if (Main.GodMode.Value == true || PlayerControl.LocalPlayer.Data.IsDead)
+        if (GameStates.IsShip && !GameStates.IsMeeting && GameStates.IsCanMove && PlayerControl.LocalPlayer.Data.IsDead || GameStates.IsLobby && GameStates.IsCanMove)
         {
             if (Camera.main.orthographicSize > 3.0f)
                 ResetButtons = true;
-         
+
             if (Input.mouseScrollDelta.y > 0)
             {
                 if (Camera.main.orthographicSize > 3.0f)
@@ -30,8 +29,10 @@ public static class Zoom
             }
             if (Input.mouseScrollDelta.y < 0)
             {
+                if (GameStates.IsDead || GameStates.IsFreePlay || DebugModeManager.AmDebugger || GameStates.IsLobby ||
+                    PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug)
                 {
-                    if (Camera.main.orthographicSize < 30.0f)
+                    if (Camera.main.orthographicSize < 18.0f)
                     {
                         SetZoomSize(times: true);
                     }
@@ -100,4 +101,4 @@ public static class Flag
     {
         if (OneTimeList.Contains(type)) OneTimeList.Remove(type);
     }
-}
+}*/

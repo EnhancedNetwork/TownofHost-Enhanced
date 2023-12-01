@@ -100,9 +100,8 @@ public class GameStartManagerPatch
             // Lobby code
             if (DataManager.Settings.Gameplay.StreamerMode)
             {
-            if (!AmongUs.Data.DataManager.Settings.Gameplay.StreamerMode) { return; }
-            GameStartManagerStartPatch.HideName.enabled = true;
-            __instance.GameRoomNameCode.color = new(255, 255, 255, 0);
+                __instance.GameRoomNameCode.color = new(255, 255, 255, 0);
+                GameStartManagerStartPatch.HideName.enabled = true;
             }
             else
             {

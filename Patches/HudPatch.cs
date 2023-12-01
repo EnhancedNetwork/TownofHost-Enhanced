@@ -27,6 +27,7 @@ class HudManagerPatch
         if (!GameStates.IsModHost) return;
         var player = PlayerControl.LocalPlayer;
         if (player == null) return;
+        //壁抜け
         if (Input.GetKeyDown(KeyCode.LeftControl))
         {
             PlayerControl.LocalPlayer.gameObject.GetComponent<CircleCollider2D>().enabled = false;

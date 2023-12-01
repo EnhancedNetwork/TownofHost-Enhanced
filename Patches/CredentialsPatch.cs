@@ -26,7 +26,14 @@ public static class Credentials
             sb.Append(Main.credentialsText);
 
             var ping = AmongUsClient.Instance.Ping;
-            sb.Append($"\r\n").Append($"Ping: {ping} ms");
+            string pingcolor = "#ff4500";
+            if (ping < 30) pingcolor = "#44dfcc";
+            else if (ping < 100) pingcolor = "#7bc690";
+            else if (ping < 200) pingcolor = "#f3920e";
+            else if (ping < 400) pingcolor = "#ff146e";
+            sb.Append($"\r\n").Append($"<color={pingcolor}>Ping: {ping} ms</color>");
+
+            if (!GameStates.IsModHost) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("Warning.NoModHost")));
 
             if (Main.ShowFPS.Value)
             {
@@ -71,15 +78,16 @@ public static class Credentials
 #endif
 
 #if CANARY
+            Main.credentialsText = $"\r\n<color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginDisplayVersion}";
             Main.credentialsText += $"\r\n<color=#a54aff>By <color=#ffc0cb>KARPED1EM</color> & </color><color=#f34c50>Moe</color>";
             buildtype = "Canary";
 #endif
 
 #if DEBUG
+            Main.credentialsText = $"\r\n<color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginDisplayVersion}";
             Main.credentialsText += $"\r\n<color=#a54aff>By <color=#ffc0cb>KARPED1EM</color> & </color><color=#f34c50>Moe</color>";
             buildtype = "Debug";
 #endif
-            
             Logger.Info($"v{Main.PluginVersion}, {buildtype}:{ThisAssembly.Git.Branch}:({ThisAssembly.Git.Commit}), link [{ThisAssembly.Git.RepositoryUrl}], dirty: [{ThisAssembly.Git.IsDirty}]", "TOHE version");
 
             if (Main.IsAprilFools)

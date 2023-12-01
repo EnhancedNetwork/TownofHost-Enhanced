@@ -26,7 +26,7 @@ public static class ServerAddManager
         }
         regionInfos.Add(CreateHttp("au-as.duikbo.at", "Modded Asia (MAS)", 443, true));
         regionInfos.Add(CreateHttp("www.aumods.us", "Modded NA (MNA)", 443, true));
-        regionInfos.Add(CreateHttp("au-eu.duikbo.at", "Modded EU (MEU)", 443, true));    
+        regionInfos.Add(CreateHttp("au-eu.duikbo.at", "Modded EU (MEU)", 443, true));
         regionInfos.Add(CreateHttp("34.95.199.244", "Modded SA (MSA)", 22023, false));
 
         regionInfos.Where(x => !serverManager.AvailableRegions.Contains(x)).Do(serverManager.AddOrUpdateRegion);

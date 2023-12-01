@@ -89,6 +89,27 @@ internal class RunLoginPatch
         if (ClickCount >= 10) ModUpdater.forceUpdate = false;
 #endif
     }
+
+    public static void Postfix(ref bool canOnline)
+    {
+        isAllowedOnline = canOnline;
+        var friendcode = EOSManager.Instance.friendCode;
+        if (friendcode == null || friendcode == "")
+        {
+            Logger.Info("friendcode not found", "EOSManager");
+            canOnline = false;
+        }
+        else if (Main.Canary && !dbConnect.CanAccessCanary(friendcode))
+        {
+            Logger.Warn("Banned because no access to canary", "dbConnect");
+            Main.hasAccess = false;
+        }
+        else if (Main.devRelease && !dbConnect.CanAccessDev(friendcode))
+        {
+            Main.hasAccess = false;
+            Logger.Warn("Banned because no access to dev", "dbConnect");
+        }
+    }
 }
 [HarmonyPatch(typeof(BanMenu), nameof(BanMenu.SetVisible))]
 internal class BanMenuSetVisiblePatch

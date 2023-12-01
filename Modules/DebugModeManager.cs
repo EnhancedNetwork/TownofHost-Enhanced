@@ -8,9 +8,9 @@ public static class DebugModeManager
     // また、ゲーム内オプションでデバッグモードを有効化することができる。
     public static bool AmDebugger { get; private set; } =
 #if DEBUG
-true; //Change this to true if u need to debug //also WHYYYYYYYYYYYYYYYY-
+true; //Change this to true if u need to debug
 #else
-false;
+true;
 #endif
     // これが有効の時、通常のゲームを破壊する可能性のある強力なデバッグ機能(テレポートなど)が有効化される。
     public static bool IsDebugMode => AmDebugger && EnableDebugMode != null && EnableDebugMode.GetBool();

@@ -40,8 +40,8 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "1.2.0";
-    public const string PluginDisplayVersion = "1.2.0";
+    public const string PluginVersion = "1.2.1";
+    public const string PluginDisplayVersion = "1.2.1";
     public static readonly string SupportedVersionAU = "2023.10.24";
     /******************* Change one of the three variables to true before making a release. *******************/
     public const bool Canary = false; // Unused variable? ---- not unused anymore :)
@@ -49,6 +49,7 @@ public class Main : BasePlugin
     public const bool devRelease = false;
 
     public static bool hasAccess = true;
+
     public static readonly bool ShowGitHubButton = true;
     public static readonly bool ShowKofiButton = true;
     public static readonly string GitHubInviteUrl = "https://github.com/0xDrMoe/TownofHost-Enhanced";
@@ -93,7 +94,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> VersionCheat { get; private set; }
     public static bool IsHostVersionCheating = false;
     public static ConfigEntry<bool> GodMode { get; private set; }
-    
+
     public static Dictionary<byte, PlayerVersion> playerVersion = new();
     //Preset Name Options
     public static ConfigEntry<string> Preset1 { get; private set; }
@@ -432,7 +433,7 @@ public class Main : BasePlugin
 
         //Client Options
         HideName = Config.Bind("Client Options", "Hide Game Code Name", "TOHE");
-        HideColor = Config.Bind("Client Options", "Hide Game Code Color", $"#ffc0cb");
+        HideColor = Config.Bind("Client Options", "Hide Game Code Color", $"{ModColor}");
         DebugKeyInput = Config.Bind("Authentication", "Debug Key", "");
         AutoStart = Config.Bind("Client Options", "AutoStart", false);
         UnlockFPS = Config.Bind("Client Options", "UnlockFPS", false);
@@ -448,9 +449,10 @@ public class Main : BasePlugin
         ModeForSmallScreen = Config.Bind("Client Options", "ModeForSmallScreen", false);
         EnableRoleSummary = Config.Bind("Client Options", "EnableRoleSummary", false); // Reverted to false due to it now being a setting to revert the summary change
         SwitchVanilla = Config.Bind("Client Options", "SwitchVanilla", false);
+        VersionCheat = Config.Bind("Client Options", "VersionCheat", false);
         GodMode = Config.Bind("Client Options", "GodMode", false);
         AutoMuteUs = Config.Bind("Client Options", "AutoMuteUs", false); // The AutoMuteUs bot fails to match the host's name.
-       
+
         Logger = BepInEx.Logging.Logger.CreateLogSource("TOHE");
         TOHE.Logger.Enable();
         TOHE.Logger.Disable("NotifyRoles");

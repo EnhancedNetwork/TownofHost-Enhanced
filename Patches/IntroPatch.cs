@@ -106,7 +106,8 @@ class CoBeginPatch
             if (!option.IsHiddenOn(Options.CurrentGameMode) && (option.Parent == null ? !option.GetString().Equals("0%") : option.Parent.GetBool()))
             {
                 logger.Info($"{(option.Parent == null
-                    ? option.GetName(true, true).RemoveHtmlTags().PadRightV2(40): $"┗ {option.GetName(true, true).RemoveHtmlTags()}".PadRightV2(41))}:{option.GetString().RemoveHtmlTags()}");
+                    ? option.GetName(true, true).RemoveHtmlTags().PadRightV2(40)
+                    : $"┗ {option.GetName(true, true).RemoveHtmlTags()}".PadRightV2(41))}:{option.GetString().RemoveHtmlTags()}");
             }
         }
 

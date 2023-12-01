@@ -330,7 +330,7 @@ internal class ChangeRoleSettings
             FFF.Init();
             Instigator.Init();
             OverKiller.Init();
-
+            
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
 
@@ -376,7 +376,7 @@ internal class SelectRolesPatch
                 PlayerControl.LocalPlayer.Data.IsDead = true;
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
             }
-
+                   
 
             SelectCustomRoles();
             SelectAddonRoles();
@@ -549,9 +549,9 @@ internal class SelectRolesPatch
                     case CustomRoles.Undertaker:
                         Undertaker.Add(pc.PlayerId);
                         break;
-                    /*     case CustomRoles.Mare:
-                             Mare.Add(pc.PlayerId);
-                             break; */
+               /*     case CustomRoles.Mare:
+                        Mare.Add(pc.PlayerId);
+                        break; */
                     case CustomRoles.Vampire:
                         Vampire.Add(pc.PlayerId);
                         break;
@@ -574,7 +574,7 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Farseer:
                         foreach (var ar in Main.AllPlayerControls)
-                        {
+                        { 
                             Main.isRevealed.Add((pc.PlayerId, ar.PlayerId), false);
                         }
                         Farseer.RandomRole.Add(pc.PlayerId, Farseer.GetRandomCrewRoleString());
@@ -971,7 +971,7 @@ internal class SelectRolesPatch
             }
 
             HudManager.Instance.SetHudActive(true);
-            //      HudManager.Instance.Chat.SetVisible(true);
+      //      HudManager.Instance.Chat.SetVisible(true);
             List<PlayerControl> AllPlayers = new();
             CustomRpcSender sender = CustomRpcSender.Create("SelectRoles Sender", SendOption.Reliable);
             foreach (var pc in Main.AllPlayerControls)
@@ -1130,15 +1130,15 @@ internal class SelectRolesPatch
         var allPlayers = new List<PlayerControl>();
         foreach (var pc in Main.AllPlayerControls)
         {
-            if (pc.Is(CustomRoles.GM)
-                || (pc.HasSubRole() && pc.GetCustomSubRoles().Count >= Options.NoLimitAddonsNumMax.GetInt())
-                || pc.Is(CustomRoles.Ntr)
-                || pc.Is(CustomRoles.Dictator)
-                || pc.Is(CustomRoles.God)
-                || pc.Is(CustomRoles.FFF)
+            if (pc.Is(CustomRoles.GM) 
+                || (pc.HasSubRole() && pc.GetCustomSubRoles().Count >= Options.NoLimitAddonsNumMax.GetInt()) 
+                || pc.Is(CustomRoles.Ntr) 
+                || pc.Is(CustomRoles.Dictator) 
+                || pc.Is(CustomRoles.God) 
+                || pc.Is(CustomRoles.FFF) 
                 || pc.Is(CustomRoles.Sunnyboy)
                 || pc.Is(CustomRoles.Bomber)
-                || pc.Is(CustomRoles.Nuker)
+                || pc.Is(CustomRoles.Nuker) 
                 || pc.Is(CustomRoles.Provocateur)
                 || pc.Is(CustomRoles.RuthlessRomantic)
                 || pc.Is(CustomRoles.Romantic)

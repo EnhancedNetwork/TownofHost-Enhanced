@@ -219,7 +219,7 @@ internal class ControllerManagerUpdatePatch
             Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].deathReason = PlayerState.DeathReason.etc;
             Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
             PlayerControl.LocalPlayer.RpcExileV2();
-            
+
             Utils.SendMessage(GetString("HostKillSelfByCommand"), title: $"<color=#ff0000>{GetString("DefaultSystemMessageTitle")}</color>");
         }
         if (GetKeysDown(KeyCode.Return, KeyCode.G, KeyCode.LeftShift) && GameStates.IsInGame && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug)
@@ -297,16 +297,16 @@ internal class ControllerManagerUpdatePatch
                 if (!pc.AmOwner) pc.MyPhysics.RpcEnterVent(2);
             }
         }
-      /*if (Input.GetKeyDown(KeyCode.L))
-        {
-            Logger.Info($"{Utils.IsActive(SystemTypes.Reactor)}", "Check SystemType.Reactor");
-            Logger.Info($"{Utils.IsActive(SystemTypes.LifeSupp)}", "Check SystemTypes.LifeSupp");
-            Logger.Info($"{Utils.IsActive(SystemTypes.Laboratory)}", "Check SystemTypes.Laboratory");
-            Logger.Info($"{Utils.IsActive(SystemTypes.HeliSabotage)}", "Check SystemTypes.HeliSabotage");
-            Logger.Info($"{Utils.IsActive(SystemTypes.Comms)}", "Check SystemTypes.Comms");
-            Logger.Info($"{Utils.IsActive(SystemTypes.Electrical)}", "Check SystemTypes.Electrical");
-            Logger.Info($"{Utils.IsActive(SystemTypes.MushroomMixupSabotage)}", "Check SystemTypes.MushroomMixupSabotage");
-        }*/
+        /*if (Input.GetKeyDown(KeyCode.L))
+          {
+              Logger.Info($"{Utils.IsActive(SystemTypes.Reactor)}", "Check SystemType.Reactor");
+              Logger.Info($"{Utils.IsActive(SystemTypes.LifeSupp)}", "Check SystemTypes.LifeSupp");
+              Logger.Info($"{Utils.IsActive(SystemTypes.Laboratory)}", "Check SystemTypes.Laboratory");
+              Logger.Info($"{Utils.IsActive(SystemTypes.HeliSabotage)}", "Check SystemTypes.HeliSabotage");
+              Logger.Info($"{Utils.IsActive(SystemTypes.Comms)}", "Check SystemTypes.Comms");
+              Logger.Info($"{Utils.IsActive(SystemTypes.Electrical)}", "Check SystemTypes.Electrical");
+              Logger.Info($"{Utils.IsActive(SystemTypes.MushroomMixupSabotage)}", "Check SystemTypes.MushroomMixupSabotage");
+          }*/
         //マスゲーム用コード終わり
     }
 
