@@ -2709,7 +2709,7 @@
   "ImpCanBeAware": "<color=#ff1919>Impostores</color> podem ser <color=#4B0082>Consciente</color>",
   "NeutralCanBeAware": "<color=#7f8c8d>Neutros</color> podem ser <color=#4B0082>Consciente</color>",
   "CrewCanBeAware": "<color=#8cffff>Tripulantes</color> podem ser <color=#4B0082>Consciente</color>",
-  "AwareKnowRole": "Knows the role of player",
+  "AwareKnowRole": "Sabe a Função do Jogador",
   "AwareInteracted": "{0} tentou revelar sua função.",
   "AwareTitle": "【★ Mensagem do Consciente ★】",
   "LighterVentButtonText": "Iluminar",
