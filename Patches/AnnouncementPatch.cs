@@ -59,13 +59,14 @@ public class ModNewsHistory
                     Text = "<size=150%>Welcome to TOH: Enhanced v1.3.0!</size>\n" +
                     "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.2.0\r\n" +
 
-                    "\n<b>【New Roles/Addons】(4 roles, 2 Addons)</i></b>" +
+                    "\n<b>【New Roles/Addons】(5 roles, 3 Addons)</i></b>" +
                         "\n     - Instigator (Killing Impostor- By: papercut)" +
                         "\n     - Enigma (Support Crewmate - By: papercut)" +
                         "\n     - Pixie (Benign Neutral - By: ryuk, Idea: Azanthiel)" +
                         "\n     - Taskinator (Benign Neutral - By: ryuk, Idea: Dx)" +
                         "\n     - Randomizer (Basic Crewmate - Idea and coded by: Night, Improved by: LezaiYa" +
                         "\n     - Influenced (Harmful Addon - By: NikoCat223)" +
+                        "\n     - Hurried (Harmful Addon - By: NikoCat223)" +
                         "\n     - Oiiai (Experimental Addon - By: NikoCat223)\r\n" +
 
                     "\n<b>【New Settings】</b>" +
@@ -367,13 +368,14 @@ public class ModNewsHistory
                     Text = "<size=150%>Добро пожаловать в TOH: Enhanced v1.3.0!</size>\n" +
                     "\n<b>【Основан】</b>\n - Основан на TOH: Enhanced v1.2.0\r\n" +
 
-                    "\n<b>【Новые роли/Атрибуты】(4 роли, 2 Атрибута)</i></b>" +
+                    "\n<b>【Новые роли/Атрибуты】(5 роли, 3 Атрибута)</i></b>" +
                         "\n     - Зачинщик (Предатель убийца - Автор: papercut)" +
                         "\n     - Энигма (Помогающий Член Экипажа - Автор: papercut)" +
                         "\n     - Пикси (Добрый Нейтрал - Автор: ryuk, Идея: Azanthiel)" +
                         "\n     - Таскинатор (Добрый Нейтрал - Автор: ryuk, Идея: Dx)" +
                         "\n     - Рандомайзер (Базовый Член Экипажа - Идея и код: Night, Улучшен: LezaiYa" +
                         "\n     - Влиятельный (Вредный Атрибут - Автор: NikoCat223)" +
+                        "\n     - Опоздавший (Вредный Атрибут - Автор: NikoCat223)" +
                         "\n     - Туман (Эксперементальный Атрибут - Автор: NikoCat223)\r\n" +
 
                     "\n<b>【Новые настройки】</b>" +
@@ -671,13 +673,14 @@ public class ModNewsHistory
                     Text = "<size=150%>欢迎来到 TOH: Enhanced v1.3.0！</size>\n" +
                     "\n<b>【基于官方版本】</b>\n - 基于 TOH: Enhanced v1.2.0\r\n" +
 
-                    "\n<b>【新职业/附加职业】(4个职业, 2个附加职业)</i></b>" +
+                    "\n<b>【新职业/附加职业】(5个职业, 3个附加职业)</i></b>" +
                         "\n     - 教唆者 (击杀类内鬼- By: papercut)" +
                         "\n     - 猜想者 (支援类船员 - By: papercut)" +
                         "\n     - 小精灵 (友好类中立 - By: ryuk, 想法: Azanthiel)" +
                         "\n     - 任务执行者 (友好类中立 - By: ryuk, 想法: Dx)" +
                         "\n     - 萧暮 (简单类船员 - 想法和编码 by: Night, 改进 by: LezaiYa" +
                         "\n     - 影响者 (有害类附加 - By: NikoCat223)" +
+                        "\n     - 焦急者 (有害类附加 - By: NikoCat223)" +
                         "\n     - Oiiai (实验性附加 - By: NikoCat223)\r\n" +
 
                     "\n<b>【新设置】</b>" +
