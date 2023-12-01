@@ -590,7 +590,7 @@ public class ModNewsHistory
                         "\n     - Oiiai (实验性附加 - By: NikoCat223)\r\n" +
 
                     "\n<b>【新设置】</b>" +
-                        "\n     - 在驱逐聊天时上添加了防垃圾邮件功能 (By: ryuk)" +
+                        "\n     - 在驱逐聊天时上添加了防垃圾邮件功能 (By: 阿龙, 修复 by: ryuk)" +
                         "\n     - 更改后遐想者击杀任何人而不受影响 (By: ryuk)" +
                         "\n     - 计算会议中的成长时间（迷你船员） (By: LezaiYa, NikoCat233)" +
                         "\n     - 利己主义者算作中立 (By: ryuk)" +
@@ -618,7 +618,7 @@ public class ModNewsHistory
                     "\n<b>【新语言】</b>" +
                         "\n     - 法语 (By: FuroYT, KevOut, Klaomi, Sansationnelle)" +
                         "\n     - 日语 (By: Sunnyboi)" +
-                        "\n     - 拉丁美洲 (By: CreepPowe)" +
+                        "\n     - 拉丁美洲 (By: CreepPower)" +
                         "\n     - 意大利语 (By: alot, Baphojack, Mattix606)" +
                         "\n     - 西班牙语 (By: xxSShadow)" +
                         "\n     - 繁体中文 (By: FlyFlyTurtle, Pomelo_)" +
