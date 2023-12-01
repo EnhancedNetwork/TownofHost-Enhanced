@@ -598,7 +598,7 @@ public class ModNewsHistory
 
                     "\n<b>【其他变化】</b>" +
                         "\n     - 网络员和分身者不兼容 (By: ryuk)" +
-                        "\n     - 改进封禁（EAC）系统 (By: NikoCat223)" +
+                        "\n     - 改进封禁系统 (By: NikoCat223)" +
                         "\n     - 大幅改进源代码库 (By: TommyXL)" +
                         "\n     - 改进了同步设置 (By: TommyXL)" +
                         "\n     - 梦魇和潜藏者在真菌密林反概率（？） (By: TommyXL)" +
