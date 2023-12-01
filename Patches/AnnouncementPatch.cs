@@ -64,20 +64,22 @@ public class ModNewsHistory
                         "\n     - Enigma (Support Crewmate - By: papercut)" +
                         "\n     - Pixie (Benign Neutral - By: ryuk, Idea: Azanthiel)" +
                         "\n     - Taskinator (Benign Neutral - By: ryuk, Idea: Dx)" +
+                        "\n     - Randomizer (Basic Crewmate - Idea and coded by: Night, Improved by: LezaiYa" +
                         "\n     - Influenced (Harmful Addon - By: NikoCat223)" +
                         "\n     - Oiiai (Experimental Addon - By: NikoCat223)\r\n" +
 
                     "\n<b>【New Settings】</b>" +
-                        "\n     - Added anti-spam feature on Lava Chat (By: ryuk)" +
-                        "\n     - Converted Madmate kill without repercussions (By: ryuk)" +
-                        "\n     - Count grow up time in meeting (By: LezaiYa, NikoCat233)" +
+                        "\n     - Added anti-spam feature on Lava Chat (By: Broke his pc's stupid, fixed by: ryuk)" +
+                        "\n     - Converted Reverie can kill anyone without repercussions (By: ryuk)" +
+                        "\n     - Count grow up time in meeting (for Mini) (By: LezaiYa, NikoCat233)" +
                         "\n     - Egoist Count as Converted Neutral (By: ryuk)" +
                         "\n     - New Camouflage Skins added (By: TommyXL)\r\n" +
 
                     "\n<b>【Changes】</b>" +
-                        "\n     - Cyber and Doppleganger incompatibility (By: ryuk)" +
+                        "\n     - Cyber and Doppelganger incompatibility (By: ryuk)" +
                         "\n     - Improved Ban System (By: NikoCat223)" +
                         "\n     - Improved Codebase Significantly (By: TommyXL)" +
+                        "\n     - Improved Sync Settings (By: TommyXL)" +
                         "\n     - Mare and Stalker anti-spawn on The Fungle (By: TommyXL)" +
                         "\n     - Removed Incompatible Role Assignment (By: NikoCat223)" +
                         "\n     - Role colors now modifiable via RoleColor.dat (By: ryuk)" +
@@ -95,17 +97,17 @@ public class ModNewsHistory
                     "\n<b>【New Languages】</b>" +
                         "\n     - French (By: FuroYT, KevOut, Klaomi, Sansationnelle)" +
                         "\n     - Japanese (By: Sunnyboi)" +
-                        "\n     - Latin American (By: CreepPowe)" +
+                        "\n     - Latin American (By: CreepPower)" +
                         "\n     - Italian (By: alot, Baphojack, Mattix606)" +
                         "\n     - Spanish (By: xxSShadow)" +
                         "\n     - Traditional Chinese (By: FlyFlyTurtle, Pomelo_)" +
                         "\n<b> Check out all of our translators on our website</b>\r\n" +
 
-                    "\n<b>【Several Other Misc Fixes and Camouflage Options】</b>\r\n" +
+                    "\n<b>【Several Other Misc Fixes】</b>\r\n" +
 
                     "\n<b> Note: Overhead tags, and permissions are now done using Discord Bot.</b>" +
                     "\nJoin the Discord for more information at discord.gg/tohe" +
-                    "\nAdditionally, ALL SETTINGS will be reset on update." +
+                    "\nAdditionally, ALL SETTINGS will be reset on update. (sorry, it was necessary)" +
 
 
                     "\n\n★ Welcome to Town of Host: Enhanced v1.3.0 ★",
@@ -354,6 +356,95 @@ public class ModNewsHistory
         // ====== Russian ======
         else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.Russian)
         {
+            {
+                var news = new ModNews
+                {
+                    Number = 90006,
+                    Title = "Town of Host: Enhanced v1.3.0",
+                    SubTitle = "★★ Новые роли? Атрибуты? Исправление багов?! ★★",
+                    ShortTitle = "TOH: Enhanced v1.3.0",
+                    BeforeNumber = 90005,
+                    Text = "<size=150%>Добро пожаловать в TOH: Enhanced v1.3.0!</size>\n" +
+                    "\n<b>【Основан】</b>\n - Основан на TOH: Enhanced v1.2.0\r\n" +
+
+                    "\n<b>【Новые роли/Атрибуты】(4 роли, 2 Атрибута)</i></b>" +
+                        "\n     - Зачинщик (Предатель убийца - Автор: papercut)" +
+                        "\n     - Энигма (Помогающий Член Экипажа - Автор: papercut)" +
+                        "\n     - Пикси (Добрый Нейтрал - Автор: ryuk, Идея: Azanthiel)" +
+                        "\n     - Таскинатор (Добрый Нейтрал - Автор: ryuk, Идея: Dx)" +
+                        "\n     - Рандомайзер (Базовый Член Экипажа - Идея и код: Night, Улучшен: LezaiYa" +
+                        "\n     - Влиятельный (Вредный Атрибут - Автор: NikoCat223)" +
+                        "\n     - Туман (Эксперементальный Атрибут - Автор: NikoCat223)\r\n" +
+
+                    "\n<b>【Новые настройки】</b>" +
+                        "\n     - Добавлена настройка «Скрывать сообщения игроков при изгании» (Автор: Broke his pc's stupid, Исправлен: ryuk)" +
+                        "\n     - Преобразованный Мечтатель может убить кого угодно без каких-либо последствий (Автор: ryuk)" +
+                        "\n     - «Может продолжать расти во время встречи» для роли Мини (Автор: LezaiYa, NikoCat233)" +
+                        "\n     - «Эгоист считается нейтралом» (Автор: ryuk)" +
+                        "\n     - Добавлены новые скины камуфляжа (Автор: TommyXL)\r\n" +
+
+                    "\n<b>【Изменения】</b>" +
+                        "\n     - Знаменитый и Двойник теперь несовместимы (Автор: ryuk)" +
+                        "\n     - Улучшенна система банов (Автор: NikoCat223)" +
+                        "\n     - Улучшенна база кода для улучшения производительности (Автор: TommyXL)" +
+                        "\n     - Улучшенна синхронизация настроек (By: TommyXL)" +
+                        "\n     - Ночной и Сталкер больше не могут появиться на карте The Fungle (Автор: TommyXL)" +
+                        "\n     - Удалено несовместимое назначение ролей (Автор: NikoCat223)" +
+                        "\n     - Цвета ролей теперь можно изменить в файле «RoleColor.dat» (Автор: ryuk)" +
+                        "\n     - Обновленны теги разработчиков (Автор: FuroYT)" +
+                        "\n     - Вектор и Неудачный больше не совместимы (Автор: ryuk)" +
+                        "\n     - Стервятник теперь может есть очищенные/каменные трупы (Автор: NikoCat223)\r\n" +
+
+                    "\n<b>【Исправления багов】</b>" +
+                        "\n     - Исправлена синхронизация причины смерти у игроков с модом (Автор: ryuk)" +
+                        "\n     - Исправлены двойные идентификаторы (Автор: ryuk)" +
+                        "\n     - <b>Исправлен баг когда Хост использовал команду «/death» и она отображалось всем игрокам (Автор: NikoCat223)</b>" +
+                        "\n     - Исправлен баг когда после перезахода в игру настройки перемешивались.\n<b>Примечание: Необходимо хотя-бы один раз зайти в настройки мода</b> (Автор: ryuk)" +
+                        "\n     - Исправлено несколько ролей, атрибутов, и ошибок телепорта (Автор: NikoCat223, ryuk, TommyXL)\r\n" +
+
+                    "\n<b>【Новые языки】</b>" +
+                        "\n     - Французский (Автор: FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                        "\n     - Японский (Автор: Sunnyboi)" +
+                        "\n     - Латиноамериканская (Автор: CreepPower)" +
+                        "\n     - Итальянский (Автор: alot, Baphojack, Mattix606)" +
+                        "\n     - Испанский (Автор: xxSShadow)" +
+                        "\n     - Традиционный Китайский (Автор: FlyFlyTurtle, Pomelo_)" +
+                        "\n<b>Ознакомьтесь со всеми нашими переводчиками на нашем сайте</b>\r\n" +
+
+                    "\n<b>【Несколько других исправлений】</b>\r\n" +
+
+                    "\n<b> Примечание: Накладные теги и разрешения теперь выполняются с помощью бота в Discord</b>" +
+                    "\nПрисоединяйтесь к Discord для получения дополнительной информации на: «discord.gg/tohe»" +
+                    "\nКроме того, ВСЕ НАСТРОЙКИ будут сброшены при обновлении (извините, так было нужно)" +
+
+
+                    "\n\n★ Добро пожаловать в Town of Host: Enhanced v1.3.0 ★",
+
+                    Date = "2023-12-1T03:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
+                    Number = 90005,
+                    Title = "Town of Host: Enhanced v1.2.0",
+                    SubTitle = "★★ Поддержка карты The Fungle! ★★",
+                    ShortTitle = "TOH: Enhanced v1.2.0",
+                    BeforeNumber = 90004,
+                    Text = "<size=150%>Добро пожаловать в TOH: Enhanced v1.2.0!</size>\n" +
+                    "\n<b>【Основан】</b>\n - Основан на TOH: Enhanced v1.1.1\r\n" +
+
+                    "\n<b>【Изменения】</b>" +
+                        "\n     - Полная поддержка карты The Fungle ​​с исправлениями ошибок" +
+                        "\n     - Добавлена ​​функция временного бана для игроков, постоянно присоединяющихся/выходящих (тролли)\n\r" +
+
+                    "\n\n★ Добро пожаловать в Town of Host: Enhanced: Fungle Edition ★",
+
+                    Date = "2023-10-29T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
             {
                 var news = new ModNews
                 {
