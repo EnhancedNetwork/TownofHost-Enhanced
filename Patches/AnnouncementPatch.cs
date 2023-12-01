@@ -69,7 +69,7 @@ public class ModNewsHistory
                         "\n     - Oiiai (Experimental Addon - By: NikoCat223)\r\n" +
 
                     "\n<b>【New Settings】</b>" +
-                        "\n     - Added anti-spam feature on Lava Chat (By: ryuk)" +
+                        "\n     - Added anti-spam feature on Lava Chat (By: Broke his pc's stupid, fixed by: ryuk)" +
                         "\n     - Converted Reverie can kill anyone without repercussions (By: ryuk)" +
                         "\n     - Count grow up time in meeting (for Mini) (By: LezaiYa, NikoCat233)" +
                         "\n     - Egoist Count as Converted Neutral (By: ryuk)" +
@@ -97,7 +97,7 @@ public class ModNewsHistory
                     "\n<b>【New Languages】</b>" +
                         "\n     - French (By: FuroYT, KevOut, Klaomi, Sansationnelle)" +
                         "\n     - Japanese (By: Sunnyboi)" +
-                        "\n     - Latin American (By: CreepPowe)" +
+                        "\n     - Latin American (By: CreepPower)" +
                         "\n     - Italian (By: alot, Baphojack, Mattix606)" +
                         "\n     - Spanish (By: xxSShadow)" +
                         "\n     - Traditional Chinese (By: FlyFlyTurtle, Pomelo_)" +
@@ -377,7 +377,7 @@ public class ModNewsHistory
                         "\n     - Туман (Эксперементальный Атрибут - Автор: NikoCat223)\r\n" +
 
                     "\n<b>【Новые настройки】</b>" +
-                        "\n     - Добавлена настройка «Скрывать сообщения игроков при изгании» (Автор: ryuk)" +
+                        "\n     - Добавлена настройка «Скрывать сообщения игроков при изгании» (Автор: Broke his pc's stupid, Исправлен: ryuk)" +
                         "\n     - Преобразованный Мечтатель может убить кого угодно без каких-либо последствий (Автор: ryuk)" +
                         "\n     - «Может продолжать расти во время встречи» для роли Мини (Автор: LezaiYa, NikoCat233)" +
                         "\n     - «Эгоист считается нейтралом» (Автор: ryuk)" +
@@ -405,7 +405,7 @@ public class ModNewsHistory
                     "\n<b>【Новые языки】</b>" +
                         "\n     - Французский (Автор: FuroYT, KevOut, Klaomi, Sansationnelle)" +
                         "\n     - Японский (Автор: Sunnyboi)" +
-                        "\n     - Латиноамериканская (Автор: CreepPowe)" +
+                        "\n     - Латиноамериканская (Автор: CreepPower)" +
                         "\n     - Итальянский (Автор: alot, Baphojack, Mattix606)" +
                         "\n     - Испанский (Автор: xxSShadow)" +
                         "\n     - Традиционный Китайский (Автор: FlyFlyTurtle, Pomelo_)" +
@@ -680,7 +680,7 @@ public class ModNewsHistory
                         "\n     - Oiiai (实验性附加 - By: NikoCat223)\r\n" +
 
                     "\n<b>【新设置】</b>" +
-                        "\n     - 在驱逐聊天时上添加了防垃圾邮件功能 (By: ryuk)" +
+                        "\n     - 在驱逐聊天时上添加了防垃圾邮件功能 (By: Broke his pc's stupid, fixed by: ryuk)" +
                         "\n     - 改装后的叛徒击杀而不受影响 (By: ryuk)" +
                         "\n     - 计算会议中的成长时间 (By: LezaiYa, NikoCat233)" +
                         "\n     - 利己主义者算作中立 (By: ryuk)" +
@@ -707,7 +707,7 @@ public class ModNewsHistory
                     "\n<b>【新语言】</b>" +
                         "\n     - 法语 (By: FuroYT, KevOut, Klaomi, Sansationnelle)" +
                         "\n     - 日语 (By: Sunnyboi)" +
-                        "\n     - 拉丁美洲 (By: CreepPowe)" +
+                        "\n     - 拉丁美洲 (By: CreepPower)" +
                         "\n     - 意大利语 (By: alot, Baphojack, Mattix606)" +
                         "\n     - 西班牙语 (By: xxSShadow)" +
                         "\n     - 繁体中文 (By: FlyFlyTurtle, Pomelo_)" +
