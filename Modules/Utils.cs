@@ -622,6 +622,8 @@ public static class Utils
 
     public static bool CanBeMadmate(this PlayerControl pc, bool inGame = false)
     {
+        if (pc.GetCustomRole().IsNK()) return false;
+
         return pc != null && (pc.GetCustomRole().IsCrewmate() || (pc.GetCustomRole().IsNeutral() && inGame)) && !pc.Is(CustomRoles.Madmate)
         && !(
             (pc.Is(CustomRoles.Sheriff) && !Options.SheriffCanBeMadmate.GetBool()) ||
