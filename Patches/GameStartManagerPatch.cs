@@ -132,10 +132,18 @@ public class GameStartManagerPatch
                                 msg += "\n" + string.Join(",", invalidColor.Select(p => $"{p.GetRealName()}"));
                                 Utils.SendMessage(msg);
                             }
+
                             if (Options.RandomMapsMode.GetBool())
                             {
                                 Main.NormalOptions.MapId = GameStartRandomMap.SelectRandomMap();
                             }
+
+                            if ((MapNames)Main.NormalOptions.MapId == MapNames.Dleks)
+                            {
+                                Logger.SendInGame(GetString("Warning.BrokenVentsInDleksSendInGame"));
+                                Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
+                            }
+
                             GameStartManager.Instance.startState = GameStartManager.StartingStates.Countdown;
                             GameStartManager.Instance.countDownTimer = Options.AutoStartTimer.GetInt();
                             __instance.StartButton.gameObject.SetActive(false);
@@ -245,6 +253,11 @@ public class GameStartRandomMap
             return false;
         }
         
+        if ((MapNames)Main.NormalOptions.MapId == MapNames.Dleks)
+        {
+            Logger.SendInGame(GetString("Warning.BrokenVentsInDleksSendInGame"));
+            Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
+        }
 
         Options.DefaultKillCooldown = Main.NormalOptions.KillCooldown;
         Main.LastKillCooldown.Value = Main.NormalOptions.KillCooldown;
