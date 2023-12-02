@@ -40,8 +40,8 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "1.2.0";
-    public const string PluginDisplayVersion = "1.2.0";
+    public const string PluginVersion = "1.3.0";
+    public const string PluginDisplayVersion = "1.3.0";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
     /******************* Change one of the three variables to true before making a release. *******************/
     public const bool Canary = false; // Unused variable? ---- not unused anymore :)
@@ -678,6 +678,7 @@ public enum CustomRoles
     Investigator,
     Guardian,
     Addict,
+    Mole,
     Tracefinder,
     Oracle,
     Spiritualist,
@@ -779,7 +780,7 @@ public enum CustomRoles
     Ntr,
     Madmate,
     Watcher,
-    Flashman,
+    Flash,
     Torch,
     Seer,
     Brakar,

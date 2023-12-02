@@ -141,7 +141,7 @@ public static class Utils
             The Skeld    = 0
             MIRA HQ      = 1
             Polus        = 2
-            Dleks        = 3 (Not used)
+            Dleks        = 3
             The Airship  = 4
             The Fungle   = 5
         */
@@ -177,7 +177,7 @@ public static class Utils
                 }
             case SystemTypes.LifeSupp:
                 {
-                    if (mapId is 2 or 4 or 5) return false; // Only Skeld & Mira HQ
+                    if (mapId is 2 or 4 or 5) return false; // Only Skeld & Dleks & Mira HQ
                     var LifeSuppSystemType = ShipStatus.Instance.Systems[type].Cast<LifeSuppSystemType>();
                     return LifeSuppSystemType != null && LifeSuppSystemType.IsActive;
                 }
@@ -622,6 +622,8 @@ public static class Utils
 
     public static bool CanBeMadmate(this PlayerControl pc, bool inGame = false)
     {
+        if (pc.GetCustomRole().IsNK()) return false;
+
         return pc != null && (pc.GetCustomRole().IsCrewmate() || (pc.GetCustomRole().IsNeutral() && inGame)) && !pc.Is(CustomRoles.Madmate)
         && !(
             (pc.Is(CustomRoles.Sheriff) && !Options.SheriffCanBeMadmate.GetBool()) ||
@@ -1265,7 +1267,7 @@ public static class Utils
             }
 
             if (opt.Value.Name == "Maximum") continue; //Maximumの項目は飛ばす
-            if (opt.Value.Name == "DisableSkeldDevices" && !Options.IsActiveSkeld) continue;
+            if (opt.Value.Name == "DisableSkeldDevices" && !Options.IsActiveSkeld && !Options.IsActiveDleks) continue;
             if (opt.Value.Name == "DisableMiraHQDevices" && !Options.IsActiveMiraHQ) continue;
             if (opt.Value.Name == "DisablePolusDevices" && !Options.IsActivePolus) continue;
             if (opt.Value.Name == "DisableAirshipDevices" && !Options.IsActiveAirship) continue;
@@ -1680,9 +1682,29 @@ public static class Utils
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (title == "") title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
-        Main.MessagesToSend.Add((text.RemoveHtmlTagsTemplate(), sendTo, title));
+
+        if (sendTo != byte.MaxValue)
+        {
+            var sendToData = GetPlayerInfoById(sendTo);
+            if (sendToData != null)
+            {
+                if (sendToData.Disconnected) return;
+                //p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId
+                else if (sendToData.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= sendToData.DefaultOutfit.ColorId)
+                {
+                    Logger.Info($"Delay Utils.sendmessage bcz {sendToData.GetPlayerName} is with bad color", "SendMessage");
+                    _ = new LateTask(() =>
+                    {
+                        SendMessage(text, sendTo, title, logforChatManager);
+                    }, 1.2f, "SendMessage_Delay");
+                    return;
+                }
+            }
+            else return;
+        }
         if (!logforChatManager)
             ChatManager.AddToHostMessage(text.RemoveHtmlTagsTemplate());
+        Main.MessagesToSend.Add((text.RemoveHtmlTagsTemplate(), sendTo, title));
     }
     public static bool IsPlayerModerator(string friendCode)
     {

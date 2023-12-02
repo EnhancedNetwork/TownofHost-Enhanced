@@ -1007,6 +1007,15 @@ class MeetingHudStartPatch
             }
         }
 
+        if ((MapNames)Main.NormalOptions.MapId == MapNames.Dleks)
+        {
+            _ = new LateTask(() =>
+            {
+                Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
+
+            }, 6f, "Message: Warning Broken Vents In Dleks");
+        }
+
         if (MeetingStates.FirstMeeting) TemplateManager.SendTemplate("OnFirstMeeting", noErr: true);
         TemplateManager.SendTemplate("OnMeeting", noErr: true);
 

@@ -7,7 +7,7 @@ namespace TOHE;
 
 static class PlayerOutfitExtension
 {
-    public static GameData.PlayerOutfit Set(this GameData.PlayerOutfit instance, string playerName, int colorId, string hatId, string skinId, string visorId, string petId,  string nameplateId)
+    public static GameData.PlayerOutfit Set(this GameData.PlayerOutfit instance, string playerName, int colorId, string hatId, string skinId, string visorId, string petId, string nameplateId)
     {
         instance.PlayerName = playerName;
         instance.ColorId = colorId;
@@ -53,12 +53,13 @@ public static class Camouflage
             (Options.DisableOnSkeld.GetBool() && Options.IsActiveSkeld) ||
             (Options.DisableOnMira.GetBool() && Options.IsActiveMiraHQ) ||
             (Options.DisableOnPolus.GetBool() && Options.IsActivePolus) ||
+            (Options.DisableOnDleks.GetBool() && Options.IsActiveDleks) ||
             (Options.DisableOnFungle.GetBool() && Options.IsActiveFungle) ||
             (Options.DisableOnAirship.GetBool() && Options.IsActiveAirship)
             ));
 
         switch (Options.KPDCamouflageMode.GetValue())
-        { 
+        {
             case 0: // Default
                 CamouflageOutfit = new GameData.PlayerOutfit()
                     .Set("", 15, "", "", "", "", "");
@@ -98,6 +99,7 @@ public static class Camouflage
                 CamouflageOutfit = new GameData.PlayerOutfit()
                     .Set("", 7, "hat_pk04_Snowman", "", "", "", "");
                 break;
+
             case 8: // TommyXL
                 CamouflageOutfit = new GameData.PlayerOutfit()
                     .Set("", 17, "hat_baseball_Black", "skin_Scientist-Darkskin", "visor_pusheenSmileVisor", "pet_Pip", "");

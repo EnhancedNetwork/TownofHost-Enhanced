@@ -63,11 +63,9 @@ public static class Options
     public static bool IsActiveSkeld => Main.NormalOptions.MapId == 0; // 0 - The Skeld
     public static bool IsActiveMiraHQ => Main.NormalOptions.MapId == 1; // 1 - MiraHQ
     public static bool IsActivePolus => Main.NormalOptions.MapId == 2; // 2 - Polus
+    public static bool IsActiveDleks => Main.NormalOptions.MapId == 3; // 3 - Dleks
     public static bool IsActiveAirship => Main.NormalOptions.MapId == 4; // 4 - Airship
     public static bool IsActiveFungle => Main.NormalOptions.MapId == 5; // 5 - The Fungle
-
-    // Map not used
-    //public static bool IsActiveDleks => Main.NormalOptions.MapId == 3; // 3 - Dleks
 
     // 役職数・確率
     public static Dictionary<CustomRoles, int> roleCounts;
@@ -676,6 +674,7 @@ public static class Options
     public static OptionItem SkeldChance;
     public static OptionItem MiraChance;
     public static OptionItem PolusChance;
+    public static OptionItem DleksChance;
     public static OptionItem AirshipChance;
     public static OptionItem FungleChance;
 
@@ -701,6 +700,7 @@ public static class Options
     public static OptionItem DisableOnSkeld;
     public static OptionItem DisableOnMira;
     public static OptionItem DisableOnPolus;
+    public static OptionItem DisableOnDleks;
     public static OptionItem DisableOnAirship;
     public static OptionItem DisableOnFungle;
     public static OptionItem DisableReportWhenCC;
@@ -925,7 +925,6 @@ public static class Options
     public static OptionItem RetributionistCanBeMadmate;
     public static OptionItem FarseerCanBeMadmate;
     public static OptionItem MadSnitchTasks;
-    public static OptionItem FlashmanSpeed;
     public static OptionItem ButtonBarryButtons;
     public static OptionItem LoverSpawnChances;
     public static OptionItem LoverKnowRoles;
@@ -1030,7 +1029,7 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 25900 lasted id for roles/add-ons (Next use 26000)
+        // 26100 lasted id for roles/add-ons (Next use 26200)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
         // Start Load Settings
@@ -1694,6 +1693,11 @@ public static class Options
          * Mini
          */
         Mini.SetupCustomOption();
+
+        /*
+         * Mole
+         */
+        Mole.SetupCustomOption();
 
         /*
          * Superstar
@@ -2379,6 +2383,7 @@ public static class Options
         NeutralCanBeDoubleShot = BooleanOptionItem.Create(19205, "NeutralCanBeDoubleShot", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.DoubleShot]);
 
+        Flash.SetupCustomOption();
 
         SetupAdtRoleOptions(19300, CustomRoles.Lazy, canSetNum: true);
         TasklessCrewCanBeLazy = BooleanOptionItem.Create(19303, "TasklessCrewCanBeLazy", false, TabGroup.Addons, false)
@@ -2835,10 +2840,6 @@ public static class Options
             .SetColor(new Color32(255, 154, 206, byte.MaxValue));
 
         //SetupAdtRoleOptions(25300, CustomRoles.Ntr, tab: TabGroup.OtherRoles);
-        /*SetupAdtRoleOptions(25400, CustomRoles.Flashman, canSetNum: true, tab: TabGroup.OtherRoles);
-        FlashmanSpeed = FloatOptionItem.Create(25403, "FlashmanSpeed", new(0.25f, 5f, 0.25f), 2.5f, TabGroup.OtherRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Flashman])
-            .SetValueFormat(OptionFormat.Multiplier); */
 
         SetupAdtRoleOptions(25500, CustomRoles.Youtuber, canSetNum: true, tab: TabGroup.OtherRoles);
         
@@ -3023,6 +3024,9 @@ public static class Options
         PolusChance = IntegerOptionItem.Create(60453, "PolusChance", new(0, 100, 5), 10, TabGroup.GameSettings, false)
             .SetParent(RandomMapsMode)
             .SetValueFormat(OptionFormat.Percent);
+        DleksChance = IntegerOptionItem.Create(60457, "DleksChance", new(0, 100, 5), 10, TabGroup.GameSettings, false)
+            .SetParent(RandomMapsMode)
+            .SetValueFormat(OptionFormat.Percent);
         AirshipChance = IntegerOptionItem.Create(60454, "AirshipChance", new(0, 100, 5), 10, TabGroup.GameSettings, false)
             .SetParent(RandomMapsMode)
             .SetValueFormat(OptionFormat.Percent);
@@ -3037,10 +3041,6 @@ public static class Options
             .SetHidden(true)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
-
-        //MapDleksChance = IntegerOptionItem.Create(60457, "MapDleks", new(0, 100, 5), 10, TabGroup.GameSettings, false)
-        //    .SetParent(RandomMapsMode)
-        //    .SetValueFormat(OptionFormat.Percent);
 
 
 
@@ -3120,6 +3120,9 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(DisableOnSomeMaps);
         DisableOnPolus = BooleanOptionItem.Create(60514, "DisableOnPolus", false, TabGroup.GameSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(DisableOnSomeMaps);
+        DisableOnDleks = BooleanOptionItem.Create(60517, "DisableOnDleks", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(DisableOnSomeMaps);
         DisableOnAirship = BooleanOptionItem.Create(60515, "DisableOnAirship", false, TabGroup.GameSettings, false)
