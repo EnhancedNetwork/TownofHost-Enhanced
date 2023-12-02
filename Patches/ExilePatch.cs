@@ -224,27 +224,29 @@ class ExileControllerWrapUpPatch
         Main.MeetingIsStarted = false;
         Main.MeetingsPassed++;
 
-            pc.RpcRemovePet();
-
-            if (Options.RandomSpawn.GetBool())
+        if (Options.RandomSpawn.GetBool())
+        {
+            RandomSpawn.SpawnMap map;
+            switch (Main.NormalOptions.MapId)
             {
-                RandomSpawn.SpawnMap map;
-                switch (Main.NormalOptions.MapId)
-                {
-                    case 0:
-                        map = new RandomSpawn.SkeldSpawnMap();
-                        Main.AllPlayerControls.Do(map.RandomTeleport);
-                        break;
-                    case 1:
-                        map = new RandomSpawn.MiraHQSpawnMap();
-                        Main.AllPlayerControls.Do(map.RandomTeleport);
-                        break;
-                    case 2:
-                        map = new RandomSpawn.PolusSpawnMap();
-                        Main.AllPlayerControls.Do(map.RandomTeleport);
-                        break;
-                }
+                case 0:
+                    map = new RandomSpawn.SkeldSpawnMap();
+                    Main.AllPlayerControls.Do(map.RandomTeleport);
+                    break;
+                case 1:
+                    map = new RandomSpawn.MiraHQSpawnMap();
+                    Main.AllPlayerControls.Do(map.RandomTeleport);
+                    break;
+                case 2:
+                    map = new RandomSpawn.PolusSpawnMap();
+                    Main.AllPlayerControls.Do(map.RandomTeleport);
+                    break;
+                case 5:
+                    map = new RandomSpawn.FungleSpawnMap();
+                    Main.AllPlayerControls.Do(map.RandomTeleport);
+                    break;
             }
+        }
 
         FallFromLadder.Reset();
         Utils.CountAlivePlayers(true);

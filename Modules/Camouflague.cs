@@ -7,7 +7,7 @@ namespace TOHE;
 
 static class PlayerOutfitExtension
 {
-    public static GameData.PlayerOutfit Set(this GameData.PlayerOutfit instance, string playerName, int colorId, string hatId, string skinId, string visorId, string petId,  string nameplateId)
+    public static GameData.PlayerOutfit Set(this GameData.PlayerOutfit instance, string playerName, int colorId, string hatId, string skinId, string visorId, string petId, string nameplateId)
     {
         instance.PlayerName = playerName;
         instance.ColorId = colorId;
@@ -58,7 +58,7 @@ public static class Camouflage
             ));
 
         switch (Options.KPDCamouflageMode.GetValue())
-        { 
+        {
             case 0: // Default
                 CamouflageOutfit = new GameData.PlayerOutfit()
                     .Set("", 15, "", "", "", "", "");
@@ -110,14 +110,7 @@ public static class Camouflage
 
         var oldIsCamouflage = IsCamouflage;
 
-        IsCamouflage = (Utils.IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool()
-            && !(Options.DisableOnSomeMaps.GetBool() &&
-            ((Options.DisableOnSkeld.GetBool() && Options.IsActiveSkeld) ||
-             (Options.DisableOnMira.GetBool() && Options.IsActiveMiraHQ) ||
-             (Options.DisableOnPolus.GetBool() && Options.IsActivePolus) ||
-             (Options.DisableOnAirship.GetBool() && Options.IsActiveAirship)
-            )))
-            || Camouflager.IsActive;
+        IsCamouflage = (Utils.IsActive(SystemTypes.Comms) && IsActive) || Camouflager.AbilityActivated;
 
         if (oldIsCamouflage != IsCamouflage)
         {

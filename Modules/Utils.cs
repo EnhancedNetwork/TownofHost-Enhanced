@@ -1265,7 +1265,7 @@ public static class Utils
             }
 
             if (opt.Value.Name == "Maximum") continue; //Maximumの項目は飛ばす
-            if (opt.Value.Name == "DisableSkeldDevices" && !Options.IsActiveSkeld && !Options.IsActiveDleks) continue;
+            if (opt.Value.Name == "DisableSkeldDevices" && !Options.IsActiveSkeld) continue;
             if (opt.Value.Name == "DisableMiraHQDevices" && !Options.IsActiveMiraHQ) continue;
             if (opt.Value.Name == "DisablePolusDevices" && !Options.IsActivePolus) continue;
             if (opt.Value.Name == "DisableAirshipDevices" && !Options.IsActiveAirship) continue;
@@ -2187,16 +2187,9 @@ public static class Utils
                         SelfName = GetString("DevouredName");
                 }
 
-            // Camouflage
-            if (!CamouflageIsForMeeting && ((IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool() &&
-                !(Options.DisableOnSomeMaps.GetBool() &&
-                    ((Options.DisableOnSkeld.GetBool() && Options.IsActiveSkeld) ||
-                     (Options.DisableOnMira.GetBool() && Options.IsActiveMiraHQ) ||
-                     (Options.DisableOnPolus.GetBool() && Options.IsActivePolus) ||
-                     (Options.DisableOnAirship.GetBool() && Options.IsActiveAirship)
-                    )))
-                    || Camouflager.IsActive))
-                SelfName = $"<size=0%>{SelfName}</size>";
+                // Camouflage
+                if (!CamouflageIsForMeeting && ((IsActive(SystemTypes.Comms) && Camouflage.IsActive) || Camouflager.AbilityActivated))
+                    SelfName = $"<size=0%>{SelfName}</size>";
 
 
                 SelfName = SelfRoleName + "\r\n" + SelfName;
@@ -2523,16 +2516,9 @@ public static class Utils
                                 TargetPlayerName = GetString("DevouredName");
                         }
 
-                    // Camouflage
-                    if (!CamouflageIsForMeeting && ((IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool() &&
-                        !(Options.DisableOnSomeMaps.GetBool() &&
-                            ((Options.DisableOnSkeld.GetBool() && Options.IsActiveSkeld) ||
-                             (Options.DisableOnMira.GetBool() && Options.IsActiveMiraHQ) ||
-                             (Options.DisableOnPolus.GetBool() && Options.IsActivePolus) ||
-                             (Options.DisableOnAirship.GetBool() && Options.IsActiveAirship)
-                            )))
-                            || Camouflager.IsActive))
-                        TargetPlayerName = $"<size=0%>{TargetPlayerName}</size>";
+                        // Camouflage
+                        if (!CamouflageIsForMeeting && ((IsActive(SystemTypes.Comms) && Camouflage.IsActive) || Camouflager.AbilityActivated))
+                            TargetPlayerName = $"<size=0%>{TargetPlayerName}</size>";
 
                         // Target Name
                         string TargetName = $"{TargetRoleText}{TargetPlayerName}{TargetDeathReason}{TargetMark}";

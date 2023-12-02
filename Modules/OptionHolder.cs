@@ -67,7 +67,7 @@ public static class Options
     public static bool IsActiveFungle => Main.NormalOptions.MapId == 5; // 5 - The Fungle
 
     // Map not used
-    public static bool IsActiveDleks => Main.NormalOptions.MapId == 3; // 3 - Dleks
+    //public static bool IsActiveDleks => Main.NormalOptions.MapId == 3; // 3 - Dleks
 
     // 役職数・確率
     public static Dictionary<CustomRoles, int> roleCounts;
@@ -140,7 +140,6 @@ public static class Options
     public static OptionItem CheatResponses;
     public static OptionItem LowLoadMode;
     public static OptionItem NewHideMsg;
-    public static OptionItem DleksChance;
     public static OptionItem GradientTagsOpt;
 
     // Dummy Settings
@@ -703,6 +702,7 @@ public static class Options
     public static OptionItem DisableOnMira;
     public static OptionItem DisableOnPolus;
     public static OptionItem DisableOnAirship;
+    public static OptionItem DisableOnFungle;
     public static OptionItem DisableReportWhenCC;
     public static OptionItem SabotageCooldownControl;
     public static OptionItem SabotageCooldown;
@@ -3026,7 +3026,7 @@ public static class Options
         AirshipChance = IntegerOptionItem.Create(60454, "AirshipChance", new(0, 100, 5), 10, TabGroup.GameSettings, false)
             .SetParent(RandomMapsMode)
             .SetValueFormat(OptionFormat.Percent);
-        AirshipChance = IntegerOptionItem.Create(19913, "AirshipChance", new(0, 100, 5), 10, TabGroup.GameSettings, false)
+        FungleChance = IntegerOptionItem.Create(60455, "FungleChance", new(0, 100, 5), 10, TabGroup.GameSettings, false)
             .SetParent(RandomMapsMode)
             .SetValueFormat(OptionFormat.Percent);
         UseMoreRandomMapSelection = BooleanOptionItem.Create(60456, "UseMoreRandomMapSelection", false, TabGroup.GameSettings, false)
@@ -3038,7 +3038,7 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
 
-        //MapDleksChance = IntegerOptionItem.Create(19915, "MapDleks", new(0, 100, 5), 10, TabGroup.GameSettings, false)
+        //MapDleksChance = IntegerOptionItem.Create(60457, "MapDleks", new(0, 100, 5), 10, TabGroup.GameSettings, false)
         //    .SetParent(RandomMapsMode)
         //    .SetValueFormat(OptionFormat.Percent);
 
@@ -3125,7 +3125,7 @@ public static class Options
         DisableOnAirship = BooleanOptionItem.Create(60515, "DisableOnAirship", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(DisableOnSomeMaps);
-        DisableOnAirship = BooleanOptionItem.Create(22214, "DisableOnAirship", false, TabGroup.GameSettings, false)
+        DisableOnFungle = BooleanOptionItem.Create(60516, "DisableOnFungle", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(DisableOnSomeMaps);
         DisableReportWhenCC = BooleanOptionItem.Create(60520, "DisableReportWhenCC", false, TabGroup.GameSettings, false)

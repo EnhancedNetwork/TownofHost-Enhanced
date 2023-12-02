@@ -123,29 +123,29 @@ class RepairSystemPatch
 
         if (systemType == SystemTypes.Electrical && 0 <= amount && amount <= 4)
         {
-            if (player.Is(CustomRoleTypes.Impostor) && (player.IsAlive() || !Options.DeadImpCantSabotage.GetBool())) return true;
-            if (player.Is(CustomRoles.Jackal) && Jackal.CanUseSabotage.GetBool()) return true;
-            if (player.Is(CustomRoles.Parasite) && (player.IsAlive() || !Options.DeadImpCantSabotage.GetBool())) return true;
-            return false;
-        }*/
-
-        if (systemType == SystemTypes.Security && amount == 1)
-        {
-            var camerasDisabled = (MapNames)Main.NormalOptions.MapId switch
+            var SwitchSystem = ShipStatus.Instance.Systems[SystemTypes.Electrical].Cast<SwitchSystem>();
+            if (SwitchSystem != null && SwitchSystem.IsActive)
             {
-                MapNames.Skeld => Options.DisableSkeldCamera.GetBool(),
-                MapNames.Polus => Options.DisablePolusCamera.GetBool(),
-                MapNames.Airship => Options.DisableAirshipCamera.GetBool(),
-                _ => false,
-            };
-            return !camerasDisabled;
+                switch (player.GetCustomRole())
+                {
+                    case CustomRoles.SabotageMaster:
+                        Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()} instant-fix-lights", "SwitchSystem");
+                        SabotageMaster.SwitchSystemRepair(SwitchSystem, amount, player.PlayerId);
+                        break;
+                    //case CustomRoles.Repairman:
+                    //    Repairman.SwitchSystemRepair(SwitchSystem, amount);
+                    //    break;
+                    case CustomRoles.Alchemist when Alchemist.FixNextSabo:
+                        Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()} instant-fix-lights", "SwitchSystem");
+                        SwitchSystem.ActualSwitches = 0;
+                        SwitchSystem.ExpectedSwitches = 0;
+                        Alchemist.FixNextSabo = false;
+                        break;
+                }
+                if (player.Is(CustomRoles.Repairman))
+                    Repairman.SwitchSystemRepair(SwitchSystem, amount);
+            }
         }
-
-        return true;
-    }
-    public static void Postfix(ShipStatus __instance)
-    {
-        Camouflage.CheckCamouflage();
     }
     public static void CheckAndOpenDoorsRange(ShipStatus __instance, int amount, int min, int max)
     {
