@@ -155,7 +155,7 @@ internal static class FFAManager
     {
         int rank = GetRankOfScore(playerId);
         string score = KBScore.TryGetValue(playerId, out var s) ? $"{s}" : "Invalid";
-        string text = string.Format(GetString("KBDisplayScore"), rank.ToString(), score);
+        string text = string.Format(GetString("FFADisplayScore"), rank.ToString(), score);
         Color color = Utils.GetRoleColor(CustomRoles.Killer);
         return Utils.ColorString(color, text);
     }
@@ -175,7 +175,7 @@ internal static class FFAManager
     }
     public static string GetHudText()
     {
-        return string.Format(GetString("KBTimeRemain"), RoundTime.ToString());
+        return string.Format(GetString("FFATimeRemain"), RoundTime.ToString());
     }
     public static void OnPlayerAttack(PlayerControl killer, PlayerControl target)
     {
