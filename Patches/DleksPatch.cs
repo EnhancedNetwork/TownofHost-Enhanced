@@ -39,7 +39,7 @@ class DleksPatch
 }
 
 [HarmonyPatch(typeof(KeyValueOption), nameof(KeyValueOption.OnEnable))]
-class AutoselectDleksPatch
+class AutoSelectDleksPatch
 {
     private static void Postfix(KeyValueOption __instance)
     {
