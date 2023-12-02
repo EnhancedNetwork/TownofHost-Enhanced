@@ -119,24 +119,27 @@ public class GameStartManagerPatch
                     Main.updateTime = 0;
                     if (((GameData.Instance.PlayerCount >= minPlayer && timer <= minWait) || timer <= maxWait) && !GameStates.IsCountDown)
                     {
-                        var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
-
-                        if (invalidColor.Any())
+                        _ = new LateTask(() =>
                         {
-                            invalidColor.Do(p => AmongUsClient.Instance.KickPlayer(p.GetClientId(), false));
+                            var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
 
-                            Logger.SendInGame(GetString("Error.InvalidColorPreventStart"));
-                            var msg = GetString("Error.InvalidColor");
-                            msg += "\n" + string.Join(",", invalidColor.Select(p => $"{p.GetRealName()}"));
-                            Utils.SendMessage(msg);
-                        }
-                        if (Options.RandomMapsMode.GetBool())
-                        {
-                            Main.NormalOptions.MapId = GameStartRandomMap.SelectRandomMap();
-                        }
-                        GameStartManager.Instance.startState = GameStartManager.StartingStates.Countdown;
-                        GameStartManager.Instance.countDownTimer = Options.AutoStartTimer.GetInt();
-                        __instance.StartButton.gameObject.SetActive(false);
+                            if (invalidColor.Any())
+                            {
+                                invalidColor.Do(p => AmongUsClient.Instance.KickPlayer(p.GetClientId(), false));
+
+                                Logger.SendInGame(GetString("Error.InvalidColorPreventStart"));
+                                var msg = GetString("Error.InvalidColor");
+                                msg += "\n" + string.Join(",", invalidColor.Select(p => $"{p.GetRealName()}"));
+                                Utils.SendMessage(msg);
+                            }
+                            if (Options.RandomMapsMode.GetBool())
+                            {
+                                Main.NormalOptions.MapId = GameStartRandomMap.SelectRandomMap();
+                            }
+                            GameStartManager.Instance.startState = GameStartManager.StartingStates.Countdown;
+                            GameStartManager.Instance.countDownTimer = Options.AutoStartTimer.GetInt();
+                            __instance.StartButton.gameObject.SetActive(false);
+                        }, 0.8f, "AutoStart");
                     }
                 }
             }
