@@ -212,7 +212,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
                     : 300f;
                 AURoleOptions.EngineerInVentMaxTime = 1;
                 break;
-       /*     case CustomRoles.Mare:
+         /* case CustomRoles.Mare:
                 Mare.ApplyGameOptions(player.PlayerId);
                 break; */
             case CustomRoles.EvilTracker:
@@ -500,6 +500,12 @@ public class PlayerGameOptionsSender : GameOptionsSender
             if (Utils.IsActive(SystemTypes.Electrical)) opt.SetFloat(FloatOptionNames.CrewLightMod, Options.LighterVisionOnLightsOut.GetFloat() * 5);
             else opt.SetFloat(FloatOptionNames.CrewLightMod, Options.LighterVisionNormal.GetFloat());
         }
+
+        if (player.Is(CustomRoles.Mare))
+        {
+            Mare.ApplyGameOptions(player.PlayerId);
+        }
+
    /*     if ((Main.FlashbangInProtect.Count >= 1 && Main.ForFlashbang.Contains(player.PlayerId) && (!player.GetCustomRole().IsCrewmate())))  
         {
                 opt.SetVision(false);

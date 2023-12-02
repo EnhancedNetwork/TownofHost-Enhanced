@@ -428,9 +428,6 @@ public static class Options
     public static OptionItem CrewCanBeGravestone;
     public static OptionItem NeutralCanBeGravestone;
 
-    // Mare Add-on
-    public static OptionItem MareKillCD;
-
     // Clumsy
     public static OptionItem ChanceToMiss;
 
@@ -2726,10 +2723,11 @@ public static class Options
         /*
          * Mare
          */
-        SetupAdtRoleOptions(23000, CustomRoles.Mare, canSetNum: true, tab: TabGroup.Addons);
-        MareKillCD = FloatOptionItem.Create(23003, "KillCooldown", new(0f, 60f, 1f), 10f, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Mare])
-            .SetValueFormat(OptionFormat.Seconds);
+        Mare.SetupCustomOption();
+        //SetupAdtRoleOptions(23000, CustomRoles.Mare, canSetNum: true, tab: TabGroup.Addons);
+        //MareKillCD = FloatOptionItem.Create(23003, "KillCooldown", new(0f, 60f, 1f), 10f, TabGroup.Addons, false)
+        //    .SetParent(CustomRoleSpawnChances[CustomRoles.Mare])
+        //    .SetValueFormat(OptionFormat.Seconds);
 
         /*
          * Mimic

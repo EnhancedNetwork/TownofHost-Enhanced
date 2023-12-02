@@ -879,9 +879,9 @@ static class ExtendedPlayerControl
             case CustomRoles.Berserker:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.BerserkerKillCooldown.GetFloat();
                 break;
-            /*    case CustomRoles.Mare:
-                    Mare.SetKillCooldown(player.PlayerId);
-                    break; */
+           /* case CustomRoles.Mare:
+                Mare.SetKillCooldown(player.PlayerId);
+                break; */
             case CustomRoles.EvilDiviner:
                 EvilDiviner.SetKillCooldown(player.PlayerId);
                 break;
@@ -1169,8 +1169,10 @@ static class ExtendedPlayerControl
         }
         if (player.PlayerId == LastImpostor.currentId)
             LastImpostor.SetKillCooldown();
+
         if (player.Is(CustomRoles.Mare))
-            Main.AllPlayerKillCooldown[player.PlayerId] = Options.MareKillCD.GetFloat();
+            Main.AllPlayerKillCooldown[player.PlayerId] = Mare.KillCooldownInLightsOut.GetFloat();
+
         if (player.Is(CustomRoles.Overclocked))
             Main.AllPlayerKillCooldown[player.PlayerId] -= Main.AllPlayerKillCooldown[player.PlayerId] * (Options.OverclockedReduction.GetFloat() / 100);
         
