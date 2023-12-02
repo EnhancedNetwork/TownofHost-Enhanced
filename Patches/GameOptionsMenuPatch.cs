@@ -427,6 +427,16 @@ public static class SetRecommendationsPatch
         __instance.roleOptions.SetRoleRecommended(RoleTypes.GuardianAngel);
         __instance.roleOptions.SetRoleRecommended(RoleTypes.Engineer);
 
+        if (Options.CurrentGameMode == CustomGameMode.FFA) //FFA
+        {
+            __instance.CrewLightMod = __instance.ImpostorLightMod = 1.25f;
+            __instance.NumImpostors = 3;
+            __instance.NumCommonTasks = 0;
+            __instance.NumLongTasks = 0;
+            __instance.NumShortTasks = 0;
+            __instance.KillCooldown = 0f;
+        }
+
         return false;
     }
 }

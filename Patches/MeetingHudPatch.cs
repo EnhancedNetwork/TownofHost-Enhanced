@@ -531,10 +531,14 @@ class CheckForEndVotingPatch
         }
 
         //小丑胜利
-        if (crole.Is(CustomRoles.Jester))
+        if (crole.Is(CustomRoles.Jester)) 
         {
-            name = string.Format(GetString("ExiledJester"), realName, coloredRole);
-            DecidedWinner = true;
+            if (Options.MeetingsNeededForJesterWin.GetInt() <= Main.MeetingsPassed)
+            {
+                name = string.Format(GetString("ExiledJester"), realName, coloredRole);
+                DecidedWinner = true;
+            }
+            else if (Options.CEMode.GetInt() == 2) name += string.Format(GetString("JesterMeetingLoose"), Options.MeetingsNeededForJesterWin.GetInt() + 1);
         }
 
         //处刑人胜利
