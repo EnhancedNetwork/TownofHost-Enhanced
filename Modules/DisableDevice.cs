@@ -92,9 +92,9 @@ class DisableDevice
                                 doComms |= Vector2.Distance(PlayerPos, DevicePos["PolusVital"]) <= UsableDistance();
                             break;
                         case 3:
-                            if (!Options.DisableSkeldAdmin.GetBool())
+                            if (Options.DisableSkeldAdmin.GetBool())
                                 doComms |= Vector2.Distance(PlayerPos, DevicePos["DleksAdmin"]) <= UsableDistance();
-                            if (!Options.DisableSkeldCamera.GetBool())
+                            if (Options.DisableSkeldCamera.GetBool())
                                 doComms |= Vector2.Distance(PlayerPos, DevicePos["DleksCamera"]) <= UsableDistance();
                             break;
                         case 4:

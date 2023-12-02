@@ -63,11 +63,9 @@ public static class Options
     public static bool IsActiveSkeld => Main.NormalOptions.MapId == 0; // 0 - The Skeld
     public static bool IsActiveMiraHQ => Main.NormalOptions.MapId == 1; // 1 - MiraHQ
     public static bool IsActivePolus => Main.NormalOptions.MapId == 2; // 2 - Polus
+    public static bool IsActiveDleks => Main.NormalOptions.MapId == 3; // 3 - Dleks
     public static bool IsActiveAirship => Main.NormalOptions.MapId == 4; // 4 - Airship
     public static bool IsActiveFungle => Main.NormalOptions.MapId == 5; // 5 - The Fungle
-
-    // Map not used
-    //public static bool IsActiveDleks => Main.NormalOptions.MapId == 3; // 3 - Dleks
 
     // 役職数・確率
     public static Dictionary<CustomRoles, int> roleCounts;
@@ -676,6 +674,7 @@ public static class Options
     public static OptionItem SkeldChance;
     public static OptionItem MiraChance;
     public static OptionItem PolusChance;
+    public static OptionItem DleksChance;
     public static OptionItem AirshipChance;
     public static OptionItem FungleChance;
 
@@ -701,6 +700,7 @@ public static class Options
     public static OptionItem DisableOnSkeld;
     public static OptionItem DisableOnMira;
     public static OptionItem DisableOnPolus;
+    public static OptionItem DisableOnDleks;
     public static OptionItem DisableOnAirship;
     public static OptionItem DisableOnFungle;
     public static OptionItem DisableReportWhenCC;
@@ -3023,6 +3023,9 @@ public static class Options
         PolusChance = IntegerOptionItem.Create(60453, "PolusChance", new(0, 100, 5), 10, TabGroup.GameSettings, false)
             .SetParent(RandomMapsMode)
             .SetValueFormat(OptionFormat.Percent);
+        DleksChance = IntegerOptionItem.Create(60457, "DleksChance", new(0, 100, 5), 10, TabGroup.GameSettings, false)
+            .SetParent(RandomMapsMode)
+            .SetValueFormat(OptionFormat.Percent);
         AirshipChance = IntegerOptionItem.Create(60454, "AirshipChance", new(0, 100, 5), 10, TabGroup.GameSettings, false)
             .SetParent(RandomMapsMode)
             .SetValueFormat(OptionFormat.Percent);
@@ -3037,10 +3040,6 @@ public static class Options
             .SetHidden(true)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
-
-        //MapDleksChance = IntegerOptionItem.Create(60457, "MapDleks", new(0, 100, 5), 10, TabGroup.GameSettings, false)
-        //    .SetParent(RandomMapsMode)
-        //    .SetValueFormat(OptionFormat.Percent);
 
 
 
@@ -3120,6 +3119,9 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(DisableOnSomeMaps);
         DisableOnPolus = BooleanOptionItem.Create(60514, "DisableOnPolus", false, TabGroup.GameSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(DisableOnSomeMaps);
+        DisableOnDleks = BooleanOptionItem.Create(60517, "DisableOnDleks", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(DisableOnSomeMaps);
         DisableOnAirship = BooleanOptionItem.Create(60515, "DisableOnAirship", false, TabGroup.GameSettings, false)
