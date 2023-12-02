@@ -1,16 +1,16 @@
-using Hazel;
-using UnityEngine;
-using System.Linq;
 using AmongUs.GameOptions;
+using Hazel;
 using System.Collections.Generic;
-
+using System.Linq;
+using TOHE.Roles.Impostor;
+using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
 
 public static class NWitch
 {
-    private static readonly int Id = 10300;
+    private static readonly int Id = 13800;
     public static bool IsEnable = false;
 
     public static Dictionary<byte, byte> TaglockedList = new();
@@ -74,7 +74,7 @@ public static class NWitch
         
         killer.SetKillCooldown();
 
-        Utils.NotifyRoles(SpecifySeer: killer);
+        Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
 
         return false;
     }
@@ -119,7 +119,8 @@ public static class NWitch
                         Utils.MarkEveryoneDirtySettings();
                         TaglockedList.Remove(taglocked.PlayerId);
                         SendRPC(byte.MaxValue, taglocked.PlayerId, 2);
-                        Utils.NotifyRoles(SpecifySeer: taglocked);
+                        //Utils.NotifyRoles(SpecifySeer: taglocked);
+                        Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(taglockedId), SpecifyTarget: taglocked, ForceLoop: true);
                     }
                 }
             }

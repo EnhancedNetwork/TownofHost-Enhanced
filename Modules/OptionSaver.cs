@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 
 namespace TOHE.Modules;
@@ -9,7 +10,18 @@ public static class OptionSaver
 {
     private static readonly DirectoryInfo SaveDataDirectoryInfo = new("./TOHE-DATA/SaveData/");
     private static readonly FileInfo OptionSaverFileInfo = new($"{SaveDataDirectoryInfo.FullName}/Options.json");
+    private static readonly FileInfo DefaultPresetFileInfo = new ($"{SaveDataDirectoryInfo.FullName}/DefaultPreset.txt");
+    private static int DefaultPresetNumber = new();
 
+    public static int GetDefaultPresetNumber()
+    {
+        if (DefaultPresetFileInfo.Exists)
+        {
+            string presetNmber = File.ReadAllText(DefaultPresetFileInfo.FullName);
+            if (int.TryParse(presetNmber, out int number) && number >= 0 && number <= 4) return number;
+        }
+        return 0;
+    }
     public static void Initialize()
     {
         if (!SaveDataDirectoryInfo.Exists)
@@ -21,13 +33,17 @@ public static class OptionSaver
         {
             OptionSaverFileInfo.Create().Dispose();
         }
+        if (!DefaultPresetFileInfo.Exists)
+        {
+            DefaultPresetFileInfo.Create().Dispose();
+        }
     }
     /// <summary>Generate object for json serialization from current options</summary>
     private static SerializableOptionsData GenerateOptionsData()
     {
         Dictionary<int, int> singleOptions = new();
         Dictionary<int, int[]> presetOptions = new();
-        foreach (var option in OptionItem.AllOptions)
+        foreach (var option in OptionItem.AllOptions.ToArray())
         {
             if (option.IsSingleValue)
             {
@@ -41,6 +57,7 @@ public static class OptionSaver
                 Logger.Warn($"Duplicate preset option ID: {option.Id}", "Option Saver");
             }
         }
+        DefaultPresetNumber = singleOptions[0];
         return new SerializableOptionsData
         {
             Version = Version,
@@ -86,12 +103,13 @@ public static class OptionSaver
 
         var jsonString = JsonSerializer.Serialize(GenerateOptionsData(), new JsonSerializerOptions { WriteIndented = true, });
         File.WriteAllText(OptionSaverFileInfo.FullName, jsonString);
+        File.WriteAllText(DefaultPresetFileInfo.FullName, DefaultPresetNumber.ToString());
     }
     /// <summary>Read options from json file</summary>
     public static void Load()
     {
         var jsonString = File.ReadAllText(OptionSaverFileInfo.FullName);
-        // 空なら読み込まず，デフォルト値をセーブする
+        // if empty, do not read, save default value
         if (jsonString.Length <= 0)
         {
             Logger.Info("Save default value as option data is empty", "Option Saver");
@@ -112,5 +130,5 @@ public static class OptionSaver
     }
 
     /// <summary>Raise the number here when making incompatible changes to the format of an option (e.g., changing the number of presets)</summary>
-    public static readonly int Version = 0;
+    public static readonly int Version = 1;
 }

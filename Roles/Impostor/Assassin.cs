@@ -1,17 +1,16 @@
 ﻿using Hazel;
 using System.Collections.Generic;
 using TOHE.Modules;
-using TOHE.Roles.Neutral;
 using TOHE.Roles.Crewmate;
+using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
-using System.Linq;
 
 namespace TOHE.Roles.Impostor;
 
 internal static class Assassin
 {
-    private static readonly int Id = 700;
+    private static readonly int Id = 2100;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

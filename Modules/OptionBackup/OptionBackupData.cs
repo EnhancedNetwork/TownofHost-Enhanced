@@ -20,8 +20,11 @@ public class OptionBackupData
         }
         foreach (BoolOptionNames name in EnumHelper.GetAllValues<BoolOptionNames>())
         {
-            if (name != BoolOptionNames.GhostsDoTasks && option.TryGetBool(name, out var value))
+            if (name is BoolOptionNames.GhostsDoTasks) continue;
+
+            if (option.TryGetBool(name, out var value))
                 AllValues.Add(new BoolOptionBackupValue(name, value));
+
         }
         foreach (FloatOptionNames name in EnumHelper.GetAllValues<FloatOptionNames>())
         {
@@ -33,8 +36,10 @@ public class OptionBackupData
             if (option.TryGetInt(name, out var value))
                 AllValues.Add(new IntOptionBackupValue(name, value));
         }
+        
         // [Vanilla bug] Only the number of people in the room cannot be obtained with GetInt, so obtain it separately.
         AllValues.Add(new IntOptionBackupValue(Int32OptionNames.MaxPlayers, option.MaxPlayers));
+       
         // TryGetUInt is not implemented, so get it separately
         AllValues.Add(new UIntOptionBackupValue(UInt32OptionNames.Keywords, (uint)option.Keywords));
 
@@ -46,7 +51,7 @@ public class OptionBackupData
 
     public IGameOptions Restore(IGameOptions option)
     {
-        foreach (var value in AllValues)
+        foreach (var value in AllValues.ToArray())
         {
             value.Restore(option);
         }
@@ -63,8 +68,7 @@ public class OptionBackupData
     {
         var value = AllValues
             .OfType<OptionBackupValueBase<TKey, TValue>>()
-            .Where(val => val.OptionName.Equals(name)).
-            FirstOrDefault();
+            .FirstOrDefault(val => val.OptionName.Equals(name));
 
         return value == null ? default : value.Value;
     }

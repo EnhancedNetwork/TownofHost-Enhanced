@@ -1,21 +1,22 @@
-﻿using Hazel;
+﻿using AmongUs.GameOptions;
+using Hazel;
 using System.Collections.Generic;
 using System.Linq;
-using AmongUs.GameOptions;
 using TOHE.Roles.Crewmate;
-using UnityEngine;
-using System;
-using static TOHE.Translator;
 using TOHE.Roles.Double;
+using UnityEngine;
+using static TOHE.Translator;
+
 namespace TOHE.Roles.Neutral;
 
 public static class Pelican
 {
-    private static readonly int Id = 12500;
+    private static readonly int Id = 17300;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
     private static Dictionary<byte, List<byte>> eatenList = new();
     private static readonly Dictionary<byte, float> originalSpeed = new();
+    private static int Count = 0;
     public static OptionItem KillCooldown;
     public static OptionItem HasImpostorVision;
     public static OptionItem CanVent;
@@ -32,6 +33,7 @@ public static class Pelican
         playerIdList = new();
         eatenList = new();
         IsEnable = false;
+        Count = 0;
     }
     public static void Add(byte playerId)
     {
@@ -50,7 +52,7 @@ public static class Pelican
     }
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetPelicanEtenNum, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetPelicanEatenNum, SendOption.Reliable, -1);
         writer.Write(playerId);
         if (playerId != byte.MaxValue)
         {
@@ -88,10 +90,11 @@ public static class Pelican
     public static bool CanEat(PlayerControl pc, byte id)
     {
         if (!pc.Is(CustomRoles.Pelican) || GameStates.IsMeeting) return false;
+
         var target = Utils.GetPlayerById(id);
-        return target != null && target.IsAlive() && !target.inVent && !Medic.ProtectList.Contains(target.PlayerId) && !target.Is(CustomRoles.GM) && !IsEaten(pc, id) && !IsEaten(id);
+        return target != null && target.CanBeTeleported() && !Medic.ProtectList.Contains(target.PlayerId) && !target.Is(CustomRoles.GM) && !IsEaten(pc, id) && !IsEaten(id);
     }
-    public static Vector2 GetBlackRoomPS()
+    public static Vector2 GetBlackRoomPSForPelican()
     {
         return Main.NormalOptions.MapId switch
         {
@@ -100,6 +103,7 @@ public static class Pelican
             2 => new Vector2(42.6f, -19.9f), // Polus
             3 => new Vector2(27f, 3.3f), // dlekS ehT
             4 => new Vector2(-16.8f, -6.2f), // Airship
+            5 => new Vector2(9.6f, 23.2f), // The Fungle
             _ => throw new System.NotImplementedException(),
         };
     }
@@ -116,7 +120,7 @@ public static class Pelican
     }
     public static void EatPlayer(PlayerControl pc, PlayerControl target)
     {
-        if (pc == null || target == null || !CanEat(pc, target.PlayerId)) return;
+        if (pc == null || target == null || !target.CanBeTeleported()) return;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
             pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("CantEat")));
@@ -130,14 +134,15 @@ public static class Pelican
         originalSpeed.Remove(target.PlayerId);
         originalSpeed.Add(target.PlayerId, Main.AllPlayerSpeed[target.PlayerId]);
 
-        target.RpcTeleport(new Vector2 (GetBlackRoomPS().x, GetBlackRoomPS().y));
+        target.RpcTeleport(GetBlackRoomPSForPelican());
         Main.AllPlayerSpeed[target.PlayerId] = 0.5f;
         ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
         target.MarkDirtySettings();
 
         Utils.NotifyRoles(SpecifySeer: pc);
         Utils.NotifyRoles(SpecifySeer: target);
-        Logger.Info($"{pc.GetRealName()} 吞掉了 {target.GetRealName()}", "Pelican");
+
+        Logger.Info($"{pc.GetRealName()} eat player => {target.GetRealName()}", "Pelican");
     }
 
     public static void OnReportDeadBody()
@@ -166,24 +171,29 @@ public static class Pelican
     public static void OnPelicanDied(byte pc)
     {
         if (!eatenList.ContainsKey(pc)) return;
+
         foreach (var tar in eatenList[pc])
         {
             var target = Utils.GetPlayerById(tar);
             var player = Utils.GetPlayerById(pc);
             if (player == null || target == null) continue;
+
             target.RpcTeleport(player.GetTruePosition());
+
             Main.AllPlayerSpeed[tar] = Main.AllPlayerSpeed[tar] - 0.5f + originalSpeed[tar];
             ReportDeadBodyPatch.CanReport[tar] = true;
+            
             target.MarkDirtySettings();
+            
             RPC.PlaySoundRPC(tar, Sounds.TaskComplete);
-            Utils.NotifyRoles(SpecifySeer: target);
-            Logger.Info($"{Utils.GetPlayerById(pc).GetRealName()} 吐出了 {target.GetRealName()}", "Pelican");
+            
+            Logger.Info($"{Utils.GetPlayerById(pc).GetRealName()} dead, player return back: {target.GetRealName()}", "Pelican");
         }
         eatenList.Remove(pc);
         SyncEatenList(pc);
+        Utils.NotifyRoles();
     }
 
-    private static int Count = 0;
     public static void OnFixedUpdate()
     {
         if (!GameStates.IsInTask)
@@ -200,19 +210,21 @@ public static class Pelican
         
         if (Count > 0) return; 
         
-        Count = 30;
+        Count = 15;
 
         foreach (var pc in eatenList)
         {
-            foreach (var tar in pc.Value)
+            foreach (var tar in pc.Value.ToArray())
             {
                 var target = Utils.GetPlayerById(tar);
                 if (target == null) continue;
-                var pos = GetBlackRoomPS();
+
+                var pos = GetBlackRoomPSForPelican();
                 var dis = Vector2.Distance(pos, target.GetTruePosition());
                 if (dis < 1f) continue;
-                target.RpcTeleport(new Vector2 (pos.x, pos.y));
-                Utils.NotifyRoles(SpecifySeer: target, ForceLoop: false);
+
+                target.RpcTeleport(pos);
+                //Utils.NotifyRoles(SpecifySeer: target, ForceLoop: false);
             }
         }
     }

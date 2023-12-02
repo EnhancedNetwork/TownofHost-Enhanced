@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Modules;
-using UnityEngine;
 using TOHE.Roles.Crewmate;
+using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
@@ -21,7 +21,7 @@ public static class Vampire
         }
     }
 
-    private static readonly int Id = 4500;
+    private static readonly int Id = 5000;
     private static readonly List<byte> PlayerIdList = new();
     public static bool IsEnable = false;
 
@@ -108,9 +108,12 @@ public static class Vampire
         {
             Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Bite;
             target.SetRealKiller(vampire);
+            //target.RpcMurderPlayer(target, true);
+            //target.RpcMurderPlayerV2(target);
             target.RpcMurderPlayerV3(target);
+
             Medic.IsDead(target);
-            Logger.Info($"Vampireに噛まれている{target.name}を自爆させました。", "Vampire");
+            Logger.Info($"{target.name} self-kill while being bitten by Vampire.", "Vampire");
             if (!isButton && vampire.IsAlive())
             {
                 RPC.PlaySoundRPC(vampire.PlayerId, Sounds.KillSound);
@@ -122,7 +125,7 @@ public static class Vampire
         }
         else
         {
-            Logger.Info("Vampireに噛まれている" + target.name + "はすでに死んでいました。", "Vampire");
+            Logger.Info($"{target.name} was dead after being bitten by Vampire", "Vampire");
         }
     }
 

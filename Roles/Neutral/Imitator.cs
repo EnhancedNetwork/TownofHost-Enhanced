@@ -1,8 +1,7 @@
 using Hazel;
 using System.Collections.Generic;
-using System.Linq;
+
 using TOHE.Roles.Crewmate;
-using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -10,7 +9,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Imitator
 {
-    private static readonly int Id = 35050;
+    private static readonly int Id = 13000;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -75,16 +74,19 @@ public static class Imitator
         }
     }
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = RememberLimit[id] >= 1 ? RememberCooldown.GetFloat() : 300f;
-    public static bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && RememberLimit[player.PlayerId] >= 1;
+    public static bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && (!RememberLimit.TryGetValue(player.PlayerId, out var x) || x > 0);
     public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
         if (RememberLimit[killer.PlayerId] < 1) return;
 
         var role = target.GetCustomRole();
 
-        if (role.IsAmneNK() || role.Is(CustomRoles.Jackal) /*|| role.IsAmneMaverick()*/
-            || role.IsImpostor() || role.IsCrewmate() || role.Is(CustomRoles.HexMaster)
-            || role.Is(CustomRoles.Poisoner) || role.Is(CustomRoles.Juggernaut) || role.Is(CustomRoles.BloodKnight))
+        if (role.Is(CustomRoles.Jackal)
+            || role.Is(CustomRoles.HexMaster)
+            || role.Is(CustomRoles.Poisoner) 
+            || role.Is(CustomRoles.Juggernaut) 
+            || role.Is(CustomRoles.BloodKnight)
+            || role.Is(CustomRoles.Sheriff))
         {
             RememberLimit[killer.PlayerId]--;
             SendRPC(killer.PlayerId);
@@ -108,22 +110,18 @@ public static class Imitator
                 case CustomRoles.BloodKnight:
                     BloodKnight.Add(killer.PlayerId);
                     break;
-                case CustomRoles.SabotageMaster:
-                    SabotageMaster.Add(killer.PlayerId);
+                case CustomRoles.Sheriff:
+                    Sheriff.Add(killer.PlayerId);
                     break;
-                case CustomRoles.Admirer:
-                    Admirer.Add(killer.PlayerId);
-                    break;
-                    //Most of the roles with skill limit need to be added here.
-                    //Niko is not doing this bcz its tooooooo harrrrrdddddddddd
             }
 
-            if (role.IsImpostor())
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedImpostor")));
-            else if (role.IsCrewmate())
+            if (role.IsCrewmate())
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedCrewmate")));
             else
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedNeutralKiller")));
+
+            // Notify target
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
         }
         else if (role.IsAmneMaverick())
         {
@@ -152,6 +150,7 @@ public static class Imitator
                 case 4:
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedMaverick")));
                     killer.RpcSetCustomRole(CustomRoles.Maverick);
+                    Maverick.Add(killer.PlayerId);
                     break;
                 case 5:
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedAmnesiac")));
@@ -159,22 +158,44 @@ public static class Imitator
                     Amnesiac.Add(killer.PlayerId);
                     break;
             }
-        }
-        //all the killer notify & setrole should be done above
-        target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorRemembered")));
 
-        if (killer.GetCustomRole() != CustomRoles.Imitator)
+        }
+        else if (role.IsCrewmate())
+        {
+            RememberLimit[killer.PlayerId]--;
+            SendRPC(killer.PlayerId);
+            killer.RpcSetCustomRole(CustomRoles.Sheriff);
+            Sheriff.Add(killer.PlayerId);
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedCrewmate")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
+        }
+        else if (role.IsImpostor())
+        {
+            RememberLimit[killer.PlayerId]--;
+            SendRPC(killer.PlayerId);
+            killer.RpcSetCustomRole(CustomRoles.Refugee);
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedImpostor")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
+        }
+
+        var killerRole = killer.GetCustomRole();
+
+        if (killerRole != CustomRoles.Imitator)
         {
             killer.ResetKillCooldown();
             killer.SetKillCooldown(forceAnime: true);
-            killer.MarkDirtySettings();
-            Utils.NotifyRoles();
-            //if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-            //target.RpcGuardAndKill(killer);
-            //target.RpcGuardAndKill(target);
+
+            Logger.Info("Imitator remembered: " + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString(), "Imitator Assign");
+            Logger.Info($"{killer.GetNameWithRole()} : {RememberLimit} remember limits left", "Imitator");
+
+            Utils.NotifyRoles(SpecifySeer: killer);
         }
-        Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Soulless.ToString(), "Assign " + CustomRoles.Soulless.ToString());
-        Logger.Info($"{killer.GetNameWithRole()} : 剩余{RememberLimit}次回忆机会", "Imitator");
+        else if (killerRole == CustomRoles.Imitator)
+        {
+            killer.SetKillCooldown(forceAnime: true);
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorInvalidTarget")));
+        }
+
         return;
     }
     //public static string GetRememberLimit() => Utils.ColorString(RememberLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Imitator) : Color.gray, $"({RememberLimit})");

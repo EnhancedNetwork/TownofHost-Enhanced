@@ -1,20 +1,21 @@
 namespace TOHE.Roles.Crewmate
 {
+    using AmongUs.GameOptions;
     using HarmonyLib;
     using Hazel;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
-    using UnityEngine;
-    using AmongUs.GameOptions;
     using TOHE.Modules;
+    using TOHE.Roles.Impostor;
     using TOHE.Roles.Neutral;
+    using UnityEngine;
     using static TOHE.Options;
     using static TOHE.Translator;
 
     public static class Alchemist
     {
-        private static readonly int Id = 5250;
+        private static readonly int Id = 6400;
         private static List<byte> playerIdList = new();
 
         public static Dictionary<byte, byte> BloodlustList = new();
@@ -115,9 +116,9 @@ namespace TOHE.Roles.Crewmate
                     player.MyPhysics.RpcBootFromVent(ventId);
                     _ = new LateTask(() =>
                     {
+                        Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Poison;
                         player.SetRealKiller(player);
                         player.RpcMurderPlayerV3(player);
-                        Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Poison;
                     }, 1f);
                     break;
                 case 3: // TP to random player
@@ -125,7 +126,10 @@ namespace TOHE.Roles.Crewmate
                     {
                         var rd = IRandom.Instance;
                         List<PlayerControl> AllAlivePlayer = new();
-                        foreach (var pc in Main.AllAlivePlayerControls.Where(x => !Pelican.IsEaten(x.PlayerId) && !x.inVent && !x.onLadder)) AllAlivePlayer.Add(pc);
+                        foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.CanBeTeleported()).ToArray())
+                        {
+                            AllAlivePlayer.Add(pc);
+                        }
                         var tar1 = AllAlivePlayer[player.PlayerId];
                         AllAlivePlayer.Remove(tar1);
                         var tar2 = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
@@ -216,8 +220,7 @@ namespace TOHE.Roles.Crewmate
                             player.MarkDirtySettings();
                             target.MarkDirtySettings();
                             BloodlustList.Remove(player.PlayerId);
-                            Utils.NotifyRoles(SpecifySeer: player);
-                            Utils.NotifyRoles(SpecifySeer: target);
+                            Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(bloodlustId), SpecifyTarget: player, ForceLoop: true);
                         }
                     }
                 }
@@ -363,29 +366,29 @@ namespace TOHE.Roles.Crewmate
                 case SystemTypes.Reactor:
                     if (amount is 64 or 65)
                     {
-                        ShipStatus.Instance.RpcRepairSystem(SystemTypes.Reactor, 16);
-                        ShipStatus.Instance.RpcRepairSystem(SystemTypes.Reactor, 17);
+                        ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Reactor, 16);
+                        ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Reactor, 17);
                     }
                     break;
                 case SystemTypes.Laboratory:
                     if (amount is 64 or 65)
                     {
-                        ShipStatus.Instance.RpcRepairSystem(SystemTypes.Laboratory, 67);
-                        ShipStatus.Instance.RpcRepairSystem(SystemTypes.Laboratory, 66);
+                        ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Laboratory, 67);
+                        ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Laboratory, 66);
                     }
                     break;
                 case SystemTypes.LifeSupp:
                     if (amount is 64 or 65)
                     {
-                        ShipStatus.Instance.RpcRepairSystem(SystemTypes.LifeSupp, 67);
-                        ShipStatus.Instance.RpcRepairSystem(SystemTypes.LifeSupp, 66);
+                        ShipStatus.Instance.RpcUpdateSystem(SystemTypes.LifeSupp, 67);
+                        ShipStatus.Instance.RpcUpdateSystem(SystemTypes.LifeSupp, 66);
                     }
                     break;
                 case SystemTypes.Comms:
                     if (amount is 64 or 65)
                     {
-                        ShipStatus.Instance.RpcRepairSystem(SystemTypes.Comms, 16);
-                        ShipStatus.Instance.RpcRepairSystem(SystemTypes.Comms, 17);
+                        ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Comms, 16);
+                        ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Comms, 17);
                     }
                     break;
             }

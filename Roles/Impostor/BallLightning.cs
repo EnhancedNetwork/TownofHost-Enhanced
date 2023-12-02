@@ -10,7 +10,7 @@ namespace TOHE.Roles.Impostor;
 
 public static class BallLightning
 {
-    private static readonly int Id = 16700;
+    private static readonly int Id = 24100;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -90,7 +90,10 @@ public static class BallLightning
                 GhostPlayer.Add(target.PlayerId);
                 SendRPC(target.PlayerId);
                 RealKiller.TryAdd(target.PlayerId, killer);
-                if (!killer.inVent) killer.RpcGuardAndKill(killer);
+
+                if (!killer.inVent)
+                    killer.RpcGuardAndKill(killer);
+
                 Utils.NotifyRoles();
                 Logger.Info($"{target.GetNameWithRole()} 转化为量子幽灵", "BallLightning");
             }
@@ -114,7 +117,8 @@ public static class BallLightning
                 deList.Add(gs.PlayerId);
                 continue;
             }
-            foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.PlayerId != gs.PlayerId && x.IsAlive() && !x.Is(CustomRoles.BallLightning) && !IsGhost(x) && !Pelican.IsEaten(x.PlayerId)))
+            var allAlivePlayerControls = Main.AllAlivePlayerControls.Where(x => x.PlayerId != gs.PlayerId && x.IsAlive() && !x.Is(CustomRoles.BallLightning) && !IsGhost(x) && !Pelican.IsEaten(x.PlayerId)).ToArray();
+            foreach (var pc in allAlivePlayerControls)
             {
                 var pos = gs.transform.position;
                 var dis = Vector2.Distance(pos, pc.transform.position);

@@ -8,7 +8,7 @@ namespace TOHE.Roles.Impostor;
 
 internal static class Eraser
 {
-    private static readonly int Id = 16800;
+    private static readonly int Id = 24200;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -107,13 +107,25 @@ internal static class Eraser
     {
         if (!IsEnable) return;
 
-        foreach (var pc in PlayerToErase)
+        foreach (var pc in PlayerToErase.ToArray())
         {
             var player = Utils.GetPlayerById(pc);
             if (player == null) continue;
+            if (!Main.ErasedRoleStorage.ContainsKey(player.PlayerId))
+            {
+                Main.ErasedRoleStorage.Add(player.PlayerId, player.GetCustomRole());
+                Logger.Info($"Added {player.GetNameWithRole()} to ErasedRoleStorage", "Eraser");
+            }
+            else
+            {
+                Logger.Info($"Canceled {player.GetNameWithRole()} Eraser bcz already erased.", "Eraser");
+                return;
+            }
             player.RpcSetCustomRole(CustomRolesHelper.GetErasedRole(player.GetCustomRole().GetRoleTypes(), player.GetCustomRole()));
-            NameNotifyManager.Notify(player, GetString("LostRoleByEraser"));
-            Logger.Info($"{player.GetNameWithRole()} 被擦除了", "Eraser");
+            player.Notify(GetString("LostRoleByEraser"));
+            player.ResetKillCooldown();
+            player.SetKillCooldown();
+            Logger.Info($"{player.GetNameWithRole()} Erase by Eraser", "Eraser");
         }
         Utils.MarkEveryoneDirtySettings();
     }

@@ -12,7 +12,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Wraith
 {
-    private static readonly int Id = 13300;
+    private static readonly int Id = 18500;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -81,7 +81,7 @@ public static class Wraith
 
         lastTime = new();
         InvisTime = new();
-        foreach (var pc in Main.AllAlivePlayerControls.Where(x => playerIdList.Contains(x.PlayerId)))
+        foreach (var pc in Main.AllAlivePlayerControls.Where(x => playerIdList.Contains(x.PlayerId)).ToArray())
         {
             lastTime.Add(pc.PlayerId, Utils.GetTimeStamp());
             SendRPC(pc);

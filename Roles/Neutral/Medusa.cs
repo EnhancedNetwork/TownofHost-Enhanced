@@ -1,14 +1,12 @@
 using AmongUs.GameOptions;
-using HarmonyLib;
 using System.Collections.Generic;
-using System.Linq;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
 
 public static class Medusa
 {
-    private static readonly int Id = 12400;
+    private static readonly int Id = 17000;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

@@ -22,7 +22,7 @@
 //        "TriggerKill", "TriggerVent","TriggerDouble"
 //    };
 
-//    private static readonly int Id = 11950;
+//    private static readonly int Id = 17200;
 //    private static Color RoleColorCurse = Utils.GetRoleColor(CustomRoles.Occultist);
 //    private static Color RoleColorSpell = Utils.GetRoleColor(CustomRoles.Impostor);
 
@@ -223,7 +223,7 @@
 //    }
 //    public static string GetCursedMark(byte target, bool isMeeting)
 //    {
-        
+
 //        if (isMeeting && IsCursed(target))
 //        {
 //            if (!CursesLookLikeSpells.GetBool())
@@ -236,7 +236,7 @@
 //            }
 //        }
 //        return "";
-        
+
 //    }
 //    public static string GetHexModeText(PlayerControl occultist, bool hud, bool isMeeting = false)
 //    {

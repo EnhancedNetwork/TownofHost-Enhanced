@@ -1,9 +1,11 @@
-using System.Collections.Generic;
-using System.Linq;
 using Hazel;
 using System;
-using TOHE.Roles.Impostor;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
+using TOHE.Roles.Impostor;
+using static TOHE.Translator;
 
 namespace TOHE.Modules.ChatManager
 {
@@ -12,6 +14,7 @@ namespace TOHE.Modules.ChatManager
         public static bool cancel = false;
         private static List<Dictionary<byte, string>> chatHistory = new();
         private const int maxHistorySize = 20;
+        public static List<string> ChatSentBySystem = new();
         public static void ResetHistory()
         {
             chatHistory = new();
@@ -19,17 +22,17 @@ namespace TOHE.Modules.ChatManager
         public static bool CheckCommond(ref string msg, string command, bool exact = true)
         {
             var comList = command.Split('|');
-            for (int i = 0; i < comList.Length; i++)
+            foreach (string comm in comList)
             {
                 if (exact)
                 {
-                    if (msg == "/" + comList[i]) return true;
+                    if (msg == "/" + comm) return true;
                 }
                 else
                 {
-                    if (msg.StartsWith("/" + comList[i]))
+                    if (msg.StartsWith("/" + comm))
                     {
-                        msg = msg.Replace("/" + comList[i], string.Empty);
+                        msg = msg.Replace("/" + comm, string.Empty);
                         return true;
                     }
                 }
@@ -61,16 +64,39 @@ namespace TOHE.Modules.ChatManager
             return false;
         }
 
+        public static string getTextHash(string text)
+        {
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                // get sha-256 hash
+                byte[] sha256Bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(text));
+                string sha256Hash = BitConverter.ToString(sha256Bytes).Replace("-", "").ToLower();
+
+                // pick front 5 and last 4
+                return string.Concat(sha256Hash.AsSpan(0, 5), sha256Hash.AsSpan(sha256Hash.Length - 4));
+            }
+        }
+
+        public static void AddToHostMessage(string text)
+        {
+            if (text != "")
+            {
+                ChatSentBySystem.Add(getTextHash(text));
+            }
+        }
+
         public static void SendMessage(PlayerControl player, string message)
         {
             int operate = 0; // 1:ID 2:猜测
             string msg = message;
             string playername = player.GetNameWithRole();
             message = message.ToLower().TrimStart().TrimEnd();
-            if (!player.IsAlive() || !AmongUsClient.Instance.AmHost) return;
+
             if (GameStates.IsInGame) operate = 3;
             if (CheckCommond(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id")) operate = 1;
             else if (CheckCommond(ref msg, "shoot|guess|bet|st|gs|bt|猜|赌|sp|jj|tl|trial|审判|判|审|compare|cmp|比较|duel|sw|换票|换|swap|st|finish|reveal", false)) operate = 2;
+            else if (ChatSentBySystem.Contains(getTextHash(msg))) operate = 5;
+            
             if ((operate == 1 || Blackmailer.ForBlackmailer.Contains(player.PlayerId)) && player.IsAlive())
             {
                 Logger.Info($"包含特殊信息，不记录", "ChatManager");
@@ -89,25 +115,84 @@ namespace TOHE.Modules.ChatManager
                 message = msg;
                 SendPreviousMessagesToAll();
             }
+            else if (operate == 5)
+            {
+                Logger.Info($"system message{msg}，不记录", "ChatManager");
+                message = msg;
+                cancel = true;
+            }
             else if (operate == 3)
             {
-                message = msg;
-                Dictionary<byte, string> newChatEntry = new()
+                if (GameStates.IsExilling)
                 {
-                    { player.PlayerId, message }
-                };
+                    if (Options.HideExileChat.GetBool()) 
+                    { 
+                        Logger.Info($"Message sent in exiling screen, spamming the chat", "ChatManager");
+                        _ = new LateTask(() => { SendPreviousMessagesToAll(); }, 0.3f);
+                    }
+                    return;
+                }
+                if (!player.IsAlive()) return;
+                message = msg;
+                //Logger.Warn($"Logging msg : {message}","Checking Exile");
+                Dictionary<byte, string> newChatEntry = new()
+                    {
+                        { player.PlayerId, message }
+                    };
                 chatHistory.Add(newChatEntry);
 
                 if (chatHistory.Count > maxHistorySize)
-                {
-                    chatHistory.RemoveAt(0);
+                    {
+                        chatHistory.RemoveAt(0);
+                    }
+                    cancel = false;
                 }
-                cancel = false;
             }
-        }
 
         public static void SendPreviousMessagesToAll()
         {
+            if (GameStates.IsExilling && chatHistory.Count < 20)
+            {
+                var firstAlivePlayer = Main.AllAlivePlayerControls.OrderBy(x => x.PlayerId).FirstOrDefault();
+                if (firstAlivePlayer == null) return;
+
+                var title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
+                var name = firstAlivePlayer?.Data?.PlayerName;
+                string spamMsg = GetString("ExileSpamMsg");
+
+                for (int i = 0; i < 20 - chatHistory.Count; i++)
+                {
+                    int clientId = -1; //sendTo == byte.MaxValue ? -1 : Utils.GetPlayerById(sendTo).GetClientId();
+                    //if (clientId == -1)
+                    //{
+                    firstAlivePlayer.SetName(title);
+                    DestroyableSingleton<HudManager>.Instance.Chat.AddChat(firstAlivePlayer, spamMsg);
+                    firstAlivePlayer.SetName(name);
+                    //}
+                    var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
+                    writer.StartMessage(clientId);
+                    writer.StartRpc(firstAlivePlayer.NetId, (byte)RpcCalls.SetName)
+                        .Write(title)
+                        .EndRpc();
+                    writer.StartRpc(firstAlivePlayer.NetId, (byte)RpcCalls.SendChat)
+                        .Write(spamMsg)
+                        .EndRpc();
+                    writer.StartRpc(firstAlivePlayer.NetId, (byte)RpcCalls.SetName)
+                        .Write(name)
+                        .EndRpc();
+                    writer.EndMessage();
+                    writer.SendMessage();
+                    //DestroyableSingleton<HudManager>.Instance.Chat.AddChat(firstAlivePlayer, spamMsg);
+                    //var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
+
+                    //writer.StartMessage(-1);
+                    //writer.StartRpc(firstAlivePlayer.NetId, (byte)RpcCalls.SendChat)
+                    //    .Write(spamMsg)
+                    //    .EndRpc()
+                    //    .EndMessage()
+                    //    .SendMessage();
+                }
+            }
             //var rd = IRandom.Instance;
             //CustomRoles[] roles = (CustomRoles[])Enum.GetValues(typeof(CustomRoles));
             //string[] specialTexts = new string[] { "bet", "bt", "guess", "gs", "shoot", "st", "赌", "猜", "审判", "tl", "判", "审", "trial" };
@@ -170,6 +255,7 @@ namespace TOHE.Modules.ChatManager
                     .EndRpc()
                     .EndMessage()
                     .SendMessage();
+
                 if (playerDead)
                 {
                     senderPlayer.Die(DeathReason.Kill, true);

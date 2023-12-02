@@ -9,7 +9,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class CursedSoul
 {
-    private static readonly int Id = 10500;
+    private static readonly int Id = 14000;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -77,13 +77,15 @@ public static class CursedSoul
 
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedSoul), GetString("CursedSoulSoullessPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedSoul), GetString("SoullessByCursedSoul")));
-            Utils.NotifyRoles();
+            
+            Utils.NotifyRoles(SpecifySeer: target , SpecifyTarget: killer, ForceLoop: true);
+            Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
 
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
-            if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-       //     target.RpcGuardAndKill(killer);
-       //     target.RpcGuardAndKill(target);
+
+            if (!DisableShieldAnimations.GetBool())
+                killer.RpcGuardAndKill(target);
 
             Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Soulless.ToString(), "Assign " + CustomRoles.Soulless.ToString());
             Logger.Info($"{killer.GetNameWithRole()} : 剩余{CurseLimit}次魅惑机会", "CursedSoul");

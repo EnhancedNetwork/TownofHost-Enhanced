@@ -1,17 +1,15 @@
-using System.Collections.Generic;
-using System.Linq;
 using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
+using System.Collections.Generic;
 using UnityEngine;
-
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral
 {
     public static class PotionMaster
     {
-        private static readonly int Id = 13000;
+        private static readonly int Id = 17700;
         public static List<byte> playerIdList = new();
         public static bool IsEnable = false;
 
@@ -107,13 +105,12 @@ namespace TOHE.Roles.Neutral
             {
                 RitualCount[killer.PlayerId]--;
                 RitualTarget[killer.PlayerId].Add(target.PlayerId);
-                Logger.Info($"{killer.GetNameWithRole()}：占った 占い先→{target.GetNameWithRole()} || 残り{RitualCount[killer.PlayerId]}回", "PotionMaster");
+                Logger.Info($"{killer.GetNameWithRole()}: Divined divination destination -> {target.GetNameWithRole()} || remaining {RitualCount[killer.PlayerId]} times", "PotionMaster");
+                
                 Utils.NotifyRoles(SpecifySeer: killer);
-
                 SendRPC(killer.PlayerId, target.PlayerId);
-                //キルクールの適正化
+
                 killer.SetKillCooldown();
-                //killer.RpcGuardAndKill(target);
             }
         }
         public static bool IsShowTargetRole(PlayerControl seer, PlayerControl target)

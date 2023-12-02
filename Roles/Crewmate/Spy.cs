@@ -10,7 +10,7 @@ namespace TOHE.Roles.Crewmate
 {
     public static class Spy
     {
-        private static readonly int Id = 640400;
+        private static readonly int Id = 9700;
         private static List<byte> playerIdList = new();
         public static bool change = false;
         public static Dictionary<byte, float> UseLimit = new();
@@ -91,9 +91,7 @@ namespace TOHE.Roles.Crewmate
         }
         public static bool OnKillAttempt(PlayerControl killer, PlayerControl target)
         {
-            if (killer == null) return false;
-            if (target == null) return false;
-            if (!target.Is(CustomRoles.Spy)) return true;
+            if (killer == null || target == null) return false;
             if (killer.PlayerId == target.PlayerId) return true;
 
             if (UseLimit[target.PlayerId] >= 1)
@@ -101,12 +99,11 @@ namespace TOHE.Roles.Crewmate
                 UseLimit[target.PlayerId] -= 1;
                 SendAbilityRPC(target.PlayerId);
                 SpyRedNameList.TryAdd(killer.PlayerId, GetTimeStamp());
-                SendRPC(killer.PlayerId);
+                SendRPC(killer.PlayerId);                
                 if (SpyInteractionBlocked.GetBool()) 
-                { 
-                    killer.SetKillCooldown(time: 10f); 
-                    return false; 
-                }
+                    killer.SetKillCooldown(time: 10f);
+                NotifyRoles(SpecifySeer: target);
+                return false;
             }
             return true;
         }
@@ -124,7 +121,7 @@ namespace TOHE.Roles.Crewmate
                     {
                         SpyRedNameList.Remove(x.Key);
                         change = true;
-                        SendRPC(x.Key, change); //sends the rpc but not received by modded??
+                        SendRPC(x.Key, change);
                     }
                 }
             }

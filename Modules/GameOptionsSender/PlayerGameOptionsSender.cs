@@ -1,13 +1,14 @@
-using System.Linq;
 using AmongUs.GameOptions;
 using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem.Linq;
 using InnerNet;
-using Mathf = UnityEngine.Mathf;
+using System;
+using System.Linq;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using Mathf = UnityEngine.Mathf;
 
 namespace TOHE.Modules;
 
@@ -39,7 +40,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
         if (player.AmOwner)
         {
             var opt = BuildGameOptions();
-            foreach (var com in GameManager.Instance.LogicComponents)
+            foreach (var com in GameManager.Instance.LogicComponents.ToArray())
             {
                 if (com.TryCast<LogicOptions>(out var lo))
                     lo.SetGameOptions(opt);
@@ -53,7 +54,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
     {
         for (byte i = 0; i < GameManager.Instance.LogicComponents.Count; i++)
         {
-            if (GameManager.Instance.LogicComponents[i].TryCast<LogicOptions>(out _))
+            if (GameManager.Instance.LogicComponents[(Index)i].TryCast<LogicOptions>(out _))
             {
                 SendOptionsArray(optionArray, i, player.GetClientId());
             }
@@ -100,6 +101,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
             case CustomRoles.EngineerTOHE:
             case CustomRoles.Phantom:
             case CustomRoles.Crewpostor:
+            case CustomRoles.Taskinator:
           //  case CustomRoles.Jester:
             case CustomRoles.Monitor:
                 AURoleOptions.EngineerCooldown = 0f;
@@ -143,7 +145,6 @@ public class PlayerGameOptionsSender : GameOptionsSender
             case CustomRoles.Jailer:
             case CustomRoles.SwordsMan:
             case CustomRoles.Arsonist:
-       //     case CustomRoles.Minimalism:
             case CustomRoles.Innocent:
             case CustomRoles.Revolutionist:
             case CustomRoles.Medic:
@@ -174,6 +175,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
                 opt.SetVision(Virus.ImpostorVision.GetBool());
                 break;
             case CustomRoles.Zombie:
+            case CustomRoles.Minimalism:
                 opt.SetFloat(FloatOptionNames.ImpostorLightMod, 0.2f);
                 break;
             case CustomRoles.Doctor:
@@ -440,24 +442,16 @@ public class PlayerGameOptionsSender : GameOptionsSender
 
         }
 
-        if (Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Bewilder) && !x.IsAlive() && (x.GetRealKiller()?.PlayerId == player.PlayerId && Options.KillerGetBewilderVision.GetBool()) && !x.Is(CustomRoles.Hangman)).Any())
+        if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Bewilder) && !x.IsAlive() && (x.GetRealKiller()?.PlayerId == player.PlayerId && Options.KillerGetBewilderVision.GetBool()) && !x.Is(CustomRoles.Hangman)))
         {
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, Options.BewilderVision.GetFloat());
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.BewilderVision.GetFloat());
         }
-        if (Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Ghoul) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId).Any())
+        if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Ghoul) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId))
         {
             Main.KillGhoul.Add(player.PlayerId);
         }
-   /*     if (Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Diseased) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId).Any())
-        {
-            Main.AllPlayerKillCooldown[player.PlayerId] *= Options.DiseasedMultiplier.GetFloat();
-            player.SetKillCooldownV3();
-            player.ResetKillCooldown();
-        //    player.SyncSettings();
-        } */
-
         if (
             (Main.GrenadierBlinding.Any() &&
             (player.GetCustomRole().IsImpostor() ||
@@ -499,7 +493,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
         Spiritcaller.ReduceVision(opt, player);
         Pitfall.SetPitfallTrapVision(opt, player);
 
-        foreach (var subRole in Main.PlayerStates[player.PlayerId].SubRoles)
+        foreach (var subRole in Main.PlayerStates[player.PlayerId].SubRoles.ToArray())
         {
             switch (subRole)
             {
@@ -552,7 +546,9 @@ public class PlayerGameOptionsSender : GameOptionsSender
 
         state.taskState.hasTasks = Utils.HasTasks(player.Data, false);
         if (Options.GhostCanSeeOtherVotes.GetBool() && player.Data.IsDead)
+        {
             opt.SetBool(BoolOptionNames.AnonymousVotes, false);
+        }
         if (Options.AdditionalEmergencyCooldown.GetBool() &&
             Options.AdditionalEmergencyCooldownThreshold.GetInt() <= Utils.AllAlivePlayersCount)
         {
@@ -564,6 +560,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
         {
             opt.SetInt(Int32OptionNames.EmergencyCooldown, 3600);
         }
+
         MeetingTimeManager.ApplyGameOptions(opt);
 
         AURoleOptions.ShapeshifterCooldown = Mathf.Max(1f, AURoleOptions.ShapeshifterCooldown);

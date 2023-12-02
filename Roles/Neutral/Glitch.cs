@@ -8,7 +8,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Glitch
 {
-    private static readonly int Id = 18125;
+    private static readonly int Id = 16300;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -178,7 +178,7 @@ public static class Glitch
         {
             try
             {
-                player.RpcRevertShapeshift(false);
+                player.RpcShapeshift(player, false);
                 isShifted = false;
             }
             catch (System.Exception ex)

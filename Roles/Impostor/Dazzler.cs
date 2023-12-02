@@ -1,6 +1,6 @@
+using AmongUs.GameOptions;
 using System.Collections.Generic;
 using System.Linq;
-using AmongUs.GameOptions;
 using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -10,7 +10,7 @@ namespace TOHE.Roles.Impostor
 {
     public static class Dazzler
     {
-        private static readonly int Id = 3500;
+        private static readonly int Id = 5400;
         public static List<byte> playerIdList = new();
         public static bool IsEnable = false;
 

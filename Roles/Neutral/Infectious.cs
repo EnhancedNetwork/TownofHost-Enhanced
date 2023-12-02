@@ -1,16 +1,14 @@
-﻿using MS.Internal.Xml.XPath;
-using TOHE.Roles.Double;
+﻿using TOHE.Roles.Double;
 using UnityEngine;
 
 using static TOHE.Options;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
 public static class Infectious
 {
-    private static readonly int Id = 12000;
+    private static readonly int Id = 16600;
     public static bool IsEnable = false;
 
     private static int BiteLimit;
@@ -65,13 +63,18 @@ public static class Infectious
             BiteLimit--;
             target.RpcSetCustomRole(CustomRoles.Infected);
 
+            Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
+            Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
+
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infectious), GetString("InfectiousBittenPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infectious), GetString("BittenByInfectious")));
-            Utils.NotifyRoles();
 
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
-            if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
+
+            if (!DisableShieldAnimations.GetBool())
+                killer.RpcGuardAndKill(target);
+
             target.RpcGuardAndKill(killer);
             target.RpcGuardAndKill(target);
             Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Infected.ToString(), "Assign " + CustomRoles.Infected.ToString());
@@ -135,8 +138,8 @@ public static class Infectious
         {
             if (alivePlayer.Is(CustomRoles.Infected))
             {
-                alivePlayer.RpcMurderPlayerV3(alivePlayer);
                 Main.PlayerStates[alivePlayer.PlayerId].deathReason = PlayerState.DeathReason.Infected;
+                alivePlayer.RpcMurderPlayerV3(alivePlayer);
             }
         }
     }

@@ -1,16 +1,15 @@
-using Hazel;
-using UnityEngine;
-using System.Linq;
 using AmongUs.GameOptions;
+using Hazel;
 using System.Collections.Generic;
-
+using System.Linq;
+using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
 
 public static class Shroud
 {
-    private static readonly int Id = 10320;
+    private static readonly int Id = 18000;
     public static bool IsEnable = false;
 
     public static Dictionary<byte, byte> ShroudList = new();
@@ -74,7 +73,7 @@ public static class Shroud
 
         killer.SetKillCooldown();
 
-        Utils.NotifyRoles(SpecifySeer: killer);
+        Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
 
         return false;
     }
@@ -117,7 +116,8 @@ public static class Shroud
                         Utils.MarkEveryoneDirtySettings();
                         ShroudList.Remove(shroud.PlayerId);
                         SendRPC(byte.MaxValue, shroud.PlayerId, 2);
-                        Utils.NotifyRoles(SpecifySeer: shroud);
+                        //Utils.NotifyRoles(SpecifySeer: shroud);
+                        Utils.NotifyRoles(Utils.GetPlayerById(shroudId), SpecifyTarget: shroud, ForceLoop: true);
                     }
                 }
             }
@@ -131,9 +131,9 @@ public static class Shroud
         PlayerControl shroudPC = Utils.GetPlayerById(shroudId);
         if (shroudPC == null) return;
         if (shroudPC.IsAlive())
-        { 
-            shrouded.RpcMurderPlayerV3(shrouded);
+        {
             Main.PlayerStates[shrouded.PlayerId].deathReason = PlayerState.DeathReason.Shrouded;
+            shrouded.RpcMurderPlayerV3(shrouded);
         }
         ShroudList.Remove(shrouded.PlayerId);
         SendRPC(byte.MaxValue, shrouded.PlayerId, 2);

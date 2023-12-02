@@ -1,7 +1,7 @@
-using HarmonyLib;
-using Discord;
-using System;
 using AmongUs.Data;
+using Discord;
+using HarmonyLib;
+using System;
 
 namespace TOHE.Patches
 {
@@ -28,8 +28,11 @@ namespace TOHE.Patches
                             lobbycode = GameStartManager.Instance.GameRoomNameCode.text;
                             region = ServerManager.Instance.CurrentRegion.Name;
                             if (region == "North America") region = "NA";
-                            if (region == "Europe") region = "EU";
-                            if (region == "Asia") region = "AS";
+                            else if (region == "Europe") region = "EU";
+                            else if (region == "Asia") region = "AS";
+                            else if (region.Contains("MNA")) region = "MNA";
+                            else if (region.Contains("MEU")) region = "MEU";
+                            else if (region.Contains("MAS")) region = "MAS";
                         }
 
                         if (lobbycode != "" && region != "")

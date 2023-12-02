@@ -1,16 +1,14 @@
-using System.Collections.Generic;
-using System.Linq;
 using HarmonyLib;
 using Hazel;
+using System.Collections.Generic;
 using UnityEngine;
-
 using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor
 {
     public static class EvilDiviner
     {
-        private static readonly int Id = 2700;
+        private static readonly int Id = 3100;
         public static List<byte> playerIdList = new();
         public static bool IsEnable = false;
 
@@ -99,7 +97,7 @@ namespace TOHE.Roles.Impostor
                 DivinationCount[killer.PlayerId]--;
                 DivinationTarget[killer.PlayerId].Add(target.PlayerId);
                 Logger.Info($"{killer.GetNameWithRole()}：占った 占い先→{target.GetNameWithRole()} || 残り{DivinationCount[killer.PlayerId]}回", "EvilDiviner");
-                Utils.NotifyRoles(SpecifySeer: killer);
+                Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
 
                 SendRPC(killer.PlayerId, target.PlayerId);
                 //キルクールの適正化

@@ -2,7 +2,6 @@
 using Hazel;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.Crewmate;
@@ -14,7 +13,7 @@ namespace TOHE.Roles.Impostor;
 
 public static class Councillor
 {
-    private static readonly int Id = 900;
+    private static readonly int Id = 1000;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -63,7 +62,7 @@ public static class Councillor
         var originMsg = msg;
 
         if (!AmongUsClient.Instance.AmHost) return false;
-        if (!GameStates.IsInGame || pc == null) return false;
+        if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false;
         if (!pc.Is(CustomRoles.Councillor)) return false;
 
         int operate = 0; // 1:ID 2:猜测
@@ -123,7 +122,7 @@ public static class Councillor
                     else pc.ShowPopUp(Utils.ColorString(Color.cyan, GetString("MessageFromKPD")) + "\n" + GetString("LaughToWhoMurderSelf"));
                     CouncillorSuicide = true;
                 }
-                if ((target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) && Mini.Age < 18)
+                if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessMini"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessMini"));
@@ -169,7 +168,7 @@ public static class Councillor
 
                     Utils.NotifyRoles(isForMeeting: false, NoCache: true);
 
-                    _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("MurderKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Judge), GetString("MurderKillTitle"))); }, 0.6f, "Guess Msg");
+                    _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("MurderKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Judge), GetString("MurderKillTitle")), true); }, 0.6f, "Guess Msg");
 
                 }, 0.2f, "Murder Kill");
             }

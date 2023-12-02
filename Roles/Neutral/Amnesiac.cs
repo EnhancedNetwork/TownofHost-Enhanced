@@ -1,15 +1,12 @@
 using Hazel;
 using System.Collections.Generic;
-using TOHE.Roles.Crewmate;
-using UnityEngine;
 using static TOHE.Options;
-using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
 public static class Amnesiac
 {
-    private static readonly int Id = 35000;
+    private static readonly int Id = 12700;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 

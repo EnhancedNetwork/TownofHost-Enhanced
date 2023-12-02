@@ -6,11 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using UnityEngine;
 using TOHE.Modules;
 using TOHE.Roles.Neutral;
-using Object = UnityEngine.Object;
+using UnityEngine;
 using static TOHE.Translator;
+using Object = UnityEngine.Object;
 
 namespace TOHE;
 
@@ -119,26 +119,27 @@ public class GameStartManagerPatch
                     Main.updateTime = 0;
                     if (((GameData.Instance.PlayerCount >= minPlayer && timer <= minWait) || timer <= maxWait) && !GameStates.IsCountDown)
                     {
-                        var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
-
-                        if (invalidColor.Any())
+                        _ = new LateTask(() =>
                         {
-                            Main.AllPlayerControls
-                                .Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId)
-                                .Do(p => AmongUsClient.Instance.KickPlayer(p.GetClientId(), false));
+                            var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
 
-                            Logger.SendInGame(GetString("Error.InvalidColorPreventStart"));
-                            var msg = GetString("Error.InvalidColor");
-                            msg += "\n" + string.Join(",", invalidColor.Select(p => $"{p.GetRealName()}"));
-                            Utils.SendMessage(msg);
-                        }
-                        if (Options.RandomMapsMode.GetBool())
-                        {
-                            Main.NormalOptions.MapId = GameStartRandomMap.SelectRandomMap();
-                        }
-                        GameStartManager.Instance.startState = GameStartManager.StartingStates.Countdown;
-                        GameStartManager.Instance.countDownTimer = Options.AutoStartTimer.GetInt();
-                        __instance.StartButton.gameObject.SetActive(false);
+                            if (invalidColor.Any())
+                            {
+                                invalidColor.Do(p => AmongUsClient.Instance.KickPlayer(p.GetClientId(), false));
+
+                                Logger.SendInGame(GetString("Error.InvalidColorPreventStart"));
+                                var msg = GetString("Error.InvalidColor");
+                                msg += "\n" + string.Join(",", invalidColor.Select(p => $"{p.GetRealName()}"));
+                                Utils.SendMessage(msg);
+                            }
+                            if (Options.RandomMapsMode.GetBool())
+                            {
+                                Main.NormalOptions.MapId = GameStartRandomMap.SelectRandomMap();
+                            }
+                            GameStartManager.Instance.startState = GameStartManager.StartingStates.Countdown;
+                            GameStartManager.Instance.countDownTimer = Options.AutoStartTimer.GetInt();
+                            __instance.StartButton.gameObject.SetActive(false);
+                        }, 0.8f, "AutoStart");
                     }
                 }
             }
@@ -173,7 +174,7 @@ public class GameStartManagerPatch
             }
             else
             {
-                if (MatchVersions(0, true) || Main.VersionCheat.Value)
+                if (MatchVersions(0, true) || Main.VersionCheat.Value || Main.IsHostVersionCheating)
                     exitTimer = 0;
                 else
                 {
@@ -234,7 +235,7 @@ public class GameStartRandomMap
 {
     public static bool Prefix(GameStartManager __instance)
     {
-        var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
+        var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
         if (invalidColor.Any())
         {
             Logger.SendInGame(GetString("Error.InvalidColorPreventStart"));
@@ -278,7 +279,7 @@ public class GameStartRandomMap
             Polus        = 2
             Dleks        = 3 (Not used)
             The Airship  = 4
-            Fungle       = 5?
+            The Fungle   = 5
         */
 
         if (Options.UseMoreRandomMapSelection.GetBool())
@@ -288,7 +289,7 @@ public class GameStartRandomMap
             if (rand.Next(1, 100) <= Options.PolusChance.GetInt()) randomMaps.Add(2);
             if (rand.Next(1, 100) <= Options.DleksChance.GetInt()) randomMaps.Add(3);
             if (rand.Next(1, 100) <= Options.AirshipChance.GetInt()) randomMaps.Add(4);
-            //if (rand.Next(1, 100) <= Options.FungleChance.GetInt()) randomMaps.Add(5);
+            if (rand.Next(1, 100) <= Options.FungleChance.GetInt()) randomMaps.Add(5);
         }
         else
         {
@@ -299,7 +300,7 @@ public class GameStartRandomMap
             if (tempRand <= Options.PolusChance.GetInt()) randomMaps.Add(2);
             if (tempRand <= Options.DleksChance.GetInt()) randomMaps.Add(3);
             if (tempRand <= Options.AirshipChance.GetInt()) randomMaps.Add(4);
-            //if (tempRand <= Options.FungleChance.GetInt()) randomMaps.Add(5);
+            if (tempRand <= Options.FungleChance.GetInt()) randomMaps.Add(5);
         }
 
         if (randomMaps.Any())
@@ -316,7 +317,7 @@ public class GameStartRandomMap
             if (Options.PolusChance.GetInt() > 0) randomMaps.Add(2);
             if (Options.DleksChance.GetInt() > 0) randomMaps.Add(3);
             if (Options.AirshipChance.GetInt() > 0) randomMaps.Add(4);
-            //if (Options.FungleChance.GetInt() > 0) randomMaps.Add(5);
+            if (Options.FungleChance.GetInt() > 0) randomMaps.Add(5);
 
             var mapsId = randomMaps[rand.Next(randomMaps.Count)];
 

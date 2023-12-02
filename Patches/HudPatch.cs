@@ -1,6 +1,5 @@
 using HarmonyLib;
 using Il2CppSystem.Text;
-using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using TOHE.Roles.Crewmate;
@@ -21,7 +20,7 @@ class HudManagerPatch
     public static int LastFPS = 0;
     public static int NowFrameCount = 0;
     public static float FrameRateTimer = 0.0f;
-    public static TMPro.TextMeshPro LowerInfoText;
+    public static TextMeshPro LowerInfoText;
     public static GameObject TempLowerInfoText;
     public static void Postfix(HudManager __instance)
     {
@@ -48,7 +47,7 @@ class HudManagerPatch
         if (GameStates.IsLobby)
         {
             var POM = GameObject.Find("PlayerOptionsMenu(Clone)");
-            __instance.GameSettings.text = POM != null ? "" : OptionShower.GetText();
+            __instance.GameSettings.text = POM != null ? "" : OptionShower.GetTextNoFresh(); //OptionShower.GetText();
             __instance.GameSettings.fontSizeMin =
             __instance.GameSettings.fontSizeMax = 1.1f;
         }
@@ -676,7 +675,7 @@ class SetHudActivePatch
             
         }
 
-        foreach (var subRole in Main.PlayerStates[player.PlayerId].SubRoles)
+        foreach (var subRole in Main.PlayerStates[player.PlayerId].SubRoles.ToArray())
         {
             switch (subRole)
             {
@@ -830,7 +829,7 @@ class RepairSender
     }
     public static void Send()
     {
-        ShipStatus.Instance.RpcRepairSystem((SystemTypes)SystemType, amount);
+        ShipStatus.Instance.RpcUpdateSystem((SystemTypes)SystemType, (byte)amount);
         Reset();
     }
     public static void Reset()

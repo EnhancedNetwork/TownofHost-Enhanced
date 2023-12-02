@@ -1,13 +1,12 @@
 ﻿using Hazel;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
 public static class Mortician
 {
-    private static readonly int Id = 7400;
+    private static readonly int Id = 8900;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -73,7 +72,7 @@ public static class Mortician
         }
 
         lastPlayerName.TryAdd(target.PlayerId, minName);
-        foreach (var pc in playerIdList)
+        foreach (var pc in playerIdList.ToArray())
         {
             var player = Utils.GetPlayerById(pc);
             if (player == null || !player.IsAlive()) continue;
@@ -83,7 +82,7 @@ public static class Mortician
     }
     public static void OnReportDeadBody(PlayerControl pc, GameData.PlayerInfo target)
     {
-        foreach (var apc in playerIdList)
+        foreach (var apc in playerIdList.ToArray())
         {
             LocateArrow.RemoveAllTarget(apc);
             SendRPC(apc, false);

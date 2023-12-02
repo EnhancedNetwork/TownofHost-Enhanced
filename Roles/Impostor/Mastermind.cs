@@ -9,7 +9,7 @@ namespace TOHE.Roles.Impostor
 {
     internal class Mastermind
     {
-        private static readonly int Id = 640600;
+        private static readonly int Id = 4100;
         public static List<byte> playerIdList = new();
         public static bool IsEnable = false;
 
@@ -66,7 +66,7 @@ namespace TOHE.Roles.Impostor
             return killer.CheckDoubleTrigger(target, () =>
             {
                 killer.SetKillCooldown(time: ManipulateCD);
-                if (target.HasKillButton() || CopyCat.playerIdList.Contains(target.PlayerId) || Main.TasklessCrewmate.Contains(target.PlayerId))
+                if (ExtendedPlayerControl.HasKillButton(target) || CopyCat.playerIdList.Contains(target.PlayerId) || Main.TasklessCrewmate.Contains(target.PlayerId))
                 {
                     ManipulateDelays.TryAdd(target.PlayerId, GetTimeStamp());
                     NotifyRoles(SpecifySeer: GetPlayerById(playerIdList[0]));

@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using Hazel;
 using System.Collections.Generic;
-using System.Linq;
 using TOHE.Modules;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -12,7 +11,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Romantic
 {
-    private static readonly int Id = 9850;
+    private static readonly int Id = 13500;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -123,8 +122,13 @@ public static class Romantic
         if (!isProtect)
         {
             BetTimes[killer.PlayerId]--;
+
             if (BetPlayer.TryGetValue(killer.PlayerId, out var originalTarget) && Utils.GetPlayerById(originalTarget) != null)
-                Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(originalTarget));
+            {
+                Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: Utils.GetPlayerById(originalTarget), ForceLoop: true);
+                Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(originalTarget), SpecifyTarget: killer, ForceLoop: true);
+            }
+
             BetPlayer.Remove(killer.PlayerId);
             BetPlayer.Add(killer.PlayerId, target.PlayerId);
             SendRPC(killer.PlayerId);
@@ -219,8 +223,6 @@ public static class Romantic
                 pc.RpcSetCustomRole(CustomRoles.VengefulRomantic);
             }, 0.2f, "Convert to Vengeful Romantic");
         }
-
-        Utils.NotifyRoles();
 
         Utils.GetPlayerById(Romantic).ResetKillCooldown();
         Utils.GetPlayerById(Romantic).SetKillCooldown();

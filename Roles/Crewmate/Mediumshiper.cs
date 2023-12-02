@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Hazel;
+using System.Collections.Generic;
 using System.Linq;
 using static TOHE.Translator;
 
@@ -6,7 +7,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class Mediumshiper
 {
-    private static readonly int Id = 7200;
+    private static readonly int Id = 8700;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -40,15 +41,38 @@ public static class Mediumshiper
         ContactLimit.Add(playerId, ContactLimitOpt.GetInt());
         IsEnable = true;
     }
+    public static void SendRPC(byte playerId, byte targetId = 0xff, bool isUsed = false)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMediumLimit, SendOption.Reliable, -1);
+        writer.Write(playerId);
+        writer.Write(ContactLimit[playerId]);
+        writer.Write(isUsed);
+        if (isUsed) writer.Write(targetId);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void ReceiveRPC(MessageReader reader)
+    {
+        byte pid = reader.ReadByte();
+        float limit = reader.ReadSingle();
+        ContactLimit[pid] = limit;
+        bool isUsed = reader.ReadBoolean();
+        if (isUsed)
+        {
+            byte targetId = reader.ReadByte();
+            ContactPlayer = new();
+            ContactPlayer.TryAdd(targetId, pid);
+        }
+    }
     public static void OnReportDeadBody(GameData.PlayerInfo target)
     {
         ContactPlayer = new();
         if (target == null) return;
-        foreach (var pc in Main.AllAlivePlayerControls.Where(x => playerIdList.Contains(x.PlayerId) && x.PlayerId != target.PlayerId))
+        foreach (var pc in Main.AllAlivePlayerControls.Where(x => playerIdList.Contains(x.PlayerId) && x.PlayerId != target.PlayerId).ToArray())
         {
             if (ContactLimit[pc.PlayerId] < 1) continue;
             ContactLimit[pc.PlayerId] -= 1;
             ContactPlayer.TryAdd(target.PlayerId, pc.PlayerId);
+            SendRPC(pc.PlayerId, target.PlayerId, true);
             Logger.Info($"通灵师建立联系：{pc.GetNameWithRole()} => {target.PlayerName}", "Mediumshiper");
         }
     }
@@ -81,17 +105,17 @@ public static class Mediumshiper
     public static bool CheckCommond(ref string msg, string command, bool exact = true)
     {
         var comList = command.Split('|');
-        for (int i = 0; i < comList.Count(); i++)
+        foreach (var comm in comList)
         {
             if (exact)
             {
-                if (msg == "/" + comList[i]) return true;
+                if (msg == "/" + comm) return true;
             }
             else
             {
-                if (msg.StartsWith("/" + comList[i]))
+                if (msg.StartsWith("/" + comm))
                 {
-                    msg = msg.Replace("/" + comList[i], string.Empty);
+                    msg = msg.Replace("/" + comm, string.Empty);
                     return true;
                 }
             }

@@ -1,14 +1,14 @@
-﻿using Hazel;
-using System.Linq;
+﻿using AmongUs.GameOptions;
+using Hazel;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using AmongUs.GameOptions;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
 public static class Bandit
 {
-    private static readonly int Id = 184200;
+    private static readonly int Id = 16000;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -141,10 +141,16 @@ public static class Bandit
         }
         TotalSteals[killer.PlayerId]++;
         SendRPC(killer.PlayerId);
-        Utils.NotifyRoles();
+
+        Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
+        Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
+
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
-        if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
+
+        if (!DisableShieldAnimations.GetBool())
+            killer.RpcGuardAndKill(target);
+        
         return false;
     }
 
@@ -173,7 +179,6 @@ public static class Bandit
             }
             Targets[banditId].Clear();
         }
-        Utils.NotifyRoles();
     }
 
     public static string GetStealLimit(byte playerId) => Utils.ColorString(TotalSteals[playerId] < MaxSteals.GetInt() ? Utils.GetRoleColor(CustomRoles.Bandit).ShadeColor(0.25f) : Color.gray, TotalSteals.TryGetValue(playerId, out var stealLimit) ? $"({MaxSteals.GetInt() - stealLimit})" : "Invalid");

@@ -1,9 +1,9 @@
-using System.Linq;
-using UnityEngine;
 using AmongUs.GameOptions;
 using System.Collections.Generic;
+using System.Linq;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -12,18 +12,19 @@ namespace TOHE.Roles.Crewmate
 {
     public static class Farseer
     {
-        private static readonly int Id = 9700;
+        private static readonly int Id = 12200;
 
         private static readonly string fontSize = "1.5";
         public static bool IsEnable = false;
 
+        public static Dictionary<int, string> RandomRole = new();
         public static Dictionary<byte, (PlayerControl, float)> FarseerTimer = new();
 
         public static OptionItem FarseerCooldown;
         public static OptionItem FarseerRevealTime;
         public static OptionItem Vision;
 
-        private static List<CustomRoles> randomRolesForTrickster = new List<CustomRoles>
+        private static List<CustomRoles> randomRolesForTrickster = new()
         {
             CustomRoles.Snitch,
             CustomRoles.Luckey,
@@ -67,8 +68,6 @@ namespace TOHE.Roles.Crewmate
             CustomRoles.Tracker,
         };
 
-        public static System.Collections.Generic.Dictionary<int, string> RandomRole = new System.Collections.Generic.Dictionary<int, string>();
-
         public static void SetupCustomOption()
         {
             SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Farseer);
@@ -82,6 +81,7 @@ namespace TOHE.Roles.Crewmate
         public static void Init()
         {
             FarseerTimer = new();
+            RandomRole = new();
             IsEnable = false;
         }
         public static void Add(byte playerId)
@@ -144,7 +144,7 @@ namespace TOHE.Roles.Crewmate
                     else
                     {
                         FarseerTimer.Remove(playerId);
-                        NotifyRoles(SpecifySeer: player);
+                        NotifyRoles(SpecifySeer: player, SpecifyTarget: farTarget, ForceLoop: true);
                         RPC.ResetCurrentRevealTarget(playerId);
 
                         Logger.Info($"Canceled: {player.GetNameWithRole()}", "Farseer");
@@ -184,8 +184,8 @@ namespace TOHE.Roles.Crewmate
             var NonCompleteColor = Color.yellow;
             var NormalColor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
 
-            TextColor = Camouflager.IsActive ? Color.gray : NormalColor;
-            string Completed = Camouflager.IsActive ? "?" : $"{taskState.CompletedTasksCount}";
+            TextColor = Camouflager.AbilityActivated ? Color.gray : NormalColor;
+            string Completed = Camouflager.AbilityActivated ? "?" : $"{taskState.CompletedTasksCount}";
 
             return $" <size={fontSize}>" + ColorString(TextColor, $"({Completed}/{taskState.AllTasksCount})") + "</size>\r\n";
         }

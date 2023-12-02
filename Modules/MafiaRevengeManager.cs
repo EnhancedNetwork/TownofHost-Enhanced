@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using Hazel;
-using Rewired.UI.ControlMapper;
 using System;
+using System.Linq;
 using TOHE.Modules;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -75,13 +75,13 @@ public static class MafiaRevengeManager
             else pc.ShowPopUp(GetString("MafiaKillDead"));
             return true;
         }
-        if (target.Is(CustomRoles.Pestilence))
+        else if (target.Is(CustomRoles.Pestilence))
         {
             if (!isUI) Utils.SendMessage(GetString("PestilenceImmune"), pc.PlayerId);
             else pc.ShowPopUp(GetString("PestilenceImmune"));
             return true;
         }
-        if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18 )
+        else if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18 )
         {
             if (!isUI) Utils.SendMessage(GetString("GuessMini"), pc.PlayerId);
             else pc.ShowPopUp(GetString("GuessMini"));
@@ -116,7 +116,7 @@ public static class MafiaRevengeManager
                 Main.PlayerStates[target.PlayerId].SetDead();
             }
 
-            _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("MafiaKillSucceed"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mafia), GetString("MafiaRevengeTitle"))); }, 0.6f, "Mafia Kill");
+            _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("MafiaKillSucceed"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mafia), GetString("MafiaRevengeTitle")), true); }, 0.6f, "Mafia Kill");
 
         }, 0.2f, "Mafia Kill");
         return true;
@@ -154,7 +154,7 @@ public static class MafiaRevengeManager
     }
     public static void CreateJudgeButton(MeetingHud __instance)
     {
-        foreach (var pva in __instance.playerStates)
+        foreach (var pva in __instance.playerStates.ToArray())
         {
             var pc = Utils.GetPlayerById(pva.TargetPlayerId);
             if (pc == null || !pc.IsAlive()) continue;

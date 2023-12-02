@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Text;
 using TOHE.Roles.Neutral;
 using UnityEngine;
+using static TOHE.Utils;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -10,7 +12,7 @@ namespace TOHE.Roles.Crewmate;
 // 贡献：https://github.com/Yumenopai/TownOfHost_Y/tree/Monitor
 internal class Monitor
 {
-    private static readonly int Id = 2350;
+    private static readonly int Id = 12500;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -96,6 +98,12 @@ internal class Monitor
                         if (!Options.DisableAirshipVital.GetBool())
                             Vital |= Vector2.Distance(PlayerPos, DisableDevice.DevicePos["AirshipVital"]) <= DisableDevice.UsableDistance();
                         break;
+                    case 5:
+                        if (!Options.DisableFungleBinoculars.GetBool())
+                            Camera |= Vector2.Distance(PlayerPos, DisableDevice.DevicePos["FungleCamera"]) <= DisableDevice.UsableDistance();
+                        if (!Options.DisableFungleVital.GetBool())
+                            Vital |= Vector2.Distance(PlayerPos, DisableDevice.DevicePos["FungleVital"]) <= DisableDevice.UsableDistance();
+                        break;
                 }
             }
             catch (Exception ex)
@@ -120,9 +128,21 @@ internal class Monitor
 
         if (isChange)
         {
-            Utils.NotifyRoles();
-            foreach (PlayerControl pc in Main.AllPlayerControls)
-                FixedUpdatePatch.Postfix(pc);
+            foreach (var pc in playerIdList.ToArray())
+            {
+                var antiAdminer = GetPlayerById(pc);
+                NotifyRoles(SpecifySeer: antiAdminer, ForceLoop: false);
+            }
         }
+    }
+    public static string GetSuffix()
+    {
+        StringBuilder sb = new();
+        if (IsAdminWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Monitor), "★")).Append(ColorString(GetRoleColor(CustomRoles.Monitor), GetString("AdminWarning")));
+        if (IsVitalWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Monitor), "★")).Append(ColorString(GetRoleColor(CustomRoles.Monitor), GetString("VitalsWarning")));
+        if (IsDoorLogWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Monitor), "★")).Append(ColorString(GetRoleColor(CustomRoles.Monitor), GetString("DoorlogWarning")));
+        if (IsCameraWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Monitor), "★")).Append(ColorString(GetRoleColor(CustomRoles.Monitor), GetString("CameraWarning")));
+
+        return sb.ToString();
     }
 }

@@ -20,8 +20,7 @@ public static class FireWorks
         CanUseKill = Initial | FireEnd
     }
 
-    private static readonly int Id = 2800;
-    private static List<byte> playerIdList = new();
+    private static readonly int Id = 3200;
     public static bool IsEnable = false;
 
     private static OptionItem FireWorksCount;
@@ -47,7 +46,6 @@ public static class FireWorks
 
     public static void Init()
     {
-        playerIdList = new();
         IsEnable = false;
         nowFireWorksCount = new();
         fireWorksPosition = new();
@@ -142,7 +140,7 @@ public static class FireWorks
                 }
                 if (suicide)
                 {
-                    var totalAlive = Main.AllAlivePlayerControls.Count();
+                    var totalAlive = Main.AllAlivePlayerControls.Length;
                     //自分が最後の生き残りの場合は勝利のために死なない
                     if (totalAlive != 1)
                     {
@@ -156,7 +154,7 @@ public static class FireWorks
                 break;
         }
         SendRPC(pc.PlayerId);
-        Utils.NotifyRoles();
+        Utils.NotifyRoles(ForceLoop: true);
     }
 
     public static string GetStateText(PlayerControl pc, bool isLocal = true)
@@ -169,7 +167,7 @@ public static class FireWorks
             Logger.Info("爆破準備OK", "FireWorks");
             state[pc.PlayerId] = FireWorksState.ReadyFire;
             SendRPC(pc.PlayerId);
-            Utils.NotifyRoles();
+            Utils.NotifyRoles(SpecifySeer: pc);
         }
         switch (state[pc.PlayerId])
         {

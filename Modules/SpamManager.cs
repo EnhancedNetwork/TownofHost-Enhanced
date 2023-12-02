@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
+﻿using System.Linq;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -116,7 +110,7 @@ public static class SpamManager
             if (kick || !GameStates.IsInGame) Utils.SendMessage(msg);
             else
             {
-                foreach (var pc in Main.AllPlayerControls.Where(x => x.IsAlive() == player.IsAlive()))
+                foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.IsAlive() == player.IsAlive()).ToArray())
                     Utils.SendMessage(msg, pc.PlayerId);
             }
         }
@@ -177,6 +171,42 @@ public static class SpamManager
         if (text == "s t a r t e d") return true;
         if (text == "S t a r t e d") return true;
 
+        if (text == "Começa") return true;
+        if (text == "começa") return true;
+        if (text == "/Começar") return true;
+        if (text == "/Começar/") return true;
+        if (text == "Começar/") return true;
+        if (text == "/começar") return true;
+        if (text == "/começar/") return true;
+        if (text == "começar/") return true;
+
+        if (text == "começa por favor") return true;
+        if (text == "COMEÇA POR FAVOR") return true;
+        if (text == "cmc pfv") return true;
+        if (text == "CMC PFV") return true;
+
+        if (text == "cmc logo") return true;
+        if (text == "CMC LOGO") return true;
+        if (text == "começa logo") return true;
+        if (text == "COMEÇA LOGO") return true;
+
+        if (text == "CMC MANO") return true;
+        if (text == "CMC MN") return true;
+        if (text == "cmc mano") return true;
+        if (text == "cmc mn") return true;
+
+        if (text == "Iniciar") return true;
+        if (text == "Iniciar Por Favor") return true;
+        if (text == "iniciar por favor") return true;
+        if (text == "iNiciar") return true;
+
+        if (text == "inIciar") return true;
+        if (text == "iniCiar") return true;
+        if (text == "iniciAr") return true;
+
+        if (text == "C O M E Ç A") return true;
+        if (text == "I N I C I A R") return true;
+        
         if (text == "Го") return true;
         if (text == "гО") return true;
         if (text == "го") return true;

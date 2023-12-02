@@ -1,12 +1,11 @@
 using System.Collections.Generic;
 using static TOHE.Options;
-using System;
 
 namespace TOHE.Roles.Impostor;
 
 public static class Blackmailer
 {
-    private static readonly int Id = 1658974;
+    private static readonly int Id = 24600;
     private static List<byte> playerIdList = new();
     public static OptionItem SkillCooldown;
     //public static OptionItem BlackmailerMax;

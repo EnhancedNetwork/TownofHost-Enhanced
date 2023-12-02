@@ -1,13 +1,13 @@
-using TMPro;
-using System;
 using HarmonyLib;
-using UnityEngine;
-using System.Linq;
-using UnityEngine.UI;
+using System;
 using System.Collections.Generic;
-using Object = UnityEngine.Object;
-using static TOHE.Translator;
+using System.Linq;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 using static TOHE.Credentials;
+using static TOHE.Translator;
+using Object = UnityEngine.Object;
 
 namespace TOHE;
 
@@ -28,6 +28,18 @@ public static class MainMenuManagerPatch
         __instance.playButton.transform.gameObject.SetActive(Options.IsLoaded);
         if (TitleLogoPatch.LoadingHint != null)
             TitleLogoPatch.LoadingHint.SetActive(!Options.IsLoaded);
+        var PlayOnlineButton = __instance.PlayOnlineButton;
+        if (PlayOnlineButton != null)
+        {
+            if (RunLoginPatch.isAllowedOnline && !Main.hasAccess)
+            {
+                var PlayLocalButton = __instance.playLocalButton;
+                if (PlayLocalButton != null) PlayLocalButton.gameObject.SetActive(false);
+
+                PlayOnlineButton.gameObject.SetActive(false);
+                DisconnectPopup.Instance.ShowCustom(GetString("NoAccess"));
+            }
+        }
     }
 
     [HarmonyPatch(nameof(MainMenuManager.Start)), HarmonyPostfix, HarmonyPriority(Priority.Normal)]
@@ -59,7 +71,7 @@ public static class MainMenuManagerPatch
 
         leftPanel.gameObject.GetComponent<SpriteRenderer>().enabled = false;
         leftPanel.gameObject.FindChild<SpriteRenderer>("Divider").enabled = false;
-        leftPanel.GetComponentsInChildren<SpriteRenderer>(true).Where(r => r.name == "Shine").ForEach(r => r.enabled = false);
+        leftPanel.GetComponentsInChildren<SpriteRenderer>(true).Where(r => r.name == "Shine").ToList().ForEach(r => r.enabled = false);
 
         GameObject splashArt = new("SplashArt");
         splashArt.transform.position = new Vector3(0, 0f, 600f); //= new Vector3(0, 0.40f, 600f);
@@ -292,10 +304,9 @@ public static class MainMenuManagerPatch
 [HarmonyPatch(typeof(Constants), nameof(Constants.ShouldHorseAround))]
 public static class HorseModePatch
 {
-    public static bool isHorseMode = false;
     public static bool Prefix(ref bool __result)
     {
-        __result = isHorseMode;
+        __result = Main.HorseMode.Value;
         return false;
     }
 }

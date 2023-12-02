@@ -1,5 +1,5 @@
-using System;
 using AmongUs.GameOptions;
+using System;
 
 namespace TOHE.Modules;
 
@@ -15,7 +15,7 @@ public class NormalGameOptionsSender : GameOptionsSender
             {
                 if (_logicOptions == null || !GameManager.Instance.LogicComponents.Contains(_logicOptions))
                 {
-                    foreach (var glc in GameManager.Instance?.LogicComponents)
+                    foreach (var glc in GameManager.Instance?.LogicComponents.ToArray())
                         if (glc.TryCast<LogicOptions>(out var lo))
                             _logicOptions = lo;
                 }
@@ -24,15 +24,14 @@ public class NormalGameOptionsSender : GameOptionsSender
             catch (Exception error)
             {
                 Logger.Fatal(error.ToString(), "NormalGameOptionsSender.IsDirty.Get");
-                return true;
+                return _logicOptions != null && _logicOptions.IsDirty;
             }
         }
         protected set
         {
             try
             {
-                if (_logicOptions != null)
-                    _logicOptions.ClearDirtyFlag();
+                _logicOptions?.ClearDirtyFlag();
             }
             catch (Exception error)
             {

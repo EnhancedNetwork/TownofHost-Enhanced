@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Modules;
-using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -10,7 +9,7 @@ namespace TOHE.Roles.Impostor
 {
     public static class Twister
     {
-        private static readonly int Id = 4400;
+        private static readonly int Id = 5700;
 
         private static OptionItem ShapeshiftCooldown;
         private static OptionItem ShapeshiftDuration;
@@ -37,17 +36,17 @@ namespace TOHE.Roles.Impostor
             var rd = IRandom.Instance;
             foreach (var pc in Main.AllAlivePlayerControls)
             {
-                if (changePositionPlayers.Contains(pc.PlayerId) || Pelican.IsEaten(pc.PlayerId) || !pc.IsAlive() || pc.onLadder || pc.inVent || GameStates.IsMeeting)
+                if (changePositionPlayers.Contains(pc.PlayerId) || !pc.CanBeTeleported())
                 {
                     continue;
                 }
 
                 var filtered = Main.AllAlivePlayerControls.Where(a =>
-                    pc.IsAlive() && !Pelican.IsEaten(pc.PlayerId) && a.PlayerId != pc.PlayerId && !changePositionPlayers.Contains(a.PlayerId)).ToList();
+                    pc.CanBeTeleported() && a.PlayerId != pc.PlayerId && !changePositionPlayers.Contains(a.PlayerId)).ToList();
                 
                 if (filtered.Count == 0) break;
 
-                PlayerControl target = filtered[rd.Next(0, filtered.Count)];
+                var target = filtered[rd.Next(0, filtered.Count)];
                 changePositionPlayers.Add(target.PlayerId);
                 changePositionPlayers.Add(pc.PlayerId);
 

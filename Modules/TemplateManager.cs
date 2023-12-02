@@ -15,7 +15,7 @@ namespace TOHE;
 public static class TemplateManager
 {
     private static readonly string TEMPLATE_FILE_PATH = "./TOHE-DATA/template.txt";
-    private static Dictionary<string, Func<string>> _replaceDictionary = new()
+    private static readonly Dictionary<string, Func<string>> _replaceDictionary = new()
     {
         ["RoomCode"] = () => InnerNet.GameCode.IntToGameName(AmongUsClient.Instance.GameId),
         ["HostName"] = () => DataManager.Player.Customization.Name,
@@ -55,11 +55,16 @@ public static class TemplateManager
             if (name.Length >= 2)
                 fileName = name switch // https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-lcid/a9eac961-e77d-41a6-90a5-ce1a8b0cdb9c
                 {
-                    "ru" => "Russian",
+                    var lang when lang.StartsWith("ru") => "Russian",
                     "zh-Hans" or "zh" or "zh-CN" or "zn-SG" => "SChinese",
                     "zh-Hant" or "zh-HK" or "zh-MO" or "zh-TW" => "TChinese",
                     "pt-BR" => "Brazilian",
-                    "es" or "es-ES" or "es-ES_tradnl" => "Spanish",
+                    "es-419" => "Latam",
+                    var lang when lang.StartsWith("es") => "Spanish",
+                    var lang when lang.StartsWith("fr") => "French",
+                    "ja" or "ja-JP" => "Japanese",
+                    var lang when lang.StartsWith("nl") => "Dutch",
+                    var lang when lang.StartsWith("it") => "Italian",
                     _ => "English"
                 };
             else fileName = "English";
@@ -130,7 +135,7 @@ public static class TemplateManager
                 HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, string.Format(GetString("Message.TemplateNotFoundHost"), str, tags.Join(delimiter: ", ")));
             else Utils.SendMessage(string.Format(GetString("Message.TemplateNotFoundClient"), str), playerId);
         }
-        else for (int i = 0; i < sendList.Count; i++) Utils.SendMessage(ApplyReplaceDictionary(sendList[i]), playerId);
+        else foreach (string x in sendList.ToArray()) Utils.SendMessage(ApplyReplaceDictionary(x), playerId);
     }
 
     private static string ApplyReplaceDictionary(string text)

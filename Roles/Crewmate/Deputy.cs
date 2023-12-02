@@ -1,6 +1,5 @@
 ﻿using Hazel;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -9,7 +8,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class Deputy
 {
-    private static readonly int Id = 6500;
+    private static readonly int Id = 7800;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -70,7 +69,6 @@ public static class Deputy
 
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("DeputyHandcuffedPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("HandcuffedByDeputy")));
-            Utils.NotifyRoles();
 
           //  target.ResetKillCooldown();
             target.SetKillCooldownV3(DeputyHandcuffCDForTarget.GetFloat());

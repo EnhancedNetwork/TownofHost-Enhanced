@@ -13,7 +13,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class Judge
 {
-    private static readonly int Id = 9300;
+    private static readonly int Id = 10700;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -63,15 +63,17 @@ public static class Judge
     }
     public static void OnReportDeadBody()
     {
-        TrialLimit.Clear();
-        foreach (var pc in playerIdList) TrialLimit.Add(pc, TrialLimitPerMeeting.GetInt());
+        foreach (var pid in TrialLimit.Keys)
+        {
+            TrialLimit[pid] = TrialLimitPerMeeting.GetInt();
+        }
     }
     public static bool TrialMsg(PlayerControl pc, string msg, bool isUI = false)
     {
         var originMsg = msg;
 
         if (!AmongUsClient.Instance.AmHost) return false;
-        if (!GameStates.IsInGame || pc == null) return false;
+        if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false;
         if (!pc.Is(CustomRoles.Judge)) return false;
 
         int operate = 0; // 1:ID 2:猜测
@@ -180,7 +182,7 @@ public static class Judge
 
                     Utils.NotifyRoles(isForMeeting: false, NoCache: true);
 
-                    _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("TrialKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Judge), GetString("TrialKillTitle"))); }, 0.6f, "Guess Msg");
+                    _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("TrialKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Judge), GetString("TrialKillTitle")), true); }, 0.6f, "Guess Msg");
 
                 }, 0.2f, "Trial Kill");
             }
@@ -227,17 +229,17 @@ public static class Judge
     public static bool CheckCommond(ref string msg, string command, bool exact = true)
     {
         var comList = command.Split('|');
-        for (int i = 0; i < comList.Count(); i++)
+        foreach (var comm in comList)
         {
             if (exact)
             {
-                if (msg == "/" + comList[i]) return true;
+                if (msg == "/" + comm) return true;
             }
             else
             {
-                if (msg.StartsWith("/" + comList[i]))
+                if (msg.StartsWith("/" + comm))
                 {
-                    msg = msg.Replace("/" + comList[i], string.Empty);
+                    msg = msg.Replace("/" + comm, string.Empty);
                     return true;
                 }
             }

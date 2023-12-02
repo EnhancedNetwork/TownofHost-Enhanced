@@ -9,7 +9,7 @@ namespace TOHE.Roles.Neutral;
 
 public static class Huntsman
 {
-    private static readonly int Id = 12870;
+    private static readonly int Id = 16500;
     public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -70,8 +70,8 @@ public static class Huntsman
     public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
         float tempkcd = KCD;
-        if (Targets.Contains(target.PlayerId)) System.Math.Clamp(KCD -= SuccessKillCooldown.GetFloat(), MinKCD.GetFloat(), MaxKCD.GetFloat());
-        else System.Math.Clamp(KCD += FailureKillCooldown.GetFloat(), MinKCD.GetFloat(), MaxKCD.GetFloat());
+        if (Targets.Contains(target.PlayerId)) Math.Clamp(KCD -= SuccessKillCooldown.GetFloat(), MinKCD.GetFloat(), MaxKCD.GetFloat());
+        else Math.Clamp(KCD += FailureKillCooldown.GetFloat(), MinKCD.GetFloat(), MaxKCD.GetFloat());
         if (KCD != tempkcd)
         {
             killer.ResetKillCooldown();
@@ -89,7 +89,7 @@ public static class Huntsman
     {
         if (!AmongUsClient.Instance.AmHost) return;
         Targets.Clear();
-        int potentialTargetCount = Main.AllAlivePlayerControls.Count() - 1;
+        int potentialTargetCount = Main.AllAlivePlayerControls.Length - 1;
         if (potentialTargetCount < 0) potentialTargetCount = 0;
         int maxLimit = Math.Min(potentialTargetCount, NumOfTargets.GetInt());
         for (var i = 0; i < maxLimit; i++)
@@ -102,13 +102,11 @@ public static class Huntsman
                 var targetId = target.PlayerId;
                 Targets.Add(targetId);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Logger.Warn($"Not enough targets for Head Hunter could be assigned. This may be due to a low player count or the following error:\n\n{ex}", "HuntsmanAssignTargets");
                 break;
             }
         }
-
-        Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(playerIdList[0]));
     }
 }
