@@ -1423,6 +1423,7 @@ static class ExtendedPlayerControl
             _ => throw new NotImplementedException(),
         };
     }
+    public static Vector2 GetCustomPosition(this PlayerControl player) => new Vector2(player.transform.position.x, player.transform.position.y);
     public static string GetRoleInfo(this PlayerControl player, bool InfoLong = false)
     {
         var role = player.GetCustomRole();

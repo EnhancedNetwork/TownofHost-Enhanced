@@ -1703,9 +1703,29 @@ public static class Utils
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (title == "") title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
-        Main.MessagesToSend.Add((text.RemoveHtmlTagsTemplate(), sendTo, title));
+
+        if (sendTo != byte.MaxValue)
+        {
+            var sendToData = GetPlayerInfoById(sendTo);
+            if (sendToData != null)
+            {
+                if (sendToData.Disconnected) return;
+                //p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId
+                else if (sendToData.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= sendToData.DefaultOutfit.ColorId)
+                {
+                    Logger.Info($"Delay Utils.sendmessage bcz {sendToData.GetPlayerName} is with bad color", "SendMessage");
+                    _ = new LateTask(() =>
+                    {
+                        SendMessage(text, sendTo, title, logforChatManager);
+                    }, 1.2f, "SendMessage_Delay");
+                    return;
+                }
+            }
+            else return;
+        }
         if (!logforChatManager)
             ChatManager.AddToHostMessage(text.RemoveHtmlTagsTemplate());
+        Main.MessagesToSend.Add((text.RemoveHtmlTagsTemplate(), sendTo, title));
     }
     public static bool IsPlayerModerator(string friendCode)
     {

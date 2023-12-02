@@ -712,7 +712,7 @@ class CheckMurderPatch
             }
             if (Main.BerserkerKillMax[killer.PlayerId] == Options.BerserkerScavengerLevel.GetInt() && Options.BerserkerTwoCanScavenger.GetBool())
             {
-                killer.RpcTeleport(target.GetTruePosition());
+                killer.RpcTeleport(target.GetCustomPosition());
                 RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
                 target.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
                 target.SetRealKiller(killer);
@@ -1102,7 +1102,7 @@ class CheckMurderPatch
             case CustomRoles.Berserker:
                 if (Main.BerserkerKillMax[target.PlayerId] >= Options.BerserkerImmortalLevel.GetInt() && Options.BerserkerFourCanNotKill.GetBool())
                 {
-                    killer.RpcTeleport(target.GetTruePosition());
+                    killer.RpcTeleport(target.GetCustomPosition());
                     RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
                     killer.SetKillCooldown(target: target, forceAnime: true);
                     return false;
@@ -1609,12 +1609,12 @@ class ShapeshiftPatch
                             var position = Main.EscapeeLocation[shapeshifter.PlayerId];
                             Main.EscapeeLocation.Remove(shapeshifter.PlayerId);
                             Logger.Msg($"{shapeshifter.GetNameWithRole()}:{position}", "EscapeeTeleport");
-                            shapeshifter.RpcTeleport(new Vector2(position.x, position.y));
+                            shapeshifter.RpcTeleport(position);
                             shapeshifter.RPCPlayCustomSound("Teleport");
                         }
                         else
                         {
-                            Main.EscapeeLocation.Add(shapeshifter.PlayerId, shapeshifter.GetTruePosition());
+                            Main.EscapeeLocation.Add(shapeshifter.PlayerId, shapeshifter.GetCustomPosition());
                         }
                     }
                     break;
@@ -1625,7 +1625,7 @@ class ShapeshiftPatch
                         var vent = Main.LastEnteredVent[shapeshifter.PlayerId];
                         var position = Main.LastEnteredVentLocation[shapeshifter.PlayerId];
                         Logger.Msg($"{shapeshifter.GetNameWithRole()}:{position}", "MinerTeleport");
-                        shapeshifter.RpcTeleport(new Vector2(position.x, position.y));
+                        shapeshifter.RpcTeleport(position);
                     }
                     break;
                 case CustomRoles.Bomber:
@@ -1706,8 +1706,8 @@ class ShapeshiftPatch
                         {
                             if (!(!GameStates.IsInTask || !shapeshifter.CanBeTeleported() || !target.CanBeTeleported()))
                             {
-                                var originPs = target.GetTruePosition();
-                                target.RpcTeleport(shapeshifter.GetTruePosition());
+                                var originPs = target.GetCustomPosition();
+                                target.RpcTeleport(shapeshifter.GetCustomPosition());
                                 shapeshifter.RpcTeleport(originPs);
                             }
                         }, 1.5f, "ImperiusCurse TP");
@@ -2652,7 +2652,7 @@ class FixedUpdatePatch
                                 else
                                 {
                                     float range = NormalGameOptionsV07.KillDistances[Mathf.Clamp(player.Is(CustomRoles.Reach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
-                                    float distance = Vector2.Distance(player.GetTruePosition(), arTarget.GetTruePosition());
+                                    float distance = Vector2.Distance(player.GetCustomPosition(), arTarget.GetCustomPosition());
 
                                     if (distance <= range)
                                     {
@@ -2712,7 +2712,7 @@ class FixedUpdatePatch
                         else
                         {
                             float range = NormalGameOptionsV07.KillDistances[Mathf.Clamp(player.Is(CustomRoles.Reach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
-                            float dis = Vector2.Distance(player.GetTruePosition(), rv_target.GetTruePosition());
+                            float dis = Vector2.Distance(player.GetCustomPosition(), rv_target.GetCustomPosition());
                             if (dis <= range)
                             {
                                 Main.RevolutionistTimer[playerId] = (rv_target, rv_time + Time.fixedDeltaTime);
@@ -3475,7 +3475,7 @@ class EnterVentPatch
         Main.LastEnteredVent.Remove(pc.PlayerId);
         Main.LastEnteredVent.Add(pc.PlayerId, __instance);
         Main.LastEnteredVentLocation.Remove(pc.PlayerId);
-        Main.LastEnteredVentLocation.Add(pc.PlayerId, pc.GetTruePosition());
+        Main.LastEnteredVentLocation.Add(pc.PlayerId, pc.GetCustomPosition());
 
         Swooper.OnEnterVent(pc, __instance);
         Wraith.OnEnterVent(pc, __instance);
@@ -3604,7 +3604,7 @@ class EnterVentPatch
                     {
                         if (player.CanBeTeleported() || player.PlayerId == pc.PlayerId)
                         {
-                            player.RpcTeleport(new Vector2(position.x, position.y));
+                            player.RpcTeleport(position);
                         }
                         if (pc != player)
                         {
@@ -3615,7 +3615,7 @@ class EnterVentPatch
                     }
                     else
                     {
-                        Main.TimeMasterBackTrack.Add(player.PlayerId, player.GetTruePosition());
+                        Main.TimeMasterBackTrack.Add(player.PlayerId, player.GetCustomPosition());
                     }
                 }
             }
