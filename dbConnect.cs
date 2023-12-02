@@ -128,9 +128,9 @@ public class dbConnect
             return false;
         }
 
-        if (userType["friendCode"] == "s_bo" || userType["friendCode"] == "s_it" || userType["friendCode"].StartsWith("t_"))
+        if (userType[friendCode] == "s_bo" || userType[friendCode] == "s_it" || userType[friendCode].StartsWith("t_"))
         {
-            Logger.Error($"Error : Dev access denied to user {friendCode}, type =  {userType}", "CanAccessDev");
+            Logger.Error($"Error : Dev access denied to user {friendCode}, type =  {userType[friendCode]}", "CanAccessDev");
             return false;
         }
         return true;

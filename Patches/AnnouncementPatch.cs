@@ -45,9 +45,78 @@ public class ModNewsHistory
     // When creating new news, you can not delete old news 
     public static void Init()
     {
-    // ====== English ======
+        // ====== English ======
         if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.English)
         {
+            {
+                var news = new ModNews
+                {
+                    Number = 100006,
+                    Title = "Town of Host: Enhanced v1.3.0",
+                    SubTitle = "★★ New Roles? Addons? Bug Fixes?! ★★",
+                    ShortTitle = "TOH: Enhanced v1.3.0",
+                    BeforeNumber = 100005,
+                    Text = "<size=150%>Welcome to TOH: Enhanced v1.3.0!</size>\n" +
+                    "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.2.0\r\n" +
+
+                    "\n<b>【New Roles/Addons】(5 roles, 3 Addons)</i></b>" +
+                        "\n     - Instigator (Killing Impostor - By: papercut)" +
+                        "\n     - Enigma (Support Crewmate - By: papercut)" +
+                        "\n     - Pixie (Benign Neutral - By: ryuk, Idea: Azanthiel)" +
+                        "\n     - Taskinator (Benign Neutral - By: ryuk, Idea: Dx)" +
+                        "\n     - Randomizer (Basic Crewmate - Idea/Coded By: Night, Improved By: LezaiYa)" +
+                        "\n     - Influenced (Harmful Addon - By: NikoCat223)" +
+                        "\n     - Hurried (Harmful Addon - By: NikoCat223)" +
+                        "\n     - Oiiai (Experimental Addon - By: NikoCat223)\r\n" +
+
+                    "\n<b>【New Settings】</b>" +
+                        "\n     - Added anti-spam feature on Lava Chat (By: Broke his pc's stupid, Fixed by: ryuk)" +
+                        "\n     - Converted Reverie can kill anyone without repercussions (By: ryuk)" +
+                        "\n     - Count grow up time in meeting (for Mini) (By: LezaiYa, NikoCat233)" +
+                        "\n     - Egoist Count as Converted Neutral (By: ryuk)" +
+                        "\n     - New Camouflage Skins added (By: TommyXL)\r\n" +
+
+                    "\n<b>【Changes】</b>" +
+                        "\n     - Cyber and Doppelganger incompatibility (By: ryuk)" +
+                        "\n     - Improved Ban System (By: NikoCat223)" +
+                        "\n     - Improved Codebase Significantly (By: TommyXL)" +
+                        "\n     - Improved Sync Settings (By: TommyXL)" +
+                        "\n     - Mare and Stalker anti-spawn on The Fungle (By: TommyXL)" +
+                        "\n     - Removed Incompatible Role Assignment (By: NikoCat223)" +
+                        "\n     - Role colors now modifiable via RoleColor.dat (By: ryuk)" +
+                        "\n     - Updated Dev Tags (By: FuroYT)" +
+                        "\n     - Vector and Unlucky no longer compatible (By: ryuk)" +
+                        "\n     - Vulture now can not eat cleaned/medusa bodies (By: NikoCat223)\r\n" +
+
+                    "\n<b>【Bug Fixes】</b>" +
+                        "\n     - Fixed Death Reason Inconsistency (By: ryuk)" +
+                        "\n     - Fixed Double IDs for roles that get them (By: ryuk)" +
+                        "\n     - <b>Fixed /death by host showing to all players (By: NikoCat223)</b>" +
+                        "\n     - Fixed settings overrides and resets\n<b>Must play one or two games</b> (By: ryuk)" +
+                        "\n     - Fixed several roles, addons, teleport bugs (By: NikoCat223, ryuk, TommyXL)\r\n" +
+
+                    "\n<b>【New Languages】</b>" +
+                        "\n     - French (By: FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                        "\n     - Japanese (By: Sunnyboi)" +
+                        "\n     - Latin American (By: CreepPower)" +
+                        "\n     - Italian (By: alot, Baphojack, Mattix606)" +
+                        "\n     - Spanish (By: xxSShadow)" +
+                        "\n     - Traditional Chinese (By: FlyFlyTurtle, Pomelo_)" +
+                        "\n<b> Check out all of our translators on our website</b>\r\n" +
+
+                    "\n<b>【Several Other Misc Fixes】</b>\r\n" +
+
+                    "\n<b> Note: Overhead tags, and permissions are now done using Discord Bot.</b>" +
+                    "\nJoin the Discord for more information at discord.gg/tohe" +
+                    "\nAdditionally, ALL SETTINGS will be reset on update. (sorry, it was necessary)" +
+
+
+                    "\n\n★ Welcome to Town of Host: Enhanced v1.3.0 ★",
+
+                    Date = "2023-12-2T03:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
             {
                 var news = new ModNews
                 {
@@ -125,7 +194,7 @@ public class ModNewsHistory
                         "\n     - Coroner: Inform killer about being tracked\n\r" +
 
                         "\n     - Infectious: Double Click to Kill/Infect" +
-                        
+
                         "\n     - Bewilder: Killer can get bewilder's vision\n\r" +
 
                     "\n<b>【Removed Roles/Addons】</b>" +
@@ -285,9 +354,99 @@ public class ModNewsHistory
                 AllModNews.Add(news);
             }
         }
-    // ====== Russian ======
+        // ====== Russian ======
         else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.Russian)
         {
+            {
+                var news = new ModNews
+                {
+                    Number = 90006,
+                    Title = "Town of Host: Enhanced v1.3.0",
+                    SubTitle = "★★ Новые роли? Атрибуты? Исправление багов?! ★★",
+                    ShortTitle = "TOH: Enhanced v1.3.0",
+                    BeforeNumber = 90005,
+                    Text = "<size=150%>Добро пожаловать в TOH: Enhanced v1.3.0!</size>\n" +
+                    "\n<b>【Основан】</b>\n - Основан на TOH: Enhanced v1.2.0\r\n" +
+
+                    "\n<b>【Новые роли/Атрибуты】(5 роли, 3 Атрибута)</i></b>" +
+                        "\n     - Зачинщик (Предатель убийца - Автор: papercut)" +
+                        "\n     - Энигма (Помогающий Член Экипажа - Автор: papercut)" +
+                        "\n     - Пикси (Добрый Нейтрал - Автор: ryuk, Идея: Azanthiel)" +
+                        "\n     - Таскинатор (Добрый Нейтрал - Автор: ryuk, Идея: Dx)" +
+                        "\n     - Рандомайзер (Базовый Член Экипажа - Идея и код: Night, Улучшен: LezaiYa)" +
+                        "\n     - Влиятельный (Вредный Атрибут - Автор: NikoCat223)" +
+                        "\n     - Опоздавший (Вредный Атрибут - Автор: NikoCat223)" +
+                        "\n     - Туман (Эксперементальный Атрибут - Автор: NikoCat223)\r\n" +
+
+                    "\n<b>【Новые настройки】</b>" +
+                        "\n     - Добавлена настройка «Скрывать сообщения игроков при изгании» (Автор: Broke his pc's stupid, Исправлен: ryuk)" +
+                        "\n     - Преобразованный Мечтатель может убить кого угодно без каких-либо последствий (Автор: ryuk)" +
+                        "\n     - «Может продолжать расти во время встречи» для роли Мини (Автор: LezaiYa, NikoCat233)" +
+                        "\n     - «Эгоист считается нейтралом» (Автор: ryuk)" +
+                        "\n     - Добавлены новые скины камуфляжа (Автор: TommyXL)\r\n" +
+
+                    "\n<b>【Изменения】</b>" +
+                        "\n     - Знаменитый и Двойник теперь несовместимы (Автор: ryuk)" +
+                        "\n     - Улучшенна система банов (Автор: NikoCat223)" +
+                        "\n     - Улучшенна база кода для улучшения производительности (Автор: TommyXL)" +
+                        "\n     - Улучшенна синхронизация настроек (By: TommyXL)" +
+                        "\n     - Ночной и Сталкер больше не могут появиться на карте The Fungle (Автор: TommyXL)" +
+                        "\n     - Удалено несовместимое назначение ролей (Автор: NikoCat223)" +
+                        "\n     - Цвета ролей теперь можно изменить в файле «RoleColor.dat» (Автор: ryuk)" +
+                        "\n     - Обновленны теги разработчиков (Автор: FuroYT)" +
+                        "\n     - Вектор и Неудачный больше не совместимы (Автор: ryuk)" +
+                        "\n     - Стервятник теперь не может есть очищенные/каменные трупы (Автор: NikoCat223)\r\n" +
+
+                    "\n<b>【Исправления багов】</b>" +
+                        "\n     - Исправлена синхронизация причины смерти у игроков с модом (Автор: ryuk)" +
+                        "\n     - Исправлены двойные идентификаторы (Автор: ryuk)" +
+                        "\n     - <b>Исправлен баг когда Хост использовал команду «/death» и она отображалось всем игрокам (Автор: NikoCat223)</b>" +
+                        "\n     - Исправлен баг когда после перезахода в игру настройки перемешивались.\n<b>Примечание: Необходимо хотя-бы один раз зайти в настройки мода</b> (Автор: ryuk)" +
+                        "\n     - Исправлено несколько ролей, атрибутов, и ошибок телепорта (Автор: NikoCat223, ryuk, TommyXL)\r\n" +
+
+                    "\n<b>【Новые языки】</b>" +
+                        "\n     - Французский (Автор: FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                        "\n     - Японский (Автор: Sunnyboi)" +
+                        "\n     - Латиноамериканская (Автор: CreepPower)" +
+                        "\n     - Итальянский (Автор: alot, Baphojack, Mattix606)" +
+                        "\n     - Испанский (Автор: xxSShadow)" +
+                        "\n     - Традиционный Китайский (Автор: FlyFlyTurtle, Pomelo_)" +
+                        "\n<b>Ознакомьтесь со всеми нашими переводчиками на нашем сайте</b>\r\n" +
+
+                    "\n<b>【Несколько других исправлений】</b>\r\n" +
+
+                    "\n<b> Примечание: Накладные теги и разрешения теперь выполняются с помощью бота в Discord</b>" +
+                    "\nПрисоединяйтесь к Discord для получения дополнительной информации на: «discord.gg/tohe»" +
+                    "\nКроме того, ВСЕ НАСТРОЙКИ будут сброшены при обновлении (извините, так было нужно)" +
+
+
+                    "\n\n★ Добро пожаловать в Town of Host: Enhanced v1.3.0 ★",
+
+                    Date = "2023-12-2T03:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
+                    Number = 90005,
+                    Title = "Town of Host: Enhanced v1.2.0",
+                    SubTitle = "★★ Поддержка карты The Fungle! ★★",
+                    ShortTitle = "TOH: Enhanced v1.2.0",
+                    BeforeNumber = 90004,
+                    Text = "<size=150%>Добро пожаловать в TOH: Enhanced v1.2.0!</size>\n" +
+                    "\n<b>【Основан】</b>\n - Основан на TOH: Enhanced v1.1.1\r\n" +
+
+                    "\n<b>【Изменения】</b>" +
+                        "\n     - Полная поддержка карты The Fungle ​​с исправлениями ошибок" +
+                        "\n     - Добавлена ​​функция временного бана для игроков, постоянно присоединяющихся/выходящих (тролли)\n\r" +
+
+                    "\n\n★ Добро пожаловать в Town of Host: Enhanced: Fungle Edition ★",
+
+                    Date = "2023-10-29T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
             {
                 var news = new ModNews
                 {
@@ -499,24 +658,94 @@ public class ModNewsHistory
                 AllModNews.Add(news);
             }
         }
-    // ====== SChinese ======
+        // ====== SChinese ======
         else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.SChinese)
         {
             {
-                //TOHE v1.2.0
+                // TOHE 1.3.0
+                var news = new ModNews
+                {
+                    Number = 80005,
+                    Title = "Town of Host: Enhanced v1.3.0",
+                    SubTitle = "★★ 新职业？附加职业？Bug修复？ ★★",
+                    ShortTitle = "TOH: Enhanced v1.3.0",
+                    BeforeNumber = 80004,
+                    Text = "<size=150%>欢迎来到 TOH: Enhanced v1.3.0！</size>\n" +
+                    "\n<b>【基于官方版本】</b>\n - 基于 TOH: Enhanced v1.2.0\r\n" +
+
+                    "\n<b>【新职业/附加职业】(5个职业, 3个附加职业)</i></b>" +
+                        "\n     - 教唆者 (击杀类内鬼- By: papercut)" +
+                        "\n     - 猜想者 (支援类船员 - By: papercut)" +
+                        "\n     - 小精灵 (友好类中立 - By: ryuk, 想法: Azanthiel)" +
+                        "\n     - 任务执行者 (友好类中立 - By: ryuk, 想法: Dx)" +
+                        "\n     - 萧暮 (简单类船员 - 想法和编码 by: Night, 改进 by: LezaiYa)" +
+                        "\n     - 影响者 (有害类附加 - By: NikoCat223)" +
+                        "\n     - 焦急者 (有害类附加 - By: NikoCat223)" +
+                        "\n     - Oiiai (实验性附加 - By: NikoCat223)\r\n" +
+
+                    "\n<b>【新设置】</b>" +
+                        "\n     - 添加了防止已死玩家在播放驱逐动画时发消息的功能 (By: 阿龙, 修复 by: ryuk)" +
+                        "\n     - 阵营转换后遐想者击杀任何人而不受影响 (By: ryuk)" +
+                        "\n     - 计算会议中的成长时间（迷你船员） (By: LezaiYa, NikoCat233)" +
+                        "\n     - 利己主义者算作中立 (By: ryuk)" +
+                        "\n     - 添加新迷彩皮肤 (By: TommyXL)\r\n" +
+
+                    "\n<b>【其他变化】</b>" +
+                        "\n     - 网络员和分身者不兼容 (By: ryuk)" +
+                        "\n     - 改进封禁系统 (By: NikoCat223)" +
+                        "\n     - 大幅改进源代码库 (By: TommyXL)" +
+                        "\n     - 改进了同步设置 (By: TommyXL)" +
+                        "\n     - 梦魇和潜藏者不会在真菌密林分配 (By: TommyXL)" +
+                        "\n     - 删除了不兼容的职业分配 (By: NikoCat223)" +
+                        "\n     - 现在可通过 RoleColor.dat 修改职业颜色 (By: ryuk)" +
+                        "\n     - 更新开发人员标签 (By: FuroYT)" +
+                        "\n     - 马里奥和倒霉蛋不再兼容 (By: ryuk)" +
+                        "\n     - 秃鹫不能吃被清理工清理和美杜莎石化的尸体了 (By: NikoCat223)\r\n" +
+
+                    "\n<b>【Bug修复】</b>" +
+                        "\n     - 修复了模组房主和客户端显示死亡原因不一致Bug (By: ryuk)" +
+                        "\n     - 修复了显示 ID 职业的双重 ID 的Bug (By: ryuk)" +
+                        "\n     - <b>修复了所有玩家都能看到房主/death指令的Bug (By: NikoCat223)</b>" +
+                        "\n     - 修复了设置覆盖和重置的Bug\n<b>必须玩一到两场游戏</b> (By: ryuk)" +
+                        "\n     - 修复了多个职业、附加职业和传送错误 (By: NikoCat223, ryuk, TommyXL)\r\n" +
+
+                    "\n<b>【新语言】</b>" +
+                        "\n     - 法语 (By: FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                        "\n     - 日语 (By: Sunnyboi)" +
+                        "\n     - 拉丁美洲 (By: CreepPower)" +
+                        "\n     - 意大利语 (By: alot, Baphojack, Mattix606)" +
+                        "\n     - 西班牙语 (By: xxSShadow)" +
+                        "\n     - 繁体中文 (By: FlyFlyTurtle, Pomelo_)" +
+                        "\n<b> 在我们的网站上查看我们所有的翻译人员</b>\r\n" +
+
+                    "\n<b>【若干其他杂项修复】</b>\r\n" +
+
+                    "\n<b> 注意：现在使用 Discord 机器人来完成开发标签和权限设置</b>" +
+                    "\n加入我们的Discord了解更多信息，请访问：discord.gg/tohe" +
+                    "\n此外，更新时将重置所有设置（对不起，这是必要的）" +
+
+
+                    "\n\n★ 欢迎来到 Town of Host: Enhanced v1.3.0 ★",
+
+                    Date = "2023-12-2T03:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                // TOHE v1.2.0
                 var news = new ModNews
                 {
                     Number = 80004,
                     Title = "Town of Host: Enhanced v1.2.0",
-                    SubTitle = "★★ 支持The Fungle ! ★★",
+                    SubTitle = "★★ 支持真菌密林 ! ★★",
                     ShortTitle = "TOH: Enhanced v1.2.0",
                     BeforeNumber = 80003,
                     Text = "<size=150%>欢迎来到TOH: Enhanced v1.2.0!</size>\n" +
-                    "\n<b>【基于】</b>\n - 基于TOH: Enhanced v1.1.1\r\n" +
+                    "\n<b>【基于官方版本】</b>\n - 基于TOH: Enhanced v1.1.1\r\n" +
 
-                    "\n<b>【挑战】</b>" +
+                    "\n<b>【其他变化】</b>" +
                         "\n     - 已完全添加支持并修复了 Fungle 更新的错误" +
-                        "\n     -如果有玩家不断加入/离开，则会暂时封禁该玩家n\r" +
+                        "\n     - 如果有玩家不断加入/离开，则会暂时封禁该玩家\n\r" +
 
                     "\n\n★ 欢迎来到Town of Host: Enhanced: Fungle Edition ★",
 
@@ -525,7 +754,7 @@ public class ModNewsHistory
                 AllModNews.Add(news);
             }
             {
-                //TOHE v1.1.1
+                // TOHE v1.1.1
                 var news = new ModNews
                 {
                     Number = 80003,
@@ -554,7 +783,7 @@ public class ModNewsHistory
                 AllModNews.Add(news);
             }
             {
-                //TOHE v1.1.0
+                // TOHE v1.1.0
                 var news = new ModNews
                 {
                     Number = 80002,
@@ -562,18 +791,18 @@ public class ModNewsHistory
                     SubTitle = "★★ 已经更新了？哇哦！ ★★",
                     ShortTitle = "TOH: Enhanced v1.1.0",
                     BeforeNumber = 80001,
-                    Text = "<size=150%>欢迎来到TOH: Enhanced v1.1.0!</size>\n" +
+                    Text = "<size=150%>欢迎来到TOH: Enhanced v1.1.0！</size>\n" +
                     "\n<b>【基于官方版本】</b>\n - 基于TOH: Enhanced v1.0.1\r\n" +
 
                     "\n<b>【新职业/附加职业】</b>" +
-                        "\n     - 总统(船员阵营:权力)" +
-                        "\n     - 间谍(船员阵营:支援)" +
-                        "\n     - 义务警长(船员阵营:击杀)\n\r" +
+                        "\n     - 总统（船员阵营：权力）" +
+                        "\n     - 间谍（船员阵营：支援）" +
+                        "\n     - 义务警长（船员阵营：击杀）\n\r" +
 
-                        "\n     - 回弹者(附加职业:混合)\n\r" +
+                        "\n     - 回弹者（附加职业：混合）\n\r" +
 
                     "\n<b>【新设置】</b>" +
-                        "\n     - 船鬼:每完成x(用字母x表示设定的任务数)项任务后，立即瞬移并击杀" +
+                        "\n     - 船鬼:每完成x（用字母x表示设定的任务数）项任务后，立即瞬移并击杀" +
                         "\n     - 死亡契约:处于死亡契约中的玩家可以召开紧急会议" +
                         "\n     - 龙卷风:隐藏玩家的交换对象\n" +
 
@@ -582,7 +811,7 @@ public class ModNewsHistory
                         "\n     - 验尸官:告知带刀玩家已被追踪\n\r" +
 
                         "\n     - 感染者:双击即可击杀/感染" +
-                        
+
                         "\n     - 迷幻者:带刀玩家可以获得迷幻者的视野\n\r" +
 
                     "\n<b>【已删除的职业/附加职业】</b>" +
@@ -608,15 +837,15 @@ public class ModNewsHistory
                 AllModNews.Add(news);
             }
             {
-                //TOHE v1.0.1
-                   var news = new ModNews
-                   {
+                // TOHE v1.0.1
+                var news = new ModNews
+                {
                     Number = 80001,
                     Title = "Town of Host: Enhanced v1.0.1",
                     SubTitle = "★★ 新时代 ★★",
                     ShortTitle = "TOH: Enhanced v1.0.1",
                     BeforeNumber = 80000,
-                    Text = "<size=150%>欢迎来到 TOH: Enhanced v1.0.1!</size>\n\n<size=125%>适配 Among Us v2023.7.11 和 v2023.7.12</size>\n" +
+                    Text = "<size=150%>欢迎来到 TOH: Enhanced v1.0.1！</size>\n\n<size=125%>适配 Among Us v2023.7.11 和 v2023.7.12</size>\n" +
                     "\n<b>【基于官方版本】</b>\n - 基于 TOH-RE v3.1.0 (备注可用)\r\n" +
                     "\n<b>【修复】</b>" +
                     "\n     - 移除Loonie的logo，并将其取代" +
@@ -650,10 +879,79 @@ public class ModNewsHistory
                 AllModNews.Add(news);
             }
         }
-           // ====== TChinese ======
+        // ====== TChinese ======
         else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.TChinese)
         {
-             {
+            {
+                var news = new ModNews
+                {
+                    Number = 70005,
+                    Title = "Town of Host: Enhanced v1.3.0",
+                    SubTitle = "★★ 新職業? 附加職業? Bug修復?! ★★",
+                    ShortTitle = "TOH: Enhanced v1.3.0",
+                    BeforeNumber = 70004,
+                    Text = "<size=150%>歡迎來到 TOH: Enhanced v1.3.0!</size>\n" +
+                    "\n<b>【基於版本】</b>\n - 基於 TOH: Enhanced v1.2.0\r\n" +
+
+                    "\n<b>【新職業/附加職業】(5個主職業，3個附加職業</i></b>" +
+                        "\n     - 教唆者 (擊殺類偽裝者 By: papercut)" +
+                        "\n     - 猜想者 (支援類船員 - By: papercut)" +
+                        "\n     - 精靈 (友善類中立 - By: ryuk, 想法: Azanthiel)" +
+                        "\n     - 搗蛋鬼 (友善類中立 - By: ryuk, 想法: Dx)" +
+                        "\n     - 隨機者 (基礎船員 - 想法以及代碼by: Night, 改進by: LezaiYa)" +
+                        "\n     - 順從者 (有害類附加職業 - By: NikoCat223)" +
+                        "\n     - 焦急者 (有害類附加職業 - By: NikoCat223)" +
+                        "\n     - Oiiai (試驗性附加職業 - By: NikoCat223)\r\n" +
+
+                    "\n<b>【新設定】</b>" +
+                        "\n     - 新增了攔截逐出畫面死人討論的機制(By: 阿龍, 修復並改進by: ryuk)" +
+                        "\n     - 陣營轉換後的遐想者可以不受限制的擊殺任何人 (By: ryuk)" +
+                        "\n     - 計算迷你船員於會議中的成長時間 (By: LezaiYa, NikoCat233)" +
+                        "\n     - 利己主義者視為中立 (By: ryuk)" +
+                        "\n     - 新增新迷彩皮膚(By: TommyXL)\r\n" +
+
+                    "\n<b>【更動】</b>" +
+                        "\n     - 分身者無法同時成為名人 (By: ryuk)" +
+                        "\n     - 改進封禁系統 (By: NikoCat223)" +
+                        "\n     - 大幅改進了源代碼庫 (By: TommyXL)" +
+                        "\n     - 改進了同步設定 (By: TommyXL)" +
+                        "\n     - 獵夢者與潛藏者不會在Fungle地圖中被分配 (By: TommyXL)" +
+                        "\n     - 刪除了不兼容的職業分配 (By: NikoCat223)" +
+                        "\n     - 職業顏色現在可以於RoleColor.dat中修改 (By: ryuk)" +
+                        "\n     - 更新開發者標籤 (By: FuroYT)" +
+                        "\n     - 瑪利歐不再能同時成為倒楣蛋 (By: ryuk)" +
+                        "\n     - 禿鷲現在無法吃被清理/石化的屍體 (By: NikoCat223)\r\n" +
+
+                    "\n<b>【Bug修復】</b>" +
+                        "\n     - 修復了房主與模組客戶端死因不一致的問題 (By: ryuk)" +
+                        "\n     - 修復了顯示ID職業的雙重ID的問題 (By: ryuk)" +
+                        "\n     - <b>修復了房主使用/death指令會被所有玩家看到的問題 (By: NikoCat223)</b>" +
+                        "\n     - 修復了設定被覆蓋或重置的問題\n<b>必須玩一到兩場遊戲</b> (By: ryuk)" +
+                        "\n     - 修復了數個職業，附加職業和傳送問題 (By: NikoCat223, ryuk, TommyXL)\r\n" +
+
+                    "\n<b>【支援新語言】</b>" +
+                        "\n     - 法語 (By: FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                        "\n     - 日語 (By: Sunnyboi)" +
+                        "\n     - 拉丁美洲 (By: CreepPower)" +
+                        "\n     - 義大利文 (By: alot, Baphojack, Mattix606)" +
+                        "\n     - 西班牙文 (By: xxSShadow)" +
+                        "\n     - 繁體中文 (By: 柚子, FlyFlyTurtle)" +
+                        "\n<b>在我們的官網上查看所有翻譯人員</b>\r\n" +
+
+                    "\n<b>【其他雜項修復】</b>\r\n" +
+
+                    "\n<b> 現在頭頂標籤與權限使用Discord機器人完成</b>" +
+                    "\n加入我們的Discord(discord.gg/tohe)以了解更多資訊" +
+                    "\n此外，更新時所有設定將會被重置(很抱歉，但這是必要的)" +
+
+
+                    "\n\n★ 歡迎來到 Town of Host: Enhanced v1.3.0 ★",
+
+                    Date = "2023-12-2T03:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
                 var news = new ModNews
                 {
                     Number = 70004,
@@ -662,19 +960,19 @@ public class ModNewsHistory
                     ShortTitle = "TOH: Enhanced v1.2.0",
                     BeforeNumber = 70003,
                     Text = "<size=150%>歡迎來到 TOH: Enhanced v1.2.0!</size>\n" +
-                    "\n<b>【基於版本】</b>\n - 基於 TOH: Enhanced v1.1.1\r\n" +
+                        "\n<b>【基於版本】</b>\n - 基於 TOH: Enhanced v1.1.1\r\n" +
 
-                    "\n<b>【更動】</b>" +
+                        "\n<b>【更動】</b>" +
                         "\n     - 支援最新的The Fungle更新!" +
-                        "\n     - 加入如果有玩家不斷進入並離開房間，則他將會被暫時封禁的機制\n\r" +
+                        "\n     - 加入反覆進出會被暫時封禁的機制\n\r" +
 
-                    "\n\n★ 歡迎來到 Town of Host: Enhanced: Fungle版本 ★",
+                        "\n\n★ 歡迎來到 Town of Host: Enhanced: Fungle版本 ★",
 
                     Date = "2023-10-29T00:00:00Z"
                 };
                 AllModNews.Add(news);
-             }
-             {
+            }
+            {
                 // TOHE v1.1.1
                 var news = new ModNews
                 {
@@ -732,7 +1030,7 @@ public class ModNewsHistory
                         "\n     - 驗屍官: 告知兇手已被追蹤\n\r" +
 
                         "\n     - 感染源: 點兩下殺人鍵殺人/感染" +
-                        
+
                         "\n     - 迷幻者: 帶刀玩家可以獲得迷患者的視野\n\r" +
 
                     "\n<b>【刪除的職業/附加職業】</b>" +
@@ -756,23 +1054,23 @@ public class ModNewsHistory
                     Date = "2023-10-21T00:00:00Z"
                 };
                 AllModNews.Add(news);
-                }
+            }
+            {
+                var news = new ModNews
                 {
-                    var news = new ModNews
-                    {
                     Number = 70001,
                     Title = "Town of Host: Enhanced v1.0.1",
                     SubTitle = "★★ 新時代 ★★",
                     ShortTitle = "TOH: Enhanced v1.0.1",
                     BeforeNumber = 70000,
                     Text = "<size=150%>歡迎來到 TOH: Enhanced v1.0.1!</size>\n\n<size=125%>支援版本 Among Us v2023.7.11、v2023.7.12</size>\n" +
-                    "\n<b>【基於版本】</b>\n - 基於TOH-RE v3.1.0 (備註: 目前可以使用)\r\n" +
-                    "\n<b>【修復】</b>" +
-                    "\n     - 刪除了大廳中的Loonie標誌，並將其更換" +
-                    "\n     - 在占卜師中增加了一條更新的線索" +
-                    "\n     - 修復了模板和VIP清單沒有產生的問題" +
-                    "\n     - 一個新職業的預告...?" +
-                    "\n\n★ 歡迎來到 Town of Host: Enhanced! ★",
+                "\n<b>【基於版本】</b>\n - 基於TOH-RE v3.1.0 (備註: 目前可以使用)\r\n" +
+                "\n<b>【修復】</b>" +
+                "\n     - 刪除了大廳中的Loonie標誌，並將其更換" +
+                "\n     - 在占卜師中增加了一條更新的線索" +
+                "\n     - 修復了模板和VIP清單沒有產生的問題" +
+                "\n     - 一個新職業的預告...?" +
+                "\n\n★ 歡迎來到 Town of Host: Enhanced! ★",
                     Date = "2023-10-15T00:00:00Z",
                 };
                 AllModNews.Add(news);
@@ -801,6 +1099,75 @@ public class ModNewsHistory
         // ====== French ======
         else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.French)
         {
+            {
+                var news = new ModNews
+                {
+                    Number = 100006,
+                    Title = "Town of Host: Enhanced v1.3.0",
+                   SubTitle = "★★ Nouveau Rôles? Modifieurs? Correctifs de bugs?! ★★",
+                    ShortTitle = "TOH: Enhanced v1.3.0",
+                    BeforeNumber = 100005,
+                    Text = "<size=150%>Bienvenue sur TOH: Enhanced v1.3.0!</size>\n" +
+                       "\n<b>【Base】</b>\n - Basé sur TOH: Enhanced v1.2.0\r\n" +
+
+                           "\n<b>【Nouveau Rôles/Modifieurs】(5 rôles, 3 Modifieurs)</i></b>" +
+                            "\n     - Culpabiliseur (Imposteur tueur - Par: papercut)" +
+                            "\n     - Énigme (Coéquipier de support - Par: papercut)" +
+                            "\n     - Fée (Bénin Neutre - Par : ryuk, Idée : Azanthiel)" +
+                            "\n     - Taskinateur (Bénin Neutre - Par : ryuk, Idée : Dx)" +
+                            "\n     - Hasardeux (Coéquipier Basique - Idée et codé par : Night, Amélioré par : LezaiYa)" +
+                            "\n     - Influencé (Modifieur Nuisible - Par: NikoCat223)" +
+                            "\n     - Pressé (Modifieur Nuisible - Par: NikoCat223)" +
+                            "\n     - Oiiai (Modifieur Experimental - Par: NikoCat223)\r\n" +
+
+                       "\n<b>【Nouveaux Paramètres】</b>" +
+                            "\n     - Ajout d'une fonctionnalité d'anti-spam pendant l'éjection (Par : Broke his pc's stupid, réglé par : ryuk)" +
+                            "\n     - Le rêveur converti peut tuer n'importe qui sans répercussions (Par: ryuk)" +
+                            "\n     - Compte le temps pendant la réunion pour grandir (Pour le Mini) (Par: LezaiYa, NikoCat233)" +
+                            "\n     - L'Égoïste compte comme un neutre converti (Par: ryuk)" +
+                            "\n     - Nouveaux skins de camouflage ajoutés (Par: TommyXL)\r\n" +
+
+                        "\n<b>【Changements】</b>" +
+                            "\n     - Incompatibilité entre Cyber et Sosie (Par: ryuk)" +
+                            "\n     - Système de bannissement amélioré (Par: NikoCat223)" +
+                            "\n     - Base de code considérablement améliorée (Par: TommyXL)" +
+                            "\n     - Paramètres de synchronisation améliorés (Par: TommyXL)" +
+                            "\n     - Anti-spawn pour le Cauchemar et Harceleur sur The Fungle (Par: TommyXL)" +
+                            "\n     - Attribution de rôle incompatible supprimée (Par: NikoCat223)" +
+                            "\n     - Couleurs des rôles désormais modifiables via RoleColor.dat (Par: ryuk)" +
+                            "\n     - Tags de dévelopeurs mis à jour (Par: FuroYT)" +
+                            "\n     - Vecteur et Malchanceux ne sont plus compatibles (Par: ryuk)" +
+                            "\n     - Le vautour ne peut plus manger les corps des nettoyés/méduses (Par: NikoCat223)\r\n" +
+
+                        "\n<b>【Corrections de bugs】</b>" +
+                            "\n     - Corrigé les raisons de morts incorrectes (Par: ryuk)" +
+                            "\n     - Corrigé les double IDs pour les rôles qui en ont accès (Par: ryuk)" +
+                            "\n     - <b>Corrigé /death de l'hôte qui s'affiche pour tous les joueurs (Par: NikoCat223)</b>" +
+                            "\n     - Corrigé les options qui se réinitialisent ou écrasé\n<b>Vous devez jouer une partie ou deux</b> (Par: ryuk)" +
+                            "\n     - Corrigé plein de rôles, Modifieurs, et bugs de téléportations (Par: NikoCat223, ryuk, TommyXL)\r\n" +
+
+                        "\n<b>【Nouvelles langues】</b>" +
+                            "\n     - Français (Par: FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                            "\n     - Japonais (Par: Sunnyboi)" +
+                            "\n     - Latino-américain (Par: CreepPower)" +
+                            "\n     - Italien (Par: alot, Baphojack, Mattix606)" +
+                            "\n     - Espagnol (Par: xxSShadow)" +
+                            "\n     - Chinois traditionnel (Par: FlyFlyTurtle, Pomelo_)" +
+                            "\n<b> Découvrez tous nos traducteurs sur notre site Web</b>\r\n" +
+
+                       "\n<b>【Plusieurs autres correctifs divers】</b>\r\n" +
+
+                        "\n<b> Note: Les tags spéciaux, et les permissions se font maintenant en utilisant un bot Discord.</b>" +
+                        "\nRejoignez le serveur Discord pour plus d'informations sur discord.gg/tohe" +
+                        "\nAdditionnelement, toutes les options seront réinitialisées avec cette mise à jour. (Désolé, c'était néssaisaire)" +
+
+
+                        "\n\n★ Bienvenue sur Town of Host: Enhanced v1.3.0 ★",
+
+                    Date = "2023-12-2T03:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
             {
                 var news = new ModNews
                 {

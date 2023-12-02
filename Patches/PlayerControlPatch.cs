@@ -3729,7 +3729,8 @@ class CoEnterVentPatch
         }
 
         //处理弹出管道的阻塞
-        if ((__instance.myPlayer.Data.Role.Role != RoleTypes.Engineer && //不是工程师
+        if (Main.NormalOptions.MapId == (int)MapNames.Dleks ||
+            (__instance.myPlayer.Data.Role.Role != RoleTypes.Engineer &&
         !__instance.myPlayer.CanUseImpostorVentButton()) || //不能使用内鬼的跳管按钮
         (__instance.myPlayer.Is(CustomRoles.Mayor) && Main.MayorUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count) && count >= Options.MayorNumOfUseButton.GetInt()) ||
         (__instance.myPlayer.Is(CustomRoles.Paranoia) && Main.ParaUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count2) && count2 >= Options.ParanoiaNumOfUseButton.GetInt()) ||

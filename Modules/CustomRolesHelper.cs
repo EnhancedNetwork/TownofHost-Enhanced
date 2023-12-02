@@ -283,7 +283,7 @@ static class CustomRolesHelper
             CustomRoles.Madmate or
             CustomRoles.Watcher or
             CustomRoles.Admired or
-            CustomRoles.Flashman or
+            CustomRoles.Flash or
             CustomRoles.Torch or
             CustomRoles.Seer or
             CustomRoles.Bait or
@@ -1561,7 +1561,7 @@ static class CustomRolesHelper
                     return false;
                 break;
 
-            case CustomRoles.Flashman:
+            case CustomRoles.Flash:
                 if (pc.Is(CustomRoles.Swooper))
                     return false;
                 break;
@@ -1606,7 +1606,7 @@ static class CustomRolesHelper
         //if (role is CustomRoles.Onbound && pc.Is(CustomRoles.Reflective)) return false;
         //if (role is CustomRoles.Reflective && pc.Is(CustomRoles.Onbound)) return false;
         //if (role is CustomRoles.Cyber && pc.Is(CustomRoles.CyberStar)) return false;
-        //if (role is CustomRoles.Ntr or CustomRoles.Watcher or CustomRoles.Flashman or CustomRoles.Torch or CustomRoles.Seer or CustomRoles.Bait or CustomRoles.Burst) return false;
+        //if (role is CustomRoles.Ntr or CustomRoles.Watcher or CustomRoles.Flash or CustomRoles.Torch or CustomRoles.Seer or CustomRoles.Bait or CustomRoles.Burst) return false;
 
         return true;
     }

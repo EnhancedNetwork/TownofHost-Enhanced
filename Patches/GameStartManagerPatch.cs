@@ -119,24 +119,35 @@ public class GameStartManagerPatch
                     Main.updateTime = 0;
                     if (((GameData.Instance.PlayerCount >= minPlayer && timer <= minWait) || timer <= maxWait) && !GameStates.IsCountDown)
                     {
-                        var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
-
-                        if (invalidColor.Any())
+                        _ = new LateTask(() =>
                         {
-                            invalidColor.Do(p => AmongUsClient.Instance.KickPlayer(p.GetClientId(), false));
+                            var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
 
-                            Logger.SendInGame(GetString("Error.InvalidColorPreventStart"));
-                            var msg = GetString("Error.InvalidColor");
-                            msg += "\n" + string.Join(",", invalidColor.Select(p => $"{p.GetRealName()}"));
-                            Utils.SendMessage(msg);
-                        }
-                        if (Options.RandomMapsMode.GetBool())
-                        {
-                            Main.NormalOptions.MapId = GameStartRandomMap.SelectRandomMap();
-                        }
-                        GameStartManager.Instance.startState = GameStartManager.StartingStates.Countdown;
-                        GameStartManager.Instance.countDownTimer = Options.AutoStartTimer.GetInt();
-                        __instance.StartButton.gameObject.SetActive(false);
+                            if (invalidColor.Any())
+                            {
+                                invalidColor.Do(p => AmongUsClient.Instance.KickPlayer(p.GetClientId(), false));
+
+                                Logger.SendInGame(GetString("Error.InvalidColorPreventStart"));
+                                var msg = GetString("Error.InvalidColor");
+                                msg += "\n" + string.Join(",", invalidColor.Select(p => $"{p.GetRealName()}"));
+                                Utils.SendMessage(msg);
+                            }
+
+                            if (Options.RandomMapsMode.GetBool())
+                            {
+                                Main.NormalOptions.MapId = GameStartRandomMap.SelectRandomMap();
+                            }
+
+                            if ((MapNames)Main.NormalOptions.MapId == MapNames.Dleks)
+                            {
+                                Logger.SendInGame(GetString("Warning.BrokenVentsInDleksSendInGame"));
+                                Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
+                            }
+
+                            GameStartManager.Instance.startState = GameStartManager.StartingStates.Countdown;
+                            GameStartManager.Instance.countDownTimer = Options.AutoStartTimer.GetInt();
+                            __instance.StartButton.gameObject.SetActive(false);
+                        }, 0.8f, "AutoStart");
                     }
                 }
             }
@@ -242,6 +253,11 @@ public class GameStartRandomMap
             return false;
         }
         
+        if ((MapNames)Main.NormalOptions.MapId == MapNames.Dleks)
+        {
+            Logger.SendInGame(GetString("Warning.BrokenVentsInDleksSendInGame"));
+            Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
+        }
 
         Options.DefaultKillCooldown = Main.NormalOptions.KillCooldown;
         Main.LastKillCooldown.Value = Main.NormalOptions.KillCooldown;
@@ -274,7 +290,7 @@ public class GameStartRandomMap
             The Skeld    = 0
             MIRA HQ      = 1
             Polus        = 2
-            Dleks        = 3 (Not used)
+            Dleks        = 3
             The Airship  = 4
             The Fungle   = 5
         */
@@ -284,6 +300,7 @@ public class GameStartRandomMap
             if (rand.Next(1, 100) <= Options.SkeldChance.GetInt()) randomMaps.Add(0);
             if (rand.Next(1, 100) <= Options.MiraChance.GetInt()) randomMaps.Add(1);
             if (rand.Next(1, 100) <= Options.PolusChance.GetInt()) randomMaps.Add(2);
+            if (rand.Next(1, 100) <= Options.DleksChance.GetInt()) randomMaps.Add(3);
             if (rand.Next(1, 100) <= Options.AirshipChance.GetInt()) randomMaps.Add(4);
             if (rand.Next(1, 100) <= Options.FungleChance.GetInt()) randomMaps.Add(5);
         }
@@ -294,6 +311,7 @@ public class GameStartRandomMap
             if (tempRand <= Options.SkeldChance.GetInt()) randomMaps.Add(0);
             if (tempRand <= Options.MiraChance.GetInt()) randomMaps.Add(1);
             if (tempRand <= Options.PolusChance.GetInt()) randomMaps.Add(2);
+            if (tempRand <= Options.DleksChance.GetInt()) randomMaps.Add(3);
             if (tempRand <= Options.AirshipChance.GetInt()) randomMaps.Add(4);
             if (tempRand <= Options.FungleChance.GetInt()) randomMaps.Add(5);
         }
@@ -310,6 +328,7 @@ public class GameStartRandomMap
             if (Options.SkeldChance.GetInt() > 0) randomMaps.Add(0);
             if (Options.MiraChance.GetInt() > 0) randomMaps.Add(1);
             if (Options.PolusChance.GetInt() > 0) randomMaps.Add(2);
+            if (Options.DleksChance.GetInt() > 0) randomMaps.Add(3);
             if (Options.AirshipChance.GetInt() > 0) randomMaps.Add(4);
             if (Options.FungleChance.GetInt() > 0) randomMaps.Add(5);
 
