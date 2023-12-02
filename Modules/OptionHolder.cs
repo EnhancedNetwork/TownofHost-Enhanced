@@ -925,7 +925,6 @@ public static class Options
     public static OptionItem RetributionistCanBeMadmate;
     public static OptionItem FarseerCanBeMadmate;
     public static OptionItem MadSnitchTasks;
-    public static OptionItem FlashmanSpeed;
     public static OptionItem ButtonBarryButtons;
     public static OptionItem LoverSpawnChances;
     public static OptionItem LoverKnowRoles;
@@ -2379,6 +2378,7 @@ public static class Options
         NeutralCanBeDoubleShot = BooleanOptionItem.Create(19205, "NeutralCanBeDoubleShot", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.DoubleShot]);
 
+        Flash.SetupCustomOption();
 
         SetupAdtRoleOptions(19300, CustomRoles.Lazy, canSetNum: true);
         TasklessCrewCanBeLazy = BooleanOptionItem.Create(19303, "TasklessCrewCanBeLazy", false, TabGroup.Addons, false)
@@ -2835,10 +2835,6 @@ public static class Options
             .SetColor(new Color32(255, 154, 206, byte.MaxValue));
 
         //SetupAdtRoleOptions(25300, CustomRoles.Ntr, tab: TabGroup.OtherRoles);
-        /*SetupAdtRoleOptions(25400, CustomRoles.Flashman, canSetNum: true, tab: TabGroup.OtherRoles);
-        FlashmanSpeed = FloatOptionItem.Create(25403, "FlashmanSpeed", new(0.25f, 5f, 0.25f), 2.5f, TabGroup.OtherRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Flashman])
-            .SetValueFormat(OptionFormat.Multiplier); */
 
         SetupAdtRoleOptions(25500, CustomRoles.Youtuber, canSetNum: true, tab: TabGroup.OtherRoles);
         

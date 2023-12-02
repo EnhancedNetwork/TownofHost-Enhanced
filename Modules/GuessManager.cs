@@ -296,7 +296,7 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("GuessNotifiedBait"));
                     return true;
                 }
-                if (role == CustomRoles.LastImpostor || role == CustomRoles.Mare || role == CustomRoles.Cyber)//(role == CustomRoles.Glow || role == CustomRoles.LastImpostor || role == CustomRoles.Mare || role == CustomRoles.Cyber)
+                if (role == CustomRoles.LastImpostor || role == CustomRoles.Mare || role == CustomRoles.Cyber || role == CustomRoles.Flash)//(role == CustomRoles.Glow || role == CustomRoles.LastImpostor || role == CustomRoles.Mare || role == CustomRoles.Cyber)
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessObviousAddon"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessObviousAddon"));
@@ -1152,7 +1152,7 @@ public static class GuessManager
                     or CustomRoles.Scientist
                     or CustomRoles.Impostor
                     or CustomRoles.Shapeshifter
-                    or CustomRoles.Flashman
+                    or CustomRoles.Flash
                     or CustomRoles.NotAssigned
                     //     or CustomRoles.Marshall 
                     //or CustomRoles.Paranoia 

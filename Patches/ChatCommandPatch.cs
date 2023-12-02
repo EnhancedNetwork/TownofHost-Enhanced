@@ -1173,7 +1173,7 @@ internal class ChatCommands
             "叛徒" => GetString("Madmate"),
             "海王" => GetString("Ntr"),
             "觀察者" or "窥视者" or "觀察" or "窥视" => GetString("Watcher"),
-            "閃電俠" or "闪电侠" or "閃電" or "闪电" => GetString("Flashman"),
+            "閃電俠" or "闪电侠" or "閃電" or "闪电" => GetString("Flash"),
             "持燈人" or "火炬" or "持燈" => GetString("Torch"),
             "靈媒" or "灵媒" or "靈媒" => GetString("Seer"),
             "破平者" or "破平" => GetString("Brakar"),

@@ -779,7 +779,7 @@ public enum CustomRoles
     Ntr,
     Madmate,
     Watcher,
-    Flashman,
+    Flash,
     Torch,
     Seer,
     Brakar,
