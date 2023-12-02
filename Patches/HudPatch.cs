@@ -62,7 +62,26 @@ class HudManagerPatch
         if (SetHudActivePatch.IsActive)
         {
             if (Options.CurrentGameMode == CustomGameMode.FFA)
+            {
+                if (LowerInfoText == null)
+                {
+                    TempLowerInfoText = new GameObject("CountdownText");
+                    TempLowerInfoText.transform.position = new Vector3(0f, -2f, 1f);
+                    LowerInfoText = TempLowerInfoText.AddComponent<TextMeshPro>();
+                    //LowerInfoText.text = string.Format(GetString("CountdownText"));
+                    LowerInfoText.alignment = TextAlignmentOptions.Center;
+                    //LowerInfoText = Object.Instantiate(__instance.KillButton.buttonLabelText);
+                    LowerInfoText.transform.parent = __instance.transform;
+                    LowerInfoText.transform.localPosition = new Vector3(0, -2f, 0);
+                    LowerInfoText.overflowMode = TextOverflowModes.Overflow;
+                    LowerInfoText.enableWordWrapping = false;
+                    LowerInfoText.color = Color.white;
+                    LowerInfoText.outlineColor = Color.black;
+                    LowerInfoText.outlineWidth = 20000000f;
+                    LowerInfoText.fontSize = 2f;
+                }
                 LowerInfoText.text = FFAManager.GetHudText();
+            }
             if (player.IsAlive())
             {
                 //MOD入り用のボタン下テキスト変更

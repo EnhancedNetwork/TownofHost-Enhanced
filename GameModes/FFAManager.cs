@@ -14,9 +14,12 @@ internal static class FFAManager
     private static Dictionary<byte, long> FFAIncreasedSpeedList = new();
     private static Dictionary<byte, long> FFADecreasedSpeedList = new();
     public static Dictionary<byte, long> FFALowerVisionList = new();
+    public static Dictionary<byte, long> FFAEnterVentTime = new();
+    public static Dictionary<byte, float> FFAVentDuration = new();
 
     private static Dictionary<byte, float> originalSpeed = new();
     public static Dictionary<byte, int> KBScore = new();
+    public static Dictionary<byte, long> FFALastKill = new();
     public static int RoundTime;
 
     //Options
@@ -91,14 +94,24 @@ internal static class FFAManager
 
         originalSpeed = new();
         KBScore = new();
-        RoundTime = FFA_GameTime.GetInt() + 8;
-
-        foreach (PlayerControl pc in Main.AllAlivePlayerControls)
+        if (FFA_DisableVentingWhenKCDIsUp.GetBool())
         {
-            KBScore.TryAdd(pc.PlayerId, 0);
+            FFALastKill = new();
+            FFAVentDuration = new();
+            FFAEnterVentTime = new();
         }
 
-        _ = new LateTask(Utils.SetChatVisible, 10f, "Set Chat Visible for Everyone");
+        _ = new LateTask( ()=>
+        {
+            Utils.SetChatVisible();
+            RoundTime = FFA_GameTime.GetInt() + 8;
+            var now = Utils.GetTimeStamp() + 8;
+            foreach (PlayerControl pc in Main.AllAlivePlayerControls)
+            {
+                KBScore.TryAdd(pc.PlayerId, 0);
+                if (FFA_DisableVentingWhenKCDIsUp.GetBool()) FFALastKill.TryAdd(pc.PlayerId, now);
+            }
+        }, 6f, "Set Chat Visible for Everyone");
     }
     private static void SendRPCSyncFFAPlayer(byte playerId)
     {
@@ -304,6 +317,13 @@ internal static class FFAManager
                 killer.MarkDirtySettings();
             }
         }
+        var now = Utils.GetTimeStamp();
+        if (FFA_DisableVentingWhenKCDIsUp.GetBool())
+        {
+            FFALastKill[killer.PlayerId] = now;
+            FFAVentDuration[killer.PlayerId] = 0;
+            FFAEnterVentTime.Remove(killer.PlayerId);
+        }
 
         killer.RpcMurderPlayerV3(target);
     }
@@ -345,15 +365,14 @@ internal static class FFAManager
         {
             if (!GameStates.IsInTask || Options.CurrentGameMode != CustomGameMode.FFA) return;
 
+            var now = Utils.GetTimeStamp();
+
+            if (LastFixedUpdate == now) return;
+            LastFixedUpdate = now;
+
+            RoundTime--;
             if (AmongUsClient.Instance.AmHost)
             {
-                var now = Utils.GetTimeStamp();
-
-                if (LastFixedUpdate == now) return;
-                LastFixedUpdate = now;
-
-                RoundTime--;
-
                 foreach (var pc in Main.AllPlayerControls.Where(pc => NameNotify.TryGetValue(pc.PlayerId, out var nn) && nn.TIMESTAMP < now).ToArray())
                 {
                     NameNotify.Remove(pc.PlayerId);

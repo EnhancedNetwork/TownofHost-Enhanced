@@ -2938,7 +2938,8 @@ public static class Utils
 
     public static void SetChatVisible()
     {
-        if (!GameStates.IsInGame) return;
+        if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
+        
         MeetingHud.Instance = UnityEngine.Object.Instantiate(HudManager.Instance.MeetingPrefab);
         MeetingHud.Instance.ServerStart(PlayerControl.LocalPlayer.PlayerId);
         AmongUsClient.Instance.Spawn(MeetingHud.Instance, -2, SpawnFlags.None);

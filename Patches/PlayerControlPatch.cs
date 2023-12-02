@@ -3392,6 +3392,22 @@ class CoExitVentPatch
 {
     public static void Postfix(PlayerPhysics __instance, [HarmonyArgument(0)] int id)
     {
+        if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenKCDIsUp.GetBool())
+        {
+            if (__instance.myPlayer != null)
+            {
+                var now = Utils.GetTimeStamp();
+                byte playerId = __instance.myPlayer.PlayerId;
+                if (FFAManager.FFAEnterVentTime.ContainsKey(playerId))
+                {
+                    if (!FFAManager.FFAVentDuration.ContainsKey(playerId)) FFAManager.FFAVentDuration[playerId] = 0f;
+                    FFAManager.FFAVentDuration[playerId] = FFAManager.FFAVentDuration[playerId] + (now - FFAManager.FFAEnterVentTime[playerId]);
+                    
+                    Logger.Warn($"Vent Duration = {FFAManager.FFAVentDuration[playerId]}, vent enter time = {FFAManager.FFAEnterVentTime[playerId]}, vent exit time = {now}, vent time = {now - FFAManager.FFAEnterVentTime[playerId]}", "FFA VENT DURATION");
+                    FFAManager.FFAEnterVentTime.Remove(playerId);
+                }
+            }
+        }
         _ = new LateTask(() =>
         {
             Mole.OnExitVent(__instance.myPlayer, id);
@@ -3624,14 +3640,26 @@ class CoEnterVentPatch
             }, 0.5f);
             return true;
         }
-        if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenKCDIsUp.GetBool() && __instance.myPlayer.killTimer <= 0)
+        if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenKCDIsUp.GetBool())
         {
-            _ = new LateTask(() =>
+
+            var pc = __instance?.myPlayer;
+            var now = Utils.GetTimeStamp();
+            FFAManager.FFAEnterVentTime[pc.PlayerId] = now;
+            if (!FFAManager.FFAVentDuration.ContainsKey(pc.PlayerId)) FFAManager.FFAVentDuration[pc.PlayerId] = 0;
+            var canVent = (now - FFAManager.FFALastKill[pc.PlayerId]) <= (Main.AllPlayerKillCooldown[pc.PlayerId] + FFAManager.FFAVentDuration[pc.PlayerId]);
+            Logger.Warn($"Enter Time = {now}, last kill time = {FFAManager.FFALastKill[pc.PlayerId]}, {FFAManager.FFAVentDuration[pc.PlayerId]}","VENT DURATION TESTING");
+            Logger.Warn($"can vent {canVent}", "FFA MODE VENTING");
+            if (!canVent)
             {
-                __instance.myPlayer?.Notify(GetString("FFA-NoVentingBecauseKCDIsUP"), 7f);
-                __instance.myPlayer?.MyPhysics?.RpcBootFromVent(id);
-            }, 0.5f);
-            return true;
+                _ = new LateTask(() =>
+                {
+                    pc?.Notify(GetString("FFA-NoVentingBecauseKCDIsUP"), 7f);
+                    pc?.MyPhysics?.RpcBootFromVent(id);
+                }, 0.5f);
+                return true;
+            }
+            
         }
         if (Glitch.hackedIdList.ContainsKey(__instance.myPlayer.PlayerId))
         {
