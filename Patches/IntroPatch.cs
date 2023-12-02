@@ -48,7 +48,6 @@ class CoBeginPatch
     public static void Prefix()
     {
         var logger = Logger.Handler("Info");
-        Utils.DoNotifyRoles(ForceLoop: true);
 
         var allPlayerControlsArray = Main.AllPlayerControls.ToArray();
 
@@ -122,6 +121,9 @@ class CoBeginPatch
         TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
 
         GameStates.InGame = true;
+
+        // Do not move this code, it should be executed at the very end to prevent a visual bug
+        Utils.DoNotifyRoles(ForceLoop: true);
     }
 }
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.BeginCrewmate))]
