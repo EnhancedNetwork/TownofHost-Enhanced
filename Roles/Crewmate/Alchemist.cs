@@ -133,7 +133,7 @@ namespace TOHE.Roles.Crewmate
                         var tar1 = AllAlivePlayer[player.PlayerId];
                         AllAlivePlayer.Remove(tar1);
                         var tar2 = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
-                        tar1.RpcTeleport(tar2.GetTruePosition());
+                        tar1.RpcTeleport(tar2.GetCustomPosition());
                         tar1.RPCPlayCustomSound("Teleport");
                     }, 2f);
                     break;
