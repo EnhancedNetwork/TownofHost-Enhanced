@@ -91,7 +91,7 @@ public static class Options
     };
     public static readonly string[] CheatResponsesName =
     {
-        "Ban", "Kick", "NoticeMe","NoticeEveryone"
+        "Ban", "Kick", "NoticeMe","NoticeEveryone", "DoNothing"
     };
     public static readonly string[] ConfirmEjectionsMode =
     {

@@ -118,7 +118,7 @@ class OnPlayerJoinedPatch
         BanManager.CheckBanPlayer(client);
         BanManager.CheckDenyNamePlayer(client);
         RPC.RpcVersionCheck();
-
+        
         if (AmongUsClient.Instance.AmHost)
         {
             if (Main.SayStartTimes.ContainsKey(client.Id)) Main.SayStartTimes.Remove(client.Id);
