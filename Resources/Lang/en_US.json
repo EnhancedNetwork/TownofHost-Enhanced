@@ -1301,6 +1301,7 @@
   "DisableOnSkeld": "Disable on <color=#66a186>The Skeld</color>",
   "DisableOnMira": "Disable on <color=#e84b56>MIRA HQ</color>",
   "DisableOnPolus": "Disable on <color=#a167c0>Polus</color>",
+  "DisableOnDleks": "Disable on <color=#66a186>dlekS ehT</color>",
   "DisableOnAirship": "Disable on <color=#ed0007>Airship</color>",
   "DisableOnFungle": "Disable on <color=#ffa646>The Fungle</color>",
   "DisableReportWhenCC": "Disable body reporting while camouflaged",
@@ -2247,6 +2248,10 @@
   "EnableGadientTags": "Enable Gradient Tags <color=#ff0000>(can cause disconnect issues)</color>",
   "Warning.GradientTags": "<color=#ff0000><size=150%>Warning:</size></color>\n\nHost has enabled gradient tags. This feature is not recommended to use because it can cause <b>disconnect issues</b>",
 
+  "WarningTitle": "Warning!",
+  "Warning.BrokenVentsInDleksSendInGame": "Warning! The vents on this map are broken",
+  "Warning.BrokenVentsInDleksMessage": "<b>On the «dlekS ehT» map the vents are broken</b>, they cannot be fixed in host-only mods, this is a vanilla bug, <b>so any roles using vents as an ability will not work</b>",
+
   "Warning.OverrideExiledPlayer": "Warning: Since the number of Impostors is set to 1, in order to avoid black screen, the voting screen will always show as a tied vote or a skip vote (only affects the visual, not the voting results). Please set more number of Impostors to avoid this problem.",
   "Warning.ShowAntiBlackExiledPlayer": "<b>Last meeting triggered Black Screen Prevention!\nFollowing is the information of the player exiled in last meeting.</b>\n",
   "Warning.InvalidRpc": "Kicked <b>{0}</b> because an invalid RPC was received.\nPlease check that no mods other than TOHE installed.",
@@ -2605,6 +2610,7 @@
   "SkeldChance": "Chance that the map is <color=#66a186>The Skeld</color>",
   "MiraChance": "Chance that the map is <color=#e84b56>MIRA HQ</color>",
   "PolusChance": "Chance that the map is <color=#a167c0>Polus</color>",
+  "DleksChance": "Chance that the map is <color=#66a186>dlekS ehT</color>",
   "AirshipChance": "Chance that the map is <color=#ed0007>Airship</color>",
   "FungleChance": "Chance that the map is <color=#ffa646>The Fungle</color>",
   "UseMoreRandomMapSelection": "Use a more random map selection",
