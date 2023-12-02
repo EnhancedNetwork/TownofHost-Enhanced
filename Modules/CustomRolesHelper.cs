@@ -143,6 +143,7 @@ static class CustomRolesHelper
                 CustomRoles.Retributionist => CustomRoles.Crewmate,
                 CustomRoles.Guardian => CustomRoles.Crewmate,
                 CustomRoles.Addict => CustomRoles.Engineer,
+                CustomRoles.Mole => CustomRoles.Engineer,
                 CustomRoles.Chameleon => CustomRoles.Engineer,
                 CustomRoles.EvilSpirit => CustomRoles.GuardianAngel,
                 CustomRoles.Lurker => CustomRoles.Impostor,

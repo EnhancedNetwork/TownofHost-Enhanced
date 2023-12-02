@@ -293,6 +293,7 @@ internal class ChangeRoleSettings
             DoubleShot.Init();
             Dazzler.Init();
             Addict.Init();
+            Mole.Init();
             Deathpact.Init();
             Tracefinder.Init();
             Devourer.Init();
@@ -872,6 +873,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Addict:
                         Addict.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Mole:
+                        Mole.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Deathpact:
                         Deathpact.Add(pc.PlayerId);

@@ -1310,6 +1310,9 @@ internal static class RPC
             case CustomRoles.Addict:
                 Addict.Add(targetId);
                 break;
+            case CustomRoles.Mole:
+                Mole.Add(targetId);
+                break;
             case CustomRoles.Deathpact:
                 Deathpact.Add(targetId);
                 break;
