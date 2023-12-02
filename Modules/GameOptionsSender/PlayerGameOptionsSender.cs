@@ -5,6 +5,7 @@ using Il2CppSystem.Linq;
 using InnerNet;
 using System;
 using System.Linq;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -504,8 +505,8 @@ public class PlayerGameOptionsSender : GameOptionsSender
                 case CustomRoles.Watcher:
                     opt.SetBool(BoolOptionNames.AnonymousVotes, false);
                     break;
-                case CustomRoles.Flashman:
-                    Main.AllPlayerSpeed[player.PlayerId] = Options.FlashmanSpeed.GetFloat();
+                case CustomRoles.Flash:
+                    Flash.SetSpeed(player.PlayerId);
                     break;
                 case CustomRoles.Torch:
                     if (!Utils.IsActive(SystemTypes.Electrical))
