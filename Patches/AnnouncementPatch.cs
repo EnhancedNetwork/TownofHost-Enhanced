@@ -60,17 +60,17 @@ public class ModNewsHistory
                     "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.2.0\r\n" +
 
                     "\n<b>【New Roles/Addons】(5 roles, 3 Addons)</i></b>" +
-                        "\n     - Instigator (Killing Impostor- By: papercut)" +
+                        "\n     - Instigator (Killing Impostor - By: papercut)" +
                         "\n     - Enigma (Support Crewmate - By: papercut)" +
                         "\n     - Pixie (Benign Neutral - By: ryuk, Idea: Azanthiel)" +
                         "\n     - Taskinator (Benign Neutral - By: ryuk, Idea: Dx)" +
-                        "\n     - Randomizer (Basic Crewmate - Idea and coded by: Night, Improved by: LezaiYa" +
+                        "\n     - Randomizer (Basic Crewmate - Idea/Coded By: Night, Improved By: LezaiYa)" +
                         "\n     - Influenced (Harmful Addon - By: NikoCat223)" +
                         "\n     - Hurried (Harmful Addon - By: NikoCat223)" +
                         "\n     - Oiiai (Experimental Addon - By: NikoCat223)\r\n" +
 
                     "\n<b>【New Settings】</b>" +
-                        "\n     - Added anti-spam feature on Lava Chat (By: Broke his pc's stupid, fixed by: ryuk)" +
+                        "\n     - Added anti-spam feature on Lava Chat (By: Broke his pc's stupid, Fixed by: ryuk)" +
                         "\n     - Converted Reverie can kill anyone without repercussions (By: ryuk)" +
                         "\n     - Count grow up time in meeting (for Mini) (By: LezaiYa, NikoCat233)" +
                         "\n     - Egoist Count as Converted Neutral (By: ryuk)" +
@@ -373,7 +373,7 @@ public class ModNewsHistory
                         "\n     - Энигма (Помогающий Член Экипажа - Автор: papercut)" +
                         "\n     - Пикси (Добрый Нейтрал - Автор: ryuk, Идея: Azanthiel)" +
                         "\n     - Таскинатор (Добрый Нейтрал - Автор: ryuk, Идея: Dx)" +
-                        "\n     - Рандомайзер (Базовый Член Экипажа - Идея и код: Night, Улучшен: LezaiYa" +
+                        "\n     - Рандомайзер (Базовый Член Экипажа - Идея и код: Night, Улучшен: LezaiYa)" +
                         "\n     - Влиятельный (Вредный Атрибут - Автор: NikoCat223)" +
                         "\n     - Опоздавший (Вредный Атрибут - Автор: NikoCat223)" +
                         "\n     - Туман (Эксперементальный Атрибут - Автор: NikoCat223)\r\n" +
@@ -678,7 +678,7 @@ public class ModNewsHistory
                         "\n     - 猜想者 (支援类船员 - By: papercut)" +
                         "\n     - 小精灵 (友好类中立 - By: ryuk, 想法: Azanthiel)" +
                         "\n     - 任务执行者 (友好类中立 - By: ryuk, 想法: Dx)" +
-                        "\n     - 萧暮 (简单类船员 - 想法和编码 by: Night, 改进 by: LezaiYa" +
+                        "\n     - 萧暮 (简单类船员 - 想法和编码 by: Night, 改进 by: LezaiYa)" +
                         "\n     - 影响者 (有害类附加 - By: NikoCat223)" +
                         "\n     - 焦急者 (有害类附加 - By: NikoCat223)" +
                         "\n     - Oiiai (实验性附加 - By: NikoCat223)\r\n" +
@@ -898,7 +898,7 @@ public class ModNewsHistory
                         "\n     - 猜想者 (支援類船員 - By: papercut)" +
                         "\n     - 精靈 (友善類中立 - By: ryuk, 想法: Azanthiel)" +
                         "\n     - 搗蛋鬼 (友善類中立 - By: ryuk, 想法: Dx)" +
-                        "\n     - 隨機者 (基礎船員 - 想法以及代碼by: Night, 改進by: LezaiYa" +
+                        "\n     - 隨機者 (基礎船員 - 想法以及代碼by: Night, 改進by: LezaiYa)" +
                         "\n     - 順從者 (有害類附加職業 - By: NikoCat223)" +
                         "\n     - 焦急者 (有害類附加職業 - By: NikoCat223)" +
                         "\n     - Oiiai (試驗性附加職業 - By: NikoCat223)\r\n" +
