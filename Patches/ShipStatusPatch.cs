@@ -174,7 +174,7 @@ class CloseDoorsPatch
     public static bool Prefix(ShipStatus __instance)
     {
         bool allow;
-        if (Options.CurrentGameMode == CustomGameMode.FFA || !Options.DisableCloseDoor.GetBool()) allow = false;
+        if (Options.CurrentGameMode == CustomGameMode.FFA || Options.DisableCloseDoor.GetBool()) allow = false;
         else allow = true;
         return allow;
     }
