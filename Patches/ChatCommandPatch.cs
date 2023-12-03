@@ -392,6 +392,17 @@ internal class ChatCommands
                     else Utils.SendMessage($"{GetString("Message.MessageWaitHelp")}\n{GetString("ForExample")}:\n{args[0]} 3", 0);
                     break;
 
+                case "/tpout":
+                    canceled = true;
+                    if (!GameStates.IsLobby) break;
+                    PlayerControl.LocalPlayer.RpcTeleport(new Vector2(0.1f, 3.8f));
+                    break;
+                case "/tpin":
+                    canceled = true;
+                    if (!GameStates.IsLobby) break;
+                    PlayerControl.LocalPlayer.RpcTeleport(new Vector2(-0.2f, 1.3f));
+                    break;
+
                 case "/say":
                 case "/s":
                     canceled = true;
@@ -1997,6 +2008,15 @@ internal class ChatCommands
                 ChatUpdatePatch.DoBlockChat = false;
                 //Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
                 Utils.SendMessage(GetString("Message.TryFixName"), player.PlayerId);
+                break;
+
+            case "/tpout":
+                if (!GameStates.IsLobby) break;
+                player.RpcTeleport(new Vector2(0.1f, 3.8f));
+                break;
+            case "/tpin":
+                if (!GameStates.IsLobby) break;
+                player.RpcTeleport(new Vector2(-0.2f, 1.3f));
                 break;
 
             case "/say":
