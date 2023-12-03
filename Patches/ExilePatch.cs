@@ -224,7 +224,7 @@ class ExileControllerWrapUpPatch
         Main.MeetingIsStarted = false;
         Main.MeetingsPassed++;
 
-        if (Options.RandomSpawn.GetBool())
+        if (Options.RandomSpawn.GetBool() || Options.CurrentGameMode == CustomGameMode.FFA)
         {
             RandomSpawn.SpawnMap map;
             switch (Main.NormalOptions.MapId)

@@ -54,6 +54,17 @@ internal class CustomRoleSelector
 
         List<CustomRoles> roleRateList = new();
 
+        if (Options.CurrentGameMode == CustomGameMode.FFA)
+        {
+            RoleResult = new();
+            foreach (PlayerControl pc in Main.AllAlivePlayerControls)
+            {
+                RoleResult.Add(pc, CustomRoles.Killer);
+            }
+
+            return;
+        }
+
         foreach (var cr in CustomRolesHelper.AllRoles)
         {
             var role = (CustomRoles)Enum.Parse(typeof(CustomRoles), cr.ToString());
@@ -401,6 +412,7 @@ internal class CustomRoleSelector
     public static List<CustomRoles> AddonRolesList = new();
     public static void SelectAddonRoles()
     {
+        if (Options.CurrentGameMode == CustomGameMode.FFA) return;
         AddonRolesList = new();
         foreach (var cr in CustomRolesHelper.AllRoles)
         {

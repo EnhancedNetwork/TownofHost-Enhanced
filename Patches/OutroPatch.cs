@@ -60,9 +60,9 @@ class EndGamePatch
             if (date == DateTime.MinValue) continue;
             var killerId = kvp.Value.GetRealKiller();
             var targetId = kvp.Key;
-            sb.Append($"\n{date:T} {Main.AllPlayerNames[targetId]}({Utils.GetDisplayRoleName(targetId, true)}{Utils.GetSubRolesText(targetId, summary: true)}) [{Utils.GetVitalText(kvp.Key)}]");
+            sb.Append($"\n{date:T} {Main.AllPlayerNames[targetId]}({(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetDisplayRoleName(targetId, true))}{(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetSubRolesText(targetId, summary: true))}) [{Utils.GetVitalText(kvp.Key)}]");
             if (killerId != byte.MaxValue && killerId != targetId)
-                sb.Append($"\n\t⇐ {Main.AllPlayerNames[killerId]}({Utils.GetDisplayRoleName(killerId, true)}{Utils.GetSubRolesText(killerId, summary: true)})");
+                sb.Append($"\n\t⇐ {Main.AllPlayerNames[killerId]}({(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetDisplayRoleName(killerId, true))}{(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetSubRolesText(killerId, summary: true))})");
         }
         KillLog = sb.ToString();
         if (!KillLog.Contains('\n')) KillLog = "";
@@ -146,6 +146,15 @@ class SetEverythingUpPatch
         string CustomWinnerText = "";
         string AdditionalWinnerText = "";
         string CustomWinnerColor = Utils.GetRoleColorCode(CustomRoles.Crewmate);
+
+        if (Options.CurrentGameMode == CustomGameMode.FFA)
+        {
+            var winnerId = CustomWinnerHolder.WinnerIds.FirstOrDefault();
+            __instance.BackgroundBar.material.color = new Color32(0, 255, 255, 255);
+            WinnerText.text = Main.AllPlayerNames[winnerId] + " wins!";
+            WinnerText.color = Main.PlayerColors[winnerId];
+            goto EndOfText;
+        }
 
         var winnerRole = (CustomRoles)CustomWinnerHolder.WinnerTeam;
         if (winnerRole >= 0)
@@ -253,6 +262,8 @@ class SetEverythingUpPatch
             return name;
         }
 
+    EndOfText:
+
         LastWinsText = WinnerText.text.RemoveHtmlTags();
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -274,12 +285,26 @@ class SetEverythingUpPatch
             sb.Append($"\n<color={CustomWinnerColor}>★</color> ").Append(EndGamePatch.SummaryText[id]);
             cloneRoles.Remove(id);
         }
-        foreach (var id in cloneRoles.ToArray())
+        if (Options.CurrentGameMode == CustomGameMode.FFA)
         {
-            if (EndGamePatch.SummaryText[id].Contains("<INVALID:NotAssigned>")) continue;
-            sb.Append($"\n　 ").Append(EndGamePatch.SummaryText[id]);
-        }
+            List<(int, byte)> list = new();
+            foreach (byte id in cloneRoles.ToArray())
+            {
+                list.Add((FFAManager.GetRankOfScore(id), id));
+            }
 
+            list.Sort();
+            foreach (var id in list.Where(x => EndGamePatch.SummaryText.ContainsKey(x.Item2)))
+                sb.Append($"\n　 ").Append(EndGamePatch.SummaryText[id.Item2]);
+        }
+        else
+        { 
+            foreach (var id in cloneRoles.ToArray())
+            {
+                if (EndGamePatch.SummaryText[id].Contains("<INVALID:NotAssigned>")) continue;
+                sb.Append($"\n　 ").Append(EndGamePatch.SummaryText[id]);
+            }
+        }
         var RoleSummary = RoleSummaryObject.GetComponent<TMPro.TextMeshPro>();
         {
             RoleSummary.alignment = TMPro.TextAlignmentOptions.TopLeft;

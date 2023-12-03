@@ -79,6 +79,21 @@ public class PlayerGameOptionsSender : GameOptionsSender
         opt.BlackOut(state.IsBlackOut);
 
         CustomRoles role = player.GetCustomRole();
+        if (Options.CurrentGameMode == CustomGameMode.FFA)
+        {
+            if (FFAManager.FFALowerVisionList.ContainsKey(player.PlayerId))
+            {
+                opt.SetVision(true);
+                opt.SetFloat(FloatOptionNames.CrewLightMod, FFAManager.FFA_LowerVision.GetFloat());
+                opt.SetFloat(FloatOptionNames.ImpostorLightMod, FFAManager.FFA_LowerVision.GetFloat());
+            }
+            else
+            {
+                opt.SetVision(true);
+                opt.SetFloat(FloatOptionNames.CrewLightMod, 1.25f);
+                opt.SetFloat(FloatOptionNames.ImpostorLightMod, 1.25f);
+            }
+        }
         switch (role.GetCustomRoleTypes())
         {
             case CustomRoleTypes.Impostor:
