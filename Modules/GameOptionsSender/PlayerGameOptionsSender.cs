@@ -94,8 +94,6 @@ public class PlayerGameOptionsSender : GameOptionsSender
                 break;
         }
 
-        if (Main.UseVersionProtocol.Value) AURoleOptions.GuardianAngelCooldown = 60f;
-
         switch (role)
         {
             case CustomRoles.Terrorist:
@@ -577,7 +575,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
         MeetingTimeManager.ApplyGameOptions(opt);
 
         AURoleOptions.ShapeshifterCooldown = Mathf.Max(1f, AURoleOptions.ShapeshifterCooldown);
-        AURoleOptions.ProtectionDurationSeconds = 0f;
+        AURoleOptions.ProtectionDurationSeconds = Main.UseVersionProtocol.Value ? 0f : 60f;
 
         return opt;
     }

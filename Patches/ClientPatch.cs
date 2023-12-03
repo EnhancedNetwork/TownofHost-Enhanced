@@ -114,18 +114,13 @@ internal class RunLoginPatch
         {
             switch (friendcode)
             {
-                case "whiskercoy#7516":
-                case "tenselogo#3429":
-                case "freepit#9942":
-                    Main.hasAccess = true;
-                    break;
                 default:
                     if (DevManager.GetDevUser(friendcode).IsDev)
                         Main.hasAccess = true;
                     break;
             }
             if (Main.hasAccess)
-                Logger.Info("Local Access", "NikoRoles");
+                Logger.Info("Local Access", "EOSManager");
         }
     }
 }

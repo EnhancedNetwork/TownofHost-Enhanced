@@ -78,7 +78,8 @@ public class GameStartManagerPatch
             if (AURoleOptions.ShapeshifterCooldown == 0f)
                 AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
 
-            AURoleOptions.GuardianAngelCooldown = Main.UseVersionProtocol.Value ? Spiritcaller.SpiritAbilityCooldown.GetFloat() : 60f;
+            AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
+            AURoleOptions.ProtectionDurationSeconds = Main.UseVersionProtocol.Value ? 0f : 60f;
         }
     }
 
