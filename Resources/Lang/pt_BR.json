@@ -2224,7 +2224,7 @@
   "Warning.GradientTags": "<color=#ff0000><size=150%>Atenção:</size></color>\n\nO Anfritrião Habilitou as Tags Gradientes. Esse Recurso não é recomendado usar por causa de <b>problemas de conexão</b>",
   "WarningTitle": "Aviso!",
   "Warning.BrokenVentsInDleksSendInGame": "Aviso! Os dutos deste mapa estão quebrados!",
-  "Warning.BrokenVentsInDleksMessage": "<b>No mapa «dlekS ehT» os dutos estão quebrados</b>, eles não podem ser consertados em mods 'Host-only', este é um bug vanilla, <b>então qualquer função que use dutos como habilidade não irá funcionar</b>",
+  "Warning.BrokenVentsInDleksMessage": "<b>No mapa «dlekS ehT» os dutos estão quebrados</b>, eles não podem ser consertados em mods 'Host-only', este é um bug vanilla, <b>então qualquer função que use um duto como habilidade não aparecerá neste mapa</b>",
   "Warning.OverrideExiledPlayer": "Aviso: Como o número de Impostores está definido como 1, para evitar tela preta, a tela de votação sempre mostrará voto empatado ou voto pulado (afeta apenas o visual, não o resultado da votação). Defina mais número de Impostores para evitar este problema.",
   "Warning.ShowAntiBlackExiledPlayer": "<b>A última reunião ativou a Prevenção de tela preta!\nA seguir terá a informação do jogador exilado na última reunião.</b>\n",
   "Warning.InvalidRpc": "<b>{0}</b> foi expulso porque um RPC inválido foi recebido.\nPor favor, verifique se nenhum mod além de TOHE está instalado.",
