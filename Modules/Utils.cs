@@ -457,10 +457,10 @@ public static class Utils
 
         return (RoleText, RoleColor);
     }
-    public static string GetKillCountText(byte playerId)
+    public static string GetKillCountText(byte playerId, bool ffa = false)
     {
         int count = Main.PlayerStates.Count(x => x.Value.GetRealKiller() == playerId);
-        if (count < 1) return "";
+        if (count < 1 && !ffa) return "";
         return ColorString(new Color32(255, 69, 0, byte.MaxValue), string.Format(GetString("KillCount"), count));
     }
     public static string GetVitalText(byte playerId, bool RealKillerColor = false)
@@ -489,6 +489,8 @@ public static class Utils
         if (p.Disconnected) return false;
         if (p.Role.IsImpostor)
             hasTasks = false; //タスクはCustomRoleを元に判定する
+
+        if (Options.CurrentGameMode == CustomGameMode.FFA) return false;
 
         if (p.IsDead && Options.GhostIgnoreTasks.GetBool()) hasTasks = false;
         var role = States.MainRole;
@@ -1008,6 +1010,9 @@ public static class Utils
                 case CustomRoles.Hacker:
                     ProgressText.Append(Hacker.GetHackLimit(playerId));
                     break;
+                case CustomRoles.Killer:
+                    ProgressText.Append(FFAManager.GetDisplayScore(playerId));
+                    break;
                 case CustomRoles.Totocalcio:
                     ProgressText.Append(Totocalcio.GetProgressText(playerId));
                     break;
@@ -1297,10 +1302,28 @@ public static class Utils
             sb.Append($"\n★ ").Append(EndGamePatch.SummaryText[id].RemoveHtmlTags());
             cloneRoles.Remove(id);
         }
-        foreach (var id in cloneRoles.ToArray())
+        if (Options.CurrentGameMode == CustomGameMode.FFA)
         {
-            if (EndGamePatch.SummaryText[id].Contains("<INVALID:NotAssigned>")) continue;
-            sb.Append($"\n　").Append(EndGamePatch.SummaryText[id].RemoveHtmlTags());
+            List<(int, byte)> list = new();
+            foreach (byte id in cloneRoles.ToArray())
+            {
+                list.Add((FFAManager.GetRankOfScore(id), id));
+            }
+
+            list.Sort();
+
+            foreach ((int, byte) id in list.ToArray())
+            {
+                sb.Append($"\n　 ").Append(EndGamePatch.SummaryText[id.Item2]);
+            }
+        }
+        else 
+        { 
+            foreach (var id in cloneRoles.ToArray())
+            {
+                if (EndGamePatch.SummaryText[id].Contains("<INVALID:NotAssigned>")) continue;
+                sb.Append($"\n　").Append(EndGamePatch.SummaryText[id].RemoveHtmlTags());
+            }
         }
         SendMessage(sb.ToString(), PlayerId);
     }
@@ -1323,7 +1346,7 @@ public static class Utils
         var sb = new StringBuilder();
         if (SetEverythingUpPatch.LastWinsText != "") sb.Append($"{GetString("LastResult")}: {SetEverythingUpPatch.LastWinsText}");
         if (SetEverythingUpPatch.LastWinsReason != "") sb.Append($"\n{GetString("LastEndReason")}: {SetEverythingUpPatch.LastWinsReason}");
-        if (sb.Length > 0) SendMessage(sb.ToString(), PlayerId);
+        if (sb.Length > 0 && Options.CurrentGameMode != CustomGameMode.FFA) SendMessage(sb.ToString(), PlayerId);
     }
     public static string GetSubRolesText(byte id, bool disableColor = false, bool intro = false, bool summary = false)
     {
@@ -1811,6 +1834,8 @@ public static class Utils
 
                     //name = $"<color=#902efd>{GetString("HostText")}</color><color=#4bf4ff>♥</color>" + name;
                 }
+                if (Options.CurrentGameMode == CustomGameMode.FFA)
+                    name = $"<color=#00ffff><size=1.7>{GetString("ModeFFA")}</size></color>\r\n" + name;
             }
             var modtag = "";
             if (Options.ApplyVipList.GetValue() == 1 && player.FriendCode != PlayerControl.LocalPlayer.FriendCode)
@@ -2133,13 +2158,19 @@ public static class Utils
 
                     //SelfMark.Append(Occultist.GetCursedMark(seer.PlayerId, true));
                 }
+                switch (Options.CurrentGameMode)
+                {
+                    case CustomGameMode.FFA:
+                        SelfSuffix.Append(FFAManager.GetPlayerArrow(seer));
+                        break;
+                }
 
 
                 // ====== Get SeerRealName ======
 
                 string SeerRealName = seer.GetRealName(isForMeeting);
 
-                if (MeetingStates.FirstMeeting && Options.ChangeNameToRoleInfo.GetBool() && !isForMeeting)
+                if (MeetingStates.FirstMeeting && Options.ChangeNameToRoleInfo.GetBool() && !isForMeeting && Options.CurrentGameMode != CustomGameMode.FFA)
                 {
                     var SeerRoleInfo = seer.GetRoleInfo();
 
@@ -2212,8 +2243,16 @@ public static class Utils
                     SelfName = $"<size=0%>{SelfName}</size>";
 
 
-                SelfName = SelfRoleName + "\r\n" + SelfName;
-
+                switch (Options.CurrentGameMode)
+                {
+                    case CustomGameMode.FFA:
+                        FFAManager.GetNameNotify(seer, ref SelfName);
+                        SelfName = $"<size={fontSize}>{SelfTaskText}</size>\r\n{SelfName}";
+                        break;
+                    default:
+                        SelfName = SelfRoleName + "\r\n" + SelfName;
+                        break;
+                }
                 SelfName += SelfSuffix.ToString() == "" ? "" : "\r\n " + SelfSuffix.ToString();
 
                 if (!isForMeeting) SelfName += "\r\n";
@@ -2725,11 +2764,14 @@ public static class Utils
         if (sendLog)
         {
             var sb = new StringBuilder(100);
-            foreach (var countTypes in EnumHelper.GetAllValues<CountTypes>())
-            {
-                var playersCount = PlayersCount(countTypes);
-                if (playersCount == 0) continue;
-                sb.Append($"{countTypes}:{AlivePlayersCount(countTypes)}/{playersCount}, ");
+            if (Options.CurrentGameMode != CustomGameMode.FFA)
+            { 
+                foreach (var countTypes in EnumHelper.GetAllValues<CountTypes>())
+                {
+                    var playersCount = PlayersCount(countTypes);
+                    if (playersCount == 0) continue;
+                    sb.Append($"{countTypes}:{AlivePlayersCount(countTypes)}/{playersCount}, ");
+                }
             }
             sb.Append($"All:{AllAlivePlayersCount}/{AllPlayersCount}");
             Logger.Info(sb.ToString(), "CountAlivePlayers");
@@ -2809,7 +2851,10 @@ public static class Utils
         if (id == PlayerControl.LocalPlayer.PlayerId) name = DataManager.player.Customization.Name;
         else name = GetPlayerById(id)?.Data.PlayerName ?? name;
         string summary = $"{ColorString(Main.PlayerColors[id], name)}<pos=14%>{GetProgressText(id)}</pos><pos=24%> {GetKillCountText(id)}</pos><pos={22 + KillsPos}%> {GetVitalText(id, true)}</pos><pos={RolePos + KillsPos}%> {GetDisplayRoleName(id, true)}{GetSubRolesText(id, summary: true)}</pos>";
-
+        if (Options.CurrentGameMode == CustomGameMode.FFA)
+        {
+            summary = $"{ColorString(Main.PlayerColors[id], name)} {GetKillCountText(id, ffa: true)}";
+        }
         return check && GetDisplayRoleName(id, true).RemoveHtmlTags().Contains("INVALID:NotAssigned")
             ? "INVALID"
             : disableColor ? summary.RemoveHtmlTags() : summary;
@@ -2822,7 +2867,10 @@ public static class Utils
         if (id == PlayerControl.LocalPlayer.PlayerId) name = DataManager.player.Customization.Name;
         else name = GetPlayerById(id)?.Data.PlayerName ?? name;
         string summary = $"{ColorString(Main.PlayerColors[id], name)} - {GetDisplayRoleName(id, true)}{GetSubRolesText(id, summary: true)} ({GetVitalText(id, true)}) {GetKillCountText(id)}";
-
+        if (Options.CurrentGameMode == CustomGameMode.FFA)
+        {
+            summary = $"{ColorString(Main.PlayerColors[id], name)} {GetKillCountText(id, ffa: true)}";
+        }
         return check && GetDisplayRoleName(id, true).RemoveHtmlTags().Contains("INVALID:NotAssigned")
             ? "INVALID"
             : disableColor ? summary.RemoveHtmlTags() : summary;
@@ -2906,6 +2954,16 @@ public static class Utils
         float G = (color.g + Weight) / (Darkness + 1);
         float B = (color.b + Weight) / (Darkness + 1);
         return new Color(R, G, B, color.a);
+    }
+
+    public static void SetChatVisible()
+    {
+        if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
+        
+        MeetingHud.Instance = UnityEngine.Object.Instantiate(HudManager.Instance.MeetingPrefab);
+        MeetingHud.Instance.ServerStart(PlayerControl.LocalPlayer.PlayerId);
+        AmongUsClient.Instance.Spawn(MeetingHud.Instance, -2, SpawnFlags.None);
+        MeetingHud.Instance.RpcClose();
     }
 
     public static bool TryCast<T>(this Il2CppObjectBase obj, out T casted)
