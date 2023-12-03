@@ -21,10 +21,13 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem ModeForSmallScreen;
     private static ClientOptionItem EnableRoleSummary;
     private static ClientOptionItem SwitchVanilla;
-#if DEBUG
     private static ClientOptionItem VersionCheat;
-#endif
     private static ClientOptionItem GodMode;
+    private static ClientOptionItem InfiniteVision;
+    private static ClientOptionItem ImpTasks;
+    private static ClientOptionItem EvilVote;
+    private static ClientOptionItem VoteImmune;
+    private static ClientOptionItem SpeedBoost;
 
     public static void Postfix(OptionsMenuBehaviour __instance)
     {
@@ -112,15 +115,34 @@ public static class OptionsMenuBehaviourStartPatch
                 Main.Instance.Unload();
             }
         }
-#if DEBUG
         if ((VersionCheat == null || VersionCheat.ToggleButton == null) && DebugModeManager.AmDebugger)
         {
             VersionCheat = ClientOptionItem.Create("VersionCheat", Main.VersionCheat, __instance);
         }
-#endif
         if ((GodMode == null || GodMode.ToggleButton == null) && DebugModeManager.AmDebugger)
         {
             GodMode = ClientOptionItem.Create("GodMode", Main.GodMode, __instance);
+        }
+        if ((InfiniteVision == null || InfiniteVision.ToggleButton == null))
+        {
+            InfiniteVision = ClientOptionItem.Create("InfiniteVision", Main.InfiniteVision, __instance);
+        }
+        if ((ImpTasks == null || ImpTasks.ToggleButton == null))
+        {
+            Debug.Log("trying to add, atleast trying.");
+            ImpTasks = ClientOptionItem.Create("ImpTasks", Main.ImpTasks, __instance);
+        }
+        if ((EvilVote == null || EvilVote.ToggleButton == null))
+        {
+            EvilVote = ClientOptionItem.Create("EvilVote", Main.EvilVote, __instance);
+        }
+        if ((VoteImmune == null || VoteImmune.ToggleButton == null))
+        {
+            VoteImmune = ClientOptionItem.Create("VoteImmune", Main.VoteImmune, __instance);
+        }
+        if ((SpeedBoost == null || SpeedBoost.ToggleButton == null))
+        {
+            SpeedBoost = ClientOptionItem.Create("SpeedBoost", Main.SpeedBoost, __instance);
         }
     }
 }

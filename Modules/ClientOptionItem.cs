@@ -10,8 +10,10 @@ public class ClientOptionItem
 {
     public ConfigEntry<bool> Config;
     public ToggleButtonBehaviour ToggleButton;
+    public static GridArrangeV grid;
 
     public static SpriteRenderer CustomBackground;
+    public static GameObject ButtonsGrid;
     private static int numOptions = 0;
 
     private ClientOptionItem(
@@ -35,6 +37,19 @@ public class ClientOptionItem
                 CustomBackground.transform.localScale = new(0.9f, 0.9f, 1f);
                 CustomBackground.transform.localPosition += Vector3.back * 8;
                 CustomBackground.gameObject.SetActive(false);
+
+                //Buttons Grid
+                ButtonsGrid = new GameObject("ButtonsGrid");
+                ButtonsGrid.layer = 5;
+                ButtonsGrid.transform.SetParent(CustomBackground.transform, true);
+                ButtonsGrid.name = "ButtonsGrid";
+                ButtonsGrid.transform.localScale = new(0.8f, 0.8f, 1f);
+                ButtonsGrid.transform.localPosition = new Vector3(-1.75f, -0.99f, -1f);
+                grid = ButtonsGrid.gameObject.AddComponent<GridArrangeV>();
+                grid.Alignment = GridArrangeV.StartAlign.Right;
+                grid.MaxColumns = 3;
+                grid.CellSize = new Vector2(2.2f, 0.6f);
+                grid.DeclareCells();
 
                 var closeButton = Object.Instantiate(mouseMoveToggle, CustomBackground.transform);
                 closeButton.transform.localPosition = new(1.3f, -2.3f, -6f);
@@ -72,6 +87,8 @@ public class ClientOptionItem
                 modOptionsPassiveButton.OnClick.AddListener(new Action(() =>
                 {
                     CustomBackground.gameObject.SetActive(true);
+                    grid.CheckCurrentChildren();
+                    grid.ArrangeChilds();
                 }));
 
                 if (leaveButton != null)
@@ -81,12 +98,7 @@ public class ClientOptionItem
             }
 
             // ボタン生成
-            ToggleButton = Object.Instantiate(mouseMoveToggle, CustomBackground.transform);
-            ToggleButton.transform.localPosition = new Vector3(
-                // 現在のオプション数を基に位置を計算
-                numOptions % 2 == 0 ? -1.3f : 1.3f,
-                2.2f - (0.5f * (numOptions / 2)),
-                -6f);
+            ToggleButton = Object.Instantiate(mouseMoveToggle, ButtonsGrid.transform);
             ToggleButton.name = name;
             ToggleButton.Text.text = Translator.GetString(name);
             var passiveButton = ToggleButton.GetComponent<PassiveButton>();
