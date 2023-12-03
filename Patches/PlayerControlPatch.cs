@@ -122,7 +122,7 @@ class CheckMurderPatch
             return false;
         }
 
-        var divice = 2000f;
+        var divice = Options.CurrentGameMode == CustomGameMode.FFA ? 3000f : 2000f;
         float minTime = Mathf.Max(0.02f, AmongUsClient.Instance.Ping / divice * 6f); //Ping value is milliseconds (ms), so ÷ 2000
         // No value is stored in TimeSinceLastKill || Stored time is greater than or equal to minTime => Allow kill
 
@@ -220,6 +220,12 @@ class CheckMurderPatch
         {
             Logger.Info(killer.GetNameWithRole() + " The hitter is not allowed to use the kill button and the kill is canceled", "CheckMurder");
             return false;
+        }
+        //FFA
+        if (Options.CurrentGameMode == CustomGameMode.FFA)
+        {
+            FFAManager.OnPlayerAttack(killer, target);
+            return true;
         }
 
         if (Mastermind.ManipulatedPlayers.ContainsKey(killer.PlayerId))
@@ -1794,6 +1800,8 @@ class ReportDeadBodyPatch
     {
         if (GameStates.IsMeeting) return false;
         if (Options.DisableMeeting.GetBool()) return false;
+        if (Options.CurrentGameMode == CustomGameMode.FFA) return false;
+
         if (!CanReport[__instance.PlayerId])
         {
             WaitReport[__instance.PlayerId].Add(target);
@@ -3030,7 +3038,8 @@ class FixedUpdatePatch
                 var RoleTextData = Utils.GetRoleText(PlayerControl.LocalPlayer.PlayerId, __instance.PlayerId);
                 RoleText.text = RoleTextData.Item1;
                 RoleText.color = RoleTextData.Item2;
-                if (__instance.AmOwner) RoleText.enabled = true;
+                if (Options.CurrentGameMode == CustomGameMode.FFA) RoleText.text = string.Empty;
+                if (__instance.AmOwner || Options.CurrentGameMode == CustomGameMode.FFA) RoleText.enabled = true;
                 else if (ExtendedPlayerControl.KnowRoleTarget(PlayerControl.LocalPlayer, __instance)) RoleText.enabled = true;
                 else RoleText.enabled = false;
                 if (!PlayerControl.LocalPlayer.Data.IsDead && PlayerControl.LocalPlayer.IsRevealedPlayer(__instance) && __instance.Is(CustomRoles.Trickster))
@@ -3074,6 +3083,9 @@ class FixedUpdatePatch
 
                     if (Pelican.IsEaten(seer.PlayerId))
                         RealName = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"));
+
+                    if (Options.CurrentGameMode == CustomGameMode.FFA)
+                        FFAManager.GetNameNotify(target, ref RealName);
 
                     if (Deathpact.IsInActiveDeathpact(seer))
                         RealName = Deathpact.GetDeathpactString(seer);
@@ -3260,6 +3272,9 @@ class FixedUpdatePatch
                 if (Spiritualist.IsEnable)
                     Suffix.Append(Spiritualist.GetSpiritualistArrow(seer, target));
 
+                if (Options.CurrentGameMode == CustomGameMode.FFA) 
+                    Suffix.Append(FFAManager.GetPlayerArrow(seer, target));
+
                 if (Tracefinder.IsEnable)
                     Suffix.Append(Tracefinder.GetTargetArrow(seer, target));
 
@@ -3397,6 +3412,22 @@ class CoExitVentPatch
 {
     public static void Postfix(PlayerPhysics __instance, [HarmonyArgument(0)] int id)
     {
+        if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenKCDIsUp.GetBool())
+        {
+            if (__instance.myPlayer != null)
+            {
+                var now = Utils.GetTimeStamp();
+                byte playerId = __instance.myPlayer.PlayerId;
+                if (FFAManager.FFAEnterVentTime.ContainsKey(playerId))
+                {
+                    if (!FFAManager.FFAVentDuration.ContainsKey(playerId)) FFAManager.FFAVentDuration[playerId] = 0f;
+                    FFAManager.FFAVentDuration[playerId] = FFAManager.FFAVentDuration[playerId] + (now - FFAManager.FFAEnterVentTime[playerId]);
+                    
+                    Logger.Warn($"Vent Duration = {FFAManager.FFAVentDuration[playerId]}, vent enter time = {FFAManager.FFAEnterVentTime[playerId]}, vent exit time = {now}, vent time = {now - FFAManager.FFAEnterVentTime[playerId]}", "FFA VENT DURATION");
+                    FFAManager.FFAEnterVentTime.Remove(playerId);
+                }
+            }
+        }
         _ = new LateTask(() =>
         {
             Mole.OnExitVent(__instance.myPlayer, id);
@@ -3617,7 +3648,39 @@ class CoEnterVentPatch
     public static bool Prefix(PlayerPhysics __instance, [HarmonyArgument(0)] int id)
     {
         if (!AmongUsClient.Instance.AmHost) return true;
+        Logger.Info($" {__instance.myPlayer.GetNameWithRole()}, Vent ID: {id}", "CoEnterVent");
 
+        if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenTwoPlayersAlive.GetBool() && Main.AllAlivePlayerControls.Length <= 2)
+        {
+            var pc = __instance?.myPlayer;
+            _ = new LateTask(() =>
+            {
+                pc?.Notify(GetString("FFA-NoVentingBecauseTwoPlayers"), 7f);
+                pc?.MyPhysics?.RpcBootFromVent(id);
+            }, 0.5f);
+            return true;
+        }
+        if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenKCDIsUp.GetBool())
+        {
+
+            var pc = __instance?.myPlayer;
+            var now = Utils.GetTimeStamp();
+            FFAManager.FFAEnterVentTime[pc.PlayerId] = now;
+            if (!FFAManager.FFAVentDuration.ContainsKey(pc.PlayerId)) FFAManager.FFAVentDuration[pc.PlayerId] = 0;
+            var canVent = (now - FFAManager.FFALastKill[pc.PlayerId]) <= (Main.AllPlayerKillCooldown[pc.PlayerId] + FFAManager.FFAVentDuration[pc.PlayerId]);
+            Logger.Warn($"Enter Time = {now}, last kill time = {FFAManager.FFALastKill[pc.PlayerId]}, {FFAManager.FFAVentDuration[pc.PlayerId]}","VENT DURATION TESTING");
+            Logger.Warn($"can vent {canVent}", "FFA MODE VENTING");
+            if (!canVent)
+            {
+                _ = new LateTask(() =>
+                {
+                    pc?.Notify(GetString("FFA-NoVentingBecauseKCDIsUP"), 7f);
+                    pc?.MyPhysics?.RpcBootFromVent(id);
+                }, 0.5f);
+                return true;
+            }
+            
+        }
         if (Glitch.hackedIdList.ContainsKey(__instance.myPlayer.PlayerId))
         {
             _ = new LateTask(() =>

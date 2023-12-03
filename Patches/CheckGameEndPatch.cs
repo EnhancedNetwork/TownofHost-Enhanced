@@ -30,6 +30,18 @@ class GameEndChecker
         //ゲーム終了判定
         predicate.CheckForEndGame(out reason);
 
+        // FFA
+        if (Options.CurrentGameMode == CustomGameMode.FFA)
+        {
+            if (CustomWinnerHolder.WinnerIds.Any() || CustomWinnerHolder.WinnerTeam != CustomWinner.Default)
+            {
+                ShipStatus.Instance.enabled = false;
+                StartEndGame(reason);
+                predicate = null;
+            }
+            return false;
+        }
+
         //ゲーム終了時
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default)
         {
@@ -515,6 +527,8 @@ class GameEndChecker
     }
 
     public static void SetPredicateToNormal() => predicate = new NormalGameEndPredicate();
+    public static void SetPredicateToFFA() => predicate = new FFAGameEndPredicate();
+
 
     // ===== ゲーム終了条件 =====
     // 通常ゲーム用
@@ -623,6 +637,58 @@ class GameEndChecker
                 }
             }
         }
+    }
+}
+
+class FFAGameEndPredicate : GameEndPredicate
+{
+    public override bool CheckForEndGame(out GameOverReason reason)
+    {
+        reason = GameOverReason.ImpostorByKill;
+        if (CustomWinnerHolder.WinnerIds.Any()) return false;
+        if (CheckGameEndByLivingPlayers(out reason)) return true;
+        return false;
+    }
+
+    public static bool CheckGameEndByLivingPlayers(out GameOverReason reason)
+    {
+        reason = GameOverReason.ImpostorByKill;
+
+        if (FFAManager.RoundTime <= 0)
+        {
+            var winner = Main.AllPlayerControls.Where(x => !x.Is(CustomRoles.GM) && x != null).OrderBy(x => FFAManager.GetRankOfScore(x.PlayerId)).First();
+
+            byte winnerId;
+            if (winner == null) winnerId = 0;
+            else winnerId = winner.PlayerId;
+
+            Logger.Warn($"Winner: {Utils.GetPlayerById(winnerId).GetRealName().RemoveHtmlTags()}", "FFA");
+
+            CustomWinnerHolder.WinnerIds = new() { winnerId };
+
+            Main.DoBlockNameChange = true;
+
+            return true;
+        }
+        else if (Main.AllAlivePlayerControls.Length == 1)
+        {
+            var winner = Main.AllAlivePlayerControls.FirstOrDefault();
+
+            Logger.Info($"Winner: {winner.GetRealName().RemoveHtmlTags()}", "FFA");
+
+            CustomWinnerHolder.WinnerIds = new() { winner.PlayerId };
+
+            Main.DoBlockNameChange = true;
+
+            return true;
+        }
+        else if (!Main.AllAlivePlayerControls.Any())
+        {
+            FFAManager.RoundTime = 0;
+            Logger.Warn("No players alive. Force ending the game", "FFA");
+            return false;
+        }
+        else return false;
     }
 }
 

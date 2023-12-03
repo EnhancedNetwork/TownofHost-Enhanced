@@ -768,8 +768,11 @@ public enum CustomRoles
     Imitator,
    //two-way camp
     Mini,
-   // Sorcerer,
-   // Flux,
+    // Sorcerer,
+    // Flux,
+
+    //FFA
+    Killer,
 
     //GM
     GM,

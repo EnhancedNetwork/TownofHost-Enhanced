@@ -62,7 +62,7 @@ class RandomSpawn
             var selectRand = (Options.SpawnRandomLocation.GetBool() && Options.SpawnRandomVents.GetBool()) ? IRandom.Instance.Next(0, 101) 
                 : Options.SpawnRandomLocation.GetBool() ? 50
                 : Options.SpawnRandomVents.GetBool() ? 51 : -1; // -1: Not Random Spawn
-
+            if (Options.CurrentGameMode == CustomGameMode.FFA) selectRand = 50;
             if (selectRand == -1) return;
 
             if (selectRand >= 0 && selectRand <= 50)
