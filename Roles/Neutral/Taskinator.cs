@@ -98,6 +98,7 @@ public static class Taskinator
 
     public static void OnTasKComplete(PlayerControl player, PlayerTask task)
     {
+        if (!AmongUsClient.Instance.AmHost) return;
         if(!IsEnable) return;
         if (player == null) return;
         byte playerId = player.PlayerId;
