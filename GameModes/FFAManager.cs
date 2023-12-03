@@ -111,7 +111,7 @@ internal static class FFAManager
                 KBScore.TryAdd(pc.PlayerId, 0);
                 if (FFA_DisableVentingWhenKCDIsUp.GetBool()) FFALastKill.TryAdd(pc.PlayerId, now);
             }
-        }, 6f, "Set Chat Visible for Everyone");
+        }, 10f, "Set Chat Visible for Everyone");
     }
     private static void SendRPCSyncFFAPlayer(byte playerId)
     {
