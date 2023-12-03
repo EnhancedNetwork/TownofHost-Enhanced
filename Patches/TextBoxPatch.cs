@@ -23,7 +23,10 @@ public class TextBoxPatch
     [HarmonyPatch(nameof(TextBoxTMP.SetText)), HarmonyPrefix]
     public static bool ModifyCharacterLimit(TextBoxTMP __instance, [HarmonyArgument(0)] string input, [HarmonyArgument(1)] string inputCompo = "")
     {
-        __instance.characterLimit = AmongUsClient.Instance.AmHost ? 1999 : 400;
+        __instance.characterLimit = AmongUsClient.Instance.AmHost ? 20000 : 2000;
+        __instance.AllowSymbols = true;
+        __instance.AllowEmail = true;
+        __instance.allowAllCharacters = true;
         if (input.Length < 1) return true;
         string before = input[^1..];
         if (replaceDic.TryGetValue(before, out var after))
