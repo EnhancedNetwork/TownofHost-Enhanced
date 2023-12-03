@@ -2236,7 +2236,7 @@
 
   "WarningTitle": "Warning!",
   "Warning.BrokenVentsInDleksSendInGame": "Warning! The vents on this map are broken",
-  "Warning.BrokenVentsInDleksMessage": "<b>On the «dlekS ehT» map the vents are broken</b>, they cannot be fixed in host-only mods, this is a vanilla bug, <b>so any roles using vents as an ability will not work</b>",
+  "Warning.BrokenVentsInDleksMessage": "<b>On the «dlekS ehT» map the vents are broken</b>, they cannot be fixed in host-only mods, this is a vanilla bug, <b>so any roles using vent as an ability will not spawns on this map</b>",
 
   "Warning.OverrideExiledPlayer": "Warning: Since the number of Impostors is set to 1, in order to avoid black screen, the voting screen will always show as a tied vote or a skip vote (only affects the visual, not the voting results). Please set more number of Impostors to avoid this problem.",
   "Warning.ShowAntiBlackExiledPlayer": "<b>Last meeting triggered Black Screen Prevention!\nFollowing is the information of the player exiled in last meeting.</b>\n",

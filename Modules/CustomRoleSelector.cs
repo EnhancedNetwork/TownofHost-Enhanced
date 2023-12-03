@@ -77,7 +77,7 @@ internal class CustomRoleSelector
             }
             else if (Options.IsActiveDleks) // Dleks
             {
-                // This roles need additional conditions - Witch & Spellсaster & Hex Master & Arsonist & Revolutionist
+                // This roles need additional conditions - Witch & Spellсaster & Hex Master
 
                 if (role is CustomRoles.Swooper
                     or CustomRoles.Miner
