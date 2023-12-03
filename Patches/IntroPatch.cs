@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TOHE.Modules;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
@@ -495,6 +496,8 @@ class IntroCutsceneDestroyPatch
                         break;
                 }
             }
+
+            KeepProtect.SendToAll();
 
             var amDesyncImpostor = Main.ResetCamPlayerList.Contains(PlayerControl.LocalPlayer.PlayerId);
             if (amDesyncImpostor)

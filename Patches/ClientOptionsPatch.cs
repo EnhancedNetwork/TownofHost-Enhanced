@@ -21,10 +21,11 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem ModeForSmallScreen;
     private static ClientOptionItem EnableRoleSummary;
     private static ClientOptionItem SwitchVanilla;
+    private static ClientOptionItem UseVersionProtocol;
 #if DEBUG
     private static ClientOptionItem VersionCheat;
+    private static ClientOptionItem GodMode;
 #endif
-    //private static ClientOptionItem GodMode;
 
     public static void Postfix(OptionsMenuBehaviour __instance)
     {
@@ -112,16 +113,20 @@ public static class OptionsMenuBehaviourStartPatch
                 Main.Instance.Unload();
             }
         }
+        if (UseVersionProtocol == null || UseVersionProtocol.ToggleButton == null)
+        {
+            UseVersionProtocol = ClientOptionItem.Create("UseVersionProtocol", Main.UseVersionProtocol, __instance);
+        }
 #if DEBUG
         if ((VersionCheat == null || VersionCheat.ToggleButton == null) && DebugModeManager.AmDebugger)
         {
             VersionCheat = ClientOptionItem.Create("VersionCheat", Main.VersionCheat, __instance);
         }
+        if ((GodMode == null || GodMode.ToggleButton == null) && DebugModeManager.AmDebugger)
+        {
+            GodMode = ClientOptionItem.Create("GodMode", Main.GodMode, __instance);
+        }
 #endif
-        //if ((GodMode == null || GodMode.ToggleButton == null) && DebugModeManager.AmDebugger)
-        //{
-        //    GodMode = ClientOptionItem.Create("GodMode", Main.GodMode, __instance);
-        //}
     }
 }
 

@@ -94,6 +94,8 @@ public class PlayerGameOptionsSender : GameOptionsSender
                 break;
         }
 
+        if (Main.UseVersionProtocol.Value) AURoleOptions.GuardianAngelCooldown = 60f;
+
         switch (role)
         {
             case CustomRoles.Terrorist:

@@ -1292,7 +1292,7 @@ class CheckMurderPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
 class MurderPlayerPatch
 {
-    public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
+    public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] MurderResultFlags resultFlags)
     {
         Logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}{(target.IsProtected() ? "(Protected)" : "")}", "MurderPlayer");
 
@@ -1305,6 +1305,24 @@ class MurderPlayerPatch
         {
             Camouflage.ResetSkinAfterDeathPlayers.Add(target.PlayerId);
             Camouflage.RpcSetSkin(target, ForceRevert: true);
+        }
+
+        if (!Main.UseVersionProtocol.Value && resultFlags == MurderResultFlags.FailedProtected && __instance.PlayerId != target.PlayerId)
+        {
+            if (CheckMurderPatch.Prefix(__instance, target))
+                __instance.RpcMurderPlayerV3(target);
+            else
+            {
+                var sender = CustomRpcSender.Create(sendOption: SendOption.Reliable);
+                sender.AutoStartRpc(PlayerControl.LocalPlayer.NetId, (byte)RpcCalls.ProtectPlayer, __instance.GetClientId())
+                    .WriteNetObject(target)
+                    .Write(18)
+                    .EndRpc();
+                sender.SendMessage();
+
+                _ = new LateTask(() => { if (GameStates.IsInTask) KeepProtect.SendKeepProtect(target); }, 0.1f, "Send protect on murder");
+            }
+            return;
         }
     }
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
@@ -2539,6 +2557,8 @@ class FixedUpdatePatch
                         __instance.ReportDeadBody(info);
                     }
                 }
+
+                KeepProtect.OnFixedUpdate();
 
                 // Agitater
                 if (Agitater.IsEnable && Agitater.CurrentBombedPlayer == player.PlayerId)

@@ -3480,5 +3480,7 @@
   "FFFCanKillAdmired": "Can kill admirer",
   "AutoMuteUs": "Enable it if you use AutoMuteUs",
   "HorseMode": "Enable to become a horse",
-  "InfluencedChangeVote": "oops!You are so influenced by others!\nYou can not contain your fear that you change voted {0}!"
+  "InfluencedChangeVote": "oops!You are so influenced by others!\nYou can not contain your fear that you change voted {0}!",
+
+  "UseVersionProtocol": "Use version protocol/n(Enable to host private rooms)"
 }

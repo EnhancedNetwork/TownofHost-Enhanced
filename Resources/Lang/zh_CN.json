@@ -3434,5 +3434,7 @@
   "FFFCanKillAdmired": "FFF团能击杀仰慕者",
   "AutoMuteUs": "大厅中不修改玩家名称（兼容AutoMuteUs）",
   "HorseMode": "启用牧马模式",
-  "InfluencedChangeVote": "哎呀！你太受别人影响了！\n你无法控制你的恐惧，你投票给了 {0}！"
+  "InfluencedChangeVote": "哎呀！你太受别人影响了！\n你无法控制你的恐惧，你投票给了 {0}！",
+
+  "UseVersionProtocol": "使用版本协议/n(启用后不公开)"
 }

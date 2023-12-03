@@ -44,8 +44,8 @@ public class Main : BasePlugin
     public const string PluginDisplayVersion = "1.3.1 dev 1";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
     /******************* Change one of the three variables to true before making a release. *******************/
-    public const bool Canary = false; // Unused variable? ---- not unused anymore :)
-    public const bool fullRelease = true;
+    public const bool Canary = true; // Unused variable? ---- not unused anymore :)
+    public const bool fullRelease = false;
     public const bool devRelease = false;
 
     public static bool hasAccess = true;
@@ -91,6 +91,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> ModeForSmallScreen { get; private set; }
     public static ConfigEntry<bool> EnableRoleSummary { get; private set; }
     public static ConfigEntry<bool> SwitchVanilla { get; private set; }
+    public static ConfigEntry<bool> UseVersionProtocol { get; private set; }
     public static ConfigEntry<bool> VersionCheat { get; private set; }
     public static bool IsHostVersionCheating = false;
     public static ConfigEntry<bool> GodMode { get; private set; }
