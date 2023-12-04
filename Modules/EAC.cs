@@ -440,6 +440,7 @@ internal class EAC
                 string msg2 = string.Format(GetString("Message.TempBanedByEAC"), pc?.Data?.PlayerName, text);
                 Logger.Warn(msg2, "EAC");
                 Logger.SendInGame(msg2);
+                break;
         }
     }
 }
