@@ -1400,7 +1400,7 @@ class MeetingHudOnDestroyPatch
             Main.AllPlayerControls.Do(pc => RandomSpawn.CustomNetworkTransformPatch.NumOfTP[pc.PlayerId] = 0);
 
             Main.LastVotedPlayerInfo = null;
-            EAC.MeetingTimes = 0;
+            EAC.ReportTimes = new();
         }
     }
 }

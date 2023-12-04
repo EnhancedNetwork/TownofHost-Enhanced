@@ -92,7 +92,7 @@ public static class Options
     };
     public static readonly string[] CheatResponsesName =
     {
-        "Ban", "Kick", "NoticeMe","NoticeEveryone", "DoNothing"
+        "Ban", "Kick", "NoticeMe","NoticeEveryone", "DoNothing", "TempBan"
     };
     public static readonly string[] ConfirmEjectionsMode =
     {
@@ -2937,7 +2937,7 @@ public static class Options
             .SetHeader(true)
             .SetColor(Color.blue);
 
-        CheatResponses = StringOptionItem.Create(60250, "CheatResponses", CheatResponsesName, 0, TabGroup.SystemSettings, false)
+        CheatResponses = StringOptionItem.Create(60250, "CheatResponses", CheatResponsesName, 4, TabGroup.SystemSettings, false)
             .SetHeader(true);
 
         //HighLevelAntiCheat = StringOptionItem.Create(60260, "HighLevelAntiCheat", CheatResponsesName, 0, TabGroup.SystemSettings, false)
