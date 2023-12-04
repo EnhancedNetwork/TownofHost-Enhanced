@@ -4,22 +4,6 @@ using HarmonyLib;
 namespace TOHE;
 
 
-[HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.LateUpdate))]
-public static class HostOnly_GodmodePostfix
-{
-    //Postfix patch of PlayerPhysics.LateUpdate to revive LocalPlayer when CheatSettings.godMode enabled
-    public static void Postfix(PlayerPhysics __instance)
-    {
-        if (Main.GodMode.Value == true)
-        {
-            if (__instance.myPlayer.Data.IsDead && __instance.AmOwner)
-            {
-                __instance.myPlayer.Revive();
-            }
-        }
-    }
-}
-
 [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CastVote))]
 public static class HostOnly_CastVotePrefix
 {
