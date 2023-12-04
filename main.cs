@@ -48,6 +48,8 @@ public class Main : BasePlugin
     public const bool fullRelease = false;
     public const bool devRelease = true;
 
+    private static MenuUI menuUI;
+
     public static bool hasAccess = true;
 
     public static readonly bool ShowGitHubButton = true;
@@ -466,6 +468,8 @@ public class Main : BasePlugin
         SpeedBoost = Config.Bind("Client Options", "SpeedBoost", false);
         BigSize = Config.Bind("Client Options", "BigSize", false);
         AutoMuteUs = Config.Bind("Client Options", "AutoMuteUs", false); // The AutoMuteUs bot fails to match the host's name.
+
+        menuUI = AddComponent<MenuUI>();
 
         Logger = BepInEx.Logging.Logger.CreateLogSource("TOHE");
         TOHE.Logger.Enable();

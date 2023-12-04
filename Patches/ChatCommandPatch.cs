@@ -88,6 +88,30 @@ internal class ChatCommands
                 }
                 if (version_text != "") HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, (PlayerControl.LocalPlayer.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + version_text);
                 break;
+            case "/changerole":
+            case "/mudarfunção":
+                canceled = true;
+                if (!(DebugModeManager.AmDebugger && GameStates.IsInGame)) break;
+                if (GameStates.IsOnlineGame && !PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug) break;
+                subArgs = text.Remove(0, 11);
+                var setRole = FixRoleNameInput(subArgs).ToLower().Trim().Replace(" ", string.Empty);
+                Logger.Info(setRole, "changerole Input");
+                foreach (var rl in CustomRolesHelper.AllRoles)
+                {
+                    if (rl.IsVanilla()) continue;
+                    var roleName = GetString(rl.ToString()).ToLower().Trim().TrimStart('*').Replace(" ", string.Empty);
+                    //Logger.Info(roleName, "2");
+                    if (setRole == roleName)
+                    {
+                        PlayerControl.LocalPlayer.RpcSetRole(rl.GetRoleTypes());
+                        PlayerControl.LocalPlayer.RpcSetCustomRole(rl);
+                        Utils.SendMessage(string.Format("Debug Set your role to {0}", rl.ToString()), PlayerControl.LocalPlayer.PlayerId);
+                        Utils.NotifyRoles(ForceLoop: true);
+                        Utils.MarkEveryoneDirtySettings();
+                        break;
+                    }
+                }
+                break;
             default:
                 Main.isChatCommand = false;
                 break;
@@ -708,31 +732,6 @@ internal class ChatCommands
                     else Utils.SendMessage("很抱歉，每个房间车队姬只会发一次", PlayerControl.LocalPlayer.PlayerId);
                     break;
                 */
-
-                case "/changerole":
-                case "/mudarfunção":
-                    canceled = true;
-                    if (!(DebugModeManager.AmDebugger && GameStates.IsInGame)) break;
-                    if (GameStates.IsOnlineGame && !PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug) break;
-                    subArgs = text.Remove(0, 11);
-                    var setRole = FixRoleNameInput(subArgs).ToLower().Trim().Replace(" ", string.Empty);
-                    Logger.Info(setRole, "changerole Input");
-                    foreach (var rl in CustomRolesHelper.AllRoles)
-                    {
-                        if (rl.IsVanilla()) continue;
-                        var roleName = GetString(rl.ToString()).ToLower().Trim().TrimStart('*').Replace(" ", string.Empty);
-                        //Logger.Info(roleName, "2");
-                        if (setRole == roleName)
-                        {
-                            PlayerControl.LocalPlayer.RpcSetRole(rl.GetRoleTypes());
-                            PlayerControl.LocalPlayer.RpcSetCustomRole(rl);
-                            Utils.SendMessage(string.Format("Debug Set your role to {0}", rl.ToString()), PlayerControl.LocalPlayer.PlayerId);
-                            Utils.NotifyRoles(ForceLoop: true);
-                            Utils.MarkEveryoneDirtySettings();
-                            break;
-                        }
-                    }
-                    break;
 
                 case "/end":
                 case "/encerrar":

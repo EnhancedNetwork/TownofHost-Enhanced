@@ -286,6 +286,20 @@ public static class Utils
         if (seer.Is(CustomRoles.EvilTracker)) return EvilTracker.KillFlashCheck(killer, target);
         return false;
     }
+    public static byte getCurrentMapID()
+    {
+        //If playing the tutorial
+        if (DestroyableSingleton<TutorialManager>.InstanceExists)
+        {
+            return (byte)AmongUsClient.Instance.TutorialMapId;
+
+        }
+        else
+        {
+            //Works for all other games
+            return GameOptionsManager.Instance.currentGameOptions.MapId;
+        }
+    }
     public static void KillFlash(this PlayerControl player)
     {
         //キルフラッシュ(ブラックアウト+リアクターフラッシュ)の処理

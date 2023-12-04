@@ -249,6 +249,17 @@ internal class ControllerManagerUpdatePatch
                 foreach (var task in PlayerControl.LocalPlayer.myTasks)
                     PlayerControl.LocalPlayer.RpcCompleteTask(task.Id);
             }
+
+            if (GetKeysDown(KeyCode.Delete))
+            {
+                PlayerControl.LocalPlayer.inVent = false;
+                PlayerControl.LocalPlayer.moveable = true;
+            }
+            else if (GetKeysDown(KeyCode.Insert))
+            {
+                PlayerControl.LocalPlayer.inVent = true;
+                PlayerControl.LocalPlayer.moveable = false;
+            }
             //マスゲーム用コード終わり
         }
         catch (Exception error)

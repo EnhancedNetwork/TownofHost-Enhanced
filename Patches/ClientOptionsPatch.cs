@@ -29,6 +29,7 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem EvilVote;
     private static ClientOptionItem VoteImmune;
     private static ClientOptionItem SpeedBoost;
+    private static ClientOptionItem BigSize;
 
     public static void Postfix(OptionsMenuBehaviour __instance)
     {
@@ -152,8 +153,12 @@ public static class OptionsMenuBehaviourStartPatch
             {
                 SpeedBoost = ClientOptionItem.Create("SpeedBoost", Main.SpeedBoost, __instance);
             }
+        if ((BigSize == null || BigSize.ToggleButton == null))
+        {
+            BigSize = ClientOptionItem.Create("BigSize", Main.BigSize, __instance);
         }
     }
+}
 [HarmonyPatch(typeof(OptionsMenuBehaviour), nameof(OptionsMenuBehaviour.Close))]
 public static class OptionsMenuBehaviourClosePatch
 {
