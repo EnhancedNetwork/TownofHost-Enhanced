@@ -2201,6 +2201,7 @@
   "Message.KickedByEAC": "{0} foi expulso pela EAC, motivo: {1}",
   "Message.BanedByEAC": "{0} foi banido pela EAC, motivo: {1}",
   "Message.NoticeByEAC": "Detectado: {0} está usando {1}",
+  "Message.TempBanedByEAC": "[{0}] foi temporiariamente banido pelo EAC, motivo: {1}",
   "Message.TempBannedForSpamQuitting": "<b>{0}</b> foi banido temporariamente devido ao spam",
   "Message.SetLevel": "Seu nível de jogo foi definido como: {0}",
   "Message.SetColor": "Sua cor foi definida para: {0}",
