@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace TOHE;
 
@@ -35,5 +36,20 @@ public class TextBoxPatch
             return false;
         }
         return true;
+    }
+}
+[HarmonyPatch(typeof(FreeChatInputField), nameof(FreeChatInputField.UpdateCharCount))]
+internal class UpdateCharCountPatch
+{
+    public static void Postfix(FreeChatInputField __instance)
+    {
+        int length = __instance.textArea.text.Length;
+        __instance.charCountText.SetText($"{length}/{__instance.textArea.characterLimit}");
+        if (length < (AmongUsClient.Instance.AmHost ? 19000 : 1900))
+            __instance.charCountText.color = Color.black;
+        else if (length < (AmongUsClient.Instance.AmHost ? 19999 : 1999))
+            __instance.charCountText.color = new Color(1f, 1f, 0f, 1f);
+        else
+            __instance.charCountText.color = Color.red;
     }
 }

@@ -24,6 +24,7 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem VersionCheat;
     private static ClientOptionItem GodMode;
     private static ClientOptionItem InfiniteVision;
+    private static ClientOptionItem AllowTPs;
     private static ClientOptionItem ImpTasks;
     private static ClientOptionItem EvilVote;
     private static ClientOptionItem VoteImmune;
@@ -123,30 +124,36 @@ public static class OptionsMenuBehaviourStartPatch
         {
             GodMode = ClientOptionItem.Create("GodMode", Main.GodMode, __instance);
         }
-        if ((InfiniteVision == null || InfiniteVision.ToggleButton == null))
+            if ((InfiniteVision == null || InfiniteVision.ToggleButton == null))
+            {
+                InfiniteVision = ClientOptionItem.Create("InfiniteVision", Main.InfiniteVision, __instance);
+            }
+        if ((AllowTPs == null || AllowTPs.ToggleButton == null))
         {
-            InfiniteVision = ClientOptionItem.Create("InfiniteVision", Main.InfiniteVision, __instance);
+            AllowTPs = ClientOptionItem.Create("AllowTPs", Main.AllowTPs, __instance);
         }
         if ((ImpTasks == null || ImpTasks.ToggleButton == null))
+            {
+                Debug.Log("trying to add, atleast trying.");
+                ImpTasks = ClientOptionItem.Create("ImpTasks", Main.ImpTasks, __instance);
+            }
+        if (AmongUsClient.Instance.AmHost)
         {
-            Debug.Log("trying to add, atleast trying.");
-            ImpTasks = ClientOptionItem.Create("ImpTasks", Main.ImpTasks, __instance);
-        }
-        if ((EvilVote == null || EvilVote.ToggleButton == null))
-        {
-            EvilVote = ClientOptionItem.Create("EvilVote", Main.EvilVote, __instance);
-        }
-        if ((VoteImmune == null || VoteImmune.ToggleButton == null))
-        {
-            VoteImmune = ClientOptionItem.Create("VoteImmune", Main.VoteImmune, __instance);
+            if ((EvilVote == null || EvilVote.ToggleButton == null))
+            {
+                EvilVote = ClientOptionItem.Create("EvilVote", Main.EvilVote, __instance);
+            }
+            if ((VoteImmune == null || VoteImmune.ToggleButton == null))
+            {
+                VoteImmune = ClientOptionItem.Create("VoteImmune", Main.VoteImmune, __instance);
+            }
         }
         if ((SpeedBoost == null || SpeedBoost.ToggleButton == null))
-        {
-            SpeedBoost = ClientOptionItem.Create("SpeedBoost", Main.SpeedBoost, __instance);
+            {
+                SpeedBoost = ClientOptionItem.Create("SpeedBoost", Main.SpeedBoost, __instance);
+            }
         }
     }
-}
-
 [HarmonyPatch(typeof(OptionsMenuBehaviour), nameof(OptionsMenuBehaviour.Close))]
 public static class OptionsMenuBehaviourClosePatch
 {
@@ -157,4 +164,4 @@ public static class OptionsMenuBehaviourClosePatch
             ClientOptionItem.CustomBackground.gameObject.SetActive(false);
         }
     }
-}
+}        

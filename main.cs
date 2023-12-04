@@ -95,6 +95,7 @@ public class Main : BasePlugin
     public static bool IsHostVersionCheating = false;
     public static ConfigEntry<bool> GodMode { get; private set; }
     public static ConfigEntry<bool> InfiniteVision { get; private set; }
+    public static ConfigEntry<bool> AllowTPs { get; private set; }
     public static ConfigEntry<bool> ImpTasks { get; private set; }
     public static ConfigEntry<bool> EvilVote { get; private set; }
     public static ConfigEntry<bool> VoteImmune { get; private set; }
@@ -458,6 +459,7 @@ public class Main : BasePlugin
         VersionCheat = Config.Bind("Client Options", "VersionCheat", false);
         GodMode = Config.Bind("Client Options", "GodMode", false);
         InfiniteVision = Config.Bind("Client Options", "InfiniteVision", false);
+        AllowTPs = Config.Bind("Client Options", "AllowTPs", true);
         ImpTasks = Config.Bind("Client Options", "ImpTasks", false);
         EvilVote = Config.Bind("Client Options", "EvilVote", false);
         VoteImmune = Config.Bind("Client Options", "VoteImmune", false);

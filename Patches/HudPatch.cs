@@ -37,13 +37,22 @@ class HudManagerPatch
         {
             PlayerControl.LocalPlayer.gameObject.GetComponent<CircleCollider2D>().enabled = true;
         }
-        if (GameStates.IsLobby)
+        if (Main.InfiniteVision.Value)
         {
-            var POM = GameObject.Find("PlayerOptionsMenu(Clone)");
-            __instance.GameSettings.text = POM != null ? "" : OptionShower.GetTextNoFresh(); //OptionShower.GetText();
-            __instance.GameSettings.fontSizeMin =
-            __instance.GameSettings.fontSizeMax = 1.1f;
+            DestroyableSingleton<HudManager>.Instance?.ShadowQuad?.gameObject?.SetActive(false);
         }
+        else
+        {
+            DestroyableSingleton<HudManager>.Instance?.ShadowQuad?.gameObject?.SetActive(true);
+        }
+            if (GameStates.IsLobby)
+            {
+                var POM = GameObject.Find("PlayerOptionsMenu(Clone)");
+                __instance.GameSettings.text = POM != null ? "" : OptionShower.GetTextNoFresh(); //OptionShower.GetText();
+                __instance.GameSettings.fontSizeMin =
+                __instance.GameSettings.fontSizeMax = 1.1f;
+            }
+
         //ゲーム中でなければ以下は実行されない
         if (!AmongUsClient.Instance.IsGameStarted) return;
 
@@ -178,7 +187,7 @@ class HudManagerPatch
                     case CustomRoles.Shroud:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText($"{GetString("ShroudButtonText")}");
-                       break;
+                        break;
                     case CustomRoles.BountyHunter:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         BountyHunter.SetAbilityButtonText(__instance);
@@ -494,7 +503,7 @@ class HudManagerPatch
                         };
                         break;
                 }
-                
+
                 //else if (player.Is(CustomRoles.Occultist))
                 //{
                 //    LowerInfoText.text = Occultist.GetHexModeText(player, true);
