@@ -3099,6 +3099,7 @@ public static class Options
 
         // Reset Doors After Meeting
         ResetDoorsEveryTurns = BooleanOptionItem.Create(60500, "ResetDoorsEveryTurns", false, TabGroup.GameSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         // Reset Doors Mode
         DoorsResetMode = StringOptionItem.Create(60501, "DoorsResetMode", EnumHelper.GetAllNames<DoorsReset.ResetMode>(), 2, TabGroup.GameSettings, false)

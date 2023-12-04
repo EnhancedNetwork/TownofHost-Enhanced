@@ -49,7 +49,7 @@ public static class Credentials
             if (Main.ShowTextOverlay.Value)
             {
                 if (Options.NoGameEnd.GetBool()) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("Overlay.NoGameEnd")));
-                if (Options.AllowConsole.GetBool()) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("Overlay.AllowConsole")));
+                if (Options.AllowConsole.GetBool() && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("Overlay.AllowConsole")));
                 if (DebugModeManager.IsDebugMode) sb.Append("\r\n").Append(Utils.ColorString(Color.green, GetString("Overlay.DebugMode")));
                 if (Options.LowLoadMode.GetBool()) sb.Append("\r\n").Append(Utils.ColorString(Color.green, GetString("Overlay.LowLoadMode")));
                 if (Options.GuesserMode.GetBool()) sb.Append("\r\n").Append(Utils.ColorString(Color.yellow, GetString("Overlay.GuesserMode")));
