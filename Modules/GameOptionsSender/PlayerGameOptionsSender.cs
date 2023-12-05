@@ -590,7 +590,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
         MeetingTimeManager.ApplyGameOptions(opt);
 
         AURoleOptions.ShapeshifterCooldown = Mathf.Max(1f, AURoleOptions.ShapeshifterCooldown);
-        AURoleOptions.ProtectionDurationSeconds = Main.UseVersionProtocol.Value ? 0f : 60f;
+        AURoleOptions.ProtectionDurationSeconds = 0f;
 
         return opt;
     }

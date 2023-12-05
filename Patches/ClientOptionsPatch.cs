@@ -30,7 +30,6 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem VoteImmune;
     private static ClientOptionItem SpeedBoost;
     private static ClientOptionItem BigSize;
-    private static ClientOptionItem UseVersionProtocol;
 
     public static void Postfix(OptionsMenuBehaviour __instance)
     {
@@ -118,10 +117,6 @@ public static class OptionsMenuBehaviourStartPatch
                 Main.Instance.Unload();
             }
         }
-        if (UseVersionProtocol == null || UseVersionProtocol.ToggleButton == null)
-        {
-            UseVersionProtocol = ClientOptionItem.Create("UseVersionProtocol", Main.UseVersionProtocol, __instance);
-        }
         if ((VersionCheat == null || VersionCheat.ToggleButton == null) && DebugModeManager.AmDebugger)
         {
             VersionCheat = ClientOptionItem.Create("VersionCheat", Main.VersionCheat, __instance);
@@ -134,10 +129,13 @@ public static class OptionsMenuBehaviourStartPatch
             {
                 InfiniteVision = ClientOptionItem.Create("InfiniteVision", Main.InfiniteVision, __instance);
             }
+    if (PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsMod)
+    {
         if ((AllowTPs == null || AllowTPs.ToggleButton == null))
         {
             AllowTPs = ClientOptionItem.Create("AllowTPs", Main.AllowTPs, __instance);
         }
+    }
         if ((ImpTasks == null || ImpTasks.ToggleButton == null))
             {
                 Debug.Log("trying to add, atleast trying.");

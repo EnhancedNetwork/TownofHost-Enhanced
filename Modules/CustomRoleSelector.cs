@@ -69,8 +69,6 @@ internal class CustomRoleSelector
         {
             var role = (CustomRoles)Enum.Parse(typeof(CustomRoles), cr.ToString());
             if (role.IsVanilla() || role.IsAdditionRole()) continue;
-            if (role is CustomRoles.DarkHide && Options.IsActiveFungle) continue;
-            if (!role.IsAbleToHostPublic()) continue;
             if (role is CustomRoles.GM or CustomRoles.NotAssigned) continue;
 
             if (Options.IsActiveFungle) // The Fungle
@@ -420,8 +418,6 @@ internal class CustomRoleSelector
         {
             CustomRoles role = (CustomRoles)Enum.Parse(typeof(CustomRoles), cr.ToString());
             if (!role.IsAdditionRole()) continue;
-            if (role.Is(CustomRoles.Mare) && Options.IsActiveFungle) continue;
-            if (!role.IsAbleToHostPublic()) continue;
             if (role is CustomRoles.Madmate && Options.MadmateSpawnMode.GetInt() != 0) continue;
             if (role is CustomRoles.Lovers or CustomRoles.LastImpostor or CustomRoles.Workhorse) continue;
 

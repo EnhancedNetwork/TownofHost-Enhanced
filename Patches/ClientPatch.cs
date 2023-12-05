@@ -109,19 +109,6 @@ internal class RunLoginPatch
             Main.hasAccess = false;
             Logger.Warn("Banned because no access to dev", "dbConnect");
         }
-
-        if (Main.hasAccess == false)
-        {
-            switch (friendcode)
-            {
-                default:
-                    if (DevManager.GetDevUser(friendcode).IsDev)
-                        Main.hasAccess = true;
-                    break;
-            }
-            if (Main.hasAccess)
-                Logger.Info("Local Access", "EOSManager");
-        }
     }
 }
 [HarmonyPatch(typeof(BanMenu), nameof(BanMenu.SetVisible))]

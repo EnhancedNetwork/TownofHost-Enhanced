@@ -3469,7 +3469,8 @@
   "AutoMuteUs": "Enable it if you use AutoMuteUs",
   "HorseMode": "Enable to become a horse",
   "InfluencedChangeVote": "oops!You are so influenced by others!\nYou can not contain your fear that you change voted {0}!",
-  "UseVersionProtocol": "Use version protocol/n(Enable to host private rooms)",
+
+
   "FFA": "Free For All",
   "ModeFFA": "Gamemode: FFA",
   "ModeDescribe.FFA": "In the FFA (Free For All) gamemode, everyone is a killer and everyone can kill anyone. The last player alive wins!\n\nSome random events make this even more fun in the mean time!",

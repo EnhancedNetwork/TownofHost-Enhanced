@@ -15,8 +15,7 @@ class ServerUpdatePatch
         {
             // Changing server version for AU mods
             //if (!Main.VersionCheat.Value)
-            if (Main.UseVersionProtocol.Value)
-                __result += 25;
+            __result += 25;
             Logger.Info($"IsOnlineGame: {__result}", "VersionServer");
         }
     }
