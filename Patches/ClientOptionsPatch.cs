@@ -30,6 +30,7 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem VoteImmune;
     private static ClientOptionItem SpeedBoost;
     private static ClientOptionItem BigSize;
+    private static ClientOptionItem UseVersionProtocol;
 
     public static void Postfix(OptionsMenuBehaviour __instance)
     {
@@ -116,6 +117,10 @@ public static class OptionsMenuBehaviourStartPatch
                 Harmony.UnpatchAll();
                 Main.Instance.Unload();
             }
+        }
+        if (UseVersionProtocol == null || UseVersionProtocol.ToggleButton == null)
+        {
+            UseVersionProtocol = ClientOptionItem.Create("UseVersionProtocol", Main.UseVersionProtocol, __instance);
         }
         if ((VersionCheat == null || VersionCheat.ToggleButton == null) && DebugModeManager.AmDebugger)
         {
