@@ -52,6 +52,15 @@ class CheckForEndVotingPatch
                     }
                 }
 
+                if (pva.DidVote && CheckRole(pva.VotedFor, CustomRoles.Solsticer)
+                    || CheckRole(pva.VotedFor, CustomRoles.Zombie))
+                {
+                    pva.UnsetVote();
+                    __instance.RpcClearVote(pc.GetClientId());
+                    return false;
+                }
+                // The chat note is patched at PlayerControl RPCSendChatNote
+
                 if (pc.Is(CustomRoles.Dictator) && pva.DidVote && pc.PlayerId != pva.VotedFor && pva.VotedFor < 253 && !pc.Data.IsDead)
                 {
                     var voteTarget = Utils.GetPlayerById(pva.VotedFor);

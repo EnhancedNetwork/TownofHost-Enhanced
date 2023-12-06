@@ -38,11 +38,11 @@ namespace TOHE.Roles.Neutral
                 .SetParent(CustomRoleSpawnChances[CustomRoles.Solsticer]);
             SolsticerSpeed = FloatOptionItem.Create(Id + 14, "SolsticerSpeed", new(0, 5, 0.1f), 1.5f, TabGroup.OtherRoles, false)
                 .SetParent(CustomRoleSpawnChances[CustomRoles.Solsticer]);
-            RemainingTasksToBeWarned = IntegerOptionItem.Create(Id + 17, "SolsticerRemainingTaskWarned", new(0, 10, 1), 1, TabGroup.OtherRoles, false)
+            RemainingTasksToBeWarned = IntegerOptionItem.Create(Id + 15, "SolsticerRemainingTaskWarned", new(0, 10, 1), 1, TabGroup.OtherRoles, false)
                 .SetParent(CustomRoleSpawnChances[CustomRoles.Solsticer]);
-            AddTasksPreDeadPlayer = FloatOptionItem.Create(Id + 15, "SAddTasksPreDeadPlayer", new(0, 15, 0.1f), 0.5f, TabGroup.OtherRoles, false)
+            AddTasksPreDeadPlayer = FloatOptionItem.Create(Id + 16, "SAddTasksPreDeadPlayer", new(0, 15, 0.1f), 0.5f, TabGroup.OtherRoles, false)
                 .SetParent(CustomRoleSpawnChances[CustomRoles.Solsticer]);
-            SolsticerTasks = OverrideTasksData.Create(Id + 16, TabGroup.OtherRoles, CustomRoles.Solsticer);
+            SolsticerTasks = OverrideTasksData.Create(Id + 17, TabGroup.OtherRoles, CustomRoles.Solsticer);
         }
         public static void Init()
         {
@@ -127,6 +127,7 @@ namespace TOHE.Roles.Neutral
                 NameNotifyManager.Notify(killer, GetString("MurderSolsticer"));
                 RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
                 killer.SetKillCooldown(time: 10f, forceAnime: true);
+                killer.MarkDirtySettings();
                 if (SolsticerKnowKiller.GetBool())
                     MurderMessage = string.Format(GetString("SolsticerMurderMessage"), killer.GetRealName(), GetString(killer.GetCustomRole().ToString()));
                 else MurderMessage = "";
@@ -161,6 +162,7 @@ namespace TOHE.Roles.Neutral
                 if (dis < 1f)
                     return;
 
+                if (GameStates.IsMeeting) return;
                 pc.RpcTeleport(pos);
             }
         }
