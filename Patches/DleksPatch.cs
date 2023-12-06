@@ -5,7 +5,7 @@ namespace TOHE.Patches;
 
 // Thanks Galster (https://github.com/Galster-dev)
 [HarmonyPatch(typeof(AmongUsClient._CoStartGameHost_d__30), nameof(AmongUsClient._CoStartGameHost_d__30.MoveNext))]
-class DleksPatch
+public static class DleksPatch
 {
     private static bool Prefix(AmongUsClient._CoStartGameHost_d__30 __instance, ref bool __result)
     {
@@ -36,6 +36,20 @@ class DleksPatch
         __result = true;
         return false;
     }
+    public static bool BootFromVent(this PlayerControl player)
+    {
+        // if map is not Dleks, always returns false
+        if ((MapNames)Main.NormalOptions.MapId != MapNames.Dleks) return false;
+
+        return player.GetCustomRole() switch
+        {
+            CustomRoles.Arsonist => !(player.IsDouseDone() || (Options.ArsonistCanIgniteAnytime.GetBool() && (Utils.GetDousedPlayerCount(player.PlayerId).Item1 >= Options.ArsonistMinPlayersToIgnite.GetInt() || player.inVent))),
+            CustomRoles.Revolutionist => !player.IsDrawDone(),
+            
+            // return true when roles don't need to use vent
+            _ => true,
+        };
+    }
 }
 
 [HarmonyPatch(typeof(KeyValueOption), nameof(KeyValueOption.OnEnable))]
@@ -45,7 +59,7 @@ class AutoSelectDleksPatch
     {
         if (__instance.Title == StringNames.GameMapName)
         {
-            // vanilla clamps this to not autoselect dleks
+            // vanilla clamps this to not auto select dleks
             __instance.Selected = GameOptionsManager.Instance.CurrentGameOptions.MapId;
         }
     }
