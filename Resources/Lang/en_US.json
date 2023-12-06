@@ -986,7 +986,7 @@
   "ObliviousInfoLong": "(Add-ons):\nDetective and Cleaners won't be Oblivious. Oblivious cannot report dead bodies. Note: Bait killed by Oblivious will still be reported automatically, and Oblivious can still be used as a scapegoat for the Anonymous.",
   "BewilderInfoLong": "(Add-ons):\nBewilder may have a smaller/bigger vision. When the Bewilder is killed, the murderer's vision may become the same as the Bewilder's vision depending on the settings.",
   "WorkhorseInfoLong": "(Add-ons):\nThe first player to complete all the tasks will become Workhorse, Workhorse will give the player extra tasks. The amount of additional tasks are set by the host.",
-  "FoolInfoLong": "(Add-ons):\nImpostor and Mechanic won't be Fool. Fools can't repair any sabotage.",
+  "FoolInfoLong": "(Add-ons):\nSleuth and Mechanic won't be Fool. Fools can't repair any sabotage.",
   "AvangerInfoLong": "(Add-ons):\nHost can set whether the Impostor can become an Avenger. When the Avenger is killed (voted out and unconventional kills are not counted), the Avenger will revenge a random player.",
   "YoutuberInfoLong": "(Add-ons):\nOnly Crewmate will become YouTuber. When the YouTuber is the first player to be killed in the game, the YouTuber will win alone. If the YouTuber does not meet the win conditions, the YouTuber will follow the Crewmate to win. Note: Indirect killing methods such as being exiled, being guessed by the Guesser, etc. will not trigger the skills of the YouTuber.",
   "EgoistInfoLong": "(Add-ons):\nMadmate and Neutrals won't be Egoist. If the Egoist's team wins, the Egoist wins instead of their team.",

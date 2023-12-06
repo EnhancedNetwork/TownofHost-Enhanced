@@ -95,7 +95,10 @@ internal class CustomRoleSelector
                     or CustomRoles.Lighter
                     or CustomRoles.Chameleon
                     or CustomRoles.Mario // Vector
-                    or CustomRoles.Wraith) continue;
+                    or CustomRoles.Wraith
+                    or CustomRoles.Arsonist) continue;
+                if (role == CustomRoles.Witch && (Witch.SwitchTrigger)Witch.ModeSwitchAction.GetValue() == Witch.SwitchTrigger.Vent || // Spellcaster
+                    role == CustomRoles.HexMaster && (HexMaster.SwitchTrigger)HexMaster.ModeSwitchAction.GetValue() == HexMaster.SwitchTrigger.Vent) continue;
             }
 
             for (int i = 0; i < role.GetCount(); i++)
