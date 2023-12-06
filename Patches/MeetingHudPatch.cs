@@ -1297,6 +1297,10 @@ class MeetingHudStartPatch
             //赌徒提示
             sb.Append(Totocalcio.TargetMark(seer, target));
             sb.Append(Romantic.TargetMark(seer, target));
+            if (Captain.IsEnable)
+                if (target.GetCustomRole().IsCrewmate() && (!target.Is(CustomRoles.Madmate) || (target.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
+                    sb.Append(Utils.ColorString((Utils.GetRoleColor(CustomRoles.Captain), "◈")));
+
             sb.Append(Lawyer.LawyerMark(seer, target));
 
             //会議画面ではインポスター自身の名前にSnitchマークはつけません。
