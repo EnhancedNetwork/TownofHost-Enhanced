@@ -153,7 +153,8 @@ enum CustomRPC
     SyncSabotageMasterSkill,
     //FFA
     SyncFFAPlayer,
-    SyncFFANameNotify
+    SyncFFANameNotify,
+    SyncSolsticerNotify
 }
 public enum Sounds
 {
@@ -577,6 +578,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SyncFFANameNotify:
                 FFAManager.ReceiveRPCSyncNameNotify(reader);
+                break;
+            case CustomRPC.SyncSolsticerNotify:
+                Solsticer.ReceiveRPC(reader);
                 break;
             case CustomRPC.SyncNWitch:
                 NWitch.ReceiveRPC(reader);

@@ -112,6 +112,7 @@ static class CustomRolesHelper
                 CustomRoles.Ludopath => CustomRoles.Impostor,
                 CustomRoles.Godfather => CustomRoles.Impostor,
                 CustomRoles.Workaholic => CustomRoles.Engineer,
+                CustomRoles.Solsticer => Solsticer.SolsticerCanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
                 CustomRoles.CursedWolf => CustomRoles.Impostor,
                 CustomRoles.Collector => CustomRoles.Crewmate,
                 CustomRoles.Taskinator => CustomRoles.Engineer,

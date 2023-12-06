@@ -208,6 +208,10 @@ class CheckMurderPatch
                     Main.ShamanTarget = byte.MaxValue;
                 }
                 break;
+            case CustomRoles.Solsticer:
+                if (Solsticer.OnCheckMurder(killer, target))
+                    return false;
+                break;
         }
         
         if (killerRole.Is(CustomRoles.Chronomancer))
@@ -2670,6 +2674,10 @@ class FixedUpdatePatch
                             }
                         }
                         break;
+
+                    case CustomRoles.Solsticer:
+                        Solsticer.OnFixedUpdate(player);
+                        break;
                 }
 
                 // Revolutionist
@@ -3099,6 +3107,10 @@ class FixedUpdatePatch
                     Mark.Append(Snitch.GetWarningMark(seer, target));
                     Mark.Append(Snitch.GetWarningArrow(seer, target));
                 }
+
+                if (CustomRoles.Solsticer.RoleExist())
+                    if (target.AmOwner || target.Is(CustomRoles.Solsticer))
+                        Mark.Append(Solsticer.GetWarningArrow(seer, target));
 
                 if (Marshall.IsEnable)
                     Mark.Append(Marshall.GetWarningMark(seer, target));
@@ -3865,6 +3877,10 @@ class PlayerControlCompleteTaskPatch
         {
             //ライターもしくはスピードブースターもしくはドクターがいる試合のみタスク終了時にCustomSyncAllSettingsを実行する
             Utils.MarkEveryoneDirtySettings();
+        }
+        if (pc.Is(CustomRoles.Solsticer))
+        {
+            Solsticer.OnCompleteTask(pc);
         }
     }
 }

@@ -635,11 +635,12 @@ public class TaskState
                         Logger.Info($"Crewpostor tried to kill pestilence (reflected back)：{target.GetNameWithRole()} => {player.GetNameWithRole()}", "Pestilence Reflect");
                     }
                 }
-            } 
+            }
         }
 
         //クリアしてたらカウントしない
         if (CompletedTasksCount >= AllTasksCount) return;
+        if (player.Is(CustomRoles.Solsticer) && !AmongUsClient.Instance.AmHost) return; //Solsticer task state is updated by host rpc
 
         CompletedTasksCount++;
 
