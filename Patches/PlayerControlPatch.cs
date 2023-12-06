@@ -4015,12 +4015,13 @@ class PlayerControlSendChatNotePatch
         {
             if (CheckForEndVotingPatch.GetPlayerVoteArea(srcPlayerId).DidVote)
             {
+                DestroyableSingleton<HudManager>.Instance.Chat.AddChatNote(Utils.GetPlayerInfoById(srcPlayerId), noteType);
                 SendRPC(__instance, srcPlayerId, noteType);
             }
             else
             {
                 //Logger.Info($"Vote chat note canceled for {srcPlayerId}", "SendChatNotePatch");
-                //This log spams lol
+                //This spams logs lol
             }
         }, 0.1f, "SendChatNotePatch");
         //0.1f should be enough for meeting hud to act
