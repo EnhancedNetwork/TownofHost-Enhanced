@@ -986,7 +986,7 @@
   "ObliviousInfoLong": "(Atributos):\n★A Perícia e os Faxineiros não serão o Alheio. O Alheio não pode reportar corpos mortos. Nota: Se um Armador for morto pelo Alheio, a função do Armador funcionará normalmente e o corpo será reportado.",
   "BewilderInfoLong": "(Atributos):\n★Impostores não serão o Perplexo. O Perplexo talvez tenha uma visão menor/maior dependendo da configuração do Anfitrião. Quando o Perplexo for morto, a visão de quem o matou se tornará igual a do Perplexo.",
   "WorkhorseInfoLong": "(Atributos):\n★A primeira pessoa a completar todas as tasks se tornará o Burro de Carga, o Burro de Carga dará tarefas adicionais para outros jogadores. A quantidade de tarefas adicionais é definida pelo Anfitrião.",
-  "FoolInfoLong": "(Atributos):\n★O Impostor e o Mecânico não serão o Travesso. O Travesso não pode consertar nenhuma sabotagem.",
+  "FoolInfoLong": "(Atributos):\n★O Cão de Caça e o Mecânico não serão o Travesso. O Travesso não pode consertar nenhuma sabotagem.",
   "AvangerInfoLong": "(Atributos):\n★O Anfitrião pode configurar se o Impostor se tornará Vingador. Quando o Vingador for morto (ejetado e morte não convencional não conta), o Vingador terá vingança de um jogador aleatório.",
   "YoutuberInfoLong": "(Atributos):\n★Apenas Tripulantes serão Trolls. Quando o Troll é o primeiro jogador a morrer, o Troll vai vencer sozinho. Se o Troll não for o primeiro a morrer, ele será um Tripulante normal. Nota: Métodos de matar não convencionais anularão a habilidade do Troll.",
   "EgoistInfoLong": "(Atributos):\n★Cúmplices e Neutros não serão o Egoísta. Se o time em que o Egoísta está vencer, o Egoísta irá ganhar sozinho.",
