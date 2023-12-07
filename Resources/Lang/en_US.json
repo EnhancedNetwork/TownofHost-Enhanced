@@ -3515,5 +3515,8 @@
   "SolsticerOnMeeting": "You witnessed too many deaths! Next round you will have {0} more short task!",
   "SolsticerTitle": "Solsticer",
   "GuessSolsticer": "Sorry, but you can not guess Solsticer!",
-  "SolsticerTasksReset": "Your tasks get reset!"
+  "VoteSolsticer": "Sorry, but you can not vote Solsticer!",
+  "SolsticerTasksReset": "Your tasks get reset!",
+
+  "VoteDead": "Sorry, but the player you just voted is already died, so your vote is returned."
 }

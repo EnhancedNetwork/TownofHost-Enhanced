@@ -124,9 +124,12 @@ namespace TOHE.Roles.Neutral
                 patched = true;
                 target.MarkDirtySettings();
                 ResetTasks(target);
-                NameNotifyManager.Notify(killer, GetString("MurderSolsticer"));
-                RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
-                killer.SetKillCooldown(time: 10f, forceAnime: true);
+                if (EveryOneKnowSolsticer.GetBool())
+                {
+                    NameNotifyManager.Notify(killer, GetString("MurderSolsticer"));
+                    RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
+                }
+                killer.SetKillCooldown(time: 10f, forceAnime: EveryOneKnowSolsticer.GetBool());
                 killer.MarkDirtySettings();
                 if (SolsticerKnowKiller.GetBool())
                     MurderMessage = string.Format(GetString("SolsticerMurderMessage"), killer.GetRealName(), GetString(killer.GetCustomRole().ToString()));

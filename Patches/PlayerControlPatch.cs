@@ -4004,34 +4004,3 @@ class PlayerControlSetRolePatch
         return true;
     }
 }
-
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSendChatNote))]
-class PlayerControlSendChatNotePatch
-{
-    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte srcPlayerId, [HarmonyArgument(1)] ChatNoteTypes noteType)
-    {
-        //This is used to cancel send chat note if the meeting hud unset a player's vote
-        _ = new LateTask(() =>
-        {
-            if (CheckForEndVotingPatch.GetPlayerVoteArea(srcPlayerId).DidVote)
-            {
-                DestroyableSingleton<HudManager>.Instance.Chat.AddChatNote(Utils.GetPlayerInfoById(srcPlayerId), noteType);
-                SendRPC(__instance, srcPlayerId, noteType);
-            }
-            else
-            {
-                //Logger.Info($"Vote chat note canceled for {srcPlayerId}", "SendChatNotePatch");
-                //This spams logs lol
-            }
-        }, 0.1f, "SendChatNotePatch");
-        //0.1f should be enough for meeting hud to act
-        return false;
-    }
-    private static void SendRPC(PlayerControl __instance,  byte srcPlayerId,  ChatNoteTypes noteType)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.SendChatNote, SendOption.Reliable);
-        writer.Write(srcPlayerId);
-        writer.Write((byte)noteType);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-}

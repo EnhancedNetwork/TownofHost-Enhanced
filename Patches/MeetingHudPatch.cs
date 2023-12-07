@@ -52,15 +52,6 @@ class CheckForEndVotingPatch
                     }
                 }
 
-                if (pva.DidVote && CheckRole(pva.VotedFor, CustomRoles.Solsticer)
-                    || CheckRole(pva.VotedFor, CustomRoles.Zombie))
-                {
-                    pva.UnsetVote();
-                    __instance.RpcClearVote(pc.GetClientId());
-                    return false;
-                }
-                // The chat note is patched at PlayerControl RPCSendChatNote
-
                 if (pc.Is(CustomRoles.Dictator) && pva.DidVote && pc.PlayerId != pva.VotedFor && pva.VotedFor < 253 && !pc.Data.IsDead)
                 {
                     var voteTarget = Utils.GetPlayerById(pva.VotedFor);
@@ -715,6 +706,8 @@ static class ExtendedMeetingHud
                 {
                     // 僵尸、活死人无法被票
                     if (target.Is(CustomRoles.Zombie)) VoteNum = 0;
+                    //Solsticer can not get voted out
+                    if (target.Is(CustomRoles.Solsticer)) VoteNum = 0;
                     // 记录破平者投票
                     if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Brakar))
                         if (!Main.BrakarVoteFor.Contains(target.PlayerId))
