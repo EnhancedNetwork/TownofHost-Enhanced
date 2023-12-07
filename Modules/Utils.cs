@@ -2069,6 +2069,9 @@ public static class Utils
                 if (Snitch.IsEnable)
                     SelfMark.Append(Snitch.GetWarningArrow(seer));
 
+                if (CustomRoles.Solsticer.RoleExist())
+                    SelfMark.Append(Solsticer.GetWarningArrow(seer, seer));
+
                 if (Gamer.IsEnable)
                     SelfMark.Append(Gamer.TargetMark(seer, seer));
 
@@ -2344,6 +2347,11 @@ public static class Utils
 
                         if (Snitch.IsEnable)
                             TargetMark.Append(Snitch.GetWarningMark(seer, target));
+
+                        if (target.Is(CustomRoles.Solsticer))
+                        {
+                            TargetMark.Append(Solsticer.GetWarningArrow(seer, target));
+                        }
 
                         if (Executioner.IsEnable)
                             TargetMark.Append(Executioner.TargetMark(seer, target));
@@ -2663,6 +2671,7 @@ public static class Utils
         Pirate.AfterMeetingTask();
         Chronomancer.AfterMeetingTask();
         Seeker.AfterMeetingTasks();
+        Solsticer.AfterMeetingTasks();
         Main.ShamanTarget = byte.MaxValue;
         Main.ShamanTargetChoosen = false;
         Main.BurstBodies.Clear();

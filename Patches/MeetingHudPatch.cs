@@ -706,6 +706,8 @@ static class ExtendedMeetingHud
                 {
                     // 僵尸、活死人无法被票
                     if (target.Is(CustomRoles.Zombie)) VoteNum = 0;
+                    //Solsticer can not get voted out
+                    if (target.Is(CustomRoles.Solsticer)) VoteNum = 0;
                     // 记录破平者投票
                     if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Brakar))
                         if (!Main.BrakarVoteFor.Contains(target.PlayerId))
@@ -891,6 +893,13 @@ class MeetingHudStartPatch
                 AddMsg(Main.VirusNotify[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Virus), GetString("VirusNoticeTitle")));
             if (Enigma.MsgToSend.ContainsKey(pc.PlayerId))
                 AddMsg(Enigma.MsgToSend[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Enigma), Enigma.MsgToSendTitle[pc.PlayerId]));
+            if (pc.Is(CustomRoles.Solsticer))
+            {
+                Solsticer.SetShortTasksToAdd();
+                if (Solsticer.MurderMessage == "")
+                    Solsticer.MurderMessage = string.Format(GetString("SolsticerOnMeeting"), Solsticer.AddShortTasks);
+                AddMsg(Solsticer.MurderMessage, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("SolsticerTitle")));
+            }
         }
         //宝箱怪的消息（合并）
         if (MimicMsg != "")

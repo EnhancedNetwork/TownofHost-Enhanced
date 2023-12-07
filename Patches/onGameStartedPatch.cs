@@ -219,6 +219,7 @@ internal class ChangeRoleSettings
             SwordsMan.Init();
             EvilTracker.Init();
             Snitch.Init();
+            Solsticer.Init();
             Vampire.Init();
             Vampiress.Init();
             Poisoner.Init();
@@ -664,6 +665,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Snitch:
                         Snitch.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Solsticer:
+                        Solsticer.Add(pc.PlayerId);
                         break;
                     case CustomRoles.AntiAdminer:
                         AntiAdminer.Add(pc.PlayerId);
