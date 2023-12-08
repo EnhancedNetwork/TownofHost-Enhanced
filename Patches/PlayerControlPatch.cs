@@ -1267,13 +1267,34 @@ class CheckMurderPatch
         }
 
         //首刀保护
-        if (Main.ShieldPlayer != byte.MaxValue && Main.ShieldPlayer == target.PlayerId && Utils.IsAllAlive)
+        if (Main.ShieldPlayer == target.PlayerId && Utils.IsAllAlive)
         {
             Main.ShieldPlayer = byte.MaxValue;
-            killer.SetKillCooldown();
-            killer.RpcGuardAndKill(target);
-            //target.RpcGuardAndKill();
-            return false;
+
+            switch (Options.HostGetKilledFirstAction.GetInt())
+            {
+                case 0:
+                    killer.SetKillCooldown(forceAnime: true);
+                    return false;
+                case 1:
+                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Youtuber);
+                    CustomWinnerHolder.WinnerIds.Add(target.PlayerId);
+                    break;
+                case 2:
+                    target.RpcMurderPlayerV3(killer);
+                    return false;
+                case 3:
+                    Main.AllAlivePlayerControls
+                        .Where(x => x.PlayerId != target.PlayerId)
+                        .Do(x =>
+                        {
+                            x.RpcSpecificMurderPlayer(x, x);
+                            x.SetRealKiller(target);
+                            Main.PlayerStates[x.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
+                        });
+                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.None);
+                    break;
+            }
         }
 
         //首刀叛变
