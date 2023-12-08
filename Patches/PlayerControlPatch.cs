@@ -1315,16 +1315,17 @@ class MurderPlayerPatch
 
         if (AmongUsClient.Instance.AmHost)
         {
-            if (resultFlags == MurderResultFlags.Succeeded) //This means the client directly send murder player without check murder
+            if (resultFlags == MurderResultFlags.Succeeded)
             {
                 __instance.RpcSpecificMurderPlayer(__instance, __instance);
-                EAC.Report(__instance, "Failed cmd check murder");
+                EAC.Report(__instance, "No check murder");
                 EAC.WarnHost();
-                EAC.HandleCheat(__instance, "Failed cmd check murder");
+                EAC.HandleCheat(__instance, "No check murder");
                 return false;
             }
+            //As long as the check murder is done by host, the murder result flags will always have DecisionByHost
+            //Succeed means the client send a murder player rpc without check murder to host
         }
-
         return true;
     }
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] MurderResultFlags resultFlags)
