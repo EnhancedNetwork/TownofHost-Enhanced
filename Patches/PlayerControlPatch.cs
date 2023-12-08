@@ -1324,7 +1324,7 @@ class CheckMurderPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
 class MurderPlayerPatch
 {
-    public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] MurderResultFlags resultFlags)
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] MurderResultFlags resultFlags)
     {
         Logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}{(target.IsProtected() ? "(Protected)" : "")}, flags : {resultFlags}", "MurderPlayer");
 
@@ -1338,6 +1338,20 @@ class MurderPlayerPatch
             Camouflage.ResetSkinAfterDeathPlayers.Add(target.PlayerId);
             Camouflage.RpcSetSkin(target, ForceRevert: true);
         }
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            if (resultFlags == MurderResultFlags.Succeeded) //This means the client directly send murder player without check murder
+            {
+                __instance.RpcSpecificMurderPlayer(__instance, __instance);
+                EAC.Report(__instance, "Failed cmd check murder");
+                EAC.WarnHost();
+                EAC.HandleCheat(__instance, "Failed cmd check murder");
+                return false;
+            }
+        }
+
+        return true;
     }
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] MurderResultFlags resultFlags)
     {
