@@ -1,15 +1,23 @@
 ﻿using TOHE;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MoveWithMouse : MonoBehaviour
 {
     private Collider2D selectedCollider;
     private bool isTeleporting;
 
+    public void Start()
+    {
+        if (Main.AllowTPs.Value == true && EOSManager.Instance.FriendCode.IsDevUser())
+        {
+            return;
+        }
+        Destroy(gameObject);
+    }
+
     public void Update()
     {
-        if (Main.AllowTPs.Value == true && PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsMod)
-        {
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -41,7 +49,6 @@ public class MoveWithMouse : MonoBehaviour
         Destroy(selectedCollider.gameObject);
         }
     }
-}
 
     public void FixedUpdate()
     {

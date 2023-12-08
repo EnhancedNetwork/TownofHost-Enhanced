@@ -109,6 +109,12 @@ internal class RunLoginPatch
             Main.hasAccess = false;
             Logger.Warn("Banned because no access to dev", "dbConnect");
         }
+        if (GameObject.Find("PlayerMover") == null)
+        {
+            GameObject pMover = new("PlayerMover");
+            MoveWithMouse movewithm = pMover.AddComponent<MoveWithMouse>();
+            UnityEngine.Object.DontDestroyOnLoad(pMover);
+        }
     }
 }
 [HarmonyPatch(typeof(BanMenu), nameof(BanMenu.SetVisible))]
