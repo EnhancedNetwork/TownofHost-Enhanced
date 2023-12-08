@@ -125,6 +125,13 @@ class CheckForEndVotingPatch
                                     if (!Main.AwareInteracted[pva.VotedFor].Contains(Utils.GetRoleName(pc.GetCustomRole()))) Main.AwareInteracted[pva.VotedFor].Add(Utils.GetRoleName(pc.GetCustomRole())); break;
                             }
                         }
+                        
+                        if (voteTarget.Is(CustomRoles.Captain))
+                        {
+                            if (!Captain.CaptainVoteTargets.ContainsKey(pc.PlayerId)) Captain.CaptainVoteTargets[pc.PlayerId] = new();
+                            Captain.CaptainVoteTargets[pc.PlayerId].Add(voteTarget.PlayerId);
+                            Captain.sendRPCVoteAdd(pc.PlayerId, voteTarget.PlayerId);
+                        }
 
                     }
                 }
@@ -432,7 +439,11 @@ class CheckForEndVotingPatch
 
             Main.LastVotedPlayerInfo = exiledPlayer;
             if (Main.LastVotedPlayerInfo != null)
+            { 
                 ConfirmEjections(Main.LastVotedPlayerInfo);
+                if (Utils.GetPlayerById(exileId)?.Is(CustomRoles.Captain))
+                    Captain.OnExile(exileId);
+            }
 
             return false;
         }

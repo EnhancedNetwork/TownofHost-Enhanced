@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 using static TOHE.Options;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -16,6 +17,7 @@ public static class Captain
     private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Marshall);
 
     private static Dictionary<byte, float> OriginalSpeed = new();
+    public static Dictionary<byte, List<byte>> CaptainVoteTargets = new();
 
     public static OptionItem OptionCrewCanFindCaptain;
     public static OptionItem OptionMadmateCanFindCaptain;
@@ -47,6 +49,7 @@ public static class Captain
     {
         playerIdList = new();
         OriginalSpeed = new();
+        CaptainVoteTargets = new();
     }
 
     public static void Add(byte playerId)
@@ -78,6 +81,24 @@ public static class Captain
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         return;
     }
+
+    public static void sendRPCVoteAdd(byte playerId, byte targetId)
+    {
+        MessageWriter writer;
+        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCaptainVotedTarget, SendOption.Reliable, -1);
+        writer.Write(playerId);
+        writer.Write(targetId);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        return;
+    }
+    private static void sendRPCVoteRemove()
+    {
+        MessageWriter writer;
+        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RevertCaptainVoteRemove, SendOption.Reliable, -1);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        return;
+    }
+    
     public static void OnTaskComplete(PlayerControl pc)
     {
         if (pc == null) return;
@@ -104,6 +125,47 @@ public static class Captain
             OriginalSpeed.Remove(target);
             sendRPCRevertSpeed(target);
         }, OptionReducedSpeedTime.GetFloat(), "Captain Revert Speed");
+    }
+    private static CustomRoles? SelectRandomAddon(byte targetId)
+    {
+        if (!AmongUsClient.Instance.AmHost) return null;
+        var AllSubRoles = Main.PlayerStates[targetId].SubRoles;
+        for (int i = AllSubRoles.Count - 1; i >= 0; i--)
+        {
+            var role = AllSubRoles[i];
+            if (role == CustomRoles.LastImpostor ||
+                role == CustomRoles.Lovers) // Causes issues involving Lovers Suicide
+            {
+                Logger.Info($"Removed {role} from list of addons", "Captain");
+                AllSubRoles.Remove(role);
+            }
+        }
+
+        if (!AllSubRoles.Any())
+        {
+            Logger.Info("No removable addons found on the target.", "Bandit");
+            return null;
+        }
+        var rand = IRandom.Instance;
+        var addon = AllSubRoles[rand.Next(0, AllSubRoles.Count)];
+        return addon;
+    }
+    public static void OnExile(byte playerId)
+    {
+        if (playerId == byte.MaxValue) return;
+        if (!CaptainVoteTargets.ContainsKey(playerId)) return;
+        for (int i = 0; i < CaptainVoteTargets[playerId].Count; i++)
+        {
+            var captainTarget = CaptainVoteTargets[playerId][i];
+            if (captainTarget == byte.MaxValue || !Utils.GetPlayerById(captainTarget).IsAlive()) continue;
+            var SelectedAddOn = SelectRandomAddon(captainTarget);
+            if (SelectedAddOn == null) continue;
+            Main.PlayerStates[captainTarget].RemoveSubRole((CustomRoles)SelectedAddOn);
+            Logger.Info($"Successfully removed {SelectedAddOn} addon from {Utils.GetPlayerById(captainTarget).GetNameWithRole()}", "Captain");
+
+        }
+        CaptainVoteTargets.Clear();
+        sendRPCVoteRemove();
     }
     public static void OnReportDeadBody()
     {
