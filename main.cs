@@ -846,7 +846,8 @@ public enum CustomRoles
     Overclocked,
     Hurried,
     Oiiai,
-    Influenced
+    Influenced,
+    Quizmaster
     // QuickFix
 }
 //WinData
@@ -940,8 +941,9 @@ public enum AdditionalWinners
     Shaman = CustomRoles.Shaman,
     Taskinator = CustomRoles.Taskinator,
     Pixie = CustomRoles.Pixie,
- //   NiceMini = CustomRoles.NiceMini,
- //   Baker = CustomRoles.Baker,
+    Quizmaster = CustomRoles.Quizmaster,
+    //   NiceMini = CustomRoles.NiceMini,
+    //   Baker = CustomRoles.Baker,
 }
 public enum SuffixModes
 {

@@ -151,6 +151,7 @@ enum CustomRPC
     SyncShroud,
     SyncMiniCrewAge,
     SyncSabotageMasterSkill,
+    QuizmasterMarkPlayer,
     //FFA
     SyncFFAPlayer,
     SyncFFANameNotify
@@ -731,6 +732,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SyncMiniCrewAge:
                 Mini.ReceiveRPC(reader);
+                break;
+            case CustomRPC.QuizmasterMarkPlayer:
+                Quizmaster.ReceiveRPC(reader);
                 break;
         }
     }
@@ -1381,6 +1385,9 @@ internal static class RPC
                 break;
             case CustomRoles.Instigator:
                 Instigator.Add(targetId);
+                break;
+            case CustomRoles.Quizmaster:
+                Quizmaster.Add(targetId);
                 break;
         }
         HudManager.Instance.SetHudActive(true);
