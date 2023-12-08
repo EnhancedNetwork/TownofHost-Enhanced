@@ -240,12 +240,12 @@ public class ModUpdater
             var fileName = Assembly.GetExecutingAssembly().Location;
             File.Move(fileName, fileName + ".bak");
             File.Move(savePath, fileName);
-            ShowPopup(GetString("updateRestart"), StringNames.ExitGame, true, true);
+            ShowPopup(GetString("updateRestart"), StringNames.Close, true, true);
         }
         catch (Exception ex)
         {
             Logger.Error($"Update failed\n{ex}", "DownloadDLL", false);
-            ShowPopup(GetString("updateManually"), StringNames.ExitGame, true, true);
+            ShowPopup(GetString("updateManually"), StringNames.Close, true, true);
             return false;
         }
         return true;
@@ -299,12 +299,12 @@ public class ModUpdater
             var fileName = Assembly.GetExecutingAssembly().Location;
             File.Move(fileName, fileName + ".bak");
             File.Move(savePath, fileName);
-            ShowPopup(GetString("updateRestart"), StringNames.ExitGame, true, true);
+            ShowPopup(GetString("updateRestart"), StringNames.Close, true, true);
         }
         catch (Exception ex)
         {
             Logger.Error($"Update failed\n{ex}", "DownloadDLL", false);
-            ShowPopup(GetString("updateManually"), StringNames.ExitGame, true, true);
+            ShowPopup(GetString("updateManually"), StringNames.Close, true, true);
             return false;
         }
         return true;
@@ -322,6 +322,7 @@ public class ModUpdater
             {
                 button.gameObject.SetActive(showButton);
                 button.GetChild(0).GetComponent<TextTranslatorTMP>().TargetText = buttonText;
+                button.GetChild(0).GetComponent<TextTranslatorTMP>().ResetText();
                 button.GetComponent<PassiveButton>().OnClick = new();
                 if (buttonIsExit) button.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() => Application.Quit()));
                 else button.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() => InfoPopup.Close()));
