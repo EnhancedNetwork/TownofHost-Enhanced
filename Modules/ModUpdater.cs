@@ -104,7 +104,7 @@ public class ModUpdater
                 Logger.Info(assets.ToString(), "ModUpdater");
                 for (int i = 0; i < assets.Count; i++)
                 {
-                    if (assets[i]["name"].ToString() == "TOH-Enhanced.1.3.0.zip" && Constants.GetPlatformType() == Platforms.StandaloneSteamPC)
+                    if (assets[i]["name"].ToString() == "TOH-Enhanced.zip" && Constants.GetPlatformType() == Platforms.StandaloneSteamPC)
                     {
                         downloadUrl = assets[i]["browser_download_url"].ToString();
                         break;
