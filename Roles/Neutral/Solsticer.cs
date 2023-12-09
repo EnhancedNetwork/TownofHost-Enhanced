@@ -100,7 +100,7 @@ namespace TOHE.Roles.Neutral
         }
         public static void ActiveWarning(PlayerControl pc)
         {
-            foreach (var target in Main.AllAlivePlayerControls.ToArray().Where(x => x.IsSolsticerTarget(onlyKiller: true)))
+            foreach (var target in Main.AllAlivePlayerControls.Where(x => x.IsSolsticerTarget(onlyKiller: true)).ToArray())
             {
                 TargetArrow.Add(target.PlayerId, pc.PlayerId);
             }
