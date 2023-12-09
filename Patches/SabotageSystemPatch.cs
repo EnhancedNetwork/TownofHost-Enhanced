@@ -82,6 +82,7 @@ public class SabotageSystemPatch
 
             // Set time limit reactor (The Airship)
             __instance.Countdown = Options.AirshipReactorTimeLimit.GetFloat();
+            QuizmasterHelpers.lastSabotage = Sabotages.Reactor;
         }
     }
     [HarmonyPatch(typeof(LifeSuppSystemType), nameof(LifeSuppSystemType.Deteriorate))]
@@ -105,6 +106,7 @@ public class SabotageSystemPatch
             Logger.Info($" {ShipStatus.Instance.Type}", "LifeSuppSystemType - ShipStatus.Instance.Type");
             Logger.Info($" {SetDurationForO2Sabotage}", "LifeSuppSystemType - SetDurationCriticalSabotage");
             SetDurationForO2Sabotage = false;
+            QuizmasterHelpers.lastSabotage = Sabotages.O2;
 
             // Set time limit reactor (The Skeld/Mira HQ)
             switch (ShipStatus.Instance.Type)
@@ -132,6 +134,7 @@ public class SabotageSystemPatch
                 // Need for hiding player names if player is desync Impostor
                 Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true, MushroomMixupIsActive: true);
             }
+            QuizmasterHelpers.lastSabotage = Sabotages.Reactor;
         }
     }
     [HarmonyPatch(typeof(MushroomMixupSabotageSystem), nameof(MushroomMixupSabotageSystem.Deteriorate))]
@@ -160,6 +163,7 @@ public class SabotageSystemPatch
 
             // Set duration Mushroom Mixup (The Fungle)
             __instance.currentSecondsUntilHeal = Options.FungleMushroomMixupDuration.GetFloat();
+            QuizmasterHelpers.lastSabotage = Sabotages.MushroomMixup;
         }
         public static void Postfix(MushroomMixupSabotageSystem __instance, bool __state)
         {
@@ -251,6 +255,7 @@ public class SabotageSystemPatch
         public static void Postfix()
         {
             Utils.MarkEveryoneDirtySettings();
+            QuizmasterHelpers.lastSabotage = Sabotages.Lights;
             if (!GameStates.IsMeeting)
                 Utils.NotifyRoles(ForceLoop: true);
         }
@@ -367,6 +372,7 @@ public class SabotageSystemPatch
                     amount = newReader.ReadByte();
                     newReader.Recycle();
                 }
+                QuizmasterHelpers.lastSabotage = Sabotages.Communications;
 
                 // When the camera is disabled, the vanilla player opens the camera so it does not blink.
                 if (amount == SecurityCameraSystemType.IncrementOp)

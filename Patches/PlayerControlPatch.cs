@@ -2403,6 +2403,7 @@ class ReportDeadBodyPatch
         if (Mediumshiper.IsEnable) Mediumshiper.OnReportDeadBody(target);
         if (Spiritualist.IsEnable) Spiritualist.OnReportDeadBody(target);
         if (Enigma.IsEnable) Enigma.OnReportDeadBody(player, target);
+        if (Quizmaster.IsEnable) Quizmaster.OnReportDeadBody(player, Utils.GetPlayerById(target.PlayerId));
 
         foreach (var pid in Main.AwareInteracted.Keys.ToArray())
         {
