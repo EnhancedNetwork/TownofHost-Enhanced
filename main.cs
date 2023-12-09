@@ -232,7 +232,6 @@ public class Main : BasePlugin
     public static bool IsAprilFools = DateTime.Now.Month == 4 && DateTime.Now.Day is 1;
     public static bool ResetOptions = true;
     public static byte FirstDied = byte.MaxValue;
-    public static byte ShieldPlayer = byte.MaxValue;
     public static int MadmateNum = 0;
     public static int BardCreations = 0;
     public static int MeetingsPassed = 0;
