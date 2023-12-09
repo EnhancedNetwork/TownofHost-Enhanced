@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TOHE.Modules;
+using TOHE.Patches;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Crewmate;
@@ -207,6 +208,10 @@ class CheckMurderPatch
                     target = Utils.GetPlayerById(Main.ShamanTarget);
                     Main.ShamanTarget = byte.MaxValue;
                 }
+                break;
+            case CustomRoles.Solsticer:
+                if (Solsticer.OnCheckMurder(killer, target))
+                    return false;
                 break;
         }
         
@@ -1266,13 +1271,34 @@ class CheckMurderPatch
         }
 
         //首刀保护
-        if (Main.ShieldPlayer != byte.MaxValue && Main.ShieldPlayer == target.PlayerId && Utils.IsAllAlive)
+        if (Main.ShieldPlayer == target.PlayerId && Utils.IsAllAlive)
         {
             Main.ShieldPlayer = byte.MaxValue;
-            killer.SetKillCooldown();
-            killer.RpcGuardAndKill(target);
-            //target.RpcGuardAndKill();
-            return false;
+
+            switch (Options.HostGetKilledFirstAction.GetInt())
+            {
+                case 0:
+                    killer.SetKillCooldown(forceAnime: true);
+                    return false;
+                case 1:
+                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Youtuber);
+                    CustomWinnerHolder.WinnerIds.Add(target.PlayerId);
+                    break;
+                case 2:
+                    target.RpcMurderPlayerV3(killer);
+                    return false;
+                case 3:
+                    Main.AllAlivePlayerControls
+                        .Where(x => x.PlayerId != target.PlayerId)
+                        .Do(x =>
+                        {
+                            x.RpcSpecificMurderPlayer(x, x);
+                            x.SetRealKiller(target);
+                            Main.PlayerStates[x.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
+                        });
+                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.None);
+                    break;
+            }
         }
 
         //首刀叛变
@@ -1447,7 +1473,7 @@ class MurderPlayerPatch
         if (target.Is(CustomRoles.Avanger))
         {
             var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId && !Pelican.IsEaten(x.PlayerId) && !Medic.ProtectList.Contains(x.PlayerId) 
-            && !x.Is(CustomRoles.Pestilence) && !x.Is(CustomRoles.Masochist) && !((x.Is(CustomRoles.NiceMini) || x.Is(CustomRoles.EvilMini)) && Mini.Age < 18)).ToList();
+            && !x.Is(CustomRoles.Pestilence) && !x.Is(CustomRoles.Masochist) && !x.Is(CustomRoles.Solsticer) && !((x.Is(CustomRoles.NiceMini) || x.Is(CustomRoles.EvilMini)) && Mini.Age < 18)).ToList();
             if (pcList.Any())
             {
                 PlayerControl rp = pcList[IRandom.Instance.Next(0, pcList.Count)];
@@ -2671,6 +2697,10 @@ class FixedUpdatePatch
                             }
                         }
                         break;
+
+                    case CustomRoles.Solsticer:
+                        Solsticer.OnFixedUpdate(player);
+                        break;
                 }
 
                 // Revolutionist
@@ -3100,6 +3130,10 @@ class FixedUpdatePatch
                     Mark.Append(Snitch.GetWarningMark(seer, target));
                     Mark.Append(Snitch.GetWarningArrow(seer, target));
                 }
+
+                if (CustomRoles.Solsticer.RoleExist())
+                    if (target.AmOwner || target.Is(CustomRoles.Solsticer))
+                        Mark.Append(Solsticer.GetWarningArrow(seer, target));
 
                 if (Marshall.IsEnable)
                     Mark.Append(Marshall.GetWarningMark(seer, target));
@@ -3761,14 +3795,14 @@ class CoEnterVentPatch
             return true;
         }
 
-        //处理弹出管道的阻塞
-        if (Main.NormalOptions.MapId == (int)MapNames.Dleks ||
-            (__instance.myPlayer.Data.Role.Role != RoleTypes.Engineer &&
-        !__instance.myPlayer.CanUseImpostorVentButton()) || //不能使用内鬼的跳管按钮
-        (__instance.myPlayer.Is(CustomRoles.Mayor) && Main.MayorUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count) && count >= Options.MayorNumOfUseButton.GetInt()) ||
-        (__instance.myPlayer.Is(CustomRoles.Paranoia) && Main.ParaUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count2) && count2 >= Options.ParanoiaNumOfUseButton.GetInt()) ||
-        (__instance.myPlayer.Is(CustomRoles.Veteran) && Main.VeteranNumOfUsed.TryGetValue(__instance.myPlayer.PlayerId, out var count3) && count3 < 1) ||
-        (__instance.myPlayer.Is(CustomRoles.DovesOfNeace) && Main.DovesOfNeaceNumOfUsed.TryGetValue(__instance.myPlayer.PlayerId, out var count4) && count4 < 1)
+        // Fix Vent Stuck
+        if (DleksPatch.BootFromVent(__instance.myPlayer)
+            || (__instance.myPlayer.Data.Role.Role != RoleTypes.Engineer 
+                && !__instance.myPlayer.CanUseImpostorVentButton())
+            || (__instance.myPlayer.Is(CustomRoles.Mayor) && Main.MayorUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count) && count >= Options.MayorNumOfUseButton.GetInt())
+            || (__instance.myPlayer.Is(CustomRoles.Paranoia) && Main.ParaUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count2) && count2 >= Options.ParanoiaNumOfUseButton.GetInt())
+            || (__instance.myPlayer.Is(CustomRoles.Veteran) && Main.VeteranNumOfUsed.TryGetValue(__instance.myPlayer.PlayerId, out var count3) && count3 < 1)
+            || (__instance.myPlayer.Is(CustomRoles.DovesOfNeace) && Main.DovesOfNeaceNumOfUsed.TryGetValue(__instance.myPlayer.PlayerId, out var count4) && count4 < 1)
         )
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.BootFromVent, SendOption.Reliable, -1);
@@ -3870,6 +3904,10 @@ class PlayerControlCompleteTaskPatch
         {
             //ライターもしくはスピードブースターもしくはドクターがいる試合のみタスク終了時にCustomSyncAllSettingsを実行する
             Utils.MarkEveryoneDirtySettings();
+        }
+        if (pc.Is(CustomRoles.Solsticer))
+        {
+            Solsticer.OnCompleteTask(pc);
         }
     }
 }

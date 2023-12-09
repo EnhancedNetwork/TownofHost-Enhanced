@@ -108,7 +108,7 @@ internal class ChangeRoleSettings
             Main.JinxSpellCount = new();
             Main.OverDeadPlayerList = new();
             Main.Provoked = new();
-            Main.ShieldPlayer = Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : byte.MaxValue;
+            Main.ShieldPlayer = Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : (byte)0;
             Main.FirstDied = byte.MaxValue;
             Main.MadmateNum = 0;
             Main.BardCreations = 0;
@@ -220,6 +220,7 @@ internal class ChangeRoleSettings
             SwordsMan.Init();
             EvilTracker.Init();
             Snitch.Init();
+            Solsticer.Init();
             Vampire.Init();
             Vampiress.Init();
             Poisoner.Init();
@@ -667,6 +668,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Snitch:
                         Snitch.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Solsticer:
+                        Solsticer.Add(pc.PlayerId);
                         break;
                     case CustomRoles.AntiAdminer:
                         AntiAdminer.Add(pc.PlayerId);

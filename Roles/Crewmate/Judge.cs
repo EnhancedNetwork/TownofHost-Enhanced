@@ -144,6 +144,12 @@ public static class Judge
                     Logger.Info($"{pc.GetNameWithRole()} judged {target.GetNameWithRole()}, judge sucide = true because target rebound", "JudgeTrialMsg");
                     judgeSuicide = true;
                 }
+                else if (target.Is(CustomRoles.Solsticer))
+                {
+                    if (!isUI) Utils.SendMessage(GetString("GuessSolsticer"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("GuessSolsticer"));
+                    return true;
+                }
                 else if (pc.Is(CustomRoles.Madmate)) judgeSuicide = false;
                 else if (pc.Is(CustomRoles.Charmed)) judgeSuicide = false;
                 else if (pc.Is(CustomRoles.Recruit)) judgeSuicide = false;

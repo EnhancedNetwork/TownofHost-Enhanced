@@ -113,6 +113,7 @@ static class CustomRolesHelper
                 CustomRoles.Ludopath => CustomRoles.Impostor,
                 CustomRoles.Godfather => CustomRoles.Impostor,
                 CustomRoles.Workaholic => CustomRoles.Engineer,
+                CustomRoles.Solsticer => Solsticer.SolsticerCanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
                 CustomRoles.CursedWolf => CustomRoles.Impostor,
                 CustomRoles.Collector => CustomRoles.Crewmate,
                 CustomRoles.Taskinator => CustomRoles.Engineer,
@@ -405,6 +406,7 @@ static class CustomRolesHelper
             CustomRoles.Gamer or
             CustomRoles.FFF or
             CustomRoles.Workaholic or
+            CustomRoles.Solsticer or
         //    CustomRoles.Pelican or
             CustomRoles.Collector or
             CustomRoles.Sunnyboy or
@@ -525,6 +527,7 @@ static class CustomRolesHelper
             CustomRoles.Vulture or
             CustomRoles.Taskinator or
             CustomRoles.Workaholic or
+            CustomRoles.Solsticer or
             CustomRoles.God or
             CustomRoles.Mario or
             CustomRoles.Revolutionist or
@@ -575,6 +578,7 @@ static class CustomRolesHelper
             CustomRoles.Terrorist or
             CustomRoles.Vulture or
             CustomRoles.Workaholic or
+            CustomRoles.Solsticer or
             CustomRoles.Revolutionist or
             CustomRoles.Provocateur;
     }
@@ -780,6 +784,7 @@ static class CustomRolesHelper
             CustomRoles.DarkHide or
             CustomRoles.Infectious or
             CustomRoles.Workaholic or
+            CustomRoles.Solsticer or
             CustomRoles.Collector or
             CustomRoles.Provocateur or
             CustomRoles.Sunnyboy or
@@ -912,6 +917,7 @@ static class CustomRolesHelper
             CustomRoles.DarkHide or
             CustomRoles.Infectious or
             CustomRoles.Workaholic or
+            CustomRoles.Solsticer or
             CustomRoles.Collector or
             CustomRoles.Provocateur or
             CustomRoles.Sunnyboy or
@@ -1046,6 +1052,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Burst)
                     || pc.Is(CustomRoles.NiceMini)
                     || pc.Is(CustomRoles.Randomizer)
+                    || pc.Is(CustomRoles.Solsticer)
                     || (pc.Is(CustomRoles.Onbound) && Options.BaitNotification.GetBool())
                     || (pc.Is(CustomRoles.Rebound) && Options.BaitNotification.GetBool())
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
@@ -1058,6 +1065,7 @@ static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Bait)
                     || pc.Is(CustomRoles.Burst)
                     || pc.Is(CustomRoles.Randomizer)
+                    || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.GuardianAngelTOHE)) 
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeTrapper.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeTrapper.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeTrapper.GetBool()))
@@ -1079,6 +1087,7 @@ static class CustomRolesHelper
                 if ((pc.Is(CustomRoles.Phantom) && !Options.PhantomCanGuess.GetBool())
                     || (pc.Is(CustomRoles.Terrorist) && (!Options.TerroristCanGuess.GetBool() || Options.CanTerroristSuicideWin.GetBool()))
                     || (pc.Is(CustomRoles.Workaholic) && !Options.WorkaholicCanGuess.GetBool())
+                    || (pc.Is(CustomRoles.Solsticer) && !Solsticer.SolsticerCanGuess.GetBool())
                     || (pc.Is(CustomRoles.God) && !Options.GodCanGuess.GetBool()))
                     return false; //Based on guess manager
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeGuesser.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeGuesser.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeGuesser.GetBool()))
@@ -1093,6 +1102,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.LastImpostor) 
                     || pc.Is(CustomRoles.NiceMini)
                     || pc.Is(CustomRoles.Mare)
+                    || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Rebound))
                     return false; //Based on guess manager
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeOnbound.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeOnbound.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeOnbound.GetBool()))
@@ -1107,9 +1117,10 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.LastImpostor)
                     || pc.Is(CustomRoles.NiceMini)
                     || pc.Is(CustomRoles.Mare)
+                    || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Onbound))
                 {
-                    Logger.Warn("reached here", "Rebound");
+                    Logger.Warn("reached here", "Rebound");  //huh?
                     return false;
                 } //Based on guess manager
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeRebound.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeRebound.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeRebound.GetBool()))
@@ -1207,6 +1218,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Bomber)
                     || pc.Is(CustomRoles.Nuker)
                     || pc.Is(CustomRoles.Jinx)
+                    || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.CursedWolf))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeFragile.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeFragile.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeFragile.GetBool()))
@@ -1227,14 +1239,14 @@ static class CustomRolesHelper
                 break;
 
             case CustomRoles.Antidote:
-                if (pc.Is(CustomRoles.Diseased))
+                if (pc.Is(CustomRoles.Diseased) || pc.Is(CustomRoles.Solsticer))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeAntidote.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeAntidote.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeAntidote.GetBool()))
                     return false;
                 break;
 
             case CustomRoles.Diseased:
-                if (pc.Is(CustomRoles.Antidote))
+                if (pc.Is(CustomRoles.Antidote) || pc.Is(CustomRoles.Solsticer))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeDiseased.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeDiseased.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeDiseased.GetBool()))
                     return false;
@@ -1276,6 +1288,7 @@ static class CustomRolesHelper
                     //|| pc.Is(CustomRoles.Sunglasses)
                     || pc.Is(CustomRoles.Randomizer)
                     || pc.Is(CustomRoles.Lighter)
+                    || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeBewilder.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeBewilder.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeBewilder.GetBool()))
@@ -1286,6 +1299,7 @@ static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Guardian)
                     || pc.Is(CustomRoles.Luckey)
                     || pc.Is(CustomRoles.Unlucky)
+                    || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Fragile))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeLucky.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeLucky.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeLucky.GetBool()))
@@ -1298,6 +1312,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Lucky)
                     || pc.Is(CustomRoles.Lucky)
                     || pc.Is(CustomRoles.Mario)
+                    || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Taskinator))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeUnlucky.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeUnlucky.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeUnlucky.GetBool()))
@@ -1355,6 +1370,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Randomizer)
                     || pc.Is(CustomRoles.Sheriff)
                     || pc.Is(CustomRoles.Hurried)
+                    || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
                 if (!pc.GetCustomRole().IsCrewmate())
@@ -1493,6 +1509,7 @@ static class CustomRolesHelper
             case CustomRoles.Burst:
                 if (pc.Is(CustomRoles.Avanger)
                     || pc.Is(CustomRoles.Trapper)
+                    || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Bait))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeBurst.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeBurst.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeBurst.GetBool()))
@@ -1502,6 +1519,7 @@ static class CustomRolesHelper
             case CustomRoles.Avanger:
                 if (pc.Is(CustomRoles.Burst)
                     || pc.Is(CustomRoles.Randomizer)
+                    || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.NiceMini))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeAvanger.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeAvanger.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeAvanger.GetBool()))
@@ -1526,6 +1544,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Oiiai)
                     || pc.Is(CustomRoles.GuardianAngelTOHE)
                     || pc.Is(CustomRoles.Influenced)
+                    || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.NiceMini)
                     || pc.Is(CustomRoles.EvilMini))
                     return false;
@@ -1544,6 +1563,7 @@ static class CustomRolesHelper
             case CustomRoles.Gravestone:
                 if (pc.Is(CustomRoles.SuperStar)
                     || pc.Is(CustomRoles.Innocent)
+                    || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.NiceMini))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeGravestone.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeGravestone.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeGravestone.GetBool()))
@@ -1552,6 +1572,7 @@ static class CustomRolesHelper
 
             case CustomRoles.Unreportable:
                 if (pc.Is(CustomRoles.Randomizer)
+                    || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Bait))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeUnreportable.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeUnreportable.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeUnreportable.GetBool()))
@@ -1564,13 +1585,14 @@ static class CustomRolesHelper
                 break;
 
             case CustomRoles.Flash:
-                if (pc.Is(CustomRoles.Swooper))
+                if (pc.Is(CustomRoles.Swooper) || pc.Is(CustomRoles.Solsticer))
                     return false;
                 break;
 
             case CustomRoles.Fool:
                 if (pc.Is(CustomRoles.SabotageMaster) 
-                    || pc.Is(CustomRoles.GuardianAngelTOHE))
+                    || pc.Is(CustomRoles.GuardianAngelTOHE)
+                    || pc.Is(CustomRoles.Repairman))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeFool.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeFool.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeFool.GetBool()))
                     return false;
@@ -1588,13 +1610,13 @@ static class CustomRolesHelper
                 break;
 
             case CustomRoles.Oiiai:
-                if (pc.Is(CustomRoles.Loyal)) return false;
+                if (pc.Is(CustomRoles.Loyal) || pc.Is(CustomRoles.Solsticer)) return false;
                 if ((pc.GetCustomRole().IsNeutral() && !Oiiai.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsCrewmate() && !Oiiai.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Oiiai.CanBeOnImp.GetBool()))
                     return false;
                 break;
 
             case CustomRoles.Hurried:
-                if (pc.Is(CustomRoles.Youtuber) || pc.Is(CustomRoles.Egoist)) return false;
+                if (pc.Is(CustomRoles.Youtuber) || pc.Is(CustomRoles.Egoist) || pc.Is(CustomRoles.Solsticer)) return false;
                 if (pc.Is(CustomRoles.Madmate) && !Hurried.CanBeOnMadMate.GetBool()) return false;
                 if (!pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Madmate)) return false;
                 if (pc.GetCustomRole().IsTasklessCrewmate()) return false;
@@ -1786,6 +1808,7 @@ static class CustomRolesHelper
             CustomRoles.Gamer => CustomWinner.Gamer,
             CustomRoles.DarkHide => CustomWinner.DarkHide,
             CustomRoles.Workaholic => CustomWinner.Workaholic,
+            CustomRoles.Solsticer => CustomWinner.Solsticer,
             CustomRoles.Collector => CustomWinner.Collector,
             CustomRoles.BloodKnight => CustomWinner.BloodKnight,
             CustomRoles.Poisoner => CustomWinner.Poisoner,

@@ -659,7 +659,16 @@ static class ExtendedPlayerControl
     }
     public static bool CanUseImpostorVentButton(this PlayerControl pc)
     {
-        if (Main.NormalOptions.MapId == (int)MapNames.Dleks) return false; // vents are broken on dleks and cannot be fixed on host side
+        // vents are broken on dleks and cannot be fixed on host side
+        if ((MapNames)Main.NormalOptions.MapId == MapNames.Dleks)
+        {
+            return pc.GetCustomRole() switch
+            {
+                CustomRoles.Arsonist => pc.IsDouseDone() || (Options.ArsonistCanIgniteAnytime.GetBool() && (Utils.GetDousedPlayerCount(pc.PlayerId).Item1 >= Options.ArsonistMinPlayersToIgnite.GetInt() || pc.inVent)),
+                CustomRoles.Revolutionist => pc.IsDrawDone(),
+                _ => false,
+            };
+        }
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel) return false;
         if (CopyCat.playerIdList.Contains(pc.PlayerId)) return true;
         if (Main.TasklessCrewmate.Contains(pc.PlayerId)) return true;
@@ -1357,6 +1366,7 @@ static class ExtendedPlayerControl
     {
         if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || (seer.AmOwner && Main.GodMode.Value)) return true;
         else if (seer.Is(CustomRoles.God)) return true;
+        else if (target.Is(CustomRoles.Solsticer) && Solsticer.EveryOneKnowSolsticer.GetBool()) return true;
         else if (Main.VisibleTasksCount && seer.Data.IsDead && Options.GhostCanSeeOtherRoles.GetBool()) return true;
         else if (target.Is(CustomRoles.Gravestone) && target.Data.IsDead) return true;
         else if (Options.SeeEjectedRolesInMeeting.GetBool() && Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote) return true;

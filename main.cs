@@ -52,6 +52,7 @@ public class Main : BasePlugin
 
     public static readonly bool ShowGitHubButton = true;
     public static readonly bool ShowKofiButton = true;
+    public static readonly bool ShowUpdateButton = true;
     public static readonly string GitHubInviteUrl = "https://github.com/0xDrMoe/TownofHost-Enhanced";
     public static readonly string kofiInviteUrl = "https://ko-fi.com/TOHEN";
 
@@ -729,6 +730,7 @@ public enum CustomRoles
     Gamer,
     DarkHide,
     Workaholic,
+    Solsticer,
     Collector,
     Provocateur,
     Sunnyboy,
@@ -917,6 +919,7 @@ public enum CustomWinner
     RuthlessRomantic = CustomRoles.RuthlessRomantic,
     NiceMini = CustomRoles.Mini,
     Doppelganger = CustomRoles.Doppelganger,
+    Solsticer = CustomRoles.Solsticer,
 }
 public enum AdditionalWinners
 {
