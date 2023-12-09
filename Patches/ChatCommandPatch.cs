@@ -948,7 +948,7 @@ internal class ChatCommands
             // 如果需要删除职业，请直接删掉，而不是注释掉
 
             // GM
-            "GM(遊戲大師)" or "管理员" or "gm" or "GM" => GetString("GM"),
+            "GM(遊戲大師)" or "管理员" or "管理" or "gm" or "GM" => GetString("GM"),
 
             // 原版职业
             "船員" or "船员" or "白板" or "天选之子" => GetString("CrewmateTOHE"),
@@ -992,7 +992,7 @@ internal class ChatCommands
             "清道夫" or "清道" => GetString("Scavenger"),
             "陷阱師" or "诡雷" => GetString("BoobyTrap"),
             "資本主義者" or "资本家" or "资本主义" or "资本" => GetString("Capitalism"),
-            "歹徒" or "教父" => GetString("Gangster"),
+            "歹徒" => GetString("Gangster"),
             "清潔工" or "清理工" or "清洁工" => GetString("Cleaner"),
             "球狀閃電" or "球状闪电" => GetString("BallLightning"),
             "貪婪者" or "贪婪者" or "贪婪" => GetString("Greedier"),
@@ -1114,7 +1114,7 @@ internal class ChatCommands
             "暴民" or "处刑人" or "处刑" or "处刑者" => GetString("Executioner"),
             "律師" or "律师" => GetString("Lawyer"),
             "投機主義者" or "投机者" or "投机" => GetString("Opportunist"),
-            "瑪利歐" or "马里奥" => GetString("Marion"),
+            "瑪利歐" or "马里奥" => GetString("Mario"),
             "豺狼" or "蓝狼" => GetString("Jackal"),
             "神" or "上帝" => GetString("God"),
             "冤罪師" or "冤罪师" or "冤罪" => GetString("Innocent"),
@@ -1126,7 +1126,7 @@ internal class ChatCommands
             "潛藏者" or "潜藏" => GetString("DarkHide"),
             "工作狂" => GetString("Workaholic"),
             "集票者" or "集票" => GetString("Collector"),
-            "神風特攻隊" or "自爆卡车" => GetString("Provocaterur"),
+            "神風特攻隊" or "自爆卡车" => GetString("Provocateur"),
             "嗜血騎士" or "嗜血骑士" => GetString("BloodKnight"),
             "瘟疫之源" or "瘟疫使者" => GetString("PlagueBearer"),
             "萬疫之神" or "瘟疫" => GetString("Pestilence"),
@@ -1135,7 +1135,7 @@ internal class ChatCommands
             "巫婆" => GetString("NWitch"),
             "追隨者" or "赌徒" or "下注" => GetString("Totocalcio"),
             "魅魔" => GetString("Succubus"),
-            "連環殺手" or "连环杀手" => GetString("NSerialkiller"),
+            "連環殺手" or "连环杀手" => GetString("NSerialKiller"),
             "劍聖" or "天启" => GetString("Juggernaut"),
             "感染者" or "感染" => GetString("Infectious"),
             "病原體" or "病毒" => GetString("Virus"),
@@ -1248,7 +1248,7 @@ internal class ChatCommands
             "順從者" or "影响者" or "順從" or "影响" => GetString("Influenced"),
 
             // 随机阵营职业
-            "迷你船員" or "迷你船员" => GetString("Mini"),
+            "迷你船員" or "迷你船员" or "迷你" => GetString("Mini"),
             _ => text,
         };
     }
