@@ -2845,6 +2845,8 @@ public static class Options
         
         Spiritcaller.SetupCustomOption();
 
+        Solsticer.SetupCustomOption();
+
         // 副职
         TextOptionItem.Create(10000023, "OtherRoles.Addons", TabGroup.OtherRoles)
             .SetGameMode(CustomGameMode.Standard)

@@ -729,6 +729,7 @@ public enum CustomRoles
     Gamer,
     DarkHide,
     Workaholic,
+    Solsticer,
     Collector,
     Provocateur,
     Sunnyboy,
@@ -917,6 +918,7 @@ public enum CustomWinner
     RuthlessRomantic = CustomRoles.RuthlessRomantic,
     NiceMini = CustomRoles.Mini,
     Doppelganger = CustomRoles.Doppelganger,
+    Solsticer = CustomRoles.Solsticer,
 }
 public enum AdditionalWinners
 {

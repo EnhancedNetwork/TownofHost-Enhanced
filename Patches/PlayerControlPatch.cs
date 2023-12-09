@@ -209,6 +209,10 @@ class CheckMurderPatch
                     Main.ShamanTarget = byte.MaxValue;
                 }
                 break;
+            case CustomRoles.Solsticer:
+                if (Solsticer.OnCheckMurder(killer, target))
+                    return false;
+                break;
         }
         
         if (killerRole.Is(CustomRoles.Chronomancer))
@@ -1469,7 +1473,7 @@ class MurderPlayerPatch
         if (target.Is(CustomRoles.Avanger))
         {
             var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId && !Pelican.IsEaten(x.PlayerId) && !Medic.ProtectList.Contains(x.PlayerId) 
-            && !x.Is(CustomRoles.Pestilence) && !x.Is(CustomRoles.Masochist) && !((x.Is(CustomRoles.NiceMini) || x.Is(CustomRoles.EvilMini)) && Mini.Age < 18)).ToList();
+            && !x.Is(CustomRoles.Pestilence) && !x.Is(CustomRoles.Masochist) && !x.Is(CustomRoles.Solsticer) && !((x.Is(CustomRoles.NiceMini) || x.Is(CustomRoles.EvilMini)) && Mini.Age < 18)).ToList();
             if (pcList.Any())
             {
                 PlayerControl rp = pcList[IRandom.Instance.Next(0, pcList.Count)];
@@ -2692,6 +2696,10 @@ class FixedUpdatePatch
                             }
                         }
                         break;
+
+                    case CustomRoles.Solsticer:
+                        Solsticer.OnFixedUpdate(player);
+                        break;
                 }
 
                 // Revolutionist
@@ -3121,6 +3129,10 @@ class FixedUpdatePatch
                     Mark.Append(Snitch.GetWarningMark(seer, target));
                     Mark.Append(Snitch.GetWarningArrow(seer, target));
                 }
+
+                if (CustomRoles.Solsticer.RoleExist())
+                    if (target.AmOwner || target.Is(CustomRoles.Solsticer))
+                        Mark.Append(Solsticer.GetWarningArrow(seer, target));
 
                 if (Marshall.IsEnable)
                     Mark.Append(Marshall.GetWarningMark(seer, target));
@@ -3887,6 +3899,10 @@ class PlayerControlCompleteTaskPatch
         {
             //ライターもしくはスピードブースターもしくはドクターがいる試合のみタスク終了時にCustomSyncAllSettingsを実行する
             Utils.MarkEveryoneDirtySettings();
+        }
+        if (pc.Is(CustomRoles.Solsticer))
+        {
+            Solsticer.OnCompleteTask(pc);
         }
     }
 }
