@@ -20,6 +20,7 @@ public class ModUpdater
 {
     private static readonly string URL_2018k = "http://api.tohre.dev";
     private static readonly string URL_Github = "https://api.github.com/repos/0xDrMoe/TownofHost-Enhanced";
+    public static readonly string downloadTest = "https://github.com/Pietrodjaowjao/TOHEN-Contributions/releases/download/v123123123/TOHE.dll";
     public static bool hasUpdate = false;
     public static bool hasOutdate = false;
     public static bool forceUpdate = false;
@@ -104,7 +105,7 @@ public class ModUpdater
                 Logger.Info(assets.ToString(), "ModUpdater");
                 for (int i = 0; i < assets.Count; i++)
                 {
-                    if (assets[i]["name"].ToString() == "TOH-Enhanced.1.3.0.zip" && Constants.GetPlatformType() == Platforms.StandaloneSteamPC)
+                    if (assets[i]["name"].ToString() == $"TOH-Enhanced.{latestVersion}.zip")
                     {
                         downloadUrl = assets[i]["browser_download_url"].ToString();
                         break;
