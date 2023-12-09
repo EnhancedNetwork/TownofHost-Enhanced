@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using static TOHE.Credentials;
 using static TOHE.Translator;
+using static UnityEngine.PlayerLoop.PreUpdate;
 using Object = UnityEngine.Object;
 
 namespace TOHE;
@@ -20,6 +21,8 @@ public static class MainMenuManagerPatch
     private static PassiveButton discordButton;
     private static PassiveButton websiteButton;
     //private static PassiveButton patreonButton;
+
+    public static PassiveButton updateButton;
 
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.LateUpdate)), HarmonyPostfix]
     public static void Postfix(MainMenuManager __instance)
@@ -168,6 +171,20 @@ public static class MainMenuManagerPatch
                 GetString("kofi")); //"Kofi"
         }
         kofiButton.gameObject.SetActive(Main.ShowKofiButton);
+
+        // update Button
+        if (updateButton == null)
+        {
+            updateButton = CreateButton(
+                "updateButton",
+                new(3.68f, -2.68f, 1f),
+                new(255, 165, 0, byte.MaxValue),
+                new(255, 200, 0, byte.MaxValue),
+                () => ModUpdater.StartUpdate(ModUpdater.downloadUrl, true),
+                GetString("update")); //"Update"
+            updateButton.transform.localScale = Vector3.one;
+        }
+        updateButton.gameObject.SetActive(ModUpdater.hasUpdate);
 
         // GitHub Button
         if (gitHubButton == null)
