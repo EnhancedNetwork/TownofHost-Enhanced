@@ -2027,6 +2027,8 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
+        Captain.SetupCustomOption();
+
         CopyCat.SetupCustomOption();
 
         SetupRoleOptions(11600, TabGroup.CrewmateRoles, CustomRoles.Dictator);

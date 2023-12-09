@@ -4,7 +4,6 @@ using System.Linq;
 using UnityEngine;
 
 using static TOHE.Options;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -66,6 +65,12 @@ public static class Captain
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         return;
     }
+    public static void ReceiveRPCSetSpeed(MessageReader reader)
+    {
+        byte targetId = reader.ReadByte();
+        float speed = reader.ReadSingle();
+        OriginalSpeed[targetId] = speed;
+    }
     private static void sendRPCRevertSpeed(byte targetId)
     {
         MessageWriter writer;
@@ -74,12 +79,21 @@ public static class Captain
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         return;
     }
+    public static void ReceiveRPCRevertSpeed(MessageReader reader)
+    {
+        byte targetId = reader.ReadByte();
+        if (OriginalSpeed.ContainsKey(targetId)) OriginalSpeed.Remove(targetId);
+    }
     private static void sendRPCRevertAllSpeed()
     {
         MessageWriter writer;
-        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RevertCaptainTargetSpeed, SendOption.Reliable, -1);
+        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RevertCaptainAllTargetSpeed, SendOption.Reliable, -1);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         return;
+    }
+    public static void ReceiveRPCRevertAllSpeed(MessageReader reader)
+    {
+        OriginalSpeed.Clear();
     }
 
     public static void sendRPCVoteAdd(byte playerId, byte targetId)
@@ -91,6 +105,13 @@ public static class Captain
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         return;
     }
+    public static void ReceiveRPCVoteAdd(MessageReader reader)
+    {
+        byte playerId = reader.ReadByte();
+        byte targetId = reader.ReadByte();
+        if (!CaptainVoteTargets.ContainsKey(playerId)) CaptainVoteTargets[playerId] = new();
+        CaptainVoteTargets[playerId].Add(targetId);
+    }
     private static void sendRPCVoteRemove()
     {
         MessageWriter writer;
@@ -98,12 +119,16 @@ public static class Captain
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         return;
     }
-    
+    public static void ReceiveRPCVoteRemove(MessageReader reader)
+    {
+        CaptainVoteTargets.Clear();
+    }
+
     public static void OnTaskComplete(PlayerControl pc)
     {
         if (pc == null) return;
         if (!IsEnable) return;
-        if (!pc.Is(CustomRoles.Captain)) return;
+        if (!pc.Is(CustomRoles.Captain) || !pc.IsAlive()) return;
         var allTargets = Main.AllAlivePlayerControls.Where(x => (x != null) && (!OriginalSpeed.ContainsKey(x.PlayerId)) && 
                                                            (x.GetCustomRole().IsImpostorTeamV3() ||
                                                            (CaptainCanTargetNB.GetBool() && x.GetCustomRole().IsNB()) ||

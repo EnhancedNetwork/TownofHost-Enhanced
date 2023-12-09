@@ -2345,7 +2345,7 @@ public static class Utils
                             TargetMark.Append(Romantic.TargetMark(seer, target));
                         if (Captain.IsEnable)
                             if (target.GetCustomRole().IsCrewmate() && (!target.Is(CustomRoles.Madmate) || (target.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
-                                TargetMark.Append(ColorString((GetRoleColor(CustomRoles.Captain), "◈")));
+                                TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Captain), "◈"));
 
                         if (Lawyer.IsEnable)
                             TargetMark.Append(Lawyer.LawyerMark(seer, target));

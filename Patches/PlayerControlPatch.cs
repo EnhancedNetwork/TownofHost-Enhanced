@@ -2351,6 +2351,7 @@ class ReportDeadBodyPatch
         if (Seeker.IsEnable) Seeker.OnReportDeadBody();
         if (Jailer.IsEnable) Jailer.OnReportDeadBody();
         if (Romantic.IsEnable) Romantic.OnReportDeadBody();
+        if (Captain.IsEnable) Captain.OnReportDeadBody();
 
 
         // if (Councillor.IsEnable) Councillor.OnReportDeadBody();
@@ -3116,7 +3117,7 @@ class FixedUpdatePatch
                     Mark.Append(Romantic.TargetMark(seer, target));
                 if (Captain.IsEnable)
                     if (target.GetCustomRole().IsCrewmate() && (!target.Is(CustomRoles.Madmate) || (target.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
-                        Mark.Append(Utils.ColorString((Utils.GetRoleColor(CustomRoles.Captain), "◈")));
+                        Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Captain), "◈"));
 
 
                 if (Lawyer.IsEnable)

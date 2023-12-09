@@ -441,7 +441,7 @@ class CheckForEndVotingPatch
             if (Main.LastVotedPlayerInfo != null)
             { 
                 ConfirmEjections(Main.LastVotedPlayerInfo);
-                if (Utils.GetPlayerById(exileId)?.Is(CustomRoles.Captain))
+                if (Utils.GetPlayerById(exileId).Is(CustomRoles.Captain))
                     Captain.OnExile(exileId);
             }
 
@@ -1310,7 +1310,7 @@ class MeetingHudStartPatch
             sb.Append(Romantic.TargetMark(seer, target));
             if (Captain.IsEnable)
                 if (target.GetCustomRole().IsCrewmate() && (!target.Is(CustomRoles.Madmate) || (target.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
-                    sb.Append(Utils.ColorString((Utils.GetRoleColor(CustomRoles.Captain), "◈")));
+                    sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Captain), "◈"));
 
             sb.Append(Lawyer.LawyerMark(seer, target));
 

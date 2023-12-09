@@ -23,6 +23,7 @@ static class CustomRolesHelper
                 CustomRoles.Jester => Options.JesterCanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
                 CustomRoles.Monitor => Monitor.CanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
                 CustomRoles.Mayor => Options.MayorHasPortableButton.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
+                CustomRoles.Captain => CustomRoles.Crewmate,
                 CustomRoles.Vulture => Vulture.CanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
                 CustomRoles.Opportunist => CustomRoles.Crewmate,
                 CustomRoles.Vindicator => CustomRoles.Impostor,
@@ -988,6 +989,7 @@ static class CustomRolesHelper
             CustomRoles.Guardian or
             CustomRoles.Merchant or
             CustomRoles.Mayor or
+            CustomRoles.Captain or
             CustomRoles.Transporter or
             CustomRoles.Retributionist or
             CustomRoles.Alchemist;
@@ -1647,7 +1649,8 @@ static class CustomRolesHelper
             ((role is CustomRoles.Workaholic) && (Options.WorkaholicVisibleToEveryone.GetBool())) ||
             ((role is CustomRoles.Doctor) && (Options.DoctorVisibleToEveryone.GetBool())) ||
             ((role is CustomRoles.Bait) && (Options.BaitNotification.GetBool()) && ParityCop.ParityCheckBaitCountType.GetBool()) ||
-            ((role is CustomRoles.President) && President.CheckPresidentReveal[target.PlayerId] == true));
+            ((role is CustomRoles.President) && President.CheckPresidentReveal[target.PlayerId] == true)) ||
+            (role is CustomRoles.Captain);
     }
     public static bool IsImpostorTeamV3(this CustomRoles role) => (role.IsImpostor() || role.IsMadmate());
     public static bool IsNeutralKillerTeam(this CustomRoles role) => (role.IsNK() || !role.IsMadmate());
