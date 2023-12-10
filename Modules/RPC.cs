@@ -151,6 +151,9 @@ enum CustomRPC
     SyncShroud,
     SyncMiniCrewAge,
     SyncSabotageMasterSkill,
+    //FFA
+    SyncFFAPlayer,
+    SyncFFANameNotify
 }
 public enum Sounds
 {
@@ -563,11 +566,17 @@ internal class RPCHandlerPatch
                 float time = reader.ReadSingle();
                 PlayerControl.LocalPlayer.SetKillTimer(time);
                 break;
+            case CustomRPC.SyncFFAPlayer:
+                FFAManager.ReceiveRPCSyncFFAPlayer(reader);
+                break;
             case CustomRPC.SyncAllPlayerNames:
                 Main.AllPlayerNames = new();
                 int num = reader.ReadInt32();
                 for (int i = 0; i < num; i++)
                     Main.AllPlayerNames.TryAdd(reader.ReadByte(), reader.ReadString());
+                break;
+            case CustomRPC.SyncFFANameNotify:
+                FFAManager.ReceiveRPCSyncNameNotify(reader);
                 break;
             case CustomRPC.SyncNWitch:
                 NWitch.ReceiveRPC(reader);
@@ -1309,6 +1318,9 @@ internal static class RPC
                 break;
             case CustomRoles.Addict:
                 Addict.Add(targetId);
+                break;
+            case CustomRoles.Mole:
+                Mole.Add(targetId);
                 break;
             case CustomRoles.Deathpact:
                 Deathpact.Add(targetId);

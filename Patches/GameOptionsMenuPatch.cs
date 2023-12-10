@@ -19,6 +19,18 @@ public static class GameSettingMenuPatch
         // オンラインモードで部屋を立て直さなくてもマップを変更できるように変更
         __instance.HideForOnline = new Il2CppReferenceArray<Transform>(0);
     }
+
+    // add dleks to map selection
+    public static void Postfix([HarmonyArgument(0)] Il2CppReferenceArray<Transform> items)
+    {
+        items
+            .FirstOrDefault(
+                i => i.gameObject.activeSelf && i.name.Equals("MapName", StringComparison.OrdinalIgnoreCase))?
+            .GetComponent<KeyValueOption>()?
+            .Values?
+            // using .Insert will convert managed values and break the struct resulting in crashes
+            .System_Collections_IList_Insert((int)MapNames.Dleks, new Il2CppSystem.Collections.Generic.KeyValuePair<string, int>(Constants.MapNames[(int)MapNames.Dleks], (int)MapNames.Dleks));
+    }
 }
 
 [HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.Start))]
@@ -414,6 +426,16 @@ public static class SetRecommendationsPatch
         __instance.roleOptions.SetRoleRecommended(RoleTypes.Scientist);
         __instance.roleOptions.SetRoleRecommended(RoleTypes.GuardianAngel);
         __instance.roleOptions.SetRoleRecommended(RoleTypes.Engineer);
+
+        if (Options.CurrentGameMode == CustomGameMode.FFA) //FFA
+        {
+            __instance.CrewLightMod = __instance.ImpostorLightMod = 1.25f;
+            __instance.NumImpostors = 3;
+            __instance.NumCommonTasks = 0;
+            __instance.NumLongTasks = 0;
+            __instance.NumShortTasks = 0;
+            __instance.KillCooldown = 0f;
+        }
 
         return false;
     }

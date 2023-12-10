@@ -224,7 +224,7 @@ class ExileControllerWrapUpPatch
         Main.MeetingIsStarted = false;
         Main.MeetingsPassed++;
 
-        if (Options.RandomSpawn.GetBool())
+        if (Options.RandomSpawn.GetBool() || Options.CurrentGameMode == CustomGameMode.FFA)
         {
             RandomSpawn.SpawnMap map;
             switch (Main.NormalOptions.MapId)
@@ -239,6 +239,10 @@ class ExileControllerWrapUpPatch
                     break;
                 case 2:
                     map = new RandomSpawn.PolusSpawnMap();
+                    Main.AllPlayerControls.Do(map.RandomTeleport);
+                    break;
+                case 3:
+                    map = new RandomSpawn.DleksSpawnMap();
                     Main.AllPlayerControls.Do(map.RandomTeleport);
                     break;
                 case 5:

@@ -1,5 +1,6 @@
 using HarmonyLib;
 using Il2CppSystem.Text;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using TOHE.Roles.Crewmate;
@@ -60,6 +61,27 @@ class HudManagerPatch
 
         if (SetHudActivePatch.IsActive)
         {
+            if (Options.CurrentGameMode == CustomGameMode.FFA)
+            {
+                if (LowerInfoText == null)
+                {
+                    TempLowerInfoText = new GameObject("CountdownText");
+                    TempLowerInfoText.transform.position = new Vector3(0f, -2f, 1f);
+                    LowerInfoText = TempLowerInfoText.AddComponent<TextMeshPro>();
+                    //LowerInfoText.text = string.Format(GetString("CountdownText"));
+                    LowerInfoText.alignment = TextAlignmentOptions.Center;
+                    //LowerInfoText = Object.Instantiate(__instance.KillButton.buttonLabelText);
+                    LowerInfoText.transform.parent = __instance.transform;
+                    LowerInfoText.transform.localPosition = new Vector3(0, -2f, 0);
+                    LowerInfoText.overflowMode = TextOverflowModes.Overflow;
+                    LowerInfoText.enableWordWrapping = false;
+                    LowerInfoText.color = Color.white;
+                    LowerInfoText.outlineColor = Color.black;
+                    LowerInfoText.outlineWidth = 20000000f;
+                    LowerInfoText.fontSize = 2f;
+                }
+                LowerInfoText.text = FFAManager.GetHudText();
+            }
             if (player.IsAlive())
             {
                 //MOD入り用のボタン下テキスト変更
@@ -413,6 +435,10 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.AbilityButton.OverrideText(GetString("AddictVentButtonText"));
                         break;
+                    case CustomRoles.Mole:
+                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
+                        __instance.AbilityButton.OverrideText(GetString("MoleVentButtonText"));
+                        break;
                     case CustomRoles.Dazzler:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.AbilityButton.OverrideText(GetString("DazzleButtonText"));
@@ -455,64 +481,33 @@ class HudManagerPatch
                     LowerInfoText.outlineWidth = 20000000f;
                     LowerInfoText.fontSize = 2f;
                 }
-
-                if (player.Is(CustomRoles.BountyHunter))
+                switch (Options.CurrentGameMode)
                 {
-                    LowerInfoText.text = BountyHunter.GetTargetText(player, true);
+                    case CustomGameMode.Standard:
+                        LowerInfoText.text = player.GetCustomRole() switch
+                        {
+                            CustomRoles.BountyHunter => BountyHunter.GetTargetText(player, true),
+                            CustomRoles.Witch => Witch.GetSpellModeText(player, true),
+                            CustomRoles.HexMaster => HexMaster.GetHexModeText(player, true),
+                            CustomRoles.FireWorks => FireWorks.GetStateText(player),
+                            CustomRoles.Swooper => Swooper.GetHudText(player),
+                            CustomRoles.Wraith => Wraith.GetHudText(player),
+                            CustomRoles.Chameleon => Chameleon.GetHudText(player),
+                            CustomRoles.Alchemist => Alchemist.GetHudText(player),
+                            CustomRoles.Huntsman => Huntsman.GetHudText(player),
+                            CustomRoles.Glitch => Glitch.GetHudText(player),
+                            CustomRoles.BloodKnight => BloodKnight.GetHudText(player),
+                            CustomRoles.Wildling => Wildling.GetHudText(player),
+                            _ => string.Empty,
+                        };
+                        break;
                 }
-                else if (player.Is(CustomRoles.Witch))
-                {
-                    LowerInfoText.text = Witch.GetSpellModeText(player, true);
-                }
-                else if (player.Is(CustomRoles.HexMaster))
-                {
-                    LowerInfoText.text = HexMaster.GetHexModeText(player, true);
-                }
+                
                 //else if (player.Is(CustomRoles.Occultist))
                 //{
                 //    LowerInfoText.text = Occultist.GetHexModeText(player, true);
                 //}
-                else if (player.Is(CustomRoles.FireWorks))
-                {
-                    var stateText = FireWorks.GetStateText(player);
-                    LowerInfoText.text = stateText;
-                }
-                else if (player.Is(CustomRoles.Swooper))
-                {
-                    LowerInfoText.text = Swooper.GetHudText(player);
-                }
-                else if (player.Is(CustomRoles.Alchemist))
-                {
-                    LowerInfoText.text = Alchemist.GetHudText(player);
-                }
-                else if (player.Is(CustomRoles.Huntsman))
-                {
-                    LowerInfoText.text = Huntsman.GetHudText(player);
-                }
-                else if (player.Is(CustomRoles.Wraith))
-                {
-                    LowerInfoText.text = Wraith.GetHudText(player);
-                }
-                else if (player.Is(CustomRoles.Chameleon))
-                {
-                    LowerInfoText.text = Chameleon.GetHudText(player);
-                }
-                else if (player.Is(CustomRoles.Glitch))
-                {
-                    LowerInfoText.text = Glitch.GetHudText(player);
-                }
-                else if (player.Is(CustomRoles.BloodKnight))
-                {
-                    LowerInfoText.text = BloodKnight.GetHudText(player);
-                }
-                else if (player.Is(CustomRoles.Wildling))
-                {
-                    LowerInfoText.text = Wildling.GetHudText(player);
-                }
-                else
-                {
-                    LowerInfoText.text = "";
-                }
+
                 LowerInfoText.enabled = LowerInfoText.text != "";
 
                 if ((!AmongUsClient.Instance.IsGameStarted && AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay) || GameStates.IsMeeting)
@@ -779,6 +774,24 @@ class TaskPanelBehaviourPatch
                             AllText += $"\r\n{GetString("PressF2ShowAddRoleDes")}";
                         AllText += "</size>";
                     }
+                    break;
+                case CustomGameMode.FFA:
+                    Dictionary<byte, string> SummaryText2 = new();
+                    foreach (var id in Main.PlayerStates.Keys)
+                    {
+                        string name = Main.AllPlayerNames[id].RemoveHtmlTags().Replace("\r\n", string.Empty);
+                        string summary = $"{Utils.GetProgressText(id)}  {Utils.ColorString(Main.PlayerColors[id], name)}";
+                        if (Utils.GetProgressText(id).Trim() == string.Empty) continue;
+                        SummaryText2[id] = summary;
+                    }
+
+                    List<(int, byte)> list2 = new();
+                    foreach (var id in Main.PlayerStates.Keys) list2.Add((FFAManager.GetRankOfScore(id), id));
+                    list2.Sort();
+                    foreach (var id in list2.Where(x => SummaryText2.ContainsKey(x.Item2))) AllText += "\r\n" + SummaryText2[id.Item2];
+
+                    AllText = $"<size=70%>{AllText}</size>";
+
                     break;
             }
 

@@ -62,7 +62,7 @@ class RandomSpawn
             var selectRand = (Options.SpawnRandomLocation.GetBool() && Options.SpawnRandomVents.GetBool()) ? IRandom.Instance.Next(0, 101) 
                 : Options.SpawnRandomLocation.GetBool() ? 50
                 : Options.SpawnRandomVents.GetBool() ? 51 : -1; // -1: Not Random Spawn
-
+            if (Options.CurrentGameMode == CustomGameMode.FFA) selectRand = 50;
             if (selectRand == -1) return;
 
             if (selectRand >= 0 && selectRand <= 50)
@@ -148,6 +148,16 @@ class RandomSpawn
             ["Toilet"] = new Vector2 (34.0f, -10.0f),
             ["SpecimenRoom"] = new Vector2 (36.5f, -22.0f)
         };
+        public override Vector2 GetLocation()
+        {
+            return positions.ToArray().OrderBy(_ => Guid.NewGuid()).Take(1).FirstOrDefault().Value;
+        }
+    }
+
+    public class DleksSpawnMap : SpawnMap
+    {
+        public Dictionary<string, Vector2> positions = new SkeldSpawnMap().positions
+            .ToDictionary(e => e.Key, e => new Vector2(-e.Value.x, e.Value.y));
         public override Vector2 GetLocation()
         {
             return positions.ToArray().OrderBy(_ => Guid.NewGuid()).Take(1).FirstOrDefault().Value;

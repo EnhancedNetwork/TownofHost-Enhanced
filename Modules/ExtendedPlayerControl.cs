@@ -397,7 +397,7 @@ static class ExtendedPlayerControl
     }
     public static string GetNameWithRole(this PlayerControl player, bool forUser = false)
     {
-        return $"{player?.Data?.PlayerName}" + (GameStates.IsInGame ? $"({player?.GetAllRoleName(forUser)})" : "");
+        return $"{player?.Data?.PlayerName}" + (GameStates.IsInGame && Options.CurrentGameMode != CustomGameMode.FFA ? $"({player?.GetAllRoleName(forUser)})" : String.Empty);
     }
     public static string GetRoleColorCode(this PlayerControl player)
     {
@@ -471,6 +471,8 @@ static class ExtendedPlayerControl
 
         return pc.GetCustomRole() switch
         {
+            //FFA
+            CustomRoles.Killer => pc.IsAlive(),
             //Standard
             CustomRoles.FireWorks => FireWorks.CanUseKillButton(pc),
             CustomRoles.Mafia => Utils.CanMafiaKill(),
@@ -657,6 +659,16 @@ static class ExtendedPlayerControl
     }
     public static bool CanUseImpostorVentButton(this PlayerControl pc)
     {
+        // vents are broken on dleks and cannot be fixed on host side
+        if ((MapNames)Main.NormalOptions.MapId == MapNames.Dleks)
+        {
+            return pc.GetCustomRole() switch
+            {
+                CustomRoles.Arsonist => pc.IsDouseDone() || (Options.ArsonistCanIgniteAnytime.GetBool() && (Utils.GetDousedPlayerCount(pc.PlayerId).Item1 >= Options.ArsonistMinPlayersToIgnite.GetInt() || pc.inVent)),
+                CustomRoles.Revolutionist => pc.IsDrawDone(),
+                _ => false,
+            };
+        }
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel) return false;
         if (CopyCat.playerIdList.Contains(pc.PlayerId)) return true;
         if (Main.TasklessCrewmate.Contains(pc.PlayerId)) return true;
@@ -732,6 +744,9 @@ static class ExtendedPlayerControl
 
             CustomRoles.Arsonist => pc.IsDouseDone() || (Options.ArsonistCanIgniteAnytime.GetBool() && (Utils.GetDousedPlayerCount(pc.PlayerId).Item1 >= Options.ArsonistMinPlayersToIgnite.GetInt() || pc.inVent)),
             CustomRoles.Revolutionist => pc.IsDrawDone(),
+
+            //FFA
+            CustomRoles.Killer => true,
 
             _ => pc.Is(CustomRoleTypes.Impostor),
         };
@@ -873,9 +888,9 @@ static class ExtendedPlayerControl
             case CustomRoles.Berserker:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.BerserkerKillCooldown.GetFloat();
                 break;
-            /*    case CustomRoles.Mare:
-                    Mare.SetKillCooldown(player.PlayerId);
-                    break; */
+           /* case CustomRoles.Mare:
+                Mare.SetKillCooldown(player.PlayerId);
+                break; */
             case CustomRoles.EvilDiviner:
                 EvilDiviner.SetKillCooldown(player.PlayerId);
                 break;
@@ -1075,6 +1090,10 @@ static class ExtendedPlayerControl
             case CustomRoles.Hacker:
                 Hacker.SetKillCooldown(player.PlayerId);
                 break;
+            //FFA
+            case CustomRoles.Killer:
+                Main.AllPlayerKillCooldown[player.PlayerId] = FFAManager.FFA_KCD.GetFloat();
+                break;
             case CustomRoles.BloodKnight:
                 BloodKnight.SetKillCooldown(player.PlayerId);
                 break;
@@ -1159,8 +1178,10 @@ static class ExtendedPlayerControl
         }
         if (player.PlayerId == LastImpostor.currentId)
             LastImpostor.SetKillCooldown();
+
         if (player.Is(CustomRoles.Mare))
-            Main.AllPlayerKillCooldown[player.PlayerId] = Options.MareKillCD.GetFloat();
+            Main.AllPlayerKillCooldown[player.PlayerId] = Mare.KillCooldownInLightsOut.GetFloat();
+
         if (player.Is(CustomRoles.Overclocked))
             Main.AllPlayerKillCooldown[player.PlayerId] -= Main.AllPlayerKillCooldown[player.PlayerId] * (Options.OverclockedReduction.GetFloat() / 100);
         
@@ -1375,6 +1396,7 @@ static class ExtendedPlayerControl
         else if (Amnesiac.KnowRole(seer, target)) return true;
         else if (Infectious.KnowRole(seer, target)) return true;
         else if (Virus.KnowRole(seer, target)) return true;
+        else if (Options.CurrentGameMode == CustomGameMode.FFA) return true;
         else if ((target.Is(CustomRoles.President) && seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) && President.CheckPresidentReveal[target.PlayerId] == true) ||
                 (target.Is(CustomRoles.President) && seer.Is(CustomRoles.Madmate) && President.MadmatesSeePresident.GetBool() && President.CheckPresidentReveal[target.PlayerId] == true) ||
                 (target.Is(CustomRoles.President) && seer.GetCustomRole().IsNeutral() && President.NeutralsSeePresident.GetBool() && President.CheckPresidentReveal[target.PlayerId] == true) ||
@@ -1406,11 +1428,13 @@ static class ExtendedPlayerControl
             0 => new Vector2(-27f, 3.3f), // The Skeld
             1 => new Vector2(-11.4f, 8.2f), // MIRA HQ
             2 => new Vector2(42.6f, -19.9f), // Polus
+            3 => new Vector2(27f, 3.3f), // dlekS ehT
             4 => new Vector2(-16.8f, -6.2f), // Airship
             5 => new Vector2(10.2f, 18.1f), // The Fungle
             _ => throw new NotImplementedException(),
         };
     }
+    public static Vector2 GetCustomPosition(this PlayerControl player) => new Vector2(player.transform.position.x, player.transform.position.y);
     public static string GetRoleInfo(this PlayerControl player, bool InfoLong = false)
     {
         var role = player.GetCustomRole();

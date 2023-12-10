@@ -5,6 +5,7 @@ using Il2CppSystem.Linq;
 using InnerNet;
 using System;
 using System.Linq;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -78,6 +79,21 @@ public class PlayerGameOptionsSender : GameOptionsSender
         opt.BlackOut(state.IsBlackOut);
 
         CustomRoles role = player.GetCustomRole();
+        if (Options.CurrentGameMode == CustomGameMode.FFA)
+        {
+            if (FFAManager.FFALowerVisionList.ContainsKey(player.PlayerId))
+            {
+                opt.SetVision(true);
+                opt.SetFloat(FloatOptionNames.CrewLightMod, FFAManager.FFA_LowerVision.GetFloat());
+                opt.SetFloat(FloatOptionNames.ImpostorLightMod, FFAManager.FFA_LowerVision.GetFloat());
+            }
+            else
+            {
+                opt.SetVision(true);
+                opt.SetFloat(FloatOptionNames.CrewLightMod, 1.25f);
+                opt.SetFloat(FloatOptionNames.ImpostorLightMod, 1.25f);
+            }
+        }
         switch (role.GetCustomRoleTypes())
         {
             case CustomRoleTypes.Impostor:
@@ -196,7 +212,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
                     : 300f;
                 AURoleOptions.EngineerInVentMaxTime = 1;
                 break;
-       /*     case CustomRoles.Mare:
+         /* case CustomRoles.Mare:
                 Mare.ApplyGameOptions(player.PlayerId);
                 break; */
             case CustomRoles.EvilTracker:
@@ -414,6 +430,10 @@ public class PlayerGameOptionsSender : GameOptionsSender
                 AURoleOptions.EngineerCooldown = Addict.VentCooldown.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 1;
                 break;
+            case CustomRoles.Mole:
+                AURoleOptions.EngineerCooldown = Mole.VentCooldown.GetFloat();
+                AURoleOptions.EngineerInVentMaxTime = 1;
+                break;
             case CustomRoles.Mario:
                 AURoleOptions.EngineerCooldown = Options.MarioVentCD.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 1;
@@ -480,6 +500,12 @@ public class PlayerGameOptionsSender : GameOptionsSender
             if (Utils.IsActive(SystemTypes.Electrical)) opt.SetFloat(FloatOptionNames.CrewLightMod, Options.LighterVisionOnLightsOut.GetFloat() * 5);
             else opt.SetFloat(FloatOptionNames.CrewLightMod, Options.LighterVisionNormal.GetFloat());
         }
+
+        if (player.Is(CustomRoles.Mare))
+        {
+            Mare.ApplyGameOptions(player.PlayerId);
+        }
+
    /*     if ((Main.FlashbangInProtect.Count >= 1 && Main.ForFlashbang.Contains(player.PlayerId) && (!player.GetCustomRole().IsCrewmate())))  
         {
                 opt.SetVision(false);
@@ -500,8 +526,8 @@ public class PlayerGameOptionsSender : GameOptionsSender
                 case CustomRoles.Watcher:
                     opt.SetBool(BoolOptionNames.AnonymousVotes, false);
                     break;
-                case CustomRoles.Flashman:
-                    Main.AllPlayerSpeed[player.PlayerId] = Options.FlashmanSpeed.GetFloat();
+                case CustomRoles.Flash:
+                    Flash.SetSpeed(player.PlayerId);
                     break;
                 case CustomRoles.Torch:
                     if (!Utils.IsActive(SystemTypes.Electrical))

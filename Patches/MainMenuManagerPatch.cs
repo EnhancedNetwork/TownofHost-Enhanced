@@ -291,32 +291,11 @@ public static class MainMenuManagerPatch
     [HarmonyPostfix]
     public static void OpenMenuPostfix()
     {
-        if (Credentials.ToheLogo != null) Credentials.ToheLogo.gameObject.SetActive(false);
+        if (ToheLogo != null) ToheLogo.gameObject.SetActive(false);
     }
     [HarmonyPatch(nameof(MainMenuManager.ResetScreen)), HarmonyPostfix]
     public static void ResetScreenPostfix()
     {
-        if (Credentials.ToheLogo != null) Credentials.ToheLogo.gameObject.SetActive(true);
-    }
-}
-
-// 来源：https://github.com/ykundesu/SuperNewRoles/blob/master/SuperNewRoles/Patches/HorseModePatch.cs
-[HarmonyPatch(typeof(Constants), nameof(Constants.ShouldHorseAround))]
-public static class HorseModePatch
-{
-    public static bool Prefix(ref bool __result)
-    {
-        __result = Main.HorseMode.Value;
-        return false;
-    }
-}
-[HarmonyPatch(typeof(Constants), nameof(Constants.ShouldFlipSkeld))]
-public static class DleksPatch
-{
-    public static bool isDleks = false;
-    public static bool Prefix(ref bool __result)
-    {
-        __result = isDleks;
-        return false;
+        if (ToheLogo != null) ToheLogo.gameObject.SetActive(true);
     }
 }

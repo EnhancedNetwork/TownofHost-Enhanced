@@ -101,6 +101,7 @@ public static class Pelican
             0 => new Vector2(-27f, 3.3f), // The Skeld
             1 => new Vector2(-11.4f, 8.2f), // MIRA HQ
             2 => new Vector2(42.6f, -19.9f), // Polus
+            3 => new Vector2(27f, 3.3f), // dlekS ehT
             4 => new Vector2(-16.8f, -6.2f), // Airship
             5 => new Vector2(9.6f, 23.2f), // The Fungle
             _ => throw new System.NotImplementedException(),
@@ -177,7 +178,7 @@ public static class Pelican
             var player = Utils.GetPlayerById(pc);
             if (player == null || target == null) continue;
 
-            target.RpcTeleport(player.GetTruePosition());
+            target.RpcTeleport(player.GetCustomPosition());
 
             Main.AllPlayerSpeed[tar] = Main.AllPlayerSpeed[tar] - 0.5f + originalSpeed[tar];
             ReportDeadBodyPatch.CanReport[tar] = true;
@@ -219,7 +220,7 @@ public static class Pelican
                 if (target == null) continue;
 
                 var pos = GetBlackRoomPSForPelican();
-                var dis = Vector2.Distance(pos, target.GetTruePosition());
+                var dis = Vector2.Distance(pos, target.GetCustomPosition());
                 if (dis < 1f) continue;
 
                 target.RpcTeleport(pos);

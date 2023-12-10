@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TOHE.Modules;
+using TOHE.Patches;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Crewmate;
@@ -122,7 +123,7 @@ class CheckMurderPatch
             return false;
         }
 
-        var divice = 2000f;
+        var divice = Options.CurrentGameMode == CustomGameMode.FFA ? 3000f : 2000f;
         float minTime = Mathf.Max(0.02f, AmongUsClient.Instance.Ping / divice * 6f); //Ping value is milliseconds (ms), so ÷ 2000
         // No value is stored in TimeSinceLastKill || Stored time is greater than or equal to minTime => Allow kill
 
@@ -220,6 +221,12 @@ class CheckMurderPatch
         {
             Logger.Info(killer.GetNameWithRole() + " The hitter is not allowed to use the kill button and the kill is canceled", "CheckMurder");
             return false;
+        }
+        //FFA
+        if (Options.CurrentGameMode == CustomGameMode.FFA)
+        {
+            FFAManager.OnPlayerAttack(killer, target);
+            return true;
         }
 
         if (Mastermind.ManipulatedPlayers.ContainsKey(killer.PlayerId))
@@ -706,7 +713,7 @@ class CheckMurderPatch
             }
             if (Main.BerserkerKillMax[killer.PlayerId] == Options.BerserkerScavengerLevel.GetInt() && Options.BerserkerTwoCanScavenger.GetBool())
             {
-                killer.RpcTeleport(target.GetTruePosition());
+                killer.RpcTeleport(target.GetCustomPosition());
                 RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
                 target.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
                 target.SetRealKiller(killer);
@@ -1096,7 +1103,7 @@ class CheckMurderPatch
             case CustomRoles.Berserker:
                 if (Main.BerserkerKillMax[target.PlayerId] >= Options.BerserkerImmortalLevel.GetInt() && Options.BerserkerFourCanNotKill.GetBool())
                 {
-                    killer.RpcTeleport(target.GetTruePosition());
+                    killer.RpcTeleport(target.GetCustomPosition());
                     RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
                     killer.SetKillCooldown(target: target, forceAnime: true);
                     return false;
@@ -1603,12 +1610,12 @@ class ShapeshiftPatch
                             var position = Main.EscapeeLocation[shapeshifter.PlayerId];
                             Main.EscapeeLocation.Remove(shapeshifter.PlayerId);
                             Logger.Msg($"{shapeshifter.GetNameWithRole()}:{position}", "EscapeeTeleport");
-                            shapeshifter.RpcTeleport(new Vector2(position.x, position.y));
+                            shapeshifter.RpcTeleport(position);
                             shapeshifter.RPCPlayCustomSound("Teleport");
                         }
                         else
                         {
-                            Main.EscapeeLocation.Add(shapeshifter.PlayerId, shapeshifter.GetTruePosition());
+                            Main.EscapeeLocation.Add(shapeshifter.PlayerId, shapeshifter.GetCustomPosition());
                         }
                     }
                     break;
@@ -1619,7 +1626,7 @@ class ShapeshiftPatch
                         var vent = Main.LastEnteredVent[shapeshifter.PlayerId];
                         var position = Main.LastEnteredVentLocation[shapeshifter.PlayerId];
                         Logger.Msg($"{shapeshifter.GetNameWithRole()}:{position}", "MinerTeleport");
-                        shapeshifter.RpcTeleport(new Vector2(position.x, position.y));
+                        shapeshifter.RpcTeleport(position);
                     }
                     break;
                 case CustomRoles.Bomber:
@@ -1700,8 +1707,8 @@ class ShapeshiftPatch
                         {
                             if (!(!GameStates.IsInTask || !shapeshifter.CanBeTeleported() || !target.CanBeTeleported()))
                             {
-                                var originPs = target.GetTruePosition();
-                                target.RpcTeleport(shapeshifter.GetTruePosition());
+                                var originPs = target.GetCustomPosition();
+                                target.RpcTeleport(shapeshifter.GetCustomPosition());
                                 shapeshifter.RpcTeleport(originPs);
                             }
                         }, 1.5f, "ImperiusCurse TP");
@@ -1776,6 +1783,8 @@ class ReportDeadBodyPatch
     {
         if (GameStates.IsMeeting) return false;
         if (Options.DisableMeeting.GetBool()) return false;
+        if (Options.CurrentGameMode == CustomGameMode.FFA) return false;
+
         if (!CanReport[__instance.PlayerId])
         {
             WaitReport[__instance.PlayerId].Add(target);
@@ -2644,7 +2653,7 @@ class FixedUpdatePatch
                                 else
                                 {
                                     float range = NormalGameOptionsV07.KillDistances[Mathf.Clamp(player.Is(CustomRoles.Reach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
-                                    float distance = Vector2.Distance(player.GetTruePosition(), arTarget.GetTruePosition());
+                                    float distance = Vector2.Distance(player.GetCustomPosition(), arTarget.GetCustomPosition());
 
                                     if (distance <= range)
                                     {
@@ -2704,7 +2713,7 @@ class FixedUpdatePatch
                         else
                         {
                             float range = NormalGameOptionsV07.KillDistances[Mathf.Clamp(player.Is(CustomRoles.Reach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
-                            float dis = Vector2.Distance(player.GetTruePosition(), rv_target.GetTruePosition());
+                            float dis = Vector2.Distance(player.GetCustomPosition(), rv_target.GetCustomPosition());
                             if (dis <= range)
                             {
                                 Main.RevolutionistTimer[playerId] = (rv_target, rv_time + Time.fixedDeltaTime);
@@ -3010,7 +3019,8 @@ class FixedUpdatePatch
                 var RoleTextData = Utils.GetRoleText(PlayerControl.LocalPlayer.PlayerId, __instance.PlayerId);
                 RoleText.text = RoleTextData.Item1;
                 RoleText.color = RoleTextData.Item2;
-                if (__instance.AmOwner) RoleText.enabled = true;
+                if (Options.CurrentGameMode == CustomGameMode.FFA) RoleText.text = string.Empty;
+                if (__instance.AmOwner || Options.CurrentGameMode == CustomGameMode.FFA) RoleText.enabled = true;
                 else if (ExtendedPlayerControl.KnowRoleTarget(PlayerControl.LocalPlayer, __instance)) RoleText.enabled = true;
                 else RoleText.enabled = false;
                 if (!PlayerControl.LocalPlayer.Data.IsDead && PlayerControl.LocalPlayer.IsRevealedPlayer(__instance) && __instance.Is(CustomRoles.Trickster))
@@ -3054,6 +3064,9 @@ class FixedUpdatePatch
 
                     if (Pelican.IsEaten(seer.PlayerId))
                         RealName = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"));
+
+                    if (Options.CurrentGameMode == CustomGameMode.FFA)
+                        FFAManager.GetNameNotify(target, ref RealName);
 
                     if (Deathpact.IsInActiveDeathpact(seer))
                         RealName = Deathpact.GetDeathpactString(seer);
@@ -3240,6 +3253,9 @@ class FixedUpdatePatch
                 if (Spiritualist.IsEnable)
                     Suffix.Append(Spiritualist.GetSpiritualistArrow(seer, target));
 
+                if (Options.CurrentGameMode == CustomGameMode.FFA) 
+                    Suffix.Append(FFAManager.GetPlayerArrow(seer, target));
+
                 if (Tracefinder.IsEnable)
                     Suffix.Append(Tracefinder.GetTargetArrow(seer, target));
 
@@ -3372,6 +3388,34 @@ class SetColorPatch
     }
 }
 
+[HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoExitVent))]
+class CoExitVentPatch
+{
+    public static void Postfix(PlayerPhysics __instance, [HarmonyArgument(0)] int id)
+    {
+        if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenKCDIsUp.GetBool())
+        {
+            if (__instance.myPlayer != null)
+            {
+                var now = Utils.GetTimeStamp();
+                byte playerId = __instance.myPlayer.PlayerId;
+                if (FFAManager.FFAEnterVentTime.ContainsKey(playerId))
+                {
+                    if (!FFAManager.FFAVentDuration.ContainsKey(playerId)) FFAManager.FFAVentDuration[playerId] = 0f;
+                    FFAManager.FFAVentDuration[playerId] = FFAManager.FFAVentDuration[playerId] + (now - FFAManager.FFAEnterVentTime[playerId]);
+                    
+                    Logger.Warn($"Vent Duration = {FFAManager.FFAVentDuration[playerId]}, vent enter time = {FFAManager.FFAEnterVentTime[playerId]}, vent exit time = {now}, vent time = {now - FFAManager.FFAEnterVentTime[playerId]}", "FFA VENT DURATION");
+                    FFAManager.FFAEnterVentTime.Remove(playerId);
+                }
+            }
+        }
+        _ = new LateTask(() =>
+        {
+            Mole.OnExitVent(__instance.myPlayer, id);
+        }, 0.1f);
+    }
+}
+
 [HarmonyPatch(typeof(Vent), nameof(Vent.EnterVent))]
 class EnterVentPatch
 {
@@ -3432,7 +3476,7 @@ class EnterVentPatch
         Main.LastEnteredVent.Remove(pc.PlayerId);
         Main.LastEnteredVent.Add(pc.PlayerId, __instance);
         Main.LastEnteredVentLocation.Remove(pc.PlayerId);
-        Main.LastEnteredVentLocation.Add(pc.PlayerId, pc.GetTruePosition());
+        Main.LastEnteredVentLocation.Add(pc.PlayerId, pc.GetCustomPosition());
 
         Swooper.OnEnterVent(pc, __instance);
         Wraith.OnEnterVent(pc, __instance);
@@ -3561,7 +3605,7 @@ class EnterVentPatch
                     {
                         if (player.CanBeTeleported() || player.PlayerId == pc.PlayerId)
                         {
-                            player.RpcTeleport(new Vector2(position.x, position.y));
+                            player.RpcTeleport(position);
                         }
                         if (pc != player)
                         {
@@ -3572,7 +3616,7 @@ class EnterVentPatch
                     }
                     else
                     {
-                        Main.TimeMasterBackTrack.Add(player.PlayerId, player.GetTruePosition());
+                        Main.TimeMasterBackTrack.Add(player.PlayerId, player.GetCustomPosition());
                     }
                 }
             }
@@ -3585,7 +3629,39 @@ class CoEnterVentPatch
     public static bool Prefix(PlayerPhysics __instance, [HarmonyArgument(0)] int id)
     {
         if (!AmongUsClient.Instance.AmHost) return true;
+        Logger.Info($" {__instance.myPlayer.GetNameWithRole()}, Vent ID: {id}", "CoEnterVent");
 
+        if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenTwoPlayersAlive.GetBool() && Main.AllAlivePlayerControls.Length <= 2)
+        {
+            var pc = __instance?.myPlayer;
+            _ = new LateTask(() =>
+            {
+                pc?.Notify(GetString("FFA-NoVentingBecauseTwoPlayers"), 7f);
+                pc?.MyPhysics?.RpcBootFromVent(id);
+            }, 0.5f);
+            return true;
+        }
+        if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenKCDIsUp.GetBool())
+        {
+
+            var pc = __instance?.myPlayer;
+            var now = Utils.GetTimeStamp();
+            FFAManager.FFAEnterVentTime[pc.PlayerId] = now;
+            if (!FFAManager.FFAVentDuration.ContainsKey(pc.PlayerId)) FFAManager.FFAVentDuration[pc.PlayerId] = 0;
+            var canVent = (now - FFAManager.FFALastKill[pc.PlayerId]) <= (Main.AllPlayerKillCooldown[pc.PlayerId] + FFAManager.FFAVentDuration[pc.PlayerId]);
+            Logger.Warn($"Enter Time = {now}, last kill time = {FFAManager.FFALastKill[pc.PlayerId]}, {FFAManager.FFAVentDuration[pc.PlayerId]}","VENT DURATION TESTING");
+            Logger.Warn($"can vent {canVent}", "FFA MODE VENTING");
+            if (!canVent)
+            {
+                _ = new LateTask(() =>
+                {
+                    pc?.Notify(GetString("FFA-NoVentingBecauseKCDIsUP"), 7f);
+                    pc?.MyPhysics?.RpcBootFromVent(id);
+                }, 0.5f);
+                return true;
+            }
+            
+        }
         if (Glitch.hackedIdList.ContainsKey(__instance.myPlayer.PlayerId))
         {
             _ = new LateTask(() =>
@@ -3681,13 +3757,14 @@ class CoEnterVentPatch
             return true;
         }
 
-        //处理弹出管道的阻塞
-        if ((__instance.myPlayer.Data.Role.Role != RoleTypes.Engineer && //不是工程师
-        !__instance.myPlayer.CanUseImpostorVentButton()) || //不能使用内鬼的跳管按钮
-        (__instance.myPlayer.Is(CustomRoles.Mayor) && Main.MayorUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count) && count >= Options.MayorNumOfUseButton.GetInt()) ||
-        (__instance.myPlayer.Is(CustomRoles.Paranoia) && Main.ParaUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count2) && count2 >= Options.ParanoiaNumOfUseButton.GetInt()) ||
-        (__instance.myPlayer.Is(CustomRoles.Veteran) && Main.VeteranNumOfUsed.TryGetValue(__instance.myPlayer.PlayerId, out var count3) && count3 < 1) ||
-        (__instance.myPlayer.Is(CustomRoles.DovesOfNeace) && Main.DovesOfNeaceNumOfUsed.TryGetValue(__instance.myPlayer.PlayerId, out var count4) && count4 < 1)
+        // Fix Vent Stuck
+        if (DleksPatch.BootFromVent(__instance.myPlayer)
+            || (__instance.myPlayer.Data.Role.Role != RoleTypes.Engineer 
+                && !__instance.myPlayer.CanUseImpostorVentButton())
+            || (__instance.myPlayer.Is(CustomRoles.Mayor) && Main.MayorUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count) && count >= Options.MayorNumOfUseButton.GetInt())
+            || (__instance.myPlayer.Is(CustomRoles.Paranoia) && Main.ParaUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count2) && count2 >= Options.ParanoiaNumOfUseButton.GetInt())
+            || (__instance.myPlayer.Is(CustomRoles.Veteran) && Main.VeteranNumOfUsed.TryGetValue(__instance.myPlayer.PlayerId, out var count3) && count3 < 1)
+            || (__instance.myPlayer.Is(CustomRoles.DovesOfNeace) && Main.DovesOfNeaceNumOfUsed.TryGetValue(__instance.myPlayer.PlayerId, out var count4) && count4 < 1)
         )
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.BootFromVent, SendOption.Reliable, -1);

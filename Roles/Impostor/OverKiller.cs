@@ -29,7 +29,7 @@ namespace TOHE.Roles.Impostor
             target.Data.IsDead = true;
 
             if (!Main.OverDeadPlayerList.Contains(target.PlayerId)) Main.OverDeadPlayerList.Add(target.PlayerId);
-            var ops = target.GetTruePosition();
+            //var ops = target.GetCustomPosition();
             var rd = IRandom.Instance;
 
             if (target.Is(CustomRoles.Avanger))
@@ -61,7 +61,7 @@ namespace TOHE.Roles.Impostor
             _ = new LateTask(() =>
             {
                 if (!MurderTargetLateTask.ContainsKey(target.PlayerId))
-                    MurderTargetLateTask.Add(target.PlayerId, (0, 0, target.GetTruePosition()));
+                    MurderTargetLateTask.Add(target.PlayerId, (0, 0, target.GetCustomPosition()));
             }, 0.6f, "OverKillerLateKill");
         }
 

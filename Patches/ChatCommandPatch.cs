@@ -392,6 +392,17 @@ internal class ChatCommands
                     else Utils.SendMessage($"{GetString("Message.MessageWaitHelp")}\n{GetString("ForExample")}:\n{args[0]} 3", 0);
                     break;
 
+                case "/tpout":
+                    canceled = true;
+                    if (!GameStates.IsLobby) break;
+                    PlayerControl.LocalPlayer.RpcTeleport(new Vector2(0.1f, 3.8f));
+                    break;
+                case "/tpin":
+                    canceled = true;
+                    if (!GameStates.IsLobby) break;
+                    PlayerControl.LocalPlayer.RpcTeleport(new Vector2(-0.2f, 1.3f));
+                    break;
+
                 case "/say":
                 case "/s":
                     canceled = true;
@@ -1173,7 +1184,7 @@ internal class ChatCommands
             "叛徒" => GetString("Madmate"),
             "海王" => GetString("Ntr"),
             "觀察者" or "窥视者" or "觀察" or "窥视" => GetString("Watcher"),
-            "閃電俠" or "闪电侠" or "閃電" or "闪电" => GetString("Flashman"),
+            "閃電俠" or "闪电侠" or "閃電" or "闪电" => GetString("Flash"),
             "持燈人" or "火炬" or "持燈" => GetString("Torch"),
             "靈媒" or "灵媒" or "靈媒" => GetString("Seer"),
             "破平者" or "破平" => GetString("Brakar"),
@@ -1276,6 +1287,11 @@ internal class ChatCommands
     }
     public static void SendRolesInfo(string role, byte playerId, bool isDev = false, bool isUp = false)
     {
+        if (Options.CurrentGameMode == CustomGameMode.FFA)
+        {
+            Utils.SendMessage(GetString("ModeDescribe.FFA"), playerId);
+            return;
+        }
         role = role.Trim().ToLower();
         if (role.StartsWith("/r")) role.Replace("/r", string.Empty);
         if (role.StartsWith("/up")) role.Replace("/up", string.Empty);
@@ -1992,6 +2008,15 @@ internal class ChatCommands
                 ChatUpdatePatch.DoBlockChat = false;
                 //Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
                 Utils.SendMessage(GetString("Message.TryFixName"), player.PlayerId);
+                break;
+
+            case "/tpout":
+                if (!GameStates.IsLobby) break;
+                player.RpcTeleport(new Vector2(0.1f, 3.8f));
+                break;
+            case "/tpin":
+                if (!GameStates.IsLobby) break;
+                player.RpcTeleport(new Vector2(-0.2f, 1.3f));
                 break;
 
             case "/say":

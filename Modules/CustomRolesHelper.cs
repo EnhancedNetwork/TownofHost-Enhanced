@@ -143,6 +143,7 @@ static class CustomRolesHelper
                 CustomRoles.Retributionist => CustomRoles.Crewmate,
                 CustomRoles.Guardian => CustomRoles.Crewmate,
                 CustomRoles.Addict => CustomRoles.Engineer,
+                CustomRoles.Mole => CustomRoles.Engineer,
                 CustomRoles.Chameleon => CustomRoles.Engineer,
                 CustomRoles.EvilSpirit => CustomRoles.GuardianAngel,
                 CustomRoles.Lurker => CustomRoles.Impostor,
@@ -181,6 +182,8 @@ static class CustomRolesHelper
     {
         return role switch
         {
+            //FFA
+            CustomRoles.Killer => RoleTypes.Impostor,
             //Standard
             CustomRoles.Sheriff => RoleTypes.Impostor,
             CustomRoles.Vigilante => RoleTypes.Impostor,
@@ -280,7 +283,7 @@ static class CustomRolesHelper
             CustomRoles.Madmate or
             CustomRoles.Watcher or
             CustomRoles.Admired or
-            CustomRoles.Flashman or
+            CustomRoles.Flash or
             CustomRoles.Torch or
             CustomRoles.Seer or
             CustomRoles.Bait or
@@ -713,6 +716,9 @@ static class CustomRolesHelper
     public static bool IsNeutral(this CustomRoles role)
     {
         return role is
+            //FFA
+            CustomRoles.Killer or
+            //Standard
             CustomRoles.Jester or
             CustomRoles.Opportunist or
             CustomRoles.Mario or
@@ -866,6 +872,9 @@ static class CustomRolesHelper
     public static bool IsNeutralWithGuessAccess(this CustomRoles role)
     {
         return role is
+            //FFA
+            CustomRoles.Killer or
+            //Standard
             CustomRoles.Jester or
             CustomRoles.Opportunist or
             CustomRoles.Mario or
@@ -1310,7 +1319,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Rascal)
                     || pc.Is(CustomRoles.NiceMini))
                     return false;
-                if (!Utils.CanBeMadmate(pc))
+                if (!pc.CanBeMadmate(inGame: false))
                     return false;
                 break;
 
@@ -1552,7 +1561,7 @@ static class CustomRolesHelper
                     return false;
                 break;
 
-            case CustomRoles.Flashman:
+            case CustomRoles.Flash:
                 if (pc.Is(CustomRoles.Swooper))
                     return false;
                 break;
@@ -1597,7 +1606,7 @@ static class CustomRolesHelper
         //if (role is CustomRoles.Onbound && pc.Is(CustomRoles.Reflective)) return false;
         //if (role is CustomRoles.Reflective && pc.Is(CustomRoles.Onbound)) return false;
         //if (role is CustomRoles.Cyber && pc.Is(CustomRoles.CyberStar)) return false;
-        //if (role is CustomRoles.Ntr or CustomRoles.Watcher or CustomRoles.Flashman or CustomRoles.Torch or CustomRoles.Seer or CustomRoles.Bait or CustomRoles.Burst) return false;
+        //if (role is CustomRoles.Ntr or CustomRoles.Watcher or CustomRoles.Flash or CustomRoles.Torch or CustomRoles.Seer or CustomRoles.Bait or CustomRoles.Burst) return false;
 
         return true;
     }

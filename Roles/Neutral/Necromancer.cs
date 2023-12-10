@@ -82,7 +82,7 @@ public static class Necromancer
             Killer = null; 
             return;
         }
-        if (seconds <= 0 || GameStates.IsMeeting) 
+        if (seconds <= 0 || GameStates.IsMeeting && player.IsAlive()) 
         { 
             player.RpcMurderPlayerV3(player); 
             player.SetRealKiller(killer);
