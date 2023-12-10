@@ -347,6 +347,7 @@ internal class ChangeRoleSettings
             MeetingStates.MeetingCalled = false;
             MeetingStates.FirstMeeting = true;
             GameStates.AlreadyDied = false;
+            EAC.ReportTimes = new();
         }
         catch (Exception ex)
         {

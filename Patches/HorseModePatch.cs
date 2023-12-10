@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using UnityEngine;
 
 namespace TOHE.Patches;
 
@@ -10,5 +11,9 @@ public static class HorseModePatch
     {
         __result = Main.HorseMode.Value;
         return false;
+    }
+    public static int GetRealConstant()
+    {
+        return Constants.GetVersion(Constants.Year, Constants.Month, Constants.Day, Constants.Revision);
     }
 }
