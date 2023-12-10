@@ -62,7 +62,9 @@ class CmdCheckMurderPatch
         Logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}", "CmdCheckMurder");
         
         if (!AmongUsClient.Instance.AmHost) return true;
-        return CheckMurderPatch.Prefix(__instance, target);
+        CheckMurderPatch.Prefix(__instance, target); 
+        //The return bool is not needed here
+        return false;
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckMurder))] // Vanilla
@@ -208,6 +210,10 @@ class CheckMurderPatch
                     target = Utils.GetPlayerById(Main.ShamanTarget);
                     Main.ShamanTarget = byte.MaxValue;
                 }
+                break;
+            case CustomRoles.Solsticer:
+                if (Solsticer.OnCheckMurder(killer, target))
+                    return false;
                 break;
         }
         
@@ -1267,15 +1273,33 @@ class CheckMurderPatch
         }
 
         //首刀保护
-        if (Main.ShieldPlayer != byte.MaxValue && Main.ShieldPlayer == target.PlayerId && Utils.IsAllAlive)
+        if (target.PlayerId == PlayerControl.LocalPlayer.PlayerId && Utils.IsAllAlive && Options.ShieldPersonDiedFirst.GetBool() && killer.PlayerId != target.PlayerId)
         {
-            Main.ShieldPlayer = byte.MaxValue;
-            killer.SetKillCooldown();
-            killer.RpcGuardAndKill(target);
-            //target.RpcGuardAndKill();
-            return false;
+            switch (Options.HostGetKilledFirstAction.GetInt())
+            {
+                case 0:
+                    killer.SetKillCooldown(forceAnime: true);
+                    return false;
+                case 1:
+                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Youtuber);
+                    CustomWinnerHolder.WinnerIds.Add(target.PlayerId);
+                    return false;
+                case 2:
+                    target.RpcMurderPlayerV3(killer);
+                    return false;
+                case 3:
+                    Main.AllAlivePlayerControls
+                        .Where(x => x.PlayerId != target.PlayerId)
+                        .Do(x =>
+                        {
+                            x.RpcSpecificMurderPlayer(x, x);
+                            x.SetRealKiller(target);
+                            Main.PlayerStates[x.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
+                        });
+                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.None);
+                    break;
+            }
         }
-
         //首刀叛变
         if (Options.MadmateSpawnMode.GetInt() == 1 && Main.MadmateNum < CustomRoles.Madmate.GetCount() && Utils.CanBeMadmate(target, true))
         {
@@ -1299,9 +1323,9 @@ class CheckMurderPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
 class MurderPlayerPatch
 {
-    public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] MurderResultFlags resultFlags)
     {
-        Logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}{(target.IsProtected() ? "(Protected)" : "")}", "MurderPlayer");
+        Logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}{(target.IsProtected() ? "(Protected)" : "")}, flags : {resultFlags}", "MurderPlayer");
 
         if (RandomSpawn.CustomNetworkTransformPatch.NumOfTP.TryGetValue(__instance.PlayerId, out var num) && num > 2)
         {
@@ -1313,8 +1337,23 @@ class MurderPlayerPatch
             Camouflage.ResetSkinAfterDeathPlayers.Add(target.PlayerId);
             Camouflage.RpcSetSkin(target, ForceRevert: true);
         }
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            if (resultFlags == MurderResultFlags.Succeeded)
+            {
+                __instance.RpcSpecificMurderPlayer(__instance, __instance);
+                EAC.Report(__instance, "No check murder");
+                EAC.WarnHost();
+                EAC.HandleCheat(__instance, "No check murder");
+                return false;
+            }
+            //As long as the check murder is done by host, the murder result flags will always have DecisionByHost
+            //Succeed means the client send a murder player rpc without check murder to host
+        }
+        return true;
     }
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] MurderResultFlags resultFlags)
     {
         if (target.AmOwner) RemoveDisableDevicesPatch.UpdateDisableDevices();
         if (!target.Data.IsDead || !AmongUsClient.Instance.AmHost) return;
@@ -1448,7 +1487,7 @@ class MurderPlayerPatch
         if (target.Is(CustomRoles.Avanger))
         {
             var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId && !Pelican.IsEaten(x.PlayerId) && !Medic.ProtectList.Contains(x.PlayerId) 
-            && !x.Is(CustomRoles.Pestilence) && !x.Is(CustomRoles.Masochist) && !((x.Is(CustomRoles.NiceMini) || x.Is(CustomRoles.EvilMini)) && Mini.Age < 18)).ToList();
+            && !x.Is(CustomRoles.Pestilence) && !x.Is(CustomRoles.Masochist) && !x.Is(CustomRoles.Solsticer) && !((x.Is(CustomRoles.NiceMini) || x.Is(CustomRoles.EvilMini)) && Mini.Age < 18)).ToList();
             if (pcList.Any())
             {
                 PlayerControl rp = pcList[IRandom.Instance.Next(0, pcList.Count)];
@@ -1782,6 +1821,11 @@ class ReportDeadBodyPatch
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo target)
     {
         if (GameStates.IsMeeting) return false;
+        if (EAC.RpcReportDeadBodyCheck(__instance, target))
+        {
+            Logger.Fatal("Eac patched the report body rpc", "ReportDeadBodyPatch");
+            return false;
+        }
         if (Options.DisableMeeting.GetBool()) return false;
         if (Options.CurrentGameMode == CustomGameMode.FFA) return false;
 
@@ -2671,6 +2715,10 @@ class FixedUpdatePatch
                             }
                         }
                         break;
+
+                    case CustomRoles.Solsticer:
+                        Solsticer.OnFixedUpdate(player);
+                        break;
                 }
 
                 // Revolutionist
@@ -3100,6 +3148,10 @@ class FixedUpdatePatch
                     Mark.Append(Snitch.GetWarningMark(seer, target));
                     Mark.Append(Snitch.GetWarningArrow(seer, target));
                 }
+
+                if (CustomRoles.Solsticer.RoleExist())
+                    if (target.AmOwner || target.Is(CustomRoles.Solsticer))
+                        Mark.Append(Solsticer.GetWarningArrow(seer, target));
 
                 if (Marshall.IsEnable)
                     Mark.Append(Marshall.GetWarningMark(seer, target));
@@ -3866,6 +3918,10 @@ class PlayerControlCompleteTaskPatch
         {
             //ライターもしくはスピードブースターもしくはドクターがいる試合のみタスク終了時にCustomSyncAllSettingsを実行する
             Utils.MarkEveryoneDirtySettings();
+        }
+        if (pc.Is(CustomRoles.Solsticer))
+        {
+            Solsticer.OnCompleteTask(pc);
         }
     }
 }

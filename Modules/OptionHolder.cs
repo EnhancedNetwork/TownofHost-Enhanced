@@ -92,7 +92,7 @@ public static class Options
     };
     public static readonly string[] CheatResponsesName =
     {
-        "Ban", "Kick", "NoticeMe","NoticeEveryone"
+        "Ban", "Kick", "NoticeMe","NoticeEveryone", "TempBan"
     };
     public static readonly string[] ConfirmEjectionsMode =
     {
@@ -832,6 +832,16 @@ public static class Options
     public static OptionItem FixFirstKillCooldown;
     public static OptionItem FixKillCooldownValue;
     public static OptionItem ShieldPersonDiedFirst;
+    public static OptionItem HostGetKilledFirstAction;
+
+    public static readonly string[] HostGetKilledFirst =
+    {
+        "HGK.DisableAttempt",
+        "HGK.Youtuber",
+        "HGK.CursedWolf",
+        "HGK.Terriost"
+    };
+
     public static OptionItem GhostCanSeeOtherRoles;
     public static OptionItem GhostCanSeeOtherVotes;
     public static OptionItem GhostCanSeeDeathReason;
@@ -1029,7 +1039,7 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 26100 lasted id for roles/add-ons (Next use 26200)
+        // 26200 lasted id for roles/add-ons (Next use 26300)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
         // Start Load Settings
@@ -2835,6 +2845,8 @@ public static class Options
         
         Spiritcaller.SetupCustomOption();
 
+        Solsticer.SetupCustomOption();
+
         // 副职
         TextOptionItem.Create(10000023, "OtherRoles.Addons", TabGroup.OtherRoles)
             .SetGameMode(CustomGameMode.Standard)
@@ -2937,7 +2949,7 @@ public static class Options
             .SetHeader(true)
             .SetColor(Color.blue);
 
-        CheatResponses = StringOptionItem.Create(60250, "CheatResponses", CheatResponsesName, 0, TabGroup.SystemSettings, false)
+        CheatResponses = StringOptionItem.Create(60250, "CheatResponses", CheatResponsesName, 4, TabGroup.SystemSettings, false)
             .SetHeader(true);
 
         //HighLevelAntiCheat = StringOptionItem.Create(60260, "HighLevelAntiCheat", CheatResponsesName, 0, TabGroup.SystemSettings, false)
@@ -3693,6 +3705,9 @@ public static class Options
         ShieldPersonDiedFirst = BooleanOptionItem.Create(60780, "ShieldPersonDiedFirst", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
+        HostGetKilledFirstAction = StringOptionItem.Create(60781, "HostGetKilledFirstAction", HostGetKilledFirst, 0, TabGroup.GameSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(ShieldPersonDiedFirst);
 
         // 杀戮闪烁持续
         KillFlashDuration = FloatOptionItem.Create(60790, "KillFlashDuration", new(0.1f, 0.45f, 0.05f), 0.3f, TabGroup.GameSettings, false)
