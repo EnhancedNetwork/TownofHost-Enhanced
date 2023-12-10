@@ -129,13 +129,10 @@ public static class OptionsMenuBehaviourStartPatch
             {
                 InfiniteVision = ClientOptionItem.Create("InfiniteVision", Main.InfiniteVision, __instance);
             }
-    if (PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsMod)
-    {
         if ((AllowTPs == null || AllowTPs.ToggleButton == null))
         {
             AllowTPs = ClientOptionItem.Create("AllowTPs", Main.AllowTPs, __instance);
         }
-    }
         if ((ImpTasks == null || ImpTasks.ToggleButton == null))
             {
                 Debug.Log("trying to add, atleast trying.");
