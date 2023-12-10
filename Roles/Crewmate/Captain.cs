@@ -9,11 +9,9 @@ namespace TOHE.Roles.Crewmate;
 
 public static class Captain
 {
-    private static readonly int Id = 11900;
+    private static readonly int Id = 26300;
     private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
-
-    private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Marshall);
 
     private static Dictionary<byte, float> OriginalSpeed = new();
     public static Dictionary<byte, List<byte>> CaptainVoteTargets = new();

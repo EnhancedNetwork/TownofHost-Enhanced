@@ -1132,6 +1132,10 @@ class MeetingHudStartPatch
                     sb.Append(Marshall.GetWarningMark(seer, target));
                     break;
             }
+            if (Captain.IsEnable)
+                if ((target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) &&
+                    (seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
+                    sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Captain), "◈"));
             switch (seer.GetCustomRole())
             {
                 case CustomRoles.Arsonist:
@@ -1317,9 +1321,7 @@ class MeetingHudStartPatch
             //赌徒提示
             sb.Append(Totocalcio.TargetMark(seer, target));
             sb.Append(Romantic.TargetMark(seer, target));
-            if (Captain.IsEnable)
-                if (target.GetCustomRole().IsCrewmate() && (!target.Is(CustomRoles.Madmate) || (target.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
-                    sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Captain), "◈"));
+            
 
             sb.Append(Lawyer.LawyerMark(seer, target));
 
