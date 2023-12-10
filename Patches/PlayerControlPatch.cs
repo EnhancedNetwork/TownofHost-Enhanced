@@ -1269,7 +1269,7 @@ class CheckMurderPatch
         }
 
         //首刀保护
-        if (target.AmOwner && Utils.IsAllAlive && Options.ShieldPersonDiedFirst.GetBool() && killer.PlayerId != target.PlayerId)
+        if (target.PlayerId == PlayerControl.LocalPlayer.PlayerId && Utils.IsAllAlive && Options.ShieldPersonDiedFirst.GetBool() && killer.PlayerId != target.PlayerId)
         {
             switch (Options.HostGetKilledFirstAction.GetInt())
             {
