@@ -44,6 +44,7 @@ public static class Captain
     public static void Init()
     {
         //playerIdList = new();
+        IsEnable = false;
         OriginalSpeed = new();
         CaptainVoteTargets = new();
     }
