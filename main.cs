@@ -635,6 +635,7 @@ public enum CustomRoles
     CyberStar,
     Cleanser,
     Mayor,
+    Captain,
     Bastion,
     Paranoia,
     Psychic,
