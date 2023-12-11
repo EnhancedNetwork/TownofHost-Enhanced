@@ -1672,7 +1672,7 @@ static class CustomRolesHelper
             ((role is CustomRoles.Doctor) && (Options.DoctorVisibleToEveryone.GetBool())) ||
             ((role is CustomRoles.Bait) && (Options.BaitNotification.GetBool()) && ParityCop.ParityCheckBaitCountType.GetBool()) ||
             ((role is CustomRoles.President) && President.CheckPresidentReveal[target.PlayerId] == true)) ||
-            (role is CustomRoles.Captain);
+            (role is CustomRoles.Captain && Captain.OptionCrewCanFindCaptain.GetBool());
     }
     public static bool IsImpostorTeamV3(this CustomRoles role) => (role.IsImpostor() || role.IsMadmate());
     public static bool IsNeutralKillerTeam(this CustomRoles role) => (role.IsNK() && !role.IsMadmate());
