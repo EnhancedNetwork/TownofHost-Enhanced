@@ -33,39 +33,39 @@ internal class EAC
             var rpc = (RpcCalls)callId;
             switch (rpc)
             {
-                case RpcCalls.CheckName:
-                    string name = sr.ReadString();
-                    if (sr.BytesRemaining > 0 && sr.ReadBoolean()) return false;
-                    if (
-                        ((name.Contains("<size") || name.Contains("size>")) && name.Contains('?') && !name.Contains("color")) ||
-                        name.Length > 160 ||
-                        name.Count(f => f.Equals("\"\\n\"")) > 3 ||
-                        name.Count(f => f.Equals("\n")) > 3 ||
-                        name.Count(f => f.Equals("\r")) > 3 ||
-                        name.Contains("░") ||
-                        name.Contains("▄") ||
-                        name.Contains("█") ||
-                        name.Contains("▌") ||
-                        name.Contains("▒") ||
-                        name.Contains("习近平")
-                        )
-                    {
-                        WarnHost();
-                        Report(pc, "非法检查游戏名称");
-                        Logger.Fatal($"玩家非法检查名称【{pc.GetClientId()}:{pc.GetRealName()}】，已驳回", "EAC");
-                        return true;
-                    }
-                    break;
-                case RpcCalls.SetName:
-                    if (!GameStates.IsLobby)
-                    {
-                        WarnHost();
-                        Report(pc, "Bad SetName rpc");
-                        HandleCheat(pc, "Bad SetName rpc");
-                        Logger.Fatal($"非法设置玩家【{pc.GetClientId()}:{pc.GetRealName()}】的游戏名称，已驳回", "EAC");
-                        return true;
-                    }
-                    break;
+                //case RpcCalls.CheckName:
+                //    string name = sr.ReadString();
+                //    if (sr.BytesRemaining > 0 && sr.ReadBoolean()) return false;
+                //    if (
+                //        ((name.Contains("<size") || name.Contains("size>")) && name.Contains('?') && !name.Contains("color")) ||
+                //        name.Length > 160 ||
+                //        name.Count(f => f.Equals("\"\\n\"")) > 3 ||
+                //        name.Count(f => f.Equals("\n")) > 3 ||
+                //        name.Count(f => f.Equals("\r")) > 3 ||
+                //        name.Contains("░") ||
+                //        name.Contains("▄") ||
+                //        name.Contains("█") ||
+                //        name.Contains("▌") ||
+                //        name.Contains("▒") ||
+                //        name.Contains("习近平")
+                //        )
+                //    {
+                //        WarnHost();
+                //        Report(pc, "非法检查游戏名称");
+                //        Logger.Fatal($"玩家非法检查名称【{pc.GetClientId()}:{pc.GetRealName()}】，已驳回", "EAC");
+                //        return true;
+                //    }
+                //    break;
+                //case RpcCalls.SetName:
+                //    if (!GameStates.IsLobby)
+                //    {
+                //        WarnHost();
+                //        Report(pc, "Bad SetName rpc");
+                //        HandleCheat(pc, "Bad SetName rpc");
+                //        Logger.Fatal($"非法设置玩家【{pc.GetClientId()}:{pc.GetRealName()}】的游戏名称，已驳回", "EAC");
+                //        return true;
+                //    }
+                //    break;
                 case RpcCalls.SetRole:
                     var role = (RoleTypes)sr.ReadUInt16();
                     if (GameStates.IsLobby && (role is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost))
