@@ -947,6 +947,21 @@ internal class ChatCommands
             // If you need to remove the roles, please delete them directly instead of commenting them out
             // 如果需要删除职业，请直接删掉，而不是注释掉
 
+            //Note for translators
+            //This file should contain not only Simplified and Traditional Chinese strings
+            //If the role has other nicknames or common misspellings in your language
+            //You can add them to this file with [ or "string" ]
+            //But please pay attention to the order of the languages
+            //so we can make the file clear and easy to manage
+
+            //Note for Contributors
+            //If you are coding a new role
+            //Pls create a new line here at the proper position
+            //Position should be same with the role name in en_US.json
+            //So translators can put nicknames or common misspellings here
+            //eg : "A" or "B" => GetString("RealRoleName"),
+            //eg : "Vector" or "Mario" => GetString("Mario"),
+
             // GM
             "GM(遊戲大師)" or "管理员" or "管理" or "gm" or "GM" => GetString("GM"),
 
@@ -1125,6 +1140,7 @@ internal class ChatCommands
             "玩家" => GetString("Gamer"),
             "潛藏者" or "潜藏" => GetString("DarkHide"),
             "工作狂" => GetString("Workaholic"),
+            "至日者" or "至日" => GetString("Solsticer"),
             "集票者" or "集票" => GetString("Collector"),
             "神風特攻隊" or "自爆卡车" => GetString("Provocateur"),
             "嗜血騎士" or "嗜血骑士" => GetString("BloodKnight"),
