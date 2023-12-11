@@ -101,6 +101,7 @@ public static class Taskinator
         if (!AmongUsClient.Instance.AmHost) return;
         if(!IsEnable) return;
         if (player == null) return;
+        if (!player.IsAlive()) return;
         byte playerId = player.PlayerId;
         if (player.Is(CustomRoles.Taskinator))
         {
