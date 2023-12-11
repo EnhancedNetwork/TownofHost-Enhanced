@@ -40,8 +40,8 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "1.3.1.1";
-    public const string PluginDisplayVersion = "1.3.1 dev 1";
+    public const string PluginVersion = "1.3.1.2";
+    public const string PluginDisplayVersion = "1.3.1 dev 2";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
     /******************* Change one of the three variables to true before making a release. *******************/
     public const bool Canary = false; // Unused variable? ---- not unused anymore :)
@@ -224,7 +224,6 @@ public class Main : BasePlugin
     public static bool IsAprilFools = DateTime.Now.Month == 4 && DateTime.Now.Day is 1;
     public static bool ResetOptions = true;
     public static byte FirstDied = byte.MaxValue;
-    public static byte ShieldPlayer = byte.MaxValue;
     public static int MadmateNum = 0;
     public static int BardCreations = 0;
     public static int MeetingsPassed = 0;
