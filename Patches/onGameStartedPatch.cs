@@ -108,7 +108,6 @@ internal class ChangeRoleSettings
             Main.JinxSpellCount = new();
             Main.OverDeadPlayerList = new();
             Main.Provoked = new();
-            Main.ShieldPlayer = Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : (byte)0;
             Main.FirstDied = byte.MaxValue;
             Main.MadmateNum = 0;
             Main.BardCreations = 0;
@@ -349,6 +348,7 @@ internal class ChangeRoleSettings
             MeetingStates.MeetingCalled = false;
             MeetingStates.FirstMeeting = true;
             GameStates.AlreadyDied = false;
+            EAC.ReportTimes = new();
         }
         catch (Exception ex)
         {

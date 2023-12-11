@@ -9,7 +9,7 @@ namespace TOHE.Roles.Neutral
 {
     public static class Solsticer
     {
-        private static readonly int Id = 11451400; //Tommy you decide the id LOL
+        private static readonly int Id = 26200;
 
         public static OptionItem EveryOneKnowSolsticer;
         public static OptionItem SolsticerCanVent;

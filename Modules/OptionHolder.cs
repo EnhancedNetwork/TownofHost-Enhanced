@@ -92,7 +92,7 @@ public static class Options
     };
     public static readonly string[] CheatResponsesName =
     {
-        "Ban", "Kick", "NoticeMe","NoticeEveryone"
+        "Ban", "Kick", "NoticeMe","NoticeEveryone", "TempBan"
     };
     public static readonly string[] ConfirmEjectionsMode =
     {
@@ -1039,7 +1039,7 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 26100 lasted id for roles/add-ons (Next use 26200)
+        // 26200 lasted id for roles/add-ons (Next use 26300)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
         // Start Load Settings
@@ -2951,7 +2951,7 @@ public static class Options
             .SetHeader(true)
             .SetColor(Color.blue);
 
-        CheatResponses = StringOptionItem.Create(60250, "CheatResponses", CheatResponsesName, 0, TabGroup.SystemSettings, false)
+        CheatResponses = StringOptionItem.Create(60250, "CheatResponses", CheatResponsesName, 4, TabGroup.SystemSettings, false)
             .SetHeader(true);
 
         //HighLevelAntiCheat = StringOptionItem.Create(60260, "HighLevelAntiCheat", CheatResponsesName, 0, TabGroup.SystemSettings, false)
