@@ -128,9 +128,9 @@ class CheckForEndVotingPatch
                         
                         if (voteTarget.Is(CustomRoles.Captain))
                         {
-                            if (!Captain.CaptainVoteTargets.ContainsKey(pc.PlayerId)) Captain.CaptainVoteTargets[pc.PlayerId] = new();
-                            Captain.CaptainVoteTargets[pc.PlayerId].Add(voteTarget.PlayerId);
-                            Captain.sendRPCVoteAdd(pc.PlayerId, voteTarget.PlayerId);
+                            if (!Captain.CaptainVoteTargets.ContainsKey(voteTarget.PlayerId)) Captain.CaptainVoteTargets[voteTarget.PlayerId] = new();
+                            Captain.CaptainVoteTargets[voteTarget.PlayerId].Add(pc.PlayerId);
+                            Captain.sendRPCVoteAdd(voteTarget.PlayerId, pc.PlayerId);
                         }
 
                     }
@@ -441,8 +441,6 @@ class CheckForEndVotingPatch
             if (Main.LastVotedPlayerInfo != null)
             { 
                 ConfirmEjections(Main.LastVotedPlayerInfo);
-                if (Utils.GetPlayerById(exileId).Is(CustomRoles.Captain))
-                    Captain.OnExile(exileId);
             }
 
             return false;
@@ -540,6 +538,8 @@ class CheckForEndVotingPatch
             name = string.Format(GetString("ExiledNiceMini"), realName, coloredRole);
             DecidedWinner = true;
         }
+        if (crole.Is(CustomRoles.Captain))
+            Captain.OnExile(exileId);
 
         //小丑胜利
         if (crole.Is(CustomRoles.Jester)) 
@@ -1133,9 +1133,9 @@ class MeetingHudStartPatch
                     break;
             }
             if (Captain.IsEnable)
-                if ((target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) &&
+                if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) &&
                     (seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
-                    sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Captain), "◈"));
+                    sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Captain), "☆"));
             switch (seer.GetCustomRole())
             {
                 case CustomRoles.Arsonist:

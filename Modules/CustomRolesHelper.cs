@@ -1675,8 +1675,8 @@ static class CustomRolesHelper
             (role is CustomRoles.Captain);
     }
     public static bool IsImpostorTeamV3(this CustomRoles role) => (role.IsImpostor() || role.IsMadmate());
-    public static bool IsNeutralKillerTeam(this CustomRoles role) => (role.IsNK() || !role.IsMadmate());
-    public static bool IsPassiveNeutralTeam(this CustomRoles role) => (role.IsNonNK() || !role.IsMadmate());
+    public static bool IsNeutralKillerTeam(this CustomRoles role) => (role.IsNK() && !role.IsMadmate());
+    public static bool IsPassiveNeutralTeam(this CustomRoles role) => (role.IsNonNK() && !role.IsMadmate());
     public static bool IsNNK(this CustomRoles role) => role.IsNeutral() && !role.IsNK();
     public static bool IsVanilla(this CustomRoles role)
     {

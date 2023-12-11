@@ -3150,9 +3150,9 @@ class FixedUpdatePatch
                 if (Romantic.IsEnable)
                     Mark.Append(Romantic.TargetMark(seer, target));
                 if (Captain.IsEnable)
-                    if ((target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) &&
+                    if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) &&
                         (seerRole.IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
-                        Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Captain), "◈"));
+                        Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Captain), "☆"));
 
 
                 if (Lawyer.IsEnable)

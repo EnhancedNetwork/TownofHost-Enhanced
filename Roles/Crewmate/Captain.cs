@@ -1,7 +1,6 @@
 ﻿using Hazel;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 using static TOHE.Options;
 
@@ -10,7 +9,7 @@ namespace TOHE.Roles.Crewmate;
 public static class Captain
 {
     private static readonly int Id = 26300;
-    private static List<byte> playerIdList = new();
+    //private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
     private static Dictionary<byte, float> OriginalSpeed = new();
@@ -33,7 +32,7 @@ public static class Captain
         OptionMadmateCanFindCaptain = BooleanOptionItem.Create(Id + 12, "MadmateCanFindCaptain", false, TabGroup.CrewmateRoles, false).SetParent(OptionCrewCanFindCaptain);
         OptionReducedSpeed = FloatOptionItem.Create(Id + 13, "ReducedSpeed", new(0.1f, 5f, 0.1f), 0.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain])
             .SetValueFormat(OptionFormat.Multiplier);
-        OptionReducedSpeedTime = FloatOptionItem.Create(Id + 14, "ReducedSpeedTime", new(1f, 60f, 1f), 10f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain])
+        OptionReducedSpeedTime = FloatOptionItem.Create(Id + 14, "ReducedSpeedTime", new(1f, 60f, 1f), 5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain])
             .SetValueFormat(OptionFormat.Seconds);
         CaptainCanTargetNB = BooleanOptionItem.Create(Id + 15, "CaptainCanTargetNB", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
         CaptainCanTargetNC = BooleanOptionItem.Create(Id + 16, "CaptainCanTargetNC", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
@@ -44,14 +43,14 @@ public static class Captain
 
     public static void Init()
     {
-        playerIdList = new();
+        //playerIdList = new();
         OriginalSpeed = new();
         CaptainVoteTargets = new();
     }
 
     public static void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        //playerIdList.Add(playerId);
         IsEnable = true;
     }
     private static void sendRPCSetSpeed(byte targetId)
@@ -127,18 +126,21 @@ public static class Captain
         if (pc == null) return;
         if (!IsEnable) return;
         if (!pc.Is(CustomRoles.Captain) || !pc.IsAlive()) return;
-        var allTargets = Main.AllAlivePlayerControls.Where(x => (x != null) && (!OriginalSpeed.ContainsKey(x.PlayerId)) && 
+        var allTargets = Main.AllAlivePlayerControls.Where(x => (x != null) && (!OriginalSpeed.ContainsKey(x.PlayerId)) &&
                                                            (x.GetCustomRole().IsImpostorTeamV3() ||
                                                            (CaptainCanTargetNB.GetBool() && x.GetCustomRole().IsNB()) ||
                                                            (CaptainCanTargetNE.GetBool() && x.GetCustomRole().IsNE()) ||
                                                            (CaptainCanTargetNC.GetBool() && x.GetCustomRole().IsNC()) ||
                                                            (CaptainCanTargetNK.GetBool() && x.GetCustomRole().IsNeutralKillerTeam()))).ToList();
+
+        Logger.Info($"Total Number of Potential Target {allTargets.Count}", "Total Captain Target");
+        if (!allTargets.Any()) return;
         var rand = IRandom.Instance;
         var targetPC = allTargets[rand.Next(allTargets.Count)];
         var target = targetPC.PlayerId;
         OriginalSpeed[target] = Main.AllPlayerSpeed[target];
         sendRPCSetSpeed(target);
-        Logger.Warn($"{targetPC.GetNameWithRole()} is chosen as the captain's target", "Captain Complete task");
+        Logger.Info($"{targetPC.GetNameWithRole()} is chosen as the captain's target", "Captain Target");
         Main.AllPlayerSpeed[target] = OptionReducedSpeed.GetFloat();
         targetPC.SyncSettings();
         targetPC.Notify("CaptainSpeedReduced", OptionReducedSpeedTime.GetFloat());
@@ -177,6 +179,7 @@ public static class Captain
     }
     public static void OnExile(byte playerId)
     {
+        Logger.Info("Captain on exile executing", "Captain on exile");
         if (playerId == byte.MaxValue) return;
         if (!CaptainVoteTargets.ContainsKey(playerId)) return;
         for (int i = 0; i < CaptainVoteTargets[playerId].Count; i++)
