@@ -138,8 +138,10 @@ public static class Captain
         var target = targetPC.PlayerId;
         OriginalSpeed[target] = Main.AllPlayerSpeed[target];
         sendRPCSetSpeed(target);
+        Logger.Warn($"{targetPC.GetNameWithRole()} is chosen as the captain's target", "Captain Complete task");
         Main.AllPlayerSpeed[target] = OptionReducedSpeed.GetFloat();
         targetPC.SyncSettings();
+        targetPC.Notify("CaptainSpeedReduced", OptionReducedSpeedTime.GetFloat());
         _ = new LateTask(() =>
         {
             if (!GameStates.IsInTask) return;
