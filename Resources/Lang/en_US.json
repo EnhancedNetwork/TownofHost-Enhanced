@@ -779,7 +779,7 @@
   "VampireInfoLong": "(Impostors):\nAs the Vampire, your kills are delayed. If a meeting is called first, your target still dies. If you bite a Bait, you kill normally and report the body.",
   "VampiressInfoLong": "(Impostors):\nAs the Vampiress, you can Bite players like a Vampire (single click) or kill normally (double click).",
   "WarlockInfoLong": "(Impostors):\nAs the Warlock, you can Curse up to one other player at a time.\nWhen you Shapeshift, if you have Cursed a player, they kill the nearest person, which, depending on settings, can include you or other Impostors.\nYou can kill normally while Shapeshifted.",
-  "ZombieInfoLong": "https://www.youtube.com/watch?v=hB8S6oKjiw8 (not a rickroll, promise)",
+  "ZombieInfoLong": "(Impostors):\nZombie has a short kill cooldown, but moves very slowly and has very little vision. Zombie will not be voted out by anyone other than the Dictator, and the movement speed of Zombie will gradually slow down as they make kills or time passes.",
   "AssassinInfoLong": "(Impostors):\nAs the Ninja, you can use the kill button to Mark up to one target at a time. You may then Shapeshift to teleport to the Marked target and kill them.\nDepending on settings, you can kill normally after killing a Marked target.",
   "HackerInfoLong": "(Impostors):\nAs the Anonymous, you can Shapeshift to force your target to report whoever you killed this round.\nIf you killed nobody that round, the target will report their own dead body as if they had died.\nNote: This does not work on Lazy nor Lazy Guy, and this ability will work regardless of whether the body can normally be reported.",
   "MinerInfoLong": "(Impostors):\nAs the Miner, you can shapeshift to teleport back to the last vent you were in.",
