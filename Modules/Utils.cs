@@ -1825,7 +1825,12 @@ public static class Utils
             if (!IsPlayerModerator(player.FriendCode) && !IsPlayerVIP(player.FriendCode))
             {
                 string name1 = Main.AllPlayerNames.TryGetValue(player.PlayerId, out var n1) ? n1 : "";
-                if (GameStates.IsLobby && name1 != player.name && player.CurrentOutfitType == PlayerOutfitType.Default) player.RpcSetName(name1);
+                if (GameStates.IsLobby && player.CurrentOutfitType == PlayerOutfitType.Default) player.RpcSetName(name1);
+
+                if (name1 != player.name)
+                {
+                    return;
+                }
                 return;
             }
         }
@@ -1836,6 +1841,12 @@ public static class Utils
         {
             if (Options.FormatNameMode.GetInt() == 1 && Main.nickName == "") name = Palette.GetColorName(player.Data.DefaultOutfit.ColorId);
         }
+
+        if (name != player.name)
+        {
+            return;
+        }
+
         else
         {
             if (!GameStates.IsLobby) return;
@@ -1849,6 +1860,11 @@ public static class Utils
                 }
                 if (Options.CurrentGameMode == CustomGameMode.FFA)
                     name = $"<color=#00ffff><size=1.7>{GetString("ModeFFA")}</size></color>\r\n" + name;
+
+                if (name != player.name)
+                {
+                    return;
+                }
             }
             var modtag = "";
             if (Options.ApplyVipList.GetValue() == 1 && player.FriendCode != PlayerControl.LocalPlayer.FriendCode)
@@ -1962,8 +1978,13 @@ public static class Utils
             }
             else name = modtag + name;
         }
-        if (name != player.name && player.CurrentOutfitType == PlayerOutfitType.Default)
+        if (player.CurrentOutfitType == PlayerOutfitType.Default)
             player.RpcSetName(name);
+
+        if (name != player.name)
+        {
+            return;
+        }
     }
     public static PlayerControl GetPlayerById(int PlayerId)
     {

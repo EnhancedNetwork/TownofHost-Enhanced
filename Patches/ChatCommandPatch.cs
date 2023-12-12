@@ -112,6 +112,32 @@ internal class ChatCommands
                     }
                 }
                 break;
+            case "/rn":
+            case "/rename":
+            case "/renomear":
+                canceled = true;
+                string col = text[3..];
+                PlayerControl.LocalPlayer.RpcSetName(col);
+                __instance.AddChat(PlayerControl.LocalPlayer, "Changed name succesfully");
+                break;
+
+            case "/hn":
+            case "/hidename":
+            case "/semnome":
+                canceled = true;
+                PlayerControl.LocalPlayer.RpcSetName("");
+                break;
+
+            case "/level":
+            case "/nível":
+            case "/nivel":
+                canceled = true;
+                subArgs = args.Length < 2 ? "" : args[1];
+                Utils.SendMessage(string.Format(GetString("Message.SetLevel"), subArgs), PlayerControl.LocalPlayer.PlayerId);
+                _ = int.TryParse(subArgs, out int input);
+                var number = Convert.ToUInt32(input);
+                PlayerControl.LocalPlayer.RpcSetLevel(number - 1);
+                break;
             default:
                 Main.isChatCommand = false;
                 break;
@@ -159,42 +185,6 @@ internal class ChatCommands
                 case "/summary":
                     canceled = true;
                     Utils.ShowLastRoles();
-                    break;
-                case "/rn":
-                case "/rename":
-                case "/renomear":
-                    canceled = true;
-                    if (args.Length < 1) break;
-                    if (args[1].Length is > 10 or < 1)
-                        Utils.SendMessage(GetString("Message.AllowNameLength"), PlayerControl.LocalPlayer.PlayerId);
-                    else Main.nickName = args[1];
-                    break;
-
-                case "/hn":
-                case "/hidename":
-                case "/semnome":
-                    canceled = true;
-                    Main.HideName.Value = args.Length > 1 ? args.Skip(1).Join(delimiter: " ") : Main.HideName.DefaultValue.ToString();
-                    GameStartManagerPatch.GameStartManagerStartPatch.HideName.text =
-                        ColorUtility.TryParseHtmlString(Main.HideColor.Value, out _)
-                            ? $"<color={Main.HideColor.Value}>{Main.HideName.Value}</color>"
-                            : $"<color={Main.ModColor}>{Main.HideName.Value}</color>";
-                    break;
-
-                case "/level":
-                case "/nível":
-                case "/nivel":
-                    canceled = true;
-                    subArgs = args.Length < 2 ? "" : args[1];
-                    Utils.SendMessage(string.Format(GetString("Message.SetLevel"), subArgs), PlayerControl.LocalPlayer.PlayerId);
-                    _ = int.TryParse(subArgs, out int input);
-                    if (input is < 1 or > 999)
-                    {
-                        Utils.SendMessage(GetString("Message.AllowLevelRange"), PlayerControl.LocalPlayer.PlayerId);
-                        break;
-                    }
-                    var number = Convert.ToUInt32(input);
-                    PlayerControl.LocalPlayer.RpcSetLevel(number - 1);
                     break;
 
                 case "/n":
