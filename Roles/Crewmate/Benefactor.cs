@@ -24,7 +24,7 @@ public static class Benefactor
     public static void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Benefactor);
-        TaskMarkPerRoundOpt = IntegerOptionItem.Create(Id + 10, "TaskMarkPerRound", new(1, 14, 1), 3, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Benefactor])
+        TaskMarkPerRoundOpt = IntegerOptionItem.Create(Id + 10, "TasksMarkPerRound", new(1, 14, 1), 3, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Benefactor])
             .SetValueFormat(OptionFormat.Votes);
         ShieldDuration = FloatOptionItem.Create(Id + 11, "ShieldDuration", new(1, 30, 1), 10, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Benefactor])
             .SetValueFormat(OptionFormat.Votes);
@@ -192,10 +192,10 @@ public static class Benefactor
         }
     }
 
-    public static bool OnCheckMurder(PlayerControl target)
+    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
         if (!IsEnable) return true;
-        if (target == null) return true;
+        if (target == null || killer == null) return true;
         if (!shieldedPlayers.ContainsKey(target.PlayerId)) return true;
         if (ShieldIsOneTimeUse.GetBool())
         {
@@ -203,8 +203,9 @@ public static class Benefactor
             SendRPC(type:4 , targetId: target.PlayerId);
             Logger.Info($"{target.GetNameWithRole()} shield broken", "BenefactorShieldBroken");
         }
+        killer.RpcGuardAndKill();
+        killer.SetKillCooldown();
         return false;
-
     }
 
 }

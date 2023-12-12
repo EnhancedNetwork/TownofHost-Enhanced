@@ -788,7 +788,7 @@ class CheckMurderPatch
         if (!AmongUsClient.Instance.AmHost) return false;
         if (target == null) target = killer;
 
-        if (!Benefactor.OnCheckMurder(target)) return false;
+        if (!Benefactor.OnCheckMurder(killer, target)) return false;
         //Jackal can kill Sidekick
         if (killer.Is(CustomRoles.Jackal) && target.Is(CustomRoles.Sidekick) && !Jackal.JackalCanKillSidekick.GetBool())
             return false;

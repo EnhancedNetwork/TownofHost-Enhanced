@@ -2707,6 +2707,7 @@
   "GodfatherTargetCountMode": "Killer turns into",
   "GodfatherCount.Refugee": "<color=#ff1919>Refugee</color>",
   "GodfatherCount.Madmate": "<color=#ff1919>Madmate</color>",
+
   "BerserkerKillCooldown": "Berserker kill cooldown",
   "BerserkerMax": "Max level that Berserker can reach",
   "BerserkerOneCanKillCooldown": "Unlock lower kill cooldown",
@@ -2717,6 +2718,8 @@
   "BerserkerMaxReached": "Maximum level reached!",
   "BerserkerLevelChanged": "Increased level to {0}",
   "BerserkerLevelRequirement": "Level requirement for unlock",
+  "KilledByBerserker": "Killed by Berserker",
+
   "ImpCanBeUnlucky": "<color=#ff1919>Impostors</color> can become <color=#b8d7a3>Unlucky</color>",
   "CrewCanBeUnlucky": "<color=#8cffff>Crewmates</color> can become <color=#b8d7a3>Unlucky</color>",
   "NeutralCanBeUnlucky": "<color=#7f8c8d>Neutrals</color> can become <color=#b8d7a3>Unlucky</color>",
@@ -3230,12 +3233,12 @@
   "VultureMaxEatenInOneRound": "Maximum eaten bodies possible per round",
   "VultureCooldownUp": "Eat Cooldown finished",
 
-  "TaskMarkPerRound": "Number of tasks that can be marked in one round",
+  "TasksMarkPerRound": "Number of tasks that can be marked in one round",
   "TaskinatorBombPlanted": "Bomb has been planted",
 
   "ShieldDuration": "Shield duration",
   "ShieldIsOneTimeUse": "Shield breaks after one kill attempt",
-  "BenefactorTaskMarked": "Benefactor task marked",
+  "BenefactorTaskMarked": "Task marked successfully",
 
   "PirateTryHideMsg": "Hide <color=#EDC240>Pirate</color>'s commands",
   "SuccessfulDuelsToWin": "Number of successful duels needed to win",

@@ -999,6 +999,7 @@ static class CustomRolesHelper
             CustomRoles.Captain or
             CustomRoles.Transporter or
             CustomRoles.Retributionist or
+            CustomRoles.Benefactor or
             CustomRoles.Alchemist;
     }
 
