@@ -215,6 +215,7 @@ internal class ChangeRoleSettings
             Doppelganger.Init();
             Sheriff.Init();
             CopyCat.Init();
+            Captain.Init();
             Cleanser.Init();
             SwordsMan.Init();
             EvilTracker.Init();
@@ -647,6 +648,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Mayor:
                         Main.MayorUsedButtonCount[pc.PlayerId] = 0;
+                        break;
+                    case CustomRoles.Captain:
+                        Captain.Add(pc.PlayerId);
                         break;
                     case CustomRoles.TimeMaster:
                         Main.TimeMasterNum[pc.PlayerId] = 0;

@@ -1029,7 +1029,7 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 26200 lasted id for roles/add-ons (Next use 26300)
+        // 26300 lasted id for roles/add-ons (Next use 26400)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
         // Start Load Settings
@@ -2031,6 +2031,8 @@ public static class Options
         TextOptionItem.Create(10000010, "RoleType.CrewPower", TabGroup.CrewmateRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
+
+        Captain.SetupCustomOption();
 
         CopyCat.SetupCustomOption();
 
