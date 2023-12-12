@@ -3209,7 +3209,7 @@
   "VultureReportCooldown": "Recarga para comer",
   "VultureMaxEatenInOneRound": "Máximo de corpos comidos por rodada",
   "VultureCooldownUp": "Recarga para comer acabou",
-  "TaskMarkPerRound": "Número de tarefas que podem ser marcadas em uma rodada",
+  "TasksMarkPerRound": "Número de tarefas que podem ser marcadas em uma rodada",
   "TaskinatorBombPlanted": "A bomba foi plantada",
   "ShieldDuration": "Duração do Escudo",
   "ShieldIsOneTimeUse": "O Escudo quebra após uma tentativa de abate",
