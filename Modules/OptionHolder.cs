@@ -832,16 +832,6 @@ public static class Options
     public static OptionItem FixFirstKillCooldown;
     public static OptionItem FixKillCooldownValue;
     public static OptionItem ShieldPersonDiedFirst;
-    public static OptionItem HostGetKilledFirstAction;
-
-    public static readonly string[] HostGetKilledFirst =
-    {
-        "HGK.DisableAttempt",
-        "HGK.Youtuber",
-        "HGK.CursedWolf",
-        "HGK.Terriost"
-    };
-
     public static OptionItem GhostCanSeeOtherRoles;
     public static OptionItem GhostCanSeeOtherVotes;
     public static OptionItem GhostCanSeeDeathReason;
@@ -1039,7 +1029,7 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 26200 lasted id for roles/add-ons (Next use 26300)
+        // 26300 lasted id for roles/add-ons (Next use 26400)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
         // Start Load Settings
@@ -2036,6 +2026,8 @@ public static class Options
         TextOptionItem.Create(10000010, "RoleType.CrewPower", TabGroup.CrewmateRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
+
+        Captain.SetupCustomOption();
 
         CopyCat.SetupCustomOption();
 
@@ -3705,9 +3697,6 @@ public static class Options
         ShieldPersonDiedFirst = BooleanOptionItem.Create(60780, "ShieldPersonDiedFirst", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
-        HostGetKilledFirstAction = StringOptionItem.Create(60781, "HostGetKilledFirstAction", HostGetKilledFirst, 0, TabGroup.GameSettings, false)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetParent(ShieldPersonDiedFirst);
 
         // 杀戮闪烁持续
         KillFlashDuration = FloatOptionItem.Create(60790, "KillFlashDuration", new(0.1f, 0.45f, 0.05f), 0.3f, TabGroup.GameSettings, false)

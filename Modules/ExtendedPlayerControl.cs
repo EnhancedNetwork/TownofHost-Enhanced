@@ -181,7 +181,7 @@ static class ExtendedPlayerControl
         if (killer.AmOwner)
         {
             killer.ProtectPlayer(target, colorId);
-            killer.MurderPlayer(target, ResultFlags);
+            killer.MurderPlayer(target, MurderResultFlags.FailedProtected);
         }
         // Other Clients
         if (killer.PlayerId != 0)
@@ -194,7 +194,7 @@ static class ExtendedPlayerControl
                 .EndRpc();
             sender.StartRpc(killer.NetId, (byte)RpcCalls.MurderPlayer)
                 .WriteNetObject(target)
-                .Write((int)ResultFlags)
+                .Write((int)MurderResultFlags.FailedProtected)
                 .EndRpc();
             sender.EndMessage();
             sender.SendMessage();

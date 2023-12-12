@@ -228,6 +228,7 @@ public static class Divinator
                 CustomRoles.Zombie or
                 CustomRoles.CyberStar or
                 CustomRoles.SuperStar or
+                CustomRoles.Captain or
                 CustomRoles.Deathpact or
                 CustomRoles.Investigator or
                 CustomRoles.Devourer

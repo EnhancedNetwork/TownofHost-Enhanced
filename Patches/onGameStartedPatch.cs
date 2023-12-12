@@ -108,7 +108,8 @@ internal class ChangeRoleSettings
             Main.JinxSpellCount = new();
             Main.OverDeadPlayerList = new();
             Main.Provoked = new();
-            Main.FirstDied = byte.MaxValue;
+            Main.ShieldPlayer = Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : "";
+            Main.FirstDied = "";
             Main.MadmateNum = 0;
             Main.BardCreations = 0;
             Main.MeetingsPassed = 0;
@@ -214,6 +215,7 @@ internal class ChangeRoleSettings
             Doppelganger.Init();
             Sheriff.Init();
             CopyCat.Init();
+            Captain.Init();
             Cleanser.Init();
             SwordsMan.Init();
             EvilTracker.Init();
@@ -645,6 +647,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Mayor:
                         Main.MayorUsedButtonCount[pc.PlayerId] = 0;
+                        break;
+                    case CustomRoles.Captain:
+                        Captain.Add(pc.PlayerId);
                         break;
                     case CustomRoles.TimeMaster:
                         Main.TimeMasterNum[pc.PlayerId] = 0;
