@@ -793,6 +793,7 @@ class CheckMurderPatch
         if (!AmongUsClient.Instance.AmHost) return false;
         if (target == null) target = killer;
 
+        if (!Benefactor.OnCheckMurder(killer, target)) return false;
         //Jackal can kill Sidekick
         if (killer.Is(CustomRoles.Jackal) && target.Is(CustomRoles.Sidekick) && !Jackal.JackalCanKillSidekick.GetBool())
             return false;
@@ -2625,7 +2626,7 @@ class FixedUpdatePatch
                     case CustomRoles.Deathpact:
                         Deathpact.OnFixedUpdate(player);
                         break;
-
+                    
                     case CustomRoles.Warlock:
                         if (Main.WarlockTimer.TryGetValue(player.PlayerId, out var warlockTimer))
                         {
@@ -2829,6 +2830,9 @@ class FixedUpdatePatch
 
                     case CustomRoles.Spy:
                         Spy.OnFixedUpdate(player);
+                        break;
+                    case CustomRoles.Benefactor:
+                        Benefactor.OnFixedUpdate();
                         break;
 
                     case CustomRoles.Glitch:
@@ -3891,6 +3895,7 @@ class PlayerControlCompleteTaskPatch
         if (pc != null)
         {
             var playerTask = pc.myTasks[taskIndex];
+            Benefactor.OnTasKComplete(pc, playerTask);
             Taskinator.OnTasKComplete(pc, playerTask);
         }
         var isTaskFinish = pc.GetPlayerTaskState().IsTaskFinished;

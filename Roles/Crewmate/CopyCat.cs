@@ -186,6 +186,9 @@ public static class CopyCat
                 case CustomRoles.Admirer:
                     Admirer.AdmirerLimit.Remove(pc.PlayerId);
                     break;
+                case CustomRoles.Benefactor:
+                    Benefactor.TaskMarkPerRound.Remove(pc.PlayerId);
+                    break;
             }
             pc.RpcSetCustomRole(CustomRoles.CopyCat);
             SetKillCooldown(player);
@@ -398,6 +401,9 @@ public static class CopyCat
                     break;
                 case CustomRoles.Admirer:
                     Admirer.AdmirerLimit.Add(pc.PlayerId, Admirer.SkillLimit.GetInt());
+                    break;
+                case CustomRoles.Benefactor:
+                    Benefactor.TaskMarkPerRound[pc.PlayerId] = 0;
                     break;
             }
 
