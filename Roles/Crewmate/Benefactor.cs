@@ -8,7 +8,7 @@ namespace TOHE.Roles.Crewmate;
 
 public static class Benefactor
 {
-    private static readonly int Id = 24000;
+    private static readonly int Id = 26400;
     //private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
