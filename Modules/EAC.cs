@@ -351,10 +351,9 @@ internal class EAC
             ReportTimes.Add(player.PlayerId, 0);
         }
         //target == null , button event
-        if (!Main.OverDeadPlayerList.Contains(target.PlayerId))
+        if (target == null || !Main.OverDeadPlayerList.Contains(target.PlayerId))
         {
             ReportTimes[player.PlayerId]++;
-            //A single body can only be reported once by a client side player
         }
 
         if (!GameStates.IsInGame)
