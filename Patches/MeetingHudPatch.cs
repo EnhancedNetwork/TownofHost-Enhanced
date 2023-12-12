@@ -85,14 +85,21 @@ class CheckForEndVotingPatch
                 if (pva.DidVote && pva.VotedFor < 253 && !pc.Data.IsDead)
                 {
                     var voteTarget = Utils.GetPlayerById(pva.VotedFor);
+                    if (voteTarget == null)
+                    {
+                        Utils.SendMessage(GetString("VoteDead"), pc.PlayerId);
+                        __instance.RpcClearVote(pc.GetClientId());
+                        continue;
+                    }
+                    else if (!voteTarget.IsAlive() || voteTarget.Data.Disconnected)
+                    {
+                        Utils.SendMessage(GetString("VoteDead"), pc.PlayerId);
+                        __instance.RpcClearVote(pc.GetClientId());
+                        continue;
+                    }
+
                     if (voteTarget != null)
                     {
-                        if (!voteTarget.IsAlive() || voteTarget.Data.Disconnected)
-                        {
-                            Utils.SendMessage(GetString("VoteDead"), pc.PlayerId);
-                            __instance.RpcClearVote(pc.GetClientId());
-                            continue; //Loop over
-                        }
                         switch (pc.GetCustomRole())
                         {
                             case CustomRoles.Divinator:
