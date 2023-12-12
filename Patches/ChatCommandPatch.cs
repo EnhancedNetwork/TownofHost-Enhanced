@@ -27,6 +27,8 @@ internal class ChatCommands
     private static string vipTagsFiles = @"./TOHE-DATA/Tags/VIP_TAGS";
 
 
+    public static PlayerControl player = PlayerControl.LocalPlayer;
+
     public static List<string> ChatHistory = new();
 
     public static bool Prefix(ChatController __instance)
@@ -116,16 +118,16 @@ internal class ChatCommands
             case "/rename":
             case "/renomear":
                 canceled = true;
-                string col = text[3..];
-                PlayerControl.LocalPlayer.RpcSetName(col);
-                __instance.AddChat(PlayerControl.LocalPlayer, "Changed name succesfully");
+                string col = text[4..];
+                player.RpcSetName(col);
+                __instance.AddChat(PlayerControl.LocalPlayer, "Mudou o nome com sucesso!");
                 break;
 
             case "/hn":
             case "/hidename":
             case "/semnome":
                 canceled = true;
-                PlayerControl.LocalPlayer.RpcSetName("");
+                player.RpcSetName("");
                 break;
 
             case "/level":

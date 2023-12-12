@@ -1825,7 +1825,6 @@ public static class Utils
             if (!IsPlayerModerator(player.FriendCode) && !IsPlayerVIP(player.FriendCode))
             {
                 string name1 = Main.AllPlayerNames.TryGetValue(player.PlayerId, out var n1) ? n1 : "";
-                if (GameStates.IsLobby && player.CurrentOutfitType == PlayerOutfitType.Default) player.RpcSetName(name1);
 
                 if (name1 != player.name)
                 {
@@ -1978,8 +1977,6 @@ public static class Utils
             }
             else name = modtag + name;
         }
-        if (player.CurrentOutfitType == PlayerOutfitType.Default)
-            player.RpcSetName(name);
 
         if (name != player.name)
         {
