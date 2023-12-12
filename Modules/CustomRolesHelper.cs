@@ -30,6 +30,7 @@ static class CustomRolesHelper
                 CustomRoles.Masochist => CustomRoles.Crewmate,
                 CustomRoles.Cleanser => CustomRoles.Crewmate,
                 CustomRoles.ParityCop => CustomRoles.Crewmate,
+                CustomRoles.Benefactor => CustomRoles.Crewmate,
                 CustomRoles.President => CustomRoles.Crewmate,
                 CustomRoles.Marshall => CustomRoles.Crewmate,
                 CustomRoles.SabotageMaster => CustomRoles.Engineer,

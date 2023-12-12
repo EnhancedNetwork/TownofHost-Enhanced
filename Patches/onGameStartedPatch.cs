@@ -241,6 +241,7 @@ internal class ChangeRoleSettings
             DarkHide.Init();
             Greedier.Init();
             Collector.Init();
+            Benefactor.Init();
             Taskinator.Init();
             QuickShooter.Init();
             Camouflager.Init();
@@ -728,6 +729,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Taskinator:
                         Taskinator.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Benefactor:
+                        Benefactor.Add(pc.PlayerId);
                         break;
                     case CustomRoles.CursedWolf:
                         Main.CursedWolfSpellCount[pc.PlayerId] = Options.GuardSpellTimes.GetInt();
