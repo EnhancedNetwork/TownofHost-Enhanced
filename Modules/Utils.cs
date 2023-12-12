@@ -2329,7 +2329,7 @@ public static class Utils
                         if (Captain.IsEnable)
                             if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) && 
                                 (seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
-                                TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Captain), "☆"));
+                                TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Captain), " ☆"));
 
                         if (target.Is(CustomRoles.Cyber) && Options.CyberKnown.GetBool())
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));

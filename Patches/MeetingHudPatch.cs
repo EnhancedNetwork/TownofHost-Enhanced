@@ -1135,7 +1135,7 @@ class MeetingHudStartPatch
             if (Captain.IsEnable)
                 if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) &&
                     (seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
-                    sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Captain), "☆"));
+                    sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Captain), " ☆"));
             switch (seer.GetCustomRole())
             {
                 case CustomRoles.Arsonist:
