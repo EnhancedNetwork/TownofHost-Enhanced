@@ -15,12 +15,18 @@ namespace TOHE.Roles.Neutral
     {
         public static PlayerControl Player;
         public static OptionItem QuestionDifficulty;
+        public static OptionItem CanKillAfterMark;
+        public static OptionItem CanVentAfterMark;
+        public static OptionItem NumOfKillAfterMark;
         public static QuizQuestionBase Question = null;
         public static List<byte> playerIdList = new();
         public static Sabotages lastSabotage = Sabotages.None;
         public static Sabotages firstSabotageOfRound = Sabotages.None;
         public static PlayerColors lastExiledColor = PlayerColors.None;
         public static readonly int Id = 26400;
+        public static int killsForRound = 0;
+        public static bool allowedKilling = false;
+        public static bool allowedVenting = true;
         public static bool IsEnable = false;
         public static bool AlreadyMarked = false;
         public static byte MarkedPlayer = byte.MaxValue;
@@ -28,6 +34,13 @@ namespace TOHE.Roles.Neutral
         {
             SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Quizmaster, 1);
             QuestionDifficulty = IntegerOptionItem.Create(Id + 10, "QuizmasterQuestionDifficulty", new(1, 5, 1), 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
+
+            CanVentAfterMark = BooleanOptionItem.Create(Id + 11, "QuizmasterCanVentAfterMark", true, TabGroup.NeutralRoles, false)
+                .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
+            CanKillAfterMark = BooleanOptionItem.Create(Id + 12, "QuizmasterCanKillAfterMark", false, TabGroup.NeutralRoles, false)
+                .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
+            NumOfKillAfterMark = IntegerOptionItem.Create(Id + 13, "QuizmasterNumOfKillAfterMark", new(1, 15, 1), 1, TabGroup.NeutralRoles, false)
+                .SetParent(CanKillAfterMark);
         }
         public static void Init()
         {
@@ -63,27 +76,53 @@ namespace TOHE.Roles.Neutral
         public static bool CanUseKillButton(PlayerControl pc)
         {
             if (pc == null || !pc.IsAlive()) return false;
-            return MarkedPlayer == byte.MaxValue && !AlreadyMarked;
+            bool canKill;
+            if (CanKillAfterMark.GetBool())
+            {
+                bool didLimit = killsForRound >= NumOfKillAfterMark.GetInt();
+                canKill = !didLimit;
+                allowedKilling = MarkedPlayer != byte.MaxValue;
+            }
+            else
+            {
+                allowedKilling = false;
+                canKill = MarkedPlayer == byte.MaxValue;
+            }
+            return canKill;
         }
 
         public static bool CanUseVentButton(PlayerControl pc)
         {
             if (pc == null || !pc.IsAlive()) return false;
-            return MarkedPlayer == byte.MaxValue;
+            bool canVent;
+            if (CanVentAfterMark.GetBool())
+            {
+                canVent = MarkedPlayer == byte.MaxValue && !AlreadyMarked;
+            }
+            else
+            {
+                canVent = MarkedPlayer == byte.MaxValue && !allowedVenting;
+            }
+            return canVent;
         }
 
         public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
         {
-            AlreadyMarked = true;
-            MarkedPlayer = target.PlayerId;
-            Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
+            if (AlreadyMarked == false)
+            {
+                allowedVenting = false;
+                AlreadyMarked = true;
+                MarkedPlayer = target.PlayerId;
+                Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
 
-            SendRPC(killer.PlayerId);
+                SendRPC(killer.PlayerId);
                 killer.ResetKillCooldown();
                 killer.SetKillCooldown();
                 killer.SyncSettings();
                 killer.RPCPlayCustomSound("Clothe");
-            return false;
+                return false;
+            }
+            return true;
         }
 
         static QuizQuestionBase GetRandomQuestion(List<QuizQuestionBase> qt)
@@ -119,6 +158,9 @@ namespace TOHE.Roles.Neutral
         public static void OnMeetingEnd() /* NEW ROUND START */
         {
             firstSabotageOfRound = Sabotages.None;
+            killsForRound = 0;
+            allowedVenting = true;
+            allowedKilling = false;
             if (MarkedPlayer != byte.MaxValue)
                 KillPlayer(Utils.GetPlayerById(MarkedPlayer));
 
@@ -134,6 +176,14 @@ namespace TOHE.Roles.Neutral
         public static void OnPlayerDead(PlayerControl target)
         {
             if (target.PlayerId == MarkedPlayer) MarkedPlayer = byte.MaxValue;
+        }
+
+        public static void SetKillButtonText(byte playerId)
+        {
+            if (allowedKilling)
+                HudManager.Instance.KillButton.OverrideText(GetString("KillButtonText"));
+            else
+                HudManager.Instance.KillButton.OverrideText(GetString("QuizmasterKillButtonText"));
         }
 
         public static string TargetMark(PlayerControl seer, PlayerControl target)
