@@ -1389,6 +1389,7 @@ class MeetingHudOnDestroyPatch
     public static void Postfix()
     {
         MeetingStates.FirstMeeting = false;
+        Quizmaster.OnMeetingEnd();
         Logger.Info("------------会议结束------------", "Phase");
         if (AmongUsClient.Instance.AmHost)
         {

@@ -588,6 +588,9 @@ class CheckMurderPatch
                 case CustomRoles.ChiefOfPolice:
                     ChiefOfPolice.OnCheckMurder(killer, target);
                     return false;
+                case CustomRoles.Quizmaster:
+                    Quizmaster.OnCheckMurder(killer, target);
+                    return false;
             }
         }
 
@@ -1316,6 +1319,8 @@ class MurderPlayerPatch
     }
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
     {
+        Quizmaster.OnPlayerDead(target);
+
         if (target.AmOwner) RemoveDisableDevicesPatch.UpdateDisableDevices();
         if (!target.Data.IsDead || !AmongUsClient.Instance.AmHost) return;
 
@@ -1778,6 +1783,7 @@ class ShapeshiftPatch
 class ReportDeadBodyPatch
 {
     public static Dictionary<byte, bool> CanReport;
+    public static HashSet<byte> UnreportablePlayers = new ();
     public static Dictionary<byte, List<GameData.PlayerInfo>> WaitReport = new();
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo target)
     {
@@ -1836,6 +1842,8 @@ class ReportDeadBodyPatch
             }
             if (target != null) //拍灯事件
             {
+                if (UnreportablePlayers.Contains(target.PlayerId)) return false;
+
                 if (Bloodhound.UnreportablePlayers.Contains(target.PlayerId)) return false;
 
                 if (__instance.Is(CustomRoles.Bloodhound))
@@ -2360,7 +2368,7 @@ class ReportDeadBodyPatch
         if (Mediumshiper.IsEnable) Mediumshiper.OnReportDeadBody(target);
         if (Spiritualist.IsEnable) Spiritualist.OnReportDeadBody(target);
         if (Enigma.IsEnable) Enigma.OnReportDeadBody(player, target);
-        if (Quizmaster.IsEnable) Quizmaster.OnReportDeadBody(player, Utils.GetPlayerById(target.PlayerId));
+        Quizmaster.OnReportDeadBody(player, target);
 
         foreach (var pid in Main.AwareInteracted.Keys.ToArray())
         {

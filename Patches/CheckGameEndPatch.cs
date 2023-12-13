@@ -105,6 +105,12 @@ class GameEndChecker
                             CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
                         }
                         break;
+                    case CustomWinner.Quizmaster:
+                        if (pc.Is(CustomRoles.Quizmaster) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                        {
+                            CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                        }
+                        break;
                     case CustomWinner.Spiritcaller:
                         if (pc.Is(CustomRoles.EvilSpirit) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         {
@@ -450,6 +456,7 @@ class GameEndChecker
         //        else pc.RpcSetName(Doppelganger.DoppelVictim[pid]);
         //    }
         //}
+        Quizmaster.ResetMarkedPlayer();
         if (Blackmailer.IsEnable) Blackmailer.ForBlackmailer.Clear();
         //ゴーストロール化
         List<byte> ReviveRequiredPlayerIds = new();

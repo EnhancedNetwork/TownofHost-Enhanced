@@ -1956,6 +1956,10 @@ public static class Utils
     {
         return Main.AllPlayerControls.FirstOrDefault(pc => pc.PlayerId == PlayerId);
     }
+    public static PlayerControl GetPlayerByRole(CustomRoles Role)
+    {
+        return Main.AllPlayerControls.FirstOrDefault(pc => pc.GetCustomRole() == Role);
+    }
     public static GameData.PlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);
     private static StringBuilder SelfSuffix = new();
@@ -2418,6 +2422,10 @@ public static class Utils
 
                             case CustomRoles.NWitch:
                                 TargetMark.Append(NWitch.TargetMark(seer, target));
+                                break;
+
+                            case CustomRoles.Quizmaster:
+                                TargetMark.Append(Quizmaster.TargetMark(seer, target));
                                 break;
                         }
 

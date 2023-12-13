@@ -455,6 +455,9 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("ChiefOfPoliceKillButtonText"));
                         break;
+                    case CustomRoles.Quizmaster:
+                        __instance.KillButton.OverrideText(GetString("AssassinMarkButtonText"));
+                        break;
 
                     default:
                         __instance.KillButton.OverrideText(GetString("KillButtonText"));

@@ -769,6 +769,7 @@ public enum CustomRoles
     Mini,
     // Sorcerer,
     // Flux,
+    Quizmaster,
 
     //FFA
     Killer,
@@ -846,8 +847,7 @@ public enum CustomRoles
     Overclocked,
     Hurried,
     Oiiai,
-    Influenced,
-    Quizmaster
+    Influenced
     // QuickFix
 }
 //WinData
@@ -884,6 +884,7 @@ public enum CustomWinner
     Poisoner = CustomRoles.Poisoner,
     HexMaster = CustomRoles.HexMaster,
     //Occultist = CustomRoles.Occultist,
+    Quizmaster = CustomRoles.Quizmaster,
     Succubus = CustomRoles.Succubus,
     Wraith = CustomRoles.Wraith,
     Bandit = CustomRoles.Bandit,

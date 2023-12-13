@@ -319,6 +319,7 @@ public class PlayerState
         Shattered,
         Trap,
         Retribution,
+        WrongAnswer,
 
         etc = -1,
     }

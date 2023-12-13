@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.Crewmate;
+using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -123,6 +124,8 @@ class RepairSystemPatch
         [HarmonyArgument(2)] byte amount)
     {
         Camouflage.CheckCamouflage();
+
+        Quizmaster.OnSabotageCall(systemType);
 
         if (systemType == SystemTypes.Electrical && 0 <= amount && amount <= 4)
         {

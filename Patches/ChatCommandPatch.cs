@@ -14,6 +14,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 
 namespace TOHE;
@@ -97,6 +98,12 @@ internal class ChatCommands
             Main.isChatCommand = true;
             switch (args[0])
             {
+                case "/ans":
+                case "/asw":
+                case "/answer":
+                    QuizmasterAnswer(PlayerControl.LocalPlayer, args);
+                    break;
+
                 case "/win":
                 case "/winner":
                 case "/vencedor":
@@ -1388,6 +1395,12 @@ internal class ChatCommands
         
         switch (args[0])
         {
+            case "/ans":
+            case "/asw":
+            case "/answer":
+                QuizmasterAnswer(player, args);
+                break;
+
             case "/l":
             case "/lastresult":
             case "/fimdejogo":
@@ -2193,6 +2206,48 @@ internal class ChatCommands
             default:
                 if (SpamManager.CheckSpam(player, text)) return;
                 break;
+        }
+    }
+    private static void QuizmasterAnswer(PlayerControl plr, string[] args)
+    {
+        if (Quizmaster.MarkedPlayer == plr.PlayerId)
+        {
+            var answerSyntaxValid = args.Length == 2;
+            var answerValid = false;
+            var answer = "";
+            if (answerSyntaxValid)
+            {
+                answer = args[1].ToUpper();
+                answerValid = (answer == "A" || answer == "B" || answer == "C");
+                var rightAnswer = Quizmaster.Question.AnswerLetter.Trim().ToUpper();
+                var quizmasterPlayer = Quizmaster.Player;
+                if (answerValid)
+                {
+                    if (rightAnswer == answer)
+                    {
+                        Utils.SendMessage(GetString("QuizmasterCorrectTarget"), plr.PlayerId, GetString("QuizmasterChatNoticeTitle"));
+                        Utils.SendMessage(GetString("QuizmasterCorrect").Replace("{QMTARGET}", plr.GetRealName()), quizmasterPlayer.PlayerId, GetString("QuizmasterChatNoticeTitle"));
+                        Quizmaster.ResetMarkedPlayer();
+                    } else
+                    {
+                        Quizmaster.KillPlayer(plr);
+                        Utils.SendMessage(GetString("QuizmasterWrong").Replace("{QMTARGET}", plr.GetRealName()), quizmasterPlayer.PlayerId, GetString("QuizmasterChatNoticeTitle"));
+                        Utils.SendMessage(GetString("QuizmasterWrongTarget").Replace("{QMWRONG}", answer).Replace("{QMRIGHT}", rightAnswer).Replace("{QM}", quizmasterPlayer.GetRealName()), plr.PlayerId, GetString("QuizmasterChatNoticeTitle"));
+                    }
+                }
+                else
+                {
+                    Utils.SendMessage(GetString("QuizmasterAnswerNotValid"), plr.PlayerId, GetString("QuizmasterChatNoticeTitle"));
+                }
+            }
+            else
+            {
+                Utils.SendMessage(GetString("QuizmasterSyntaxNotValid"), plr.PlayerId, GetString("QuizmasterChatNoticeTitle"));
+            }
+        }
+        else if (plr.GetCustomRole() is CustomRoles.Quizmaster)
+        {
+            Utils.SendMessage(GetString("QuizmasterCantAnswer"), plr.PlayerId, GetString("QuizmasterChatNoticeTitle"));
         }
     }
 }
