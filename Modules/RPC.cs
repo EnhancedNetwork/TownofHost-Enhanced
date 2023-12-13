@@ -33,6 +33,11 @@ enum CustomRPC
     SetKillOrCurse,
     SetSheriffShotLimit,
     //SetCopyCatMiscopyLimit,
+    SetCaptainTargetSpeed,
+    RevertCaptainTargetSpeed,
+    RevertCaptainAllTargetSpeed,
+    SetCaptainVotedTarget,
+    RevertCaptainVoteRemove,
     SetDousedPlayer,
     setPlaguedPlayer,
     SetNameColorData,
@@ -154,7 +159,8 @@ enum CustomRPC
     QuizmasterMarkPlayer,
     //FFA
     SyncFFAPlayer,
-    SyncFFANameNotify
+    SyncFFANameNotify,
+    SyncSolsticerNotify
 }
 public enum Sounds
 {
@@ -364,6 +370,23 @@ internal class RPCHandlerPatch
             case CustomRPC.SetSheriffShotLimit:
                 Sheriff.ReceiveRPC(reader);
                 break;
+
+            case CustomRPC.SetCaptainTargetSpeed:
+                Captain.ReceiveRPCSetSpeed(reader);
+                break;
+            case CustomRPC.RevertCaptainTargetSpeed:
+                Captain.ReceiveRPCRevertSpeed(reader);
+                break;
+            case CustomRPC.RevertCaptainAllTargetSpeed:
+                Captain.ReceiveRPCRevertAllSpeed(reader);
+                break;
+            case CustomRPC.SetCaptainVotedTarget:
+                Captain.ReceiveRPCVoteAdd(reader);
+                break;
+            case CustomRPC.RevertCaptainVoteRemove:
+                Captain.ReceiveRPCVoteRemove(reader);
+                break;
+
         /*    case CustomRPC.SetCopyCatMiscopyLimit:
                 CopyCat.ReceiveRPC(reader);
                 break; */
@@ -578,6 +601,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SyncFFANameNotify:
                 FFAManager.ReceiveRPCSyncNameNotify(reader);
+                break;
+            case CustomRPC.SyncSolsticerNotify:
+                Solsticer.ReceiveRPC(reader);
                 break;
             case CustomRPC.SyncNWitch:
                 NWitch.ReceiveRPC(reader);
@@ -1039,6 +1065,9 @@ internal static class RPC
                 break;
             case CustomRoles.CopyCat:
                 CopyCat.Add(targetId);
+                break;
+            case CustomRoles.Captain:
+                Captain.Add(targetId);
                 break;
             case CustomRoles.Pickpocket:
                 Pickpocket.Add(targetId);

@@ -108,8 +108,8 @@ internal class ChangeRoleSettings
             Main.JinxSpellCount = new();
             Main.OverDeadPlayerList = new();
             Main.Provoked = new();
-            Main.ShieldPlayer = Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : byte.MaxValue;
-            Main.FirstDied = byte.MaxValue;
+            Main.ShieldPlayer = Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : "";
+            Main.FirstDied = "";
             Main.MadmateNum = 0;
             Main.BardCreations = 0;
             Main.MeetingsPassed = 0;
@@ -215,10 +215,12 @@ internal class ChangeRoleSettings
             Doppelganger.Init();
             Sheriff.Init();
             CopyCat.Init();
+            Captain.Init();
             Cleanser.Init();
             SwordsMan.Init();
             EvilTracker.Init();
             Snitch.Init();
+            Solsticer.Init();
             Vampire.Init();
             Vampiress.Init();
             Poisoner.Init();
@@ -348,6 +350,7 @@ internal class ChangeRoleSettings
             MeetingStates.MeetingCalled = false;
             MeetingStates.FirstMeeting = true;
             GameStates.AlreadyDied = false;
+            EAC.ReportTimes = new();
         }
         catch (Exception ex)
         {
@@ -646,6 +649,9 @@ internal class SelectRolesPatch
                     case CustomRoles.Mayor:
                         Main.MayorUsedButtonCount[pc.PlayerId] = 0;
                         break;
+                    case CustomRoles.Captain:
+                        Captain.Add(pc.PlayerId);
+                        break;
                     case CustomRoles.TimeMaster:
                         Main.TimeMasterNum[pc.PlayerId] = 0;
                         Main.TimeMasterNumOfUsed.Add(pc.PlayerId, Options.TimeMasterMaxUses.GetInt());
@@ -664,6 +670,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Snitch:
                         Snitch.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Solsticer:
+                        Solsticer.Add(pc.PlayerId);
                         break;
                     case CustomRoles.AntiAdminer:
                         AntiAdminer.Add(pc.PlayerId);

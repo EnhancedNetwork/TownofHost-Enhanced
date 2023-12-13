@@ -40,8 +40,8 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "1.3.1.1";
-    public const string PluginDisplayVersion = "1.3.1 dev 1";
+    public const string PluginVersion = "1.3.1.2111"; // hotfix version for meeting unable to be called
+    public const string PluginDisplayVersion = "1.3.1 dev 2 hotfix 2";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
     /******************* Change one of the three variables to true before making a release. *******************/
     public const bool Canary = false; // Unused variable? ---- not unused anymore :)
@@ -52,6 +52,7 @@ public class Main : BasePlugin
 
     public static readonly bool ShowGitHubButton = true;
     public static readonly bool ShowKofiButton = true;
+    public static readonly bool ShowUpdateButton = true;
     public static readonly string GitHubInviteUrl = "https://github.com/0xDrMoe/TownofHost-Enhanced";
     public static readonly string kofiInviteUrl = "https://ko-fi.com/TOHEN";
 
@@ -222,8 +223,8 @@ public class Main : BasePlugin
     public static bool IsInitialRelease = DateTime.Now.Month == 1 && DateTime.Now.Day is 17;
     public static bool IsAprilFools = DateTime.Now.Month == 4 && DateTime.Now.Day is 1;
     public static bool ResetOptions = true;
-    public static byte FirstDied = byte.MaxValue;
-    public static byte ShieldPlayer = byte.MaxValue;
+    public static string FirstDied = ""; //Store with hash puid so things can pass through different round
+    public static string ShieldPlayer = "";
     public static int MadmateNum = 0;
     public static int BardCreations = 0;
     public static int MeetingsPassed = 0;
@@ -634,6 +635,7 @@ public enum CustomRoles
     CyberStar,
     Cleanser,
     Mayor,
+    Captain,
     Bastion,
     Paranoia,
     Psychic,
@@ -728,6 +730,7 @@ public enum CustomRoles
     Gamer,
     DarkHide,
     Workaholic,
+    Solsticer,
     Collector,
     Provocateur,
     Sunnyboy,
@@ -918,6 +921,7 @@ public enum CustomWinner
     RuthlessRomantic = CustomRoles.RuthlessRomantic,
     NiceMini = CustomRoles.Mini,
     Doppelganger = CustomRoles.Doppelganger,
+    Solsticer = CustomRoles.Solsticer,
 }
 public enum AdditionalWinners
 {

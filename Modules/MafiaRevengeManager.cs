@@ -87,6 +87,12 @@ public static class MafiaRevengeManager
             else pc.ShowPopUp(GetString("GuessMini"));
             return true;
         }
+        else if (target.Is(CustomRoles.Solsticer))
+        {
+            if (!isUI) Utils.SendMessage(GetString("GuessSolsticer"), pc.PlayerId);
+            else pc.ShowPopUp(GetString("GuessSolsticer"));
+            return true;
+        }
 
         Logger.Info($"{pc.GetNameWithRole()} 复仇了 {target.GetNameWithRole()}", "Mafia");
 

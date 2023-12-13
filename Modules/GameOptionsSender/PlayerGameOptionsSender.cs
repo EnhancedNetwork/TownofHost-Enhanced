@@ -381,6 +381,9 @@ public class PlayerGameOptionsSender : GameOptionsSender
                 AURoleOptions.EngineerCooldown = Options.WorkaholicVentCooldown.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 0f;
                 break;
+            case CustomRoles.Solsticer:
+                Solsticer.ApplyGameOptions();
+                break;
             case CustomRoles.ImperiusCurse:
                 AURoleOptions.ShapeshifterCooldown = Options.ImperiusCurseShapeshiftCooldown.GetFloat();
                 AURoleOptions.ShapeshifterLeaveSkin = false;

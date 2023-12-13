@@ -376,6 +376,7 @@ public class TaskState
 
         if (AmongUsClient.Instance.AmHost)
         {
+            if (player.Is(CustomRoles.Captain)) Captain.OnTaskComplete(player);
             //FIXME:SpeedBooster class transplant
             if (player.IsAlive()
             && player.Is(CustomRoles.SpeedBooster)
@@ -636,11 +637,12 @@ public class TaskState
                         Logger.Info($"Crewpostor tried to kill pestilence (reflected back)：{target.GetNameWithRole()} => {player.GetNameWithRole()}", "Pestilence Reflect");
                     }
                 }
-            } 
+            }
         }
 
         //クリアしてたらカウントしない
         if (CompletedTasksCount >= AllTasksCount) return;
+        if (player.Is(CustomRoles.Solsticer) && !AmongUsClient.Instance.AmHost) return; //Solsticer task state is updated by host rpc
 
         CompletedTasksCount++;
 

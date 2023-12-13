@@ -92,7 +92,7 @@ public static class Options
     };
     public static readonly string[] CheatResponsesName =
     {
-        "Ban", "Kick", "NoticeMe","NoticeEveryone"
+        "Ban", "Kick", "NoticeMe","NoticeEveryone", "TempBan"
     };
     public static readonly string[] ConfirmEjectionsMode =
     {
@@ -2027,6 +2027,8 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
+        Captain.SetupCustomOption();
+
         CopyCat.SetupCustomOption();
 
         SetupRoleOptions(11600, TabGroup.CrewmateRoles, CustomRoles.Dictator);
@@ -2837,6 +2839,8 @@ public static class Options
         
         Spiritcaller.SetupCustomOption();
 
+        Solsticer.SetupCustomOption();
+
         // 副职
         TextOptionItem.Create(10000023, "OtherRoles.Addons", TabGroup.OtherRoles)
             .SetGameMode(CustomGameMode.Standard)
@@ -2933,7 +2937,8 @@ public static class Options
         EndWhenPlayerBug = BooleanOptionItem.Create(60240, "EndWhenPlayerBug", true, TabGroup.SystemSettings, false)
             .SetHeader(true)
             .SetColor(Color.blue);
-        CheatResponses = StringOptionItem.Create(60250, "CheatResponses", CheatResponsesName, 4, TabGroup.SystemSettings, false)
+
+        CheatResponses = StringOptionItem.Create(60250, "CheatResponses", CheatResponsesName, 0, TabGroup.SystemSettings, false)
             .SetHeader(true);
         //HighLevelAntiCheat = StringOptionItem.Create(60260, "HighLevelAntiCheat", CheatResponsesName, 0, TabGroup.SystemSettings, false)
         //.SetHeader(true);

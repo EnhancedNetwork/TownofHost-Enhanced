@@ -2060,6 +2060,9 @@ public static class Utils
                 if (Snitch.IsEnable)
                     SelfMark.Append(Snitch.GetWarningArrow(seer));
 
+                if (CustomRoles.Solsticer.RoleExist())
+                    SelfMark.Append(Solsticer.GetWarningArrow(seer, seer));
+
                 if (Gamer.IsEnable)
                     SelfMark.Append(Gamer.TargetMark(seer, seer));
 
@@ -2327,6 +2330,11 @@ public static class Utils
                         if (target.Is(CustomRoles.SuperStar) && Options.EveryOneKnowSuperStar.GetBool())
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.SuperStar), "★"));
 
+                        if (Captain.IsEnable)
+                            if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) && 
+                                (seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
+                                TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Captain), "☆"));
+
                         if (target.Is(CustomRoles.Cyber) && Options.CyberKnown.GetBool())
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
 
@@ -2335,6 +2343,11 @@ public static class Utils
 
                         if (Snitch.IsEnable)
                             TargetMark.Append(Snitch.GetWarningMark(seer, target));
+
+                        if (target.Is(CustomRoles.Solsticer))
+                        {
+                            TargetMark.Append(Solsticer.GetWarningArrow(seer, target));
+                        }
 
                         if (Executioner.IsEnable)
                             TargetMark.Append(Executioner.TargetMark(seer, target));
@@ -2347,6 +2360,7 @@ public static class Utils
 
                         if (Romantic.IsEnable)
                             TargetMark.Append(Romantic.TargetMark(seer, target));
+
 
                         if (Lawyer.IsEnable)
                             TargetMark.Append(Lawyer.LawyerMark(seer, target));
@@ -2658,6 +2672,7 @@ public static class Utils
         Pirate.AfterMeetingTask();
         Chronomancer.AfterMeetingTask();
         Seeker.AfterMeetingTasks();
+        Solsticer.AfterMeetingTasks();
         Main.ShamanTarget = byte.MaxValue;
         Main.ShamanTargetChoosen = false;
         Main.BurstBodies.Clear();

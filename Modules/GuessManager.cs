@@ -279,6 +279,12 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("GuessDisabled"));
                     return true;
                 }
+                if (pc.Is(CustomRoles.Solsticer) && !Solsticer.SolsticerCanGuess.GetBool())
+                {
+                    if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("GuessDisabled"));
+                    return true;
+                }
                 if (role == CustomRoles.SuperStar || target.Is(CustomRoles.SuperStar))
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessSuperStar"), pc.PlayerId);
@@ -300,6 +306,12 @@ public static class GuessManager
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessObviousAddon"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessObviousAddon"));
+                    return true;
+                }
+                if (role == CustomRoles.Solsticer && target.Is(CustomRoles.Solsticer))
+                {
+                    if (!isUI) Utils.SendMessage(GetString("GuessSolsticer"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("GuessSolsticer"));
                     return true;
                 }
                 if (target.Is(CustomRoles.Onbound))
@@ -1161,6 +1173,7 @@ public static class GuessManager
                     or CustomRoles.Oblivious
                     //     or CustomRoles.Reflective
                     or CustomRoles.GuardianAngelTOHE
+                    or CustomRoles.Solsticer
                     ) continue;
 
                 CreateRole(role);
