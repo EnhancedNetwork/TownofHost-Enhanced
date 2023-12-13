@@ -1007,6 +1007,9 @@ public static class Utils
                 case CustomRoles.Cleanser:
                     ProgressText.Append(Cleanser.GetProgressText(playerId));
                     break;
+                case CustomRoles.Keeper:
+                    ProgressText.Append(Keeper.GetProgressText(playerId, comms));
+                    break;
                 case CustomRoles.Hacker:
                     ProgressText.Append(Hacker.GetHackLimit(playerId));
                     break;
@@ -2651,6 +2654,7 @@ public static class Utils
         Chameleon.AfterMeetingTasks();
         Eraser.AfterMeetingTasks();
         Cleanser.AfterMeetingTasks();
+        Keeper.AfterMeetingTasks();
         BountyHunter.AfterMeetingTasks();
         //Undertaker.AfterMeetingTasks();
         EvilTracker.AfterMeetingTasks();

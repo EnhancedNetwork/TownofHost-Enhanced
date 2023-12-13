@@ -1,13 +1,16 @@
-﻿using Hazel;
+﻿using Epic.OnlineServices;
+using Hazel;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
+using System.Text;
 using UnityEngine;
 using static TOHE.Options;
-using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 public static class Keeper
 {
-    private static readonly int Id = 6600;
+    private static readonly int Id = 26400;
     //public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
@@ -21,7 +24,7 @@ public static class Keeper
 
     public static void SetupCustomOption()
     {
-        SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Cleanser);
+        SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Keeper);
         KeeperUsesOpt = IntegerOptionItem.Create(Id + 10, "MaxProtections", new(1, 14, 1), 3, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Keeper])
             .SetValueFormat(OptionFormat.Times);
         HideVote = BooleanOptionItem.Create(Id + 11, "KeeperHideVote", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Keeper]);
@@ -42,18 +45,36 @@ public static class Keeper
     {
         //playerIdList.Add(playerId);
         DidVote.Add(playerId, false);
+        keeperUses[playerId] = 0;
         IsEnable = true;
     }
 
-    //public static string GetProgressText(byte playerId) => Utils.ColorString(CleanserUsesOpt.GetInt() - CleanserUses[playerId] > 0 ? Utils.GetRoleColor(CustomRoles.Cleanser).ShadeColor(0.25f) : Color.gray, CleanserUses.TryGetValue(playerId, out var x) ? $"({CleanserUsesOpt.GetInt() - x})" : "Invalid");
-    public static string GetProgressText(byte playerId)
+    public static string GetProgressText(byte playerId, bool comms)
     {
-        if (!keeperUses.ContainsKey(playerId)) return "Invalid";
-        Color x;
-        if (KeeperUsesOpt.GetInt() - keeperUses[playerId] > 0)
-            x = Utils.GetRoleColor(CustomRoles.Cleanser);
-        else x = Color.gray;
-        return (Utils.ColorString(x, $"({KeeperUsesOpt.GetInt() - keeperUses[playerId]})"));
+        if (playerId == byte.MaxValue) return string.Empty;
+        if (!keeperUses.ContainsKey(playerId)) return string.Empty;
+        var ProgressText = new StringBuilder();
+        var taskState8 = Main.PlayerStates?[playerId].GetTaskState();
+        Color TextColor8;
+        var TaskCompleteColor8 = Color.green;
+        var NonCompleteColor8 = Color.yellow;
+        var NormalColor8 = taskState8.IsTaskFinished ? TaskCompleteColor8 : NonCompleteColor8;
+        TextColor8 = comms ? Color.gray : NormalColor8;
+        string Completed8 = comms ? "?" : $"{taskState8.CompletedTasksCount}";
+        Color TextColor81;
+        var maxUses = KeeperUsesOpt.GetInt();
+        var usesLeft = Math.Max(maxUses - keeperUses[playerId], 0);
+        if (usesLeft < 1) TextColor81 = Color.red;
+        else TextColor81 = Color.white;
+        ProgressText.Append(Utils.ColorString(TextColor8, $"({Completed8}/{taskState8.AllTasksCount})"));
+        ProgressText.Append(Utils.ColorString(TextColor81, $" <color=#ffffff>-</color> {keeperUses[playerId]}"));
+        return ProgressText.ToString();
+        
+        //Color x;
+        //if (KeeperUsesOpt.GetInt() - keeperUses[playerId] > 0)
+        //    x = Utils.GetRoleColor(CustomRoles.Cleanser);
+        //else x = Color.gray;
+        //return (Utils.ColorString(x, $"({KeeperUsesOpt.GetInt() - keeperUses[playerId]})"));
     }
 
     private static void SendRPC(int type, byte keeperId = 0xff, byte targetId = 0xff)
@@ -96,6 +117,8 @@ public static class Keeper
 
     public static void OnVote(PlayerControl voter, PlayerControl target)
     {
+        if (!IsEnable) return;
+        if (voter == null || target == null) return;
         if (!voter.Is(CustomRoles.Keeper)) return;
         if (DidVote[voter.PlayerId]) return;
         DidVote[voter.PlayerId] = true;

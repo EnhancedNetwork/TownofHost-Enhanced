@@ -1818,6 +1818,11 @@ public static class Options
         ParityCop.SetupCustomOption();
 
         /*
+         *  Keeper
+         */
+        Keeper.SetupCustomOption();
+
+        /*
          * Lighter
          */
         SetupSingleRoleOptions(8400, TabGroup.CrewmateRoles, CustomRoles.Lighter, 1);
