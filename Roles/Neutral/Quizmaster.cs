@@ -20,7 +20,7 @@ namespace TOHE.Roles.Neutral
         public static Sabotages lastSabotage = Sabotages.None;
         public static Sabotages firstSabotageOfRound = Sabotages.None;
         public static PlayerColors lastExiledColor = PlayerColors.None;
-        public static readonly int Id = 26200;
+        public static readonly int Id = 26400;
         public static bool IsEnable = false;
         public static bool AlreadyMarked = false;
         public static byte MarkedPlayer = byte.MaxValue;

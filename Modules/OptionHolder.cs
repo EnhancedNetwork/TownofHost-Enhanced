@@ -1029,7 +1029,7 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 26200 lasted id for roles/add-ons (Next use 26300)
+        // 26400 lasted id for roles/add-ons (Next use 26500)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
         // Start Load Settings
@@ -2933,7 +2933,7 @@ public static class Options
         EndWhenPlayerBug = BooleanOptionItem.Create(60240, "EndWhenPlayerBug", true, TabGroup.SystemSettings, false)
             .SetHeader(true)
             .SetColor(Color.blue);
-        CheatResponses = StringOptionItem.Create(60250, "CheatResponses", CheatResponsesName, 0, TabGroup.SystemSettings, false)
+        CheatResponses = StringOptionItem.Create(60250, "CheatResponses", CheatResponsesName, 4, TabGroup.SystemSettings, false)
             .SetHeader(true);
         //HighLevelAntiCheat = StringOptionItem.Create(60260, "HighLevelAntiCheat", CheatResponsesName, 0, TabGroup.SystemSettings, false)
         //.SetHeader(true);
