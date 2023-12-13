@@ -62,8 +62,7 @@ class CmdCheckMurderPatch
         Logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}", "CmdCheckMurder");
         
         if (!AmongUsClient.Instance.AmHost) return true;
-        CheckMurderPatch.Prefix(__instance, target); 
-        //The return bool is not needed here
+        CheckMurderPatch.Prefix(__instance, target);
         return false;
     }
 }
@@ -1273,33 +1272,14 @@ class CheckMurderPatch
         }
 
         //首刀保护
-        if (target.PlayerId == PlayerControl.LocalPlayer.PlayerId && Utils.IsAllAlive && Options.ShieldPersonDiedFirst.GetBool() && killer.PlayerId != target.PlayerId)
+        if (Main.ShieldPlayer != "" && Main.ShieldPlayer == target.GetClient().GetHashedPuid() && Utils.IsAllAlive)
         {
-            switch (Options.HostGetKilledFirstAction.GetInt())
-            {
-                case 0:
-                    killer.SetKillCooldown(forceAnime: true);
-                    return false;
-                case 1:
-                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Youtuber);
-                    CustomWinnerHolder.WinnerIds.Add(target.PlayerId);
-                    return false;
-                case 2:
-                    target.RpcMurderPlayerV3(killer);
-                    return false;
-                case 3:
-                    Main.AllAlivePlayerControls
-                        .Where(x => x.PlayerId != target.PlayerId)
-                        .Do(x =>
-                        {
-                            x.RpcSpecificMurderPlayer(x, x);
-                            x.SetRealKiller(target);
-                            Main.PlayerStates[x.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
-                        });
-                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.None);
-                    break;
-            }
+            Main.ShieldPlayer = "";
+            killer.RpcGuardAndKill(target);
+            killer.SetKillCooldown(forceAnime: true);
+            return false;
         }
+
         //首刀叛变
         if (Options.MadmateSpawnMode.GetInt() == 1 && Main.MadmateNum < CustomRoles.Madmate.GetCount() && Utils.CanBeMadmate(target, true))
         {
@@ -1390,7 +1370,7 @@ class MurderPlayerPatch
         }
 
         //看看UP是不是被首刀了
-        if (Main.FirstDied == byte.MaxValue && target.Is(CustomRoles.Youtuber))
+        if (Main.FirstDied == "" && target.Is(CustomRoles.Youtuber))
         {
             CustomSoundsManager.RPCPlayCustomSoundAll("Congrats");
             if (!CustomWinnerHolder.CheckForConvertedWinner(target.PlayerId))
@@ -1401,8 +1381,8 @@ class MurderPlayerPatch
             //Imagine youtuber is converted
         }
 
-        if (Main.FirstDied == byte.MaxValue)
-            Main.FirstDied = target.PlayerId;
+        if (Main.FirstDied == "")
+            Main.FirstDied = target.GetClient().GetHashedPuid();
 
         if (target.Is(CustomRoles.Bait))
         {
