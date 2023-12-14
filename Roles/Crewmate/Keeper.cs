@@ -8,7 +8,7 @@ using static TOHE.Options;
 namespace TOHE.Roles.Crewmate;
 public static class Keeper
 {
-    private static readonly int Id = 26400;
+    private static readonly int Id = 26500;
     //public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
