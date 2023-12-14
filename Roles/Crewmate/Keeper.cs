@@ -1,8 +1,6 @@
-﻿using Epic.OnlineServices;
-using Hazel;
+﻿using Hazel;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Metrics;
 using System.Text;
 using UnityEngine;
 using static TOHE.Options;
@@ -48,6 +46,11 @@ public static class Keeper
         keeperUses[playerId] = 0;
         IsEnable = true;
     }
+    public static void Remove(byte playerId)
+    {
+        DidVote.Remove(playerId);
+        keeperUses.Remove(playerId);
+    }
 
     public static string GetProgressText(byte playerId, bool comms)
     {
@@ -65,9 +68,9 @@ public static class Keeper
         var maxUses = KeeperUsesOpt.GetInt();
         var usesLeft = Math.Max(maxUses - keeperUses[playerId], 0);
         if (usesLeft < 1) TextColor81 = Color.red;
-        else TextColor81 = Color.white;
+        else TextColor81 = Utils.GetRoleColor(CustomRoles.Keeper);
         ProgressText.Append(Utils.ColorString(TextColor8, $"({Completed8}/{taskState8.AllTasksCount})"));
-        ProgressText.Append(Utils.ColorString(TextColor81, $" <color=#ffffff>-</color> {keeperUses[playerId]}"));
+        ProgressText.Append(Utils.ColorString(TextColor81, $" <color=#ffffff>-</color> {usesLeft}"));
         return ProgressText.ToString();
         
         //Color x;
@@ -143,5 +146,5 @@ public static class Keeper
         SendRPC(type: 1);
     }
 
-    public static bool BeforeExile(byte exileId) => keeperTarget.Contains(exileId);
+    public static bool IsTargetExiled(byte exileId) => keeperTarget.Contains(exileId);
 }

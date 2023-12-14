@@ -426,7 +426,7 @@ class CheckForEndVotingPatch
             else if (!braked)
                 exiledPlayer = GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => !tie && info.PlayerId == exileId);
 
-            if (Keeper.BeforeExile(exileId))
+            if (Keeper.IsTargetExiled(exileId))
             {
                 exileId = 0xff;
                 exiledPlayer = Utils.GetPlayerInfoById(exileId);

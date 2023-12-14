@@ -1605,7 +1605,8 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Loyal)
                     || pc.Is(CustomRoles.VoidBallot)
                     || pc.Is(CustomRoles.Brakar)
-                    || pc.Is(CustomRoles.Collector))
+                    || pc.Is(CustomRoles.Collector)
+                    || pc.Is(CustomRoles.Keeper))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Influenced.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Influenced.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Influenced.CanBeOnImp.GetBool()))
                     return false;
