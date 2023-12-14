@@ -204,7 +204,7 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("EGGuessMax"));
                     return true;
                 }
-                if (pc.Is(CustomRoles.Solsticer) && !Solsticer.CanGuess)
+                if (pc.Is(CustomRoles.Solsticer) && (!Solsticer.CanGuess || !Solsticer.SolsticerCanGuess.GetBool()))
                 {
                     if (!isUI) Utils.SendMessage(GetString("SolsticerGuessMax"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("SolsticerGuessMax"));
@@ -1189,6 +1189,12 @@ public static class GuessManager
                     or CustomRoles.Solsticer
                     or CustomRoles.GuardianAngel
                     or CustomRoles.Killer
+                    or CustomRoles.Mini
+                    or CustomRoles.Onbound
+                    or CustomRoles.Rebound
+                    or CustomRoles.LastImpostor
+                    or CustomRoles.Mare
+                    or CustomRoles.Cyber
                     ) continue;
 
                 CreateRole(role);
