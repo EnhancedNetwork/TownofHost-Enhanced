@@ -3534,6 +3534,8 @@
   "GuessSolsticer": "Sorry, but you can not guess Solsticer!",
   "VoteSolsticer": "Sorry, but you can not vote Solsticer!",
   "SolsticerTasksReset": "Your tasks get reset!",
+  "SolsticerMisGuessed": "You just misguessed! So you are no longer allowed to guess.",
+  "SolsticerGuessMax": "Because you already misguessed, you are no longer allowed to guess.",
 
   "VoteDead": "Sorry, but the player you just voted is already died, so your vote is returned."
 }

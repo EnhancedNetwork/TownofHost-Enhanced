@@ -204,6 +204,12 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("EGGuessMax"));
                     return true;
                 }
+                if (pc.Is(CustomRoles.Solsticer) && !Solsticer.CanGuess)
+                {
+                    if (!isUI) Utils.SendMessage(GetString("SolsticerGuessMax"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("SolsticerGuessMax"));
+                    return true;
+                }
                 if (pc.Is(CustomRoles.Phantom) && !Options.PhantomCanGuess.GetBool())
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
@@ -669,6 +675,13 @@ public static class GuessManager
 
                         return true;
                     }
+                }
+
+                if (dp.Is(CustomRoles.Solsticer))
+                {
+                    Solsticer.CanGuess = false;
+                    _ = new LateTask(() => { Utils.SendMessage(GetString("SolsticerMisGuessed"), dp.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("GuessKillTitle")), true); }, 0.6f, "Solsticer MisGuess Msg");
+                    return true;
                 }
 
                 string Name = dp.GetRealName();
@@ -1174,6 +1187,8 @@ public static class GuessManager
                     //     or CustomRoles.Reflective
                     or CustomRoles.GuardianAngelTOHE
                     or CustomRoles.Solsticer
+                    or CustomRoles.GuardianAngel
+                    or CustomRoles.Killer
                     ) continue;
 
                 CreateRole(role);
