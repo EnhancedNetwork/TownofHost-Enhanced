@@ -717,6 +717,7 @@ class CastVotePatch
 {
     public static bool Prefix(MeetingHud __instance, [HarmonyArgument(0)] byte srcPlayerId, [HarmonyArgument(1)] byte suspectPlayerId)
     {
+        if (!AmongUsClient.Instance.AmHost) return true;
         var voter = Utils.GetPlayerById(srcPlayerId);
         if (voter == null || !voter.IsAlive()) return false;
 
