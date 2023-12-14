@@ -22,7 +22,6 @@ namespace TOHE.Roles.Neutral
         public static List<byte> playerIdList = new();
         public static Sabotages lastSabotage = Sabotages.None;
         public static Sabotages firstSabotageOfRound = Sabotages.None;
-        public static PlayerColors lastExiledColor = PlayerColors.None;
         public static readonly int Id = 26400;
         public static int killsForRound = 0;
         public static bool allowedKilling = false;
@@ -30,6 +29,7 @@ namespace TOHE.Roles.Neutral
         public static bool IsEnable = false;
         public static bool AlreadyMarked = false;
         public static byte MarkedPlayer = byte.MaxValue;
+        public static string lastExiledColor = "None";
         public static void SetupCustomOption()
         {
             SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Quizmaster, 1);
@@ -72,7 +72,7 @@ namespace TOHE.Roles.Neutral
             if (targetId != byte.MaxValue)
                 MarkedPlayer = targetId;
         }
-        public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 30;
+        public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 15;
         public static bool CanUseKillButton(PlayerControl pc)
         {
             if (pc == null || !pc.IsAlive()) return false;
@@ -97,7 +97,7 @@ namespace TOHE.Roles.Neutral
             bool canVent;
             if (CanVentAfterMark.GetBool())
             {
-                canVent = MarkedPlayer == byte.MaxValue && !AlreadyMarked;
+                canVent = true;
             }
             else
             {
@@ -127,7 +127,7 @@ namespace TOHE.Roles.Neutral
 
         static QuizQuestionBase GetRandomQuestion(List<QuizQuestionBase> qt)
         {
-            List<QuizQuestionBase> questions = qt.Where(a => a.Stage < QuestionDifficulty.GetInt()).ToList();
+            List<QuizQuestionBase> questions = qt.Where(a => a.Stage <= QuestionDifficulty.GetInt()).ToList();
             var rnd = IRandom.Instance;
             QuizQuestionBase question = questions[rnd.Next(0, questions.Count)];
             question.FixUnsetAnswers();
@@ -178,12 +178,12 @@ namespace TOHE.Roles.Neutral
             if (target.PlayerId == MarkedPlayer) MarkedPlayer = byte.MaxValue;
         }
 
-        public static void SetKillButtonText(byte playerId)
+        public static void SetKillButtonText(HudManager instance)
         {
             if (allowedKilling)
-                HudManager.Instance.KillButton.OverrideText(GetString("KillButtonText"));
+                instance.KillButton.OverrideText(GetString("KillButtonText"));
             else
-                HudManager.Instance.KillButton.OverrideText(GetString("QuizmasterKillButtonText"));
+                instance.KillButton.OverrideText(GetString("QuizmasterKillButtonText"));
         }
 
         public static string TargetMark(PlayerControl seer, PlayerControl target)
@@ -256,20 +256,22 @@ namespace TOHE.Roles.Neutral
             int positionForRightAnswer = rnd.Next(0, 3);
 
             if (QuizmasterQuestionType == QuizmasterQuestionType.EjectionColorQuestion)
-                Answer = Quizmaster.lastExiledColor.ToString();
-
+                Answer = Quizmaster.lastExiledColor;
             PosibleAnswers.Remove(Answer);
             for (int numOfQuestionsDone = 0; numOfQuestionsDone < 3; numOfQuestionsDone++)
             {
+                var prefix = "";
                 if (numOfQuestionsDone == positionForRightAnswer)
                 {
                     AnswerLetter = new List<string> { "A", "B", "C" }[positionForRightAnswer];
-                    Answers.Add("QuizmasterSabotages." + Answer);
+                    if (Answer == "None") prefix = "QuizmasterSabotages.";
+                    Answers.Add(prefix + Answer);
                 }
                 else
                 {
                     string thatAnswer = PosibleAnswers[rnd.Next(0, PosibleAnswers.Count)];
-                    Answers.Add("QuizmasterSabotages." + thatAnswer);
+                    Answers.Add(thatAnswer);
+                    if (Answer == "None") prefix = "QuizmasterSabotages.";
                     PosibleAnswers.Remove(thatAnswer);
                 }
             }
@@ -344,29 +346,5 @@ namespace TOHE.Roles.Neutral
         O2,
         Communications,
         MushroomMixup
-    }
-
-    public enum PlayerColors
-    {
-        None = -1,
-
-        Red,
-        Blue,
-        Green,
-        Pink,
-        Orange,
-        Yellow,
-        Black,
-        White,
-        Purple,
-        Brown,
-        Cyan,
-        Lime,
-        Maroon,
-        Rose,
-        Banana,
-        Gray,
-        Tan,
-        Coral
     }
 }

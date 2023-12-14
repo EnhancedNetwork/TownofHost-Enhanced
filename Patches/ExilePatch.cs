@@ -62,7 +62,8 @@ class ExileControllerWrapUpPatch
             Main.PlayerStates[exiled.PlayerId].deathReason = PlayerState.DeathReason.Vote;
 
             var role = exiled.GetCustomRole();
-            Quizmaster.lastExiledColor = (PlayerColors)System.Enum.Parse(typeof(PlayerColors), exiled.GetPlayerColorString().Trim(), true);
+
+            Quizmaster.lastExiledColor = exiled.GetPlayerColorString();
 
             //判断冤罪师胜利
             var pcList = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId).ToArray();

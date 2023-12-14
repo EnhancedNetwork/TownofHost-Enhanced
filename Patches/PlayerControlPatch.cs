@@ -594,8 +594,9 @@ class CheckMurderPatch
                     ChiefOfPolice.OnCheckMurder(killer, target);
                     return false;
                 case CustomRoles.Quizmaster:
-                    Quizmaster.OnCheckMurder(killer, target);
-                    return false;
+                    if (!Quizmaster.OnCheckMurder(killer, target))
+                        return false;
+                    break;
             }
         }
 

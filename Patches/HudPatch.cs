@@ -457,6 +457,7 @@ class HudManagerPatch
                         break;
                     case CustomRoles.Quizmaster:
                         __instance.KillButton.OverrideText(GetString("QuizmasterKillButtonText"));
+                        Quizmaster.SetKillButtonText(__instance);
                         break;
 
                     default:
