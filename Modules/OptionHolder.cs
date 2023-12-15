@@ -1029,7 +1029,7 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 26300 lasted id for roles/add-ons (Next use 26400)
+        // 26400 last id for roles/add-ons (Next use 26500)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
         // Start Load Settings
@@ -1747,6 +1747,11 @@ public static class Options
         TextOptionItem.Create(10000008, "RoleType.CrewSupport", TabGroup.CrewmateRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
+
+        /*
+         * Benefactor 
+         */
+        Benefactor.SetupCustomOption();
 
         /*
          * Chameleon

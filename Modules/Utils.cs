@@ -1001,6 +1001,9 @@ public static class Utils
                 case CustomRoles.Taskinator:
                     ProgressText.Append(Taskinator.GetProgressText(playerId));
                     break;
+                case CustomRoles.Benefactor:
+                    ProgressText.Append(Benefactor.GetProgressText(playerId));
+                    break;
                 case CustomRoles.Eraser:
                     ProgressText.Append(Eraser.GetProgressText(playerId));
                     break;
@@ -2658,6 +2661,7 @@ public static class Utils
         Spiritualist.AfterMeetingTasks();
         Vulture.AfterMeetingTasks();
         Taskinator.AfterMeetingTasks();
+        Benefactor.AfterMeetingTasks();
         //Baker.AfterMeetingTasks();
         Jailer.AfterMeetingTasks();
         CopyCat.AfterMeetingTasks();  //all crew after meeting task should be before this

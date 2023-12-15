@@ -374,6 +374,7 @@ public static class Divinator
 
                 CustomRoles.Crewpostor or
                 CustomRoles.Taskinator or
+                CustomRoles.Benefactor or
                 CustomRoles.Marshall or
                 CustomRoles.Workaholic or
                 CustomRoles.Phantom or
