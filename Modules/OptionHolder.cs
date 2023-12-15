@@ -1749,6 +1749,11 @@ public static class Options
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
         /*
+         * Benefactor 
+         */
+        Benefactor.SetupCustomOption();
+
+        /*
          * Chameleon
          */
         Chameleon.SetupCustomOption();

@@ -268,6 +268,7 @@
   "Traitor": "Traitor",
   "Vulture": "Vulture",
   "Taskinator": "Taskinator",
+  "Benefactor": "Benefactor",
   "Medusa": "Medusa",
   "Baker": "Baker",
   "Famine": "Famine",
@@ -674,6 +675,7 @@
   "TraitorInfo": "Eliminate the <color=#ff1919>Impostors</color>, then win",
   "VultureInfo": "Eat bodies by reporting to win",
   "TaskinatorInfo": "Silent tasks, deadly blasts",
+  "BenefactorInfo": "Task complete, shield elite!",
   "MedusaInfo": "Stone bodies by reporting them",
   "BakerInfo": "Complete your tasks to poison your bread",
   "FamineInfo": "Give out your poisoned bread",
@@ -781,7 +783,7 @@
   "VampireInfoLong": "(Impostors):\nAs the Vampire, your kills are delayed. If a meeting is called first, your target still dies. If you bite a Bait, you kill normally and report the body.",
   "VampiressInfoLong": "(Impostors):\nAs the Vampiress, you can Bite players like a Vampire (single click) or kill normally (double click).",
   "WarlockInfoLong": "(Impostors):\nAs the Warlock, you can Curse up to one other player at a time.\nWhen you Shapeshift, if you have Cursed a player, they kill the nearest person, which, depending on settings, can include you or other Impostors.\nYou can kill normally while Shapeshifted.",
-  "ZombieInfoLong": "https://www.youtube.com/watch?v=hB8S6oKjiw8 (not a rickroll, promise)",
+  "ZombieInfoLong": "(Impostors):\nZombie has a short kill cooldown, but moves very slowly and has very little vision. Zombie will not be voted out by anyone other than the Dictator, and the movement speed of Zombie will gradually slow down as they make kills or time passes.",
   "AssassinInfoLong": "(Impostors):\nAs the Ninja, you can use the kill button to Mark up to one target at a time. You may then Shapeshift to teleport to the Marked target and kill them.\nDepending on settings, you can kill normally after killing a Marked target.",
   "HackerInfoLong": "(Impostors):\nAs the Anonymous, you can Shapeshift to force your target to report whoever you killed this round.\nIf you killed nobody that round, the target will report their own dead body as if they had died.\nNote: This does not work on Lazy nor Lazy Guy, and this ability will work regardless of whether the body can normally be reported.",
   "MinerInfoLong": "(Impostors):\nAs the Miner, you can shapeshift to teleport back to the last vent you were in.",
@@ -957,6 +959,7 @@
   "TraitorInfoLong": "(Neutrals):\nAs the Traitor, you were an Impostor that betrayed the Impostors.\nYou know the Impostors but they don't know you.\nThe twist? They can kill you but you can't kill them.\n\nEliminate the Impostors by other means, then kill everyone else to win!",
   "VultureInfoLong": "(Neutrals):\nAs the Vulture, report bodies to win!\n\nWhen you report a body, if your eat cooldown is up, you'll eat the body (makes it unreportable).\nIf your eat ability is still on cooldown, then you'll report the body normally.\n\nAdditionally, you'll report bodies normally if the maximum bodies eaten per round is reached.",
   "TaskinatorInfoLong": "(Neutrals):\nAs the Taskinator, whenever you complete a task, the task will be bombed. When another player completes the bombed task, the bomb will detonate and the player will die.\n\nYou win if you survive till the end and Crew doesn't win.\n\n Note: Taskinator bombs ignore all protection.",
+  "BenefactorInfoLong": "(Crewmates):\nAs the Benefactor, whenever you complete a task, the task will be marked. When another player completes the marked task, they get a temporary shield.\n\n Note: Shield only protects from direct kill attacks",
   "MedusaInfoLong": "(Neutrals):\nAs the Medusa, you can stone bodies much like cleaning a body.\nStoned bodies cannot be reported.\n\nKill everyone to win.",
   "BakerInfoLong": "(Neutrals):\nAs the Baker, you give out bread.\nAt the beginning of each meeting, messages will be given out.\n\nIf you finish your tasks, you become Famine when a meeting is called.",
   "FamineInfoLong": "(Neutrals):\nAs the Famine, you give out poisoned bread.\nPlayers with poisoned bread die at the end of the meeting if the Famine is not exiled.\n\nIf the Famine is alive at the end of the game, they steal the win.",
@@ -2600,7 +2603,7 @@
   "DivinatorCheck.Result26": "<b>{0}</b> is either Medium, Spiritcaller, Spiritualist, Parasite, Swooper, or Wraith",
   "DivinatorCheck.Result27": "<b>{0}</b> is either Time Manager, Time Master, Time Thief, Shapemaster, Sniper, Vampiress, or Werewolf",
   "DivinatorCheck.Result28": "<b>{0}</b> is either Puppeteer, Witch, Deputy, Transporter, Twister, Mercenary",
-  "DivinatorCheck.Result29": "<b>{0}</b> is either Crewpostor, Marshall, Workaholic, Phantom, Mini, Taskinator or Terrorist ",
+  "DivinatorCheck.Result29": "<b>{0}</b> is either Crewpostor, Marshall, Workaholic, Phantom, Mini, Taskinator, Benefactor or Terrorist ",
   "SunnyboyChance": "<color=#ff9902>Sunnyboy</color> Chance",
   "BardChance": "<color=#ff1919>Bard</color> Chance",
   "VampiressChance": "<color=#ff1919>Vampiress</color> Chance",
@@ -2707,6 +2710,7 @@
   "GodfatherTargetCountMode": "Killer turns into",
   "GodfatherCount.Refugee": "<color=#ff1919>Refugee</color>",
   "GodfatherCount.Madmate": "<color=#ff1919>Madmate</color>",
+
   "BerserkerKillCooldown": "Berserker kill cooldown",
   "BerserkerMax": "Max level that Berserker can reach",
   "BerserkerOneCanKillCooldown": "Unlock lower kill cooldown",
@@ -2717,6 +2721,8 @@
   "BerserkerMaxReached": "Maximum level reached!",
   "BerserkerLevelChanged": "Increased level to {0}",
   "BerserkerLevelRequirement": "Level requirement for unlock",
+  "KilledByBerserker": "Killed by Berserker",
+
   "ImpCanBeUnlucky": "<color=#ff1919>Impostors</color> can become <color=#b8d7a3>Unlucky</color>",
   "CrewCanBeUnlucky": "<color=#8cffff>Crewmates</color> can become <color=#b8d7a3>Unlucky</color>",
   "NeutralCanBeUnlucky": "<color=#7f8c8d>Neutrals</color> can become <color=#b8d7a3>Unlucky</color>",
@@ -3235,8 +3241,12 @@
   "VultureMaxEatenInOneRound": "Maximum eaten bodies possible per round",
   "VultureCooldownUp": "Eat Cooldown finished",
 
-  "TaskMarkPerRound": "Number of tasks that can be bombed in one round",
+  "TasksMarkPerRound": "Number of tasks that can be marked in one round",
   "TaskinatorBombPlanted": "Bomb has been planted",
+
+  "ShieldDuration": "Shield duration",
+  "ShieldIsOneTimeUse": "Shield breaks after one kill attempt",
+  "BenefactorTaskMarked": "Task marked successfully",
 
   "PirateTryHideMsg": "Hide <color=#EDC240>Pirate</color>'s commands",
   "SuccessfulDuelsToWin": "Number of successful duels needed to win",
@@ -3542,6 +3552,8 @@
   "GuessSolsticer": "Sorry, but you can not guess Solsticer!",
   "VoteSolsticer": "Sorry, but you can not vote Solsticer!",
   "SolsticerTasksReset": "Your tasks get reset!",
+  "SolsticerMisGuessed": "You just misguessed! So you are no longer allowed to guess.",
+  "SolsticerGuessMax": "Because you already misguessed, you are no longer allowed to guess.",
 
   "VoteDead": "Sorry, but the player you just voted is already died, so your vote is returned."
 }

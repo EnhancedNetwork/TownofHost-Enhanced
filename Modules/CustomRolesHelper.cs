@@ -31,6 +31,7 @@ static class CustomRolesHelper
                 CustomRoles.Masochist => CustomRoles.Crewmate,
                 CustomRoles.Cleanser => CustomRoles.Crewmate,
                 CustomRoles.ParityCop => CustomRoles.Crewmate,
+                CustomRoles.Benefactor => CustomRoles.Crewmate,
                 CustomRoles.Keeper => CustomRoles.Crewmate,
                 CustomRoles.President => CustomRoles.Crewmate,
                 CustomRoles.Marshall => CustomRoles.Crewmate,
@@ -265,13 +266,13 @@ static class CustomRolesHelper
     {
         if (player == null) return false;
         var customRole = player.GetCustomRole();
-        bool hostSideHasKillButton = customRole.GetDYRole() == RoleTypes.Impostor || customRole.GetVNRole() == CustomRoles.Impostor || customRole.GetVNRole() == CustomRoles.Shapeshifter;
+        bool ModSideHasKillButton = customRole.GetDYRole() == RoleTypes.Impostor || customRole.GetVNRole() == CustomRoles.Impostor || customRole.GetVNRole() == CustomRoles.Shapeshifter;
 
         if (player.IsModClient() || (!considerVanillaShift && !player.IsModClient()))
-            return hostSideHasKillButton;
+            return ModSideHasKillButton;
 
-        bool vanillaSideHasKillButton = Main.ErasedRoleStorage.TryGetValue(player.PlayerId, out var erasedRole) ?
-                                         (erasedRole.GetDYRole() == RoleTypes.Impostor || erasedRole.GetVNRole() == CustomRoles.Impostor || erasedRole.GetVNRole() == CustomRoles.Shapeshifter) : hostSideHasKillButton;
+        bool vanillaSideHasKillButton = EAC.OriginalRoles.TryGetValue(player.PlayerId, out var OriginalRole) ?
+                                         (OriginalRole.GetDYRole() == RoleTypes.Impostor || OriginalRole.GetVNRole() == CustomRoles.Impostor || OriginalRole.GetVNRole() == CustomRoles.Shapeshifter) : ModSideHasKillButton;
 
         return vanillaSideHasKillButton;
     }
@@ -999,6 +1000,7 @@ static class CustomRolesHelper
             CustomRoles.Captain or
             CustomRoles.Transporter or
             CustomRoles.Retributionist or
+            CustomRoles.Benefactor or
             CustomRoles.Alchemist;
     }
 

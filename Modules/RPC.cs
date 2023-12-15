@@ -102,6 +102,7 @@ enum CustomRPC
     SetJinxSpellCount,
     SetCollectorVotes,
     TaskinatorMarkedTask,
+    BenefactorRPC,
     SetSwapperVotes,
     SetQuickShooterShotLimit,
     SetEraseLimit,
@@ -560,6 +561,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.TaskinatorMarkedTask:
                 Taskinator.ReceiveRPC(reader);
+                break;
+            case CustomRPC.BenefactorRPC:
+                Benefactor.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetQuickShooterShotLimit:
                 QuickShooter.ReceiveRPC(reader);
@@ -1179,6 +1183,9 @@ internal static class RPC
                 break;
             case CustomRoles.Taskinator:
                 Taskinator.Add(targetId);
+                break;
+            case CustomRoles.Benefactor:
+                Benefactor.Add(targetId);
                 break;
             case CustomRoles.CursedWolf:
                 Main.CursedWolfSpellCount[targetId] = Options.GuardSpellTimes.GetInt();

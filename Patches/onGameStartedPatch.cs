@@ -242,6 +242,7 @@ internal class ChangeRoleSettings
             DarkHide.Init();
             Greedier.Init();
             Collector.Init();
+            Benefactor.Init();
             Taskinator.Init();
             QuickShooter.Init();
             Camouflager.Init();
@@ -384,8 +385,8 @@ internal class SelectRolesPatch
                 PlayerControl.LocalPlayer.Data.IsDead = true;
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
             }
-                   
 
+            EAC.OriginalRoles = new();
             SelectCustomRoles();
             SelectAddonRoles();
             CalculateVanillaRoleCount();
@@ -734,6 +735,9 @@ internal class SelectRolesPatch
                     case CustomRoles.Taskinator:
                         Taskinator.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.Benefactor:
+                        Benefactor.Add(pc.PlayerId);
+                        break;
                     case CustomRoles.CursedWolf:
                         Main.CursedWolfSpellCount[pc.PlayerId] = Options.GuardSpellTimes.GetInt();
                         break;
@@ -1041,6 +1045,7 @@ internal class SelectRolesPatch
                 .Where(p => p.GetCustomRole() is CustomRoles.Arsonist or CustomRoles.Revolutionist or CustomRoles.Sidekick or CustomRoles.Shaman or CustomRoles.Vigilante or CustomRoles.Witness or CustomRoles.Innocent or CustomRoles.Killer)
                 .Select(p => p.PlayerId)
                 .ToArray());
+            EAC.LogAllRoles();
 
             Utils.CountAlivePlayers(true);
             Utils.SyncAllSettings();

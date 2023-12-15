@@ -85,6 +85,19 @@ class CheckForEndVotingPatch
                 if (pva.DidVote && pva.VotedFor < 253 && !pc.Data.IsDead)
                 {
                     var voteTarget = Utils.GetPlayerById(pva.VotedFor);
+                    if (voteTarget == null)
+                    {
+                        Utils.SendMessage(GetString("VoteDead"), pc.PlayerId);
+                        __instance.RpcClearVote(pc.GetClientId());
+                        continue;
+                    }
+                    else if (!voteTarget.IsAlive() || voteTarget.Data.Disconnected)
+                    {
+                        Utils.SendMessage(GetString("VoteDead"), pc.PlayerId);
+                        __instance.RpcClearVote(pc.GetClientId());
+                        continue;
+                    }
+
                     if (voteTarget != null)
                     {
                         switch (pc.GetCustomRole())
@@ -139,12 +152,17 @@ class CheckForEndVotingPatch
                     }
                 }
             }
-            foreach (var ps in __instance.playerStates.ToArray())
-            {
-                if (shouldSkip) break; //Meeting Skip with vote counting on keystroke (m + delete)
 
-                //死んでいないプレイヤーが投票していない
-                if (!(Main.PlayerStates[ps.TargetPlayerId].IsDead || ps.DidVote)) return false;
+            if (!shouldSkip)
+            {
+                foreach (var ps in __instance.playerStates.ToArray())
+                {
+                    //死んでいないプレイヤーが投票していない
+                    if (!ps.DidVote && Utils.GetPlayerById(ps.TargetPlayerId)?.IsAlive() == true)
+                    {
+                        return false;
+                    }
+                }
             }
 
             GameData.PlayerInfo exiledPlayer = PlayerControl.LocalPlayer.Data;
@@ -706,6 +724,47 @@ class CheckForEndVotingPatch
     }
 }
 
+[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CastVote))]
+class CastVotePatch
+{
+    public static bool Prefix(MeetingHud __instance, [HarmonyArgument(0)] byte srcPlayerId, [HarmonyArgument(1)] byte suspectPlayerId)
+    {
+        if (!AmongUsClient.Instance.AmHost) return true;
+        var voter = Utils.GetPlayerById(srcPlayerId);
+        if (voter == null || !voter.IsAlive()) return false;
+
+        var target = Utils.GetPlayerById(suspectPlayerId);
+        if (target != null && suspectPlayerId < 253)
+        {
+            if (!target.IsAlive() || target.Data.Disconnected)
+            {
+                Utils.SendMessage(GetString("VoteDead"), srcPlayerId);
+                __instance.RpcClearVote(voter.GetClientId());
+                return false;
+            }
+
+            switch(voter.GetCustomRole())
+            {
+                case CustomRoles.Dictator:
+                    if (target.Is(CustomRoles.Solsticer))
+                    {
+                        Utils.SendMessage(GetString("VoteSolsticer"), srcPlayerId);
+                        __instance.RpcClearVote(voter.GetClientId());
+                        return false;
+                    }
+                    if (!target.IsAlive())
+                    {
+                        Utils.SendMessage(GetString("VoteDead"), srcPlayerId);
+                        __instance.RpcClearVote(voter.GetClientId());
+                        return false;
+                    } //patch here so checkend is not triggered
+                    break;
+            }
+        }
+
+        return true;
+    }
+}
 static class ExtendedMeetingHud
 {
     public static Dictionary<byte, int> CustomCalculateVotes(this MeetingHud __instance, bool CountInfluenced = false)
