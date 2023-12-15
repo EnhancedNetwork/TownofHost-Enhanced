@@ -211,7 +211,8 @@ public static class Divinator
                 CustomRoles.CursedSoul or
                 CustomRoles.Cleanser or
                 CustomRoles.CursedWolf or
-                CustomRoles.President
+                CustomRoles.President or 
+                CustomRoles.Keeper
                 => "Result10",
 
                 CustomRoles.Addict or
