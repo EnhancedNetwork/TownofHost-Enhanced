@@ -355,8 +355,12 @@ class CheckForEndVotingPatch
                 if (voterpva.VotedFor != voterstate.VotedForId)
                 {
                     voterstate.VotedForId = voterpva.VotedFor;
-                    statesList[i] = voterstate;
                 }
+                if (voterpc.Is(CustomRoles.Silent))
+                {
+                    voterstate.VotedForId = 254; //Change to non should work
+                }
+                statesList[i] = voterstate;
             }
             /*This change the voter icon on meetinghud to the player the voter actually voted for.
              Should work for Influenced and swapeer , Also change role like mayor that has mutiple vote icons
