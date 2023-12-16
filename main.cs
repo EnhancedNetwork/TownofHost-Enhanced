@@ -687,6 +687,7 @@ public enum CustomRoles
     Spiritualist,
     Chameleon,
     ParityCop,
+    Keeper,
     Admirer,
     TimeMaster,
     Crusader,

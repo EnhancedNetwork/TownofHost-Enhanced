@@ -32,6 +32,7 @@ static class CustomRolesHelper
                 CustomRoles.Cleanser => CustomRoles.Crewmate,
                 CustomRoles.ParityCop => CustomRoles.Crewmate,
                 CustomRoles.Benefactor => CustomRoles.Crewmate,
+                CustomRoles.Keeper => CustomRoles.Crewmate,
                 CustomRoles.President => CustomRoles.Crewmate,
                 CustomRoles.Marshall => CustomRoles.Crewmate,
                 CustomRoles.SabotageMaster => CustomRoles.Engineer,
@@ -1106,7 +1107,8 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.NiceMini)
                     || pc.Is(CustomRoles.Mare)
                     || pc.Is(CustomRoles.Solsticer)
-                    || pc.Is(CustomRoles.Rebound))
+                    || pc.Is(CustomRoles.Rebound)
+                    || pc.Is(CustomRoles.Workaholic) && !Options.WorkaholicVisibleToEveryone.GetBool())
                     return false; //Based on guess manager
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeOnbound.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeOnbound.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeOnbound.GetBool()))
                     return false;
@@ -1121,7 +1123,8 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.NiceMini)
                     || pc.Is(CustomRoles.Mare)
                     || pc.Is(CustomRoles.Solsticer)
-                    || pc.Is(CustomRoles.Onbound))
+                    || pc.Is(CustomRoles.Onbound)
+                    || pc.Is(CustomRoles.Workaholic) && !Options.WorkaholicVisibleToEveryone.GetBool())
                 {
                     Logger.Warn("reached here", "Rebound");  //huh?
                     return false;
@@ -1134,7 +1137,7 @@ static class CustomRolesHelper
                 if (!Options.GuesserMode.GetBool() && !pc.Is(CustomRoles.EvilGuesser) && !pc.Is(CustomRoles.NiceGuesser) && !pc.Is(CustomRoles.Doomsayer) && !pc.Is(CustomRoles.Guesser))
                     return false;
                 if (pc.Is(CustomRoles.CopyCat) ||
-                    pc.Is(CustomRoles.Workaholic))
+                    pc.Is(CustomRoles.Workaholic) && !Options.WorkaholicCanGuess.GetBool())
                     return false;
                 if (Options.GuesserMode.GetBool())
                 {
@@ -1608,7 +1611,8 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Loyal)
                     || pc.Is(CustomRoles.VoidBallot)
                     || pc.Is(CustomRoles.Brakar)
-                    || pc.Is(CustomRoles.Collector))
+                    || pc.Is(CustomRoles.Collector)
+                    || pc.Is(CustomRoles.Keeper))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Influenced.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Influenced.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Influenced.CanBeOnImp.GetBool()))
                     return false;

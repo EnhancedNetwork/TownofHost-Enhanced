@@ -114,6 +114,9 @@ class CheckForEndVotingPatch
                             case CustomRoles.Cleanser:
                                 Cleanser.OnVote(pc, voteTarget);
                                 break;
+                            case CustomRoles.Keeper:
+                                Keeper.OnVote(pc, voteTarget);
+                                break;
                             case CustomRoles.Tracker:
                                 Tracker.OnVote(pc, voteTarget);
                                 break;
@@ -222,8 +225,10 @@ class CheckForEndVotingPatch
                 if (CheckRole(ps.TargetPlayerId, CustomRoles.Tracker) && Tracker.HideVote.GetBool() && Tracker.TempTrackLimit[ps.TargetPlayerId] > 0) continue;
                 // Hide Oracle Vote
                 if (CheckRole(ps.TargetPlayerId, CustomRoles.Oracle) && Oracle.HideVote.GetBool() && Oracle.TempCheckLimit[ps.TargetPlayerId] > 0) continue;
-                // Hide Oracle Vote
+                // Hide Cleanser Vote
                 if (CheckRole(ps.TargetPlayerId, CustomRoles.Cleanser) && Cleanser.HideVote.GetBool() && Cleanser.CleanserUses[ps.TargetPlayerId] > 0) continue;
+                // Hide Keeper Vote
+                if (CheckRole(ps.TargetPlayerId, CustomRoles.Keeper) && Keeper.HideVote.GetBool() && Keeper.keeperUses[ps.TargetPlayerId] > 0) continue;
 
                 // Hide Jester Vote
                 if (CheckRole(ps.TargetPlayerId, CustomRoles.Jester) && Options.HideJesterVote.GetBool()) continue;
@@ -442,6 +447,13 @@ class CheckForEndVotingPatch
             }
             else if (!braked)
                 exiledPlayer = GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => !tie && info.PlayerId == exileId);
+
+            if (Keeper.IsTargetExiled(exileId))
+            {
+                exileId = 0xff;
+                exiledPlayer = Utils.GetPlayerInfoById(exileId);
+            }
+
             exiledPlayer?.Object.SetRealKiller(null);
 
             //RPC
@@ -1198,7 +1210,7 @@ class MeetingHudStartPatch
             if (Captain.IsEnable)
                 if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) &&
                     (seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
-                    sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Captain), "☆"));
+                    sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Captain), " ☆"));
             switch (seer.GetCustomRole())
             {
                 case CustomRoles.Arsonist:

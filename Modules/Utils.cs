@@ -1010,6 +1010,9 @@ public static class Utils
                 case CustomRoles.Cleanser:
                     ProgressText.Append(Cleanser.GetProgressText(playerId));
                     break;
+                case CustomRoles.Keeper:
+                    ProgressText.Append(Keeper.GetProgressText(playerId, comms));
+                    break;
                 case CustomRoles.Hacker:
                     ProgressText.Append(Hacker.GetHackLimit(playerId));
                     break;
@@ -2332,7 +2335,7 @@ public static class Utils
                         if (Captain.IsEnable)
                             if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) && 
                                 (seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
-                                TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Captain), "☆"));
+                                TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Captain), " ☆"));
 
                         if (target.Is(CustomRoles.Cyber) && Options.CyberKnown.GetBool())
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
@@ -2654,6 +2657,7 @@ public static class Utils
         Chameleon.AfterMeetingTasks();
         Eraser.AfterMeetingTasks();
         Cleanser.AfterMeetingTasks();
+        Keeper.AfterMeetingTasks();
         BountyHunter.AfterMeetingTasks();
         //Undertaker.AfterMeetingTasks();
         EvilTracker.AfterMeetingTasks();
