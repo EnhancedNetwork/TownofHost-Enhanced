@@ -651,6 +651,7 @@ public enum CustomRoles
     Detective,
     SwordsMan,
     NiceGuesser,
+    GuessMaster,
     Transporter,
     TimeManager,
     Veteran,

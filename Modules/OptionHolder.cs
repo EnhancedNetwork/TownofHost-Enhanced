@@ -1029,7 +1029,7 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 26500 lasted id for roles/add-ons (Next use 26600)
+        // 26700 lasted id for roles/add-ons (Next use 26800)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
         // Start Load Settings
@@ -1675,6 +1675,11 @@ public static class Options
             .SetValueFormat(OptionFormat.Seconds);
         DoctorVisibleToEveryone = BooleanOptionItem.Create(6703, "DoctorVisibleToEveryone", false, TabGroup.CrewmateRoles, false)
         .SetParent(CustomRoleSpawnChances[CustomRoles.Doctor]);
+
+        /*
+         * Guess Master
+         */
+        GuessMaster.SetupCustomOption();
 
         /*
          * Lazy Guy

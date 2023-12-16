@@ -183,6 +183,7 @@ public static class GuessManager
 
             if (target != null)
             {
+                GuessMaster.OnGuess(role);
                 bool guesserSuicide = false;
                 if (CopyCat.playerIdList.Contains(pc.PlayerId))
                 {
@@ -709,6 +710,7 @@ public static class GuessManager
                             Doomsayer.CheckCountGuess(pc);
                         }
 
+                        if (dp == pc) GuessMaster.OnGuess(role, isMisguess: true, dp: dp);
                         //死者检查
                         Utils.AfterPlayerDeathTasks(dp, true);
 

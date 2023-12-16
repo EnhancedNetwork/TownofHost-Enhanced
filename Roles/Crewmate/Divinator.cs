@@ -291,6 +291,8 @@ public static class Divinator
 
                 CustomRoles.EvilGuesser or
                 CustomRoles.NiceGuesser or
+                CustomRoles.Doomsayer or
+                CustomRoles.GuessMaster or
                 CustomRoles.DarkHide or
                 CustomRoles.Camouflager or
                 CustomRoles.Chameleon or
@@ -379,6 +381,7 @@ public static class Divinator
                 CustomRoles.Marshall or
                 CustomRoles.Workaholic or
                 CustomRoles.Phantom or
+                CustomRoles.Solsticer or
                 CustomRoles.NiceMini or
                 CustomRoles.EvilMini or
                 CustomRoles.Terrorist
