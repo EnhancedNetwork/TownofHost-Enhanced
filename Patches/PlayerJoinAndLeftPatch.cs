@@ -281,6 +281,11 @@ class OnPlayerLeftPatch
                         }
                     }
                 }
+
+                if (GameStates.IsMeeting)
+                {
+                    MeetingHud.Instance.CheckForEndVoting();
+                }
             }
         }
         catch (Exception error)

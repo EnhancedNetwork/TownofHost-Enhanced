@@ -757,6 +757,7 @@ public static class GuessManager
             var voteAreaPlayer = Utils.GetPlayerById(playerVoteArea.TargetPlayerId);
             if (!voteAreaPlayer.AmOwner) continue;
             meetingHud.ClearVote();
+            meetingHud.CheckForEndVoting();
         }
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GuessKill, SendOption.Reliable, -1);
         writer.Write(pc.PlayerId);
