@@ -107,19 +107,6 @@ public class dbConnect
         }
     }
 
-    public static bool CanAccessCanary(string friendCode)
-    {
-        //var userInfoTask = GetUserInfoByFriendCode(friendCode);
-        //userInfoTask.Wait(); // Wait for the task to complete
-        //var userInfo = userInfoTask.Result; // Get the result
-
-        if (!userType.ContainsKey(friendCode))
-        {
-            Logger.Error($"no user found, with friendcode {friendCode}", "CanAccessCanary");
-            return false;
-        }
-        return true;
-    }
     public static bool CanAccessDev(string friendCode)
     {
         if (!userType.ContainsKey(friendCode))
