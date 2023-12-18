@@ -738,6 +738,13 @@ class CastVotePatch
         if (voter == null || !voter.IsAlive()) return false;
 
         var target = Utils.GetPlayerById(suspectPlayerId);
+        if (target == null && suspectPlayerId < 253)
+        {
+            Utils.SendMessage(GetString("VoteDead"), srcPlayerId);
+            __instance.RpcClearVote(voter.GetClientId());
+            return false;
+        } //Vote a disconnect player
+
         if (target != null && suspectPlayerId < 253)
         {
             if (!target.IsAlive() || target.Data.Disconnected)
@@ -767,6 +774,12 @@ class CastVotePatch
         }
 
         return true;
+    }
+
+    public static void Postfix(MeetingHud __instance)
+    {
+        __instance.CheckForEndVoting();
+        //For stuffs in check for end voting to work
     }
 }
 static class ExtendedMeetingHud
