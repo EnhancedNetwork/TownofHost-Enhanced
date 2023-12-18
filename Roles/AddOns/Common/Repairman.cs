@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace TOHE.Roles.Crewmate;
+namespace TOHE.Roles.AddOns.Common;
 
 public static class Repairman
 {
