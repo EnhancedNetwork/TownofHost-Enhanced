@@ -195,6 +195,9 @@ public static class CopyCat
                 case CustomRoles.Swapper:
                     Swapper.Swappermax.Remove(pc.PlayerId);
                     break;
+                case CustomRoles.GuessMaster:
+                    GuessMaster.Remove(pc.PlayerId);
+                    break;
             }
             pc.RpcSetCustomRole(CustomRoles.CopyCat);
             SetKillCooldown(player);
@@ -416,6 +419,9 @@ public static class CopyCat
                     break;
                 case CustomRoles.Swapper:
                     Swapper.Swappermax.TryAdd(pc.PlayerId, Swapper.SwapMax.GetInt());
+                    break;
+                case CustomRoles.GuessMaster:
+                    GuessMaster.Add(pc.PlayerId);
                     break;
             }
 

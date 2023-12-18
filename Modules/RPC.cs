@@ -1074,6 +1074,9 @@ internal static class RPC
             case CustomRoles.Captain:
                 Captain.Add(targetId);
                 break;
+            case CustomRoles.GuessMaster:
+                GuessMaster.Add(targetId);
+                break;
             case CustomRoles.Pickpocket:
                 Pickpocket.Add(targetId);
                 break;
