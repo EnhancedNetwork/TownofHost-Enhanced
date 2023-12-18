@@ -2482,6 +2482,8 @@ public static class Options
         NeutralCanBeWatcher = BooleanOptionItem.Create(20405, "NeutralCanBeWatcher", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Watcher]);
 
+        Silent.SetupCustomOptions();
+
         TextOptionItem.Create(10000016, "RoleType.Harmful", TabGroup.Addons) // HARMFUL
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 154, 206, byte.MaxValue));

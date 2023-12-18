@@ -360,8 +360,12 @@ class CheckForEndVotingPatch
                 if (voterpva.VotedFor != voterstate.VotedForId)
                 {
                     voterstate.VotedForId = voterpva.VotedFor;
-                    statesList[i] = voterstate;
                 }
+                if (voterpc.Is(CustomRoles.Silent))
+                {
+                    voterstate.VotedForId = 254; //Change to non should work
+                }
+                statesList[i] = voterstate;
             }
             /*This change the voter icon on meetinghud to the player the voter actually voted for.
              Should work for Influenced and swapeer , Also change role like mayor that has mutiple vote icons
@@ -734,6 +738,13 @@ class CastVotePatch
         if (voter == null || !voter.IsAlive()) return false;
 
         var target = Utils.GetPlayerById(suspectPlayerId);
+        if (target == null && suspectPlayerId < 253)
+        {
+            Utils.SendMessage(GetString("VoteDead"), srcPlayerId);
+            __instance.RpcClearVote(voter.GetClientId());
+            return false;
+        } //Vote a disconnect player
+
         if (target != null && suspectPlayerId < 253)
         {
             if (!target.IsAlive() || target.Data.Disconnected)
@@ -763,6 +774,12 @@ class CastVotePatch
         }
 
         return true;
+    }
+
+    public static void Postfix(MeetingHud __instance)
+    {
+        __instance.CheckForEndVoting();
+        //For stuffs in check for end voting to work
     }
 }
 static class ExtendedMeetingHud

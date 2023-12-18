@@ -364,6 +364,7 @@
   "Hurried": "Hurried",
   "Oiiai": "OIIAI",
   "Influenced": "Influenced",
+  "Silent": "Silent",
   "Prefix.Ntr": "Neptune ",
   "Prefix.Watcher": "Watcher ",
   "Prefix.Overclocked": "Overclocked ",
@@ -425,6 +426,7 @@
   "Prefix.Oiiai": "OIIAI ",
   "Prefix.Influenced": "Influenced ",
   "Prefix.Cyber": "Cyber ",
+  "Prefix.Silent": "Silent ",
   "PrefixB.Ntr": "(Neptune) ",
   "PrefixB.Watcher": "(Watcher) ",
   "PrefixB.Overclocked": "(Overclocked) ",
@@ -486,6 +488,7 @@
   "PrefixB.Oiiai": "(OIIAI) ",
   "PrefixB.Cyber": "(Cyber) ",
   "PrefixB.Influenced": "(Influenced) ",
+  "PrefixB.Silent": "(Silent) ",
   "BracketAddons": "Add Brackets To Add-ons",
   "EngineerTOHEInfo": "Use the vents to catch the <color=#ff1919>Impostors</color>",
   "ScientistTOHEInfo": "Access portable vitals from anywhere",
@@ -769,6 +772,7 @@
   "CyberInfo": "You're popular!",
   "HurriedInfo": "God I got too much stuffs!",
   "InfluencedInfo": "You lack decisiveness!",
+  "SilentInfo": "Vote like a Ghost!",
   "GMInfo": "Spectate the chaos!",
   "NotAssignedInfo": "No assigned role",
   "SunnyboyInfo": "Shine, shine my sunshine!",
@@ -1056,6 +1060,7 @@
   "NimbleInfoLong": "(Add-ons):\nAs the Nimble, you gain access to the vent button.\n\nOnly assigned to certain crewmates.",
   "RepairmanInfoLong": "(Add-ons):\nAs the Repairman, you can fix most sabotages much faster than other players.",
   "InfluencedInfoLong": "(Add-ons):\nAs the Influenced, your vote will be forced to the player with the most votes.\nInfluenced vote won't be counted while choosing the exiled player'\nNote that your vote skill still functions on the player you voted first\nIf all the alive players are Influenced,then the vote result won't shift\nCollector cannot become influenced.",
+  "SilentInfoLong": "(Add-ons):\nAs the Silent, your vote icon won't appear on the result screen.\nSo nobody knows who you voted for.",
   "CyberInfoLong": "(Add-ons):\nAs the Cyber, you cannot be killed while in a group.\nAdditionally, your death will be known.",
   "HurriedInfoLong": "(Add-ons):\nAs the hurried, you must finish all your tasks to win with your team! If you failed with your tasks, you lose.\nHurried hurries to his goal so it won't get madmate,charmed or so.",
   "OiiaiInfoLong": "(Add-ons):\nAs the Oiiai, when you die, you will make your killer forget their role.\nAdditionally, you may pass Oiiai on to the killer, depending on settings.",
@@ -3564,5 +3569,9 @@
   "SolsticerMisGuessed": "You just misguessed! So you are no longer allowed to guess.",
   "SolsticerGuessMax": "Because you already misguessed, you are no longer allowed to guess.",
 
-  "VoteDead": "Sorry, but the player you just voted is already died, so your vote is returned."
+  "VoteDead": "Sorry, but the player you just voted is already died, so your vote is returned.",
+
+  "ImpCanBeSilent": "<color=#ff1919>Impostors</color> can become Silent",
+  "CrewCanBeSilent": "<color=#8cffff>Crewmates</color> can become Silent",
+  "NeutralCanBeSilent": "<color=#7f8c8d>Neutrals</color> can become Silent"
 }

@@ -74,7 +74,7 @@ public static class Romantic
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRomanticTarget, SendOption.Reliable, -1);
         writer.Write(playerId);
-        //writer.Write(BetTimes.TryGetValue(playerId, out var times) ? times : MaxBetTimes);
+        writer.Write(BetTimes.TryGetValue(playerId, out var times) ? times : MaxBetTimes);
         writer.Write(BetPlayer.TryGetValue(playerId, out var player) ? player : byte.MaxValue);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
