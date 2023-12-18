@@ -47,6 +47,11 @@ public static class RiftMaker
         TPCooldown = TPCooldownOpt.GetFloat();
     }
 
+    public static void SendRPC()
+    {
+
+    }
+
     public static void ApplyGameOptions()
     {
         AURoleOptions.ShapeshifterCooldown = SSCooldown.GetFloat();
@@ -60,12 +65,27 @@ public static class RiftMaker
         if (!pc.Is(CustomRoles.RiftMaker)) return;
 
         if (!MarkedLocation.ContainsKey(pc.PlayerId)) MarkedLocation[pc.PlayerId] = new();
-        if (MarkedLocation[pc.PlayerId].Count >= 2) MarkedLocation[pc.PlayerId].RemoveAt(0);
+
+        var currentPos = pc.GetCustomPosition();
+        var totalMarked = MarkedLocation[pc.PlayerId].Count;
+        if (totalMarked == 1 && Vector2.Distance(currentPos, MarkedLocation[pc.PlayerId][0]) <= 4f)
+        {
+            pc.Notify(GetString("IncorrectMarks"));
+            return;
+        }
+        else if (totalMarked == 2 && Vector2.Distance(currentPos, MarkedLocation[pc.PlayerId][1]) <= 4f)
+        {
+            pc.Notify(GetString("IncorrectMarks"));
+            return;
+        }
+
+        if (totalMarked >= 2) MarkedLocation[pc.PlayerId].RemoveAt(0);
 
         MarkedLocation[pc.PlayerId].Add(pc.GetCustomPosition());
         if (MarkedLocation[pc.PlayerId].Count == 2) LastTP[pc.PlayerId] = Utils.GetTimeStamp();
         pc.Notify(GetString("MarkDone"));
 
+        //sendrpc for marked location and lasttp
     }
 
     public static void OnVent(PlayerControl pc, int ventId)
@@ -80,6 +100,7 @@ public static class RiftMaker
         {
             pc.MyPhysics?.RpcBootFromVent(ventId);
         }, 0.5f, "RiftMakerOnVent");
+        //semd rpc for clearing markedlocation
     }
 
 
