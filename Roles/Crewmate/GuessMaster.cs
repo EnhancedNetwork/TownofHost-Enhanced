@@ -5,7 +5,7 @@ namespace TOHE.Roles.Crewmate
 {
     public static class GuessMaster
     {
-        private static readonly int Id = 26700;
+        private static readonly int Id = 26800;
         private static bool IsEnable = false;
         private static HashSet<byte> playerIdList = new();
         public static void SetupCustomOption()
