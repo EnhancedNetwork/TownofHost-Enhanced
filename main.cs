@@ -852,7 +852,9 @@ public enum CustomRoles
     Overclocked,
     Hurried,
     Oiiai,
-    Influenced
+    Influenced,
+    Silent,
+    Mundane
     // QuickFix
 }
 //WinData

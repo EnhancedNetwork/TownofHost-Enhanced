@@ -1029,7 +1029,7 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 26700 lasted id for roles/add-ons (Next use 26800)
+        // 26600 lasted id for roles/add-ons (Next use 26700)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
         // Start Load Settings
@@ -2487,6 +2487,8 @@ public static class Options
         NeutralCanBeWatcher = BooleanOptionItem.Create(20405, "NeutralCanBeWatcher", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Watcher]);
 
+        Silent.SetupCustomOptions();
+
         TextOptionItem.Create(10000016, "RoleType.Harmful", TabGroup.Addons) // HARMFUL
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 154, 206, byte.MaxValue));
@@ -2515,6 +2517,8 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
         FragileKillerLunge = BooleanOptionItem.Create(20609, "FragileKillerLunge", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
+
+        Mundane.SetupCustomOption();
 
         SetupAdtRoleOptions(20700, CustomRoles.Oblivious, canSetNum: true);
         ImpCanBeOblivious = BooleanOptionItem.Create(20703, "ImpCanBeOblivious", true, TabGroup.Addons, false)

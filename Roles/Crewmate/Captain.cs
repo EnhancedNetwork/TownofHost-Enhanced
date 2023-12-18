@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using static TOHE.Options;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -198,6 +199,14 @@ public static class Captain
     }
     public static void OnReportDeadBody()
     {
+        foreach (byte target in OriginalSpeed.Keys)
+        {
+            PlayerControl targetPC = Utils.GetPlayerById(target);
+            if (targetPC == null) continue;
+            Main.AllPlayerSpeed[target] = OriginalSpeed[target];
+            targetPC.SyncSettings();
+        }
+
         OriginalSpeed.Clear();
         sendRPCRevertAllSpeed();
     }
