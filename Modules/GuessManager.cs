@@ -89,7 +89,7 @@ public static class GuessManager
         var originMsg = msg;
 
         if (!AmongUsClient.Instance.AmHost) return false;
-        if (!GameStates.IsInGame || pc == null) return false;
+        if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false;
         if (!pc.Is(CustomRoles.NiceGuesser) 
             && !pc.Is(CustomRoles.EvilGuesser) 
             && !pc.Is(CustomRoles.Doomsayer) 
@@ -183,11 +183,19 @@ public static class GuessManager
 
             if (target != null)
             {
+                GuessMaster.OnGuess(role);
                 bool guesserSuicide = false;
                 if (CopyCat.playerIdList.Contains(pc.PlayerId))
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessDisabled"));
+                    return true;
+                }
+
+                if (!Mundane.OnGuess(pc))
+                {
+                    if (!isUI) Utils.SendMessage(GetString("GuessedAsMundane"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("GuessedAsMundane"));
                     return true;
                 }
 
@@ -202,6 +210,12 @@ public static class GuessManager
                 {
                     if (!isUI) Utils.SendMessage(GetString("EGGuessMax"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("EGGuessMax"));
+                    return true;
+                }
+                if (pc.Is(CustomRoles.Solsticer) && (!Solsticer.CanGuess || !Solsticer.SolsticerCanGuess.GetBool()))
+                {
+                    if (!isUI) Utils.SendMessage(GetString("SolsticerGuessMax"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("SolsticerGuessMax"));
                     return true;
                 }
                 if (pc.Is(CustomRoles.Phantom) && !Options.PhantomCanGuess.GetBool())
@@ -279,6 +293,12 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("GuessDisabled"));
                     return true;
                 }
+                if (pc.Is(CustomRoles.Solsticer) && !Solsticer.SolsticerCanGuess.GetBool())
+                {
+                    if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("GuessDisabled"));
+                    return true;
+                }
                 if (role == CustomRoles.SuperStar || target.Is(CustomRoles.SuperStar))
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessSuperStar"), pc.PlayerId);
@@ -296,10 +316,16 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("GuessNotifiedBait"));
                     return true;
                 }
-                if (role == CustomRoles.LastImpostor || role == CustomRoles.Mare || role == CustomRoles.Cyber)//(role == CustomRoles.Glow || role == CustomRoles.LastImpostor || role == CustomRoles.Mare || role == CustomRoles.Cyber)
+                if (role == CustomRoles.LastImpostor || role == CustomRoles.Mare || role == CustomRoles.Cyber || role == CustomRoles.Flash)//(role == CustomRoles.Glow || role == CustomRoles.LastImpostor || role == CustomRoles.Mare || role == CustomRoles.Cyber)
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessObviousAddon"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessObviousAddon"));
+                    return true;
+                }
+                if (role == CustomRoles.Solsticer && target.Is(CustomRoles.Solsticer))
+                {
+                    if (!isUI) Utils.SendMessage(GetString("GuessSolsticer"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("GuessSolsticer"));
                     return true;
                 }
                 if (target.Is(CustomRoles.Onbound))
@@ -659,6 +685,13 @@ public static class GuessManager
                     }
                 }
 
+                if (dp.Is(CustomRoles.Solsticer))
+                {
+                    Solsticer.CanGuess = false;
+                    _ = new LateTask(() => { Utils.SendMessage(GetString("SolsticerMisGuessed"), dp.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("GuessKillTitle")), true); }, 0.6f, "Solsticer MisGuess Msg");
+                    return true;
+                }
+
                 string Name = dp.GetRealName();
                 if (!Options.DisableKillAnimationOnGuess.GetBool()) CustomSoundsManager.RPCPlayCustomSoundAll("Gunfire");
 
@@ -684,6 +717,7 @@ public static class GuessManager
                             Doomsayer.CheckCountGuess(pc);
                         }
 
+                        if (dp == pc) GuessMaster.OnGuess(role, isMisguess: true, dp: dp);
                         //死者检查
                         Utils.AfterPlayerDeathTasks(dp, true);
 
@@ -745,6 +779,7 @@ public static class GuessManager
             var voteAreaPlayer = Utils.GetPlayerById(playerVoteArea.TargetPlayerId);
             if (!voteAreaPlayer.AmOwner) continue;
             meetingHud.ClearVote();
+            meetingHud.CheckForEndVoting();
         }
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GuessKill, SendOption.Reliable, -1);
         writer.Write(pc.PlayerId);
@@ -1152,7 +1187,7 @@ public static class GuessManager
                     or CustomRoles.Scientist
                     or CustomRoles.Impostor
                     or CustomRoles.Shapeshifter
-                    or CustomRoles.Flashman
+                    or CustomRoles.Flash
                     or CustomRoles.NotAssigned
                     //     or CustomRoles.Marshall 
                     //or CustomRoles.Paranoia 
@@ -1161,6 +1196,15 @@ public static class GuessManager
                     or CustomRoles.Oblivious
                     //     or CustomRoles.Reflective
                     or CustomRoles.GuardianAngelTOHE
+                    or CustomRoles.Solsticer
+                    or CustomRoles.GuardianAngel
+                    or CustomRoles.Killer
+                    or CustomRoles.Mini
+                    or CustomRoles.Onbound
+                    or CustomRoles.Rebound
+                    or CustomRoles.LastImpostor
+                    or CustomRoles.Mare
+                    or CustomRoles.Cyber
                     ) continue;
 
                 CreateRole(role);

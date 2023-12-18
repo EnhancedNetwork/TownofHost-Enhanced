@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using AmongUs.GameOptions;
+using System.Collections.Generic;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
 
@@ -76,20 +77,31 @@ namespace TOHE.Roles.AddOns.Common
                 return;
             }
 
-            if (!killer.GetCustomRole().IsNK())
+            if (!killer.GetCustomRole().IsNeutral())
             {
                 //Use eraser here LOL
                 killer.RpcSetCustomRole(CustomRolesHelper.GetErasedRole(killer.GetCustomRole().GetRoleTypes(), killer.GetCustomRole()));
+                Logger.Info($"Oiiai {killer.GetNameWithRole()} with eraser assign.", "Oiiai");
             }
             else
             {
-                int changeValue = ChangeNeutralRole.GetValue();
+                if (killer.HasImpKillButton())
+                {
+                    int changeValue = ChangeNeutralRole.GetValue();
 
-                if (changeValue != 0) { 
-                //Typically only NK tiggers this
-                    killer.RpcSetCustomRole(NRoleChangeRoles[changeValue-1]);
-                    if (changeValue == 1) Amnesiac.Add(killer.PlayerId);
-                    else if (changeValue == 2) Imitator.Add(killer.PlayerId);
+                    if (changeValue != 0)
+                    {
+                        killer.RpcSetCustomRole(NRoleChangeRoles[changeValue - 1]);
+                        if (changeValue == 1) Amnesiac.Add(killer.PlayerId);
+                        else if (changeValue == 2) Imitator.Add(killer.PlayerId);
+
+                        Logger.Info($"Oiiai {killer.GetNameWithRole()} with Neutrals with kill button assign.", "Oiiai");
+                    }
+                }
+                else
+                {
+                    killer.RpcSetCustomRole(CustomRoles.Opportunist);
+                    Logger.Info($"Oiiai {killer.GetNameWithRole()} with Neutrals without kill button assign.", "Oiiai");
                 }
             }
             killer.ResetKillCooldown();
@@ -97,9 +109,10 @@ namespace TOHE.Roles.AddOns.Common
             killer.Notify(GetString("LostRoleByOiiai"));
             Logger.Info($"{killer.GetRealName()} was OIIAIed", "Oiiai");
         }
+
         private static bool CanGetOiiaied(PlayerControl player)
         {
-            if (player.GetCustomRole().IsNK() && ChangeNeutralRole.GetValue() == 0) return false;
+            if (player.GetCustomRole().IsNeutral() && ChangeNeutralRole.GetValue() == 0) return false;
             if (player.Is(CustomRoles.Loyal)) return false;
 
             return true;

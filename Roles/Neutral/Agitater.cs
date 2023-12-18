@@ -97,9 +97,9 @@ public static class Agitater
                 var pc = Utils.GetPlayerById(CurrentBombedPlayer);
                 if (pc != null && pc.IsAlive() && killer != null)
                 {
-                    pc.RpcMurderPlayerV3(pc);
                     Main.PlayerStates[CurrentBombedPlayer].deathReason = PlayerState.DeathReason.Bombed;
                     pc.SetRealKiller(Utils.GetPlayerById(playerIdList[0]));
+                    pc.RpcMurderPlayerV3(pc);
                     Logger.Info($"{killer.GetNameWithRole()}  bombed {pc.GetNameWithRole()} bomb cd complete", "Agitater");
                     ResetBomb();
                 }
@@ -115,10 +115,11 @@ public static class Agitater
         var target = Utils.GetPlayerById(CurrentBombedPlayer);
         var killer = Utils.GetPlayerById(playerIdList[0]);
         if (target == null || killer == null) return;
-        target.RpcExileV2();
+        
         target.SetRealKiller(killer);
         Main.PlayerStates[CurrentBombedPlayer].deathReason = PlayerState.DeathReason.Bombed;
         Main.PlayerStates[CurrentBombedPlayer].SetDead();
+        target.RpcExileV2();
         Utils.AfterPlayerDeathTasks(target, true);
         ResetBomb();
         Logger.Info($"{killer.GetRealName()} bombed {target.GetRealName()} on report", "Agitater");
@@ -133,7 +134,7 @@ public static class Agitater
         }
         else
         {
-            var playerPos = player.GetTruePosition();
+            var playerPos = player.GetCustomPosition();
             Dictionary<byte, float> targetDistance = new();
             float dis;
 

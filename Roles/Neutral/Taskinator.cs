@@ -20,7 +20,7 @@ public static class Taskinator
     public static void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Taskinator);
-        TaskMarkPerRoundOpt = IntegerOptionItem.Create(Id + 10, "TaskMarkPerRound", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Taskinator])
+        TaskMarkPerRoundOpt = IntegerOptionItem.Create(Id + 10, "TasksMarkPerRound", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Taskinator])
             .SetValueFormat(OptionFormat.Votes);
         Options.OverrideTasksData.Create(Id + 11, TabGroup.NeutralRoles, CustomRoles.Taskinator);
     }
@@ -98,8 +98,10 @@ public static class Taskinator
 
     public static void OnTasKComplete(PlayerControl player, PlayerTask task)
     {
+        if (!AmongUsClient.Instance.AmHost) return;
         if(!IsEnable) return;
         if (player == null) return;
+        if (!player.IsAlive()) return;
         byte playerId = player.PlayerId;
         if (player.Is(CustomRoles.Taskinator))
         {

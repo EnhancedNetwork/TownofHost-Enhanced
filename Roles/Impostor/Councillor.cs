@@ -62,7 +62,7 @@ public static class Councillor
         var originMsg = msg;
 
         if (!AmongUsClient.Instance.AmHost) return false;
-        if (!GameStates.IsInGame || pc == null) return false;
+        if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false;
         if (!pc.Is(CustomRoles.Councillor)) return false;
 
         int operate = 0; // 1:ID 2:猜测
@@ -132,6 +132,12 @@ public static class Councillor
                 {
                     Logger.Info($"{pc.GetNameWithRole()} judged {target.GetNameWithRole()}, councillor sucide = true because target rebound", "CouncillorTrialMsg");
                     CouncillorSuicide = true;
+                }
+                else if (target.Is(CustomRoles.Solsticer))
+                {
+                    if (!isUI) Utils.SendMessage(GetString("GuessSolsticer"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("GuessSolsticer"));
+                    return true;
                 }
                 else if (target.Is(CustomRoles.Madmate) && CanMurderMadmate.GetBool()) CouncillorSuicide = false;
                 else if (target.Is(CustomRoles.Parasite) && CanMurderMadmate.GetBool()) CouncillorSuicide = false;

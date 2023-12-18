@@ -85,6 +85,19 @@ class CheckForEndVotingPatch
                 if (pva.DidVote && pva.VotedFor < 253 && !pc.Data.IsDead)
                 {
                     var voteTarget = Utils.GetPlayerById(pva.VotedFor);
+                    if (voteTarget == null)
+                    {
+                        Utils.SendMessage(GetString("VoteDead"), pc.PlayerId);
+                        __instance.RpcClearVote(pc.GetClientId());
+                        continue;
+                    }
+                    else if (!voteTarget.IsAlive() || voteTarget.Data.Disconnected)
+                    {
+                        Utils.SendMessage(GetString("VoteDead"), pc.PlayerId);
+                        __instance.RpcClearVote(pc.GetClientId());
+                        continue;
+                    }
+
                     if (voteTarget != null)
                     {
                         switch (pc.GetCustomRole())
@@ -100,6 +113,9 @@ class CheckForEndVotingPatch
                                 break;
                             case CustomRoles.Cleanser:
                                 Cleanser.OnVote(pc, voteTarget);
+                                break;
+                            case CustomRoles.Keeper:
+                                Keeper.OnVote(pc, voteTarget);
                                 break;
                             case CustomRoles.Tracker:
                                 Tracker.OnVote(pc, voteTarget);
@@ -125,16 +141,28 @@ class CheckForEndVotingPatch
                                     if (!Main.AwareInteracted[pva.VotedFor].Contains(Utils.GetRoleName(pc.GetCustomRole()))) Main.AwareInteracted[pva.VotedFor].Add(Utils.GetRoleName(pc.GetCustomRole())); break;
                             }
                         }
+                        
+                        if (voteTarget.Is(CustomRoles.Captain))
+                        {
+                            if (!Captain.CaptainVoteTargets.ContainsKey(voteTarget.PlayerId)) Captain.CaptainVoteTargets[voteTarget.PlayerId] = new();
+                            Captain.CaptainVoteTargets[voteTarget.PlayerId].Add(pc.PlayerId);
+                            Captain.sendRPCVoteAdd(voteTarget.PlayerId, pc.PlayerId);
+                        }
 
                     }
                 }
             }
-            foreach (var ps in __instance.playerStates.ToArray())
-            {
-                if (shouldSkip) break; //Meeting Skip with vote counting on keystroke (m + delete)
 
-                //死んでいないプレイヤーが投票していない
-                if (!(Main.PlayerStates[ps.TargetPlayerId].IsDead || ps.DidVote)) return false;
+            if (!shouldSkip)
+            {
+                foreach (var ps in __instance.playerStates.ToArray())
+                {
+                    //死んでいないプレイヤーが投票していない
+                    if (!ps.DidVote && Utils.GetPlayerById(ps.TargetPlayerId)?.IsAlive() == true)
+                    {
+                        return false;
+                    }
+                }
             }
 
             GameData.PlayerInfo exiledPlayer = PlayerControl.LocalPlayer.Data;
@@ -197,8 +225,10 @@ class CheckForEndVotingPatch
                 if (CheckRole(ps.TargetPlayerId, CustomRoles.Tracker) && Tracker.HideVote.GetBool() && Tracker.TempTrackLimit[ps.TargetPlayerId] > 0) continue;
                 // Hide Oracle Vote
                 if (CheckRole(ps.TargetPlayerId, CustomRoles.Oracle) && Oracle.HideVote.GetBool() && Oracle.TempCheckLimit[ps.TargetPlayerId] > 0) continue;
-                // Hide Oracle Vote
+                // Hide Cleanser Vote
                 if (CheckRole(ps.TargetPlayerId, CustomRoles.Cleanser) && Cleanser.HideVote.GetBool() && Cleanser.CleanserUses[ps.TargetPlayerId] > 0) continue;
+                // Hide Keeper Vote
+                if (CheckRole(ps.TargetPlayerId, CustomRoles.Keeper) && Keeper.HideVote.GetBool() && Keeper.keeperUses[ps.TargetPlayerId] > 0) continue;
 
                 // Hide Jester Vote
                 if (CheckRole(ps.TargetPlayerId, CustomRoles.Jester) && Options.HideJesterVote.GetBool()) continue;
@@ -330,8 +360,12 @@ class CheckForEndVotingPatch
                 if (voterpva.VotedFor != voterstate.VotedForId)
                 {
                     voterstate.VotedForId = voterpva.VotedFor;
-                    statesList[i] = voterstate;
                 }
+                if (voterpc.Is(CustomRoles.Silent))
+                {
+                    voterstate.VotedForId = 254; //Change to non should work
+                }
+                statesList[i] = voterstate;
             }
             /*This change the voter icon on meetinghud to the player the voter actually voted for.
              Should work for Influenced and swapeer , Also change role like mayor that has mutiple vote icons
@@ -413,6 +447,13 @@ class CheckForEndVotingPatch
             }
             else if (!braked)
                 exiledPlayer = GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => !tie && info.PlayerId == exileId);
+
+            if (Keeper.IsTargetExiled(exileId))
+            {
+                exileId = 0xff;
+                exiledPlayer = Utils.GetPlayerInfoById(exileId);
+            }
+
             exiledPlayer?.Object.SetRealKiller(null);
 
             //RPC
@@ -432,7 +473,9 @@ class CheckForEndVotingPatch
 
             Main.LastVotedPlayerInfo = exiledPlayer;
             if (Main.LastVotedPlayerInfo != null)
+            { 
                 ConfirmEjections(Main.LastVotedPlayerInfo);
+            }
 
             return false;
         }
@@ -529,12 +572,18 @@ class CheckForEndVotingPatch
             name = string.Format(GetString("ExiledNiceMini"), realName, coloredRole);
             DecidedWinner = true;
         }
+        if (crole.Is(CustomRoles.Captain))
+            Captain.OnExile(exileId);
 
         //小丑胜利
-        if (crole.Is(CustomRoles.Jester))
+        if (crole.Is(CustomRoles.Jester)) 
         {
-            name = string.Format(GetString("ExiledJester"), realName, coloredRole);
-            DecidedWinner = true;
+            if (Options.MeetingsNeededForJesterWin.GetInt() <= Main.MeetingsPassed)
+            {
+                name = string.Format(GetString("ExiledJester"), realName, coloredRole);
+                DecidedWinner = true;
+            }
+            else if (Options.CEMode.GetInt() == 2) name += string.Format(GetString("JesterMeetingLoose"), Options.MeetingsNeededForJesterWin.GetInt() + 1);
         }
 
         //处刑人胜利
@@ -679,6 +728,60 @@ class CheckForEndVotingPatch
     }
 }
 
+[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CastVote))]
+class CastVotePatch
+{
+    public static bool Prefix(MeetingHud __instance, [HarmonyArgument(0)] byte srcPlayerId, [HarmonyArgument(1)] byte suspectPlayerId)
+    {
+        if (!AmongUsClient.Instance.AmHost) return true;
+        var voter = Utils.GetPlayerById(srcPlayerId);
+        if (voter == null || !voter.IsAlive()) return false;
+
+        var target = Utils.GetPlayerById(suspectPlayerId);
+        if (target == null && suspectPlayerId < 253)
+        {
+            Utils.SendMessage(GetString("VoteDead"), srcPlayerId);
+            __instance.RpcClearVote(voter.GetClientId());
+            return false;
+        } //Vote a disconnect player
+
+        if (target != null && suspectPlayerId < 253)
+        {
+            if (!target.IsAlive() || target.Data.Disconnected)
+            {
+                Utils.SendMessage(GetString("VoteDead"), srcPlayerId);
+                __instance.RpcClearVote(voter.GetClientId());
+                return false;
+            }
+
+            switch(voter.GetCustomRole())
+            {
+                case CustomRoles.Dictator:
+                    if (target.Is(CustomRoles.Solsticer))
+                    {
+                        Utils.SendMessage(GetString("VoteSolsticer"), srcPlayerId);
+                        __instance.RpcClearVote(voter.GetClientId());
+                        return false;
+                    }
+                    if (!target.IsAlive())
+                    {
+                        Utils.SendMessage(GetString("VoteDead"), srcPlayerId);
+                        __instance.RpcClearVote(voter.GetClientId());
+                        return false;
+                    } //patch here so checkend is not triggered
+                    break;
+            }
+        }
+
+        return true;
+    }
+
+    public static void Postfix(MeetingHud __instance)
+    {
+        __instance.CheckForEndVoting();
+        //For stuffs in check for end voting to work
+    }
+}
 static class ExtendedMeetingHud
 {
     public static Dictionary<byte, int> CustomCalculateVotes(this MeetingHud __instance, bool CountInfluenced = false)
@@ -702,6 +805,8 @@ static class ExtendedMeetingHud
                 {
                     // 僵尸、活死人无法被票
                     if (target.Is(CustomRoles.Zombie)) VoteNum = 0;
+                    //Solsticer can not get voted out
+                    if (target.Is(CustomRoles.Solsticer)) VoteNum = 0;
                     // 记录破平者投票
                     if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Brakar))
                         if (!Main.BrakarVoteFor.Contains(target.PlayerId))
@@ -887,6 +992,13 @@ class MeetingHudStartPatch
                 AddMsg(Main.VirusNotify[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Virus), GetString("VirusNoticeTitle")));
             if (Enigma.MsgToSend.ContainsKey(pc.PlayerId))
                 AddMsg(Enigma.MsgToSend[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Enigma), Enigma.MsgToSendTitle[pc.PlayerId]));
+            if (pc.Is(CustomRoles.Solsticer))
+            {
+                Solsticer.SetShortTasksToAdd();
+                if (Solsticer.MurderMessage == "")
+                    Solsticer.MurderMessage = string.Format(GetString("SolsticerOnMeeting"), Solsticer.AddShortTasks);
+                AddMsg(Solsticer.MurderMessage, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("SolsticerTitle")));
+            }
         }
         //宝箱怪的消息（合并）
         if (MimicMsg != "")
@@ -1003,6 +1115,15 @@ class MeetingHudStartPatch
             }
         }
 
+        if ((MapNames)Main.NormalOptions.MapId == MapNames.Dleks)
+        {
+            _ = new LateTask(() =>
+            {
+                Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
+
+            }, 6f, "Message: Warning Broken Vents In Dleks");
+        }
+
         if (MeetingStates.FirstMeeting) TemplateManager.SendTemplate("OnFirstMeeting", noErr: true);
         TemplateManager.SendTemplate("OnMeeting", noErr: true);
 
@@ -1099,6 +1220,10 @@ class MeetingHudStartPatch
                     sb.Append(Marshall.GetWarningMark(seer, target));
                     break;
             }
+            if (Captain.IsEnable)
+                if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) &&
+                    (seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
+                    sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Captain), " ☆"));
             switch (seer.GetCustomRole())
             {
                 case CustomRoles.Arsonist:
@@ -1284,6 +1409,8 @@ class MeetingHudStartPatch
             //赌徒提示
             sb.Append(Totocalcio.TargetMark(seer, target));
             sb.Append(Romantic.TargetMark(seer, target));
+            
+
             sb.Append(Lawyer.LawyerMark(seer, target));
 
             //会議画面ではインポスター自身の名前にSnitchマークはつけません。
@@ -1383,7 +1510,7 @@ class MeetingHudOnDestroyPatch
             Main.AllPlayerControls.Do(pc => RandomSpawn.CustomNetworkTransformPatch.NumOfTP[pc.PlayerId] = 0);
 
             Main.LastVotedPlayerInfo = null;
-            EAC.MeetingTimes = 0;
+            EAC.ReportTimes = new();
         }
     }
 }

@@ -127,9 +127,10 @@ public static class Puppeteer
 
                         if (!puppet.Is(CustomRoles.Pestilence) && PuppeteerDoubleKills.GetBool())
                         {
-                            puppet.RpcMurderPlayerV3(puppet);
+                            
                             Main.PlayerStates[puppet.PlayerId].deathReason = PlayerState.DeathReason.Drained;
                             puppet.SetRealKiller(Utils.GetPlayerById(puppeteerId));
+                            puppet.RpcMurderPlayerV3(puppet);
                         }
                     }
                 }

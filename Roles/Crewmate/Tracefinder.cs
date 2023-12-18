@@ -80,13 +80,13 @@ public static class Tracefinder
 
     public static void OnPlayerDead(PlayerControl target)
     {
-        var pos = target.GetTruePosition();
+        var pos = target.GetCustomPosition();
         float minDis = float.MaxValue;
         string minName = "";
         foreach (var pc in Main.AllAlivePlayerControls)
         {
             if (pc.PlayerId == target.PlayerId) continue;
-            var dis = Vector2.Distance(pc.GetTruePosition(), pos);
+            var dis = Vector2.Distance(pc.GetCustomPosition(), pos);
             if (dis < minDis && dis < 1.5f)
             {
                 minDis = dis;

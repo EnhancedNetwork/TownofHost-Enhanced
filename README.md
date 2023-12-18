@@ -81,6 +81,7 @@
 ### :star: [TOHE+](https://github.com/Gurge44/TOHE_PLUS)
 >
 > - Provided roles: Pyromaniac, Necromancer, Head Hunter (Huntsman), Alchemist, and others
+> - Game Mode: FFA
 ### :star: [TOHEX](https://github.com/TOHEX-Official/TownOfHostEdited-Xi)
 >
 > - Provided role: Swapper

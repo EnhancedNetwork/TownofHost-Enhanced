@@ -108,8 +108,8 @@ internal class ChangeRoleSettings
             Main.JinxSpellCount = new();
             Main.OverDeadPlayerList = new();
             Main.Provoked = new();
-            Main.ShieldPlayer = Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : byte.MaxValue;
-            Main.FirstDied = byte.MaxValue;
+            Main.ShieldPlayer = Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : "";
+            Main.FirstDied = "";
             Main.MadmateNum = 0;
             Main.BardCreations = 0;
             Main.MeetingsPassed = 0;
@@ -215,10 +215,13 @@ internal class ChangeRoleSettings
             Doppelganger.Init();
             Sheriff.Init();
             CopyCat.Init();
+            Captain.Init();
+            GuessMaster.Init();
             Cleanser.Init();
             SwordsMan.Init();
             EvilTracker.Init();
             Snitch.Init();
+            Solsticer.Init();
             Vampire.Init();
             Vampiress.Init();
             Poisoner.Init();
@@ -240,6 +243,7 @@ internal class ChangeRoleSettings
             DarkHide.Init();
             Greedier.Init();
             Collector.Init();
+            Benefactor.Init();
             Taskinator.Init();
             QuickShooter.Init();
             Camouflager.Init();
@@ -293,6 +297,7 @@ internal class ChangeRoleSettings
             DoubleShot.Init();
             Dazzler.Init();
             Addict.Init();
+            Mole.Init();
             Deathpact.Init();
             Tracefinder.Init();
             Devourer.Init();
@@ -306,6 +311,7 @@ internal class ChangeRoleSettings
             Wildling.Init();
             Morphling.Init();
             ParityCop.Init(); // *giggle* party cop
+            Keeper.Init(); // *giggle* party cop
             Spiritcaller.Init();
             Lurker.Init();
             PlagueBearer.Init();
@@ -334,6 +340,9 @@ internal class ChangeRoleSettings
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
 
+            //FFA
+            FFAManager.Init();
+
             CustomWinnerHolder.Reset();
             AntiBlackout.Reset();
             NameNotifyManager.Reset();
@@ -343,6 +352,7 @@ internal class ChangeRoleSettings
             MeetingStates.MeetingCalled = false;
             MeetingStates.FirstMeeting = true;
             GameStates.AlreadyDied = false;
+            EAC.ReportTimes = new();
         }
         catch (Exception ex)
         {
@@ -376,8 +386,8 @@ internal class SelectRolesPatch
                 PlayerControl.LocalPlayer.Data.IsDead = true;
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
             }
-                   
 
+            EAC.OriginalRoles = new();
             SelectCustomRoles();
             SelectAddonRoles();
             CalculateVanillaRoleCount();
@@ -468,6 +478,13 @@ internal class SelectRolesPatch
                         break;
                 }
                 Main.PlayerStates[pc.PlayerId].SetMainRole(role);
+            }
+
+            if (Options.CurrentGameMode == CustomGameMode.FFA)
+            {
+                foreach (var pair in Main.PlayerStates)
+                    ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
+                goto EndOfSelectRolePatch;
             }
 
             var rd = IRandom.Instance;
@@ -634,6 +651,12 @@ internal class SelectRolesPatch
                     case CustomRoles.Mayor:
                         Main.MayorUsedButtonCount[pc.PlayerId] = 0;
                         break;
+                    case CustomRoles.Captain:
+                        Captain.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.GuessMaster:
+                        GuessMaster.Add(pc.PlayerId);
+                        break;
                     case CustomRoles.TimeMaster:
                         Main.TimeMasterNum[pc.PlayerId] = 0;
                         Main.TimeMasterNumOfUsed.Add(pc.PlayerId, Options.TimeMasterMaxUses.GetInt());
@@ -652,6 +675,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Snitch:
                         Snitch.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Solsticer:
+                        Solsticer.Add(pc.PlayerId);
                         break;
                     case CustomRoles.AntiAdminer:
                         AntiAdminer.Add(pc.PlayerId);
@@ -712,6 +738,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Taskinator:
                         Taskinator.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Benefactor:
+                        Benefactor.Add(pc.PlayerId);
                         break;
                     case CustomRoles.CursedWolf:
                         Main.CursedWolfSpellCount[pc.PlayerId] = Options.GuardSpellTimes.GetInt();
@@ -873,6 +902,9 @@ internal class SelectRolesPatch
                     case CustomRoles.Addict:
                         Addict.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.Mole:
+                        Mole.Add(pc.PlayerId);
+                        break;
                     case CustomRoles.Deathpact:
                         Deathpact.Add(pc.PlayerId);
                         break;
@@ -893,6 +925,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.ParityCop:
                         ParityCop.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Keeper:
+                        Keeper.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Spiritcaller:
                         Spiritcaller.Add(pc.PlayerId);
@@ -970,6 +1005,8 @@ internal class SelectRolesPatch
                 }
             }
 
+            EndOfSelectRolePatch:
+
             HudManager.Instance.SetHudActive(true);
       //      HudManager.Instance.Chat.SetVisible(true);
             List<PlayerControl> AllPlayers = new();
@@ -994,6 +1031,9 @@ internal class SelectRolesPatch
                 case CustomGameMode.Standard:
                     GameEndChecker.SetPredicateToNormal();
                     break;
+                case CustomGameMode.FFA:
+                    GameEndChecker.SetPredicateToFFA();
+                    break;
             }
 
             GameOptionsSender.AllSenders.Clear();
@@ -1006,9 +1046,10 @@ internal class SelectRolesPatch
 
             // Added players with positions that have not yet been classified to the list of players requiring ResetCam   
             Main.ResetCamPlayerList.UnionWith(Main.AllPlayerControls
-                .Where(p => p.GetCustomRole() is CustomRoles.Arsonist or CustomRoles.Revolutionist or CustomRoles.Sidekick or CustomRoles.Shaman or CustomRoles.Vigilante or CustomRoles.Witness or CustomRoles.Innocent)
+                .Where(p => p.GetCustomRole() is CustomRoles.Arsonist or CustomRoles.Revolutionist or CustomRoles.Sidekick or CustomRoles.Shaman or CustomRoles.Vigilante or CustomRoles.Witness or CustomRoles.Innocent or CustomRoles.Killer)
                 .Select(p => p.PlayerId)
                 .ToArray());
+            EAC.LogAllRoles();
 
             Utils.CountAlivePlayers(true);
             Utils.SyncAllSettings();

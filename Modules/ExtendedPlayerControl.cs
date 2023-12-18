@@ -181,7 +181,7 @@ static class ExtendedPlayerControl
         if (killer.AmOwner)
         {
             killer.ProtectPlayer(target, colorId);
-            killer.MurderPlayer(target, ResultFlags);
+            killer.MurderPlayer(target, MurderResultFlags.FailedProtected);
         }
         // Other Clients
         if (killer.PlayerId != 0)
@@ -194,7 +194,7 @@ static class ExtendedPlayerControl
                 .EndRpc();
             sender.StartRpc(killer.NetId, (byte)RpcCalls.MurderPlayer)
                 .WriteNetObject(target)
-                .Write((int)ResultFlags)
+                .Write((int)MurderResultFlags.FailedProtected)
                 .EndRpc();
             sender.EndMessage();
             sender.SendMessage();
@@ -213,12 +213,10 @@ static class ExtendedPlayerControl
     public static void SetKillCooldown(this PlayerControl player, float time = -1f, PlayerControl target = null, bool forceAnime = false)
     {
         if (player == null) return;
-        if (!Main.ErasedRoleStorage.ContainsKey(player.PlayerId))
-        {
-            if (!player.CanUseKillButton()) return;
-        }
-        else if (!HasKillButton(role: Main.ErasedRoleStorage[player.PlayerId]))
-            return;
+
+        if (!player.HasImpKillButton(considerVanillaShift: true)) return;
+        if (player.HasImpKillButton(false) && !player.CanUseKillButton()) return;
+
         if (target == null) target = player;
         if (time >= 0f) Main.AllPlayerKillCooldown[player.PlayerId] = time * 2;
         else Main.AllPlayerKillCooldown[player.PlayerId] *= 2;
@@ -399,7 +397,7 @@ static class ExtendedPlayerControl
     }
     public static string GetNameWithRole(this PlayerControl player, bool forUser = false)
     {
-        return $"{player?.Data?.PlayerName}" + (GameStates.IsInGame ? $"({player?.GetAllRoleName(forUser)})" : "");
+        return $"{player?.Data?.PlayerName}" + (GameStates.IsInGame && Options.CurrentGameMode != CustomGameMode.FFA ? $"({player?.GetAllRoleName(forUser)})" : String.Empty);
     }
     public static string GetRoleColorCode(this PlayerControl player)
     {
@@ -473,6 +471,8 @@ static class ExtendedPlayerControl
 
         return pc.GetCustomRole() switch
         {
+            //FFA
+            CustomRoles.Killer => pc.IsAlive(),
             //Standard
             CustomRoles.FireWorks => FireWorks.CanUseKillButton(pc),
             CustomRoles.Mafia => Utils.CanMafiaKill(),
@@ -659,6 +659,16 @@ static class ExtendedPlayerControl
     }
     public static bool CanUseImpostorVentButton(this PlayerControl pc)
     {
+        // vents are broken on dleks and cannot be fixed on host side
+        if ((MapNames)Main.NormalOptions.MapId == MapNames.Dleks)
+        {
+            return pc.GetCustomRole() switch
+            {
+                CustomRoles.Arsonist => pc.IsDouseDone() || (Options.ArsonistCanIgniteAnytime.GetBool() && (Utils.GetDousedPlayerCount(pc.PlayerId).Item1 >= Options.ArsonistMinPlayersToIgnite.GetInt() || pc.inVent)),
+                CustomRoles.Revolutionist => pc.IsDrawDone(),
+                _ => false,
+            };
+        }
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel) return false;
         if (CopyCat.playerIdList.Contains(pc.PlayerId)) return true;
         if (Main.TasklessCrewmate.Contains(pc.PlayerId)) return true;
@@ -734,6 +744,9 @@ static class ExtendedPlayerControl
 
             CustomRoles.Arsonist => pc.IsDouseDone() || (Options.ArsonistCanIgniteAnytime.GetBool() && (Utils.GetDousedPlayerCount(pc.PlayerId).Item1 >= Options.ArsonistMinPlayersToIgnite.GetInt() || pc.inVent)),
             CustomRoles.Revolutionist => pc.IsDrawDone(),
+
+            //FFA
+            CustomRoles.Killer => true,
 
             _ => pc.Is(CustomRoleTypes.Impostor),
         };
@@ -875,9 +888,9 @@ static class ExtendedPlayerControl
             case CustomRoles.Berserker:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.BerserkerKillCooldown.GetFloat();
                 break;
-            /*    case CustomRoles.Mare:
-                    Mare.SetKillCooldown(player.PlayerId);
-                    break; */
+           /* case CustomRoles.Mare:
+                Mare.SetKillCooldown(player.PlayerId);
+                break; */
             case CustomRoles.EvilDiviner:
                 EvilDiviner.SetKillCooldown(player.PlayerId);
                 break;
@@ -1077,6 +1090,10 @@ static class ExtendedPlayerControl
             case CustomRoles.Hacker:
                 Hacker.SetKillCooldown(player.PlayerId);
                 break;
+            //FFA
+            case CustomRoles.Killer:
+                Main.AllPlayerKillCooldown[player.PlayerId] = FFAManager.FFA_KCD.GetFloat();
+                break;
             case CustomRoles.BloodKnight:
                 BloodKnight.SetKillCooldown(player.PlayerId);
                 break;
@@ -1158,18 +1175,13 @@ static class ExtendedPlayerControl
             case CustomRoles.EvilMini:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Mini.GetKillCoolDown();
                 break;
-            case CustomRoles.CrewmateTOHE:
-            case CustomRoles.EngineerTOHE:
-            case CustomRoles.ScientistTOHE:
-            case CustomRoles.GuardianAngelTOHE:
-                Main.AllPlayerKillCooldown[player.PlayerId] = 300f;
-                break;
-                //Vanilla imp and ss is done at the beginning of the function
         }
         if (player.PlayerId == LastImpostor.currentId)
             LastImpostor.SetKillCooldown();
+
         if (player.Is(CustomRoles.Mare))
-            Main.AllPlayerKillCooldown[player.PlayerId] = Options.MareKillCD.GetFloat();
+            Main.AllPlayerKillCooldown[player.PlayerId] = Mare.KillCooldownInLightsOut.GetFloat();
+
         if (player.Is(CustomRoles.Overclocked))
             Main.AllPlayerKillCooldown[player.PlayerId] -= Main.AllPlayerKillCooldown[player.PlayerId] * (Options.OverclockedReduction.GetFloat() / 100);
         
@@ -1185,6 +1197,8 @@ static class ExtendedPlayerControl
             Main.AllPlayerKillCooldown[player.PlayerId] = kcd;
             Logger.Info($"kill cd of player set to {Main.AllPlayerKillCooldown[player.PlayerId]}", "Antidote");
         }
+        if (!player.HasImpKillButton(considerVanillaShift: false))
+            Main.AllPlayerKillCooldown[player.PlayerId] = 300f;
         if (Main.AllPlayerKillCooldown[player.PlayerId] == 0)
         {
             if (player.Is(CustomRoles.Chronomancer)) return;
@@ -1352,6 +1366,7 @@ static class ExtendedPlayerControl
     {
         if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || (seer.AmOwner && Main.GodMode.Value)) return true;
         else if (seer.Is(CustomRoles.God)) return true;
+        else if (target.Is(CustomRoles.Solsticer) && Solsticer.EveryOneKnowSolsticer.GetBool()) return true;
         else if (Main.VisibleTasksCount && seer.Data.IsDead && Options.GhostCanSeeOtherRoles.GetBool()) return true;
         else if (target.Is(CustomRoles.Gravestone) && target.Data.IsDead) return true;
         else if (Options.SeeEjectedRolesInMeeting.GetBool() && Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote) return true;
@@ -1382,6 +1397,7 @@ static class ExtendedPlayerControl
         else if (Amnesiac.KnowRole(seer, target)) return true;
         else if (Infectious.KnowRole(seer, target)) return true;
         else if (Virus.KnowRole(seer, target)) return true;
+        else if (Options.CurrentGameMode == CustomGameMode.FFA) return true;
         else if ((target.Is(CustomRoles.President) && seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) && President.CheckPresidentReveal[target.PlayerId] == true) ||
                 (target.Is(CustomRoles.President) && seer.Is(CustomRoles.Madmate) && President.MadmatesSeePresident.GetBool() && President.CheckPresidentReveal[target.PlayerId] == true) ||
                 (target.Is(CustomRoles.President) && seer.GetCustomRole().IsNeutral() && President.NeutralsSeePresident.GetBool() && President.CheckPresidentReveal[target.PlayerId] == true) ||
@@ -1413,11 +1429,13 @@ static class ExtendedPlayerControl
             0 => new Vector2(-27f, 3.3f), // The Skeld
             1 => new Vector2(-11.4f, 8.2f), // MIRA HQ
             2 => new Vector2(42.6f, -19.9f), // Polus
+            3 => new Vector2(27f, 3.3f), // dlekS ehT
             4 => new Vector2(-16.8f, -6.2f), // Airship
             5 => new Vector2(10.2f, 18.1f), // The Fungle
             _ => throw new NotImplementedException(),
         };
     }
+    public static Vector2 GetCustomPosition(this PlayerControl player) => new Vector2(player.transform.position.x, player.transform.position.y);
     public static string GetRoleInfo(this PlayerControl player, bool InfoLong = false)
     {
         var role = player.GetCustomRole();

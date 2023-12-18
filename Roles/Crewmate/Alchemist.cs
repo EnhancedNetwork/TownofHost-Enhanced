@@ -116,9 +116,9 @@ namespace TOHE.Roles.Crewmate
                     player.MyPhysics.RpcBootFromVent(ventId);
                     _ = new LateTask(() =>
                     {
+                        Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Poison;
                         player.SetRealKiller(player);
                         player.RpcMurderPlayerV3(player);
-                        Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Poison;
                     }, 1f);
                     break;
                 case 3: // TP to random player
@@ -133,7 +133,7 @@ namespace TOHE.Roles.Crewmate
                         var tar1 = AllAlivePlayer[player.PlayerId];
                         AllAlivePlayer.Remove(tar1);
                         var tar2 = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
-                        tar1.RpcTeleport(tar2.GetTruePosition());
+                        tar1.RpcTeleport(tar2.GetCustomPosition());
                         tar1.RPCPlayCustomSound("Teleport");
                     }, 2f);
                     break;

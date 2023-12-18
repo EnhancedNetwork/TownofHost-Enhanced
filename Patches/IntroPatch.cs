@@ -1,7 +1,6 @@
 using AmongUs.GameOptions;
 using HarmonyLib;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TOHE.Roles.Neutral;
@@ -21,24 +20,34 @@ class SetUpRoleTextPatch
         {
             PlayerControl localPlayer = PlayerControl.LocalPlayer;
             CustomRoles role = localPlayer.GetCustomRole();
-
-            if (!role.IsVanilla())
+            if (Options.CurrentGameMode == CustomGameMode.FFA)
             {
-                __instance.YouAreText.color = Utils.GetRoleColor(role);
-                __instance.RoleText.text = Utils.GetRoleName(role);
-                __instance.RoleText.color = Utils.GetRoleColor(role);
-                __instance.RoleBlurbText.color = Utils.GetRoleColor(role);
-                __instance.RoleBlurbText.text = localPlayer.GetRoleInfo();
+                var color = ColorUtility.TryParseHtmlString("#00ffff", out var c) ? c : new(255, 255, 255, 255);
+                __instance.YouAreText.transform.gameObject.SetActive(false);
+                __instance.RoleText.text = "FREE FOR ALL";
+                __instance.RoleText.color = color;
+                __instance.RoleBlurbText.color = color;
+                __instance.RoleBlurbText.text = "KILL EVERYONE TO WIN";
             }
+            else 
+            { 
+                if (!role.IsVanilla())
+                {
+                    __instance.YouAreText.color = Utils.GetRoleColor(role);
+                    __instance.RoleText.text = Utils.GetRoleName(role);
+                    __instance.RoleText.color = Utils.GetRoleColor(role);
+                    __instance.RoleBlurbText.color = Utils.GetRoleColor(role);
+                    __instance.RoleBlurbText.text = localPlayer.GetRoleInfo();
+                }
 
-            foreach (var subRole in Main.PlayerStates[localPlayer.PlayerId].SubRoles.ToArray())
-                __instance.RoleBlurbText.text += "\n" + Utils.ColorString(Utils.GetRoleColor(subRole), GetString($"{subRole}Info"));
+                foreach (var subRole in Main.PlayerStates[localPlayer.PlayerId].SubRoles.ToArray())
+                    __instance.RoleBlurbText.text += "\n" + Utils.ColorString(Utils.GetRoleColor(subRole), GetString($"{subRole}Info"));
 
-            if (!localPlayer.Is(CustomRoles.Lovers) && !localPlayer.Is(CustomRoles.Ntr) && CustomRoles.Ntr.RoleExist())
-                __instance.RoleBlurbText.text += "\n" + Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), GetString($"{CustomRoles.Lovers}Info"));
+                if (!localPlayer.Is(CustomRoles.Lovers) && !localPlayer.Is(CustomRoles.Ntr) && CustomRoles.Ntr.RoleExist())
+                    __instance.RoleBlurbText.text += "\n" + Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), GetString($"{CustomRoles.Lovers}Info"));
 
-            __instance.RoleText.text += Utils.GetSubRolesText(localPlayer.PlayerId, false, true);
-
+                __instance.RoleText.text += Utils.GetSubRolesText(localPlayer.PlayerId, false, true);
+            }
         }, 0.0001f, "Override Role Text");
     }
 }
@@ -48,7 +57,6 @@ class CoBeginPatch
     public static void Prefix()
     {
         var logger = Logger.Handler("Info");
-        Utils.DoNotifyRoles(ForceLoop: true);
 
         var allPlayerControlsArray = Main.AllPlayerControls.ToArray();
 
@@ -122,6 +130,9 @@ class CoBeginPatch
         TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
 
         GameStates.InGame = true;
+
+        // Do not move this code, it should be executed at the very end to prevent a visual bug
+        Utils.DoNotifyRoles(ForceLoop: true);
     }
 }
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.BeginCrewmate))]
@@ -331,6 +342,14 @@ class BeginCrewmatePatch
                 __instance.ImpostorText.gameObject.SetActive(true);
                 __instance.ImpostorText.text = GetString("SubText.Madmate");
         }
+        if (Options.CurrentGameMode == CustomGameMode.FFA)
+        {
+            __instance.TeamTitle.text = "FREE FOR ALL";
+            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(0, 255, 255, byte.MaxValue);
+            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
+            __instance.ImpostorText.gameObject.SetActive(true);
+            __instance.ImpostorText.text = "KILL EVERYONE TO WIN";
+        }
 
         if (Input.GetKey(KeyCode.RightShift))
         {
@@ -450,7 +469,7 @@ class IntroCutsceneDestroyPatch
             if (Main.NormalOptions.MapId != 4)
             {
                 Main.AllPlayerControls.Do(pc => pc.RpcResetAbilityCooldown());
-                if (Options.FixFirstKillCooldown.GetBool())
+                if (Options.FixFirstKillCooldown.GetBool() && Options.CurrentGameMode != CustomGameMode.FFA)
                     _ = new LateTask(() =>
                     {
                         Main.AllPlayerControls.Do(x => x.ResetKillCooldown());
@@ -466,7 +485,7 @@ class IntroCutsceneDestroyPatch
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
             }
 
-            if (Options.RandomSpawn.GetBool())
+            if (Options.RandomSpawn.GetBool() || Options.CurrentGameMode == CustomGameMode.FFA)
             {
                 RandomSpawn.SpawnMap map;
                 switch (Main.NormalOptions.MapId)
@@ -481,6 +500,10 @@ class IntroCutsceneDestroyPatch
                         break;
                     case 2:
                         map = new RandomSpawn.PolusSpawnMap();
+                        Main.AllPlayerControls.Do(map.RandomTeleport);
+                        break;
+                    case 3:
+                        map = new RandomSpawn.DleksSpawnMap();
                         Main.AllPlayerControls.Do(map.RandomTeleport);
                         break;
                     case 5:

@@ -74,7 +74,7 @@ public static class Romantic
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRomanticTarget, SendOption.Reliable, -1);
         writer.Write(playerId);
-        //writer.Write(BetTimes.TryGetValue(playerId, out var times) ? times : MaxBetTimes);
+        writer.Write(BetTimes.TryGetValue(playerId, out var times) ? times : MaxBetTimes);
         writer.Write(BetPlayer.TryGetValue(playerId, out var player) ? player : byte.MaxValue);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
@@ -200,6 +200,7 @@ public static class Romantic
         });
         if (Romantic == 0x73) return;
         var pc = Utils.GetPlayerById(Romantic);
+        if (pc == null) return;
         if (player.GetCustomRole().IsImpostorTeamV3())
         {
             Logger.Info($"Impostor Romantic Partner Died changing {pc.GetNameWithRole()} to Refugee", "Romantic");
@@ -224,8 +225,8 @@ public static class Romantic
             }, 0.2f, "Convert to Vengeful Romantic");
         }
 
-        Utils.GetPlayerById(Romantic).ResetKillCooldown();
-        Utils.GetPlayerById(Romantic).SetKillCooldown();
+        pc.ResetKillCooldown();
+        pc.SetKillCooldown();
     }
 }
 

@@ -63,6 +63,8 @@ public static class TemplateManager
                     var lang when lang.StartsWith("es") => "Spanish",
                     var lang when lang.StartsWith("fr") => "French",
                     "ja" or "ja-JP" => "Japanese",
+                    var lang when lang.StartsWith("nl") => "Dutch",
+                    var lang when lang.StartsWith("it") => "Italian",
                     _ => "English"
                 };
             else fileName = "English";

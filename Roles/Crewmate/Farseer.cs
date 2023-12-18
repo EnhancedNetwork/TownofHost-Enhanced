@@ -136,7 +136,7 @@ namespace TOHE.Roles.Crewmate
                 {
 
                     float range = NormalGameOptionsV07.KillDistances[Mathf.Clamp(player.Is(CustomRoles.Reach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
-                    float dis = Vector2.Distance(player.GetTruePosition(), farTarget.GetTruePosition());
+                    float dis = Vector2.Distance(player.GetCustomPosition(), farTarget.GetCustomPosition());
                     if (dis <= range)
                     {
                         FarseerTimer[playerId] = (farTarget, farTime + Time.fixedDeltaTime);

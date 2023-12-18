@@ -6,7 +6,6 @@ using TOHE.Modules.ChatManager;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate;
 public static class ParityCop
@@ -114,7 +113,7 @@ public static class ParityCop
         var originMsg = msg;
 
         if (!AmongUsClient.Instance.AmHost) return false;
-        if (!GameStates.IsInGame || pc == null) return false;
+        if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false;
         if (!pc.Is(CustomRoles.ParityCop)) return false;
 
         int operate = 0; // 1:ID 2:猜测

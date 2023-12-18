@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.Crewmate;
+using TOHE.Roles.AddOns.Common;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -33,11 +34,17 @@ class ShipFixedUpdatePatch
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.UpdateSystem), typeof(SystemTypes), typeof(PlayerControl), typeof(MessageReader))]
 public static class MessageReaderUpdateSystemPatch
 {
-    public static void Prefix(ShipStatus __instance, [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
+    public static bool Prefix(ShipStatus __instance, [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
     {
-        if (systemType is SystemTypes.Ventilation) return;
+        if (systemType is SystemTypes.Ventilation) return true;
+        var amount = MessageReader.Get(reader).ReadByte();
+        if (EAC.RpcUpdateSystemCheck(player, systemType, amount))
+        {
+            Logger.Info("Eac patched Sabotage RPC", "MessageReaderUpdateSystemPatch");
+            return false;
+        }
 
-        RepairSystemPatch.Prefix(__instance, systemType, player, MessageReader.Get(reader).ReadByte());
+        return RepairSystemPatch.Prefix(__instance, systemType, player, amount);
     }
     public static void Postfix(ShipStatus __instance, [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
     {
@@ -62,6 +69,9 @@ class RepairSystemPatch
         }
 
         if (!AmongUsClient.Instance.AmHost) return true;
+
+        if ((Options.CurrentGameMode == CustomGameMode.FFA) && systemType == SystemTypes.Sabotage) return false;
+
 
         if (Options.DisableSabotage.GetBool() && systemType == SystemTypes.Sabotage)
         {
@@ -104,8 +114,8 @@ class RepairSystemPatch
             var Ue = IRandom.Instance;
             if (Ue.Next(1, 100) <= Options.UnluckySabotageSuicideChance.GetInt())
             {
-                player.RpcMurderPlayerV3(player);
                 Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
+                player.RpcMurderPlayerV3(player);
                 return false;
             }
         }
@@ -170,7 +180,10 @@ class CloseDoorsPatch
 {
     public static bool Prefix(ShipStatus __instance)
     {
-        return !(Options.DisableCloseDoor.GetBool());
+        bool allow;
+        if (Options.CurrentGameMode == CustomGameMode.FFA || Options.DisableCloseDoor.GetBool()) allow = false;
+        else allow = true;
+        return allow;
     }
 }
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Start))]
@@ -183,7 +196,7 @@ class StartPatch
 
         Utils.CountAlivePlayers(true);
 
-        if (Options.AllowConsole.GetBool())
+        if (Options.AllowConsole.GetBool() && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug)
         {
             if (!BepInEx.ConsoleManager.ConsoleActive && BepInEx.ConsoleManager.ConsoleEnabled)
                 BepInEx.ConsoleManager.CreateConsole();
@@ -222,7 +235,7 @@ class CheckTaskCompletionPatch
 {
     public static bool Prefix(ref bool __result)
     {
-        if (Options.DisableTaskWin.GetBool() || Options.NoGameEnd.GetBool() || TaskState.InitialTotalTasks == 0)
+        if (Options.DisableTaskWin.GetBool() || Options.NoGameEnd.GetBool() || TaskState.InitialTotalTasks == 0 || Options.CurrentGameMode == CustomGameMode.FFA)
         {
             __result = false;
             return false;

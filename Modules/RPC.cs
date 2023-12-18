@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TOHE.Modules;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
@@ -33,6 +34,11 @@ enum CustomRPC
     SetKillOrCurse,
     SetSheriffShotLimit,
     //SetCopyCatMiscopyLimit,
+    SetCaptainTargetSpeed,
+    RevertCaptainTargetSpeed,
+    RevertCaptainAllTargetSpeed,
+    SetCaptainVotedTarget,
+    RevertCaptainVoteRemove,
     SetDousedPlayer,
     setPlaguedPlayer,
     SetNameColorData,
@@ -76,6 +82,7 @@ enum CustomRPC
     SetDivinatorTempLimit,
     SetBloodhoundLimit,
     SetParityCopLimit,
+    KeeperRPC,
     SetOracleLimit,
     SetMediumLimit,
     SetPelicanEatenNum,
@@ -96,6 +103,7 @@ enum CustomRPC
     SetJinxSpellCount,
     SetCollectorVotes,
     TaskinatorMarkedTask,
+    BenefactorRPC,
     SetSwapperVotes,
     SetQuickShooterShotLimit,
     SetEraseLimit,
@@ -151,6 +159,10 @@ enum CustomRPC
     SyncShroud,
     SyncMiniCrewAge,
     SyncSabotageMasterSkill,
+    //FFA
+    SyncFFAPlayer,
+    SyncFFANameNotify,
+    SyncSolsticerNotify
 }
 public enum Sounds
 {
@@ -360,6 +372,23 @@ internal class RPCHandlerPatch
             case CustomRPC.SetSheriffShotLimit:
                 Sheriff.ReceiveRPC(reader);
                 break;
+
+            case CustomRPC.SetCaptainTargetSpeed:
+                Captain.ReceiveRPCSetSpeed(reader);
+                break;
+            case CustomRPC.RevertCaptainTargetSpeed:
+                Captain.ReceiveRPCRevertSpeed(reader);
+                break;
+            case CustomRPC.RevertCaptainAllTargetSpeed:
+                Captain.ReceiveRPCRevertAllSpeed(reader);
+                break;
+            case CustomRPC.SetCaptainVotedTarget:
+                Captain.ReceiveRPCVoteAdd(reader);
+                break;
+            case CustomRPC.RevertCaptainVoteRemove:
+                Captain.ReceiveRPCVoteRemove(reader);
+                break;
+
         /*    case CustomRPC.SetCopyCatMiscopyLimit:
                 CopyCat.ReceiveRPC(reader);
                 break; */
@@ -534,6 +563,9 @@ internal class RPCHandlerPatch
             case CustomRPC.TaskinatorMarkedTask:
                 Taskinator.ReceiveRPC(reader);
                 break;
+            case CustomRPC.BenefactorRPC:
+                Benefactor.ReceiveRPC(reader);
+                break;
             case CustomRPC.SetQuickShooterShotLimit:
                 QuickShooter.ReceiveRPC(reader);
                 break;
@@ -563,11 +595,20 @@ internal class RPCHandlerPatch
                 float time = reader.ReadSingle();
                 PlayerControl.LocalPlayer.SetKillTimer(time);
                 break;
+            case CustomRPC.SyncFFAPlayer:
+                FFAManager.ReceiveRPCSyncFFAPlayer(reader);
+                break;
             case CustomRPC.SyncAllPlayerNames:
                 Main.AllPlayerNames = new();
                 int num = reader.ReadInt32();
                 for (int i = 0; i < num; i++)
                     Main.AllPlayerNames.TryAdd(reader.ReadByte(), reader.ReadString());
+                break;
+            case CustomRPC.SyncFFANameNotify:
+                FFAManager.ReceiveRPCSyncNameNotify(reader);
+                break;
+            case CustomRPC.SyncSolsticerNotify:
+                Solsticer.ReceiveRPC(reader);
                 break;
             case CustomRPC.SyncNWitch:
                 NWitch.ReceiveRPC(reader);
@@ -704,6 +745,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetParityCopLimit:
                 ParityCop.ReceiveRPC(reader);
+                break;
+            case CustomRPC.KeeperRPC:
+                Keeper.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetOracleLimit:
                 Oracle.ReceiveRPC(reader);
@@ -1027,6 +1071,12 @@ internal static class RPC
             case CustomRoles.CopyCat:
                 CopyCat.Add(targetId);
                 break;
+            case CustomRoles.Captain:
+                Captain.Add(targetId);
+                break;
+            case CustomRoles.GuessMaster:
+                GuessMaster.Add(targetId);
+                break;
             case CustomRoles.Pickpocket:
                 Pickpocket.Add(targetId);
                 break;
@@ -1138,6 +1188,9 @@ internal static class RPC
             case CustomRoles.Taskinator:
                 Taskinator.Add(targetId);
                 break;
+            case CustomRoles.Benefactor:
+                Benefactor.Add(targetId);
+                break;
             case CustomRoles.CursedWolf:
                 Main.CursedWolfSpellCount[targetId] = Options.GuardSpellTimes.GetInt();
                 break;
@@ -1177,6 +1230,9 @@ internal static class RPC
                 break;
             case CustomRoles.ParityCop:
                 ParityCop.Add(targetId);
+                break;
+            case CustomRoles.Keeper:
+                Keeper.Add(targetId);
                 break;
             case CustomRoles.Councillor:
                 Councillor.Add(targetId);
@@ -1309,6 +1365,9 @@ internal static class RPC
                 break;
             case CustomRoles.Addict:
                 Addict.Add(targetId);
+                break;
+            case CustomRoles.Mole:
+                Mole.Add(targetId);
                 break;
             case CustomRoles.Deathpact:
                 Deathpact.Add(targetId);

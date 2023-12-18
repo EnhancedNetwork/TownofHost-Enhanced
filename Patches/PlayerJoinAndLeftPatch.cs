@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
+using TOHE.Patches;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
@@ -32,6 +33,12 @@ class OnGameJoinedPatch
         ChatUpdatePatch.DoBlockChat = false;
         GameStates.InGame = false;
         ErrorText.Instance.Clear();
+
+        if (HorseModePatch.GetRealConstant() != Constants.GetBroadcastVersion() - 25 && GameStates.IsOnlineGame)
+        {
+            AmongUsClient.Instance.ExitGame(DisconnectReasons.Hacking);
+            SceneChanger.ChangeScene("MainMenu");
+        } //Prevent some people doing public lobby things
 
         if (AmongUsClient.Instance.AmHost) // Execute the following only on the host
         {
@@ -273,6 +280,11 @@ class OnPlayerLeftPatch
                             //should ban on player's next join game
                         }
                     }
+                }
+
+                if (GameStates.IsMeeting)
+                {
+                    MeetingHud.Instance.CheckForEndVoting();
                 }
             }
         }

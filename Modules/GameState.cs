@@ -57,6 +57,7 @@ public class PlayerState
     {
         MainRole = role;
         countTypes = role.GetCountTypes();
+        var pc = Utils.GetPlayerById(PlayerId);
         if (role == CustomRoles.DarkHide)
         {
             if (!DarkHide.SnatchesWin.GetBool())
@@ -77,6 +78,23 @@ public class PlayerState
             if (!Options.ArsonistCanIgniteAnytime.GetBool())
             {
                 countTypes = CountTypes.Crew;
+            }
+        }
+        if (role == CustomRoles.Opportunist)
+        {
+            if (AmongUsClient.Instance.AmHost)
+            {
+                if (!pc.HasImpKillButton(considerVanillaShift: true))
+                {
+                    var taskstate = pc.GetPlayerTaskState();
+                    if (taskstate != null)
+                    {
+                        GameData.Instance.RpcSetTasks(pc.PlayerId, new byte[0]);
+                        taskstate.CompletedTasksCount = 0;
+                        taskstate.AllTasksCount = pc.Data.Tasks.Count;
+                        taskstate.hasTasks = true;
+                    }
+                }
             }
         }
     }
@@ -248,6 +266,10 @@ public class PlayerState
         if (AmongUsClient.Instance.AmHost)
         {
             RPC.SendDeathReason(PlayerId, deathReason);
+            if (GameStates.IsMeeting)
+            {
+                MeetingHud.Instance.CheckForEndVoting();
+            }
         }
     }
     public bool IsSuicide() { return deathReason == DeathReason.Suicide; }
@@ -357,6 +379,7 @@ public class TaskState
 
         if (AmongUsClient.Instance.AmHost)
         {
+            if (player.Is(CustomRoles.Captain)) Captain.OnTaskComplete(player);
             //FIXME:SpeedBooster class transplant
             if (player.IsAlive()
             && player.Is(CustomRoles.SpeedBooster)
@@ -413,8 +436,8 @@ public class TaskState
                     var tar1 = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
                     AllAlivePlayer.Remove(tar1);
                     var tar2 = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
-                    var posTar1 = tar1.GetTruePosition();
-                    tar1.RpcTeleport(tar2.GetTruePosition());
+                    var posTar1 = tar1.GetCustomPosition();
+                    tar1.RpcTeleport(tar2.GetCustomPosition());
                     tar2.RpcTeleport(posTar1);
                     AllAlivePlayer.Clear();
                     tar1.RPCPlayCustomSound("Teleport");
@@ -432,9 +455,8 @@ public class TaskState
                 var Ue = IRandom.Instance;
                 if (Ue.Next(1, 100) <= Options.UnluckyTaskSuicideChance.GetInt())
                 {
-                    player.RpcMurderPlayerV3(player);
                     Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-
+                    player.RpcMurderPlayerV3(player);
                 }
             }
             if (player.Is(CustomRoles.Bloodlust) && player.IsAlive() && !Alchemist.BloodlustList.ContainsKey(player.PlayerId))
@@ -523,8 +545,9 @@ public class TaskState
             if (player.Is(CustomRoles.Ghoul) && (CompletedTasksCount + 1) >= AllTasksCount && player.IsAlive())
             _ = new LateTask(() =>
             {
-                player.RpcMurderPlayerV3(player);
                 Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
+                player.RpcMurderPlayerV3(player);
+                
             }, 0.2f, "Ghoul Suicide");
             
             if (player.Is(CustomRoles.Ghoul) && (CompletedTasksCount + 1) >= AllTasksCount && !player.IsAlive())
@@ -535,8 +558,9 @@ public class TaskState
                     {
                         if (Main.KillGhoul.Contains(pc.PlayerId) && player.PlayerId != pc.PlayerId && pc.IsAlive())
                         {
+                            Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                             player.RpcMurderPlayerV3(pc);
-                            Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Kill;                        
+                                                   
                         }
                     }
 
@@ -616,11 +640,12 @@ public class TaskState
                         Logger.Info($"Crewpostor tried to kill pestilence (reflected back)：{target.GetNameWithRole()} => {player.GetNameWithRole()}", "Pestilence Reflect");
                     }
                 }
-            } 
+            }
         }
 
         //クリアしてたらカウントしない
         if (CompletedTasksCount >= AllTasksCount) return;
+        if (player.Is(CustomRoles.Solsticer) && !AmongUsClient.Instance.AmHost) return; //Solsticer task state is updated by host rpc
 
         CompletedTasksCount++;
 

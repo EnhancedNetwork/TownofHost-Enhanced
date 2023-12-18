@@ -60,6 +60,7 @@
   "Jailer": "#aa900d",
   "Guardian": "#2E8B57",
   "Addict": "#008000",
+  "Mole": "#3E2723",
   "Tracefinder": "#0066CC",
   "Oracle": "#6666FF",
   "Spiritualist": "#669999",
@@ -100,6 +101,7 @@
   "Gamer": "#68bc71",
   "DarkHide": "#483d8b",
   "Workaholic": "#008b8b",
+  "Solsticer": "#fbfa83",
   "Collector": "#9d8892",
   "Provocateur": "#74ba43",
   "Sunnyboy": "#ff9902",
@@ -155,7 +157,7 @@
   "Ntr": "#00a4ff",
   "Madmate": "#ff1919",
   "Watcher": "#800080",
-  "Flashman": "#ff8400",
+  "Flash": "#ff8400",
   "Torch": "#eee5be",
   "Seer": "#61b26c",
   "Brakar": "#1447af",
@@ -215,5 +217,14 @@
   "Cyber": "#F46F4E",
   "Hurried": "#136cf0",
   "Oiiai": "#2bdb2b",
-  "Influenced": "#b0006a"
+  "Influenced": "#b0006a",
+  "Captain": "#4682B4",
+  "Benefactor": "#27ae60",
+  "Silent": "#9da9cf",
+  "Keeper": "#9ed9c8",
+  "Mundane": "#E69B4C",
+  "GuessMaster": "#FFD700",
+
+  "Killer": "#00ffff"
+
 }

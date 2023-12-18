@@ -4,6 +4,7 @@ using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.AddOns.Crewmate;
+using TOHE.Roles.Neutral;
 
 namespace TOHE;
 
@@ -150,8 +151,8 @@ class RpcSetTasksPatch
             NumShortTasks = Options.MadSnitchTasks.GetInt();
         }
 
-        // GM - no have tasks, Lazy Gay and Lazy have 1 task
-        if (pc.Is(CustomRoles.GM) || pc.Is(CustomRoles.Needy) || pc.Is(CustomRoles.Lazy))
+        // GM - no have tasks, Lazy Gay and Lazy have 1 task, FFA all are killers so need to assign any tasks
+        if (pc.Is(CustomRoles.GM) || pc.Is(CustomRoles.Needy) || pc.Is(CustomRoles.Lazy) || Options.CurrentGameMode == CustomGameMode.FFA)
         {
             hasCommonTasks = false;
             NumShortTasks = 0;
@@ -161,6 +162,15 @@ class RpcSetTasksPatch
         if (pc.Is(CustomRoles.Workhorse))
         {
             (hasCommonTasks, NumLongTasks, NumShortTasks) = Workhorse.TaskData;
+        }
+
+        if (pc.Is(CustomRoles.Solsticer))
+        {
+            Solsticer.SetShortTasksToAdd();
+            NumShortTasks += Solsticer.AddShortTasks;
+            var taskState = pc.GetPlayerTaskState();
+            taskState.AllTasksCount = NumShortTasks + NumLongTasks;
+            hasCommonTasks = false;
         }
 
         // Capitalism is going to wreak havoc on people
