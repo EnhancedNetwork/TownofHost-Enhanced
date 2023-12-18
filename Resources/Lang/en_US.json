@@ -3578,8 +3578,7 @@
   "SolsticerMisGuessed": "You just misguessed! So you are no longer allowed to guess.",
   "SolsticerGuessMax": "Because you already misguessed, you are no longer allowed to guess.",
 
-  "VoteDead": "Sorry, but the player you just voted is already died, so your vote is returned.",
-
+  "VoteDead": "Sorry, but the player you just voted is already died, so your vote is returned."
   "ImpCanBeSilent": "<color=#ff1919>Impostors</color> can become Silent",
   "CrewCanBeSilent": "<color=#8cffff>Crewmates</color> can become Silent",
   "NeutralCanBeSilent": "<color=#7f8c8d>Neutrals</color> can become Silent"
