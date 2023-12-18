@@ -331,6 +331,7 @@ static class CustomRolesHelper
             CustomRoles.Infected or
             CustomRoles.Onbound or
             CustomRoles.Rebound or
+            CustomRoles.Mundane or
             CustomRoles.Lazy or
             //     CustomRoles.Reflective or
             CustomRoles.Rascal or
@@ -1098,6 +1099,33 @@ static class CustomRolesHelper
                     return false;
                 break;
 
+            case CustomRoles.Mundane:
+                if (pc.CanUseKillButton() || pc.Is(CustomRoleTypes.Impostor)) return false;
+                if ((pc.GetCustomRole().IsCrewmate() && !Mundane.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Mundane.CanBeOnNeutral.GetBool())) return false;
+                if (pc.Is(CustomRoles.CopyCat)
+                    || pc.Is(CustomRoles.Doomsayer)
+                    || pc.Is(CustomRoles.GuardianAngelTOHE))
+                    return false;
+                if ((pc.Is(CustomRoles.Phantom) && !Options.PhantomCanGuess.GetBool())
+                    || (pc.Is(CustomRoles.Terrorist) && (!Options.TerroristCanGuess.GetBool() || Options.CanTerroristSuicideWin.GetBool()))
+                    || (pc.Is(CustomRoles.Workaholic) && !Options.WorkaholicCanGuess.GetBool())
+                    || (pc.Is(CustomRoles.Solsticer) && !Solsticer.SolsticerCanGuess.GetBool())
+                    || (pc.Is(CustomRoles.God) && !Options.GodCanGuess.GetBool()))
+                    return false; //Based on guess manager
+
+                // return true only when its a guesser, NG, guesser mode on with crew can guess (if crew role) and nnk can guess (if nnk)
+                if (pc.Is(CustomRoles.Guesser) || pc.Is(CustomRoles.NiceGuesser)) return true;
+                if (Options.GuesserMode.GetBool())
+                {
+                    if (pc.GetCustomRole().IsNonNK() && Options.PassiveNeutralsCanGuess.GetBool())
+                        return true;
+                    if (pc.GetCustomRole().IsCrewmate() && Options.CrewmatesCanGuess.GetBool())
+                        return true;
+                    else return false;
+                }
+                else return false;
+                break;
+
             case CustomRoles.Onbound:
                 if (pc.Is(CustomRoles.SuperStar)
                     || (pc.Is(CustomRoles.Doctor) && Options.DoctorVisibleToEveryone.GetBool())
@@ -1126,7 +1154,6 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Onbound)
                     || pc.Is(CustomRoles.Workaholic) && !Options.WorkaholicVisibleToEveryone.GetBool())
                 {
-                    Logger.Warn("reached here", "Rebound");  //huh?
                     return false;
                 } //Based on guess manager
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeRebound.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeRebound.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeRebound.GetBool()))

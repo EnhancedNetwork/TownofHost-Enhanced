@@ -1029,7 +1029,7 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 26500 lasted id for roles/add-ons (Next use 26600)
+        // 26600 lasted id for roles/add-ons (Next use 26700)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
         // Start Load Settings
@@ -2512,6 +2512,8 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
         FragileKillerLunge = BooleanOptionItem.Create(20609, "FragileKillerLunge", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
+
+        Mundane.SetupCustomOption();
 
         SetupAdtRoleOptions(20700, CustomRoles.Oblivious, canSetNum: true);
         ImpCanBeOblivious = BooleanOptionItem.Create(20703, "ImpCanBeOblivious", true, TabGroup.Addons, false)
