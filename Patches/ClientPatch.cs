@@ -99,11 +99,7 @@ internal class RunLoginPatch
             Logger.Info("friendcode not found", "EOSManager");
             canOnline = false;
         }
-        else if (Main.Canary && !dbConnect.CanAccessCanary(friendcode))
-        {
-            Logger.Warn("Banned because no access to canary", "dbConnect");
-            Main.hasAccess = false;
-        }
+
         else if (Main.devRelease && !dbConnect.CanAccessDev(friendcode))
         {
             Main.hasAccess = false;
