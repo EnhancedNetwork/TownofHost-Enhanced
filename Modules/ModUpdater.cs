@@ -12,6 +12,7 @@ using static TOHE.Translator;
 using Newtonsoft.Json.Linq;
 using System.IO.Compression;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TOHE;
 
@@ -20,7 +21,7 @@ public class ModUpdater
 {
     //private static readonly string URL_2018k = "http://api.tohre.dev";
     private static readonly string URL_Github = "https://api.github.com/repos/0xDrMoe/TownofHost-Enhanced";
-    public static readonly string downloadTest = "https://github.com/Pietrodjaowjao/TOHEN-Contributions/releases/download/v123123123/TOHE.dll";
+    //public static readonly string downloadTest = "https://github.com/Pietrodjaowjao/TOHEN-Contributions/releases/download/v123123123/TOHE.dll";
     public static bool hasUpdate = false;
     public static bool hasOutdate = false;
     public static bool forceUpdate = false;
@@ -172,22 +173,24 @@ public class ModUpdater
     }
     public static void DeleteOldFiles()
     {
+        string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        string searchPattern = "TOHE.dll*";
+        string[] files = Directory.GetFiles(path, searchPattern);
         try
         {
-            foreach (var path in Directory.EnumerateFiles(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "*.*"))
+            foreach (string filePath in files)
             {
-                if (path.EndsWith(Path.GetFileName(Assembly.GetExecutingAssembly().Location))) continue;
-                if (path.EndsWith("TOHE.dll")) continue;
-                if (!path.EndsWith(".dll")) continue;
-                Logger.Info($"{Path.GetFileName(path)} 已删除", "DeleteOldFiles");
-                File.Delete(path);
+                if (Path.GetFileName(filePath) != "TOHE.dll")
+                {
+                Logger.Info($"{filePath} will be deleted", "DeleteOldFiles");
+                File.Delete(filePath);
+                }
             }
         }
         catch (Exception e)
         {
-            Logger.Error($"清除更新残留失败\n{e}", "DeleteOldFiles");
+            Logger.Error($"Failed to clear update residue\n{e}", "DeleteOldFiles");
         }
-        return;
     }
     private static readonly object downloadLock = new();
     public static async Task<bool> DownloadDLL(string url)
