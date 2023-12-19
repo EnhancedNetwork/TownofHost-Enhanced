@@ -9,9 +9,6 @@ internal class VoteBanSystemPatch
     {
         if (!AmongUsClient.Instance.AmHost) return true;
 
-        if (DebugModeManager.AmDebugger)
-            return false; //Disable vote kick while debugging
-
         var VoterClient = AmongUsClient.Instance.GetClient(srcClient);
         var ClientData = AmongUsClient.Instance.GetClient(clientId);
         var VoterPc = VoterClient.Character;
@@ -34,7 +31,7 @@ internal class VoteBanSystemPatch
         {
             Logger.Info($"Canceled because target is dev host", "VoteBanSystem");
             return false; //If the host has debug permission, Prevent host from being vote kicked
-        }
+        } //wont function if target is debug but not host for security reasons
 
         return true;
     }
