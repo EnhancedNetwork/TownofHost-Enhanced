@@ -180,7 +180,7 @@ public class ModUpdater
         {
             foreach (string filePath in files)
             {
-                if (Path.GetFileName(filePath) != "TOHE.dll")
+                if (Path.GetFileName(filePath).EndsWith(".bak") || Path.GetFileName(filePath).EndsWith(".temp"))
                 {
                 Logger.Info($"{filePath} will be deleted", "DeleteOldFiles");
                 File.Delete(filePath);
