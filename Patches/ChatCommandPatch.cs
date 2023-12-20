@@ -1116,6 +1116,11 @@ internal class ChatCommands
             "間諜" or "间谍" => GetString("Spy"),
             "隨機者" or "萧暮" or "暮" or "萧暮不姓萧" => GetString("Randomizer"),
             "猜想者" or "猜想" or "谜团" => GetString("Enigma"),
+            "" or "舰长" or "船长" => GetString("Captain"),
+            "" or "鼹鼠" => GetString("Mole"),
+            "" or "恩人" => GetString("Benefactor"),
+            "" or "守卫者" => GetString("Keeper"),
+            "" or "竞猜大师" or "竞猜" => GetString("GuessMaster"),
 
             // 感谢WuQing帮我写这个
             // Thanks to WuQing for writing this for me
@@ -1262,9 +1267,11 @@ internal class ChatCommands
             "焦急者" or "焦急的" or "焦急" => GetString("Hurried"),
             "OIIAI" => GetString("Oiiai"),
             "順從者" or "影响者" or "順從" or "影响" => GetString("Influenced"),
+            "" or "沉默者" or "沉默" => GetString("Silent"),
+            "" or "平凡者" or "平凡" => GetString("Mundane"),
 
             // 随机阵营职业
-            "迷你船員" or "迷你船员" or "迷你" => GetString("Mini"),
+            "迷你船員" or "迷你船员" or "迷你" or "小孩" => GetString("Mini"),
             _ => text,
         };
     }
