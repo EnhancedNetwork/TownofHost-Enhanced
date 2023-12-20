@@ -40,9 +40,10 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "1.3.1.3";
-    public const string PluginDisplayVersion = "1.3.1 Canary 1";
+    public const string PluginVersion = "1.3.1.2";
+    public const string PluginDisplayVersion = "1.3.1 Canary 2";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
+
     /******************* Change one of the three variables to true before making a release. *******************/
     public const bool Canary = true; // Unused variable? ---- not unused anymore :)
     public const bool fullRelease = false;

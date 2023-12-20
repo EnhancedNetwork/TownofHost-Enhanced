@@ -1,4 +1,5 @@
 using HarmonyLib;
+using Rewired;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -679,7 +680,6 @@ public static class Options
     public static OptionItem FungleChance;
 
     public static OptionItem UseMoreRandomMapSelection;
-    public static OptionItem AddedDleks;
     public static OptionItem RandomSpawn;
     public static OptionItem SpawnRandomLocation;
     public static OptionItem AirshipAdditionalSpawn;
@@ -693,6 +693,9 @@ public static class Options
     public static OptionItem DisableZiplineFromUnder;
     public static OptionItem ResetDoorsEveryTurns;
     public static OptionItem DoorsResetMode;
+    public static OptionItem ChangeDecontaminationTime;
+    public static OptionItem DecontaminationTimeOnMiraHQ;
+    public static OptionItem DecontaminationTimeOnPolus;
 
     // Sabotage
     public static OptionItem CommsCamouflage;
@@ -3129,6 +3132,20 @@ public static class Options
             .SetParent(ResetDoorsEveryTurns)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
 
+        // Change decontamination time on MiraHQ/Polus
+        ChangeDecontaminationTime = BooleanOptionItem.Create(60503, "ChangeDecontaminationTime", false, TabGroup.GameSettings, false)
+            .SetColor(new Color32(19, 188, 233, byte.MaxValue));
+        // Decontamination time on MiraHQ
+        DecontaminationTimeOnMiraHQ = FloatOptionItem.Create(60504, "DecontaminationTimeOnMiraHQ", new(0.5f, 10f, 0.25f), 3f, TabGroup.GameSettings, false)
+            .SetParent(ChangeDecontaminationTime)
+            .SetValueFormat(OptionFormat.Multiplier)
+            .SetColor(new Color32(19, 188, 233, byte.MaxValue));
+        // Decontamination time on Polus
+        DecontaminationTimeOnPolus = FloatOptionItem.Create(60505, "DecontaminationTimeOnPolus", new(0.5f, 10f, 0.25f), 3f, TabGroup.GameSettings, false)
+            .SetParent(ChangeDecontaminationTime)
+            .SetValueFormat(OptionFormat.Multiplier)
+            .SetColor(new Color32(19, 188, 233, byte.MaxValue));
+
         // Sabotage
         TextOptionItem.Create(10000026, "MenuTitle.Sabotage", TabGroup.GameSettings)
             .SetGameMode(CustomGameMode.Standard)
@@ -3235,7 +3252,7 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard);
 
 
-        //禁用相关设定
+        // Disable
         TextOptionItem.Create(10000027, "MenuTitle.Disable", TabGroup.GameSettings)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
