@@ -9,15 +9,25 @@ public static class DeconSystemDeterioratePatch
     {
         if (!Options.ChangeDecontaminationTime.GetBool()) return;
 
+        float deconTime;
+
         if (Options.IsActiveMiraHQ)
         {
-            __instance.DoorOpenTime = Options.DecontaminationTimeOnMiraHQ.GetFloat();
-            __instance.DeconTime = Options.DecontaminationTimeOnMiraHQ.GetFloat();
+            // Temp decon time MiraHQ
+            deconTime = Options.DecontaminationTimeOnMiraHQ.GetFloat();
+
+            // Set same value for "DeconTime" and "DoorOpenTime"
+            __instance.DoorOpenTime = deconTime;
+            __instance.DeconTime = deconTime;
         }
         else if (Options.IsActivePolus)
         {
-            __instance.DoorOpenTime = Options.DecontaminationTimeOnPolus.GetFloat();
-            __instance.DeconTime = Options.DecontaminationTimeOnPolus.GetFloat();
+            // Temp decon time Polus
+            deconTime = Options.DecontaminationTimeOnPolus.GetFloat();
+
+            // Set same value for "DeconTime" and "DoorOpenTime"
+            __instance.DoorOpenTime = deconTime;
+            __instance.DeconTime = deconTime;
         }
     }
 }
