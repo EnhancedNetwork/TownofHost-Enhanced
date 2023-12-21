@@ -2223,10 +2223,10 @@ class ChatUpdatePatch
         if (!AmongUsClient.Instance.AmHost || !Main.MessagesToSend.Any() || (Main.MessagesToSend[0].Item2 == byte.MaxValue && Main.MessageWait.Value > __instance.timeSinceLastMessage)) return;
         if (DoBlockChat) return;
         var player = PlayerControl.LocalPlayer;
-        if (!GameStates.IsLobby)
+        if (GameStates.IsInGame || player.Data.IsDead)
         {
-            player = Main.AllAlivePlayerControls.OrderBy(x => x.PlayerId).FirstOrDefault()
-                     ?? Main.AllPlayerControls.OrderBy(x => x.PlayerId).FirstOrDefault()
+            player = Main.AllAlivePlayerControls.ToArray().OrderBy(x => x.PlayerId).FirstOrDefault()
+                     ?? Main.AllPlayerControls.ToArray().OrderBy(x => x.PlayerId).FirstOrDefault()
                      ?? player;
         }
         if (player == null) return;
