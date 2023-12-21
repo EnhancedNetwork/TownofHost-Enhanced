@@ -709,6 +709,7 @@ public abstract class GameEndPredicate
         {
             reason = GameOverReason.HumansByTask;
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
+            Logger.Info($"Game End By Completed All Tasks", "CheckGameEndBySabotage");
             return true;
         }
         return false;
@@ -716,7 +717,6 @@ public abstract class GameEndPredicate
     /// <summary>ShipStatus.Systems内の要素をもとにサボタージュ勝利が可能かを判定します。</summary>
     public virtual bool CheckGameEndBySabotage(out GameOverReason reason)
     {
-        Logger.Info($"Start", "CheckGameEndBySabotage");
         reason = GameOverReason.ImpostorByKill;
         if (ShipStatus.Instance.Systems == null) return false;
 
@@ -739,8 +739,6 @@ public abstract class GameEndPredicate
         if (systems.ContainsKey(SystemTypes.Reactor)) sys = systems[SystemTypes.Reactor];
         else if (systems.ContainsKey(SystemTypes.Laboratory)) sys = systems[SystemTypes.Laboratory];
         else if (systems.ContainsKey(SystemTypes.HeliSabotage)) sys = systems[SystemTypes.HeliSabotage];
-
-        Logger.Info($"Systems is - {sys}", "CheckGameEndBySabotage");
 
         ICriticalSabotage critical;
         if (sys != null && // サボタージュ存在確認
