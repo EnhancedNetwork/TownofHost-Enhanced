@@ -48,7 +48,7 @@ public static class Seeker
             _ = new LateTask(() =>
             {
                 ResetTarget(Utils.GetPlayerById(playerId));
-            }, 10f, "SeekerRound1");
+            }, 10f, "Seeker Round 1");
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -155,7 +155,7 @@ public static class Seeker
             Main.AllPlayerSpeed[player.PlayerId] = DefaultSpeed;
             ReportDeadBodyPatch.CanReport[player.PlayerId] = true;
             player.MarkDirtySettings(); // dont know what the hell is this
-        }, 5f, "FreezeSeeker");
+        }, 5f, "Freeze Seeker");
     }
     public static byte ResetTarget(PlayerControl player)
     {

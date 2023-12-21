@@ -298,6 +298,7 @@ class ExileControllerWrapUpPatch
                     Utils.AfterPlayerDeathTasks(player);
                 });
                 Main.AfterMeetingDeathPlayers.Clear();
+
             }, 0.5f, "AfterMeetingDeathPlayers Task");
         }
 

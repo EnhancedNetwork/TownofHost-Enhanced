@@ -3459,7 +3459,7 @@ class CoExitVentPatch
         _ = new LateTask(() =>
         {
             Mole.OnExitVent(__instance.myPlayer, id);
-        }, 0.1f);
+        }, 0.1f, "Mole On Exit Vent");
     }
 }
 
@@ -3685,7 +3685,7 @@ class CoEnterVentPatch
             {
                 pc?.Notify(GetString("FFA-NoVentingBecauseTwoPlayers"), 7f);
                 pc?.MyPhysics?.RpcBootFromVent(id);
-            }, 0.5f);
+            }, 0.5f, "Player No Venting Because Two Players");
             return true;
         }
         if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenKCDIsUp.GetBool())
@@ -3704,7 +3704,7 @@ class CoEnterVentPatch
                 {
                     pc?.Notify(GetString("FFA-NoVentingBecauseKCDIsUP"), 7f);
                     pc?.MyPhysics?.RpcBootFromVent(id);
-                }, 0.5f);
+                }, 0.5f, "Player No Venting Because KCD Is UP");
                 return true;
             }
             
@@ -3715,7 +3715,7 @@ class CoEnterVentPatch
             {
                 __instance.myPlayer?.Notify(string.Format(GetString("HackedByGlitch"), GetString("GlitchVent")));
                 __instance.myPlayer?.MyPhysics?.RpcBootFromVent(id);
-            }, 0.5f);
+            }, 0.5f, "Player Boot From Vent By Glith");
             return true;
         }
 

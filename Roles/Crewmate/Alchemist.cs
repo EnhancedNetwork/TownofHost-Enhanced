@@ -110,7 +110,13 @@ namespace TOHE.Roles.Crewmate
                 case 1: // Shield
                     IsProtected = true;
                     player.Notify(GetString("AlchemistShielded"), ShieldDuration.GetInt());
-                    _ = new LateTask(() => { IsProtected = false; player.Notify(GetString("AlchemistShieldOut")); }, ShieldDuration.GetInt());
+
+                    _ = new LateTask(() =>
+                    {
+                        IsProtected = false;
+                        player.Notify(GetString("AlchemistShieldOut"));
+
+                    }, ShieldDuration.GetInt(), "Alchemist Shield Is Out");
                     break;
                 case 2: // Suicide
                     player.MyPhysics.RpcBootFromVent(ventId);
@@ -119,7 +125,8 @@ namespace TOHE.Roles.Crewmate
                         Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Poison;
                         player.SetRealKiller(player);
                         player.RpcMurderPlayerV3(player);
-                    }, 1f);
+
+                    }, 1f, "Alchemist Is Poisoned");
                     break;
                 case 3: // TP to random player
                     _ = new LateTask(() =>
@@ -135,7 +142,7 @@ namespace TOHE.Roles.Crewmate
                         var tar2 = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
                         tar1.RpcTeleport(tar2.GetCustomPosition());
                         tar1.RPCPlayCustomSound("Teleport");
-                    }, 2f);
+                    }, 2f, "Alchemist teleported to random player");
                     break;
                 case 4: // Increased speed
                     player.Notify(GetString("AlchemistPotionDidNothing"));
@@ -154,7 +161,13 @@ namespace TOHE.Roles.Crewmate
                     VisionPotionActive = true;
                     player.MarkDirtySettings();
                     player.Notify(GetString("AlchemistHasVision"), VisionDuration.GetFloat());
-                    _ = new LateTask(() => { VisionPotionActive = false; player.MarkDirtySettings(); player.Notify(GetString("AlchemistVisionOut")); }, VisionDuration.GetFloat());
+                    _ = new LateTask(() =>
+                    { 
+                        VisionPotionActive = false;
+                        player.MarkDirtySettings();
+                        player.Notify(GetString("AlchemistVisionOut"));
+
+                    }, VisionDuration.GetFloat(), "Alchemist Vision Is Out");
                     break;
                 case 10:
                     player.Notify("NoPotion");
