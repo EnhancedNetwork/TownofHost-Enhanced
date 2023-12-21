@@ -1348,6 +1348,9 @@
   "AllOpen": "打开所有",
   "AllClosed": "关闭所有",
   "RandomByDoor": "随机打开",
+  "ChangeDecontaminationTime": "更改消毒时间（<color=#e84b56>米拉总部</color>/<color=#a167c0>波鲁斯</color>）",
+  "DecontaminationTimeOnMiraHQ": "<color=#e84b56>米拉总部</color>消毒时间",
+  "DecontaminationTimeOnPolus": "<color=#a167c0>波鲁斯</color>消毒时间",
   "ApplyDenyNameList": "踢出使用违规昵称的玩家",
   "KickPlayerFriendCodeNotExist": "踢出没有好友id的玩家",
   "TempBanPlayerFriendCodeNotExist": "临时封禁没有好友id的玩家",
@@ -3528,7 +3531,7 @@
   "SolsticerTasksReset": "你的任务惨遭重置了",
   "SolsticerMisGuessed": "你只是猜错了！所以你不能再猜了",
   "SolsticerGuessMax": "因为你已经猜错了，所以你不能再猜了。",
-  "VoteDead": "抱歉，但是你投的玩家已经死了！\n你的投票已被归还。",
+  "VoteDead": "抱歉，但是你投的玩家已经趋势了！\n你的投票已被归还。",
   "ImpCanBeSilent": "<color=#ff1919>内鬼阵营</color>可以成为沉默者",
   "CrewCanBeSilent": "<color=#8cffff>船员阵营</color>可以成为沉默者",
   "NeutralCanBeSilent": "<color=#7f8c8d>中立阵营</color>可以成为沉默者"
