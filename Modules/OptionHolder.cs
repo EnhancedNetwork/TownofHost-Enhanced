@@ -3448,31 +3448,31 @@ public static class Options
             .SetParent(DisableShortTasks)
             .SetGameMode(CustomGameMode.Standard);
         DisableFixAntenna = BooleanOptionItem.Create(60656, "DisableFixAntenna", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableLongTasks)
+            .SetParent(DisableShortTasks)
             .SetGameMode(CustomGameMode.Standard);
         DisableBuildSandcastle = BooleanOptionItem.Create(60657, "DisableBuildSandcastle", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableLongTasks)
+            .SetParent(DisableShortTasks)
             .SetGameMode(CustomGameMode.Standard);
         DisableCrankGenerator = BooleanOptionItem.Create(60658, "DisableCrankGenerator", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableLongTasks)
+            .SetParent(DisableShortTasks)
             .SetGameMode(CustomGameMode.Standard);
         DisableMonitorMushroom = BooleanOptionItem.Create(60659, "DisableMonitorMushroom", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableLongTasks)
+            .SetParent(DisableShortTasks)
             .SetGameMode(CustomGameMode.Standard);
         DisablePlayVideoGame = BooleanOptionItem.Create(60660, "DisablePlayVideoGame", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableLongTasks)
+            .SetParent(DisableShortTasks)
             .SetGameMode(CustomGameMode.Standard);
         DisableFindSignal = BooleanOptionItem.Create(60661, "DisableFindSignal", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableLongTasks)
+            .SetParent(DisableShortTasks)
             .SetGameMode(CustomGameMode.Standard);
         DisableThrowFisbee = BooleanOptionItem.Create(60662, "DisableThrowFisbee", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableLongTasks)
+            .SetParent(DisableShortTasks)
             .SetGameMode(CustomGameMode.Standard);
         DisableLiftWeights = BooleanOptionItem.Create(60663, "DisableLiftWeights", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableLongTasks)
+            .SetParent(DisableShortTasks)
             .SetGameMode(CustomGameMode.Standard);
         DisableCollectShells = BooleanOptionItem.Create(60664, "DisableCollectShells", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableLongTasks)
+            .SetParent(DisableShortTasks)
             .SetGameMode(CustomGameMode.Standard);
 
 
@@ -3496,13 +3496,13 @@ public static class Options
             .SetParent(DisableCommonTasks)
             .SetGameMode(CustomGameMode.Standard);
         DisableRoastMarshmallow = BooleanOptionItem.Create(60624, "DisableRoastMarshmallow", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableShortTasks)
+            .SetParent(DisableCommonTasks)
             .SetGameMode(CustomGameMode.Standard);
         DisableCollectSamples = BooleanOptionItem.Create(60625, "DisableCollectSamples", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableShortTasks)
+            .SetParent(DisableCommonTasks)
             .SetGameMode(CustomGameMode.Standard);
         DisableReplaceParts = BooleanOptionItem.Create(60626, "DisableReplaceParts", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableShortTasks)
+            .SetParent(DisableCommonTasks)
             .SetGameMode(CustomGameMode.Standard);
 
 
@@ -3556,25 +3556,25 @@ public static class Options
             .SetParent(DisableLongTasks)
             .SetGameMode(CustomGameMode.Standard);
         DisableCollectVegetables = BooleanOptionItem.Create(60633, "DisableCollectVegetables", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableCommonTasks)
+            .SetParent(DisableLongTasks)
             .SetGameMode(CustomGameMode.Standard);
         DisableMineOres = BooleanOptionItem.Create(60634, "DisableMineOres", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableCommonTasks)
+            .SetParent(DisableLongTasks)
             .SetGameMode(CustomGameMode.Standard);
         DisableExtractFuel = BooleanOptionItem.Create(60635, "DisableExtractFuel", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableCommonTasks)
+            .SetParent(DisableLongTasks)
             .SetGameMode(CustomGameMode.Standard);
         DisableCatchFish = BooleanOptionItem.Create(60636, "DisableCatchFish", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableCommonTasks)
+            .SetParent(DisableLongTasks)
             .SetGameMode(CustomGameMode.Standard);
         DisablePolishGem = BooleanOptionItem.Create(60637, "DisablePolishGem", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableCommonTasks)
+            .SetParent(DisableLongTasks)
             .SetGameMode(CustomGameMode.Standard);
         DisableHelpCritter = BooleanOptionItem.Create(60638, "DisableHelpCritter", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableCommonTasks)
+            .SetParent(DisableLongTasks)
             .SetGameMode(CustomGameMode.Standard);
         DisableHoistSupplies = BooleanOptionItem.Create(60639, "DisableHoistSupplies", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableCommonTasks)
+            .SetParent(DisableLongTasks)
             .SetGameMode(CustomGameMode.Standard);
         
 
