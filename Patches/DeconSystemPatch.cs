@@ -7,6 +7,8 @@ public static class DeconSystemUpdateSystemPatch
 {
     public static void Prefix(DeconSystem __instance)
     {
+        if (!AmongUsClient.Instance.AmHost) return;
+
         if (Options.ChangeDecontaminationTime.GetBool())
         {
             float deconTime;
