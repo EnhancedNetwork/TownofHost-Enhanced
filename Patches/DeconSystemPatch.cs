@@ -5,11 +5,8 @@ namespace TOHE.Patches;
 [HarmonyPatch(typeof(DeconSystem), nameof(DeconSystem.UpdateSystem))]
 public static class DeconSystemUpdateSystemPatch
 {
-    public static bool DeconTimeIsSet = false;
     public static void Prefix(DeconSystem __instance)
     {
-        if (DeconTimeIsSet) return;
-
         if (Options.ChangeDecontaminationTime.GetBool())
         {
             float deconTime;
@@ -39,7 +36,5 @@ public static class DeconSystemUpdateSystemPatch
             __instance.DoorOpenTime = 3f;
             __instance.DeconTime = 3f;
         }
-
-        DeconTimeIsSet = true;
     }
 }

@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
-using TOHE.Patches;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
@@ -16,7 +15,6 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Modules.CustomRoleSelector;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -350,7 +348,6 @@ internal class ChangeRoleSettings
 
             IRandom.SetInstanceById(Options.RoleAssigningAlgorithm.GetValue());
 
-            DeconSystemUpdateSystemPatch.DeconTimeIsSet = false;
             MeetingStates.MeetingCalled = false;
             MeetingStates.FirstMeeting = true;
             GameStates.AlreadyDied = false;
