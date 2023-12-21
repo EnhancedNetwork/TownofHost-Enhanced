@@ -862,6 +862,7 @@ public static class Options
     public static OptionItem SendRoleDescriptionFirstMeeting;
     public static OptionItem RoleAssigningAlgorithm;
     public static OptionItem EndWhenPlayerBug;
+    public static OptionItem RemovePetsAtDeadPlayers;
 
     public static OptionItem EnableUpMode;
     public static OptionItem AutoKickStart;
@@ -2957,10 +2958,12 @@ public static class Options
         LowLoadMode = BooleanOptionItem.Create(60230, "LowLoadMode", true, TabGroup.SystemSettings, false)
             .SetHeader(true)
             .SetColor(Color.green);
-
         EndWhenPlayerBug = BooleanOptionItem.Create(60240, "EndWhenPlayerBug", true, TabGroup.SystemSettings, false)
-            .SetHeader(true)
             .SetColor(Color.blue);
+        HideExileChat = BooleanOptionItem.Create(60292, "HideExileChat", true, TabGroup.SystemSettings, false)
+            .SetColor(Color.blue);
+        RemovePetsAtDeadPlayers = BooleanOptionItem.Create(60294, "RemovePetsAtDeadPlayers", false, TabGroup.SystemSettings, false)
+            .SetColor(Color.magenta);
 
         CheatResponses = StringOptionItem.Create(60250, "CheatResponses", CheatResponsesName, 4, TabGroup.SystemSettings, false)
             .SetHeader(true);
@@ -2972,9 +2975,6 @@ public static class Options
             .SetHeader(true);
         AutoDisplayLastRoles = BooleanOptionItem.Create(60280, "AutoDisplayLastRoles", true, TabGroup.SystemSettings, false);
         AutoDisplayLastResult = BooleanOptionItem.Create(60290, "AutoDisplayLastResult", true, TabGroup.SystemSettings, false);
-
-        HideExileChat = BooleanOptionItem.Create(60295, "HideExileChat", true, TabGroup.SystemSettings, false)
-            .SetHeader(true);
 
         SuffixMode = StringOptionItem.Create(60300, "SuffixMode", suffixModes, 0, TabGroup.SystemSettings, true)
             .SetHeader(true);
