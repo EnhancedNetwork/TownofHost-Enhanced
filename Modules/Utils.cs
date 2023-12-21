@@ -1949,7 +1949,7 @@ public static class Utils
                 };
             }
             
-            if (!name.Contains('\r') && player.FriendCode.GetDevUser().HasTag())
+            if (!name.Contains('\r') && player.FriendCode.GetDevUser().HasTag() && (player.AmOwner || player.IsModClient()))
             {
                 name = player.FriendCode.GetDevUser().GetTag() + "<size=1.5>" + modtag + "</size>" + name;
             }
@@ -2010,7 +2010,8 @@ public static class Utils
             MushroomMixupIsActive = IsActive(SystemTypes.MushroomMixupSabotage);
         }
 
-        Logger.Info($" START - Count Seers: {seerList.Length}", "DoNotifyRoles", force: true);
+        Logger.Info($" START - Count Seers: {seerList.Length} & Count Target: {targetList.Length}", "DoNotifyRoles", force: true);
+
         //seer: player who updates the nickname/role/mark
         //target: seer updates nickname/role/mark of other targets
         foreach (var seer in seerList)
@@ -2275,7 +2276,6 @@ public static class Utils
                 || NoCache
                 || ForceLoop)
             {
-                Logger.Info($" Loop for Targets - Count Targets: {targetList.Length}", "DoNotifyRoles", force: true);
                 foreach (var target in targetList)
                 {
                     // if the target is the seer itself, do nothing
@@ -2605,13 +2605,10 @@ public static class Utils
 
                         target.RpcSetNamePrivate(TargetName, true, seer, force: NoCache);
                     }
-
-                    //logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":END");
                 }
             }
-
-            //logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":END");
         }
+        //Logger.Info($" Loop for Targets: {}", "DoNotifyRoles", force: true);
         Logger.Info($" END", "DoNotifyRoles", force: true);
         return Task.CompletedTask;
     }
