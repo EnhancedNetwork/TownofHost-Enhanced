@@ -2,32 +2,44 @@
 
 namespace TOHE.Patches;
 
-[HarmonyPatch(typeof(DeconSystem), nameof(DeconSystem.Deteriorate))]
-public static class DeconSystemDeterioratePatch
+[HarmonyPatch(typeof(DeconSystem), nameof(DeconSystem.UpdateSystem))]
+public static class DeconSystemUpdateSystemPatch
 {
+    public static bool DeconTimeIsSet = false;
     public static void Prefix(DeconSystem __instance)
     {
-        if (!Options.ChangeDecontaminationTime.GetBool()) return;
+        if (DeconTimeIsSet) return;
 
-        float deconTime;
-
-        if (Options.IsActiveMiraHQ)
+        if (Options.ChangeDecontaminationTime.GetBool())
         {
-            // Temp decon time MiraHQ
-            deconTime = Options.DecontaminationTimeOnMiraHQ.GetFloat();
+            float deconTime;
 
-            // Set same value for "DeconTime" and "DoorOpenTime"
-            __instance.DoorOpenTime = deconTime;
-            __instance.DeconTime = deconTime;
+            if (Options.IsActiveMiraHQ)
+            {
+                // Temp decon time MiraHQ
+                deconTime = Options.DecontaminationTimeOnMiraHQ.GetFloat();
+
+                // Set same value for "DeconTime" and "DoorOpenTime"
+                __instance.DoorOpenTime = deconTime;
+                __instance.DeconTime = deconTime;
+            }
+            else if (Options.IsActivePolus)
+            {
+                // Temp decon time Polus
+                deconTime = Options.DecontaminationTimeOnPolus.GetFloat();
+
+                // Set same value for "DeconTime" and "DoorOpenTime"
+                __instance.DoorOpenTime = deconTime;
+                __instance.DeconTime = deconTime;
+            }
         }
-        else if (Options.IsActivePolus)
+        else
         {
-            // Temp decon time Polus
-            deconTime = Options.DecontaminationTimeOnPolus.GetFloat();
-
-            // Set same value for "DeconTime" and "DoorOpenTime"
-            __instance.DoorOpenTime = deconTime;
-            __instance.DeconTime = deconTime;
+            // Set to defalt
+            __instance.DoorOpenTime = 3f;
+            __instance.DeconTime = 3f;
         }
+
+        DeconTimeIsSet = true;
     }
 }
