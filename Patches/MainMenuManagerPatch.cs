@@ -187,6 +187,20 @@ public static class MainMenuManagerPatch
         }
         updateButton.gameObject.SetActive(ModUpdater.hasUpdate);
 
+        // Gitee update Button
+        if (updateButton == null)
+        {
+            updateButton = CreateButton(
+                "updateButton",
+                new(3.68f, -2.38f, 1f),
+                new(255, 165, 0, byte.MaxValue),
+                new(255, 200, 0, byte.MaxValue),
+                () => GiteeModUpdater.StartUpdate(GiteeModUpdater.GiteedownloadUrl, true),
+                GetString("Giteeupdate")); //"Gitee Update"
+            updateButton.transform.localScale = Vector3.one;
+        }
+        updateButton.gameObject.SetActive(GiteeModUpdater.hasUpdate);
+
         // GitHub Button
         if (gitHubButton == null)
         {
