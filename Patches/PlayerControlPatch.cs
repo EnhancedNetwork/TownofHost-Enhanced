@@ -2548,6 +2548,17 @@ class FixedUpdatePatch
                         }
                     }
                 }
+
+                if (KickPlayerPatch.AttemptedKickPlayerList.Any())
+                {
+                    foreach (var item in KickPlayerPatch.AttemptedKickPlayerList)
+                    {
+                        KickPlayerPatch.AttemptedKickPlayerList[item.Key]++;
+
+                        if (item.Value > 30)
+                            KickPlayerPatch.AttemptedKickPlayerList.Remove(item.Key);
+                    }
+                }
             }
 
             if (DoubleTrigger.FirstTriggerTimer.Any()) 
