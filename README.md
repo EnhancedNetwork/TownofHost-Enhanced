@@ -88,3 +88,19 @@
 ### :star: [Stellar Roles](https://github.com/Mr-Fluuff/StellarRolesAU)
 >
 > - Provided role: ParityCop (Inspector)
+
+---
+
+# Legal License Notice
+
+This project utilizes a third-party API, custom-coded by The Enhanced Network. founded by Moe Wehbeh, which is not subject to the GPL 3.0 license. However, please be aware that the project itself, including any modifications, additions, or integrations made to interact with the API, is governed by the terms of the GNU General Public License version 3.0 (GPL-3.0).
+
+## Licensing Information
+
+This project is licensed under the GNU General Public License version 3.0. For more details, please refer to the [LICENSE](https://github.com/0xDrMoe/TownofHost-Enhanced/blob/main/LICENSE) file.
+
+### Third-Party API
+
+The third-party API used in this project is "TOHE API". Please note that the API itself is not covered by the GPL 3.0 license and may have its own licensing terms. Refer to the documentation provided by The Enhanced Network for information regarding the API's usage and licensing.
+
+---
