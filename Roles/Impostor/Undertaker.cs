@@ -92,7 +92,7 @@ public static class Undertaker
             Main.AllPlayerSpeed[player.PlayerId] = DefaultSpeed;
             ReportDeadBodyPatch.CanReport[player.PlayerId] = true;
             player.MarkDirtySettings();
-        }, FreezeTime.GetFloat(), "FreezeUndertaker");
+        }, FreezeTime.GetFloat(), "Freeze Undertaker");
     }
 
     public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);

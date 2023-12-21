@@ -153,7 +153,7 @@ namespace TOHE.Roles.Neutral
                     ReportDeadBodyPatch.CanReport[target.PlayerId] = true;
                     target.MarkDirtySettings();
                     RPC.PlaySoundRPC(target.PlayerId, Sounds.TaskComplete);
-                }, SpiritFreezeTime.GetFloat());
+                }, SpiritFreezeTime.GetFloat(), "Spirit UnFreeze");
             }
         }
 

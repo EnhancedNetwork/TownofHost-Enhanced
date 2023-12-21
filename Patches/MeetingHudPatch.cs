@@ -898,7 +898,10 @@ class MeetingHudStartPatch
         if (msgToSend.Count >= 1)
         {
             var msgTemp = msgToSend.ToList();
-            _ = new LateTask(() => { msgTemp.Do(x => Utils.SendMessage(x.Item1, x.Item2, x.Item3)); }, 3f, "Skill Description First Meeting");
+            _ = new LateTask(() => 
+            {
+                msgTemp.Do(x => Utils.SendMessage(x.Item1, x.Item2, x.Item3));
+            }, 3f, "Skill Description First Meeting");
         }
         msgToSend = new();
 
@@ -1015,7 +1018,10 @@ class MeetingHudStartPatch
         msgToSend.Do(x => Logger.Info($"To:{x.Item2} {x.Item3} => {x.Item1}", "Skill Notice OnMeeting Start"));
 
         //总体延迟发送
-        _ = new LateTask(() => { msgToSend.Do(x => Utils.SendMessage(x.Item1, x.Item2, x.Item3)); }, 3f, "Skill Notice OnMeeting Start");
+        _ = new LateTask(() => 
+        { 
+            msgToSend.Do(x => Utils.SendMessage(x.Item1, x.Item2, x.Item3)); 
+        }, 3f, "Skill Notice On Meeting Start");
 
         Main.CyberStarDead.Clear();
         Main.CyberDead.Clear();

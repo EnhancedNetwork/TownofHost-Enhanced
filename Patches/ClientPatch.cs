@@ -60,7 +60,7 @@ internal class MMOnlineManagerStartPatch
             {
                 message = GetString("CanNotJoinPublicRoomNoLatest");
             }
-            _ = new LateTask(() => { textObj.text = $"<size=2>{Utils.ColorString(Color.red, message)}</size>"; }, 0.01f, "CanNotJoinPublic");
+            _ = new LateTask(() => { textObj.text = $"<size=2>{Utils.ColorString(Color.red, message)}</size>"; }, 0.01f, "Can Not Join Public");
         }
     }
 }

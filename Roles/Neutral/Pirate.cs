@@ -184,7 +184,7 @@ public static class Pirate
                     if (!isUI) Utils.SendMessage(GetString("DuelAlreadyDone"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("DuelAlreadyDone"));
                     Logger.Msg("Duel attempted more than once", "Pirate");
-                }, 0.2f, "Pirate");
+                }, 0.2f, "Pirate Duel Already Done");
                 return true;
             }
 
@@ -211,7 +211,7 @@ public static class Pirate
                 {
                     if (!isUI) Utils.SendMessage(String.Format(GetString("DuelDone"), rpsOption), pc.PlayerId);
                     else pc.ShowPopUp(String.Format(GetString("DuelDone"), rpsOption));
-                }, 0.2f, "Pirate");
+                }, 0.2f, "Pirate Duel Done");
                 DuelDone[pc.PlayerId] = true;
                 return true;
 

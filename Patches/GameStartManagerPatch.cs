@@ -147,7 +147,7 @@ public class GameStartManagerPatch
                             GameStartManager.Instance.startState = GameStartManager.StartingStates.Countdown;
                             GameStartManager.Instance.countDownTimer = Options.AutoStartTimer.GetInt();
                             __instance.StartButton.gameObject.SetActive(false);
-                        }, 0.8f, "AutoStart");
+                        }, 0.8f, "Auto Start");
                     }
                 }
             }

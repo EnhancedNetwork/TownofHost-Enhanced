@@ -138,7 +138,7 @@ public static class Jailer
                 _ = new LateTask(() =>
                 {
                     Utils.SendMessage(GetString("JailedNotifyMsg"), targetId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
-                }, 0.3f, "JailerNotifyJailed");
+                }, 0.3f, "Jailer Notify Jailed");
         }
     }
 

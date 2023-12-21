@@ -286,9 +286,9 @@ internal class CustomRoleSelector
         if (Options.NeutralKillingRolesMaxPlayer.GetInt() > 1 && !Options.TemporaryAntiBlackoutFix.GetBool())
         {
             _ = new LateTask(() =>
-                {
-                    Logger.SendInGame(GetString("NeutralKillingBlackoutWarning"));
-                }, 4f, "Neutral Killing Blackout Warning");
+            {
+                Logger.SendInGame(GetString("NeutralKillingBlackoutWarning"));
+            }, 4f, "Neutral Killing Blackout Warning");
 
         }
 

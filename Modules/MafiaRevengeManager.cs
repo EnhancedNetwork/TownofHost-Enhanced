@@ -124,7 +124,7 @@ public static class MafiaRevengeManager
 
             _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("MafiaKillSucceed"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mafia), GetString("MafiaRevengeTitle")), true); }, 0.6f, "Mafia Kill");
 
-        }, 0.2f, "Mafia Kill");
+        }, 0.2f, "Mafia Start Kill");
         return true;
     }
 

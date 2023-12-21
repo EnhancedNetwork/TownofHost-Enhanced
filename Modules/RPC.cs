@@ -236,13 +236,14 @@ internal class RPCHandlerPatch
                     _ = new LateTask(() =>
                     {
                         Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutEndGame"), __instance?.Data?.PlayerName), true);
-                    }, 3f, "Anti-Black Msg SendInGame");
+                    }, 3f, "Anti-Black Msg SendInGame 1");
+
                     _ = new LateTask(() =>
                     {
                         CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
                         GameManager.Instance.LogicFlow.CheckEndCriteria();
                         RPC.ForceEndGame(CustomWinner.Error);
-                    }, 5.5f, "Anti-Black End Game");
+                    }, 5.5f, "Anti-Black End Game 1");
                 }
                 else if (GameStates.IsOnlineGame)
                 {
@@ -250,7 +251,7 @@ internal class RPCHandlerPatch
                     _ = new LateTask(() =>
                     {
                         Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutIgnored"), __instance?.Data?.PlayerName), true);
-                    }, 3f, "Anti-Black Msg SendInGame");
+                    }, 3f, "Anti-Black Msg SendInGame 2");
                 }
                 break;
 
@@ -285,7 +286,7 @@ internal class RPCHandlerPatch
                                     Logger.SendInGame(msg);
                                     AmongUsClient.Instance.KickPlayer(__instance.GetClientId(), false);
                                 }
-                            }, 5f, "Kick");
+                            }, 5f, "Kick Because Diffrent Version Or Mod");
                         }
                     }
                     // Kick Unmached Player End
@@ -293,6 +294,7 @@ internal class RPCHandlerPatch
                 catch
                 {
                     Logger.Warn($"{__instance?.Data?.PlayerName}({__instance.PlayerId}): バージョン情報が無効です", "RpcVersionCheck");
+                    
                     _ = new LateTask(() =>
                     {
                         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck, SendOption.Reliable, __instance.GetClientId());

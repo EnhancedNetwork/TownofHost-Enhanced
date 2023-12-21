@@ -92,7 +92,7 @@ public static class Necromancer
         player.Notify(string.Format(GetString("NecromancerRevenge"), seconds, Killer.GetRealName()), 1.1f);
         Timer = seconds;
 
-        _ = new LateTask(() => { Countdown(seconds - 1, player); }, 1.01f);
+        _ = new LateTask(() => { Countdown(seconds - 1, player); }, 1.01f, "Necromancer Countdown");
     }
     public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
