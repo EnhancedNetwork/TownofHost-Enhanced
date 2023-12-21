@@ -3984,6 +3984,16 @@ public static class PlayerControlCheckUseZiplinePatch
         return true;
     }
 }
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
+public static class PlayerControlDiePatch
+{
+    public static void Postfix(PlayerControl __instance)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+
+        __instance.RpcRemovePet();
+    }
+}
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetRole))]
 class PlayerControlSetRolePatch
 {
