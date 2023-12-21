@@ -850,7 +850,7 @@
   "GodfatherInfoLong": "(インポスター):\nゴッドファーザーとして、誰かを選んで彼らをあなたのターゲットにします。次のラウンドで誰かがそのターゲットをキルした場合、キラーは難民に変わります。",
   "ChronomancerInfoLong": "(インポスター):\n時空術師として、キルボタンをチャージできます。アクティブになると、時空術師はチャージが尽きるまで無限にキルボタンを使用できます。",
   "PitfallInfoLong": "(インポスター):\nピットフォールとして、シェイプシフトを使用してシェイプシフトの周りのエリアをトラップとしてマークします。このエリアに入るプレイヤーは一時的に動けなくなり、視界も影響を受けます。",
-  "BerserkerInfoLong": "(インポスター):\nバーサーカーとして、キルごとにレベルアップします。ホストが定義した一定のレベルに達すると、新しいパワーが解除されます。\n\nスカベンジキルはあなたのキルを消失させます。\nボムキルはあなたのキルを爆発させます。",
+  "BerserkerInfoLong": "(インポスター):\n狂戦士として、キルごとにレベルアップします。ホストが定義した一定のレベルに達すると、新しいパワーが解除されます。\n\nスカベンジキルはあなたのキルを消失させます。\nボムキルはあなたのキルを爆発させます。",
   "EvilMiniInfoLong": "(インポスター):\nイービルミニとして、成長するまで不死身で、非常に長い初期キルのクールダウンがあります。成長するにつれてクールダウンが大幅に短縮されます。",
   "BlackmailerInfoLong": "(インポスター):\nブラックメイラーとして、ターゲットにシフトすると、そのプレイヤーを脅迫し、脅迫されたプレイヤーは話すことができません。\n\n脅迫されたプレイヤーによる発言は混乱コマンドをトリガーします。脅迫されたプレイヤーがアイコンを見たときには話さないでください。",
   "InstigatorInfoLong": "(インポスター):\nインスティゲーターとして、クルーメイトたちを互いに対立させるのがあなたの仕事です。会議でクルーメイトが追放されるたびに、あなたが生存している限り、無実のプレイヤーに投票したクルーメイトの追加の死が会議後に発生します。追加で死亡するプレイヤーの数はホストによって決められます。",
@@ -1348,6 +1348,9 @@
   "AllOpen": "すべてを開く",
   "AllClosed": "すべてを閉じる",
   "RandomByDoor": "ランダムに閉じる",
+  "ChangeDecontaminationTime": "Change Decontamination Time (<color=#e84b56>MIRA HQ</color>/<color=#a167c0>Polus</color>)",
+  "DecontaminationTimeOnMiraHQ": "Decontamination Time On <color=#e84b56>MIRA HQ</color>",
+  "DecontaminationTimeOnPolus": "Decontamination Time On <color=#a167c0>Polus</color>",
   "ApplyDenyNameList": "DenyNameリストを適用",
   "KickPlayerFriendCodeNotExist": "フレンドコードのないプレイヤーをキック",
   "TempBanPlayerFriendCodeNotExist": "フレンドコードのないプレイヤーを一時的に禁止",
@@ -2704,8 +2707,8 @@
   "GodfatherTargetCountMode": "キラーが変身します",
   "GodfatherCount.Refugee": "<color=#ff1919>難民</color>",
   "GodfatherCount.Madmate": "<color=#ff1919>マッドメイト</color>",
-  "BerserkerKillCooldown": "バーサーカーキルクールダウン",
-  "BerserkerMax": "バーサーカーが達成できる最大レベル",
+  "BerserkerKillCooldown": "狂戦士のキルクールダウン",
+  "BerserkerMax": "狂戦士が達できる最大レベル",
   "BerserkerOneCanKillCooldown": "より低いキルクールダウンのロックを解除する",
   "BerserkerOneKillCooldown": "ロック解除後のキルクールタイム",
   "BerserkerTwoCanScavenger": "スカベンジ・キルのアンロック",
@@ -3531,5 +3534,5 @@
   "VoteDead": "申し訳ないが、あなたが投票したプレイヤーは既に死亡しているため、あなたの投票は戻されます。",
   "ImpCanBeSilent": "<color=#ff1919>インポスター</color>はサイレントになることができます",
   "CrewCanBeSilent": "<color=#8cffff>クルーメイト</color>はサイレントになることができます",
-  "NeutralCanBeSilent": "<color=#7f8c8d>Neutrals</color> can become Silent"
+  "NeutralCanBeSilent": "<color=#7f8c8d>中立者</color>はサイレントになることができます"
 }
