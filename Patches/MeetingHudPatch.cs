@@ -1509,7 +1509,7 @@ class MeetingHudOnDestroyPatch
     public static void Postfix()
     {
         MeetingStates.FirstMeeting = false;
-        Logger.Info("------------会议结束------------", "Phase");
+        Logger.Info("------------End Meeting------------", "Phase");
         if (AmongUsClient.Instance.AmHost)
         {
             AntiBlackout.SetIsDead();
