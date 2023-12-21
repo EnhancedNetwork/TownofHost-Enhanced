@@ -2424,6 +2424,10 @@ class ReportDeadBodyPatch
 
         MeetingTimeManager.OnReportDeadBody();
 
+        // Clear all Notice players
+        NameNotifyManager.Notice.Clear();
+
+        // Update Notify Roles for Meeting
         Utils.DoNotifyRoles(isForMeeting: true, NoCache: true, CamouflageIsForMeeting: true);
 
         _ = new LateTask(Utils.SyncAllSettings, 3f, "Sync all settings after report");
