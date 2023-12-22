@@ -8,6 +8,7 @@ using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
 using AsmResolver.Collections;
+using Il2CppSystem.Data;
 
 namespace TOHE.Roles.Neutral
 {
@@ -31,6 +32,9 @@ namespace TOHE.Roles.Neutral
         public static byte MarkedPlayer = byte.MaxValue;
         public static string lastExiledColor = "None";
         public static string lastReportedColor = "None";
+        public static string thisReportedColor = "None";
+        public static string lastButtonPressedColor = "None";
+        public static string thisButtonPressedColor = "None";
         public static void SetupCustomOption()
         {
             SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Quizmaster, 1);
@@ -137,16 +141,29 @@ namespace TOHE.Roles.Neutral
 
         public static void OnReportDeadBody(PlayerControl player, GameData.PlayerInfo targetInfo)
         {
-            lastReportedColor = targetInfo.GetPlayerColorString();
-            Player = Utils.GetPlayerByRole(CustomRoles.Quizmaster);
+            lastReportedColor = thisReportedColor;
+            thisReportedColor = targetInfo.GetPlayerColorString();
+            DoQuestion();
+        }
+
+        public static void OnButtonPress(PlayerControl player)
+        {
+            lastButtonPressedColor = thisButtonPressedColor;
+            thisButtonPressedColor = player.Data.GetPlayerColorString();
+            DoQuestion();
+        }
+
+        public static void DoQuestion()
+        {
             if (MarkedPlayer != byte.MaxValue)
             {
                 List<QuizQuestionBase> Questions = new List<QuizQuestionBase>
                 {
                     new SabotageQuestion { Stage = 1, Question = "LastSabotage",/* JSON ENTRIES */ QuizmasterQuestionType = QuizmasterQuestionType.LatestSabotageQuestion },
                     new SabotageQuestion { Stage = 1, Question = "FirstRoundSabotage", QuizmasterQuestionType = QuizmasterQuestionType.FirstRoundSabotageQuestion },
-                    new EjectionQuestion { Stage = 1, Question = "LastEjectedPlayerColor", QuizmasterQuestionType = QuizmasterQuestionType.EjectionColorQuestion },
-                    new ReportQuestion { Stage = 1, Question = "LastReportPlayerColor", QuizmasterQuestionType = QuizmasterQuestionType.ReportColorQuestion },
+                    new PlrColorQuestion { Stage = 1, Question = "LastEjectedPlayerColor", QuizmasterQuestionType = QuizmasterQuestionType.EjectionColorQuestion },
+                    new PlrColorQuestion { Stage = 1, Question = "LastReportPlayerColor", QuizmasterQuestionType = QuizmasterQuestionType.ReportColorQuestion },
+                    new PlrColorQuestion { Stage = 1, Question = "LastButtonPressedPlayerColor", QuizmasterQuestionType = QuizmasterQuestionType.LastMeetingColorQuestion },
                 };
                 Question = GetRandomQuestion(Questions);
                 _ = new LateTask(() =>
@@ -227,6 +244,22 @@ namespace TOHE.Roles.Neutral
             plrToKill.RpcExileV2();
             ResetMarkedPlayer();
         }
+
+        public static void RightAnswer(PlayerControl target)
+        {
+            lastReportedColor = thisReportedColor;
+            Utils.SendMessage(GetString("QuizmasterCorrectTarget"), target.PlayerId, GetString("QuizmasterChatNoticeTitle"));
+            Utils.SendMessage(GetString("QuizmasterCorrect").Replace("{QMTARGET}", target.GetRealName()), Player.PlayerId, GetString("QuizmasterChatNoticeTitle"));
+            ResetMarkedPlayer();
+        }
+
+        public static void WrongAnswer(PlayerControl target, string wrongAnswer, string rightAnswer)
+        {
+            lastReportedColor = thisReportedColor;
+            KillPlayer(target);
+            Utils.SendMessage(GetString("QuizmasterWrong").Replace("{QMTARGET}", target.GetRealName()), Player.PlayerId, GetString("QuizmasterChatNoticeTitle"));
+            Utils.SendMessage(GetString("QuizmasterWrongTarget").Replace("{QMWRONG}", wrongAnswer).Replace("{QMRIGHT}", rightAnswer).Replace("{QM}", Player.GetRealName()), target.PlayerId, GetString("QuizmasterChatNoticeTitle"));
+        }
     }
 
     abstract public class QuizQuestionBase
@@ -241,7 +274,7 @@ namespace TOHE.Roles.Neutral
         public abstract void FixUnsetAnswers();
     }
 
-    class EjectionQuestion : QuizQuestionBase
+    class PlrColorQuestion : QuizQuestionBase
     {
 
         public override void FixUnsetAnswers()
@@ -260,46 +293,10 @@ namespace TOHE.Roles.Neutral
 
             if (QuizmasterQuestionType == QuizmasterQuestionType.EjectionColorQuestion)
                 Answer = Quizmaster.lastReportedColor;
-            PossibleAnswers.Remove(Answer);
-            for (int numOfQuestionsDone = 0; numOfQuestionsDone < 3; numOfQuestionsDone++)
-            {
-                var prefix = "";
-                if (numOfQuestionsDone == positionForRightAnswer)
-                {
-                    AnswerLetter = new List<string> { "A", "B", "C" }[positionForRightAnswer];
-                    if (Answer == "None") prefix = "Quizmaster.";
-                    Answers.Add(prefix + Answer);
-                }
-                else
-                {
-                    string thatAnswer = PossibleAnswers[rnd.Next(0, PossibleAnswers.Count)];
-                    if (Answer == "None") prefix = "Quizmaster.";
-                    Answers.Add(prefix + thatAnswer);
-                    PossibleAnswers.Remove(thatAnswer);
-                }
-            }
-        }
-    }
-
-    class ReportQuestion : QuizQuestionBase
-    {
-
-        public override void FixUnsetAnswers()
-        {
-            Answers = new List<string> { };
-            List<string> PossibleAnswers = new List<string> { };
-
-            foreach (PlayerControl plr in Main.AllPlayerControls)
-            {
-                if (!PossibleAnswers.Contains(plr.Data.GetPlayerColorString())) PossibleAnswers.Add(plr.Data.GetPlayerColorString());
-            }
-
-
-            var rnd = IRandom.Instance;
-            int positionForRightAnswer = rnd.Next(0, 3);
-
-            if (QuizmasterQuestionType == QuizmasterQuestionType.ReportColorQuestion)
+            else if (QuizmasterQuestionType == QuizmasterQuestionType.ReportColorQuestion)
                 Answer = Quizmaster.lastReportedColor;
+            else if (QuizmasterQuestionType == QuizmasterQuestionType.LastMeetingColorQuestion)
+                Answer = Quizmaster.lastButtonPressedColor;
             PossibleAnswers.Remove(Answer);
             for (int numOfQuestionsDone = 0; numOfQuestionsDone < 3; numOfQuestionsDone++)
             {
@@ -379,7 +376,7 @@ namespace TOHE.Roles.Neutral
         LatestSabotageQuestion,
         EjectionColorQuestion,
         ReportColorQuestion,
-        MeetingQuestion,
+        LastMeetingColorQuestion,
         BasisQuestion,
     }
 

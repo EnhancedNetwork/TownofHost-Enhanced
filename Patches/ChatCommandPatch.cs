@@ -2241,16 +2241,9 @@ internal class ChatCommands
                 if (answerValid)
                 {
                     if (rightAnswer == answer)
-                    {
-                        Utils.SendMessage(GetString("QuizmasterCorrectTarget"), plr.PlayerId, GetString("QuizmasterChatNoticeTitle"));
-                        Utils.SendMessage(GetString("QuizmasterCorrect").Replace("{QMTARGET}", plr.GetRealName()), quizmasterPlayer.PlayerId, GetString("QuizmasterChatNoticeTitle"));
-                        Quizmaster.ResetMarkedPlayer();
-                    } else
-                    {
-                        Quizmaster.KillPlayer(plr);
-                        Utils.SendMessage(GetString("QuizmasterWrong").Replace("{QMTARGET}", plr.GetRealName()), quizmasterPlayer.PlayerId, GetString("QuizmasterChatNoticeTitle"));
-                        Utils.SendMessage(GetString("QuizmasterWrongTarget").Replace("{QMWRONG}", answer).Replace("{QMRIGHT}", rightAnswer).Replace("{QM}", quizmasterPlayer.GetRealName()), plr.PlayerId, GetString("QuizmasterChatNoticeTitle"));
-                    }
+                        Quizmaster.RightAnswer(plr);
+                    else
+                        Quizmaster.WrongAnswer(plr, answer, rightAnswer);
                 }
                 else
                 {

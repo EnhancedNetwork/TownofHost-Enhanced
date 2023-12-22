@@ -2291,6 +2291,7 @@ class ReportDeadBodyPatch
 
         if (target == null) //ボタン
         {
+            Quizmaster.OnButtonPress(player);
             if (player.Is(CustomRoles.Mayor))
             {
                 Main.MayorUsedButtonCount[player.PlayerId] += 1;
@@ -2330,6 +2331,8 @@ class ReportDeadBodyPatch
 
             if (Virus.IsEnable && Main.InfectedBodies.Contains(target.PlayerId))
                 Virus.OnKilledBodyReport(player);
+
+            Quizmaster.OnReportDeadBody(player, target);
         }
 
         Main.LastVotedPlayerInfo = null;
@@ -2396,7 +2399,6 @@ class ReportDeadBodyPatch
         if (Mediumshiper.IsEnable) Mediumshiper.OnReportDeadBody(target);
         if (Spiritualist.IsEnable) Spiritualist.OnReportDeadBody(target);
         if (Enigma.IsEnable) Enigma.OnReportDeadBody(player, target);
-        Quizmaster.OnReportDeadBody(player, target);
 
         foreach (var pid in Main.AwareInteracted.Keys.ToArray())
         {
