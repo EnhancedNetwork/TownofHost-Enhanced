@@ -545,9 +545,9 @@ class GameEndChecker
         {
             reason = GameOverReason.ImpostorByKill;
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return false;
-            if (CheckGameEndByLivingPlayers(out reason)) return true;
-            if (CheckGameEndByTask(out reason)) return true;
             if (CheckGameEndBySabotage(out reason)) return true;
+            if (CheckGameEndByTask(out reason)) return true;
+            if (CheckGameEndByLivingPlayers(out reason)) return true;
 
             return false;
         }
@@ -716,6 +716,7 @@ public abstract class GameEndPredicate
         {
             reason = GameOverReason.HumansByTask;
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
+            Logger.Info($"Game End By Completed All Tasks", "CheckGameEndBySabotage");
             return true;
         }
         return false;
@@ -737,6 +738,7 @@ public abstract class GameEndPredicate
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Impostor);
             reason = GameOverReason.ImpostorBySabotage;
             LifeSupp.Countdown = 10000f;
+            Logger.Info($"Game End By LifeSupp Sabotage", "CheckGameEndBySabotage");
             return true;
         }
 
@@ -754,6 +756,7 @@ public abstract class GameEndPredicate
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Impostor);
             reason = GameOverReason.ImpostorBySabotage;
             critical.ClearSabotage();
+            Logger.Info($"Game End By Critical Sabotage", "CheckGameEndBySabotage");
             return true;
         }
 

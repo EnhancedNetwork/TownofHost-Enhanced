@@ -219,6 +219,8 @@ class ExileControllerWrapUpPatch
                 Shroud.MurderShroudedPlayers(player);
             }
 
+            player.RpcRemovePet();
+
             player.ResetKillCooldown();
             player.RpcResetAbilityCooldown();
         }
@@ -300,6 +302,7 @@ class ExileControllerWrapUpPatch
                     Utils.AfterPlayerDeathTasks(player);
                 });
                 Main.AfterMeetingDeathPlayers.Clear();
+
             }, 0.5f, "AfterMeetingDeathPlayers Task");
         }
 

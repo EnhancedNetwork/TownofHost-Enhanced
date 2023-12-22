@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TOHE.Modules;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
@@ -81,6 +82,7 @@ enum CustomRPC
     SetDivinatorTempLimit,
     SetBloodhoundLimit,
     SetParityCopLimit,
+    KeeperRPC,
     SetOracleLimit,
     SetMediumLimit,
     SetPelicanEatenNum,
@@ -101,6 +103,7 @@ enum CustomRPC
     SetJinxSpellCount,
     SetCollectorVotes,
     TaskinatorMarkedTask,
+    BenefactorRPC,
     SetSwapperVotes,
     SetQuickShooterShotLimit,
     SetEraseLimit,
@@ -234,13 +237,14 @@ internal class RPCHandlerPatch
                     _ = new LateTask(() =>
                     {
                         Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutEndGame"), __instance?.Data?.PlayerName), true);
-                    }, 3f, "Anti-Black Msg SendInGame");
+                    }, 3f, "Anti-Black Msg SendInGame 1");
+
                     _ = new LateTask(() =>
                     {
                         CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
                         GameManager.Instance.LogicFlow.CheckEndCriteria();
                         RPC.ForceEndGame(CustomWinner.Error);
-                    }, 5.5f, "Anti-Black End Game");
+                    }, 5.5f, "Anti-Black End Game 1");
                 }
                 else if (GameStates.IsOnlineGame)
                 {
@@ -248,7 +252,7 @@ internal class RPCHandlerPatch
                     _ = new LateTask(() =>
                     {
                         Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutIgnored"), __instance?.Data?.PlayerName), true);
-                    }, 3f, "Anti-Black Msg SendInGame");
+                    }, 3f, "Anti-Black Msg SendInGame 2");
                 }
                 break;
 
@@ -283,7 +287,7 @@ internal class RPCHandlerPatch
                                     Logger.SendInGame(msg);
                                     AmongUsClient.Instance.KickPlayer(__instance.GetClientId(), false);
                                 }
-                            }, 5f, "Kick");
+                            }, 5f, "Kick Because Diffrent Version Or Mod");
                         }
                     }
                     // Kick Unmached Player End
@@ -291,6 +295,7 @@ internal class RPCHandlerPatch
                 catch
                 {
                     Logger.Warn($"{__instance?.Data?.PlayerName}({__instance.PlayerId}): バージョン情報が無効です", "RpcVersionCheck");
+                    
                     _ = new LateTask(() =>
                     {
                         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck, SendOption.Reliable, __instance.GetClientId());
@@ -561,6 +566,9 @@ internal class RPCHandlerPatch
             case CustomRPC.TaskinatorMarkedTask:
                 Taskinator.ReceiveRPC(reader);
                 break;
+            case CustomRPC.BenefactorRPC:
+                Benefactor.ReceiveRPC(reader);
+                break;
             case CustomRPC.SetQuickShooterShotLimit:
                 QuickShooter.ReceiveRPC(reader);
                 break;
@@ -740,6 +748,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetParityCopLimit:
                 ParityCop.ReceiveRPC(reader);
+                break;
+            case CustomRPC.KeeperRPC:
+                Keeper.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetOracleLimit:
                 Oracle.ReceiveRPC(reader);
@@ -1069,6 +1080,9 @@ internal static class RPC
             case CustomRoles.Captain:
                 Captain.Add(targetId);
                 break;
+            case CustomRoles.GuessMaster:
+                GuessMaster.Add(targetId);
+                break;
             case CustomRoles.Pickpocket:
                 Pickpocket.Add(targetId);
                 break;
@@ -1180,6 +1194,9 @@ internal static class RPC
             case CustomRoles.Taskinator:
                 Taskinator.Add(targetId);
                 break;
+            case CustomRoles.Benefactor:
+                Benefactor.Add(targetId);
+                break;
             case CustomRoles.CursedWolf:
                 Main.CursedWolfSpellCount[targetId] = Options.GuardSpellTimes.GetInt();
                 break;
@@ -1219,6 +1236,9 @@ internal static class RPC
                 break;
             case CustomRoles.ParityCop:
                 ParityCop.Add(targetId);
+                break;
+            case CustomRoles.Keeper:
+                Keeper.Add(targetId);
                 break;
             case CustomRoles.Councillor:
                 Councillor.Add(targetId);

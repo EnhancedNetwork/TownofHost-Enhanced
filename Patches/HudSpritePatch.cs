@@ -99,6 +99,9 @@ public static class HudSpritePatch
             case CustomRoles.EvilTracker:
                 newAbilityButton = CustomButton.Get("Track");
                 break;
+            case CustomRoles.Tracker:
+                newAbilityButton = CustomButton.Get("Track");
+                break;
             case CustomRoles.Vampire:
                 newKillButton = CustomButton.Get("Bite");
                 break;
@@ -164,6 +167,15 @@ public static class HudSpritePatch
                 break;
             case CustomRoles.Agitater:
                 newKillButton = CustomButton.Get("bombshell");
+                break;
+            case CustomRoles.Vulture:
+                newReportButton = CustomButton.Get("Eat");
+                break;
+            case CustomRoles.Pursuer:
+                newAbilityButton = CustomButton.Get("Pursuer");
+                break;
+            case CustomRoles.Cleaner:
+                newReportButton = CustomButton.Get("Clean");
                 break;
             case CustomRoles.Warlock:
                 if (!shapeshifting)

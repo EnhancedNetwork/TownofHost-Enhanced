@@ -101,13 +101,24 @@ internal class EAC
                     Logger.Fatal($"非法设置玩家【{pc.GetClientId()}:{pc.GetRealName()}】的游戏名称，已驳回", "EAC");
                     return true;
                 case RpcCalls.ReportDeadBody:
-                    var p1 = Utils.GetPlayerById(sr.ReadByte());
-                    if (p1 != null && p1.IsAlive() && !p1.Is(CustomRoles.Paranoia) && !p1.Is(CustomRoles.GM))
+                    if (!GameStates.IsInGame)
                     {
                         WarnHost();
-                        Report(pc, "非法报告尸体");
-                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法报告尸体：【{p1?.GetNameWithRole() ?? "null"}】，已驳回", "EAC");
+                        Report(pc, "Report body out of game A");
+                        HandleCheat(pc, "Report body out of game A");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非游戏内开会，已驳回", "EAC");
                         return true;
+                    }
+                    if (ReportTimes.TryGetValue(pc.PlayerId, out int rtimes))
+                    {
+                        if (rtimes > 14)
+                        {
+                            WarnHost();
+                            Report(pc, "Spam report bodies A");
+                            HandleCheat(pc, "Spam report bodies A");
+                            Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】刷报告尸体满14次，已驳回", "EAC");
+                            return true;
+                        }
                     }
                     break;
                 case RpcCalls.SetColor:
@@ -241,6 +252,21 @@ internal class EAC
         WarnHost(-1);
         return false;
     }
+    public static Dictionary<byte, CustomRoles> OriginalRoles = new();
+    public static void LogAllRoles()
+    {
+        foreach (var pc in Main.AllPlayerControls.ToArray())
+        {
+            try
+            {
+                OriginalRoles.Add(pc.PlayerId, pc.GetCustomRole());
+            }
+            catch (Exception error)
+            {
+                Logger.Fatal(error.ToString(), "EAC.LogAllRoles");
+            }
+        }
+    }
     public static bool RpcUpdateSystemCheck(PlayerControl player, SystemTypes systemType, byte amount)
     {
         //Update system rpc can not get received by playercontrol.handlerpc
@@ -249,30 +275,13 @@ internal class EAC
         if (player.AmOwner || !AmongUsClient.Instance.AmHost) return false;
         if (systemType == SystemTypes.Sabotage) //Normal sabotage using buttons
         {
-            if (player.GetCustomRole().GetVNRole() != CustomRoles.Impostor && player.GetCustomRole().GetVNRole() != CustomRoles.Shapeshifter
-                && player.GetCustomRole().GetDYRole() != RoleTypes.Impostor && player.GetCustomRole().GetDYRole() != RoleTypes.Shapeshifter)
+            if (!player.HasImpKillButton(true))
             {
-                if (Main.ErasedRoleStorage.ContainsKey(player.PlayerId) && !player.IsModClient())
-                {
-                    var originRole = Main.ErasedRoleStorage[player.PlayerId];
-                    if (originRole.GetVNRole() != CustomRoles.Impostor && originRole.GetVNRole() != CustomRoles.Shapeshifter
-                        && originRole.GetDYRole() != RoleTypes.Impostor && originRole.GetDYRole() != RoleTypes.Shapeshifter)
-                    {
-                        WarnHost();
-                        Report(player, "Bad Sabotage A : Non imp after erased");
-                        HandleCheat(player, "Bad Sabotage A");
-                        Logger.Fatal($"玩家【{player.GetClientId()}:{player.GetRealName()}】Bad Sabotage A，已驳回", "EAC");
-                        return true;
-                    }
-                }
-                else
-                {
-                    WarnHost();
-                    Report(player, "Bad Sabotage B : Non imp");
-                    HandleCheat(player, "Bad Sabotage B");
-                    Logger.Fatal($"玩家【{player.GetClientId()}:{player.GetRealName()}】Bad Sabotage B，已驳回", "EAC");
-                    return true;
-                }
+                WarnHost();
+                Report(player, "Bad Sabotage A : Non Imp");
+                HandleCheat(player, "Bad Sabotage A : Non Imp");
+                Logger.Fatal($"玩家【{player.GetClientId()}:{player.GetRealName()}】Bad Sabotage A，已驳回", "EAC");
+                return true;
             }
         } //Cheater directly send 128 systemtype rpc
         else if (systemType == SystemTypes.LifeSupp)
@@ -391,9 +400,8 @@ internal class EAC
     {
         string msg = $"{pc.GetClientId()}|{pc.FriendCode}|{pc.Data.PlayerName}|{pc.GetClient().GetHashedPuid()}|{reason}";
         //Cloud.SendData(msg);
-        Logger.Fatal($"EAC报告：{pc.GetRealName()}: {reason}", "EAC Cloud");
-        Logger.SendInGame(string.Format(GetString("Message.NoticeByEAC"), pc?.Data?.PlayerName, reason));
-
+        Logger.Fatal($"EAC报告：{msg}", "EAC Cloud");
+        Logger.SendInGame(string.Format(GetString("Message.NoticeByEAC"), $"{pc?.Data?.PlayerName} | {pc.GetClient().GetHashedPuid()}", reason));
     }
     public static bool ReceiveInvalidRpc(PlayerControl pc, byte callId)
     {

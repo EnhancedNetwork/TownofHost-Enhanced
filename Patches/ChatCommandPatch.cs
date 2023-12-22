@@ -32,6 +32,7 @@ internal class ChatCommands
 
     public static bool Prefix(ChatController __instance)
     {
+        if (__instance.quickChatField.visible) return true;
         if (__instance.freeChatField.textArea.text == "") return false;
         __instance.timeSinceLastMessage = 3f;
         var text = __instance.freeChatField.textArea.text;
@@ -947,27 +948,26 @@ internal class ChatCommands
         text = text.Replace("着", "者").Trim().ToLower();
         return text switch
         {
-            // 第一个为繁体中文，第二个为简体中文，后面为别名
-            // 也有可能第一个都是 简体/繁体 中文
-            // 繁体中文由阿龙、柚子、flyflyturtle制作
+            // Part of the string thanks to WuQing for helping
+            // 部分string感谢WuQing帮忙
+            // 第一个为繁体中文，第二个为简体中文
 
+            // Note for translators
+            // This file should contain not only Simplified and Traditional Chinese strings
+            // If the role has other nicknames or common misspellings in your language
+            // You can add them to this file with [ or "string" ]
+            // But please pay attention to the order of the languages
+            // so we can make the file clear and easy to manage
+
+            // Note for Contributors
+            // If you are coding a new role
+            // Pls create a new line here at the proper position
+            // Position should be same with the role name in en_US.json
+            // So translators can put nicknames or common misspellings here
+            // eg : "A" or "B" => GetString("RealRoleName"),
+            // eg : "Vector" or "Mario" => GetString("Mario"),
             // If you need to remove the roles, please delete them directly instead of commenting them out
             // 如果需要删除职业，请直接删掉，而不是注释掉
-
-            //Note for translators
-            //This file should contain not only Simplified and Traditional Chinese strings
-            //If the role has other nicknames or common misspellings in your language
-            //You can add them to this file with [ or "string" ]
-            //But please pay attention to the order of the languages
-            //so we can make the file clear and easy to manage
-
-            //Note for Contributors
-            //If you are coding a new role
-            //Pls create a new line here at the proper position
-            //Position should be same with the role name in en_US.json
-            //So translators can put nicknames or common misspellings here
-            //eg : "A" or "B" => GetString("RealRoleName"),
-            //eg : "Vector" or "Mario" => GetString("Mario"),
 
             // GM
             "GM(遊戲大師)" or "管理员" or "管理" or "gm" or "GM" => GetString("GM"),
@@ -1123,9 +1123,11 @@ internal class ChatCommands
             "間諜" or "间谍" => GetString("Spy"),
             "隨機者" or "萧暮" or "暮" or "萧暮不姓萧" => GetString("Randomizer"),
             "猜想者" or "猜想" or "谜团" => GetString("Enigma"),
-
-            // 感谢WuQing帮我写这个
-            // Thanks to WuQing for writing this for me
+            "船長" or "舰长" or "船长" => GetString("Captain"),
+            "鼹鼠" => GetString("Mole"),
+            "慈善家" or "恩人" => GetString("Benefactor"),
+            "守衛者" or "守卫者" => GetString("Keeper"),
+            "賭場管理員" or "竞猜大师" or "竞猜" => GetString("GuessMaster"),
 
             // 中立阵营职业
             "小丑" or "丑皇" => GetString("Jester"),
@@ -1197,9 +1199,6 @@ internal class ChatCommands
             "魔藥師" or "药剂师" => GetString("PotionMaster"),
             "死靈法師" or "亡灵巫师" => GetString("Necromancer"),
 
-            // 后面的别名分别对应附加前缀（也有可能没有）
-            // 再次感谢WuQing帮忙编写
-
             // 附加职业
             "絕境者" or "绝境者" => GetString("LastImpostor"),
             "超頻" or "超频波" or "超频" => GetString("Overclocked"),
@@ -1269,9 +1268,11 @@ internal class ChatCommands
             "焦急者" or "焦急的" or "焦急" => GetString("Hurried"),
             "OIIAI" => GetString("Oiiai"),
             "順從者" or "影响者" or "順從" or "影响" => GetString("Influenced"),
+            "沉默者" or "沉默" => GetString("Silent"),
+            "平凡者" or "平凡" => GetString("Mundane"),
 
             // 随机阵营职业
-            "迷你船員" or "迷你船员" or "迷你" => GetString("Mini"),
+            "迷你船員" or "迷你船员" or "迷你" or "小孩" => GetString("Mini"),
             _ => text,
         };
     }
@@ -2275,7 +2276,13 @@ class ChatUpdatePatch
     {
         if (!AmongUsClient.Instance.AmHost || !Main.MessagesToSend.Any() || (Main.MessagesToSend[0].Item2 == byte.MaxValue && Main.MessageWait.Value > __instance.timeSinceLastMessage)) return;
         if (DoBlockChat) return;
-        var player = Main.AllAlivePlayerControls.OrderBy(x => x.PlayerId).FirstOrDefault();
+        var player = PlayerControl.LocalPlayer;
+        if (GameStates.IsInGame || player.Data.IsDead)
+        {
+            player = Main.AllAlivePlayerControls.ToArray().OrderBy(x => x.PlayerId).FirstOrDefault()
+                     ?? Main.AllPlayerControls.ToArray().OrderBy(x => x.PlayerId).FirstOrDefault()
+                     ?? player;
+        }
         if (player == null) return;
         (string msg, byte sendTo, string title) = Main.MessagesToSend[0];
         Main.MessagesToSend.RemoveAt(0);
@@ -2315,6 +2322,22 @@ internal class AddChatPatch
                 break;
         }
         if (!AmongUsClient.Instance.AmHost) return;
+    }
+}
+
+[HarmonyPatch(typeof(FreeChatInputField), nameof(FreeChatInputField.UpdateCharCount))]
+internal class UpdateCharCountPatch
+{
+    public static void Postfix(FreeChatInputField __instance)
+    {
+        int length = __instance.textArea.text.Length;
+        __instance.charCountText.SetText($"{length}/{__instance.textArea.characterLimit}");
+        if (length < (AmongUsClient.Instance.AmHost ? 888 : 250))
+            __instance.charCountText.color = Color.black;
+        else if (length < (AmongUsClient.Instance.AmHost ? 999 : 300))
+            __instance.charCountText.color = new Color(1f, 1f, 0f, 1f);
+        else
+            __instance.charCountText.color = Color.red;
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSendChat))]

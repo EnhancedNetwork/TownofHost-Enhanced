@@ -211,7 +211,8 @@ public static class Divinator
                 CustomRoles.CursedSoul or
                 CustomRoles.Cleanser or
                 CustomRoles.CursedWolf or
-                CustomRoles.President
+                CustomRoles.President or 
+                CustomRoles.Keeper
                 => "Result10",
 
                 CustomRoles.Addict or
@@ -290,6 +291,8 @@ public static class Divinator
 
                 CustomRoles.EvilGuesser or
                 CustomRoles.NiceGuesser or
+                CustomRoles.Doomsayer or
+                CustomRoles.GuessMaster or
                 CustomRoles.DarkHide or
                 CustomRoles.Camouflager or
                 CustomRoles.Chameleon or
@@ -374,9 +377,11 @@ public static class Divinator
 
                 CustomRoles.Crewpostor or
                 CustomRoles.Taskinator or
+                CustomRoles.Benefactor or
                 CustomRoles.Marshall or
                 CustomRoles.Workaholic or
                 CustomRoles.Phantom or
+                CustomRoles.Solsticer or
                 CustomRoles.NiceMini or
                 CustomRoles.EvilMini or
                 CustomRoles.Terrorist

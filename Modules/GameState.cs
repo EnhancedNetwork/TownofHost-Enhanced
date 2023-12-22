@@ -266,6 +266,10 @@ public class PlayerState
         if (AmongUsClient.Instance.AmHost)
         {
             RPC.SendDeathReason(PlayerId, deathReason);
+            if (GameStates.IsMeeting)
+            {
+                MeetingHud.Instance.CheckForEndVoting();
+            }
         }
     }
     public bool IsSuicide() { return deathReason == DeathReason.Suicide; }

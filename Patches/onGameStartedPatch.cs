@@ -15,7 +15,6 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Modules.CustomRoleSelector;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -216,6 +215,7 @@ internal class ChangeRoleSettings
             Sheriff.Init();
             CopyCat.Init();
             Captain.Init();
+            GuessMaster.Init();
             Cleanser.Init();
             SwordsMan.Init();
             EvilTracker.Init();
@@ -242,6 +242,7 @@ internal class ChangeRoleSettings
             DarkHide.Init();
             Greedier.Init();
             Collector.Init();
+            Benefactor.Init();
             Taskinator.Init();
             QuickShooter.Init();
             Camouflager.Init();
@@ -309,6 +310,7 @@ internal class ChangeRoleSettings
             Wildling.Init();
             Morphling.Init();
             ParityCop.Init(); // *giggle* party cop
+            Keeper.Init(); // *giggle* party cop
             Spiritcaller.Init();
             Lurker.Init();
             PlagueBearer.Init();
@@ -384,8 +386,8 @@ internal class SelectRolesPatch
                 PlayerControl.LocalPlayer.Data.IsDead = true;
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
             }
-                   
 
+            EAC.OriginalRoles = new();
             SelectCustomRoles();
             SelectAddonRoles();
             CalculateVanillaRoleCount();
@@ -652,6 +654,9 @@ internal class SelectRolesPatch
                     case CustomRoles.Captain:
                         Captain.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.GuessMaster:
+                        GuessMaster.Add(pc.PlayerId);
+                        break;
                     case CustomRoles.TimeMaster:
                         Main.TimeMasterNum[pc.PlayerId] = 0;
                         Main.TimeMasterNumOfUsed.Add(pc.PlayerId, Options.TimeMasterMaxUses.GetInt());
@@ -733,6 +738,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Taskinator:
                         Taskinator.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Benefactor:
+                        Benefactor.Add(pc.PlayerId);
                         break;
                     case CustomRoles.CursedWolf:
                         Main.CursedWolfSpellCount[pc.PlayerId] = Options.GuardSpellTimes.GetInt();
@@ -918,6 +926,9 @@ internal class SelectRolesPatch
                     case CustomRoles.ParityCop:
                         ParityCop.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.Keeper:
+                        Keeper.Add(pc.PlayerId);
+                        break;
                     case CustomRoles.Spiritcaller:
                         Spiritcaller.Add(pc.PlayerId);
                         break;
@@ -1038,6 +1049,7 @@ internal class SelectRolesPatch
                 .Where(p => p.GetCustomRole() is CustomRoles.Arsonist or CustomRoles.Revolutionist or CustomRoles.Sidekick or CustomRoles.Shaman or CustomRoles.Vigilante or CustomRoles.Witness or CustomRoles.Innocent or CustomRoles.Killer)
                 .Select(p => p.PlayerId)
                 .ToArray());
+            EAC.LogAllRoles();
 
             Utils.CountAlivePlayers(true);
             Utils.SyncAllSettings();

@@ -792,6 +792,7 @@ class CheckMurderPatch
         if (!AmongUsClient.Instance.AmHost) return false;
         if (target == null) target = killer;
 
+        if (!Benefactor.OnCheckMurder(killer, target)) return false;
         //Jackal can kill Sidekick
         if (killer.Is(CustomRoles.Jackal) && target.Is(CustomRoles.Sidekick) && !Jackal.JackalCanKillSidekick.GetBool())
             return false;
@@ -2386,6 +2387,7 @@ class ReportDeadBodyPatch
         if (Jailer.IsEnable) Jailer.OnReportDeadBody();
         if (Romantic.IsEnable) Romantic.OnReportDeadBody();
         if (Captain.IsEnable) Captain.OnReportDeadBody();
+        Solsticer.patched = false;
 
 
         // if (Councillor.IsEnable) Councillor.OnReportDeadBody();
@@ -2432,6 +2434,10 @@ class ReportDeadBodyPatch
 
         MeetingTimeManager.OnReportDeadBody();
 
+        // Clear all Notice players
+        NameNotifyManager.Notice.Clear();
+
+        // Update Notify Roles for Meeting
         Utils.DoNotifyRoles(isForMeeting: true, NoCache: true, CamouflageIsForMeeting: true);
 
         _ = new LateTask(Utils.SyncAllSettings, 3f, "Sync all settings after report");
@@ -2552,6 +2558,17 @@ class FixedUpdatePatch
                         }
                     }
                 }
+
+                if (KickPlayerPatch.AttemptedKickPlayerList.Any())
+                {
+                    foreach (var item in KickPlayerPatch.AttemptedKickPlayerList)
+                    {
+                        KickPlayerPatch.AttemptedKickPlayerList[item.Key]++;
+
+                        if (item.Value > 11)
+                            KickPlayerPatch.AttemptedKickPlayerList.Remove(item.Key);
+                    }
+                }
             }
 
             if (DoubleTrigger.FirstTriggerTimer.Any()) 
@@ -2631,7 +2648,7 @@ class FixedUpdatePatch
                     case CustomRoles.Deathpact:
                         Deathpact.OnFixedUpdate(player);
                         break;
-
+                    
                     case CustomRoles.Warlock:
                         if (Main.WarlockTimer.TryGetValue(player.PlayerId, out var warlockTimer))
                         {
@@ -2835,6 +2852,9 @@ class FixedUpdatePatch
 
                     case CustomRoles.Spy:
                         Spy.OnFixedUpdate(player);
+                        break;
+                    case CustomRoles.Benefactor:
+                        Benefactor.OnFixedUpdate();
                         break;
 
                     case CustomRoles.Glitch:
@@ -3161,7 +3181,7 @@ class FixedUpdatePatch
                 if (Captain.IsEnable)
                     if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) &&
                         (seerRole.IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
-                        Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Captain), "☆"));
+                        Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Captain), " ☆"));
 
 
                 if (Lawyer.IsEnable)
@@ -3460,7 +3480,7 @@ class CoExitVentPatch
         _ = new LateTask(() =>
         {
             Mole.OnExitVent(__instance.myPlayer, id);
-        }, 0.1f);
+        }, 0.1f, "Mole On Exit Vent");
     }
 }
 
@@ -3686,7 +3706,7 @@ class CoEnterVentPatch
             {
                 pc?.Notify(GetString("FFA-NoVentingBecauseTwoPlayers"), 7f);
                 pc?.MyPhysics?.RpcBootFromVent(id);
-            }, 0.5f);
+            }, 0.5f, "Player No Venting Because Two Players");
             return true;
         }
         if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenKCDIsUp.GetBool())
@@ -3705,7 +3725,7 @@ class CoEnterVentPatch
                 {
                     pc?.Notify(GetString("FFA-NoVentingBecauseKCDIsUP"), 7f);
                     pc?.MyPhysics?.RpcBootFromVent(id);
-                }, 0.5f);
+                }, 0.5f, "Player No Venting Because KCD Is UP");
                 return true;
             }
             
@@ -3716,7 +3736,7 @@ class CoEnterVentPatch
             {
                 __instance.myPlayer?.Notify(string.Format(GetString("HackedByGlitch"), GetString("GlitchVent")));
                 __instance.myPlayer?.MyPhysics?.RpcBootFromVent(id);
-            }, 0.5f);
+            }, 0.5f, "Player Boot From Vent By Glith");
             return true;
         }
 
@@ -3897,6 +3917,7 @@ class PlayerControlCompleteTaskPatch
         if (pc != null)
         {
             var playerTask = pc.myTasks[taskIndex];
+            Benefactor.OnTasKComplete(pc, playerTask);
             Taskinator.OnTasKComplete(pc, playerTask);
         }
         var isTaskFinish = pc.GetPlayerTaskState().IsTaskFinished;
@@ -3982,6 +4003,16 @@ public static class PlayerControlCheckUseZiplinePatch
         }
 
         return true;
+    }
+}
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
+public static class PlayerControlDiePatch
+{
+    public static void Postfix(PlayerControl __instance)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+
+        __instance.RpcRemovePet();
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetRole))]

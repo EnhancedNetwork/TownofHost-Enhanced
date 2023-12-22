@@ -474,10 +474,10 @@ class IntroCutsceneDestroyPatch
                     {
                         Main.AllPlayerControls.Do(x => x.ResetKillCooldown());
                         Main.AllPlayerControls.Where(x => (Main.AllPlayerKillCooldown[x.PlayerId] - 2f) > 0f).Do(pc => pc.SetKillCooldown(Options.FixKillCooldownValue.GetFloat() - 2f));
-                    }, 2f, "FixKillCooldownTask");
+                    }, 2f, "Fix Kill Cooldown Task");
             }
 
-            _ = new LateTask(() => Main.AllPlayerControls.Do(pc => pc.RpcSetRoleDesync(RoleTypes.Shapeshifter, -3)), 2f, "SetImpostorForServer");
+            _ = new LateTask(() => Main.AllPlayerControls.Do(pc => pc.RpcSetRoleDesync(RoleTypes.Shapeshifter, -3)), 2f, "Set Impostor For Server");
             
             if (PlayerControl.LocalPlayer.Is(CustomRoles.GM))
             {

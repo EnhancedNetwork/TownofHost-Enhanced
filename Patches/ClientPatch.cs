@@ -1,5 +1,6 @@
 using HarmonyLib;
 using InnerNet;
+using System.Collections.Generic;
 using TOHE.Modules;
 using UnityEngine;
 using static TOHE.Translator;
@@ -60,7 +61,7 @@ internal class MMOnlineManagerStartPatch
             {
                 message = GetString("CanNotJoinPublicRoomNoLatest");
             }
-            _ = new LateTask(() => { textObj.text = $"<size=2>{Utils.ColorString(Color.red, message)}</size>"; }, 0.01f, "CanNotJoinPublic");
+            _ = new LateTask(() => { textObj.text = $"<size=2>{Utils.ColorString(Color.red, message)}</size>"; }, 0.01f, "Can Not Join Public");
         }
     }
 }
@@ -100,11 +101,7 @@ internal class RunLoginPatch
             Logger.Info("friendcode not found", "EOSManager");
             canOnline = false;
         }
-        else if (Main.Canary && !dbConnect.CanAccessCanary(friendcode))
-        {
-            Logger.Warn("Banned because no access to canary", "dbConnect");
-            Main.hasAccess = false;
-        }
+
         else if (Main.devRelease && !dbConnect.CanAccessDev(friendcode))
         {
             Main.hasAccess = false;
@@ -137,10 +134,22 @@ internal class InnerNetClientCanBanPatch
 [HarmonyPatch(typeof(InnerNet.InnerNetClient), nameof(InnerNet.InnerNetClient.KickPlayer))]
 internal class KickPlayerPatch
 {
-    public static void Prefix(InnerNet.InnerNetClient __instance, int clientId, bool ban)
+    public static Dictionary<string, int> AttemptedKickPlayerList = new();
+    public static bool Prefix(InnerNet.InnerNetClient __instance, int clientId, bool ban)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
+        if (!AmongUsClient.Instance.AmHost) return true;
+
+        var HashedPuid = AmongUsClient.Instance.GetClient(clientId).GetHashedPuid();
+        if (!AttemptedKickPlayerList.ContainsKey(HashedPuid))
+            AttemptedKickPlayerList.Add(HashedPuid, 0);
+        else if (AttemptedKickPlayerList[HashedPuid] < 10)
+        {
+            Logger.Fatal($"Kick player Request too fast! Canceled.", "KickPlayerPatch");
+            return false;
+        }
         if (ban) BanManager.AddBanPlayer(AmongUsClient.Instance.GetRecentClient(clientId));
+
+        return true;
     }
 }
 [HarmonyPatch(typeof(ResolutionManager), nameof(ResolutionManager.SetResolution))]

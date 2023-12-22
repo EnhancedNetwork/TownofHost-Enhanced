@@ -36,16 +36,18 @@ public static class Utils
             Logger.Fatal($"{text} 错误，触发防黑屏措施", "Anti-black");
             ChatUpdatePatch.DoBlockChat = true;
             Main.OverrideWelcomeMsg = GetString("AntiBlackOutNotifyInLobby");
+            
             _ = new LateTask(() =>
             {
                 Logger.SendInGame(GetString("AntiBlackOutLoggerSendInGame"), true);
-            }, 3f, "Anti-Black Msg SendInGame");
+            }, 3f, "Anti-Black Msg SendInGame 3");
+            
             _ = new LateTask(() =>
             {
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
                 GameManager.Instance.LogicFlow.CheckEndCriteria();
                 RPC.ForceEndGame(CustomWinner.Error);
-            }, 5.5f, "Anti-Black End Game");
+            }, 5.5f, "Anti-Black End Game 3");
         }
         else
         {
@@ -57,19 +59,20 @@ public static class Utils
                 _ = new LateTask(() =>
                 {
                     Logger.SendInGame(GetString("AntiBlackOutRequestHostToForceEnd"), true);
-                }, 3f, "Anti-Black Msg SendInGame");
+                }, 3f, "Anti-Black Msg SendInGame 4");
             }
             else
             {
                 _ = new LateTask(() =>
                 {
                     Logger.SendInGame(GetString("AntiBlackOutHostRejectForceEnd"), true);
-                }, 3f, "Anti-Black Msg SendInGame");
+                }, 3f, "Anti-Black Msg SendInGame 5");
+                
                 _ = new LateTask(() =>
                 {
                     AmongUsClient.Instance.ExitGame(DisconnectReasons.Custom);
                     Logger.Fatal($"{text} 错误，已断开游戏", "Anti-black");
-                }, 8f, "Anti-Black Exit Game");
+                }, 8f, "Anti-Black Exit Game 4");
             }
         }
     }
@@ -320,7 +323,7 @@ public static class Utils
         {
             Main.PlayerStates[player.PlayerId].IsBlackOut = false; //ブラックアウト解除
             player.MarkDirtySettings();
-        }, Options.KillFlashDuration.GetFloat(), "RemoveKillFlash");
+        }, Options.KillFlashDuration.GetFloat(), "Remove Kill Flash");
     }
     public static void BlackOut(this IGameOptions opt, bool IsBlackOut)
     {
@@ -1001,11 +1004,17 @@ public static class Utils
                 case CustomRoles.Taskinator:
                     ProgressText.Append(Taskinator.GetProgressText(playerId));
                     break;
+                case CustomRoles.Benefactor:
+                    ProgressText.Append(Benefactor.GetProgressText(playerId));
+                    break;
                 case CustomRoles.Eraser:
                     ProgressText.Append(Eraser.GetProgressText(playerId));
                     break;
                 case CustomRoles.Cleanser:
                     ProgressText.Append(Cleanser.GetProgressText(playerId));
+                    break;
+                case CustomRoles.Keeper:
+                    ProgressText.Append(Keeper.GetProgressText(playerId, comms));
                     break;
                 case CustomRoles.Hacker:
                     ProgressText.Append(Hacker.GetHackLimit(playerId));
@@ -2008,7 +2017,8 @@ public static class Utils
             MushroomMixupIsActive = IsActive(SystemTypes.MushroomMixupSabotage);
         }
 
-        Logger.Info($" START - Count Seers: {seerList.Length}", "DoNotifyRoles", force: true);
+        Logger.Info($" START - Count Seers: {seerList.Length} & Count Target: {targetList.Length}", "DoNotifyRoles", force: true);
+
         //seer: player who updates the nickname/role/mark
         //target: seer updates nickname/role/mark of other targets
         foreach (var seer in seerList)
@@ -2273,7 +2283,6 @@ public static class Utils
                 || NoCache
                 || ForceLoop)
             {
-                Logger.Info($" Loop for Targets - Count Targets: {targetList.Length}", "DoNotifyRoles", force: true);
                 foreach (var target in targetList)
                 {
                     // if the target is the seer itself, do nothing
@@ -2333,7 +2342,7 @@ public static class Utils
                         if (Captain.IsEnable)
                             if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) && 
                                 (seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
-                                TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Captain), "☆"));
+                                TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Captain), " ☆"));
 
                         if (target.Is(CustomRoles.Cyber) && Options.CyberKnown.GetBool())
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
@@ -2607,13 +2616,10 @@ public static class Utils
 
                         target.RpcSetNamePrivate(TargetName, true, seer, force: NoCache);
                     }
-
-                    //logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":END");
                 }
             }
-
-            //logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":END");
         }
+        //Logger.Info($" Loop for Targets: {}", "DoNotifyRoles", force: true);
         Logger.Info($" END", "DoNotifyRoles", force: true);
         return Task.CompletedTask;
     }
@@ -2659,6 +2665,7 @@ public static class Utils
         Chameleon.AfterMeetingTasks();
         Eraser.AfterMeetingTasks();
         Cleanser.AfterMeetingTasks();
+        Keeper.AfterMeetingTasks();
         BountyHunter.AfterMeetingTasks();
         //Undertaker.AfterMeetingTasks();
         EvilTracker.AfterMeetingTasks();
@@ -2666,6 +2673,7 @@ public static class Utils
         Spiritualist.AfterMeetingTasks();
         Vulture.AfterMeetingTasks();
         Taskinator.AfterMeetingTasks();
+        Benefactor.AfterMeetingTasks();
         //Baker.AfterMeetingTasks();
         Jailer.AfterMeetingTasks();
         CopyCat.AfterMeetingTasks();  //all crew after meeting task should be before this

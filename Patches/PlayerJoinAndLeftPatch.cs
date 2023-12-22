@@ -50,6 +50,7 @@ class OnGameJoinedPatch
             EAC.DeNum = new();
             Main.AllPlayerNames = new();
             Main.PlayerQuitTimes = new();
+            KickPlayerPatch.AttemptedKickPlayerList = new();
 
             if (Main.NormalOptions.KillCooldown == 0f)
                 Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
@@ -280,6 +281,11 @@ class OnPlayerLeftPatch
                             //should ban on player's next join game
                         }
                     }
+                }
+
+                if (GameStates.IsMeeting)
+                {
+                    MeetingHud.Instance.CheckForEndVoting();
                 }
             }
         }

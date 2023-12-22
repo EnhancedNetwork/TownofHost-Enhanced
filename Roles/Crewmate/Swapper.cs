@@ -152,7 +152,7 @@ public static class Swapper
                         else pc.ShowPopUp(string.Format(GetString("SwapVoteC"), player1.GetRealName(), player2.GetRealName()));
                     }
                     Utils.NotifyRoles(isForMeeting: true, NoCache: true);
-                }, 0.2f);
+                }, 0.2f, "Players Was Swaped");
             }
         }
         return true;
