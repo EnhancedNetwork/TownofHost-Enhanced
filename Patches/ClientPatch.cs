@@ -141,10 +141,9 @@ internal class KickPlayerPatch
         var HashedPuid = AmongUsClient.Instance.GetClient(clientId).GetHashedPuid();
         if (!AttemptedKickPlayerList.ContainsKey(HashedPuid))
             AttemptedKickPlayerList.Add(HashedPuid, 0);
-        else if (AttemptedKickPlayerList[HashedPuid] < 15)
+        else if (AttemptedKickPlayerList[HashedPuid] < 10)
         {
             Logger.Fatal($"Kick player Request too fast! Canceled.", "KickPlayerPatch");
-            AttemptedKickPlayerList[HashedPuid] = 0;
             return false;
         }
         if (ban) BanManager.AddBanPlayer(AmongUsClient.Instance.GetRecentClient(clientId));

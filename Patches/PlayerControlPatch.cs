@@ -2555,7 +2555,7 @@ class FixedUpdatePatch
                     {
                         KickPlayerPatch.AttemptedKickPlayerList[item.Key]++;
 
-                        if (item.Value > 30)
+                        if (item.Value > 11)
                             KickPlayerPatch.AttemptedKickPlayerList.Remove(item.Key);
                     }
                 }
