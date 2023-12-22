@@ -30,6 +30,7 @@ namespace TOHE.Roles.Neutral
         public static bool AlreadyMarked = false;
         public static byte MarkedPlayer = byte.MaxValue;
         public static string lastExiledColor = "None";
+        public static string lastReportedColor = "None";
         public static void SetupCustomOption()
         {
             SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Quizmaster, 1);
@@ -136,6 +137,7 @@ namespace TOHE.Roles.Neutral
 
         public static void OnReportDeadBody(PlayerControl player, GameData.PlayerInfo targetInfo)
         {
+            lastReportedColor = targetInfo.GetPlayerColorString();
             Player = Utils.GetPlayerByRole(CustomRoles.Quizmaster);
             if (MarkedPlayer != byte.MaxValue)
             {
@@ -144,6 +146,7 @@ namespace TOHE.Roles.Neutral
                     new SabotageQuestion { Stage = 1, Question = "LastSabotage",/* JSON ENTRIES */ QuizmasterQuestionType = QuizmasterQuestionType.LatestSabotageQuestion },
                     new SabotageQuestion { Stage = 1, Question = "FirstRoundSabotage", QuizmasterQuestionType = QuizmasterQuestionType.FirstRoundSabotageQuestion },
                     new EjectionQuestion { Stage = 1, Question = "LastEjectedPlayerColor", QuizmasterQuestionType = QuizmasterQuestionType.EjectionColorQuestion },
+                    new ReportQuestion { Stage = 1, Question = "LastReportPlayerColor", QuizmasterQuestionType = QuizmasterQuestionType.ReportColorQuestion },
                 };
                 Question = GetRandomQuestion(Questions);
                 _ = new LateTask(() =>
@@ -244,11 +247,11 @@ namespace TOHE.Roles.Neutral
         public override void FixUnsetAnswers()
         {
             Answers = new List<string>{ };
-            List<string> PosibleAnswers = new List<string> { };
+            List<string> PossibleAnswers = new List<string> { };
 
             foreach (PlayerControl plr in Main.AllPlayerControls)
             {
-                PosibleAnswers.Add(plr.Data.GetPlayerColorString());
+                if (!PossibleAnswers.Contains(plr.Data.GetPlayerColorString())) PossibleAnswers.Add(plr.Data.GetPlayerColorString());
             }
 
 
@@ -256,23 +259,63 @@ namespace TOHE.Roles.Neutral
             int positionForRightAnswer = rnd.Next(0, 3);
 
             if (QuizmasterQuestionType == QuizmasterQuestionType.EjectionColorQuestion)
-                Answer = Quizmaster.lastExiledColor;
-            PosibleAnswers.Remove(Answer);
+                Answer = Quizmaster.lastReportedColor;
+            PossibleAnswers.Remove(Answer);
             for (int numOfQuestionsDone = 0; numOfQuestionsDone < 3; numOfQuestionsDone++)
             {
                 var prefix = "";
                 if (numOfQuestionsDone == positionForRightAnswer)
                 {
                     AnswerLetter = new List<string> { "A", "B", "C" }[positionForRightAnswer];
-                    if (Answer == "None") prefix = "QuizmasterSabotages.";
+                    if (Answer == "None") prefix = "Quizmaster.";
                     Answers.Add(prefix + Answer);
                 }
                 else
                 {
-                    string thatAnswer = PosibleAnswers[rnd.Next(0, PosibleAnswers.Count)];
-                    Answers.Add(thatAnswer);
-                    if (Answer == "None") prefix = "QuizmasterSabotages.";
-                    PosibleAnswers.Remove(thatAnswer);
+                    string thatAnswer = PossibleAnswers[rnd.Next(0, PossibleAnswers.Count)];
+                    if (Answer == "None") prefix = "Quizmaster.";
+                    Answers.Add(prefix + thatAnswer);
+                    PossibleAnswers.Remove(thatAnswer);
+                }
+            }
+        }
+    }
+
+    class ReportQuestion : QuizQuestionBase
+    {
+
+        public override void FixUnsetAnswers()
+        {
+            Answers = new List<string> { };
+            List<string> PossibleAnswers = new List<string> { };
+
+            foreach (PlayerControl plr in Main.AllPlayerControls)
+            {
+                if (!PossibleAnswers.Contains(plr.Data.GetPlayerColorString())) PossibleAnswers.Add(plr.Data.GetPlayerColorString());
+            }
+
+
+            var rnd = IRandom.Instance;
+            int positionForRightAnswer = rnd.Next(0, 3);
+
+            if (QuizmasterQuestionType == QuizmasterQuestionType.ReportColorQuestion)
+                Answer = Quizmaster.lastReportedColor;
+            PossibleAnswers.Remove(Answer);
+            for (int numOfQuestionsDone = 0; numOfQuestionsDone < 3; numOfQuestionsDone++)
+            {
+                var prefix = "";
+                if (numOfQuestionsDone == positionForRightAnswer)
+                {
+                    AnswerLetter = new List<string> { "A", "B", "C" }[positionForRightAnswer];
+                    if (Answer == "None") prefix = "Quizmaster.";
+                    Answers.Add(prefix + Answer);
+                }
+                else
+                {
+                    string thatAnswer = PossibleAnswers[rnd.Next(0, PossibleAnswers.Count)];
+                    if (Answer == "None") prefix = "Quizmaster.";
+                    Answers.Add(prefix + thatAnswer);
+                    PossibleAnswers.Remove(thatAnswer);
                 }
             }
         }
@@ -289,7 +332,7 @@ namespace TOHE.Roles.Neutral
         public override void FixUnsetAnswers()
         {
             Answers = new List<string> { };
-            List<string> PosibleAnswers = (MapNames)Main.NormalOptions.MapId switch
+            List<string> PossibleAnswers = (MapNames)Main.NormalOptions.MapId switch
             {
                 MapNames.Skeld => SkeldSabotages.ConvertAll(f => f.ToString()),
                 MapNames.Dleks => SkeldSabotages.ConvertAll(f => f.ToString()),
@@ -309,19 +352,22 @@ namespace TOHE.Roles.Neutral
             else if (QuizmasterQuestionType == QuizmasterQuestionType.FirstRoundSabotageQuestion)
                 Answer = Quizmaster.firstSabotageOfRound.ToString();
 
-            PosibleAnswers.Remove(Answer);
+            PossibleAnswers.Remove(Answer);
             for (int numOfQuestionsDone = 0; numOfQuestionsDone < 3; numOfQuestionsDone++)
             {
+                var prefix = "QuizmasterSabotages.";
                 if (numOfQuestionsDone == positionForRightAnswer)
                 {
                     AnswerLetter = new List<string> { "A", "B", "C" }[positionForRightAnswer];
-                    Answers.Add("QuizmasterSabotages." + Answer);
+                    if (Answer == "None") prefix = "Quizmaster.";
+                    Answers.Add(prefix + Answer);
                 }
                 else
                 {
-                    string thatAnswer = PosibleAnswers[rnd.Next(0, PosibleAnswers.Count)];
-                    Answers.Add("QuizmasterSabotages." + thatAnswer);
-                    PosibleAnswers.Remove(thatAnswer);
+                    string thatAnswer = PossibleAnswers[rnd.Next(0, PossibleAnswers.Count)];
+                    if (Answer == "None") prefix = "Quizmaster.";
+                    Answers.Add(prefix + thatAnswer);
+                    PossibleAnswers.Remove(thatAnswer);
                 }
             }
         }
@@ -332,7 +378,7 @@ namespace TOHE.Roles.Neutral
         FirstRoundSabotageQuestion,
         LatestSabotageQuestion,
         EjectionColorQuestion,
-        ReportQuestion,
+        ReportColorQuestion,
         MeetingQuestion,
         BasisQuestion,
     }

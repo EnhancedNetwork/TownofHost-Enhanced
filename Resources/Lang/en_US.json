@@ -3572,7 +3572,7 @@
     "QuizmasterCanVentAfterMark": "Can Vent After Marked Somebody For Quiz",
     "QuizmasterCanKillAfterMark": "Can Kill After Marked Somebody For Quiz",
     "QuizmasterNumOfKillAfterMark": "How Many Kills Per Round",
-    "QuizmasterSabotages.None": "None",
+    "Quizmaster.None": "None",
     "QuizmasterSabotages.Lights": "Lights",
     "QuizmasterSabotages.Reactor": "Reactor",
     "QuizmasterSabotages.Communications": "Communications",
