@@ -1975,7 +1975,7 @@ public static class Utils
     private static StringBuilder SelfMark = new(20);
     private static StringBuilder TargetSuffix = new();
     private static StringBuilder TargetMark = new(20);
-    public static async void NotifyRoles(bool isForMeeting = false, PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
+    public static async void NotifyRoles(bool isForMeeting = false, PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool NoCache = false, bool ForceLoop = false, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (Main.AllPlayerControls == null) return;
@@ -1991,7 +1991,7 @@ public static class Utils
 
         await DoNotifyRoles(isForMeeting, SpecifySeer, SpecifyTarget, NoCache, ForceLoop, CamouflageIsForMeeting, MushroomMixupIsActive);
     }
-    public static Task DoNotifyRoles(bool isForMeeting = false, PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
+    public static Task DoNotifyRoles(bool isForMeeting = false, PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool NoCache = false, bool ForceLoop = false, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
         if (!AmongUsClient.Instance.AmHost) return Task.CompletedTask;
         if (Main.AllPlayerControls == null) return Task.CompletedTask;
