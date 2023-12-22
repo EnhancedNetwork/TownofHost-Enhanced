@@ -1942,8 +1942,8 @@ public static class Utils
                     _ => name
                 };
             }
-            
-            if (!name.Contains('\r') && player.FriendCode.GetDevUser().HasTag())
+
+            if (!name.Contains($"\r\r") && player.FriendCode.GetDevUser().HasTag())
             {
                 name = player.FriendCode.GetDevUser().GetTag() + "<size=1.5>" + modtag + "</size>" + name;
             }
