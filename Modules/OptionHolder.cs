@@ -1029,7 +1029,7 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 26400 lasted id for roles/add-ons (Next use 26500)
+        // 26900 lasted id for roles/add-ons (Next use 27000)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
         // Start Load Settings

@@ -22,7 +22,7 @@ namespace TOHE.Roles.Neutral
         public static List<byte> playerIdList = new();
         public static Sabotages lastSabotage = Sabotages.None;
         public static Sabotages firstSabotageOfRound = Sabotages.None;
-        public static readonly int Id = 26400;
+        public static readonly int Id = 26900;
         public static int killsForRound = 0;
         public static bool allowedKilling = false;
         public static bool allowedVenting = true;
