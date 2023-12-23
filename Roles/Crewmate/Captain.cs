@@ -136,7 +136,7 @@ public static class Captain
                                                            (CaptainCanTargetNK.GetBool() && x.GetCustomRole().IsNeutralKillerTeam()))).ToList();
 
         Logger.Info($"Total Number of Potential Target {allTargets.Count}", "Total Captain Target");
-        if (!allTargets.Any()) return;
+        if (allTargets.Count == 0) return;
         var rand = IRandom.Instance;
         var targetPC = allTargets[rand.Next(allTargets.Count)];
         var target = targetPC.PlayerId;
@@ -170,7 +170,7 @@ public static class Captain
             }
         }
 
-        if (!AllSubRoles.Any())
+        if (AllSubRoles.Count == 0)
         {
             Logger.Info("No removable addons found on the target.", "Bandit");
             return null;
