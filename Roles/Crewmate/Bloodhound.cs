@@ -174,7 +174,7 @@
             if (!seer.Is(CustomRoles.Bloodhound)) return "";
             if (target != null && seer.PlayerId != target.PlayerId) return "";
             if (GameStates.IsMeeting) return "";
-            if (BloodhoundTargets.ContainsKey(seer.PlayerId) && BloodhoundTargets[seer.PlayerId].Any())
+            if (BloodhoundTargets.ContainsKey(seer.PlayerId) && BloodhoundTargets[seer.PlayerId].Count > 0)
             {
                 var arrows = "";
                 foreach (var targetId in BloodhoundTargets[seer.PlayerId])

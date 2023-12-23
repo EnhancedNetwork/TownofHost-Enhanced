@@ -107,7 +107,7 @@ static class LocateArrow
         var seerIsDead = !seer.IsAlive();
 
         var arrowList = new List<ArrowInfo>(LocateArrows.Keys.Where(a => a.From == seer.PlayerId));
-        if (!arrowList.Any()) return;
+        if (arrowList.Count == 0) return;
 
         var update = false;
         foreach (var arrowInfo in arrowList.ToArray())

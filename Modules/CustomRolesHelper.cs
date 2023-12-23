@@ -1944,7 +1944,7 @@ static class CustomRolesHelper
             //CountTypes.Rogue => throw new System.NotImplementedException(),
             _ => throw new System.NotImplementedException()
         };
-    public static bool HasSubRole(this PlayerControl pc) => Main.PlayerStates[pc.PlayerId].SubRoles.Any();
+    public static bool HasSubRole(this PlayerControl pc) => Main.PlayerStates[pc.PlayerId].SubRoles.Count > 0;
 }
 public enum CustomRoleTypes
 {

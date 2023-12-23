@@ -49,8 +49,12 @@ public class ErrorText : MonoBehaviour
     public Vector3 TextOffset = new(0, 0.3f, -1000f);
     public void Update()
     {
-        AllErrors.ForEach(err => err.IncreaseTimer());
-        var ToRemove = AllErrors.Where(err => err.ErrorLevel <= 1 && 30f < err.Timer).ToArray();
+        foreach (var error in AllErrors.ToArray())
+        {
+            error.IncreaseTimer();
+        }
+
+        var ToRemove = AllErrors.Where(err => err.ErrorLevel <= 1 && 30f < err.Timer);
         if (ToRemove.Any())
         {
             AllErrors.RemoveAll(err => ToRemove.Contains(err));

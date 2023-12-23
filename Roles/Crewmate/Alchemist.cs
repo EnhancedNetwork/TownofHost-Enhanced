@@ -7,7 +7,6 @@ namespace TOHE.Roles.Crewmate
     using System.Linq;
     using System.Text;
     using TOHE.Modules;
-    using TOHE.Roles.Impostor;
     using TOHE.Roles.Neutral;
     using UnityEngine;
     using static TOHE.Options;
@@ -19,7 +18,7 @@ namespace TOHE.Roles.Crewmate
         private static List<byte> playerIdList = new();
 
         public static Dictionary<byte, byte> BloodlustList = new();
-        private static Dictionary<byte, int> ventedId = new();
+        //private static Dictionary<byte, int> ventedId = new();
         private static Dictionary<byte, long> InvisTime = new();
 
         public static byte PotionID = 10;
@@ -55,7 +54,7 @@ namespace TOHE.Roles.Crewmate
             BloodlustList = new();
             PotionID = 10;
             PlayerName = string.Empty;
-            ventedId = new();
+            //ventedId = new();
             InvisTime = new();
             FixNextSabo = false;
             VisionPotionActive = false;
@@ -65,7 +64,7 @@ namespace TOHE.Roles.Crewmate
             playerIdList.Add(playerId);
             PlayerName = Utils.GetPlayerById(playerId).GetRealName();
         }
-        public static bool IsEnable => playerIdList.Any();
+        public static bool IsEnable => playerIdList.Count > 0;
 
         public static void OnTaskComplete(PlayerControl pc)
         {
@@ -217,7 +216,7 @@ namespace TOHE.Roles.Crewmate
                         targetDistance.Add(target.PlayerId, dis);
                     }
                 }
-                if (targetDistance.Any())
+                if (targetDistance.Count > 0)
                 {
                     var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                     PlayerControl target = Utils.GetPlayerById(min.Key);

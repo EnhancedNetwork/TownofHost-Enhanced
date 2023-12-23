@@ -66,7 +66,7 @@ internal class ControllerManagerUpdatePatch
                 {
                     var role = PlayerControl.LocalPlayer.GetCustomRole();
                     var lp = PlayerControl.LocalPlayer;
-                    if (!Main.PlayerStates[lp.PlayerId].SubRoles.Any()) return;
+                    if (Main.PlayerStates[lp.PlayerId].SubRoles.Count == 0) return;
 
                     addDes = new();
                     foreach (var subRole in Main.PlayerStates[lp.PlayerId].SubRoles.Where(x => x is not CustomRoles.Charmed).ToArray())
@@ -164,7 +164,7 @@ internal class ControllerManagerUpdatePatch
             if (Input.GetKeyDown(KeyCode.LeftShift) && GameStates.IsCountDown && !HudManager.Instance.Chat.IsOpenOrOpening)
             {
                 var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
-                if (invalidColor.Any())
+                if (invalidColor.Length > 0)
                 {
                     GameStartManager.Instance.ResetStartState(); //Hope this works
                     Logger.SendInGame(GetString("Error.InvalidColorPreventStart"));

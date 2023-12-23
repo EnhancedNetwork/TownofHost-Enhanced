@@ -130,7 +130,7 @@ public static class Benefactor
             if (taskIndex.ContainsKey(playerId)) taskIndex[playerId].Clear();
             SendRPC(type: 0, benefactorId: playerId); //clear taskindex
         }
-        if (shieldedPlayers.Any())
+        if (shieldedPlayers.Count > 0)
         {
             shieldedPlayers.Clear();
             SendRPC(type: 1); //clear all shielded players

@@ -1126,11 +1126,11 @@ class CheckMurderPatch
                 break;
                 //return true;
             case CustomRoles.SuperStar:
-                if (Main.AllAlivePlayerControls.Where(x =>
+                if (Main.AllAlivePlayerControls.Any(x =>
                     x.PlayerId != killer.PlayerId &&
                     x.PlayerId != target.PlayerId &&
-                    Vector2.Distance(x.transform.position, target.transform.position) < 2f
-                    ).Any()) return false;
+                    Vector2.Distance(x.transform.position, target.transform.position) < 2f)
+                   ) return false;
                 break;
             //玩家被击杀事件
             case CustomRoles.Gamer:
@@ -1265,12 +1265,11 @@ class CheckMurderPatch
                 }
                 if (target.Is(CustomRoles.Cyber))
                 {
-                    if (Main.AllAlivePlayerControls.Where(x =>
-                    x.PlayerId != killer.PlayerId &&
-                    x.PlayerId != target.PlayerId &&
-                    Vector2.Distance(x.transform.position, target.transform.position) < 2f
-                    ).Any()) 
-                    return false;
+                    if (Main.AllAlivePlayerControls.Any(x =>
+                        x.PlayerId != killer.PlayerId &&
+                        x.PlayerId != target.PlayerId &&
+                        Vector2.Distance(x.transform.position, target.transform.position) < 2f)) 
+                        return false;
 
                 }
             }
@@ -1475,7 +1474,7 @@ class MurderPlayerPatch
         {
             var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId && !Pelican.IsEaten(x.PlayerId) && !Medic.ProtectList.Contains(x.PlayerId) 
             && !x.Is(CustomRoles.Pestilence) && !x.Is(CustomRoles.Masochist) && !x.Is(CustomRoles.Solsticer) && !((x.Is(CustomRoles.NiceMini) || x.Is(CustomRoles.EvilMini)) && Mini.Age < 18)).ToList();
-            if (pcList.Any())
+            if (pcList.Count > 0)
             {
                 PlayerControl rp = pcList[IRandom.Instance.Next(0, pcList.Count)];
                 Main.PlayerStates[rp.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
@@ -2286,7 +2285,7 @@ class ReportDeadBodyPatch
     public static void AfterReportTasks(PlayerControl player, GameData.PlayerInfo target)
     {
         //=============================================
-        //以下、ボタンが押されることが確定したものとする。
+        // Hereinafter, it is assumed that the button is confirmed to be pressed
         //=============================================
 
         if (target == null) //ボタン
@@ -2345,6 +2344,7 @@ class ReportDeadBodyPatch
         Main.AllKillers.Clear();
         Main.GodfatherTarget.Clear();
         OverKiller.MurderTargetLateTask.Clear();
+        Solsticer.patched = false;
 
         if (Options.BombsClearAfterMeeting.GetBool())
         {
@@ -2390,7 +2390,6 @@ class ReportDeadBodyPatch
         if (Jailer.IsEnable) Jailer.OnReportDeadBody();
         if (Romantic.IsEnable) Romantic.OnReportDeadBody();
         if (Captain.IsEnable) Captain.OnReportDeadBody();
-        Solsticer.patched = false;
 
 
         // if (Councillor.IsEnable) Councillor.OnReportDeadBody();
@@ -2412,7 +2411,7 @@ class ReportDeadBodyPatch
                         rolelist = string.Join(", ", Main.AwareInteracted[pid]);
                     Utils.SendMessage(string.Format(GetString("AwareInteracted"), rolelist), pid, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Aware), GetString("AwareTitle")));
                     Main.AwareInteracted[pid] = new();
-                }, 0.5f, "AwareCheckMsg");
+                }, 0.5f, "Aware Check Msg");
             }
         }
 
@@ -2430,10 +2429,16 @@ class ReportDeadBodyPatch
         Main.RevolutionistStart.Clear();
         Main.RevolutionistLastTime.Clear();
 
-        Main.AllPlayerControls
-            .Where(pc => Main.CheckShapeshift.ContainsKey(pc.PlayerId) && !Doppelganger.DoppelVictim.ContainsKey(pc.PlayerId))
-            .Do(pc => Camouflage.RpcSetSkin(pc, RevertToDefault: true));
+        // Check shapeshift and revert skin to default
+        foreach (var pc in Main.AllPlayerControls)
+        {
+            if (Main.CheckShapeshift.ContainsKey(pc.PlayerId) && !Doppelganger.DoppelVictim.ContainsKey(pc.PlayerId))
+            {
+                Camouflage.RpcSetSkin(pc, RevertToDefault: true);
+            }
+        }
 
+        // Set meeting time
         MeetingTimeManager.OnReportDeadBody();
 
         // Clear all Notice players
@@ -2442,6 +2447,7 @@ class ReportDeadBodyPatch
         // Update Notify Roles for Meeting
         Utils.DoNotifyRoles(isForMeeting: true, NoCache: true, CamouflageIsForMeeting: true);
 
+        // Sync all settings on meeting start
         _ = new LateTask(Utils.SyncAllSettings, 3f, "Sync all settings after report");
     }
     public static async void ChangeLocalNameAndRevert(string name, int time)
@@ -2561,7 +2567,7 @@ class FixedUpdatePatch
                     }
                 }
 
-                if (KickPlayerPatch.AttemptedKickPlayerList.Any())
+                if (KickPlayerPatch.AttemptedKickPlayerList.Count > 0)
                 {
                     foreach (var item in KickPlayerPatch.AttemptedKickPlayerList)
                     {
@@ -2573,7 +2579,7 @@ class FixedUpdatePatch
                 }
             }
 
-            if (DoubleTrigger.FirstTriggerTimer.Any()) 
+            if (DoubleTrigger.FirstTriggerTimer.Count > 0) 
                 DoubleTrigger.OnFixedUpdate(player);
 
             var playerRole = player.GetCustomRole();
@@ -2586,7 +2592,7 @@ class FixedUpdatePatch
 
             if (GameStates.IsInTask)
             {
-                if (ReportDeadBodyPatch.CanReport[__instance.PlayerId] && ReportDeadBodyPatch.WaitReport[__instance.PlayerId].Any())
+                if (ReportDeadBodyPatch.CanReport[__instance.PlayerId] && ReportDeadBodyPatch.WaitReport[__instance.PlayerId].Count > 0)
                 {
                     if (Glitch.hackedIdList.ContainsKey(__instance.PlayerId))
                     {

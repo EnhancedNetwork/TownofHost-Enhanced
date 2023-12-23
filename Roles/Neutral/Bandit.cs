@@ -102,7 +102,7 @@ public static class Bandit
             }
         }
 
-        if (!AllSubRoles.Any())
+        if (AllSubRoles.Count == 0)
         {
             Logger.Info("No stealable addons found on the target.", "Bandit");
             return null;

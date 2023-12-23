@@ -153,8 +153,8 @@ internal class CustomRoleSelector
             }
         }
 
-        // 抽取优先职业（内鬼）
-        while (ImpOnList.Any())
+        // Select Impostors "Always"
+        while (ImpOnList.Count > 0)
         {
             var select = ImpOnList[rd.Next(0, ImpOnList.Count)];
             ImpOnList.Remove(select);
@@ -164,10 +164,10 @@ internal class CustomRoleSelector
             if (readyRoleNum >= playerCount) goto EndOfAssign;
             if (readyRoleNum >= optImpNum) break;
         }
-        // 优先职业不足以分配，开始分配启用的职业（内鬼）
+        // Select Impostors "Random"
         if (readyRoleNum < playerCount && readyRoleNum < optImpNum)
         {
-            while (ImpRateList.Any())
+            while (ImpRateList.Count > 0)
             {
                 var select = ImpRateList[rd.Next(0, ImpRateList.Count)];
                 ImpRateList.Remove(select);
@@ -180,7 +180,7 @@ internal class CustomRoleSelector
         }
 
         // Select NonNeutralKilling "Always"
-        while (NonNeutralKillingOnList.Any() && optNonNeutralKillingNum > 0)
+        while (NonNeutralKillingOnList.Count > 0 && optNonNeutralKillingNum > 0)
         {
             var select = NonNeutralKillingOnList[rd.Next(0, NonNeutralKillingOnList.Count)];
             NonNeutralKillingOnList.Remove(select);
@@ -195,7 +195,7 @@ internal class CustomRoleSelector
         // Select NonNeutralKilling "Random"
         if (readyRoleNum < playerCount && readyNonNeutralKillingNum < optNonNeutralKillingNum)
         {
-            while (NonNeutralKillingRateList.Any() && optNonNeutralKillingNum > 0)
+            while (NonNeutralKillingRateList.Count > 0 && optNonNeutralKillingNum > 0)
             {
                 var select = NonNeutralKillingRateList[rd.Next(0, NonNeutralKillingRateList.Count)];
                 NonNeutralKillingRateList.Remove(select);
@@ -209,7 +209,7 @@ internal class CustomRoleSelector
         }
 
         // Select NeutralKilling "Always"
-        while (NeutralKillingOnList.Any() && optNeutralKillingNum > 0)
+        while (NeutralKillingOnList.Count > 0 && optNeutralKillingNum > 0)
         {
             var select = NeutralKillingOnList[rd.Next(0, NeutralKillingOnList.Count)];
             NeutralKillingOnList.Remove(select);
@@ -224,7 +224,7 @@ internal class CustomRoleSelector
         // Select NeutralKilling "Random"
         if (readyRoleNum < playerCount && readyNeutralKillingNum < optNeutralKillingNum)
         {
-            while (NeutralKillingRateList.Any() && optNeutralKillingNum > 0)
+            while (NeutralKillingRateList.Count > 0 && optNeutralKillingNum > 0)
             {
                 var select = NeutralKillingRateList[rd.Next(0, NeutralKillingRateList.Count)];
                 NeutralKillingRateList.Remove(select);
@@ -237,8 +237,8 @@ internal class CustomRoleSelector
             }
         }
 
-        // 抽取优先职业
-        while (roleOnList.Any())
+        // Select Crewmates "Always"
+        while (roleOnList.Count > 0)
         {
             var select = roleOnList[rd.Next(0, roleOnList.Count)];
             roleOnList.Remove(select);
@@ -247,10 +247,10 @@ internal class CustomRoleSelector
             Logger.Info(select.ToString() + " Add to Crewmate waiting list (preferred)", "CustomRoleSelector");
             if (readyRoleNum >= playerCount) goto EndOfAssign;
         }
-        // 优先职业不足以分配，开始分配启用的职业
+        // Select Crewmates "Random"
         if (readyRoleNum < playerCount)
         {
-            while (roleRateList.Any())
+            while (roleRateList.Count > 0)
             {
                 var select = roleRateList[rd.Next(0, roleRateList.Count)];
                 roleRateList.Remove(select);
@@ -354,7 +354,7 @@ internal class CustomRoleSelector
 
         var AllPlayer = Main.AllAlivePlayerControls.ToList();
 
-        while (AllPlayer.Any() && rolesToAssign.Any())
+        while (AllPlayer.Count > 0 && rolesToAssign.Count > 0)
         {
             PlayerControl delPc = null;
             foreach (var pc in AllPlayer)
@@ -385,9 +385,10 @@ internal class CustomRoleSelector
             }
         }
 
-        if (AllPlayer.Any())
+        if (AllPlayer.Count > 0)
             Logger.Error("Role assignment error: There are players who have not been assigned role", "CustomRoleSelector");
-        if (rolesToAssign.Any())
+        
+        if (rolesToAssign.Count > 0)
             Logger.Error("Role assignment error: There is an unassigned role", "CustomRoleSelector");
 
     }

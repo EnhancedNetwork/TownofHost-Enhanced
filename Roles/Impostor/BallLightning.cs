@@ -134,7 +134,7 @@ public static class BallLightning
                 break;
             }
         }
-        if (deList.Any())
+        if (deList.Count > 0)
         {
             GhostPlayer.RemoveAll(deList.Contains);
             foreach (var gs in deList) SendRPC(gs);

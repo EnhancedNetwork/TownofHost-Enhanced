@@ -36,7 +36,7 @@ internal class ChatCommands
         if (__instance.freeChatField.textArea.text == "") return false;
         __instance.timeSinceLastMessage = 3f;
         var text = __instance.freeChatField.textArea.text;
-        if (!ChatHistory.Any() || ChatHistory[^1] != text) ChatHistory.Add(text);
+        if (ChatHistory.Count == 0 || ChatHistory[^1] != text) ChatHistory.Add(text);
         ChatControllerUpdatePatch.CurrentHistorySelection = ChatHistory.Count;
         string[] args = text.Split(' ');
         string subArgs = "";
@@ -109,7 +109,7 @@ internal class ChatCommands
                 case "/winner":
                 case "/vencedor":
                     canceled = true;
-                    if (!Main.winnerNameList.Any()) Utils.SendMessage(GetString("NoInfoExists"));
+                    if (Main.winnerNameList.Count == 0) Utils.SendMessage(GetString("NoInfoExists"));
                     else Utils.SendMessage("Winner: " + string.Join(", ", Main.winnerNameList));
                     break;
 
@@ -1519,7 +1519,7 @@ internal class ChatCommands
             case "/win":
             case "/winner":
             case "/vencedor":
-                if (!Main.winnerNameList.Any()) Utils.SendMessage(GetString("NoInfoExists"), player.PlayerId);
+                if (Main.winnerNameList.Count == 0) Utils.SendMessage(GetString("NoInfoExists"), player.PlayerId);
                 else Utils.SendMessage("Winner: " + string.Join(", ", Main.winnerNameList), player.PlayerId);
                 break;
 
@@ -2267,7 +2267,7 @@ class ChatUpdatePatch
     public static bool DoBlockChat = false;
     public static void Postfix(ChatController __instance)
     {
-        if (!AmongUsClient.Instance.AmHost || !Main.MessagesToSend.Any() || (Main.MessagesToSend[0].Item2 == byte.MaxValue && Main.MessageWait.Value > __instance.timeSinceLastMessage)) return;
+        if (!AmongUsClient.Instance.AmHost || Main.MessagesToSend.Count == 0 || (Main.MessagesToSend[0].Item2 == byte.MaxValue && Main.MessageWait.Value > __instance.timeSinceLastMessage)) return;
         if (DoBlockChat) return;
         var player = PlayerControl.LocalPlayer;
         if (GameStates.IsInGame || player.Data.IsDead)

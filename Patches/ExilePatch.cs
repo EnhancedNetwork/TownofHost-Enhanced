@@ -65,9 +65,8 @@ class ExileControllerWrapUpPatch
 
             Quizmaster.lastExiledColor = exiled.GetPlayerColorString();
 
-            //判断冤罪师胜利
-            var pcList = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId).ToArray();
-            if (pcList.Any())
+            var pcArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId).ToArray();
+            if (pcArray.Length > 0)
             {
                 if (!Options.InnocentCanWinByImp.GetBool() && role.IsImpostor())
                 {
@@ -76,7 +75,7 @@ class ExileControllerWrapUpPatch
                 else
                 {
                     bool isInnocentWinConverted = false;
-                    foreach (var Innocent in pcList)
+                    foreach (var Innocent in pcArray)
                     {
                         if (CustomWinnerHolder.CheckForConvertedWinner(Innocent.PlayerId))
                         {
@@ -95,7 +94,7 @@ class ExileControllerWrapUpPatch
                             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Innocent);
                         }
 
-                        pcList.Do(x => CustomWinnerHolder.WinnerIds.Add(x.PlayerId));
+                        pcArray.Do(x => CustomWinnerHolder.WinnerIds.Add(x.PlayerId));
                     }
                     DecidedWinner = true;
                 }
@@ -175,7 +174,7 @@ class ExileControllerWrapUpPatch
         if (HexMaster.IsEnable)
             HexMaster.RemoveHexedPlayer();
 
-        if (Swapper.Vote.Any() && Swapper.VoteTwo.Any())
+        if (Swapper.Vote.Count > 0 && Swapper.VoteTwo.Count > 0)
         {
             foreach (var swapper in Main.AllAlivePlayerControls)
             {
