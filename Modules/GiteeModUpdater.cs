@@ -108,7 +108,7 @@ public class GiteeModUpdater
                 {
                     if (assets[i]["name"].ToString() == $"TOH-Enhanced.{latestVersion}.zip")
                     {
-                        GiteedownloadUrl = assets[i]["browser_download_url"].ToString();
+                        GiteedownloadUrl = assets[i]["browser_Giteedownload_url"].ToString();
                         break;
                     }
                 }
@@ -215,7 +215,7 @@ public class GiteeModUpdater
 
             if (response == null || !response.IsSuccessStatusCode)
             {
-                throw new Exception($"File retrieval failed with status code: {response?.StatusCode}");
+                throw new Exception($"文件检索失败，状态码: {response?.StatusCode}");
             }
 
             var total = response.Content.Headers.ContentLength ?? 0;
@@ -277,7 +277,7 @@ public class GiteeModUpdater
 
             if (response == null || !response.IsSuccessStatusCode)
             {
-                throw new Exception($"File retrieval failed with status code: {response?.StatusCode}");
+                throw new Exception($"文件检索失败，状态码: {response?.StatusCode}");
             }
 
             var total = response.Content.Headers.ContentLength ?? 0;
@@ -290,7 +290,7 @@ public class GiteeModUpdater
 
                 if (entry == null)
                 {
-                    throw new Exception($"'{entryPath}' not found in the ZIP archive");
+                    throw new Exception($"'{entryPath}' 在 ZIP 压缩包中找不到");
                 }
 
                 // Extract "TOHE.dll" to the temporary file
