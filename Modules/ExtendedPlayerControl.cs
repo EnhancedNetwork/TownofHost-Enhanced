@@ -378,7 +378,8 @@ static class ExtendedPlayerControl
     public static string GetSubRoleName(this PlayerControl player, bool forUser = false)
     {
         var SubRoles = Main.PlayerStates[player.PlayerId].SubRoles.ToArray();
-        if (!SubRoles.Any()) return string.Empty;
+        if (SubRoles.Length == 0) return string.Empty;
+
         var sb = new StringBuilder();
         foreach (var role in SubRoles)
         {
@@ -397,7 +398,7 @@ static class ExtendedPlayerControl
     }
     public static string GetNameWithRole(this PlayerControl player, bool forUser = false)
     {
-        return $"{player?.Data?.PlayerName}" + (GameStates.IsInGame && Options.CurrentGameMode != CustomGameMode.FFA ? $"({player?.GetAllRoleName(forUser)})" : String.Empty);
+        return $"{player?.Data?.PlayerName}" + (GameStates.IsInGame && Options.CurrentGameMode != CustomGameMode.FFA ? $"({player?.GetAllRoleName(forUser)})" : string.Empty);
     }
     public static string GetRoleColorCode(this PlayerControl player)
     {

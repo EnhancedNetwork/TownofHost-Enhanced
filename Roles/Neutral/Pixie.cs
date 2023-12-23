@@ -115,10 +115,10 @@ public static class Pixie
     public static void CheckExileTarget(GameData.PlayerInfo exiled)
     {
         if (!IsEnable) return;
-        foreach (var pixieId in  PixieTargets.Keys.ToArray())
+        foreach (var pixieId in PixieTargets.Keys.ToArray())
         {
             var pc = Utils.GetPlayerById(pixieId);
-            if (!PixieTargets[pixieId].Any()) continue;
+            if (PixieTargets[pixieId].Count == 0) continue;
             if (!PixiePoints.ContainsKey(pixieId)) PixiePoints[pixieId] = 0;
             if (PixiePoints[pixieId] >= PixiePointsToWin.GetInt()) continue;
 
@@ -127,7 +127,7 @@ public static class Pixie
                 PixiePoints[pixieId]++;
             }
             else if (PixieSuicideOpt.GetBool() 
-                && PixieTargets[pixieId].Where(eid => Utils.GetPlayerById(eid)?.IsAlive() == true).Any())
+                && PixieTargets[pixieId].Any(eid => Utils.GetPlayerById(eid)?.IsAlive() == true))
             {
                 CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Suicide, pixieId);
                 Utils.GetPlayerById(pixieId).SetRealKiller(Utils.GetPlayerById(pixieId));

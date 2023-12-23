@@ -137,7 +137,7 @@ namespace TOHE.Roles.Crewmate
             {
                 return;
             }
-            if (!addons.Any())
+            if (addons.Count == 0)
             {
                 player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSellFail")));
                 Logger.Info("No addons to sell.", "Merchant");
@@ -170,7 +170,7 @@ namespace TOHE.Roles.Crewmate
                     )
                 ).ToList();
 
-            if (AllAlivePlayer.Any())
+            if (AllAlivePlayer.Count > 0)
             {
                 bool helpfulAddon = helpfulAddons.Contains(addon);
                 bool harmfulAddon = !helpfulAddon;
@@ -190,7 +190,7 @@ namespace TOHE.Roles.Crewmate
                     ).ToList();
                 }
 
-                if (!AllAlivePlayer.Any())
+                if (AllAlivePlayer.Count == 0)
                 {
                     player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSellFail")));
                     return;

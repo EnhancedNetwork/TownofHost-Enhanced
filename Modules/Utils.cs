@@ -1360,7 +1360,7 @@ public static class Utils
     public static string GetSubRolesText(byte id, bool disableColor = false, bool intro = false, bool summary = false)
     {
         var SubRoles = Main.PlayerStates[id].SubRoles;
-        if (!SubRoles.Any() && intro == false) return "";
+        if (SubRoles.Count == 0 && intro == false) return "";
         var sb = new StringBuilder();
         foreach (var role in SubRoles.ToArray())
         {
@@ -1372,7 +1372,7 @@ public static class Utils
             sb.Append($"{ColorString(Color.white, " + ")}{RoleText}");
         }
 
-        if (intro && !SubRoles.Contains(CustomRoles.Lovers) && !SubRoles.Contains(CustomRoles.Ntr) && CustomRolesHelper.RoleExist(CustomRoles.Ntr))
+        if (intro && !SubRoles.Contains(CustomRoles.Lovers) && !SubRoles.Contains(CustomRoles.Ntr) && CustomRoles.Ntr.RoleExist())
         {
             var RoleText = disableColor ? GetRoleName(CustomRoles.Lovers) : ColorString(GetRoleColor(CustomRoles.Lovers), GetRoleName(CustomRoles.Lovers));
             sb.Append($"{ColorString(Color.white, " + ")}{RoleText}");

@@ -198,7 +198,7 @@ public static class Pelican
     {
         if (!GameStates.IsInTask)
         {
-            if (eatenList.Any())
+            if (eatenList.Count > 0)
             {
                 eatenList.Clear();
                 SyncEatenList(byte.MaxValue);

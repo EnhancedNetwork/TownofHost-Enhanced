@@ -110,7 +110,7 @@ namespace TOHE.Roles.Crewmate
         public static void OnFixedUpdate(PlayerControl pc)
         {
             if (pc == null) return;
-            if (!SpyRedNameList.Any()) return;
+            if (SpyRedNameList.Count == 0) return;
             change = false;
 
             foreach (var x in SpyRedNameList)
