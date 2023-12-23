@@ -9,6 +9,7 @@ using static TOHE.Options;
 using static TOHE.Translator;
 using AsmResolver.Collections;
 using Il2CppSystem.Data;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral
 {
@@ -19,7 +20,8 @@ namespace TOHE.Roles.Neutral
         public static OptionItem CanKillAfterMark;
         public static OptionItem CanVentAfterMark;
         public static OptionItem NumOfKillAfterMark;
-        public static QuizQuestionBase Question = null;
+        public static QuizQuestionBase Question = new SetAnswersQuestion { Stage = 0, Answer = "Hello", PossibleAnswers = { "This", "Is", "To Prevent", "Errors" }, Question = "Idk" };
+        public static QuizQuestionBase previousQuestion = new SetAnswersQuestion { Stage = 0, Answer = "Hello", PossibleAnswers = { "This", "Is", "To Prevent", "Errors" }, Question = "Idk" };
         public static List<byte> playerIdList = new();
         public static Sabotages lastSabotage = Sabotages.None;
         public static Sabotages firstSabotageOfRound = Sabotages.None;
@@ -35,6 +37,7 @@ namespace TOHE.Roles.Neutral
         public static string thisReportedColor = "None";
         public static string lastButtonPressedColor = "None";
         public static string thisButtonPressedColor = "None";
+        public static int meetingNum = 0;
         public static void SetupCustomOption()
         {
             SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Quizmaster, 1);
@@ -58,7 +61,6 @@ namespace TOHE.Roles.Neutral
         {
             playerIdList.Add(playerId);
             MarkedPlayer = byte.MaxValue;
-            Player = Utils.GetPlayerByRole(CustomRoles.Quizmaster);
             firstSabotageOfRound = Sabotages.None;
             IsEnable = true;
         }
@@ -118,7 +120,7 @@ namespace TOHE.Roles.Neutral
                 allowedVenting = false;
                 AlreadyMarked = true;
                 MarkedPlayer = target.PlayerId;
-                Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
+                Utils.DoNotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
 
                 SendRPC(killer.PlayerId);
                 killer.ResetKillCooldown();
@@ -135,14 +137,53 @@ namespace TOHE.Roles.Neutral
             List<QuizQuestionBase> questions = qt.Where(a => a.Stage <= QuestionDifficulty.GetInt()).ToList();
             var rnd = IRandom.Instance;
             QuizQuestionBase question = questions[rnd.Next(0, questions.Count)];
+            for (int s = 0; s < -1; s++)
+            {
+                if (question == previousQuestion)
+                {
+                    question = questions[rnd.Next(0, questions.Count)];
+                }
+                else
+                {
+                    previousQuestion = question;
+                    s = -1;
+                    break;
+                }
+            }
+            if (question == null)
+                question = questions[1];
+
             question.FixUnsetAnswers();
             return question;
+        }
+
+        static CustomRoles GetRandomRole(List<CustomRoles> roles, bool AllowAddons)
+        {
+            var rnd = IRandom.Instance;
+            CustomRoles chosenRole = roles[rnd.Next(0, roles.Count)];
+            if (chosenRole.IsAdditionRole() && !AllowAddons)
+            {
+                for (int s = 0; s < -1; s++)
+                {
+                    if (chosenRole.IsAdditionRole() && !AllowAddons)
+                    {
+                        chosenRole = roles[rnd.Next(0, roles.Count)];
+                    }
+                    else
+                    {
+                        s = -1;
+                        break;
+                    }
+                }
+            }
+            return chosenRole;
         }
 
         public static void OnReportDeadBody(PlayerControl player, GameData.PlayerInfo targetInfo)
         {
             lastReportedColor = thisReportedColor;
             thisReportedColor = targetInfo.GetPlayerColorString();
+            meetingNum++;
             DoQuestion();
         }
 
@@ -150,11 +191,13 @@ namespace TOHE.Roles.Neutral
         {
             lastButtonPressedColor = thisButtonPressedColor;
             thisButtonPressedColor = player.Data.GetPlayerColorString();
+            meetingNum++;
             DoQuestion();
         }
 
         public static void DoQuestion()
         {
+            Player = Utils.GetPlayerByRole(CustomRoles.Quizmaster);
             if (MarkedPlayer != byte.MaxValue)
             {
                 List<QuizQuestionBase> Questions = new List<QuizQuestionBase>
@@ -164,14 +207,26 @@ namespace TOHE.Roles.Neutral
                     new PlrColorQuestion { Stage = 1, Question = "LastEjectedPlayerColor", QuizmasterQuestionType = QuizmasterQuestionType.EjectionColorQuestion },
                     new PlrColorQuestion { Stage = 1, Question = "LastReportPlayerColor", QuizmasterQuestionType = QuizmasterQuestionType.ReportColorQuestion },
                     new PlrColorQuestion { Stage = 1, Question = "LastButtonPressedPlayerColor", QuizmasterQuestionType = QuizmasterQuestionType.LastMeetingColorQuestion },
+
+                    new CountQuestion { Stage = 2, Question = "MeetingPassed", QuizmasterQuestionType = QuizmasterQuestionType.MeetingCountQuestion },
+                    new SetAnswersQuestion { Stage = 2, Question = "HowManyFactions", Answer = "Three", PossibleAnswers = { "One", "Two", "Three", "Four", "Five" }, QuizmasterQuestionType = QuizmasterQuestionType.FactionQuestion },
+                    new SetAnswersQuestion { Stage = 2, Question = "BasisOfRole", Answer = CustomRolesHelper.GetCustomRoleTypes(GetRandomRole(CustomRolesHelper.AllRoles.ToList(), true)).ToString(), PossibleAnswers = { "Crewmate", "Impostor", "Neutral", "Addon" }, QuizmasterQuestionType = QuizmasterQuestionType.RoleBasisQuestion },
+                    new SetAnswersQuestion { Stage = 2, Question = "FactionOfRole", Answer = CustomRolesHelper.GetRoleTypes(GetRandomRole(CustomRolesHelper.AllRoles.ToList(), false)).ToString(), PossibleAnswers = { "Crewmate", "Impostor", "Neutral" }, QuizmasterQuestionType = QuizmasterQuestionType.RoleFactionQuestion },
                 };
                 Question = GetRandomQuestion(Questions);
                 _ = new LateTask(() =>
                 {
-                    Utils.SendMessage(GetString("QuizmasterMarkedBy").Replace("{QMCOLOR}", Utils.GetRoleColorCode(CustomRoles.Quizmaster)).Replace("{QMQUESTION}", GetString("QuizmasterQuestions." + Question.Question)), MarkedPlayer, GetString("QuizmasterChatTitle"));
-                    Utils.SendMessage(GetString("QuizmasterAnswers").Replace("{QMA}", GetString(Question.Answers[0])).Replace("{QMB}", GetString(Question.Answers[1])).Replace("{QMC}", GetString(Question.Answers[2])), MarkedPlayer, GetString("QuizmasterChatTitle"));
+                    Utils.SendMessage(GetString("QuizmasterMarkedBy").Replace("{QMCOLOR}", Utils.GetRoleColorCode(CustomRoles.Quizmaster)).Replace("{QMQUESTION}", Question.hasQuestionTranslation ? GetString("QuizmasterQuestions." + Question.Question) : Question.Question), MarkedPlayer, GetString("QuizmasterChatTitle"));
+                    Utils.SendMessage(GetString("QuizmasterAnswers").Replace("{QMA}", Question.hasAnswersTranslation ? GetString(Question.Answers[0]) : Question.Answers[0]).Replace("{QMB}", Question.hasAnswersTranslation ? GetString(Question.Answers[1]) : Question.Answers[1]).Replace("{QMC}", Question.hasAnswersTranslation ? GetString(Question.Answers[2]) : Question.Answers[2]), MarkedPlayer, GetString("QuizmasterChatTitle"));
                     Utils.SendMessage(GetString("QuizmasterMarked").Replace("{QMTARGET}", Utils.GetPlayerById(MarkedPlayer).GetRealName()), Player.PlayerId, GetString("QuizmasterChatTitle"));
-                }, 5.1f, "Quizmaster Chat Notice");
+                    foreach (var plr in Main.AllPlayerControls)
+                    {
+                        if (plr.PlayerId != Player.PlayerId && MarkedPlayer != plr.PlayerId)
+                        {
+                            Utils.SendMessage(GetString("QuizmasterMarkedPublic").Replace("{QMCOLOR}", Utils.GetRoleColorCode(CustomRoles.Quizmaster)).Replace("{QMTARGET}", Utils.GetPlayerById(MarkedPlayer).GetRealName()), plr.PlayerId, GetString("QuizmasterChatNoticeTitle"));
+                        }
+                    }
+                }, 6.1f, "Quizmaster Chat Notice");
             }
         }
 
@@ -183,8 +238,6 @@ namespace TOHE.Roles.Neutral
             allowedKilling = false;
             if (MarkedPlayer != byte.MaxValue)
                 KillPlayer(Utils.GetPlayerById(MarkedPlayer));
-
-            ResetMarkedPlayer();
         }
 
         public static void ResetMarkedPlayer()
@@ -248,6 +301,13 @@ namespace TOHE.Roles.Neutral
         public static void RightAnswer(PlayerControl target)
         {
             lastReportedColor = thisReportedColor;
+            foreach (var plr in Main.AllPlayerControls)
+            {
+                if (plr.PlayerId != Player.PlayerId && target.PlayerId != plr.PlayerId)
+                {
+                    Utils.SendMessage(GetString("QuizmasterCorrectPublic").Replace("{QMCOLOR}", Utils.GetRoleColorCode(CustomRoles.Quizmaster)).Replace("{QMTARGET}", target.GetRealName()), plr.PlayerId, GetString("QuizmasterChatNoticeTitle"));
+                }
+            }
             Utils.SendMessage(GetString("QuizmasterCorrectTarget"), target.PlayerId, GetString("QuizmasterChatNoticeTitle"));
             Utils.SendMessage(GetString("QuizmasterCorrect").Replace("{QMTARGET}", target.GetRealName()), Player.PlayerId, GetString("QuizmasterChatNoticeTitle"));
             ResetMarkedPlayer();
@@ -257,6 +317,13 @@ namespace TOHE.Roles.Neutral
         {
             lastReportedColor = thisReportedColor;
             KillPlayer(target);
+            foreach (var plr in Main.AllPlayerControls)
+            {
+                if (plr.PlayerId != Player.PlayerId && target.PlayerId != plr.PlayerId)
+                {
+                    Utils.SendMessage(GetString("QuizmasterWrongPublic").Replace("{QMCOLOR}", Utils.GetRoleColorCode(CustomRoles.Quizmaster)).Replace("{QMTARGET}", target.GetRealName()), plr.PlayerId, GetString("QuizmasterChatNoticeTitle"));
+                }
+            }
             Utils.SendMessage(GetString("QuizmasterWrong").Replace("{QMTARGET}", target.GetRealName()), Player.PlayerId, GetString("QuizmasterChatNoticeTitle"));
             Utils.SendMessage(GetString("QuizmasterWrongTarget").Replace("{QMWRONG}", wrongAnswer).Replace("{QMRIGHT}", rightAnswer).Replace("{QM}", Player.GetRealName()), target.PlayerId, GetString("QuizmasterChatNoticeTitle"));
         }
@@ -271,6 +338,9 @@ namespace TOHE.Roles.Neutral
         public string Answer { get; set; }
         public string AnswerLetter { get; set; }
         public List<string> Answers { get; set; }
+        public List<string> PossibleAnswers { get; set; } = new List<string> { };
+        public bool hasAnswersTranslation { get; set; } = true;
+        public bool hasQuestionTranslation { get; set; } = true;
         public abstract void FixUnsetAnswers();
     }
 
@@ -280,13 +350,11 @@ namespace TOHE.Roles.Neutral
         public override void FixUnsetAnswers()
         {
             Answers = new List<string>{ };
-            List<string> PossibleAnswers = new List<string> { };
 
             foreach (PlayerControl plr in Main.AllPlayerControls)
             {
                 if (!PossibleAnswers.Contains(plr.Data.GetPlayerColorString())) PossibleAnswers.Add(plr.Data.GetPlayerColorString());
             }
-
 
             var rnd = IRandom.Instance;
             int positionForRightAnswer = rnd.Next(0, 3);
@@ -297,6 +365,52 @@ namespace TOHE.Roles.Neutral
                 Answer = Quizmaster.lastReportedColor;
             else if (QuizmasterQuestionType == QuizmasterQuestionType.LastMeetingColorQuestion)
                 Answer = Quizmaster.lastButtonPressedColor;
+
+            hasAnswersTranslation = false;
+
+            int ans = int.Parse(Answer);
+            PossibleAnswers.Remove(Answer);
+            for (int numOfQuestionsDone = 0; numOfQuestionsDone < 3; numOfQuestionsDone++)
+            {
+                var prefix = "";
+                if (numOfQuestionsDone == positionForRightAnswer)
+                {
+                    AnswerLetter = new List<string> { "A", "B", "C" }[positionForRightAnswer];
+                    if (Answer == "None") prefix = "Quizmaster.";
+                    if (prefix != "")
+                        Answer = GetString(prefix + Answer);
+                    Answers.Add(prefix + Answer);
+                }
+                else
+                {
+                    string thatAnswer = PossibleAnswers[rnd.Next(0, PossibleAnswers.Count)];
+                    if (thatAnswer == "None") prefix = "Quizmaster.";
+                    if (prefix != "")
+                        thatAnswer = GetString(prefix + thatAnswer);
+                    Answers.Add(prefix + thatAnswer);
+                    PossibleAnswers.Remove(thatAnswer);
+                }
+            }
+        }
+    }
+
+    class CountQuestion : QuizQuestionBase
+    {
+
+        public override void FixUnsetAnswers()
+        {
+            if (QuizmasterQuestionType == QuizmasterQuestionType.MeetingCountQuestion)
+                Answer = Quizmaster.meetingNum.ToString();
+            Answers = new List<string> { };
+            int ans = int.Parse(Answer);
+            PossibleAnswers.Add((ans + 1).ToString());
+            PossibleAnswers.Add((ans - 1).ToString());
+
+            hasAnswersTranslation = false;
+
+            var rnd = IRandom.Instance;
+            int positionForRightAnswer = rnd.Next(0, 3);
+
             PossibleAnswers.Remove(Answer);
             for (int numOfQuestionsDone = 0; numOfQuestionsDone < 3; numOfQuestionsDone++)
             {
@@ -310,7 +424,41 @@ namespace TOHE.Roles.Neutral
                 else
                 {
                     string thatAnswer = PossibleAnswers[rnd.Next(0, PossibleAnswers.Count)];
+                    if (thatAnswer == "None") prefix = "Quizmaster.";
+                    Answers.Add(prefix + thatAnswer);
+                    PossibleAnswers.Remove(thatAnswer);
+                }
+            }
+        }
+    }
+
+    class SetAnswersQuestion : QuizQuestionBase
+    {
+        public override void FixUnsetAnswers()
+        {
+            Answers = new List<string> { };
+
+            var rnd = IRandom.Instance;
+            int positionForRightAnswer = rnd.Next(0, 3);
+
+            PossibleAnswers.Remove(Answer);
+            for (int numOfQuestionsDone = 0; numOfQuestionsDone < 3; numOfQuestionsDone++)
+            {
+                var prefix = "";
+                if (QuizmasterQuestionType == QuizmasterQuestionType.FactionQuestion)
+                    prefix = "QuizmasterAnswers.";
+                if (QuizmasterQuestionType == QuizmasterQuestionType.RoleFactionQuestion || QuizmasterQuestionType == QuizmasterQuestionType.RoleBasisQuestion)
+                    prefix = "Type";
+                if (numOfQuestionsDone == positionForRightAnswer)
+                {
+                    AnswerLetter = new List<string> { "A", "B", "C" }[positionForRightAnswer];
                     if (Answer == "None") prefix = "Quizmaster.";
+                    Answers.Add(prefix + Answer);
+                }
+                else
+                {
+                    string thatAnswer = PossibleAnswers[rnd.Next(0, PossibleAnswers.Count)];
+                    if (thatAnswer == "None") prefix = "Quizmaster.";
                     Answers.Add(prefix + thatAnswer);
                     PossibleAnswers.Remove(thatAnswer);
                 }
@@ -329,7 +477,7 @@ namespace TOHE.Roles.Neutral
         public override void FixUnsetAnswers()
         {
             Answers = new List<string> { };
-            List<string> PossibleAnswers = (MapNames)Main.NormalOptions.MapId switch
+            PossibleAnswers = (MapNames)Main.NormalOptions.MapId switch
             {
                 MapNames.Skeld => SkeldSabotages.ConvertAll(f => f.ToString()),
                 MapNames.Dleks => SkeldSabotages.ConvertAll(f => f.ToString()),
@@ -362,7 +510,7 @@ namespace TOHE.Roles.Neutral
                 else
                 {
                     string thatAnswer = PossibleAnswers[rnd.Next(0, PossibleAnswers.Count)];
-                    if (Answer == "None") prefix = "Quizmaster.";
+                    if (thatAnswer == "None") prefix = "Quizmaster.";
                     Answers.Add(prefix + thatAnswer);
                     PossibleAnswers.Remove(thatAnswer);
                 }
@@ -377,7 +525,10 @@ namespace TOHE.Roles.Neutral
         EjectionColorQuestion,
         ReportColorQuestion,
         LastMeetingColorQuestion,
-        BasisQuestion,
+        RoleBasisQuestion,
+        RoleFactionQuestion,
+        MeetingCountQuestion,
+        FactionQuestion,
     }
 
     public enum Sabotages
