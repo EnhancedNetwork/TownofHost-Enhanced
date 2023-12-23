@@ -137,22 +137,14 @@ namespace TOHE.Roles.Neutral
             List<QuizQuestionBase> questions = qt.Where(a => a.Stage <= QuestionDifficulty.GetInt()).ToList();
             var rnd = IRandom.Instance;
             QuizQuestionBase question = questions[rnd.Next(0, questions.Count)];
-            for (int s = 0; s < -1; s++)
+            if (question == previousQuestion)
             {
-                if (question == previousQuestion)
-                {
-                    question = questions[rnd.Next(0, questions.Count)];
-                }
-                else
-                {
-                    previousQuestion = question;
-                    s = -1;
-                    break;
-                }
+                question = questions[rnd.Next(0, questions.Count)];
             }
             if (question == null)
-                question = questions[1];
+                question = new PlrColorQuestion { Stage = 1, Question = "LastReportPlayerColor", QuizmasterQuestionType = QuizmasterQuestionType.ReportColorQuestion },;
 
+            previousQuestion = question;
             question.FixUnsetAnswers();
             return question;
         }
