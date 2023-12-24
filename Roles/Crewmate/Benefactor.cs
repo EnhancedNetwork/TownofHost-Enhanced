@@ -168,7 +168,8 @@ public static class Benefactor
                     var benefactorPC = Utils.GetPlayerById(benefactorId);
                     if (benefactorPC == null) continue;
 
-                    player.Notify(GetString("BenefactorTargetGotShield"));
+                    player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Benefactor), GetString("BenefactorTargetGotShield")));
+                    player.RpcGuardAndKill();
 
                     long now = Utils.GetTimeStamp();
                     shieldedPlayers[playerId] = now;
@@ -188,6 +189,8 @@ public static class Benefactor
         {
             var target = x.Key;
             shieldedPlayers.Remove(target);
+            Utils.GetPlayerById(target)?.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Benefactor), GetString("BKProtectOut")));
+            Utils.GetPlayerById(target)?.RpcGuardAndKill();
             SendRPC(type: 4, targetId: target); //remove shieldedPlayer
         }
     }
