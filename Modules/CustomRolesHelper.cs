@@ -1101,7 +1101,7 @@ static class CustomRolesHelper
                 break;
 
             case CustomRoles.Mundane:
-                if (pc.CanUseKillButton() || pc.Is(CustomRoleTypes.Impostor)) return false;
+                if (pc.CanUseKillButton() || pc.GetCustomRole().IsTasklessCrewmate() || pc.Is(CustomRoleTypes.Impostor)) return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Mundane.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Mundane.CanBeOnNeutral.GetBool())) return false;
                 if (pc.Is(CustomRoles.CopyCat)
                     || pc.Is(CustomRoles.Doomsayer)
