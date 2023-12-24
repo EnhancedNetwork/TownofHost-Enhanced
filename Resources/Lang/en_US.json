@@ -3267,6 +3267,7 @@
   "ShieldDuration": "Shield duration",
   "ShieldIsOneTimeUse": "Shield breaks after one kill attempt",
   "BenefactorTaskMarked": "Task marked successfully",
+  "BenefactorTargetGotShield": "You got shield by Benefactor",
 
   "PirateTryHideMsg": "Hide <color=#EDC240>Pirate</color>'s commands",
   "SuccessfulDuelsToWin": "Number of successful duels needed to win",
