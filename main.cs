@@ -583,6 +583,7 @@ public enum CustomRoles
     Capitalism,
     Gangster,
     Cleaner,
+    Kamikaze,
     BallLightning,
     Greedier,
     CursedWolf,
