@@ -306,6 +306,9 @@ class CheckMurderPatch
                 case CustomRoles.Pyromaniac:
                     if (!Pyromaniac.OnCheckMurder(killer, target)) return false;
                     break;
+                case CustomRoles.Kamikaze:
+                    if (!Kamikaze.OnCheckMurder(killer, target)) return false;
+                    break;
                 case CustomRoles.Poisoner:
                     if (!Poisoner.OnCheckMurder(killer, target)) return false;
                     break;
@@ -2504,6 +2507,8 @@ class FixedUpdatePatch
             LocateArrow.OnFixedUpdate(player);
         }
 
+        if (Kamikaze.IsEnable)
+            Kamikaze.MurderKamikazedPlayers(player);
 
         if (AmongUsClient.Instance.AmHost)
         {
