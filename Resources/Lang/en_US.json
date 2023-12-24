@@ -694,7 +694,7 @@
   "BanditInfo": "Rob a player's add-on",
   "DoppelgangerInfo": "Steal your target's identity",
   "MasochistInfo": "Get attacked a few times to win!",
-  "": "Kill players with a suicidal mission",
+  "KamikazeInfo": "Kill players with a suicidal mission",
   "DoomsayerInfo": "Successfully guess players to win",
   "ShroudInfo": "Shroud players to make them kill",
   "WerewolfInfo": "Kill crewmates in groups",
