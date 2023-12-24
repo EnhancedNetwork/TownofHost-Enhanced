@@ -530,7 +530,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
                     opt.SetBool(BoolOptionNames.AnonymousVotes, false);
                     break;
                 case CustomRoles.Flash:
-                    Flash.SetSpeed(player.PlayerId);
+                    Flash.SetSpeed(player.PlayerId, false);
                     break;
                 case CustomRoles.Torch:
                     if (!Utils.IsActive(SystemTypes.Electrical))
