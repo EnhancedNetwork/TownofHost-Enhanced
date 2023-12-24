@@ -29,6 +29,7 @@ enum CustomRPC
     SetCustomRole,
     SetBountyTarget,
     SyncPuppet,
+    SyncKami,
     SetKillOrSpell,
     SetKillOrHex,
     SetKillOrCurse,
@@ -360,6 +361,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SyncPuppet:
                 Puppeteer.ReceiveRPC(reader);
+                break;
+             case CustomRPC.SyncKami:
+                Kamikaze.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetKillOrSpell:
                 Witch.ReceiveRPC(reader, false);
@@ -1352,6 +1356,9 @@ internal static class RPC
                 break;
             case CustomRoles.Huntsman:
                 Huntsman.Add(targetId);
+                break;
+            case CustomRoles.Kamikaze:
+                Kamikaze.Add(targetId);
                 break;
             case CustomRoles.NWitch:
                 NWitch.Add(targetId);
