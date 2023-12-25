@@ -96,6 +96,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> VersionCheat { get; private set; }
     public static bool IsHostVersionCheating = false;
     public static ConfigEntry<bool> GodMode { get; private set; }
+    public static ConfigEntry<bool> AutoRehost { get; private set; }
 
     public static Dictionary<byte, PlayerVersion> playerVersion = new();
     //Preset Name Options
@@ -454,6 +455,7 @@ public class Main : BasePlugin
         VersionCheat = Config.Bind("Client Options", "VersionCheat", false);
         GodMode = Config.Bind("Client Options", "GodMode", false);
         AutoMuteUs = Config.Bind("Client Options", "AutoMuteUs", false); // The AutoMuteUs bot fails to match the host's name.
+        AutoRehost = Config.Bind("Client Options", "AutoRehost", false);
 
         Logger = BepInEx.Logging.Logger.CreateLogSource("TOHE");
         TOHE.Logger.Enable();
