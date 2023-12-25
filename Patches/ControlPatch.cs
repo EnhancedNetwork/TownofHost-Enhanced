@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TOHE.Modules;
+using TOHE.Patches;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -23,10 +24,16 @@ internal class ControllerManagerUpdatePatch
     {
         try
         {
-            if (!RehostManager.IsAutoRehostDone && (GetKeysDown(KeyCode.LeftShift, KeyCode.C)))
+            if (!RehostManager.IsAutoRehostDone && GetKeysDown(KeyCode.LeftShift, KeyCode.C))
             {
                 Logger.Info("User canceled Auto Rehost!", "ControllerManager");
                 RehostManager.IsAutoRehostDone = true;
+            }
+
+            if (EndGameManagerPatch.IsRestarting && GetKeysDown(KeyCode.LeftShift, KeyCode.C))
+            {
+                Logger.Info("User canceled Auto Play Again!", "ControllerManager");
+                EndGameManagerPatch.IsRestarting = false;
             }
             //切换自定义设置的页面
             if (GameStates.IsLobby)
