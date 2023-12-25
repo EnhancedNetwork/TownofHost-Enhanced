@@ -3228,6 +3228,7 @@
   "ShieldDuration": "Durata Scudo",
   "ShieldIsOneTimeUse": "Lo scudo si rompe dopo un tentativo di uccisione",
   "BenefactorTaskMarked": "Incarico contrassegnato con successo",
+  "BenefactorTargetGotShield": "Hai avuto lo scudo dal Benefattore",
   "PirateTryHideMsg": "Nascondi il comando del <color=#EDC240>Pirata</color>",
   "SuccessfulDuelsToWin": "Numero di duelli vinti necessari per vincere",
   "PirateMeetingMsg": "Duella con il bersaglio.\n\nComandi duello:\n⦿ /duel 0\n⦿ /duel 1\n⦿ /duel 2\n\nVinci il duello se scegli la stessa opzione del bersaglio",
