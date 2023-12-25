@@ -3228,6 +3228,7 @@
   "ShieldDuration": "護盾持續時間",
   "ShieldIsOneTimeUse": "護盾抵擋攻擊後會被消耗",
   "BenefactorTaskMarked": "成功標記此任務",
+  "BenefactorTargetGotShield": "你獲得了慈善家的護盾",
   "PirateTryHideMsg": "嘗試混淆<color=#EDC240>挑戰者</color>的指令",
   "SuccessfulDuelsToWin": "獲勝所需的挑戰勝利次數",
   "PirateMeetingMsg": "現在，與你的目標進行挑戰。\n\n挑戰指令：\n⦿ /duel 0\n⦿ /duel 1\n⦿ /duel 2\n\n如果你選擇與目標相同的選項，你就贏得了挑戰",
