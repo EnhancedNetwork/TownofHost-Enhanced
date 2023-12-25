@@ -3228,6 +3228,7 @@
   "ShieldDuration": "シールドの持続時間",
   "ShieldIsOneTimeUse": "シールドは1回の殺害試行後に破れます",
   "BenefactorTaskMarked": "タスクが正常にマークされました",
+  "BenefactorTargetGotShield": "You got shield by Benefactor",
   "PirateTryHideMsg": "<color=#EDC240>パイレーツ</color>のコマンドを隠す",
   "SuccessfulDuelsToWin": "勝利に必要な成功したデュエルの回数",
   "PirateMeetingMsg": "あなたのターゲットと決闘します。\n決闘コマンド：\n⦿ /duel 0\n⦿ /duel 1\n⦿ /duel 2\nターゲットと同じオプションを選んだ場合、あなたが決闘に勝ちます。",
