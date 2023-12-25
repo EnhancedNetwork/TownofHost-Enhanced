@@ -3228,6 +3228,7 @@
   "ShieldDuration": "Duración del Escudo",
   "ShieldIsOneTimeUse": "El Escudo se rompe después de un intento de asesinato",
   "BenefactorTaskMarked": "Tareas marcadas con éxito",
+  "BenefactorTargetGotShield": "You got shield by Benefactor",
   "PirateTryHideMsg": "Esconder comandos del <color=#EDC240>Pirata</color>",
   "SuccessfulDuelsToWin": "Número de duelos exitosos necesarios para ganar",
   "PirateMeetingMsg": "Haz un duelo con tu objetivo.\n\nComando de duelo:\n⦿ /duel 0\n⦿ /duel 1\n⦿ /duel 2\n\nGanarás si eliges la misma opción de tu adversario.",
