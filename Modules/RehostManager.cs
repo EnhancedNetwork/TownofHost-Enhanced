@@ -18,8 +18,8 @@ namespace TOHE.Modules
             if (AmongUsClient.Instance.mode != MatchMakerModes.HostAndClient) return;
             ShouldPublic = AmongUsClient.Instance.IsGamePublic;
 
-            if (reason == DisconnectReasons.NewConnection || reason == DisconnectReasons.ConnectionLimit /*||
-                reason == DisconnectReasons.ExitGame*/) return;
+            if (reason == DisconnectReasons.NewConnection || reason == DisconnectReasons.ConnectionLimit ||
+                reason == DisconnectReasons.ExitGame) return;
 
             _ = new LateTask(() =>
             {
