@@ -88,8 +88,12 @@ public static class Kamikaze
         {
             foreach (var alivePlayer in Main.AllAlivePlayerControls)
             {
+                if (alivePlayer.PlayerId == kamikameha.PlayerId) 
+                { 
                 Main.PlayerStates[kamikameha.PlayerId].deathReason = PlayerState.DeathReason.Targeted;
                 alivePlayer.RpcMurderPlayerV3(kamikameha);
+                 // Logger.Info($"{alivePlayer.GetNameWithRole()} is the killer of {kamikameha.GetNameWithRole()}", "Kamikaze"); -- Works fine
+                }
             }
         }
     }
