@@ -2841,6 +2841,9 @@ class FixedUpdatePatch
                     Main.AllKillers.Remove(player.PlayerId);
 
                 playerRole = player.GetCustomRole();
+
+                 if (Kamikaze.IsEnable)
+                     Kamikaze.MurderKamikazedPlayers(player);
                 
                 switch (playerRole)
                 {
@@ -2863,9 +2866,6 @@ class FixedUpdatePatch
                 if (GameStates.IsInTask)
                 {
 
-                    if (Kamikaze.IsEnable)
-                    Kamikaze.MurderKamikazedPlayers(player);
-                    
                     if (BountyHunter.IsEnable)
                         BountyHunter.OnFixedUpdate(player);
 
