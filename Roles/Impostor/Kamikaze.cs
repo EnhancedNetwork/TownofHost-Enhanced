@@ -70,7 +70,6 @@ public static class Kamikaze
         int Limit = reader.ReadInt32();
         
         KamikazedList[targetId] = KamiId;
-        MarkedLim.Add(KillerIdo, Limit);
         MarkedLim[KillerIdo] = Limit;
     }
     public static void MurderKamikazedPlayers(PlayerControl kamikameha)
