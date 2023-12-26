@@ -12,7 +12,6 @@ namespace TOHE.Roles.Impostor;
 public static class Kamikaze
 {
     private static readonly int Id = 26900;
-    public static List<byte> MaxMarked = new();
     public static bool IsEnable = false;
 
 
@@ -36,7 +35,6 @@ public static class Kamikaze
     }
     public static void Init()
     {
-        MaxMarked = new();
         MarkedLim = new();
         KamikazedList = new();
         IsEnable = false;
