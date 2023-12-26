@@ -83,15 +83,13 @@ public static class Kamikaze
         }
         else if(CheckKamiDeath)
         {
-            foreach (var alivePlayer in Main.AllAlivePlayerControls)
-            {
-                if (alivePlayer.PlayerId == kamikameha.PlayerId) 
-                { 
-                Main.PlayerStates[kamikameha.PlayerId].deathReason = PlayerState.DeathReason.Targeted;
-                alivePlayer.RpcMurderPlayerV3(kamikameha);
-                 // Logger.Info($"{alivePlayer.GetNameWithRole()} is the killer of {kamikameha.GetNameWithRole()}", "Kamikaze"); -- Works fine
-                }
+            if (kamikameha.IsAlive()) 
+            { 
+               Main.PlayerStates[kamikameha.PlayerId].deathReason = PlayerState.DeathReason.Targeted;
+               kamikameha.RpcMurderPlayerV3(kamikameha);
+                // Logger.Info($"{alivePlayer.GetNameWithRole()} is the killer of {kamikameha.GetNameWithRole()}", "Kamikaze"); -- Works fine
             }
+            
         }
     }
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
