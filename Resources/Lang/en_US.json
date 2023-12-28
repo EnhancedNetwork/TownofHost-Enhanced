@@ -3112,6 +3112,7 @@
   "AlchemistShieldOut": "Potion of Resistance ended",
   "AlchemistVisionOut": "Potion of Night Vision ended",
   "AlchemistPotionBloodlust": "You gained bloodlust",
+  "AlchemistPotionDidNothing": "Nothing happened",
   "DeathpactDuration": "<color=#ff1919>Death Pact</color> duration",
   "DeathPactCooldown": "<color=#ff1919>Death Pact</color> Assign Cooldown",
   "DeathpactNumberOfPlayersInPact": "Number of players in <color=#ff1919>Death Pact</color>",
