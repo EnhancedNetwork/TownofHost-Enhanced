@@ -208,7 +208,7 @@ public static class BanManager
             if ((user["friendcode"].ToString().ToLower().Trim() == code.ToLower().Trim())
                 || (user["hashPUID"].ToString().ToLower().Trim() == hashedPuid.ToLower().Trim()))
             {
-                Logger.Warn($"friendcode : {code}, hashedPUID : {user["hashPUID"]} banned by EAC reason : {user["reason"]}", "CheckEACList");
+                Logger.Warn($"friendcode : {code}, hashedPUID : {hashedPuid} banned by EAC reason : {user["reason"]}", "CheckEACList");
                 return true; 
             }
         }
