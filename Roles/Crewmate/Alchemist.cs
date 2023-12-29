@@ -143,7 +143,7 @@ namespace TOHE.Roles.Crewmate
                         tar1.RPCPlayCustomSound("Teleport");
                     }, 2f, "Alchemist teleported to random player");
                     break;
-                case 4: // Increased speed
+                case 4: // Increased speed?? Right now it's only water (do nothing) case.
                     player.Notify(GetString("AlchemistPotionDidNothing"));
                     break;
                 case 5: // Quick fix next sabo
