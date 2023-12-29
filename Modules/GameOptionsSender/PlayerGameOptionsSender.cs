@@ -598,6 +598,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
 
         AURoleOptions.ShapeshifterCooldown = Mathf.Max(1f, AURoleOptions.ShapeshifterCooldown);
         AURoleOptions.ProtectionDurationSeconds = 0f;
+        AURoleOptions.ImpostorsCanSeeProtect = false;
 
         return opt;
     }
