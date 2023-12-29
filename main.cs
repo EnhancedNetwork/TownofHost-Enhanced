@@ -457,7 +457,7 @@ public class Main : BasePlugin
 
         Logger = BepInEx.Logging.Logger.CreateLogSource("TOHE");
         TOHE.Logger.Enable();
-        TOHE.Logger.Disable("NotifyRoles");
+        //TOHE.Logger.Disable("NotifyRoles");
         TOHE.Logger.Disable("SwitchSystem");
         TOHE.Logger.Disable("ModNews");
         if (!DebugModeManager.AmDebugger)

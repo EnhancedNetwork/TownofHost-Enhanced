@@ -1983,7 +1983,7 @@ public static class Utils
         //var callerMethod = caller.GetMethod();
         //string callerMethodName = callerMethod.Name;
         //string callerClassName = callerMethod.DeclaringType.FullName;
-        //Logger.Info($" Was called from: {callerClassName}.{callerMethodName}", "NotifyRoles", force: true);
+        //Logger.Info($" Was called from: {callerClassName}.{callerMethodName}", "NotifyRoles");
 
         await DoNotifyRoles(isForMeeting, SpecifySeer, SpecifyTarget, NoCache, ForceLoop, CamouflageIsForMeeting, MushroomMixupIsActive);
     }
@@ -2013,7 +2013,7 @@ public static class Utils
             MushroomMixupIsActive = IsActive(SystemTypes.MushroomMixupSabotage);
         }
 
-        Logger.Info($" START - Count Seers: {seerList.Length} & Count Target: {targetList.Length}", "DoNotifyRoles", force: true);
+        Logger.Info($" START - Count Seers: {seerList.Length} & Count Target: {targetList.Length}", "DoNotifyRoles");
 
         //seer: player who updates the nickname/role/mark
         //target: seer updates nickname/role/mark of other targets
@@ -2612,7 +2612,7 @@ public static class Utils
             }
         }
         //Logger.Info($" Loop for Targets: {}", "DoNotifyRoles", force: true);
-        Logger.Info($" END", "DoNotifyRoles", force: true);
+        Logger.Info($" END", "DoNotifyRoles");
         return Task.CompletedTask;
     }
     public static void MarkEveryoneDirtySettings()
