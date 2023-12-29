@@ -4,12 +4,33 @@ using System.Net.Http;
 using System.Text.Json;
 using System.IO;
 using System.Reflection;
+
 namespace TOHE;
 
 public class dbConnect
 {
     private static Dictionary<string, string> userType = new();
-    public static string getToken()
+
+    public static void Init()
+    {
+        try
+        {
+            GetRoleTable();
+        }
+        catch (Exception Ex)
+        {
+            Logger.Error($"Error in fetching roletable {Ex}", "dbConnect.init");
+        }
+        try
+        {
+            GetEACList();
+        }
+        catch (Exception Ex)
+        {
+            Logger.Error($"Error in fetching eaclist {Ex}", "dbConnect.init");
+        }
+    }
+    private static string getToken()
     {
         string apiToken = "";
         Assembly assembly = Assembly.GetExecutingAssembly();
@@ -42,7 +63,7 @@ public class dbConnect
         }
         return apiToken;
     }
-    public static void GetRoleTable()
+    private static void GetRoleTable()
     {
         userType = new();
         string apiToken = getToken();
@@ -102,6 +123,53 @@ public class dbConnect
             catch (Exception ex)
             {
                 Logger.Error($"error: {ex}", "dbConnect");
+                return;
+            }
+        }
+    }
+
+    private static void GetEACList()
+    {
+        string apiToken = getToken();
+        if (apiToken == "")
+        {
+            Logger.Warn("Embedded resource not found.", "apiToken");
+            return;
+        }
+        using (var httpClient = new HttpClient())
+        {
+            string apiUrl = "https://api.tohre.dev"; // Replace with your actual API URL
+            string endpoint = $"{apiUrl}/eac?token={apiToken}";
+
+            try
+            {
+                var response = httpClient.GetAsync(endpoint).Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using (var responseStream = response.Content.ReadAsStreamAsync().Result)
+                    {
+                        try
+                        {
+                            BanManager.EACDict = JsonSerializer.DeserializeAsync<List<Dictionary<string, JsonElement>>>(responseStream).Result;
+                        }
+                        catch (JsonException jsonEx)
+                        {
+                            // If deserialization as a list fails, try deserializing as a single JSON object
+                            Logger.Error($"Error deserializing JSON: {jsonEx.Message}", "GetEACList");
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    Logger.Error($"Error in fetching the EAC List, Success status code is false", "GetEACList");
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"error: {ex}", "GetEACList");
                 return;
             }
         }
