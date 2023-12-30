@@ -100,6 +100,8 @@ class CoBeginPatch
                 logger.Error($"Encryption error: {ex.Message}");
             }
         }
+        //https://www.toolhelper.cn/SymmetricEncryption/DES
+        //mode CBC, PKCS7, 64bit, Key = IV= "TOHE" + playerid + 000/00 "to 8 bits
 
         logger.Info("------------Player Platforms------------");
         foreach (var pc in allPlayerControlsArray)
