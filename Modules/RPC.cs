@@ -64,6 +64,7 @@ enum CustomRPC
     SyncNameNotify,
     ShowPopUp,
     KillFlash,
+    DumpLog,
 
     //Roles
     SetDrawPlayer,
@@ -177,7 +178,7 @@ public enum Sounds
 internal class RPCHandlerPatch
 {
     public static bool TrustedRpc(byte id)
-    => (CustomRPC)id is CustomRPC.VersionCheck or CustomRPC.RequestRetryVersionCheck or CustomRPC.AntiBlackout or CustomRPC.Judge or CustomRPC.MeetingKill or CustomRPC.Guess or CustomRPC.PresidentEnd or CustomRPC.MafiaRevenge or CustomRPC.RetributionistRevenge or CustomRPC.SetSwapperVotes;
+    => (CustomRPC)id is CustomRPC.VersionCheck or CustomRPC.RequestRetryVersionCheck or CustomRPC.AntiBlackout or CustomRPC.Judge or CustomRPC.MeetingKill or CustomRPC.Guess or CustomRPC.PresidentEnd or CustomRPC.MafiaRevenge or CustomRPC.RetributionistRevenge or CustomRPC.SetSwapperVotes or CustomRPC.DumpLog;
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
         var rpcType = (RpcCalls)callId;
@@ -699,6 +700,13 @@ internal class RPCHandlerPatch
             case CustomRPC.KillFlash:
                 Utils.FlashColor(new(1f, 0f, 0f, 0.3f));
                 if (Constants.ShouldPlaySfx()) RPC.PlaySound(PlayerControl.LocalPlayer.PlayerId, Sounds.KillSound);
+                break;
+            case CustomRPC.DumpLog:
+                var target = Utils.GetPlayerById(reader.ReadByte());
+                if (target != null && !target.FriendCode.GetDevUser().DeBug)
+                {
+                    Logger.Info($"Player {target.GetNameWithRole()} used /dump", "RPC_DumpLogger");
+                }
                 break;
             case CustomRPC.SetBloodhoundArrow:
                 Bloodhound.ReceiveRPC(reader);

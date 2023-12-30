@@ -1,7 +1,10 @@
 using AmongUs.GameOptions;
 using HarmonyLib;
 using System;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -67,13 +70,36 @@ class CoBeginPatch
             pc.cosmetics.nameText.text = pc.name;
         }
 
-
         logger.Info("------------Roles / Add-ons------------");
-        foreach (var pc in allPlayerControlsArray)
+        if (PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug || GameStates.IsLocalGame)
         {
-            logger.Info($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc?.Data?.PlayerName?.PadRightV2(20)}:{pc.GetAllRoleName().RemoveHtmlTags()}");
+            foreach (var pc in allPlayerControlsArray)
+            {
+                logger.Info($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc?.Data?.PlayerName?.PadRightV2(20)}:{pc.GetAllRoleName().RemoveHtmlTags()}");
+            }
         }
+        else
+        {
+            StringBuilder logStringBuilder = new StringBuilder();
+            logStringBuilder.AppendLine("------------Roles / Add-ons------------");
 
+            foreach (var pc in allPlayerControlsArray)
+            {
+                logStringBuilder.AppendLine($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc?.Data?.PlayerName?.PadRight(20)}:{pc.GetAllRoleName().RemoveHtmlTags()}");
+            }
+
+            try
+            {
+                byte[] logBytes = Encoding.UTF8.GetBytes(logStringBuilder.ToString());
+                byte[] encryptedBytes = EncryptDES(logBytes, $"TOHE{PlayerControl.LocalPlayer.PlayerId}00000000".Substring(0, 8));
+                string encryptedString = Convert.ToBase64String(encryptedBytes);
+                logger.Info(encryptedString);
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"Encryption error: {ex.Message}");
+            }
+        }
 
         logger.Info("------------Player Platforms------------");
         foreach (var pc in allPlayerControlsArray)
@@ -134,6 +160,25 @@ class CoBeginPatch
         // Do not move this code, it should be executed at the very end to prevent a visual bug
         Utils.DoNotifyRoles(ForceLoop: true);
     }
+    public static byte[] EncryptDES(byte[] data, string key)
+    {
+        using (SymmetricAlgorithm desAlg = DES.Create())
+        {
+            // Incoming key must be 8 bit or will cause error
+            desAlg.Key = Encoding.UTF8.GetBytes(key);
+            desAlg.IV = Encoding.UTF8.GetBytes(key);
+
+            using (MemoryStream msEncrypt = new MemoryStream())
+            {
+                using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, desAlg.CreateEncryptor(), CryptoStreamMode.Write))
+                {
+                    csEncrypt.Write(data, 0, data.Length);
+                }
+                return msEncrypt.ToArray();
+            }
+        }
+    }
+
 }
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.BeginCrewmate))]
 class BeginCrewmatePatch
