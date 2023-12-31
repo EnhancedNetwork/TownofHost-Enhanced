@@ -856,6 +856,7 @@ public enum CustomRoles
     Oiiai,
     Influenced,
     Silent,
+    Susceptible,
     Mundane
     // QuickFix
 }
