@@ -1263,6 +1263,7 @@ internal class ChatCommands
             "OIIAI" => GetString("Oiiai"),
             "順從者" or "影响者" or "順從" or "影响" => GetString("Influenced"),
             "沉默者" or "沉默" => GetString("Silent"),
+            "" or "" => GetString("Susceptible"),
             "平凡者" or "平凡" => GetString("Mundane"),
 
             // 随机阵营职业
