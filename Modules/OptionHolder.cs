@@ -2497,6 +2497,8 @@ public static class Options
 
         Silent.SetupCustomOptions();
 
+        Susceptible.SetupCustomOptions();
+
         TextOptionItem.Create(10000016, "RoleType.Harmful", TabGroup.Addons) // HARMFUL
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 154, 206, byte.MaxValue));
