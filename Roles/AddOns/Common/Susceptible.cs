@@ -5,7 +5,7 @@ namespace TOHE.Roles.AddOns.Common
 {
     public class Susceptible
     {
-        private static readonly int Id = 26900;
+        private static readonly int Id = 27000;
         public static OptionItem CanBeOnCrew;
         public static OptionItem CanBeOnImp;
         public static OptionItem CanBeOnNeutral;
