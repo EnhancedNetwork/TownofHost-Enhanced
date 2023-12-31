@@ -19,7 +19,7 @@ namespace TOHE.Roles.AddOns.Common
             CanBeOnNeutral = BooleanOptionItem.Create(Id + 13, "NeutralCanBeSusceptible", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Susceptible]);
         }
 
-         public static bool ChangeRandomDeath(PlayerControl victim)
+         public static void ChangeRandomDeath(PlayerControl victim)
         {
             PlayerState.DeathReason[] deathReasons = (PlayerState.DeathReason[])Enum.GetValues(typeof(PlayerState.DeathReason));
             Random random = new Random();
@@ -31,7 +31,6 @@ namespace TOHE.Roles.AddOns.Common
             {
                 Main.PlayerStates[victim.PlayerId].deathReason = randomReason;
             }
-            return true;
         }
     }
 }
