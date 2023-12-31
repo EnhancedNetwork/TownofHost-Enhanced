@@ -305,6 +305,9 @@ class CheckMurderPatch
                 case CustomRoles.Pyromaniac:
                     if (!Pyromaniac.OnCheckMurder(killer, target)) return false;
                     break;
+                case CustomRoles.Kamikaze:
+                    if (!Kamikaze.OnCheckMurder(killer, target)) return false;
+                    break;
                 case CustomRoles.Poisoner:
                     if (!Poisoner.OnCheckMurder(killer, target)) return false;
                     break;
@@ -2503,7 +2506,6 @@ class FixedUpdatePatch
             LocateArrow.OnFixedUpdate(player);
         }
 
-
         if (AmongUsClient.Instance.AmHost)
         {
             if (GameStates.IsLobby)
@@ -2839,6 +2841,9 @@ class FixedUpdatePatch
 
                 playerRole = player.GetCustomRole();
 
+                 if (Kamikaze.IsEnable)
+                     Kamikaze.MurderKamikazedPlayers(player);
+                
                 switch (playerRole)
                 {
                     case CustomRoles.Pelican:
@@ -2859,6 +2864,7 @@ class FixedUpdatePatch
 
                 if (GameStates.IsInTask)
                 {
+
                     if (BountyHunter.IsEnable)
                         BountyHunter.OnFixedUpdate(player);
 
