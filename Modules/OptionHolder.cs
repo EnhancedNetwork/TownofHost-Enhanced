@@ -2497,8 +2497,6 @@ public static class Options
 
         Silent.SetupCustomOptions();
 
-        Susceptible.SetupCustomOptions();
-
         TextOptionItem.Create(10000016, "RoleType.Harmful", TabGroup.Addons) // HARMFUL
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 154, 206, byte.MaxValue));
@@ -2658,6 +2656,8 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.Gravestone]);
         NeutralCanBeGravestone = BooleanOptionItem.Create(22105, "NeutralCanBeGravestone", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Gravestone]);
+
+        Susceptible.SetupCustomOptions();
         
         SetupAdtRoleOptions(22200, CustomRoles.Guesser, canSetNum: true, tab: TabGroup.Addons);
         ImpCanBeGuesser = BooleanOptionItem.Create(22203, "ImpCanBeGuesser", true, TabGroup.Addons, false)
