@@ -1427,6 +1427,11 @@ class MurderPlayerPatch
             }
         }
 
+        if (target.Is(CustomRoles.Susceptible))
+        {
+            Susceptible.ChangeRandomDeath(target);
+        }
+
         if (target.Is(CustomRoles.Trapper) && killer != target)
             killer.TrapperKilled(target);
 
