@@ -1064,7 +1064,7 @@ internal class ChatCommands
             "警長" or "警长" => GetString("Sheriff"),
             "義警" or "义务警员" or "警员" => GetString("Vigilante"),
             "監禁者" or "狱警" or "狱卒" => GetString("Jailer"),
-
+            "模仿者" or "模仿猫" or "模仿" => GetString("CopyCat"),
             "告密者" => GetString("Snitch"),
             "展現者" or "展现者" or "展现" => GetString("Marshall"),
             "增速師" or "增速者" or "增速" => GetString("SpeedBooster"),
@@ -1160,7 +1160,7 @@ internal class ChatCommands
             "感染者" or "感染" => GetString("Infectious"),
             "病原體" or "病毒" => GetString("Virus"),
             "起訴人" or "起诉人" => GetString("Pursuer"),
-
+            "怨靈" or "幽灵" => GetString("Phantom"),
             "挑戰者" or "决斗者" or "挑战者" => GetString("Pirate"),
             "炸彈王" or "炸弹狂" or "煽动者" => GetString("Agitater"),
             "獨行者" or "独行者" => GetString("Maverick"),
@@ -1173,7 +1173,7 @@ internal class ChatCommands
             "飢荒" or "饥荒" => GetString("Famine"),
             "靈魂召喚者" or "灵魂召唤者" => GetString("Spiritcaller"),
             "失憶者" or "失忆者" or "失忆" => GetString("Amnesiac"),
-
+            "模仿家" or "效仿者" => GetString("Imitator"),
             "強盜" => GetString("Bandit"),
             "分身者" => GetString("Doppelganger"),
             "受虐狂" => GetString("Masochist"),
@@ -1190,7 +1190,7 @@ internal class ChatCommands
             "絕情者" or "无情浪漫者" => GetString("RuthlessRomantic"),
             "毒醫" or "投毒者" => GetString("Poisoner"),
             "代碼工程師" or "巫师" => GetString("HexMaster"),
-            
+            "幻影" or "魅影" => GetString("Wraith"),
             "掃把星" or "扫把星" => GetString("Jinx"),
             "魔藥師" or "药剂师" => GetString("PotionMaster"),
             "死靈法師" or "亡灵巫师" => GetString("Necromancer"),
@@ -1269,19 +1269,6 @@ internal class ChatCommands
 
             // 随机阵营职业
             "迷你船員" or "迷你船员" or "迷你" or "小孩" => GetString("Mini"),
-
-            // 字符串冲突
-            //繁体中文
-            "幻影" => GetString("Wraith"),
-            "怨靈" => GetString("Phantom"),
-            "模仿者" => GetString("CopyCat"),
-            "模仿家" => GetString("Imitator"),
-            //简体中文
-            "模仿者" => GetString("Imitator"),
-            "模仿猫" or "模仿" => GetString("CopyCat"),
-            "魅影" => GetString("Wraith"),
-            "幻影" => GetString("Phantom"),
-
             _ => text,
         };
     }
