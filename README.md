@@ -88,6 +88,9 @@
 ### :star: [Stellar Roles](https://github.com/Mr-Fluuff/StellarRolesAU)
 >
 > - Provided role: ParityCop (Inspector)
+### :star: [Loonie](https://youareanidiot.cc)
+>
+> - Provided a name. We always give credit.
 
 ---
 
