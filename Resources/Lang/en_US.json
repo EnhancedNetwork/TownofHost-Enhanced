@@ -3003,6 +3003,8 @@
 
   "MaxProtections": "Max protections",
   "KeeperHideVote": "Hide Keeper's vote",
+  "KeeperProtect": "You chose to protect <b>{0}</b>, your vote has been returned",
+  "KeeperTitle": "Keeper",
 
   "MaulKillButtonText": "Maul",
   "MaulRadius": "Maul Radius",
