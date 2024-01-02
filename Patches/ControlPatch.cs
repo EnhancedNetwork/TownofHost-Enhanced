@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using static Il2CppSystem.Globalization.CultureInfo;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -145,6 +146,8 @@ internal class ControllerManagerUpdatePatch
             //强制结束游戏
             if (GetKeysDown(KeyCode.Return, KeyCode.L, KeyCode.LeftShift) && GameStates.IsInGame)
             {
+                NameNotifyManager.Notice.Clear();
+                Utils.DoNotifyRoles(ForceLoop: true);
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Draw);
                 GameManager.Instance.LogicFlow.CheckEndCriteria();
             }
@@ -343,7 +346,7 @@ internal class ControllerManagerUpdatePatch
     {
         if (keys.Any(k => Input.GetKeyDown(k)) && keys.All(k => Input.GetKey(k)))
         {
-            Logger.Info($"快捷键：{keys.First(k => Input.GetKeyDown(k))} in [{string.Join(",", keys)}]", "GetKeysDown");
+            Logger.Info($"Shortcut Key：{keys.First(k => Input.GetKeyDown(k))} in [{string.Join(",", keys)}]", "GetKeysDown");
             return true;
         }
         return false;

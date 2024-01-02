@@ -202,6 +202,13 @@ class OnPlayerLeftPatch
                     Main.PlayerStates[data.Character.PlayerId].SetDead();
                 }
 
+                // if the player left while he had a Notice message, clear it
+                if (NameNotifyManager.Notice.ContainsKey(data.Character.PlayerId))
+                {
+                    NameNotifyManager.Notice.Remove(data.Character.PlayerId);
+                    Utils.NotifyRoles(SpecifyTarget: data.Character, ForceLoop: true);
+                }
+
                 AntiBlackout.OnDisconnect(data.Character.Data);
                 PlayerGameOptionsSender.RemoveSender(data.Character);
             }
