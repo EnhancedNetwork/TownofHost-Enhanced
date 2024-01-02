@@ -3537,7 +3537,7 @@
   "GuessSolsticer": "你不能猜测神的信徒！",
   "VoteSolsticer": "你不能票出神的信徒！",
   "SolsticerTasksReset": "你的任务惨遭重置了",
-  "SolsticerMisGuessed": "你只是猜错了！所以你不能再猜了",
+  "SolsticerMisGuessed": "你刚刚猜错了！所以你不能再猜了",
   "SolsticerGuessMax": "因为你已经猜错了，所以你不能再猜了。",
   "VoteDead": "你投票的玩家在会议结束前就被驱逐了。你的投票被返还了。",
   "ImpCanBeSilent": "<color=#ff1919>内鬼阵营</color>可以成为沉默者",
