@@ -75,6 +75,7 @@ public class Main : BasePlugin
     public static bool AlreadyShowMsgBox = false;
     public static string credentialsText;
     public static NormalGameOptionsV07 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
+    public static HideNSeekGameOptionsV07 HideNSeekOptions => GameOptionsManager.Instance.currentHideNSeekGameOptions;
     //Client Options
     public static ConfigEntry<string> HideName { get; private set; }
     public static ConfigEntry<string> HideColor { get; private set; }
@@ -171,6 +172,7 @@ public class Main : BasePlugin
     public static List<byte> MedusaBodies = new();
     public static List<byte> InfectedBodies = new();
     public static List<byte> BrakarVoteFor = new();
+    public static List<StringOption> TempStringOption = new();
     public static Dictionary<byte, (byte, float)> BitPlayers = new();
     public static Dictionary<byte, float> WarlockTimer = new();
     public static Dictionary<byte, float> AssassinTimer = new();

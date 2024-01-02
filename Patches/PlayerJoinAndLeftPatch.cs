@@ -42,7 +42,6 @@ class OnGameJoinedPatch
 
         if (AmongUsClient.Instance.AmHost) // Execute the following only on the host
         {
-
             GameStartManagerPatch.GameStartManagerUpdatePatch.exitTimer = -1;
             Main.DoBlockNameChange = false;
             Main.newLobby = true;
@@ -52,12 +51,19 @@ class OnGameJoinedPatch
             Main.PlayerQuitTimes = new();
             KickPlayerPatch.AttemptedKickPlayerList = new();
 
-            if (Main.NormalOptions.KillCooldown == 0f)
-                Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
+            if (GameStates.IsNormalGame)
+            {
+                if (Main.NormalOptions.KillCooldown == 0f)
+                    Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
 
-            AURoleOptions.SetOpt(Main.NormalOptions.Cast<IGameOptions>());
-            if (AURoleOptions.ShapeshifterCooldown == 0f)
-                AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
+                AURoleOptions.SetOpt(Main.NormalOptions.Cast<IGameOptions>());
+                if (AURoleOptions.ShapeshifterCooldown == 0f)
+                    AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
+            }
+            //else if (GameStates.IsHideNSeek)
+            //{
+            //    AURoleOptions.SetOpt(Main.HideNSeekOptions.Cast<IGameOptions>());
+            //}
 
             _ = new LateTask(() =>
             {

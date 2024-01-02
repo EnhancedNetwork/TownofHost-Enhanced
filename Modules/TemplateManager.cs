@@ -15,7 +15,7 @@ namespace TOHE;
 public static class TemplateManager
 {
     private static readonly string TEMPLATE_FILE_PATH = "./TOHE-DATA/template.txt";
-    private static readonly Dictionary<string, Func<string>> _replaceDictionary = new()
+    private static readonly Dictionary<string, Func<string>> _replaceDictionaryNormalOptions = new()
     {
         ["RoomCode"] = () => InnerNet.GameCode.IntToGameName(AmongUsClient.Instance.GameId),
         ["HostName"] = () => DataManager.Player.Customization.Name,
@@ -38,6 +38,21 @@ public static class TemplateManager
         ["Time"] = () => DateTime.Now.ToShortTimeString(),
         ["PlayerName"] = () => ""
         
+    };
+
+    private static readonly Dictionary<string, Func<string>> _replaceDictionaryHideNSeekOptions = new()
+    {
+        ["RoomCode"] = () => InnerNet.GameCode.IntToGameNameV2(AmongUsClient.Instance.GameId),
+        ["HostName"] = () => DataManager.Player.Customization.Name,
+        ["AmongUsVersion"] = () => UnityEngine.Application.version,
+        ["InternalVersion"] = () => Main.PluginVersion,
+        ["ModVersion"] = () => Main.PluginDisplayVersion,
+        ["Map"] = () => Constants.MapNames[Main.NormalOptions.MapId],
+        ["PlayerSpeedMod"] = () => Main.HideNSeekOptions.PlayerSpeedMod.ToString(),
+        ["Date"] = () => DateTime.Now.ToShortDateString(),
+        ["Time"] = () => DateTime.Now.ToShortTimeString(),
+        ["PlayerName"] = () => ""
+
     };
 
     public static void Init()
@@ -119,7 +134,11 @@ public static class TemplateManager
             playerName = () => Main.AllPlayerNames[playerId];   
         }
 
-        _replaceDictionary["PlayerName"] = playerName;
+        if (GameStates.IsNormalGame)
+            _replaceDictionaryNormalOptions["PlayerName"] = playerName;
+        else if (GameStates.IsHideNSeek)
+            _replaceDictionaryHideNSeekOptions["PlayerName"] = playerName;
+
         while ((text = sr.ReadLine()) != null)
         {
             tmp = text.Split(":");
@@ -140,9 +159,19 @@ public static class TemplateManager
 
     private static string ApplyReplaceDictionary(string text)
     {
-        foreach (var kvp in _replaceDictionary)
+        if (GameStates.IsNormalGame)
         {
-            text = Regex.Replace(text, "{{" + kvp.Key + "}}", kvp.Value.Invoke() ?? "", RegexOptions.IgnoreCase);
+            foreach (var kvp in _replaceDictionaryNormalOptions)
+            {
+                text = Regex.Replace(text, "{{" + kvp.Key + "}}", kvp.Value.Invoke() ?? "", RegexOptions.IgnoreCase);
+            }
+        }
+        else if (GameStates.IsHideNSeek)
+        {
+            foreach (var kvp in _replaceDictionaryHideNSeekOptions)
+            {
+                text = Regex.Replace(text, "{{" + kvp.Key + "}}", kvp.Value.Invoke() ?? "", RegexOptions.IgnoreCase);
+            }
         }
         return text;
     }

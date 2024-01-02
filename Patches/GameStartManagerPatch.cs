@@ -71,14 +71,17 @@ public class GameStartManagerPatch
                 __instance.privatePublicText.color = Palette.DisabledClear;
             }
 
-            if (Main.NormalOptions.KillCooldown == 0f)
-                Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
+            if (GameStates.IsNormalGame)
+            {
+                if (Main.NormalOptions.KillCooldown == 0f)
+                    Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
 
-            AURoleOptions.SetOpt(Main.NormalOptions.Cast<IGameOptions>());
-            if (AURoleOptions.ShapeshifterCooldown == 0f)
-                AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
+                AURoleOptions.SetOpt(Main.NormalOptions.Cast<IGameOptions>());
+                if (AURoleOptions.ShapeshifterCooldown == 0f)
+                    AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
 
-            AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
+                AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
+            }
         }
     }
 
@@ -259,15 +262,23 @@ public class GameStartRandomMap
             Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
         }
 
-        Options.DefaultKillCooldown = Main.NormalOptions.KillCooldown;
-        Main.LastKillCooldown.Value = Main.NormalOptions.KillCooldown;
-        Main.NormalOptions.KillCooldown = 0f;
+        IGameOptions opt = Main.NormalOptions.Cast<IGameOptions>();
+        if (GameStates.IsNormalGame)
+        {
+            Options.DefaultKillCooldown = Main.NormalOptions.KillCooldown;
+            Main.LastKillCooldown.Value = Main.NormalOptions.KillCooldown;
+            Main.NormalOptions.KillCooldown = 0f;
 
-        var opt = Main.NormalOptions.Cast<IGameOptions>();
-        AURoleOptions.SetOpt(opt);
-        Main.LastShapeshifterCooldown.Value = AURoleOptions.ShapeshifterCooldown;
-        AURoleOptions.ShapeshifterCooldown = 0f;
-        AURoleOptions.ImpostorsCanSeeProtect = false;
+            opt = Main.NormalOptions.Cast<IGameOptions>();
+            AURoleOptions.SetOpt(opt);
+            Main.LastShapeshifterCooldown.Value = AURoleOptions.ShapeshifterCooldown;
+            AURoleOptions.ShapeshifterCooldown = 0f;
+            AURoleOptions.ImpostorsCanSeeProtect = false;
+        }
+        else if (GameStates.IsHideNSeek)
+        {
+            opt = Main.HideNSeekOptions.Cast<IGameOptions>();
+        }
 
         PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(opt));
 
@@ -347,7 +358,9 @@ class ResetStartStatePatch
     {
         if (GameStates.IsCountDown)
         {
-            Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
+            if (GameStates.IsNormalGame)
+                Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
+            
             PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(GameOptionsManager.Instance.CurrentGameOptions));
         }
     }

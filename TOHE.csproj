@@ -7,7 +7,7 @@
         <Description>Town Of Host Enhanced</Description>
         <Authors>Moe</Authors>
         <langVersion>latest</langVersion>
-	<AmongUs>C:\Program Files (x86)\Steam\steamapps\common\Among Us</AmongUs>
+	<AmongUs>C:\Program Files (x86)\Steam\steamapps\common\Among Us (v11.28_Town of Host Enhanced v1.3.1)</AmongUs>
         <Configurations>Debug;Release;Canary</Configurations>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Optimize>True</Optimize>

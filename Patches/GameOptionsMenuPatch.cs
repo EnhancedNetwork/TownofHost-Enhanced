@@ -41,39 +41,50 @@ public static class GameOptionsMenuPatch
     public static void Postfix(GameOptionsMenu __instance)
     {
         var modeForSmallScreen = Main.ModeForSmallScreen.Value;
-
-        var children = __instance.Children.ToArray();
-        foreach (var ob in children)
+        Logger.Info("Start?", "Test GameOptionsMenuPatch");
+        
+        if (GameStates.IsNormalGame)
         {
-            switch (ob.Title)
+            var children = __instance.Children.ToArray();
+            foreach (var ob in children)
             {
-                case StringNames.GameVotingTime:
-                    ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 600);
-                    break;
-                case StringNames.GameShortTasks:
-                case StringNames.GameLongTasks:
-                case StringNames.GameCommonTasks:
-                    ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 99);
-                    break;
-                case StringNames.GameKillCooldown:
-                    ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 180);
-                    break;
-                default:
-                    break;
+                switch (ob.Title)
+                {
+                    case StringNames.GameVotingTime:
+                        ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 600);
+                        break;
+                    case StringNames.GameShortTasks:
+                    case StringNames.GameLongTasks:
+                    case StringNames.GameCommonTasks:
+                        ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 99);
+                        break;
+                    case StringNames.GameKillCooldown:
+                        ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 180);
+                        break;
+                    default:
+                        break;
+                }
             }
         }
+
+        Logger.Info("gameSettingMenu == null?", "Test GameOptionsMenuPatch");
+        var gameSettingMenu = Object.FindObjectOfType<GameSettingMenu>();
+        if (gameSettingMenu == null) return;
+        Logger.Info("gameSettingMenu != null", "Test GameOptionsMenuPatch");
+
+        Logger.Info("StringOption template == null?", "Test GameOptionsMenuPatch");
         var template = Object.FindObjectOfType<StringOption>();
         if (template == null) return;
+        Logger.Info("StringOption template != null", "Test GameOptionsMenuPatch");
 
         GameObject.Find("Tint")?.SetActive(false);
 
-        var gameSettings = GameObject.Find("Game Settings");
+        Logger.Info("gameSettings == null?", "Test GameOptionsMenuPatch");
+        var gameSettings = GameStates.IsNormalGame ? GameObject.Find("Game Settings") : gameSettingMenu.HideNSeekSettings;
         if (gameSettings == null) return;
+        Logger.Info("gameSettings != null", "Test GameOptionsMenuPatch");
 
         gameSettings.transform.Find("GameGroup").GetComponent<Scroller>().ScrollWheelSpeed = 1.2f;
-
-        var gameSettingMenu = Object.FindObjectOfType<GameSettingMenu>();
-        if (gameSettingMenu == null) return;
 
         var regularGameSettings = gameSettingMenu.RegularGameSettings;
         var rolesSettings = gameSettingMenu.RolesSettings.gameObject;
@@ -385,6 +396,13 @@ public class RpcSyncSettingsPatch
 {
     public static void Postfix()
     {
+        var template = Object.FindObjectOfType<StringOption>();
+        var gameSettings = GameObject.Find("Game Settings");
+        var gameSettingMenu = Object.FindObjectOfType<GameSettingMenu>();
+
+        Logger.Info($"template == null {template == null}", "test");
+        Logger.Info($"gameSettings == null {gameSettings == null}", "test");
+        Logger.Info($"gameSettingMenu == null {gameSettingMenu == null}", "test");
         OptionItem.SyncAllOptions();
     }
 }
