@@ -206,7 +206,7 @@ class OnPlayerLeftPatch
                 if (NameNotifyManager.Notice.ContainsKey(data.Character.PlayerId))
                 {
                     NameNotifyManager.Notice.Remove(data.Character.PlayerId);
-                    Utils.NotifyRoles(SpecifyTarget: data.Character, ForceLoop: true);
+                    Utils.DoNotifyRoles(SpecifyTarget: data.Character, ForceLoop: true);
                 }
 
                 AntiBlackout.OnDisconnect(data.Character.Data);
