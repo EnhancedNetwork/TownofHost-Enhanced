@@ -35,15 +35,15 @@ public static class Captain
         OptionMadmateCanFindCaptain = BooleanOptionItem.Create(Id + 12, "MadmateCanFindCaptain", false, TabGroup.CrewmateRoles, false).SetParent(OptionCrewCanFindCaptain);
         OptionTaskRequiredToReveal = IntegerOptionItem.Create(Id + 13, "CaptainRevealTaskRequired", new(0, 15, 1), 5, TabGroup.CrewmateRoles, false).SetParent(OptionCrewCanFindCaptain);
         OptionTaskRequiredToSlow = IntegerOptionItem.Create(Id + 14, "CaptainSlowTaskRequired", new(0, 15, 1), 5, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
-        OptionReducedSpeed = FloatOptionItem.Create(Id + 14, "ReducedSpeed", new(0.1f, 5f, 0.1f), 0.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain])
+        OptionReducedSpeed = FloatOptionItem.Create(Id + 15, "ReducedSpeed", new(0.1f, 5f, 0.1f), 0.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain])
             .SetValueFormat(OptionFormat.Times);
-        OptionReducedSpeedTime = FloatOptionItem.Create(Id + 15, "ReducedSpeedTime", new(1f, 60f, 1f), 5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain])
+        OptionReducedSpeedTime = FloatOptionItem.Create(Id + 16, "ReducedSpeedTime", new(1f, 60f, 1f), 5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain])
             .SetValueFormat(OptionFormat.Seconds);
-        CaptainCanTargetNB = BooleanOptionItem.Create(Id + 16, "CaptainCanTargetNB", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
-        CaptainCanTargetNC = BooleanOptionItem.Create(Id + 17, "CaptainCanTargetNC", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
-        CaptainCanTargetNE = BooleanOptionItem.Create(Id + 18, "CaptainCanTargetNE", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
-        CaptainCanTargetNK = BooleanOptionItem.Create(Id + 19, "CaptainCanTargetNK", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
-        OverrideTasksData.Create(Id + 20, TabGroup.CrewmateRoles, CustomRoles.Captain);
+        CaptainCanTargetNB = BooleanOptionItem.Create(Id + 17, "CaptainCanTargetNB", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
+        CaptainCanTargetNC = BooleanOptionItem.Create(Id + 18, "CaptainCanTargetNC", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
+        CaptainCanTargetNE = BooleanOptionItem.Create(Id + 19, "CaptainCanTargetNE", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
+        CaptainCanTargetNK = BooleanOptionItem.Create(Id + 20, "CaptainCanTargetNK", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
+        OverrideTasksData.Create(Id + 21, TabGroup.CrewmateRoles, CustomRoles.Captain);
     }
 
     public static void Init()
