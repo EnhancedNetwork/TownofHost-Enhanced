@@ -27,7 +27,7 @@ public static class GameSettingMenuPatch
     public static void Prefix(GameSettingMenu __instance)
     {
         // Unlocks map/impostor amount changing in online (for testing on your custom servers)
-        // オンラインモードで部屋を立て直さなくてもマップを変更できるように変更
+        // Changed to be able to change the map in online mode without having to re-establish the room.
         __instance.HideForOnline = new Il2CppReferenceArray<Transform>(0);
     }
 
