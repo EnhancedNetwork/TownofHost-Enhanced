@@ -97,6 +97,64 @@ public class PlayerState
                 }
             }
         }
+        // check for role addon
+        if (pc.Is(CustomRoles.Madmate))
+        {
+            countTypes = Options.MadmateCountMode.GetInt() switch
+            {
+                0 => CountTypes.OutOfGame,
+                1 => CountTypes.Impostor,
+                2 => countTypes,
+                _ => throw new NotImplementedException()
+            };
+        }
+        if (pc.Is(CustomRoles.Charmed))
+        {
+            countTypes = Succubus.CharmedCountMode.GetInt() switch
+            {
+                0 => CountTypes.OutOfGame,
+                1 => CountTypes.Succubus,
+                2 => countTypes,
+                _ => throw new NotImplementedException()
+            };
+        }
+        if (pc.Is(CustomRoles.Recruit))
+        {
+            countTypes = Jackal.SidekickCountMode.GetInt() switch
+            {
+                0 => CountTypes.Jackal,
+                1 => CountTypes.OutOfGame,
+                2 => countTypes,
+                _ => throw new NotImplementedException()
+            };
+        }
+        if (pc.Is(CustomRoles.Infected))
+        {
+            countTypes = CountTypes.Infectious;
+        }
+        if (pc.Is(CustomRoles.Contagious))
+        {
+            countTypes = Virus.ContagiousCountMode.GetInt() switch
+            {
+                0 => CountTypes.OutOfGame,
+                1 => CountTypes.Virus,
+                2 => countTypes,
+                _ => throw new NotImplementedException()
+            };
+        }
+        if (pc.Is(CustomRoles.Rogue))
+        {
+            countTypes = CountTypes.Rogue;
+        }
+        if (pc.Is(CustomRoles.Admired))
+        {
+            countTypes = CountTypes.Crew;
+        }
+        if (pc.Is(CustomRoles.Soulless))
+        {
+            countTypes = CountTypes.OutOfGame;
+        }
+
     }
     public void SetSubRole(CustomRoles role, bool AllReplace = false, PlayerControl pc = null)
     {
