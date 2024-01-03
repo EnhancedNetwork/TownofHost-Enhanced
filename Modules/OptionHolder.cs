@@ -1032,7 +1032,7 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 26900 lasted id for roles/add-ons (Next use 27000)
+        // 27000 lasted id for roles/add-ons (Next use 27100)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
         // Start Load Settings
@@ -2300,7 +2300,8 @@ public static class Options
 
         Pyromaniac.SetupCustomOption();
 
-        Quizmaster.SetupCustomOption();
+        if (!Quizmaster.InExperimental)
+            Quizmaster.SetupCustomOption();
 
         NSerialKiller.SetupCustomOption(); // Serial Killer
 
@@ -2863,7 +2864,10 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.God]);
         GodCanGuess = BooleanOptionItem.Create(25104, "CanGuess", false, TabGroup.OtherRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.God]);
-        
+
+        if (Quizmaster.InExperimental)
+            Quizmaster.SetupCustomOption();
+
         Spiritcaller.SetupCustomOption();
 
         Solsticer.SetupCustomOption();

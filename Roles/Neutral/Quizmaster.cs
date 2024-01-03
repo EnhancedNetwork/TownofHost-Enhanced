@@ -25,7 +25,7 @@ namespace TOHE.Roles.Neutral
         public static List<byte> playerIdList = new();
         public static Sabotages lastSabotage = Sabotages.None;
         public static Sabotages firstSabotageOfRound = Sabotages.None;
-        public static readonly int Id = 26900;
+        public static readonly int Id = 27000;
         public static int killsForRound = 0;
         public static bool allowedKilling = false;
         public static bool allowedVenting = true;
@@ -40,16 +40,21 @@ namespace TOHE.Roles.Neutral
         public static int meetingNum = 0;
         public static int diedThisRound = 0;
         public static int buttonMeeting = 0;
+
+        public static bool InExperimental = true;
         public static void SetupCustomOption()
         {
-            SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Quizmaster, 1);
-            QuestionDifficulty = IntegerOptionItem.Create(Id + 10, "QuizmasterSettings.QuestionDifficulty", new(1, 5, 1), 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
+            TabGroup tab = InExperimental ? TabGroup.OtherRoles : TabGroup.NeutralRoles;
 
-            CanVentAfterMark = BooleanOptionItem.Create(Id + 11, "QuizmasterSettings.CanVentAfterMark", true, TabGroup.NeutralRoles, false)
+            SetupSingleRoleOptions(Id, tab, CustomRoles.Quizmaster, 1);
+            QuestionDifficulty = IntegerOptionItem.Create(Id + 10, "QuizmasterSettings.QuestionDifficulty", new(1, 4, 1), 1, tab, false).SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
+
+            CanVentAfterMark = BooleanOptionItem.Create(Id + 11, "QuizmasterSettings.CanVentAfterMark", true, tab, false)
                 .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
-            CanKillAfterMark = BooleanOptionItem.Create(Id + 12, "QuizmasterSettings.CanKillAfterMark", false, TabGroup.NeutralRoles, false)
+            CanKillAfterMark = BooleanOptionItem.Create(Id + 12, "QuizmasterSettings.CanKillAfterMark", false, tab, false)
                 .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
-            NumOfKillAfterMark = IntegerOptionItem.Create(Id + 13, "QuizmasterSettings.rNumOfKillAfterMark", new(1, 15, 1), 1, TabGroup.NeutralRoles, false)
+            NumOfKillAfterMark = IntegerOptionItem.Create(Id + 13, "QuizmasterSettings.rNumOfKillAfterMark", new(1, 15, 1), 1, tab, false)
+                .SetValueFormat(OptionFormat.Players)
                 .SetParent(CanKillAfterMark);
         }
         public static void Init()
@@ -212,6 +217,11 @@ namespace TOHE.Roles.Neutral
                     new SetAnswersQuestion { Stage = 3, Question = "WhatDoesEOgMeansInName", Answer = "Edited", PossibleAnswers = { "Edition", "Experimental", "Enhanced", "Edited" }, QuizmasterQuestionType = QuizmasterQuestionType.NameOriginQuestion },
                     new CountQuestion { Stage = 3, Question = "HowManyDiedFirstRound", QuizmasterQuestionType = QuizmasterQuestionType.DiedFirstRoundCountQuestion },
                     new CountQuestion { Stage = 3, Question = "ButtonPressedBefore", QuizmasterQuestionType = QuizmasterQuestionType.ButtonPressedBeforeThisQuestion },
+
+                    new DeathReasonQuestion { Stage = 4, Question = "PlrDieReason", QuizmasterQuestionType = QuizmasterQuestionType.PlrDeathReasonQuestion},
+                    new DeathReasonQuestion { Stage = 4, Question = "PlrDieMethod", QuizmasterQuestionType = QuizmasterQuestionType.PlrDeathMethodQuestion},
+                    new SetAnswersQuestion { Stage = 4, Question = "LastAddedRoleForKarped", Answer = "Pacifist", PossibleAnswers = { "Pacifist", "Vampire", "Snitch", "Vigilante", "Jackal", "Mole", "Sniper" }, QuizmasterQuestionType = QuizmasterQuestionType.RoleAddedQuestion },
+                    new DeathReasonQuestion { Stage = 4, Question = "PlrDieFaction", QuizmasterQuestionType = QuizmasterQuestionType.PlrDeathKillerFactionQuestion},
                 };
                 
                 Question = GetRandomQuestion(Questions);
@@ -432,6 +442,86 @@ namespace TOHE.Roles.Neutral
         }
     }
 
+    class DeathReasonQuestion : QuizQuestionBase
+    {
+
+        public override void FixUnsetAnswers()
+        {
+            Answers = new List<string> { };
+
+            var rnd = IRandom.Instance;
+
+            PlayerControl chosenPlayer = null;
+
+            if (QuizmasterQuestionType == QuizmasterQuestionType.PlrDeathReasonQuestion)
+            {
+                PossibleAnswers.Add("None");
+                PossibleAnswers.Add(PlayerState.DeathReason.etc.ToString());
+                PossibleAnswers.Add(PlayerState.DeathReason.Vote.ToString());
+            }
+            else if (QuizmasterQuestionType == QuizmasterQuestionType.PlrDeathMethodQuestion)
+            {
+                PossibleAnswers.Add(PlayerState.DeathReason.Disconnected.ToString());
+                PossibleAnswers.Add(PlayerState.DeathReason.Vote.ToString());
+                PossibleAnswers.Add(PlayerState.DeathReason.Kill.ToString());
+            }
+            else if (QuizmasterQuestionType == QuizmasterQuestionType.PlrDeathKillerFactionQuestion)
+            {
+                PossibleAnswers.Add("");
+                PossibleAnswers.Add(PlayerState.DeathReason.Vote.ToString());
+                PossibleAnswers.Add(PlayerState.DeathReason.Kill.ToString());
+            }
+
+            chosenPlayer = Main.AllPlayerControls[rnd.Next(0, Main.AllPlayerControls.Length)];
+
+            foreach (PlayerControl plr in Main.AllPlayerControls)
+            {
+                if (QuizmasterQuestionType == QuizmasterQuestionType.PlrDeathReasonQuestion)
+                {
+                    if (plr.Data.IsDead && !PossibleAnswers.Contains(Main.PlayerStates[chosenPlayer.PlayerId].deathReason.ToString()))
+                        PossibleAnswers.Add(Main.PlayerStates[chosenPlayer.PlayerId].deathReason.ToString());
+                }
+            }
+
+            int positionForRightAnswer = rnd.Next(0, 3);
+
+            hasQuestionTranslation = false; //doing this do i can just change the player name in question
+            Question = GetString(Question).Replace("{PLR}", chosenPlayer.GetRealName());
+
+            if (QuizmasterQuestionType == QuizmasterQuestionType.PlrDeathReasonQuestion)
+                Answer = chosenPlayer.Data.IsDead ? Main.PlayerStates[chosenPlayer.PlayerId].deathReason.ToString() : "None";
+            else if (QuizmasterQuestionType == QuizmasterQuestionType.PlrDeathMethodQuestion)
+                Answer = chosenPlayer.Data.Disconnected ? PlayerState.DeathReason.Disconnected.ToString() : (Main.PlayerStates[chosenPlayer.PlayerId].deathReason == PlayerState.DeathReason.Vote ? PlayerState.DeathReason.Vote.ToString() : PlayerState.DeathReason.Kill.ToString());
+            else if (QuizmasterQuestionType == QuizmasterQuestionType.PlrDeathKillerFactionQuestion)
+                Answer = CustomRolesHelper.GetRoleTypes(chosenPlayer.GetRealKiller().GetCustomRole()).ToString();
+
+            int ans = int.Parse(Answer);
+            PossibleAnswers.Remove(Answer);
+            for (int numOfQuestionsDone = 0; numOfQuestionsDone < 3; numOfQuestionsDone++)
+            {
+                var prefix = "DeathReason.";
+                if (QuizmasterQuestionType == QuizmasterQuestionType.PlrDeathKillerFactionQuestion) prefix = "Type";
+                if (numOfQuestionsDone == positionForRightAnswer)
+                {
+                    AnswerLetter = new List<string> { "A", "B", "C" }[positionForRightAnswer];
+                    if (Answer == "None") prefix = "Quizmaster.";
+                    if (prefix != "")
+                        Answer = GetString(prefix + Answer);
+                    Answers.Add(prefix + Answer);
+                }
+                else
+                {
+                    string thatAnswer = PossibleAnswers[rnd.Next(0, PossibleAnswers.Count)];
+                    if (thatAnswer == "None") prefix = "Quizmaster.";
+                    if (prefix != "")
+                        thatAnswer = GetString(prefix + thatAnswer);
+                    Answers.Add(prefix + thatAnswer);
+                    PossibleAnswers.Remove(thatAnswer);
+                }
+            }
+        }
+    }
+
     class CountQuestion : QuizQuestionBase
     {
 
@@ -581,6 +671,10 @@ namespace TOHE.Roles.Neutral
         ButtonPressedBeforeThisQuestion,
         DiedFirstRoundCountQuestion,
         NameOriginQuestion,
+        PlrDeathReasonQuestion,
+        PlrDeathMethodQuestion,
+        RoleAddedQuestion,
+        PlrDeathKillerFactionQuestion,
     }
 
     public enum Sabotages
