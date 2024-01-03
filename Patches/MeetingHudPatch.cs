@@ -114,9 +114,7 @@ class CheckForEndVotingPatch
                             case CustomRoles.Cleanser:
                                 Cleanser.OnVote(pc, voteTarget);
                                 break;
-                            case CustomRoles.Keeper:
-                                Keeper.OnVote(pc, voteTarget);
-                                break;
+                            
                             case CustomRoles.Tracker:
                                 Tracker.OnVote(pc, voteTarget);
                                 break;
@@ -770,6 +768,13 @@ class CastVotePatch
                         return false;
                     } //patch here so checkend is not triggered
                     break;
+                case CustomRoles.Keeper:
+                    if (!Keeper.OnVote(voter, target))
+                    {
+                        __instance.RpcClearVote(voter.GetClientId());
+                        return false;
+                    }
+                    break;
             }
         }
 
@@ -1228,6 +1233,7 @@ class MeetingHudStartPatch
             }
             if (Captain.IsEnable)
                 if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) &&
+                    (target.GetPlayerTaskState().CompletedTasksCount >= Captain.OptionTaskRequiredToReveal.GetInt()) &&
                     (seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
                     sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Captain), " ☆"));
             switch (seer.GetCustomRole())

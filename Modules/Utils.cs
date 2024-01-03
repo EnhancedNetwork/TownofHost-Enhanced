@@ -151,6 +151,12 @@ public static class Utils
 
         //Logger.Info($"{type}", "SystemTypes");
 
+        // if ShipStatus not have current SystemTypes, return false
+        if (!ShipStatus.Instance.Systems.ContainsKey(type))
+        {
+            return false;
+        }
+
         switch (type)
         {
             case SystemTypes.Electrical:
@@ -162,10 +168,6 @@ public static class Utils
             case SystemTypes.Reactor:
                 {
                     if (mapId == 2) return false; // if Polus return false
-                    else if (mapId is 4) // Only Airhip
-                    {
-                        return IsActive(SystemTypes.HeliSabotage);
-                    }
                     else
                     {
                         var ReactorSystemType = ShipStatus.Instance.Systems[type].Cast<ReactorSystemType>();
@@ -186,7 +188,7 @@ public static class Utils
                 }
             case SystemTypes.HeliSabotage:
                 {
-                    if (mapId != 4) return false;// Only Airhip
+                    if (mapId != 4) return false; // Only Airhip
                     var HeliSabotageSystem = ShipStatus.Instance.Systems[type].Cast<HeliSabotageSystem>();
                     return HeliSabotageSystem != null && HeliSabotageSystem.IsActive;
                 }
@@ -206,13 +208,19 @@ public static class Utils
             case SystemTypes.MushroomMixupSabotage:
                 {
                     if (mapId != 5) return false; // Only The Fungle
-                    var MushroomMixupSabotageSystem = ShipStatus.Instance.Systems[type].Cast<MushroomMixupSabotageSystem>();
+                    var MushroomMixupSabotageSystem = ShipStatus.Instance.Systems[type].TryCast<MushroomMixupSabotageSystem>();
                     return MushroomMixupSabotageSystem != null && MushroomMixupSabotageSystem.IsActive;
                 }
             default:
                 return false;
         }
     }
+    public static SystemTypes GetCriticalSabotageSystemType() => (MapNames)Main.NormalOptions.MapId switch
+    {
+        MapNames.Polus => SystemTypes.Laboratory,
+        MapNames.Airship => SystemTypes.HeliSabotage,
+        _ => SystemTypes.Reactor,
+    };
     public static void SetVision(this IGameOptions opt, bool HasImpVision)
     {
         if (HasImpVision)
@@ -291,16 +299,8 @@ public static class Utils
     }
     public static void KillFlash(this PlayerControl player)
     {
-        //キルフラッシュ(ブラックアウト+リアクターフラッシュ)の処理
-        bool ReactorCheck = false; //リアクターフラッシュの確認
-
-        var systemtypes = (MapNames)Main.NormalOptions.MapId switch
-        {
-            MapNames.Polus => SystemTypes.Laboratory,
-            MapNames.Airship => SystemTypes.HeliSabotage,
-            _ => SystemTypes.Reactor,
-        };
-        ReactorCheck = IsActive(systemtypes);
+        // Kill flash (blackout flash + reactor flash)
+        bool ReactorCheck = IsActive(GetCriticalSabotageSystemType());
 
         var Duration = Options.KillFlashDuration.GetFloat();
         if (ReactorCheck) Duration += 0.2f; //リアクター中はブラックアウトを長くする
@@ -964,6 +964,9 @@ public static class Utils
                     break;
                 case CustomRoles.Masochist:
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Masochist).ShadeColor(0.25f), $"({(Main.MasochistKillMax.TryGetValue(playerId, out var count3) ? count3 : 0)}/{Options.MasochistKillMax.GetInt()})"));
+                    break;
+                case CustomRoles.Kamikaze:
+                    ProgressText.Append(Kamikaze.GetMarkedLimit(playerId));
                     break;
                 case CustomRoles.QuickShooter:
                     ProgressText.Append(QuickShooter.GetShotLimit(playerId));
@@ -2336,7 +2339,8 @@ public static class Utils
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.SuperStar), "★"));
 
                         if (Captain.IsEnable)
-                            if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) && 
+                            if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) &&
+                                (target.GetPlayerTaskState().CompletedTasksCount >= Captain.OptionTaskRequiredToReveal.GetInt()) &&
                                 (seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
                                 TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Captain), " ☆"));
 

@@ -1423,6 +1423,11 @@ public static class Options
             .SetValueFormat(OptionFormat.Seconds);
 
         /*
+         * Kamikaze
+         */
+        Kamikaze.SetupCustomOption();
+
+        /*
          * Time Thief
          */
         TimeThief.SetupCustomOption();
