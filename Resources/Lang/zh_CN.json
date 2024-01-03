@@ -2975,6 +2975,8 @@
   "LostAddonByCleanser": "你所有的附加职业都被清洗者删除lol",
   "MaxProtections": "最大保护次数",
   "KeeperHideVote": "隐藏守卫者的投票",
+  "KeeperProtect": "你选择保护  <b>{0}</b>，你的票被返回了",
+  "KeeperTitle": "守卫者",
   "MaulKillButtonText": "伤害",
   "MaulRadius": "袭击半径",
   "KillCooldownAfterKilling": "击杀后冷却",
