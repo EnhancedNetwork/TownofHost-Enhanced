@@ -49,6 +49,7 @@ class ExileControllerWrapUpPatch
         bool DecidedWinner = false;
         if (!AmongUsClient.Instance.AmHost) return;
         AntiBlackout.RestoreIsDead(doSend: false);
+        Pixie.CheckExileTarget(exiled);
 
         Logger.Info($"{!Collector.CollectorWin(false)}", "!Collector.CollectorWin(false)");
         Logger.Info($"{exiled != null}", "exiled != null");
@@ -157,7 +158,6 @@ class ExileControllerWrapUpPatch
                 DecidedWinner = false;
             }
 
-            Pixie.CheckExileTarget(exiled);
 
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist) Main.PlayerStates[exiled.PlayerId].SetDead();
 

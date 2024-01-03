@@ -97,6 +97,7 @@ static class CustomRolesHelper
                 CustomRoles.Sans => CustomRoles.Impostor,
                 CustomRoles.Bomber => CustomRoles.Shapeshifter,
                 CustomRoles.Nuker => CustomRoles.Shapeshifter,
+                CustomRoles.Kamikaze => CustomRoles.Impostor,
              //   CustomRoles.Flashbang => CustomRoles.Shapeshifter,
                 CustomRoles.BoobyTrap => CustomRoles.Impostor,
                 CustomRoles.Scavenger => CustomRoles.Impostor,
@@ -697,6 +698,7 @@ static class CustomRolesHelper
             CustomRoles.Sans or
             CustomRoles.Bomber or
             CustomRoles.Nuker or
+            CustomRoles.Kamikaze or
             CustomRoles.Scavenger or
             CustomRoles.BoobyTrap or
             CustomRoles.Capitalism or
@@ -1106,8 +1108,10 @@ static class CustomRolesHelper
                 break;
 
             case CustomRoles.Mundane:
-                if (pc.CanUseKillButton() || pc.Is(CustomRoleTypes.Impostor)) return false;
-                if ((pc.GetCustomRole().IsCrewmate() && !Mundane.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Mundane.CanBeOnNeutral.GetBool())) return false;
+                if (pc.CanUseKillButton() || pc.GetCustomRole().IsTasklessCrewmate() || pc.Is(CustomRoleTypes.Impostor))
+                    return false;
+                if ((pc.GetCustomRole().IsCrewmate() && !Mundane.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Mundane.CanBeOnNeutral.GetBool()))
+                    return false;
                 if (pc.Is(CustomRoles.CopyCat)
                     || pc.Is(CustomRoles.Doomsayer)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
@@ -1469,6 +1473,7 @@ static class CustomRolesHelper
 
             case CustomRoles.Mare:
                 if (pc.Is(CustomRoles.Underdog)
+                    || pc.Is(CustomRoles.Berserker)
                     || pc.Is(CustomRoles.Inhibitor)
                     || pc.Is(CustomRoles.Saboteur)
                     || pc.Is(CustomRoles.Swift)

@@ -138,6 +138,12 @@ internal class KickPlayerPatch
     public static bool Prefix(InnerNet.InnerNetClient __instance, int clientId, bool ban)
     {
         if (!AmongUsClient.Instance.AmHost) return true;
+        if (AmongUsClient.Instance.ClientId == clientId)
+        {
+            Logger.SendInGame(string.Format("Game Attempting to {0} Host, Blocked the attempt.", ban ? "Ban" : "Kick"));
+            Logger.Info("How the fuck host are kicking it self", "KickPlayerPatch");
+            return false;
+        }
 
         var HashedPuid = AmongUsClient.Instance.GetClient(clientId).GetHashedPuid();
         if (!AttemptedKickPlayerList.ContainsKey(HashedPuid))

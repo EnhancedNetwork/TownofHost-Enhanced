@@ -267,6 +267,7 @@ public class GameStartRandomMap
         AURoleOptions.SetOpt(opt);
         Main.LastShapeshifterCooldown.Value = AURoleOptions.ShapeshifterCooldown;
         AURoleOptions.ShapeshifterCooldown = 0f;
+        AURoleOptions.ImpostorsCanSeeProtect = false;
 
         PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(opt));
 

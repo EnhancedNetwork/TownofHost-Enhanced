@@ -181,7 +181,7 @@ static class ExtendedPlayerControl
         if (killer.AmOwner)
         {
             killer.ProtectPlayer(target, colorId);
-            killer.MurderPlayer(target, MurderResultFlags.FailedProtected);
+            killer.MurderPlayer(target, MurderResultFlags.FailedProtected | MurderResultFlags.DecisionByHost);
         }
         // Other Clients
         if (killer.PlayerId != 0)
@@ -194,7 +194,7 @@ static class ExtendedPlayerControl
                 .EndRpc();
             sender.StartRpc(killer.NetId, (byte)RpcCalls.MurderPlayer)
                 .WriteNetObject(target)
-                .Write((int)MurderResultFlags.FailedProtected)
+                .Write((int)(MurderResultFlags.FailedProtected | MurderResultFlags.DecisionByHost))
                 .EndRpc();
             sender.EndMessage();
             sender.SendMessage();
@@ -327,7 +327,7 @@ static class ExtendedPlayerControl
             The cooldown of the host resets directly.
         */
     }
-    public static void RpcDesyncRepairSystem(this PlayerControl target, SystemTypes systemType, int amount)
+    public static void RpcDesyncUpdateSystem(this PlayerControl target, SystemTypes systemType, int amount)
     {
         var messageWriter = AmongUsClient.Instance.StartRpcImmediately(ShipStatus.Instance.NetId, (byte)RpcCalls.UpdateSystem, SendOption.Reliable, target.GetClientId());
         messageWriter.Write((byte)systemType);
@@ -412,16 +412,11 @@ static class ExtendedPlayerControl
     {
         if (pc == null || !AmongUsClient.Instance.AmHost || pc.AmOwner) return;
 
-        var systemtypes = (MapNames)Main.NormalOptions.MapId switch
-        {
-            MapNames.Polus => SystemTypes.Laboratory,
-            MapNames.Airship => SystemTypes.HeliSabotage,
-            _ => SystemTypes.Reactor,
-        };
+        var systemtypes = Utils.GetCriticalSabotageSystemType();
 
         _ = new LateTask(() =>
         {
-            pc.RpcDesyncRepairSystem(systemtypes, 128);
+            pc.RpcDesyncUpdateSystem(systemtypes, 128);
         }, 0f + delay, "Reactor Desync");
 
         _ = new LateTask(() =>
@@ -431,31 +426,27 @@ static class ExtendedPlayerControl
 
         _ = new LateTask(() =>
         {
-            pc.RpcDesyncRepairSystem(systemtypes, 16);
-            if (Main.NormalOptions.MapId == 4) //Airship用
-                pc.RpcDesyncRepairSystem(systemtypes, 17);
+            pc.RpcDesyncUpdateSystem(systemtypes, 16);
+
+            if (Main.NormalOptions.MapId == 4) //If Airship
+                pc.RpcDesyncUpdateSystem(systemtypes, 17);
         }, 0.4f + delay, "Fix Desync Reactor");
     }
     public static void ReactorFlash(this PlayerControl pc, float delay = 0f)
     {
         if (pc == null) return;
         // Logger.Info($"{pc}", "ReactorFlash");
-        var systemtypes = (MapNames)Main.NormalOptions.MapId switch
-        {
-            MapNames.Polus => SystemTypes.Laboratory,
-            MapNames.Airship => SystemTypes.HeliSabotage,
-            _ => SystemTypes.Reactor,
-        };
+        var systemtypes = Utils.GetCriticalSabotageSystemType();
         float FlashDuration = Options.KillFlashDuration.GetFloat();
 
-        pc.RpcDesyncRepairSystem(systemtypes, 128);
+        pc.RpcDesyncUpdateSystem(systemtypes, 128);
 
         _ = new LateTask(() =>
         {
-            pc.RpcDesyncRepairSystem(systemtypes, 16);
+            pc.RpcDesyncUpdateSystem(systemtypes, 16);
 
             if (Main.NormalOptions.MapId == 4) //If Airship
-                pc.RpcDesyncRepairSystem(systemtypes, 17);
+                pc.RpcDesyncUpdateSystem(systemtypes, 17);
 
         }, FlashDuration + delay, "Fix Desync Reactor");
     }
@@ -479,8 +470,8 @@ static class ExtendedPlayerControl
             CustomRoles.Mafia => Utils.CanMafiaKill(),
             CustomRoles.Shaman => pc.IsAlive(),
             CustomRoles.Underdog => playerCount <= Options.UnderdogMaximumPlayersNeededToKill.GetInt(),
-            CustomRoles.Inhibitor => !Utils.IsActive(SystemTypes.Electrical) && !Utils.IsActive(SystemTypes.Laboratory) && !Utils.IsActive(SystemTypes.Comms) && !Utils.IsActive(SystemTypes.LifeSupp) && !Utils.IsActive(SystemTypes.Reactor),
-            CustomRoles.Saboteur => Utils.IsActive(SystemTypes.Electrical) || Utils.IsActive(SystemTypes.Laboratory) || Utils.IsActive(SystemTypes.Comms) || Utils.IsActive(SystemTypes.LifeSupp) || Utils.IsActive(SystemTypes.Reactor),
+            CustomRoles.Inhibitor => !Utils.IsActive(SystemTypes.Electrical) && !Utils.IsActive(SystemTypes.Comms) && !Utils.IsActive(SystemTypes.MushroomMixupSabotage) && !Utils.IsActive(SystemTypes.Laboratory) && !Utils.IsActive(SystemTypes.LifeSupp) && !Utils.IsActive(SystemTypes.Reactor) && !Utils.IsActive(SystemTypes.HeliSabotage),
+            CustomRoles.Saboteur => Utils.IsActive(SystemTypes.Electrical) || Utils.IsActive(SystemTypes.Comms) || Utils.IsActive(SystemTypes.MushroomMixupSabotage) || Utils.IsActive(SystemTypes.Laboratory) || Utils.IsActive(SystemTypes.LifeSupp) || Utils.IsActive(SystemTypes.Reactor) || Utils.IsActive(SystemTypes.HeliSabotage),
             CustomRoles.Sniper => Sniper.CanUseKillButton(pc),
             CustomRoles.Sheriff => Sheriff.CanUseKillButton(pc.PlayerId),
             CustomRoles.Vigilante => pc.IsAlive(),
@@ -892,6 +883,9 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Berserker:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.BerserkerKillCooldown.GetFloat();
+                break;
+            case CustomRoles.Kamikaze:
+                Kamikaze.SetKillCooldown(player.PlayerId);
                 break;
            /* case CustomRoles.Mare:
                 Mare.SetKillCooldown(player.PlayerId);

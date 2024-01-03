@@ -114,9 +114,7 @@ class CheckForEndVotingPatch
                             case CustomRoles.Cleanser:
                                 Cleanser.OnVote(pc, voteTarget);
                                 break;
-                            case CustomRoles.Keeper:
-                                Keeper.OnVote(pc, voteTarget);
-                                break;
+                            
                             case CustomRoles.Tracker:
                                 Tracker.OnVote(pc, voteTarget);
                                 break;
@@ -769,6 +767,13 @@ class CastVotePatch
                         __instance.RpcClearVote(voter.GetClientId());
                         return false;
                     } //patch here so checkend is not triggered
+                    break;
+                case CustomRoles.Keeper:
+                    if (!Keeper.OnVote(voter, target))
+                    {
+                        __instance.RpcClearVote(voter.GetClientId());
+                        return false;
+                    }
                     break;
             }
         }
