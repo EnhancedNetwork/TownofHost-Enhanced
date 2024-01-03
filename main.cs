@@ -172,7 +172,6 @@ public class Main : BasePlugin
     public static List<byte> MedusaBodies = new();
     public static List<byte> InfectedBodies = new();
     public static List<byte> BrakarVoteFor = new();
-    public static List<StringOption> TempStringOption = new();
     public static Dictionary<byte, (byte, float)> BitPlayers = new();
     public static Dictionary<byte, float> WarlockTimer = new();
     public static Dictionary<byte, float> AssassinTimer = new();
