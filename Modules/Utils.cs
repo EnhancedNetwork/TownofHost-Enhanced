@@ -2339,7 +2339,8 @@ public static class Utils
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.SuperStar), "★"));
 
                         if (Captain.IsEnable)
-                            if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) && 
+                            if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) &&
+                                (target.GetPlayerTaskState().CompletedTasksCount >= Captain.OptionTaskRequiredToReveal.GetInt()) &&
                                 (seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
                                 TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Captain), " ☆"));
 
