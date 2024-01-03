@@ -73,7 +73,7 @@ public static class GameOptionsMenuPatch
         Logger.Info("gameSettingMenu != null", "Test GameOptionsMenuPatch");
 
         Logger.Info("StringOption template == null?", "Test GameOptionsMenuPatch");
-        var template = Object.FindObjectOfType<StringOption>();
+        var template = Object.FindObjectOfType<PlayerOption>(); //GameStates.IsNormalGame ? Object.FindObjectOfType<StringOption>() :
         if (template == null) return;
         Logger.Info("StringOption template != null", "Test GameOptionsMenuPatch");
 
@@ -92,8 +92,10 @@ public static class GameOptionsMenuPatch
         List<SpriteRenderer> highlights = new() { gameSettingMenu.GameSettingsHightlight, gameSettingMenu.RolesSettingsHightlight };
 
         var roleTab = GameObject.Find("RoleTab");
-        var gameTab = GameObject.Find("GameTab");
-        List<GameObject> tabs = new() { gameTab, roleTab };
+        var gameTab = gameSettingMenu.Tabs; //GameObject.Find("GameTab");
+        Logger.Info($"roleTab {roleTab}  gameTab {gameTab}", "Test GameOptionsMenuPatch");
+        //List<GameObject> tabs = new() { gameTab, roleTab };
+        List<GameObject> tabs = new() { gameTab };
 
         foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
         {
@@ -396,13 +398,6 @@ public class RpcSyncSettingsPatch
 {
     public static void Postfix()
     {
-        var template = Object.FindObjectOfType<StringOption>();
-        var gameSettings = GameObject.Find("Game Settings");
-        var gameSettingMenu = Object.FindObjectOfType<GameSettingMenu>();
-
-        Logger.Info($"template == null {template == null}", "test");
-        Logger.Info($"gameSettings == null {gameSettings == null}", "test");
-        Logger.Info($"gameSettingMenu == null {gameSettingMenu == null}", "test");
         OptionItem.SyncAllOptions();
     }
 }
