@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using static TOHE.Options;
-using static UnityEngine.GraphicsBuffer;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -18,6 +18,8 @@ public static class Captain
 
     public static OptionItem OptionCrewCanFindCaptain;
     public static OptionItem OptionMadmateCanFindCaptain;
+    public static OptionItem OptionTaskRequiredToReveal;
+    public static OptionItem OptionTaskRequiredToSlow;
     public static OptionItem OptionReducedSpeed;
     public static OptionItem OptionReducedSpeedTime;
     public static OptionItem CaptainCanTargetNB;
@@ -31,15 +33,17 @@ public static class Captain
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Captain);
         OptionCrewCanFindCaptain = BooleanOptionItem.Create(Id + 11, "CrewCanFindCaptain", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
         OptionMadmateCanFindCaptain = BooleanOptionItem.Create(Id + 12, "MadmateCanFindCaptain", false, TabGroup.CrewmateRoles, false).SetParent(OptionCrewCanFindCaptain);
-        OptionReducedSpeed = FloatOptionItem.Create(Id + 13, "ReducedSpeed", new(0.1f, 5f, 0.1f), 0.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain])
-            .SetValueFormat(OptionFormat.Multiplier);
-        OptionReducedSpeedTime = FloatOptionItem.Create(Id + 14, "ReducedSpeedTime", new(1f, 60f, 1f), 5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain])
+        OptionTaskRequiredToReveal = IntegerOptionItem.Create(Id + 13, "CaptainRevealTaskRequired", new(0, 15, 1), 5, TabGroup.CrewmateRoles, false).SetParent(OptionCrewCanFindCaptain);
+        OptionTaskRequiredToSlow = IntegerOptionItem.Create(Id + 14, "CaptainSlowTaskRequired", new(0, 15, 1), 5, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
+        OptionReducedSpeed = FloatOptionItem.Create(Id + 14, "ReducedSpeed", new(0.1f, 5f, 0.1f), 0.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain])
+            .SetValueFormat(OptionFormat.Times);
+        OptionReducedSpeedTime = FloatOptionItem.Create(Id + 15, "ReducedSpeedTime", new(1f, 60f, 1f), 5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain])
             .SetValueFormat(OptionFormat.Seconds);
-        CaptainCanTargetNB = BooleanOptionItem.Create(Id + 15, "CaptainCanTargetNB", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
-        CaptainCanTargetNC = BooleanOptionItem.Create(Id + 16, "CaptainCanTargetNC", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
-        CaptainCanTargetNE = BooleanOptionItem.Create(Id + 17, "CaptainCanTargetNE", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
-        CaptainCanTargetNK = BooleanOptionItem.Create(Id + 18, "CaptainCanTargetNK", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
-        OverrideTasksData.Create(Id + 19, TabGroup.CrewmateRoles, CustomRoles.Captain);
+        CaptainCanTargetNB = BooleanOptionItem.Create(Id + 16, "CaptainCanTargetNB", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
+        CaptainCanTargetNC = BooleanOptionItem.Create(Id + 17, "CaptainCanTargetNC", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
+        CaptainCanTargetNE = BooleanOptionItem.Create(Id + 18, "CaptainCanTargetNE", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
+        CaptainCanTargetNK = BooleanOptionItem.Create(Id + 19, "CaptainCanTargetNK", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
+        OverrideTasksData.Create(Id + 20, TabGroup.CrewmateRoles, CustomRoles.Captain);
     }
 
     public static void Init()
@@ -127,6 +131,7 @@ public static class Captain
     {
         if (pc == null) return;
         if (!IsEnable) return;
+        if (pc.GetPlayerTaskState().CompletedTasksCount < OptionTaskRequiredToSlow.GetInt()) return;
         if (!pc.Is(CustomRoles.Captain) || !pc.IsAlive()) return;
         var allTargets = Main.AllAlivePlayerControls.Where(x => (x != null) && (!OriginalSpeed.ContainsKey(x.PlayerId)) &&
                                                            (x.GetCustomRole().IsImpostorTeamV3() ||
@@ -145,7 +150,7 @@ public static class Captain
         Logger.Info($"{targetPC.GetNameWithRole()} is chosen as the captain's target", "Captain Target");
         Main.AllPlayerSpeed[target] = OptionReducedSpeed.GetFloat();
         targetPC.SyncSettings();
-        targetPC.Notify("CaptainSpeedReduced", OptionReducedSpeedTime.GetFloat());
+        targetPC.Notify(GetString("CaptainSpeedReduced"), OptionReducedSpeedTime.GetFloat());
         _ = new LateTask(() =>
         {
             if (!GameStates.IsInTask) return;

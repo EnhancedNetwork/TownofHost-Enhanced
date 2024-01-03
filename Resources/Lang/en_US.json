@@ -2947,6 +2947,8 @@
   "CaptainCanTargetNC": "Captain can target Neutral Chaos",
   "CaptainCanTargetNK": "Captain can target Neutral Killer",
   "CaptainSpeedReduced": "Captain reduced your speed",
+  "CaptainRevealTaskRequired": "Number of tasks completed after which Captain is revealed",
+  "CaptainSlowTaskRequired": "Number of tasks completed after which target speed is reduced",
 
   "ParityCopTryHideMsg": "Hide <color=#0D57AF>Inspector</color>'s commands",
   "MaxParityCheckLimit": "Max inspections per game",
