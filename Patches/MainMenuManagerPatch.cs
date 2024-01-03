@@ -7,7 +7,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using static TOHE.Credentials;
 using static TOHE.Translator;
-using static UnityEngine.PlayerLoop.PreUpdate;
 using Object = UnityEngine.Object;
 
 namespace TOHE;

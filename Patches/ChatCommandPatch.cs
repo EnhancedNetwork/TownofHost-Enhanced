@@ -31,10 +31,12 @@ internal class ChatCommands
 
     public static bool Prefix(ChatController __instance)
     {
+        if (__instance.quickChatField.visible) return true;
         if (__instance.freeChatField.textArea.text == "") return false;
+        if (!GameStates.IsModHost && !AmongUsClient.Instance.AmHost) return true;
         __instance.timeSinceLastMessage = 3f;
         var text = __instance.freeChatField.textArea.text;
-        if (!ChatHistory.Any() || ChatHistory[^1] != text) ChatHistory.Add(text);
+        if (ChatHistory.Count == 0 || ChatHistory[^1] != text) ChatHistory.Add(text);
         ChatControllerUpdatePatch.CurrentHistorySelection = ChatHistory.Count;
         string[] args = text.Split(' ');
         string subArgs = "";
@@ -43,7 +45,7 @@ internal class ChatCommands
         var cancelVal = "";
         Main.isChatCommand = true;
         Logger.Info(text, "SendChat");
-        if (Options.NewHideMsg.GetBool() || Blackmailer.IsEnable) // Blackmailer.ForBlackmailer.Contains(PlayerControl.LocalPlayer.PlayerId)) && PlayerControl.LocalPlayer.IsAlive())
+        if ((Options.NewHideMsg.GetBool() || Blackmailer.IsEnable) && AmongUsClient.Instance.AmHost) // Blackmailer.ForBlackmailer.Contains(PlayerControl.LocalPlayer.PlayerId)) && PlayerControl.LocalPlayer.IsAlive())
         {
             ChatManager.SendMessage(PlayerControl.LocalPlayer, text);
         }
@@ -101,7 +103,7 @@ internal class ChatCommands
                 case "/winner":
                 case "/vencedor":
                     canceled = true;
-                    if (!Main.winnerNameList.Any()) Utils.SendMessage(GetString("NoInfoExists"));
+                    if (Main.winnerNameList.Count == 0) Utils.SendMessage(GetString("NoInfoExists"));
                     else Utils.SendMessage("Winner: " + string.Join(", ", Main.winnerNameList));
                     break;
 
@@ -940,27 +942,26 @@ internal class ChatCommands
         text = text.Replace("着", "者").Trim().ToLower();
         return text switch
         {
-            // 第一个为繁体中文，第二个为简体中文，后面为别名
-            // 也有可能第一个都是 简体/繁体 中文
-            // 繁体中文由阿龙、柚子、flyflyturtle制作
+            // Part of the string thanks to WuQing for helping
+            // 部分string感谢WuQing帮忙
+            // 第一个为繁体中文，第二个为简体中文
 
+            // Note for translators
+            // This file should contain not only Simplified and Traditional Chinese strings
+            // If the role has other nicknames or common misspellings in your language
+            // You can add them to this file with [ or "string" ]
+            // But please pay attention to the order of the languages
+            // so we can make the file clear and easy to manage
+
+            // Note for Contributors
+            // If you are coding a new role
+            // Pls create a new line here at the proper position
+            // Position should be same with the role name in en_US.json
+            // So translators can put nicknames or common misspellings here
+            // eg : "A" or "B" => GetString("RealRoleName"),
+            // eg : "Vector" or "Mario" => GetString("Mario"),
             // If you need to remove the roles, please delete them directly instead of commenting them out
             // 如果需要删除职业，请直接删掉，而不是注释掉
-
-            //Note for translators
-            //This file should contain not only Simplified and Traditional Chinese strings
-            //If the role has other nicknames or common misspellings in your language
-            //You can add them to this file with [ or "string" ]
-            //But please pay attention to the order of the languages
-            //so we can make the file clear and easy to manage
-
-            //Note for Contributors
-            //If you are coding a new role
-            //Pls create a new line here at the proper position
-            //Position should be same with the role name in en_US.json
-            //So translators can put nicknames or common misspellings here
-            //eg : "A" or "B" => GetString("RealRoleName"),
-            //eg : "Vector" or "Mario" => GetString("Mario"),
 
             // GM
             "GM(遊戲大師)" or "管理员" or "管理" or "gm" or "GM" => GetString("GM"),
@@ -1054,6 +1055,7 @@ internal class ChatCommands
             "大明星" or "明星" => GetString("SuperStar"),
             "網紅" or "网红" => GetString("CyberStar"),
             "清洗者" or "清洗" => GetString("Cleanser"),
+            "守衛者" or "守卫者" => GetString("Keeper"),
             "俠客" or "侠客" or "正义使者" => GetString("SwordsMan"),
             "市長" or "市长" => GetString("Mayor"),
             "被害妄想症" or "被害妄想" or "被迫害妄想症" or "被害" or "妄想" or "妄想症" => GetString("Paranoia"),
@@ -1070,6 +1072,7 @@ internal class ChatCommands
             "獨裁主義者" or "独裁者" or "独裁" => GetString("Dictator"),
             "偵探" or "侦探" => GetString("Detective"),
             "正義賭怪" or "正义赌怪" or "好赌" or "正义的赌怪" => GetString("NiceGuesser"),
+            "賭場管理員" or "竞猜大师" or "竞猜" => GetString("GuessMaster"),
             "傳送師" or "传送师" => GetString("Transporter"),
             "時間大師" or "时间操控者" or "时间操控" => GetString("TimeManager"),
             "老兵" => GetString("Veteran"),
@@ -1095,6 +1098,7 @@ internal class ChatCommands
             "算命師" or "研究者" => GetString("Investigator"),
             "守護者" or "守护者" or "守护" => GetString("Guardian"),
             "賢者" or "瘾君子" or "醉酒" => GetString("Addict"),
+            "鼹鼠" => GetString("Mole"),
             "藥劑師" or "炼金术士" or "药剂" => GetString("Alchemist"),
             "尋跡者" or "寻迹者" or "寻迹" or "寻找鸡腿" => GetString("Tracefinder"),
             "先知" or "神谕" or "神谕者" => GetString("Oracle"),
@@ -1116,14 +1120,14 @@ internal class ChatCommands
             "間諜" or "间谍" => GetString("Spy"),
             "隨機者" or "萧暮" or "暮" or "萧暮不姓萧" => GetString("Randomizer"),
             "猜想者" or "猜想" or "谜团" => GetString("Enigma"),
-
-            // 感谢WuQing帮我写这个
-            // Thanks to WuQing for writing this for me
+            "船長" or "舰长" or "船长" => GetString("Captain"),
+            "慈善家" or "恩人" => GetString("Benefactor"),
 
             // 中立阵营职业
             "小丑" or "丑皇" => GetString("Jester"),
             "縱火犯" or "纵火犯" or "纵火者" or "纵火" => GetString("Arsonist"),
             "焚燒狂" or "焚烧狂" or "焚烧" => GetString("Pyromaniac"),
+            "神風特攻隊" or "神风特攻队" => GetString("Kamikaze"),
             "獵人" or "猎人" => GetString("Huntsman"),
             "恐怖分子" => GetString("Terrorist"),
             "暴民" or "处刑人" or "处刑" or "处刑者" => GetString("Executioner"),
@@ -1142,7 +1146,7 @@ internal class ChatCommands
             "工作狂" => GetString("Workaholic"),
             "至日者" or "至日" => GetString("Solsticer"),
             "集票者" or "集票" => GetString("Collector"),
-            "神風特攻隊" or "自爆卡车" => GetString("Provocateur"),
+            "挑釁者" or "自爆卡车" => GetString("Provocateur"),
             "嗜血騎士" or "嗜血骑士" => GetString("BloodKnight"),
             "瘟疫之源" or "瘟疫使者" => GetString("PlagueBearer"),
             "萬疫之神" or "瘟疫" => GetString("Pestilence"),
@@ -1156,7 +1160,7 @@ internal class ChatCommands
             "感染者" or "感染" => GetString("Infectious"),
             "病原體" or "病毒" => GetString("Virus"),
             "起訴人" or "起诉人" => GetString("Pursuer"),
-            "怨靈" or "怨灵" => GetString("Phantom"),
+            "怨靈" or "幽灵" => GetString("Phantom"),
             "挑戰者" or "决斗者" or "挑战者" => GetString("Pirate"),
             "炸彈王" or "炸弹狂" or "煽动者" => GetString("Agitater"),
             "獨行者" or "独行者" => GetString("Maverick"),
@@ -1169,6 +1173,7 @@ internal class ChatCommands
             "飢荒" or "饥荒" => GetString("Famine"),
             "靈魂召喚者" or "灵魂召唤者" => GetString("Spiritcaller"),
             "失憶者" or "失忆者" or "失忆" => GetString("Amnesiac"),
+            "模仿家" or "效仿者" => GetString("Imitator"),
             "強盜" => GetString("Bandit"),
             "分身者" => GetString("Doppelganger"),
             "受虐狂" => GetString("Masochist"),
@@ -1189,9 +1194,6 @@ internal class ChatCommands
             "掃把星" or "扫把星" => GetString("Jinx"),
             "魔藥師" or "药剂师" => GetString("PotionMaster"),
             "死靈法師" or "亡灵巫师" => GetString("Necromancer"),
-
-            // 后面的别名分别对应附加前缀（也有可能没有）
-            // 再次感谢WuQing帮忙编写
 
             // 附加职业
             "絕境者" or "绝境者" => GetString("LastImpostor"),
@@ -1232,7 +1234,7 @@ internal class ChatCommands
             "幸運" or "幸运加持" => GetString("Lucky"),
             "倒霉" or "倒霉蛋" => GetString("Unlucky"),
             "虛無" or "无效投票" => GetString("VoidBallot"),
-            "敏感" or "意识到" => GetString("Aware"),
+            "敏感" or "意识者" or "意识" => GetString("Aware"),
             "嬌嫩" or "脆弱" => GetString("Fragile"),
             "專業" or "双重猜测" => GetString("DoubleShot"),
             "流氓" => GetString("Rascal"),
@@ -1262,9 +1264,11 @@ internal class ChatCommands
             "焦急者" or "焦急的" or "焦急" => GetString("Hurried"),
             "OIIAI" => GetString("Oiiai"),
             "順從者" or "影响者" or "順從" or "影响" => GetString("Influenced"),
+            "沉默者" or "沉默" => GetString("Silent"),
+            "平凡者" or "平凡" => GetString("Mundane"),
 
             // 随机阵营职业
-            "迷你船員" or "迷你船员" or "迷你" => GetString("Mini"),
+            "迷你船員" or "迷你船员" or "迷你" or "小孩" => GetString("Mini"),
             _ => text,
         };
     }
@@ -1505,7 +1509,7 @@ internal class ChatCommands
             case "/win":
             case "/winner":
             case "/vencedor":
-                if (!Main.winnerNameList.Any()) Utils.SendMessage(GetString("NoInfoExists"), player.PlayerId);
+                if (Main.winnerNameList.Count == 0) Utils.SendMessage(GetString("NoInfoExists"), player.PlayerId);
                 else Utils.SendMessage("Winner: " + string.Join(", ", Main.winnerNameList), player.PlayerId);
                 break;
 
@@ -2218,9 +2222,15 @@ class ChatUpdatePatch
     public static bool DoBlockChat = false;
     public static void Postfix(ChatController __instance)
     {
-        if (!AmongUsClient.Instance.AmHost || !Main.MessagesToSend.Any() || (Main.MessagesToSend[0].Item2 == byte.MaxValue && Main.MessageWait.Value > __instance.timeSinceLastMessage)) return;
+        if (!AmongUsClient.Instance.AmHost || Main.MessagesToSend.Count == 0 || (Main.MessagesToSend[0].Item2 == byte.MaxValue && Main.MessageWait.Value > __instance.timeSinceLastMessage)) return;
         if (DoBlockChat) return;
-        var player = Main.AllAlivePlayerControls.OrderBy(x => x.PlayerId).FirstOrDefault();
+        var player = PlayerControl.LocalPlayer;
+        if (GameStates.IsInGame || player.Data.IsDead)
+        {
+            player = Main.AllAlivePlayerControls.ToArray().OrderBy(x => x.PlayerId).FirstOrDefault()
+                     ?? Main.AllPlayerControls.ToArray().OrderBy(x => x.PlayerId).FirstOrDefault()
+                     ?? player;
+        }
         if (player == null) return;
         (string msg, byte sendTo, string title) = Main.MessagesToSend[0];
         Main.MessagesToSend.RemoveAt(0);
@@ -2260,6 +2270,22 @@ internal class AddChatPatch
                 break;
         }
         if (!AmongUsClient.Instance.AmHost) return;
+    }
+}
+
+[HarmonyPatch(typeof(FreeChatInputField), nameof(FreeChatInputField.UpdateCharCount))]
+internal class UpdateCharCountPatch
+{
+    public static void Postfix(FreeChatInputField __instance)
+    {
+        int length = __instance.textArea.text.Length;
+        __instance.charCountText.SetText($"{length}/{__instance.textArea.characterLimit}");
+        if (length < (AmongUsClient.Instance.AmHost ? 888 : 250))
+            __instance.charCountText.color = Color.black;
+        else if (length < (AmongUsClient.Instance.AmHost ? 999 : 300))
+            __instance.charCountText.color = new Color(1f, 1f, 0f, 1f);
+        else
+            __instance.charCountText.color = Color.red;
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSendChat))]

@@ -49,6 +49,7 @@ class ExileControllerWrapUpPatch
         bool DecidedWinner = false;
         if (!AmongUsClient.Instance.AmHost) return;
         AntiBlackout.RestoreIsDead(doSend: false);
+        Pixie.CheckExileTarget(exiled);
 
         Logger.Info($"{!Collector.CollectorWin(false)}", "!Collector.CollectorWin(false)");
         Logger.Info($"{exiled != null}", "exiled != null");
@@ -63,9 +64,9 @@ class ExileControllerWrapUpPatch
             
             var role = exiled.GetCustomRole();
 
-            //判断冤罪师胜利
-            var pcList = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId).ToArray();
-            if (pcList.Any())
+            // Innocent is dead
+            var pcArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId).ToArray();
+            if (pcArray.Length > 0)
             {
                 if (!Options.InnocentCanWinByImp.GetBool() && role.IsImpostor())
                 {
@@ -74,7 +75,7 @@ class ExileControllerWrapUpPatch
                 else
                 {
                     bool isInnocentWinConverted = false;
-                    foreach (var Innocent in pcList)
+                    foreach (var Innocent in pcArray)
                     {
                         if (CustomWinnerHolder.CheckForConvertedWinner(Innocent.PlayerId))
                         {
@@ -93,7 +94,7 @@ class ExileControllerWrapUpPatch
                             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Innocent);
                         }
 
-                        pcList.Do(x => CustomWinnerHolder.WinnerIds.Add(x.PlayerId));
+                        pcArray.Do(x => CustomWinnerHolder.WinnerIds.Add(x.PlayerId));
                     }
                     DecidedWinner = true;
                 }
@@ -156,7 +157,6 @@ class ExileControllerWrapUpPatch
                 DecidedWinner = false;
             }
 
-            Pixie.CheckExileTarget(exiled);
 
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist) Main.PlayerStates[exiled.PlayerId].SetDead();
 
@@ -173,7 +173,7 @@ class ExileControllerWrapUpPatch
         if (HexMaster.IsEnable)
             HexMaster.RemoveHexedPlayer();
 
-        if (Swapper.Vote.Any() && Swapper.VoteTwo.Any())
+        if (Swapper.Vote.Count > 0 && Swapper.VoteTwo.Count > 0)
         {
             foreach (var swapper in Main.AllAlivePlayerControls)
             {
@@ -216,6 +216,8 @@ class ExileControllerWrapUpPatch
             {
                 Shroud.MurderShroudedPlayers(player);
             }
+
+            player.RpcRemovePet();
 
             player.ResetKillCooldown();
             player.RpcResetAbilityCooldown();
@@ -298,6 +300,7 @@ class ExileControllerWrapUpPatch
                     Utils.AfterPlayerDeathTasks(player);
                 });
                 Main.AfterMeetingDeathPlayers.Clear();
+
             }, 0.5f, "AfterMeetingDeathPlayers Task");
         }
 

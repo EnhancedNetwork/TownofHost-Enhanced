@@ -145,7 +145,7 @@ public static class RetributionistRevengeManager
 
             _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("RetributionistKillSucceed"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Retributionist), GetString("RetributionistRevengeTitle")), true); }, 0.6f, "Retributionist Kill");
 
-        }, 0.2f, "Retributionist Kill");
+        }, 0.2f, "Retributionist Start Kill");
         return true;
     }
 

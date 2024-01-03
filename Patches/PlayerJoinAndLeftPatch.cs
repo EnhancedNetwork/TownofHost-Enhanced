@@ -50,6 +50,7 @@ class OnGameJoinedPatch
             EAC.DeNum = new();
             Main.AllPlayerNames = new();
             Main.PlayerQuitTimes = new();
+            KickPlayerPatch.AttemptedKickPlayerList = new();
 
             if (Main.NormalOptions.KillCooldown == 0f)
                 Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
@@ -199,6 +200,13 @@ class OnPlayerLeftPatch
                 {
                     Main.PlayerStates[data.Character.PlayerId].deathReason = PlayerState.DeathReason.Disconnected;
                     Main.PlayerStates[data.Character.PlayerId].SetDead();
+                }
+
+                // if the player left while he had a Notice message, clear it
+                if (NameNotifyManager.Notice.ContainsKey(data.Character.PlayerId))
+                {
+                    NameNotifyManager.Notice.Remove(data.Character.PlayerId);
+                    Utils.DoNotifyRoles(SpecifyTarget: data.Character, ForceLoop: true);
                 }
 
                 AntiBlackout.OnDisconnect(data.Character.Data);

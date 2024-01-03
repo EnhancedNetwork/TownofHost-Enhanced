@@ -23,7 +23,7 @@ public static class NameNotifyManager
     {
         if (!GameStates.IsInTask)
         {
-            Notice = new();
+            Notice.Clear();
             return;
         }
         if (Notice.ContainsKey(player.PlayerId) && Notice[player.PlayerId].Item2 < Utils.GetTimeStamp())
@@ -57,8 +57,9 @@ public static class NameNotifyManager
     {
         byte PlayerId = reader.ReadByte();
         Notice.Remove(PlayerId);
+        long now = Utils.GetTimeStamp();
         if (reader.ReadBoolean())
-            Notice.Add(PlayerId, new(reader.ReadString(), Utils.GetTimeStamp() + (long)reader.ReadSingle()));
-        Logger.Info($"New name notify for {Main.AllPlayerNames[PlayerId]}: {Notice[PlayerId].Item1} ({Notice[PlayerId].Item2 - Utils.GetTimeStamp()}s)", "Name Notify");
+            Notice.Add(PlayerId, new(reader.ReadString(), now + (long)reader.ReadSingle()));
+        Logger.Info($"New name notify for {Main.AllPlayerNames[PlayerId]}: {Notice[PlayerId].Item1} ({Notice[PlayerId].Item2 - now}s)", "Name Notify");
     }
 }

@@ -114,9 +114,7 @@ class CheckForEndVotingPatch
                             case CustomRoles.Cleanser:
                                 Cleanser.OnVote(pc, voteTarget);
                                 break;
-                            case CustomRoles.Keeper:
-                                Keeper.OnVote(pc, voteTarget);
-                                break;
+                            
                             case CustomRoles.Tracker:
                                 Tracker.OnVote(pc, voteTarget);
                                 break;
@@ -770,6 +768,13 @@ class CastVotePatch
                         return false;
                     } //patch here so checkend is not triggered
                     break;
+                case CustomRoles.Keeper:
+                    if (!Keeper.OnVote(voter, target))
+                    {
+                        __instance.RpcClearVote(voter.GetClientId());
+                        return false;
+                    }
+                    break;
             }
         }
 
@@ -898,7 +903,10 @@ class MeetingHudStartPatch
         if (msgToSend.Count >= 1)
         {
             var msgTemp = msgToSend.ToList();
-            _ = new LateTask(() => { msgTemp.Do(x => Utils.SendMessage(x.Item1, x.Item2, x.Item3)); }, 3f, "Skill Description First Meeting");
+            _ = new LateTask(() => 
+            {
+                msgTemp.Do(x => Utils.SendMessage(x.Item1, x.Item2, x.Item3));
+            }, 3f, "Skill Description First Meeting");
         }
         msgToSend = new();
 
@@ -1015,7 +1023,10 @@ class MeetingHudStartPatch
         msgToSend.Do(x => Logger.Info($"To:{x.Item2} {x.Item3} => {x.Item1}", "Skill Notice OnMeeting Start"));
 
         //总体延迟发送
-        _ = new LateTask(() => { msgToSend.Do(x => Utils.SendMessage(x.Item1, x.Item2, x.Item3)); }, 3f, "Skill Notice OnMeeting Start");
+        _ = new LateTask(() => 
+        { 
+            msgToSend.Do(x => Utils.SendMessage(x.Item1, x.Item2, x.Item3)); 
+        }, 3f, "Skill Notice On Meeting Start");
 
         Main.CyberStarDead.Clear();
         Main.CyberDead.Clear();
@@ -1503,7 +1514,7 @@ class MeetingHudOnDestroyPatch
     public static void Postfix()
     {
         MeetingStates.FirstMeeting = false;
-        Logger.Info("------------会议结束------------", "Phase");
+        Logger.Info("------------End Meeting------------", "Phase");
         if (AmongUsClient.Instance.AmHost)
         {
             AntiBlackout.SetIsDead();

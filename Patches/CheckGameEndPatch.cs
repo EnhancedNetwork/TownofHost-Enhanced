@@ -33,7 +33,7 @@ class GameEndChecker
         // FFA
         if (Options.CurrentGameMode == CustomGameMode.FFA)
         {
-            if (CustomWinnerHolder.WinnerIds.Any() || CustomWinnerHolder.WinnerTeam != CustomWinner.Default)
+            if (CustomWinnerHolder.WinnerIds.Count > 0 || CustomWinnerHolder.WinnerTeam != CustomWinner.Default)
             {
                 ShipStatus.Instance.enabled = false;
                 StartEndGame(reason);
@@ -45,8 +45,14 @@ class GameEndChecker
         //ゲーム終了時
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default)
         {
+            // Clear all Notice players 
+            NameNotifyManager.Notice.Clear();
+
             // Reset Camouflage
             Main.AllPlayerControls.Do(pc => Camouflage.RpcSetSkin(pc, ForceRevert: true, RevertToDefault: true, GameEnd: true));
+
+            // Update all Notify Roles
+            Utils.DoNotifyRoles(ForceLoop: true);
 
             if (reason == GameOverReason.ImpostorBySabotage && (CustomRoles.Jackal.RoleExist() || CustomRoles.Sidekick.RoleExist()) && Jackal.CanWinBySabotageWhenNoImpAlive.GetBool() && !Main.AllAlivePlayerControls.Any(x => x.GetCustomRole().IsImpostorTeam()))
             {
@@ -168,7 +174,7 @@ class GameEndChecker
                 {
                     var egoistCrewArray = Main.AllAlivePlayerControls.Where(x => x != null && x.GetCustomRole().IsCrewmate() && x.Is(CustomRoles.Egoist)).ToArray();
 
-                    if (egoistCrewArray.Any())
+                    if (egoistCrewArray.Length > 0)
                     {
                         reason = GameOverReason.ImpostorByKill;
                         CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Egoist);
@@ -185,7 +191,7 @@ class GameEndChecker
                 {
                     var egoistImpArray = Main.AllAlivePlayerControls.Where(x => x != null && x.GetCustomRole().IsImpostor() && x.Is(CustomRoles.Egoist)).ToArray();
 
-                    if (egoistImpArray.Any())
+                    if (egoistImpArray.Length > 0)
                     {
                         reason = GameOverReason.ImpostorByKill;
                         CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Egoist);
@@ -538,9 +544,9 @@ class GameEndChecker
         {
             reason = GameOverReason.ImpostorByKill;
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return false;
-            if (CheckGameEndByLivingPlayers(out reason)) return true;
-            if (CheckGameEndByTask(out reason)) return true;
             if (CheckGameEndBySabotage(out reason)) return true;
+            if (CheckGameEndByTask(out reason)) return true;
+            if (CheckGameEndByLivingPlayers(out reason)) return true;
 
             return false;
         }
@@ -586,7 +592,7 @@ class GameEndChecker
 
             int totalNKAlive = neutralRoleCounts.Sum(kvp => kvp.Value);
 
-            if (Main.AllAlivePlayerControls.Any() && Main.AllAlivePlayerControls.All(p => p.Is(CustomRoles.Lovers))) // if lover is alive lover wins
+            if (Main.AllAlivePlayerControls.Length > 0 && Main.AllAlivePlayerControls.All(p => p.Is(CustomRoles.Lovers))) // if lover is alive lover wins
             {
                 reason = GameOverReason.ImpostorByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Lovers);
@@ -645,7 +651,7 @@ class FFAGameEndPredicate : GameEndPredicate
     public override bool CheckForEndGame(out GameOverReason reason)
     {
         reason = GameOverReason.ImpostorByKill;
-        if (CustomWinnerHolder.WinnerIds.Any()) return false;
+        if (CustomWinnerHolder.WinnerIds.Count > 0) return false;
         if (CheckGameEndByLivingPlayers(out reason)) return true;
         return false;
     }
@@ -682,7 +688,7 @@ class FFAGameEndPredicate : GameEndPredicate
 
             return true;
         }
-        else if (!Main.AllAlivePlayerControls.Any())
+        else if (Main.AllAlivePlayerControls.Length == 0)
         {
             FFAManager.RoundTime = 0;
             Logger.Warn("No players alive. Force ending the game", "FFA");
@@ -709,6 +715,7 @@ public abstract class GameEndPredicate
         {
             reason = GameOverReason.HumansByTask;
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
+            Logger.Info($"Game End By Completed All Tasks", "CheckGameEndBySabotage");
             return true;
         }
         return false;
@@ -730,6 +737,7 @@ public abstract class GameEndPredicate
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Impostor);
             reason = GameOverReason.ImpostorBySabotage;
             LifeSupp.Countdown = 10000f;
+            Logger.Info($"Game End By LifeSupp Sabotage", "CheckGameEndBySabotage");
             return true;
         }
 
@@ -747,6 +755,7 @@ public abstract class GameEndPredicate
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Impostor);
             reason = GameOverReason.ImpostorBySabotage;
             critical.ClearSabotage();
+            Logger.Info($"Game End By Critical Sabotage", "CheckGameEndBySabotage");
             return true;
         }
 

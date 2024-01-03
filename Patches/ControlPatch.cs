@@ -66,7 +66,7 @@ internal class ControllerManagerUpdatePatch
                 {
                     var role = PlayerControl.LocalPlayer.GetCustomRole();
                     var lp = PlayerControl.LocalPlayer;
-                    if (!Main.PlayerStates[lp.PlayerId].SubRoles.Any()) return;
+                    if (Main.PlayerStates[lp.PlayerId].SubRoles.Count == 0) return;
 
                     addDes = new();
                     foreach (var subRole in Main.PlayerStates[lp.PlayerId].SubRoles.Where(x => x is not CustomRoles.Charmed).ToArray())
@@ -145,6 +145,8 @@ internal class ControllerManagerUpdatePatch
             //强制结束游戏
             if (GetKeysDown(KeyCode.Return, KeyCode.L, KeyCode.LeftShift) && GameStates.IsInGame)
             {
+                NameNotifyManager.Notice.Clear();
+                Utils.DoNotifyRoles(ForceLoop: true);
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Draw);
                 GameManager.Instance.LogicFlow.CheckEndCriteria();
             }
@@ -164,7 +166,7 @@ internal class ControllerManagerUpdatePatch
             if (Input.GetKeyDown(KeyCode.LeftShift) && GameStates.IsCountDown && !HudManager.Instance.Chat.IsOpenOrOpening)
             {
                 var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
-                if (invalidColor.Any())
+                if (invalidColor.Length > 0)
                 {
                     GameStartManager.Instance.ResetStartState(); //Hope this works
                     Logger.SendInGame(GetString("Error.InvalidColorPreventStart"));
@@ -343,7 +345,7 @@ internal class ControllerManagerUpdatePatch
     {
         if (keys.Any(k => Input.GetKeyDown(k)) && keys.All(k => Input.GetKey(k)))
         {
-            Logger.Info($"快捷键：{keys.First(k => Input.GetKeyDown(k))} in [{string.Join(",", keys)}]", "GetKeysDown");
+            Logger.Info($"Shortcut Key：{keys.First(k => Input.GetKeyDown(k))} in [{string.Join(",", keys)}]", "GetKeysDown");
             return true;
         }
         return false;
@@ -373,6 +375,7 @@ internal class HandleHUDPatch
 {
     public static void Postfix(Rewired.Player player)
     {
+        if (!GameStates.IsInGame) return;
         if (player.GetButtonDown(8) && // 8:キルボタンのactionId
         PlayerControl.LocalPlayer.Data?.Role?.IsImpostor == false &&
         PlayerControl.LocalPlayer.CanUseKillButton())

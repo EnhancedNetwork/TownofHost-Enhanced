@@ -58,11 +58,11 @@ public static class Pixie
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetPixieTargets, SendOption.Reliable, -1);
         writer.Write(pixieId);
         writer.Write(operate);
-        if (!operate)
+        if (!operate) // false = 0
         {
             writer.Write(targetId);
         }
-        else
+        else // true = 1
         {
             writer.Write(PixiePoints[pixieId]);
         }
@@ -115,23 +115,26 @@ public static class Pixie
     public static void CheckExileTarget(GameData.PlayerInfo exiled)
     {
         if (!IsEnable) return;
-        foreach (var pixieId in  PixieTargets.Keys.ToArray())
+        foreach (var pixieId in PixieTargets.Keys.ToArray())
         {
-            var pc = Utils.GetPlayerById(pixieId);
-            if (!PixieTargets[pixieId].Any()) continue;
-            if (!PixiePoints.ContainsKey(pixieId)) PixiePoints[pixieId] = 0;
-            if (PixiePoints[pixieId] >= PixiePointsToWin.GetInt()) continue;
+            if (exiled != null)
+            { 
+                var pc = Utils.GetPlayerById(pixieId);
+                if (PixieTargets[pixieId].Count == 0) continue;
+                if (!PixiePoints.ContainsKey(pixieId)) PixiePoints[pixieId] = 0;
+                if (PixiePoints[pixieId] >= PixiePointsToWin.GetInt()) continue;
 
-            if (PixieTargets[pixieId].Contains(exiled.PlayerId))
-            {
-                PixiePoints[pixieId]++;
-            }
-            else if (PixieSuicideOpt.GetBool() 
-                && PixieTargets[pixieId].Where(eid => Utils.GetPlayerById(eid)?.IsAlive() == true).Any())
-            {
-                CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Suicide, pixieId);
-                Utils.GetPlayerById(pixieId).SetRealKiller(Utils.GetPlayerById(pixieId));
-                Logger.Info($"{pc.GetNameWithRole()} committed suicide because target not exiled and target(s) were alive during ejection", "Pixie");
+                if (PixieTargets[pixieId].Contains(exiled.PlayerId))
+                {
+                    PixiePoints[pixieId]++;
+                }
+                else if (PixieSuicideOpt.GetBool() 
+                    && PixieTargets[pixieId].Any(eid => Utils.GetPlayerById(eid)?.IsAlive() == true))
+                {
+                    CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Suicide, pixieId);
+                    Utils.GetPlayerById(pixieId).SetRealKiller(Utils.GetPlayerById(pixieId));
+                    Logger.Info($"{pc.GetNameWithRole()} committed suicide because target not exiled and target(s) were alive during ejection", "Pixie");
+                }
             }
             PixieTargets[pixieId].Clear();
             SendRPC(pixieId, true);

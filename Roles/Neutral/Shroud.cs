@@ -99,7 +99,7 @@ public static class Shroud
                     targetDistance.Add(target.PlayerId, dis);
                 }
             }
-            if (targetDistance.Any())
+            if (targetDistance.Count > 0)
             {
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 var target = Utils.GetPlayerById(min.Key);

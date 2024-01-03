@@ -397,7 +397,7 @@ internal static class FFAManager
 
                         var filtered = Main.AllAlivePlayerControls.Where(a =>
                             pc.IsAlive() && !pc.inVent && a.PlayerId != pc.PlayerId && !changePositionPlayers.Contains(a.PlayerId)).ToArray();
-                        if (!filtered.Any()) break;
+                        if (filtered.Length == 0) break;
 
                         PlayerControl target = filtered[rd.Next(0, filtered.Length)];
 

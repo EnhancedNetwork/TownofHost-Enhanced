@@ -14,7 +14,7 @@ namespace TOHE.Roles.Impostor
         private static OptionItem AbilityLimit;
         private static OptionItem KillsPerAbilityUse;
 
-        private static IRandom rd = IRandom.Instance;
+        private static readonly IRandom rd = IRandom.Instance;
 
         private static Dictionary<int, int> AbilityUseCount;
 
@@ -54,7 +54,7 @@ namespace TOHE.Roles.Impostor
                 var killer = Main.AllPlayerControls.FirstOrDefault(a => a.PlayerId == player);
                 if (!killer.IsAlive()) continue;
 
-                List<PlayerControl> killPotentials = new List<PlayerControl>();
+                List<PlayerControl> killPotentials = new();
                 var votedForExiled = MeetingHud.Instance.playerStates.Where(a => a.VotedFor == exiled.PlayerId && a.TargetPlayerId != exiled.PlayerId).ToArray();
                 foreach (var playerVote in votedForExiled)
                 {
@@ -63,13 +63,13 @@ namespace TOHE.Roles.Impostor
                     killPotentials.Add(crewPlayer);
                 }
 
-                if (!killPotentials.Any()) break;
+                if (killPotentials.Count == 0) break;
 
-                List<byte> killPlayers = new List<byte>();
+                List<byte> killPlayers = new();
 
                 for (int i = 0; i < KillsPerAbilityUse.GetInt(); i++)
                 {
-                    if (!killPotentials.Any()) break;
+                    if (killPotentials.Count == 0) break;
 
                     PlayerControl target = killPotentials[rd.Next(0, killPotentials.Count)];
                     target.SetRealKiller(killer);

@@ -20,7 +20,7 @@ public class OptionBackupData
         }
         foreach (BoolOptionNames name in EnumHelper.GetAllValues<BoolOptionNames>())
         {
-            if (name is BoolOptionNames.GhostsDoTasks) continue;
+            if (name == BoolOptionNames.GhostsDoTasks) continue;
 
             if (option.TryGetBool(name, out var value))
                 AllValues.Add(new BoolOptionBackupValue(name, value));

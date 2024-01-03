@@ -154,6 +154,7 @@ public static class Romantic
                 killer.RPCPlayCustomSound("Shield");
                 killer.Notify(GetString("RomanticProtectPartner"));
                 tpc.Notify(GetString("RomanticIsProtectingYou"));
+                
                 _ = new LateTask(() =>
                 {
                     if (!GameStates.IsInTask || !tpc.IsAlive()) return;
@@ -161,7 +162,7 @@ public static class Romantic
                     killer.Notify("ProtectingOver");
                     tpc.Notify("ProtectingOver");
                     killer.SetKillCooldown();
-                }, ProtectDuration.GetFloat());
+                }, ProtectDuration.GetFloat(), "Romantic Protecting Is Over");
             }
         }
 

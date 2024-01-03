@@ -327,9 +327,10 @@ public static class Divinator
                 CustomRoles.Divinator or
                 CustomRoles.EvilDiviner or
                 CustomRoles.PotionMaster or
-                //CustomRoles.Occultist or
+                //CustomRoles.Occultist or <-- Also removed from divinator LANG 
+                CustomRoles.Kamikaze or
                 CustomRoles.HexMaster or
-                CustomRoles.Witch
+                CustomRoles.Witch 
                 => "Result23",
 
                 CustomRoles.Needy or

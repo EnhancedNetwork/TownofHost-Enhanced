@@ -15,7 +15,6 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Modules.CustomRoleSelector;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -151,7 +150,7 @@ internal class ChangeRoleSettings
             Camouflage.Init();
 
             var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
-            if (invalidColor.Any())
+            if (invalidColor.Length > 0)
             {
                 var msg = GetString("Error.InvalidColor");
                 Logger.SendInGame(msg);
@@ -168,6 +167,7 @@ internal class ChangeRoleSettings
                     Main.LastNotifyNames[pair] = target.name;
                 }
             }
+
             foreach (var pc in Main.AllPlayerControls)
             {
                 var colorId = pc.Data.DefaultOutfit.ColorId;
@@ -246,6 +246,7 @@ internal class ChangeRoleSettings
             Benefactor.Init();
             Taskinator.Init();
             QuickShooter.Init();
+            Kamikaze.Init();
             Camouflager.Init();
             Divinator.Init();
             Jailer.Init();
@@ -880,6 +881,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Pyromaniac:
                         Pyromaniac.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Kamikaze:
+                        Kamikaze.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Werewolf:
                         Werewolf.Add(pc.PlayerId);

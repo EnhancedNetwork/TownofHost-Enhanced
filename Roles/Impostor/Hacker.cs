@@ -92,7 +92,7 @@ public static class Hacker
         }
 
         // 未找到骇客击杀的尸体，寻找其他尸体
-        if (targetId == byte.MaxValue && DeadBodyList.Any())
+        if (targetId == byte.MaxValue && DeadBodyList.Count > 0)
             targetId = DeadBodyList[IRandom.Instance.Next(0, DeadBodyList.Count)];
 
         if (targetId == byte.MaxValue)

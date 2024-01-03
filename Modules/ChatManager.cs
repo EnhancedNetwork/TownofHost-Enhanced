@@ -128,7 +128,7 @@ namespace TOHE.Modules.ChatManager
                     if (Options.HideExileChat.GetBool()) 
                     { 
                         Logger.Info($"Message sent in exiling screen, spamming the chat", "ChatManager");
-                        _ = new LateTask(() => { SendPreviousMessagesToAll(); }, 0.3f);
+                        _ = new LateTask (SendPreviousMessagesToAll, 0.3f, "Spamming the chat");
                     }
                     return;
                 }
@@ -151,6 +151,8 @@ namespace TOHE.Modules.ChatManager
 
         public static void SendPreviousMessagesToAll()
         {
+            if (!AmongUsClient.Instance.AmHost || !GameStates.IsModHost) return;
+            //This should never function for non host
             if (GameStates.IsExilling && chatHistory.Count < 20)
             {
                 var firstAlivePlayer = Main.AllAlivePlayerControls.OrderBy(x => x.PlayerId).FirstOrDefault();

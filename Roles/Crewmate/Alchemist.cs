@@ -7,7 +7,6 @@ namespace TOHE.Roles.Crewmate
     using System.Linq;
     using System.Text;
     using TOHE.Modules;
-    using TOHE.Roles.Impostor;
     using TOHE.Roles.Neutral;
     using UnityEngine;
     using static TOHE.Options;
@@ -19,7 +18,7 @@ namespace TOHE.Roles.Crewmate
         private static List<byte> playerIdList = new();
 
         public static Dictionary<byte, byte> BloodlustList = new();
-        private static Dictionary<byte, int> ventedId = new();
+        //private static Dictionary<byte, int> ventedId = new();
         private static Dictionary<byte, long> InvisTime = new();
 
         public static byte PotionID = 10;
@@ -55,7 +54,7 @@ namespace TOHE.Roles.Crewmate
             BloodlustList = new();
             PotionID = 10;
             PlayerName = string.Empty;
-            ventedId = new();
+            //ventedId = new();
             InvisTime = new();
             FixNextSabo = false;
             VisionPotionActive = false;
@@ -65,7 +64,7 @@ namespace TOHE.Roles.Crewmate
             playerIdList.Add(playerId);
             PlayerName = Utils.GetPlayerById(playerId).GetRealName();
         }
-        public static bool IsEnable => playerIdList.Any();
+        public static bool IsEnable => playerIdList.Count > 0;
 
         public static void OnTaskComplete(PlayerControl pc)
         {
@@ -110,7 +109,13 @@ namespace TOHE.Roles.Crewmate
                 case 1: // Shield
                     IsProtected = true;
                     player.Notify(GetString("AlchemistShielded"), ShieldDuration.GetInt());
-                    _ = new LateTask(() => { IsProtected = false; player.Notify(GetString("AlchemistShieldOut")); }, ShieldDuration.GetInt());
+
+                    _ = new LateTask(() =>
+                    {
+                        IsProtected = false;
+                        player.Notify(GetString("AlchemistShieldOut"));
+
+                    }, ShieldDuration.GetInt(), "Alchemist Shield Is Out");
                     break;
                 case 2: // Suicide
                     player.MyPhysics.RpcBootFromVent(ventId);
@@ -119,7 +124,8 @@ namespace TOHE.Roles.Crewmate
                         Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Poison;
                         player.SetRealKiller(player);
                         player.RpcMurderPlayerV3(player);
-                    }, 1f);
+
+                    }, 1f, "Alchemist Is Poisoned");
                     break;
                 case 3: // TP to random player
                     _ = new LateTask(() =>
@@ -135,9 +141,9 @@ namespace TOHE.Roles.Crewmate
                         var tar2 = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
                         tar1.RpcTeleport(tar2.GetCustomPosition());
                         tar1.RPCPlayCustomSound("Teleport");
-                    }, 2f);
+                    }, 2f, "Alchemist teleported to random player");
                     break;
-                case 4: // Increased speed
+                case 4: // Increased speed?? Right now it's only water (do nothing) case.
                     player.Notify(GetString("AlchemistPotionDidNothing"));
                     break;
                 case 5: // Quick fix next sabo
@@ -154,7 +160,13 @@ namespace TOHE.Roles.Crewmate
                     VisionPotionActive = true;
                     player.MarkDirtySettings();
                     player.Notify(GetString("AlchemistHasVision"), VisionDuration.GetFloat());
-                    _ = new LateTask(() => { VisionPotionActive = false; player.MarkDirtySettings(); player.Notify(GetString("AlchemistVisionOut")); }, VisionDuration.GetFloat());
+                    _ = new LateTask(() =>
+                    { 
+                        VisionPotionActive = false;
+                        player.MarkDirtySettings();
+                        player.Notify(GetString("AlchemistVisionOut"));
+
+                    }, VisionDuration.GetFloat(), "Alchemist Vision Is Out");
                     break;
                 case 10:
                     player.Notify("NoPotion");
@@ -204,7 +216,7 @@ namespace TOHE.Roles.Crewmate
                         targetDistance.Add(target.PlayerId, dis);
                     }
                 }
-                if (targetDistance.Any())
+                if (targetDistance.Count > 0)
                 {
                     var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                     PlayerControl target = Utils.GetPlayerById(min.Key);

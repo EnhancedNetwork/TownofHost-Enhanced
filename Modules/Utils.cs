@@ -36,16 +36,18 @@ public static class Utils
             Logger.Fatal($"{text} 错误，触发防黑屏措施", "Anti-black");
             ChatUpdatePatch.DoBlockChat = true;
             Main.OverrideWelcomeMsg = GetString("AntiBlackOutNotifyInLobby");
+            
             _ = new LateTask(() =>
             {
                 Logger.SendInGame(GetString("AntiBlackOutLoggerSendInGame"), true);
-            }, 3f, "Anti-Black Msg SendInGame");
+            }, 3f, "Anti-Black Msg SendInGame 3");
+            
             _ = new LateTask(() =>
             {
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
                 GameManager.Instance.LogicFlow.CheckEndCriteria();
                 RPC.ForceEndGame(CustomWinner.Error);
-            }, 5.5f, "Anti-Black End Game");
+            }, 5.5f, "Anti-Black End Game 3");
         }
         else
         {
@@ -57,19 +59,20 @@ public static class Utils
                 _ = new LateTask(() =>
                 {
                     Logger.SendInGame(GetString("AntiBlackOutRequestHostToForceEnd"), true);
-                }, 3f, "Anti-Black Msg SendInGame");
+                }, 3f, "Anti-Black Msg SendInGame 4");
             }
             else
             {
                 _ = new LateTask(() =>
                 {
                     Logger.SendInGame(GetString("AntiBlackOutHostRejectForceEnd"), true);
-                }, 3f, "Anti-Black Msg SendInGame");
+                }, 3f, "Anti-Black Msg SendInGame 5");
+                
                 _ = new LateTask(() =>
                 {
                     AmongUsClient.Instance.ExitGame(DisconnectReasons.Custom);
                     Logger.Fatal($"{text} 错误，已断开游戏", "Anti-black");
-                }, 8f, "Anti-Black Exit Game");
+                }, 8f, "Anti-Black Exit Game 4");
             }
         }
     }
@@ -148,6 +151,12 @@ public static class Utils
 
         //Logger.Info($"{type}", "SystemTypes");
 
+        // if ShipStatus not have current SystemTypes, return false
+        if (!ShipStatus.Instance.Systems.ContainsKey(type))
+        {
+            return false;
+        }
+
         switch (type)
         {
             case SystemTypes.Electrical:
@@ -159,10 +168,6 @@ public static class Utils
             case SystemTypes.Reactor:
                 {
                     if (mapId == 2) return false; // if Polus return false
-                    else if (mapId is 4) // Only Airhip
-                    {
-                        return IsActive(SystemTypes.HeliSabotage);
-                    }
                     else
                     {
                         var ReactorSystemType = ShipStatus.Instance.Systems[type].Cast<ReactorSystemType>();
@@ -183,7 +188,7 @@ public static class Utils
                 }
             case SystemTypes.HeliSabotage:
                 {
-                    if (mapId != 4) return false;// Only Airhip
+                    if (mapId != 4) return false; // Only Airhip
                     var HeliSabotageSystem = ShipStatus.Instance.Systems[type].Cast<HeliSabotageSystem>();
                     return HeliSabotageSystem != null && HeliSabotageSystem.IsActive;
                 }
@@ -203,13 +208,19 @@ public static class Utils
             case SystemTypes.MushroomMixupSabotage:
                 {
                     if (mapId != 5) return false; // Only The Fungle
-                    var MushroomMixupSabotageSystem = ShipStatus.Instance.Systems[type].Cast<MushroomMixupSabotageSystem>();
+                    var MushroomMixupSabotageSystem = ShipStatus.Instance.Systems[type].TryCast<MushroomMixupSabotageSystem>();
                     return MushroomMixupSabotageSystem != null && MushroomMixupSabotageSystem.IsActive;
                 }
             default:
                 return false;
         }
     }
+    public static SystemTypes GetCriticalSabotageSystemType() => (MapNames)Main.NormalOptions.MapId switch
+    {
+        MapNames.Polus => SystemTypes.Laboratory,
+        MapNames.Airship => SystemTypes.HeliSabotage,
+        _ => SystemTypes.Reactor,
+    };
     public static void SetVision(this IGameOptions opt, bool HasImpVision)
     {
         if (HasImpVision)
@@ -288,16 +299,8 @@ public static class Utils
     }
     public static void KillFlash(this PlayerControl player)
     {
-        //キルフラッシュ(ブラックアウト+リアクターフラッシュ)の処理
-        bool ReactorCheck = false; //リアクターフラッシュの確認
-
-        var systemtypes = (MapNames)Main.NormalOptions.MapId switch
-        {
-            MapNames.Polus => SystemTypes.Laboratory,
-            MapNames.Airship => SystemTypes.HeliSabotage,
-            _ => SystemTypes.Reactor,
-        };
-        ReactorCheck = IsActive(systemtypes);
+        // Kill flash (blackout flash + reactor flash)
+        bool ReactorCheck = IsActive(GetCriticalSabotageSystemType());
 
         var Duration = Options.KillFlashDuration.GetFloat();
         if (ReactorCheck) Duration += 0.2f; //リアクター中はブラックアウトを長くする
@@ -320,7 +323,7 @@ public static class Utils
         {
             Main.PlayerStates[player.PlayerId].IsBlackOut = false; //ブラックアウト解除
             player.MarkDirtySettings();
-        }, Options.KillFlashDuration.GetFloat(), "RemoveKillFlash");
+        }, Options.KillFlashDuration.GetFloat(), "Remove Kill Flash");
     }
     public static void BlackOut(this IGameOptions opt, bool IsBlackOut)
     {
@@ -962,6 +965,9 @@ public static class Utils
                 case CustomRoles.Masochist:
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Masochist).ShadeColor(0.25f), $"({(Main.MasochistKillMax.TryGetValue(playerId, out var count3) ? count3 : 0)}/{Options.MasochistKillMax.GetInt()})"));
                     break;
+                case CustomRoles.Kamikaze:
+                    ProgressText.Append(Kamikaze.GetMarkedLimit(playerId));
+                    break;
                 case CustomRoles.QuickShooter:
                     ProgressText.Append(QuickShooter.GetShotLimit(playerId));
                     break;
@@ -1357,7 +1363,7 @@ public static class Utils
     public static string GetSubRolesText(byte id, bool disableColor = false, bool intro = false, bool summary = false)
     {
         var SubRoles = Main.PlayerStates[id].SubRoles;
-        if (!SubRoles.Any() && intro == false) return "";
+        if (SubRoles.Count == 0 && intro == false) return "";
         var sb = new StringBuilder();
         foreach (var role in SubRoles.ToArray())
         {
@@ -1369,7 +1375,7 @@ public static class Utils
             sb.Append($"{ColorString(Color.white, " + ")}{RoleText}");
         }
 
-        if (intro && !SubRoles.Contains(CustomRoles.Lovers) && !SubRoles.Contains(CustomRoles.Ntr) && CustomRolesHelper.RoleExist(CustomRoles.Ntr))
+        if (intro && !SubRoles.Contains(CustomRoles.Lovers) && !SubRoles.Contains(CustomRoles.Ntr) && CustomRoles.Ntr.RoleExist())
         {
             var RoleText = disableColor ? GetRoleName(CustomRoles.Lovers) : ColorString(GetRoleColor(CustomRoles.Lovers), GetRoleName(CustomRoles.Lovers));
             sb.Append($"{ColorString(Color.white, " + ")}{RoleText}");
@@ -1949,7 +1955,7 @@ public static class Utils
                 };
             }
             
-            if (!name.Contains('\r') && player.FriendCode.GetDevUser().HasTag())
+            if (!name.Contains('\r') && player.FriendCode.GetDevUser().HasTag() && (player.AmOwner || player.IsModClient()))
             {
                 name = player.FriendCode.GetDevUser().GetTag() + "<size=1.5>" + modtag + "</size>" + name;
             }
@@ -1968,7 +1974,7 @@ public static class Utils
     private static StringBuilder SelfMark = new(20);
     private static StringBuilder TargetSuffix = new();
     private static StringBuilder TargetMark = new(20);
-    public static async void NotifyRoles(bool isForMeeting = false, PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
+    public static async void NotifyRoles(bool isForMeeting = false, PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool NoCache = false, bool ForceLoop = false, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (Main.AllPlayerControls == null) return;
@@ -1980,11 +1986,11 @@ public static class Utils
         //var callerMethod = caller.GetMethod();
         //string callerMethodName = callerMethod.Name;
         //string callerClassName = callerMethod.DeclaringType.FullName;
-        //Logger.Info($" Was called from: {callerClassName}.{callerMethodName}", "NotifyRoles", force: true);
+        //Logger.Info($" Was called from: {callerClassName}.{callerMethodName}", "NotifyRoles");
 
         await DoNotifyRoles(isForMeeting, SpecifySeer, SpecifyTarget, NoCache, ForceLoop, CamouflageIsForMeeting, MushroomMixupIsActive);
     }
-    public static Task DoNotifyRoles(bool isForMeeting = false, PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
+    public static Task DoNotifyRoles(bool isForMeeting = false, PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool NoCache = false, bool ForceLoop = false, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
         if (!AmongUsClient.Instance.AmHost) return Task.CompletedTask;
         if (Main.AllPlayerControls == null) return Task.CompletedTask;
@@ -2010,7 +2016,8 @@ public static class Utils
             MushroomMixupIsActive = IsActive(SystemTypes.MushroomMixupSabotage);
         }
 
-        Logger.Info($" START - Count Seers: {seerList.Length}", "DoNotifyRoles", force: true);
+        Logger.Info($" START - Count Seers: {seerList.Length} & Count Target: {targetList.Length}", "DoNotifyRoles");
+
         //seer: player who updates the nickname/role/mark
         //target: seer updates nickname/role/mark of other targets
         foreach (var seer in seerList)
@@ -2275,7 +2282,6 @@ public static class Utils
                 || NoCache
                 || ForceLoop)
             {
-                Logger.Info($" Loop for Targets - Count Targets: {targetList.Length}", "DoNotifyRoles", force: true);
                 foreach (var target in targetList)
                 {
                     // if the target is the seer itself, do nothing
@@ -2605,14 +2611,11 @@ public static class Utils
 
                         target.RpcSetNamePrivate(TargetName, true, seer, force: NoCache);
                     }
-
-                    //logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":END");
                 }
             }
-
-            //logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":END");
         }
-        Logger.Info($" END", "DoNotifyRoles", force: true);
+        //Logger.Info($" Loop for Targets: {}", "DoNotifyRoles", force: true);
+        Logger.Info($" END", "DoNotifyRoles");
         return Task.CompletedTask;
     }
     public static void MarkEveryoneDirtySettings()

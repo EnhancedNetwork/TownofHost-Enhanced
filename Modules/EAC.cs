@@ -3,6 +3,7 @@ using Hazel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using InnerNet;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -26,7 +27,7 @@ internal class EAC
     public static bool ReceiveRpc(PlayerControl pc, byte callId, MessageReader reader)
     {
         if (!AmongUsClient.Instance.AmHost) return false;
-        if (pc == null || reader == null || pc.AmOwner) return false;
+        if (pc == null || reader == null) return false;
         try
         {
             MessageReader sr = MessageReader.Get(reader);
@@ -101,13 +102,24 @@ internal class EAC
                     Logger.Fatal($"非法设置玩家【{pc.GetClientId()}:{pc.GetRealName()}】的游戏名称，已驳回", "EAC");
                     return true;
                 case RpcCalls.ReportDeadBody:
-                    var p1 = Utils.GetPlayerById(sr.ReadByte());
-                    if (p1 != null && p1.IsAlive() && !p1.Is(CustomRoles.Paranoia) && !p1.Is(CustomRoles.GM))
+                    if (!GameStates.IsInGame)
                     {
                         WarnHost();
-                        Report(pc, "非法报告尸体");
-                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法报告尸体：【{p1?.GetNameWithRole() ?? "null"}】，已驳回", "EAC");
+                        Report(pc, "Report body out of game A");
+                        HandleCheat(pc, "Report body out of game A");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非游戏内开会，已驳回", "EAC");
                         return true;
+                    }
+                    if (ReportTimes.TryGetValue(pc.PlayerId, out int rtimes))
+                    {
+                        if (rtimes > 14)
+                        {
+                            WarnHost();
+                            Report(pc, "Spam report bodies A");
+                            HandleCheat(pc, "Spam report bodies A");
+                            Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】刷报告尸体满14次，已驳回", "EAC");
+                            return true;
+                        }
                     }
                     break;
                 case RpcCalls.SetColor:
@@ -148,6 +160,24 @@ internal class EAC
                     HandleCheat(pc, "Directly Murder Player");
                     Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】直接击杀，已驳回", "EAC");
                     return true;
+                case RpcCalls.Shapeshift:
+                    if (GameStates.IsLobby)
+                    {
+                        Report(pc, "ShapeShift in lobby");
+                        HandleCheat(pc, "ShapeShift in lobby");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】大厅变形，已驳回", "EAC");
+                        return true;
+                    }
+                    var target = sr.ReadNetObject<PlayerControl>();
+                    if (target == null)
+                    {
+                        Report(pc, "ShapeShift to null player!");
+                        //HandleCheat(pc, "ShapeShift to null player!");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法变形为空玩家，已驳回", "EAC");
+                        return true;
+                    }
+                    break;
+
             }
             switch (callId)
             {
@@ -389,9 +419,8 @@ internal class EAC
     {
         string msg = $"{pc.GetClientId()}|{pc.FriendCode}|{pc.Data.PlayerName}|{pc.GetClient().GetHashedPuid()}|{reason}";
         //Cloud.SendData(msg);
-        Logger.Fatal($"EAC报告：{pc.GetRealName()}: {reason}", "EAC Cloud");
-        Logger.SendInGame(string.Format(GetString("Message.NoticeByEAC"), pc?.Data?.PlayerName, reason));
-
+        Logger.Fatal($"EAC报告：{msg}", "EAC Cloud");
+        Logger.SendInGame(string.Format(GetString("Message.NoticeByEAC"), $"{pc?.Data?.PlayerName} | {pc.GetClient().GetHashedPuid()}", reason));
     }
     public static bool ReceiveInvalidRpc(PlayerControl pc, byte callId)
     {

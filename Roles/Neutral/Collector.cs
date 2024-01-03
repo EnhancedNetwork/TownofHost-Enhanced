@@ -57,11 +57,11 @@ public static class Collector
     }
     public static bool CollectorWin(bool check = true)
     {
-        var pc = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Collector) && x.IsAlive() && CollectDone(x)).ToArray();
-        if (pc.Any())
+        var pcArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Collector) && x.IsAlive() && CollectDone(x)).ToArray();
+        if (pcArray.Length > 0)
         {
             bool isWinConverted = false;
-            foreach (var x in pc)
+            foreach (var x in pcArray)
             {
                 if (CustomWinnerHolder.CheckForConvertedWinner(x.PlayerId))
                 {
@@ -74,7 +74,8 @@ public static class Collector
             if (!isWinConverted)
             {
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Collector);
-                foreach (var winner in pc) CustomWinnerHolder.WinnerIds.Add(winner.PlayerId);
+                foreach (var winner in pcArray)
+                    CustomWinnerHolder.WinnerIds.Add(winner.PlayerId);
             }
             return true;
         }

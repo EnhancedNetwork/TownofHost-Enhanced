@@ -123,7 +123,7 @@ public class GameStartManagerPatch
                         {
                             var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
 
-                            if (invalidColor.Any())
+                            if (invalidColor.Length > 0)
                             {
                                 invalidColor.Do(p => AmongUsClient.Instance.KickPlayer(p.GetClientId(), false));
 
@@ -147,7 +147,7 @@ public class GameStartManagerPatch
                             GameStartManager.Instance.startState = GameStartManager.StartingStates.Countdown;
                             GameStartManager.Instance.countDownTimer = Options.AutoStartTimer.GetInt();
                             __instance.StartButton.gameObject.SetActive(false);
-                        }, 0.8f, "AutoStart");
+                        }, 0.8f, "Auto Start");
                     }
                 }
             }
@@ -244,7 +244,7 @@ public class GameStartRandomMap
     public static bool Prefix(GameStartManager __instance)
     {
         var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
-        if (invalidColor.Any())
+        if (invalidColor.Length > 0)
         {
             Logger.SendInGame(GetString("Error.InvalidColorPreventStart"));
             var msg = GetString("Error.InvalidColor");
@@ -267,6 +267,7 @@ public class GameStartRandomMap
         AURoleOptions.SetOpt(opt);
         Main.LastShapeshifterCooldown.Value = AURoleOptions.ShapeshifterCooldown;
         AURoleOptions.ShapeshifterCooldown = 0f;
+        AURoleOptions.ImpostorsCanSeeProtect = false;
 
         PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(opt));
 
@@ -316,7 +317,7 @@ public class GameStartRandomMap
             if (tempRand <= Options.FungleChance.GetInt()) randomMaps.Add(5);
         }
 
-        if (randomMaps.Any())
+        if (randomMaps.Count > 0)
         {
             var mapsId = randomMaps[0];
 
