@@ -1515,9 +1515,9 @@ class MeetingHudOnDestroyPatch
     {
         MeetingStates.FirstMeeting = false;
         Logger.Info("------------End Meeting------------", "Phase");
-        Quizmaster.OnMeetingEnd();
         if (AmongUsClient.Instance.AmHost)
         {
+            Quizmaster.OnMeetingEnd();
             AntiBlackout.SetIsDead();
             Main.AllPlayerControls.Do(pc => RandomSpawn.CustomNetworkTransformPatch.NumOfTP[pc.PlayerId] = 0);
 

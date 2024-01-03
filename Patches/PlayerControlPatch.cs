@@ -1341,8 +1341,10 @@ class MurderPlayerPatch
     }
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] MurderResultFlags resultFlags)
     {
-        Quizmaster.OnPlayerDead(target);
-
+        if (AmongUsClient.Instance.AmHost)
+        {
+            Quizmaster.OnPlayerDead(target);
+        }
         if (target.AmOwner) RemoveDisableDevicesPatch.UpdateDisableDevices();
         if (!target.Data.IsDead || !AmongUsClient.Instance.AmHost) return;
 

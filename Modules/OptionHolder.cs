@@ -2976,8 +2976,6 @@ public static class Options
             .SetHeader(true);
         AutoDisplayLastRoles = BooleanOptionItem.Create(60280, "AutoDisplayLastRoles", true, TabGroup.SystemSettings, false);
         AutoDisplayLastResult = BooleanOptionItem.Create(60290, "AutoDisplayLastResult", true, TabGroup.SystemSettings, false);
-        HideExileChat = BooleanOptionItem.Create(60295, "HideExileChat", true, TabGroup.SystemSettings, false)
-            .SetHeader(true);
         SuffixMode = StringOptionItem.Create(60300, "SuffixMode", suffixModes, 0, TabGroup.SystemSettings, true)
             .SetHeader(true);
         HideGameSettings = BooleanOptionItem.Create(60310, "HideGameSettings", false, TabGroup.SystemSettings, false);
@@ -3115,6 +3113,19 @@ public static class Options
         // Reset Doors Mode
         DoorsResetMode = StringOptionItem.Create(60501, "DoorsResetMode", EnumHelper.GetAllNames<DoorsReset.ResetMode>(), 2, TabGroup.GameSettings, false)
             .SetParent(ResetDoorsEveryTurns)
+            .SetColor(new Color32(19, 188, 233, byte.MaxValue));
+        // Change decontamination time on MiraHQ/Polus
+        ChangeDecontaminationTime = BooleanOptionItem.Create(60503, "ChangeDecontaminationTime", false, TabGroup.GameSettings, false)
+            .SetColor(new Color32(19, 188, 233, byte.MaxValue));
+        // Decontamination time on MiraHQ
+        DecontaminationTimeOnMiraHQ = FloatOptionItem.Create(60504, "DecontaminationTimeOnMiraHQ", new(0.5f, 10f, 0.25f), 3f, TabGroup.GameSettings, false)
+            .SetParent(ChangeDecontaminationTime)
+            .SetValueFormat(OptionFormat.Seconds)
+            .SetColor(new Color32(19, 188, 233, byte.MaxValue));
+        // Decontamination time on Polus
+        DecontaminationTimeOnPolus = FloatOptionItem.Create(60505, "DecontaminationTimeOnPolus", new(0.5f, 10f, 0.25f), 3f, TabGroup.GameSettings, false)
+            .SetParent(ChangeDecontaminationTime)
+            .SetValueFormat(OptionFormat.Seconds)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         // Sabotage
         TextOptionItem.Create(10000026, "MenuTitle.Sabotage", TabGroup.GameSettings)
@@ -3460,15 +3471,6 @@ public static class Options
             .SetParent(DisableCommonTasks)
             .SetGameMode(CustomGameMode.Standard);
         DisableReplaceParts = BooleanOptionItem.Create(60626, "DisableReplaceParts", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableCommonTasks)
-            .SetGameMode(CustomGameMode.Standard);
-        DisablePolishGem = BooleanOptionItem.Create(60637, "DisablePolishGem", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableCommonTasks)
-            .SetGameMode(CustomGameMode.Standard);
-        DisableHelpCritter = BooleanOptionItem.Create(60638, "DisableHelpCritter", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableCommonTasks)
-            .SetGameMode(CustomGameMode.Standard);
-        DisableHoistSupplies = BooleanOptionItem.Create(60639, "DisableHoistSupplies", false, TabGroup.TaskSettings, false)
             .SetParent(DisableCommonTasks)
             .SetGameMode(CustomGameMode.Standard);
         //Disable Long Tasks

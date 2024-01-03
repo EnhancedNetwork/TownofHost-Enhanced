@@ -103,7 +103,7 @@ internal class ChatCommands
                 case "/ans":
                 case "/asw":
                 case "/answer":
-                    QuizmasterAnswer(PlayerControl.LocalPlayer, args);
+                    Quizmaster.AnswerByChat(PlayerControl.LocalPlayer, args);
                     break;
 
                 case "/win":
@@ -1418,7 +1418,7 @@ internal class ChatCommands
             case "/ans":
             case "/asw":
             case "/answer":
-                QuizmasterAnswer(player, args);
+                Quizmaster.AnswerByChat(player, args);
                 break;
 
             case "/l":
@@ -2226,41 +2226,6 @@ internal class ChatCommands
             default:
                 if (SpamManager.CheckSpam(player, text)) return;
                 break;
-        }
-    }
-    private static void QuizmasterAnswer(PlayerControl plr, string[] args)
-    {
-        if (Quizmaster.MarkedPlayer == plr.PlayerId)
-        {
-            var answerSyntaxValid = args.Length == 2;
-            var answerValid = false;
-            var answer = "";
-            if (answerSyntaxValid)
-            {
-                answer = args[1].ToUpper();
-                answerValid = (answer == "A" || answer == "B" || answer == "C");
-                var rightAnswer = Quizmaster.Question.AnswerLetter.Trim().ToUpper();
-                var quizmasterPlayer = Quizmaster.Player;
-                if (answerValid)
-                {
-                    if (rightAnswer == answer)
-                        Quizmaster.RightAnswer(plr);
-                    else
-                        Quizmaster.WrongAnswer(plr, answer, rightAnswer);
-                }
-                else
-                {
-                    Utils.SendMessage(GetString("QuizmasterAnswerNotValid"), plr.PlayerId, GetString("QuizmasterChatNoticeTitle"));
-                }
-            }
-            else
-            {
-                Utils.SendMessage(GetString("QuizmasterSyntaxNotValid"), plr.PlayerId, GetString("QuizmasterChatNoticeTitle"));
-            }
-        }
-        else if (plr.GetCustomRole() is CustomRoles.Quizmaster)
-        {
-            Utils.SendMessage(GetString("QuizmasterCantAnswer"), plr.PlayerId, GetString("QuizmasterChatNoticeTitle"));
         }
     }
 }

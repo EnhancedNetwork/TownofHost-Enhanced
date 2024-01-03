@@ -744,7 +744,7 @@ static class ExtendedPlayerControl
             CustomRoles.Killer => true,
 
             _ => pc.Is(CustomRoleTypes.Impostor),
-        }; ;
+        };
     }
     public static bool CanUseSabotage(this PlayerControl pc) // NOTE: THIS IS FOR THE HUD FOR MODDED CLIENTS, THIS DOES NOT DETERMINE WHETHER A ROLE CAN SABOTAGE
     {
