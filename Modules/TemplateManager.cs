@@ -134,9 +134,9 @@ public static class TemplateManager
             playerName = () => Main.AllPlayerNames[playerId];   
         }
 
-        if (GameStates.IsNormalGame)
+        //if (GameStates.IsNormalGame)
             _replaceDictionaryNormalOptions["PlayerName"] = playerName;
-        else if (GameStates.IsHideNSeek)
+        //else if (GameStates.IsHideNSeek)
             _replaceDictionaryHideNSeekOptions["PlayerName"] = playerName;
 
         while ((text = sr.ReadLine()) != null)
@@ -159,20 +159,28 @@ public static class TemplateManager
 
     private static string ApplyReplaceDictionary(string text)
     {
-        if (GameStates.IsNormalGame)
+        try
         {
-            foreach (var kvp in _replaceDictionaryNormalOptions)
+            if (GameStates.IsNormalGame)
             {
-                text = Regex.Replace(text, "{{" + kvp.Key + "}}", kvp.Value.Invoke() ?? "", RegexOptions.IgnoreCase);
+                foreach (var kvp in _replaceDictionaryNormalOptions)
+                {
+                    text = Regex.Replace(text, "{{" + kvp.Key + "}}", kvp.Value.Invoke() ?? "", RegexOptions.IgnoreCase);
+                }
             }
+            else if (GameStates.IsHideNSeek)
+            {
+                foreach (var kvp in _replaceDictionaryHideNSeekOptions)
+                {
+                    text = Regex.Replace(text, "{{" + kvp.Key + "}}", kvp.Value.Invoke() ?? "", RegexOptions.IgnoreCase);
+                }
+            }
+            return text;
         }
-        else if (GameStates.IsHideNSeek)
+        catch (Exception ex)
         {
-            foreach (var kvp in _replaceDictionaryHideNSeekOptions)
-            {
-                text = Regex.Replace(text, "{{" + kvp.Key + "}}", kvp.Value.Invoke() ?? "", RegexOptions.IgnoreCase);
-            }
+            Logger.Exception(ex, "TemplateManager.ApplyReplaceDictionary");
+            return text;
         }
-        return text;
     }
 }

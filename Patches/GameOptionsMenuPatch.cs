@@ -8,9 +8,24 @@ using System.Linq;
 using UnityEngine;
 using static TOHE.Translator;
 using Object = UnityEngine.Object;
+using System.Text;
+using System.Text.RegularExpressions;
+using BepInEx.Configuration;
+using Hazel;
+using UnityEngine.Events;
 
 namespace TOHE;
 
+[HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.Start))]
+[HarmonyPriority(Priority.First)]
+class GameSettingMenuStartPatch
+{
+    public static void Postfix(GameSettingMenu __instance)
+    {
+        __instance.Tabs.SetActive(true);
+
+    }
+}
 [HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.InitializeOptions))]
 public static class GameSettingMenuPatch
 {
@@ -33,9 +48,8 @@ public static class GameSettingMenuPatch
             .System_Collections_IList_Insert((int)MapNames.Dleks, new Il2CppSystem.Collections.Generic.KeyValuePair<string, int>(Constants.MapNames[(int)MapNames.Dleks], (int)MapNames.Dleks));
     }
 }
-
 [HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.Start))]
-[HarmonyPriority(Priority.First)]
+[HarmonyPriority(799)]
 public static class GameOptionsMenuPatch
 {
     public static void Postfix(GameOptionsMenu __instance)
@@ -65,159 +79,313 @@ public static class GameOptionsMenuPatch
                         break;
                 }
             }
-        }
 
-        Logger.Info("gameSettingMenu == null?", "Test GameOptionsMenuPatch");
-        var gameSettingMenu = Object.FindObjectOfType<GameSettingMenu>();
-        if (gameSettingMenu == null) return;
-        Logger.Info("gameSettingMenu != null", "Test GameOptionsMenuPatch");
+            var template = Object.FindObjectOfType<StringOption>();
+            if (template == null) return;
 
-        Logger.Info("StringOption template == null?", "Test GameOptionsMenuPatch");
-        var template = Object.FindObjectOfType<PlayerOption>(); //GameStates.IsNormalGame ? Object.FindObjectOfType<StringOption>() :
-        if (template == null) return;
-        Logger.Info("StringOption template != null", "Test GameOptionsMenuPatch");
+            GameObject.Find("Tint")?.SetActive(false);
 
-        GameObject.Find("Tint")?.SetActive(false);
+            var gameSettings = GameObject.Find("Game Settings");
+            if (gameSettings == null) return;
 
-        Logger.Info("gameSettings == null?", "Test GameOptionsMenuPatch");
-        var gameSettings = GameStates.IsNormalGame ? GameObject.Find("Game Settings") : gameSettingMenu.HideNSeekSettings;
-        if (gameSettings == null) return;
-        Logger.Info("gameSettings != null", "Test GameOptionsMenuPatch");
+            gameSettings.transform.Find("GameGroup").GetComponent<Scroller>().ScrollWheelSpeed = 1.2f;
 
-        gameSettings.transform.Find("GameGroup").GetComponent<Scroller>().ScrollWheelSpeed = 1.2f;
+            var gameSettingMenu = Object.FindObjectOfType<GameSettingMenu>();
+            if (gameSettingMenu == null) return;
 
-        var regularGameSettings = gameSettingMenu.RegularGameSettings;
-        var rolesSettings = gameSettingMenu.RolesSettings.gameObject;
-        List<GameObject> menus = new() { regularGameSettings, rolesSettings };
-        List<SpriteRenderer> highlights = new() { gameSettingMenu.GameSettingsHightlight, gameSettingMenu.RolesSettingsHightlight };
+            var regularGameSettings = gameSettingMenu.RegularGameSettings;
+            var rolesSettings = gameSettingMenu.RolesSettings.gameObject;
+            List<GameObject> menus = new() { regularGameSettings, rolesSettings };
+            List<SpriteRenderer> highlights = new() { gameSettingMenu.GameSettingsHightlight, gameSettingMenu.RolesSettingsHightlight };
 
-        var roleTab = GameObject.Find("RoleTab");
-        var gameTab = gameSettingMenu.Tabs; //GameObject.Find("GameTab");
-        Logger.Info($"roleTab {roleTab}  gameTab {gameTab}", "Test GameOptionsMenuPatch");
-        //List<GameObject> tabs = new() { gameTab, roleTab };
-        List<GameObject> tabs = new() { gameTab };
+            var roleTab = GameObject.Find("RoleTab");
+            var gameTab = GameObject.Find("GameTab");
+            List<GameObject> tabs = new() { gameTab, roleTab };
 
-        foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
-        {
-            var obj = gameSettings.transform.parent.Find(tab + "Tab");
-            if (obj != null)
+            foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
             {
-                obj.transform.Find("../../GameGroup/Text").GetComponent<TextMeshPro>().SetText(GetString("TabGroup." + tab));
-                continue;
-            }
-
-            var tohSettings = Object.Instantiate(gameSettings, gameSettings.transform.parent);
-            tohSettings.name = tab + "Tab";
-
-            var tohSettingsTransform = tohSettings.transform;
-
-            if (!modeForSmallScreen)
-            {
-                tohSettingsTransform.Find("BackPanel").transform.localScale =
-                tohSettingsTransform.Find("Bottom Gradient").transform.localScale = new Vector3(1.6f, 1f, 1f);
-                tohSettingsTransform.Find("Bottom Gradient").transform.localPosition += new Vector3(0.2f, 0f, 0f);
-                tohSettingsTransform.Find("BackPanel").transform.localPosition += new Vector3(0.2f, 0f, 0f);
-                tohSettingsTransform.Find("Background").transform.localScale = new Vector3(1.8f, 1f, 1f);
-                tohSettingsTransform.Find("UI_Scrollbar").transform.localPosition += new Vector3(1.4f, 0f, 0f);
-                tohSettingsTransform.Find("UI_ScrollbarTrack").transform.localPosition += new Vector3(1.4f, 0f, 0f);
-                tohSettingsTransform.Find("GameGroup/SliderInner").transform.localPosition += new Vector3(-0.3f, 0f, 0f);
-            }
-            else
-            {
-                tohSettingsTransform.Find("BackPanel").transform.localScale =
-                tohSettingsTransform.Find("Bottom Gradient").transform.localScale = new Vector3(1.2f, 1f, 1f);
-                tohSettingsTransform.Find("Background").transform.localScale = new Vector3(1.3f, 1f, 1f);
-                tohSettingsTransform.Find("UI_Scrollbar").transform.localPosition += new Vector3(0.35f, 0f, 0f);
-                tohSettingsTransform.Find("UI_ScrollbarTrack").transform.localPosition += new Vector3(0.35f, 0f, 0f);
-                tohSettingsTransform.Find("GameGroup/SliderInner").transform.localPosition += new Vector3(-0.15f, 0f, 0f);
-            }
-
-            var tohMenu = tohSettingsTransform.Find("GameGroup/SliderInner").GetComponent<GameOptionsMenu>();
-
-            //OptionBehaviourを破棄
-            foreach (var optionBehaviour in tohMenu.GetComponentsInChildren<OptionBehaviour>())
-            {
-                Object.Destroy(optionBehaviour.gameObject);
-            }
-
-            var scOptions = new List<OptionBehaviour>();
-            foreach (var option in OptionItem.AllOptions.Where(opt => opt.Tab == tab).ToArray())
-            {
-                if (option.OptionBehaviour == null)
+                var obj = gameSettings.transform.parent.Find(tab + "Tab");
+                if (obj != null)
                 {
-                    float yoffset = option.IsText ? 300f : 0f;
-                    float xoffset = option.IsText ? 300f : 0.3f;
-                    var stringOption = Object.Instantiate(template, tohMenu.transform);
-                    scOptions.Add(stringOption);
-                    stringOption.OnValueChanged = new Action<OptionBehaviour>((o) => { });
-                    stringOption.TitleText.text = option.Name;
-                    stringOption.Value = stringOption.oldValue = option.CurrentValue;
-                    stringOption.ValueText.text = option.GetString();
-                    stringOption.name = option.Name;
-
-                    var stringOptionTransform = stringOption.transform;
-                    if (!modeForSmallScreen)
-                    {
-                        stringOptionTransform.Find("Background").localScale = new Vector3(1.6f, 1f, 1f);
-                        stringOptionTransform.Find("Plus_TMP").localPosition += new Vector3(option.IsText ? 300f : 1.4f, yoffset, 0f);
-                        stringOptionTransform.Find("Minus_TMP").localPosition += new Vector3(option.IsText ? 300f : 1.0f, yoffset, 0f);
-                        stringOptionTransform.Find("Value_TMP").localPosition += new Vector3(option.IsText ? 300f : 1.2f, yoffset, 0f);
-                        stringOptionTransform.Find("Value_TMP").GetComponent<RectTransform>().sizeDelta = new Vector2(1.6f, 0.26f);
-                        stringOptionTransform.Find("Title_TMP").localPosition += new Vector3(option.IsText ? 0.25f : 0.1f, option.IsText ? -0.1f : 0f, 0f);
-                        stringOptionTransform.Find("Title_TMP").GetComponent<RectTransform>().sizeDelta = new Vector2(5.5f, 0.37f);
-                    }
-                    else
-                    {
-                        stringOptionTransform.Find("Background").localScale = new Vector3(1.2f, 1f, 1f);
-                        stringOptionTransform.Find("Plus_TMP").localPosition += new Vector3(xoffset, yoffset, 0f);
-                        stringOptionTransform.Find("Minus_TMP").localPosition += new Vector3(xoffset, yoffset, 0f);
-                        stringOptionTransform.Find("Value_TMP").localPosition += new Vector3(xoffset, yoffset, 0f);
-                        stringOptionTransform.Find("Title_TMP").localPosition += new Vector3(option.IsText ? 0.3f : 0.15f, option.IsText ? -0.1f : 0f, 0f);
-                        stringOptionTransform.Find("Title_TMP").GetComponent<RectTransform>().sizeDelta = new Vector2(3.5f, 0.37f);
-                    }
-
-                    option.OptionBehaviour = stringOption;
+                    obj.transform.Find("../../GameGroup/Text").GetComponent<TextMeshPro>().SetText(GetString("TabGroup." + tab));
+                    continue;
                 }
-                option.OptionBehaviour.gameObject.SetActive(true);
-            }
-            tohMenu.Children = scOptions.ToArray();
-            tohSettings.gameObject.SetActive(false);
-            menus.Add(tohSettings.gameObject);
 
-            var tohTab = Object.Instantiate(roleTab, roleTab.transform.parent);
-            tohTab.transform.Find("Hat Button").Find("Icon").GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite($"TOHE.Resources.Images.TabIcon_{tab}.png", 100f);
-            tabs.Add(tohTab);
-            var tohTabHighlight = tohTab.transform.Find("Hat Button").Find("Tab Background").GetComponent<SpriteRenderer>();
-            highlights.Add(tohTabHighlight);
-        }
+                var tohSettings = Object.Instantiate(gameSettings, gameSettings.transform.parent);
+                tohSettings.name = tab + "Tab";
 
-        var tabsCount = tabs.Count;
-        var menusCount = menus.Count;
-        var tabsCountDividedBy323 = tabsCount / 3.23f;
-        var tabsCountDividedBy325 = tabsCount / 3.25f;
+                var tohSettingsTransform = tohSettings.transform;
 
-        for (var i = 0; i < tabsCount; i++)
-        {
-            var tab = tabs[i];
-            var transform = tab.transform;
-
-            var xValue = modeForSmallScreen ? 0.6f * (i - 1) - tabsCountDividedBy325 : 0.65f * (i - 1) - tabsCountDividedBy323;
-            transform.localPosition = new(xValue, transform.localPosition.y, transform.localPosition.z);
-
-            var button = tab.GetComponentInChildren<PassiveButton>();
-            if (button != null)
-            {
-                var copiedIndex = i;
-                button.OnClick ??= new UnityEngine.UI.Button.ButtonClickedEvent();
-                void value()
+                if (!modeForSmallScreen)
                 {
-                    for (var j = 0; j < menusCount; j++)
-                    {
-                        menus[j].SetActive(j == copiedIndex);
-                        highlights[j].enabled = j == copiedIndex;
-                    }
+                    tohSettingsTransform.Find("BackPanel").transform.localScale =
+                    tohSettingsTransform.Find("Bottom Gradient").transform.localScale = new Vector3(1.6f, 1f, 1f);
+                    tohSettingsTransform.Find("Bottom Gradient").transform.localPosition += new Vector3(0.2f, 0f, 0f);
+                    tohSettingsTransform.Find("BackPanel").transform.localPosition += new Vector3(0.2f, 0f, 0f);
+                    tohSettingsTransform.Find("Background").transform.localScale = new Vector3(1.8f, 1f, 1f);
+                    tohSettingsTransform.Find("UI_Scrollbar").transform.localPosition += new Vector3(1.4f, 0f, 0f);
+                    tohSettingsTransform.Find("UI_ScrollbarTrack").transform.localPosition += new Vector3(1.4f, 0f, 0f);
+                    tohSettingsTransform.Find("GameGroup/SliderInner").transform.localPosition += new Vector3(-0.3f, 0f, 0f);
                 }
-                button.OnClick.AddListener((Action)value);
+                else
+                {
+                    tohSettingsTransform.Find("BackPanel").transform.localScale =
+                    tohSettingsTransform.Find("Bottom Gradient").transform.localScale = new Vector3(1.2f, 1f, 1f);
+                    tohSettingsTransform.Find("Background").transform.localScale = new Vector3(1.3f, 1f, 1f);
+                    tohSettingsTransform.Find("UI_Scrollbar").transform.localPosition += new Vector3(0.35f, 0f, 0f);
+                    tohSettingsTransform.Find("UI_ScrollbarTrack").transform.localPosition += new Vector3(0.35f, 0f, 0f);
+                    tohSettingsTransform.Find("GameGroup/SliderInner").transform.localPosition += new Vector3(-0.15f, 0f, 0f);
+                }
+
+                var tohMenu = tohSettingsTransform.Find("GameGroup/SliderInner").GetComponent<GameOptionsMenu>();
+
+                //OptionBehaviourを破棄
+                foreach (var optionBehaviour in tohMenu.GetComponentsInChildren<OptionBehaviour>())
+                {
+                    Object.Destroy(optionBehaviour.gameObject);
+                }
+
+                var scOptions = new List<OptionBehaviour>();
+                foreach (var option in OptionItem.AllOptions.Where(opt => opt.Tab == tab).ToArray())
+                {
+                    if (option.OptionBehaviour == null)
+                    {
+                        float yoffset = option.IsText ? 300f : 0f;
+                        float xoffset = option.IsText ? 300f : 0.3f;
+                        var stringOption = Object.Instantiate(template, tohMenu.transform);
+                        scOptions.Add(stringOption);
+                        stringOption.OnValueChanged = new Action<OptionBehaviour>((o) => { });
+                        stringOption.TitleText.text = option.Name;
+                        stringOption.Value = stringOption.oldValue = option.CurrentValue;
+                        stringOption.ValueText.text = option.GetString();
+                        stringOption.name = option.Name;
+
+                        var stringOptionTransform = stringOption.transform;
+                        if (!modeForSmallScreen)
+                        {
+                            stringOptionTransform.Find("Background").localScale = new Vector3(1.6f, 1f, 1f);
+                            stringOptionTransform.Find("Plus_TMP").localPosition += new Vector3(option.IsText ? 300f : 1.4f, yoffset, 0f);
+                            stringOptionTransform.Find("Minus_TMP").localPosition += new Vector3(option.IsText ? 300f : 1.0f, yoffset, 0f);
+                            stringOptionTransform.Find("Value_TMP").localPosition += new Vector3(option.IsText ? 300f : 1.2f, yoffset, 0f);
+                            stringOptionTransform.Find("Value_TMP").GetComponent<RectTransform>().sizeDelta = new Vector2(1.6f, 0.26f);
+                            stringOptionTransform.Find("Title_TMP").localPosition += new Vector3(option.IsText ? 0.25f : 0.1f, option.IsText ? -0.1f : 0f, 0f);
+                            stringOptionTransform.Find("Title_TMP").GetComponent<RectTransform>().sizeDelta = new Vector2(5.5f, 0.37f);
+                        }
+                        else
+                        {
+                            stringOptionTransform.Find("Background").localScale = new Vector3(1.2f, 1f, 1f);
+                            stringOptionTransform.Find("Plus_TMP").localPosition += new Vector3(xoffset, yoffset, 0f);
+                            stringOptionTransform.Find("Minus_TMP").localPosition += new Vector3(xoffset, yoffset, 0f);
+                            stringOptionTransform.Find("Value_TMP").localPosition += new Vector3(xoffset, yoffset, 0f);
+                            stringOptionTransform.Find("Title_TMP").localPosition += new Vector3(option.IsText ? 0.3f : 0.15f, option.IsText ? -0.1f : 0f, 0f);
+                            stringOptionTransform.Find("Title_TMP").GetComponent<RectTransform>().sizeDelta = new Vector2(3.5f, 0.37f);
+                        }
+
+                        option.OptionBehaviour = stringOption;
+                    }
+                    option.OptionBehaviour.gameObject.SetActive(true);
+                }
+                tohMenu.Children = scOptions.ToArray();
+                tohSettings.gameObject.SetActive(false);
+                menus.Add(tohSettings.gameObject);
+
+                var tohTab = Object.Instantiate(roleTab, roleTab.transform.parent);
+                tohTab.transform.Find("Hat Button").Find("Icon").GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite($"TOHE.Resources.Images.TabIcon_{tab}.png", 100f);
+                tabs.Add(tohTab);
+                var tohTabHighlight = tohTab.transform.Find("Hat Button").Find("Tab Background").GetComponent<SpriteRenderer>();
+                highlights.Add(tohTabHighlight);
+            }
+
+            var tabsCount = tabs.Count;
+            var menusCount = menus.Count;
+            var tabsCountDividedBy323 = tabsCount / 3.23f;
+            var tabsCountDividedBy325 = tabsCount / 3.25f;
+
+            for (var i = 0; i < tabsCount; i++)
+            {
+                var tab = tabs[i];
+                var transform = tab.transform;
+
+                var xValue = modeForSmallScreen ? 0.6f * (i - 1) - tabsCountDividedBy325 : 0.65f * (i - 1) - tabsCountDividedBy323;
+                transform.localPosition = new(xValue, transform.localPosition.y, transform.localPosition.z);
+
+                var button = tab.GetComponentInChildren<PassiveButton>();
+                if (button != null)
+                {
+                    var copiedIndex = i;
+                    button.OnClick ??= new UnityEngine.UI.Button.ButtonClickedEvent();
+                    void value()
+                    {
+                        for (var j = 0; j < menusCount; j++)
+                        {
+                            menus[j].SetActive(j == copiedIndex);
+                            highlights[j].enabled = j == copiedIndex;
+                        }
+                    }
+                    button.OnClick.AddListener((Action)value);
+                }
+            }
+        }
+        else if (GameStates.IsHideNSeek)
+        {
+            var gameSettingMenu = Object.FindObjectOfType<GameSettingMenu>();
+            if (gameSettingMenu == null) return;
+
+            gameSettingMenu.RegularGameSettings.gameObject.SetActive(true);
+
+            var template = Object.FindObjectsOfType<StringOption>().FirstOrDefault();
+            if (template == null) return;
+
+            GameObject.Find("Tint")?.SetActive(false);
+
+            var gameSettings = GameObject.Find("Game Settings");
+            if (gameSettings == null) return;
+
+            gameSettingMenu.RegularGameSettings.gameObject.SetActive(false);
+            gameSettings.transform.Find("GameGroup").GetComponent<Scroller>().ScrollWheelSpeed = 1.2f;
+
+            var regularGameSettings = gameSettingMenu.RegularGameSettings;
+            var rolesSettings = gameSettingMenu.RolesSettings.gameObject;
+            List<GameObject> menus = new() { regularGameSettings, rolesSettings };
+            List<SpriteRenderer> highlights = new() { gameSettingMenu.GameSettingsHightlight, gameSettingMenu.RolesSettingsHightlight };
+
+            var roleTab = GameObject.Find("RoleTab");
+            var gameTab = GameObject.Find("GameTab");
+            List<GameObject> tabs = new() { gameTab, roleTab };
+
+            foreach (var tab in EnumHelper.GetAllValues<TabGroup>().Where(tab => tab == TabGroup.SystemSettings || tab == TabGroup.GameSettings))
+            {
+                var obj = gameSettings.transform.parent.Find(tab + "Tab");
+                if (obj != null)
+                {
+                    obj.transform.Find("../../GameGroup/Text").GetComponent<TextMeshPro>().SetText(GetString("TabGroup." + tab));
+                    continue;
+                }
+
+                var tohSettings = Object.Instantiate(gameSettings, gameSettings.transform.parent);
+                tohSettings.name = tab + "Tab";
+
+                var tohSettingsTransform = tohSettings.transform;
+
+                if (!modeForSmallScreen)
+                {
+                    tohSettingsTransform.Find("BackPanel").transform.localScale =
+                    tohSettingsTransform.Find("Bottom Gradient").transform.localScale = new Vector3(1.6f, 1f, 1f);
+                    tohSettingsTransform.Find("Bottom Gradient").transform.localPosition += new Vector3(0.2f, 0f, 0f);
+                    tohSettingsTransform.Find("BackPanel").transform.localPosition += new Vector3(0.2f, 0f, 0f);
+                    tohSettingsTransform.Find("Background").transform.localScale = new Vector3(1.8f, 1f, 1f);
+                    tohSettingsTransform.Find("UI_Scrollbar").transform.localPosition += new Vector3(1.4f, 0f, 0f);
+                    tohSettingsTransform.Find("UI_ScrollbarTrack").transform.localPosition += new Vector3(1.4f, 0f, 0f);
+                    tohSettingsTransform.Find("GameGroup/SliderInner").transform.localPosition += new Vector3(-0.3f, 0f, 0f);
+                }
+                else
+                {
+                    tohSettingsTransform.Find("BackPanel").transform.localScale =
+                    tohSettingsTransform.Find("Bottom Gradient").transform.localScale = new Vector3(1.2f, 1f, 1f);
+                    tohSettingsTransform.Find("Background").transform.localScale = new Vector3(1.3f, 1f, 1f);
+                    tohSettingsTransform.Find("UI_Scrollbar").transform.localPosition += new Vector3(0.35f, 0f, 0f);
+                    tohSettingsTransform.Find("UI_ScrollbarTrack").transform.localPosition += new Vector3(0.35f, 0f, 0f);
+                    tohSettingsTransform.Find("GameGroup/SliderInner").transform.localPosition += new Vector3(-0.15f, 0f, 0f);
+                }
+
+                var tohMenu = tohSettingsTransform.Find("GameGroup/SliderInner").GetComponent<GameOptionsMenu>();
+
+                //OptionBehaviourを破棄
+                foreach (var optionBehaviour in tohMenu.GetComponentsInChildren<OptionBehaviour>())
+                {
+                    Object.Destroy(optionBehaviour.gameObject);
+                }
+
+                var scOptions = new List<OptionBehaviour>();
+                foreach (var option in OptionItem.AllOptions.Where(opt => opt.Tab == tab).ToArray())
+                {
+                    if (option.OptionBehaviour == null)
+                    {
+                        float yoffset = option.IsText ? 300f : 0f;
+                        float xoffset = option.IsText ? 300f : 0.3f;
+                        var stringOption = Object.Instantiate(template, tohMenu.transform);
+                        scOptions.Add(stringOption);
+                        stringOption.OnValueChanged = new Action<OptionBehaviour>((o) => { });
+                        stringOption.TitleText.text = option.Name;
+                        stringOption.Value = stringOption.oldValue = option.CurrentValue;
+                        stringOption.ValueText.text = option.GetString();
+                        stringOption.name = option.Name;
+
+                        var stringOptionTransform = stringOption.transform;
+                        if (!modeForSmallScreen)
+                        {
+                            stringOptionTransform.Find("Background").localScale = new Vector3(1.6f, 1f, 1f);
+                            stringOptionTransform.Find("Plus_TMP").localPosition += new Vector3(option.IsText ? 300f : 1.4f, yoffset, 0f);
+                            stringOptionTransform.Find("Minus_TMP").localPosition += new Vector3(option.IsText ? 300f : 1.0f, yoffset, 0f);
+                            stringOptionTransform.Find("Value_TMP").localPosition += new Vector3(option.IsText ? 300f : 1.2f, yoffset, 0f);
+                            stringOptionTransform.Find("Value_TMP").GetComponent<RectTransform>().sizeDelta = new Vector2(1.6f, 0.26f);
+                            stringOptionTransform.Find("Title_TMP").localPosition += new Vector3(option.IsText ? 0.25f : 0.1f, option.IsText ? -0.1f : 0f, 0f);
+                            stringOptionTransform.Find("Title_TMP").GetComponent<RectTransform>().sizeDelta = new Vector2(5.5f, 0.37f);
+                        }
+                        else
+                        {
+                            stringOptionTransform.Find("Background").localScale = new Vector3(1.2f, 1f, 1f);
+                            stringOptionTransform.Find("Plus_TMP").localPosition += new Vector3(xoffset, yoffset, 0f);
+                            stringOptionTransform.Find("Minus_TMP").localPosition += new Vector3(xoffset, yoffset, 0f);
+                            stringOptionTransform.Find("Value_TMP").localPosition += new Vector3(xoffset, yoffset, 0f);
+                            stringOptionTransform.Find("Title_TMP").localPosition += new Vector3(option.IsText ? 0.3f : 0.15f, option.IsText ? -0.1f : 0f, 0f);
+                            stringOptionTransform.Find("Title_TMP").GetComponent<RectTransform>().sizeDelta = new Vector2(3.5f, 0.37f);
+                        }
+
+                        option.OptionBehaviour = stringOption;
+                    }
+                    option.OptionBehaviour.gameObject.SetActive(true);
+                }
+                tohMenu.Children = scOptions.ToArray();
+                tohSettings.gameObject.SetActive(false);
+                menus.Add(tohSettings.gameObject);
+
+                var tohTab = Object.Instantiate(roleTab, roleTab.transform.parent);
+                tohTab.transform.Find("Hat Button").Find("Icon").GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite($"TOHE.Resources.Images.TabIcon_{tab}.png", 100f);
+                tabs.Add(tohTab);
+                var tohTabHighlight = tohTab.transform.Find("Hat Button").Find("Tab Background").GetComponent<SpriteRenderer>();
+                highlights.Add(tohTabHighlight);
+            }
+
+            var tabsCount = tabs.Count;
+            var menusCount = menus.Count;
+            var tabsCountDividedBy323 = tabsCount / 3.23f;
+            var tabsCountDividedBy325 = tabsCount / 3.25f;
+
+            for (var i = 0; i < tabsCount; i++)
+            {
+                var tab = tabs[i];
+                var transform = tab.transform;
+
+                var xValue = modeForSmallScreen ? 0.6f * (i - 1) - tabsCountDividedBy325 : 0.65f * (i - 1) - tabsCountDividedBy323;
+                transform.localPosition = new(xValue, transform.localPosition.y, transform.localPosition.z);
+
+                var button = tab.GetComponentInChildren<PassiveButton>();
+                if (button != null)
+                {
+                    var copiedIndex = i;
+                    button.OnClick ??= new UnityEngine.UI.Button.ButtonClickedEvent();
+                    void value()
+                    {
+                        gameSettingMenu.RegularGameSettings.SetActive(false);
+                        gameSettingMenu.RolesSettings.gameObject.SetActive(false);
+                        gameSettingMenu.HideNSeekSettings.gameObject.SetActive(false);
+                        gameSettingMenu.GameSettingsHightlight.enabled = false;
+                        gameSettingMenu.RolesSettingsHightlight.enabled = false;
+                        if (copiedIndex == 0)
+                        {
+                            gameSettingMenu.HideNSeekSettings.gameObject.SetActive(true);
+                            gameSettingMenu.GameSettingsHightlight.enabled = true;
+                        }
+                        for (var j = 0; j < menusCount; j++)
+                        {
+                            if (j == 0 && copiedIndex == 0) continue;
+                            menus[j].SetActive(j == copiedIndex);
+                            highlights[j].enabled = j == copiedIndex;
+                        }
+                    }
+                    button.OnClick.AddListener((Action)value);
+                }
             }
         }
     }
@@ -231,6 +399,7 @@ public class GameOptionsMenuUpdatePatch
     public static void Postfix(GameOptionsMenu __instance)
     {
         if (__instance.transform.parent.parent.name == "Game Settings") return;
+
         foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
         {
             string tabcolor = tab switch

@@ -255,29 +255,38 @@ public class GameStartRandomMap
             Utils.SendMessage(msg);
             return false;
         }
-        
-        if ((MapNames)Main.NormalOptions.MapId == MapNames.Dleks)
+
+        if (GameStates.IsNormalGame)
         {
-            Logger.SendInGame(GetString("Warning.BrokenVentsInDleksSendInGame"));
-            Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
+            if ((MapNames)Main.NormalOptions.MapId == MapNames.Dleks)
+            {
+                Logger.SendInGame(GetString("Warning.BrokenVentsInDleksSendInGame"));
+                Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
+            }
+        }
+        else if (GameStates.IsHideNSeek)
+        {
+            if ((MapNames)Main.HideNSeekOptions.MapId == MapNames.Dleks)
+            {
+                Logger.SendInGame(GetString("Warning.BrokenVentsInDleksSendInGame"));
+                Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
+            }
         }
 
-        IGameOptions opt = Main.NormalOptions.Cast<IGameOptions>();
+        IGameOptions opt = GameStates.IsNormalGame 
+            ? Main.NormalOptions.Cast<IGameOptions>()
+            : Main.HideNSeekOptions.Cast<IGameOptions>();
+        
         if (GameStates.IsNormalGame)
         {
             Options.DefaultKillCooldown = Main.NormalOptions.KillCooldown;
             Main.LastKillCooldown.Value = Main.NormalOptions.KillCooldown;
             Main.NormalOptions.KillCooldown = 0f;
 
-            opt = Main.NormalOptions.Cast<IGameOptions>();
             AURoleOptions.SetOpt(opt);
             Main.LastShapeshifterCooldown.Value = AURoleOptions.ShapeshifterCooldown;
             AURoleOptions.ShapeshifterCooldown = 0f;
             AURoleOptions.ImpostorsCanSeeProtect = false;
-        }
-        else if (GameStates.IsHideNSeek)
-        {
-            opt = Main.HideNSeekOptions.Cast<IGameOptions>();
         }
 
         PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(opt));
@@ -285,12 +294,16 @@ public class GameStartRandomMap
         __instance.ReallyBegin(false);
         return false;
     }
-    public static bool Prefix(GameStartRandomMap __instance)
+    public static bool Prefix()
     {
         bool continueStart = true;
         if (Options.RandomMapsMode.GetBool())
         {
-            Main.NormalOptions.MapId = SelectRandomMap();
+            if (GameStates.IsNormalGame)
+                Main.NormalOptions.MapId = SelectRandomMap();
+
+            else if (GameStates.IsHideNSeek)
+                Main.HideNSeekOptions.MapId = SelectRandomMap();
         }
         return continueStart;
     }
