@@ -3,6 +3,7 @@ using Hazel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using InnerNet;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -26,7 +27,7 @@ internal class EAC
     public static bool ReceiveRpc(PlayerControl pc, byte callId, MessageReader reader)
     {
         if (!AmongUsClient.Instance.AmHost) return false;
-        if (pc == null || reader == null || pc.AmOwner) return false;
+        if (pc == null || reader == null) return false;
         try
         {
             MessageReader sr = MessageReader.Get(reader);
@@ -159,6 +160,24 @@ internal class EAC
                     HandleCheat(pc, "Directly Murder Player");
                     Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】直接击杀，已驳回", "EAC");
                     return true;
+                case RpcCalls.Shapeshift:
+                    if (GameStates.IsLobby)
+                    {
+                        Report(pc, "ShapeShift in lobby");
+                        HandleCheat(pc, "ShapeShift in lobby");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】大厅变形，已驳回", "EAC");
+                        return true;
+                    }
+                    var target = sr.ReadNetObject<PlayerControl>();
+                    if (target == null)
+                    {
+                        Report(pc, "ShapeShift to null player!");
+                        //HandleCheat(pc, "ShapeShift to null player!");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法变形为空玩家，已驳回", "EAC");
+                        return true;
+                    }
+                    break;
+
             }
             switch (callId)
             {

@@ -23,7 +23,7 @@ public static class NameNotifyManager
     {
         if (!GameStates.IsInTask)
         {
-            Notice = new();
+            Notice.Clear();
             return;
         }
         if (Notice.ContainsKey(player.PlayerId) && Notice[player.PlayerId].Item2 < Utils.GetTimeStamp())

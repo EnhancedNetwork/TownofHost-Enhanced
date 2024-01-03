@@ -97,6 +97,7 @@ static class CustomRolesHelper
                 CustomRoles.Sans => CustomRoles.Impostor,
                 CustomRoles.Bomber => CustomRoles.Shapeshifter,
                 CustomRoles.Nuker => CustomRoles.Shapeshifter,
+                CustomRoles.Kamikaze => CustomRoles.Impostor,
              //   CustomRoles.Flashbang => CustomRoles.Shapeshifter,
                 CustomRoles.BoobyTrap => CustomRoles.Impostor,
                 CustomRoles.Scavenger => CustomRoles.Impostor,
@@ -694,6 +695,7 @@ static class CustomRolesHelper
             CustomRoles.Sans or
             CustomRoles.Bomber or
             CustomRoles.Nuker or
+            CustomRoles.Kamikaze or
             CustomRoles.Scavenger or
             CustomRoles.BoobyTrap or
             CustomRoles.Capitalism or
@@ -1466,6 +1468,7 @@ static class CustomRolesHelper
 
             case CustomRoles.Mare:
                 if (pc.Is(CustomRoles.Underdog)
+                    || pc.Is(CustomRoles.Berserker)
                     || pc.Is(CustomRoles.Inhibitor)
                     || pc.Is(CustomRoles.Saboteur)
                     || pc.Is(CustomRoles.Swift)
