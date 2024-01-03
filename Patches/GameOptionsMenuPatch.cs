@@ -8,11 +8,6 @@ using System.Linq;
 using UnityEngine;
 using static TOHE.Translator;
 using Object = UnityEngine.Object;
-using System.Text;
-using System.Text.RegularExpressions;
-using BepInEx.Configuration;
-using Hazel;
-using UnityEngine.Events;
 
 namespace TOHE;
 
