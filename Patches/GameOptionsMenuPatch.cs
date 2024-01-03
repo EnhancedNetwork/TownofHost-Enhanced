@@ -570,6 +570,8 @@ public static class RolesSettingsMenuPatch
 {
     public static void Postfix(RolesSettingsMenu __instance)
     {
+        if (GameStates.IsHideNSeek) return;
+
         foreach (var ob in __instance.Children.ToArray())
         {
             switch (ob.Title)

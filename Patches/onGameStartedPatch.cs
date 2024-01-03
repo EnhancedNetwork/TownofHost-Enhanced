@@ -26,13 +26,16 @@ internal class ChangeRoleSettings
         Main.OverrideWelcomeMsg = "";
         try
         {
-            //注:この時点では役職は設定されていません。
-            Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.GuardianAngel, 0, 0);
-            if (Options.DisableVanillaRoles.GetBool())
+            // Note: No positions are set at this time.
+            if (GameStates.IsNormalGame)
             {
-                Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Scientist, 0, 0);
-                Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Engineer, 0, 0);
-                Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Shapeshifter, 0, 0);
+                Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.GuardianAngel, 0, 0);
+                if (Options.DisableVanillaRoles.GetBool())
+                {
+                    Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Scientist, 0, 0);
+                    Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Engineer, 0, 0);
+                    Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Shapeshifter, 0, 0);
+                }
             }
 
             Main.PlayerStates = new();
