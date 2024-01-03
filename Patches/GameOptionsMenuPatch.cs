@@ -17,8 +17,8 @@ class GameSettingMenuStartPatch
 {
     public static void Postfix(GameSettingMenu __instance)
     {
+        // Need for Hide&Seek because tabs are disabled by default
         __instance.Tabs.SetActive(true);
-
     }
 }
 [HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.InitializeOptions))]
