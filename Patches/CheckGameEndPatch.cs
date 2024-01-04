@@ -10,10 +10,31 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-[HarmonyPatch(typeof(LogicGameFlowNormal), nameof(LogicGameFlowNormal.CheckEndCriteria))]
-class GameEndChecker
+[HarmonyPatch(typeof(LogicGameFlowHnS), nameof(LogicGameFlowHnS.CheckEndCriteria))]
+class GameEndCheckerForHnS
 {
-    private static GameEndPredicate predicate;
+    public static bool Prefix()
+    {
+        if (!AmongUsClient.Instance.AmHost) return true;
+
+        if (Options.NoGameEnd.GetBool()) return false;
+
+        //GameEndCheckerForNormal.predicate.CheckForEndGame(out var reason);
+
+        //if (CustomWinnerHolder.WinnerIds.Count > 0 || CustomWinnerHolder.WinnerTeam != CustomWinner.Default)
+        //{
+        //    ShipStatus.Instance.enabled = false;
+        //    GameEndCheckerForNormal.StartEndGame(reason);
+        //    GameEndCheckerForNormal.predicate = null;
+        //}
+
+        return true;
+    }
+}
+[HarmonyPatch(typeof(LogicGameFlowNormal), nameof(LogicGameFlowNormal.CheckEndCriteria))]
+class GameEndCheckerForNormal
+{
+    public static GameEndPredicate predicate;
     public static bool Prefix()
     {
         if (!AmongUsClient.Instance.AmHost) return true;
@@ -533,6 +554,7 @@ class GameEndChecker
     }
 
     public static void SetPredicateToNormal() => predicate = new NormalGameEndPredicate();
+    public static void SetPredicateToHidenSeek() => predicate = new HidenSeekGameEndPredicate();
     public static void SetPredicateToFFA() => predicate = new FFAGameEndPredicate();
 
 
@@ -651,7 +673,7 @@ class FFAGameEndPredicate : GameEndPredicate
     public override bool CheckForEndGame(out GameOverReason reason)
     {
         reason = GameOverReason.ImpostorByKill;
-        if (CustomWinnerHolder.WinnerIds.Count > 0) return false;
+        if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return false;
         if (CheckGameEndByLivingPlayers(out reason)) return true;
         return false;
     }
@@ -695,6 +717,41 @@ class FFAGameEndPredicate : GameEndPredicate
             return false;
         }
         else return false;
+    }
+}
+
+class HidenSeekGameEndPredicate : GameEndPredicate
+{
+    public override bool CheckForEndGame(out GameOverReason reason)
+    {
+        reason = GameOverReason.ImpostorByKill;
+        if (CustomWinnerHolder.WinnerIds.Count > 0) return false;
+        if (CheckGameEndByLivingPlayers(out reason)) return true;
+        return false;
+    }
+
+    public static bool CheckGameEndByLivingPlayers(out GameOverReason reason)
+    {
+        reason = GameOverReason.ImpostorByKill;
+
+        if (Main.AllAlivePlayerControls.Length == Main.HideNSeekOptions.NumImpostors)
+        {
+            PlayerControl[] winner = Main.AllAlivePlayerControls;
+
+            Logger.Info($"Winners: {winner}", "Hide & Seek Game End Predicate");
+
+            CustomWinnerHolder.WinnerIds = new();
+            foreach (var imps in winner)
+            {
+                CustomWinnerHolder.WinnerIds.Add(imps.PlayerId);
+            }
+
+            Main.DoBlockNameChange = true;
+
+            return true;
+        }
+
+        return false;
     }
 }
 

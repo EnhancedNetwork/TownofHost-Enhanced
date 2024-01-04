@@ -10,7 +10,7 @@ class CanUsePatch
     public static bool Prefix(ref float __result, Console __instance, [HarmonyArgument(0)] GameData.PlayerInfo pc, [HarmonyArgument(1)] out bool canUse, [HarmonyArgument(2)] out bool couldUse)
     {
         canUse = couldUse = false;
-        //こいつをfalseでreturnしても、タスク(サボ含む)以外の使用可能な物は使えるまま(ボタンなど)
+        // Even if you return this one with false, anything usable (buttons, etc.) other than tasks (including sabots) will remain usable.
         return __instance.AllowImpostor || Utils.HasTasks(PlayerControl.LocalPlayer.Data, false);
     }
 }
@@ -32,6 +32,19 @@ class CanUseVentPatch
         [HarmonyArgument(2)] ref bool couldUse,
         ref float __result)
     {
+        if (GameStates.IsHideNSeek) return true;
+        //{
+        //    if (pc.Role.IsImpostor)
+        //    {
+        //        canUse = false;
+        //        return false;
+        //    }
+        //    else
+        //    {
+        //        canUse = true;
+        //        return true;
+        //    }
+        //}
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         //#######################################

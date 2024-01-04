@@ -37,6 +37,10 @@ internal class ChangeRoleSettings
                     Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Shapeshifter, 0, 0);
                 }
             }
+            else if (GameStates.IsHideNSeek)
+            {
+                Main.AliveImpostorCount = Main.HideNSeekOptions.NumImpostors;
+            }
 
             Main.PlayerStates = new();
 
@@ -370,7 +374,7 @@ internal class SelectRolesPatch
 {
     public static void Prefix()
     {
-        if (!AmongUsClient.Instance.AmHost) return;
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek) return;
 
         try
         {
@@ -429,6 +433,26 @@ internal class SelectRolesPatch
 
         try
         {
+            if (GameStates.IsHideNSeek)
+            {
+                //switch (Options.CurrentGameMode)
+                //{
+                //    case CustomGameMode.HidenSeekTOHE:
+                //        GameEndCheckerForNormal.SetPredicateToHidenSeek();
+                //        break;
+                //}
+
+                GameOptionsSender.AllSenders.Clear();
+                foreach (var pc in Main.AllPlayerControls)
+                {
+                    GameOptionsSender.AllSenders.Add(
+                        new PlayerGameOptionsSender(pc)
+                    );
+                }
+
+                return;
+            }
+
             List<(PlayerControl, RoleTypes)> newList = new();
             foreach (var sd in RpcSetRoleReplacer.StoragedData.ToArray())
             {
@@ -1036,10 +1060,10 @@ internal class SelectRolesPatch
             switch (Options.CurrentGameMode)
             {
                 case CustomGameMode.Standard:
-                    GameEndChecker.SetPredicateToNormal();
+                    GameEndCheckerForNormal.SetPredicateToNormal();
                     break;
                 case CustomGameMode.FFA:
-                    GameEndChecker.SetPredicateToFFA();
+                    GameEndCheckerForNormal.SetPredicateToFFA();
                     break;
             }
 

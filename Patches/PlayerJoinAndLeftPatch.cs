@@ -159,7 +159,7 @@ class OnPlayerJoinedPatch
             //if (Main.newLobby && Options.ShareLobby.GetBool()) Cloud.ShareLobby();
 
             if (client.GetHashedPuid() != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
-                && !FixedUpdatePatch.CheckAllowList(client.FriendCode) && !GameStates.IsLocalGame)
+                && !BanManager.CheckAllowList(client.FriendCode) && !GameStates.IsLocalGame)
             {
                 if (Main.PlayerQuitTimes.ContainsKey(client.GetHashedPuid()))
                 {
@@ -301,7 +301,7 @@ class OnPlayerLeftPatch
                 if (GameStates.IsLobby && !GameStates.IsLocalGame)
                 {
                     if (data?.GetHashedPuid() != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
-                        && !FixedUpdatePatch.CheckAllowList(data?.FriendCode))
+                        && !BanManager.CheckAllowList(data?.FriendCode))
                     {
                         if (!Main.PlayerQuitTimes.ContainsKey(data?.GetHashedPuid()))
                             Main.PlayerQuitTimes.Add(data?.GetHashedPuid(), 1);

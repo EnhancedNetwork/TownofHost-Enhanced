@@ -387,7 +387,14 @@ class UnrestrictedNumImpostorsPatch
 {
     public static bool Prefix(ref int __result)
     {
-        __result = Main.NormalOptions.NumImpostors;
+        if (GameStates.IsNormalGame)
+        {
+            __result = Main.NormalOptions.NumImpostors;
+        }
+        else if (GameStates.IsHideNSeek)
+        {
+            __result = Main.HideNSeekOptions.NumImpostors;
+        }
         return false;
     }
 }

@@ -142,7 +142,7 @@ public static class GameOptionsMenuStartPatch
             List<SpriteRenderer> highlights = new() { gameSettingMenu.GameSettingsHightlight, gameSettingMenu.RolesSettingsHightlight };
             List<GameObject> tabs = new() { gameTab, roleTab };
 
-            foreach (var tab in EnumHelper.GetAllValues<TabGroup>().Where(tab => GameStates.IsNormalGame || (GameStates.IsHideNSeek && (tab == TabGroup.SystemSettings || tab == TabGroup.GameSettings /*|| tab == TabGroup.TaskSettings*/))).ToArray())
+            foreach (var tab in EnumHelper.GetAllValues<TabGroup>().Where(tab => GameStates.IsNormalGame || (GameStates.IsHideNSeek && (tab == TabGroup.SystemSettings || tab == TabGroup.GameSettings || tab == TabGroup.TaskSettings))).ToArray())
             {
                 var obj = gameSettings.transform.parent.Find(tab + "Tab");
                 if (obj != null)

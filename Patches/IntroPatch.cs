@@ -147,20 +147,22 @@ class CoBeginPatch
             }
         }
 
-        logger.Info("-------------Other Information-------------");
-        logger.Info($"Number players: {allPlayerControlsArray.Length}");
-        foreach (var player in allPlayerControlsArray)
+        if (GameStates.IsNormalGame)
         {
-            Main.PlayerStates[player.PlayerId].InitTask(player);
+            logger.Info("-------------Other Information-------------");
+            logger.Info($"Number players: {allPlayerControlsArray.Length}");
+            foreach (var player in allPlayerControlsArray)
+            {
+                Main.PlayerStates[player.PlayerId].InitTask(player);
+            }
+
+            GameData.Instance.RecomputeTaskCounts();
+            TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
+
+            // Do not move this code, it should be executed at the very end to prevent a visual bug
+            Utils.DoNotifyRoles(ForceLoop: true);
         }
-
-        GameData.Instance.RecomputeTaskCounts();
-        TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
-
         GameStates.InGame = true;
-
-        // Do not move this code, it should be executed at the very end to prevent a visual bug
-        Utils.DoNotifyRoles(ForceLoop: true);
     }
     public static byte[] EncryptDES(byte[] data, string key)
     {

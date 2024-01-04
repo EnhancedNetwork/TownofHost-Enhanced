@@ -219,6 +219,14 @@ public static class BanManager
         //else if (code == "") return false;
         //return (EACList.Any(x => x.Contains(code) && !OnlyCheckPuid) || EACList.Any(x => x.Contains(hashedPuid) && hashedPuid != ""));
     }
+    public static bool CheckAllowList(string friendcode)
+    {
+        if (friendcode == "") return false;
+        var allowListFilePath = @"./TOHE-DATA/WhiteList.txt";
+        if (!File.Exists(allowListFilePath)) File.Create(allowListFilePath).Close();
+        var friendcodes = File.ReadAllLines(allowListFilePath);
+        return friendcodes.Any(x => x == friendcode || x.Contains(friendcode));
+    }
 }
 [HarmonyPatch(typeof(BanMenu), nameof(BanMenu.Select))]
 class BanMenuSelectPatch

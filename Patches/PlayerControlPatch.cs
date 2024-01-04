@@ -3,7 +3,6 @@ using HarmonyLib;
 using Hazel;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,7 +24,7 @@ class CheckProtectPatch
 {
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
     {
-        if (!AmongUsClient.Instance.AmHost) return false;
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek) return false;
         Logger.Info("CheckProtect occurs: " + __instance.GetNameWithRole() + "=>" + target.GetNameWithRole(), "CheckProtect");
 
         if (__instance.Is(CustomRoles.EvilSpirit))
@@ -60,7 +59,8 @@ class CmdCheckMurderPatch
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
     {
         Logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}", "CmdCheckMurder");
-        if (!AmongUsClient.Instance.AmHost || !GameStates.IsModHost) return true;
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || !GameStates.IsModHost) return true;
+
         __instance.CheckMurder(target);
         return false;
     }
@@ -83,6 +83,7 @@ class CheckMurderPatch
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
     {
         if (!AmongUsClient.Instance.AmHost) return false;
+        if (GameStates.IsHideNSeek) return true;
 
         var killer = __instance; // Alternative variable
 
@@ -1320,6 +1321,12 @@ class MurderPlayerPatch
             Camouflage.RpcSetSkin(target, ForceRevert: true);
         }
 
+        //if (GameStates.IsHideNSeek)
+        //{
+        //    if ()
+        //    Main.AliveImpostorCount
+        //}
+
         if (AmongUsClient.Instance.AmHost)
         {
             if (resultFlags == MurderResultFlags.Succeeded)
@@ -1370,6 +1377,8 @@ class MurderPlayerPatch
         {
             Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Kill;
         }
+
+        if (GameStates.IsHideNSeek) return;
 
         //看看UP是不是被首刀了
         if (Main.FirstDied == "" && target.Is(CustomRoles.Youtuber))
@@ -1562,6 +1571,7 @@ class ShapeshiftPatch
         Main.ShapeshiftTarget[shapeshifter.PlayerId] = target.PlayerId;
 
         if (!AmongUsClient.Instance.AmHost) return;
+        if (GameStates.IsHideNSeek) return;
         if (!shapeshifting) Camouflage.RpcSetSkin(__instance);
 
         if (!Pelican.IsEaten(shapeshifter.PlayerId))
@@ -1802,7 +1812,8 @@ class ReportDeadBodyPatch
     public static Dictionary<byte, List<GameData.PlayerInfo>> WaitReport = new();
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo target)
     {
-        if (GameStates.IsMeeting) return false;
+        if (GameStates.IsMeeting || GameStates.IsHideNSeek) return false;
+
         if (EAC.RpcReportDeadBodyCheck(__instance, target))
         {
             Logger.Fatal("Eac patched the report body rpc", "ReportDeadBodyPatch");
@@ -2450,7 +2461,7 @@ class ReportDeadBodyPatch
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
-class FixedUpdatePatch
+class FixedUpdateInNormalGamePatch
 {
     //private static long LastFixedUpdate = new(); //Doesn't seem to be working.
     private static StringBuilder Mark = new(20);
@@ -2458,17 +2469,10 @@ class FixedUpdatePatch
     private static int LevelKickBufferTime = 20;
     private static Dictionary<int, int> BufferTime = new();
 
-    public static bool CheckAllowList(string friendcode)
-    {
-        if (friendcode == "") return false;
-        var allowListFilePath = @"./TOHE-DATA/WhiteList.txt";
-        if (!File.Exists(allowListFilePath)) File.Create(allowListFilePath).Close();
-        var friendcodes = File.ReadAllLines(allowListFilePath);
-        return friendcodes.Any(x => x == friendcode || x.Contains(friendcode));
-    }
     public static void Postfix(PlayerControl __instance)
     {
         var player = __instance;
+        var playerRole = player.GetCustomRole();
 
         if (!GameStates.IsModHost) return;
 
@@ -2495,15 +2499,20 @@ class FixedUpdatePatch
             BufferTime[player.PlayerId] = timerLowLoad;
         }
 
-        if (Sniper.IsEnable)
-            Sniper.OnFixedUpdate(player);
-
         if (!lowLoad)
-        {
             Zoom.OnFixedUpdate();
-            NameNotifyManager.OnFixedUpdate(player);
-            TargetArrow.OnFixedUpdate(player);
-            LocateArrow.OnFixedUpdate(player);
+
+        if (GameStates.IsNormalGame)
+        {
+            if (Sniper.IsEnable)
+                Sniper.OnFixedUpdate(player);
+
+            if (!lowLoad)
+            {
+                NameNotifyManager.OnFixedUpdate(player);
+                TargetArrow.OnFixedUpdate(player);
+                LocateArrow.OnFixedUpdate(player);
+            }
         }
 
         if (AmongUsClient.Instance.AmHost)
@@ -2519,7 +2528,7 @@ class FixedUpdatePatch
                 bool playerInAllowList = false;
                 if (Options.ApplyAllowList.GetBool())
                 {
-                    playerInAllowList = CheckAllowList(player.Data.FriendCode);
+                    playerInAllowList = BanManager.CheckAllowList(player.Data.FriendCode);
                 }
 
                 if (!playerInAllowList)
@@ -2568,19 +2577,19 @@ class FixedUpdatePatch
                 }
             }
 
-            if (DoubleTrigger.FirstTriggerTimer.Count > 0)
-                DoubleTrigger.OnFixedUpdate(player);
-
-            var playerRole = player.GetCustomRole();
-
-            if (player.Is(CustomRoles.NiceMini) || player.Is(CustomRoles.EvilMini))
+            if (GameStates.IsInTask && GameStates.IsNormalGame)
             {
-                if (!player.Data.IsDead)
-                    Mini.OnFixedUpdate(player);
-            } //Mini's count down needs to be done outside if intask if we are counting meeting time
+                playerRole = player.GetCustomRole();
 
-            if (GameStates.IsInTask)
-            {
+                if (DoubleTrigger.FirstTriggerTimer.Count > 0)
+                    DoubleTrigger.OnFixedUpdate(player);
+
+                if (player.Is(CustomRoles.NiceMini) || player.Is(CustomRoles.EvilMini))
+                {
+                    if (!player.Data.IsDead)
+                        Mini.OnFixedUpdate(player);
+                } //Mini's count down needs to be done outside if intask if we are counting meeting time
+
                 if (ReportDeadBodyPatch.CanReport[__instance.PlayerId] && ReportDeadBodyPatch.WaitReport[__instance.PlayerId].Count > 0)
                 {
                     if (Glitch.hackedIdList.ContainsKey(__instance.PlayerId))
@@ -2839,11 +2848,9 @@ class FixedUpdatePatch
                 if (Main.AllKillers.TryGetValue(player.PlayerId, out var ktime) && ktime + Options.WitnessTime.GetInt() < Utils.GetTimeStamp())
                     Main.AllKillers.Remove(player.PlayerId);
 
-                playerRole = player.GetCustomRole();
-
                  if (Kamikaze.IsEnable)
                      Kamikaze.MurderKamikazedPlayers(player);
-                
+
                 switch (playerRole)
                 {
                     case CustomRoles.Pelican:
@@ -2864,159 +2871,160 @@ class FixedUpdatePatch
 
                 if (GameStates.IsInTask)
                 {
-
-                    if (BountyHunter.IsEnable)
-                        BountyHunter.OnFixedUpdate(player);
-
-                    if (Puppeteer.IsEnable)
-                        Puppeteer.OnFixedUpdate(player);
-
-                    if (NWitch.IsEnable)
-                        NWitch.OnFixedUpdate(player);
-
-                    if (Shroud.IsEnable)
-                        Shroud.OnFixedUpdate(player);
-
-                    if (Spiritcaller.IsEnable)
-                        Spiritcaller.OnFixedUpdate(player);
-
-                    if (Pitfall.IsEnable)
-                        Pitfall.OnFixedUpdate(player);
-
-                    if (Alchemist.BloodlustList.ContainsKey(player.PlayerId))
-                        Alchemist.OnFixedUpdate(player);
-
-                    switch (playerRole)
+                    if (GameStates.IsNormalGame)
                     {
-                        case CustomRoles.Swooper:
-                            Swooper.OnFixedUpdate(player);
-                            break;
+                        if (BountyHunter.IsEnable)
+                            BountyHunter.OnFixedUpdate(player);
 
-                        case CustomRoles.Wraith:
-                            Wraith.OnFixedUpdate(player);
-                            break;
+                        if (Puppeteer.IsEnable)
+                            Puppeteer.OnFixedUpdate(player);
 
-                        case CustomRoles.Chameleon:
-                            Chameleon.OnFixedUpdate(player);
-                            break;
+                        if (NWitch.IsEnable)
+                            NWitch.OnFixedUpdate(player);
 
-                        //case CustomRoles.Alchemist:
-                        //    Alchemist.OnFixedUpdate(player);
-                        //    break;
+                        if (Shroud.IsEnable)
+                            Shroud.OnFixedUpdate(player);
 
-                        case CustomRoles.BallLightning:
-                            BallLightning.OnFixedUpdate();
-                            break;
+                        if (Spiritcaller.IsEnable)
+                            Spiritcaller.OnFixedUpdate(player);
 
-                        case CustomRoles.BloodKnight:
-                            BloodKnight.OnFixedUpdate(player);
-                            break;
+                        if (Pitfall.IsEnable)
+                            Pitfall.OnFixedUpdate(player);
 
-                        case CustomRoles.Wildling:
-                            Wildling.OnFixedUpdate(player);
-                            break;
+                        if (Alchemist.BloodlustList.ContainsKey(player.PlayerId))
+                            Alchemist.OnFixedUpdate(player);
 
-                        case CustomRoles.Mastermind:
-                            Mastermind.OnFixedUpdate();
-                            break;
+                        switch (playerRole)
+                        {
+                            case CustomRoles.Swooper:
+                                Swooper.OnFixedUpdate(player);
+                                break;
 
-                        case CustomRoles.Veteran:
-                            if (Main.VeteranInProtect.TryGetValue(player.PlayerId, out var vtime) && vtime + Options.VeteranSkillDuration.GetInt() < Utils.GetTimeStamp())
-                            {
-                                Main.VeteranInProtect.Remove(player.PlayerId);
+                            case CustomRoles.Wraith:
+                                Wraith.OnFixedUpdate(player);
+                                break;
 
-                                if (!Options.DisableShieldAnimations.GetBool())
+                            case CustomRoles.Chameleon:
+                                Chameleon.OnFixedUpdate(player);
+                                break;
+
+                            //case CustomRoles.Alchemist:
+                            //    Alchemist.OnFixedUpdate(player);
+                            //    break;
+
+                            case CustomRoles.BallLightning:
+                                BallLightning.OnFixedUpdate();
+                                break;
+
+                            case CustomRoles.BloodKnight:
+                                BloodKnight.OnFixedUpdate(player);
+                                break;
+
+                            case CustomRoles.Wildling:
+                                Wildling.OnFixedUpdate(player);
+                                break;
+
+                            case CustomRoles.Mastermind:
+                                Mastermind.OnFixedUpdate();
+                                break;
+
+                            case CustomRoles.Veteran:
+                                if (Main.VeteranInProtect.TryGetValue(player.PlayerId, out var vtime) && vtime + Options.VeteranSkillDuration.GetInt() < Utils.GetTimeStamp())
                                 {
-                                    player.RpcGuardAndKill();
+                                    Main.VeteranInProtect.Remove(player.PlayerId);
+
+                                    if (!Options.DisableShieldAnimations.GetBool())
+                                    {
+                                        player.RpcGuardAndKill();
+                                    }
+                                    else
+                                    {
+                                        player.RpcResetAbilityCooldown();
+                                    }
+
+                                    player.Notify(string.Format(GetString("VeteranOffGuard"), Main.VeteranNumOfUsed[player.PlayerId]));
                                 }
-                                else
+                                break;
+
+                            case CustomRoles.Grenadier:
+                                var stopGrenadierSkill = false;
+                                var stopMadGrenadierSkill = false;
+
+                                if (Main.GrenadierBlinding.TryGetValue(player.PlayerId, out var grenadierTime) && grenadierTime + Options.GrenadierSkillDuration.GetInt() < Utils.GetTimeStamp())
                                 {
-                                    player.RpcResetAbilityCooldown();
+                                    Main.GrenadierBlinding.Remove(player.PlayerId);
+                                    stopGrenadierSkill = true;
                                 }
 
-                                player.Notify(string.Format(GetString("VeteranOffGuard"), Main.VeteranNumOfUsed[player.PlayerId]));
-                            }
-                            break;
-
-                        case CustomRoles.Grenadier:
-                            var stopGrenadierSkill = false;
-                            var stopMadGrenadierSkill = false;
-
-                            if (Main.GrenadierBlinding.TryGetValue(player.PlayerId, out var grenadierTime) && grenadierTime + Options.GrenadierSkillDuration.GetInt() < Utils.GetTimeStamp())
-                            {
-                                Main.GrenadierBlinding.Remove(player.PlayerId);
-                                stopGrenadierSkill = true;
-                            }
-
-                            if (Main.MadGrenadierBlinding.TryGetValue(player.PlayerId, out var madGrenadierTime) && madGrenadierTime + Options.GrenadierSkillDuration.GetInt() < Utils.GetTimeStamp())
-                            {
-                                Main.MadGrenadierBlinding.Remove(player.PlayerId);
-                                stopMadGrenadierSkill = true;
-                            }
-
-                            if (stopGrenadierSkill || stopMadGrenadierSkill)
-                            {
-                                if (!Options.DisableShieldAnimations.GetBool())
+                                if (Main.MadGrenadierBlinding.TryGetValue(player.PlayerId, out var madGrenadierTime) && madGrenadierTime + Options.GrenadierSkillDuration.GetInt() < Utils.GetTimeStamp())
                                 {
-                                    player.RpcGuardAndKill();
+                                    Main.MadGrenadierBlinding.Remove(player.PlayerId);
+                                    stopMadGrenadierSkill = true;
                                 }
-                                else
-                                {
-                                    player.RpcResetAbilityCooldown();
-                                }
-                                player.Notify(GetString("GrenadierSkillStop"));
-                                Utils.MarkEveryoneDirtySettings();
-                            }
-                            break;
 
-                        case CustomRoles.Lighter:
-                            if (Main.Lighter.TryGetValue(player.PlayerId, out var ltime) && ltime + Options.LighterSkillDuration.GetInt() < Utils.GetTimeStamp())
-                            {
-                                Main.Lighter.Remove(player.PlayerId);
-                                if (!Options.DisableShieldAnimations.GetBool())
+                                if (stopGrenadierSkill || stopMadGrenadierSkill)
                                 {
-                                    player.RpcGuardAndKill();
+                                    if (!Options.DisableShieldAnimations.GetBool())
+                                    {
+                                        player.RpcGuardAndKill();
+                                    }
+                                    else
+                                    {
+                                        player.RpcResetAbilityCooldown();
+                                    }
+                                    player.Notify(GetString("GrenadierSkillStop"));
+                                    Utils.MarkEveryoneDirtySettings();
                                 }
-                                else
-                                {
-                                    player.RpcResetAbilityCooldown();
-                                }
-                                player.Notify(GetString("LighterSkillStop"));
-                                player.MarkDirtySettings();
-                            }
-                            break;
+                                break;
 
-                        case CustomRoles.Mario:
-                            if (Main.MarioVentCount[player.PlayerId] >= Options.MarioVentNumWin.GetInt())
-                            {
-                                Main.MarioVentCount[player.PlayerId] = Options.MarioVentNumWin.GetInt();
-                                if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
+                            case CustomRoles.Lighter:
+                                if (Main.Lighter.TryGetValue(player.PlayerId, out var ltime) && ltime + Options.LighterSkillDuration.GetInt() < Utils.GetTimeStamp())
                                 {
-                                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Mario);
-                                    CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
+                                    Main.Lighter.Remove(player.PlayerId);
+                                    if (!Options.DisableShieldAnimations.GetBool())
+                                    {
+                                        player.RpcGuardAndKill();
+                                    }
+                                    else
+                                    {
+                                        player.RpcResetAbilityCooldown();
+                                    }
+                                    player.Notify(GetString("LighterSkillStop"));
+                                    player.MarkDirtySettings();
                                 }
-                            }
-                            break;
+                                break;
 
-                        case CustomRoles.Vulture:
-                            if (Vulture.BodyReportCount[player.PlayerId] >= Vulture.NumberOfReportsToWin.GetInt())
-                            {
-                                Vulture.BodyReportCount[player.PlayerId] = Vulture.NumberOfReportsToWin.GetInt();
-                                if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
+                            case CustomRoles.Mario:
+                                if (Main.MarioVentCount[player.PlayerId] >= Options.MarioVentNumWin.GetInt())
                                 {
-                                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Vulture);
-                                    CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
+                                    Main.MarioVentCount[player.PlayerId] = Options.MarioVentNumWin.GetInt();
+                                    if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
+                                    {
+                                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Mario);
+                                        CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
+                                    }
                                 }
-                            }
-                            break;
+                                break;
+
+                            case CustomRoles.Vulture:
+                                if (Vulture.BodyReportCount[player.PlayerId] >= Vulture.NumberOfReportsToWin.GetInt())
+                                {
+                                    Vulture.BodyReportCount[player.PlayerId] = Vulture.NumberOfReportsToWin.GetInt();
+                                    if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
+                                    {
+                                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Vulture);
+                                        CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
+                                    }
+                                }
+                                break;
+                        }
+
+                        if (GameStates.IsInGame && CustomRoles.Lovers.IsEnable())
+                            LoversSuicide();
                     }
-
+                    
                     if (Options.LadderDeath.GetBool() && player.IsAlive())
                         FallFromLadder.FixedUpdate(player);
-
-                    if (GameStates.IsInGame && CustomRoles.Lovers.IsEnable())
-                        LoversSuicide();
-
 
                     //Local Player only
                     if (player.AmOwner)
@@ -3031,7 +3039,7 @@ class FixedUpdatePatch
                     }
                 }
 
-                if (GameStates.IsInGame && Main.RefixCooldownDelay <= 0)
+                if (GameStates.IsNormalGame && GameStates.IsInGame && Main.RefixCooldownDelay <= 0)
                     foreach (var pc in Main.AllPlayerControls)
                     {
                         if (pc.Is(CustomRoles.Vampire) || pc.Is(CustomRoles.Warlock) || pc.Is(CustomRoles.Assassin) || pc.Is(CustomRoles.Vampiress))
@@ -3049,7 +3057,7 @@ class FixedUpdatePatch
         if (__instance.AmOwner)
         {
             //Kill target override processing
-            if (GameStates.IsInTask && !__instance.Is(CustomRoleTypes.Impostor) && __instance.CanUseKillButton() && !__instance.Data.IsDead)
+            if (GameStates.IsNormalGame && GameStates.IsInTask && !__instance.Is(CustomRoleTypes.Impostor) && __instance.CanUseKillButton() && !__instance.Data.IsDead)
             {
                 var players = __instance.GetPlayersInAbilityRangeSorted(false);
                 PlayerControl closest = players.Count <= 0 ? null : players[0];
@@ -3074,7 +3082,7 @@ class FixedUpdatePatch
                 }
                 else __instance.cosmetics.nameText.text = __instance?.Data?.PlayerName;
             }
-            if (GameStates.IsInGame)
+            if (GameStates.IsNormalGame && GameStates.IsInGame)
             {
                 var RoleTextData = Utils.GetRoleText(PlayerControl.LocalPlayer.PlayerId, __instance.PlayerId);
                 RoleText.text = RoleTextData.Item1;
@@ -3463,6 +3471,8 @@ class CoExitVentPatch
 {
     public static void Postfix(PlayerPhysics __instance, [HarmonyArgument(0)] int id)
     {
+        if (GameStates.IsHideNSeek) return;
+
         if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenKCDIsUp.GetBool())
         {
             if (__instance.myPlayer != null)
@@ -3491,6 +3501,7 @@ class EnterVentPatch
 {
     public static void Postfix(Vent __instance, [HarmonyArgument(0)] PlayerControl pc)
     {
+        if (GameStates.IsHideNSeek) return;
 
         Witch.OnEnterVent(pc);
         HexMaster.OnEnterVent(pc);
@@ -3698,7 +3709,7 @@ class CoEnterVentPatch
 {
     public static bool Prefix(PlayerPhysics __instance, [HarmonyArgument(0)] int id)
     {
-        if (!AmongUsClient.Instance.AmHost) return true;
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek) return true;
         Logger.Info($" {__instance.myPlayer.GetNameWithRole().RemoveHtmlTags()}, Vent ID: {id}", "CoEnterVent");
 
         if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenTwoPlayersAlive.GetBool() && Main.AllAlivePlayerControls.Length <= 2)
@@ -3882,6 +3893,8 @@ class GameDataCompleteTaskPatch
 {
     public static void Postfix(PlayerControl pc)
     {
+        if (GameStates.IsHideNSeek) return;
+
         Logger.Info($"Task Complete: {pc.GetNameWithRole().RemoveHtmlTags()}", "CompleteTask");
         Main.PlayerStates[pc.PlayerId].UpdateTask(pc);
         Utils.NotifyRoles(SpecifySeer: pc);
@@ -3892,6 +3905,8 @@ class PlayerControlCompleteTaskPatch
 {
     public static bool Prefix(PlayerControl __instance)
     {
+        if (GameStates.IsHideNSeek) return true;
+
         var player = __instance;
 
         if (Workhorse.OnCompleteTask(player)) //タスク勝利をキャンセル
@@ -3914,6 +3929,8 @@ class PlayerControlCompleteTaskPatch
     }
     public static void Postfix(PlayerControl __instance, object[] __args)
     {
+        if (GameStates.IsHideNSeek) return;
+
         var pc = __instance;
         Snitch.OnCompleteTask(pc);
         int taskIndex = Convert.ToInt32(__args[0]);
@@ -4023,6 +4040,8 @@ class PlayerControlSetRolePatch
 {
     public static bool Prefix(PlayerControl __instance, ref RoleTypes roleType)
     {
+        if (GameStates.IsHideNSeek) return true;
+
         var target = __instance;
         var targetName = __instance.GetNameWithRole().RemoveHtmlTags();
         Logger.Info($" {targetName} => {roleType}", "PlayerControl.RpcSetRole");

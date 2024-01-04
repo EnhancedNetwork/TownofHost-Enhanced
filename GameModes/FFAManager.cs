@@ -358,7 +358,7 @@ internal static class FFAManager
     }
 
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
-    class FixedUpdatePatch
+    class FixedUpdateInGameModeFFAPatch
     {
         private static long LastFixedUpdate;
         public static void Postfix(PlayerControl __instance)

@@ -1978,6 +1978,7 @@ public static class Utils
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (Main.AllPlayerControls == null) return;
+        if (GameStates.IsHideNSeek) return;
 
         //Do not update NotifyRoles during meetings
         if (GameStates.IsMeeting) return;
@@ -1994,6 +1995,7 @@ public static class Utils
     {
         if (!AmongUsClient.Instance.AmHost) return Task.CompletedTask;
         if (Main.AllPlayerControls == null) return Task.CompletedTask;
+        if (GameStates.IsHideNSeek) return Task.CompletedTask;
 
         //Do not update NotifyRoles during meetings
         if (GameStates.IsMeeting) return Task.CompletedTask;
@@ -2770,7 +2772,7 @@ public static class Utils
         if (Lawyer.Target.ContainsValue(target.PlayerId))
             Lawyer.ChangeRoleByTarget(target);
 
-        FixedUpdatePatch.LoversSuicide(target.PlayerId, onMeeting);
+        FixedUpdateInNormalGamePatch.LoversSuicide(target.PlayerId, onMeeting);
     }
     public static void ChangeInt(ref int ChangeTo, int input, int max)
     {

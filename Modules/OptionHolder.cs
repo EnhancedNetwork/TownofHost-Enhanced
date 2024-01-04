@@ -3388,7 +3388,7 @@ public static class Options
         //Disable Short Tasks
         DisableShortTasks = BooleanOptionItem.Create(60594, "DisableShortTasks", false, TabGroup.TaskSettings, false)
             .SetGameMode(CustomGameMode.Standard)
-            //.SetGameMode(CustomGameMode.HidenSeekTOHE)
+            .SetGameMode(CustomGameMode.HidenSeekTOHE)
             .SetHeader(true)
             .SetColor(new Color32(239, 89, 175, byte.MaxValue));
         DisableCleanVent = BooleanOptionItem.Create(60595, "DisableCleanVent", false, TabGroup.TaskSettings, false)
@@ -3472,7 +3472,7 @@ public static class Options
         //Disable Common Tasks
         DisableCommonTasks = BooleanOptionItem.Create(60627, "DisableCommonTasks", false, TabGroup.TaskSettings, false)
             .SetGameMode(CustomGameMode.Standard)
-            //.SetGameMode(CustomGameMode.HidenSeekTOHE)
+            .SetGameMode(CustomGameMode.HidenSeekTOHE)
             .SetColor(new Color32(239, 89, 175, byte.MaxValue));
         DisableSwipeCard = BooleanOptionItem.Create(60628, "DisableSwipeCardTask", false, TabGroup.TaskSettings, false)
             .SetParent(DisableCommonTasks);
@@ -3495,7 +3495,7 @@ public static class Options
         //Disable Long Tasks
         DisableLongTasks = BooleanOptionItem.Create(60640, "DisableLongTasks", false, TabGroup.TaskSettings, false)
             .SetGameMode(CustomGameMode.Standard)
-            //.SetGameMode(CustomGameMode.HidenSeekTOHE)
+            .SetGameMode(CustomGameMode.HidenSeekTOHE)
             .SetColor(new Color32(239, 89, 175, byte.MaxValue));
         DisableSubmitScan = BooleanOptionItem.Create(60641, "DisableSubmitScanTask", false, TabGroup.TaskSettings, false)
             .SetParent(DisableLongTasks);
@@ -3547,7 +3547,7 @@ public static class Options
         //Disable Divert Power, Weather Nodes and etc. situational Tasks
         DisableOtherTasks = BooleanOptionItem.Create(60665, "DisableOtherTasks", false, TabGroup.TaskSettings, false)
             .SetGameMode(CustomGameMode.Standard)
-            //.SetGameMode(CustomGameMode.HidenSeekTOHE)
+            .SetGameMode(CustomGameMode.HidenSeekTOHE)
             .SetColor(new Color32(239, 89, 175, byte.MaxValue));
         DisableUploadData = BooleanOptionItem.Create(60666, "DisableUploadDataTask", false, TabGroup.TaskSettings, false)
             .SetParent(DisableOtherTasks);

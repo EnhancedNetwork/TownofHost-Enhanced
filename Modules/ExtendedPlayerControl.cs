@@ -377,6 +377,8 @@ static class ExtendedPlayerControl
     }
     public static string GetSubRoleName(this PlayerControl player, bool forUser = false)
     {
+        if (GameStates.IsHideNSeek) return string.Empty;
+
         var SubRoles = Main.PlayerStates[player.PlayerId].SubRoles.ToArray();
         if (SubRoles.Length == 0) return string.Empty;
 
@@ -652,14 +654,29 @@ static class ExtendedPlayerControl
     public static bool CanUseImpostorVentButton(this PlayerControl pc)
     {
         // vents are broken on dleks and cannot be fixed on host side
-        if ((MapNames)Main.NormalOptions.MapId == MapNames.Dleks)
+        if (GameStates.IsNormalGame)
         {
-            return pc.GetCustomRole() switch
+            if ((MapNames)Main.NormalOptions.MapId == MapNames.Dleks)
             {
-                CustomRoles.Arsonist => pc.IsDouseDone() || (Options.ArsonistCanIgniteAnytime.GetBool() && (Utils.GetDousedPlayerCount(pc.PlayerId).Item1 >= Options.ArsonistMinPlayersToIgnite.GetInt() || pc.inVent)),
-                CustomRoles.Revolutionist => pc.IsDrawDone(),
-                _ => false,
-            };
+                return pc.GetCustomRole() switch
+                {
+                    CustomRoles.Arsonist => pc.IsDouseDone() || (Options.ArsonistCanIgniteAnytime.GetBool() && (Utils.GetDousedPlayerCount(pc.PlayerId).Item1 >= Options.ArsonistMinPlayersToIgnite.GetInt() || pc.inVent)),
+                    CustomRoles.Revolutionist => pc.IsDrawDone(),
+                    _ => false,
+                };
+            }
+        }
+        else if (GameStates.IsHideNSeek)
+        {
+            if ((MapNames)Main.HideNSeekOptions.MapId == MapNames.Dleks)
+            {
+                return pc.GetCustomRole() switch
+                {
+                    CustomRoles.Arsonist => pc.IsDouseDone() || (Options.ArsonistCanIgniteAnytime.GetBool() && (Utils.GetDousedPlayerCount(pc.PlayerId).Item1 >= Options.ArsonistMinPlayersToIgnite.GetInt() || pc.inVent)),
+                    CustomRoles.Revolutionist => pc.IsDrawDone(),
+                    _ => false,
+                };
+            }
         }
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel) return false;
         if (CopyCat.playerIdList.Contains(pc.PlayerId)) return true;

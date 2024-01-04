@@ -22,7 +22,7 @@ class EndGamePatch
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         GameStates.InGame = false;
 
-        Logger.Info("-----------游戏结束-----------", "Phase");
+        Logger.Info("-----------Game over-----------", "Phase");
         if (!GameStates.IsModHost) return;
         SummaryText = new();
         foreach (var id in Main.PlayerStates.Keys.ToArray())
@@ -67,7 +67,9 @@ class EndGamePatch
         KillLog = sb.ToString();
         if (!KillLog.Contains('\n')) KillLog = "";
 
-        Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
+        if (GameStates.IsNormalGame)
+            Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
+        
         //winnerListリセット
         TempData.winners = new Il2CppSystem.Collections.Generic.List<WinningPlayerData>();
         var winner = new List<PlayerControl>();
