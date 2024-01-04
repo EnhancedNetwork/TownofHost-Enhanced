@@ -122,7 +122,7 @@ namespace TOHE.Roles.Neutral
 
         public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
         {
-            if (!AlreadyMarked && allowedKilling)
+            if (!AlreadyMarked)
             {
                 allowedVenting = false;
                 AlreadyMarked = true;

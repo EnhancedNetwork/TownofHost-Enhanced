@@ -113,7 +113,7 @@ internal class ChatCommands
                     break;
 
                 case "/qmquiz":
-                    Quizmaster.ShowQuestion(player);
+                    Quizmaster.ShowQuestion(PlayerControl.LocalPlayer);
                     break;
 
                 case "/win":
