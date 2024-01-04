@@ -49,7 +49,6 @@ internal class ChatCommands
         {
             ChatManager.SendMessage(PlayerControl.LocalPlayer, text);
         }
-
         //if (text.Length >= 3) if (text[..2] == "/r" && text[..3] != "/rn" && text[..3] != "/rs") args[0] = "/r";
         if (text.Length >= 4) if (text[..3] == "/up") args[0] = "/up";
 
@@ -84,11 +83,18 @@ internal class ChatCommands
             case "/versão":
                 canceled = true;
                 string version_text = "";
-                foreach (var kvp in Main.playerVersion.OrderBy(pair => pair.Key).ToArray())
+                try
                 {
-                    version_text += $"{kvp.Key}:{Main.AllPlayerNames[kvp.Key]}:{kvp.Value.forkId}/{kvp.Value.version}({kvp.Value.tag})\n";
+                    foreach (var kvp in Main.playerVersion.OrderBy(pair => pair.Key).ToArray())
+                    {
+                        version_text += $"{kvp.Key}:{Utils.GetPlayerById(kvp.Key)?.GetRealName() ?? "null"}:{kvp.Value.forkId}/{kvp.Value.version}({kvp.Value.tag})\n";
+                    }
+                    if (version_text != "") HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, (PlayerControl.LocalPlayer.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + version_text);
                 }
-                if (version_text != "") HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, (PlayerControl.LocalPlayer.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + version_text);
+                catch (Exception e)
+                {
+                    Logger.Error(e.Message, "/version");
+                }
                 break;
             default:
                 Main.isChatCommand = false;
