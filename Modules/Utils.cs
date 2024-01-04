@@ -2834,6 +2834,17 @@ public static class Utils
         System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo("Explorer.exe")
         { Arguments = "/e,/select," + @filename.Replace("/", "\\") };
         System.Diagnostics.Process.Start(psi);
+
+        if (!AmongUsClient.Instance.AmHost && GameStates.IsOnlineGame && GameStates.IsModHost)
+        {
+            if (!PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug)
+            {
+                var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+                    (byte)CustomRPC.DumpLog, SendOption.Reliable, AmongUsClient.Instance.HostId);
+                writer.Write(PlayerControl.LocalPlayer.PlayerId);
+                AmongUsClient.Instance.FinishRpcImmediately(writer);
+            }
+        }
     }
     public static (int, int) GetDousedPlayerCount(byte playerId)
     {
