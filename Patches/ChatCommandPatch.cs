@@ -49,7 +49,6 @@ internal class ChatCommands
         {
             ChatManager.SendMessage(PlayerControl.LocalPlayer, text);
         }
-
         //if (text.Length >= 3) if (text[..2] == "/r" && text[..3] != "/rn" && text[..3] != "/rs") args[0] = "/r";
         if (text.Length >= 4) if (text[..3] == "/up") args[0] = "/up";
 
