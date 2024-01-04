@@ -84,7 +84,6 @@ namespace TOHE.Modules.ChatManager
                 ChatSentBySystem.Add(getTextHash(text));
             }
         }
-
         public static void SendMessage(PlayerControl player, string message)
         {
             int operate = 0; // 1:ID 2:猜测
