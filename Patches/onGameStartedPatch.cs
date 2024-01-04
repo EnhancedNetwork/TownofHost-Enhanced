@@ -435,13 +435,6 @@ internal class SelectRolesPatch
         {
             if (GameStates.IsHideNSeek)
             {
-                //switch (Options.CurrentGameMode)
-                //{
-                //    case CustomGameMode.HidenSeekTOHE:
-                //        GameEndCheckerForNormal.SetPredicateToHidenSeek();
-                //        break;
-                //}
-
                 GameOptionsSender.AllSenders.Clear();
                 foreach (var pc in Main.AllPlayerControls)
                 {

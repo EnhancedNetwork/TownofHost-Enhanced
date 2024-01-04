@@ -25,7 +25,7 @@ class GameEndCheckerForHnS
 [HarmonyPatch(typeof(LogicGameFlowNormal), nameof(LogicGameFlowNormal.CheckEndCriteria))]
 class GameEndCheckerForNormal
 {
-    public static GameEndPredicate predicate;
+    private static GameEndPredicate predicate;
     public static bool Prefix()
     {
         if (!AmongUsClient.Instance.AmHost) return true;
@@ -545,7 +545,6 @@ class GameEndCheckerForNormal
     }
 
     public static void SetPredicateToNormal() => predicate = new NormalGameEndPredicate();
-    public static void SetPredicateToHidenSeek() => predicate = new HidenSeekGameEndPredicate();
     public static void SetPredicateToFFA() => predicate = new FFAGameEndPredicate();
 
 
@@ -708,41 +707,6 @@ class FFAGameEndPredicate : GameEndPredicate
             return false;
         }
         else return false;
-    }
-}
-
-class HidenSeekGameEndPredicate : GameEndPredicate
-{
-    public override bool CheckForEndGame(out GameOverReason reason)
-    {
-        reason = GameOverReason.ImpostorByKill;
-        if (CustomWinnerHolder.WinnerIds.Count > 0) return false;
-        if (CheckGameEndByLivingPlayers(out reason)) return true;
-        return false;
-    }
-
-    public static bool CheckGameEndByLivingPlayers(out GameOverReason reason)
-    {
-        reason = GameOverReason.ImpostorByKill;
-
-        if (Main.AllAlivePlayerControls.Length == Main.HideNSeekOptions.NumImpostors)
-        {
-            PlayerControl[] winner = Main.AllAlivePlayerControls;
-
-            Logger.Info($"Winners: {winner}", "Hide & Seek Game End Predicate");
-
-            CustomWinnerHolder.WinnerIds = new();
-            foreach (var imps in winner)
-            {
-                CustomWinnerHolder.WinnerIds.Add(imps.PlayerId);
-            }
-
-            Main.DoBlockNameChange = true;
-
-            return true;
-        }
-
-        return false;
     }
 }
 
