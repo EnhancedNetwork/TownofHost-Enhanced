@@ -29,7 +29,7 @@ class GameSettingMenuClosePatch
         // if custom game mode is HideNSeekTOHE in normal game, set standart
         if (GameStates.IsNormalGame && Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
         {
-            // Select custom game mode for Hide & Seek
+            // Select standart custom game mode
             Options.GameMode.SetValue(0);
         }
     }
