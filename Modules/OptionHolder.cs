@@ -18,8 +18,9 @@ namespace TOHE;
 public enum CustomGameMode
 {
     Standard = 0x01,
-    HidenSeekTOHE = 0x02,
-    FFA = 0x03,
+    FFA = 0x02,
+
+    HidenSeekTOHE = 0x55, // HidenSeekTOHE must be after other game modes
     All = int.MaxValue
 }
 
@@ -48,21 +49,23 @@ public static class Options
         Main.Preset4.Value, Main.Preset5.Value
     };
 
-    // ゲームモード
+    // Custom Game Mode
     public static OptionItem GameMode;
     public static CustomGameMode CurrentGameMode
         => GameMode.GetInt() switch
         {
-            1 => CustomGameMode.HidenSeekTOHE,
-            2 => CustomGameMode.FFA,
+            1 => CustomGameMode.FFA,
+            2 => CustomGameMode.HidenSeekTOHE, // HidenSeekTOHE must be after other game modes
             _ => CustomGameMode.Standard
         };
 
     public static readonly string[] gameModes =
     {
         "Standard",
-        "Hide & Seek",
         "FFA",
+
+
+        "Hide & Seek", // HidenSeekTOHE must be after other game modes
     };
 
     // MapActive
@@ -3906,19 +3909,19 @@ public static class Options
             Role = role;
             Dictionary<string, string> replacementDic = new() { { "%role%", Utils.ColorString(Utils.GetRoleColor(role), Utils.GetRoleName(role)) } };
             doOverride = BooleanOptionItem.Create(idStart++, "doOverride", false, tab, false)
-        .SetParent(CustomRoleSpawnChances[role])
+                .SetParent(CustomRoleSpawnChances[role])
                 .SetValueFormat(OptionFormat.None);
             doOverride.ReplacementDictionary = replacementDic;
             assignCommonTasks = BooleanOptionItem.Create(idStart++, "assignCommonTasks", true, tab, false)
-        .SetParent(doOverride)
+                .SetParent(doOverride)
                 .SetValueFormat(OptionFormat.None);
             assignCommonTasks.ReplacementDictionary = replacementDic;
             numLongTasks = IntegerOptionItem.Create(idStart++, "roleLongTasksNum", new(0, 99, 1), 3, tab, false)
-        .SetParent(doOverride)
+                .SetParent(doOverride)
                 .SetValueFormat(OptionFormat.Pieces);
             numLongTasks.ReplacementDictionary = replacementDic;
             numShortTasks = IntegerOptionItem.Create(idStart++, "roleShortTasksNum", new(0, 99, 1), 3, tab, false)
-        .SetParent(doOverride)
+                .SetParent(doOverride)
                 .SetValueFormat(OptionFormat.Pieces);
             numShortTasks.ReplacementDictionary = replacementDic;
 

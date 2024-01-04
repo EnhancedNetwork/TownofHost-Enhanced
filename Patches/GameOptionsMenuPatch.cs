@@ -8,6 +8,7 @@ using System.Linq;
 using UnityEngine;
 using static TOHE.Translator;
 using Object = UnityEngine.Object;
+using UnityEngine.ProBuilder;
 
 namespace TOHE;
 
@@ -19,6 +20,19 @@ class GameSettingMenuStartPatch
     {
         // Need for Hide&Seek because tabs are disabled by default
         __instance.Tabs.SetActive(true);
+    }
+}
+[HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.Close))]
+class GameSettingMenuClosePatch
+{
+    public static void Postfix()
+    {
+        // if custom game mode is HideNSeekTOHE in normal game, set standart
+        if (GameStates.IsNormalGame && Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
+        {
+            // Select custom game mode for Hide & Seek
+            Options.GameMode.SetValue(0);
+        }
     }
 }
 [HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.InitializeOptions))]
@@ -59,6 +73,12 @@ public static class GameOptionsMenuStartPatch
 
             if (GameStates.IsNormalGame)
             {
+                if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
+                {
+                    // Select custom game mode for Hide & Seek
+                    Options.GameMode.SetValue(0);
+                }
+
                 template = Object.FindObjectOfType<StringOption>();
                 if (template == null) return;
 
@@ -93,6 +113,9 @@ public static class GameOptionsMenuStartPatch
             }
             else if (GameStates.IsHideNSeek)
             {
+                // Select custom game mode for Hide & Seek
+                Options.GameMode.SetValue(2);
+
                 try
                 {
                     gameSettingMenu = Object.FindObjectOfType<GameSettingMenu>();
@@ -423,6 +446,20 @@ public class StringOptionIncreasePatch
         var option = OptionItem.AllOptions.FirstOrDefault(opt => opt.OptionBehaviour == __instance);
         if (option == null) return true;
 
+        if (option.Name == "GameMode")
+        {
+            switch (GameOptionsManager.Instance.CurrentGameOptions.GameMode)
+            {
+                // To prevent the Host from selecting CustomGameMode.HidenSeekTOHE
+                case GameModes.Normal when option.CurrentValue == 1:
+                // To prevent the Host from selecting CustomGameMode.Standard/FFA
+                case GameModes.HideNSeek when option.CurrentValue == 2:
+                    return false;
+                default:
+                    break;
+            }
+        }
+
         option.SetValue(option.CurrentValue + (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) ? 5 : 1));
         return false;
     }
@@ -435,6 +472,20 @@ public class StringOptionDecreasePatch
     {
         var option = OptionItem.AllOptions.FirstOrDefault(opt => opt.OptionBehaviour == __instance);
         if (option == null) return true;
+
+        if (option.Name == "GameMode")
+        {
+            switch (GameOptionsManager.Instance.CurrentGameOptions.GameMode)
+            {
+                // To prevent the Host from selecting CustomGameMode.HidenSeekTOHE
+                case GameModes.Normal when option.CurrentValue == 0:
+                // To prevent the Host from selecting CustomGameMode.Standard/FFA
+                case GameModes.HideNSeek when option.CurrentValue == 2:
+                    return false;
+                default:
+                    break;
+            }
+        }
 
         option.SetValue(option.CurrentValue - (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) ? 5 : 1));
         return false;
