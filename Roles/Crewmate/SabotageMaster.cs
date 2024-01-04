@@ -131,6 +131,7 @@ public static class SabotageMaster
                 DoorsProgressing = false;
                 break;
         }
+        Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(playerId));
     }
     public static void SwitchSystemRepair(SwitchSystem __instance, byte amount, byte playerId)
     {
