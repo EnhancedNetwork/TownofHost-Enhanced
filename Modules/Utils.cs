@@ -139,6 +139,12 @@ public static class Utils
     }
     public static bool IsActive(SystemTypes type)
     {
+        // if ShipStatus not have current SystemTypes, return false
+        if (!ShipStatus.Instance.Systems.ContainsKey(type))
+        {
+            return false;
+        }
+
         int mapId = Main.NormalOptions.MapId;
         /*
             The Skeld    = 0
@@ -150,12 +156,6 @@ public static class Utils
         */
 
         //Logger.Info($"{type}", "SystemTypes");
-
-        // if ShipStatus not have current SystemTypes, return false
-        if (!ShipStatus.Instance.Systems.ContainsKey(type))
-        {
-            return false;
-        }
 
         switch (type)
         {

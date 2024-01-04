@@ -22,6 +22,26 @@ class OnGameJoinedPatch
     {
         while (!Options.IsLoaded) System.Threading.Tasks.Task.Delay(1);
         Logger.Info($"{__instance.GameId} Joining room", "OnGameJoined");
+
+        switch (GameOptionsManager.Instance.CurrentGameOptions.GameMode)
+        {
+            case GameModes.Normal:
+                Logger.Info("Is Normal Game", "Game Mode");
+                break;
+
+            case GameModes.HideNSeek:
+                Logger.Info("Is Hide & Seek", "Game Mode");
+                break;
+
+            case GameModes.None:
+                Logger.Info("Is None", "Game Mode");
+                break;
+
+            default:
+                Logger.Info("No find", "Game Mode");
+                break;
+        }
+
         Main.IsHostVersionCheating = false;
         Main.playerVersion = new Dictionary<byte, PlayerVersion>();
         if (!Main.VersionCheat.Value) RPC.RpcVersionCheck();
@@ -60,10 +80,6 @@ class OnGameJoinedPatch
                 if (AURoleOptions.ShapeshifterCooldown == 0f)
                     AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
             }
-            //else if (GameStates.IsHideNSeek)
-            //{
-            //    AURoleOptions.SetOpt(Main.HideNSeekOptions.Cast<IGameOptions>());
-            //}
 
             _ = new LateTask(() =>
             {
@@ -72,8 +88,9 @@ class OnGameJoinedPatch
                     AmongUsClient.Instance.ExitGame(DisconnectReasons.Banned);
                     SceneChanger.ChangeScene("MainMenu");
                 }
+
                 var client = PlayerControl.LocalPlayer.GetClient();
-                Logger.Info($"{client.PlayerName.RemoveHtmlTags()}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Hosted room", "Session");
+                Logger.Info($"{client.PlayerName.RemoveHtmlTags()}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Hosted room", "Session: OnGameJoined");
             }, 1f, "OnGameJoinedPatch");
         }
     }
@@ -89,9 +106,10 @@ class DisconnectInternalPatch
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerJoined))]
 class OnPlayerJoinedPatch
 {
-    public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ClientData client)
+    public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
     {
-        Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Joining room", "Session");
+        Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Joining room", "Session: OnPlayerJoined");
+        
         if (AmongUsClient.Instance.AmHost && client.FriendCode == "" && Options.KickPlayerFriendCodeNotExist.GetBool() && !GameStates.IsLocalGame)
         {
             if (!Options.TempBanPlayerFriendCodeNotExist.GetBool())
@@ -109,6 +127,7 @@ class OnPlayerJoinedPatch
                 Logger.Info($"TempBanned a player {client?.PlayerName} without a friend code", "Temp Ban");
             }
         }
+
         Platforms platform = client.PlatformData.Platform;
         if (AmongUsClient.Instance.AmHost && Options.KickOtherPlatformPlayer.GetBool() && platform != Platforms.Unknown && !GameStates.IsLocalGame)
         {
@@ -138,6 +157,7 @@ class OnPlayerJoinedPatch
             if (Main.SayStartTimes.ContainsKey(client.Id)) Main.SayStartTimes.Remove(client.Id);
             if (Main.SayBanwordsTimes.ContainsKey(client.Id)) Main.SayBanwordsTimes.Remove(client.Id);
             //if (Main.newLobby && Options.ShareLobby.GetBool()) Cloud.ShareLobby();
+
             if (client.GetHashedPuid() != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
                 && !FixedUpdatePatch.CheckAllowList(client.FriendCode) && !GameStates.IsLocalGame)
             {
@@ -163,7 +183,7 @@ class OnPlayerLeftPatch
     {
         try
         {
-            if (GameStates.IsInGame)
+            if (GameStates.IsNormalGame && GameStates.IsInGame)
             {
                 if (data.Character.Is(CustomRoles.Lovers) && !data.Character.Data.IsDead)
                 {
@@ -253,7 +273,6 @@ class OnPlayerLeftPatch
                 writer.SendMessage();
             }
 
-            // 附加描述掉线原因
             switch (reason)
             {
                 case DisconnectReasons.Hacking:

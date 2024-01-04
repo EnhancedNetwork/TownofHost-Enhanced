@@ -37,7 +37,7 @@ public class GameStartManagerPatch
             // Reset lobby countdown timer
             timer = 600f;
 
-            HideName = UnityEngine.Object.Instantiate(__instance.GameRoomNameCode, __instance.GameRoomNameCode.transform);
+            HideName = Object.Instantiate(__instance.GameRoomNameCode, __instance.GameRoomNameCode.transform);
             HideName.text = ColorUtility.TryParseHtmlString(Main.HideColor.Value, out _)
                     ? $"<color={Main.HideColor.Value}>{Main.HideName.Value}</color>"
                     : $"<color={Main.ModColor}>{Main.HideName.Value}</color>";
@@ -138,7 +138,11 @@ public class GameStartManagerPatch
 
                             if (Options.RandomMapsMode.GetBool())
                             {
-                                Main.NormalOptions.MapId = GameStartRandomMap.SelectRandomMap();
+                                if (GameStates.IsNormalGame)
+                                    Main.NormalOptions.MapId = GameStartRandomMap.SelectRandomMap();
+
+                                else if (GameStates.IsHideNSeek)
+                                    Main.HideNSeekOptions.MapId = GameStartRandomMap.SelectRandomMap();
                             }
 
                             if ((MapNames)Main.NormalOptions.MapId == MapNames.Dleks)
