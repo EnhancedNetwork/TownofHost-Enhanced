@@ -24,6 +24,7 @@ class EndGamePatch
 
         Logger.Info("-----------Game over-----------", "Phase");
         if (!GameStates.IsModHost) return;
+        if (GameStates.IsHideNSeek) return;
         SummaryText = new();
         foreach (var id in Main.PlayerStates.Keys.ToArray())
         {
@@ -118,6 +119,8 @@ class SetEverythingUpPatch
 
     public static void Postfix(EndGameManager __instance)
     {
+        if (GameStates.IsHideNSeek) return;
+
         if (!Main.playerVersion.ContainsKey(0)) return;
         //#######################################
         //          ==勝利陣営表示==
