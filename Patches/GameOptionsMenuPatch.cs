@@ -74,7 +74,7 @@ public static class GameOptionsMenuStartPatch
             {
                 if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
                 {
-                    // Select custom game mode for Hide & Seek
+                    // Select standart custom game mode for normal game
                     Options.GameMode.SetValue(0);
                 }
 
@@ -115,29 +115,22 @@ public static class GameOptionsMenuStartPatch
                 // Select custom game mode for Hide & Seek
                 Options.GameMode.SetValue(2);
 
-                try
-                {
-                    gameSettingMenu = Object.FindObjectOfType<GameSettingMenu>();
-                    if (gameSettingMenu == null) return;
+                gameSettingMenu = Object.FindObjectOfType<GameSettingMenu>();
+                if (gameSettingMenu == null) return;
 
-                    gameSettingMenu.RegularGameSettings.gameObject.SetActive(true);
-                    gameSettingMenu.RolesSettings.gameObject.SetActive(true);
+                gameSettingMenu.RegularGameSettings.gameObject.SetActive(true);
+                gameSettingMenu.RolesSettings.gameObject.SetActive(true);
 
-                    GameObject.Find("Tint")?.SetActive(false);
+                GameObject.Find("Tint")?.SetActive(false);
 
-                    template = Object.FindObjectsOfType<StringOption>().FirstOrDefault();
-                    if (template == null) return;
+                template = Object.FindObjectsOfType<StringOption>().FirstOrDefault();
+                if (template == null) return;
 
-                    gameSettings = GameObject.Find("Game Settings");
-                    if (gameSettings == null) return;
+                gameSettings = GameObject.Find("Game Settings");
+                if (gameSettings == null) return;
 
-                    gameSettingMenu.RegularGameSettings.gameObject.SetActive(false);
-                    gameSettingMenu.RolesSettings.gameObject.SetActive(false);
-                }
-                catch
-                {
-                    Logger.Msg("ddddddddddddddddddd", "Error");
-                }
+                gameSettingMenu.RegularGameSettings.gameObject.SetActive(false);
+                gameSettingMenu.RolesSettings.gameObject.SetActive(false);
             }
 
             gameSettings.transform.Find("GameGroup").GetComponent<Scroller>().ScrollWheelSpeed = 1.2f;
@@ -149,7 +142,7 @@ public static class GameOptionsMenuStartPatch
             List<SpriteRenderer> highlights = new() { gameSettingMenu.GameSettingsHightlight, gameSettingMenu.RolesSettingsHightlight };
             List<GameObject> tabs = new() { gameTab, roleTab };
 
-            foreach (var tab in EnumHelper.GetAllValues<TabGroup>().Where(tab => GameStates.IsNormalGame || (GameStates.IsHideNSeek && (tab == TabGroup.SystemSettings || tab == TabGroup.GameSettings))).ToArray())
+            foreach (var tab in EnumHelper.GetAllValues<TabGroup>().Where(tab => GameStates.IsNormalGame || (GameStates.IsHideNSeek && (tab == TabGroup.SystemSettings || tab == TabGroup.GameSettings /*|| tab == TabGroup.TaskSettings*/))).ToArray())
             {
                 var obj = gameSettings.transform.parent.Find(tab + "Tab");
                 if (obj != null)
@@ -245,14 +238,13 @@ public static class GameOptionsMenuStartPatch
             var tabsCount = tabs.Count;
             var menusCount = menus.Count;
             var tabsCountDividedBy323 = tabsCount / 3.23f;
-            var tabsCountDividedBy325 = tabsCount / 3.25f;
 
             for (var i = 0; i < tabsCount; i++)
             {
                 var tab = tabs[i];
                 var transform = tab.transform;
 
-                var xValue = modeForSmallScreen ? 0.6f * (i - 1) - tabsCountDividedBy325 : 0.65f * (i - 1) - tabsCountDividedBy323;
+                var xValue = modeForSmallScreen ? 0.6f * (i - 1) - tabsCountDividedBy323 : 0.65f * (i - 1) - tabsCountDividedBy323;
                 transform.localPosition = new(xValue, transform.localPosition.y, transform.localPosition.z);
 
                 var button = tab.GetComponentInChildren<PassiveButton>();
@@ -269,6 +261,7 @@ public static class GameOptionsMenuStartPatch
                             gameSettingMenu.HideNSeekSettings.gameObject.SetActive(false);
                             gameSettingMenu.GameSettingsHightlight.enabled = false;
                             gameSettingMenu.RolesSettingsHightlight.enabled = false;
+
                             if (copiedIndex == 0)
                             {
                                 gameSettingMenu.HideNSeekSettings.gameObject.SetActive(true);
