@@ -65,7 +65,7 @@ public static class Options
         "FFA",
 
 
-        "Hide & Seek", // HidenSeekTOHE must be after other game modes
+        "Hide&SeekTOHE", // HidenSeekTOHE must be after other game modes
     };
 
     // MapActive
