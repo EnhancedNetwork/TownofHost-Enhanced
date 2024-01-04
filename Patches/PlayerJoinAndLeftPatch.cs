@@ -26,19 +26,19 @@ class OnGameJoinedPatch
         switch (GameOptionsManager.Instance.CurrentGameOptions.GameMode)
         {
             case GameModes.Normal:
-                Logger.Info("Is Normal Game", "Game Mode");
+                Logger.Info(" Is Normal Game", "Game Mode");
                 break;
 
             case GameModes.HideNSeek:
-                Logger.Info("Is Hide & Seek", "Game Mode");
+                Logger.Info(" Is Hide & Seek", "Game Mode");
                 break;
 
             case GameModes.None:
-                Logger.Info("Is None", "Game Mode");
+                Logger.Info(" Is None", "Game Mode");
                 break;
 
             default:
-                Logger.Info("No find", "Game Mode");
+                Logger.Info(" No find", "Game Mode");
                 break;
         }
 

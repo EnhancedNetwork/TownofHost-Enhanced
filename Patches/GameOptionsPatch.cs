@@ -21,7 +21,7 @@ class ChanceChangePatch
         }
         if (__instance.Role.Role == RoleTypes.GuardianAngel)
         {
-            //+-ボタン, 設定値, 詳細設定ボタンを非表示
+            // Hide + -, setpoint and advanced buttons
             var tf = __instance.transform;
             tf.Find("Count Plus_TMP").gameObject.active
                 = tf.Find("Chance Minus_TMP").gameObject.active
@@ -30,6 +30,7 @@ class ChanceChangePatch
                 = tf.Find("More Options").gameObject.active
                 = false;
 
+            // Add Disable text for Guardian Angel
             if (!__instance.TitleText.text.Contains(DisableText))
                 __instance.TitleText.text += DisableText;
             __instance.TitleText.color = Utils.GetRoleColor(CustomRoles.GuardianAngel);
