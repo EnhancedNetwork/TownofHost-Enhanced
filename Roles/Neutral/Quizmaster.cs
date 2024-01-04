@@ -20,8 +20,8 @@ namespace TOHE.Roles.Neutral
         public static OptionItem CanKillAfterMark;
         public static OptionItem CanVentAfterMark;
         public static OptionItem NumOfKillAfterMark;
-        public static QuizQuestionBase Question = new SetAnswersQuestion { Stage = 0, Answer = "Hello", PossibleAnswers = { "This", "Is", "To Prevent", "Errors" }, Question = "Idk" };
-        public static QuizQuestionBase previousQuestion = new SetAnswersQuestion { Stage = 0, Answer = "Hello", PossibleAnswers = { "This", "Is", "To Prevent", "Errors" }, Question = "Idk" };
+        public static QuizQuestionBase Question = new SetAnswersQuestion { Stage = 0, Answer = "Select Me", PossibleAnswers = { "Select me", "Die", "Die", "Die" }, Question = "This question is to prevent crashes answer the letter with the answer \"Select me\"", hasAnswersTranslation = false, hasQuestionTranslation = false };
+        public static QuizQuestionBase previousQuestion = new SetAnswersQuestion { Stage = 0, Answer = "Select Me", PossibleAnswers = { "Select me", "Die", "Die", "Die" }, Question = "This question is to prevent crashes answer the letter with the answer \"Select me\"", hasAnswersTranslation = false, hasQuestionTranslation = false };
         public static List<byte> playerIdList = new();
         public static Sabotages lastSabotage = Sabotages.None;
         public static Sabotages firstSabotageOfRound = Sabotages.None;
@@ -53,7 +53,7 @@ namespace TOHE.Roles.Neutral
                 .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
             CanKillAfterMark = BooleanOptionItem.Create(Id + 12, "QuizmasterSettings.CanKillAfterMark", false, tab, false)
                 .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
-            NumOfKillAfterMark = IntegerOptionItem.Create(Id + 13, "QuizmasterSettings.rNumOfKillAfterMark", new(1, 15, 1), 1, tab, false)
+            NumOfKillAfterMark = IntegerOptionItem.Create(Id + 13, "QuizmasterSettings.NumOfKillAfterMark", new(1, 15, 1), 1, tab, false)
                 .SetValueFormat(OptionFormat.Players)
                 .SetParent(CanKillAfterMark);
         }
@@ -220,7 +220,7 @@ namespace TOHE.Roles.Neutral
 
                     new DeathReasonQuestion { Stage = 4, Question = "PlrDieReason", QuizmasterQuestionType = QuizmasterQuestionType.PlrDeathReasonQuestion},
                     new DeathReasonQuestion { Stage = 4, Question = "PlrDieMethod", QuizmasterQuestionType = QuizmasterQuestionType.PlrDeathMethodQuestion},
-                    new SetAnswersQuestion { Stage = 4, Question = "LastAddedRoleForKarped", Answer = "Pacifist", PossibleAnswers = { "Pacifist", "Vampire", "Snitch", "Vigilante", "Jackal", "Mole", "Sniper" }, QuizmasterQuestionType = QuizmasterQuestionType.RoleAddedQuestion, hasAnswersTranslation = false },
+                    new SetAnswersQuestion { Stage = 4, Question = "LastAddedRoleForKarped", Answer = "Pacifist", PossibleAnswers = { "Pacifist", "Vampire", "Snitch", "Vigilante", "Jackal", "Mole", "Sniper" }, QuizmasterQuestionType = QuizmasterQuestionType.RoleAddedQuestion },
                     new DeathReasonQuestion { Stage = 4, Question = "PlrDieFaction", QuizmasterQuestionType = QuizmasterQuestionType.PlrDeathKillerFactionQuestion},
                 };
                 
