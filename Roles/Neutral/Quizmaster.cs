@@ -200,6 +200,8 @@ namespace TOHE.Roles.Neutral
             Player = Utils.GetPlayerByRole(CustomRoles.Quizmaster);
             if (MarkedPlayer != byte.MaxValue)
             {
+                CustomRoles randomRole = GetRandomRole(CustomRolesHelper.AllRoles.ToList(), false);
+                CustomRoles randomRoleWithAddon = GetRandomRole(CustomRolesHelper.AllRoles.ToList(), false);
                 List<QuizQuestionBase> Questions = new List<QuizQuestionBase>
                 {
                     new SabotageQuestion { Stage = 1, Question = "LastSabotage",/* JSON ENTRIES */ QuizmasterQuestionType = QuizmasterQuestionType.LatestSabotageQuestion },
@@ -210,8 +212,8 @@ namespace TOHE.Roles.Neutral
 
                     new CountQuestion { Stage = 2, Question = "MeetingPassed", QuizmasterQuestionType = QuizmasterQuestionType.MeetingCountQuestion },
                     new SetAnswersQuestion { Stage = 2, Question = "HowManyFactions", Answer = "Three", PossibleAnswers = { "One", "Two", "Three", "Four", "Five" }, QuizmasterQuestionType = QuizmasterQuestionType.FactionQuestion },
-                    new SetAnswersQuestion { Stage = 2, Question = "BasisOfRole", Answer = CustomRolesHelper.GetCustomRoleTypes(GetRandomRole(CustomRolesHelper.AllRoles.ToList(), true)).ToString(), PossibleAnswers = { "Crewmate", "Impostor", "Neutral", "Addon" }, QuizmasterQuestionType = QuizmasterQuestionType.RoleBasisQuestion },
-                    new SetAnswersQuestion { Stage = 2, Question = "FactionOfRole", Answer = CustomRolesHelper.GetRoleTypes(GetRandomRole(CustomRolesHelper.AllRoles.ToList(), false)).ToString(), PossibleAnswers = { "Crewmate", "Impostor", "Neutral" }, QuizmasterQuestionType = QuizmasterQuestionType.RoleFactionQuestion },
+                    new SetAnswersQuestion { Stage = 2, Question = GetString("BasisOfRole").Replace("{QMROLE}", randomRoleWithAddon.ToString()), hasQuestionTranslation = false, Answer = CustomRolesHelper.GetCustomRoleTypes(randomRoleWithAddon).ToString(), PossibleAnswers = { "Crewmate", "Impostor", "Neutral", "Addon" }, QuizmasterQuestionType = QuizmasterQuestionType.RoleBasisQuestion },
+                    new SetAnswersQuestion { Stage = 2, Question = GetString("FactionOfRole").Replace("{QMROLE}", randomRole.ToString()), hasQuestionTranslation = false, Answer = CustomRolesHelper.GetRoleTypes(randomRole).ToString(), PossibleAnswers = { "Crewmate", "Impostor", "Neutral" }, QuizmasterQuestionType = QuizmasterQuestionType.RoleFactionQuestion },
 
                     new SetAnswersQuestion { Stage = 3, Question = "FactionRemovedName", Answer = "Coven", PossibleAnswers = { "Sabotuer", "Sorcerers", "Coven", "Killer" }, QuizmasterQuestionType = QuizmasterQuestionType.RemovedFactionQuestion },
                     new SetAnswersQuestion { Stage = 3, Question = "WhatDoesEOgMeansInName", Answer = "Edited", PossibleAnswers = { "Edition", "Experimental", "Enhanced", "Edited" }, QuizmasterQuestionType = QuizmasterQuestionType.NameOriginQuestion },
@@ -250,6 +252,8 @@ namespace TOHE.Roles.Neutral
             diedThisRound = 0;
             if (MarkedPlayer != byte.MaxValue)
                 KillPlayer(Utils.GetPlayerById(MarkedPlayer));
+
+            ResetMarkedPlayer();
         }
 
         public static void ResetMarkedPlayer()
