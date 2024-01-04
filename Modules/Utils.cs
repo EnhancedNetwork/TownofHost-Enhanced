@@ -2450,10 +2450,6 @@ public static class Utils
                             case CustomRoles.NWitch:
                                 TargetMark.Append(NWitch.TargetMark(seer, target));
                                 break;
-
-                            case CustomRoles.Quizmaster:
-                                TargetMark.Append(Quizmaster.TargetMark(seer, target));
-                                break;
                         }
 
 
@@ -2509,6 +2505,10 @@ public static class Utils
                             case CustomRoles.Swapper:
                                 if (seer.IsAlive() && target.IsAlive())
                                     TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + TargetPlayerName;
+                                break;
+
+                            case CustomRoles.Quizmaster:
+                                TargetMark.Append(Quizmaster.TargetMark(seer, target));
                                 break;
 
                         }

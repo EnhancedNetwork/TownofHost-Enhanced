@@ -122,7 +122,7 @@ namespace TOHE.Roles.Neutral
 
         public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
         {
-            if (AlreadyMarked == false)
+            if (!AlreadyMarked && allowedKilling)
             {
                 allowedVenting = false;
                 AlreadyMarked = true;
@@ -136,7 +136,7 @@ namespace TOHE.Roles.Neutral
                 killer.RPCPlayCustomSound("Clothe");
                 return false;
             }
-            return true;
+            return allowedKilling && AlreadyMarked;
         }
 
         static QuizQuestionBase GetRandomQuestion(List<QuizQuestionBase> qt)
@@ -229,9 +229,8 @@ namespace TOHE.Roles.Neutral
                 Question = GetRandomQuestion(Questions);
                 _ = new LateTask(() =>
                 {
-                    Utils.SendMessage(GetString("QuizmasterChat.MarkedBy").Replace("{QMCOLOR}", Utils.GetRoleColorCode(CustomRoles.Quizmaster)).Replace("{QMQUESTION}", Question.hasQuestionTranslation ? GetString("QuizmasterQuestions." + Question.Question) : Question.Question), MarkedPlayer, GetString("QuizmasterChat.Title"));
-                    Utils.SendMessage(GetString("QuizmasterChat.Answers").Replace("{QMA}", Question.hasAnswersTranslation ? GetString(Question.Answers[0]) : Question.Answers[0]).Replace("{QMB}", Question.hasAnswersTranslation ? GetString(Question.Answers[1]) : Question.Answers[1]).Replace("{QMC}", Question.hasAnswersTranslation ? GetString(Question.Answers[2]) : Question.Answers[2]), MarkedPlayer, GetString("QuizmasterChat.Title"));
-                    Utils.SendMessage(GetString("QuizmasterChat.Marked").Replace("{QMTARGET}", Utils.GetPlayerById(MarkedPlayer).GetRealName()), Player.PlayerId, GetString("QuizmasterChat.ChatTitle"));
+                    ShowQuestion(Main.AllPlayerControls[MarkedPlayer]);
+                    Utils.SendMessage(GetString("QuizmasterChat.Marked").Replace("{QMTARGET}", Utils.GetPlayerById(MarkedPlayer).GetRealName()), Player.PlayerId, GetString("QuizmasterChat.Title"));
                     foreach (var plr in Main.AllPlayerControls)
                     {
                         if (plr.PlayerId != Player.PlayerId && MarkedPlayer != plr.PlayerId)
@@ -377,6 +376,15 @@ namespace TOHE.Roles.Neutral
             else if (plr.GetCustomRole() is CustomRoles.Quizmaster)
             {
                 Utils.SendMessage(GetString("QuizmasterCantAnswer"), plr.PlayerId, GetString("QuizmasterChat.Title"));
+            }
+        }
+
+        public static void ShowQuestion(PlayerControl plr)
+        {
+            if (plr.PlayerId == MarkedPlayer)
+            {
+                Utils.SendMessage(GetString("QuizmasterChat.MarkedBy").Replace("{QMCOLOR}", Utils.GetRoleColorCode(CustomRoles.Quizmaster)).Replace("{QMQUESTION}", Question.hasQuestionTranslation ? GetString("QuizmasterQuestions." + Question.Question) : Question.Question), MarkedPlayer, GetString("QuizmasterChat.Title"));
+                Utils.SendMessage(GetString("QuizmasterChat.Answers").Replace("{QMA}", Question.hasAnswersTranslation ? GetString(Question.Answers[0]) : Question.Answers[0]).Replace("{QMB}", Question.hasAnswersTranslation ? GetString(Question.Answers[1]) : Question.Answers[1]).Replace("{QMC}", Question.hasAnswersTranslation ? GetString(Question.Answers[2]) : Question.Answers[2]), MarkedPlayer, GetString("QuizmasterChat.Title"));
             }
         }
     }

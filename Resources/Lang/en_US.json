@@ -3583,7 +3583,7 @@
 
     "QuizmasterChat.MarkedBy": "You've been marked by the <color={QMCOLOR}><b>Quizmaster</b></color>\nTo survive you have to answer correct to this question:\n\n{QMQUESTION}",
     "QuizmasterChat.MarkedPublic": "<b>{QMTARGET}</b> has been marked by the <color={QMCOLOR}><b>Quizmaster</b></color>\nTo survive {QMTARGET} have to answer correct to their question!",
-    "QuizmasterChat.Answers": "<size=150%><b>Answers</b></size>\nA: {QMA}\nB: {QMB}\nC: {QMC}\n\nTo answer just type /answer [answer letter]",
+    "QuizmasterChat.Answers": "<size=150%><b>Answers</b></size>\nA: {QMA}\nB: {QMB}\nC: {QMC}\n\nTo answer just type /answer [answer letter]\n\nIf you need to recheck the answer and questions just do /qmquiz",
     "QuizmasterChat.CorrectTarget": "<b><size=150%>Correct</size></b>",
     "QuizmasterChat.Correct": "<b>{QMTARGET}</b> got the right answer!\nYou can now mark someone else!",
     "QuizmasterChat.CorrectPublic": "<b>{QMTARGET}</b> got the <color={QMCOLOR}><b>Quizmaster</b></color>'s question answer correct and <b>survived</b>!\n<size=90%>Beware of the <color={QMCOLOR}><b>Quizmaster</b></color>!</size>",

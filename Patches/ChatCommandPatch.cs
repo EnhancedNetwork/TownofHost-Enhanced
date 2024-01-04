@@ -112,6 +112,10 @@ internal class ChatCommands
                     Quizmaster.AnswerByChat(PlayerControl.LocalPlayer, args);
                     break;
 
+                case "/qmquiz":
+                    Quizmaster.ShowQuestion(player);
+                    break;
+
                 case "/win":
                 case "/winner":
                 case "/vencedor":
@@ -1425,6 +1429,10 @@ internal class ChatCommands
             case "/asw":
             case "/answer":
                 Quizmaster.AnswerByChat(player, args);
+                break;
+
+            case "/qmquiz":
+                Quizmaster.ShowQuestion(player);
                 break;
 
             case "/l":
