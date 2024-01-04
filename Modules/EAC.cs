@@ -178,7 +178,10 @@ internal class EAC
                     break;
                 case RpcCalls.Shapeshift:
                     Report(pc, "Directly Shapeshift");
-                    pc.RpcShapeshift(pc, false);
+                    var swriter = AmongUsClient.Instance.StartRpcImmediately(pc.NetId, (byte)RpcCalls.Shapeshift, SendOption.Reliable, -1);
+                    swriter.WriteNetObject(pc);
+                    swriter.Write(false);
+                    AmongUsClient.Instance.FinishRpcImmediately(swriter);
                     HandleCheat(pc, "Directly Shapeshift");
                     Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】直接变形，已驳回", "EAC");
                     return true;
