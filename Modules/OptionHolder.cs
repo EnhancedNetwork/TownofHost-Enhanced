@@ -18,7 +18,8 @@ namespace TOHE;
 public enum CustomGameMode
 {
     Standard = 0x01,
-    FFA = 0x02,
+    HidenSeekTOHE = 0x02,
+    FFA = 0x03,
     All = int.MaxValue
 }
 
@@ -33,14 +34,14 @@ public static class Options
         taskOptionsLoad = Task.Run(Load);
         taskOptionsLoad.ContinueWith(t => { Logger.Msg("Mod option loading end", "Load Options"); });
     }
-    [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix]
-    public static void WaitOptionsLoad()
-    {
-        //taskOptionsLoad.Wait();
-        //Logger.Info("Mod option loading eng", "Load Options");
-    }
+    //[HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix]
+    //public static void WaitOptionsLoad()
+    //{
+    //    taskOptionsLoad.Wait();
+    //    Logger.Info("Mod option loading eng", "Load Options");
+    //}
 
-    // プリセット
+    // Presets
     private static readonly string[] presets =
     {
         Main.Preset1.Value, Main.Preset2.Value, Main.Preset3.Value,
@@ -52,23 +53,25 @@ public static class Options
     public static CustomGameMode CurrentGameMode
         => GameMode.GetInt() switch
         {
-            1 => CustomGameMode.FFA,
+            1 => CustomGameMode.HidenSeekTOHE,
+            2 => CustomGameMode.FFA,
             _ => CustomGameMode.Standard
         };
 
     public static readonly string[] gameModes =
     {
         "Standard",
-        "FFA"
+        "Hide & Seek",
+        "FFA",
     };
 
     // MapActive
-    public static bool IsActiveSkeld => Main.NormalOptions.MapId == 0; // 0 - The Skeld
-    public static bool IsActiveMiraHQ => Main.NormalOptions.MapId == 1; // 1 - MiraHQ
-    public static bool IsActivePolus => Main.NormalOptions.MapId == 2; // 2 - Polus
-    public static bool IsActiveDleks => Main.NormalOptions.MapId == 3; // 3 - Dleks
-    public static bool IsActiveAirship => Main.NormalOptions.MapId == 4; // 4 - Airship
-    public static bool IsActiveFungle => Main.NormalOptions.MapId == 5; // 5 - The Fungle
+    public static bool IsActiveSkeld => GameStates.IsNormalGame ? (MapNames)Main.NormalOptions.MapId == MapNames.Skeld : (MapNames)Main.HideNSeekOptions.MapId == MapNames.Skeld;
+    public static bool IsActiveMiraHQ => GameStates.IsNormalGame ? (MapNames)Main.NormalOptions.MapId == MapNames.Mira : (MapNames)Main.HideNSeekOptions.MapId == MapNames.Mira;
+    public static bool IsActivePolus => GameStates.IsNormalGame ? (MapNames)Main.NormalOptions.MapId == MapNames.Polus : (MapNames)Main.HideNSeekOptions.MapId == MapNames.Polus;
+    public static bool IsActiveDleks => GameStates.IsNormalGame ? (MapNames)Main.NormalOptions.MapId == MapNames.Dleks : (MapNames)Main.HideNSeekOptions.MapId == MapNames.Dleks;
+    public static bool IsActiveAirship => GameStates.IsNormalGame ? (MapNames)Main.NormalOptions.MapId == MapNames.Airship : (MapNames)Main.HideNSeekOptions.MapId == MapNames.Airship;
+    public static bool IsActiveFungle => GameStates.IsNormalGame ? (MapNames)Main.NormalOptions.MapId == MapNames.Fungle : (MapNames)Main.HideNSeekOptions.MapId == MapNames.Fungle;
 
     // 役職数・確率
     public static Dictionary<CustomRoles, int> roleCounts;
@@ -1060,7 +1063,7 @@ public static class Options
         //    .SetHidden(true)
         //    .SetHeader(true);
 
-        // 各职业的总体设定
+
         ImpKnowAlliesRole = BooleanOptionItem.Create(60002, "ImpKnowAlliesRole", true, TabGroup.ImpostorRoles, false)
             .SetGameMode(CustomGameMode.Standard)
            .SetHeader(true);
