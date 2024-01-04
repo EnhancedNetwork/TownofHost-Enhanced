@@ -153,6 +153,8 @@ internal class ControllerManagerUpdatePatch
             //强制结束会议或召开会议
             if (GetKeysDown(KeyCode.Return, KeyCode.M, KeyCode.LeftShift) && GameStates.IsInGame)
             {
+                if (GameStates.IsHideNSeek) return;
+
                 if (GameStates.IsMeeting)
                 {
                     MeetingHud.Instance.RpcClose();

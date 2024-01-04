@@ -17,16 +17,7 @@ class GameEndCheckerForHnS
     {
         if (!AmongUsClient.Instance.AmHost) return true;
 
-        if (Options.NoGameEnd.GetBool()) return false;
-
-        //GameEndCheckerForNormal.predicate.CheckForEndGame(out var reason);
-
-        //if (CustomWinnerHolder.WinnerIds.Count > 0 || CustomWinnerHolder.WinnerTeam != CustomWinner.Default)
-        //{
-        //    ShipStatus.Instance.enabled = false;
-        //    GameEndCheckerForNormal.StartEndGame(reason);
-        //    GameEndCheckerForNormal.predicate = null;
-        //}
+        if (Options.NoGameEnd.GetBool() && CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw and not CustomWinner.Error) return false;
 
         return true;
     }
