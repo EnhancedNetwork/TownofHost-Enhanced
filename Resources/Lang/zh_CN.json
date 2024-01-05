@@ -1231,6 +1231,7 @@
   "HideGameSettings": "隐藏游戏设置",
   "DIYGameSettings": "显示自定义的/n消息",
   "PlayerCanSetColor": "允许玩家使用/color指令",
+  "PlayerCanUseQuitCommand": "Players can use the /quit command to leave the lobby forever",
   "KPDCamouflageMode": "伪装效果为",
   "RoleOptions": "职业设置",
   "ModeOptions": "模组设置",
@@ -3547,5 +3548,6 @@
   "VoteDead": "你投票的玩家在会议结束前就被驱逐了。你的投票被返还了。",
   "ImpCanBeSilent": "<color=#ff1919>内鬼阵营</color>可以成为沉默者",
   "CrewCanBeSilent": "<color=#8cffff>船员阵营</color>可以成为沉默者",
-  "NeutralCanBeSilent": "<color=#7f8c8d>中立阵营</color>可以成为沉默者"
+  "NeutralCanBeSilent": "<color=#7f8c8d>中立阵营</color>可以成为沉默者",
+  "LastMessageReplay": "上个系统消息重新发布"
 }
