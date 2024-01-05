@@ -53,6 +53,10 @@ namespace TOHE.Patches
 
                         else if (GameStates.IsHideNSeek)
                             details = $"TOHE v{Main.PluginDisplayVersion} - Hide & Seek";
+
+                        else details = $"TOHE v{Main.PluginDisplayVersion}";
+
+                        activity.Details = details;
                     }
                 }
             }
