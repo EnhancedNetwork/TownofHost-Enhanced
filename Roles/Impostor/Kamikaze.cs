@@ -1,7 +1,5 @@
-using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
-using System.Linq;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
@@ -20,7 +18,7 @@ public static class Kamikaze
     private static OptionItem OptMaxMarked;
     public static Dictionary<byte, int> MarkedLim = new();
 
-    public static bool CheckKamiDeath = false;
+    //public static bool CheckKamiDeath = false;
 
 
 
@@ -53,24 +51,32 @@ public static class Kamikaze
             Main.ResetCamPlayerList.Add(playerId);
     }
 
-    private static void SendRPC(byte KamiId, byte targetId, byte KillerIdo)
+    private static void SendRPC(byte KamiId, byte targetId, bool checkMurder = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncKami, SendOption.Reliable, -1);
-        writer.Write(KamiId);
+        writer.Write(checkMurder);
         writer.Write(targetId);
-        writer.Write(MarkedLim[KillerIdo]);
+        
+        if (checkMurder) 
+        { 
+            writer.Write(KamiId);
+            writer.Write(MarkedLim[KamiId]);
+        }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC(MessageReader reader)
     {
-        
-        var KamiId = reader.ReadByte();
+        var checkMurder = reader.ReadBoolean();
         var targetId = reader.ReadByte();
-        byte KillerIdo = reader.ReadByte();
-        int Limit = reader.ReadInt32();
-        
-        KamikazedList[targetId] = KamiId;
-        MarkedLim[KillerIdo] = Limit;
+        if (checkMurder)
+        {
+            var KamiId = reader.ReadByte();
+            int Limit = reader.ReadInt32();
+
+            KamikazedList[targetId] = KamiId;
+            MarkedLim[KamiId] = Limit;
+        }
+        else KamikazedList.Remove(targetId);
     }
     public static void MurderKamikazedPlayers(PlayerControl kamikameha)
     {
@@ -80,16 +86,20 @@ public static class Kamikaze
         if (!kamikameha.IsAlive())
         {
             KamikazedList.Remove(kamikameha.PlayerId);
+            SendRPC(KamiId: KamikazedList[kamikameha.PlayerId], targetId:kamikameha.PlayerId, checkMurder:false); // to remove playerid
+            return;
         }
-        else if(CheckKamiDeath)
+        var kami = Utils.GetPlayerById(KamikazedList[kamikameha.PlayerId]);
+        if (kami == null) return;
+        if (!kami.IsAlive())
         {
-            if (kamikameha.IsAlive()) 
-            { 
-               Main.PlayerStates[kamikameha.PlayerId].deathReason = PlayerState.DeathReason.Targeted;
-               kamikameha.RpcMurderPlayerV3(kamikameha);
+            if (kamikameha.IsAlive())
+            {
+                Main.PlayerStates[kamikameha.PlayerId].deathReason = PlayerState.DeathReason.Targeted;
+                kamikameha.RpcMurderPlayerV3(kamikameha);
                 // Logger.Info($"{alivePlayer.GetNameWithRole()} is the killer of {kamikameha.GetNameWithRole()}", "Kamikaze"); -- Works fine
             }
-            
+
         }
     }
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
@@ -108,9 +118,9 @@ public static class Kamikaze
             { 
                 KamikazedList[target.PlayerId] = killer.PlayerId;
                 killer.SetKillCooldown(KillCooldown.GetFloat());
-                SendRPC(killer.PlayerId, target.PlayerId, killer.PlayerId);
                 Utils.NotifyRoles(SpecifySeer: killer);
                 MarkedLim[killer.PlayerId]--;
+                SendRPC(KamiId: killer.PlayerId, targetId: target.PlayerId, checkMurder: true) ;
             } 
             else
             {

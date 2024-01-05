@@ -485,13 +485,13 @@ public class PlayerGameOptionsSender : GameOptionsSender
             Main.KillGhoul.Add(player.PlayerId);
         }
         
-        if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Kamikaze) && !x.IsAlive()))
-        {
-        Kamikaze.CheckKamiDeath = true;
-        } else 
-        {
-        Kamikaze.CheckKamiDeath = false;
-        }
+        //if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Kamikaze) && !x.IsAlive()))
+        //{
+        //Kamikaze.CheckKamiDeath = true;
+        //} else 
+        //{
+        //Kamikaze.CheckKamiDeath = false;
+        //}
 
         // Grenadier or Mad Grenadier enter the vent
         if ((Main.GrenadierBlinding.Count > 0 &&
