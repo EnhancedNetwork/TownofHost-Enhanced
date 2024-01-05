@@ -1619,18 +1619,25 @@ internal class ChatCommands
             case "/quit":
             case "/qt":
             case "/sair":
-                subArgs = args.Length < 2 ? "" : args[1];
-                var cid = player.PlayerId.ToString();
-                cid = cid.Length != 1 ? cid.Substring(1, 1) : cid;
-                if (subArgs.Equals(cid))
+                if (Options.PlayerCanUseQuitCommand.GetBool())
                 {
-                    string name = player.GetRealName();
-                    Utils.SendMessage(string.Format(GetString("Message.PlayerQuitForever"), name));
-                    AmongUsClient.Instance.KickPlayer(player.GetClientId(), true);
+                    subArgs = args.Length < 2 ? "" : args[1];
+                    var cid = player.PlayerId.ToString();
+                    cid = cid.Length != 1 ? cid.Substring(1, 1) : cid;
+                    if (subArgs.Equals(cid))
+                    {
+                        string name = player.GetRealName();
+                        Utils.SendMessage(string.Format(GetString("Message.PlayerQuitForever"), name));
+                        AmongUsClient.Instance.KickPlayer(player.GetClientId(), true);
+                    }
+                    else
+                    {
+                        Utils.SendMessage(string.Format(GetString("SureUse.quit"), cid), player.PlayerId);
+                    }
                 }
                 else
                 {
-                    Utils.SendMessage(string.Format(GetString("SureUse.quit"), cid), player.PlayerId);
+                    Utils.SendMessage(GetString("DisableUseCommand"), player.PlayerId);
                 }
                 break;
             case "/id":
