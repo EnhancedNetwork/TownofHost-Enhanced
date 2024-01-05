@@ -45,10 +45,6 @@ public static class Kamikaze
         // Double Trigger
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
-
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
 
     private static void SendRPC(byte KamiId, byte targetId, bool checkMurder = false)
