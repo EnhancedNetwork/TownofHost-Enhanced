@@ -9,7 +9,7 @@ namespace TOHE.Roles.Crewmate
     {
         private static readonly int Id = 26000;
         //private static List<byte> playerIdList = new();
-        private static bool IsEnable = false;
+        public static bool IsEnable = false;
 
         public static OptionItem VentCooldown;
 
@@ -32,7 +32,6 @@ namespace TOHE.Roles.Crewmate
 
         public static void OnExitVent(PlayerControl pc, int id)
         {
-            if (!IsEnable) return;
             if (!pc.Is(CustomRoles.Mole)) return;
 
             var vents = Object.FindObjectsOfType<Vent>().Where(x => x.Id != id).ToArray();
