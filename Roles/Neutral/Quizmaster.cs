@@ -95,12 +95,12 @@ namespace TOHE.Roles.Neutral
             {
                 bool didLimit = killsForRound >= NumOfKillAfterMark.GetInt();
                 canKill = !didLimit;
-                allowedKilling = MarkedPlayer != byte.MaxValue;
+                allowedKilling = AlreadyMarked == true;
             }
             else
             {
                 allowedKilling = false;
-                canKill = MarkedPlayer == byte.MaxValue;
+                canKill = MarkedPlayer == byte.MaxValue && AlreadyMarked == false;
             }
             return canKill;
         }
@@ -122,7 +122,7 @@ namespace TOHE.Roles.Neutral
 
         public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
         {
-            if (!AlreadyMarked)
+            if (AlreadyMarked == false)
             {
                 allowedVenting = false;
                 AlreadyMarked = true;
@@ -252,19 +252,20 @@ namespace TOHE.Roles.Neutral
             if (MarkedPlayer != byte.MaxValue)
                 KillPlayer(Utils.GetPlayerById(MarkedPlayer));
 
-            ResetMarkedPlayer();
+            ResetMarkedPlayer(true);
         }
 
-        public static void ResetMarkedPlayer()
+        public static void ResetMarkedPlayer(bool canMarkAgain = true)
         {
-            AlreadyMarked = false;
+            if (canMarkAgain == true)
+                AlreadyMarked = false;
             MarkedPlayer = byte.MaxValue;
         }
 
         public static void OnPlayerDead(PlayerControl target)
         {
             diedThisRound++;
-            if (target.PlayerId == MarkedPlayer) MarkedPlayer = byte.MaxValue;
+            if (target.PlayerId == MarkedPlayer) ResetMarkedPlayer(false);
         }
 
         public static void SetKillButtonText(HudManager instance)
@@ -311,7 +312,7 @@ namespace TOHE.Roles.Neutral
             Main.PlayerStates[plrToKill.PlayerId].deathReason = PlayerState.DeathReason.WrongAnswer;
             Main.PlayerStates[plrToKill.PlayerId].SetDead();
             plrToKill.RpcExileV2();
-            ResetMarkedPlayer();
+            ResetMarkedPlayer(true);
         }
 
         public static void RightAnswer(PlayerControl target)
@@ -326,7 +327,7 @@ namespace TOHE.Roles.Neutral
             }
             Utils.SendMessage(GetString("QuizmasterChat.CorrectTarget"), target.PlayerId, GetString("QuizmasterChat.Title"));
             Utils.SendMessage(GetString("QuizmasterChat.Correct").Replace("{QMTARGET}", target.GetRealName()), Player.PlayerId, GetString("QuizmasterChat.Title"));
-            ResetMarkedPlayer();
+            ResetMarkedPlayer(true);
         }
 
         public static void WrongAnswer(PlayerControl target, string wrongAnswer, string rightAnswer)
@@ -384,7 +385,7 @@ namespace TOHE.Roles.Neutral
             if (plr.PlayerId == MarkedPlayer)
             {
                 Utils.SendMessage(GetString("QuizmasterChat.MarkedBy").Replace("{QMCOLOR}", Utils.GetRoleColorCode(CustomRoles.Quizmaster)).Replace("{QMQUESTION}", Question.hasQuestionTranslation ? GetString("QuizmasterQuestions." + Question.Question) : Question.Question), MarkedPlayer, GetString("QuizmasterChat.Title"));
-                Utils.SendMessage(GetString("QuizmasterChat.Answers").Replace("{QMA}", Question.hasAnswersTranslation ? GetString(Question.Answers[0]) : Question.Answers[0]).Replace("{QMB}", Question.hasAnswersTranslation ? GetString(Question.Answers[1]) : Question.Answers[1]).Replace("{QMC}", Question.hasAnswersTranslation ? GetString(Question.Answers[2]) : Question.Answers[2]), MarkedPlayer, GetString("QuizmasterChat.Title"));
+                Utils.SendMessage(GetString("QuizmasterChat.Answers").Replace("{QMA}", Question.hasAnswersTranslation ? GetString(Question.Answers[0], showInvalid: Question.showInvalid) : Question.Answers[0]).Replace("{QMB}", Question.hasAnswersTranslation ? GetString(Question.Answers[1], showInvalid: Question.showInvalid) : Question.Answers[1]).Replace("{QMC}", Question.hasAnswersTranslation ? GetString(Question.Answers[2], showInvalid: Question.showInvalid) : Question.Answers[2]), MarkedPlayer, GetString("QuizmasterChat.Title"));
             }
         }
     }
@@ -401,6 +402,7 @@ namespace TOHE.Roles.Neutral
         public List<string> PossibleAnswers { get; set; } = new List<string> { };
         public bool hasAnswersTranslation { get; set; } = true;
         public bool hasQuestionTranslation { get; set; } = true;
+        public bool showInvalid { get; set; } = true;
         public abstract void FixUnsetAnswers();
     }
 
@@ -497,7 +499,9 @@ namespace TOHE.Roles.Neutral
             int positionForRightAnswer = rnd.Next(0, 3);
 
             hasQuestionTranslation = false; //doing this do i can just change the player name in question
-            Question = GetString(Question).Replace("{PLR}", chosenPlayer.GetRealName());
+            Question = GetString("QuizmasterQuestions." + Question).Replace("{PLR}", chosenPlayer.GetRealName());
+
+            showInvalid = false;
 
             if (QuizmasterQuestionType == QuizmasterQuestionType.PlrDeathReasonQuestion)
                 Answer = chosenPlayer.Data.IsDead ? Main.PlayerStates[chosenPlayer.PlayerId].deathReason.ToString() : "None";
@@ -509,7 +513,7 @@ namespace TOHE.Roles.Neutral
             PossibleAnswers.Remove(Answer);
             for (int numOfQuestionsDone = 0; numOfQuestionsDone < 3; numOfQuestionsDone++)
             {
-                var prefix = "DeathReason.";
+                var prefix = "";
                 if (QuizmasterQuestionType == QuizmasterQuestionType.PlrDeathKillerFactionQuestion) prefix = "Type";
                 if (numOfQuestionsDone == positionForRightAnswer)
                 {

@@ -166,12 +166,12 @@ public static class Translator
     //    }
     //}
 
-    public static string GetString(string s, Dictionary<string, string> replacementDic = null, bool console = false)
+    public static string GetString(string s, Dictionary<string, string> replacementDic = null, bool console = false, bool showInvalid = true)
     {
         var langId = TranslationController.InstanceExists ? TranslationController.Instance.currentLanguage.languageID : SupportedLangs.English;
         if (console) langId = SupportedLangs.English;
         if (Main.ForceOwnLanguage.Value) langId = GetUserTrueLang();
-        string str = GetString(s, langId);
+        string str = GetString(s, langId, showInvalid);
         if (replacementDic != null)
             foreach (var rd in replacementDic)
             {
@@ -180,9 +180,9 @@ public static class Translator
         return str;
     }
 
-    public static string GetString(string str, SupportedLangs langId)
+    public static string GetString(string str, SupportedLangs langId, bool showInvalid = true)
     {
-        var res = $"<INVALID:{str}>";
+        var res = showInvalid ? $"<INVALID:{str}>" : str;
         try
         {
             if (translateMaps.TryGetValue(str, out var dic) && (!dic.TryGetValue((int)langId, out res) || res == "" || (langId is not SupportedLangs.SChinese and not SupportedLangs.TChinese && Regex.IsMatch(res, @"[\u4e00-\u9fa5]") && res == GetString(str, SupportedLangs.SChinese)))) //strに該当する&無効なlangIdかresが空
