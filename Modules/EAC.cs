@@ -430,11 +430,6 @@ internal class EAC
     }
     public static bool ReceiveInvalidRpc(PlayerControl pc, byte callId)
     {
-        if (Options.CheatResponses.GetInt() == 5)
-        {
-            Logger.Info("Cancel action bcz cheat response is cancel.", "MalumMenu on top!");
-            return false;
-        }
         switch (callId)
         {
             case unchecked((byte)42069):

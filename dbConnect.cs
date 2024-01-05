@@ -127,11 +127,7 @@ public class dbConnect
             }
         }
     }
-    public static bool IsBooster(string friendcode)
-    {
-        if (!userType.ContainsKey(friendcode)) return false;
-        return userType[friendcode] == "s_bo";
-    }
+
     private static void GetEACList()
     {
         string apiToken = getToken();

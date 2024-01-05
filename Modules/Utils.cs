@@ -1711,11 +1711,9 @@ public static class Utils
             }
         }
     }
-    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false)
+    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (!replay && GameStates.IsInGame) ChatManager.AddSystemChatHistory(sendTo, text);
-
         if (title == "") title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
 
         if (sendTo != byte.MaxValue)
@@ -2640,7 +2638,6 @@ public static class Utils
     }
     public static void AfterMeetingTasks()
     {
-        ChatManager.ClearLastSysMsg();
         if (Options.DiseasedCDReset.GetBool())
         {
             foreach (var pid in Main.KilledDiseased.Keys.ToArray())

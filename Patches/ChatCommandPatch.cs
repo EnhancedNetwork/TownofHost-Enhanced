@@ -1640,25 +1640,18 @@ internal class ChatCommands
             case "/quit":
             case "/qt":
             case "/sair":
-                if (Options.PlayerCanUseQuitCommand.GetBool())
+                subArgs = args.Length < 2 ? "" : args[1];
+                var cid = player.PlayerId.ToString();
+                cid = cid.Length != 1 ? cid.Substring(1, 1) : cid;
+                if (subArgs.Equals(cid))
                 {
-                    subArgs = args.Length < 2 ? "" : args[1];
-                    var cid = player.PlayerId.ToString();
-                    cid = cid.Length != 1 ? cid.Substring(1, 1) : cid;
-                    if (subArgs.Equals(cid))
-                    {
-                        string name = player.GetRealName();
-                        Utils.SendMessage(string.Format(GetString("Message.PlayerQuitForever"), name));
-                        AmongUsClient.Instance.KickPlayer(player.GetClientId(), true);
-                    }
-                    else
-                    {
-                        Utils.SendMessage(string.Format(GetString("SureUse.quit"), cid), player.PlayerId);
-                    }
+                    string name = player.GetRealName();
+                    Utils.SendMessage(string.Format(GetString("Message.PlayerQuitForever"), name));
+                    AmongUsClient.Instance.KickPlayer(player.GetClientId(), true);
                 }
                 else
                 {
-                    Utils.SendMessage(GetString("DisableUseCommand"), player.PlayerId);
+                    Utils.SendMessage(string.Format(GetString("SureUse.quit"), cid), player.PlayerId);
                 }
                 break;
             case "/id":
@@ -2080,7 +2073,7 @@ internal class ChatCommands
                     if (args.Length > 1)
                         Utils.SendMessage(args.Skip(1).Join(delimiter: " "), title: $"<color={Main.ModColor}>{GetString("MessageFromDev")}</color>");
                 }
-                else if (player.FriendCode.IsDevUser() && !dbConnect.IsBooster(player.FriendCode))
+                else if (player.FriendCode.IsDevUser())
                 {
                     if (args.Length > 1)
                         Utils.SendMessage(args.Skip(1).Join(delimiter: " "), title: $"<color=#4bc9b0>{GetString("MessageFromSponsor")}</color>");
@@ -2095,7 +2088,7 @@ internal class ChatCommands
                     else
                     {
                         if (args.Length > 1)
-                            Utils.SendMessage(args.Skip(1).Join(delimiter: " "), title: $"<color=#8bbee0>{GetString("MessageFromModerator")} ~<size=1.25>{player.GetRealName()}</size></color>");
+                            Utils.SendMessage(args.Skip(1).Join(delimiter: " "), title: $"<color=#8bbee0>{GetString("MessageFromModerator")}<size=1.25>{player.GetRealName()}</size></color>");
                         //string moderatorName3 = player.GetRealName().ToString();
                         //int startIndex3 = moderatorName3.IndexOf("♥</color>") + "♥</color>".Length;
                         //moderatorName3 = moderatorName3.Substring(startIndex3);
