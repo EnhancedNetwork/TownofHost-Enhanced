@@ -136,10 +136,10 @@ internal class ChangeRoleSettings
 
             Main.RealOptionsData = new OptionBackupData(GameOptionsManager.Instance.CurrentGameOptions);
 
+            GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor = false;
+
             if (GameStates.IsNormalGame)
             {
-                GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor = false;
-
                 MeetingTimeManager.Init();
 
                 Main.DefaultCrewmateVision = Main.RealOptionsData.GetFloat(FloatOptionNames.CrewLightMod);

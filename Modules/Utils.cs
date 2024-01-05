@@ -224,8 +224,8 @@ public static class Utils
         _ => SystemTypes.Reactor,
     };
 
-    public static MapNames GetActiveMapName() => GameStates.IsNormalGame ? (MapNames)Main.NormalOptions.MapId : (MapNames)Main.HideNSeekOptions.MapId;
-    public static byte GetActiveMapId() => GameStates.IsNormalGame ? Main.NormalOptions.MapId : Main.HideNSeekOptions.MapId;
+    public static MapNames GetActiveMapName() => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId;
+    public static byte GetActiveMapId() => GameOptionsManager.Instance.CurrentGameOptions.MapId;
 
     public static void SetVision(this IGameOptions opt, bool HasImpVision)
     {

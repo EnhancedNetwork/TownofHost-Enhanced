@@ -69,12 +69,12 @@ public static class Options
     };
 
     // MapActive
-    public static bool IsActiveSkeld => GameStates.IsNormalGame ? (MapNames)Main.NormalOptions.MapId == MapNames.Skeld : (MapNames)Main.HideNSeekOptions.MapId == MapNames.Skeld;
-    public static bool IsActiveMiraHQ => GameStates.IsNormalGame ? (MapNames)Main.NormalOptions.MapId == MapNames.Mira : (MapNames)Main.HideNSeekOptions.MapId == MapNames.Mira;
-    public static bool IsActivePolus => GameStates.IsNormalGame ? (MapNames)Main.NormalOptions.MapId == MapNames.Polus : (MapNames)Main.HideNSeekOptions.MapId == MapNames.Polus;
-    public static bool IsActiveDleks => GameStates.IsNormalGame ? (MapNames)Main.NormalOptions.MapId == MapNames.Dleks : (MapNames)Main.HideNSeekOptions.MapId == MapNames.Dleks;
-    public static bool IsActiveAirship => GameStates.IsNormalGame ? (MapNames)Main.NormalOptions.MapId == MapNames.Airship : (MapNames)Main.HideNSeekOptions.MapId == MapNames.Airship;
-    public static bool IsActiveFungle => GameStates.IsNormalGame ? (MapNames)Main.NormalOptions.MapId == MapNames.Fungle : (MapNames)Main.HideNSeekOptions.MapId == MapNames.Fungle;
+    public static bool IsActiveSkeld => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Skeld;
+    public static bool IsActiveMiraHQ => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Mira;
+    public static bool IsActivePolus => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Polus;
+    public static bool IsActiveDleks => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Dleks;
+    public static bool IsActiveAirship => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Airship;
+    public static bool IsActiveFungle => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Fungle;
 
     // 役職数・確率
     public static Dictionary<CustomRoles, int> roleCounts;
