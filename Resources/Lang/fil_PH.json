@@ -1231,6 +1231,7 @@
   "HideGameSettings": "Hide Game Settings",
   "DIYGameSettings": "Enable only custom /n messages",
   "PlayerCanSetColor": "Players can use the /color command",
+  "PlayerCanUseQuitCommand": "Players can use the /quit command to leave the lobby forever",
   "KPDCamouflageMode": "Camouflage Appearance",
   "RoleOptions": "Role Options",
   "ModeOptions": "Mode Options",
@@ -3547,5 +3548,6 @@
   "VoteDead": "The player you voted for was exhiled before the meeting concluded. Your vote was rescinded.",
   "ImpCanBeSilent": "<color=#ff1919>Impostors</color> can become Silent",
   "CrewCanBeSilent": "<color=#8cffff>Crewmates</color> can become Silent",
-  "NeutralCanBeSilent": "<color=#7f8c8d>Neutrals</color> can become Silent"
+  "NeutralCanBeSilent": "<color=#7f8c8d>Neutrals</color> can become Silent",
+  "LastMessageReplay": "Last System Message Replay"
 }
