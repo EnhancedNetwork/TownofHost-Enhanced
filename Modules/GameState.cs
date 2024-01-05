@@ -761,7 +761,7 @@ public static class GameStates
     public static bool IsOnlineGame => AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame;
     public static bool IsLocalGame => AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame;
     public static bool IsFreePlay => AmongUsClient.Instance.NetworkMode == NetworkModes.FreePlay;
-    public static bool IsInTask => InGame && !MeetingHud.Instance; // is null in H&S
+    public static bool IsInTask => InGame && !MeetingHud.Instance;
     public static bool IsMeeting => InGame && MeetingHud.Instance;
     public static bool IsVoting => IsMeeting && MeetingHud.Instance.state is MeetingHud.VoteStates.Voted or MeetingHud.VoteStates.NotVoted;
     public static bool IsProceeding => IsMeeting && MeetingHud.Instance.state is MeetingHud.VoteStates.Proceeding;

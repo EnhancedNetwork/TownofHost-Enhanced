@@ -27,10 +27,24 @@ class OnGameJoinedPatch
         {
             case GameModes.Normal:
                 Logger.Info(" Is Normal Game", "Game Mode");
+
+                // if custom game mode is HideNSeekTOHE in normal game, set standart
+                if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
+                {
+                    // Select standart
+                    Options.GameMode.SetValue(0);
+                }
                 break;
 
             case GameModes.HideNSeek:
                 Logger.Info(" Is Hide & Seek", "Game Mode");
+
+                // if custom game mode is Standard/FFA in H&S game, set HideNSeekTOHE
+                if (Options.CurrentGameMode is CustomGameMode.Standard or CustomGameMode.FFA)
+                {
+                    // Select HideNSeekTOHE
+                    Options.GameMode.SetValue(2);
+                }
                 break;
 
             case GameModes.None:
@@ -40,19 +54,6 @@ class OnGameJoinedPatch
             default:
                 Logger.Info(" No find", "Game Mode");
                 break;
-        }
-
-        // if custom game mode is HideNSeekTOHE in normal game, set standart
-        if (GameStates.IsNormalGame && Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
-        {
-            // Select standart
-            Options.GameMode.SetValue(0);
-        }
-        // if custom game mode is Standard/FFA in H&S game, set HideNSeekTOHE
-        else if (GameStates.IsHideNSeek && Options.CurrentGameMode is CustomGameMode.Standard or CustomGameMode.FFA)
-        {
-            // Select HideNSeekTOHE
-            Options.GameMode.SetValue(2);
         }
 
         Main.IsHostVersionCheating = false;
