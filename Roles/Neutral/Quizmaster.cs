@@ -388,6 +388,11 @@ namespace TOHE.Roles.Neutral
                 Utils.SendMessage(GetString("QuizmasterChat.Answers").Replace("{QMA}", Question.hasAnswersTranslation ? GetString(Question.Answers[0], showInvalid: Question.showInvalid) : Question.Answers[0]).Replace("{QMB}", Question.hasAnswersTranslation ? GetString(Question.Answers[1], showInvalid: Question.showInvalid) : Question.Answers[1]).Replace("{QMC}", Question.hasAnswersTranslation ? GetString(Question.Answers[2], showInvalid: Question.showInvalid) : Question.Answers[2]), MarkedPlayer, GetString("QuizmasterChat.Title"));
             }
         }
+
+        public static void OnVotedOut()
+        {
+            ResetMarkedPlayer(false);
+        }
     }
 
     abstract public class QuizQuestionBase
