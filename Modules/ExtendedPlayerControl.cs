@@ -430,7 +430,7 @@ static class ExtendedPlayerControl
         {
             pc.RpcDesyncUpdateSystem(systemtypes, 16);
 
-            if (Main.NormalOptions.MapId == 4) //If Airship
+            if (Options.IsActiveAirship)
                 pc.RpcDesyncUpdateSystem(systemtypes, 17);
         }, 0.4f + delay, "Fix Desync Reactor");
     }
@@ -447,7 +447,7 @@ static class ExtendedPlayerControl
         {
             pc.RpcDesyncUpdateSystem(systemtypes, 16);
 
-            if (Main.NormalOptions.MapId == 4) //If Airship
+            if (Options.IsActiveAirship)
                 pc.RpcDesyncUpdateSystem(systemtypes, 17);
 
         }, FlashDuration + delay, "Fix Desync Reactor");
@@ -656,7 +656,7 @@ static class ExtendedPlayerControl
         // vents are broken on dleks and cannot be fixed on host side
         if (GameStates.IsNormalGame)
         {
-            if ((MapNames)Main.NormalOptions.MapId == MapNames.Dleks)
+            if (Options.IsActiveDleks)
             {
                 return pc.GetCustomRole() switch
                 {
@@ -1426,7 +1426,7 @@ static class ExtendedPlayerControl
     }
     public static Vector2 GetBlackRoomPosition()
     {
-        return Main.NormalOptions.MapId switch
+        return Utils.GetActiveMapId() switch
         {
             0 => new Vector2(-27f, 3.3f), // The Skeld
             1 => new Vector2(-11.4f, 8.2f), // MIRA HQ

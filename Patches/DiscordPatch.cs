@@ -37,14 +37,22 @@ namespace TOHE.Patches
 
                         if (lobbycode != "" && region != "")
                         {
-                            details = $"TOHE - {lobbycode} ({region})";
+                            if (GameStates.IsNormalGame)
+                                details = $"TOHE - {lobbycode} ({region})";
+
+                            else if (GameStates.IsHideNSeek)
+                                details = $"TOHE Hide & Seek - {lobbycode} ({region})";
                         }
 
                         activity.Details = details;
                     }
                     else
                     {
-                        details = $"TOHE v{Main.PluginDisplayVersion}";
+                        if (GameStates.IsNormalGame)
+                            details = $"TOHE v{Main.PluginDisplayVersion}";
+
+                        else if (GameStates.IsHideNSeek)
+                            details = $"TOHE v{Main.PluginDisplayVersion} - Hide & Seek";
                     }
                 }
             }

@@ -47,7 +47,7 @@ public static class TemplateManager
         ["AmongUsVersion"] = () => UnityEngine.Application.version,
         ["InternalVersion"] = () => Main.PluginVersion,
         ["ModVersion"] = () => Main.PluginDisplayVersion,
-        ["Map"] = () => Constants.MapNames[Main.NormalOptions.MapId],
+        ["Map"] = () => Constants.MapNames[Main.HideNSeekOptions.MapId],
         ["PlayerSpeedMod"] = () => Main.HideNSeekOptions.PlayerSpeedMod.ToString(),
         ["Date"] = () => DateTime.Now.ToShortDateString(),
         ["Time"] = () => DateTime.Now.ToShortTimeString(),

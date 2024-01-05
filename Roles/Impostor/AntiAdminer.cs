@@ -55,7 +55,7 @@ internal class AntiAdminer
             try
             {
                 Vector2 PlayerPos = pc.transform.position;
-                var mapId = Main.NormalOptions.MapId;
+                var mapId = GetActiveMapId();
                 var mapName = (MapNames)mapId;
 
                 switch (mapId)

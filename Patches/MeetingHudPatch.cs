@@ -1126,7 +1126,7 @@ class MeetingHudStartPatch
             }
         }
 
-        if ((MapNames)Main.NormalOptions.MapId == MapNames.Dleks)
+        if (Options.IsActiveDleks)
         {
             _ = new LateTask(() =>
             {

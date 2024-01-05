@@ -146,7 +146,7 @@ public class GameStartManagerPatch
                             }
 
                             if (GameStates.IsNormalGame)
-                                if ((MapNames)Main.NormalOptions.MapId == MapNames.Dleks)
+                                if (Options.IsActiveDleks)
                                 {
                                     Logger.SendInGame(GetString("Warning.BrokenVentsInDleksSendInGame"));
                                     Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
@@ -263,7 +263,7 @@ public class GameStartRandomMap
 
         if (GameStates.IsNormalGame)
         {
-            if ((MapNames)Main.NormalOptions.MapId == MapNames.Dleks)
+            if (Options.IsActiveDleks)
             {
                 Logger.SendInGame(GetString("Warning.BrokenVentsInDleksSendInGame"));
                 Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));

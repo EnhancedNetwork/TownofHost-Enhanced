@@ -147,7 +147,7 @@ public static class Utils
             return false;
         }
 
-        int mapId = Main.NormalOptions.MapId;
+        int mapId = GetActiveMapId();
         /*
             The Skeld    = 0
             MIRA HQ      = 1
@@ -217,7 +217,7 @@ public static class Utils
                 return false;
         }
     }
-    public static SystemTypes GetCriticalSabotageSystemType() => (MapNames)Main.NormalOptions.MapId switch
+    public static SystemTypes GetCriticalSabotageSystemType() => GetActiveMapName() switch
     {
         MapNames.Polus => SystemTypes.Laboratory,
         MapNames.Airship => SystemTypes.HeliSabotage,
@@ -1178,7 +1178,7 @@ public static class Utils
     
     public static void ShowAllActiveSettings(byte PlayerId = byte.MaxValue)
     {
-        var mapId = Main.NormalOptions.MapId;
+        var mapId = GetActiveMapId();
         if (Options.HideGameSettings.GetBool() && PlayerId != byte.MaxValue)
         {
             SendMessage(GetString("Message.HideGameSettings"), PlayerId);

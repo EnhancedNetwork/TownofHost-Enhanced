@@ -98,17 +98,14 @@ class RepairSystemPatch
         switch (player.GetCustomRole())
         {
             case CustomRoles.SabotageMaster:
-                SabotageMaster.RepairSystem(__instance, systemType, amount, player.PlayerId);
+                SabotageMaster.UpdateSystem(__instance, systemType, amount, player.PlayerId);
                 break;
-            //case CustomRoles.Repairman:
-            //    Repairman.RepairSystem(__instance, systemType, amount);
-            //    break;
             case CustomRoles.Alchemist when Alchemist.FixNextSabo:
-                Alchemist.RepairSystem(systemType, amount);
+                Alchemist.UpdateSystem(systemType, amount);
                 break;
         }
         if (player.Is(CustomRoles.Repairman))
-            Repairman.RepairSystem(__instance, systemType, amount, player.PlayerId);
+            Repairman.UpdateSystem(__instance, systemType, amount, player.PlayerId);
 
 
         if (player.Is(CustomRoles.Unlucky) && player.IsAlive()

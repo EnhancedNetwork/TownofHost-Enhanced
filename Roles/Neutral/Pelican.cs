@@ -96,7 +96,7 @@ public static class Pelican
     }
     public static Vector2 GetBlackRoomPSForPelican()
     {
-        return Main.NormalOptions.MapId switch
+        return Utils.GetActiveMapId() switch
         {
             0 => new Vector2(-27f, 3.3f), // The Skeld
             1 => new Vector2(-11.4f, 8.2f), // MIRA HQ
