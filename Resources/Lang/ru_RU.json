@@ -1231,6 +1231,7 @@
   "HideGameSettings": "Скрыть настройки игры",
   "DIYGameSettings": "Включить только пользовательские /n сообщения",
   "PlayerCanSetColor": "Игроки могут использовать команду /color",
+  "PlayerCanUseQuitCommand": "Игроки могут использовать команду /quit, чтобы навсегда покинуть лобби",
   "KPDCamouflageMode": "Внешний вид камуфляжа",
   "RoleOptions": "Настройка Ролей",
   "ModeOptions": "Настройка Режима",
@@ -3547,5 +3548,6 @@
   "VoteDead": "Игрок, за которого вы проголосовали, уже мёртв или вышел из игры.\nВаш голос был отменён.",
   "ImpCanBeSilent": "<color=#ff1919>Предатели</color> могут стать Тихим",
   "CrewCanBeSilent": "<color=#8cffff>Члены Экипажа</color> могут стать Тихим",
-  "NeutralCanBeSilent": "<color=#7f8c8d>Нейтралы</color> могут стать Тихим"
+  "NeutralCanBeSilent": "<color=#7f8c8d>Нейтралы</color> могут стать Тихим",
+  "LastMessageReplay": "Воспроизведение последнего системного сообщения"
 }
