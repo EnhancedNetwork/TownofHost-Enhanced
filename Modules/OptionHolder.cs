@@ -1402,6 +1402,11 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.Godfather]);
 
         /*
+         * Kamikaze
+         */
+        Kamikaze.SetupCustomOption();
+
+        /*
          * Morphling
          */
         Morphling.SetupCustomOption();
@@ -1421,11 +1426,6 @@ public static class Options
         MafiaShapeshiftDur = FloatOptionItem.Create(3605, "ShapeshiftDuration", new(1f, 180f, 1f), 30f, TabGroup.ImpostorRoles, false)
             .SetParent(LegacyMafia)
             .SetValueFormat(OptionFormat.Seconds);
-
-        /*
-         * Kamikaze
-         */
-        Kamikaze.SetupCustomOption();
 
         /*
          * Time Thief
