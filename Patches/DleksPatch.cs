@@ -68,6 +68,7 @@ class AutoSelectDleksPatch
 [HarmonyPatch(typeof(Vent), nameof(Vent.UpdateArrows))]
 class VentUpdateArrowsPatch
 {
+    // Fixes null errors update arrows in vent on Dleks map
     private static bool Prefix(Vent __instance, [HarmonyArgument(0)] VentilationSystem ventSystem)
     {
         return Options.IsActiveDleks && (__instance == null || ventSystem == null);
