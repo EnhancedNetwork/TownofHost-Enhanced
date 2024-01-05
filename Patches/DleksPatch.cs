@@ -39,7 +39,7 @@ public static class DleksPatch
     public static bool BootFromVent(this PlayerControl player)
     {
         // if map is not Dleks, always returns false
-        if ((MapNames)Main.NormalOptions.MapId != MapNames.Dleks) return false;
+        if (!Options.IsActiveDleks) return false;
 
         return player.GetCustomRole() switch
         {
@@ -62,5 +62,14 @@ class AutoSelectDleksPatch
             // vanilla clamps this to not auto select dleks
             __instance.Selected = GameOptionsManager.Instance.CurrentGameOptions.MapId;
         }
+    }
+}
+
+[HarmonyPatch(typeof(Vent), nameof(Vent.UpdateArrows))]
+class VentUpdateArrowsPatch
+{
+    private static bool Prefix(Vent __instance, [HarmonyArgument(0)] VentilationSystem ventSystem)
+    {
+        return Options.IsActiveDleks && (__instance == null || ventSystem == null);
     }
 }
