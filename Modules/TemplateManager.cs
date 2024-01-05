@@ -134,10 +134,8 @@ public static class TemplateManager
             playerName = () => Main.AllPlayerNames[playerId];   
         }
 
-        //if (GameStates.IsNormalGame)
-            _replaceDictionaryNormalOptions["PlayerName"] = playerName;
-        //else if (GameStates.IsHideNSeek)
-            _replaceDictionaryHideNSeekOptions["PlayerName"] = playerName;
+        _replaceDictionaryNormalOptions["PlayerName"] = playerName;
+        _replaceDictionaryHideNSeekOptions["PlayerName"] = playerName;
 
         while ((text = sr.ReadLine()) != null)
         {
@@ -177,9 +175,9 @@ public static class TemplateManager
             }
             return text;
         }
-        catch (Exception ex)
+        catch //(Exception ex)
         {
-            Logger.Exception(ex, "TemplateManager.ApplyReplaceDictionary");
+            //Logger.Exception(ex, "TemplateManager.ApplyReplaceDictionary");
             return text;
         }
     }

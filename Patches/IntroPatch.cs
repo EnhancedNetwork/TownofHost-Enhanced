@@ -158,11 +158,12 @@ class CoBeginPatch
 
             GameData.Instance.RecomputeTaskCounts();
             TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
-
-            // Do not move this code, it should be executed at the very end to prevent a visual bug
-            Utils.DoNotifyRoles(ForceLoop: true);
         }
+
         GameStates.InGame = true;
+
+        // Do not move this code, it should be executed at the very end to prevent a visual bug
+        Utils.DoNotifyRoles(ForceLoop: true);
     }
     public static byte[] EncryptDES(byte[] data, string key)
     {

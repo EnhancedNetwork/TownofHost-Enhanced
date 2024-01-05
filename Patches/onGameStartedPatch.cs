@@ -133,16 +133,21 @@ internal class ChangeRoleSettings
 
             Options.UsedButtonCount = 0;
 
-            GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor = false;
+            if (GameStates.IsNormalGame)
+            {
+                GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor = false;
+
+                MeetingTimeManager.Init();
+
+                Main.DefaultCrewmateVision = Main.RealOptionsData.GetFloat(FloatOptionNames.CrewLightMod);
+                Main.DefaultImpostorVision = Main.RealOptionsData.GetFloat(FloatOptionNames.ImpostorLightMod);
+            }
+
             Main.RealOptionsData = new OptionBackupData(GameOptionsManager.Instance.CurrentGameOptions);
 
             Main.introDestroyed = false;
 
             RandomSpawn.CustomNetworkTransformPatch.NumOfTP = new();
-
-            MeetingTimeManager.Init();
-            Main.DefaultCrewmateVision = Main.RealOptionsData.GetFloat(FloatOptionNames.CrewLightMod);
-            Main.DefaultImpostorVision = Main.RealOptionsData.GetFloat(FloatOptionNames.ImpostorLightMod);
 
             Main.LastNotifyNames = new();
 
@@ -183,7 +188,10 @@ internal class ChangeRoleSettings
                 //Main.AllPlayerNames[pc.PlayerId] = pc?.Data?.PlayerName;
 
                 Main.PlayerColors[pc.PlayerId] = Palette.PlayerColors[colorId];
-                Main.AllPlayerSpeed[pc.PlayerId] = Main.RealOptionsData.GetFloat(FloatOptionNames.PlayerSpeedMod); //移動速度をデフォルトの移動速度に変更
+                
+                if (GameStates.IsNormalGame)
+                    Main.AllPlayerSpeed[pc.PlayerId] = Main.RealOptionsData.GetFloat(FloatOptionNames.PlayerSpeedMod); //移動速度をデフォルトの移動速度に変更
+                
                 ReportDeadBodyPatch.CanReport[pc.PlayerId] = true;
                 ReportDeadBodyPatch.WaitReport[pc.PlayerId] = new();
                 pc.cosmetics.nameText.text = pc.name;
@@ -442,6 +450,12 @@ internal class SelectRolesPatch
                         new PlayerGameOptionsSender(pc)
                     );
                 }
+
+                //Utils.CountAlivePlayers(true);
+
+                EAC.LogAllRoles();
+                Utils.SyncAllSettings();
+                SetColorPatch.IsAntiGlitchDisabled = false;
 
                 return;
             }

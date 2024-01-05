@@ -2499,15 +2499,14 @@ class FixedUpdateInNormalGamePatch
             BufferTime[player.PlayerId] = timerLowLoad;
         }
 
+        if (Sniper.IsEnable)
+            Sniper.OnFixedUpdate(player);
+
         if (!lowLoad)
+        {
             Zoom.OnFixedUpdate();
 
-        if (GameStates.IsNormalGame)
-        {
-            if (Sniper.IsEnable)
-                Sniper.OnFixedUpdate(player);
-
-            if (!lowLoad)
+            if (GameStates.IsNormalGame)
             {
                 NameNotifyManager.OnFixedUpdate(player);
                 TargetArrow.OnFixedUpdate(player);
@@ -3445,6 +3444,8 @@ class PlayerStartPatch
 {
     public static void Postfix(PlayerControl __instance)
     {
+        if (GameStates.IsHideNSeek) return;
+
         var roleText = UnityEngine.Object.Instantiate(__instance.cosmetics.nameText);
         roleText.transform.SetParent(__instance.cosmetics.nameText.transform);
         roleText.transform.localPosition = new Vector3(0f, 0.2f, 0f);
@@ -4100,7 +4101,7 @@ class PlayerControlLocalSetRolePatch
 {
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] RoleTypes role)
     {
-        if (!AmongUsClient.Instance.AmHost && !GameStates.IsModHost)
+        if (!AmongUsClient.Instance.AmHost && GameStates.IsNormalGame && !GameStates.IsModHost)
         {
             var modRole = role switch
             {

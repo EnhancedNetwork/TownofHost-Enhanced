@@ -11,8 +11,10 @@ public static class DeconSystemUpdateSystemPatch
 
         if (Options.ChangeDecontaminationTime.GetBool())
         {
+            var mapName = GameStates.IsNormalGame ? (MapNames)Main.NormalOptions.MapId : (MapNames)Main.HideNSeekOptions.MapId;
+            
             // Temp decon time
-            var deconTime = (MapNames)Main.NormalOptions.MapId switch
+            var deconTime = mapName switch
             {
                 MapNames.Mira => Options.DecontaminationTimeOnMiraHQ.GetFloat(),
                 MapNames.Polus => Options.DecontaminationTimeOnPolus.GetFloat(),

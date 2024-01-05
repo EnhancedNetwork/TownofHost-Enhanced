@@ -157,19 +157,19 @@ internal class KickPlayerPatch
         return true;
     }
 }
-[HarmonyPatch(typeof(ResolutionManager), nameof(ResolutionManager.SetResolution))]
-internal class SetResolutionManager
-{
-    public static void Postfix()
-    {
-        //if (MainMenuManagerPatch.qqButton != null)
-        //    MainMenuManagerPatch.qqButton.transform.localPosition = Vector3.Reflect(MainMenuManagerPatch.template.transform.localPosition, Vector3.left);
-        //if (MainMenuManagerPatch.discordButton != null)
-        //    MainMenuManagerPatch.discordButton.transform.localPosition = Vector3.Reflect(MainMenuManagerPatch.template.transform.localPosition, Vector3.left);
-        //if (MainMenuManagerPatch.updateButton != null)
-        //    MainMenuManagerPatch.updateButton.transform.localPosition = MainMenuManagerPatch.template.transform.localPosition + new Vector3(0.25f, 0.75f);
-    }
-}
+//[HarmonyPatch(typeof(ResolutionManager), nameof(ResolutionManager.SetResolution))]
+//class SetResolutionManager
+//{
+//    public static void Postfix()
+//    {
+//        if (MainMenuManagerPatch.qqButton != null)
+//            MainMenuManagerPatch.qqButton.transform.localPosition = Vector3.Reflect(MainMenuManagerPatch.template.transform.localPosition, Vector3.left);
+//        if (MainMenuManagerPatch.discordButton != null)
+//            MainMenuManagerPatch.discordButton.transform.localPosition = Vector3.Reflect(MainMenuManagerPatch.template.transform.localPosition, Vector3.left);
+//        if (MainMenuManagerPatch.updateButton != null)
+//            MainMenuManagerPatch.updateButton.transform.localPosition = MainMenuManagerPatch.template.transform.localPosition + new Vector3(0.25f, 0.75f);
+//    }
+//}
 
 [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.SendAllStreamedObjects))]
 internal class InnerNetObjectSerializePatch

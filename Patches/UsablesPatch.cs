@@ -33,18 +33,7 @@ class CanUseVentPatch
         ref float __result)
     {
         if (GameStates.IsHideNSeek) return true;
-        //{
-        //    if (pc.Role.IsImpostor)
-        //    {
-        //        canUse = false;
-        //        return false;
-        //    }
-        //    else
-        //    {
-        //        canUse = true;
-        //        return true;
-        //    }
-        //}
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         //#######################################

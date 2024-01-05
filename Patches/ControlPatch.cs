@@ -36,10 +36,10 @@ internal class ControllerManagerUpdatePatch
                 }
             }
             //捕捉全屏快捷键
-            if (GetKeysDown(KeyCode.LeftAlt, KeyCode.Return))
-            {
-                _ = new LateTask(SetResolutionManager.Postfix, 0.01f, "Fix Button Position");
-            }
+            //if (GetKeysDown(KeyCode.LeftAlt, KeyCode.Return))
+            //{
+            //    _ = new LateTask(SetResolutionManager.Postfix, 0.01f, "Fix Button Position");
+            //}
             //职业介绍
             if (Input.GetKeyDown(KeyCode.F1) && GameStates.InGame && Options.CurrentGameMode == CustomGameMode.Standard)
             {
@@ -94,7 +94,7 @@ internal class ControllerManagerUpdatePatch
                 resolutionIndex++;
                 if (resolutionIndex >= resolutions.Length) resolutionIndex = 0;
                 ResolutionManager.SetResolution(resolutions[resolutionIndex].Item1, resolutions[resolutionIndex].Item2, false);
-                SetResolutionManager.Postfix();
+                //SetResolutionManager.Postfix();
             }
             //重新加载自定义翻译
             if (GetKeysDown(KeyCode.F5, KeyCode.T))

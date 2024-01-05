@@ -145,11 +145,12 @@ public class GameStartManagerPatch
                                     Main.HideNSeekOptions.MapId = GameStartRandomMap.SelectRandomMap();
                             }
 
-                            if ((MapNames)Main.NormalOptions.MapId == MapNames.Dleks)
-                            {
-                                Logger.SendInGame(GetString("Warning.BrokenVentsInDleksSendInGame"));
-                                Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
-                            }
+                            if (GameStates.IsNormalGame)
+                                if ((MapNames)Main.NormalOptions.MapId == MapNames.Dleks)
+                                {
+                                    Logger.SendInGame(GetString("Warning.BrokenVentsInDleksSendInGame"));
+                                    Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
+                                }
 
                             GameStartManager.Instance.startState = GameStartManager.StartingStates.Countdown;
                             GameStartManager.Instance.countDownTimer = Options.AutoStartTimer.GetInt();
@@ -263,14 +264,6 @@ public class GameStartRandomMap
         if (GameStates.IsNormalGame)
         {
             if ((MapNames)Main.NormalOptions.MapId == MapNames.Dleks)
-            {
-                Logger.SendInGame(GetString("Warning.BrokenVentsInDleksSendInGame"));
-                Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
-            }
-        }
-        else if (GameStates.IsHideNSeek)
-        {
-            if ((MapNames)Main.HideNSeekOptions.MapId == MapNames.Dleks)
             {
                 Logger.SendInGame(GetString("Warning.BrokenVentsInDleksSendInGame"));
                 Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));

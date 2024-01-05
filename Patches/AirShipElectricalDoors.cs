@@ -11,7 +11,7 @@ public class AirshipElectricalDoors
 
     public static void Initialize()
     {
-        if (Main.NormalOptions.MapId != 4) return;
+        if (!Options.IsActiveAirship) return;
         Instance.Initialize();
     }
     public static byte[] GetClosedDoors()

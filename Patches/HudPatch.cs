@@ -25,7 +25,8 @@ class HudManagerPatch
     public static GameObject TempLowerInfoText;
     public static void Postfix(HudManager __instance)
     {
-        if (!GameStates.IsModHost) return;
+        if (GameStates.IsHideNSeek || !GameStates.IsModHost) return;
+
         var player = PlayerControl.LocalPlayer;
         if (player == null) return;
         //壁抜け
@@ -585,6 +586,8 @@ class ToggleHighlightPatch
 {
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] bool active, [HarmonyArgument(1)] RoleTeamTypes team)
     {
+        if (GameStates.IsHideNSeek) return;
+
         var player = PlayerControl.LocalPlayer;
         if (!GameStates.IsInTask) return;
 
@@ -599,6 +602,8 @@ class SetVentOutlinePatch
 {
     public static void Postfix(Vent __instance, [HarmonyArgument(1)] ref bool mainTarget)
     {
+        if (GameStates.IsHideNSeek) return;
+
         var player = PlayerControl.LocalPlayer;
         Color color = PlayerControl.LocalPlayer.GetRoleColor();
         __instance.myRend.material.SetColor("_OutlineColor", color);
@@ -697,6 +702,8 @@ class VentButtonDoClickPatch
 {
     public static bool Prefix(VentButton __instance)
     {
+        if (GameStates.IsHideNSeek) return true;
+
         var pc = PlayerControl.LocalPlayer;
         {
             if (!pc.Is(CustomRoles.Swooper) || !pc.Is(CustomRoles.Wraith) || !pc.Is(CustomRoles.Chameleon) || pc.inVent || __instance.currentTarget == null || !pc.CanMove || !__instance.isActiveAndEnabled) return true;
@@ -710,7 +717,7 @@ class MapBehaviourShowPatch
 {
     public static void Prefix(MapBehaviour __instance, ref MapOptions opts)
     {
-        if (GameStates.IsMeeting) return;
+        if (GameStates.IsMeeting || GameStates.IsHideNSeek) return;
 
         if (opts.Mode is MapOptions.Modes.Normal or MapOptions.Modes.Sabotage)
         {
@@ -736,7 +743,8 @@ class TaskPanelBehaviourPatch
     // タスク表示の文章が更新・適用された後に実行される
     public static void Postfix(TaskPanelBehaviour __instance)
     {
-        if (!GameStates.IsModHost) return;
+        if (GameStates.IsHideNSeek || !GameStates.IsModHost) return;
+
         PlayerControl player = PlayerControl.LocalPlayer;
 
         var taskText = __instance.taskText.text;
