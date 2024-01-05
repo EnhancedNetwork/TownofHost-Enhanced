@@ -27,14 +27,14 @@ public static class Options
 {
     static Task taskOptionsLoad;
     [HarmonyPatch(typeof(TranslationController), nameof(TranslationController.Initialize)), HarmonyPostfix]
-    public static void OptionsLoadStart()
+    public static void OptionsLoadStart_Postfix()
     {
         Logger.Msg("Mod option loading start", "Load Options");
         taskOptionsLoad = Task.Run(Load);
         taskOptionsLoad.ContinueWith(t => { Logger.Msg("Mod option loading end", "Load Options"); });
     }
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix]
-    public static void WaitOptionsLoad()
+    public static void WaitOptionsLoad_Postfix()
     {
         //taskOptionsLoad.Wait();
         //Logger.Info("Mod option loading eng", "Load Options");
@@ -906,6 +906,7 @@ public static class Options
     public static OptionItem TimeForReminder;
 
     public static OptionItem PlayerCanSetColor;
+    public static OptionItem PlayerCanUseQuitCommand;
 
     //Add-Ons
     public static OptionItem NameDisplayAddons;
@@ -1402,6 +1403,11 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.Godfather]);
 
         /*
+         * Kamikaze
+         */
+        Kamikaze.SetupCustomOption();
+
+        /*
          * Morphling
          */
         Morphling.SetupCustomOption();
@@ -1421,11 +1427,6 @@ public static class Options
         MafiaShapeshiftDur = FloatOptionItem.Create(3605, "ShapeshiftDuration", new(1f, 180f, 1f), 30f, TabGroup.ImpostorRoles, false)
             .SetParent(LegacyMafia)
             .SetValueFormat(OptionFormat.Seconds);
-
-        /*
-         * Kamikaze
-         */
-        Kamikaze.SetupCustomOption();
 
         /*
          * Time Thief
@@ -2985,6 +2986,7 @@ public static class Options
         HideGameSettings = BooleanOptionItem.Create(60310, "HideGameSettings", false, TabGroup.SystemSettings, false);
         //DIYGameSettings = BooleanOptionItem.Create(60320, "DIYGameSettings", false, TabGroup.SystemSettings, false);
         PlayerCanSetColor = BooleanOptionItem.Create(60330, "PlayerCanSetColor", false, TabGroup.SystemSettings, false);
+        PlayerCanUseQuitCommand = BooleanOptionItem.Create(60331, "PlayerCanUseQuitCommand", false, TabGroup.SystemSettings, false);
         FormatNameMode = StringOptionItem.Create(60340, "FormatNameMode", formatNameModes, 0, TabGroup.SystemSettings, false);
         DisableEmojiName = BooleanOptionItem.Create(60350, "DisableEmojiName", true, TabGroup.SystemSettings, false);
         ChangeNameToRoleInfo = BooleanOptionItem.Create(60360, "ChangeNameToRoleInfo", true, TabGroup.SystemSettings, false);
