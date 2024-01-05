@@ -163,7 +163,9 @@ public class RemoveDisableDevicesPatch
         var admins = UnityEngine.Object.FindObjectsOfType<MapConsole>(true);
         var consoles = UnityEngine.Object.FindObjectsOfType<SystemConsole>(true);
         if (admins == null || consoles == null) return;
-        switch (Main.NormalOptions.MapId)
+
+        var mapId = GameStates.IsNormalGame ? Main.NormalOptions.MapId : Main.HideNSeekOptions.MapId;
+        switch (mapId)
         {
             case 0:
             case 3:

@@ -149,6 +149,10 @@ internal class ControllerManagerUpdatePatch
                 Utils.DoNotifyRoles(ForceLoop: true);
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Draw);
                 GameManager.Instance.LogicFlow.CheckEndCriteria();
+                if (GameStates.IsHideNSeek)
+                {
+                    GameEndCheckerForNormal.StartEndGame(GameOverReason.ImpostorDisconnect);
+                }
             }
             //强制结束会议或召开会议
             if (GetKeysDown(KeyCode.Return, KeyCode.M, KeyCode.LeftShift) && GameStates.IsInGame)
