@@ -134,7 +134,7 @@ class FixedUpdateInHidenSeekPatch
             Zoom.OnFixedUpdate();
         }
 
-        if (AmongUsClient.Instance.AmHost) return;
+        if (!AmongUsClient.Instance.AmHost) return;
 
         if (GameStates.IsLobby)
         {

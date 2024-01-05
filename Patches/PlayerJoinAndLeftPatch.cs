@@ -42,6 +42,13 @@ class OnGameJoinedPatch
                 break;
         }
 
+        // if custom game mode is HideNSeekTOHE in normal game, set standart
+        if (GameStates.IsNormalGame && Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
+        {
+            // Select standart custom game mode
+            Options.GameMode.SetValue(0);
+        }
+
         Main.IsHostVersionCheating = false;
         Main.playerVersion = new Dictionary<byte, PlayerVersion>();
         if (!Main.VersionCheat.Value) RPC.RpcVersionCheck();

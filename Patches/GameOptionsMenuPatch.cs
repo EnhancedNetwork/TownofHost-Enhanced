@@ -131,6 +131,24 @@ public static class GameOptionsMenuStartPatch
 
                 gameSettingMenu.RegularGameSettings.gameObject.SetActive(false);
                 gameSettingMenu.RolesSettings.gameObject.SetActive(false);
+
+                var children = __instance.Children.ToArray();
+                foreach (var ob in children)
+                {
+                    switch (ob.Title)
+                    {
+                        case StringNames.GameShortTasks:
+                        case StringNames.GameLongTasks:
+                        case StringNames.GameCommonTasks:
+                            ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 10);
+                            break;
+                        case StringNames.GameNumImpostors:
+                            ob.Cast<NumberOption>().ValidRange = new FloatRange(1, 3);
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }
 
             gameSettings.transform.Find("GameGroup").GetComponent<Scroller>().ScrollWheelSpeed = 1.2f;
@@ -440,7 +458,7 @@ public class StringOptionIncreasePatch
 
         if (option.Name == "GameMode")
         {
-            var gameModeCount = Options.gameModes.Length;
+            var gameModeCount = Options.gameModes.Length - 1;
             switch (GameOptionsManager.Instance.CurrentGameOptions.GameMode)
             {
                 // To prevent the Host from selecting CustomGameMode.HidenSeekTOHE
@@ -473,7 +491,7 @@ public class StringOptionDecreasePatch
                 // To prevent the Host from selecting CustomGameMode.HidenSeekTOHE
                 case GameModes.Normal when option.CurrentValue == 0:
                 // To prevent the Host from selecting CustomGameMode.Standard/FFA
-                case GameModes.HideNSeek when option.CurrentValue == Options.gameModes.Length:
+                case GameModes.HideNSeek when option.CurrentValue == Options.gameModes.Length - 1:
                     return false;
                 default:
                     break;
