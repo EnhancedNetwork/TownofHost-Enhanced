@@ -21,7 +21,6 @@ public class SabotageSystemPatch
     {
         private static void Prefix(ReactorSystemType __instance)
         {
-            if (GameStates.IsHideNSeek) return;
             if (!Options.SabotageTimeControl.GetBool()) return;
             if ((MapNames)Main.NormalOptions.MapId is MapNames.Airship) return;
 
@@ -64,7 +63,6 @@ public class SabotageSystemPatch
     {
         private static void Prefix(HeliSabotageSystem __instance)
         {
-            if (GameStates.IsHideNSeek) return;
             if (!Options.SabotageTimeControl.GetBool()) return;
             if ((MapNames)Main.NormalOptions.MapId is not MapNames.Airship) return;
 
@@ -91,7 +89,6 @@ public class SabotageSystemPatch
     {
         private static void Prefix(LifeSuppSystemType __instance)
         {
-            if (GameStates.IsHideNSeek) return;
             if (!Options.SabotageTimeControl.GetBool()) return;
             if ((MapNames)Main.NormalOptions.MapId is MapNames.Polus or MapNames.Airship or MapNames.Fungle) return;
 
@@ -128,8 +125,6 @@ public class SabotageSystemPatch
     {
         public static void Postfix()
         {
-            if (GameStates.IsHideNSeek) return;
-
             Logger.Info($" IsActive", "MushroomMixupSabotageSystem.UpdateSystem.Postfix");
 
             foreach (var pc in Main.AllAlivePlayerControls.Where(player => !player.Is(CustomRoleTypes.Impostor) && Main.ResetCamPlayerList.Contains(player.PlayerId)).ToArray())
@@ -146,7 +141,6 @@ public class SabotageSystemPatch
         {
             __state = __instance.IsActive;
 
-            if (GameStates.IsHideNSeek) return;
             if (!Options.SabotageTimeControl.GetBool()) return;
             if ((MapNames)Main.NormalOptions.MapId is not MapNames.Fungle) return;
 

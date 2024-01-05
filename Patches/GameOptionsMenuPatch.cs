@@ -440,12 +440,13 @@ public class StringOptionIncreasePatch
 
         if (option.Name == "GameMode")
         {
+            var gameModeCount = Options.gameModes.Length;
             switch (GameOptionsManager.Instance.CurrentGameOptions.GameMode)
             {
                 // To prevent the Host from selecting CustomGameMode.HidenSeekTOHE
-                case GameModes.Normal when option.CurrentValue == 1:
+                case GameModes.Normal when option.CurrentValue == gameModeCount - 1:
                 // To prevent the Host from selecting CustomGameMode.Standard/FFA
-                case GameModes.HideNSeek when option.CurrentValue == 2:
+                case GameModes.HideNSeek when option.CurrentValue == gameModeCount:
                     return false;
                 default:
                     break;
@@ -472,7 +473,7 @@ public class StringOptionDecreasePatch
                 // To prevent the Host from selecting CustomGameMode.HidenSeekTOHE
                 case GameModes.Normal when option.CurrentValue == 0:
                 // To prevent the Host from selecting CustomGameMode.Standard/FFA
-                case GameModes.HideNSeek when option.CurrentValue == 2:
+                case GameModes.HideNSeek when option.CurrentValue == Options.gameModes.Length:
                     return false;
                 default:
                     break;
