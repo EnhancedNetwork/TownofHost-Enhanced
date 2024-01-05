@@ -13,6 +13,8 @@ class ServerUpdatePatch
         }
         if (GameStates.IsOnlineGame)
         {
+            if (GameStates.IsHideNSeek) return; // Will Insidesloth give permission for this?
+
             // Changing server version for AU mods
             //if (!Main.VersionCheat.Value)
             __result += 25;
