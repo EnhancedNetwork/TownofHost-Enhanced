@@ -223,6 +223,10 @@ public static class Utils
         MapNames.Airship => SystemTypes.HeliSabotage,
         _ => SystemTypes.Reactor,
     };
+
+    public static MapNames GetActiveMapName() => GameStates.IsNormalGame ? (MapNames)Main.NormalOptions.MapId : (MapNames)Main.HideNSeekOptions.MapId;
+    public static byte GetActiveMapId() => GameStates.IsNormalGame ? Main.NormalOptions.MapId : Main.HideNSeekOptions.MapId;
+
     public static void SetVision(this IGameOptions opt, bool HasImpVision)
     {
         if (HasImpVision)

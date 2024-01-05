@@ -11,7 +11,7 @@ public static class DeconSystemUpdateSystemPatch
 
         if (Options.ChangeDecontaminationTime.GetBool())
         {
-            var mapName = GameStates.IsNormalGame ? (MapNames)Main.NormalOptions.MapId : (MapNames)Main.HideNSeekOptions.MapId;
+            var mapName = Utils.GetActiveMapName();
             
             // Temp decon time
             var deconTime = mapName switch

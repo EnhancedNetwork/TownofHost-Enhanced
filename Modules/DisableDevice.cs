@@ -63,7 +63,7 @@ class DisableDevice
                         (Options.DisableDevicesIgnoreCrewmates.GetBool() && pc.Is(CustomRoleTypes.Crewmate)) ||
                         (Options.DisableDevicesIgnoreAfterAnyoneDied.GetBool() && GameStates.AlreadyDied);
 
-                var mapId = GameStates.IsNormalGame ? Main.NormalOptions.MapId : Main.HideNSeekOptions.MapId;
+                var mapId = Utils.GetActiveMapId();
                 var mapName = (MapNames)mapId;
 
                 if (pc.IsAlive() && !Utils.IsActive(SystemTypes.Comms))
@@ -164,7 +164,7 @@ public class RemoveDisableDevicesPatch
         var consoles = UnityEngine.Object.FindObjectsOfType<SystemConsole>(true);
         if (admins == null || consoles == null) return;
 
-        var mapId = GameStates.IsNormalGame ? Main.NormalOptions.MapId : Main.HideNSeekOptions.MapId;
+        var mapId = Utils.GetActiveMapId();
         switch (mapId)
         {
             case 0:

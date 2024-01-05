@@ -516,18 +516,23 @@ class IntroCutsceneDestroyPatch
         Main.introDestroyed = true;
         if (AmongUsClient.Instance.AmHost)
         {
-            if (Main.NormalOptions.MapId != 4)
+            if (GameStates.IsNormalGame)
             {
-                Main.AllPlayerControls.Do(pc => pc.RpcResetAbilityCooldown());
-                if (Options.FixFirstKillCooldown.GetBool() && Options.CurrentGameMode != CustomGameMode.FFA)
-                    _ = new LateTask(() =>
+                if (!Options.IsActiveAirship)
+                {
+                    Main.AllPlayerControls.Do(pc => pc.RpcResetAbilityCooldown());
+                    if (Options.FixFirstKillCooldown.GetBool() && Options.CurrentGameMode != CustomGameMode.FFA)
                     {
-                        Main.AllPlayerControls.Do(x => x.ResetKillCooldown());
-                        Main.AllPlayerControls.Where(x => (Main.AllPlayerKillCooldown[x.PlayerId] - 2f) > 0f).Do(pc => pc.SetKillCooldown(Options.FixKillCooldownValue.GetFloat() - 2f));
-                    }, 2f, "Fix Kill Cooldown Task");
-            }
+                        _ = new LateTask(() =>
+                        {
+                            Main.AllPlayerControls.Do(x => x.ResetKillCooldown());
+                            Main.AllPlayerControls.Where(x => (Main.AllPlayerKillCooldown[x.PlayerId] - 2f) > 0f).Do(pc => pc.SetKillCooldown(Options.FixKillCooldownValue.GetFloat() - 2f));
+                        }, 2f, "Fix Kill Cooldown Task");
+                    }
+                }
 
-            _ = new LateTask(() => Main.AllPlayerControls.Do(pc => pc.RpcSetRoleDesync(RoleTypes.Shapeshifter, -3)), 2f, "Set Impostor For Server");
+                _ = new LateTask(() => Main.AllPlayerControls.Do(pc => pc.RpcSetRoleDesync(RoleTypes.Shapeshifter, -3)), 2f, "Set Impostor For Server");
+            }
             
             if (PlayerControl.LocalPlayer.Is(CustomRoles.GM))
             {
@@ -538,7 +543,8 @@ class IntroCutsceneDestroyPatch
             if (Options.RandomSpawn.GetBool() || Options.CurrentGameMode == CustomGameMode.FFA)
             {
                 RandomSpawn.SpawnMap map;
-                var mapId = GameStates.IsNormalGame ? Main.NormalOptions.MapId : Main.HideNSeekOptions.MapId;
+                var mapId = Utils.GetActiveMapId();
+
                 switch (Main.NormalOptions.MapId)
                 {
                     case 0:
