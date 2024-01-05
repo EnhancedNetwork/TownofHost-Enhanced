@@ -81,7 +81,7 @@ public static class Doppelganger
         return instance;
     }
 
-    public static void RpcChangeSkin(PlayerControl pc, GameData.PlayerOutfit newOutfit)
+    public static void RpcChangeSkin(PlayerControl pc, GameData.PlayerOutfit newOutfit, uint level)
     {
         var sender = CustomRpcSender.Create(name: $"Doppelganger.RpcChangeSkin({pc.Data.PlayerName})");
         //if (pc.PlayerId == PlayerControl.LocalPlayer.PlayerId) Main.nickName = newOutfit.PlayerName;
@@ -121,6 +121,10 @@ public static class Doppelganger
         sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetNamePlateStr)
             .Write(newOutfit.NamePlateId)
             .EndRpc();
+        pc.SetLevel(level);
+        sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetLevel)
+            .Write(level)
+            .EndRpc();
 
         sender.SendMessage();
         DoppelPresentSkin[pc.PlayerId] = newOutfit;
@@ -151,16 +155,18 @@ public static class Doppelganger
 
         var killerSkin = new GameData.PlayerOutfit()
             .Set(kname, killer.CurrentOutfit.ColorId, killer.CurrentOutfit.HatId, killer.CurrentOutfit.SkinId, killer.CurrentOutfit.VisorId, killer.CurrentOutfit.PetId, killer.CurrentOutfit.NamePlateId);
+        var killerLvl = Utils.GetPlayerInfoById(killer.PlayerId).PlayerLevel;
 
         var targetSkin = new GameData.PlayerOutfit()
             .Set(tname, target.CurrentOutfit.ColorId, target.CurrentOutfit.HatId, target.CurrentOutfit.SkinId, target.CurrentOutfit.VisorId, target.CurrentOutfit.PetId, target.CurrentOutfit.NamePlateId);
+        var targetLvl = Utils.GetPlayerInfoById(target.PlayerId).PlayerLevel;
 
         DoppelVictim[target.PlayerId] = tname;
         
 
-        RpcChangeSkin(target, killerSkin);
+        RpcChangeSkin(target, killerSkin, killerLvl);
         Logger.Info("Changed target skin", "Doppelganger");
-        RpcChangeSkin(killer, targetSkin);
+        RpcChangeSkin(killer, targetSkin, targetLvl);
         Logger.Info("Changed killer skin", "Doppelganger");
 
         SendRPC(killer.PlayerId);
