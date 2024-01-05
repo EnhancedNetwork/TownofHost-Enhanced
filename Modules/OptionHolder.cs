@@ -168,6 +168,9 @@ public static class Options
     public static OptionItem NeutralWinTogether;
 
 
+    // Hide & Seek Setting
+    public static OptionItem NumImpostorsHnS;
+
     public static OptionItem DefaultShapeshiftCooldown;
     public static OptionItem DeadImpCantSabotage;
     public static OptionItem ImpKnowAlliesRole;
@@ -3043,7 +3046,21 @@ public static class Options
         //FFA
         FFAManager.SetupCustomOption();
 
-        //驱逐相关设定
+        // Hide & Seek
+        TextOptionItem.Create(10000055, "MenuTitle.Hide&Seek", TabGroup.GameSettings)
+            .SetGameMode(CustomGameMode.HidenSeekTOHE)
+            .SetColor(Color.red);
+
+        // Num impostors in Hide & Seek
+        NumImpostorsHnS = IntegerOptionItem.Create(60891, "NumImpostorsHnS", new(1, 3, 1), 1, TabGroup.GameSettings, false)
+            .SetHeader(true)
+            .SetColor(Color.red)
+            .SetGameMode(CustomGameMode.HidenSeekTOHE)
+            .SetValueFormat(OptionFormat.Players);
+
+
+
+        // Confirm Ejections Mode
         TextOptionItem.Create(10000024, "MenuTitle.Ejections", TabGroup.GameSettings)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue));

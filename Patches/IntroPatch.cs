@@ -538,6 +538,7 @@ class IntroCutsceneDestroyPatch
             if (Options.RandomSpawn.GetBool() || Options.CurrentGameMode == CustomGameMode.FFA)
             {
                 RandomSpawn.SpawnMap map;
+                var mapId = GameStates.IsNormalGame ? Main.NormalOptions.MapId : Main.HideNSeekOptions.MapId;
                 switch (Main.NormalOptions.MapId)
                 {
                     case 0:

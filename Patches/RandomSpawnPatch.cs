@@ -36,13 +36,16 @@ class RandomSpawn
                 if (NumOfTP[player.PlayerId] == 1)
                 {
                     //return if the map is not airship
-                    if (Main.NormalOptions.MapId != 4)
+                    if (!Options.IsActiveAirship)
                     {
                         return;
                     }
 
-                    // Reset cooldown player
-                    player.RpcResetAbilityCooldown();
+                    if (GameStates.IsNormalGame)
+                    {
+                        // Reset cooldown player
+                        player.RpcResetAbilityCooldown();
+                    }
 
                     //return if random spawn is off
                     if (!Options.RandomSpawn.GetBool())
