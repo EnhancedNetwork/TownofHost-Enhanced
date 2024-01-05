@@ -1969,7 +1969,7 @@
   "DeathReason.Drained": "Drained",
   "DeathReason.Shattered": "Shattered",
   "DeathReason.Trap": "Trapped",
-  "DeathReason.Targeted":  "Targeted",
+  "DeathReason.Targeted": "Targeted",
   "DeathReason.Retribution": "Retribution",
   "Alive": "Alive",
   "Win": " Wins!",
@@ -3598,5 +3598,6 @@
 
   "ImpCanBeSilent": "<color=#ff1919>Impostors</color> can become Silent",
   "CrewCanBeSilent": "<color=#8cffff>Crewmates</color> can become Silent",
-  "NeutralCanBeSilent": "<color=#7f8c8d>Neutrals</color> can become Silent"
+  "NeutralCanBeSilent": "<color=#7f8c8d>Neutrals</color> can become Silent",
+  "LastMessageReplay":  "Last System Message Replay"
 }
