@@ -137,6 +137,12 @@ public static class GameOptionsMenuStartPatch
                 {
                     switch (ob.Title)
                     {
+                        case StringNames.EscapeTime:
+                            ob.Cast<NumberOption>().ValidRange = new FloatRange(10, 600);
+                            break;
+                        case StringNames.FinalEscapeTime:
+                            ob.Cast<NumberOption>().ValidRange = new FloatRange(10, 300);
+                            break;
                         case StringNames.GameShortTasks:
                         case StringNames.GameLongTasks:
                         case StringNames.GameCommonTasks:
@@ -325,6 +331,11 @@ public class GameOptionsMenuUpdatePatch
     public static void Postfix(GameOptionsMenu __instance)
     {
         if (__instance.transform.parent.parent.name == "Game Settings") return;
+
+        if (GameStates.IsHideNSeek)
+        {
+            Main.HideNSeekOptions.NumImpostors = Options.NumImpostorsHnS.GetInt();
+        }
 
         foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
         {

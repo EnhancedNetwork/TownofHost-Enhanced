@@ -364,6 +364,8 @@ class CreatePlayerPatch
         }
         Main.AllPlayerNames.Remove(client.Character.PlayerId);
         Main.AllPlayerNames.TryAdd(client.Character.PlayerId, name);
+        Logger.Info($"client.PlayerName： {client.PlayerName}", "Name player");
+
         if (!name.Equals(client.PlayerName))
         {
             _ = new LateTask(() =>
@@ -397,49 +399,52 @@ class CreatePlayerPatch
 
         if (Main.OverrideWelcomeMsg == "" && Main.PlayerStates.Count != 0 && Main.clientIdList.Contains(client.Id))
         {
-            if (Options.AutoDisplayKillLog.GetBool() && Main.PlayerStates.Count != 0 && Main.clientIdList.Contains(client.Id))
+            if (GameStates.IsNormalGame)
             {
-                _ = new LateTask(() =>
+                if (Options.AutoDisplayKillLog.GetBool() && Main.PlayerStates.Count != 0 && Main.clientIdList.Contains(client.Id))
                 {
-                    if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
+                    _ = new LateTask(() =>
                     {
-                        Main.isChatCommand = true;
-                        Utils.ShowKillLog(client.Character.PlayerId);
-                    }
-                }, 3f, "DisplayKillLog");
-            }
-            if (Options.AutoDisplayLastRoles.GetBool())
-            {
-                _ = new LateTask(() =>
+                        if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
+                        {
+                            Main.isChatCommand = true;
+                            Utils.ShowKillLog(client.Character.PlayerId);
+                        }
+                    }, 3f, "DisplayKillLog");
+                }
+                if (Options.AutoDisplayLastRoles.GetBool())
                 {
-                    if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
+                    _ = new LateTask(() =>
                     {
-                        Main.isChatCommand = true;
-                        Utils.ShowLastRoles(client.Character.PlayerId);
-                    }
-                }, 3.1f, "DisplayLastRoles");
-            }
-            if (Options.AutoDisplayLastResult.GetBool())
-            {
-                _ = new LateTask(() =>
+                        if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
+                        {
+                            Main.isChatCommand = true;
+                            Utils.ShowLastRoles(client.Character.PlayerId);
+                        }
+                    }, 3.1f, "DisplayLastRoles");
+                }
+                if (Options.AutoDisplayLastResult.GetBool())
                 {
-                    if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
+                    _ = new LateTask(() =>
                     {
-                        Main.isChatCommand = true;
-                        Utils.ShowLastResult(client.Character.PlayerId);
-                    }
-                }, 3.2f, "DisplayLastResult");
-            }
-            if (PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsUp && Options.EnableUpMode.GetBool())
-            {
-                _ = new LateTask(() =>
+                        if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
+                        {
+                            Main.isChatCommand = true;
+                            Utils.ShowLastResult(client.Character.PlayerId);
+                        }
+                    }, 3.2f, "DisplayLastResult");
+                }
+                if (PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsUp && Options.EnableUpMode.GetBool())
                 {
-                    if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
+                    _ = new LateTask(() =>
                     {
-                        Main.isChatCommand = true;
-                   //     Utils.SendMessage($"{GetString("Message.YTPlanNotice")} {PlayerControl.LocalPlayer.FriendCode.GetDevUser().UpName}", client.Character.PlayerId);
-                    }
-                }, 3.3f, "DisplayUpWarnning");
+                        if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
+                        {
+                            Main.isChatCommand = true;
+                            //     Utils.SendMessage($"{GetString("Message.YTPlanNotice")} {PlayerControl.LocalPlayer.FriendCode.GetDevUser().UpName}", client.Character.PlayerId);
+                        }
+                    }, 3.3f, "DisplayUpWarnning");
+                }
             }
         }
     }
