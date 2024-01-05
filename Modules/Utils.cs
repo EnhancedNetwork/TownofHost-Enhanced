@@ -139,6 +139,8 @@ public static class Utils
     }
     public static bool IsActive(SystemTypes type)
     {
+        if (GameStates.IsHideNSeek) return false;
+
         // if ShipStatus not have current SystemTypes, return false
         if (!ShipStatus.Instance.Systems.ContainsKey(type))
         {

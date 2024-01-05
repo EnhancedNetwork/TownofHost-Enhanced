@@ -25,7 +25,7 @@ class HudManagerPatch
     public static GameObject TempLowerInfoText;
     public static void Postfix(HudManager __instance)
     {
-        if (GameStates.IsHideNSeek || !GameStates.IsModHost) return;
+        if (!GameStates.IsModHost) return;
 
         var player = PlayerControl.LocalPlayer;
         if (player == null) return;
@@ -54,7 +54,7 @@ class HudManagerPatch
             __instance.GameSettings.fontSizeMax = 1.1f;
         }
         //ゲーム中でなければ以下は実行されない
-        if (!AmongUsClient.Instance.IsGameStarted) return;
+        if (!AmongUsClient.Instance.IsGameStarted || GameStates.IsHideNSeek) return;
 
         Utils.CountAlivePlayers();
 
@@ -743,7 +743,13 @@ class TaskPanelBehaviourPatch
     // タスク表示の文章が更新・適用された後に実行される
     public static void Postfix(TaskPanelBehaviour __instance)
     {
-        if (GameStates.IsHideNSeek || !GameStates.IsModHost) return;
+        if (!GameStates.IsModHost) return;
+
+        if (GameStates.IsHideNSeek)
+        {
+            __instance.open = false;
+            return;
+        }
 
         PlayerControl player = PlayerControl.LocalPlayer;
 
