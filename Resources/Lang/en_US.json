@@ -1231,7 +1231,7 @@
   "HideGameSettings": "Hide Game Settings",
   "DIYGameSettings": "Enable only custom /n messages",
   "PlayerCanSetColor": "Players can use the /color command",
-  "PlayerCanUseQuitCommand": "Players can use the /quit command to leave the lobby forever"
+  "PlayerCanUseQuitCommand": "Players can use the /quit command to leave the lobby forever",
   "KPDCamouflageMode": "Camouflage Appearance",
   "RoleOptions": "Role Options",
   "ModeOptions": "Mode Options",
