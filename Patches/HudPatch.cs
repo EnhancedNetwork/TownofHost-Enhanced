@@ -621,8 +621,8 @@ class SetHudActivePatch
     }
     public static void Postfix(HudManager __instance, [HarmonyArgument(2)] bool isActive)
     {
-        if (GameStates.IsHideNSeek) return;
         __instance.ReportButton.ToggleVisible(!GameStates.IsLobby && isActive);
+        if (GameStates.IsHideNSeek) return;
         if (!GameStates.IsModHost) return;
         IsActive = isActive;
         if (!isActive) return;
