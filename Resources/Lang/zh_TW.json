@@ -1231,6 +1231,7 @@
   "HideGameSettings": "隱藏遊戲設定",
   "DIYGameSettings": "顯示自定義的/n訊息",
   "PlayerCanSetColor": "允許玩家使用/color指令",
+  "PlayerCanUseQuitCommand": "Players can use the /quit command to leave the lobby forever",
   "KPDCamouflageMode": "咔皮呆偽裝效果(包括通訊破壞及隱蔽者)",
   "RoleOptions": "職業設定",
   "ModeOptions": "模組設定",
@@ -3547,5 +3548,6 @@
   "VoteDead": "你嘗試投票的玩家在會議結束前死亡，因此你的投票已被返還。",
   "ImpCanBeSilent": "<color=#ff1919>偽裝者</color>可以成為沉默者",
   "CrewCanBeSilent": "<color=#8cffff>船員</color>可以成為沉默者",
-  "NeutralCanBeSilent": "<color=#7f8c8d>中立</color> 可以成為沉默者"
+  "NeutralCanBeSilent": "<color=#7f8c8d>中立</color> 可以成為沉默者",
+  "LastMessageReplay": "Last System Message Replay"
 }
