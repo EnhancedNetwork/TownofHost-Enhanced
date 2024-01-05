@@ -1231,6 +1231,7 @@
   "HideGameSettings": "Hide Game Settings",
   "DIYGameSettings": "Enable only custom /n messages",
   "PlayerCanSetColor": "Players can use the /color command",
+  "PlayerCanUseQuitCommand": "Players can use the /quit command to leave the lobby forever",
   "KPDCamouflageMode": "Camouflage Appearance",
   "RoleOptions": "Role Options",
   "ModeOptions": "Mode Options",
@@ -1969,7 +1970,7 @@
   "DeathReason.Drained": "Drained",
   "DeathReason.Shattered": "Shattered",
   "DeathReason.Trap": "Trapped",
-  "DeathReason.Targeted":  "Targeted",
+  "DeathReason.Targeted": "Targeted",
   "DeathReason.Retribution": "Retribution",
   "Alive": "Alive",
   "Win": " Wins!",
@@ -3598,5 +3599,6 @@
 
   "ImpCanBeSilent": "<color=#ff1919>Impostors</color> can become Silent",
   "CrewCanBeSilent": "<color=#8cffff>Crewmates</color> can become Silent",
-  "NeutralCanBeSilent": "<color=#7f8c8d>Neutrals</color> can become Silent"
+  "NeutralCanBeSilent": "<color=#7f8c8d>Neutrals</color> can become Silent",
+  "LastMessageReplay":  "Last System Message Replay"
 }
