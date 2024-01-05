@@ -1231,6 +1231,7 @@
   "HideGameSettings": "Esconder opciones del juego",
   "DIYGameSettings": "Activar exclusivamente los mensajes personalizados por /n",
   "PlayerCanSetColor": "Los jugadores pueden usar /color",
+  "PlayerCanUseQuitCommand": "Players can use the /quit command to leave the lobby forever",
   "KPDCamouflageMode": "Aparencia de camuflaje",
   "RoleOptions": "Opciones de roles",
   "ModeOptions": "Opciones de modo",
@@ -3547,5 +3548,6 @@
   "VoteDead": "El jugador al cual has votado murió antes de que terminara la reunión. Tu voto fue cancelado.",
   "ImpCanBeSilent": "<color=#ff1919>Impostores</color> pueden ser Silencioso",
   "CrewCanBeSilent": "<color=#8cffff>Tripulantes</color> pueden ser Silencioso",
-  "NeutralCanBeSilent": "<color=#7f8c8d>Neutros</color> pueden ser Silencioso"
+  "NeutralCanBeSilent": "<color=#7f8c8d>Neutros</color> pueden ser Silencioso",
+  "LastMessageReplay": "Last System Message Replay"
 }
