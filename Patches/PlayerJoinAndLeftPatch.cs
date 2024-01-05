@@ -45,8 +45,14 @@ class OnGameJoinedPatch
         // if custom game mode is HideNSeekTOHE in normal game, set standart
         if (GameStates.IsNormalGame && Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
         {
-            // Select standart custom game mode
+            // Select standart
             Options.GameMode.SetValue(0);
+        }
+        // if custom game mode is Standard/FFA in H&S game, set HideNSeekTOHE
+        else if (GameStates.IsHideNSeek && Options.CurrentGameMode is CustomGameMode.Standard or CustomGameMode.FFA)
+        {
+            // Select HideNSeekTOHE
+            Options.GameMode.SetValue(2);
         }
 
         Main.IsHostVersionCheating = false;
