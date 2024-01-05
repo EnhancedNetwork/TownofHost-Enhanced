@@ -3897,7 +3897,7 @@ class PlayerControlCompleteTaskPatch
 {
     public static bool Prefix(PlayerControl __instance)
     {
-        if (GameStates.IsHideNSeek) return true;
+        if (GameStates.IsHideNSeek) return false;
 
         var player = __instance;
 

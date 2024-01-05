@@ -666,17 +666,8 @@ static class ExtendedPlayerControl
                 };
             }
         }
-        else if (GameStates.IsHideNSeek)
-        {
-            if ((MapNames)Main.HideNSeekOptions.MapId == MapNames.Dleks)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
+        else if (GameStates.IsHideNSeek) return true;
+
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel) return false;
         if (CopyCat.playerIdList.Contains(pc.PlayerId)) return true;
         if (Main.TasklessCrewmate.Contains(pc.PlayerId)) return true;
@@ -875,7 +866,7 @@ static class ExtendedPlayerControl
     }
     public static void ResetKillCooldown(this PlayerControl player)
     {
-        Main.AllPlayerKillCooldown[player.PlayerId] = Options.DefaultKillCooldown; //キルクールをデフォルトキルクールに変更
+        Main.AllPlayerKillCooldown[player.PlayerId] = GameStates.IsNormalGame ? Options.DefaultKillCooldown : 1f; //キルクールをデフォルトキルクールに変更
         switch (player.GetCustomRole())
         {
             case CustomRoles.SerialKiller:
