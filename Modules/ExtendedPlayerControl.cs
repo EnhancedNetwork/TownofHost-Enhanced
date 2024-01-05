@@ -670,12 +670,11 @@ static class ExtendedPlayerControl
         {
             if ((MapNames)Main.HideNSeekOptions.MapId == MapNames.Dleks)
             {
-                return pc.GetCustomRole() switch
-                {
-                    CustomRoles.Arsonist => pc.IsDouseDone() || (Options.ArsonistCanIgniteAnytime.GetBool() && (Utils.GetDousedPlayerCount(pc.PlayerId).Item1 >= Options.ArsonistMinPlayersToIgnite.GetInt() || pc.inVent)),
-                    CustomRoles.Revolutionist => pc.IsDrawDone(),
-                    _ => false,
-                };
+                return false;
+            }
+            else
+            {
+                return true;
             }
         }
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel) return false;
