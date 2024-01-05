@@ -2990,7 +2990,9 @@ public static class Options
         //.SetHeader(true);
 
         AutoDisplayKillLog = BooleanOptionItem.Create(60270, "AutoDisplayKillLog", true, TabGroup.SystemSettings, false)
-            .SetHeader(true);
+            .SetHeader(true)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetGameMode(CustomGameMode.FFA);
         AutoDisplayLastRoles = BooleanOptionItem.Create(60280, "AutoDisplayLastRoles", true, TabGroup.SystemSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetGameMode(CustomGameMode.FFA);
