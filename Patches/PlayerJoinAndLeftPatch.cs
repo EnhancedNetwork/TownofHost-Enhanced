@@ -239,7 +239,7 @@ class OnPlayerLeftPatch
                 PlayerGameOptionsSender.RemoveSender(data.Character);
             }
 
-            if (Main.HostClientId == __instance.ClientId)
+            if (Main.HostClientId == data.Id)
             {
                 var clientId = -1;
                 var player = PlayerControl.LocalPlayer;
