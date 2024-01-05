@@ -384,7 +384,21 @@ internal class SelectRolesPatch
 {
     public static void Prefix()
     {
-        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek) return;
+        if (!AmongUsClient.Instance.AmHost) return;
+
+        if (GameStates.IsHideNSeek)
+        {
+            if (Main.EnableGM.Value)
+            {
+                PlayerControl.LocalPlayer.RpcSetCustomRole(CustomRoles.GM);
+                PlayerControl.LocalPlayer.RpcSetRole(RoleTypes.Crewmate);
+                PlayerControl.LocalPlayer.Data.IsDead = true;
+                Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
+            }
+
+            EAC.OriginalRoles = new();
+            return;
+        }
 
         try
         {

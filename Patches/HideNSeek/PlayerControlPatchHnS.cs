@@ -194,12 +194,6 @@ class FixedUpdateInHidenSeekPatch
                         KickPlayerPatch.AttemptedKickPlayerList.Remove(item.Key);
                 }
             }
-
-            if (!lowLoad)
-            {
-                if (!Main.DoBlockNameChange)
-                    Utils.ApplySuffix(__instance);
-            }
         }
         else
         {
@@ -209,5 +203,8 @@ class FixedUpdateInHidenSeekPatch
                     FallFromLadder.FixedUpdate(player);
             }
         }
+
+        if (!Main.DoBlockNameChange)
+            Utils.ApplySuffix(__instance);
     }
 }

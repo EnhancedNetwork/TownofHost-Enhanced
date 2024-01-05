@@ -160,7 +160,15 @@ public static class GameOptionsMenuStartPatch
             List<SpriteRenderer> highlights = new() { gameSettingMenu.GameSettingsHightlight, gameSettingMenu.RolesSettingsHightlight };
             List<GameObject> tabs = new() { gameTab, roleTab };
 
-            foreach (var tab in EnumHelper.GetAllValues<TabGroup>().Where(tab => GameStates.IsNormalGame || (GameStates.IsHideNSeek && (tab == TabGroup.SystemSettings || tab == TabGroup.GameSettings || tab == TabGroup.TaskSettings))).ToArray())
+            // No add roleTab in Hide & Seek
+            if (GameStates.IsHideNSeek)
+            {
+                menus = new() { gameSettingMenu.RegularGameSettings };
+                highlights = new() { gameSettingMenu.GameSettingsHightlight };
+                tabs = new() { gameTab };
+            }
+
+            foreach (var tab in EnumHelper.GetAllValues<TabGroup>().Where(tab => GameStates.IsNormalGame || (GameStates.IsHideNSeek && (tab is TabGroup.SystemSettings or TabGroup.GameSettings or TabGroup.TaskSettings))).ToArray())
             {
                 var obj = gameSettings.transform.parent.Find(tab + "Tab");
                 if (obj != null)
@@ -251,6 +259,12 @@ public static class GameOptionsMenuStartPatch
                 tabs.Add(tohTab);
                 var tohTabHighlight = tohTab.transform.Find("Hat Button").Find("Tab Background").GetComponent<SpriteRenderer>();
                 highlights.Add(tohTabHighlight);
+            }
+
+            // hide roleTab in Hide & Seek
+            if (GameStates.IsHideNSeek)
+            {
+                roleTab.active = false;
             }
 
             var tabsCount = tabs.Count;

@@ -723,6 +723,7 @@ internal class ChatCommands
                 case "/changerole":
                 case "/mudarfunção":
                     canceled = true;
+                    if (GameStates.IsHideNSeek) break;
                     if (!(DebugModeManager.AmDebugger && GameStates.IsInGame)) break;
                     if (GameStates.IsOnlineGame && !PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug) break;
                     subArgs = text.Remove(0, 11);
