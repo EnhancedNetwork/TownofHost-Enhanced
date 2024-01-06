@@ -133,9 +133,9 @@ public static class TemplateManager
         {
             if (playerId == 0xff)
                 HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, string.Format(GetString("Message.TemplateNotFoundHost"), str, tags.Join(delimiter: ", ")));
-            else Utils.SendMessage(string.Format(GetString("Message.TemplateNotFoundClient"), str), playerId);
+            else Utils.SendMessage(string.Format(GetString("Message.TemplateNotFoundClient"), str), playerId, replay: true);
         }
-        else foreach (string x in sendList.ToArray()) Utils.SendMessage(ApplyReplaceDictionary(x), playerId);
+        else foreach (string x in sendList.ToArray()) Utils.SendMessage(ApplyReplaceDictionary(x), playerId, replay:true);
     }
 
     private static string ApplyReplaceDictionary(string text)

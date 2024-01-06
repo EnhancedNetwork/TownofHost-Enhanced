@@ -1040,7 +1040,10 @@ static class CustomRolesHelper
                     return false;
                 break;
             case CustomRoles.Autopsy:
-                if (pc.Is(CustomRoles.Doctor))
+                if (pc.Is(CustomRoles.Doctor)
+                    || pc.Is(CustomRoles.Tracefinder)
+                    || pc.Is(CustomRoles.ScientistTOHE)
+                    || pc.Is(CustomRoles.Sunnyboy))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeAutopsy.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeAutopsy.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeAutopsy.GetBool()))
                     return false;
