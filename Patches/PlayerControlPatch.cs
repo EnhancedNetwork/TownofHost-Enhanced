@@ -3836,7 +3836,7 @@ class CoEnterVentPatch
         }
 
         // Fix Vent Stuck
-        if (//DleksPatch.BootFromVent(__instance.myPlayer) ||
+        if (
             (__instance.myPlayer.Data.Role.Role != RoleTypes.Engineer
                 && !__instance.myPlayer.CanUseImpostorVentButton())
             || (__instance.myPlayer.Is(CustomRoles.Mayor) && Main.MayorUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count) && count >= Options.MayorNumOfUseButton.GetInt())

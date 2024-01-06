@@ -15,7 +15,7 @@ class RandomSpawn
         public static void Postfix(CustomNetworkTransform __instance, [HarmonyArgument(0)] Vector2 position)
         {
             if (!AmongUsClient.Instance.AmHost) return;
-            if (position == new Vector2(-25f, 40f)) return; //If it's the first spring, RETURN
+            if (position == new Vector2(-25f, 40f)) return; //If it's the first spring, return
             if (GameStates.IsInTask)
             {
                 var player = Main.AllPlayerControls.FirstOrDefault(p => p.NetTransform == __instance);

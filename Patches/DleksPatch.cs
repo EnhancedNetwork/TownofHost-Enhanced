@@ -36,20 +36,6 @@ public static class DleksPatch
         __result = true;
         return false;
     }
-    //public static bool BootFromVent(this PlayerControl player)
-    //{
-    //    // if map is not Dleks, always returns false
-    //    if (!Options.IsActiveDleks) return false;
-
-    //    return player.GetCustomRole() switch
-    //    {
-    //        CustomRoles.Arsonist => !(player.IsDouseDone() || (Options.ArsonistCanIgniteAnytime.GetBool() && (Utils.GetDousedPlayerCount(player.PlayerId).Item1 >= Options.ArsonistMinPlayersToIgnite.GetInt() || player.inVent))),
-    //        CustomRoles.Revolutionist => !player.IsDrawDone(),
-
-    //        // return true when roles don't need to use vent
-    //        _ => true,
-    //    };
-    //}
 }
 
 [HarmonyPatch(typeof(KeyValueOption), nameof(KeyValueOption.OnEnable))]
@@ -68,7 +54,7 @@ class AutoSelectDleksPatch
 public static class VentSetButtonsPatch
 {
     public static bool ShowButtons = false;
-    // Fix buttons in vent on Dleks map and "Index was outside the bounds of the array" errors
+    // Fix arrows buttons in vent on Dleks map and "Index was outside the bounds of the array" errors
     private static bool Prefix(Vent __instance, [HarmonyArgument(0)] ref bool enabled)
     {
         // if map is Dleks
@@ -115,7 +101,7 @@ public static class VentSetButtonsPatch
 [HarmonyPatch(typeof(Vent), nameof(Vent.TryMoveToVent))]
 class VentTryMoveToVentPatch
 {
-    // Update Arrows Buttons
+    // Update arrows buttons when player move to vents
     private static void Postfix(Vent __instance, [HarmonyArgument(0)] Vent otherVent)
     {
         if (__instance == null || otherVent == null || !Options.IsActiveDleks) return;
