@@ -1429,7 +1429,7 @@ class MurderPlayerPatch
 
         if (target.Is(CustomRoles.Susceptible))
         {
-            Susceptible.ChangeRandomDeath(target);
+            Susceptible.CallEnabledAndChange(target);
         }
 
         if (target.Is(CustomRoles.Trapper) && killer != target)
