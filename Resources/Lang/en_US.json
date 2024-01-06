@@ -3598,12 +3598,9 @@
 
   "ImpCanBeSilent": "<color=#ff1919>Impostors</color> can become Silent",
   "CrewCanBeSilent": "<color=#8cffff>Crewmates</color> can become Silent",
-  "NeutralCanBeSilent": "<color=#7f8c8d>Neutrals</color> can become Silent"
-
-
-
-
-
+  "NeutralCanBeSilent": "<color=#7f8c8d>Neutrals</color> can become Silent",
+  "LastMessageReplay": "Last System Message Replay"
+  
   "ImpCanBeSusceptible": "<color=#ff1919>Impostors</color> can become Susceptible",
   "CrewCanBeSusceptible": "<color=#8cffff>Crewmates</color> can become Susceptible",
   "NeutralCanBeSusceptible": "<color=#7f8c8d>Neutrals</color> can become Susceptible"
