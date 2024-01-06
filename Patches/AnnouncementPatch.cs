@@ -67,7 +67,7 @@ public class ModNewsHistory
                         "\n     - Guess Master (Basic Crewmate - By: ryuk)" +
                         "\n     - Kamikaze (Support Impostor - By: Drakos)" +
                         "\n     - Solsticer (Experimental Neutral - By: NikoCat223)" +
-                        "\n     - Flash (Helpful Addon - By: NikoCat223)" +
+                        "\n     - Flash (Helpful Addon - By: TommyXL)" +
                         "\n     - Silent (Helpful Addon - By: NikoCat223)" +
                         "\n     - Mundane (Harmful Addon - By: ryuk)" +
 
@@ -95,7 +95,7 @@ public class ModNewsHistory
                         "\n     - Multiple Bug Fixes (By: NikoCat233, LezaiYa)" +
                         "\n     - Enigma Typo (By: Plaguer)" +
                         "\n     - Prevent-MM-Mass-Shapeshift - Set Cheating Player Notification to \"Notify\" (By: NikoCat223)" +
-                        "\n     - Removed Unnecessary roles ferom Guesser GUIs (By: NikoCat223)" +
+                        "\n     - Removed Unnecessary roles from Guesser GUIs (By: NikoCat223)" +
                         "\n     - Fix Workaholic getting Onbound, Rebound and Double Shot when Anti-Guess Enabled" +
 
                     "\n<b>【Translator Credits】</b>" +
