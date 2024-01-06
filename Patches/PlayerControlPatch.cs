@@ -3064,7 +3064,7 @@ class FixedUpdatePatch
         {
             if (GameStates.IsLobby)
             {
-                if (Main.playerVersion.TryGetValue(__instance.PlayerId, out var ver))
+                if (Main.playerVersion.TryGetValue(__instance.GetClientId(), out var ver))
                 {
                     if (Main.ForkId != ver.forkId) // フォークIDが違う場合
                         __instance.cosmetics.nameText.text = $"<color=#ff0000><size=1.2>{ver.forkId}</size>\n{__instance?.name}</color>";

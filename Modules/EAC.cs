@@ -232,19 +232,20 @@ internal class EAC
                         Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】游戏内改等级，已驳回", "EAC");
                         return true;
                     }
-                    if (sr.ReadPackedUInt32() > 0)
-                    {
-                        uint ClientDataLevel = pc.GetClient() == null ? pc.GetClient().PlayerLevel : 0;
-                        uint PlayerControlLevel = sr.ReadPackedUInt32();
-                        if (ClientDataLevel != 0 && Math.Abs(PlayerControlLevel - ClientDataLevel) > 4)
-                        {
-                            WarnHost();
-                            Report(pc, "Sus Level Change");
-                            AmongUsClient.Instance.KickPlayer(pc.GetClientId(), false);
-                            Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】游戏内改等级，已驳回", "EAC");
-                            return true;
-                        }
-                    }
+                    //if (sr.ReadPackedUInt32() > 0)
+                    //{
+                    //    uint ClientDataLevel = pc.GetClient() == null ? pc.GetClient().PlayerLevel : 0;
+                    //    uint PlayerControlLevel = sr.ReadPackedUInt32();
+                    //    if (ClientDataLevel != 0 && Math.Abs(PlayerControlLevel - ClientDataLevel) > 4)
+                    //    {
+                    //        WarnHost();
+                    //        Report(pc, "Sus Level Change");
+                    //        AmongUsClient.Instance.KickPlayer(pc.GetClientId(), false);
+                    //        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】游戏内改等级，已驳回", "EAC");
+                    //        return true;
+                    //    }
+                    //}
+                    //Buggy
                     break;
                 case 39:
                 case 40:

@@ -111,13 +111,13 @@ class CoBeginPatch
                 var text = pc.AmOwner ? "[*]" : "   ";
                 text += $"{pc.PlayerId,-2}:{pc.Data?.PlayerName?.PadRightV2(20)}:{pc.GetClient()?.PlatformData?.Platform.ToString()?.Replace("Standalone", ""),-11}";
 
-                if (Main.playerVersion.TryGetValue(pc.PlayerId, out PlayerVersion pv))
+                if (Main.playerVersion.TryGetValue(pc.GetClientId(), out PlayerVersion pv))
                 {
-                    text += $":Mod({pv.forkId}/{pv.version}:{pv.tag})";
+                    text += $":Mod({pv.forkId}/{pv.version}:{pv.tag}), ClientId :{pc.GetClientId()}";
                 }
                 else
                 {
-                    text += ":Vanilla";
+                    text += ":Vanilla, ClientId :" + pc.GetClientId() ;
                 }
                 logger.Info(text);
             }
@@ -158,6 +158,7 @@ class CoBeginPatch
         TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
 
         GameStates.InGame = true;
+        RPC.RpcVersionCheck();
 
         // Do not move this code, it should be executed at the very end to prevent a visual bug
         Utils.DoNotifyRoles(ForceLoop: true);
