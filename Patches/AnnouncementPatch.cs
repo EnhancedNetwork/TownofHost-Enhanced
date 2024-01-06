@@ -1102,79 +1102,6 @@ public class ModNewsHistory
         else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.TChinese)
         {
             {
-                var news = new ModNews
-                {
-                    Number = 70007,
-                    Title = "Town of Host: Enhanced v1.4.0",
-                    SubTitle = "★★ Consistent Updates, yay! ★★",
-                    ShortTitle = "TOH: Enhanced v1.4.0",
-                    BeforeNumber = 70006,
-                    Text = "<size=150%>Welcome to TOH: Enhanced v1.4.0!</size>\n" +
-                    "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.3.0\r\n" +
-
-                    "\n<b>【New Roles/Addons】(7 roles, 3 Addons)</i></b>" +
-                        "\n     - Benefactor (Support Crewmate - By: ryuk)" +
-                        "\n     - Keeper (Support Crewmate - By: ryuk)" +
-                        "\n     - Captain (Power Crewmate - By: ryuk)" +
-                        "\n     - Mole (Basic Crewmate - By: ryuk)" +
-                        "\n     - Guess Master (Basic Crewmate - By: ryuk)" +
-                        "\n     - Kamikaze (Support Impostor - By: Drakos)" +
-                        "\n     - Solsticer (Experimental Neutral - By: NikoCat223)" +
-                        "\n     - Flash (Helpful Addon - By: TommyXL)" +
-                        "\n     - Silent (Helpful Addon - By: NikoCat223)" +
-                        "\n     - Mundane (Harmful Addon - By: ryuk)" +
-
-                    "\n<b>【New Settings】</b>" +
-                        "\n     - dlekS ehT !paM weN (Thanks sleepyut (@Galster-dev on GitHub) and TommyXL)" +
-                        "\n     - New Gamemode: FFA from TOHE+ (By: ryuk, Special Thanks: Gurge44)" +
-                        "\n     - Added chat commands /tpin, /tpout - TP players in and out of ship in lobby (By: ryuk)" +
-                        "\n     - New Setting: Prevent /quit due to malicious use (By: Furo)" +
-                        "\n     - New Setting: Change Decontamination Time (Very Cool! Try this! By: TommyXL)" +
-                        "\n     - Returned Setting: Remove Pets At Dead Players (By: TommyXL)" +
-                        "\n     - New Region: Modded South America - MSA (By: Pietro)" +
-                        "\n     - New Region: Modded Chinese - Multiple (By: NikoCat223)" +
-                        "\n     - New Button: Update! Now update the mod automatically! (By: Pietro)" +
-
-                    "\n<b>【Changes】</b>" +
-                        "\n     - Added Skill Icons: Vulture, Pursuer and Cleaner (By: LeziYa)" +
-                        "\n     - Updated Log Readability (By: TommyXL)" +
-                        "\n     - Enhanced Anti-Cheat (EAC) now done by API (By: ryuk & Moe)" +
-                        "\n     - Fool (Addon) now incompatible with Repairman (Addon) to avoid issues (By: ryuk)" +
-                        "\n     - System now sends message after clearing - Very Useful! (By: ryuk)" +
-
-                    "\n<b>【Bug Fixes】</b>" +
-                        "\n     - Alchemist invalid string fix (By: Drakos)" +
-                        "\n     - Votes now return if a player dies mid-round or disconnects (By: NikoCat223, ryuk)" +
-                        "\n     - Multiple Bug Fixes (By: NikoCat233, LezaiYa)" +
-                        "\n     - Enigma Typo (By: Plaguer)" +
-                        "\n     - Prevent-MM-Mass-Shapeshift - Set Cheating Player Notification to \"Notify\" (By: NikoCat223)" +
-
-                        "\n     - Removed Unnecessary roles from Guesser GUIs (By: NikoCat223)" +
-                        "\n     - Fix Workaholic getting Onbound, Rebound and Double Shot when Anti-Guess Enabled (By: ryuk)" +
-
-                    "\n<b>【Translator Credits】</b>" +
-                        "\n     - Brazilian (By: Dx7405)" +
-                        "\n     - Dutch (By: apemv, madmazel_)" +
-                        "\n     - French (By: FuroYT, KevOut, Klaomi, Sansationnelle)" +
-                        "\n     - Italian (By: alot, Baphojack, Mattix606)" +
-                        "\n     - Japanese (By: Sunnyboi)" +
-                        "\n     - Latin American (By: CreepPower)" +
-                        "\n     - Russian (By: chill_ultimated, Nevermore59, Shoulder Devil, TommyXL)" +
-                        "\n     - Simplified Chinese (By: CrewCyan, Hinharrrrr, LezaiYa, NikoCat223)" +
-                        "\n     - Spanish (By: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
-                        "\n     - Traditional Chinese (By: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
-                        "\n<b> Check out all of our translators on our website</b>\r\n" +
-
-                    "\n<b>【Several Other Misc Fixes by Devs Above!】</b>\r\n" +
-
-
-                    "\n\n★ Welcome to Town of Host: Enhanced v1.4.0 ★",
-
-                    Date = "2024-1-6T03:00:00Z"
-                };
-                AllModNews.Add(news);
-            }
-            {
                 var news = new ModNews()
                 {
                     Number = 70006,
@@ -1193,7 +1120,7 @@ public class ModNewsHistory
                         "\n     - 賭場管理員 (基礎類船員 - By: ryuk)" +
                         "\n     - 神風特攻隊 (支援類偽裝者 - By: Drakos)" +
                         "\n     - 致聖者 (試驗性中立 - By: NikoCat223)" +
-                        "\n     - 閃電俠 (幫助類附加職業 - By: NikoCat223)" +
+                        "\n     - 閃電俠 (幫助類附加職業 - By: TommyXL)" +
                         "\n     - 沉默者 (幫助類附加職業 - By: NikoCat223)" +
                         "\n     - 平凡者 (有害類附加職業 - By: ryuk)" +
 
@@ -1462,79 +1389,6 @@ public class ModNewsHistory
         else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.Japanese)
         {
             {
-                var news = new ModNews
-                {
-                    Number = 100008,
-                    Title = "Town of Host: Enhanced v1.4.0",
-                    SubTitle = "★★ Consistent Updates, yay! ★★",
-                    ShortTitle = "TOH: Enhanced v1.4.0",
-                    BeforeNumber = 100007,
-                    Text = "<size=150%>Welcome to TOH: Enhanced v1.4.0!</size>\n" +
-                    "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.3.0\r\n" +
-
-                    "\n<b>【New Roles/Addons】(7 roles, 3 Addons)</i></b>" +
-                        "\n     - Benefactor (Support Crewmate - By: ryuk)" +
-                        "\n     - Keeper (Support Crewmate - By: ryuk)" +
-                        "\n     - Captain (Power Crewmate - By: ryuk)" +
-                        "\n     - Mole (Basic Crewmate - By: ryuk)" +
-                        "\n     - Guess Master (Basic Crewmate - By: ryuk)" +
-                        "\n     - Kamikaze (Support Impostor - By: Drakos)" +
-                        "\n     - Solsticer (Experimental Neutral - By: NikoCat223)" +
-                        "\n     - Flash (Helpful Addon - By: TommyXL)" +
-                        "\n     - Silent (Helpful Addon - By: NikoCat223)" +
-                        "\n     - Mundane (Harmful Addon - By: ryuk)" +
-
-                    "\n<b>【New Settings】</b>" +
-                        "\n     - dlekS ehT !paM weN (Thanks sleepyut (@Galster-dev on GitHub) and TommyXL)" +
-                        "\n     - New Gamemode: FFA from TOHE+ (By: ryuk, Special Thanks: Gurge44)" +
-                        "\n     - Added chat commands /tpin, /tpout - TP players in and out of ship in lobby (By: ryuk)" +
-                        "\n     - New Setting: Prevent /quit due to malicious use (By: Furo)" +
-                        "\n     - New Setting: Change Decontamination Time (Very Cool! Try this! By: TommyXL)" +
-                        "\n     - Returned Setting: Remove Pets At Dead Players (By: TommyXL)" +
-                        "\n     - New Region: Modded South America - MSA (By: Pietro)" +
-                        "\n     - New Region: Modded Chinese - Multiple (By: NikoCat223)" +
-                        "\n     - New Button: Update! Now update the mod automatically! (By: Pietro)" +
-
-                    "\n<b>【Changes】</b>" +
-                        "\n     - Added Skill Icons: Vulture, Pursuer and Cleaner (By: LeziYa)" +
-                        "\n     - Updated Log Readability (By: TommyXL)" +
-                        "\n     - Enhanced Anti-Cheat (EAC) now done by API (By: ryuk & Moe)" +
-                        "\n     - Fool (Addon) now incompatible with Repairman (Addon) to avoid issues (By: ryuk)" +
-                        "\n     - System now sends message after clearing - Very Useful! (By: ryuk)" +
-
-                    "\n<b>【Bug Fixes】</b>" +
-                        "\n     - Alchemist invalid string fix (By: Drakos)" +
-                        "\n     - Votes now return if a player dies mid-round or disconnects (By: NikoCat223, ryuk)" +
-                        "\n     - Multiple Bug Fixes (By: NikoCat233, LezaiYa)" +
-                        "\n     - Enigma Typo (By: Plaguer)" +
-                        "\n     - Prevent-MM-Mass-Shapeshift - Set Cheating Player Notification to \"Notify\" (By: NikoCat223)" +
-
-                        "\n     - Removed Unnecessary roles from Guesser GUIs (By: NikoCat223)" +
-                        "\n     - Fix Workaholic getting Onbound, Rebound and Double Shot when Anti-Guess Enabled (By: ryuk)" +
-
-                    "\n<b>【Translator Credits】</b>" +
-                        "\n     - Brazilian (By: Dx7405)" +
-                        "\n     - Dutch (By: apemv, madmazel_)" +
-                        "\n     - French (By: FuroYT, KevOut, Klaomi, Sansationnelle)" +
-                        "\n     - Italian (By: alot, Baphojack, Mattix606)" +
-                        "\n     - Japanese (By: Sunnyboi)" +
-                        "\n     - Latin American (By: CreepPower)" +
-                        "\n     - Russian (By: chill_ultimated, Nevermore59, Shoulder Devil, TommyXL)" +
-                        "\n     - Simplified Chinese (By: CrewCyan, Hinharrrrr, LezaiYa, NikoCat223)" +
-                        "\n     - Spanish (By: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
-                        "\n     - Traditional Chinese (By: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
-                        "\n<b> Check out all of our translators on our website</b>\r\n" +
-
-                    "\n<b>【Several Other Misc Fixes by Devs Above!】</b>\r\n" +
-
-
-                    "\n\n★ Welcome to Town of Host: Enhanced v1.4.0 ★",
-
-                    Date = "2024-1-6T03:00:00Z"
-                };
-                AllModNews.Add(news);
-            }
-            {
                 var news = new ModNews()
                 {
                     Number = 100007,
@@ -1554,7 +1408,7 @@ public class ModNewsHistory
                         "\n     - 推測マスター (基本クルーメイト - By: ryuk)" +
                         "\n     - ロケットミサイル (サポートインポスター - By: Drakos)" +
                         "\n     - ソルスティス (実験中のニュートラル - By: NikoCat223)" +
-                        "\n     - 閃光 (役立つアドオン - By: NikoCat223)" +
+                        "\n     - 閃光 (役立つアドオン - By: TommyXL)" +
                         "\n     - サイレント (役立つアドオン - By: NikoCat223)" +
                         "\n     - 平凡 (有害アドオン - By: ryuk)" +
 
@@ -1917,7 +1771,7 @@ public class ModNewsHistory
                         "\n     - Gok Meester (Standaard bemanningslid - Door: ryuk)" +
                         "\n     - Kamikaze (Support Bedrieger - Door: Drakos)" +
                         "\n     - Solsticer (Experimentele Neutraal - Door: NikoCat223)" +
-                        "\n     - Flash (Helpvolle Toevoeging - Door: NikoCat223)" +
+                        "\n     - Flash (Helpvolle Toevoeging - Door: TommyXL)" +
                         "\n     - Stil (Helpvolle Toevoeging - Door: NikoCat223)" +
                         "\n     - Mundaan (Schadelijke Toevoeging - Door: ryuk)\r\n" +
 
