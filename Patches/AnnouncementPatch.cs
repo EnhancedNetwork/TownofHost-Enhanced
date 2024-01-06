@@ -1174,6 +1174,78 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
+                    Number = 100007,
+                    Title = "Town of Host: Enhanced v1.4.0",
+                    SubTitle = "★★ Mises à jour consistantes, ouais ! ★★",
+                    ShortTitle = "TOH: Enhanced v1.4.0",
+                    BeforeNumber = 100006,
+                    Text = "<size=150%>Bienvenue sur TOH: Enhanced v1.4.0!</size>\n" +
+                    "\n<b>【Base】</b>\n - Basé sur TOH: Enhanced v1.3.0\r\n" +
+
+                    "\n<b>【Nouveau Rôles/Modifieurs】(7 Rôles, 3 Modifieurs)</i></b>" +
+                        "\n     - Bienfaiteur (Coéquipier de support - Par: ryuk)" +
+                        "\n     - Protecteur (Coéquipier de support - Par: ryuk)" +
+                        "\n     - Capitaine (Coéquipier de pouvoir - Par: ryuk)" +
+                        "\n     - Taupe (Coéquipier Basique - Par: ryuk)" +
+                        "\n     - Maître penseur (Coéquipier Basique - Par: ryuk)" +
+                        "\n     - Kamikaze (Imposteur de support - Par: Drakos)" +
+                        "\n     - Solsticer (Neutre éxperimental - Par: NikoCat223)" +
+                        "\n     - Flash (Modifieur Utile - Par: NikoCat223)" +
+                        "\n     - Discret (Modifieur Utile - Par: NikoCat223)" +
+                        "\n     - Banal (Modifieur Nuisible - Par: ryuk)" +
+
+                    "\n<b>【Nouveaux Paramètres】</b>" +
+                        "\n     - dlekS ehT !etraC ellevuoN (Merci sleepyut (@Galster-dev sur GitHub) et TommyXL)" +
+                        "\n     - Nouveau Mode de Jeu: FFA de TOHE+ (Par: ryuk, Remerciements Speciaux: Gurge44)" +
+                        "\n     - Ajout des commandes de chat /tpin, /tpout - Téléporte les joueurs en dehors ou a l'intérieur du vaisseau dans le lobby (Par: ryuk)" +
+                        "\n     - Nouveau Paramètre : empêcher la commande /quit en raison d'une utilisation malveillante (Par: Furo)" +
+                        "\n     - Nouveau Paramètre : modifier le temps de décontamination (Très cool ! Essayez ceci! Par: TommyXL)" +
+                        "\n     - Paramètre Réajouté : supprimer les animaux de compagnie des joueurs morts " +
+                        "\n     - Nouvelle Région: Amérique du Sud Moddée - MSA (Par: Pietro)" +
+                        "\n     - Nouvelle Région: Chine Moddée - Multiple (Par: NikoCat223)" +
+                        "\n     - Nouveau Bouton: Mise à Jour! Maintenant, mettez à jour le mod automatiquement! (Par: Pietro)" +
+
+                    "\n<b>【Changements】</b>" +
+                        "\n     - Icônes de compétences ajoutées : Vautour, Poursuivant et Nettoyeur (Par: LeziYa)" +
+                        "\n     - Lisibilité des logs mise à jour (Par: TommyXL)" +
+                        "\n     - Enhanced Anti-Cheat (EAC) est maintenant gérée par l'API (Par: ryuk & Moe)" +
+                        "\n     - Idiot (Modifieurs) est désormais incompatible avec Repairman (Modifieurs) pour éviter les problèmes (Par: ryuk)" +
+                        "\n     - Le système envoie désormais un message après l'effacement - Très utile ! (Par: ryuk)" +
+
+                    "\n<b>【Corrections de bugs】</b>" +
+                        "\n     - Correction de charactères invalide pour l'Alchemist (Par: Drakos)" +
+                        "\n     - Les votes s'annulent désormais si un joueur meurt au milieu du tour ou se déconnecte (Par: NikoCat223, ryuk)" +
+                        "\n     - Plusieurs corrections de bugs (Par: NikoCat233, LezaiYa)" +
+                        "\n     - Faute de frape dans l'Enigme (Par: Plaguer)" +
+                        "\n     - Prevent-MM-Mass-Shapeshift - Définissez la notification du joueur tricheur sur \"Prevenir\" (Par: NikoCat223)" +
+                        "\n     - Suppression des rôles inutiles dans les GUIs pour deviner (Par: NikoCat223)" +
+                        "\n     - Correction du Workaholic obtenant Onbound, Rebound et Double Shot lorsque l'Anti-Guess est activé" +
+
+                    "\n<b>【Credits des traducteurs】</b>" +
+                        "\n     - Brésilien (Par: Dx7405)" +
+                        "\n     - Néerlandais (Par: apemv, madmazel_)" +
+                        "\n     - Français (Par: FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                        "\n     - Italien (Par: alot, Baphojack, Mattix606)" +
+                        "\n     - Japonais (Par: Sunnyboi)" +
+                        "\n     - Latino-Américain (Par: CreepPower)" +
+                        "\n     - Russe (Par: chill_ultimated, Nevermore59, Shoulder Devil, TommyXL)" +
+                        "\n     - Chinois simplifié (Par: CrewCyan, Hinharrrrr, LezaiYa, NikoCat223)" +
+                        "\n     - Espagnol (Par: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
+                        "\n     - Chinois traditionnel (Par: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
+                        "\n<b> Découvrez tous nos traducteurs sur notre site</b>\r\n" +
+
+                    "\n<b>【Plusieurs autres correctifs par les développeurs ci-dessus !】</b>\r\n" +
+
+
+                    "\n\n★ Bienvenue sur Town of Host: Enhanced v1.4.0 ★",
+
+                    Date = "2024-1-6T03:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
                     Number = 100006,
                     Title = "Town of Host: Enhanced v1.3.0",
                    SubTitle = "★★ Nouveau Rôles? Modifieurs? Correctifs de bugs?! ★★",
@@ -1193,7 +1265,7 @@ public class ModNewsHistory
                             "\n     - Oiiai (Modifieur Experimental - Par: NikoCat223)\r\n" +
 
                        "\n<b>【Nouveaux Paramètres】</b>" +
-                            "\n     - Ajout d'une fonctionnalité d'anti-spam pendant l'éjection (Par : Broke his pc's stupid, réglé par : ryuk)" +
+                            "\n     - Ajout d'une fonctionnalité d'anti-spam pendant l'éjection (Par : Broke his pc's stupid, corrigé par : ryuk)" +
                             "\n     - Le rêveur converti peut tuer n'importe qui sans répercussions (Par: ryuk)" +
                             "\n     - Compte le temps pendant la réunion pour grandir (Pour le Mini) (Par: LezaiYa, NikoCat233)" +
                             "\n     - L'Égoïste compte comme un neutre converti (Par: ryuk)" +
