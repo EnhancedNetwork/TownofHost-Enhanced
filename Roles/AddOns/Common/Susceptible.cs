@@ -337,6 +337,17 @@ namespace TOHE.Roles.AddOns.Common
                         }
                     break;
 
+                    case PlayerState.DeathReason.Targeted:
+                        if (!Kamikaze.IsEnable)
+                        {
+                            Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
+                        }
+                        else
+                        {
+                            goto default;
+                        }
+                    break;
+
                     default:
                         while(Main.PlayerStates[victim.PlayerId].deathReason != CheckReason)
                         Main.PlayerStates[victim.PlayerId].deathReason = CheckReason;
