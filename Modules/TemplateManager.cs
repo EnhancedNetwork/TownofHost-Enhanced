@@ -161,14 +161,14 @@ public static class TemplateManager
         {
             if (GameStates.IsNormalGame)
             {
-                foreach (var kvp in _replaceDictionaryNormalOptions)
+                foreach (var kvp in _replaceDictionaryNormalOptions.ToArray())
                 {
                     text = Regex.Replace(text, "{{" + kvp.Key + "}}", kvp.Value.Invoke() ?? "", RegexOptions.IgnoreCase);
                 }
             }
             else if (GameStates.IsHideNSeek)
             {
-                foreach (var kvp in _replaceDictionaryHideNSeekOptions)
+                foreach (var kvp in _replaceDictionaryHideNSeekOptions.ToArray())
                 {
                     text = Regex.Replace(text, "{{" + kvp.Key + "}}", kvp.Value.Invoke() ?? "", RegexOptions.IgnoreCase);
                 }

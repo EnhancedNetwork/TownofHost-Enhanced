@@ -89,6 +89,8 @@ class MurderPlayerInHidenSeekPatch
         {
             Utils.SyncAllSettings();
         }
+
+        Logger.Info($"Killer Is Alive: {killer.IsAlive()}, Target Is Alive: {target.IsAlive()}", "Check Is Alive");
     }
 }
 

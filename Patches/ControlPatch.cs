@@ -382,6 +382,7 @@ internal class HandleHUDPatch
     public static void Postfix(Rewired.Player player)
     {
         if (!GameStates.IsInGame) return;
+        if (GameStates.IsHideNSeek) return;
         if (player.GetButtonDown(8) && // 8:キルボタンのactionId
         PlayerControl.LocalPlayer.Data?.Role?.IsImpostor == false &&
         PlayerControl.LocalPlayer.CanUseKillButton())

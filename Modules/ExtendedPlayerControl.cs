@@ -654,19 +654,19 @@ static class ExtendedPlayerControl
     public static bool CanUseImpostorVentButton(this PlayerControl pc)
     {
         // vents are broken on dleks and cannot be fixed on host side
-        if (GameStates.IsNormalGame)
-        {
-            if (Options.IsActiveDleks)
-            {
-                return pc.GetCustomRole() switch
-                {
-                    CustomRoles.Arsonist => pc.IsDouseDone() || (Options.ArsonistCanIgniteAnytime.GetBool() && (Utils.GetDousedPlayerCount(pc.PlayerId).Item1 >= Options.ArsonistMinPlayersToIgnite.GetInt() || pc.inVent)),
-                    CustomRoles.Revolutionist => pc.IsDrawDone(),
-                    _ => false,
-                };
-            }
-        }
-        else if (GameStates.IsHideNSeek) return true;
+        //if (GameStates.IsNormalGame)
+        //{
+        //    if (Options.IsActiveDleks)
+        //    {
+        //        return pc.GetCustomRole() switch
+        //        {
+        //            CustomRoles.Arsonist => pc.IsDouseDone() || (Options.ArsonistCanIgniteAnytime.GetBool() && (Utils.GetDousedPlayerCount(pc.PlayerId).Item1 >= Options.ArsonistMinPlayersToIgnite.GetInt() || pc.inVent)),
+        //            CustomRoles.Revolutionist => pc.IsDrawDone(),
+        //            _ => false,
+        //        };
+        //    }
+        //}
+        if (GameStates.IsHideNSeek) return true;
 
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel) return false;
         if (CopyCat.playerIdList.Contains(pc.PlayerId)) return true;
