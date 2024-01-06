@@ -1231,7 +1231,7 @@
   "HideGameSettings": "隐藏游戏设置",
   "DIYGameSettings": "显示自定义的/n消息",
   "PlayerCanSetColor": "允许玩家使用/color指令",
-  "PlayerCanUseQuitCommand": "Players can use the /quit command to leave the lobby forever",
+  "PlayerCanUseQuitCommand": "允许玩家使用/qt永远离开房间",
   "KPDCamouflageMode": "伪装效果为",
   "RoleOptions": "职业设置",
   "ModeOptions": "模组设置",
@@ -2246,6 +2246,8 @@
   "Message.MadmateSelfVoteModeNotify": "请注意：当前叛徒生成模式为[{0}]\n投票给自己代表你希望成为叛徒。若你符合成为叛徒的条件且还有剩余名额，将立刻成为叛徒。",
   "Message.HostLeftGameInGame": "★警告★：房主已退出游戏，接下来游戏将无法正常运行，请各位退出游戏，或等待新房主重开游戏。",
   "Message.HostLeftGameInLobby": "★警告★：房主已退出游戏，接下来游戏将无法正常运行，若新房主已安装TOHE，需要至少重开一次房间才能正常游戏。",
+  "Message.HostLeftGameNewHostIsMod": "★警告★ 原房主暴毙啦！<b>{0}</b>成为了新的统治者！\n运气不错，新房主还是有mod的，这个房还没炸，只要强制结束再重开就可以啦！",
+  "Message.HostLeftGameNewHostIsNotMod": "★警告★ 原房主暴毙啦！<b>{0}</b>成为了新的统治者！\n糟糕，新房主没mod，这房爆了！赶紧退出跑路吧！",
   "Message.LobbyShared": "已请求车队姬群发你的房号",
   "Message.LobbyShareFailed": "车队姬似乎不在线捏",
   "Message.YTPlanDisabled": "<color=#ff1919><size=150%><b>错误</b></size></color>\n<color=#ff1919>请在设置启用 <b>{0}</b> </color>",
@@ -3549,5 +3551,5 @@
   "ImpCanBeSilent": "<color=#ff1919>内鬼阵营</color>可以成为沉默者",
   "CrewCanBeSilent": "<color=#8cffff>船员阵营</color>可以成为沉默者",
   "NeutralCanBeSilent": "<color=#7f8c8d>中立阵营</color>可以成为沉默者",
-  "LastMessageReplay": "上个系统消息重新发布"
+  "LastMessageReplay": "在刷屏后向玩家补发上一条系统消息"
 }
