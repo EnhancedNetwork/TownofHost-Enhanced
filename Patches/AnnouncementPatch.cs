@@ -64,7 +64,7 @@ public class ModNewsHistory
                         "\n     - Keeper (Support Crewmate - By: ryuk)" +
                         "\n     - Captain (Power Crewmate - By: ryuk)" +
                         "\n     - Mole (Basic Crewmate - By: ryuk)" +
-                        "\n     - Nice Guesser (Basic Crewmate - By: ryuk)" +
+                        "\n     - Guess Master (Basic Crewmate - By: ryuk)" +
                         "\n     - Kamikaze (Support Impostor - By: Drakos)" +
                         "\n     - Solsticer (Experimental Neutral - By: NikoCat223)" +
                         "\n     - Flash (Helpful Addon - By: NikoCat223)" +
