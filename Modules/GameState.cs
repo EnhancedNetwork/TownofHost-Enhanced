@@ -397,6 +397,7 @@ public class PlayerState
         Targeted,
         Retribution,
 
+        //Please add all new roles with deathreason & new deathreason in Susceptible.CallEnabledAndChange
         etc = -1,
     }
     public byte GetRealKiller()
