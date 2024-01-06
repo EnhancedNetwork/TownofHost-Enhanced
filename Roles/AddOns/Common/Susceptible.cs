@@ -39,7 +39,7 @@ namespace TOHE.Roles.AddOns.Common
 
             if (EnabledDeathReasons.GetBool())
             {
-                Logger.Info($"{victim.GetNameWithRole()} had the deathreason {CheckReason}", "Susceptible");
+                Logger.Info($"{victim.GetNameWithRole()} had the deathreason {randomReason}", "Susceptible");
                 switch (randomReason) 
                 { 
                     case PlayerState.DeathReason.Eaten:
