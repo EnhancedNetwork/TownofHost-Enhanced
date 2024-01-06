@@ -38,7 +38,6 @@ namespace TOHE.Roles.AddOns.Common
         {
             ChangeRandomDeath();
 
-
             if (EnabledDeathReasons.GetBool())
             {
                 Logger.Info($"{victim.GetNameWithRole()} had the deathreason {CheckReason}", "Susceptible");
