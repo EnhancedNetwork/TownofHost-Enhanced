@@ -433,11 +433,11 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
-                    Number = 100007,
+                    Number = 90006,
                     Title = "Town of Host: Enhanced v1.4.0",
                     SubTitle = "★★ Постоянные обновления, ура! ★★",
                     ShortTitle = "TOH: Enhanced v1.4.0",
-                    BeforeNumber = 100006,
+                    BeforeNumber = 90006,
                     Text = "<size=150%>Добро пожаловать в TOH: Enhanced v1.4.0!</size>\n" +
                     "\n<b>【Основан】</b>\n - Онован на TOH: Enhanced v1.3.0\r\n" +
 
