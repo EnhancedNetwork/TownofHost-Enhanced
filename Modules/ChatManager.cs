@@ -13,11 +13,21 @@ namespace TOHE.Modules.ChatManager
     {
         public static bool cancel = false;
         private static List<Dictionary<byte, string>> chatHistory = new();
+        private static Dictionary<byte, string> LastSystemChatMsg = new();
         private const int maxHistorySize = 20;
         public static List<string> ChatSentBySystem = new();
         public static void ResetHistory()
         {
             chatHistory = new();
+            LastSystemChatMsg = new();
+        }
+        public static void ClearLastSysMsg()
+        {
+            LastSystemChatMsg.Clear();
+        }
+        public static void AddSystemChatHistory(byte playerId, string msg)
+        {
+            LastSystemChatMsg[playerId] = msg;
         }
         public static bool CheckCommond(ref string msg, string command, bool exact = true)
         {
@@ -84,7 +94,6 @@ namespace TOHE.Modules.ChatManager
                 ChatSentBySystem.Add(getTextHash(text));
             }
         }
-
         public static void SendMessage(PlayerControl player, string message)
         {
             int operate = 0; // 1:ID 2:猜测
@@ -262,6 +271,13 @@ namespace TOHE.Modules.ChatManager
                 {
                     senderPlayer.Die(DeathReason.Kill, true);
                 }
+            }
+            foreach (var playerId in LastSystemChatMsg.Keys)
+            {
+                var pc = Utils.GetPlayerById(playerId);
+                if (pc == null && playerId != byte.MaxValue) continue;
+                var title = "<color=#FF0000>" + GetString("LastMessageReplay") + "</color>";
+                Utils.SendMessage(LastSystemChatMsg[playerId], playerId, title: title, replay: true);
             }
         }
     }

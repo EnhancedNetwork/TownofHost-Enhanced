@@ -105,7 +105,7 @@ class RepairSystemPatch
                 break;
         }
         if (player.Is(CustomRoles.Repairman))
-            Repairman.RepairSystem(__instance, systemType, amount);
+            Repairman.RepairSystem(__instance, systemType, amount, player.PlayerId);
 
 
         if (player.Is(CustomRoles.Unlucky) && player.IsAlive()

@@ -1167,8 +1167,12 @@ static class CustomRolesHelper
             case CustomRoles.DoubleShot:
                 if (!Options.GuesserMode.GetBool() && !pc.Is(CustomRoles.EvilGuesser) && !pc.Is(CustomRoles.NiceGuesser) && !pc.Is(CustomRoles.Doomsayer) && !pc.Is(CustomRoles.Guesser))
                     return false;
-                if (pc.Is(CustomRoles.CopyCat) ||
-                    pc.Is(CustomRoles.Workaholic) && !Options.WorkaholicCanGuess.GetBool())
+                if (pc.Is(CustomRoles.CopyCat) 
+                    || pc.Is(CustomRoles.Workaholic) && !Options.WorkaholicCanGuess.GetBool()
+                    || (pc.Is(CustomRoles.Terrorist) && (!Options.TerroristCanGuess.GetBool() || Options.CanTerroristSuicideWin.GetBool())
+                    || (pc.Is(CustomRoles.Phantom) && !Options.PhantomCanGuess.GetBool()))
+                    || (pc.Is(CustomRoles.Solsticer) && !Solsticer.SolsticerCanGuess.GetBool())
+                    || (pc.Is(CustomRoles.God) && !Options.GodCanGuess.GetBool()))
                     return false;
                 if (Options.GuesserMode.GetBool())
                 {
@@ -1468,6 +1472,7 @@ static class CustomRolesHelper
 
             case CustomRoles.Mare:
                 if (pc.Is(CustomRoles.Underdog)
+                    || pc.Is(CustomRoles.Berserker)
                     || pc.Is(CustomRoles.Inhibitor)
                     || pc.Is(CustomRoles.Saboteur)
                     || pc.Is(CustomRoles.Swift)

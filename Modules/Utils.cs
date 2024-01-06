@@ -151,6 +151,12 @@ public static class Utils
 
         //Logger.Info($"{type}", "SystemTypes");
 
+        // if ShipStatus not have current SystemTypes, return false
+        if (!ShipStatus.Instance.Systems.ContainsKey(type))
+        {
+            return false;
+        }
+
         switch (type)
         {
             case SystemTypes.Electrical:
@@ -162,10 +168,6 @@ public static class Utils
             case SystemTypes.Reactor:
                 {
                     if (mapId == 2) return false; // if Polus return false
-                    else if (mapId is 4) // Only Airhip
-                    {
-                        return IsActive(SystemTypes.HeliSabotage);
-                    }
                     else
                     {
                         var ReactorSystemType = ShipStatus.Instance.Systems[type].Cast<ReactorSystemType>();
@@ -186,7 +188,7 @@ public static class Utils
                 }
             case SystemTypes.HeliSabotage:
                 {
-                    if (mapId != 4) return false;// Only Airhip
+                    if (mapId != 4) return false; // Only Airhip
                     var HeliSabotageSystem = ShipStatus.Instance.Systems[type].Cast<HeliSabotageSystem>();
                     return HeliSabotageSystem != null && HeliSabotageSystem.IsActive;
                 }
@@ -206,13 +208,19 @@ public static class Utils
             case SystemTypes.MushroomMixupSabotage:
                 {
                     if (mapId != 5) return false; // Only The Fungle
-                    var MushroomMixupSabotageSystem = ShipStatus.Instance.Systems[type].Cast<MushroomMixupSabotageSystem>();
+                    var MushroomMixupSabotageSystem = ShipStatus.Instance.Systems[type].TryCast<MushroomMixupSabotageSystem>();
                     return MushroomMixupSabotageSystem != null && MushroomMixupSabotageSystem.IsActive;
                 }
             default:
                 return false;
         }
     }
+    public static SystemTypes GetCriticalSabotageSystemType() => (MapNames)Main.NormalOptions.MapId switch
+    {
+        MapNames.Polus => SystemTypes.Laboratory,
+        MapNames.Airship => SystemTypes.HeliSabotage,
+        _ => SystemTypes.Reactor,
+    };
     public static void SetVision(this IGameOptions opt, bool HasImpVision)
     {
         if (HasImpVision)
@@ -291,16 +299,8 @@ public static class Utils
     }
     public static void KillFlash(this PlayerControl player)
     {
-        //キルフラッシュ(ブラックアウト+リアクターフラッシュ)の処理
-        bool ReactorCheck = false; //リアクターフラッシュの確認
-
-        var systemtypes = (MapNames)Main.NormalOptions.MapId switch
-        {
-            MapNames.Polus => SystemTypes.Laboratory,
-            MapNames.Airship => SystemTypes.HeliSabotage,
-            _ => SystemTypes.Reactor,
-        };
-        ReactorCheck = IsActive(systemtypes);
+        // Kill flash (blackout flash + reactor flash)
+        bool ReactorCheck = IsActive(GetCriticalSabotageSystemType());
 
         var Duration = Options.KillFlashDuration.GetFloat();
         if (ReactorCheck) Duration += 0.2f; //リアクター中はブラックアウトを長くする
@@ -1711,9 +1711,11 @@ public static class Utils
             }
         }
     }
-    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false)
+    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
+        if (!replay && GameStates.IsInGame) ChatManager.AddSystemChatHistory(sendTo, text);
+
         if (title == "") title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
 
         if (sendTo != byte.MaxValue)
@@ -2339,7 +2341,8 @@ public static class Utils
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.SuperStar), "★"));
 
                         if (Captain.IsEnable)
-                            if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) && 
+                            if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) &&
+                                (target.GetPlayerTaskState().CompletedTasksCount >= Captain.OptionTaskRequiredToReveal.GetInt()) &&
                                 (seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
                                 TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Captain), " ☆"));
 
@@ -2629,6 +2632,7 @@ public static class Utils
     }
     public static void AfterMeetingTasks()
     {
+        ChatManager.ClearLastSysMsg();
         if (Options.DiseasedCDReset.GetBool())
         {
             foreach (var pid in Main.KilledDiseased.Keys.ToArray())
@@ -2833,6 +2837,17 @@ public static class Utils
         System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo("Explorer.exe")
         { Arguments = "/e,/select," + @filename.Replace("/", "\\") };
         System.Diagnostics.Process.Start(psi);
+
+        if (!AmongUsClient.Instance.AmHost && GameStates.IsOnlineGame && GameStates.IsModHost)
+        {
+            if (!PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug)
+            {
+                var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+                    (byte)CustomRPC.DumpLog, SendOption.Reliable, AmongUsClient.Instance.HostId);
+                writer.Write(PlayerControl.LocalPlayer.PlayerId);
+                AmongUsClient.Instance.FinishRpcImmediately(writer);
+            }
+        }
     }
     public static (int, int) GetDousedPlayerCount(byte playerId)
     {

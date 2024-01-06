@@ -18,7 +18,7 @@ innerdodge#6269,原版非mod
 agileneap#1421,Dishfa
 halcyondew#6797,IShowSpeed
 localclue#9040,b站 残暴fell?
-flexsleepy#7693,煎饼
+flexsleepy#7693,6c225be6e,cch篸莀 //AUM
 squishsafe#1232,花生味的名字
 tipbright#9969,11
 nounpurple#8471,ewr32424
@@ -75,6 +75,8 @@ curtsyboth#4114,1f9bbee79,龙傲天》//MalumMenu
 shyfortune#7692,526f950da,B站日常无语的无语君 //AUM
 0a4f7e294,Melani //no friendcode hacker
 sprysign#5596,064c15bb6,Onion
+musksolid#9543,troutdusky#6471,a9b3569f5,c40cfe547,caf7d691c,covid20 //Spoofed MalumMenu
+errantlug#6514,79f0cbe07,Kerbpoetic //AUM
 
 ## Griefer
 setmolar#4374,藏族顶针
