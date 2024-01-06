@@ -13,6 +13,7 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
+using UnityEngine.TextCore;
 using static TOHE.Translator;
 
 
@@ -49,7 +50,6 @@ internal class ChatCommands
         {
             ChatManager.SendMessage(PlayerControl.LocalPlayer, text);
         }
-
         //if (text.Length >= 3) if (text[..2] == "/r" && text[..3] != "/rn" && text[..3] != "/rs") args[0] = "/r";
         if (text.Length >= 4) if (text[..3] == "/up") args[0] = "/up";
 
@@ -84,11 +84,34 @@ internal class ChatCommands
             case "/versão":
                 canceled = true;
                 string version_text = "";
-                foreach (var kvp in Main.playerVersion.OrderBy(pair => pair.Key).ToArray())
+                var player = PlayerControl.LocalPlayer;
+                var title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
+                var name = player?.Data?.PlayerName;
+                try
                 {
-                    version_text += $"{kvp.Key}:{Main.AllPlayerNames[kvp.Key]}:{kvp.Value.forkId}/{kvp.Value.version}({kvp.Value.tag})\n";
+                    foreach (var kvp in Main.playerVersion.OrderBy(pair => pair.Key).ToArray())
+                    {
+                        var pc = Utils.GetClientById(kvp.Key)?.Character;
+                        version_text += $"{kvp.Key}/{(pc?.PlayerId != null ? pc.PlayerId.ToString() : "null")}:{pc?.GetRealName() ?? "null"}:{kvp.Value.forkId}/{kvp.Value.version}({kvp.Value.tag})\n";
+                    }
+                    if (version_text != "")
+                    {
+                        player.SetName(title);
+                        DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, version_text);
+                        player.SetName(name);
+                    }
                 }
-                if (version_text != "") HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, (PlayerControl.LocalPlayer.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + version_text);
+                catch (Exception e)
+                {
+                    Logger.Error(e.Message, "/version");
+                    version_text = "Error while getting version : " + e.Message;
+                    if (version_text != "")
+                    {
+                        player.SetName(title);
+                        DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, version_text);
+                        player.SetName(name);
+                    }
+                }
                 break;
             default:
                 Main.isChatCommand = false;
@@ -1055,6 +1078,7 @@ internal class ChatCommands
             "大明星" or "明星" => GetString("SuperStar"),
             "網紅" or "网红" => GetString("CyberStar"),
             "清洗者" or "清洗" => GetString("Cleanser"),
+            "守衛者" or "守卫者" => GetString("Keeper"),
             "俠客" or "侠客" or "正义使者" => GetString("SwordsMan"),
             "市長" or "市长" => GetString("Mayor"),
             "被害妄想症" or "被害妄想" or "被迫害妄想症" or "被害" or "妄想" or "妄想症" => GetString("Paranoia"),
@@ -1071,6 +1095,7 @@ internal class ChatCommands
             "獨裁主義者" or "独裁者" or "独裁" => GetString("Dictator"),
             "偵探" or "侦探" => GetString("Detective"),
             "正義賭怪" or "正义赌怪" or "好赌" or "正义的赌怪" => GetString("NiceGuesser"),
+            "賭場管理員" or "竞猜大师" or "竞猜" => GetString("GuessMaster"),
             "傳送師" or "传送师" => GetString("Transporter"),
             "時間大師" or "时间操控者" or "时间操控" => GetString("TimeManager"),
             "老兵" => GetString("Veteran"),
@@ -1096,6 +1121,7 @@ internal class ChatCommands
             "算命師" or "研究者" => GetString("Investigator"),
             "守護者" or "守护者" or "守护" => GetString("Guardian"),
             "賢者" or "瘾君子" or "醉酒" => GetString("Addict"),
+            "鼹鼠" => GetString("Mole"),
             "藥劑師" or "炼金术士" or "药剂" => GetString("Alchemist"),
             "尋跡者" or "寻迹者" or "寻迹" or "寻找鸡腿" => GetString("Tracefinder"),
             "先知" or "神谕" or "神谕者" => GetString("Oracle"),
@@ -1118,15 +1144,13 @@ internal class ChatCommands
             "隨機者" or "萧暮" or "暮" or "萧暮不姓萧" => GetString("Randomizer"),
             "猜想者" or "猜想" or "谜团" => GetString("Enigma"),
             "船長" or "舰长" or "船长" => GetString("Captain"),
-            "鼹鼠" => GetString("Mole"),
             "慈善家" or "恩人" => GetString("Benefactor"),
-            "守衛者" or "守卫者" => GetString("Keeper"),
-            "賭場管理員" or "竞猜大师" or "竞猜" => GetString("GuessMaster"),
 
             // 中立阵营职业
             "小丑" or "丑皇" => GetString("Jester"),
             "縱火犯" or "纵火犯" or "纵火者" or "纵火" => GetString("Arsonist"),
             "焚燒狂" or "焚烧狂" or "焚烧" => GetString("Pyromaniac"),
+            "神風特攻隊" or "神风特攻队" => GetString("Kamikaze"),
             "獵人" or "猎人" => GetString("Huntsman"),
             "恐怖分子" => GetString("Terrorist"),
             "暴民" or "处刑人" or "处刑" or "处刑者" => GetString("Executioner"),
@@ -1145,7 +1169,7 @@ internal class ChatCommands
             "工作狂" => GetString("Workaholic"),
             "至日者" or "至日" => GetString("Solsticer"),
             "集票者" or "集票" => GetString("Collector"),
-            "神風特攻隊" or "自爆卡车" => GetString("Provocateur"),
+            "挑釁者" or "自爆卡车" => GetString("Provocateur"),
             "嗜血騎士" or "嗜血骑士" => GetString("BloodKnight"),
             "瘟疫之源" or "瘟疫使者" => GetString("PlagueBearer"),
             "萬疫之神" or "瘟疫" => GetString("Pestilence"),
@@ -1159,7 +1183,7 @@ internal class ChatCommands
             "感染者" or "感染" => GetString("Infectious"),
             "病原體" or "病毒" => GetString("Virus"),
             "起訴人" or "起诉人" => GetString("Pursuer"),
-            "怨靈" or "怨灵" => GetString("Phantom"),
+            "怨靈" or "幽灵" => GetString("Phantom"),
             "挑戰者" or "决斗者" or "挑战者" => GetString("Pirate"),
             "炸彈王" or "炸弹狂" or "煽动者" => GetString("Agitater"),
             "獨行者" or "独行者" => GetString("Maverick"),
@@ -1172,6 +1196,7 @@ internal class ChatCommands
             "飢荒" or "饥荒" => GetString("Famine"),
             "靈魂召喚者" or "灵魂召唤者" => GetString("Spiritcaller"),
             "失憶者" or "失忆者" or "失忆" => GetString("Amnesiac"),
+            "模仿家" or "效仿者" => GetString("Imitator"),
             "強盜" => GetString("Bandit"),
             "分身者" => GetString("Doppelganger"),
             "受虐狂" => GetString("Masochist"),
@@ -1232,7 +1257,7 @@ internal class ChatCommands
             "幸運" or "幸运加持" => GetString("Lucky"),
             "倒霉" or "倒霉蛋" => GetString("Unlucky"),
             "虛無" or "无效投票" => GetString("VoidBallot"),
-            "敏感" or "意识到" => GetString("Aware"),
+            "敏感" or "意识者" or "意识" => GetString("Aware"),
             "嬌嫩" or "脆弱" => GetString("Fragile"),
             "專業" or "双重猜测" => GetString("DoubleShot"),
             "流氓" => GetString("Rascal"),
@@ -1612,18 +1637,25 @@ internal class ChatCommands
             case "/quit":
             case "/qt":
             case "/sair":
-                subArgs = args.Length < 2 ? "" : args[1];
-                var cid = player.PlayerId.ToString();
-                cid = cid.Length != 1 ? cid.Substring(1, 1) : cid;
-                if (subArgs.Equals(cid))
+                if (Options.PlayerCanUseQuitCommand.GetBool())
                 {
-                    string name = player.GetRealName();
-                    Utils.SendMessage(string.Format(GetString("Message.PlayerQuitForever"), name));
-                    AmongUsClient.Instance.KickPlayer(player.GetClientId(), true);
+                    subArgs = args.Length < 2 ? "" : args[1];
+                    var cid = player.PlayerId.ToString();
+                    cid = cid.Length != 1 ? cid.Substring(1, 1) : cid;
+                    if (subArgs.Equals(cid))
+                    {
+                        string name = player.GetRealName();
+                        Utils.SendMessage(string.Format(GetString("Message.PlayerQuitForever"), name));
+                        AmongUsClient.Instance.KickPlayer(player.GetClientId(), true);
+                    }
+                    else
+                    {
+                        Utils.SendMessage(string.Format(GetString("SureUse.quit"), cid), player.PlayerId);
+                    }
                 }
                 else
                 {
-                    Utils.SendMessage(string.Format(GetString("SureUse.quit"), cid), player.PlayerId);
+                    Utils.SendMessage(GetString("DisableUseCommand"), player.PlayerId);
                 }
                 break;
             case "/id":
@@ -2045,7 +2077,7 @@ internal class ChatCommands
                     if (args.Length > 1)
                         Utils.SendMessage(args.Skip(1).Join(delimiter: " "), title: $"<color={Main.ModColor}>{GetString("MessageFromDev")}</color>");
                 }
-                else if (player.FriendCode.IsDevUser())
+                else if (player.FriendCode.IsDevUser() && !dbConnect.IsBooster(player.FriendCode))
                 {
                     if (args.Length > 1)
                         Utils.SendMessage(args.Skip(1).Join(delimiter: " "), title: $"<color=#4bc9b0>{GetString("MessageFromSponsor")}</color>");
@@ -2060,7 +2092,7 @@ internal class ChatCommands
                     else
                     {
                         if (args.Length > 1)
-                            Utils.SendMessage(args.Skip(1).Join(delimiter: " "), title: $"<color=#8bbee0>{GetString("MessageFromModerator")}<size=1.25>{player.GetRealName()}</size></color>");
+                            Utils.SendMessage(args.Skip(1).Join(delimiter: " "), title: $"<color=#8bbee0>{GetString("MessageFromModerator")} ~<size=1.25>{player.GetRealName()}</size></color>");
                         //string moderatorName3 = player.GetRealName().ToString();
                         //int startIndex3 = moderatorName3.IndexOf("♥</color>") + "♥</color>".Length;
                         //moderatorName3 = moderatorName3.Substring(startIndex3);

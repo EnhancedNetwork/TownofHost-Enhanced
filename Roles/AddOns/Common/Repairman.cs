@@ -41,7 +41,7 @@ public static class Repairman
         playerIdList.Add(playerId);
         IsEnable = true;
     }
-    public static void RepairSystem(ShipStatus __instance, SystemTypes systemType, byte amount)
+    public static void RepairSystem(ShipStatus __instance, SystemTypes systemType, byte amount, byte playerId)
     {
         switch (systemType)
         {
@@ -106,6 +106,7 @@ public static class Repairman
                 DoorsProgressing = false;
                 break;
         }
+        Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(playerId));
     }
     public static void SwitchSystemRepair(SwitchSystem __instance, byte amount)
     {

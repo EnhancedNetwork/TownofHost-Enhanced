@@ -13,16 +13,17 @@ public static class ServerAddManager
     private static ServerManager serverManager = DestroyableSingleton<ServerManager>.Instance;
     public static void Init()
     {
-        if (CultureInfo.CurrentCulture.Name.StartsWith("zh") && serverManager.AvailableRegions.Count == 7) return;
-        if (!CultureInfo.CurrentCulture.Name.StartsWith("zh") && serverManager.AvailableRegions.Count == 6) return;
+        if (CultureInfo.CurrentCulture.Name.StartsWith("zh") && serverManager.AvailableRegions.Count == 10) return;
+        if (!CultureInfo.CurrentCulture.Name.StartsWith("zh") && serverManager.AvailableRegions.Count == 7) return;
 
         serverManager.AvailableRegions = ServerManager.DefaultRegions;
         List<IRegionInfo> regionInfos = new();
 
         if (CultureInfo.CurrentCulture.Name.StartsWith("zh"))
         {
-            regionInfos.Add(CreateHttp("au-sh.pafyx.top", "梦服上海 (新)", 22000, false));
-            //regionInfos.Add(CreateHttp("120.78.171.61", "霸总广州", 22000, false));
+            regionInfos.Add((CreateHttp("45yun.cn", "小猫[北京]", 22000, false)));
+            regionInfos.Add((CreateHttp("45yun.cn", "小猫[成都]", 2267, false)));
+            regionInfos.Add((CreateHttp("mau.kaifuxia.top", "新梦初[上海]", 25000, false)));
         }
         regionInfos.Add(CreateHttp("au-as.duikbo.at", "Modded Asia (MAS)", 443, true));
         regionInfos.Add(CreateHttp("www.aumods.us", "Modded NA (MNA)", 443, true));
