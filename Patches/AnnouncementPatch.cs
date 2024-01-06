@@ -1483,7 +1483,7 @@ public class ModNewsHistory
                         "\n     - Maître penseur (Coéquipier Basique - Par: ryuk)" +
                         "\n     - Kamikaze (Imposteur de support - Par: Drakos)" +
                         "\n     - Solsticer (Neutre éxperimental - Par: NikoCat223)" +
-                        "\n     - Flash (Modifieur Utile - Par: NikoCat223)" +
+                        "\n     - Flash (Modifieur Utile - Par: TommyXL)" +
                         "\n     - Discret (Modifieur Utile - Par: NikoCat223)" +
                         "\n     - Banal (Modifieur Nuisible - Par: ryuk)\r\n" +
 
@@ -1825,6 +1825,82 @@ public class ModNewsHistory
                 AllModNews.Add(news);
             }
         }
+        // ====== Italian ======
+        else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.Italian)
+        {
+            {
+                var news = new ModNews()
+                {
+                    Number = 100007,
+                    Title = "Town of Host: Enhanced v1.4.0",
+                    SubTitle = "★★ Aggiornamenti consistenti, evvai! ★★",
+                    ShortTitle = "TOH: Enhanced v1.4.0",
+                    BeforeNumber = 100006,
+                    Text = "<size=150%>Benvenuto a TOH: Enhanced v1.4.0!</size>\n" +
+                    "\n<b>【Base】</b>\n - Base su TOH: Enhanced v1.3.0\r\n" +
+
+                    "\n<b>【Nuovi Ruoli/Modificatori】(7 Ruoli, 3 Modificatori)</i></b>" +
+                        "\n     - Benefattore (Astronauta Supporto - Da: ryuk)" +
+                        "\n     - Custode (Astronauta Supporto - Da: ryuk)" +
+                        "\n     - Capitano (Astronauta Potere - Da: ryuk)" +
+                        "\n     - Talpa (Astronauta Base - Da: ryuk)" +
+                        "\n     - Maestro Indovino (Astronauta Base - Da: ryuk)" +
+                        "\n     - Kamikaze (Impostore Supporto - Da: Drakos)" +
+                        "\n     - Impiegato (Neutrale Sperimentale - Da: NikoCat223)" +
+                        "\n     - Veloce (Modificatori Utili - Da: NikoCat223)" +
+                        "\n     - Silenzioso (Modificatori Utili - Da: NikoCat223)" +
+                        "\n     - Mondano (Modificatori Dannosi - Da: ryuk)" +
+
+                    "\n<b>【Nuove Impostazioni】</b>" +
+                        "\n     - dlekS ehT !appaM avouN (Grazie sleepyut (@Galster-dev su GitHub) e TommyXL)" +
+                        "\n     - Nuova Modalita: FFA presa da TOHE+ (da: ryuk, Ringraziamenti Speciali: Gurge44)" +
+                        "\n     - Aggiunti comandi chat /tpin, /tpout - Teletrasporta i giocatori all'interno o esterno della nave in lobby (Da: ryuk)" +
+                        "\n     - Nuova Impostazione: Prevenire /quit a causa di un uso dannoso (Da: Furo)" +
+                        "\n     - Nuova Impostazione: Cambia il Tempo di Decontaminazione (Molto bella! Provala! Da: TommyXL)" +
+                        "\n     - Impostazione Ritornata: Rimuovi i Compagni ai Giocatori Morti " +
+                        "\n     - Nuova Regione: Sudamerica Modificato - MSA (Da: Pietro)" +
+                        "\n     - Nuova Regione: Cinese Modificato - Multiplo (Da: NikoCat223)" +
+                        "\n     - Nuovo Bottone: Aggiorna! Ora aggiorna la mod in automatico! (Da: Pietro)" +
+
+                    "\n<b>【Cambiamenti】</b>" +
+                        "\n     - Aggiunte icone di abilità: Avvoltoio, Persecutore e Ripulitore (Da: LeziYa)" +
+                        "\n     - Leggibilità del registro aggiornata (Da: TommyXL)" +
+                        "\n     - Anti-Cheat Migliorato (EAC) ora eseguito dall'API (Da: ryuk & Moe)" +
+                        "\n     - Sciocco (Modificatore) Ora è incompatibile con il Riparatore (Modificatore) per evitare errori (Da: ryuk)" +
+                        "\n     - Il sistema ora invia un messaggio dopo la cancellazione - Molto Utile! (Da: ryuk)" +
+
+                    "\n<b>【Correzioni di Bug】</b>" +
+                        "\n     - Correzione della stringa non valida dell'Alchimista (Da: Drakos)" +
+                        "\n     - I voti ora ritornano se un giocatore muore a metà turno o si disconnette (Da: NikoCat223, ryuk)" +
+                        "\n     - Molteplici Correzioni di Bug (Da: NikoCat233, LezaiYa)" +
+                        "\n     - Enigma errore di battitura (Da: Plaguer)" +
+                        "\n     - Prevent-MM-Mass-Shapeshift - Imposta la notifica del giocatore imbroglione su \"Notify\" (Da: NikoCat223)" +
+                        "\n     - Rimossi i ruoli non necessari dall'interfaccia Indovino (Da: NikoCat223)" +
+                        "\n     - Risolto il problema con Stacanovista che otteneva Svincolato, Rimbalzo e Seconda Chance quando Anti-Indovina era abilitato" +
+
+                    "\n<b>【Crediti ai Traduttori】</b>" +
+                        "\n     - Brasiliano (Da: Dx7405)" +
+                        "\n     - Olandese (Da: apemv, madmazel_)" +
+                        "\n     - Francese (Da: FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                        "\n     - Italiano (Da: alot, Baphojack, Mattix606)" +
+                        "\n     - Giapponese (Da: Sunnyboi)" +
+                        "\n     - Latino Americano (Da: CreepPower)" +
+                        "\n     - Russo (Da: chill_ultimated, Nevermore59, Shoulder Devil, TommyXL)" +
+                        "\n     - Cinese Semplificato (Da: CrewCyan, Hinharrrrr, LezaiYa, NikoCat223)" +
+                        "\n     - Spagnolo (Da: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
+                        "\n     - Cinese Tradizionale (Da: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
+                        "\n<b> Scopri tutti i nostri traduttori sul nostro sito web</b>\r\n" +
+
+                    "\n<b>【Diverse altre correzioni varie apportate dagli sviluppatori sopra!】</b>\r\n" +
+
+
+                    "\n\n★ Benvenuto a Town of Host: Enhanced v1.4.0 ★",
+
+                    Date = "2024-1-6T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+        }
         // ====== Brazilian ======
         else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.Brazilian)
         {
@@ -1920,7 +1996,7 @@ public class ModNewsHistory
                         "\n     - Mestre Apostador (Tripulante Básico - por: ryuk)" +
                         "\n     - Kamikaze (Impostor Suporte - por: Drakos)" +
                         "\n     - Speedrunner (Neutro Experimental - por: NikoCat223)" +
-                        "\n     - Flash (Atributo Útil - por: NikoCat223)" +
+                        "\n     - Flash (Atributo Útil - por: TommyXL)" +
                         "\n     - Silencioso (Atributo Útil - por: NikoCat223)" +
                         "\n     - Mundano (Atributo Prejudicial - por: ryuk)\r\n" +
 
