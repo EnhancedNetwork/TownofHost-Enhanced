@@ -3307,7 +3307,7 @@ public static class Options
         TextOptionItem.Create(10000027, "MenuTitle.Disable", TabGroup.GameSettings)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue))
             .SetGameMode(CustomGameMode.Standard)
-            .SetGameMode(CustomGameMode.FFA); ;
+            .SetGameMode(CustomGameMode.FFA);
 
         DisableShieldAnimations = BooleanOptionItem.Create(60560, "DisableShieldAnimations", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
