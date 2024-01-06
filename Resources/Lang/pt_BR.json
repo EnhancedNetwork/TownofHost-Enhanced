@@ -1231,7 +1231,7 @@
   "HideGameSettings": "Esconder Configurações da Sala",
   "DIYGameSettings": "Habilitar somente mensagens /n",
   "PlayerCanSetColor": "Jogadores podem usar o comando /color",
-  "PlayerCanUseQuitCommand": "Players can use the /quit command to leave the lobby forever",
+  "PlayerCanUseQuitCommand": "Os jogadores podem usar o comando /quit para sair do lobby para sempre",
   "KPDCamouflageMode": "Aparência da Camuflagem",
   "RoleOptions": "Opções de Função",
   "ModeOptions": "Opções de Modo",
@@ -2246,6 +2246,8 @@
   "Message.MadmateSelfVoteModeNotify": "Observação: O modo atual de geração de Cúmplices é [{0}]\n Votar em si mesmo significa que você quer ser um Cúmplice. Se você reunir as condições para se tornar um Cúmplice e ainda restar vagas, você se tornará um Cúmplice imediatamente",
   "Message.HostLeftGameInGame": "★ Aviso ★ O anfitrião saiu do jogo, na próxima vez o jogo não iniciaria normalmente. Por favor, saia do lobby ou espere até que o novo anfitrião abra um lobby.",
   "Message.HostLeftGameInLobby": "★ Aviso ★ O anfitrião saiu do jogo, na próxima vez o jogo não iniciaria normalmente. Se o novo anfitrião tiver o TOHE, você precisará entrar novamente no lobby para jogar normalmente.",
+  "Message.HostLeftGameNewHostIsMod": "★Warning★ Original Host left the game and <b>{0}</b> become the new Host! \nThe room is still modded, just start a game and end it immediately to reset the lobby!",
+  "Message.HostLeftGameNewHostIsNotMod": "★Warning★ Original Host left the game and <b>{0}</b> become the new Host. \nBut it's not modded. Please, exit the lobby or wait until new Host opens a lobby.",
   "Message.LobbyShared": "O lobby foi compartilhado com sucesso!",
   "Message.LobbyShareFailed": "TOHE-Chan não parece estar online (falha ao compartilhar o lobby)",
   "Message.YTPlanDisabled": "<color=#ff1919><size=150%><b>ERRO</b></size></color>\n\n<color=#ff1919>Por favor, ative <b>{0}</b> nas configurações.</color>",
@@ -3549,5 +3551,5 @@
   "ImpCanBeSilent": "<color=#ff1919>Impostores</color> podem se tornar Silencioso",
   "CrewCanBeSilent": "<color=#8cffff>Tripulantes</color> podem se tornar Silencioso",
   "NeutralCanBeSilent": "<color=#7f8c8d>Neutros</color> podem se tornar Silencioso",
-  "LastMessageReplay": "Last System Message Replay"
+  "LastMessageReplay": "Repetição da última mensagem de sistema"
 }
