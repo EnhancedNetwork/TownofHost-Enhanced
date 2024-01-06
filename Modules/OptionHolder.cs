@@ -2471,7 +2471,9 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.Seer]);
         NeutralCanBeSeer = BooleanOptionItem.Create(20005, "NeutralCanBeSeer", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Seer]);
-        
+
+        Silent.SetupCustomOptions();
+
         SetupAdtRoleOptions(20100, CustomRoles.Sleuth, canSetNum: true);
         ImpCanBeSleuth = BooleanOptionItem.Create(20103, "ImpCanBeSleuth", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Sleuth]);
@@ -2505,8 +2507,6 @@ public static class Options
         NeutralCanBeWatcher = BooleanOptionItem.Create(20405, "NeutralCanBeWatcher", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Watcher]);
 
-        Silent.SetupCustomOptions();
-
         TextOptionItem.Create(10000016, "RoleType.Harmful", TabGroup.Addons) // HARMFUL
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 154, 206, byte.MaxValue));
@@ -2535,6 +2535,10 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
         FragileKillerLunge = BooleanOptionItem.Create(20609, "FragileKillerLunge", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
+
+        Hurried.SetupCustomOption();
+
+        Influenced.SetupCustomOption();
 
         Mundane.SetupCustomOption();
 
@@ -2593,10 +2597,6 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.VoidBallot]);
         NeutralCanBeVoidBallot = BooleanOptionItem.Create(21105, "NeutralCanBeVoidBallot", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.VoidBallot]);
-
-        Influenced.SetupCustomOption();
-
-        Hurried.SetupCustomOption();
 
         TextOptionItem.Create(10000017, "RoleType.Mixed", TabGroup.Addons) // MIXED
             .SetGameMode(CustomGameMode.Standard)

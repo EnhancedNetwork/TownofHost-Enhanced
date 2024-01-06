@@ -2246,6 +2246,8 @@
   "Message.MadmateSelfVoteModeNotify": "Nota: La generación de Locura actual es de [{0}]\n Votarse a sí mismo significa que quieres ser un Loco. Si todas las condiciones para serlo son correctas y queda sitios, pasarás al lado oscuro",
   "Message.HostLeftGameInGame": "★Aviso★ El Anfitrión se fue de la partida, la próxima partida será vanilla. Por favor, sal de esta sala o espera que un nuevo Anfitrión abra otra sala.",
   "Message.HostLeftGameInLobby": "★Aviso★ El Anfitrión se fue de la partida, la próxima partida será vanilla. Si el nuevo Anfitrión tiene Town of Host Enhanced, tendrás que desconectarte y volver para jugar con el mod.",
+  "Message.HostLeftGameNewHostIsMod": "★Warning★ Original Host left the game and <b>{0}</b> become the new Host! \nThe room is still modded, just start a game and end it immediately to reset the lobby!",
+  "Message.HostLeftGameNewHostIsNotMod": "★Warning★ Original Host left the game and <b>{0}</b> become the new Host. \nBut it's not modded. Please, exit the lobby or wait until new Host opens a lobby.",
   "Message.LobbyShared": "La sala fue compartida exitosamente",
   "Message.LobbyShareFailed": "TOHE-Chan ha sido discontinuado. Desactive la opción.",
   "Message.YTPlanDisabled": "<color=#ff1919><size=150%><b>ERROR</b></size></color>\n\n<color=#ff1919>Por favor active <b>{0}</b> en las Opciones</color>",
