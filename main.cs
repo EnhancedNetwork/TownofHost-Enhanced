@@ -96,7 +96,7 @@ public class Main : BasePlugin
     public static bool IsHostVersionCheating = false;
     public static ConfigEntry<bool> GodMode { get; private set; }
 
-    public static Dictionary<byte, PlayerVersion> playerVersion = new();
+    public static Dictionary<int, PlayerVersion> playerVersion = new();
     //Preset Name Options
     public static ConfigEntry<string> Preset1 { get; private set; }
     public static ConfigEntry<string> Preset2 { get; private set; }

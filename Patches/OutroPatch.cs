@@ -116,7 +116,7 @@ class SetEverythingUpPatch
 
     public static void Postfix(EndGameManager __instance)
     {
-        if (!Main.playerVersion.ContainsKey(0)) return;
+        if (!Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId)) return;
         //#######################################
         //          ==勝利陣営表示==
         //#######################################

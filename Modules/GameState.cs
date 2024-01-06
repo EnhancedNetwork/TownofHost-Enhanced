@@ -751,7 +751,7 @@ public static class GameStates
 {
     public static bool InGame = false;
     public static bool AlreadyDied = false;
-    public static bool IsModHost => PlayerControl.AllPlayerControls.ToArray().FirstOrDefault(x => x.PlayerId == 0 && x.IsModClient());
+    public static bool IsModHost => Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId);
     public static bool IsLobby => AmongUsClient.Instance.GameState == AmongUsClient.GameStates.Joined;
     public static bool IsInGame => InGame;
     public static bool IsEnded => AmongUsClient.Instance.GameState == AmongUsClient.GameStates.Ended;

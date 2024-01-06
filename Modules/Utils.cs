@@ -655,7 +655,7 @@ public static class Utils
     {
         try
         {
-            if (!Main.playerVersion.ContainsKey(0)) return string.Empty; //ホストがMODを入れていなければ未記入を返す
+            if (!Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId)) return string.Empty; //ホストがMODを入れていなければ未記入を返す
             var taskState = pc.GetPlayerTaskState();
             var Comms = false;
             if (taskState.hasTasks)
@@ -676,7 +676,7 @@ public static class Utils
     {
         try
         {
-            if (!Main.playerVersion.ContainsKey(0)) return ""; //ホストがMODを入れていなければ未記入を返す
+            if (!Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId)) return ""; //ホストがMODを入れていなければ未記入を返す
             var ProgressText = new StringBuilder();
             var role = Main.PlayerStates[playerId].MainRole;
             switch (role)

@@ -2,6 +2,7 @@ using AmongUs.Data;
 using AmongUs.GameOptions;
 using HarmonyLib;
 using InnerNet;
+using Rewired.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -143,7 +144,7 @@ public class GameStartManagerPatch
                                 Logger.SendInGame(GetString("Warning.BrokenVentsInDleksSendInGame"));
                                 Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
                             }
-
+                            RPC.RpcVersionCheck();
                             GameStartManager.Instance.startState = GameStartManager.StartingStates.Countdown;
                             GameStartManager.Instance.countDownTimer = Options.AutoStartTimer.GetInt();
                             __instance.StartButton.gameObject.SetActive(false);
@@ -167,7 +168,7 @@ public class GameStartManagerPatch
                     var dummyComponent = client.Character.GetComponent<DummyBehaviour>();
                     if (dummyComponent != null && dummyComponent.enabled)
                         continue;
-                    if (!MatchVersions(client.Character.PlayerId, true))
+                    if (!MatchVersions(client.Id, true))
                     {
                         canStartGame = false;
                         mismatchedPlayerNameList.Add(Utils.ColorString(Palette.PlayerColors[client.ColorId], client.Character.Data.PlayerName));
@@ -182,7 +183,7 @@ public class GameStartManagerPatch
             }
             else
             {
-                if (MatchVersions(0, true) || Main.VersionCheat.Value || Main.IsHostVersionCheating)
+                if (MatchVersions(AmongUsClient.Instance.HostId, true) || Main.VersionCheat.Value || Main.IsHostVersionCheating)
                     exitTimer = 0;
                 else
                 {
@@ -221,9 +222,9 @@ public class GameStartManagerPatch
             __instance.PlayerCounter.text = currentText + suffix;
             __instance.PlayerCounter.autoSizeTextContainer = true;
         }
-        private static bool MatchVersions(byte playerId, bool acceptVanilla = false)
+        private static bool MatchVersions(int clientId, bool acceptVanilla = false)
         {
-            if (!Main.playerVersion.TryGetValue(playerId, out var version)) return acceptVanilla;
+            if (!Main.playerVersion.TryGetValue(clientId, out var version)) return acceptVanilla;
             return Main.ForkId == version.forkId
                 && Main.version.CompareTo(version.version) == 0
                 && version.tag == $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})";
@@ -270,6 +271,7 @@ public class GameStartRandomMap
         AURoleOptions.ImpostorsCanSeeProtect = false;
 
         PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(opt));
+        RPC.RpcVersionCheck();
 
         __instance.ReallyBegin(false);
         return false;
