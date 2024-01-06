@@ -40,31 +40,30 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "1.3.1.3";
-    public const string PluginDisplayVersion = "1.3.1 Canary 3 (Pre-Release)";
+    public const string PluginVersion = "1.4.0";
+    public const string PluginDisplayVersion = "1.4.0";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public const bool Canary = true; // Unused variable? ---- not unused anymore :)
-    public const bool fullRelease = false;
+    public const bool Canary = false;
+    public const bool fullRelease = true;
     public const bool devRelease = false;
 
     public static bool hasAccess = true;
 
-    public static readonly bool ShowGitHubButton = true;
-    public static readonly bool ShowKofiButton = true;
     public static readonly bool ShowUpdateButton = true;
+
+    public static readonly bool ShowGitHubButton = true;
     public static readonly string GitHubInviteUrl = "https://github.com/0xDrMoe/TownofHost-Enhanced";
-    public static readonly string kofiInviteUrl = "https://ko-fi.com/TOHEN";
 
     public static readonly bool ShowDiscordButton = true;
     public static readonly string DiscordInviteUrl = "https://discord.gg/tohe";
 
     public static readonly bool ShowWebsiteButton = true;
     public static readonly string WebsiteInviteUrl = "https://tohre.dev";
-
-    public static readonly bool ShowPatreonButton = true;
-    public static readonly string PatreonInviteUrl = "https://www.patreon.com/TOHRE";
+    
+    public static readonly bool ShowKofiButton = true;
+    public static readonly string kofiInviteUrl = "https://ko-fi.com/TOHEN";
 
     public Harmony Harmony { get; } = new Harmony(PluginGuid);
     public static Version version = Version.Parse(PluginVersion);
