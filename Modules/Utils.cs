@@ -1714,6 +1714,7 @@ public static class Utils
     public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
+        // set replay to true when you want to send previous sys msg or do not want to add a sys msg in the history
         if (!replay && GameStates.IsInGame) ChatManager.AddSystemChatHistory(sendTo, text);
 
         if (title == "") title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
