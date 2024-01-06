@@ -13,6 +13,7 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
+using UnityEngine.TextCore;
 using static TOHE.Translator;
 
 
@@ -83,17 +84,33 @@ internal class ChatCommands
             case "/versão":
                 canceled = true;
                 string version_text = "";
+                var player = PlayerControl.LocalPlayer;
+                var title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
+                var name = player?.Data?.PlayerName;
                 try
                 {
                     foreach (var kvp in Main.playerVersion.OrderBy(pair => pair.Key).ToArray())
                     {
-                        version_text += $"{kvp.Key}:{Utils.GetPlayerById(kvp.Key)?.GetRealName() ?? "null"}:{kvp.Value.forkId}/{kvp.Value.version}({kvp.Value.tag})\n";
+                        var pc = Utils.GetClientById(kvp.Key)?.Character;
+                        version_text += $"{kvp.Key}/{(pc?.PlayerId != null ? pc.PlayerId.ToString() : "null")}:{pc?.GetRealName() ?? "null"}:{kvp.Value.forkId}/{kvp.Value.version}({kvp.Value.tag})\n";
                     }
-                    if (version_text != "") HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, (PlayerControl.LocalPlayer.FriendCode.GetDevUser().HasTag() ? "\n" : string.Empty) + version_text);
+                    if (version_text != "")
+                    {
+                        player.SetName(title);
+                        DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, version_text);
+                        player.SetName(name);
+                    }
                 }
                 catch (Exception e)
                 {
                     Logger.Error(e.Message, "/version");
+                    version_text = "Error while getting version : " + e.Message;
+                    if (version_text != "")
+                    {
+                        player.SetName(title);
+                        DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, version_text);
+                        player.SetName(name);
+                    }
                 }
                 break;
             default:

@@ -51,20 +51,19 @@ public class Main : BasePlugin
 
     public static bool hasAccess = true;
 
-    public static readonly bool ShowGitHubButton = true;
-    public static readonly bool ShowKofiButton = true;
     public static readonly bool ShowUpdateButton = true;
+
+    public static readonly bool ShowGitHubButton = true;
     public static readonly string GitHubInviteUrl = "https://github.com/0xDrMoe/TownofHost-Enhanced";
-    public static readonly string kofiInviteUrl = "https://ko-fi.com/TOHEN";
 
     public static readonly bool ShowDiscordButton = true;
     public static readonly string DiscordInviteUrl = "https://discord.gg/tohe";
 
     public static readonly bool ShowWebsiteButton = true;
     public static readonly string WebsiteInviteUrl = "https://tohre.dev";
-
-    public static readonly bool ShowPatreonButton = true;
-    public static readonly string PatreonInviteUrl = "https://www.patreon.com/TOHRE";
+    
+    public static readonly bool ShowKofiButton = true;
+    public static readonly string kofiInviteUrl = "https://ko-fi.com/TOHEN";
 
     public Harmony Harmony { get; } = new Harmony(PluginGuid);
     public static Version version = Version.Parse(PluginVersion);
@@ -98,7 +97,7 @@ public class Main : BasePlugin
     public static bool IsHostVersionCheating = false;
     public static ConfigEntry<bool> GodMode { get; private set; }
 
-    public static Dictionary<byte, PlayerVersion> playerVersion = new();
+    public static Dictionary<int, PlayerVersion> playerVersion = new();
     //Preset Name Options
     public static ConfigEntry<string> Preset1 { get; private set; }
     public static ConfigEntry<string> Preset2 { get; private set; }
