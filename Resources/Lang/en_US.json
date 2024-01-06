@@ -367,7 +367,6 @@
   "Oiiai": "OIIAI",
   "Influenced": "Influenced",
   "Silent": "Silent",
-  "Susceptible": "Susceptible",
   "Prefix.Ntr": "Neptune ",
   "Prefix.Watcher": "Watcher ",
   "Prefix.Overclocked": "Overclocked ",
@@ -430,7 +429,6 @@
   "Prefix.Influenced": "Influenced ",
   "Prefix.Cyber": "Cyber ",
   "Prefix.Silent": "Silent ",
-  "Prefix.Susceptible": "Susceptible ",
   "PrefixB.Ntr": "(Neptune) ",
   "PrefixB.Watcher": "(Watcher) ",
   "PrefixB.Overclocked": "(Overclocked) ",
@@ -493,7 +491,6 @@
   "PrefixB.Cyber": "(Cyber) ",
   "PrefixB.Influenced": "(Influenced) ",
   "PrefixB.Silent": "(Silent) ",
-  "PrefixB.Susceptible": "(Susceptible) ",
   "BracketAddons": "Add Brackets To Add-ons",
   "EngineerTOHEInfo": "Use the vents to catch the <color=#ff1919>Impostors</color>",
   "ScientistTOHEInfo": "Access portable vitals from anywhere",
@@ -780,7 +777,6 @@
   "HurriedInfo": "God I got too much stuffs!",
   "InfluencedInfo": "You lack decisiveness!",
   "SilentInfo": "Vote like a Ghost!",
-  "SusceptibleInfo": "Deathreason lotto!",
   "GMInfo": "Spectate the chaos!",
   "NotAssignedInfo": "No assigned role",
   "SunnyboyInfo": "Shine, shine my sunshine!",
@@ -1071,7 +1067,6 @@
   "RepairmanInfoLong": "(Add-ons):\nAs the Repairman, you can fix most sabotages much faster than other players.",
   "InfluencedInfoLong": "(Add-ons):\nAs the Influenced, your vote will be forced to the player with the most votes.\nInfluenced vote won't be counted while choosing the exiled player'\nNote that your vote skill still functions on the player you voted first\nIf all the alive players are Influenced,then the vote result won't shift\nCollector cannot become influenced.",
   "SilentInfoLong": "(Add-ons):\nAs the Silent, your vote icon won't appear on the result screen.\nSo nobody knows who you voted for.",
-  "SusceptibleInfoLong": "(Add-ons):\nAs the Susceptible, your death reason will be random.",
   "CyberInfoLong": "(Add-ons):\nAs the Cyber, you cannot be killed while in a group.\nAdditionally, your death will be known.",
   "HurriedInfoLong": "(Add-ons):\nAs the hurried, you must finish all your tasks to win with your team! If you failed with your tasks, you lose.\nHurried hurries to his goal so it won't get madmate,charmed or so.",
   "OiiaiInfoLong": "(Add-ons):\nAs the Oiiai, when you die, you will make your killer forget their role.\nAdditionally, you may pass Oiiai on to the killer, depending on settings.",
@@ -3608,8 +3603,4 @@
   "CrewCanBeSilent": "<color=#8cffff>Crewmates</color> can become Silent",
   "NeutralCanBeSilent": "<color=#7f8c8d>Neutrals</color> can become Silent",
   "LastMessageReplay": "Last System Message Replay"
-  
-  "ImpCanBeSusceptible": "<color=#ff1919>Impostors</color> can become Susceptible",
-  "CrewCanBeSusceptible": "<color=#8cffff>Crewmates</color> can become Susceptible",
-  "NeutralCanBeSusceptible": "<color=#7f8c8d>Neutrals</color> can become Susceptible"
 }
