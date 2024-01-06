@@ -13,7 +13,7 @@ namespace TOHE.Roles.AddOns.Common
         public static OptionItem CanBeOnNeutral;
         public static OptionItem EnabledDeathReasons;
        
-        private static PlayerState.DeathReason CheckReason;
+        private static PlayerState.DeathReason randomReason;
 
 
         public static void SetupCustomOptions()
@@ -30,8 +30,7 @@ namespace TOHE.Roles.AddOns.Common
             PlayerState.DeathReason[] deathReasons = (PlayerState.DeathReason[])Enum.GetValues(typeof(PlayerState.DeathReason));
             Random random = new Random();
             int randomIndex = random.Next(deathReasons.Length);
-            PlayerState.DeathReason randomReason = deathReasons[randomIndex];
-            CheckReason = randomReason;
+            randomReason = deathReasons[randomIndex];
         }
 
         public static void CallEnabledAndChange(PlayerControl victim)
@@ -41,7 +40,7 @@ namespace TOHE.Roles.AddOns.Common
             if (EnabledDeathReasons.GetBool())
             {
                 Logger.Info($"{victim.GetNameWithRole()} had the deathreason {CheckReason}", "Susceptible");
-                switch (CheckReason) 
+                switch (randomReason) 
                 { 
                     case PlayerState.DeathReason.Eaten:
                         if (!Pelican.IsEnable)
@@ -343,15 +342,15 @@ namespace TOHE.Roles.AddOns.Common
                     break;
 
                     default:
-                        while(Main.PlayerStates[victim.PlayerId].deathReason != CheckReason)
-                        Main.PlayerStates[victim.PlayerId].deathReason = CheckReason;
+                        while(Main.PlayerStates[victim.PlayerId].deathReason != randomReason)
+                        Main.PlayerStates[victim.PlayerId].deathReason = randomReason;
                     break;
                 }
             }
             else
             {
-                while (Main.PlayerStates[victim.PlayerId].deathReason != CheckReason)
-                Main.PlayerStates[victim.PlayerId].deathReason = CheckReason;
+                while (Main.PlayerStates[victim.PlayerId].deathReason != randomReason)
+                Main.PlayerStates[victim.PlayerId].deathReason = randomReason;
             }
 
         }
