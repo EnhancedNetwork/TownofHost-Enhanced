@@ -190,7 +190,7 @@ namespace TOHE.Roles.AddOns.Common
                     break;
 
                     case PlayerState.DeathReason.Gambled:
-                        if (!CustomRoles.EvilGuesser.RoleExist() && !CustomRoles.NiceGuesser.RoleExist())
+                        if (!CustomRoles.EvilGuesser.RoleExist() && !CustomRoles.NiceGuesser.RoleExist() && !Options.GuesserMode.GetBool())
                         {
                             Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                         }
