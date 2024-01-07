@@ -146,11 +146,11 @@ public class GameStartManagerPatch
                                     Main.HideNSeekOptions.MapId = GameStartRandomMap.SelectRandomMap();
                             }
 
-                            if (GameStates.IsNormalGame && Options.IsActiveDleks)
-                            {
-                                Logger.SendInGame(GetString("Warning.BrokenVentsInDleksSendInGame"));
-                                Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
-                            }
+                            //if (GameStates.IsNormalGame && Options.IsActiveDleks)
+                            //{
+                            //    Logger.SendInGame(GetString("Warning.BrokenVentsInDleksSendInGame"));
+                            //    Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
+                            //}
 
                             RPC.RpcVersionCheck();
 
@@ -263,14 +263,11 @@ public class GameStartRandomMap
             return false;
         }
 
-        if (GameStates.IsNormalGame)
-        {
-            if (Options.IsActiveDleks)
-            {
-                Logger.SendInGame(GetString("Warning.BrokenVentsInDleksSendInGame"));
-                Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
-            }
-        }
+        //if (GameStates.IsNormalGame && Options.IsActiveDleks)
+        //{
+        //    Logger.SendInGame(GetString("Warning.BrokenVentsInDleksSendInGame"));
+        //    Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
+        //}
 
         IGameOptions opt = GameStates.IsNormalGame 
             ? Main.NormalOptions.Cast<IGameOptions>()
