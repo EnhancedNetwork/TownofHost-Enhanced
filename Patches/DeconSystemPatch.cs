@@ -10,11 +10,9 @@ public static class DeconSystemUpdateSystemPatch
         if (!AmongUsClient.Instance.AmHost) return;
 
         if (Options.ChangeDecontaminationTime.GetBool())
-        {
-            var mapName = Utils.GetActiveMapName();
-            
+        {         
             // Temp decon time
-            var deconTime = mapName switch
+            var deconTime = Utils.GetActiveMapName() switch
             {
                 MapNames.Mira => Options.DecontaminationTimeOnMiraHQ.GetFloat(),
                 MapNames.Polus => Options.DecontaminationTimeOnPolus.GetFloat(),

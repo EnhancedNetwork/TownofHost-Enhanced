@@ -1178,7 +1178,6 @@ public static class Utils
     
     public static void ShowAllActiveSettings(byte PlayerId = byte.MaxValue)
     {
-        var mapId = GetActiveMapId();
         if (Options.HideGameSettings.GetBool() && PlayerId != byte.MaxValue)
         {
             SendMessage(GetString("Message.HideGameSettings"), PlayerId);
