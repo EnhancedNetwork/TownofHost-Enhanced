@@ -835,25 +835,25 @@ public class ModNewsHistory
                         "\n     - 新游戏模式：自由对战，来自TOHE+ (By: ryuk, Special 感谢: Gurge44)" +
                         "\n     - 添加了聊天指令 /tpin、/tpout - 在房间中对尝试出图的玩家进行TP (By: ryuk)" +
                         "\n     - 新设置： 防止/qt因恶意使用而退出 (By: Furo)" +
-                        "\n     - 新设置：更改消毒时间 (非常酷！试试这个！ By: TommyXL)" +
-                        "\n     - 重做设置：玩家死亡后强制删除宠物" +
-                        "\n     - 新服务器：修改南美洲 (By: Pietro)" +
-                        "\n     - 新服务器：修改过的中国服务器 - 多个 (By: NikoCat223)" +
+                        "\n     - 新设置：更改关门消毒的时间 (非常酷！试试这个！ By: TommyXL)" +
+                        "\n     - 重新引入设置：玩家死亡后强制删除宠物" +
+                        "\n     - 新服务器：Modded南美洲 (By: Pietro)" +
+                        "\n     - 新服务器：多个Modded中国服务器 (By: NikoCat223)" +
                         "\n     - 新按钮： Mod更新！现在可自动更新 Mod！ (By: Pietro)" +
 
                     "\n<b>【更改】</b>" +
                         "\n     - 添加了技能图标： 秃鹫、起诉人和清理工 (By: LezaiYa)" +
                         "\n     - 更新日志可读性 (By: TommyXL)" +
-                        "\n     - 增强型反作弊 （EAC）现在可通过应用程序接口（API）完成 (By: ryuk & Moe)" +
+                        "\n     - 增强型反作弊 （EAC）现在可通过TOHE在线接口（API）完成 (By: ryuk & Moe)" +
                         "\n     - 蠢蛋（附加职业）现在与维修员（附加职业）不兼容，以避免出现问题 (By: ryuk)" +
-                        "\n     - 系统现在会在清除旧信息后发送信息 - 非常有用！ (By: ryuk)" +
+                        "\n     - 系统现在会在刷屏后发送上一条系统信息 - 非常有用！ (By: ryuk)" +
 
                     "\n<b>【Bug修复】</b>" +
                         "\n     - 炼金术士的无效字符串的Bug修复 (By: Drakos)" +
                         "\n     - 如果玩家中途死亡或断开连接，投票现在会取消 (By: NikoCat223, ryuk)" +
                         "\n     - 多个Bug修复 (By: NikoCat233, LezaiYa)" +
                         "\n     - 猜想者的错别字 <仅限英文> (By: Plaguer)" +
-                        "\n     - 预防 -MM-Mass-Shapeshift- 将作弊玩家通知设置为\"通知\" (By: NikoCat223)" +
+                        "\n     - 预防 -MM-Mass-Shapeshift- 建议将检测到作弊玩家的操作设置为\"仅通知或取消\" (By: NikoCat223)" +
                         "\n     - 删除了赌怪PC用户界面中不必要的职业 (By: NikoCat223)" +
                         "\n     - 修复工作狂在启用反猜测时获得不可被赌、回弹者和双重猜测的Bug" +
 
