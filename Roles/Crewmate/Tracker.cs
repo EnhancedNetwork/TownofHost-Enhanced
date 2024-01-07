@@ -60,12 +60,11 @@ namespace TOHE.Roles.Crewmate
             writer.Write(trackerId);
             writer.Write(operate);
             if (operate == 0) writer.Write(targetId);
-            if (operate == 2) writer.Write(TrackLimit[targetId]);
+            if (operate == 2) writer.Write(TrackLimit[trackerId]);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
         public static void ReceiveRPC(MessageReader reader)
         {
-
             byte trackerId = reader.ReadByte();
             int operate = reader.ReadInt32();
             if (operate == 0)
