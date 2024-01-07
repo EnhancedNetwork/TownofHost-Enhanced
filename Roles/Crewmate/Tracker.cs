@@ -56,6 +56,7 @@ namespace TOHE.Roles.Crewmate
         }
         public static void SendRPC(int operate, byte trackerId = byte.MaxValue, byte targetId = byte.MaxValue)
         {
+            if (!AmongUsClient.Instance.AmHost) return;
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetTrackerTarget, SendOption.Reliable, -1);
             writer.Write(trackerId);
             writer.Write(operate);
