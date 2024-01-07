@@ -70,38 +70,41 @@ class CoBeginPatch
             pc.cosmetics.nameText.text = pc.name;
         }
 
-        logger.Info("------------Roles / Add-ons------------");
-        if (PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug || GameStates.IsLocalGame)
+        if (GameStates.IsNormalGame)
         {
-            foreach (var pc in allPlayerControlsArray)
+            logger.Info("------------Roles / Add-ons------------");
+            if (PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug || GameStates.IsLocalGame)
             {
-                logger.Info($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc?.Data?.PlayerName?.PadRightV2(20)}:{pc.GetAllRoleName().RemoveHtmlTags()}");
+                foreach (var pc in allPlayerControlsArray)
+                {
+                    logger.Info($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc?.Data?.PlayerName?.PadRightV2(20)}:{pc.GetAllRoleName().RemoveHtmlTags()}");
+                }
             }
-        }
-        else
-        {
-            StringBuilder logStringBuilder = new StringBuilder();
-            logStringBuilder.AppendLine("------------Roles / Add-ons------------");
+            else
+            {
+                StringBuilder logStringBuilder = new StringBuilder();
+                logStringBuilder.AppendLine("------------Roles / Add-ons------------");
 
-            foreach (var pc in allPlayerControlsArray)
-            {
-                logStringBuilder.AppendLine($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc?.Data?.PlayerName?.PadRight(20)}:{pc.GetAllRoleName().RemoveHtmlTags()}");
-            }
+                foreach (var pc in allPlayerControlsArray)
+                {
+                    logStringBuilder.AppendLine($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc?.Data?.PlayerName?.PadRight(20)}:{pc.GetAllRoleName().RemoveHtmlTags()}");
+                }
 
-            try
-            {
-                byte[] logBytes = Encoding.UTF8.GetBytes(logStringBuilder.ToString());
-                byte[] encryptedBytes = EncryptDES(logBytes, $"TOHE{PlayerControl.LocalPlayer.PlayerId}00000000".Substring(0, 8));
-                string encryptedString = Convert.ToBase64String(encryptedBytes);
-                logger.Info(encryptedString);
+                try
+                {
+                    byte[] logBytes = Encoding.UTF8.GetBytes(logStringBuilder.ToString());
+                    byte[] encryptedBytes = EncryptDES(logBytes, $"TOHE{PlayerControl.LocalPlayer.PlayerId}00000000".Substring(0, 8));
+                    string encryptedString = Convert.ToBase64String(encryptedBytes);
+                    logger.Info(encryptedString);
+                }
+                catch (Exception ex)
+                {
+                    logger.Error($"Encryption error: {ex.Message}");
+                }
             }
-            catch (Exception ex)
-            {
-                logger.Error($"Encryption error: {ex.Message}");
-            }
+            //https://www.toolhelper.cn/SymmetricEncryption/DES
+            //mode CBC, PKCS7, 64bit, Key = IV= "TOHE" + playerid + 000/00 "to 8 bits
         }
-        //https://www.toolhelper.cn/SymmetricEncryption/DES
-        //mode CBC, PKCS7, 64bit, Key = IV= "TOHE" + playerid + 000/00 "to 8 bits
 
         logger.Info("------------Player Platforms------------");
         foreach (var pc in allPlayerControlsArray)
