@@ -3346,7 +3346,7 @@
   "TaskBasedCrewCanBeHurried": "Funções baseadas em tarefas podem se tornar Apressados",
   "HurriedCanBeConverted": "O Apressado pode ser recrutado no jogo (exceto cúmplices)",
   "Developer": "Desenvolvedor",
-  "Sponsor": "Tradutor",
+  "Sponsor": "Patrocinador",
   "OriginalDev": "Desenvolvedor",
   "NewDev": "Desenvolvedor",
   "Booster": "Booster",
@@ -3551,5 +3551,6 @@
   "ImpCanBeSilent": "<color=#ff1919>Impostores</color> podem se tornar Silencioso",
   "CrewCanBeSilent": "<color=#8cffff>Tripulantes</color> podem se tornar Silencioso",
   "NeutralCanBeSilent": "<color=#7f8c8d>Neutros</color> podem se tornar Silencioso",
-  "LastMessageReplay": "Repetição da última mensagem de sistema"
+  "LastMessageReplay": "Repetição da última mensagem de sistema",
+  "Contributor": "Contribuidor"
 }

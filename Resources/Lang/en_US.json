@@ -5,6 +5,7 @@
   "HostColor": "#902efd",
   "IconColor": "#4bf4ff",
   "Icon": "♥",
+  "HideHostText": "Hide 'Host♥' Text",
   "NameColor": "#ffc0cb",
   "kofi": "Ko-Fi",
   "update": "Update",
@@ -3602,5 +3603,6 @@
   "ImpCanBeSilent": "<color=#ff1919>Impostors</color> can become Silent",
   "CrewCanBeSilent": "<color=#8cffff>Crewmates</color> can become Silent",
   "NeutralCanBeSilent": "<color=#7f8c8d>Neutrals</color> can become Silent",
-  "LastMessageReplay": "Last System Message Replay"
+  "LastMessageReplay": "Last System Message Replay",
+  "Contributor": "Contributor"
 }

@@ -1844,7 +1844,7 @@ public static class Utils
             {
                 if (!player.IsModClient()) return;
                 {
-                    if (GameStates.IsOnlineGame || GameStates.IsLocalGame)
+                    if ((GameStates.IsOnlineGame || GameStates.IsLocalGame) && !Options.HideHostText.GetBool())
                         name = $"<color={GetString("HostColor")}>{GetString("HostText")}</color><color={GetString("IconColor")}>{GetString("Icon")}</color><color={GetString("NameColor")}>{name}</color>";
 
                     //name = $"<color=#902efd>{GetString("HostText")}</color><color=#4bf4ff>♥</color>" + name;
