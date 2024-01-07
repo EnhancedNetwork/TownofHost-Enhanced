@@ -202,6 +202,10 @@ class ExileControllerWrapUpPatch
                     Main.CursedPlayers[player.PlayerId] = null;
                     Main.isCurseAndKill[player.PlayerId] = false;
                     break;
+
+                case CustomRoles.Bard:
+                    Bard.OnExileWrapUp(player, exiled);
+                    break;
             }
 
             if (Infectious.IsEnable)
