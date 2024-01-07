@@ -544,8 +544,7 @@ class GameEndChecker
         {
             reason = GameOverReason.ImpostorByKill;
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return false;
-            if (CheckGameEndByLivingPlayers(out reason) || CheckGameEndBySabotage(out reason) || CheckGameEndByTask(out reason)) return true;
-
+            if (CheckGameEndByLivingPlayers(out reason) || CheckGameEndByTask(out reason) || CheckGameEndBySabotage(out reason)) return true;
             return false;
         }
 
@@ -617,7 +616,7 @@ class GameEndChecker
                     CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
                 }
 
-                else if (crewCount > impCount) return false;
+                else if (crewCount > impCount) return false; // crewmate is more than imp (the game must continue)
                 return true;
             }
 
