@@ -233,7 +233,7 @@ class ExileControllerWrapUpPatch
         if (Options.RandomSpawn.GetBool() || Options.CurrentGameMode == CustomGameMode.FFA)
         {
             RandomSpawn.SpawnMap map;
-            switch (Main.NormalOptions.MapId)
+            switch (Utils.GetActiveMapId())
             {
                 case 0:
                     map = new RandomSpawn.SkeldSpawnMap();

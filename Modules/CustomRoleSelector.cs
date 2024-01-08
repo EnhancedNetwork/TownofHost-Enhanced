@@ -75,31 +75,31 @@ internal class CustomRoleSelector
             {
                 if (role is CustomRoles.DarkHide) continue;
             }
-            else if (Options.IsActiveDleks) // Dleks
-            {
-                // This roles need additional conditions - Witch & Spellсaster & Hex Master
+            //else if (Options.IsActiveDleks) // Dleks
+            //{
+            //    // This roles need additional conditions - Witch & Spellсaster & Hex Master
 
-                if (role is CustomRoles.Swooper
-                    or CustomRoles.Miner
-                    or CustomRoles.Lurker
-                    or CustomRoles.EngineerTOHE
-                    or CustomRoles.Paranoia
-                    or CustomRoles.Veteran
-                    or CustomRoles.Alchemist
-                    or CustomRoles.Bastion
-                    or CustomRoles.Grenadier
-                    or CustomRoles.DovesOfNeace // Pacifist
-                    or CustomRoles.Mole
-                    or CustomRoles.Addict
-                    or CustomRoles.TimeMaster
-                    or CustomRoles.Lighter
-                    or CustomRoles.Chameleon
-                    or CustomRoles.Mario // Vector
-                    or CustomRoles.Wraith
-                    or CustomRoles.Arsonist) continue;
-                if (role == CustomRoles.Witch && (Witch.SwitchTrigger)Witch.ModeSwitchAction.GetValue() == Witch.SwitchTrigger.Vent || // Spellcaster
-                    role == CustomRoles.HexMaster && (HexMaster.SwitchTrigger)HexMaster.ModeSwitchAction.GetValue() == HexMaster.SwitchTrigger.Vent) continue;
-            }
+            //    if (role is CustomRoles.Swooper
+            //        or CustomRoles.Miner
+            //        or CustomRoles.Lurker
+            //        or CustomRoles.EngineerTOHE
+            //        or CustomRoles.Paranoia
+            //        or CustomRoles.Veteran
+            //        or CustomRoles.Alchemist
+            //        or CustomRoles.Bastion
+            //        or CustomRoles.Grenadier
+            //        or CustomRoles.DovesOfNeace // Pacifist
+            //        or CustomRoles.Mole
+            //        or CustomRoles.Addict
+            //        or CustomRoles.TimeMaster
+            //        or CustomRoles.Lighter
+            //        or CustomRoles.Chameleon
+            //        or CustomRoles.Mario // Vector
+            //        or CustomRoles.Wraith
+            //        or CustomRoles.Arsonist) continue;
+            //    if (role == CustomRoles.Witch && (Witch.SwitchTrigger)Witch.ModeSwitchAction.GetValue() == Witch.SwitchTrigger.Vent || // Spellcaster
+            //        role == CustomRoles.HexMaster && (HexMaster.SwitchTrigger)HexMaster.ModeSwitchAction.GetValue() == HexMaster.SwitchTrigger.Vent) continue;
+            //}
 
             for (int i = 0; i < role.GetCount(); i++)
                 roleList.Add(role);
@@ -420,12 +420,12 @@ internal class CustomRoleSelector
             {
                 if (role is CustomRoles.Mare) continue;
             }
-            else if (Options.IsActiveDleks) // Dleks
-            {
-                if (role is CustomRoles.Nimble
-                    or CustomRoles.Burst
-                    or CustomRoles.Circumvent) continue;
-            }
+            //else if (Options.IsActiveDleks) // Dleks
+            //{
+            //    if (role is CustomRoles.Nimble
+            //        or CustomRoles.Burst
+            //        or CustomRoles.Circumvent) continue;
+            //}
 
             AddonRolesList.Add(role);
         }

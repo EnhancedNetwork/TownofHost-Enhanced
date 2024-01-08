@@ -49,10 +49,10 @@ internal class ControllerManagerUpdatePatch
                 }
             }
             //捕捉全屏快捷键
-            if (GetKeysDown(KeyCode.LeftAlt, KeyCode.Return))
-            {
-                _ = new LateTask(SetResolutionManager.Postfix, 0.01f, "Fix Button Position");
-            }
+            //if (GetKeysDown(KeyCode.LeftAlt, KeyCode.Return))
+            //{
+            //    _ = new LateTask(SetResolutionManager.Postfix, 0.01f, "Fix Button Position");
+            //}
             //职业介绍
             if (Input.GetKeyDown(KeyCode.F1) && GameStates.InGame && Options.CurrentGameMode == CustomGameMode.Standard)
             {
@@ -107,7 +107,7 @@ internal class ControllerManagerUpdatePatch
                 resolutionIndex++;
                 if (resolutionIndex >= resolutions.Length) resolutionIndex = 0;
                 ResolutionManager.SetResolution(resolutions[resolutionIndex].Item1, resolutions[resolutionIndex].Item2, false);
-                SetResolutionManager.Postfix();
+                //SetResolutionManager.Postfix();
             }
             //重新加载自定义翻译
             if (GetKeysDown(KeyCode.F5, KeyCode.T))
@@ -162,10 +162,16 @@ internal class ControllerManagerUpdatePatch
                 Utils.DoNotifyRoles(ForceLoop: true);
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Draw);
                 GameManager.Instance.LogicFlow.CheckEndCriteria();
+                if (GameStates.IsHideNSeek)
+                {
+                    GameEndCheckerForNormal.StartEndGame(GameOverReason.ImpostorDisconnect);
+                }
             }
             //强制结束会议或召开会议
             if (GetKeysDown(KeyCode.Return, KeyCode.M, KeyCode.LeftShift) && GameStates.IsInGame)
             {
+                if (GameStates.IsHideNSeek) return;
+
                 if (GameStates.IsMeeting)
                 {
                     MeetingHud.Instance.RpcClose();
@@ -389,6 +395,7 @@ internal class HandleHUDPatch
     public static void Postfix(Rewired.Player player)
     {
         if (!GameStates.IsInGame) return;
+        if (GameStates.IsHideNSeek) return;
         if (player.GetButtonDown(8) && // 8:キルボタンのactionId
         PlayerControl.LocalPlayer.Data?.Role?.IsImpostor == false &&
         PlayerControl.LocalPlayer.CanUseKillButton())

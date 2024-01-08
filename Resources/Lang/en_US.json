@@ -3583,6 +3583,10 @@
   "Killer": "FREE FOR ALL",
   "KillerInfo": "Kill Everyone to Win",
 
+  "Hide&SeekTOHE": "Hide & Seek",
+  "MenuTitle.Hide&Seek": "Hide & Seek Settings",
+  "NumImpostorsHnS": "Num Impostors",
+
   "EveryOneKnowSolsticer": "Every One Know who is Solsticer",
   "SolsticerKnowItsKiller": "Solsticer knows the role of whom used kill button on it",
   "SolsticerSpeed": "Movement speed of Solsticer",

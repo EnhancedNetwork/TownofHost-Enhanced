@@ -11,7 +11,7 @@ using static TOHE.Translator;
 namespace TOHE;
 
 [HarmonyPatch(typeof(LogicGameFlowNormal), nameof(LogicGameFlowNormal.CheckEndCriteria))]
-class GameEndChecker
+class GameEndCheckerForNormal
 {
     private static GameEndPredicate predicate;
     public static bool Prefix()

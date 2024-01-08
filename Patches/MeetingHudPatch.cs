@@ -696,7 +696,7 @@ class CheckForEndVotingPatch
         {
             if (CustomRoles.Lovers.IsEnable() && !Main.isLoversDead && Main.LoversPlayers.Any(lp => lp.PlayerId == playerId))
             {
-                FixedUpdatePatch.LoversSuicide(playerId, true);
+                FixedUpdateInNormalGamePatch.LoversSuicide(playerId, true);
             }
 
             RevengeOnExile(playerId, deathReason);
@@ -1126,7 +1126,7 @@ class MeetingHudStartPatch
             }
         }
 
-        if ((MapNames)Main.NormalOptions.MapId == MapNames.Dleks)
+        if (Options.IsActiveDleks)
         {
             _ = new LateTask(() =>
             {
