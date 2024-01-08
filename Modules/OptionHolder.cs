@@ -3003,7 +3003,7 @@ public static class Options
 
         SuffixMode = StringOptionItem.Create(60300, "SuffixMode", suffixModes, 0, TabGroup.SystemSettings, true)
             .SetHeader(true);
-        HideHostText = BooleanOptionItem.Create(60311, "HideHostText", false, TabGroup.SystemSettings, false, true);
+        HideHostText = BooleanOptionItem.Create(60311, "HideHostText", false, TabGroup.SystemSettings, false);
         HideGameSettings = BooleanOptionItem.Create(60310, "HideGameSettings", false, TabGroup.SystemSettings, false);
         //DIYGameSettings = BooleanOptionItem.Create(60320, "DIYGameSettings", false, TabGroup.SystemSettings, false);
         PlayerCanSetColor = BooleanOptionItem.Create(60330, "PlayerCanSetColor", false, TabGroup.SystemSettings, false);
