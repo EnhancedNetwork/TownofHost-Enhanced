@@ -3122,8 +3122,7 @@ public static class Options
 
         // Random Spawn
         RandomSpawn = BooleanOptionItem.Create(60470, "RandomSpawn", false, TabGroup.GameSettings, false)
-            .SetGameMode(CustomGameMode.Standard)
-            // .HideInFFA()
+            .HideInFFA()
             //.SetGameMode(CustomGameMode.HidenSeekTOHE) Temporarily removed as additional changes are needed
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         SpawnRandomLocation = BooleanOptionItem.Create(60471, "SpawnRandomLocation", true, TabGroup.GameSettings, false)
