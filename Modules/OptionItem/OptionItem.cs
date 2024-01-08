@@ -161,6 +161,10 @@ public abstract class OptionItem
             Translator.GetString(Name, ReplacementDictionary, console) :
             Utils.ColorString(NameColor, Translator.GetString(Name, ReplacementDictionary));
     }
+    public virtual string GetNameVanilla()
+    {
+        return Translator.GetString(Name, ReplacementDictionary, vanilla: true);
+    }
     public virtual bool GetBool() => CurrentValue != 0 && (Parent == null || Parent.GetBool());
     public virtual int GetInt() => CurrentValue;
     public virtual float GetFloat() => CurrentValue;
@@ -186,7 +190,14 @@ public abstract class OptionItem
     {
         if (OptionBehaviour is not null and StringOption opt)
         {
+            if (IsVanillaText)
+            {
+            opt.TitleText.text = GetNameVanilla();
+            }
+            else
+            {
             opt.TitleText.text = GetName();
+            }
             opt.ValueText.text = GetString();
             opt.oldValue = opt.Value = CurrentValue;
         }
