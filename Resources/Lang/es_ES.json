@@ -5,6 +5,7 @@
   "HostColor": "#902efd",
   "IconColor": "#4bf4ff",
   "Icon": "♥",
+  "HideHostText": "Hide 'Host♥' Text",
   "NameColor": "#ffc0cb",
   "kofi": "Ko-Fi",
   "update": "Actualizar",
@@ -2696,6 +2697,7 @@
   "AutoStartTimer": "Cuenta Atrás para empezar automáticamente",
   "AutoPlayAgainCountdown": "Retraso antes de volver a entrar",
   "AutoPlayAgain": "Volver a Jugar Automáticamente",
+  "AutoRehost": "Auto Re-Host on Bad Disconnect",
   "CountdownText": "Volviendo a la sala de espera en {0}s",
   "TimeMasterSkillDuration": "Duración de <color=#44baff>Escudo de Tiempo</color>",
   "TimeMasterSkillCooldown": "Tiempo de Espera para el <color=#44baff>Escudo Temporal</color>",
@@ -3532,6 +3534,9 @@
   "FFA_ShieldBroken": "<color=#ffff00>Alguien te intentó matar y tu escudo se ha roto</color>",
   "Killer": "TODOS CONTRA TODOS",
   "KillerInfo": "Sé el Último en Pie",
+  "Hide&SeekTOHE": "Hide & Seek",
+  "MenuTitle.Hide&Seek": "Hide & Seek Settings",
+  "NumImpostorsHnS": "Num Impostors",
   "EveryOneKnowSolsticer": "Todos conocen al Empleado del Mes",
   "SolsticerKnowItsKiller": "El Empleado del Mes conoce el rol de quien lo haya matado",
   "SolsticerSpeed": "Velocidad de movimiento del Empleado del Mes",
@@ -3551,5 +3556,6 @@
   "ImpCanBeSilent": "<color=#ff1919>Impostores</color> pueden ser Silencioso",
   "CrewCanBeSilent": "<color=#8cffff>Tripulantes</color> pueden ser Silencioso",
   "NeutralCanBeSilent": "<color=#7f8c8d>Neutros</color> pueden ser Silencioso",
-  "LastMessageReplay": "Repetición del Último Mensaje del Sistema"
+  "LastMessageReplay": "Repetición del Último Mensaje del Sistema",
+  "Contributor": "Contributor"
 }
