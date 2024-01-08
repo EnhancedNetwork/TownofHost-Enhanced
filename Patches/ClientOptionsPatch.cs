@@ -23,8 +23,9 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem SwitchVanilla;
 #if DEBUG
     private static ClientOptionItem VersionCheat;
+    private static ClientOptionItem GodMode;
+    private static ClientOptionItem AutoRehost;
 #endif
-    //private static ClientOptionItem GodMode;
 
     public static void Postfix(OptionsMenuBehaviour __instance)
     {
@@ -36,6 +37,7 @@ public static class OptionsMenuBehaviourStartPatch
             Main.ResetOptions = false;
             Main.VersionCheat.Value = false;
             Main.GodMode.Value = false;
+            Main.AutoRehost.Value = false;
         }
 
         if (UnlockFPS == null || UnlockFPS.ToggleButton == null)
@@ -113,15 +115,22 @@ public static class OptionsMenuBehaviourStartPatch
             }
         }
 #if DEBUG
-        if ((VersionCheat == null || VersionCheat.ToggleButton == null) && DebugModeManager.AmDebugger)
+        if (EOSManager.Instance.friendCode.GetDevUser().DeBug)
         {
-            VersionCheat = ClientOptionItem.Create("VersionCheat", Main.VersionCheat, __instance);
+            if ((VersionCheat == null || VersionCheat.ToggleButton == null) && DebugModeManager.AmDebugger)
+            {
+                VersionCheat = ClientOptionItem.Create("VersionCheat", Main.VersionCheat, __instance);
+            }
+            if ((GodMode == null || GodMode.ToggleButton == null) && DebugModeManager.AmDebugger)
+            {
+                GodMode = ClientOptionItem.Create("GodMode", Main.GodMode, __instance);
+            }
+            if ((AutoRehost == null || AutoRehost.ToggleButton == null) && DebugModeManager.AmDebugger)
+            {
+                AutoRehost = ClientOptionItem.Create("AutoRehost", Main.AutoRehost, __instance);
+            }
         }
 #endif
-        //if ((GodMode == null || GodMode.ToggleButton == null) && DebugModeManager.AmDebugger)
-        //{
-        //    GodMode = ClientOptionItem.Create("GodMode", Main.GodMode, __instance);
-        //}
     }
 }
 

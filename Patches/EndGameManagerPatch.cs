@@ -9,7 +9,8 @@ namespace TOHE.Patches;
 public class EndGameManagerPatch
 {
     public static GameObject CountdownText;
-    public static bool IsRestarting { get; private set; }
+    public static TextMeshPro CountdownTextText;
+    public static bool IsRestarting;
 
     public static void Postfix(EndGameManager __instance)
     {
@@ -24,14 +25,16 @@ public class EndGameManagerPatch
         }, 0.5f, "Auto Play Again");
     }
 
-    public static void CancelPlayAgain()
-    {
-        IsRestarting = false;
-    }
-
     private static void BeginAutoPlayAgainCountdown(EndGameManager endGameManager, int seconds)
     {
-        if (!IsRestarting) return;
+        if (!IsRestarting)
+        {
+            if (CountdownTextText.isActiveAndEnabled)
+            {
+                CountdownTextText.text = string.Format(GetString("CancelStartCountDown"), seconds);
+            }
+            return;
+        }
         if (endGameManager == null) return;
         EndGameNavigation navigation = endGameManager.Navigation;
         if (navigation == null) return;
@@ -40,14 +43,13 @@ public class EndGameManagerPatch
         {
             CountdownText = new GameObject("CountdownText");
             CountdownText.transform.position = new Vector3(0f, -2.5f, 30f);
-            var CountdownTextText = CountdownText.AddComponent<TextMeshPro>();
+            CountdownTextText = CountdownText.AddComponent<TextMeshPro>();
             CountdownTextText.text = string.Format(GetString("CountdownText"), seconds);
             CountdownTextText.alignment = TextAlignmentOptions.Center;
             CountdownTextText.fontSize = 3f;
         }
         else
         {
-            var CountdownTextText = CountdownText.GetComponent<TextMeshPro>();
             CountdownTextText.text = string.Format(GetString("CountdownText"), seconds);
         }
 
