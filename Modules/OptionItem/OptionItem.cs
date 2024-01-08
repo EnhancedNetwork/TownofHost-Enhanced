@@ -190,7 +190,7 @@ public abstract class OptionItem
     {
         if (OptionBehaviour is not null and StringOption opt)
         {
-            if (IsVanillaText)
+            if (IsVanillaText == true)
             {
             opt.TitleText.text = GetNameVanilla();
             }

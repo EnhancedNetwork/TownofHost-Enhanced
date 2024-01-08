@@ -175,6 +175,10 @@ public static class Translator
             {
                 return DestroyableSingleton<TranslationController>.Instance.GetString(text);
             }
+            else
+            {
+                return $"<INVALID:{nameToFind}> (vanillaStr)";
+            }
         }
         var langId = TranslationController.InstanceExists ? TranslationController.Instance.currentLanguage.languageID : SupportedLangs.English;
         if (console) langId = SupportedLangs.English;
