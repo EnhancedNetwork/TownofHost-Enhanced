@@ -5,6 +5,7 @@
   "HostColor": "#902efd",
   "IconColor": "#4bf4ff",
   "Icon": "♥",
+  "HideHostText": "隱藏'房主♥'文字",
   "NameColor": "#ffc0cb",
   "kofi": "Ko-Fi",
   "update": "一鍵更新",
@@ -1986,7 +1987,7 @@
   "RoleRevealMode": "揭示模式",
   "Investigator.Suspicion": "是否可疑",
   "Investigator.Role": "確認職業",
-  "SabotageCooldownControl": "更改修理時限",
+  "SabotageCooldownControl": "更改破壞冷卻",
   "SabotageCooldown": "破壞冷卻",
   "SabotageTimeControl": "更改修理時限",
   "SkeldReactorTimeLimit": "<color=#66a186>The Skeld</color>反應堆時間限制",
@@ -2696,6 +2697,7 @@
   "AutoStartTimer": "自動開始的初始倒計時",
   "AutoPlayAgainCountdown": "重新加入房間前的延遲",
   "AutoPlayAgain": "自動再玩一次",
+  "AutoRehost": "在斷線時自動重新主持",
   "CountdownText": "{0} 秒後重新進入房間",
   "TimeMasterSkillDuration": "<color=#44baff>時間護盾</color>持續時間",
   "TimeMasterSkillCooldown": "<color=#44baff>時間護盾</color>冷卻時間",
@@ -3532,6 +3534,9 @@
   "FFA_ShieldBroken": "<color=#ffff00>有人嘗試攻擊你，所以你的護盾失效了!</color>",
   "Killer": "個人競技模式",
   "KillerInfo": "殺光所有人來獲勝",
+  "Hide&SeekTOHE": "躲貓貓",
+  "MenuTitle.Hide&Seek": "躲貓貓遊戲設定",
+  "NumImpostorsHnS": "偽裝者數量",
   "EveryOneKnowSolsticer": "所有人都知道誰是至聖者",
   "SolsticerKnowItsKiller": "至聖者能夠知道嘗試擊殺他的人的職業",
   "SolsticerSpeed": "至聖者的移動速度",
@@ -3551,5 +3556,6 @@
   "ImpCanBeSilent": "<color=#ff1919>偽裝者</color>可以成為沉默者",
   "CrewCanBeSilent": "<color=#8cffff>船員</color>可以成為沉默者",
   "NeutralCanBeSilent": "<color=#7f8c8d>中立</color> 可以成為沉默者",
-  "LastMessageReplay": "最近一次系統訊息重播"
+  "LastMessageReplay": "最近一次系統訊息重播",
+  "Contributor": "貢獻者"
 }
