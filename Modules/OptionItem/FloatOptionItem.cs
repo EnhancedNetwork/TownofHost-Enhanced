@@ -5,14 +5,14 @@ public class FloatOptionItem : OptionItem
     public FloatValueRule Rule;
 
     // コンストラクタ
-    public FloatOptionItem(int id, string name, float defaultValue, TabGroup tab, bool isSingleValue, FloatValueRule rule)
-    : base(id, name, rule.GetNearestIndex(defaultValue), tab, isSingleValue)
+    public FloatOptionItem(int id, string name, float defaultValue, TabGroup tab, bool isSingleValue, FloatValueRule rule, bool vanilla)
+    : base(id, name, rule.GetNearestIndex(defaultValue), tab, isSingleValue, vanillaStr:vanilla)
     {
         Rule = rule;
     }
-    public static FloatOptionItem Create(int id, string name, FloatValueRule rule, float defaultValue, TabGroup tab, bool isSingleValue)
+    public static FloatOptionItem Create(int id, string name, FloatValueRule rule, float defaultValue, TabGroup tab, bool isSingleValue, bool vanillaText)
     {
-        return new FloatOptionItem(id, name, defaultValue, tab, isSingleValue, rule);
+        return new FloatOptionItem(id, name, defaultValue, tab, isSingleValue, rule, vanillaText);
     }
 
     // Getter

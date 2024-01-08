@@ -32,6 +32,7 @@ public abstract class OptionItem
     public bool IsHeader { get; protected set; }
     public bool IsHidden { get; protected set; }
     public bool IsText { get; protected set; }
+    public bool IsVanillaText { get; protected set; }
     public Dictionary<string, string> ReplacementDictionary
     {
         get => _replacementDictionary;
@@ -60,7 +61,7 @@ public abstract class OptionItem
     public event EventHandler<UpdateValueEventArgs> UpdateValueEvent;
 
     // Constructor
-    public OptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue)
+    public OptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue, bool vanillaStr)
     {
         // Info Setting
         Id = id;
@@ -68,6 +69,7 @@ public abstract class OptionItem
         DefaultValue = defaultValue;
         Tab = tab;
         IsSingleValue = isSingleValue;
+        IsVanillaText = vanillaStr;
 
         // Nullable Info Setting
         NameColor = Color.white;
