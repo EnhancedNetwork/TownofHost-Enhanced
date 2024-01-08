@@ -5,6 +5,7 @@
   "HostColor": "#902efd",
   "IconColor": "#4bf4ff",
   "Icon": "♥",
+  "HideHostText": "Esconder o texto 'Anfitrião♥'",
   "NameColor": "#ffc0cb",
   "kofi": "Ko-Fi",
   "update": "Atualizar",
@@ -2696,6 +2697,7 @@
   "AutoStartTimer": "Contagem inicial para jogar automaticamente",
   "AutoPlayAgainCountdown": "Atraso antes de entrar na sala novamente",
   "AutoPlayAgain": "Jogar de novo automaticamente",
+  "AutoRehost": "Re-hospedagem automática em caso de desconexão incorreta",
   "CountdownText": "Voltando para o lobby em {0}s",
   "TimeMasterSkillDuration": "Duração do <color=#44baff>Escudo Temporal</color>",
   "TimeMasterSkillCooldown": "Recarga do <color=#44baff>Escudo Temporal</color>",
@@ -3532,6 +3534,9 @@
   "FFA_ShieldBroken": "<color=#ffff00>Alguém tentou matar você, seu escudo agora está quebrado!</color>",
   "Killer": "MATAR OU MORRER",
   "KillerInfo": "Mate todos para vencer",
+  "Hide&SeekTOHE": "Esconde-Esconde",
+  "MenuTitle.Hide&Seek": "Configurações do Modo Esconde-Esconde",
+  "NumImpostorsHnS": "Nº Impostores ",
   "EveryOneKnowSolsticer": "Todos sabem quem é o Speedrunner",
   "SolsticerKnowItsKiller": "Speedrunner sabe a função de quem usou o botão de matar nele",
   "SolsticerSpeed": "Velocidade de movimento do Speedrunner",
@@ -3551,5 +3556,6 @@
   "ImpCanBeSilent": "<color=#ff1919>Impostores</color> podem se tornar Silencioso",
   "CrewCanBeSilent": "<color=#8cffff>Tripulantes</color> podem se tornar Silencioso",
   "NeutralCanBeSilent": "<color=#7f8c8d>Neutros</color> podem se tornar Silencioso",
-  "LastMessageReplay": "Repetição da última mensagem de sistema"
+  "LastMessageReplay": "Repetição da última mensagem de sistema",
+  "Contributor": "Contribuidor"
 }
