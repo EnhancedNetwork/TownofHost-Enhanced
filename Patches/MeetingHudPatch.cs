@@ -678,12 +678,22 @@ class CheckForEndVotingPatch
     }
 
     public static void TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason deathReason, params byte[] playerIds)
-    {
+    {    
         var AddedIdList = new List<byte>();
         foreach (var playerId in playerIds)
+        try { 
+        
+            byte walnut = Convert.ToByte(playerId);
+            if (Susceptible.CheckReason.Contains(walnut))
+            {
+                    Susceptible.ChangeRandomDeath();
+                    deathReason = Susceptible.randomReason;
+            }
             if (Main.AfterMeetingDeathPlayers.TryAdd(playerId, deathReason))
-                AddedIdList.Add(playerId);
-        CheckForDeathOnExile(deathReason, AddedIdList.ToArray());
+            AddedIdList.Add(playerId);
+            CheckForDeathOnExile(deathReason, AddedIdList.ToArray());
+                
+            } catch (OverflowException) { } catch (FormatException) { }
     }
     public static void CheckForDeathOnExile(PlayerState.DeathReason deathReason, params byte[] playerIds)
     {
