@@ -10,7 +10,7 @@ public class BooleanOptionItem : OptionItem
     : base(id, name, defaultValue ? 1 : 0, tab, isSingleValue, vanillaStr:vanilla)
     {
     }
-    public static BooleanOptionItem Create(int id, string name, bool defaultValue, TabGroup tab, bool isSingleValue, bool vanillaText)
+    public static BooleanOptionItem Create(int id, string name, bool defaultValue, TabGroup tab, bool isSingleValue, bool vanillaText = false)
     {
         return new BooleanOptionItem(id, name, defaultValue, tab, isSingleValue, vanillaText);
     }

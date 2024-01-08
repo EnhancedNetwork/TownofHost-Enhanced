@@ -14,7 +14,7 @@ public class StringOptionItem : OptionItem
         Selections = selections;
     }
     public static StringOptionItem Create(
-        int id, string name, string[] selections, int defaultIndex, TabGroup tab, bool isSingleValue, bool vanillaText
+        int id, string name, string[] selections, int defaultIndex, TabGroup tab, bool isSingleValue, bool vanillaText = false
     )
     {
         return new StringOptionItem(

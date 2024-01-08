@@ -10,7 +10,7 @@ public class FloatOptionItem : OptionItem
     {
         Rule = rule;
     }
-    public static FloatOptionItem Create(int id, string name, FloatValueRule rule, float defaultValue, TabGroup tab, bool isSingleValue, bool vanillaText)
+    public static FloatOptionItem Create(int id, string name, FloatValueRule rule, float defaultValue, TabGroup tab, bool isSingleValue, bool vanillaText = false)
     {
         return new FloatOptionItem(id, name, defaultValue, tab, isSingleValue, rule, vanillaText);
     }

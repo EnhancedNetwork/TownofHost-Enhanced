@@ -11,7 +11,7 @@ public class IntegerOptionItem : OptionItem
     {
         Rule = rule;
     }
-    public static IntegerOptionItem Create(int id, string name, IntegerValueRule rule, int defaultValue, TabGroup tab, bool isSingleValue, bool vanillaText)
+    public static IntegerOptionItem Create(int id, string name, IntegerValueRule rule, int defaultValue, TabGroup tab, bool isSingleValue, bool vanillaText = false)
     {
         return new IntegerOptionItem(id, name, defaultValue, tab, isSingleValue, rule, vanillaText);
     }
