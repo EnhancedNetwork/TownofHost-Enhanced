@@ -5,6 +5,7 @@
   "HostColor": "#902efd",
   "IconColor": "#4bf4ff",
   "Icon": "♥",
+  "HideHostText": "Hide 'Host♥' Text",
   "NameColor": "#ffc0cb",
   "kofi": "Ko-Fi",
   "update": "Actualizar",
@@ -2696,6 +2697,7 @@
   "AutoStartTimer": "Cuenta regresiva inicial para empezar automáticamente",
   "AutoPlayAgainCountdown": "Retraso antes de reingersar al lobby",
   "AutoPlayAgain": "Volver a Jugar Automáticamente",
+  "AutoRehost": "Auto Re-Host on Bad Disconnect",
   "CountdownText": "Volviendo a la sala de espera en {0}s",
   "TimeMasterSkillDuration": "Duración del <color=#44baff>Escudo del Tiempo</color>",
   "TimeMasterSkillCooldown": "Tiempo de espera del <color=#44baff>Escudo del Tiempo</color>",
@@ -3532,6 +3534,9 @@
   "FFA_ShieldBroken": "<color=#ffff00>¡Alguien intentó matarte y tu escudo ahora está roto!</color>",
   "Killer": "TODOS CONTRA TODOS",
   "KillerInfo": "Mata a todos para ganar",
+  "Hide&SeekTOHE": "Hide & Seek",
+  "MenuTitle.Hide&Seek": "Hide & Seek Settings",
+  "NumImpostorsHnS": "Num Impostors",
   "EveryOneKnowSolsticer": "Todos saben quien es el Solicitador",
   "SolsticerKnowItsKiller": "El Solisitor conoce el rol de quien lo haya tratado matar",
   "SolsticerSpeed": "Velocidad de movimiento del Solicitador",
@@ -3551,5 +3556,6 @@
   "ImpCanBeSilent": "<color=#ff1919>Impostores</color> pueden ser Silencioso",
   "CrewCanBeSilent": "<color=#8cffff>Tripulantes</color> pueden ser Silencioso",
   "NeutralCanBeSilent": "<color=#7f8c8d>Neutrales</color> pueden ser Silencioso",
-  "LastMessageReplay": "Ultimo mensage de sistemo reproducido"
+  "LastMessageReplay": "Ultimo mensage de sistemo reproducido",
+  "Contributor": "Contributor"
 }
