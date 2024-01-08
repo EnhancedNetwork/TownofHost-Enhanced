@@ -31,6 +31,8 @@
 
 **Credit to these mods and their developers for the code and help:**
 ### :star: [TOHRE](https://github.com/Loonie-Toons/) 
+>
+> - Town of Betrayal was forked from TOH: Enhanced
 > 
 > - TOH: Enhanced was forked from TOH-RE
 >
