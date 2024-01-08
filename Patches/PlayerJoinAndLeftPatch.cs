@@ -77,6 +77,14 @@ class OnGameJoinedPatch
 
         if (AmongUsClient.Instance.AmHost) // Execute the following only on the host
         {
+            EndGameManagerPatch.IsRestarting = false;
+            if (!RehostManager.IsAutoRehostDone)
+            {
+                AmongUsClient.Instance.ChangeGamePublic(RehostManager.ShouldPublic);
+                RehostManager.IsAutoRehostDone = true;
+            }
+
+
             GameStartManagerPatch.GameStartManagerUpdatePatch.exitTimer = -1;
             Main.DoBlockNameChange = false;
             Main.newLobby = true;
@@ -119,6 +127,7 @@ class DisconnectInternalPatch
     public static void Prefix(InnerNetClient __instance, DisconnectReasons reason, string stringReason)
     {
         Logger.Info($"Disconnect (Reason:{reason}:{stringReason}, ping:{__instance.Ping})", "Reason Disconnect");
+        RehostManager.OnDisconnectInternal(reason);
     }
 }
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerJoined))]
