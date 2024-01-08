@@ -30,9 +30,11 @@
 <br>
 
 **Credit to these mods and their developers for the code and help:**
-### :star: [TOHRE](https://github.com/Loonie-Toons/) 
+### :star: [TOH: Enhanced](https://github.com/0xDrMoe/TownofHost-Enhanced/)
 >
-> - Town of Betrayal was forked from TOH: Enhanced
+> - TOB was forked from TOH: Enhanced
+>
+### :star: [TOHRE](https://github.com/Loonie-Toons/) 
 > 
 > - TOH: Enhanced was forked from TOH-RE
 >
