@@ -148,6 +148,11 @@ class CheckMurderPatch
                 Main.KilledDiseased.Add(killer.PlayerId, 1);
             }
         }
+
+        if (target.Is(CustomRoles.Susceptible))
+        {
+            Susceptible.CallEnabledAndChange(target);
+        }
         if (target.Is(CustomRoles.Antidote))
         {
             if (Main.KilledAntidote.ContainsKey(killer.PlayerId))
