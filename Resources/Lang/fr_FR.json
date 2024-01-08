@@ -5,6 +5,7 @@
   "HostColor": "#902efd",
   "IconColor": "#4bf4ff",
   "Icon": "♥",
+  "HideHostText": "Hide 'Host♥' Text",
   "NameColor": "#ffc0cb",
   "kofi": "Ko-Fi",
   "update": "Mettre à Jour",
@@ -2696,6 +2697,7 @@
   "AutoStartTimer": "Compte à rebours initial pour le démarrage automatique",
   "AutoPlayAgainCountdown": "Délai avant de rentrer dans le hall",
   "AutoPlayAgain": "Rejouer automatiquement",
+  "AutoRehost": "Auto Re-Host on Bad Disconnect",
   "CountdownText": "Rejoindre le lobby dans {0}s",
   "TimeMasterSkillDuration": "<color=#44baff>Bouclier temporel</color> Durée",
   "TimeMasterSkillCooldown": "Temps de recharge pour le <color=#44baff> Bouclier temporel</color>",
@@ -3532,6 +3534,9 @@
   "FFA_ShieldBroken": "<color=#ffff00>Quelqu'un a brisé ton bouclier !</color>",
   "Killer": "CHACUN POUR SOI",
   "KillerInfo": "Soyez le dernier vivant pour Gagner",
+  "Hide&SeekTOHE": "Hide & Seek",
+  "MenuTitle.Hide&Seek": "Hide & Seek Settings",
+  "NumImpostorsHnS": "Num Impostors",
   "EveryOneKnowSolsticer": "Tout le monde sait qui est le Solsticer",
   "SolsticerKnowItsKiller": "Le Solsticer connaît le rôle de celui qui a utilisé le bouton Tuer sur lui",
   "SolsticerSpeed": "Vitesse de déplacement du Solsticer",
@@ -3551,5 +3556,6 @@
   "ImpCanBeSilent": "Les<color=#ff1919> Imposteurs</color> peuvent être discrets",
   "CrewCanBeSilent": "Les <color=#8cffff>Coéquipiers</color> peuvent être discrets",
   "NeutralCanBeSilent": "Les <color=#7f8c8d>Neutres</color> peuvent être discrets",
-  "LastMessageReplay": "Last System Message Replay"
+  "LastMessageReplay": "Last System Message Replay",
+  "Contributor": "Contributor"
 }
