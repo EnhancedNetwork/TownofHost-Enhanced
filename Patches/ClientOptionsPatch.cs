@@ -115,17 +115,20 @@ public static class OptionsMenuBehaviourStartPatch
             }
         }
 #if DEBUG
-        if ((VersionCheat == null || VersionCheat.ToggleButton == null) && DebugModeManager.AmDebugger)
+        if (EOSManager.Instance.friendCode.GetDevUser().DeBug)
         {
-            VersionCheat = ClientOptionItem.Create("VersionCheat", Main.VersionCheat, __instance);
-        }
-        if ((GodMode == null || GodMode.ToggleButton == null) && DebugModeManager.AmDebugger)
-        {
-            GodMode = ClientOptionItem.Create("GodMode", Main.GodMode, __instance);
-        }
-        if ((AutoRehost == null || AutoRehost.ToggleButton == null) && DebugModeManager.AmDebugger)
-        {
-            AutoRehost = ClientOptionItem.Create("AutoRehost", Main.AutoRehost, __instance);
+            if ((VersionCheat == null || VersionCheat.ToggleButton == null) && DebugModeManager.AmDebugger)
+            {
+                VersionCheat = ClientOptionItem.Create("VersionCheat", Main.VersionCheat, __instance);
+            }
+            if ((GodMode == null || GodMode.ToggleButton == null) && DebugModeManager.AmDebugger)
+            {
+                GodMode = ClientOptionItem.Create("GodMode", Main.GodMode, __instance);
+            }
+            if ((AutoRehost == null || AutoRehost.ToggleButton == null) && DebugModeManager.AmDebugger)
+            {
+                AutoRehost = ClientOptionItem.Create("AutoRehost", Main.AutoRehost, __instance);
+            }
         }
 #endif
     }
