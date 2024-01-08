@@ -30,6 +30,7 @@ public abstract class OptionItem
     public bool IsHeader { get; protected set; }
     public bool IsHidden { get; protected set; }
     public bool IsText { get; protected set; }
+    public bool IsVanilla { get; protected set; }
     public Dictionary<string, string> ReplacementDictionary
     {
         get => _replacementDictionary;
@@ -66,6 +67,7 @@ public abstract class OptionItem
         DefaultValue = defaultValue;
         Tab = tab;
         IsSingleValue = isSingleValue;
+        IsVanilla = vanila;
 
         // Nullable Info Setting
         NameColor = Color.white;
@@ -187,7 +189,14 @@ public abstract class OptionItem
     {
         if (OptionBehaviour is not null and StringOption opt)
         {
+            if (IsVanilla)
+            {
+            opt.TitleText.text = GetNameVanilla();
+            }
+            else
+            {
             opt.TitleText.text = GetName();
+            }
             opt.ValueText.text = GetString();
             opt.oldValue = opt.Value = CurrentValue;
         }
