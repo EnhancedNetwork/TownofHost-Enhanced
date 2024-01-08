@@ -1431,12 +1431,7 @@ class MurderPlayerPatch
                 }, Options.BurstKillDelay.GetFloat(), "Burst Suicide");
             }
         }
-
-        if (target.Is(CustomRoles.Susceptible))
-        {
-            Susceptible.CallEnabledAndChange(target);
-        }
-
+        
         if (target.Is(CustomRoles.Trapper) && killer != target)
             killer.TrapperKilled(target);
 
