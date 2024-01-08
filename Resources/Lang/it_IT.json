@@ -5,6 +5,7 @@
   "HostColor": "#902efd",
   "IconColor": "#4bf4ff",
   "Icon": "♥",
+  "HideHostText": "Hide 'Host♥' Text",
   "NameColor": "#ffc0cb",
   "kofi": "Ko-Fi",
   "update": "Aggiorna",
@@ -2696,6 +2697,7 @@
   "AutoStartTimer": "Conto alla rovescia iniziale per iniziare automaticamente",
   "AutoPlayAgainCountdown": "Ritardo prima di rientrare nella lobby",
   "AutoPlayAgain": "Auto Gioca Ancora",
+  "AutoRehost": "Auto Re-Host on Bad Disconnect",
   "CountdownText": "Rientro in lobby entro {0}s",
   "TimeMasterSkillDuration": "Durata <color=#44baff>Scudo Temporale</color>",
   "TimeMasterSkillCooldown": "Ricarica <color=#44baff>Scudo Temporale</color>",
@@ -3532,6 +3534,9 @@
   "FFA_ShieldBroken": "<color=#ffff00>Qualcuno ha provato a ucciderti, ora il tuo scudo è rotto!</color>",
   "Killer": "TUTTI CONTRO TUTTI",
   "KillerInfo": "Uccidi tutti per vincere",
+  "Hide&SeekTOHE": "Hide & Seek",
+  "MenuTitle.Hide&Seek": "Hide & Seek Settings",
+  "NumImpostorsHnS": "Num Impostors",
   "EveryOneKnowSolsticer": "Tutti sanno chi è l'Impiegato",
   "SolsticerKnowItsKiller": "L'Impiegato conosce i ruoli che hanno usato il pulsante uccidi su di esso",
   "SolsticerSpeed": "Velocità di movimento dell'Impiegato",
@@ -3551,5 +3556,6 @@
   "ImpCanBeSilent": "Gli <color=#ff1919>Impostori</color> possono diventare Silenzioso",
   "CrewCanBeSilent": "Gli <color=#8cffff>Astronauti</color> possono essere Silenzioso",
   "NeutralCanBeSilent": "I <color=#7f8c8d>Neutrali</color> possono essere Silenzioso",
-  "LastMessageReplay": "Riproduzione dell'ultimo messaggio di sistema"
+  "LastMessageReplay": "Riproduzione dell'ultimo messaggio di sistema",
+  "Contributor": "Contributor"
 }
