@@ -1231,7 +1231,7 @@
   "HideGameSettings": "隱藏遊戲設定",
   "DIYGameSettings": "顯示自定義的/n訊息",
   "PlayerCanSetColor": "允許玩家使用/color指令",
-  "PlayerCanUseQuitCommand": "Players can use the /quit command to leave the lobby forever",
+  "PlayerCanUseQuitCommand": "玩家可以使用/quit指令來永遠離開大廳",
   "KPDCamouflageMode": "咔皮呆偽裝效果(包括通訊破壞及隱蔽者)",
   "RoleOptions": "職業設定",
   "ModeOptions": "模組設定",
@@ -1410,7 +1410,7 @@
   "MastermindTimeLimit": "殺人時間限制",
   "MastermindDelay": "操控通知延遲",
   "ManipulateNotify": "在{0}殺死某一玩家來避免死亡!",
-  "ManipulatedKilled": "<color=#00ffff>{0}</color>殺死了某位玩家",
+  "ManipulatedKilled": "<color=#00ffff>{0}</color>被你勒索的人殺害了",
   "SurvivedManipulation": "你在<color=#ff1919>主謀</color>的操控中存活了!",
   "HackCooldown": "駭入冷卻時間",
   "HackDuration": "駭入持續時間",
@@ -2246,6 +2246,8 @@
   "Message.MadmateSelfVoteModeNotify": "請注意: 目前叛徒生成模式為[{0}]\n投票給自己代表您希望成為叛徒。若您符合成為叛徒的條件且還有剩餘名額，將立刻成為叛徒。",
   "Message.HostLeftGameInGame": "警告: 房主已退出遊戲，接下來遊戲無法正常運作，請各位退出遊戲，或等待新房主重開遊戲。",
   "Message.HostLeftGameInLobby": "警告: 房主已退出遊戲，接下來遊戲無法正常運作，若新房主已安裝TOHE，至少需要重開一次房間才能正常遊玩。",
+  "Message.HostLeftGameNewHostIsMod": "★警告★ 原房主離開了游戲， <b>{0}</b>成爲了新房主！房間依然是模組，只要開始並立即結束（shift+L+enter）便可重置房間！",
+  "Message.HostLeftGameNewHostIsNotMod": "★警告★ 原房主離開了游戲， <b>{0}</b>成爲了新房主！房間變成原版，請離開大廳或等待新房主開始游戲（原版）。",
   "Message.LobbyShared": "已請求車隊姬發送您的房號",
   "Message.LobbyShareFailed": "車隊姬似乎不在線(分享大廳失敗)",
   "Message.YTPlanDisabled": "<color=#ff1919><size=150%><b>錯誤</b></size></color>\n\n<color=#ff1919>請在設定中開啟<b>{0}</b></color>",
@@ -2979,7 +2981,7 @@
   "LostAddonByCleanser": "你的附加職業被清洗者清洗了",
   "MaxProtections": "能力最大使用次數",
   "KeeperHideVote": "隱藏守衛者的投票",
-  "KeeperProtect": "你已選擇守護<b>{0}</b>，以防止他在這輪會議中被逐出，現在你可以重新投票。",
+  "KeeperProtect": "你已選擇守護【<b>{0}</b>】防止他在這輪會議中被逐出，現在你可以重新投票。",
   "KeeperTitle": "【 ★ 守衛者訊息 ★ 】",
   "MaulKillButtonText": "獵殺",
   "MaulRadius": "獵殺範圍",
@@ -3549,5 +3551,5 @@
   "ImpCanBeSilent": "<color=#ff1919>偽裝者</color>可以成為沉默者",
   "CrewCanBeSilent": "<color=#8cffff>船員</color>可以成為沉默者",
   "NeutralCanBeSilent": "<color=#7f8c8d>中立</color> 可以成為沉默者",
-  "LastMessageReplay": "Last System Message Replay"
+  "LastMessageReplay": "最近一次系統訊息重播"
 }

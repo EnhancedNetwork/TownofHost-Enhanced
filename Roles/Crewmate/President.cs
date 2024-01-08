@@ -88,8 +88,8 @@ public static class President
 
         int operate = 0;
         msg = msg.ToLower().TrimStart().TrimEnd();
-        if (CheckCommond(ref msg, "finish")) operate = 1;
-        else if (CheckCommond(ref msg, "reveal")) operate = 2;
+        if (CheckCommond(ref msg, "finish|结束|结束会议|結束|結束會議")) operate = 1;
+        else if (CheckCommond(ref msg, "reveal|展示")) operate = 2;
         else return false;
 
         if (!pc.IsAlive())

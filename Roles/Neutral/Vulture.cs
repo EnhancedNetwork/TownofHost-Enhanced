@@ -170,9 +170,10 @@ public static class Vulture
 
     public static string GetTargetArrow(PlayerControl seer, PlayerControl target = null)
     {
-        if (!seer.Is(CustomRoles.Vulture)) return "";
-        if (target != null && seer.PlayerId != target.PlayerId) return "";
-        if (GameStates.IsMeeting) return "";
+        if (seer == null) return string.Empty;
+        if (!seer.Is(CustomRoles.Vulture)) return string.Empty;
+        if (target != null && seer.PlayerId != target.PlayerId) return string.Empty;
+        if (GameStates.IsMeeting) return string.Empty;
         return Utils.ColorString(Color.white, LocateArrow.GetArrows(seer));
     }
 }

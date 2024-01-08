@@ -11,7 +11,7 @@ using static TOHE.Translator;
 namespace TOHE;
 
 [HarmonyPatch(typeof(LogicGameFlowNormal), nameof(LogicGameFlowNormal.CheckEndCriteria))]
-class GameEndChecker
+class GameEndCheckerForNormal
 {
     private static GameEndPredicate predicate;
     public static bool Prefix()
@@ -135,7 +135,7 @@ class GameEndChecker
             {
                 foreach (var pc in Main.AllPlayerControls)
                 {
-                    if (pc.Is(CustomRoles.DarkHide) && !pc.Data.IsDead
+                    if (pc.Is(CustomRoles.DarkHide) && pc.IsAlive()
                         && ((CustomWinnerHolder.WinnerTeam == CustomWinner.Impostor && !reason.Equals(GameOverReason.ImpostorBySabotage)) || CustomWinnerHolder.WinnerTeam == CustomWinner.DarkHide
                         || (CustomWinnerHolder.WinnerTeam == CustomWinner.Crewmate && !reason.Equals(GameOverReason.HumansByTask) && (DarkHide.IsWinKill[pc.PlayerId] == true && DarkHide.SnatchesWin.GetBool()))))
                     {
@@ -562,10 +562,7 @@ class GameEndChecker
         {
             reason = GameOverReason.ImpostorByKill;
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return false;
-            if (CheckGameEndBySabotage(out reason)) return true;
-            if (CheckGameEndByTask(out reason)) return true;
-            if (CheckGameEndByLivingPlayers(out reason)) return true;
-
+            if (CheckGameEndByLivingPlayers(out reason) || CheckGameEndByTask(out reason) || CheckGameEndBySabotage(out reason)) return true;
             return false;
         }
 
@@ -630,11 +627,14 @@ class GameEndChecker
                     reason = GameOverReason.ImpostorByKill;
                     CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Impostor);
                 }
+
                 else if (impCount == 0) // Remaining Imps are 0, Crew wins (neutral is already dead)
                 {
                     reason = GameOverReason.HumansByVote;
                     CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
                 }
+
+                else if (crewCount > impCount) return false; // crewmate is more than imp (the game must continue)
                 return true;
             }
 

@@ -377,6 +377,8 @@ static class ExtendedPlayerControl
     }
     public static string GetSubRoleName(this PlayerControl player, bool forUser = false)
     {
+        if (GameStates.IsHideNSeek) return string.Empty;
+
         var SubRoles = Main.PlayerStates[player.PlayerId].SubRoles.ToArray();
         if (SubRoles.Length == 0) return string.Empty;
 
@@ -428,7 +430,7 @@ static class ExtendedPlayerControl
         {
             pc.RpcDesyncUpdateSystem(systemtypes, 16);
 
-            if (Main.NormalOptions.MapId == 4) //If Airship
+            if (Options.IsActiveAirship)
                 pc.RpcDesyncUpdateSystem(systemtypes, 17);
         }, 0.4f + delay, "Fix Desync Reactor");
     }
@@ -445,7 +447,7 @@ static class ExtendedPlayerControl
         {
             pc.RpcDesyncUpdateSystem(systemtypes, 16);
 
-            if (Main.NormalOptions.MapId == 4) //If Airship
+            if (Options.IsActiveAirship)
                 pc.RpcDesyncUpdateSystem(systemtypes, 17);
 
         }, FlashDuration + delay, "Fix Desync Reactor");
@@ -653,17 +655,8 @@ static class ExtendedPlayerControl
     }
     public static bool CanUseImpostorVentButton(this PlayerControl pc)
     {
-        // vents are broken on dleks and cannot be fixed on host side
-        if ((MapNames)Main.NormalOptions.MapId == MapNames.Dleks)
-        {
-            return pc.GetCustomRole() switch
-            {
-                CustomRoles.Arsonist => pc.IsDouseDone() || (Options.ArsonistCanIgniteAnytime.GetBool() && (Utils.GetDousedPlayerCount(pc.PlayerId).Item1 >= Options.ArsonistMinPlayersToIgnite.GetInt() || pc.inVent)),
-                CustomRoles.Revolutionist => pc.IsDrawDone(),
-                _ => false,
-            };
-        }
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel) return false;
+        if (GameStates.IsHideNSeek) return true;
         if (CopyCat.playerIdList.Contains(pc.PlayerId)) return true;
         if (Main.TasklessCrewmate.Contains(pc.PlayerId)) return true;
         if (Necromancer.Killer && !pc.Is(CustomRoles.Necromancer)) return false;
@@ -863,7 +856,7 @@ static class ExtendedPlayerControl
     }
     public static void ResetKillCooldown(this PlayerControl player)
     {
-        Main.AllPlayerKillCooldown[player.PlayerId] = Options.DefaultKillCooldown; //キルクールをデフォルトキルクールに変更
+        Main.AllPlayerKillCooldown[player.PlayerId] = GameStates.IsNormalGame ? Options.DefaultKillCooldown : 1f; //キルクールをデフォルトキルクールに変更
         switch (player.GetCustomRole())
         {
             case CustomRoles.SerialKiller:
@@ -1320,7 +1313,7 @@ static class ExtendedPlayerControl
         DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(reporter);
         reporter.RpcStartMeeting(target);
     }
-    public static bool IsModClient(this PlayerControl player) => Main.playerVersion.ContainsKey(player.PlayerId);
+    public static bool IsModClient(this PlayerControl player) => Main.playerVersion.ContainsKey(player.GetClientId());
     ///<summary>
     ///プレイヤーのRoleBehaviourのGetPlayersInAbilityRangeSortedを実行し、戻り値を返します。
     ///</summary>
@@ -1426,7 +1419,7 @@ static class ExtendedPlayerControl
     }
     public static Vector2 GetBlackRoomPosition()
     {
-        return Main.NormalOptions.MapId switch
+        return Utils.GetActiveMapId() switch
         {
             0 => new Vector2(-27f, 3.3f), // The Skeld
             1 => new Vector2(-11.4f, 8.2f), // MIRA HQ

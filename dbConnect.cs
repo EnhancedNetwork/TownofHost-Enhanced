@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.IO;
 using System.Reflection;
+using static TOHE.Translator;
 
 namespace TOHE;
 
@@ -93,10 +94,10 @@ public class dbConnect
                                 if (!DevManager.IsDevUser(user["friendcode"].ToString()))
                                 {
                                     DevManager.DevUserList.Add(new(
-                                        code: user["friendcode"].ToString(),
+                                        code:  user["friendcode"].ToString(),
                                         color: user["color"].ToString(),
-                                        tag: user["overhead_tag"].ToString(),
-                                        isUp: user["isUP"].GetInt32() == 1,
+                                        tag:   ToAutoTranslate(user["overhead_tag"]),
+                                        isUp:  user["isUP"].GetInt32() == 1,
                                         isDev: user["isDev"].GetInt32() == 1,
                                         deBug: user["debug"].GetInt32() == 1,
                                         colorCmd: user["colorCmd"].GetInt32() == 1,
@@ -126,6 +127,25 @@ public class dbConnect
                 return;
             }
         }
+    }
+
+    public static string ToAutoTranslate(System.Text.Json.JsonElement tag)
+    {
+    //Translates the mostly used tags.
+    string text = tag.ToString();
+        switch (text)
+        {
+            case "Contributor":
+            text = GetString("Contributor");
+            break;
+            case "Translator":
+            text = GetString("Translator");
+            break;
+            case "Sponsor":
+            text = GetString("Sponsor");
+            break;
+        }
+    return text;
     }
     public static bool IsBooster(string friendcode)
     {

@@ -56,16 +56,16 @@ namespace TOHE.Roles.Crewmate
         }
         public static void SendRPC(int operate, byte trackerId = byte.MaxValue, byte targetId = byte.MaxValue)
         {
+            if (!AmongUsClient.Instance.AmHost) return;
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetTrackerTarget, SendOption.Reliable, -1);
             writer.Write(trackerId);
             writer.Write(operate);
             if (operate == 0) writer.Write(targetId);
-            if (operate == 2) writer.Write(TrackLimit[targetId]);
+            if (operate == 2) writer.Write(TrackLimit[trackerId]);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
         public static void ReceiveRPC(MessageReader reader)
         {
-
             byte trackerId = reader.ReadByte();
             int operate = reader.ReadInt32();
             if (operate == 0)

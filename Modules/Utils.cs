@@ -111,7 +111,7 @@ public static class Utils
         }
 
         // For Client side
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable);
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.None);
         NetHelpers.WriteVector2(location, messageWriter);
         messageWriter.Write(player.NetTransform.lastSequenceId + 100U);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
@@ -139,7 +139,15 @@ public static class Utils
     }
     public static bool IsActive(SystemTypes type)
     {
-        int mapId = Main.NormalOptions.MapId;
+        if (GameStates.IsHideNSeek) return false;
+
+        // if ShipStatus not have current SystemTypes, return false
+        if (!ShipStatus.Instance.Systems.ContainsKey(type))
+        {
+            return false;
+        }
+
+        int mapId = GetActiveMapId();
         /*
             The Skeld    = 0
             MIRA HQ      = 1
@@ -150,12 +158,6 @@ public static class Utils
         */
 
         //Logger.Info($"{type}", "SystemTypes");
-
-        // if ShipStatus not have current SystemTypes, return false
-        if (!ShipStatus.Instance.Systems.ContainsKey(type))
-        {
-            return false;
-        }
 
         switch (type)
         {
@@ -215,12 +217,16 @@ public static class Utils
                 return false;
         }
     }
-    public static SystemTypes GetCriticalSabotageSystemType() => (MapNames)Main.NormalOptions.MapId switch
+    public static SystemTypes GetCriticalSabotageSystemType() => GetActiveMapName() switch
     {
         MapNames.Polus => SystemTypes.Laboratory,
         MapNames.Airship => SystemTypes.HeliSabotage,
         _ => SystemTypes.Reactor,
     };
+
+    public static MapNames GetActiveMapName() => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId;
+    public static byte GetActiveMapId() => GameOptionsManager.Instance.CurrentGameOptions.MapId;
+
     public static void SetVision(this IGameOptions opt, bool HasImpVision)
     {
         if (HasImpVision)
@@ -655,7 +661,7 @@ public static class Utils
     {
         try
         {
-            if (!Main.playerVersion.ContainsKey(0)) return string.Empty; //ホストがMODを入れていなければ未記入を返す
+            if (!Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId)) return string.Empty; //ホストがMODを入れていなければ未記入を返す
             var taskState = pc.GetPlayerTaskState();
             var Comms = false;
             if (taskState.hasTasks)
@@ -676,7 +682,7 @@ public static class Utils
     {
         try
         {
-            if (!Main.playerVersion.ContainsKey(0)) return ""; //ホストがMODを入れていなければ未記入を返す
+            if (!Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId)) return ""; //ホストがMODを入れていなければ未記入を返す
             var ProgressText = new StringBuilder();
             var role = Main.PlayerStates[playerId].MainRole;
             switch (role)
@@ -1172,7 +1178,6 @@ public static class Utils
     
     public static void ShowAllActiveSettings(byte PlayerId = byte.MaxValue)
     {
-        var mapId = Main.NormalOptions.MapId;
         if (Options.HideGameSettings.GetBool() && PlayerId != byte.MaxValue)
         {
             SendMessage(GetString("Message.HideGameSettings"), PlayerId);
@@ -1714,6 +1719,7 @@ public static class Utils
     public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
+        // set replay to true when you want to send previous sys msg or do not want to add a sys msg in the history
         if (!replay && GameStates.IsInGame) ChatManager.AddSystemChatHistory(sendTo, text);
 
         if (title == "") title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
@@ -1843,7 +1849,7 @@ public static class Utils
             {
                 if (!player.IsModClient()) return;
                 {
-                    if (GameStates.IsOnlineGame || GameStates.IsLocalGame)
+                    if ((GameStates.IsOnlineGame || GameStates.IsLocalGame) && !Options.HideHostText.GetBool())
                         name = $"<color={GetString("HostColor")}>{GetString("HostText")}</color><color={GetString("IconColor")}>{GetString("Icon")}</color><color={GetString("NameColor")}>{name}</color>";
 
                     //name = $"<color=#902efd>{GetString("HostText")}</color><color=#4bf4ff>♥</color>" + name;
@@ -1984,6 +1990,7 @@ public static class Utils
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (Main.AllPlayerControls == null) return;
+        if (GameStates.IsHideNSeek) return;
 
         //Do not update NotifyRoles during meetings
         if (GameStates.IsMeeting) return;
@@ -2000,6 +2007,7 @@ public static class Utils
     {
         if (!AmongUsClient.Instance.AmHost) return Task.CompletedTask;
         if (Main.AllPlayerControls == null) return Task.CompletedTask;
+        if (GameStates.IsHideNSeek) return Task.CompletedTask;
 
         //Do not update NotifyRoles during meetings
         if (GameStates.IsMeeting) return Task.CompletedTask;
@@ -2781,7 +2789,7 @@ public static class Utils
         if (Lawyer.Target.ContainsValue(target.PlayerId))
             Lawyer.ChangeRoleByTarget(target);
 
-        FixedUpdatePatch.LoversSuicide(target.PlayerId, onMeeting);
+        FixedUpdateInNormalGamePatch.LoversSuicide(target.PlayerId, onMeeting);
     }
     public static void ChangeInt(ref int ChangeTo, int input, int max)
     {
