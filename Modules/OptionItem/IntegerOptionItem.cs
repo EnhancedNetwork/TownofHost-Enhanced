@@ -6,14 +6,14 @@ public class IntegerOptionItem : OptionItem
     public IntegerValueRule Rule;
 
     // コンストラクタ
-    public IntegerOptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue, IntegerValueRule rule)
-    : base(id, name, rule.GetNearestIndex(defaultValue), tab, isSingleValue)
+    public IntegerOptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue, IntegerValueRule rule, bool vanilla)
+    : base(id, name, rule.GetNearestIndex(defaultValue), tab, isSingleValue, vanila:vanilla)
     {
         Rule = rule;
     }
-    public static IntegerOptionItem Create(int id, string name, IntegerValueRule rule, int defaultValue, TabGroup tab, bool isSingleValue)
+    public static IntegerOptionItem Create(int id, string name, IntegerValueRule rule, int defaultValue, TabGroup tab, bool isSingleValue, bool vanilla = false)
     {
-        return new IntegerOptionItem(id, name, defaultValue, tab, isSingleValue, rule);
+        return new IntegerOptionItem(id, name, defaultValue, tab, isSingleValue, rule, vanilla);
     }
 
     // Getter

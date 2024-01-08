@@ -6,14 +6,14 @@ public class PresetOptionItem : OptionItem
     public IntegerValueRule Rule;
 
     // コンストラクタ
-    public PresetOptionItem(int defaultValue, TabGroup tab)
-    : base(0, "Preset", defaultValue, tab, true)
+    public PresetOptionItem(int defaultValue, TabGroup tab, bool vanilla)
+    : base(0, "Preset", defaultValue, tab, true, vanila:vanilla)
     {
         Rule = (0, NumPresets - 1, 1);
     }
-    public static PresetOptionItem Create(int defaultValue, TabGroup tab)
+    public static PresetOptionItem Create(int defaultValue, TabGroup tab, bool vanilla = false)
     {
-        return new PresetOptionItem(defaultValue, tab);
+        return new PresetOptionItem(defaultValue, tab, vanilla);
     }
 
     // Getter

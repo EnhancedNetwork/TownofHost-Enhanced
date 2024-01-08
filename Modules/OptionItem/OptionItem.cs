@@ -58,7 +58,7 @@ public abstract class OptionItem
     public event EventHandler<UpdateValueEventArgs> UpdateValueEvent;
 
     // Constructor
-    public OptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue)
+    public OptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue, bool vanila)
     {
         // Info Setting
         Id = id;
@@ -152,6 +152,15 @@ public abstract class OptionItem
         return disableColor ?
             Translator.GetString(Name, ReplacementDictionary, console) :
             Utils.ColorString(NameColor, Translator.GetString(Name, ReplacementDictionary));
+    }
+    public virtual string GetNameVanilla()
+    {
+        string nameToFind = Name;
+        if (Enum.TryParse<StringNames>(nameToFind, out StringNames text))
+        {
+            return DestroyableSingleton<TranslationController>.Instance.GetString(text);
+        }
+        return string.Empty;
     }
     public virtual bool GetBool() => CurrentValue != 0 && (Parent == null || Parent.GetBool());
     public virtual int GetInt() => CurrentValue;

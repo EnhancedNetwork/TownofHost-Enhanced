@@ -6,18 +6,18 @@ public class TextOptionItem : OptionItem
     public IntegerValueRule Rule;
 
     // コンストラクタ
-    public TextOptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue)
-    : base(id, name, defaultValue, tab, isSingleValue)
+    public TextOptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue, bool vanilla)
+    : base(id, name, defaultValue, tab, isSingleValue, vanila:vanilla)
     {
         IsText = true;
         IsHeader = true;
     }
     public static TextOptionItem Create(
-        int id, string name, TabGroup tab, bool isSingleValue = false
+        int id, string name, TabGroup tab, bool isSingleValue = false, bool vanilla = false
     )
     {
         return new TextOptionItem(
-            id, name, 0, tab, isSingleValue
+            id, name, 0, tab, isSingleValue, vanilla
         );
     }
 
