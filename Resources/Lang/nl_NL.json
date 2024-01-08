@@ -5,6 +5,7 @@
   "HostColor": "#902efd",
   "IconColor": "#4bf4ff",
   "Icon": "♥",
+  "HideHostText": "Hide 'Host♥' Text",
   "NameColor": "#ffc0cb",
   "kofi": "Ko-Fi",
   "update": "Updaten",
@@ -2696,6 +2697,7 @@
   "AutoStartTimer": "Initial countdown for auto-starting",
   "AutoPlayAgainCountdown": "Delay before re-entering lobby",
   "AutoPlayAgain": "Auto Play Again",
+  "AutoRehost": "Auto Re-Host on Bad Disconnect",
   "CountdownText": "Rejoining lobby in {0}s",
   "TimeMasterSkillDuration": "<color=#44baff>Time Shield</color> Duration",
   "TimeMasterSkillCooldown": "<color=#44baff>Time Shield</color> Cooldown",
@@ -3532,6 +3534,9 @@
   "FFA_ShieldBroken": "<color=#ffff00>Someone tried to kill you, your shield is now broken!</color>",
   "Killer": "FREE FOR ALL",
   "KillerInfo": "Kill Everyone to Win",
+  "Hide&SeekTOHE": "Hide & Seek",
+  "MenuTitle.Hide&Seek": "Hide & Seek Settings",
+  "NumImpostorsHnS": "Num Impostors",
   "EveryOneKnowSolsticer": "Every One Know who is Solsticer",
   "SolsticerKnowItsKiller": "Solsticer knows the role of whom used kill button on it",
   "SolsticerSpeed": "Movement speed of Solsticer",
@@ -3551,5 +3556,6 @@
   "ImpCanBeSilent": "<color=#ff1919>Impostors</color> can become Silent",
   "CrewCanBeSilent": "<color=#8cffff>Crewmates</color> can become Silent",
   "NeutralCanBeSilent": "<color=#7f8c8d>Neutrals</color> can become Silent",
-  "LastMessageReplay": "Last System Message Replay"
+  "LastMessageReplay": "Last System Message Replay",
+  "Contributor": "Contributor"
 }
