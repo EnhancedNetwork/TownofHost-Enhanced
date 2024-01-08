@@ -95,12 +95,12 @@ internal class RunLoginPatch
     {
         isAllowedOnline = canOnline;
         var friendcode = EOSManager.Instance.friendCode;
+        dbConnect.Init();
         if (friendcode == null || friendcode == "")
         {
             Logger.Info("friendcode not found", "EOSManager");
             canOnline = false;
         }
-
         else if (Main.devRelease && !dbConnect.CanAccessDev(friendcode))
         {
             Main.hasAccess = false;
