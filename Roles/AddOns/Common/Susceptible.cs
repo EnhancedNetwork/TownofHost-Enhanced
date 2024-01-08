@@ -15,7 +15,6 @@ namespace TOHE.Roles.AddOns.Common
         public static OptionItem CanBeOnNeutral;
         public static OptionItem EnabledDeathReasons;
         public static PlayerState.DeathReason randomReason;
-        public static List<byte> CheckReason;
 
 
         public static void SetupCustomOptions()
@@ -25,16 +24,6 @@ namespace TOHE.Roles.AddOns.Common
             CanBeOnImp = BooleanOptionItem.Create(Id + 12, "ImpCanBeSusceptible", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Susceptible]);
             CanBeOnCrew = BooleanOptionItem.Create(Id + 13, "CrewCanBeSusceptible", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Susceptible]);
             CanBeOnNeutral = BooleanOptionItem.Create(Id + 14, "NeutralCanBeSusceptible", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Susceptible]);
-        }
-
-        public static void Init()
-        {
-            CheckReason = new();
-        }
-        public static void Add(byte playerId)
-        {
-            ChangeRandomDeath();
-            CheckReason.Add(playerId);
         }
 
         public static void ChangeRandomDeath()
