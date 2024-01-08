@@ -5,6 +5,7 @@
   "HostColor": "#902efd",
   "IconColor": "#4bf4ff",
   "Icon": "♥",
+  "HideHostText": "Hide 'Host♥' Text",
   "NameColor": "#ffc0cb",
   "kofi": "Ko-Fi",
   "update": "アップデート",
@@ -2696,6 +2697,7 @@
   "AutoStartTimer": "自動開始のための初期カウントダウン",
   "AutoPlayAgainCountdown": "ロビーに再入る前の遅延",
   "AutoPlayAgain": "自動再生",
+  "AutoRehost": "Auto Re-Host on Bad Disconnect",
   "CountdownText": "{0} 秒後にロビーに再参加します。",
   "TimeMasterSkillDuration": "<color=#44baff>タイムシールド</color> の持続時間",
   "TimeMasterSkillCooldown": "<color=#44baff>タイムシールド</color>のクールダウン",
@@ -3532,6 +3534,9 @@
   "FFA_ShieldBroken": "<color=#ffff00>誰かがあなたを殺そうとしました、今あなたのシールドは壊れています！</color>",
   "Killer": "フリー・フォー・オール",
   "KillerInfo": "みんなを殺して勝つ！",
+  "Hide&SeekTOHE": "Hide & Seek",
+  "MenuTitle.Hide&Seek": "Hide & Seek Settings",
+  "NumImpostorsHnS": "Num Impostors",
   "EveryOneKnowSolsticer": "みんながソルスティスが誰であるかを知っています",
   "SolsticerKnowItsKiller": "ソルスティスは、自身にキルボタンを使用した人の役割を知っています",
   "SolsticerSpeed": "ソルスティスの移動速度",
@@ -3551,5 +3556,6 @@
   "ImpCanBeSilent": "<color=#ff1919>インポスター</color>はサイレントになることができます",
   "CrewCanBeSilent": "<color=#8cffff>クルーメイト</color>はサイレントになることができます",
   "NeutralCanBeSilent": "<color=#7f8c8d>中立者</color>はサイレントになることができます",
-  "LastMessageReplay": "最後のシステムメッセージのリプレイ"
+  "LastMessageReplay": "最後のシステムメッセージのリプレイ",
+  "Contributor": "Contributor"
 }
