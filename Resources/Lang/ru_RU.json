@@ -5,6 +5,7 @@
   "HostColor": "#902efd",
   "IconColor": "#4bf4ff",
   "Icon": "♥",
+  "HideHostText": "Скрыть 'Хост♥' текст",
   "NameColor": "#ffc0cb",
   "kofi": "Ko-Fi",
   "update": "Обновить",
@@ -2696,6 +2697,7 @@
   "AutoStartTimer": "Начальный обратный отсчет для авто запуска",
   "AutoPlayAgainCountdown": "Задержка перед повторным заходом в лобби",
   "AutoPlayAgain": "Автоматический заходить в лобби после игры",
+  "AutoRehost": "Повторный авто хостинг при плохом отключении",
   "CountdownText": "Присоединение к лобби через {0} с",
   "TimeMasterSkillDuration": "Длительность <color=#44baff>временного щита</color>",
   "TimeMasterSkillCooldown": "Откат <color=#44baff>временного щита</color>",
@@ -3532,6 +3534,9 @@
   "FFA_ShieldBroken": "<color=#ffff00>Кто-то попытался тебя убить, твой щит был сломан!</color>",
   "Killer": "БЕСПЛАТНО ДЛЯ ВСЕХ",
   "KillerInfo": "Убейте всех, чтобы выиграть",
+  "Hide&SeekTOHE": "Прятки",
+  "MenuTitle.Hide&Seek": "Настройки Пряток",
+  "NumImpostorsHnS": "Количество Предателей",
   "EveryOneKnowSolsticer": "Все могут знать кто является Солнечным",
   "SolsticerKnowItsKiller": "Может знать роль того, кто использовал на нем кнопку убийства",
   "SolsticerSpeed": "Увеличить скорость передвижения на",
@@ -3551,5 +3556,6 @@
   "ImpCanBeSilent": "<color=#ff1919>Предатели</color> могут стать Тихим",
   "CrewCanBeSilent": "<color=#8cffff>Члены Экипажа</color> могут стать Тихим",
   "NeutralCanBeSilent": "<color=#7f8c8d>Нейтралы</color> могут стать Тихим",
-  "LastMessageReplay": "Воспроизведение последнего системного сообщения"
+  "LastMessageReplay": "Воспроизведение последнего системного сообщения",
+  "Contributor": "Помощник"
 }
