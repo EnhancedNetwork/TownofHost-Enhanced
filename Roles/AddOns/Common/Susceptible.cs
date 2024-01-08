@@ -1,4 +1,6 @@
+using Epic.OnlineServices;
 using System;
+using System.Collections.Generic;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -12,8 +14,8 @@ namespace TOHE.Roles.AddOns.Common
         public static OptionItem CanBeOnImp;
         public static OptionItem CanBeOnNeutral;
         public static OptionItem EnabledDeathReasons;
-       
-        private static PlayerState.DeathReason randomReason;
+        public static PlayerState.DeathReason randomReason;
+        public static List<byte> CheckReason;
 
 
         public static void SetupCustomOptions()
@@ -25,7 +27,17 @@ namespace TOHE.Roles.AddOns.Common
             CanBeOnNeutral = BooleanOptionItem.Create(Id + 14, "NeutralCanBeSusceptible", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Susceptible]);
         }
 
-         public static void ChangeRandomDeath()
+        public static void Init()
+        {
+            CheckReason = new();
+        }
+        public static void Add(byte playerId)
+        {
+            ChangeRandomDeath();
+            CheckReason.Add(playerId);
+        }
+
+        public static void ChangeRandomDeath()
         {
             PlayerState.DeathReason[] deathReasons = (PlayerState.DeathReason[])Enum.GetValues(typeof(PlayerState.DeathReason));
             Random random = new Random();
@@ -36,22 +48,21 @@ namespace TOHE.Roles.AddOns.Common
         public static void CallEnabledAndChange(PlayerControl victim)
         {
             ChangeRandomDeath();
-
             if (EnabledDeathReasons.GetBool())
             {
                 Logger.Info($"{victim.GetNameWithRole()} had the deathreason {randomReason}", "Susceptible");
-                switch (randomReason) 
-                { 
+                switch (randomReason)
+                {
                     case PlayerState.DeathReason.Eaten:
                         if (!Pelican.IsEnable)
                         {
                             Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
-                        } 
-                        else 
+                        }
+                        else
                         {
                             goto default;
                         }
-                    break;
+                        break;
 
                     case PlayerState.DeathReason.Spell:
                         if (!Witch.IsEnable)
@@ -62,7 +73,7 @@ namespace TOHE.Roles.AddOns.Common
                         {
                             goto default;
                         }
-                    break;
+                        break;
 
                     case PlayerState.DeathReason.Hex:
                         if (!HexMaster.IsEnable)
@@ -71,9 +82,9 @@ namespace TOHE.Roles.AddOns.Common
                         }
                         else
                         {
-                           goto default;
+                            goto default;
                         }
-                    break;
+                        break;
 
                     case PlayerState.DeathReason.Curse:
                         if (!CustomRoles.CursedWolf.RoleExist())
@@ -84,7 +95,7 @@ namespace TOHE.Roles.AddOns.Common
                         {
                             goto default;
                         }
-                    break;
+                        break;
 
                     case PlayerState.DeathReason.Jinx:
                         if (!Jinx.IsEnable)
@@ -95,7 +106,7 @@ namespace TOHE.Roles.AddOns.Common
                         {
                             goto default;
                         }
-                    break;
+                        break;
 
 
                     case PlayerState.DeathReason.Shattered:
@@ -107,7 +118,7 @@ namespace TOHE.Roles.AddOns.Common
                         {
                             goto default;
                         }
-                    break;
+                        break;
 
 
                     case PlayerState.DeathReason.Bite:
@@ -119,7 +130,7 @@ namespace TOHE.Roles.AddOns.Common
                         {
                             goto default;
                         }
-                    break;
+                        break;
 
                     case PlayerState.DeathReason.Poison:
                         if (!Poisoner.IsEnable)
@@ -130,7 +141,7 @@ namespace TOHE.Roles.AddOns.Common
                         {
                             goto default;
                         }
-                    break;
+                        break;
 
                     case PlayerState.DeathReason.Bombed:
                         if (!CustomRoles.Bomber.RoleExist() && !CustomRoles.Burst.RoleExist() && !CustomRoles.BoobyTrap.RoleExist() && !FireWorks.IsEnable)
@@ -141,7 +152,7 @@ namespace TOHE.Roles.AddOns.Common
                         {
                             goto default;
                         }
-                    break;
+                        break;
 
                     case PlayerState.DeathReason.Misfire:
                         if (!ChiefOfPolice.IsEnable)
@@ -152,7 +163,7 @@ namespace TOHE.Roles.AddOns.Common
                         {
                             goto default;
                         }
-                    break;
+                        break;
 
                     case PlayerState.DeathReason.Torched:
                         if (!CustomRoles.Arsonist.RoleExist())
@@ -163,7 +174,7 @@ namespace TOHE.Roles.AddOns.Common
                         {
                             goto default;
                         }
-                    break;
+                        break;
 
                     case PlayerState.DeathReason.Sniped:
                         if (!Sniper.IsEnable)
@@ -174,8 +185,8 @@ namespace TOHE.Roles.AddOns.Common
                         {
                             goto default;
                         }
-                    break;
-                    
+                        break;
+
                     case PlayerState.DeathReason.Revenge:
                         if (!CustomRoles.Avanger.RoleExist() && !CustomRoles.Retributionist.RoleExist() && !CustomRoles.Mafia.RoleExist())
                         {
@@ -185,7 +196,7 @@ namespace TOHE.Roles.AddOns.Common
                         {
                             goto default;
                         }
-                    break;
+                        break;
 
                     case PlayerState.DeathReason.Gambled:
                         if (!CustomRoles.EvilGuesser.RoleExist() && !CustomRoles.NiceGuesser.RoleExist() && !Options.GuesserMode.GetBool())
@@ -196,7 +207,7 @@ namespace TOHE.Roles.AddOns.Common
                         {
                             goto default;
                         }
-                    break;
+                        break;
 
                     case PlayerState.DeathReason.Quantization:
                         if (!BallLightning.IsEnable)
@@ -207,7 +218,7 @@ namespace TOHE.Roles.AddOns.Common
                         {
                             goto default;
                         }
-                    break;
+                        break;
 
                     case PlayerState.DeathReason.Overtired:
                         if (!CustomRoles.Workaholic.RoleExist())
@@ -218,7 +229,7 @@ namespace TOHE.Roles.AddOns.Common
                         {
                             goto default;
                         }
-                    break;
+                        break;
 
                     case PlayerState.DeathReason.Ashamed:
                         if (!CustomRoles.Workaholic.RoleExist())
@@ -229,7 +240,7 @@ namespace TOHE.Roles.AddOns.Common
                         {
                             goto default;
                         }
-                    break;
+                        break;
 
                     case PlayerState.DeathReason.PissedOff:
                         if (!CustomRoles.Pestilence.RoleExist() && !CustomRoles.Provocateur.RoleExist())
@@ -240,7 +251,7 @@ namespace TOHE.Roles.AddOns.Common
                         {
                             goto default;
                         }
-                    break;
+                        break;
 
                     case PlayerState.DeathReason.Dismembered:
                         if (!CustomRoles.OverKiller.RoleExist())
@@ -251,7 +262,7 @@ namespace TOHE.Roles.AddOns.Common
                         {
                             goto default;
                         }
-                    break;
+                        break;
 
                     case PlayerState.DeathReason.LossOfHead:
                         if (!Hangman.IsEnable)
@@ -262,7 +273,7 @@ namespace TOHE.Roles.AddOns.Common
                         {
                             goto default;
                         }
-                    break;
+                        break;
 
                     case PlayerState.DeathReason.Trialed:
                         if (!Judge.IsEnable && !Councillor.IsEnable)
@@ -273,7 +284,7 @@ namespace TOHE.Roles.AddOns.Common
                         {
                             goto default;
                         }
-                    break;
+                        break;
 
                     case PlayerState.DeathReason.Infected:
                         if (!Infectious.IsEnable)
@@ -284,7 +295,7 @@ namespace TOHE.Roles.AddOns.Common
                         {
                             goto default;
                         }
-                    break;
+                        break;
 
                     case PlayerState.DeathReason.Hack:
                         if (!Glitch.IsEnable)
@@ -295,7 +306,7 @@ namespace TOHE.Roles.AddOns.Common
                         {
                             goto default;
                         }
-                    break;
+                        break;
 
                     case PlayerState.DeathReason.Pirate:
                         if (!Pirate.IsEnable)
@@ -306,7 +317,7 @@ namespace TOHE.Roles.AddOns.Common
                         {
                             goto default;
                         }
-                    break;
+                        break;
 
                     case PlayerState.DeathReason.Shrouded:
                         if (!Shroud.IsEnable)
@@ -317,7 +328,7 @@ namespace TOHE.Roles.AddOns.Common
                         {
                             goto default;
                         }
-                    break;
+                        break;
 
                     case PlayerState.DeathReason.Mauled:
                         if (!Werewolf.IsEnable)
@@ -328,29 +339,18 @@ namespace TOHE.Roles.AddOns.Common
                         {
                             goto default;
                         }
-                    break;
-
-                    case PlayerState.DeathReason.Targeted:
-                        if (!Kamikaze.IsEnable)
-                        {
-                            Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
-                        }
-                        else
-                        {
-                            goto default;
-                        }
-                    break;
+                        break;
 
                     default:
-                        while(Main.PlayerStates[victim.PlayerId].deathReason != randomReason)
-                        Main.PlayerStates[victim.PlayerId].deathReason = randomReason;
-                    break;
+                        while (Main.PlayerStates[victim.PlayerId].deathReason != randomReason)
+                            Main.PlayerStates[victim.PlayerId].deathReason = randomReason;
+                        break;
                 }
             }
             else
             {
                 while (Main.PlayerStates[victim.PlayerId].deathReason != randomReason)
-                Main.PlayerStates[victim.PlayerId].deathReason = randomReason;
+                    Main.PlayerStates[victim.PlayerId].deathReason = randomReason;
             }
 
         }
