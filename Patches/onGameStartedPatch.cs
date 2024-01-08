@@ -1003,6 +1003,9 @@ internal class SelectRolesPatch
                         case CustomRoles.Oiiai:
                             Oiiai.Add(pc.PlayerId);
                             break;
+                        case CustomRoles.Susceptible:
+                            Susceptible.Add(pc.PlayerId);
+                            break; 
 
                         default:
                             break;
