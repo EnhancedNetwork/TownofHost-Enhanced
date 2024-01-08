@@ -334,6 +334,7 @@ internal class ChangeRoleSettings
             Blackmailer.Init();
             Spy.Init();
             Oiiai.Init();
+            Susceptible.init();
             FFF.Init();
             Instigator.Init();
             OverKiller.Init();
