@@ -5,6 +5,7 @@
   "HostColor": "#902efd",
   "IconColor": "#4bf4ff",
   "Icon": "♥",
+  "HideHostText": "隐藏房主标识",
   "NameColor": "#ffc0cb",
   "kofi": "Ko-Fi",
   "update": "Github更新",
@@ -2696,6 +2697,7 @@
   "AutoStartTimer": "自动开始的初始倒计时",
   "AutoPlayAgainCountdown": "重新进入大厅前的延迟",
   "AutoPlayAgain": "再次自动游玩",
+  "AutoRehost": "非正常断开连接后自动开房",
   "CountdownText": "在{0}秒内重新加入大厅",
   "TimeMasterSkillDuration": "<color=#44baff>时间护盾</color>的持续时间",
   "TimeMasterSkillCooldown": "<color=#44baff>时间护盾</color>的冷却时间",
@@ -3532,6 +3534,9 @@
   "FFA_ShieldBroken": "<color=#ffff00>有人想击杀你，你的盾牌现在坏了！</color>",
   "Killer": "自由对战",
   "KillerInfo": "击杀所有人，获得胜利！",
+  "Hide&SeekTOHE": "捉迷藏",
+  "MenuTitle.Hide&Seek": "捉迷藏设置",
+  "NumImpostorsHnS": "伪装者数量",
   "EveryOneKnowSolsticer": "所有人都知道至日者是谁",
   "SolsticerKnowItsKiller": "至日者知道击杀他人的职业",
   "SolsticerSpeed": "至日者的移动速度",
@@ -3551,5 +3556,6 @@
   "ImpCanBeSilent": "<color=#ff1919>内鬼阵营</color>可以成为沉默者",
   "CrewCanBeSilent": "<color=#8cffff>船员阵营</color>可以成为沉默者",
   "NeutralCanBeSilent": "<color=#7f8c8d>中立阵营</color>可以成为沉默者",
-  "LastMessageReplay": "在刷屏后向玩家补发上一条系统消息"
+  "LastMessageReplay": "在刷屏后向玩家补发上一条系统消息",
+  "Contributor": "代码贡献者"
 }
