@@ -22,7 +22,7 @@ public class SabotageSystemPatch
         private static void Prefix(ReactorSystemType __instance)
         {
             if (!Options.SabotageTimeControl.GetBool()) return;
-            if ((MapNames)Main.NormalOptions.MapId is MapNames.Airship) return;
+            if (Options.IsActiveAirship) return;
 
             // If Reactor sabotage is end
             if (!__instance.IsActive || !SetDurationForReactorSabotage)
@@ -64,7 +64,7 @@ public class SabotageSystemPatch
         private static void Prefix(HeliSabotageSystem __instance)
         {
             if (!Options.SabotageTimeControl.GetBool()) return;
-            if ((MapNames)Main.NormalOptions.MapId is not MapNames.Airship) return;
+            if (!Options.IsActiveAirship) return;
 
             // If Reactor sabotage is end (Airship)
             if (!__instance.IsActive || ShipStatus.Instance == null || !SetDurationForReactorSabotage)
@@ -90,7 +90,7 @@ public class SabotageSystemPatch
         private static void Prefix(LifeSuppSystemType __instance)
         {
             if (!Options.SabotageTimeControl.GetBool()) return;
-            if ((MapNames)Main.NormalOptions.MapId is MapNames.Polus or MapNames.Airship or MapNames.Fungle) return;
+            if (Utils.GetActiveMapName() is MapNames.Polus or MapNames.Airship or MapNames.Fungle) return;
 
             // If O2 sabotage is end
             if (!__instance.IsActive || !SetDurationForO2Sabotage)
@@ -142,7 +142,7 @@ public class SabotageSystemPatch
             __state = __instance.IsActive;
 
             if (!Options.SabotageTimeControl.GetBool()) return;
-            if ((MapNames)Main.NormalOptions.MapId is not MapNames.Fungle) return;
+            if (!Options.IsActiveFungle) return;
 
             // If Mushroom Mixup sabotage is end
             if (!__instance.IsActive || !SetDurationMushroomMixupSabotage)
@@ -163,6 +163,8 @@ public class SabotageSystemPatch
         }
         public static void Postfix(MushroomMixupSabotageSystem __instance, bool __state)
         {
+            if (GameStates.IsHideNSeek) return;
+
             // if Mushroom Mixup Sabotage is end
             if (__instance.IsActive != __state && !Main.MeetingIsStarted)
             {
@@ -191,6 +193,8 @@ public class SabotageSystemPatch
     {
         private static bool Prefix(SwitchSystem __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] MessageReader msgReader)
         {
+            if (GameStates.IsHideNSeek) return false;
+
             byte amount;
             {
                 var newReader = MessageReader.Get(msgReader);
@@ -215,7 +219,7 @@ public class SabotageSystemPatch
             }
 
             // Cancel if player can't fix a specific outage on Airship
-            if (Main.NormalOptions.MapId == 4)
+            if (Options.IsActiveAirship)
             {
                 var truePosition = player.GetCustomPosition();
                 if (Options.DisableAirshipViewingDeckLightsPanel.GetBool() && Vector2.Distance(truePosition, new(-12.93f, -11.28f)) <= 2f) return false;
@@ -281,6 +285,8 @@ public class SabotageSystemPatch
 
         private static bool Prefix([HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] MessageReader msgReader)
         {
+            if (GameStates.IsHideNSeek) return false;
+
             byte amount;
             {
                 var newReader = MessageReader.Get(msgReader);
@@ -346,7 +352,7 @@ public class SabotageSystemPatch
         public static void Postfix(SabotageSystemType __instance, bool __runOriginal)
         {
             // __runOriginal - the result that was returned from Prefix
-            if (!AmongUsClient.Instance.AmHost || !(isCooldownModificationEnabled && __runOriginal))
+            if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || !(isCooldownModificationEnabled && __runOriginal))
             {
                 return;
             }
@@ -371,7 +377,7 @@ public class SabotageSystemPatch
                 // When the camera is disabled, the vanilla player opens the camera so it does not blink.
                 if (amount == SecurityCameraSystemType.IncrementOp)
                 {
-                    var camerasDisabled = (MapNames)Main.NormalOptions.MapId switch
+                    var camerasDisabled = Utils.GetActiveMapName() switch
                     {
                         MapNames.Skeld or MapNames.Dleks => Options.DisableSkeldCamera.GetBool(),
                         MapNames.Polus => Options.DisablePolusCamera.GetBool(),

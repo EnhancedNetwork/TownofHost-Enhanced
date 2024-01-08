@@ -7,6 +7,8 @@ class CustomTaskCountsPatch
 {
     public static bool Prefix(GameData __instance)
     {
+        if (GameStates.IsHideNSeek) return true;
+
         __instance.TotalTasks = 0;
         __instance.CompletedTasks = 0;
         foreach (var p in __instance.AllPlayers.ToArray())

@@ -22,6 +22,40 @@ class OnGameJoinedPatch
     {
         while (!Options.IsLoaded) System.Threading.Tasks.Task.Delay(1);
         Logger.Info($"{__instance.GameId} Joining room", "OnGameJoined");
+
+        switch (GameOptionsManager.Instance.CurrentGameOptions.GameMode)
+        {
+            case GameModes.Normal:
+                Logger.Info(" Is Normal Game", "Game Mode");
+
+                // if custom game mode is HideNSeekTOHE in normal game, set standart
+                if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
+                {
+                    // Select standart
+                    Options.GameMode.SetValue(0);
+                }
+                break;
+
+            case GameModes.HideNSeek:
+                Logger.Info(" Is Hide & Seek", "Game Mode");
+
+                // if custom game mode is Standard/FFA in H&S game, set HideNSeekTOHE
+                if (Options.CurrentGameMode is CustomGameMode.Standard or CustomGameMode.FFA)
+                {
+                    // Select HideNSeekTOHE
+                    Options.GameMode.SetValue(2);
+                }
+                break;
+
+            case GameModes.None:
+                Logger.Info(" Is None", "Game Mode");
+                break;
+
+            default:
+                Logger.Info(" No find", "Game Mode");
+                break;
+        }
+
         Main.IsHostVersionCheating = false;
         Main.playerVersion = new();
         if (!Main.VersionCheat.Value) RPC.RpcVersionCheck();
@@ -43,6 +77,13 @@ class OnGameJoinedPatch
 
         if (AmongUsClient.Instance.AmHost) // Execute the following only on the host
         {
+            EndGameManagerPatch.IsRestarting = false;
+            if (!RehostManager.IsAutoRehostDone)
+            {
+                AmongUsClient.Instance.ChangeGamePublic(RehostManager.ShouldPublic);
+                RehostManager.IsAutoRehostDone = true;
+            }
+
 
             GameStartManagerPatch.GameStartManagerUpdatePatch.exitTimer = -1;
             Main.DoBlockNameChange = false;
@@ -53,12 +94,15 @@ class OnGameJoinedPatch
             Main.PlayerQuitTimes = new();
             KickPlayerPatch.AttemptedKickPlayerList = new();
 
-            if (Main.NormalOptions.KillCooldown == 0f)
-                Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
+            if (GameStates.IsNormalGame)
+            {
+                if (Main.NormalOptions.KillCooldown == 0f)
+                    Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
 
-            AURoleOptions.SetOpt(Main.NormalOptions.Cast<IGameOptions>());
-            if (AURoleOptions.ShapeshifterCooldown == 0f)
-                AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
+                AURoleOptions.SetOpt(Main.NormalOptions.Cast<IGameOptions>());
+                if (AURoleOptions.ShapeshifterCooldown == 0f)
+                    AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
+            }
         }
 
         _ = new LateTask(() =>
@@ -73,7 +117,7 @@ class OnGameJoinedPatch
                 return;
             }
             var client = PlayerControl.LocalPlayer.GetClient();
-            Logger.Info($"{client.PlayerName.RemoveHtmlTags()}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) finished join room", "Session");
+            Logger.Info($"{client.PlayerName.RemoveHtmlTags()}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) finished join room", "Session: OnGameJoined");
         }, 0.6f, "OnGameJoinedPatch");
     }
 }
@@ -83,15 +127,17 @@ class DisconnectInternalPatch
     public static void Prefix(InnerNetClient __instance, DisconnectReasons reason, string stringReason)
     {
         Logger.Info($"Disconnect (Reason:{reason}:{stringReason}, ping:{__instance.Ping})", "Reason Disconnect");
+        RehostManager.OnDisconnectInternal(reason);
     }
 }
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerJoined))]
 class OnPlayerJoinedPatch
 {
-    public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ClientData client)
+    public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
     {
-        Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Joining room", "Session");
+        Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Joining room", "Session: OnPlayerJoined");
         RPC.RpcVersionCheck();
+
         if (AmongUsClient.Instance.AmHost && client.FriendCode == "" && Options.KickPlayerFriendCodeNotExist.GetBool() && !GameStates.IsLocalGame)
         {
             if (!Options.TempBanPlayerFriendCodeNotExist.GetBool())
@@ -109,6 +155,7 @@ class OnPlayerJoinedPatch
                 Logger.Info($"TempBanned a player {client?.PlayerName} without a friend code", "Temp Ban");
             }
         }
+
         Platforms platform = client.PlatformData.Platform;
         if (AmongUsClient.Instance.AmHost && Options.KickOtherPlatformPlayer.GetBool() && platform != Platforms.Unknown && !GameStates.IsLocalGame)
         {
@@ -137,8 +184,9 @@ class OnPlayerJoinedPatch
             if (Main.SayStartTimes.ContainsKey(client.Id)) Main.SayStartTimes.Remove(client.Id);
             if (Main.SayBanwordsTimes.ContainsKey(client.Id)) Main.SayBanwordsTimes.Remove(client.Id);
             //if (Main.newLobby && Options.ShareLobby.GetBool()) Cloud.ShareLobby();
+
             if (client.GetHashedPuid() != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
-                && !FixedUpdatePatch.CheckAllowList(client.FriendCode) && !GameStates.IsLocalGame)
+                && !BanManager.CheckAllowList(client.FriendCode) && !GameStates.IsLocalGame)
             {
                 if (Main.PlayerQuitTimes.ContainsKey(client.GetHashedPuid()))
                 {
@@ -162,7 +210,7 @@ class OnPlayerLeftPatch
     {
         try
         {
-            if (GameStates.IsInGame)
+            if (GameStates.IsNormalGame && GameStates.IsInGame)
             {
                 if (data.Character.Is(CustomRoles.Lovers) && !data.Character.Data.IsDead)
                 {
@@ -277,7 +325,6 @@ class OnPlayerLeftPatch
                 }, 0.5f, "On Host Disconnected");
             }
 
-            // 附加描述掉线原因
             switch (reason)
             {
                 case DisconnectReasons.Hacking:
@@ -307,7 +354,7 @@ class OnPlayerLeftPatch
                 if (GameStates.IsLobby && !GameStates.IsLocalGame)
                 {
                     if (data?.GetHashedPuid() != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
-                        && !FixedUpdatePatch.CheckAllowList(data?.FriendCode))
+                        && !BanManager.CheckAllowList(data?.FriendCode))
                     {
                         if (!Main.PlayerQuitTimes.ContainsKey(data?.GetHashedPuid()))
                             Main.PlayerQuitTimes.Add(data?.GetHashedPuid(), 1);
@@ -356,6 +403,8 @@ class CreatePlayerPatch
         }
         Main.AllPlayerNames.Remove(client.Character.PlayerId);
         Main.AllPlayerNames.TryAdd(client.Character.PlayerId, name);
+        Logger.Info($"client.PlayerName： {client.PlayerName}", "Name player");
+
         if (!name.Equals(client.PlayerName))
         {
             _ = new LateTask(() =>
@@ -389,49 +438,52 @@ class CreatePlayerPatch
 
         if (Main.OverrideWelcomeMsg == "" && Main.PlayerStates.Count != 0 && Main.clientIdList.Contains(client.Id))
         {
-            if (Options.AutoDisplayKillLog.GetBool() && Main.PlayerStates.Count != 0 && Main.clientIdList.Contains(client.Id))
+            if (GameStates.IsNormalGame)
             {
-                _ = new LateTask(() =>
+                if (Options.AutoDisplayKillLog.GetBool() && Main.PlayerStates.Count != 0 && Main.clientIdList.Contains(client.Id))
                 {
-                    if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
+                    _ = new LateTask(() =>
                     {
-                        Main.isChatCommand = true;
-                        Utils.ShowKillLog(client.Character.PlayerId);
-                    }
-                }, 3f, "DisplayKillLog");
-            }
-            if (Options.AutoDisplayLastRoles.GetBool())
-            {
-                _ = new LateTask(() =>
+                        if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
+                        {
+                            Main.isChatCommand = true;
+                            Utils.ShowKillLog(client.Character.PlayerId);
+                        }
+                    }, 3f, "DisplayKillLog");
+                }
+                if (Options.AutoDisplayLastRoles.GetBool())
                 {
-                    if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
+                    _ = new LateTask(() =>
                     {
-                        Main.isChatCommand = true;
-                        Utils.ShowLastRoles(client.Character.PlayerId);
-                    }
-                }, 3.1f, "DisplayLastRoles");
-            }
-            if (Options.AutoDisplayLastResult.GetBool())
-            {
-                _ = new LateTask(() =>
+                        if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
+                        {
+                            Main.isChatCommand = true;
+                            Utils.ShowLastRoles(client.Character.PlayerId);
+                        }
+                    }, 3.1f, "DisplayLastRoles");
+                }
+                if (Options.AutoDisplayLastResult.GetBool())
                 {
-                    if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
+                    _ = new LateTask(() =>
                     {
-                        Main.isChatCommand = true;
-                        Utils.ShowLastResult(client.Character.PlayerId);
-                    }
-                }, 3.2f, "DisplayLastResult");
-            }
-            if (PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsUp && Options.EnableUpMode.GetBool())
-            {
-                _ = new LateTask(() =>
+                        if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
+                        {
+                            Main.isChatCommand = true;
+                            Utils.ShowLastResult(client.Character.PlayerId);
+                        }
+                    }, 3.2f, "DisplayLastResult");
+                }
+                if (PlayerControl.LocalPlayer.FriendCode.GetDevUser().IsUp && Options.EnableUpMode.GetBool())
                 {
-                    if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
+                    _ = new LateTask(() =>
                     {
-                        Main.isChatCommand = true;
-                   //     Utils.SendMessage($"{GetString("Message.YTPlanNotice")} {PlayerControl.LocalPlayer.FriendCode.GetDevUser().UpName}", client.Character.PlayerId);
-                    }
-                }, 3.3f, "DisplayUpWarnning");
+                        if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
+                        {
+                            Main.isChatCommand = true;
+                            //     Utils.SendMessage($"{GetString("Message.YTPlanNotice")} {PlayerControl.LocalPlayer.FriendCode.GetDevUser().UpName}", client.Character.PlayerId);
+                        }
+                    }, 3.3f, "DisplayUpWarnning");
+                }
             }
         }
     }
