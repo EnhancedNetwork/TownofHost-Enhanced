@@ -370,7 +370,7 @@ namespace TOHE.Roles.Crewmate
             if (FixNextSabo) str.Append("<color=#3333ff>★</color>");
             return str.ToString();
         }
-        public static void RepairSystem(SystemTypes systemType, byte amount)
+        public static void UpdateSystem(SystemTypes systemType, byte amount)
         {
             FixNextSabo = false;
             switch (systemType)

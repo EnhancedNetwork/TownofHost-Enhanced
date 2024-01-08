@@ -26,13 +26,21 @@ internal class ChangeRoleSettings
         Main.OverrideWelcomeMsg = "";
         try
         {
-            //注:この時点では役職は設定されていません。
-            Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.GuardianAngel, 0, 0);
-            if (Options.DisableVanillaRoles.GetBool())
+            // Note: No positions are set at this time.
+            if (GameStates.IsNormalGame)
             {
-                Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Scientist, 0, 0);
-                Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Engineer, 0, 0);
-                Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Shapeshifter, 0, 0);
+                Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.GuardianAngel, 0, 0);
+                if (Options.DisableVanillaRoles.GetBool())
+                {
+                    Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Scientist, 0, 0);
+                    Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Engineer, 0, 0);
+                    Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Shapeshifter, 0, 0);
+                }
+            }
+            else if (GameStates.IsHideNSeek)
+            {
+                Main.HideNSeekOptions.NumImpostors = Options.NumImpostorsHnS.GetInt();
+                Main.AliveImpostorCount = Main.HideNSeekOptions.NumImpostors;
             }
 
             Main.PlayerStates = new();
@@ -126,16 +134,21 @@ internal class ChangeRoleSettings
 
             Options.UsedButtonCount = 0;
 
-            GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor = false;
             Main.RealOptionsData = new OptionBackupData(GameOptionsManager.Instance.CurrentGameOptions);
+
+            if (GameStates.IsNormalGame)
+            {
+                GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor = false;
+
+                MeetingTimeManager.Init();
+
+                Main.DefaultCrewmateVision = Main.RealOptionsData.GetFloat(FloatOptionNames.CrewLightMod);
+                Main.DefaultImpostorVision = Main.RealOptionsData.GetFloat(FloatOptionNames.ImpostorLightMod);
+            }
 
             Main.introDestroyed = false;
 
             RandomSpawn.CustomNetworkTransformPatch.NumOfTP = new();
-
-            MeetingTimeManager.Init();
-            Main.DefaultCrewmateVision = Main.RealOptionsData.GetFloat(FloatOptionNames.CrewLightMod);
-            Main.DefaultImpostorVision = Main.RealOptionsData.GetFloat(FloatOptionNames.ImpostorLightMod);
 
             Main.LastNotifyNames = new();
 
@@ -176,7 +189,10 @@ internal class ChangeRoleSettings
                 //Main.AllPlayerNames[pc.PlayerId] = pc?.Data?.PlayerName;
 
                 Main.PlayerColors[pc.PlayerId] = Palette.PlayerColors[colorId];
-                Main.AllPlayerSpeed[pc.PlayerId] = Main.RealOptionsData.GetFloat(FloatOptionNames.PlayerSpeedMod); //移動速度をデフォルトの移動速度に変更
+                
+                if (GameStates.IsNormalGame)
+                    Main.AllPlayerSpeed[pc.PlayerId] = Main.RealOptionsData.GetFloat(FloatOptionNames.PlayerSpeedMod); //移動速度をデフォルトの移動速度に変更
+                
                 ReportDeadBodyPatch.CanReport[pc.PlayerId] = true;
                 ReportDeadBodyPatch.WaitReport[pc.PlayerId] = new();
                 pc.cosmetics.nameText.text = pc.name;
@@ -186,12 +202,14 @@ internal class ChangeRoleSettings
                 Camouflage.PlayerSkins[pc.PlayerId] = new GameData.PlayerOutfit().Set(outfit.PlayerName, outfit.ColorId, outfit.HatId, outfit.SkinId, outfit.VisorId, outfit.PetId, outfit.NamePlateId);
                 Main.clientIdList.Add(pc.GetClientId());
             }
+
             Main.VisibleTasksCount = true;
             if (__instance.AmHost)
             {
                 RPC.SyncCustomSettingsRPC();
                 Main.RefixCooldownDelay = 0;
             }
+
             FallFromLadder.Reset();
             BountyHunter.Init();
             SerialKiller.Init();
@@ -369,6 +387,20 @@ internal class SelectRolesPatch
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
+        if (GameStates.IsHideNSeek)
+        {
+            if (Main.EnableGM.Value)
+            {
+                PlayerControl.LocalPlayer.RpcSetCustomRole(CustomRoles.GM);
+                PlayerControl.LocalPlayer.RpcSetRole(RoleTypes.Crewmate);
+                PlayerControl.LocalPlayer.Data.IsDead = true;
+                Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
+            }
+
+            EAC.OriginalRoles = new();
+            return;
+        }
+
         try
         {
             //CustomRpcSenderとRpcSetRoleReplacerの初期化
@@ -426,6 +458,25 @@ internal class SelectRolesPatch
 
         try
         {
+            if (GameStates.IsHideNSeek)
+            {
+                GameOptionsSender.AllSenders.Clear();
+                foreach (var pc in Main.AllPlayerControls)
+                {
+                    GameOptionsSender.AllSenders.Add(
+                        new PlayerGameOptionsSender(pc)
+                    );
+                }
+
+                //Utils.CountAlivePlayers(true);
+
+                EAC.LogAllRoles();
+                Utils.SyncAllSettings();
+                SetColorPatch.IsAntiGlitchDisabled = false;
+
+                return;
+            }
+
             List<(PlayerControl, RoleTypes)> newList = new();
             foreach (var sd in RpcSetRoleReplacer.StoragedData.ToArray())
             {
@@ -1033,10 +1084,10 @@ internal class SelectRolesPatch
             switch (Options.CurrentGameMode)
             {
                 case CustomGameMode.Standard:
-                    GameEndChecker.SetPredicateToNormal();
+                    GameEndCheckerForNormal.SetPredicateToNormal();
                     break;
                 case CustomGameMode.FFA:
-                    GameEndChecker.SetPredicateToFFA();
+                    GameEndCheckerForNormal.SetPredicateToFFA();
                     break;
             }
 

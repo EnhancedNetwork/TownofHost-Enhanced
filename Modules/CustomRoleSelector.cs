@@ -75,31 +75,31 @@ internal class CustomRoleSelector
             {
                 if (role is CustomRoles.DarkHide) continue;
             }
-            else if (Options.IsActiveDleks) // Dleks
-            {
-                // This roles need additional conditions - Witch & Spellсaster & Hex Master
+            //else if (Options.IsActiveDleks) // Dleks
+            //{
+            //    // This roles need additional conditions - Witch & Spellсaster & Hex Master
 
-                if (role is CustomRoles.Swooper
-                    or CustomRoles.Miner
-                    or CustomRoles.Lurker
-                    or CustomRoles.EngineerTOHE
-                    or CustomRoles.Paranoia
-                    or CustomRoles.Veteran
-                    or CustomRoles.Alchemist
-                    or CustomRoles.Bastion
-                    or CustomRoles.Grenadier
-                    or CustomRoles.DovesOfNeace // Pacifist
-                    or CustomRoles.Mole
-                    or CustomRoles.Addict
-                    or CustomRoles.TimeMaster
-                    or CustomRoles.Lighter
-                    or CustomRoles.Chameleon
-                    or CustomRoles.Mario // Vector
-                    or CustomRoles.Wraith
-                    or CustomRoles.Arsonist) continue;
-                if (role == CustomRoles.Witch && (Witch.SwitchTrigger)Witch.ModeSwitchAction.GetValue() == Witch.SwitchTrigger.Vent || // Spellcaster
-                    role == CustomRoles.HexMaster && (HexMaster.SwitchTrigger)HexMaster.ModeSwitchAction.GetValue() == HexMaster.SwitchTrigger.Vent) continue;
-            }
+            //    if (role is CustomRoles.Swooper
+            //        or CustomRoles.Miner
+            //        or CustomRoles.Lurker
+            //        or CustomRoles.EngineerTOHE
+            //        or CustomRoles.Paranoia
+            //        or CustomRoles.Veteran
+            //        or CustomRoles.Alchemist
+            //        or CustomRoles.Bastion
+            //        or CustomRoles.Grenadier
+            //        or CustomRoles.DovesOfNeace // Pacifist
+            //        or CustomRoles.Mole
+            //        or CustomRoles.Addict
+            //        or CustomRoles.TimeMaster
+            //        or CustomRoles.Lighter
+            //        or CustomRoles.Chameleon
+            //        or CustomRoles.Mario // Vector
+            //        or CustomRoles.Wraith
+            //        or CustomRoles.Arsonist) continue;
+            //    if (role == CustomRoles.Witch && (Witch.SwitchTrigger)Witch.ModeSwitchAction.GetValue() == Witch.SwitchTrigger.Vent || // Spellcaster
+            //        role == CustomRoles.HexMaster && (HexMaster.SwitchTrigger)HexMaster.ModeSwitchAction.GetValue() == HexMaster.SwitchTrigger.Vent) continue;
+            //}
 
             for (int i = 0; i < role.GetCount(); i++)
                 roleList.Add(role);
@@ -264,19 +264,11 @@ internal class CustomRoleSelector
     // 职业抽取结束
     EndOfAssign:
 
-        // 隐藏职业
-        {
-            if (rd.Next(0, 100) < Options.SunnyboyChance.GetInt() && rolesToAssign.Remove(CustomRoles.Jester)) rolesToAssign.Add(CustomRoles.Sunnyboy);
-        }
-        {
-            if (rd.Next(0, 100) < Sans.BardChance.GetInt() && rolesToAssign.Remove(CustomRoles.Sans)) rolesToAssign.Add(CustomRoles.Bard);
-        }
-        {
-            if (rd.Next(0, 100) < Vampire.VampiressChance.GetInt() && rolesToAssign.Remove(CustomRoles.Vampire)) rolesToAssign.Add(CustomRoles.Vampiress);
-        }
-        {
-            if (rd.Next(0, 100) < Options.NukerChance.GetInt() && rolesToAssign.Remove(CustomRoles.Bomber)) rolesToAssign.Add(CustomRoles.Nuker);
-        }
+        if (rd.Next(0, 100) < Options.SunnyboyChance.GetInt() && rolesToAssign.Remove(CustomRoles.Jester)) rolesToAssign.Add(CustomRoles.Sunnyboy);
+        if (rd.Next(0, 100) < Sans.BardChance.GetInt() && rolesToAssign.Remove(CustomRoles.Sans)) rolesToAssign.Add(CustomRoles.Bard);
+        if (rd.Next(0, 100) < Vampire.VampiressChance.GetInt() && rolesToAssign.Remove(CustomRoles.Vampire)) rolesToAssign.Add(CustomRoles.Vampiress);
+        if (rd.Next(0, 100) < Options.NukerChance.GetInt() && rolesToAssign.Remove(CustomRoles.Bomber)) rolesToAssign.Add(CustomRoles.Nuker);
+
         if (NSerialKiller.HasSerialKillerBuddy.GetBool() && rolesToAssign.Contains(CustomRoles.NSerialKiller))
         {
             if (rd.Next(0, 100) < NSerialKiller.ChanceToSpawn.GetInt()) rolesToAssign.Add(CustomRoles.NSerialKiller);
@@ -289,7 +281,6 @@ internal class CustomRoleSelector
             {
                 Logger.SendInGame(GetString("NeutralKillingBlackoutWarning"));
             }, 4f, "Neutral Killing Blackout Warning");
-
         }
 
         if (Romantic.IsEnable)
@@ -429,12 +420,12 @@ internal class CustomRoleSelector
             {
                 if (role is CustomRoles.Mare) continue;
             }
-            else if (Options.IsActiveDleks) // Dleks
-            {
-                if (role is CustomRoles.Nimble
-                    or CustomRoles.Burst
-                    or CustomRoles.Circumvent) continue;
-            }
+            //else if (Options.IsActiveDleks) // Dleks
+            //{
+            //    if (role is CustomRoles.Nimble
+            //        or CustomRoles.Burst
+            //        or CustomRoles.Circumvent) continue;
+            //}
 
             AddonRolesList.Add(role);
         }

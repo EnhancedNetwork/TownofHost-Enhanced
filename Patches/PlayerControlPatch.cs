@@ -3,7 +3,6 @@ using HarmonyLib;
 using Hazel;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,7 +24,7 @@ class CheckProtectPatch
 {
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
     {
-        if (!AmongUsClient.Instance.AmHost) return false;
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek) return false;
         Logger.Info("CheckProtect occurs: " + __instance.GetNameWithRole() + "=>" + target.GetNameWithRole(), "CheckProtect");
 
         if (__instance.Is(CustomRoles.EvilSpirit))
@@ -60,7 +59,8 @@ class CmdCheckMurderPatch
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
     {
         Logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}", "CmdCheckMurder");
-        if (!AmongUsClient.Instance.AmHost || !GameStates.IsModHost) return true;
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || !GameStates.IsModHost) return true;
+
         __instance.CheckMurder(target);
         return false;
     }
@@ -83,6 +83,7 @@ class CheckMurderPatch
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
     {
         if (!AmongUsClient.Instance.AmHost) return false;
+        if (GameStates.IsHideNSeek) return true;
 
         var killer = __instance; // Alternative variable
 
@@ -1307,7 +1308,7 @@ class MurderPlayerPatch
 {
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] MurderResultFlags resultFlags)
     {
-        Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}{(target.IsProtected() ? "(Protected)" : "")}, flags : {resultFlags}", "MurderPlayer");
+        Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}{(target.IsProtected() ? "(Protected)" : "")}, flags : {resultFlags}", "MurderPlayer Prefix");
 
         if (RandomSpawn.CustomNetworkTransformPatch.NumOfTP.TryGetValue(__instance.PlayerId, out var num) && num > 2)
         {
@@ -1337,6 +1338,7 @@ class MurderPlayerPatch
     }
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] MurderResultFlags resultFlags)
     {
+        if (GameStates.IsHideNSeek) return;
         if (target.AmOwner) RemoveDisableDevicesPatch.UpdateDisableDevices();
         if (!target.Data.IsDead || !AmongUsClient.Instance.AmHost) return;
 
@@ -1562,6 +1564,7 @@ class ShapeshiftPatch
         Main.ShapeshiftTarget[shapeshifter.PlayerId] = target.PlayerId;
 
         if (!AmongUsClient.Instance.AmHost) return;
+        if (GameStates.IsHideNSeek) return;
         if (!shapeshifting) Camouflage.RpcSetSkin(__instance);
 
         if (!Pelican.IsEaten(shapeshifter.PlayerId))
@@ -1802,7 +1805,8 @@ class ReportDeadBodyPatch
     public static Dictionary<byte, List<GameData.PlayerInfo>> WaitReport = new();
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo target)
     {
-        if (GameStates.IsMeeting) return false;
+        if (GameStates.IsMeeting || GameStates.IsHideNSeek) return false;
+
         if (EAC.RpcReportDeadBodyCheck(__instance, target))
         {
             Logger.Fatal("Eac patched the report body rpc", "ReportDeadBodyPatch");
@@ -2450,7 +2454,7 @@ class ReportDeadBodyPatch
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
-class FixedUpdatePatch
+class FixedUpdateInNormalGamePatch
 {
     //private static long LastFixedUpdate = new(); //Doesn't seem to be working.
     private static StringBuilder Mark = new(20);
@@ -2458,16 +2462,10 @@ class FixedUpdatePatch
     private static int LevelKickBufferTime = 20;
     private static Dictionary<int, int> BufferTime = new();
 
-    public static bool CheckAllowList(string friendcode)
-    {
-        if (friendcode == "") return false;
-        var allowListFilePath = @"./TOHE-DATA/WhiteList.txt";
-        if (!File.Exists(allowListFilePath)) File.Create(allowListFilePath).Close();
-        var friendcodes = File.ReadAllLines(allowListFilePath);
-        return friendcodes.Any(x => x == friendcode || x.Contains(friendcode));
-    }
     public static void Postfix(PlayerControl __instance)
     {
+        if (GameStates.IsHideNSeek) return;
+
         var player = __instance;
 
         if (!GameStates.IsModHost) return;
@@ -2519,7 +2517,7 @@ class FixedUpdatePatch
                 bool playerInAllowList = false;
                 if (Options.ApplyAllowList.GetBool())
                 {
-                    playerInAllowList = CheckAllowList(player.Data.FriendCode);
+                    playerInAllowList = BanManager.CheckAllowList(player.Data.FriendCode);
                 }
 
                 if (!playerInAllowList)
@@ -2841,9 +2839,9 @@ class FixedUpdatePatch
 
                 playerRole = player.GetCustomRole();
 
-                 if (Kamikaze.IsEnable)
-                     Kamikaze.MurderKamikazedPlayers(player);
-                
+                if (Kamikaze.IsEnable)
+                    Kamikaze.MurderKamikazedPlayers(player);
+
                 switch (playerRole)
                 {
                     case CustomRoles.Pelican:
@@ -3437,6 +3435,8 @@ class PlayerStartPatch
 {
     public static void Postfix(PlayerControl __instance)
     {
+        if (GameStates.IsHideNSeek) return;
+
         var roleText = UnityEngine.Object.Instantiate(__instance.cosmetics.nameText);
         roleText.transform.SetParent(__instance.cosmetics.nameText.transform);
         roleText.transform.localPosition = new Vector3(0f, 0.2f, 0f);
@@ -3463,6 +3463,8 @@ class CoExitVentPatch
 {
     public static void Postfix(PlayerPhysics __instance, [HarmonyArgument(0)] int id)
     {
+        if (GameStates.IsHideNSeek) return;
+
         if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenKCDIsUp.GetBool())
         {
             if (__instance.myPlayer != null)
@@ -3479,10 +3481,14 @@ class CoExitVentPatch
                 }
             }
         }
-        _ = new LateTask(() =>
+
+        if (Mole.IsEnable)
         {
-            Mole.OnExitVent(__instance.myPlayer, id);
-        }, 0.1f, "Mole On Exit Vent");
+            _ = new LateTask(() =>
+            {
+                Mole.OnExitVent(__instance.myPlayer, id);
+            }, 0.1f, "Mole On Exit Vent");
+        }
     }
 }
 
@@ -3491,6 +3497,7 @@ class EnterVentPatch
 {
     public static void Postfix(Vent __instance, [HarmonyArgument(0)] PlayerControl pc)
     {
+        if (GameStates.IsHideNSeek) return;
 
         Witch.OnEnterVent(pc);
         HexMaster.OnEnterVent(pc);
@@ -3698,7 +3705,7 @@ class CoEnterVentPatch
 {
     public static bool Prefix(PlayerPhysics __instance, [HarmonyArgument(0)] int id)
     {
-        if (!AmongUsClient.Instance.AmHost) return true;
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek) return true;
         Logger.Info($" {__instance.myPlayer.GetNameWithRole().RemoveHtmlTags()}, Vent ID: {id}", "CoEnterVent");
 
         if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenTwoPlayersAlive.GetBool() && Main.AllAlivePlayerControls.Length <= 2)
@@ -3829,8 +3836,8 @@ class CoEnterVentPatch
         }
 
         // Fix Vent Stuck
-        if (DleksPatch.BootFromVent(__instance.myPlayer)
-            || (__instance.myPlayer.Data.Role.Role != RoleTypes.Engineer
+        if (
+            (__instance.myPlayer.Data.Role.Role != RoleTypes.Engineer
                 && !__instance.myPlayer.CanUseImpostorVentButton())
             || (__instance.myPlayer.Is(CustomRoles.Mayor) && Main.MayorUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count) && count >= Options.MayorNumOfUseButton.GetInt())
             || (__instance.myPlayer.Is(CustomRoles.Paranoia) && Main.ParaUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count2) && count2 >= Options.ParanoiaNumOfUseButton.GetInt())
@@ -3882,6 +3889,8 @@ class GameDataCompleteTaskPatch
 {
     public static void Postfix(PlayerControl pc)
     {
+        if (GameStates.IsHideNSeek) return;
+
         Logger.Info($"Task Complete: {pc.GetNameWithRole().RemoveHtmlTags()}", "CompleteTask");
         Main.PlayerStates[pc.PlayerId].UpdateTask(pc);
         Utils.NotifyRoles(SpecifySeer: pc);
@@ -3892,6 +3901,8 @@ class PlayerControlCompleteTaskPatch
 {
     public static bool Prefix(PlayerControl __instance)
     {
+        if (GameStates.IsHideNSeek) return false;
+
         var player = __instance;
 
         if (Workhorse.OnCompleteTask(player)) //タスク勝利をキャンセル
@@ -3914,6 +3925,8 @@ class PlayerControlCompleteTaskPatch
     }
     public static void Postfix(PlayerControl __instance, object[] __args)
     {
+        if (GameStates.IsHideNSeek) return;
+
         var pc = __instance;
         Snitch.OnCompleteTask(pc);
         int taskIndex = Convert.ToInt32(__args[0]);
@@ -4023,6 +4036,8 @@ class PlayerControlSetRolePatch
 {
     public static bool Prefix(PlayerControl __instance, ref RoleTypes roleType)
     {
+        if (GameStates.IsHideNSeek) return true;
+
         var target = __instance;
         var targetName = __instance.GetNameWithRole().RemoveHtmlTags();
         Logger.Info($" {targetName} => {roleType}", "PlayerControl.RpcSetRole");
@@ -4081,7 +4096,7 @@ class PlayerControlLocalSetRolePatch
 {
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] RoleTypes role)
     {
-        if (!AmongUsClient.Instance.AmHost && !GameStates.IsModHost)
+        if (!AmongUsClient.Instance.AmHost && GameStates.IsNormalGame && !GameStates.IsModHost)
         {
             var modRole = role switch
             {
