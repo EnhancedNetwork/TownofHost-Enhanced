@@ -27,12 +27,9 @@ public abstract class OptionItem
     public Color NameColor { get; protected set; }
     public OptionFormat ValueFormat { get; protected set; }
     public CustomGameMode GameMode { get; protected set; }
-    public CustomGameMode HideOptionInFFA { get; protected set; }
-    public CustomGameMode HideOptionInHnS { get; protected set; }
     public bool IsHeader { get; protected set; }
     public bool IsHidden { get; protected set; }
     public bool IsText { get; protected set; }
-    public bool IsVanilla { get; protected set; }
     public Dictionary<string, string> ReplacementDictionary
     {
         get => _replacementDictionary;
@@ -61,7 +58,7 @@ public abstract class OptionItem
     public event EventHandler<UpdateValueEventArgs> UpdateValueEvent;
 
     // Constructor
-    public OptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue, bool vanila)
+    public OptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue)
     {
         // Info Setting
         Id = id;
@@ -69,14 +66,11 @@ public abstract class OptionItem
         DefaultValue = defaultValue;
         Tab = tab;
         IsSingleValue = isSingleValue;
-        IsVanilla = vanila;
 
         // Nullable Info Setting
         NameColor = Color.white;
         ValueFormat = OptionFormat.None;
         GameMode = CustomGameMode.All;
-        HideOptionInFFA = CustomGameMode.All;
-        HideOptionInHnS = CustomGameMode.All;
         IsHeader = false;
         IsHidden = false;
         IsText = false;
@@ -125,8 +119,6 @@ public abstract class OptionItem
     public OptionItem SetHeader(bool value) => Do(i => i.IsHeader = value);
     public OptionItem SetHidden(bool value) => Do(i => i.IsHidden = value);
     public OptionItem SetText(bool value) => Do(i => i.IsText = value);
-    public OptionItem HideInFFA(CustomGameMode value = CustomGameMode.FFA) => Do(i => i.HideOptionInFFA = value);
-    public OptionItem HideInHnS(CustomGameMode value = CustomGameMode.HidenSeekTOHE) => Do(i => i.HideOptionInHnS = value);
 
     public OptionItem SetParent(OptionItem parent) => Do(i =>
     {
@@ -161,15 +153,6 @@ public abstract class OptionItem
             Translator.GetString(Name, ReplacementDictionary, console) :
             Utils.ColorString(NameColor, Translator.GetString(Name, ReplacementDictionary));
     }
-    public virtual string GetNameVanilla()
-    {
-        string nameToFind = Name;
-        if (Enum.TryParse<StringNames>(nameToFind, out StringNames text))
-        {
-            return DestroyableSingleton<TranslationController>.Instance.GetString(text);
-        }
-        return string.Empty;
-    }
     public virtual bool GetBool() => CurrentValue != 0 && (Parent == null || Parent.GetBool());
     public virtual int GetInt() => CurrentValue;
     public virtual float GetFloat() => CurrentValue;
@@ -182,7 +165,7 @@ public abstract class OptionItem
     // Deprecated IsHidden function
     public virtual bool IsHiddenOn(CustomGameMode mode)
     {
-        return IsHidden || (HideOptionInFFA != CustomGameMode.All && HideOptionInFFA == mode) || (HideOptionInHnS != CustomGameMode.All && HideOptionInHnS == mode) || (GameMode != CustomGameMode.All && GameMode != mode);
+        return IsHidden || (GameMode != CustomGameMode.All && GameMode != mode);
     }
 
     public string ApplyFormat(string value)
@@ -195,14 +178,7 @@ public abstract class OptionItem
     {
         if (OptionBehaviour is not null and StringOption opt)
         {
-            if (IsVanilla)
-            {
-            opt.TitleText.text = GetNameVanilla();
-            }
-            else
-            {
             opt.TitleText.text = GetName();
-            }
             opt.ValueText.text = GetString();
             opt.oldValue = opt.Value = CurrentValue;
         }

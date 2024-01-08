@@ -7,18 +7,18 @@ public class StringOptionItem : OptionItem
     public string[] Selections;
 
     // コンストラクタ
-    public StringOptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue, string[] selections, bool vanilla)
-    : base(id, name, defaultValue, tab, isSingleValue, vanila:vanilla)
+    public StringOptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue, string[] selections)
+    : base(id, name, defaultValue, tab, isSingleValue)
     {
         Rule = (0, selections.Length - 1, 1);
         Selections = selections;
     }
     public static StringOptionItem Create(
-        int id, string name, string[] selections, int defaultIndex, TabGroup tab, bool isSingleValue, bool vanilla = false
+        int id, string name, string[] selections, int defaultIndex, TabGroup tab, bool isSingleValue
     )
     {
         return new StringOptionItem(
-            id, name, defaultIndex, tab, isSingleValue, selections, vanilla
+            id, name, defaultIndex, tab, isSingleValue, selections
         );
     }
 
