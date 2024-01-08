@@ -2246,6 +2246,8 @@
   "Message.MadmateSelfVoteModeNotify": "Remarque : le mode de génération de folie actuel est [{0}]\\nVotez pour vous-même signifie que vous voulez devenir Fou. Si vous remplissez les conditions pour devenir Fou et qu'il reste des places, vous deviendrez immédiatement Fou",
   "Message.HostLeftGameInGame": "★Warning★ L'hôte a quitté le jeu, la prochaine fois le jeu ne commencera pas normalement. Veuillez quitter le lobby ou attendre qu'un nouvel hôte ouvre un lobby.",
   "Message.HostLeftGameInLobby": "★Warning★ L'hôte a quitté le jeu, la prochaine fois le jeu ne commencera pas normalement. Si le nouvel hôte a TOHE, vous devez entrer à nouveau dans le lobby pour jouer normalement.",
+  "Message.HostLeftGameNewHostIsMod": "★Warning★ Original Host left the game and <b>{0}</b> become the new Host! \nThe room is still modded, just start a game and end it immediately to reset the lobby!",
+  "Message.HostLeftGameNewHostIsNotMod": "★Warning★ Original Host left the game and <b>{0}</b> become the new Host. \nBut it's not modded. Please, exit the lobby or wait until new Host opens a lobby.",
   "Message.LobbyShared": "Le lobby a été partagé avec succès !",
   "Message.LobbyShareFailed": "TOHE-Chan ne semble pas être en ligne (échec du partage du lobby)",
   "Message.YTPlanDisabled": "<color=#ff1919><size=150%><b>ERROR</b></size></color>\\n<color=#ff1919>Veuillez activer <b>{0}</b> dans les paramètres</color>.",

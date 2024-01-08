@@ -114,6 +114,8 @@ class RpcSetTasksPatch
     [HarmonyArgument(0)] byte playerId,
     [HarmonyArgument(1)] ref Il2CppStructArray<byte> taskTypeIds)
     {
+        if (GameStates.IsHideNSeek) return;
+
         // null measure
         if (Main.RealOptionsData == null)
         {

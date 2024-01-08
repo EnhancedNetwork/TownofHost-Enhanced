@@ -41,7 +41,7 @@ public static class Repairman
         playerIdList.Add(playerId);
         IsEnable = true;
     }
-    public static void RepairSystem(ShipStatus __instance, SystemTypes systemType, byte amount, byte playerId)
+    public static void UpdateSystem(ShipStatus __instance, SystemTypes systemType, byte amount, byte playerId)
     {
         switch (systemType)
         {
@@ -81,7 +81,7 @@ public static class Repairman
                 if (!FixesDoors.GetBool()) break;
                 if (DoorsProgressing == true) break;
 
-                int mapId = Main.NormalOptions.MapId;
+                int mapId = Utils.GetActiveMapId();
                 if (AmongUsClient.Instance.NetworkMode == NetworkModes.FreePlay) mapId = AmongUsClient.Instance.TutorialMapId;
 
                 DoorsProgressing = true;

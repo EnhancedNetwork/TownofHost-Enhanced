@@ -1060,6 +1060,7 @@ static class CustomRolesHelper
 
             case CustomRoles.Bait:
                 if (pc.Is(CustomRoles.Trapper)
+                    || pc.Is(CustomRoles.Provocateur)
                     || pc.Is(CustomRoles.Unreportable)
                     || pc.Is(CustomRoles.Burst)
                     || pc.Is(CustomRoles.NiceMini)

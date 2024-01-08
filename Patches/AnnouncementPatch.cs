@@ -812,69 +812,68 @@ public class ModNewsHistory
                 {
                     Number = 80006,
                     Title = "Town of Host: Enhanced v1.4.0",
-                    SubTitle = "★★ Consistent Updates, yay! ★★",
+                    SubTitle = "★★ 持续更新，耶！ ★★",
                     ShortTitle = "TOH: Enhanced v1.4.0",
                     BeforeNumber = 80005,
-                    Text = "<size=150%>Welcome to TOH: Enhanced v1.4.0!</size>\n" +
-                    "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.3.0\r\n" +
+                    Text = "<size=150%>欢迎来到TOH: Enhanced v1.4.0！</size>\n" +
+                    "\n<b>【基于官方版本】</b>\n - 基于TOH: Enhanced v1.3.0\r\n" +
 
-                    "\n<b>【New Roles/Addons】(7 roles, 3 Addons)</i></b>" +
-                        "\n     - Benefactor (Support Crewmate - By: ryuk)" +
-                        "\n     - Keeper (Support Crewmate - By: ryuk)" +
-                        "\n     - Captain (Power Crewmate - By: ryuk)" +
-                        "\n     - Mole (Basic Crewmate - By: ryuk)" +
-                        "\n     - Guess Master (Basic Crewmate - By: ryuk)" +
-                        "\n     - Kamikaze (Support Impostor - By: Drakos)" +
-                        "\n     - Solsticer (Experimental Neutral - By: NikoCat223)" +
-                        "\n     - Flash (Helpful Addon - By: TommyXL)" +
-                        "\n     - Silent (Helpful Addon - By: NikoCat223)" +
-                        "\n     - Mundane (Harmful Addon - By: ryuk)" +
+                    "\n<b>【新职业/附加职业】(7个职业, 3个附加职业)</i></b>" +
+                        "\n     - 恩人 (支援类船员 - By: ryuk)" +
+                        "\n     - 守卫者 (支援类船员 - By: ryuk)" +
+                        "\n     - 舰长 (权力类船员 - By: ryuk)" +
+                        "\n     - 鼹鼠 (简单类船员 - By: ryuk)" +
+                        "\n     - 竞猜大师 (简单类船员 - By: ryuk)" +
+                        "\n     - 神风特工队 (支援类内鬼 - By: Drakos)" +
+                        "\n     - 至日者 (实验性中立 - By: NikoCat223)" +
+                        "\n     - 闪电侠 (帮助类附加职业 - By: TommyXL)" +
+                        "\n     - 沉默者 (帮助类附加职业 - By: NikoCat223)" +
+                        "\n     - 平凡者 (有害类附加职业 - By: ryuk)" +
 
-                    "\n<b>【New Settings】</b>" +
-                        "\n     - dlekS ehT !paM weN (Thanks sleepyut (@Galster-dev on GitHub) and TommyXL)" +
-                        "\n     - New Gamemode: FFA from TOHE+ (By: ryuk, Special Thanks: Gurge44)" +
-                        "\n     - Added chat commands /tpin, /tpout - TP players in and out of ship in lobby (By: ryuk)" +
-                        "\n     - New Setting: Prevent /quit due to malicious use (By: Furo)" +
-                        "\n     - New Setting: Change Decontamination Time (Very Cool! Try this! By: TommyXL)" +
-                        "\n     - Returned Setting: Remove Pets At Dead Players (By: TommyXL)" +
-                        "\n     - New Region: Modded South America - MSA (By: Pietro)" +
-                        "\n     - New Region: Modded Chinese - Multiple (By: NikoCat223)" +
-                        "\n     - New Button: Update! Now update the mod automatically! (By: Pietro)" +
+                    "\n<b>【新设置】</b>" +
+                        "\n     - 舰髅骷！图地新 (感谢sleepyut和TommyXL)" +
+                        "\n     - 新游戏模式：自由对战，来自TOHE+ (By: ryuk, Special 感谢: Gurge44)" +
+                        "\n     - 添加了聊天指令 /tpin、/tpout - 在房间中对尝试出图的玩家进行TP (By: ryuk)" +
+                        "\n     - 新设置： 防止/qt因恶意使用而退出 (By: Furo)" +
+                        "\n     - 新设置：更改关门消毒的时间 (非常酷！试试这个！ By: TommyXL)" +
+                        "\n     - 重新引入设置：玩家死亡后强制删除宠物" +
+                        "\n     - 新服务器：Modded南美洲 (By: Pietro)" +
+                        "\n     - 新服务器：多个Modded中国服务器 (By: NikoCat223)" +
+                        "\n     - 新按钮： Mod更新！现在可自动更新 Mod！ (By: Pietro)" +
 
-                    "\n<b>【Changes】</b>" +
-                        "\n     - Added Skill Icons: Vulture, Pursuer and Cleaner (By: LeziYa)" +
-                        "\n     - Updated Log Readability (By: TommyXL)" +
-                        "\n     - Enhanced Anti-Cheat (EAC) now done by API (By: ryuk & Moe)" +
-                        "\n     - Fool (Addon) now incompatible with Repairman (Addon) to avoid issues (By: ryuk)" +
-                        "\n     - System now sends message after clearing - Very Useful! (By: ryuk)" +
+                    "\n<b>【更改】</b>" +
+                        "\n     - 添加了技能图标： 秃鹫、起诉人和清理工 (By: LezaiYa)" +
+                        "\n     - 更新日志可读性 (By: TommyXL)" +
+                        "\n     - 增强型反作弊 （EAC）现在可通过TOHE在线接口（API）完成 (By: ryuk & Moe)" +
+                        "\n     - 蠢蛋（附加职业）现在与维修员（附加职业）不兼容，以避免出现问题 (By: ryuk)" +
+                        "\n     - 系统现在会在刷屏后发送上一条系统信息 - 非常有用！ (By: ryuk)" +
 
-                    "\n<b>【Bug Fixes】</b>" +
-                        "\n     - Alchemist invalid string fix (By: Drakos)" +
-                        "\n     - Votes now return if a player dies mid-round or disconnects (By: NikoCat223, ryuk)" +
-                        "\n     - Multiple Bug Fixes (By: NikoCat233, LezaiYa)" +
-                        "\n     - Enigma Typo (By: Plaguer)" +
-                        "\n     - Prevent-MM-Mass-Shapeshift - Set Cheating Player Notification to \"Notify\" (By: NikoCat223)" +
+                    "\n<b>【Bug修复】</b>" +
+                        "\n     - 炼金术士的无效字符串的Bug修复 (By: Drakos)" +
+                        "\n     - 如果玩家中途死亡或断开连接，投票现在会取消 (By: NikoCat223, ryuk)" +
+                        "\n     - 多个Bug修复 (By: NikoCat233, LezaiYa)" +
+                        "\n     - 猜想者的错别字 <仅限英文> (By: Plaguer)" +
+                        "\n     - 预防 -MM-Mass-Shapeshift- 建议将检测到作弊玩家的操作设置为\"仅通知或取消\" (By: NikoCat223)" +
+                        "\n     - 删除了赌怪PC用户界面中不必要的职业 (By: NikoCat223)" +
+                        "\n     - 修复工作狂在启用反猜测时获得不可被赌、回弹者和双重猜测的Bug" +
 
-                        "\n     - Removed Unnecessary roles from Guesser GUIs (By: NikoCat223)" +
-                        "\n     - Fix Workaholic getting Onbound, Rebound and Double Shot when Anti-Guess Enabled (By: ryuk)" +
+                    "\n<b>【翻译人员名单】</b>" +
+                        "\n     - 巴西语 (By: Dx7405)" +
+                        "\n     - 荷兰语 (By: apemv, madmazel_)" +
+                        "\n     - 法语 (By: FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                        "\n     - 意大利语 (By: alot, Baphojack, Mattix606)" +
+                        "\n     - 日语 (By: Sunnyboi)" +
+                        "\n     - 拉丁美洲语 (By: CreepPower)" +
+                        "\n     - 俄语 (By: chill_ultimated, Nevermore59, Shoulder Devil, TommyXL)" +
+                        "\n     - 简体中文 (By: CrewCyan（船员小青）, LezaiYa（乐崽吖）, NikoCat223)" +
+                        "\n     - 西班牙语 (By: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
+                        "\n     - 繁体中文 (By: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
+                        "\n<b> 在我们的网站上查看我们所有的翻译人员</b>\r\n" +
 
-                    "\n<b>【Translator Credits】</b>" +
-                        "\n     - Brazilian (By: Dx7405)" +
-                        "\n     - Dutch (By: apemv, madmazel_)" +
-                        "\n     - French (By: FuroYT, KevOut, Klaomi, Sansationnelle)" +
-                        "\n     - Italian (By: alot, Baphojack, Mattix606)" +
-                        "\n     - Japanese (By: Sunnyboi)" +
-                        "\n     - Latin American (By: CreepPower)" +
-                        "\n     - Russian (By: chill_ultimated, Nevermore59, Shoulder Devil, TommyXL)" +
-                        "\n     - Simplified Chinese (By: CrewCyan, Hinharrrrr, LezaiYa, NikoCat223)" +
-                        "\n     - Spanish (By: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
-                        "\n     - Traditional Chinese (By: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
-                        "\n<b> Check out all of our translators on our website</b>\r\n" +
-
-                    "\n<b>【Several Other Misc Fixes by Devs Above!】</b>\r\n" +
+                    "\n<b>【开发者还进行了多项其他杂项修复！】</b>\r\n" +
 
 
-                    "\n\n★ Welcome to Town of Host: Enhanced v1.4.0 ★",
+                    "\n\n★ 欢迎来到Town of Host: Enhanced v1.4.0 ★",
 
                     Date = "2024-1-6T03:00:00Z"
                 };
@@ -1483,7 +1482,7 @@ public class ModNewsHistory
                         "\n     - Maître penseur (Coéquipier Basique - Par: ryuk)" +
                         "\n     - Kamikaze (Imposteur de support - Par: Drakos)" +
                         "\n     - Solsticer (Neutre éxperimental - Par: NikoCat223)" +
-                        "\n     - Flash (Modifieur Utile - Par: NikoCat223)" +
+                        "\n     - Flash (Modifieur Utile - Par: TommyXL)" +
                         "\n     - Discret (Modifieur Utile - Par: NikoCat223)" +
                         "\n     - Banal (Modifieur Nuisible - Par: ryuk)\r\n" +
 
@@ -1825,6 +1824,82 @@ public class ModNewsHistory
                 AllModNews.Add(news);
             }
         }
+        // ====== Italian ======
+        else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.Italian)
+        {
+            {
+                var news = new ModNews()
+                {
+                    Number = 100007,
+                    Title = "Town of Host: Enhanced v1.4.0",
+                    SubTitle = "★★ Aggiornamenti consistenti, evvai! ★★",
+                    ShortTitle = "TOH: Enhanced v1.4.0",
+                    BeforeNumber = 100006,
+                    Text = "<size=150%>Benvenuto a TOH: Enhanced v1.4.0!</size>\n" +
+                    "\n<b>【Base】</b>\n - Base su TOH: Enhanced v1.3.0\r\n" +
+
+                    "\n<b>【Nuovi Ruoli/Modificatori】(7 Ruoli, 3 Modificatori)</i></b>" +
+                        "\n     - Benefattore (Astronauta Supporto - Da: ryuk)" +
+                        "\n     - Custode (Astronauta Supporto - Da: ryuk)" +
+                        "\n     - Capitano (Astronauta Potere - Da: ryuk)" +
+                        "\n     - Talpa (Astronauta Base - Da: ryuk)" +
+                        "\n     - Maestro Indovino (Astronauta Base - Da: ryuk)" +
+                        "\n     - Kamikaze (Impostore Supporto - Da: Drakos)" +
+                        "\n     - Impiegato (Neutrale Sperimentale - Da: NikoCat223)" +
+                        "\n     - Veloce (Modificatori Utili - Da: NikoCat223)" +
+                        "\n     - Silenzioso (Modificatori Utili - Da: NikoCat223)" +
+                        "\n     - Mondano (Modificatori Dannosi - Da: ryuk)" +
+
+                    "\n<b>【Nuove Impostazioni】</b>" +
+                        "\n     - dlekS ehT !appaM avouN (Grazie sleepyut (@Galster-dev su GitHub) e TommyXL)" +
+                        "\n     - Nuova Modalita: FFA presa da TOHE+ (da: ryuk, Ringraziamenti Speciali: Gurge44)" +
+                        "\n     - Aggiunti comandi chat /tpin, /tpout - Teletrasporta i giocatori all'interno o esterno della nave in lobby (Da: ryuk)" +
+                        "\n     - Nuova Impostazione: Prevenire /quit a causa di un uso dannoso (Da: Furo)" +
+                        "\n     - Nuova Impostazione: Cambia il Tempo di Decontaminazione (Molto bella! Provala! Da: TommyXL)" +
+                        "\n     - Impostazione Ritornata: Rimuovi i Compagni ai Giocatori Morti " +
+                        "\n     - Nuova Regione: Sudamerica Modificato - MSA (Da: Pietro)" +
+                        "\n     - Nuova Regione: Cinese Modificato - Multiplo (Da: NikoCat223)" +
+                        "\n     - Nuovo Bottone: Aggiorna! Ora aggiorna la mod in automatico! (Da: Pietro)" +
+
+                    "\n<b>【Cambiamenti】</b>" +
+                        "\n     - Aggiunte icone di abilità: Avvoltoio, Persecutore e Ripulitore (Da: LeziYa)" +
+                        "\n     - Leggibilità del registro aggiornata (Da: TommyXL)" +
+                        "\n     - Anti-Cheat Migliorato (EAC) ora eseguito dall'API (Da: ryuk & Moe)" +
+                        "\n     - Sciocco (Modificatore) Ora è incompatibile con il Riparatore (Modificatore) per evitare errori (Da: ryuk)" +
+                        "\n     - Il sistema ora invia un messaggio dopo la cancellazione - Molto Utile! (Da: ryuk)" +
+
+                    "\n<b>【Correzioni di Bug】</b>" +
+                        "\n     - Correzione della stringa non valida dell'Alchimista (Da: Drakos)" +
+                        "\n     - I voti ora ritornano se un giocatore muore a metà turno o si disconnette (Da: NikoCat223, ryuk)" +
+                        "\n     - Molteplici Correzioni di Bug (Da: NikoCat233, LezaiYa)" +
+                        "\n     - Enigma errore di battitura (Da: Plaguer)" +
+                        "\n     - Prevent-MM-Mass-Shapeshift - Imposta la notifica del giocatore imbroglione su \"Notify\" (Da: NikoCat223)" +
+                        "\n     - Rimossi i ruoli non necessari dall'interfaccia Indovino (Da: NikoCat223)" +
+                        "\n     - Risolto il problema con Stacanovista che otteneva Svincolato, Rimbalzo e Seconda Chance quando Anti-Indovina era abilitato" +
+
+                    "\n<b>【Crediti ai Traduttori】</b>" +
+                        "\n     - Brasiliano (Da: Dx7405)" +
+                        "\n     - Olandese (Da: apemv, madmazel_)" +
+                        "\n     - Francese (Da: FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                        "\n     - Italiano (Da: alot, Baphojack, Mattix606)" +
+                        "\n     - Giapponese (Da: Sunnyboi)" +
+                        "\n     - Latino Americano (Da: CreepPower)" +
+                        "\n     - Russo (Da: chill_ultimated, Nevermore59, Shoulder Devil, TommyXL)" +
+                        "\n     - Cinese Semplificato (Da: CrewCyan, Hinharrrrr, LezaiYa, NikoCat223)" +
+                        "\n     - Spagnolo (Da: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
+                        "\n     - Cinese Tradizionale (Da: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
+                        "\n<b> Scopri tutti i nostri traduttori sul nostro sito web</b>\r\n" +
+
+                    "\n<b>【Diverse altre correzioni varie apportate dagli sviluppatori sopra!】</b>\r\n" +
+
+
+                    "\n\n★ Benvenuto a Town of Host: Enhanced v1.4.0 ★",
+
+                    Date = "2024-1-6T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+        }
         // ====== Brazilian ======
         else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.Brazilian)
         {
@@ -1920,7 +1995,7 @@ public class ModNewsHistory
                         "\n     - Mestre Apostador (Tripulante Básico - por: ryuk)" +
                         "\n     - Kamikaze (Impostor Suporte - por: Drakos)" +
                         "\n     - Speedrunner (Neutro Experimental - por: NikoCat223)" +
-                        "\n     - Flash (Atributo Útil - por: NikoCat223)" +
+                        "\n     - Flash (Atributo Útil - por: TommyXL)" +
                         "\n     - Silencioso (Atributo Útil - por: NikoCat223)" +
                         "\n     - Mundano (Atributo Prejudicial - por: ryuk)\r\n" +
 

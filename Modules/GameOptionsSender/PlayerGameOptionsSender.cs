@@ -30,8 +30,8 @@ public class PlayerGameOptionsSender : GameOptionsSender
         }
     }
 
-    public override IGameOptions BasedGameOptions =>
-            Main.RealOptionsData.Restore(new NormalGameOptionsV07(new UnityLogger().Cast<ILogger>()).Cast<IGameOptions>());
+    public override IGameOptions BasedGameOptions => GameStates.IsNormalGame ?
+            Main.RealOptionsData.Restore(new NormalGameOptionsV07(new UnityLogger().Cast<ILogger>()).Cast<IGameOptions>()) : Main.RealOptionsData.Restore(new HideNSeekGameOptionsV07(new UnityLogger().Cast<ILogger>()).Cast<IGameOptions>());
     public override bool IsDirty { get; protected set; }
 
     public PlayerControl player;
@@ -80,7 +80,9 @@ public class PlayerGameOptionsSender : GameOptionsSender
         if (Main.RealOptionsData == null) Main.RealOptionsData = new OptionBackupData(GameOptionsManager.Instance.CurrentGameOptions);
 
         var opt = BasedGameOptions;
-        AURoleOptions.SetOpt(opt);
+        if (GameStates.IsNormalGame) AURoleOptions.SetOpt(opt);
+        else if (GameStates.IsHideNSeek) return opt;
+
         var state = Main.PlayerStates[player.PlayerId];
         opt.BlackOut(state.IsBlackOut);
 
