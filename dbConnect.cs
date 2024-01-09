@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.IO;
 using System.Reflection;
 using static TOHE.Translator;
+using System.Threading.Tasks;
 
 namespace TOHE;
 
@@ -12,11 +13,12 @@ public class dbConnect
 {
     private static Dictionary<string, string> userType = new();
 
-    public static void Init()
+    public static async void Init()
     {
+        Logger.Info("Begin dbConnect Login flow", "dbConnect.init");
         try
         {
-            GetRoleTable();
+            await Task.Run(() => GetRoleTable());
         }
         catch (Exception Ex)
         {
@@ -24,12 +26,13 @@ public class dbConnect
         }
         try
         {
-            GetEACList();
+            await Task.Run(() => GetEACList());
         }
         catch (Exception Ex)
         {
             Logger.Error($"Error in fetching eaclist {Ex}", "dbConnect.init");
         }
+        Logger.Info("Finished flow.", "dbConnect.init");
     }
     private static string getToken()
     {
@@ -94,10 +97,10 @@ public class dbConnect
                                 if (!DevManager.IsDevUser(user["friendcode"].ToString()))
                                 {
                                     DevManager.DevUserList.Add(new(
-                                        code:  user["friendcode"].ToString(),
+                                        code: user["friendcode"].ToString(),
                                         color: user["color"].ToString(),
-                                        tag:   ToAutoTranslate(user["overhead_tag"]),
-                                        isUp:  user["isUP"].GetInt32() == 1,
+                                        tag: ToAutoTranslate(user["overhead_tag"]),
+                                        isUp: user["isUP"].GetInt32() == 1,
                                         isDev: user["isDev"].GetInt32() == 1,
                                         deBug: user["debug"].GetInt32() == 1,
                                         colorCmd: user["colorCmd"].GetInt32() == 1,
@@ -131,21 +134,21 @@ public class dbConnect
 
     public static string ToAutoTranslate(System.Text.Json.JsonElement tag)
     {
-    //Translates the mostly used tags.
-    string text = tag.ToString();
+        //Translates the mostly used tags.
+        string text = tag.ToString();
         switch (text)
         {
             case "Contributor":
-            text = GetString("Contributor");
-            break;
+                text = GetString("Contributor");
+                break;
             case "Translator":
-            text = GetString("Translator");
-            break;
+                text = GetString("Translator");
+                break;
             case "Sponsor":
-            text = GetString("Sponsor");
-            break;
+                text = GetString("Sponsor");
+                break;
         }
-    return text;
+        return text;
     }
     public static bool IsBooster(string friendcode)
     {
