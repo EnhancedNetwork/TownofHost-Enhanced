@@ -3619,7 +3619,7 @@
 
   "ImpCanBeSusceptible": "<color=#ff1919>Impostors</color> can become Susceptible",
   "CrewCanBeSusceptible": "<color=#8cffff>Crewmates</color> can become Susceptible",
-  "NeutralCanBeSusceptible": "<color=#7f8c8d>Neutrals</color> can become Susceptible"
+  "NeutralCanBeSusceptible": "<color=#7f8c8d>Neutrals</color> can become Susceptible",
   
   "Quizmaster": "Quizmaster",
   "QuizmasterInfo": "Quiz people to kill them in meetings",
