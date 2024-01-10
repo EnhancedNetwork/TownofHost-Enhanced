@@ -3266,7 +3266,8 @@ public static class Options
         // Disable
         TextOptionItem.Create(10000027, "MenuTitle.Disable", TabGroup.GameSettings)
             .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(255, 153, 153, byte.MaxValue));
+            .SetColor(new Color32(255, 153, 153, byte.MaxValue))
+            .HideInHnS();
 
         DisableShieldAnimations = BooleanOptionItem.Create(60560, "DisableShieldAnimations", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
@@ -3294,7 +3295,8 @@ public static class Options
         // Disable Devices
         DisableDevices = BooleanOptionItem.Create(60570, "DisableDevices", false, TabGroup.GameSettings, false)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
-            //.SetGameMode(CustomGameMode.Standard);
+            .HideInHnS();
+        //.SetGameMode(CustomGameMode.Standard);
         DisableSkeldDevices = BooleanOptionItem.Create(60571, "DisableSkeldDevices", false, TabGroup.GameSettings, false)
             .SetParent(DisableDevices);
         //.SetGameMode(CustomGameMode.Standard);
@@ -3519,8 +3521,7 @@ public static class Options
         DisableHelpCritter = BooleanOptionItem.Create(60638, "DisableHelpCritter", false, TabGroup.TaskSettings, false)
             .SetParent(DisableLongTasks);
         DisableHoistSupplies = BooleanOptionItem.Create(60639, "DisableHoistSupplies", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableLongTasks)
-            .SetGameMode(CustomGameMode.Standard);
+            .SetParent(DisableLongTasks);
         
 
 
@@ -3537,8 +3538,7 @@ public static class Options
         DisableDivertPower = BooleanOptionItem.Create(60669, "DisableDivertPower", false, TabGroup.TaskSettings, false)
             .SetParent(DisableOtherTasks);
         DisableActivateWeatherNodes = BooleanOptionItem.Create(60670, "DisableActivateWeatherNodes", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableOtherTasks)
-            .SetGameMode(CustomGameMode.Standard);
+            .SetParent(DisableOtherTasks);
 
 
 

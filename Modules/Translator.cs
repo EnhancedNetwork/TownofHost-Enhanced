@@ -166,7 +166,7 @@ public static class Translator
     //    }
     //}
 
-    public static string GetString(string s, Dictionary<string, string> replacementDic = null, bool console = false, bool vanilla = false, bool showInvalid = true)
+    public static string GetString(string s, Dictionary<string, string> replacementDic = null, bool console = false, bool showInvalid = true, bool vanilla = false)
     {
         if (vanilla)
         {
