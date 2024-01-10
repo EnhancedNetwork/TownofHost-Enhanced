@@ -3265,7 +3265,6 @@ public static class Options
 
         // Disable
         TextOptionItem.Create(10000027, "MenuTitle.Disable", TabGroup.GameSettings)
-            .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue))
             .HideInHnS();
 
@@ -3294,7 +3293,7 @@ public static class Options
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
         // Disable Devices
         DisableDevices = BooleanOptionItem.Create(60570, "DisableDevices", false, TabGroup.GameSettings, false)
-            .SetColor(new Color32(255, 153, 153, byte.MaxValue));
+            .SetColor(new Color32(255, 153, 153, byte.MaxValue))
             .HideInHnS();
         //.SetGameMode(CustomGameMode.Standard);
         DisableSkeldDevices = BooleanOptionItem.Create(60571, "DisableSkeldDevices", false, TabGroup.GameSettings, false)
@@ -3447,8 +3446,7 @@ public static class Options
         DisableLiftWeights = BooleanOptionItem.Create(60663, "DisableLiftWeights", false, TabGroup.TaskSettings, false)
             .SetParent(DisableShortTasks);
         DisableCollectShells = BooleanOptionItem.Create(60664, "DisableCollectShells", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableShortTasks)
-            .SetGameMode(CustomGameMode.Standard);
+            .SetParent(DisableShortTasks);
 
 
         //Disable Common Tasks
@@ -3470,8 +3468,7 @@ public static class Options
         DisableCollectSamples = BooleanOptionItem.Create(60625, "DisableCollectSamples", false, TabGroup.TaskSettings, false)
             .SetParent(DisableCommonTasks);
         DisableReplaceParts = BooleanOptionItem.Create(60626, "DisableReplaceParts", false, TabGroup.TaskSettings, false)
-            .SetParent(DisableCommonTasks)
-            .SetGameMode(CustomGameMode.Standard);
+            .SetParent(DisableCommonTasks);
 
 
         //Disable Long Tasks
