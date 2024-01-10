@@ -71,7 +71,7 @@ internal class CustomRoleSelector
             if (role.IsVanilla() || role.IsAdditionRole()) continue;
             if (role is CustomRoles.GM or CustomRoles.NotAssigned) continue;
 
-            if (Options.IsActiveFungle) // The Fungle
+            if (GameStates.FungleIsActive) // The Fungle
             {
                 if (role is CustomRoles.DarkHide) continue;
             }
@@ -416,7 +416,7 @@ internal class CustomRoleSelector
             if (role is CustomRoles.Madmate && Options.MadmateSpawnMode.GetInt() != 0) continue;
             if (role is CustomRoles.Lovers or CustomRoles.LastImpostor or CustomRoles.Workhorse) continue;
 
-            if (Options.IsActiveFungle) // The Fungle
+            if (GameStates.FungleIsActive) // The Fungle
             {
                 if (role is CustomRoles.Mare) continue;
             }

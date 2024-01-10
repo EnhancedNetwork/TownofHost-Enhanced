@@ -601,6 +601,10 @@ class CheckMurderPatch
                 case CustomRoles.ChiefOfPolice:
                     ChiefOfPolice.OnCheckMurder(killer, target);
                     return false;
+                case CustomRoles.Quizmaster:
+                    if (!Quizmaster.OnCheckMurder(killer, target))
+                        return false;
+                    break;
             }
         }
 
@@ -1347,6 +1351,9 @@ class MurderPlayerPatch
         if (target.AmOwner) RemoveDisableDevicesPatch.UpdateDisableDevices();
         if (!target.Data.IsDead || !AmongUsClient.Instance.AmHost) return;
 
+        if (Quizmaster.IsEnable)
+            Quizmaster.OnPlayerDead(target);
+
         if (Main.OverDeadPlayerList.Contains(target.PlayerId)) return;
 
         PlayerControl killer = __instance;
@@ -1807,6 +1814,7 @@ class ShapeshiftPatch
 class ReportDeadBodyPatch
 {
     public static Dictionary<byte, bool> CanReport;
+    public static HashSet<byte> UnreportablePlayers = new ();
     public static Dictionary<byte, List<GameData.PlayerInfo>> WaitReport = new();
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo target)
     {
@@ -1871,6 +1879,8 @@ class ReportDeadBodyPatch
             }
             if (target != null) //拍灯事件
             {
+                if (UnreportablePlayers.Contains(target.PlayerId)) return false;
+
                 if (Bloodhound.UnreportablePlayers.Contains(target.PlayerId)) return false;
 
                 if (__instance.Is(CustomRoles.Bloodhound))
@@ -2292,6 +2302,7 @@ class ReportDeadBodyPatch
 
         if (target == null) //ボタン
         {
+            if (Quizmaster.IsEnable) Quizmaster.OnButtonPress(player);
             if (player.Is(CustomRoles.Mayor))
             {
                 Main.MayorUsedButtonCount[player.PlayerId] += 1;
@@ -2331,6 +2342,8 @@ class ReportDeadBodyPatch
 
             if (Virus.IsEnable && Main.InfectedBodies.Contains(target.PlayerId))
                 Virus.OnKilledBodyReport(player);
+
+            if (Quizmaster.IsEnable) Quizmaster.OnReportDeadBody(player, target);
         }
 
         Main.LastVotedPlayerInfo = null;

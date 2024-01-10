@@ -61,10 +61,11 @@ class ExileControllerWrapUpPatch
 
             exiled.IsDead = true;
             Main.PlayerStates[exiled.PlayerId].deathReason = PlayerState.DeathReason.Vote;
-            
+
             var role = exiled.GetCustomRole();
 
-            // Innocent is dead
+            if (Quizmaster.IsEnable) Quizmaster.lastExiledColor = exiled.GetPlayerColorString();
+
             var pcArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId).ToArray();
             if (pcArray.Length > 0)
             {
@@ -133,6 +134,11 @@ class ExileControllerWrapUpPatch
             if (role.Is(CustomRoles.Terrorist))
             {
                 Utils.CheckTerroristWin(exiled);
+            }
+
+            if (role.Is(CustomRoles.Quizmaster))
+            {
+                Quizmaster.OnVotedOut();
             }
 
             //Devourer check win

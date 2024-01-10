@@ -465,7 +465,14 @@ public class StringOptionEnablePatch
         if (option == null) return true;
 
         __instance.OnValueChanged = new Action<OptionBehaviour>((o) => { });
-        __instance.TitleText.text = option.GetName();
+        if (option.IsVanillaText)
+        {
+            __instance.TitleText.text = option.GetNameVanilla();
+        }
+        else
+        {
+            __instance.TitleText.text = option.GetName();
+        }
         __instance.Value = __instance.oldValue = option.CurrentValue;
         __instance.ValueText.text = option.GetString();
 

@@ -70,41 +70,38 @@ class CoBeginPatch
             pc.cosmetics.nameText.text = pc.name;
         }
 
-        if (GameStates.IsNormalGame)
+        logger.Info("------------Roles / Add-ons------------");
+        if (PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug || GameStates.IsLocalGame)
         {
-            logger.Info("------------Roles / Add-ons------------");
-            if (PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug || GameStates.IsLocalGame)
+            foreach (var pc in allPlayerControlsArray)
             {
-                foreach (var pc in allPlayerControlsArray)
-                {
-                    logger.Info($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc?.Data?.PlayerName?.PadRightV2(20)}:{pc.GetAllRoleName().RemoveHtmlTags()}");
-                }
+                logger.Info($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc?.Data?.PlayerName?.PadRightV2(20)}:{pc.GetAllRoleName().RemoveHtmlTags()}");
             }
-            else
-            {
-                StringBuilder logStringBuilder = new StringBuilder();
-                logStringBuilder.AppendLine("------------Roles / Add-ons------------");
-
-                foreach (var pc in allPlayerControlsArray)
-                {
-                    logStringBuilder.AppendLine($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc?.Data?.PlayerName?.PadRight(20)}:{pc.GetAllRoleName().RemoveHtmlTags()}");
-                }
-
-                try
-                {
-                    byte[] logBytes = Encoding.UTF8.GetBytes(logStringBuilder.ToString());
-                    byte[] encryptedBytes = EncryptDES(logBytes, $"TOHE{PlayerControl.LocalPlayer.PlayerId}00000000".Substring(0, 8));
-                    string encryptedString = Convert.ToBase64String(encryptedBytes);
-                    logger.Info(encryptedString);
-                }
-                catch (Exception ex)
-                {
-                    logger.Error($"Encryption error: {ex.Message}");
-                }
-            }
-            //https://www.toolhelper.cn/SymmetricEncryption/DES
-            //mode CBC, PKCS7, 64bit, Key = IV= "TOHE" + playerid + 000/00 "to 8 bits
         }
+        else
+        {
+            StringBuilder logStringBuilder = new StringBuilder();
+            logStringBuilder.AppendLine("------------Roles / Add-ons------------");
+
+            foreach (var pc in allPlayerControlsArray)
+            {
+                logStringBuilder.AppendLine($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc?.Data?.PlayerName?.PadRight(20)}:{pc.GetAllRoleName().RemoveHtmlTags()}");
+            }
+
+            try
+            {
+                byte[] logBytes = Encoding.UTF8.GetBytes(logStringBuilder.ToString());
+                byte[] encryptedBytes = EncryptDES(logBytes, $"TOHE{PlayerControl.LocalPlayer.PlayerId}00000000".Substring(0, 8));
+                string encryptedString = Convert.ToBase64String(encryptedBytes);
+                logger.Info(encryptedString);
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"Encryption error: {ex.Message}");
+            }
+        }
+        //https://www.toolhelper.cn/SymmetricEncryption/DES
+        //mode CBC, PKCS7, 64bit, Key = IV= "TOHE" + playerid + 000/00 "to 8 bits
 
         logger.Info("------------Player Platforms------------");
         foreach (var pc in allPlayerControlsArray)
@@ -168,6 +165,34 @@ class CoBeginPatch
 
         // Do not move this code, it should be executed at the very end to prevent a visual bug
         Utils.DoNotifyRoles(ForceLoop: true);
+
+        if (GameStates.IsHideNSeek && Options.RandomSpawn.GetBool())
+        {
+            RandomSpawn.SpawnMap map;
+            switch (Utils.GetActiveMapId())
+            {
+                case 0:
+                    map = new RandomSpawn.SkeldSpawnMap();
+                    Main.AllPlayerControls.Do(map.RandomTeleport);
+                    break;
+                case 1:
+                    map = new RandomSpawn.MiraHQSpawnMap();
+                    Main.AllPlayerControls.Do(map.RandomTeleport);
+                    break;
+                case 2:
+                    map = new RandomSpawn.PolusSpawnMap();
+                    Main.AllPlayerControls.Do(map.RandomTeleport);
+                    break;
+                case 3:
+                    map = new RandomSpawn.DleksSpawnMap();
+                    Main.AllPlayerControls.Do(map.RandomTeleport);
+                    break;
+                case 5:
+                    map = new RandomSpawn.FungleSpawnMap();
+                    Main.AllPlayerControls.Do(map.RandomTeleport);
+                    break;
+            }
+        }
     }
     public static byte[] EncryptDES(byte[] data, string key)
     {
@@ -514,7 +539,7 @@ class BeginImpostorPatch
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.OnDestroy))]
 class IntroCutsceneDestroyPatch
 {
-    public static void Postfix(IntroCutscene __instance)
+    public static void Postfix()
     {
         if (!GameStates.IsInGame) return;
         Main.introDestroyed = true;
@@ -522,7 +547,7 @@ class IntroCutsceneDestroyPatch
         {
             if (GameStates.IsNormalGame)
             {
-                if (!Options.IsActiveAirship)
+                if (!GameStates.AirshipIsActive)
                 {
                     Main.AllPlayerControls.Do(pc => pc.RpcResetAbilityCooldown());
                     if (Options.FixFirstKillCooldown.GetBool() && Options.CurrentGameMode != CustomGameMode.FFA)
@@ -544,10 +569,9 @@ class IntroCutsceneDestroyPatch
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
             }
 
-            if (Options.RandomSpawn.GetBool() || Options.CurrentGameMode == CustomGameMode.FFA)
+            if (GameStates.IsNormalGame && (Options.RandomSpawn.GetBool() || Options.CurrentGameMode == CustomGameMode.FFA))
             {
                 RandomSpawn.SpawnMap map;
-
                 switch (Utils.GetActiveMapId())
                 {
                     case 0:

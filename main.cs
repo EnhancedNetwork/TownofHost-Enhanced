@@ -46,8 +46,8 @@ public class Main : BasePlugin
 
     /******************* Change one of the three variables to true before making a release. *******************/
     public const bool Canary = false; // Unused variable? ---- not unused anymore :)
-    public const bool fullRelease = true;
-    public const bool devRelease = false;
+    public const bool fullRelease = false;
+    public const bool devRelease = true;
 
     public static bool hasAccess = true;
 
@@ -778,6 +778,7 @@ public enum CustomRoles
     Mini,
     // Sorcerer,
     // Flux,
+    Quizmaster,
 
     //FFA
     Killer,
@@ -895,6 +896,7 @@ public enum CustomWinner
     Poisoner = CustomRoles.Poisoner,
     HexMaster = CustomRoles.HexMaster,
     //Occultist = CustomRoles.Occultist,
+    Quizmaster = CustomRoles.Quizmaster,
     Succubus = CustomRoles.Succubus,
     Wraith = CustomRoles.Wraith,
     Bandit = CustomRoles.Bandit,
@@ -953,8 +955,9 @@ public enum AdditionalWinners
     Shaman = CustomRoles.Shaman,
     Taskinator = CustomRoles.Taskinator,
     Pixie = CustomRoles.Pixie,
- //   NiceMini = CustomRoles.NiceMini,
- //   Baker = CustomRoles.Baker,
+    Quizmaster = CustomRoles.Quizmaster,
+    //   NiceMini = CustomRoles.NiceMini,
+    //   Baker = CustomRoles.Baker,
 }
 public enum SuffixModes
 {

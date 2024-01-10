@@ -355,7 +355,8 @@ internal class ChangeRoleSettings
             FFF.Init();
             Instigator.Init();
             OverKiller.Init();
-            
+            Quizmaster.Init();
+
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
 
