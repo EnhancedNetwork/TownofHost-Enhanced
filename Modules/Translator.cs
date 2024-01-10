@@ -166,8 +166,20 @@ public static class Translator
     //    }
     //}
 
-    public static string GetString(string s, Dictionary<string, string> replacementDic = null, bool console = false, bool showInvalid = true)
+    public static string GetString(string s, Dictionary<string, string> replacementDic = null, bool console = false, bool vanilla = false, bool showInvalid = true)
     {
+        if (vanilla)
+        {
+            string nameToFind = s;
+            if (Enum.TryParse<StringNames>(nameToFind, out StringNames text))
+            {
+                return DestroyableSingleton<TranslationController>.Instance.GetString(text);
+            }
+            else
+            {
+                return showInvalid ? $"<INVALID:{nameToFind}> (vanillaStr)" : nameToFind;
+            }
+        }
         var langId = TranslationController.InstanceExists ? TranslationController.Instance.currentLanguage.languageID : SupportedLangs.English;
         if (console) langId = SupportedLangs.English;
         if (Main.ForceOwnLanguage.Value) langId = GetUserTrueLang();

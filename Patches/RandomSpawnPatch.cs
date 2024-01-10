@@ -36,7 +36,7 @@ class RandomSpawn
                 if (NumOfTP[player.PlayerId] == 1)
                 {
                     //return if the map is not airship
-                    if (!Options.IsActiveAirship)
+                    if (!GameStates.AirshipIsActive)
                     {
                         return;
                     }

@@ -68,14 +68,6 @@ public static class Options
         "Hide&SeekTOHE", // HidenSeekTOHE must be after other game modes
     };
 
-    // MapActive
-    public static bool IsActiveSkeld => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Skeld;
-    public static bool IsActiveMiraHQ => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Mira;
-    public static bool IsActivePolus => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Polus;
-    public static bool IsActiveDleks => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Dleks;
-    public static bool IsActiveAirship => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Airship;
-    public static bool IsActiveFungle => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Fungle;
-
     // 役職数・確率
     public static Dictionary<CustomRoles, int> roleCounts;
     public static Dictionary<CustomRoles, float> roleSpawnChances;
@@ -2912,13 +2904,11 @@ public static class Options
             .SetHeader(true);
         EnableKillerLeftCommand = BooleanOptionItem.Create(60040, "EnableKillerLeftCommand", true, TabGroup.SystemSettings, false)
             .SetColor(Color.green)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetGameMode(CustomGameMode.FFA);
+            .HideInHnS();
         SeeEjectedRolesInMeeting = BooleanOptionItem.Create(60041, "SeeEjectedRolesInMeeting", true, TabGroup.SystemSettings, false)
             .SetColor(Color.green)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetGameMode(CustomGameMode.FFA);
-
+            .HideInHnS();
+        
         KickLowLevelPlayer = IntegerOptionItem.Create(60050, "KickLowLevelPlayer", new(0, 100, 1), 0, TabGroup.SystemSettings, false)
             .SetValueFormat(OptionFormat.Level)
             .SetHeader(true);
@@ -3271,7 +3261,9 @@ public static class Options
         DisableAirshipCargoLightsPanel = BooleanOptionItem.Create(60554, "DisableAirshipCargoLightsPanel", false, TabGroup.GameSettings, false)
             .SetParent(LightsOutSpecialSettings)
             .SetGameMode(CustomGameMode.Standard);
-        //禁用相关设定
+
+
+        // Disable
         TextOptionItem.Create(10000027, "MenuTitle.Disable", TabGroup.GameSettings)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));

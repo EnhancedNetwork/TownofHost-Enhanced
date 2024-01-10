@@ -430,7 +430,7 @@ static class ExtendedPlayerControl
         {
             pc.RpcDesyncUpdateSystem(systemtypes, 16);
 
-            if (Options.IsActiveAirship)
+            if (GameStates.AirshipIsActive)
                 pc.RpcDesyncUpdateSystem(systemtypes, 17);
         }, 0.4f + delay, "Fix Desync Reactor");
     }
@@ -447,7 +447,7 @@ static class ExtendedPlayerControl
         {
             pc.RpcDesyncUpdateSystem(systemtypes, 16);
 
-            if (Options.IsActiveAirship)
+            if (GameStates.AirshipIsActive)
                 pc.RpcDesyncUpdateSystem(systemtypes, 17);
 
         }, FlashDuration + delay, "Fix Desync Reactor");
