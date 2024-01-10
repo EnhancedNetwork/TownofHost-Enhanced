@@ -98,6 +98,7 @@ internal class RunLoginPatch
         dbConnect.Init();
         if (friendcode == null || friendcode == "")
         {
+            EOSManager.Instance.attemptAuthAgain = true;
             Logger.Info("friendcode not found", "EOSManager");
             canOnline = false;
         }

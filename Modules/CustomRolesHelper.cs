@@ -260,6 +260,7 @@ static class CustomRolesHelper
             CustomRoles.Agitater => RoleTypes.Impostor,
             CustomRoles.Spiritcaller => RoleTypes.Impostor,
             CustomRoles.ChiefOfPolice => RoleTypes.Impostor,
+            CustomRoles.Quizmaster => RoleTypes.Impostor,
             _ => RoleTypes.GuardianAngel
         };
     }
@@ -498,7 +499,8 @@ static class CustomRolesHelper
             CustomRoles.PlagueBearer or
             CustomRoles.Agitater or
             CustomRoles.RuthlessRomantic or
-            CustomRoles.Pestilence;
+            CustomRoles.Pestilence or
+            CustomRoles.Quizmaster;
     }
     public static bool IsNonNK(this CustomRoles role) // ROLE ASSIGNING, NOT NEUTRAL TYPE
     {
@@ -626,7 +628,8 @@ static class CustomRolesHelper
             CustomRoles.Agitater or
             CustomRoles.RuthlessRomantic or
             CustomRoles.Shroud or
-            CustomRoles.Pestilence;
+            CustomRoles.Pestilence or
+            CustomRoles.Quizmaster;
     }
     public static bool IsCK(this CustomRoles role)
     {
@@ -804,7 +807,8 @@ static class CustomRolesHelper
             CustomRoles.Virus or
             CustomRoles.Succubus or
             CustomRoles.Doomsayer or
-            CustomRoles.Spiritcaller;
+            CustomRoles.Spiritcaller or
+            CustomRoles.Quizmaster;
     }
 /*    public static bool IsCoven(this CustomRoles role)
     {
@@ -943,7 +947,8 @@ static class CustomRolesHelper
             CustomRoles.RuthlessRomantic or
             CustomRoles.VengefulRomantic or
             CustomRoles.Pixie or
-            CustomRoles.Seeker;
+            CustomRoles.Seeker or
+            CustomRoles.Quizmaster;
     }
     public static bool IsMadmate(this CustomRoles role)
     {

@@ -551,6 +551,7 @@ static class ExtendedPlayerControl
             CustomRoles.ChiefOfPolice => ChiefOfPolice.CanUseKillButton(pc.PlayerId),
             CustomRoles.EvilMini => pc.IsAlive(),
             CustomRoles.Doppelganger => pc.IsAlive(),
+            CustomRoles.Quizmaster => Quizmaster.CanUseKillButton(pc),
 
             _ => pc.Is(CustomRoleTypes.Impostor),
         };
@@ -647,6 +648,7 @@ static class ExtendedPlayerControl
             CustomRoles.ChiefOfPolice => true,
             CustomRoles.EvilMini => true,
             CustomRoles.Doppelganger => true,
+            CustomRoles.Quizmaster => true,
 
             _ => pc.Is(CustomRoleTypes.Impostor),
         };
@@ -669,10 +671,10 @@ static class ExtendedPlayerControl
             CustomRoles.Deputy or
             CustomRoles.Investigator or
             CustomRoles.Innocent or
-        //    CustomRoles.SwordsMan or
+            //    CustomRoles.SwordsMan or
             CustomRoles.FFF or
             CustomRoles.Medic or
-      //      CustomRoles.NWitch or
+            //      CustomRoles.NWitch or
             CustomRoles.Monarch or
             CustomRoles.Romantic or
             CustomRoles.Provocateur or
@@ -722,10 +724,11 @@ static class ExtendedPlayerControl
             CustomRoles.Wraith => true,
             CustomRoles.Pyromaniac => Pyromaniac.CanVent.GetBool(),
             CustomRoles.Amnesiac => true,
-         //   CustomRoles.Chameleon => true,
+            //   CustomRoles.Chameleon => true,
             CustomRoles.Parasite => true,
             CustomRoles.Refugee => true,
             CustomRoles.Spiritcaller => Spiritcaller.CanVent.GetBool(),
+            CustomRoles.Quizmaster => Quizmaster.CanUseVentButton(pc),
 
             CustomRoles.Arsonist => pc.IsDouseDone() || (Options.ArsonistCanIgniteAnytime.GetBool() && (Utils.GetDousedPlayerCount(pc.PlayerId).Item1 >= Options.ArsonistMinPlayersToIgnite.GetInt() || pc.inVent)),
             CustomRoles.Revolutionist => pc.IsDrawDone(),
@@ -792,7 +795,8 @@ static class ExtendedPlayerControl
             CustomRoles.Pestilence or
             CustomRoles.Werewolf or
     //        CustomRoles.Minion or
-            CustomRoles.Spiritcaller
+            CustomRoles.Spiritcaller or
+            CustomRoles.Quizmaster
             => false,
 
             CustomRoles.Bandit => Bandit.CanUseSabotage.GetBool(),
@@ -1162,6 +1166,9 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.EvilMini:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Mini.GetKillCoolDown();
+                break;
+            case CustomRoles.Quizmaster:
+                Quizmaster.SetKillCooldown(player.PlayerId);
                 break;
         }
         if (player.PlayerId == LastImpostor.currentId)

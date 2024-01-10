@@ -15,6 +15,7 @@ using TOHE.Roles.Neutral;
 using UnityEngine;
 using UnityEngine.TextCore;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 
 namespace TOHE;
@@ -122,6 +123,16 @@ internal class ChatCommands
             Main.isChatCommand = true;
             switch (args[0])
             {
+                case "/ans":
+                case "/asw":
+                case "/answer":
+                    Quizmaster.AnswerByChat(PlayerControl.LocalPlayer, args);
+                    break;
+
+                case "/qmquiz":
+                    Quizmaster.ShowQuestion(PlayerControl.LocalPlayer);
+                    break;
+
                 case "/win":
                 case "/winner":
                 case "/vencedor":
@@ -1432,6 +1443,16 @@ internal class ChatCommands
         
         switch (args[0])
         {
+            case "/ans":
+            case "/asw":
+            case "/answer":
+                Quizmaster.AnswerByChat(player, args);
+                break;
+
+            case "/qmquiz":
+                Quizmaster.ShowQuestion(player);
+                break;
+
             case "/l":
             case "/lastresult":
             case "/fimdejogo":
