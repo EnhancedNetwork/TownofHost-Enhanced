@@ -12,27 +12,53 @@ namespace TOHE;
 public class dbConnect
 {
     private static Dictionary<string, string> userType = new();
-
+    public static bool InitOnce = false;
     public static async void Init()
     {
+        bool success = true;
         Logger.Info("Begin dbConnect Login flow", "dbConnect.init");
         try
         {
             await Task.Run(() => GetRoleTable());
         }
-        catch (Exception Ex)
+        catch
         {
-            Logger.Error($"Error in fetching roletable {Ex}", "dbConnect.init");
+            Logger.Error($"Error in fetching roletable", "dbConnect.init");
+            success = false;
         }
         try
         {
             await Task.Run(() => GetEACList());
         }
-        catch (Exception Ex)
+        catch
         {
-            Logger.Error($"Error in fetching eaclist {Ex}", "dbConnect.init");
+            Logger.Error($"Error in fetching eaclist", "dbConnect.init");
+            success = false;
         }
-        Logger.Info("Finished flow.", "dbConnect.init");
+
+        if (success)
+        {
+            Logger.Info("Finished Sync flow.", "dbConnect.init");
+            InitOnce = true;
+            if (EOSManager.Instance.friendCode != null && EOSManager.Instance.friendCode != "")
+            {
+                if (!CanAccessDev(EOSManager.Instance.friendCode))
+                    Main.hasAccess = false;
+            }
+        }
+
+        if (!success)
+        {
+            if (!InitOnce || !GameStates.IsNotJoined)
+            {
+                if (AmongUsClient.Instance.mode != InnerNet.MatchMakerModes.None)
+                    AmongUsClient.Instance.ExitGame(DisconnectReasons.ExitGame);
+
+                DestroyableSingleton<EOSManager>.Instance.ContinueInOfflineMode();
+                DestroyableSingleton<DisconnectPopup>.Instance.ShowCustom(GetString("dbConnect.InitFailure"));
+            }
+            Logger.Info("Failed.", "dbConnect.init");
+        }
     }
     private static string getToken()
     {

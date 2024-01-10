@@ -3609,5 +3609,8 @@
   "CrewCanBeSilent": "<color=#8cffff>Crewmates</color> can become Silent",
   "NeutralCanBeSilent": "<color=#7f8c8d>Neutrals</color> can become Silent",
   "LastMessageReplay": "Last System Message Replay",
-  "Contributor": "Contributor"
+  "Contributor": "Contributor",
+
+  "dbConnect.InitFailure": "Error while connecting to TOHE api, pls check your network connection and retry login!",
+  "dbConnect.nullFriendCode": "This build of TOHE is not aviliable to users with no friendcode!"
 }

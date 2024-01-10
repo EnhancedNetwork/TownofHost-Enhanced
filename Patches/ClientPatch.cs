@@ -94,17 +94,15 @@ internal class RunLoginPatch
     public static void Postfix(ref bool canOnline)
     {
         isAllowedOnline = canOnline;
+
+        if (!EOSManager.Instance.loginFlowFinished) return;
+
         var friendcode = EOSManager.Instance.friendCode;
         dbConnect.Init();
         if (friendcode == null || friendcode == "")
         {
             Logger.Info("friendcode not found", "EOSManager");
             canOnline = false;
-        }
-        else if (Main.devRelease && !dbConnect.CanAccessDev(friendcode))
-        {
-            Main.hasAccess = false;
-            Logger.Warn("Banned because no access to dev", "dbConnect");
         }
     }
 }
