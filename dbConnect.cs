@@ -20,20 +20,22 @@ public class dbConnect
         Logger.Info("Begin dbConnect Login flow", "dbConnect.init");
         try
         {
+            Logger.Info($"start fetching roletable", "dbConnect.init");
             success = await Task.Run(() => GetRoleTable());
         }
-        catch
+        catch (Exception ex)
         {
-            Logger.Error($"Error in fetching roletable", "dbConnect.init");
+            Logger.Error($"Error in fetching roletable {ex}", "dbConnect.init");
             success = false;
         }
         try
         {
+            Logger.Info($"start fetching EACList", "dbConnect.init");
             success = success && await Task.Run(() => GetEACList());
         }
-        catch
+        catch (Exception ex)
         {
-            Logger.Error($"Error in fetching eaclist", "dbConnect.init");
+            Logger.Error($"Error in fetching eaclist {ex}", "dbConnect.init");
             success = false;
         }
 
@@ -110,47 +112,48 @@ public class dbConnect
 
             try
             {
-                var response = httpClient.GetAsync(endpoint).Result;
-
-                if (response.IsSuccessStatusCode)
+                using (var response = httpClient.GetAsync(endpoint).Result) // Move the using statement inside the try block
                 {
-                    using (var responseStream = response.Content.ReadAsStreamAsync().Result)
+                    if (response.IsSuccessStatusCode)
                     {
-                        try
+                        using (var responseStream = response.Content.ReadAsStreamAsync().Result)
                         {
-                            var userList = JsonSerializer.DeserializeAsync<List<Dictionary<string, JsonElement>>>(responseStream).Result;
-                            foreach (var user in userList)
+                            try
                             {
-                                if (!DevManager.IsDevUser(user["friendcode"].ToString()))
+                                var userList = JsonSerializer.DeserializeAsync<List<Dictionary<string, JsonElement>>>(responseStream).Result;
+                                foreach (var user in userList)
                                 {
-                                    DevManager.DevUserList.Add(new(
-                                        code: user["friendcode"].ToString(),
-                                        color: user["color"].ToString(),
-                                        tag: ToAutoTranslate(user["overhead_tag"]),
-                                        isUp: user["isUP"].GetInt32() == 1,
-                                        isDev: user["isDev"].GetInt32() == 1,
-                                        deBug: user["debug"].GetInt32() == 1,
-                                        colorCmd: user["colorCmd"].GetInt32() == 1,
-                                        upName: user["name"].ToString()));
+                                    if (!DevManager.IsDevUser(user["friendcode"].ToString()))
+                                    {
+                                        DevManager.DevUserList.Add(new(
+                                            code: user["friendcode"].ToString(),
+                                            color: user["color"].ToString(),
+                                            tag: ToAutoTranslate(user["overhead_tag"]),
+                                            isUp: user["isUP"].GetInt32() == 1,
+                                            isDev: user["isDev"].GetInt32() == 1,
+                                            deBug: user["debug"].GetInt32() == 1,
+                                            colorCmd: user["colorCmd"].GetInt32() == 1,
+                                            upName: user["name"].ToString()));
 
+                                    }
+                                    tempUserType[user["friendcode"].ToString()] = user["type"].ToString(); // Store the data in the temporary dictionary
                                 }
-                                tempUserType[user["friendcode"].ToString()] = user["type"].ToString(); // Store the data in the temporary dictionary
+                                userType = tempUserType; // Replace userType with the temporary dictionary
+                                return true;
                             }
-                            userType = tempUserType; // Replace userType with the temporary dictionary
-                            return true;
-                        }
-                        catch (JsonException jsonEx)
-                        {
-                            // If deserialization as a list fails, try deserializing as a single JSON object
-                            Logger.Error($"Error deserializing JSON: {jsonEx.Message}", "dbConnect");
-                            return false;
+                            catch (JsonException jsonEx)
+                            {
+                                // If deserialization as a list fails, try deserializing as a single JSON object
+                                Logger.Error($"Error deserializing JSON: {jsonEx.Message}", "dbConnect");
+                                return false;
+                            }
                         }
                     }
-                }
-                else
-                {
-                    Logger.Error($"Error in fetching the User List, Success status code is false", "dbConnect");
-                    return false;
+                    else
+                    {
+                        Logger.Error($"Error in fetching the User List, Success status code is false", "dbConnect");
+                        return false;
+                    }
                 }
             }
             catch (Exception ex)
@@ -200,30 +203,31 @@ public class dbConnect
 
             try
             {
-                var response = httpClient.GetAsync(endpoint).Result;
-
-                if (response.IsSuccessStatusCode)
+                using (var response = httpClient.GetAsync(endpoint).Result) // Move the using statement inside the try block
                 {
-                    using (var responseStream = response.Content.ReadAsStreamAsync().Result)
+                    if (response.IsSuccessStatusCode)
                     {
-                        try
+                        using (var responseStream = response.Content.ReadAsStreamAsync().Result)
                         {
-                            tempEACDict = JsonSerializer.DeserializeAsync<List<Dictionary<string, JsonElement>>>(responseStream).Result; // Store the data in the temporary list
-                            BanManager.EACDict = BanManager.EACDict.Concat(tempEACDict).ToList(); // Merge the temporary list with BanManager.EACDict
-                            return true;
-                        }
-                        catch (JsonException jsonEx)
-                        {
-                            // If deserialization as a list fails, try deserializing as a single JSON object
-                            Logger.Error($"Error deserializing JSON: {jsonEx.Message}", "GetEACList");
-                            return false;
+                            try
+                            {
+                                tempEACDict = JsonSerializer.DeserializeAsync<List<Dictionary<string, JsonElement>>>(responseStream).Result; // Store the data in the temporary list
+                                BanManager.EACDict = BanManager.EACDict.Concat(tempEACDict).ToList(); // Merge the temporary list with BanManager.EACDict
+                                return true;
+                            }
+                            catch (JsonException jsonEx)
+                            {
+                                // If deserialization as a list fails, try deserializing as a single JSON object
+                                Logger.Error($"Error deserializing JSON: {jsonEx.Message}", "GetEACList");
+                                return false;
+                            }
                         }
                     }
-                }
-                else
-                {
-                    Logger.Error($"Error in fetching the EAC List, Success status code is false", "GetEACList");
-                    return false;
+                    else
+                    {
+                        Logger.Error($"Error in fetching the EAC List, Success status code is false", "GetEACList");
+                        return false;
+                    }
                 }
             }
             catch (Exception ex)
