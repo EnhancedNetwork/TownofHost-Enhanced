@@ -166,7 +166,7 @@ public static class Translator
     //    }
     //}
 
-    public static string GetString(string s, Dictionary<string, string> replacementDic = null, bool console = false, bool showInvalid = true, bool vanilla = false)
+    public static string GetString(string s, Dictionary<string, string> replacementDic = null, bool console = false, bool showInvalid = false, bool vanilla = false)
     {
         if (vanilla)
         {
@@ -192,7 +192,7 @@ public static class Translator
         return str;
     }
 
-    public static string GetString(string str, SupportedLangs langId, bool showInvalid = true)
+    public static string GetString(string str, SupportedLangs langId, bool showInvalid = false)
     {
         var res = showInvalid ? $"<INVALID:{str}>" : str;
         try
