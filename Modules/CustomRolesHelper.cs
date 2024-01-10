@@ -1511,6 +1511,7 @@ static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Bomber)
                     || pc.Is(CustomRoles.Nuker)
                     || pc.Is(CustomRoles.BoobyTrap)
+                    || pc.Is(CustomRoles.Kamikaze)
                     || pc.Is(CustomRoles.Swooper)
                     || pc.Is(CustomRoles.Vampire)
                     || pc.Is(CustomRoles.Vampiress)
