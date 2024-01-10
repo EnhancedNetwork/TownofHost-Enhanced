@@ -1308,6 +1308,7 @@ static class CustomRolesHelper
 
             case CustomRoles.Seer:
                 if (pc.Is(CustomRoles.Mortician)
+                    || pc.Is(CustomRoles.EvilTracker)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeSeer.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeSeer.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeSeer.GetBool()))
