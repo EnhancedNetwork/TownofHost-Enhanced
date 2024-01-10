@@ -2899,12 +2899,10 @@ public static class Options
             .SetHeader(true);
         EnableKillerLeftCommand = BooleanOptionItem.Create(60040, "EnableKillerLeftCommand", true, TabGroup.SystemSettings, false)
             .SetColor(Color.green)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetGameMode(CustomGameMode.FFA);
+            .HideInHnS();
         SeeEjectedRolesInMeeting = BooleanOptionItem.Create(60041, "SeeEjectedRolesInMeeting", true, TabGroup.SystemSettings, false)
             .SetColor(Color.green)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetGameMode(CustomGameMode.FFA);
+            .HideInHnS();
         
         KickLowLevelPlayer = IntegerOptionItem.Create(60050, "KickLowLevelPlayer", new(0, 100, 1), 0, TabGroup.SystemSettings, false)
             .SetValueFormat(OptionFormat.Level)
