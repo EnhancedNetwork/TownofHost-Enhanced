@@ -6,13 +6,13 @@ public class BooleanOptionItem : OptionItem
     public const string TEXT_false = "ColoredOff";
 
     // Constructor
-    public BooleanOptionItem(int id, string name, bool defaultValue, TabGroup tab, bool isSingleValue)
-    : base(id, name, defaultValue ? 1 : 0, tab, isSingleValue)
+    public BooleanOptionItem(int id, string name, bool defaultValue, TabGroup tab, bool isSingleValue, bool vanilla)
+    : base(id, name, defaultValue ? 1 : 0, tab, isSingleValue, vanillaStr:vanilla)
     {
     }
-    public static BooleanOptionItem Create(int id, string name, bool defaultValue, TabGroup tab, bool isSingleValue)
+    public static BooleanOptionItem Create(int id, string name, bool defaultValue, TabGroup tab, bool isSingleValue, bool vanillaText = false)
     {
-        return new BooleanOptionItem(id, name, defaultValue, tab, isSingleValue);
+        return new BooleanOptionItem(id, name, defaultValue, tab, isSingleValue, vanillaText);
     }
 
     // Getter
