@@ -1,4 +1,5 @@
-{ "Crewmate": "#8cffff",
+{ 
+  "Crewmate": "#8cffff",
   "Engineer": "#8cffff",
   "Scientist": "#8cffff",
   "GuardianAngel": "#ffffff",
