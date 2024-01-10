@@ -3604,6 +3604,9 @@
   "SolsticerGuessMax": "Because you already misguessed, you are no longer allowed to guess.",
 
   "VoteDead": "The player you voted for was exhiled before the meeting concluded. Your vote was rescinded.",
+  "CancelVoteNotifyFirst": "Your role is using <b>Cancel Vote System</b>\nThe first vote is for your skill\nVote yourself or skip to keep your skill\nVote anyone else to cast your skill on them",
+  "CancelVoteSkip": "You decided to keep your skill!\nNow your vote on others will be counted as real.",
+  "CancelVoteSuccess": "You cast your skill on {0}.\nNow your vote on others will be counted as real.\nNote that your skill won't return if your target die in meeting.",
 
   "ImpCanBeSilent": "<color=#ff1919>Impostors</color> can become Silent",
   "CrewCanBeSilent": "<color=#8cffff>Crewmates</color> can become Silent",
