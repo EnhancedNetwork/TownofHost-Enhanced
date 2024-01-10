@@ -354,7 +354,8 @@ static class CustomRolesHelper
             CustomRoles.Hurried or
             CustomRoles.Oiiai or
             CustomRoles.Influenced or
-            CustomRoles.Silent;
+            CustomRoles.Silent or
+            CustomRoles.Susceptible;
     }
     
     public static bool IsBetrayalAddon(this CustomRoles role)
