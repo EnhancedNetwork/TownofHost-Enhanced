@@ -1287,12 +1287,12 @@ public static class Utils
             }
 
             if (opt.Value.Name == "Maximum") continue; //Maximumの項目は飛ばす
-            if (opt.Value.Name == "DisableSkeldDevices" && !Options.IsActiveSkeld && !Options.IsActiveDleks) continue;
-            if (opt.Value.Name == "DisableMiraHQDevices" && !Options.IsActiveMiraHQ) continue;
-            if (opt.Value.Name == "DisablePolusDevices" && !Options.IsActivePolus) continue;
-            if (opt.Value.Name == "DisableAirshipDevices" && !Options.IsActiveAirship) continue;
-            if (opt.Value.Name == "PolusReactorTimeLimit" && !Options.IsActivePolus) continue;
-            if (opt.Value.Name == "AirshipReactorTimeLimit" && !Options.IsActiveAirship) continue;
+            if (opt.Value.Name == "DisableSkeldDevices" && !GameStates.SkeldIsActive && !GameStates.DleksIsActive) continue;
+            if (opt.Value.Name == "DisableMiraHQDevices" && !GameStates.MiraHQIsActive) continue;
+            if (opt.Value.Name == "DisablePolusDevices" && !GameStates.PolusIsActive) continue;
+            if (opt.Value.Name == "DisableAirshipDevices" && !GameStates.AirshipIsActive) continue;
+            if (opt.Value.Name == "PolusReactorTimeLimit" && !GameStates.PolusIsActive) continue;
+            if (opt.Value.Name == "AirshipReactorTimeLimit" && !GameStates.AirshipIsActive) continue;
             if (deep > 0)
             {
                 sb.Append(string.Concat(Enumerable.Repeat("┃", Mathf.Max(deep - 1, 0))));

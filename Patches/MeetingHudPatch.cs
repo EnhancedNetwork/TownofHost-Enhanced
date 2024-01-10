@@ -1126,14 +1126,14 @@ class MeetingHudStartPatch
             }
         }
 
-        if (Options.IsActiveDleks)
-        {
-            _ = new LateTask(() =>
-            {
-                Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")), replay: true);
+        //if (GameStates.DleksIsActive)
+        //{
+        //    _ = new LateTask(() =>
+        //    {
+        //        Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")), replay: true);
 
-            }, 6f, "Message: Warning Broken Vents In Dleks");
-        }
+        //    }, 6f, "Message: Warning Broken Vents In Dleks");
+        //}
 
         if (MeetingStates.FirstMeeting) TemplateManager.SendTemplate("OnFirstMeeting", noErr: true);
         TemplateManager.SendTemplate("OnMeeting", noErr: true);

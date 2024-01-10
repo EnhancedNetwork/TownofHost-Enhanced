@@ -58,7 +58,7 @@ public static class VentSetButtonsPatch
     private static bool Prefix(Vent __instance, [HarmonyArgument(0)] ref bool enabled)
     {
         // if map is Dleks
-        if (Options.IsActiveDleks && Main.introDestroyed)
+        if (GameStates.DleksIsActive && Main.introDestroyed)
         {
             enabled = false;
             if (GameStates.IsMeeting) 
@@ -68,7 +68,7 @@ public static class VentSetButtonsPatch
     }
     public static void Postfix(Vent __instance, [HarmonyArgument(0)] bool enabled)
     {
-        if (!Options.IsActiveDleks) return;
+        if (!GameStates.DleksIsActive) return;
         if (enabled || !Main.introDestroyed) return;
 
         var setActive = ShowButtons || !PlayerControl.LocalPlayer.inVent && !GameStates.IsMeeting;
@@ -104,7 +104,7 @@ class VentTryMoveToVentPatch
     // Update arrows buttons when player move to vents
     private static void Postfix(Vent __instance, [HarmonyArgument(0)] Vent otherVent)
     {
-        if (__instance == null || otherVent == null || !Options.IsActiveDleks) return;
+        if (__instance == null || otherVent == null || !GameStates.DleksIsActive) return;
 
         VentSetButtonsPatch.ShowButtons = true;
         VentSetButtonsPatch.Postfix(otherVent, false);
@@ -118,6 +118,6 @@ class VentUpdateArrowsPatch
     private static bool Prefix()
     {
         // if map is not Dleks
-        return !Options.IsActiveDleks;
+        return !GameStates.DleksIsActive;
     }
 }

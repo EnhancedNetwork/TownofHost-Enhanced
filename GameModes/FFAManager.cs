@@ -221,12 +221,12 @@ internal static class FFAManager
             bool mark = false;
             var nowKCD = Main.AllPlayerKillCooldown[killer.PlayerId];
             byte EffectType;
-            if (!Options.IsActiveAirship) EffectType = (byte)HashRandom.Next(0, 10);
+            if (!GameStates.AirshipIsActive) EffectType = (byte)HashRandom.Next(0, 10);
             else EffectType = (byte)HashRandom.Next(4, 10);
             if (EffectType <= 7) // Buff
             {
                 byte EffectID = (byte)HashRandom.Next(0, 3);
-                if (Options.IsActiveAirship) EffectID = 2;
+                if (GameStates.AirshipIsActive) EffectID = 2;
                 switch (EffectID)
                 {
                     case 0:
@@ -264,7 +264,7 @@ internal static class FFAManager
             else if (EffectType == 8) // De-Buff
             {
                 byte EffectID = (byte)HashRandom.Next(0, 3);
-                if (Options.IsActiveAirship) EffectID = 1;
+                if (GameStates.AirshipIsActive) EffectID = 1;
                 switch (EffectID)
                 {
                     case 0:
@@ -419,7 +419,7 @@ internal static class FFAManager
                     changePositionPlayers.Clear();
                 }
 
-                if (Options.IsActiveAirship) return;
+                if (GameStates.AirshipIsActive) return;
 
                 foreach (PlayerControl pc in Main.AllAlivePlayerControls)
                 {
