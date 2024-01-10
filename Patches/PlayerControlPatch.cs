@@ -1343,12 +1343,11 @@ class MurderPlayerPatch
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] MurderResultFlags resultFlags)
     {
         if (GameStates.IsHideNSeek) return;
-        if (AmongUsClient.Instance.AmHost)
-        {
-            Quizmaster.OnPlayerDead(target);
-        }
         if (target.AmOwner) RemoveDisableDevicesPatch.UpdateDisableDevices();
         if (!target.Data.IsDead || !AmongUsClient.Instance.AmHost) return;
+
+        if (Quizmaster.IsEnable)
+            Quizmaster.OnPlayerDead(target);
 
         if (Main.OverDeadPlayerList.Contains(target.PlayerId)) return;
 
@@ -2298,7 +2297,7 @@ class ReportDeadBodyPatch
 
         if (target == null) //ボタン
         {
-            Quizmaster.OnButtonPress(player);
+            if (Quizmaster.IsEnable) Quizmaster.OnButtonPress(player);
             if (player.Is(CustomRoles.Mayor))
             {
                 Main.MayorUsedButtonCount[player.PlayerId] += 1;
@@ -2339,7 +2338,7 @@ class ReportDeadBodyPatch
             if (Virus.IsEnable && Main.InfectedBodies.Contains(target.PlayerId))
                 Virus.OnKilledBodyReport(player);
 
-            Quizmaster.OnReportDeadBody(player, target);
+            if (Quizmaster.IsEnable) Quizmaster.OnReportDeadBody(player, target);
         }
 
         Main.LastVotedPlayerInfo = null;

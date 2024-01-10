@@ -132,7 +132,8 @@ class RepairSystemPatch
     {
         Camouflage.CheckCamouflage();
 
-        Quizmaster.OnSabotageCall(systemType);
+        if (Quizmaster.IsEnable)
+            Quizmaster.OnSabotageCall(systemType);
 
         if (systemType == SystemTypes.Electrical && 0 <= amount && amount <= 4)
         {

@@ -473,7 +473,7 @@ class GameEndCheckerForNormal
         //        else pc.RpcSetName(Doppelganger.DoppelVictim[pid]);
         //    }
         //}
-        Quizmaster.ResetMarkedPlayer();
+        if (Quizmaster.IsEnable) Quizmaster.ResetMarkedPlayer();
         if (Blackmailer.IsEnable) Blackmailer.ForBlackmailer.Clear();
         //ゴーストロール化
         List<byte> ReviveRequiredPlayerIds = new();
