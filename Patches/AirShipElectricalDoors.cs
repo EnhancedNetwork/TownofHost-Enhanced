@@ -11,7 +11,7 @@ public class AirshipElectricalDoors
 
     public static void Initialize()
     {
-        if (!Options.IsActiveAirship) return;
+        if (!GameStates.AirshipIsActive) return;
         Instance.Initialize();
     }
     public static byte[] GetClosedDoors()

@@ -50,12 +50,12 @@ public static class Camouflage
 
         IsActive = Options.CommsCamouflage.GetBool() && !(Options.DisableOnSomeMaps.GetBool() &&
             (
-            (Options.DisableOnSkeld.GetBool() && Options.IsActiveSkeld) ||
-            (Options.DisableOnMira.GetBool() && Options.IsActiveMiraHQ) ||
-            (Options.DisableOnPolus.GetBool() && Options.IsActivePolus) ||
-            (Options.DisableOnDleks.GetBool() && Options.IsActiveDleks) ||
-            (Options.DisableOnFungle.GetBool() && Options.IsActiveFungle) ||
-            (Options.DisableOnAirship.GetBool() && Options.IsActiveAirship)
+            (Options.DisableOnSkeld.GetBool() && GameStates.SkeldIsActive) ||
+            (Options.DisableOnMira.GetBool() && GameStates.MiraHQIsActive) ||
+            (Options.DisableOnPolus.GetBool() && GameStates.PolusIsActive) ||
+            (Options.DisableOnDleks.GetBool() && GameStates.DleksIsActive) ||
+            (Options.DisableOnAirship.GetBool() && GameStates.AirshipIsActive) ||
+            (Options.DisableOnFungle.GetBool() && GameStates.FungleIsActive)
             ));
 
         switch (Options.KPDCamouflageMode.GetValue())

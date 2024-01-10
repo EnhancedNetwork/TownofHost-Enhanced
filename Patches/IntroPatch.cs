@@ -547,7 +547,7 @@ class IntroCutsceneDestroyPatch
         {
             if (GameStates.IsNormalGame)
             {
-                if (!Options.IsActiveAirship)
+                if (!GameStates.AirshipIsActive)
                 {
                     Main.AllPlayerControls.Do(pc => pc.RpcResetAbilityCooldown());
                     if (Options.FixFirstKillCooldown.GetBool() && Options.CurrentGameMode != CustomGameMode.FFA)

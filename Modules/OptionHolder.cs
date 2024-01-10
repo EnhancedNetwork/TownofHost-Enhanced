@@ -68,14 +68,6 @@ public static class Options
         "Hide&SeekTOHE", // HidenSeekTOHE must be after other game modes
     };
 
-    // MapActive
-    public static bool IsActiveSkeld => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Skeld;
-    public static bool IsActiveMiraHQ => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Mira;
-    public static bool IsActivePolus => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Polus;
-    public static bool IsActiveDleks => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Dleks;
-    public static bool IsActiveAirship => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Airship;
-    public static bool IsActiveFungle => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Fungle;
-
     // 役職数・確率
     public static Dictionary<CustomRoles, int> roleCounts;
     public static Dictionary<CustomRoles, float> roleSpawnChances;

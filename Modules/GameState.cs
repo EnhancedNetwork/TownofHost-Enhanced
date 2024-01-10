@@ -751,9 +751,16 @@ public static class GameStates
 {
     public static bool InGame = false;
     public static bool AlreadyDied = false;
+    /**********Check Ststus game***********/
     public static bool IsModHost => Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId);
     public static bool IsNormalGame => GameOptionsManager.Instance.CurrentGameOptions.GameMode == GameModes.Normal;
     public static bool IsHideNSeek => GameOptionsManager.Instance.CurrentGameOptions.GameMode == GameModes.HideNSeek;
+    public static bool SkeldIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Skeld;
+    public static bool MiraHQIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Mira;
+    public static bool PolusIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Polus;
+    public static bool DleksIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Dleks;
+    public static bool AirshipIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Airship;
+    public static bool FungleIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Fungle;
     public static bool IsLobby => AmongUsClient.Instance.GameState == AmongUsClient.GameStates.Joined;
     public static bool IsInGame => InGame;
     public static bool IsEnded => AmongUsClient.Instance.GameState == AmongUsClient.GameStates.Ended;
