@@ -396,6 +396,7 @@ public class PlayerState
         Trap,
         Targeted,
         Retribution,
+        WrongAnswer,
 
         etc = -1,
     }

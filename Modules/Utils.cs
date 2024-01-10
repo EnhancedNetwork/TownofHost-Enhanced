@@ -1962,8 +1962,8 @@ public static class Utils
                     _ => name
                 };
             }
-            
-            if (!name.Contains('\r') && player.FriendCode.GetDevUser().HasTag() && (player.AmOwner || player.IsModClient()))
+
+            if (!name.Contains($"\r\r") && player.FriendCode.GetDevUser().HasTag())
             {
                 name = player.FriendCode.GetDevUser().GetTag() + "<size=1.5>" + modtag + "</size>" + name;
             }
@@ -1975,6 +1975,10 @@ public static class Utils
     public static PlayerControl GetPlayerById(int PlayerId)
     {
         return Main.AllPlayerControls.FirstOrDefault(pc => pc.PlayerId == PlayerId);
+    }
+    public static PlayerControl GetPlayerByRole(CustomRoles Role)
+    {
+        return Main.AllPlayerControls.FirstOrDefault(pc => pc.GetCustomRole() == Role);
     }
     public static GameData.PlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);
@@ -2511,6 +2515,10 @@ public static class Utils
                             case CustomRoles.Swapper:
                                 if (seer.IsAlive() && target.IsAlive())
                                     TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + TargetPlayerName;
+                                break;
+
+                            case CustomRoles.Quizmaster:
+                                TargetMark.Append(Quizmaster.TargetMark(seer, target));
                                 break;
 
                         }
