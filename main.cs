@@ -41,15 +41,11 @@ public class Main : BasePlugin
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
     public const string PluginVersion = "1.4.1.1";
-    public const string PluginDisplayVersion = "1.4.1 dev 1";
+    public const string PluginDisplayVersion = "1.4.1 Dev 1";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
 
     /******************* Change one of the three variables to true before making a release. *******************/
-<<<<<<< HEAD
     public const bool Canary = false; 
-=======
-    public const bool Canary = false; // Unused variable? ---- not unused anymore :)
->>>>>>> c4fa9a4134b06517a19fb714fee696005fa2e047
     public const bool fullRelease = false;
     public const bool devRelease = true;
 

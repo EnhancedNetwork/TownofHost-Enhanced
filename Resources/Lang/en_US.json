@@ -3588,8 +3588,8 @@
   "FFA_ShieldBroken": "<color=#ffff00>Someone tried to kill you, your shield is now broken!</color>",
   "Killer": "FREE FOR ALL",
   "KillerInfo": "Kill Everyone to Win",
-  
-   "Hide&SeekTOHE": "Hide & Seek",
+
+  "Hide&SeekTOHE": "Hide & Seek",
   "MenuTitle.Hide&Seek": "Hide & Seek Settings",
   "NumImpostorsHnS": "Num Impostors",
 
@@ -3620,12 +3620,12 @@
   "ImpCanBeSusceptible": "<color=#ff1919>Impostors</color> can become Susceptible",
   "CrewCanBeSusceptible": "<color=#8cffff>Crewmates</color> can become Susceptible",
   "NeutralCanBeSusceptible": "<color=#7f8c8d>Neutrals</color> can become Susceptible",
-  
+
   "Quizmaster": "Quizmaster",
   "QuizmasterInfo": "Quiz people to kill them in meetings",
-  "QuizmasterInfoLong": "As the Quizmaster, you can mark a player using your kill button. In the next meeting, the marked player will \"?!\" next to their name. If the player answers a question wrongly, or doesn't answer, they will die. If the Quizmaster was killed/ejected in the same meeting, the player will live.\nThe Quizmaster cannot mark multiple people in the same round",
+  "QuizmasterInfoLong": "(Neutrals):\nAs the Quizmaster, you can mark a player using your kill button. In the next meeting, the marked player will \"?!\" next to their name. If the player answers a question wrongly, or doesn't answer, they will die. If the Quizmaster was killed/ejected in the same meeting, the player will live.\nThe Quizmaster cannot mark multiple people in the same round",
   "QuizmasterKillButtonText": "Quiz",
-  
+
   "QuizmasterChat.MarkedBy": "You've been marked by the <color={QMCOLOR}><b>Quizmaster</b></color>\nTo survive you have to answer correct to this question:\n\n{QMQUESTION}",
   "QuizmasterChat.MarkedPublic": "<b>{QMTARGET}</b> has been marked by the <color={QMCOLOR}><b>Quizmaster</b></color>\nTo survive {QMTARGET} have to answer correct to their question!",
   "QuizmasterChat.Answers": "<size=150%><b>Answers</b></size>\nA: {QMA}\nB: {QMB}\nC: {QMC}\n\nTo answer just type /answer [answer letter]\n\nIf you need to recheck the answer and questions just do /qmquiz",
