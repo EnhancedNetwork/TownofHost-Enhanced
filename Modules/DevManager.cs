@@ -42,7 +42,7 @@ public class DevUser
         }
         string t1;
         t1 = Tag == "#Dev" ? Translator.GetString("Developer") : Tag;
-        return $"<size=1.2><color=#{startColor}>{t1}</color></size>\r\n";
+        return $"<size=1.2><color=#{startColor}>{t1}</color></size>\r\r\n";
     }
     //public string GetTag() 
     //{

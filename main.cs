@@ -45,7 +45,11 @@ public class Main : BasePlugin
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
 
     /******************* Change one of the three variables to true before making a release. *******************/
+<<<<<<< HEAD
     public const bool Canary = false; 
+=======
+    public const bool Canary = false; // Unused variable? ---- not unused anymore :)
+>>>>>>> c4fa9a4134b06517a19fb714fee696005fa2e047
     public const bool fullRelease = false;
     public const bool devRelease = true;
 
@@ -778,6 +782,7 @@ public enum CustomRoles
     Mini,
     // Sorcerer,
     // Flux,
+    Quizmaster,
 
     //FFA
     Killer,
@@ -857,6 +862,7 @@ public enum CustomRoles
     Oiiai,
     Influenced,
     Silent,
+    Susceptible,
     Mundane
     // QuickFix
 }
@@ -894,6 +900,7 @@ public enum CustomWinner
     Poisoner = CustomRoles.Poisoner,
     HexMaster = CustomRoles.HexMaster,
     //Occultist = CustomRoles.Occultist,
+    Quizmaster = CustomRoles.Quizmaster,
     Succubus = CustomRoles.Succubus,
     Wraith = CustomRoles.Wraith,
     Bandit = CustomRoles.Bandit,
@@ -952,8 +959,9 @@ public enum AdditionalWinners
     Shaman = CustomRoles.Shaman,
     Taskinator = CustomRoles.Taskinator,
     Pixie = CustomRoles.Pixie,
- //   NiceMini = CustomRoles.NiceMini,
- //   Baker = CustomRoles.Baker,
+    Quizmaster = CustomRoles.Quizmaster,
+    //   NiceMini = CustomRoles.NiceMini,
+    //   Baker = CustomRoles.Baker,
 }
 public enum SuffixModes
 {
