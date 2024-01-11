@@ -45,9 +45,9 @@ public class Main : BasePlugin
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public const bool Canary = false; // Unused variable? ---- not unused anymore :)
-    public const bool fullRelease = true;
-    public const bool devRelease = false;
+    public const bool Canary = false; 
+    public const bool fullRelease = false;
+    public const bool devRelease = true;
 
     public static bool hasAccess = true;
 
