@@ -1281,8 +1281,13 @@ public static class GuessManager
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.OnDestroy))]
     class MeetingHudOnDestroyGuesserUIClose
     {
-        public static void Postfix()
+        public static void Postfix(MeetingHud __instance)
         {
+            if (__instance == null || textTemplate == null)
+            {
+                return;
+            }
+
             UnityEngine.Object.Destroy(textTemplate.gameObject);
         }
     }
