@@ -1019,9 +1019,9 @@ static class ExtendedPlayerControl
             case CustomRoles.Witness:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.WitnessCD.GetFloat();
                 break;
-            case CustomRoles.Capitalism:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Options.CapitalismSkillCooldown.GetFloat();
-                break;
+            //case CustomRoles.Capitalism:
+            //    Main.AllPlayerKillCooldown[player.PlayerId] = Options.CapitalismSkillCooldown.GetFloat();
+            //    break;
             case CustomRoles.Pelican:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Pelican.KillCooldown.GetFloat();
                 break;

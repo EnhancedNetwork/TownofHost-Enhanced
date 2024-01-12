@@ -116,434 +116,237 @@ public static class Options
     public static float DefaultKillCooldown = Main.NormalOptions?.KillCooldown ?? 20;
     public static OptionItem GhostsDoTasks;
 
-    public static OptionItem DisableMeeting;
-    public static OptionItem DisableCloseDoor;
-    public static OptionItem DisableSabotage;
-    public static OptionItem DisableTaskWin;
 
-    public static OptionItem KillFlashDuration;
-    //public static OptionItem ShareLobby;
-    //public static OptionItem ShareLobbyMinPlayer;
-    public static OptionItem DisableShieldAnimations;
-    public static OptionItem DisableKillAnimationOnGuess;
-    public static OptionItem DisableVanillaRoles;
-    public static OptionItem SunnyboyChance;
-    public static OptionItem BardChance;
-    public static OptionItem CEMode;
-    public static OptionItem ConfirmEjectionsNK;
-    public static OptionItem ConfirmEjectionsNonNK;
-    public static OptionItem ConfirmEjectionsNeutralAsImp;
-    public static OptionItem ShowImpRemainOnEject;
-    public static OptionItem ShowNKRemainOnEject;
-    public static OptionItem ShowTeamNextToRoleNameOnEject;
-    public static OptionItem CheatResponses;
-    public static OptionItem LowLoadMode;
-    public static OptionItem NewHideMsg;
+    // ------------ System Settings Tab ------------
+    public static OptionItem TemporaryAntiBlackoutFix;
     public static OptionItem GradientTagsOpt;
+    public static OptionItem EnableKillerLeftCommand;
+    public static OptionItem SeeEjectedRolesInMeeting;
 
-    // Dummy Settings
-    public static OptionItem SpawnSidekickAlone;
+    public static OptionItem KickLowLevelPlayer;
+    public static OptionItem TempBanLowLevelPlayer;
+
+    public static OptionItem ApplyAllowList;
+
+    public static OptionItem KickOtherPlatformPlayer;
+    public static OptionItem OptKickAndroidPlayer;
+    public static OptionItem OptKickIphonePlayer;
+    public static OptionItem OptKickXboxPlayer;
+    public static OptionItem OptKickPlayStationPlayer;
+    public static OptionItem OptKickNintendoPlayer;
+
+    public static OptionItem KickPlayerFriendCodeNotExist;
+    public static OptionItem TempBanPlayerFriendCodeNotExist;
+
+    public static OptionItem AutoKickStart;
+    public static OptionItem AutoKickStartTimes;
+    public static OptionItem AutoKickStartAsBan;
+
+    public static OptionItem TempBanPlayersWhoKeepQuitting;
+    public static OptionItem QuitTimesTillTempBan;
+
+    public static OptionItem ApplyVipList;
+    public static OptionItem ApplyDenyNameList;
+    public static OptionItem ApplyBanList;
+    public static OptionItem ApplyModeratorList;
+    public static OptionItem AllowSayCommand;
+
+    //public static OptionItem ApplyReminderMsg;
+    //public static OptionItem TimeForReminder;
+    //public static OptionItem AutoKickStopWords;
+    //public static OptionItem AutoKickStopWordsTimes;
+    //public static OptionItem AutoKickStopWordsAsBan;
+    //public static OptionItem AutoWarnStopWords;
+
+    public static OptionItem MinWaitAutoStart;
+    public static OptionItem MaxWaitAutoStart;
+    public static OptionItem PlayerAutoStart;
+    public static OptionItem AutoStartTimer;
+    public static OptionItem AutoPlayAgain;
+    public static OptionItem AutoPlayAgainCountdown;
+
+    //public static OptionItem ShowLobbyCode;
+    public static OptionItem LowLoadMode;
+    public static OptionItem EndWhenPlayerBug;
+    public static OptionItem HideExileChat;
+    public static OptionItem RemovePetsAtDeadPlayers;
+
+    public static OptionItem CheatResponses;
+    public static OptionItem NewHideMsg;
+
+    public static OptionItem AutoDisplayKillLog;
+    public static OptionItem AutoDisplayLastRoles;
+    public static OptionItem AutoDisplayLastResult;
+
+    public static OptionItem SuffixMode;
+    public static OptionItem HideHostText;
+    public static OptionItem HideGameSettings;
+
+    public static OptionItem PlayerCanSetColor;
+    public static OptionItem PlayerCanUseQuitCommand;
+    public static OptionItem FormatNameMode;
+    public static OptionItem DisableEmojiName;
+    //public static OptionItem ColorNameMode;
+    public static OptionItem ChangeNameToRoleInfo;
+    public static OptionItem SendRoleDescriptionFirstMeeting;
+
+    public static OptionItem NoGameEnd;
+    public static OptionItem AllowConsole;
+
+    public static OptionItem RoleAssigningAlgorithm;
+    public static OptionItem KPDCamouflageMode;
+    public static OptionItem EnableUpMode;
 
 
-    // Detailed Ejections //
-    public static OptionItem ExtendedEjections;
-    public static OptionItem ConfirmEgoistOnEject;
-    public static OptionItem ConfirmSidekickOnEject;
-    public static OptionItem ConfirmLoversOnEject;
-
-
-    public static OptionItem NonNeutralKillingRolesMinPlayer;
-    public static OptionItem NonNeutralKillingRolesMaxPlayer;
-    public static OptionItem NeutralKillingRolesMinPlayer;
-    public static OptionItem NeutralKillingRolesMaxPlayer;
-    public static OptionItem NeutralRoleWinTogether;
-    public static OptionItem NeutralWinTogether;
-
+    // ------------ Game Settings Tab ------------
 
     // Hide & Seek Setting
     public static OptionItem NumImpostorsHnS;
 
-    public static OptionItem DefaultShapeshiftCooldown;
-    public static OptionItem DeadImpCantSabotage;
-    public static OptionItem ImpKnowAlliesRole;
-    public static OptionItem ImpKnowWhosMadmate;
-    public static OptionItem MadmateKnowWhosImp;
-    public static OptionItem MadmateKnowWhosMadmate;
-    public static OptionItem MadmateHasImpostorVision;
-    //public static OptionItem MadmateCanFixSabotage;
-    public static OptionItem ImpCanKillMadmate;
-    public static OptionItem MadmateCanKillImp;
+    // Confirm Ejection
+    public static OptionItem CEMode;
+    public static OptionItem ShowImpRemainOnEject;
+    public static OptionItem ShowNKRemainOnEject;
+    public static OptionItem ShowTeamNextToRoleNameOnEject;
+    public static OptionItem ConfirmEgoistOnEject;
+    public static OptionItem ConfirmLoversOnEject;
+    //public static OptionItem ConfirmSidekickOnEject;
+    //public static OptionItem ExtendedEjections;
 
-    public static OptionItem ShapeMasterShapeshiftDuration;
-    public static OptionItem EGCanGuessImp;
-    public static OptionItem EGCanGuessAdt;
-    public static OptionItem EGCanGuessTaskDoneSnitch;
-    public static OptionItem EGCanGuessTime;
-    public static OptionItem EGTryHideMsg;
-    public static OptionItem WarlockCanKillAllies;
-    public static OptionItem WarlockCanKillSelf;
-    public static OptionItem WarlockShiftDuration;
-    public static OptionItem ScavengerKillCooldown;
-    public static OptionItem ZombieKillCooldown;
-    public static OptionItem ZombieSpeedReduce;
-    public static OptionItem EvilWatcherChance;
-    public static OptionItem GGCanGuessCrew;
-    public static OptionItem GGCanGuessAdt;
-    public static OptionItem GGCanGuessTime;
-    public static OptionItem GGTryHideMsg;
+    // Maps Settings
+    public static OptionItem RandomMapsMode;
+    public static OptionItem SkeldChance;
+    public static OptionItem MiraChance;
+    public static OptionItem PolusChance;
+    public static OptionItem DleksChance;
+    public static OptionItem AirshipChance;
+    public static OptionItem FungleChance;
+    public static OptionItem UseMoreRandomMapSelection;
 
-    public static OptionItem VigilanteKillCooldown;
+    public static OptionItem RandomSpawn;
+    public static OptionItem SpawnRandomLocation;
+    public static OptionItem AirshipAdditionalSpawn;
+    public static OptionItem SpawnRandomVents;
 
-    public static OptionItem LuckeyProbability;
-    public static OptionItem LuckyProbability;
-    public static OptionItem OverclockedReduction;
-    public static OptionItem VindicatorAdditionalVote;
-    public static OptionItem VindicatorHideVote;
-    public static OptionItem MayorAdditionalVote;
-    public static OptionItem MayorHasPortableButton;
-    public static OptionItem MayorNumOfUseButton;
-    public static OptionItem MayorHideVote;
-    public static OptionItem MayorRevealWhenDoneTasks;
-    public static OptionItem OppoImmuneToAttacksWhenTasksDone;
-    public static OptionItem DoctorTaskCompletedBatteryCharge;
-    public static OptionItem SpeedBoosterUpSpeed;
-    public static OptionItem SpeedBoosterTimes;
-    public static OptionItem GlitchCanVote;
-    public static OptionItem EscapeeSSDuration;
-    public static OptionItem EscapeeSSCD;
-    public static OptionItem MinerSSDuration;
-    public static OptionItem MinerSSCD;
-    public static OptionItem TrapperBlockMoveTime;
-    public static OptionItem BecomeTrapperBlockMoveTime;
-    public static OptionItem DetectiveCanknowKiller;
-    public static OptionItem TransporterTeleportMax;
-    public static OptionItem CanTerroristSuicideWin;
-    public static OptionItem InnocentCanWinByImp;
-    public static OptionItem WorkaholicVentCooldown;
-    public static OptionItem WorkaholicCannotWinAtDeath;
-    public static OptionItem WorkaholicVisibleToEveryone;
-    public static OptionItem WorkaholicGiveAdviceAlive;
-    public static OptionItem BaitNotification;
-    public static OptionItem BaitCanBeReportedUnderAllConditions;
-    public static OptionItem DoctorVisibleToEveryone;
-    public static OptionItem JackalWinWithSidekick;
-    public static OptionItem ArsonistDouseTime;
-    public static OptionItem ArsonistCooldown;
-    //public static OptionItem ArsonistKeepsGameGoing;
-    public static OptionItem ArsonistCanIgniteAnytime;
-    public static OptionItem ArsonistMinPlayersToIgnite;
-    public static OptionItem ArsonistMaxPlayersToIgnite;
-    public static OptionItem JesterCanUseButton;
-    public static OptionItem JesterCanVent;
-    public static OptionItem MeetingsNeededForJesterWin;
-    public static OptionItem HideJesterVote;
-    public static OptionItem LegacyMafia;
-    public static OptionItem NotifyGodAlive;
-    public static OptionItem MarioVentNumWin;
-    public static OptionItem MarioVentCD;
-    public static OptionItem VeteranSkillCooldown;
-    public static OptionItem VeteranSkillDuration;
-    public static OptionItem TimeMasterSkillCooldown;
-    public static OptionItem TimeMasterSkillDuration;
-    public static OptionItem TimeMasterMaxUses;
-    public static OptionItem TimeMasterAbilityUseGainWithEachTaskCompleted;
-    public static OptionItem VeteranSkillMaxOfUseage;
-    public static OptionItem VeteranAbilityUseGainWithEachTaskCompleted;
-    public static OptionItem BodyguardProtectRadius;
-    public static OptionItem BastionBombCooldown;
-    public static OptionItem BombsClearAfterMeeting;
-    public static OptionItem BastionAbilityUseGainWithEachTaskCompleted;
-    public static OptionItem BastionMaxBombs;
-    public static OptionItem WitnessCD;
-    public static OptionItem WitnessTime;
-    public static OptionItem ParanoiaNumOfUseButton;
-    public static OptionItem ParanoiaVentCooldown;
-    public static OptionItem ImpKnowCyberStarDead;
-    public static OptionItem NeutralKnowCyberStarDead;
-    public static OptionItem EveryOneKnowSuperStar;
-    public static OptionItem MNKillCooldown;
-    public static OptionItem MafiaCanKillNum;
-    public static OptionItem RetributionistCanKillNum;
-    public static OptionItem MinimumPlayersAliveToRetri;
-    public static OptionItem CanOnlyRetributeWithTasksDone;
-    public static OptionItem BomberRadius;
-    public static OptionItem BomberCanKill;
-    public static OptionItem BomberKillCD;
-    public static OptionItem BombCooldown;
-    public static OptionItem ImpostorsSurviveBombs;
-    public static OptionItem BomberDiesInExplosion;
-    public static OptionItem NukerChance;
-    public static OptionItem NukeRadius;
-    public static OptionItem NukeCooldown;
+    public static OptionItem MapModification;
+    public static OptionItem AirshipVariableElectrical;
+    public static OptionItem DisableAirshipMovingPlatform;
+    public static OptionItem DisableSporeTriggerOnFungle;
+    public static OptionItem DisableZiplineOnFungle;
+    public static OptionItem DisableZiplineFromTop;
+    public static OptionItem DisableZiplineFromUnder;
 
-    // UNDERDOG
-    public static OptionItem UnderdogKillCooldown;
-    public static OptionItem UnderdogMaximumPlayersNeededToKill;
+    public static OptionItem ResetDoorsEveryTurns;
+    public static OptionItem DoorsResetMode;
 
-    //cultivator
-    public static OptionItem BerserkerKillCooldown;
-    public static OptionItem BerserkerMax;
-    public static OptionItem BerserkerOneCanKillCooldown;
-    public static OptionItem BerserkerKillCooldownLevel;
-    public static OptionItem BerserkerOneKillCooldown;
-    public static OptionItem BerserkerTwoCanScavenger;
-    public static OptionItem BerserkerScavengerLevel;
-    public static OptionItem BerserkerThreeCanBomber;
-    public static OptionItem BerserkerBomberLevel;
-    //public static OptionItem BerserkerFourCanFlash;
-    //public static OptionItem BerserkerSpeed;
-    public static OptionItem BerserkerFourCanNotKill;
-    public static OptionItem BerserkerImmortalLevel;
+    public static OptionItem ChangeDecontaminationTime;
+    public static OptionItem DecontaminationTimeOnMiraHQ;
+    public static OptionItem DecontaminationTimeOnPolus;
 
-    public static OptionItem CleanerKillCooldown;
-    public static OptionItem KillCooldownAfterCleaning;
-    public static OptionItem GuardSpellTimes;
-    public static OptionItem killAttacker;
-    public static OptionItem FlashWhenTrapBoobyTrap;
-    public static OptionItem CapitalismSkillCooldown;
-    public static OptionItem GrenadierSkillCooldown;
-    public static OptionItem GrenadierSkillDuration;
-    public static OptionItem GrenadierCauseVision;
-    public static OptionItem GrenadierCanAffectNeutral;
-    public static OptionItem GrenadierSkillMaxOfUseage;
-    public static OptionItem GrenadierAbilityUseGainWithEachTaskCompleted;
-    public static OptionItem LighterVisionNormal;
-    public static OptionItem LighterVisionOnLightsOut;
-    public static OptionItem LighterSkillCooldown;
-    public static OptionItem LighterSkillDuration;
-    public static OptionItem LighterSkillMaxOfUseage;
-    public static OptionItem LighterAbilityUseGainWithEachTaskCompleted;
-    public static OptionItem RevolutionistDrawTime;
-    public static OptionItem RevolutionistCooldown;
-    public static OptionItem RevolutionistDrawCount;
-    public static OptionItem RevolutionistKillProbability;
-    public static OptionItem RevolutionistVentCountDown;
-    public static OptionItem ShapeImperiusCurseShapeshiftDuration;
-    public static OptionItem ImperiusCurseShapeshiftCooldown;
-    public static OptionItem ProvKillCD;
-    public static OptionItem CrewpostorCanKillAllies;
-    public static OptionItem CrewpostorKillAfterTask;
-    public static OptionItem CrewpostorKnowsAllies;
-    public static OptionItem AlliesKnowCrewpostor;
-    public static OptionItem CrewpostorLungeKill;
+    // Sabotage Settings
+    public static OptionItem CommsCamouflage;
+    public static OptionItem DisableOnSomeMaps;
+    public static OptionItem DisableOnSkeld;
+    public static OptionItem DisableOnMira;
+    public static OptionItem DisableOnPolus;
+    public static OptionItem DisableOnDleks;
+    public static OptionItem DisableOnAirship;
+    public static OptionItem DisableOnFungle;
+    public static OptionItem DisableReportWhenCC;
 
-    public static OptionItem ImpCanBeSeer;
-    public static OptionItem CrewCanBeSeer;
-    public static OptionItem NeutralCanBeSeer;
-    public static OptionItem ImpCanBeAutopsy;
-    public static OptionItem CrewCanBeAutopsy;
-    public static OptionItem NeutralCanBeAutopsy;
-    public static OptionItem ImpCanBeBewilder;
-    public static OptionItem CrewCanBeBewilder;
-    public static OptionItem NeutralCanBeBewilder;
-    public static OptionItem KillerGetBewilderVision;
-    public static OptionItem ImpCanBeSunglasses;
-    public static OptionItem CrewCanBeSunglasses;
-    public static OptionItem NeutralCanBeSunglasses;
-    //public static OptionItem ImpCanBeGlow;
-    //public static OptionItem CrewCanBeGlow;
-    //public static OptionItem NeutralCanBeGlow;
-    public static OptionItem ImpCanBeGuesser;
-    public static OptionItem CrewCanBeGuesser;
-    public static OptionItem NeutralCanBeGuesser;
-    public static OptionItem ImpCanBeWatcher;
-    public static OptionItem CrewCanBeWatcher;
-    public static OptionItem NeutralCanBeWatcher;
-    public static OptionItem ImpCanBeNecroview;
-    public static OptionItem CrewCanBeNecroview;
-    public static OptionItem NeutralCanBeNecroview;
-    public static OptionItem ImpCanBeOblivious;
-    public static OptionItem CrewCanBeOblivious;
-    public static OptionItem NeutralCanBeOblivious;
-    public static OptionItem ObliviousBaitImmune;
-    public static OptionItem ImpCanBeTiebreaker;
-    public static OptionItem CrewCanBeTiebreaker;
-    public static OptionItem NeutralCanBeTiebreaker;
-    public static OptionItem CrewmateCanBeSidekick;
-    public static OptionItem NeutralCanBeSidekick;
-    public static OptionItem ImpostorCanBeSidekick;
-    public static OptionItem ImpCanBeOnbound;
-    public static OptionItem CrewCanBeOnbound;
-    public static OptionItem NeutralCanBeOnbound;
-    public static OptionItem ImpCanBeRebound;
-    public static OptionItem CrewCanBeRebound;
-    public static OptionItem NeutralCanBeRebound;
-    public static OptionItem ImpCanBeInLove;
-    public static OptionItem CrewCanBeInLove;
-    public static OptionItem NeutralCanBeInLove;
-    public static OptionItem ImpCanBeReflective;
-    public static OptionItem CrewCanBeReflective;
-    public static OptionItem NeutralCanBeReflective;
-    public static OptionItem ImpCanBeUnreportable;
-    public static OptionItem CrewCanBeUnreportable;
-    public static OptionItem NeutralCanBeUnreportable;
-    public static OptionItem ImpCanBeLucky;
-    public static OptionItem CrewCanBeLucky;
-    public static OptionItem NeutralCanBeLucky;
+    public static OptionItem SabotageCooldownControl;
+    public static OptionItem SabotageCooldown;
 
-    public static OptionItem ImpCanBeUnlucky;
-    public static OptionItem CrewCanBeUnlucky;
-    public static OptionItem NeutralCanBeUnlucky;
-    public static OptionItem UnluckyTaskSuicideChance;
-    public static OptionItem UnluckyKillSuicideChance;
-    public static OptionItem UnluckyVentSuicideChance;
-    public static OptionItem UnluckyReportSuicideChance;
-    public static OptionItem UnluckySabotageSuicideChance;
+    public static OptionItem SabotageTimeControl;
+    public static OptionItem SkeldReactorTimeLimit;
+    public static OptionItem SkeldO2TimeLimit;
+    public static OptionItem MiraReactorTimeLimit;
+    public static OptionItem MiraO2TimeLimit;
+    public static OptionItem PolusReactorTimeLimit;
+    public static OptionItem AirshipReactorTimeLimit;
+    public static OptionItem FungleReactorTimeLimit;
+    public static OptionItem FungleMushroomMixupDuration;
 
-    // Cyber Addon
-    public static OptionItem ImpCanBeCyber;
-    public static OptionItem CrewCanBeCyber;
-    public static OptionItem NeutralCanBeCyber;
-    public static OptionItem ImpKnowCyberDead;
-    public static OptionItem CrewKnowCyberDead;
-    public static OptionItem NeutralKnowCyberDead;
-    public static OptionItem CyberKnown;
+    public static OptionItem LightsOutSpecialSettings;
+    public static OptionItem BlockDisturbancesToSwitches;
+    public static OptionItem DisableAirshipViewingDeckLightsPanel;
+    public static OptionItem DisableAirshipGapRoomLightsPanel;
+    public static OptionItem DisableAirshipCargoLightsPanel;
 
-    // Sleuth
-    public static OptionItem SleuthCanKnowKillerRole;
-    public static OptionItem ImpCanBeSleuth;
-    public static OptionItem CrewCanBeSleuth;
-    public static OptionItem NeutralCanBeSleuth;
+    // Disable
+    public static OptionItem DisableShieldAnimations;
+    public static OptionItem DisableKillAnimationOnGuess;
+    public static OptionItem DisableVanillaRoles;
+    public static OptionItem DisableTaskWin;
+    public static OptionItem DisableMeeting;
+    public static OptionItem DisableSabotage;
+    public static OptionItem DisableCloseDoor;
 
-    // Ludopath
-    public static OptionItem LudopathRandomKillCD;
+    public static OptionItem DisableDevices;
+    public static OptionItem DisableSkeldDevices;
+    public static OptionItem DisableSkeldAdmin;
+    public static OptionItem DisableSkeldCamera;
+    public static OptionItem DisableMiraHQDevices;
+    public static OptionItem DisableMiraHQAdmin;
+    public static OptionItem DisableMiraHQDoorLog;
+    public static OptionItem DisablePolusDevices;
+    public static OptionItem DisablePolusAdmin;
+    public static OptionItem DisablePolusCamera;
+    public static OptionItem DisablePolusVital;
+    public static OptionItem DisableAirshipDevices;
+    public static OptionItem DisableAirshipCockpitAdmin;
+    public static OptionItem DisableAirshipRecordsAdmin;
+    public static OptionItem DisableAirshipCamera;
+    public static OptionItem DisableAirshipVital;
+    public static OptionItem DisableFungleDevices;
+    public static OptionItem DisableFungleBinoculars;
+    public static OptionItem DisableFungleVital;
+    public static OptionItem DisableDevicesIgnoreConditions;
+    public static OptionItem DisableDevicesIgnoreImpostors;
+    public static OptionItem DisableDevicesIgnoreNeutrals;
+    public static OptionItem DisableDevicesIgnoreCrewmates;
+    public static OptionItem DisableDevicesIgnoreAfterAnyoneDied;
 
-    // BURST ADDON //
-    public static OptionItem ImpCanBeBurst;
-    public static OptionItem CrewCanBeBurst;
-    public static OptionItem NeutralCanBeBurst;
-    public static OptionItem BurstKillDelay;
-    // RASCAL //
-    public static OptionItem RascalAppearAsMadmate;
+    // Meeting Settings
+    public static OptionItem SyncButtonMode;
+    public static OptionItem SyncedButtonCount;
+    public static int UsedButtonCount = 0;
+
+    public static OptionItem AllAliveMeeting;
+    public static OptionItem AllAliveMeetingTime;
+
+    public static OptionItem AdditionalEmergencyCooldown;
+    public static OptionItem AdditionalEmergencyCooldownThreshold;
+    public static OptionItem AdditionalEmergencyCooldownTime;
+
+    public static OptionItem VoteMode;
+    public static OptionItem WhenSkipVote;
+    public static OptionItem WhenSkipVoteIgnoreFirstMeeting;
+    public static OptionItem WhenSkipVoteIgnoreNoDeadBody;
+    public static OptionItem WhenSkipVoteIgnoreEmergency;
+    public static OptionItem WhenNonVote;
+    public static OptionItem WhenTie;
+
+    // Other
+    public static OptionItem LadderDeath;
+    public static OptionItem LadderDeathChance;
+
+    public static OptionItem FixFirstKillCooldown;
+    public static OptionItem FixKillCooldownValue;
+    public static OptionItem ShieldPersonDiedFirst;
+
+    public static OptionItem KillFlashDuration;
+
+    // Ghost
+    public static OptionItem GhostIgnoreTasks;
+    public static OptionItem GhostCanSeeOtherRoles;
+    public static OptionItem GhostCanSeeOtherVotes;
+    public static OptionItem GhostCanSeeDeathReason;
 
 
-    // ROGUE
-    public static OptionItem ImpCanBeRogue;
-    public static OptionItem CrewCanBeRogue;
-    public static OptionItem NeutralCanBeRogue;
-    public static OptionItem RogueKnowEachOther;
-    public static OptionItem RogueKnowEachOtherRoles;
+    // ------------ Task Management Tab ------------
 
-    // Gravestone
-    public static OptionItem ImpCanBeGravestone;
-    public static OptionItem CrewCanBeGravestone;
-    public static OptionItem NeutralCanBeGravestone;
-
-    // Clumsy
-    public static OptionItem ChanceToMiss;
-
-    // Nimble
-    public static OptionItem NeutralCanBeNimble;
-    public static OptionItem CrewCanBeNimble;
-
-
-
-    //
-    public static OptionItem ControlCooldown;
-    public static OptionItem InhibitorCD;
-    public static OptionItem SaboteurCD;
-    public static OptionItem JesterVision;
-    public static OptionItem PhantomCanVent;
-    public static OptionItem PhantomSnatchesWin;
-    // public static OptionItem LawyerVision;
-    public static OptionItem ImpCanBeDiseased;
-    public static OptionItem CrewCanBeDiseased;
-    public static OptionItem NeutralCanBeDiseased;
-    public static OptionItem DiseasedCDOpt;
-    public static OptionItem DiseasedCDReset;
-
-    public static OptionItem ImpCanBeVoidBallot;
-    public static OptionItem CrewCanBeVoidBallot;
-    public static OptionItem NeutralCanBeVoidBallot;
-
-    public static OptionItem ImpCanBeAware;
-    public static OptionItem CrewCanBeAware;
-    public static OptionItem NeutralCanBeAware;
-    public static OptionItem AwareknowRole;
-
-    public static OptionItem ImpCanBeFragile;
-    public static OptionItem CrewCanBeFragile;
-    public static OptionItem NeutralCanBeFragile;
-    public static OptionItem ImpCanKillFragile;
-    public static OptionItem CrewCanKillFragile;
-    public static OptionItem NeutralCanKillFragile;
-    public static OptionItem FragileKillerLunge;
-
-    public static OptionItem ImpCanBeAntidote;
-    public static OptionItem CrewCanBeAntidote;
-    public static OptionItem NeutralCanBeAntidote;
-    public static OptionItem AntidoteCDOpt;
-    public static OptionItem AntidoteCDReset;
-
-    public static OptionItem ImpCanBeStubborn;
-    public static OptionItem CrewCanBeStubborn;
-    public static OptionItem NeutralCanBeStubborn;
-
-    public static OptionItem ImpCanBeBait;
-    public static OptionItem CrewCanBeBait;
-    public static OptionItem NeutralCanBeBait;
-    public static OptionItem BaitDelayMin;
-    public static OptionItem BaitDelayMax;
-    public static OptionItem BecomeBaitDelayMin;
-    public static OptionItem BecomeBaitDelayMax;
-    public static OptionItem BaitDelayNotify;
-    public static OptionItem BecomeBaitDelayNotify;
-    public static OptionItem ImpCanBeTrapper;
-    public static OptionItem CrewCanBeTrapper;
-    public static OptionItem NeutralCanBeTrapper;
-    public static OptionItem ImpCanBeFool;
-    public static OptionItem CrewCanBeFool;
-    public static OptionItem NeutralCanBeFool;
-    public static OptionItem TorchVision;
-    public static OptionItem GlowVision;
-    public static OptionItem TorchAffectedByLights;
-    public static OptionItem TasklessCrewCanBeLazy;
-    public static OptionItem TaskBasedCrewCanBeLazy;
-    public static OptionItem DovesOfNeaceCooldown;
-    public static OptionItem DovesOfNeaceMaxOfUseage;
-    public static OptionItem DovesOfNeaceAbilityUseGainWithEachTaskCompleted;
-    public static OptionItem BTKillCooldown;
-    public static OptionItem TrapOnlyWorksOnTheBodyBoobyTrap;
-    public static OptionItem ImpCanBeDoubleShot;
-    public static OptionItem CrewCanBeDoubleShot;
-    public static OptionItem NeutralCanBeDoubleShot;
-    public static OptionItem MimicCanSeeDeadRoles;
-
-    // Trapster
-    public static OptionItem TrapConsecutiveBodies;
-    public static OptionItem TrapConsecutiveTrapsterBodies;
-    public static OptionItem TrapTrapsterBody;
-
-    //public static OptionItem NSerialKillerKillCD;
-    //public static OptionItem NSerialKillerHasImpostorVision;
-    //public static OptionItem NSerialKillerCanVent;
-
-    public static OptionItem VoodooCooldown;
-
-    public static OptionItem ParasiteCD;
-    public static OptionItem RefugeeKillCD;
-
-    public static OptionItem ShapeshiftCD;
-    public static OptionItem ShapeshiftDur;
-
-    public static OptionItem MafiaShapeshiftCD;
-    public static OptionItem MafiaShapeshiftDur;
-
-    public static OptionItem ScientistDur;
-    public static OptionItem ScientistCD;
-
-    //public static OptionItem GCanGuessImp;
-    //public static OptionItem GCanGuessCrew;
-    //public static OptionItem GCanGuessNeutrals;
-    public static OptionItem GCanGuessAdt;
-    public static OptionItem GCanGuessTaskDoneSnitch;
-    public static OptionItem GTryHideMsg;
-
-    // Masochist
-    public static OptionItem MasochistKillMax;
-
-
-    //Task Management
+    // Disable Tasks
     public static OptionItem DisableShortTasks;
     public static OptionItem DisableCleanVent;
     public static OptionItem DisableCalibrateDistributor;
@@ -574,12 +377,14 @@ public static class Options
     public static OptionItem DisablePickUpTowels;
     public static OptionItem DisablePolishRuby;
     public static OptionItem DisableDressMannequin;
+
     public static OptionItem DisableCommonTasks;
     public static OptionItem DisableSwipeCard;
     public static OptionItem DisableFixWiring;
     public static OptionItem DisableEnterIdCode;
     public static OptionItem DisableInsertKeys;
     public static OptionItem DisableScanBoardingPass;
+
     public static OptionItem DisableLongTasks;
     public static OptionItem DisableSubmitScan;
     public static OptionItem DisableUnlockSafe;
@@ -596,6 +401,7 @@ public static class Options
     public static OptionItem DisableDevelopPhotos;
     public static OptionItem DisableRewindTapes;
     public static OptionItem DisableStartFans;
+
     public static OptionItem DisableOtherTasks;
     public static OptionItem DisableUploadData;
     public static OptionItem DisableEmptyGarbage;
@@ -622,152 +428,495 @@ public static class Options
     public static OptionItem DisableLiftWeights;
     public static OptionItem DisableCollectShells;
 
-    // Merchant Filters //
-    public static OptionItem BaitCanBeSold;
-    public static OptionItem WatcherCanBeSold;
-    public static OptionItem SeerCanBeSold;
-    public static OptionItem TrapperCanBeSold;
-    public static OptionItem TiebreakerCanBeSold;
-    public static OptionItem KnightedCanBeSold;
-    public static OptionItem NecroviewCanBeSold;
-    public static OptionItem SoullessCanBeSold;
-    public static OptionItem SchizoCanBeSold;
-    public static OptionItem OnboundCanBeSold;
-    public static OptionItem GuesserCanBeSold;
-    public static OptionItem UnreportableCanBeSold;
-    public static OptionItem LuckyCanBeSold;
-    public static OptionItem ObliviousCanBeSold;
-    public static OptionItem BewilderCanBeSold;
-
-    //デバイスブロック
-    public static OptionItem DisableDevices;
-    public static OptionItem DisableSkeldDevices;
-    public static OptionItem DisableSkeldAdmin;
-    public static OptionItem DisableSkeldCamera;
-    public static OptionItem DisableMiraHQDevices;
-    public static OptionItem DisableMiraHQAdmin;
-    public static OptionItem DisableMiraHQDoorLog;
-    public static OptionItem DisablePolusDevices;
-    public static OptionItem DisablePolusAdmin;
-    public static OptionItem DisablePolusCamera;
-    public static OptionItem DisablePolusVital;
-    public static OptionItem DisableAirshipDevices;
-    public static OptionItem DisableAirshipCockpitAdmin;
-    public static OptionItem DisableAirshipRecordsAdmin;
-    public static OptionItem DisableAirshipCamera;
-    public static OptionItem DisableAirshipVital;
-    public static OptionItem DisableFungleDevices;
-    public static OptionItem DisableFungleBinoculars;
-    public static OptionItem DisableFungleVital;
-    public static OptionItem DisableDevicesIgnoreConditions;
-    public static OptionItem DisableDevicesIgnoreImpostors;
-    public static OptionItem DisableDevicesIgnoreNeutrals;
-    public static OptionItem DisableDevicesIgnoreCrewmates;
-    public static OptionItem DisableDevicesIgnoreAfterAnyoneDied;
-
-    // Temporary Settings
-    public static OptionItem TemporaryAntiBlackoutFix;
-    public static OptionItem EnableKillerLeftCommand;
-    public static OptionItem SeeEjectedRolesInMeeting;
-
-    // Maps
-    public static OptionItem RandomMapsMode;
-    public static OptionItem SkeldChance;
-    public static OptionItem MiraChance;
-    public static OptionItem PolusChance;
-    public static OptionItem DleksChance;
-    public static OptionItem AirshipChance;
-    public static OptionItem FungleChance;
-
-    public static OptionItem UseMoreRandomMapSelection;
-    public static OptionItem RandomSpawn;
-    public static OptionItem SpawnRandomLocation;
-    public static OptionItem AirshipAdditionalSpawn;
-    public static OptionItem SpawnRandomVents;
-    public static OptionItem MapModification;
-    public static OptionItem AirshipVariableElectrical;
-    public static OptionItem DisableAirshipMovingPlatform;
-    public static OptionItem DisableSporeTriggerOnFungle;
-    public static OptionItem DisableZiplineOnFungle;
-    public static OptionItem DisableZiplineFromTop;
-    public static OptionItem DisableZiplineFromUnder;
-    public static OptionItem ResetDoorsEveryTurns;
-    public static OptionItem DoorsResetMode;
-    public static OptionItem ChangeDecontaminationTime;
-    public static OptionItem DecontaminationTimeOnMiraHQ;
-    public static OptionItem DecontaminationTimeOnPolus;
-
-    // Sabotage
-    public static OptionItem CommsCamouflage;
-    public static OptionItem DisableOnSomeMaps;
-    public static OptionItem DisableOnSkeld;
-    public static OptionItem DisableOnMira;
-    public static OptionItem DisableOnPolus;
-    public static OptionItem DisableOnDleks;
-    public static OptionItem DisableOnAirship;
-    public static OptionItem DisableOnFungle;
-    public static OptionItem DisableReportWhenCC;
-    public static OptionItem SabotageCooldownControl;
-    public static OptionItem SabotageCooldown;
-    public static OptionItem SabotageTimeControl;
-    public static OptionItem SkeldReactorTimeLimit;
-    public static OptionItem SkeldO2TimeLimit;
-    public static OptionItem MiraReactorTimeLimit;
-    public static OptionItem MiraO2TimeLimit;
-    public static OptionItem PolusReactorTimeLimit;
-    public static OptionItem AirshipReactorTimeLimit;
-    public static OptionItem FungleReactorTimeLimit;
-    public static OptionItem FungleMushroomMixupDuration;
-    public static OptionItem LightsOutSpecialSettings;
-    public static OptionItem DisableAirshipViewingDeckLightsPanel;
-    public static OptionItem DisableAirshipGapRoomLightsPanel;
-    public static OptionItem DisableAirshipCargoLightsPanel;
-    public static OptionItem BlockDisturbancesToSwitches;
-
-    //Guesser Mode//
+    // Guesser Mode
     public static OptionItem GuesserMode;
     public static OptionItem CrewmatesCanGuess;
     public static OptionItem ImpostorsCanGuess;
     public static OptionItem NeutralKillersCanGuess;
     public static OptionItem PassiveNeutralsCanGuess;
-    public static OptionItem HideGuesserCommands;
     public static OptionItem CanGuessAddons;
     public static OptionItem ImpCanGuessImp;
     public static OptionItem CrewCanGuessCrew;
+    public static OptionItem HideGuesserCommands;
 
-    // Guesser Mode - Addon Config //
-    public static OptionItem AddonSettingsCrew;
-    public static OptionItem ClaimAddonSettingsCrew;
-    public static OptionItem BetrayalAddonSettingsCrew;
-    public static OptionItem ImpOnlyAddonSettingsCrew;
-    public static OptionItem CrewOnlyAddonSettingsCrew;
-    public static OptionItem NeutralAddonSettingsCrew;
-    public static OptionItem BasicAddonSettingsCrew;
-
-    public static OptionItem AddonSettingsImp;
-    public static OptionItem ClaimAddonSettingsImp;
-    public static OptionItem BetrayalAddonSettingsImp;
-    public static OptionItem ImpOnlyAddonSettingsImp;
-    public static OptionItem CrewOnlyAddonSettingsImp;
-    public static OptionItem NeutralAddonSettingsImp;
-    public static OptionItem BasicAddonSettingsImp;
-    public static OptionItem AddonSettingsNeut;
-    public static OptionItem ClaimAddonSettingsNeut;
-    public static OptionItem BetrayalAddonSettingsNeut;
-    public static OptionItem ImpOnlyAddonSettingsNeut;
-    public static OptionItem CrewOnlyAddonSettingsNeut;
-    public static OptionItem NeutralAddonSettingsNeut;
-    public static OptionItem BasicAddonSettingsNeut;
+    public static OptionItem ImpCanBeOnbound;
+    public static OptionItem CrewCanBeOnbound;
+    public static OptionItem NeutralCanBeOnbound;
 
 
-    // 投票モード
-    public static OptionItem VoteMode;
-    public static OptionItem WhenSkipVote;
-    public static OptionItem WhenSkipVoteIgnoreFirstMeeting;
-    public static OptionItem WhenSkipVoteIgnoreNoDeadBody;
-    public static OptionItem WhenSkipVoteIgnoreEmergency;
-    public static OptionItem WhenNonVote;
-    public static OptionItem WhenTie;
+    // ------------ General Role Settings ------------
+
+    // Imp
+    public static OptionItem ImpKnowAlliesRole;
+    public static OptionItem ImpKnowWhosMadmate;
+    public static OptionItem ImpCanKillMadmate;
+    public static OptionItem MadmateKnowWhosMadmate;
+    public static OptionItem MadmateKnowWhosImp;
+    public static OptionItem MadmateCanKillImp;
+    public static OptionItem MadmateHasImpostorVision;
+    public static OptionItem RefugeeKillCD;
+    //public static OptionItem MadmateCanFixSabotage;
+    public static OptionItem DefaultShapeshiftCooldown;
+    public static OptionItem DeadImpCantSabotage;
+
+    // Neutral
+    public static OptionItem NonNeutralKillingRolesMinPlayer;
+    public static OptionItem NonNeutralKillingRolesMaxPlayer;
+    public static OptionItem NeutralKillingRolesMinPlayer;
+    public static OptionItem NeutralKillingRolesMaxPlayer;
+    public static OptionItem NeutralRoleWinTogether;
+    public static OptionItem NeutralWinTogether;
+
+    // Add-on
+    public static OptionItem NameDisplayAddons;
+    public static OptionItem NoLimitAddonsNumMax;
+    public static OptionItem AddBracketsToAddons;
+
+    // Impostors role settings
+    public static OptionItem ShapeshiftCD;
+    public static OptionItem ShapeshiftDur;
+
+    public static OptionItem BerserkerKillCooldown;
+    public static OptionItem BerserkerMax;
+    public static OptionItem BerserkerOneCanKillCooldown;
+    public static OptionItem BerserkerKillCooldownLevel;
+    public static OptionItem BerserkerOneKillCooldown;
+    public static OptionItem BerserkerTwoCanScavenger;
+    public static OptionItem BerserkerScavengerLevel;
+    public static OptionItem BerserkerThreeCanBomber;
+    public static OptionItem BerserkerBomberLevel;
+    //public static OptionItem BerserkerFourCanFlash;
+    //public static OptionItem BerserkerSpeed;
+    public static OptionItem BerserkerFourCanNotKill;
+    public static OptionItem BerserkerImmortalLevel;
+
+    public static OptionItem BomberRadius;
+    public static OptionItem BomberCanKill;
+    public static OptionItem BomberKillCD;
+    public static OptionItem BombCooldown;
+    public static OptionItem ImpostorsSurviveBombs;
+    public static OptionItem BomberDiesInExplosion;
+    public static OptionItem NukerChance;
+    public static OptionItem NukeRadius;
+    public static OptionItem NukeCooldown;
+
+    public static OptionItem GuardSpellTimes;
+    public static OptionItem killAttacker;
+
+    public static OptionItem EGCanGuessTime;
+    public static OptionItem EGCanGuessImp;
+    public static OptionItem EGCanGuessAdt;
+    public static OptionItem EGCanGuessTaskDoneSnitch;
+    public static OptionItem EGTryHideMsg;
+
+    public static OptionItem InhibitorCD;
+
+    public static OptionItem LudopathRandomKillCD;
+
+    public static OptionItem SaboteurCD;
+
+    public static OptionItem BTKillCooldown;
+    public static OptionItem TrapConsecutiveBodies;
+    public static OptionItem TrapTrapsterBody;
+    public static OptionItem TrapConsecutiveTrapsterBodies;
+    //public static OptionItem TrapOnlyWorksOnTheBodyBoobyTrap;
+
+    public static OptionItem UnderdogMaximumPlayersNeededToKill;
+    public static OptionItem UnderdogKillCooldown;
+
+    public static OptionItem CleanerKillCooldown;
+    public static OptionItem KillCooldownAfterCleaning;
+
+    public static OptionItem GodfatherChangeOpt;
+
+    public static OptionItem MafiaCanKillNum;
+    public static OptionItem LegacyMafia;
+    public static OptionItem MafiaShapeshiftCD;
+    public static OptionItem MafiaShapeshiftDur;
+
+    public static OptionItem VindicatorAdditionalVote;
+    public static OptionItem VindicatorHideVote;
+
+    public static OptionItem EscapeeSSDuration;
+    public static OptionItem EscapeeSSCD;
+
+    public static OptionItem MinerSSDuration;
+    public static OptionItem MinerSSCD;
+
+    public static OptionItem ScavengerKillCooldown;
+
+    public static OptionItem ShapeMasterShapeshiftDuration;
+
+    public static OptionItem ShapeImperiusCurseShapeshiftDuration;
+    public static OptionItem ImperiusCurseShapeshiftCooldown;
+
+    public static OptionItem WarlockCanKillAllies;
+    public static OptionItem WarlockCanKillSelf;
+    public static OptionItem WarlockShiftDuration;
+
+    // Madmate
+    public static OptionItem CrewpostorCanKillAllies;
+    public static OptionItem CrewpostorKnowsAllies;
+    public static OptionItem AlliesKnowCrewpostor;
+    public static OptionItem CrewpostorLungeKill;
+    public static OptionItem CrewpostorKillAfterTask;
+
+    public static OptionItem ParasiteCD;
+
+
+    // Crewmates role settings
+    public static OptionItem ScientistCD;
+    public static OptionItem ScientistDur;
+
+    public static OptionItem ImpKnowCyberStarDead;
+    public static OptionItem NeutralKnowCyberStarDead;
+
+    public static OptionItem DoctorTaskCompletedBatteryCharge;
+    public static OptionItem DoctorVisibleToEveryone;
+
+    public static OptionItem LuckeyProbability;
+
+    public static OptionItem EveryOneKnowSuperStar;
+
+    public static OptionItem TransporterTeleportMax;
+
+    public static OptionItem BecomeBaitDelayNotify;
+    public static OptionItem BecomeBaitDelayMin;
+    public static OptionItem BecomeBaitDelayMax;
+    public static OptionItem BecomeTrapperBlockMoveTime;
+
+    public static OptionItem DetectiveCanknowKiller;
+
+    public static OptionItem GrenadierSkillCooldown;
+    public static OptionItem GrenadierSkillDuration;
+    public static OptionItem GrenadierCauseVision;
+    public static OptionItem GrenadierCanAffectNeutral;
+    public static OptionItem GrenadierSkillMaxOfUseage;
+    public static OptionItem GrenadierAbilityUseGainWithEachTaskCompleted;
+
+    public static OptionItem LighterVisionNormal;
+    public static OptionItem LighterVisionOnLightsOut;
+    public static OptionItem LighterSkillCooldown;
+    public static OptionItem LighterSkillDuration;
+    public static OptionItem LighterSkillMaxOfUseage;
+    public static OptionItem LighterAbilityUseGainWithEachTaskCompleted;
+
+    public static OptionItem DovesOfNeaceCooldown;
+    public static OptionItem DovesOfNeaceMaxOfUseage;
+    public static OptionItem DovesOfNeaceAbilityUseGainWithEachTaskCompleted;
+
+    //public static OptionItem ParanoiaNumOfUseButton;
+    //public static OptionItem ParanoiaVentCooldown;
+
+    public static OptionItem TimeMasterSkillCooldown;
+    public static OptionItem TimeMasterSkillDuration;
+    public static OptionItem TimeMasterMaxUses;
+    public static OptionItem TimeMasterAbilityUseGainWithEachTaskCompleted;
+
+    public static OptionItem WitnessCD;
+    public static OptionItem WitnessTime;
+
+    public static OptionItem BombsClearAfterMeeting;
+    public static OptionItem BastionBombCooldown;
+    public static OptionItem BastionAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem BastionMaxBombs;
+
+    public static OptionItem BodyguardProtectRadius;
+
+    public static OptionItem GGCanGuessTime;
+    public static OptionItem GGCanGuessCrew;
+    public static OptionItem GGCanGuessAdt;
+    public static OptionItem GGTryHideMsg;
+
+    public static OptionItem RetributionistCanKillNum;
+    public static OptionItem MinimumPlayersAliveToRetri;
+    public static OptionItem CanOnlyRetributeWithTasksDone;
+
+    public static OptionItem VeteranSkillCooldown;
+    public static OptionItem VeteranSkillDuration;
+    public static OptionItem VeteranSkillMaxOfUseage;
+    public static OptionItem VeteranAbilityUseGainWithEachTaskCompleted;
+
+    public static OptionItem VigilanteKillCooldown;
+
+    public static OptionItem MayorAdditionalVote;
+    public static OptionItem MayorHasPortableButton;
+    public static OptionItem MayorNumOfUseButton;
+    public static OptionItem MayorHideVote;
+    public static OptionItem MayorRevealWhenDoneTasks;
+
+
+    // Neutrals role settings
+    public static OptionItem OppoImmuneToAttacksWhenTasksDone;
+
+    public static OptionItem VoodooCooldown;
+
+    public static OptionItem InnocentCanWinByImp;
+
+    public static OptionItem JesterCanUseButton;
+    public static OptionItem JesterHasImpostorVision;
+    public static OptionItem JesterCanVent;
+    public static OptionItem JesterVision;
+    public static OptionItem MeetingsNeededForJesterWin;
+    public static OptionItem HideJesterVote;
+    public static OptionItem SunnyboyChance;
+
+    public static OptionItem MasochistKillMax;
+
+    public static OptionItem PhantomCanVent;
+    public static OptionItem PhantomSnatchesWin;
+    public static OptionItem PhantomCanGuess;
+
+    public static OptionItem ProvKillCD;
+
+    public static OptionItem RevolutionistDrawTime;
+    public static OptionItem RevolutionistCooldown;
+    public static OptionItem RevolutionistDrawCount;
+    public static OptionItem RevolutionistKillProbability;
+    public static OptionItem RevolutionistVentCountDown;
+
+    public static OptionItem CanTerroristSuicideWin;
+    public static OptionItem TerroristCanGuess;
+
+    public static OptionItem MarioVentNumWin;
+    public static OptionItem MarioVentCD;
+
+    public static OptionItem WorkaholicCannotWinAtDeath;
+    public static OptionItem WorkaholicVentCooldown;
+    public static OptionItem WorkaholicVisibleToEveryone;
+    public static OptionItem WorkaholicGiveAdviceAlive;
+    public static OptionItem WorkaholicCanGuess;
+
+    public static OptionItem ArsonistDouseTime;
+    public static OptionItem ArsonistCooldown;
+    //public static OptionItem ArsonistKeepsGameGoing;
+    public static OptionItem ArsonistCanIgniteAnytime;
+    public static OptionItem ArsonistMinPlayersToIgnite;
+    public static OptionItem ArsonistMaxPlayersToIgnite;
+
+
+    // Add-Ons settings
+    public static OptionItem ImpCanBeAutopsy;
+    public static OptionItem CrewCanBeAutopsy;
+    public static OptionItem NeutralCanBeAutopsy;
+
+    public static OptionItem ImpCanBeBait;
+    public static OptionItem CrewCanBeBait;
+    public static OptionItem NeutralCanBeBait;
+    public static OptionItem BaitDelayMin;
+    public static OptionItem BaitDelayMax;
+    public static OptionItem BaitDelayNotify;
+    public static OptionItem BaitNotification;
+    public static OptionItem BaitCanBeReportedUnderAllConditions;
+
+    public static OptionItem ImpCanBeTrapper;
+    public static OptionItem CrewCanBeTrapper;
+    public static OptionItem NeutralCanBeTrapper;
+    public static OptionItem TrapperBlockMoveTime;
+
+    public static OptionItem BewilderVision;
+    public static OptionItem ImpCanBeBewilder;
+    public static OptionItem CrewCanBeBewilder;
+    public static OptionItem NeutralCanBeBewilder;
+    public static OptionItem KillerGetBewilderVision;
+
+    public static OptionItem ImpCanBeBurst;
+    public static OptionItem CrewCanBeBurst;
+    public static OptionItem NeutralCanBeBurst;
+    public static OptionItem BurstKillDelay;
+
+    public static OptionItem ImpCanBeCyber;
+    public static OptionItem CrewCanBeCyber;
+    public static OptionItem NeutralCanBeCyber;
+    public static OptionItem ImpKnowCyberDead;
+    public static OptionItem CrewKnowCyberDead;
+    public static OptionItem NeutralKnowCyberDead;
+    public static OptionItem CyberKnown;
+
+    public static OptionItem ImpCanBeDoubleShot;
+    public static OptionItem CrewCanBeDoubleShot;
+    public static OptionItem NeutralCanBeDoubleShot;
+
+    public static OptionItem TasklessCrewCanBeLazy;
+    public static OptionItem TaskBasedCrewCanBeLazy;
+
+    public static OptionItem ImpCanBeLoyal;
+    public static OptionItem CrewCanBeLoyal;
+
+    public static OptionItem LuckyProbability;
+    public static OptionItem ImpCanBeLucky;
+    public static OptionItem CrewCanBeLucky;
+    public static OptionItem NeutralCanBeLucky;
+
+    public static OptionItem ImpCanBeNecroview;
+    public static OptionItem CrewCanBeNecroview;
+    public static OptionItem NeutralCanBeNecroview;
+
+    //public static OptionItem NeutralCanBeNimble;
+    //public static OptionItem CrewCanBeNimble;
+
+    public static OptionItem OverclockedReduction;
+
+    public static OptionItem ImpCanBeSeer;
+    public static OptionItem CrewCanBeSeer;
+    public static OptionItem NeutralCanBeSeer;
+
+    public static OptionItem ImpCanBeSleuth;
+    public static OptionItem CrewCanBeSleuth;
+    public static OptionItem NeutralCanBeSleuth;
+    public static OptionItem SleuthCanKnowKillerRole;
+
+    public static OptionItem ImpCanBeTiebreaker;
+    public static OptionItem CrewCanBeTiebreaker;
+    public static OptionItem NeutralCanBeTiebreaker;
+
+    public static OptionItem TorchVision;
+    public static OptionItem TorchAffectedByLights;
+
+    public static OptionItem ImpCanBeWatcher;
+    public static OptionItem CrewCanBeWatcher;
+    public static OptionItem NeutralCanBeWatcher;
+    //public static OptionItem EvilWatcherChance;
+
+    public static OptionItem ImpCanBeUnreportable;
+    public static OptionItem CrewCanBeUnreportable;
+    public static OptionItem NeutralCanBeUnreportable;
+
+    public static OptionItem ImpCanBeFragile;
+    public static OptionItem CrewCanBeFragile;
+    public static OptionItem NeutralCanBeFragile;
+    public static OptionItem ImpCanKillFragile;
+    public static OptionItem CrewCanKillFragile;
+    public static OptionItem NeutralCanKillFragile;
+    public static OptionItem FragileKillerLunge;
+
+    public static OptionItem ImpCanBeOblivious;
+    public static OptionItem CrewCanBeOblivious;
+    public static OptionItem NeutralCanBeOblivious;
+    public static OptionItem ObliviousBaitImmune;
+
+    public static OptionItem RascalAppearAsMadmate;
+
+    //public static OptionItem SunglassesVision;
+    //public static OptionItem ImpCanBeSunglasses;
+    //public static OptionItem CrewCanBeSunglasses;
+    //public static OptionItem NeutralCanBeSunglasses;
+
+    public static OptionItem UnluckyTaskSuicideChance;
+    public static OptionItem UnluckyKillSuicideChance;
+    public static OptionItem UnluckyVentSuicideChance;
+    public static OptionItem UnluckyReportSuicideChance;
+    public static OptionItem UnluckySabotageSuicideChance;
+    public static OptionItem ImpCanBeUnlucky;
+    public static OptionItem CrewCanBeUnlucky;
+    public static OptionItem NeutralCanBeUnlucky;
+
+    public static OptionItem ImpCanBeVoidBallot;
+    public static OptionItem CrewCanBeVoidBallot;
+    public static OptionItem NeutralCanBeVoidBallot;
+
+    public static OptionItem ImpCanBeAntidote;
+    public static OptionItem CrewCanBeAntidote;
+    public static OptionItem NeutralCanBeAntidote;
+    public static OptionItem AntidoteCDOpt;
+    public static OptionItem AntidoteCDReset;
+
+    public static OptionItem ImpCanBeAvanger;
+    public static OptionItem CrewCanBeAvanger;
+    public static OptionItem NeutralCanBeAvanger;
+
+    public static OptionItem ImpCanBeAware;
+    public static OptionItem CrewCanBeAware;
+    public static OptionItem NeutralCanBeAware;
+    public static OptionItem AwareknowRole;
+
+    public static OptionItem ImpCanBeDiseased;
+    public static OptionItem CrewCanBeDiseased;
+    public static OptionItem NeutralCanBeDiseased;
+    public static OptionItem DiseasedCDOpt;
+    public static OptionItem DiseasedCDReset;
+
+    //public static OptionItem ImpCanBeGlow;
+    //public static OptionItem CrewCanBeGlow;
+    //public static OptionItem NeutralCanBeGlow;
+    //public static OptionItem GlowVision;
+
+    public static OptionItem ImpCanBeGravestone;
+    public static OptionItem CrewCanBeGravestone;
+    public static OptionItem NeutralCanBeGravestone;
+
+    public static OptionItem ImpCanBeGuesser;
+    public static OptionItem CrewCanBeGuesser;
+    public static OptionItem NeutralCanBeGuesser;
+    public static OptionItem GCanGuessAdt;
+    public static OptionItem GCanGuessTaskDoneSnitch;
+    public static OptionItem GTryHideMsg;
+
+    public static OptionItem ImpCanBeRebound;
+    public static OptionItem CrewCanBeRebound;
+    public static OptionItem NeutralCanBeRebound;
+
+    public static OptionItem ImpCanBeDualPersonality;
+    public static OptionItem CrewCanBeDualPersonality;
+    public static OptionItem DualVotes;
+    //public static OptionItem HideDualVotes;
+
+    public static OptionItem ImpCanBeStubborn;
+    public static OptionItem CrewCanBeStubborn;
+    public static OptionItem NeutralCanBeStubborn;
+
+    public static OptionItem ChanceToMiss;
+
+    public static OptionItem MadmateSpawnMode;
+    public static OptionItem MadmateCountMode;
+    public static OptionItem SheriffCanBeMadmate;
+    public static OptionItem MayorCanBeMadmate;
+    public static OptionItem NGuesserCanBeMadmate;
+    public static OptionItem MarshallCanBeMadmate;
+    public static OptionItem FarseerCanBeMadmate;
+    public static OptionItem RetributionistCanBeMadmate;
+    public static OptionItem SnitchCanBeMadmate;
+    public static OptionItem MadSnitchTasks;
+    public static OptionItem JudgeCanBeMadmate;
+
+    public static OptionItem MimicCanSeeDeadRoles;
+
+    public static OptionItem TicketsPerKill;
+
+    public static OptionItem CrewCanBeEgoist;
+    public static OptionItem ImpCanBeEgoist;
+    public static OptionItem ImpEgoistVisibalToAllies;
+    public static OptionItem EgoistCountAsConverted;
+
+    public static OptionItem LoverSpawnChances;
+    public static OptionItem LoverKnowRoles;
+    public static OptionItem LoverSuicide;
+    public static OptionItem ImpCanBeInLove;
+    public static OptionItem CrewCanBeInLove;
+    public static OptionItem NeutralCanBeInLove;
+
+    // Experimental Roles
+    public static OptionItem MNKillCooldown;
+
+    public static OptionItem ZombieKillCooldown;
+    public static OptionItem ZombieSpeedReduce;
+
+    //public static OptionItem CapitalismSkillCooldown;
+
+    //public static OptionItem SpeedBoosterUpSpeed;
+    //public static OptionItem SpeedBoosterTimes;
+
+    public static OptionItem NotifyGodAlive;
+    public static OptionItem GodCanGuess;
+
+    public static OptionItem ImpCanBeFool;
+    public static OptionItem CrewCanBeFool;
+    public static OptionItem NeutralCanBeFool;
+
+
+    public static VoteMode GetWhenSkipVote() => (VoteMode)WhenSkipVote.GetValue();
+    public static VoteMode GetWhenNonVote() => (VoteMode)WhenNonVote.GetValue();
+
     public static readonly string[] voteModes =
     {
         "Default", "Suicide", "SelfVote", "Skip"
@@ -798,157 +947,6 @@ public static class Options
         "SidekickCountMode.None",
         "SidekickCountMode.Original",
     };
-    public static VoteMode GetWhenSkipVote() => (VoteMode)WhenSkipVote.GetValue();
-    public static VoteMode GetWhenNonVote() => (VoteMode)WhenNonVote.GetValue();
-
-    // ボタン回数
-    public static OptionItem SyncButtonMode;
-    public static OptionItem SyncedButtonCount;
-    public static int UsedButtonCount = 0;
-
-    // 全員生存時の会議時間
-    public static OptionItem AllAliveMeeting;
-    public static OptionItem AllAliveMeetingTime;
-
-    // 追加の緊急ボタンクールダウン
-    public static OptionItem AdditionalEmergencyCooldown;
-    public static OptionItem AdditionalEmergencyCooldownThreshold;
-    public static OptionItem AdditionalEmergencyCooldownTime;
-
-    //転落死
-    public static OptionItem LadderDeath;
-    public static OptionItem LadderDeathChance;
-
-    // タスク上書き
-    public static OverrideTasksData TerroristTasks;
-    public static OverrideTasksData TransporterTasks;
-    public static OverrideTasksData WorkaholicTasks;
-    public static OverrideTasksData CrewpostorTasks;
-    public static OverrideTasksData PhantomTasks;
-    public static OverrideTasksData GuardianTasks;
-    public static OverrideTasksData OpportunistTasks;
-    public static OverrideTasksData MayorTasks;
-    public static OverrideTasksData RetributionistTasks;
-    public static OverrideTasksData TimeManagerTasks;
-
-    // その他
-    public static OptionItem FixFirstKillCooldown;
-    public static OptionItem FixKillCooldownValue;
-    public static OptionItem ShieldPersonDiedFirst;
-    public static OptionItem GhostCanSeeOtherRoles;
-    public static OptionItem GhostCanSeeOtherVotes;
-    public static OptionItem GhostCanSeeDeathReason;
-    public static OptionItem GhostIgnoreTasks;
-    public static OptionItem KPDCamouflageMode;
-
-    // Guess Restrictions //
-    public static OptionItem TerroristCanGuess;
-    public static OptionItem WorkaholicCanGuess;
-    public static OptionItem PhantomCanGuess;
-    public static OptionItem GodCanGuess;
-
-    // プリセット対象外
-    public static OptionItem AllowConsole;
-    public static OptionItem NoGameEnd;
-    public static OptionItem AutoDisplayLastRoles;
-    public static OptionItem AutoDisplayKillLog;
-    public static OptionItem AutoDisplayLastResult;
-    public static OptionItem HideExileChat;
-    public static OptionItem SuffixMode;
-    public static OptionItem HideHostText;
-    public static OptionItem HideGameSettings;
-    public static OptionItem FormatNameMode;
-    public static OptionItem ColorNameMode;
-    public static OptionItem DisableEmojiName;
-    public static OptionItem ChangeNameToRoleInfo;
-    public static OptionItem SendRoleDescriptionFirstMeeting;
-    public static OptionItem RoleAssigningAlgorithm;
-    public static OptionItem EndWhenPlayerBug;
-    public static OptionItem RemovePetsAtDeadPlayers;
-
-    public static OptionItem EnableUpMode;
-    public static OptionItem AutoKickStart;
-    public static OptionItem AutoKickStartAsBan;
-    public static OptionItem AutoKickStartTimes;
-    public static OptionItem AutoKickStopWords;
-    public static OptionItem AutoKickStopWordsAsBan;
-    public static OptionItem AutoKickStopWordsTimes;
-    public static OptionItem KickOtherPlatformPlayer;
-    public static OptionItem OptKickAndroidPlayer;
-    public static OptionItem OptKickIphonePlayer;
-    public static OptionItem OptKickXboxPlayer;
-    public static OptionItem OptKickPlayStationPlayer;
-    public static OptionItem OptKickNintendoPlayer;
-    public static OptionItem ApplyDenyNameList;
-    public static OptionItem KickPlayerFriendCodeNotExist;
-    public static OptionItem TempBanPlayerFriendCodeNotExist;
-
-    public static OptionItem KickLowLevelPlayer;
-    public static OptionItem TempBanLowLevelPlayer;
-    public static OptionItem ApplyBanList;
-    public static OptionItem ApplyModeratorList;
-    public static OptionItem ApplyVipList;
-    public static OptionItem ApplyAllowList;
-    public static OptionItem AutoWarnStopWords;
-
-    public static OptionItem TempBanPlayersWhoKeepQuitting;
-    public static OptionItem QuitTimesTillTempBan;
-
-    public static OptionItem MinWaitAutoStart;
-    public static OptionItem MaxWaitAutoStart;
-    public static OptionItem PlayerAutoStart;
-    public static OptionItem AutoStartTimer;
-
-    public static OptionItem AutoPlayAgain;
-    public static OptionItem AutoPlayAgainCountdown;
-    //public static OptionItem ShowLobbyCode;
-
-    public static OptionItem AllowSayCommand;
-    public static OptionItem ApplyReminderMsg;
-    public static OptionItem TimeForReminder;
-
-    public static OptionItem PlayerCanSetColor;
-    public static OptionItem PlayerCanUseQuitCommand;
-
-    //Add-Ons
-    public static OptionItem NameDisplayAddons;
-    public static OptionItem AddBracketsToAddons;
-    public static OptionItem NoLimitAddonsNumMax;
-    public static OptionItem BewilderVision;
-    public static OptionItem JesterHasImpostorVision;
-    public static OptionItem SunglassesVision;
-    public static OptionItem ImpCanBeAvanger;
-    public static OptionItem CrewCanBeAvanger;
-    public static OptionItem NeutralCanBeAvanger;
-    public static OptionItem MadmateSpawnMode;
-    public static OptionItem MadmateCountMode;
-    public static OptionItem SheriffCanBeMadmate;
-    public static OptionItem MayorCanBeMadmate;
-    public static OptionItem NGuesserCanBeMadmate;
-    public static OptionItem SnitchCanBeMadmate;
-    public static OptionItem JudgeCanBeMadmate;
-    public static OptionItem MarshallCanBeMadmate;
-    public static OptionItem RetributionistCanBeMadmate;
-    public static OptionItem FarseerCanBeMadmate;
-    public static OptionItem MadSnitchTasks;
-    public static OptionItem ButtonBarryButtons;
-    public static OptionItem LoverSpawnChances;
-    public static OptionItem LoverKnowRoles;
-    public static OptionItem LoverSuicide;
-    public static OptionItem ImpCanBeEgoist;
-    public static OptionItem ImpEgoistVisibalToAllies;
-    public static OptionItem CrewCanBeEgoist;
-    public static OptionItem EgoistCountAsConverted;
-    public static OptionItem TicketsPerKill;
-    public static OptionItem ImpCanBeDualPersonality;
-    public static OptionItem CrewCanBeDualPersonality;
-    public static OptionItem DualVotes;
-    public static OptionItem HideDualVotes;
-    public static OptionItem ImpCanBeLoyal;
-    public static OptionItem CrewCanBeLoyal;
-    //public static OptionItem SidekickCountMode;
-    public static OptionItem GodfatherChangeOpt;
-
     public static readonly string[] GodfatherChangeMode =
     {
         "GodfatherCount.Refugee",
@@ -980,6 +978,55 @@ public static class Options
         "FormatNameModes.Snacks",
     };
     public static SuffixModes GetSuffixMode() => (SuffixModes)SuffixMode.GetValue();
+
+
+    // Options not using
+    /*public static OptionItem ButtonBarryButtons;
+      public static OptionItem GlitchCanVote;
+      public static OptionItem JackalWinWithSidekick;
+      public static OptionItem FlashWhenTrapBoobyTrap;
+      public static OptionItem CrewmateCanBeSidekick;
+      public static OptionItem NeutralCanBeSidekick;
+      public static OptionItem ImpostorCanBeSidekick;
+      public static OptionItem ImpCanBeReflective;
+      public static OptionItem CrewCanBeReflective;
+      public static OptionItem NeutralCanBeReflective;
+      public static OptionItem ImpCanBeRogue;
+      public static OptionItem CrewCanBeRogue;
+      public static OptionItem NeutralCanBeRogue;
+      public static OptionItem RogueKnowEachOther;
+      public static OptionItem RogueKnowEachOtherRoles;
+      public static OptionItem ControlCooldown;
+      public static OptionItem LawyerVision;
+      public static OptionItem BardChance;
+      public static OptionItem BaitCanBeSold;
+      public static OptionItem WatcherCanBeSold;
+      public static OptionItem SeerCanBeSold;
+      public static OptionItem TrapperCanBeSold;
+      public static OptionItem TiebreakerCanBeSold;
+      public static OptionItem KnightedCanBeSold;
+      public static OptionItem NecroviewCanBeSold;
+      public static OptionItem SoullessCanBeSold;
+      public static OptionItem SchizoCanBeSold;
+      public static OptionItem OnboundCanBeSold;
+      public static OptionItem GuesserCanBeSold;
+      public static OptionItem UnreportableCanBeSold;
+      public static OptionItem LuckyCanBeSold;
+      public static OptionItem ObliviousCanBeSold;
+      public static OptionItem BewilderCanBeSold; */
+
+    // Override Tasks
+    public static OverrideTasksData TerroristTasks;
+    public static OverrideTasksData TransporterTasks;
+    public static OverrideTasksData WorkaholicTasks;
+    public static OverrideTasksData CrewpostorTasks;
+    public static OverrideTasksData PhantomTasks;
+    public static OverrideTasksData GuardianTasks;
+    public static OverrideTasksData OpportunistTasks;
+    public static OverrideTasksData MayorTasks;
+    public static OverrideTasksData RetributionistTasks;
+    public static OverrideTasksData TimeManagerTasks;
+
 
     public static int SnitchExposeTaskLeft = 1;
 
@@ -1038,6 +1085,7 @@ public static class Options
         // 27100 lasted id for roles/add-ons (Next use 27200)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
+
         // Start Load Settings
         if (IsLoaded) return;
         OptionSaver.Initialize();
@@ -1051,6 +1099,7 @@ public static class Options
         // Game Mode
         GameMode = StringOptionItem.Create(60000, "GameMode", gameModes, 0, TabGroup.GameSettings, false)
             .SetHeader(true);
+
 
         #region Roles/Add-ons Settings
         CustomRoleCounts = new();
@@ -1116,7 +1165,7 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true);
         NeutralWinTogether = BooleanOptionItem.Create(60018, "NeutralWinTogether", false, TabGroup.NeutralRoles, false)
-        .SetParent(NeutralRoleWinTogether)
+            .SetParent(NeutralRoleWinTogether)
             .SetGameMode(CustomGameMode.Standard);
 
         NameDisplayAddons = BooleanOptionItem.Create(60019, "NameDisplayAddons", true, TabGroup.Addons, false)
@@ -1126,9 +1175,9 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard);
         AddBracketsToAddons = BooleanOptionItem.Create(60021, "BracketAddons", false, TabGroup.Addons, false)
             .SetGameMode(CustomGameMode.Standard);
+        #endregion
 
-        //==================================================================================================================================//
-
+        #region Impostors Settings
         // Impostor
         TextOptionItem.Create(10000000, "RoleType.VanillaRoles", TabGroup.ImpostorRoles) // Vanilla
             .SetGameMode(CustomGameMode.Standard)
@@ -1616,8 +1665,9 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.Parasite])
             .SetValueFormat(OptionFormat.Seconds);
 
-        //==================================================================================================================================//
+        #endregion
 
+        #region Crewmates Settings
         /*
          * VANILLA ROLES
          */
@@ -1906,12 +1956,12 @@ public static class Options
             .SetValueFormat(OptionFormat.Times);
 
         /*SetupRoleOptions(9300, TabGroup.CrewmateRoles, CustomRoles.Paranoia);
-    ParanoiaNumOfUseButton = IntegerOptionItem.Create(9302, "ParanoiaNumOfUseButton", new(1, 20, 1), 3, TabGroup.CrewmateRoles, false)
-        .SetParent(CustomRoleSpawnChances[CustomRoles.Paranoia])
-        .SetValueFormat(OptionFormat.Times);
-    ParanoiaVentCooldown = FloatOptionItem.Create(9303, "ParanoiaVentCooldown", new(0, 180, 1), 10, TabGroup.CrewmateRoles, false)
-        .SetParent(CustomRoleSpawnChances[CustomRoles.Paranoia])
-        .SetValueFormat(OptionFormat.Seconds); */
+        ParanoiaNumOfUseButton = IntegerOptionItem.Create(9302, "ParanoiaNumOfUseButton", new(1, 20, 1), 3, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Paranoia])
+            .SetValueFormat(OptionFormat.Times);
+        ParanoiaVentCooldown = FloatOptionItem.Create(9303, "ParanoiaVentCooldown", new(0, 180, 1), 10, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Paranoia])
+            .SetValueFormat(OptionFormat.Seconds); */
 
         /*
          * Psychic
@@ -2030,17 +2080,17 @@ public static class Options
         
         Sheriff.SetupCustomOption();
         
-        SetupRoleOptions(11300, TabGroup.CrewmateRoles, CustomRoles.Veteran);
-        VeteranSkillCooldown = FloatOptionItem.Create(11302, "VeteranSkillCooldown", new(1f, 180f, 1f), 20f, TabGroup.CrewmateRoles, false)
+        SetupRoleOptions(11350, TabGroup.CrewmateRoles, CustomRoles.Veteran);
+        VeteranSkillCooldown = FloatOptionItem.Create(11358, "VeteranSkillCooldown", new(1f, 180f, 1f), 20f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Veteran])
             .SetValueFormat(OptionFormat.Seconds);
-        VeteranSkillDuration = FloatOptionItem.Create(11303, "VeteranSkillDuration", new(1f, 180f, 1f), 20f, TabGroup.CrewmateRoles, false)
+        VeteranSkillDuration = FloatOptionItem.Create(11359, "VeteranSkillDuration", new(1f, 180f, 1f), 20f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Veteran])
             .SetValueFormat(OptionFormat.Seconds);
-        VeteranSkillMaxOfUseage = IntegerOptionItem.Create(11304, "VeteranSkillMaxOfUseage", new(0, 20, 1), 10, TabGroup.CrewmateRoles, false)
+        VeteranSkillMaxOfUseage = IntegerOptionItem.Create(11360, "VeteranSkillMaxOfUseage", new(0, 20, 1), 10, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Veteran])
             .SetValueFormat(OptionFormat.Times);
-        VeteranAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(11305, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
+        VeteranAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(11361, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Veteran])
             .SetValueFormat(OptionFormat.Times);
 
@@ -2093,6 +2143,9 @@ public static class Options
 
         //ChiefOfPolice.SetupCustomOption();
 
+        #endregion
+
+        #region Neutrals Settings
         // Neutral
         TextOptionItem.Create(10000011, "RoleType.NeutralBenign", TabGroup.NeutralRoles)
             .SetGameMode(CustomGameMode.Standard)
@@ -2128,10 +2181,6 @@ public static class Options
 
         NWitch.SetupCustomOption();
 
-        /*  SetupSingleRoleOptions(13900, TabGroup.NeutralRoles, CustomRoles.NWitch, 1, zeroOne: false);
-          ControlCooldown = FloatOptionItem.Create(13902, "ControlCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false)
-          .SetParent(CustomRoleSpawnChances[CustomRoles.NWitch])
-              .SetValueFormat(OptionFormat.Seconds); */
 
         TextOptionItem.Create(10000012, "RoleType.NeutralEvil", TabGroup.NeutralRoles)
             .SetGameMode(CustomGameMode.Standard)
@@ -2320,7 +2369,9 @@ public static class Options
 
         Wraith.SetupCustomOption();
 
+        #endregion
 
+        #region Add-Ons Settings
         // Add-Ons 
         TextOptionItem.Create(10000015, "RoleType.Helpful", TabGroup.Addons) // HELPFUL
             .SetGameMode(CustomGameMode.Standard)
@@ -2646,7 +2697,7 @@ public static class Options
         
         SetupAdtRoleOptions(21900, CustomRoles.Ghoul, canSetNum: true);
 
-        //BYE GLOW, SEE YOU NEVER
+        //BYE GLOW, SEE YOU NEVER - LOOOOOL
         // SetupAdtRoleOptions(22000, CustomRoles.Glow, canSetNum: true);
         //ImpCanBeGlow = BooleanOptionItem.Create(22003, "ImpCanBeGlow", true, TabGroup.Addons, false)
         //.SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
@@ -2761,10 +2812,6 @@ public static class Options
          * Mare
          */
         Mare.SetupCustomOption();
-        //SetupAdtRoleOptions(23000, CustomRoles.Mare, canSetNum: true, tab: TabGroup.Addons);
-        //MareKillCD = FloatOptionItem.Create(23003, "KillCooldown", new(0f, 60f, 1f), 10f, TabGroup.Addons, false)
-        //    .SetParent(CustomRoleSpawnChances[CustomRoles.Mare])
-        //    .SetValueFormat(OptionFormat.Seconds);
 
         /*
          * Mimic
@@ -2802,8 +2849,9 @@ public static class Options
         
         Workhorse.SetupCustomOption();
 
+        #endregion
 
-        // 内鬼
+        #region Experimental Roles/Add-ons Settings
         TextOptionItem.Create(10000020, "OtherRoles.ImpostorRoles", TabGroup.OtherRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(247, 70, 49, byte.MaxValue));
@@ -2895,6 +2943,7 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.Fool]);
 
         Oiiai.SetupCustomOptions();
+
         #endregion
 
         #region System Settings
@@ -2983,8 +3032,7 @@ public static class Options
 
         CheatResponses = StringOptionItem.Create(60250, "CheatResponses", CheatResponsesName, 0, TabGroup.SystemSettings, false)
             .SetHeader(true);
-        //HighLevelAntiCheat = StringOptionItem.Create(60260, "HighLevelAntiCheat", CheatResponsesName, 0, TabGroup.SystemSettings, false)
-        //.SetHeader(true);
+
         AutoDisplayKillLog = BooleanOptionItem.Create(60270, "AutoDisplayKillLog", true, TabGroup.SystemSettings, false)
             .SetHeader(true)
             .HideInHnS();
@@ -3024,6 +3072,7 @@ public static class Options
             .SetColor(Color.cyan)
             .SetHeader(true);
         #endregion 
+
         #region Game Settings
         //FFA
         FFAManager.SetupCustomOption();
@@ -3067,6 +3116,7 @@ public static class Options
         ConfirmLoversOnEject = BooleanOptionItem.Create(60445, "ConfirmLoversOnEject", true, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue));
+
         //Maps Settings
         TextOptionItem.Create(10000025, "MenuTitle.MapsSettings", TabGroup.GameSettings)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
@@ -3572,6 +3622,7 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(Color.yellow)
             .SetHeader(true);
+
         SetupAdtRoleOptions(25800, CustomRoles.Onbound, canSetNum: true, tab: TabGroup.TaskSettings);
         ImpCanBeOnbound = BooleanOptionItem.Create(25803, "ImpCanBeOnbound", true, TabGroup.TaskSettings, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Onbound]);
@@ -3737,7 +3788,7 @@ public static class Options
 
 
         var countOption = IntegerOptionItem.Create(id + 1, "NumberOfLovers", new(2, 2, 1), 2, TabGroup.Addons, false)
-        .SetParent(spawnOption)
+            .SetParent(spawnOption)
             .SetHidden(true)
             .SetGameMode(customGameMode);
 

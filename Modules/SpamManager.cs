@@ -114,7 +114,7 @@ public static class SpamManager
                     Utils.SendMessage(msg, pc.PlayerId);
             }
         }
-        if (kick) AmongUsClient.Instance.KickPlayer(player.GetClientId(), Options.AutoKickStopWordsAsBan.GetBool());
+        if (kick) AmongUsClient.Instance.KickPlayer(player.GetClientId(), Options.AutoKickStartAsBan.GetBool());
         return true;
     }
     private static bool ContainsStart(string text)

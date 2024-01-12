@@ -1636,10 +1636,10 @@ static class CustomRolesHelper
                     return false;
                 break;
 
-            case CustomRoles.Rogue:
-                if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeRogue.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeRogue.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeRogue.GetBool()))
-                    return false;
-                break;
+            //case CustomRoles.Rogue:
+            //    if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeRogue.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeRogue.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeRogue.GetBool()))
+            //        return false;
+            //    break;
 
             case CustomRoles.Flash:
                 if (pc.Is(CustomRoles.Swooper) || pc.Is(CustomRoles.Solsticer))

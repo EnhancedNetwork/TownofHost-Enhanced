@@ -454,8 +454,8 @@ public class TaskState
 
         if (AmongUsClient.Instance.AmHost)
         {
-            if (player.Is(CustomRoles.Captain)) Captain.OnTaskComplete(player);
             //FIXME:SpeedBooster class transplant
+            /*
             if (player.IsAlive()
             && player.Is(CustomRoles.SpeedBooster)
             && ((CompletedTasksCount + 1) <= Options.SpeedBoosterTimes.GetInt()))
@@ -465,6 +465,7 @@ public class TaskState
                 if (Main.AllPlayerSpeed[player.PlayerId] > 3) player.Notify(Translator.GetString("SpeedBoosterSpeedLimit"));
                 else player.Notify(string.Format(Translator.GetString("SpeedBoosterTaskDone"), Main.AllPlayerSpeed[player.PlayerId].ToString("0.0#####")));
             }
+            */
 
             /*
             //叛徒修理搞破坏
@@ -497,6 +498,9 @@ public class TaskState
                 }
             }
             */
+
+            if (player.Is(CustomRoles.Captain))
+                Captain.OnTaskComplete(player);
 
             //传送师完成任务
             if (player.IsAlive()
