@@ -1412,10 +1412,10 @@ class MurderPlayerPatch
                 delay = Math.Max(delay, 0.15f);
                 if (delay > 0.15f && Options.BaitDelayNotify.GetBool()) killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), string.Format(GetString("KillBaitNotify"), (int)delay)), delay);
                 Logger.Info($"{killer.GetNameWithRole()} 击杀诱饵 => {target.GetNameWithRole()}", "MurderPlayer");
-                _ = new LateTask(() => { if (GameStates.IsInTask) killer.CmdReportDeadBody(target.Data); }, delay, "Bait Self Report");
+                _ = new LateTask(() => { if (GameStates.IsInTask && GameStates.IsInGame) killer.CmdReportDeadBody(target.Data); }, delay, "Bait Self Report");
             }
         }
-        if (target.Is(CustomRoles.Burst) && !killer.Data.IsDead)
+        if (target.Is(CustomRoles.Burst) && killer.IsAlive())
         {
             target.SetRealKiller(killer);
             Main.BurstBodies.Add(target.PlayerId);
@@ -1424,13 +1424,13 @@ class MurderPlayerPatch
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Burst), GetString("BurstNotify")));
                 _ = new LateTask(() =>
                 {
-                    if (!killer.inVent && !killer.Data.IsDead && !GameStates.IsMeeting)
+                    if (!killer.inVent && killer.IsAlive() && !GameStates.IsMeeting && GameStates.IsInGame)
                     {
                         Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
                         target.RpcMurderPlayerV3(killer);
                         killer.SetRealKiller(target);
                     }
-                    else
+                    else if (GameStates.IsInGame)
                     {
                         RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
                         killer.SetKillCooldown(time: Main.AllPlayerKillCooldown[killer.PlayerId] - Options.BurstKillDelay.GetFloat(), forceAnime: true);
