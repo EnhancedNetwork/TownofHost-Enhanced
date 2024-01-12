@@ -2080,17 +2080,17 @@ public static class Options
         
         Sheriff.SetupCustomOption();
         
-        SetupRoleOptions(11300, TabGroup.CrewmateRoles, CustomRoles.Veteran);
-        VeteranSkillCooldown = FloatOptionItem.Create(11302, "VeteranSkillCooldown", new(1f, 180f, 1f), 20f, TabGroup.CrewmateRoles, false)
+        SetupRoleOptions(11350, TabGroup.CrewmateRoles, CustomRoles.Veteran);
+        VeteranSkillCooldown = FloatOptionItem.Create(11358, "VeteranSkillCooldown", new(1f, 180f, 1f), 20f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Veteran])
             .SetValueFormat(OptionFormat.Seconds);
-        VeteranSkillDuration = FloatOptionItem.Create(11303, "VeteranSkillDuration", new(1f, 180f, 1f), 20f, TabGroup.CrewmateRoles, false)
+        VeteranSkillDuration = FloatOptionItem.Create(11359, "VeteranSkillDuration", new(1f, 180f, 1f), 20f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Veteran])
             .SetValueFormat(OptionFormat.Seconds);
-        VeteranSkillMaxOfUseage = IntegerOptionItem.Create(11304, "VeteranSkillMaxOfUseage", new(0, 20, 1), 10, TabGroup.CrewmateRoles, false)
+        VeteranSkillMaxOfUseage = IntegerOptionItem.Create(11360, "VeteranSkillMaxOfUseage", new(0, 20, 1), 10, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Veteran])
             .SetValueFormat(OptionFormat.Times);
-        VeteranAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(11305, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
+        VeteranAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(11361, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Veteran])
             .SetValueFormat(OptionFormat.Times);
 
