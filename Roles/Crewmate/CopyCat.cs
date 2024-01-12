@@ -71,7 +71,7 @@ public static class CopyCat
     {
         if (!IsEnable) return;
 
-        foreach (var player in playerIdList)
+        foreach (var player in playerIdList.ToArray())
         {
             var pc = Utils.GetPlayerById(player);
             if (pc == null) continue;

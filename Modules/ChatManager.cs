@@ -272,7 +272,7 @@ namespace TOHE.Modules.ChatManager
                     senderPlayer.Die(DeathReason.Kill, true);
                 }
             }
-            foreach (var playerId in LastSystemChatMsg.Keys)
+            foreach (var playerId in LastSystemChatMsg.Keys.ToArray())
             {
                 var pc = Utils.GetPlayerById(playerId);
                 if (pc == null && playerId != byte.MaxValue) continue;

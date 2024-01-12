@@ -287,7 +287,7 @@ internal class ControllerManagerUpdatePatch
             //完成你的所有任务
             if (GetKeysDown(KeyCode.Return, KeyCode.T, KeyCode.LeftShift) && GameStates.IsInGame)
             {
-                foreach (var task in PlayerControl.LocalPlayer.myTasks)
+                foreach (var task in PlayerControl.LocalPlayer.myTasks.ToArray())
                     PlayerControl.LocalPlayer.RpcCompleteTask(task.Id);
             }
 
