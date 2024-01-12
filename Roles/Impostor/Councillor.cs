@@ -55,7 +55,7 @@ public static class Councillor
     public static void OnReportDeadBody()
     {
         MurderLimit.Clear();
-        foreach (var pc in playerIdList) MurderLimit.Add(pc, MurderLimitPerMeeting.GetInt());
+        foreach (var pc in playerIdList.ToArray()) MurderLimit.Add(pc, MurderLimitPerMeeting.GetInt());
     }
     public static bool MurderMsg(PlayerControl pc, string msg, bool isUI = false)
     {

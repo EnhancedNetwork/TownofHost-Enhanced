@@ -64,7 +64,7 @@ public static class Chronomancer
         if (!IsEnable) return;
 
         long now = Utils.GetTimeStamp();
-        foreach (var playerId in playerIdList)
+        foreach (var playerId in playerIdList.ToArray())
         {
             if (Utils.GetPlayerById(playerId).IsAlive())
             { 

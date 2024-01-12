@@ -522,7 +522,7 @@ class GameEndCheckerForNormal
         writer.StartMessage(1); // Data
         {
             writer.WritePacked(GameData.Instance.NetId); // NetId
-            foreach (var info in GameData.Instance.AllPlayers)
+            foreach (var info in GameData.Instance.AllPlayers.ToArray())
             {
                 if (ReviveRequiredPlayerIds.Contains(info.PlayerId))
                 {

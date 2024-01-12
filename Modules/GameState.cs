@@ -406,7 +406,7 @@ public class PlayerState
     public int GetKillCount(bool ExcludeSelfKill = false)
     {
         int count = 0;
-        foreach (var state in Main.PlayerStates.Values)
+        foreach (var state in Main.PlayerStates.Values.ToArray())
             if (!(ExcludeSelfKill && state.PlayerId == PlayerId) && state.GetRealKiller() == PlayerId)
                 count++;
         return count;

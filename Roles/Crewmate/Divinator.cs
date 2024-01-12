@@ -1,5 +1,6 @@
 using Hazel;
 using System.Collections.Generic;
+using System.Linq;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -547,7 +548,7 @@ public static class Divinator
     public static void OnReportDeadBody()
     {
         didVote.Clear();
-        foreach (var divinatorId in CheckLimit.Keys)
+        foreach (var divinatorId in CheckLimit.Keys.ToArray())
         {
             TempCheckLimit[divinatorId] = CheckLimit[divinatorId];
             SendRPC(divinatorId, isTemp: true);
