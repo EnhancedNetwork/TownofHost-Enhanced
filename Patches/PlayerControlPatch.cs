@@ -3529,12 +3529,12 @@ class EnterVentPatch
                 pc?.NoCheckStartMeeting(pc?.Data);
             }
         }
-        /*  if (pc.Is(CustomRoles.Wraith)) // THIS WAS FOR WEREWOLF TESTING PURPOSES, PLEASE IGNORE
-          {
-              pc?.MyPhysics?.RpcBootFromVent(__instance.Id);            
-          } */
+     /* if (pc.Is(CustomRoles.Wraith)) // THIS WAS FOR WEREWOLF TESTING PURPOSES, PLEASE IGNORE
+        {
+            pc?.MyPhysics?.RpcBootFromVent(__instance.Id);            
+        } */
 
-        else if (pc.Is(CustomRoles.Paranoia))
+     /* else if (pc.Is(CustomRoles.Paranoia))
         {
             if (Main.ParaUsedButtonCount.TryGetValue(pc.PlayerId, out var count) && count < Options.ParanoiaNumOfUseButton.GetInt())
             {
@@ -3549,7 +3549,7 @@ class EnterVentPatch
                 pc?.MyPhysics?.RpcBootFromVent(__instance.Id);
                 pc?.NoCheckStartMeeting(pc?.Data);
             }
-        }
+        } */
 
         else if (pc.Is(CustomRoles.Mario))
         {
@@ -3858,7 +3858,7 @@ class CoEnterVentPatch
             (__instance.myPlayer.Data.Role.Role != RoleTypes.Engineer
                 && !__instance.myPlayer.CanUseImpostorVentButton())
             || (__instance.myPlayer.Is(CustomRoles.Mayor) && Main.MayorUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count) && count >= Options.MayorNumOfUseButton.GetInt())
-            || (__instance.myPlayer.Is(CustomRoles.Paranoia) && Main.ParaUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count2) && count2 >= Options.ParanoiaNumOfUseButton.GetInt())
+          //|| (__instance.myPlayer.Is(CustomRoles.Paranoia) && Main.ParaUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count2) && count2 >= Options.ParanoiaNumOfUseButton.GetInt())
             || (__instance.myPlayer.Is(CustomRoles.Veteran) && Main.VeteranNumOfUsed.TryGetValue(__instance.myPlayer.PlayerId, out var count3) && count3 < 1)
             || (__instance.myPlayer.Is(CustomRoles.DovesOfNeace) && Main.DovesOfNeaceNumOfUsed.TryGetValue(__instance.myPlayer.PlayerId, out var count4) && count4 < 1)
         )
