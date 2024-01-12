@@ -127,11 +127,11 @@ public static class RiftMaker
         Vector2 position = player.GetCustomPosition();
         Vector2 TPto = MarkedLocation[playerId][0];
 
-        if (Vector2.Distance(position, MarkedLocation[playerId][0]) <= 1f)
+        if (position == MarkedLocation[playerId][0])
         {
             TPto = MarkedLocation[playerId][1];
         }
-        else if (Vector2.Distance(position, MarkedLocation[playerId][1]) <= 1f)
+        else if (position == MarkedLocation[playerId][1])
         {
             TPto = MarkedLocation[playerId][0];
         }
