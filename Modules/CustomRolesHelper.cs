@@ -82,7 +82,7 @@ static class CustomRolesHelper
                 CustomRoles.Hacker => CustomRoles.Shapeshifter,
                 CustomRoles.Visionary => CustomRoles.Impostor,
                 CustomRoles.Assassin => CustomRoles.Shapeshifter,
-                CustomRoles.Luckey => CustomRoles.Crewmate,
+            //    CustomRoles.Luckey => CustomRoles.Crewmate,
                 CustomRoles.CyberStar => CustomRoles.Crewmate,
                 CustomRoles.TaskManager => CustomRoles.Crewmate,
                 CustomRoles.Escapee => CustomRoles.Shapeshifter,
@@ -1266,7 +1266,7 @@ static class CustomRolesHelper
 
             case CustomRoles.Fragile:
                 if (pc.Is(CustomRoles.Lucky)
-                    || pc.Is(CustomRoles.Luckey)
+                  //  || pc.Is(CustomRoles.Luckey)
                     || pc.Is(CustomRoles.Guardian)
                     || pc.Is(CustomRoles.Medic)
                     || pc.Is(CustomRoles.Bomber)
@@ -1354,7 +1354,7 @@ static class CustomRolesHelper
 
             case CustomRoles.Lucky:
                 if (pc.Is(CustomRoles.Guardian)
-                    || pc.Is(CustomRoles.Luckey)
+                 //   || pc.Is(CustomRoles.Luckey)
                     || pc.Is(CustomRoles.Unlucky)
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Fragile))
@@ -1364,8 +1364,8 @@ static class CustomRolesHelper
                 break;
 
             case CustomRoles.Unlucky:
-                if (pc.Is(CustomRoles.Luckey)
-                    || pc.Is(CustomRoles.Mario)
+                if (//pc.Is(CustomRoles.Luckey)
+                    pc.Is(CustomRoles.Mario)
                     || pc.Is(CustomRoles.Lucky)
                     || pc.Is(CustomRoles.Lucky)
                     || pc.Is(CustomRoles.Mario)

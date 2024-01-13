@@ -991,14 +991,14 @@ class CheckMurderPatch
         switch (target.GetCustomRole())
         {
             //击杀幸运儿
-            case CustomRoles.Luckey:
-                var rd = IRandom.Instance;
-                if (rd.Next(0, 100) < Options.LuckeyProbability.GetInt())
-                {
-                    killer.RpcGuardAndKill(target);
-                    return false;
-                }
-                break;
+            //case CustomRoles.Luckey:
+            //    var rd = IRandom.Instance;
+            //    if (rd.Next(0, 100) < Options.LuckeyProbability.GetInt())
+            //    {
+            //        killer.RpcGuardAndKill(target);
+            //        return false;
+            //    }
+            //    break;
             //击杀呪狼
             case CustomRoles.CursedWolf:
                 if (Main.CursedWolfSpellCount[target.PlayerId] <= 0) break;

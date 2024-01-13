@@ -574,7 +574,7 @@ public static class Options
     public static OptionItem DoctorTaskCompletedBatteryCharge;
     public static OptionItem DoctorVisibleToEveryone;
 
-    public static OptionItem LuckeyProbability;
+   //public static OptionItem LuckeyProbability;
 
     public static OptionItem EveryOneKnowSuperStar;
 
@@ -1755,10 +1755,10 @@ public static class Options
         /*
          * Luckey
          */
-        SetupRoleOptions(6900, TabGroup.CrewmateRoles, CustomRoles.Luckey);
-        LuckeyProbability = IntegerOptionItem.Create(6902, "LuckeyProbability", new(0, 100, 5), 50, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Luckey])
-            .SetValueFormat(OptionFormat.Percent);
+        //SetupRoleOptions(6900, TabGroup.CrewmateRoles, CustomRoles.Luckey);
+        //LuckeyProbability = IntegerOptionItem.Create(6902, "LuckeyProbability", new(0, 100, 5), 50, TabGroup.CrewmateRoles, false)
+        //    .SetParent(CustomRoleSpawnChances[CustomRoles.Luckey])
+        //    .SetValueFormat(OptionFormat.Percent);
 
         /*
          * Mini
