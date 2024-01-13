@@ -1082,7 +1082,7 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 27100 lasted id for roles/add-ons (Next use 27200)
+        // 27200 lasted id for roles/add-ons (Next use 27300)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
 
@@ -1537,6 +1537,11 @@ public static class Options
          * Puppeteer
          */
         Puppeteer.SetupCustomOption();
+
+        /*
+         * Rift Maker
+         */
+        RiftMaker.SetupCustomOption();
 
         /*
          * Scavenger

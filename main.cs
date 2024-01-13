@@ -604,6 +604,7 @@ public enum CustomRoles
     Puppeteer,
     QuickShooter,
     Refugee,
+    RiftMaker,
     Saboteur,
     Scavenger,
     ShapeMaster,

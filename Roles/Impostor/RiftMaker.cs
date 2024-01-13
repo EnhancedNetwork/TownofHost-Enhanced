@@ -8,13 +8,14 @@ namespace TOHE.Roles.Impostor;
 
 public static class RiftMaker
 {
-    private static readonly int Id = 26800;
+    private static readonly int Id = 27200;
     //private static List<byte> playerIdList = new();
     public static bool IsEnable = false;
 
     public static OptionItem SSCooldown;
     public static OptionItem KillCooldown;
     public static OptionItem TPCooldownOpt;
+    public static OptionItem RiftRadius;
 
     public static Dictionary<byte, List<Vector2>> MarkedLocation = new();
     public static Dictionary<byte, long> LastTP = new();
@@ -26,7 +27,9 @@ public static class RiftMaker
             .SetValueFormat(OptionFormat.Seconds);
         SSCooldown = FloatOptionItem.Create(Id + 11, "ShapeshiftCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.RiftMaker])
             .SetValueFormat(OptionFormat.Seconds);
-        TPCooldownOpt = FloatOptionItem.Create(Id + 11, "TPCooldown", new(5f, 25f, 2.5f), 5f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.RiftMaker])
+        TPCooldownOpt = FloatOptionItem.Create(Id + 12, "TPCooldown", new(5f, 25f, 2.5f), 5f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.RiftMaker])
+            .SetValueFormat(OptionFormat.Seconds);
+        RiftRadius = FloatOptionItem.Create(Id + 13, "RiftRadius", new(0.5f, 2f, 0.5f), 1f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.RiftMaker])
             .SetValueFormat(OptionFormat.Seconds);
     }
 
@@ -94,6 +97,7 @@ public static class RiftMaker
     public static void ApplyGameOptions()
     {
         AURoleOptions.ShapeshifterCooldown = SSCooldown.GetFloat();
+        AURoleOptions.ShapeshifterLeaveSkin = true;
         AURoleOptions.ShapeshifterDuration = 1f;
     }
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
@@ -109,12 +113,12 @@ public static class RiftMaker
         var totalMarked = MarkedLocation[pc.PlayerId].Count;
         if (totalMarked == 1 && Vector2.Distance(currentPos, MarkedLocation[pc.PlayerId][0]) <= 4f)
         {
-            pc.Notify(GetString("IncorrectMarks"));
+            pc.Notify(GetString("IncorrectRifts"));
             return;
         }
         else if (totalMarked == 2 && Vector2.Distance(currentPos, MarkedLocation[pc.PlayerId][1]) <= 4f)
         {
-            pc.Notify(GetString("IncorrectMarks"));
+            pc.Notify(GetString("IncorrectRifts"));
             return;
         }
 
@@ -122,7 +126,7 @@ public static class RiftMaker
 
         MarkedLocation[pc.PlayerId].Add(pc.GetCustomPosition());
         if (MarkedLocation[pc.PlayerId].Count == 2) LastTP[pc.PlayerId] = Utils.GetTimeStamp();
-        pc.Notify(GetString("MarkDone"));
+        pc.Notify(GetString("RiftDone"));
 
         SendRPC(pc.PlayerId, 0);
         //sendrpc for marked location and lasttp
@@ -136,7 +140,7 @@ public static class RiftMaker
         MarkedLocation[pc.PlayerId].Clear();
         //send rpc for clearing markedlocation
         SendRPC(pc.PlayerId, 1);
-        pc.Notify(GetString("MarksCleared"));
+        pc.Notify(GetString("RiftsCleared"));
 
         _ = new LateTask(() =>
         {
@@ -164,16 +168,16 @@ public static class RiftMaker
         //}
         var now = Utils.GetTimeStamp();
         if (!LastTP.ContainsKey(playerId)) LastTP[playerId] = now;
-        if (LastTP[playerId] + TPCooldown > now) return;
+        if (now - LastTP[playerId] <= TPCooldown) return;
 
         Vector2 position = player.GetCustomPosition();
-        Vector2 TPto = MarkedLocation[playerId][0];
+        Vector2 TPto; ;
 
-        if (position == MarkedLocation[playerId][0])
+        if (Vector2.Distance(position, MarkedLocation[playerId][0]) <= RiftRadius.GetFloat())
         {
             TPto = MarkedLocation[playerId][1];
         }
-        else if (position == MarkedLocation[playerId][1])
+        else if (Vector2.Distance(position, MarkedLocation[playerId][1]) <= RiftRadius.GetFloat())
         {
             TPto = MarkedLocation[playerId][0];
         }
