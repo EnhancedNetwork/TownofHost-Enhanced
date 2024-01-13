@@ -1505,7 +1505,7 @@ internal static class RPC
             from = Main.AllPlayerControls.FirstOrDefault(c => c.NetId == targetNetId)?.Data?.PlayerName;
         }
         catch { }
-        Logger.Info($"FromNetID:{targetNetId}({from.RemoveHtmlTags()}) TargetClientID:{targetClientId}({target.RemoveHtmlTags()}) CallID:{callId}({rpcName.RemoveHtmlTags()})", "SendRPC");
+        Logger.Info($"FromNetID:{targetNetId}({from}) TargetClientID:{targetClientId}({target}) CallID:{callId}({rpcName})", "SendRPC");
     }
     public static string GetRpcName(byte callId)
     {
