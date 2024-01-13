@@ -76,8 +76,7 @@ namespace TOHE.Roles.Crewmate
 
         public static void OnTaskComplete(PlayerControl pc)
         {
-            // PotionID = (byte)HashRandom.Next(1, 8);
-            PotionID = 4;
+            PotionID = (byte)HashRandom.Next(1, 8);
 
             switch (PotionID)
             {
