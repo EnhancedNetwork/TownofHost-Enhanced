@@ -155,7 +155,7 @@ namespace TOHE.Roles.Crewmate
                     }, 2f, "Alchemist teleported to random player");
                     break;
                 case 4: // Increased speed.;
-                    int SpeedDuration = 5;
+                    int SpeedDuration = 10;
                     player.Notify(GetString("AlchemistHasSpeed"));
                     player.MarkDirtySettings();
                     var tmpSpeed = Main.AllPlayerSpeed[player.PlayerId];
@@ -343,7 +343,7 @@ namespace TOHE.Roles.Crewmate
                     case 3: // TP to random player
                         str.Append(GetString("PotionStore") + GetString("StoreTP"));
                         break;
-                    case 4: // Nothing
+                    case 4: // Increased Speed
                         str.Append(GetString("PotionStore") + GetString("StoreSP"));
                         break;
                     case 5: // Quick fix next sabo
@@ -383,8 +383,8 @@ namespace TOHE.Roles.Crewmate
                 case 3: // TP to random player
                     str.Append("<color=#42d1ff>§</color>");
                     break;
-                case 4: // Nothing
-                    str.Append("<color=#ffffff>◎</color>");
+                case 4: // Increased Speed
+                    str.Append("<color=#ffffff>»</color>");
                     break;
                 case 5: // Quick fix next sabo
                     str.Append("<color=#3333ff>★</color>");
