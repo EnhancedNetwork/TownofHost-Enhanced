@@ -50,26 +50,27 @@ public static class RiftMaker
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RiftMakerSyncData, SendOption.Reliable, -1);
         writer.Write(operate);
-        if (operate == 0)
+        writer.Write(riftID);
+
+        if (operate == 0) //sync markedloaction and last tp
         {
-            writer.Write(riftID);
             int length = MarkedLocation[riftID].Count;
             writer.Write(MarkedLocation[riftID][length - 1].x); //x coordinate
             writer.Write(MarkedLocation[riftID][length - 1].y); //y coordinate
 
             writer.Write(LastTP[riftID].ToString());
         }
-        if (operate == 0)
+        if (operate == 2) //sync last tp
         {
-            writer.Write(riftID);
+            writer.Write(LastTP[riftID].ToString());
         }
     }
-    public static void RecieveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
     {
         int operate = reader.ReadInt32();
-        if (operate == 0)
+        byte riftID = reader.ReadByte();
+        if (operate == 0) //sync  marked location and last tp
         {
-            byte riftID = reader.ReadByte();
             float xLoc = reader.ReadSingle();
             float yLoc = reader.ReadSingle();
             if (!MarkedLocation.ContainsKey(riftID)) MarkedLocation[riftID] = new();
@@ -79,10 +80,14 @@ public static class RiftMaker
             string stimeStamp = reader.ReadString();
             if (long.TryParse(stimeStamp, out long timeStamp)) LastTP[riftID] = timeStamp;
         }
-        if (operate == 1)
+        if (operate == 1) //clear marked location
         {
-            byte riftID = reader.ReadByte();
             if (MarkedLocation.ContainsKey(riftID)) MarkedLocation[riftID].Clear();
+        }
+        if (operate == 2) //sync last tp
+        {
+            string stimeStamp = reader.ReadString();
+            if (long.TryParse(stimeStamp, out long timeStamp)) LastTP[riftID] = timeStamp;
         }
     }
 
@@ -150,13 +155,13 @@ public static class RiftMaker
         byte playerId = player.PlayerId;
         if (!MarkedLocation.ContainsKey(playerId)) MarkedLocation[playerId] = new();
         if (MarkedLocation[playerId].Count != 2) return;
-
-        if (Vector2.Distance(MarkedLocation[playerId][0], MarkedLocation[playerId][1]) <= 4f)
-        {
-            player.Notify(GetString("IncorrectMarks"));
-            MarkedLocation[playerId].RemoveAt(1);
-            return;
-        }
+        // already checked in SS
+        //if (Vector2.Distance(MarkedLocation[playerId][0], MarkedLocation[playerId][1]) <= 4f)
+        //{
+        //    player.Notify(GetString("IncorrectMarks"));
+        //    MarkedLocation[playerId].RemoveAt(1);
+        //    return;
+        //}
         var now = Utils.GetTimeStamp();
         if (!LastTP.ContainsKey(playerId)) LastTP[playerId] = now;
         if (LastTP[playerId] + TPCooldown > now) return;
@@ -177,6 +182,7 @@ public static class RiftMaker
         LastTP[playerId] = now;
         player.RpcTeleport(TPto);
         //SENDRPC
+        SendRPC(playerId, 2);
         return;
     }
 }

@@ -450,6 +450,9 @@ public class PlayerGameOptionsSender : GameOptionsSender
             case CustomRoles.Undertaker:
                 Undertaker.ApplyGameOptions();
                 break;
+            case CustomRoles.RiftMaker:
+                RiftMaker.ApplyGameOptions();
+                break;
             case CustomRoles.Spiritcaller:
                 opt.SetVision(Spiritcaller.ImpostorVision.GetBool());
                 break;

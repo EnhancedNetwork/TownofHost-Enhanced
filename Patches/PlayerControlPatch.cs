@@ -1576,6 +1576,9 @@ class ShapeshiftPatch
                 case CustomRoles.Undertaker:
                     Undertaker.OnShapeshift(shapeshifter, shapeshifting);
                     break;
+                case CustomRoles.RiftMaker:
+                    RiftMaker.OnShapeshift(shapeshifter, shapeshifting);
+                    break;
                 case CustomRoles.FireWorks:
                     FireWorks.ShapeShiftState(shapeshifter, shapeshifting);
                     break;
@@ -2862,6 +2865,10 @@ class FixedUpdatePatch
 
                     switch (playerRole)
                     {
+
+                        case CustomRoles.RiftMaker:
+                            RiftMaker.OnFixedUpdate(player);
+                            break;
                         case CustomRoles.Swooper:
                             Swooper.OnFixedUpdate(player);
                             break;
@@ -3673,7 +3680,7 @@ class CoEnterVentPatch
     {
         if (!AmongUsClient.Instance.AmHost) return true;
         Logger.Info($" {__instance.myPlayer.GetNameWithRole()}, Vent ID: {id}", "CoEnterVent");
-
+        //FFA
         if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenTwoPlayersAlive.GetBool() && Main.AllAlivePlayerControls.Length <= 2)
         {
             var pc = __instance?.myPlayer;
@@ -3684,6 +3691,7 @@ class CoEnterVentPatch
             }, 0.5f);
             return true;
         }
+        //FFA
         if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenKCDIsUp.GetBool())
         {
 
@@ -3705,6 +3713,9 @@ class CoEnterVentPatch
             }
             
         }
+
+        if (RiftMaker.IsEnable) RiftMaker.OnVent(__instance.myPlayer, id);
+
         if (Glitch.hackedIdList.ContainsKey(__instance.myPlayer.PlayerId))
         {
             _ = new LateTask(() =>

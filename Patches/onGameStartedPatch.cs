@@ -213,6 +213,7 @@ internal class ChangeRoleSettings
             Sidekick.Init();
             Bandit.Init();
             Doppelganger.Init();
+            RiftMaker.Init();
             Sheriff.Init();
             CopyCat.Init();
             Captain.Init();
@@ -564,6 +565,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Undertaker:
                         Undertaker.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.RiftMaker:
+                        RiftMaker.Add(pc.PlayerId);
                         break;
                /*     case CustomRoles.Mare:
                         Mare.Add(pc.PlayerId);
