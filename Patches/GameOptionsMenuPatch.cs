@@ -85,7 +85,7 @@ public static class GameOptionsMenuStartPatch
                 if (gameSettings == null) return;
 
                 gameSettingMenu = Object.FindObjectOfType<GameSettingMenu>();
-                if (gameSettings == null) return;
+                if (gameSettingMenu == null) return;
 
                 GameObject.Find("Tint")?.SetActive(false);
 
