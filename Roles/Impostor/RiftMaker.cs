@@ -1,6 +1,5 @@
 ﻿using Hazel;
 using System.Collections.Generic;
-using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
@@ -47,9 +46,44 @@ public static class RiftMaker
         TPCooldown = TPCooldownOpt.GetFloat();
     }
 
-    public static void SendRPC()
+    public static void SendRPC(byte riftID, int operate)
     {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RiftMakerSyncData, SendOption.Reliable, -1);
+        writer.Write(operate);
+        if (operate == 0)
+        {
+            writer.Write(riftID);
+            int length = MarkedLocation[riftID].Count;
+            writer.Write(MarkedLocation[riftID][length - 1].x); //x coordinate
+            writer.Write(MarkedLocation[riftID][length - 1].y); //y coordinate
 
+            writer.Write(LastTP[riftID].ToString());
+        }
+        if (operate == 0)
+        {
+            writer.Write(riftID);
+        }
+    }
+    public static void RecieveRPC(MessageReader reader)
+    {
+        int operate = reader.ReadInt32();
+        if (operate == 0)
+        {
+            byte riftID = reader.ReadByte();
+            float xLoc = reader.ReadSingle();
+            float yLoc = reader.ReadSingle();
+            if (!MarkedLocation.ContainsKey(riftID)) MarkedLocation[riftID] = new();
+            if (MarkedLocation[riftID].Count >= 2) MarkedLocation[riftID].RemoveAt(0);
+            MarkedLocation[riftID].Add(new Vector2(xLoc, yLoc));
+
+            string stimeStamp = reader.ReadString();
+            if (long.TryParse(stimeStamp, out long timeStamp)) LastTP[riftID] = timeStamp;
+        }
+        if (operate == 1)
+        {
+            byte riftID = reader.ReadByte();
+            if (MarkedLocation.ContainsKey(riftID)) MarkedLocation[riftID].Clear();
+        }
     }
 
     public static void ApplyGameOptions()
@@ -85,6 +119,7 @@ public static class RiftMaker
         if (MarkedLocation[pc.PlayerId].Count == 2) LastTP[pc.PlayerId] = Utils.GetTimeStamp();
         pc.Notify(GetString("MarkDone"));
 
+        SendRPC(pc.PlayerId, 0);
         //sendrpc for marked location and lasttp
     }
 
@@ -94,13 +129,15 @@ public static class RiftMaker
         if (!pc.Is(CustomRoles.RiftMaker)) return;
 
         MarkedLocation[pc.PlayerId].Clear();
+        //send rpc for clearing markedlocation
+        SendRPC(pc.PlayerId, 1);
         pc.Notify(GetString("MarksCleared"));
 
         _ = new LateTask(() =>
         {
             pc.MyPhysics?.RpcBootFromVent(ventId);
         }, 0.5f, "RiftMakerOnVent");
-        //semd rpc for clearing markedlocation
+
     }
 
 

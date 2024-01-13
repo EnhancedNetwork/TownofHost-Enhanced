@@ -66,8 +66,8 @@ public static class Undertaker
     public static void ReceiveRPC(MessageReader reader)
     {
         byte PlayerId = reader.ReadByte();
-        float xLoc = reader.ReadInt32();
-        float yLoc = reader.ReadInt32();
+        float xLoc = reader.ReadSingle();
+        float yLoc = reader.ReadSingle();
 
         if (MarkedLocation.ContainsKey(PlayerId))
             MarkedLocation[PlayerId] = new Vector2(xLoc,yLoc);
