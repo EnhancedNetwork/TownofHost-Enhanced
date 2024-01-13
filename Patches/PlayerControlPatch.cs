@@ -3430,12 +3430,7 @@ class CoExitVentPatch
         }
 
         if (Mole.IsEnable)
-        {
-            _ = new LateTask(() =>
-            {
-                Mole.OnExitVent(__instance.myPlayer, id);
-            }, 0.1f, "Mole On Exit Vent");
-        }
+            Mole.OnExitVent(__instance.myPlayer, id);
     }
 }
 
