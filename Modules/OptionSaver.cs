@@ -13,15 +13,6 @@ public static class OptionSaver
     private static readonly FileInfo DefaultPresetFileInfo = new ($"{SaveDataDirectoryInfo.FullName}/DefaultPreset.txt");
     private static int DefaultPresetNumber = new();
 
-    public static int GetDefaultPresetNumber()
-    {
-        if (DefaultPresetFileInfo.Exists)
-        {
-            string presetNmber = File.ReadAllText(DefaultPresetFileInfo.FullName);
-            if (int.TryParse(presetNmber, out int number) && number >= 0 && number <= 4) return number;
-        }
-        return 0;
-    }
     public static void Initialize()
     {
         if (!SaveDataDirectoryInfo.Exists)
