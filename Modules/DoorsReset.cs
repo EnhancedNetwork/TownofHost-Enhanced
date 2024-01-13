@@ -9,8 +9,13 @@ public static class DoorsReset
 
     public static void Initialize()
     {
+        if (GameStates.IsHideNSeek)
+        {
+            isEnabled = false;
+            return;
+        }
         // Not supported except Airship, Polus and Fungle
-        if (((MapNames)Main.NormalOptions.MapId is not (MapNames.Airship or MapNames.Polus or MapNames.Fungle)) || Options.DisableCloseDoor.GetBool())
+        if ((Utils.GetActiveMapName() is not (MapNames.Airship or MapNames.Polus or MapNames.Fungle)) || Options.DisableCloseDoor.GetBool())
         {
             isEnabled = false;
             return;

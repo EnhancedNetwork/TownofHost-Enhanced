@@ -56,8 +56,8 @@ public static class Swapper
 
         int operate = 0;
         msg = msg.ToLower().TrimStart().TrimEnd();
-        if (CheckCommond(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id")) operate = 1;
-        else if (CheckCommond(ref msg, "sw|换票|换|swap|st", false)) operate = 2;
+        if (CheckCommond(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id|編號|玩家編號")) operate = 1;
+        else if (CheckCommond(ref msg, "sw|换票|换|換票|換|swap|st", false)) operate = 2;
         else return false;
 
         if (!pc.IsAlive())
@@ -152,7 +152,7 @@ public static class Swapper
                         else pc.ShowPopUp(string.Format(GetString("SwapVoteC"), player1.GetRealName(), player2.GetRealName()));
                     }
                     Utils.NotifyRoles(isForMeeting: true, NoCache: true);
-                }, 0.2f);
+                }, 0.2f, "Players Was Swaped");
             }
         }
         return true;

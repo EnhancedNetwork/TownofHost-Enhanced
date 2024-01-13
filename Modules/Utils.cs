@@ -36,16 +36,18 @@ public static class Utils
             Logger.Fatal($"{text} 错误，触发防黑屏措施", "Anti-black");
             ChatUpdatePatch.DoBlockChat = true;
             Main.OverrideWelcomeMsg = GetString("AntiBlackOutNotifyInLobby");
+            
             _ = new LateTask(() =>
             {
                 Logger.SendInGame(GetString("AntiBlackOutLoggerSendInGame"), true);
-            }, 3f, "Anti-Black Msg SendInGame");
+            }, 3f, "Anti-Black Msg SendInGame 3");
+            
             _ = new LateTask(() =>
             {
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
                 GameManager.Instance.LogicFlow.CheckEndCriteria();
                 RPC.ForceEndGame(CustomWinner.Error);
-            }, 5.5f, "Anti-Black End Game");
+            }, 5.5f, "Anti-Black End Game 3");
         }
         else
         {
@@ -57,19 +59,20 @@ public static class Utils
                 _ = new LateTask(() =>
                 {
                     Logger.SendInGame(GetString("AntiBlackOutRequestHostToForceEnd"), true);
-                }, 3f, "Anti-Black Msg SendInGame");
+                }, 3f, "Anti-Black Msg SendInGame 4");
             }
             else
             {
                 _ = new LateTask(() =>
                 {
                     Logger.SendInGame(GetString("AntiBlackOutHostRejectForceEnd"), true);
-                }, 3f, "Anti-Black Msg SendInGame");
+                }, 3f, "Anti-Black Msg SendInGame 5");
+                
                 _ = new LateTask(() =>
                 {
                     AmongUsClient.Instance.ExitGame(DisconnectReasons.Custom);
                     Logger.Fatal($"{text} 错误，已断开游戏", "Anti-black");
-                }, 8f, "Anti-Black Exit Game");
+                }, 8f, "Anti-Black Exit Game 4");
             }
         }
     }
@@ -99,19 +102,29 @@ public static class Utils
             return;
         }
 
+        var net = player.NetTransform;
+        var numHost = (ushort)(net.lastSequenceId + 2);
+        var numClient = (ushort)(net.lastSequenceId + 48);
+
         // Host side
         if (AmongUsClient.Instance.AmHost)
         {
-            var playerlastSequenceId = (int)player.NetTransform.lastSequenceId;
-            playerlastSequenceId += 10;
-            player.NetTransform.SnapTo(location, (ushort)playerlastSequenceId);
+            player.NetTransform.SnapTo(location, numHost);
+        }
+        else
+        {
+            // Local Teleport For Client
+            MessageWriter localMessageWriter = AmongUsClient.Instance.StartRpcImmediately(net.NetId, (byte)RpcCalls.SnapTo, SendOption.None, player.GetClientId());
+            NetHelpers.WriteVector2(location, localMessageWriter);
+            localMessageWriter.Write(numClient);
+            AmongUsClient.Instance.FinishRpcImmediately(localMessageWriter);
         }
 
-        // For Client side
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable);
-        NetHelpers.WriteVector2(location, messageWriter);
-        messageWriter.Write(player.NetTransform.lastSequenceId + 100U);
-        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+        // Global Teleport
+        MessageWriter globalMessageWriter = AmongUsClient.Instance.StartRpcImmediately(net.NetId, (byte)RpcCalls.SnapTo, SendOption.None);
+        NetHelpers.WriteVector2(location, globalMessageWriter);
+        globalMessageWriter.Write(numClient);
+        AmongUsClient.Instance.FinishRpcImmediately(globalMessageWriter);
     }
     public static void RpcRandomVentTeleport(this PlayerControl player)
     {
@@ -136,7 +149,15 @@ public static class Utils
     }
     public static bool IsActive(SystemTypes type)
     {
-        int mapId = Main.NormalOptions.MapId;
+        if (GameStates.IsHideNSeek) return false;
+
+        // if ShipStatus not have current SystemTypes, return false
+        if (!ShipStatus.Instance.Systems.ContainsKey(type))
+        {
+            return false;
+        }
+
+        int mapId = GetActiveMapId();
         /*
             The Skeld    = 0
             MIRA HQ      = 1
@@ -159,10 +180,6 @@ public static class Utils
             case SystemTypes.Reactor:
                 {
                     if (mapId == 2) return false; // if Polus return false
-                    else if (mapId is 4) // Only Airhip
-                    {
-                        return IsActive(SystemTypes.HeliSabotage);
-                    }
                     else
                     {
                         var ReactorSystemType = ShipStatus.Instance.Systems[type].Cast<ReactorSystemType>();
@@ -183,7 +200,7 @@ public static class Utils
                 }
             case SystemTypes.HeliSabotage:
                 {
-                    if (mapId != 4) return false;// Only Airhip
+                    if (mapId != 4) return false; // Only Airhip
                     var HeliSabotageSystem = ShipStatus.Instance.Systems[type].Cast<HeliSabotageSystem>();
                     return HeliSabotageSystem != null && HeliSabotageSystem.IsActive;
                 }
@@ -203,13 +220,23 @@ public static class Utils
             case SystemTypes.MushroomMixupSabotage:
                 {
                     if (mapId != 5) return false; // Only The Fungle
-                    var MushroomMixupSabotageSystem = ShipStatus.Instance.Systems[type].Cast<MushroomMixupSabotageSystem>();
+                    var MushroomMixupSabotageSystem = ShipStatus.Instance.Systems[type].TryCast<MushroomMixupSabotageSystem>();
                     return MushroomMixupSabotageSystem != null && MushroomMixupSabotageSystem.IsActive;
                 }
             default:
                 return false;
         }
     }
+    public static SystemTypes GetCriticalSabotageSystemType() => GetActiveMapName() switch
+    {
+        MapNames.Polus => SystemTypes.Laboratory,
+        MapNames.Airship => SystemTypes.HeliSabotage,
+        _ => SystemTypes.Reactor,
+    };
+
+    public static MapNames GetActiveMapName() => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId;
+    public static byte GetActiveMapId() => GameOptionsManager.Instance.CurrentGameOptions.MapId;
+
     public static void SetVision(this IGameOptions opt, bool HasImpVision)
     {
         if (HasImpVision)
@@ -288,16 +315,8 @@ public static class Utils
     }
     public static void KillFlash(this PlayerControl player)
     {
-        //キルフラッシュ(ブラックアウト+リアクターフラッシュ)の処理
-        bool ReactorCheck = false; //リアクターフラッシュの確認
-
-        var systemtypes = (MapNames)Main.NormalOptions.MapId switch
-        {
-            MapNames.Polus => SystemTypes.Laboratory,
-            MapNames.Airship => SystemTypes.HeliSabotage,
-            _ => SystemTypes.Reactor,
-        };
-        ReactorCheck = IsActive(systemtypes);
+        // Kill flash (blackout flash + reactor flash)
+        bool ReactorCheck = IsActive(GetCriticalSabotageSystemType());
 
         var Duration = Options.KillFlashDuration.GetFloat();
         if (ReactorCheck) Duration += 0.2f; //リアクター中はブラックアウトを長くする
@@ -320,7 +339,7 @@ public static class Utils
         {
             Main.PlayerStates[player.PlayerId].IsBlackOut = false; //ブラックアウト解除
             player.MarkDirtySettings();
-        }, Options.KillFlashDuration.GetFloat(), "RemoveKillFlash");
+        }, Options.KillFlashDuration.GetFloat(), "Remove Kill Flash");
     }
     public static void BlackOut(this IGameOptions opt, bool IsBlackOut)
     {
@@ -652,7 +671,7 @@ public static class Utils
     {
         try
         {
-            if (!Main.playerVersion.ContainsKey(0)) return string.Empty; //ホストがMODを入れていなければ未記入を返す
+            if (!Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId)) return string.Empty; //ホストがMODを入れていなければ未記入を返す
             var taskState = pc.GetPlayerTaskState();
             var Comms = false;
             if (taskState.hasTasks)
@@ -673,7 +692,7 @@ public static class Utils
     {
         try
         {
-            if (!Main.playerVersion.ContainsKey(0)) return ""; //ホストがMODを入れていなければ未記入を返す
+            if (!Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId)) return ""; //ホストがMODを入れていなければ未記入を返す
             var ProgressText = new StringBuilder();
             var role = Main.PlayerStates[playerId].MainRole;
             switch (role)
@@ -962,6 +981,9 @@ public static class Utils
                 case CustomRoles.Masochist:
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Masochist).ShadeColor(0.25f), $"({(Main.MasochistKillMax.TryGetValue(playerId, out var count3) ? count3 : 0)}/{Options.MasochistKillMax.GetInt()})"));
                     break;
+                case CustomRoles.Kamikaze:
+                    ProgressText.Append(Kamikaze.GetMarkedLimit(playerId));
+                    break;
                 case CustomRoles.QuickShooter:
                     ProgressText.Append(QuickShooter.GetShotLimit(playerId));
                     break;
@@ -1166,7 +1188,6 @@ public static class Utils
     
     public static void ShowAllActiveSettings(byte PlayerId = byte.MaxValue)
     {
-        var mapId = Main.NormalOptions.MapId;
         if (Options.HideGameSettings.GetBool() && PlayerId != byte.MaxValue)
         {
             SendMessage(GetString("Message.HideGameSettings"), PlayerId);
@@ -1276,12 +1297,12 @@ public static class Utils
             }
 
             if (opt.Value.Name == "Maximum") continue; //Maximumの項目は飛ばす
-            if (opt.Value.Name == "DisableSkeldDevices" && !Options.IsActiveSkeld && !Options.IsActiveDleks) continue;
-            if (opt.Value.Name == "DisableMiraHQDevices" && !Options.IsActiveMiraHQ) continue;
-            if (opt.Value.Name == "DisablePolusDevices" && !Options.IsActivePolus) continue;
-            if (opt.Value.Name == "DisableAirshipDevices" && !Options.IsActiveAirship) continue;
-            if (opt.Value.Name == "PolusReactorTimeLimit" && !Options.IsActivePolus) continue;
-            if (opt.Value.Name == "AirshipReactorTimeLimit" && !Options.IsActiveAirship) continue;
+            if (opt.Value.Name == "DisableSkeldDevices" && !GameStates.SkeldIsActive && !GameStates.DleksIsActive) continue;
+            if (opt.Value.Name == "DisableMiraHQDevices" && !GameStates.MiraHQIsActive) continue;
+            if (opt.Value.Name == "DisablePolusDevices" && !GameStates.PolusIsActive) continue;
+            if (opt.Value.Name == "DisableAirshipDevices" && !GameStates.AirshipIsActive) continue;
+            if (opt.Value.Name == "PolusReactorTimeLimit" && !GameStates.PolusIsActive) continue;
+            if (opt.Value.Name == "AirshipReactorTimeLimit" && !GameStates.AirshipIsActive) continue;
             if (deep > 0)
             {
                 sb.Append(string.Concat(Enumerable.Repeat("┃", Mathf.Max(deep - 1, 0))));
@@ -1357,7 +1378,7 @@ public static class Utils
     public static string GetSubRolesText(byte id, bool disableColor = false, bool intro = false, bool summary = false)
     {
         var SubRoles = Main.PlayerStates[id].SubRoles;
-        if (!SubRoles.Any() && intro == false) return "";
+        if (SubRoles.Count == 0 && intro == false) return "";
         var sb = new StringBuilder();
         foreach (var role in SubRoles.ToArray())
         {
@@ -1369,7 +1390,7 @@ public static class Utils
             sb.Append($"{ColorString(Color.white, " + ")}{RoleText}");
         }
 
-        if (intro && !SubRoles.Contains(CustomRoles.Lovers) && !SubRoles.Contains(CustomRoles.Ntr) && CustomRolesHelper.RoleExist(CustomRoles.Ntr))
+        if (intro && !SubRoles.Contains(CustomRoles.Lovers) && !SubRoles.Contains(CustomRoles.Ntr) && CustomRoles.Ntr.RoleExist())
         {
             var RoleText = disableColor ? GetRoleName(CustomRoles.Lovers) : ColorString(GetRoleColor(CustomRoles.Lovers), GetRoleName(CustomRoles.Lovers));
             sb.Append($"{ColorString(Color.white, " + ")}{RoleText}");
@@ -1705,9 +1726,12 @@ public static class Utils
             }
         }
     }
-    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false)
+    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
+        // set replay to true when you want to send previous sys msg or do not want to add a sys msg in the history
+        if (!replay && GameStates.IsInGame) ChatManager.AddSystemChatHistory(sendTo, text);
+
         if (title == "") title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
 
         if (sendTo != byte.MaxValue)
@@ -1835,7 +1859,7 @@ public static class Utils
             {
                 if (!player.IsModClient()) return;
                 {
-                    if (GameStates.IsOnlineGame || GameStates.IsLocalGame)
+                    if ((GameStates.IsOnlineGame || GameStates.IsLocalGame) && !Options.HideHostText.GetBool())
                         name = $"<color={GetString("HostColor")}>{GetString("HostText")}</color><color={GetString("IconColor")}>{GetString("Icon")}</color><color={GetString("NameColor")}>{name}</color>";
 
                     //name = $"<color=#902efd>{GetString("HostText")}</color><color=#4bf4ff>♥</color>" + name;
@@ -1948,8 +1972,8 @@ public static class Utils
                     _ => name
                 };
             }
-            
-            if (!name.Contains('\r') && player.FriendCode.GetDevUser().HasTag())
+
+            if (!name.Contains($"\r\r") && player.FriendCode.GetDevUser().HasTag())
             {
                 name = player.FriendCode.GetDevUser().GetTag() + "<size=1.5>" + modtag + "</size>" + name;
             }
@@ -1962,16 +1986,21 @@ public static class Utils
     {
         return Main.AllPlayerControls.FirstOrDefault(pc => pc.PlayerId == PlayerId);
     }
+    public static PlayerControl GetPlayerByRole(CustomRoles Role)
+    {
+        return Main.AllPlayerControls.FirstOrDefault(pc => pc.GetCustomRole() == Role);
+    }
     public static GameData.PlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);
     private static StringBuilder SelfSuffix = new();
     private static StringBuilder SelfMark = new(20);
     private static StringBuilder TargetSuffix = new();
     private static StringBuilder TargetMark = new(20);
-    public static async void NotifyRoles(bool isForMeeting = false, PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
+    public static async void NotifyRoles(bool isForMeeting = false, PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool NoCache = false, bool ForceLoop = false, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (Main.AllPlayerControls == null) return;
+        if (GameStates.IsHideNSeek) return;
 
         //Do not update NotifyRoles during meetings
         if (GameStates.IsMeeting) return;
@@ -1980,14 +2009,15 @@ public static class Utils
         //var callerMethod = caller.GetMethod();
         //string callerMethodName = callerMethod.Name;
         //string callerClassName = callerMethod.DeclaringType.FullName;
-        //Logger.Info($" Was called from: {callerClassName}.{callerMethodName}", "NotifyRoles", force: true);
+        //Logger.Info($" Was called from: {callerClassName}.{callerMethodName}", "NotifyRoles");
 
         await DoNotifyRoles(isForMeeting, SpecifySeer, SpecifyTarget, NoCache, ForceLoop, CamouflageIsForMeeting, MushroomMixupIsActive);
     }
-    public static Task DoNotifyRoles(bool isForMeeting = false, PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
+    public static Task DoNotifyRoles(bool isForMeeting = false, PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool NoCache = false, bool ForceLoop = false, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
         if (!AmongUsClient.Instance.AmHost) return Task.CompletedTask;
         if (Main.AllPlayerControls == null) return Task.CompletedTask;
+        if (GameStates.IsHideNSeek) return Task.CompletedTask;
 
         //Do not update NotifyRoles during meetings
         if (GameStates.IsMeeting) return Task.CompletedTask;
@@ -2010,7 +2040,8 @@ public static class Utils
             MushroomMixupIsActive = IsActive(SystemTypes.MushroomMixupSabotage);
         }
 
-        Logger.Info($" START - Count Seers: {seerList.Length}", "DoNotifyRoles", force: true);
+        Logger.Info($" START - Count Seers: {seerList.Length} & Count Target: {targetList.Length}", "DoNotifyRoles");
+
         //seer: player who updates the nickname/role/mark
         //target: seer updates nickname/role/mark of other targets
         foreach (var seer in seerList)
@@ -2275,7 +2306,6 @@ public static class Utils
                 || NoCache
                 || ForceLoop)
             {
-                Logger.Info($" Loop for Targets - Count Targets: {targetList.Length}", "DoNotifyRoles", force: true);
                 foreach (var target in targetList)
                 {
                     // if the target is the seer itself, do nothing
@@ -2333,7 +2363,8 @@ public static class Utils
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.SuperStar), "★"));
 
                         if (Captain.IsEnable)
-                            if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) && 
+                            if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) &&
+                                (target.GetPlayerTaskState().CompletedTasksCount >= Captain.OptionTaskRequiredToReveal.GetInt()) &&
                                 (seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
                                 TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Captain), " ☆"));
 
@@ -2496,6 +2527,10 @@ public static class Utils
                                     TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + TargetPlayerName;
                                 break;
 
+                            case CustomRoles.Quizmaster:
+                                TargetMark.Append(Quizmaster.TargetMark(seer, target));
+                                break;
+
                         }
 
                         // ========= Only During Meeting =========
@@ -2605,14 +2640,11 @@ public static class Utils
 
                         target.RpcSetNamePrivate(TargetName, true, seer, force: NoCache);
                     }
-
-                    //logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":END");
                 }
             }
-
-            //logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":END");
         }
-        Logger.Info($" END", "DoNotifyRoles", force: true);
+        //Logger.Info($" Loop for Targets: {}", "DoNotifyRoles", force: true);
+        Logger.Info($" END", "DoNotifyRoles");
         return Task.CompletedTask;
     }
     public static void MarkEveryoneDirtySettings()
@@ -2626,6 +2658,7 @@ public static class Utils
     }
     public static void AfterMeetingTasks()
     {
+        ChatManager.ClearLastSysMsg();
         if (Options.DiseasedCDReset.GetBool())
         {
             foreach (var pid in Main.KilledDiseased.Keys.ToArray())
@@ -2766,7 +2799,7 @@ public static class Utils
         if (Lawyer.Target.ContainsValue(target.PlayerId))
             Lawyer.ChangeRoleByTarget(target);
 
-        FixedUpdatePatch.LoversSuicide(target.PlayerId, onMeeting);
+        FixedUpdateInNormalGamePatch.LoversSuicide(target.PlayerId, onMeeting);
     }
     public static void ChangeInt(ref int ChangeTo, int input, int max)
     {
@@ -2830,6 +2863,17 @@ public static class Utils
         System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo("Explorer.exe")
         { Arguments = "/e,/select," + @filename.Replace("/", "\\") };
         System.Diagnostics.Process.Start(psi);
+
+        if (!AmongUsClient.Instance.AmHost && GameStates.IsOnlineGame && GameStates.IsModHost)
+        {
+            if (!PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug)
+            {
+                var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+                    (byte)CustomRPC.DumpLog, SendOption.Reliable, AmongUsClient.Instance.HostId);
+                writer.Write(PlayerControl.LocalPlayer.PlayerId);
+                AmongUsClient.Instance.FinishRpcImmediately(writer);
+            }
+        }
     }
     public static (int, int) GetDousedPlayerCount(byte playerId)
     {

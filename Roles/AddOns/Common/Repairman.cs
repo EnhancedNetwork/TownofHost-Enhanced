@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace TOHE.Roles.Crewmate;
+namespace TOHE.Roles.AddOns.Common;
 
 public static class Repairman
 {
@@ -41,7 +41,7 @@ public static class Repairman
         playerIdList.Add(playerId);
         IsEnable = true;
     }
-    public static void RepairSystem(ShipStatus __instance, SystemTypes systemType, byte amount)
+    public static void UpdateSystem(ShipStatus __instance, SystemTypes systemType, byte amount, byte playerId)
     {
         switch (systemType)
         {
@@ -81,7 +81,7 @@ public static class Repairman
                 if (!FixesDoors.GetBool()) break;
                 if (DoorsProgressing == true) break;
 
-                int mapId = Main.NormalOptions.MapId;
+                int mapId = Utils.GetActiveMapId();
                 if (AmongUsClient.Instance.NetworkMode == NetworkModes.FreePlay) mapId = AmongUsClient.Instance.TutorialMapId;
 
                 DoorsProgressing = true;
@@ -106,6 +106,7 @@ public static class Repairman
                 DoorsProgressing = false;
                 break;
         }
+        Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(playerId));
     }
     public static void SwitchSystemRepair(SwitchSystem __instance, byte amount)
     {

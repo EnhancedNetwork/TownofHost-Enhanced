@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Modules;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -97,6 +98,64 @@ public class PlayerState
                 }
             }
         }
+        // check for role addon
+        if (pc.Is(CustomRoles.Madmate))
+        {
+            countTypes = Options.MadmateCountMode.GetInt() switch
+            {
+                0 => CountTypes.OutOfGame,
+                1 => CountTypes.Impostor,
+                2 => countTypes,
+                _ => throw new NotImplementedException()
+            };
+        }
+        if (pc.Is(CustomRoles.Charmed))
+        {
+            countTypes = Succubus.CharmedCountMode.GetInt() switch
+            {
+                0 => CountTypes.OutOfGame,
+                1 => CountTypes.Succubus,
+                2 => countTypes,
+                _ => throw new NotImplementedException()
+            };
+        }
+        if (pc.Is(CustomRoles.Recruit))
+        {
+            countTypes = Jackal.SidekickCountMode.GetInt() switch
+            {
+                0 => CountTypes.Jackal,
+                1 => CountTypes.OutOfGame,
+                2 => countTypes,
+                _ => throw new NotImplementedException()
+            };
+        }
+        if (pc.Is(CustomRoles.Infected))
+        {
+            countTypes = CountTypes.Infectious;
+        }
+        if (pc.Is(CustomRoles.Contagious))
+        {
+            countTypes = Virus.ContagiousCountMode.GetInt() switch
+            {
+                0 => CountTypes.OutOfGame,
+                1 => CountTypes.Virus,
+                2 => countTypes,
+                _ => throw new NotImplementedException()
+            };
+        }
+        if (pc.Is(CustomRoles.Rogue))
+        {
+            countTypes = CountTypes.Rogue;
+        }
+        if (pc.Is(CustomRoles.Admired))
+        {
+            countTypes = CountTypes.Crew;
+        }
+        if (pc.Is(CustomRoles.Soulless))
+        {
+            countTypes = CountTypes.OutOfGame;
+        }
+
     }
     public void SetSubRole(CustomRoles role, bool AllReplace = false, PlayerControl pc = null)
     {
@@ -106,7 +165,20 @@ public class PlayerState
             AllReplace = true;
         }
         if (AllReplace)
-            SubRoles.ToArray().Do(role => SubRoles.Remove(role));
+        {
+            var sync = false;
+            foreach (var subRole in SubRoles.ToArray())
+            {
+                if (pc.Is(CustomRoles.Flash))
+                {
+                    Flash.SetSpeed(pc.PlayerId, true);
+                    sync = true;
+                }
+                SubRoles.Remove(subRole);
+
+                if (sync) Utils.MarkEveryoneDirtySettings();
+            }
+        }
 
         if (!SubRoles.Contains(role))
             SubRoles.Add(role);
@@ -266,6 +338,10 @@ public class PlayerState
         if (AmongUsClient.Instance.AmHost)
         {
             RPC.SendDeathReason(PlayerId, deathReason);
+            if (GameStates.IsMeeting)
+            {
+                MeetingHud.Instance.CheckForEndVoting();
+            }
         }
     }
     public bool IsSuicide() { return deathReason == DeathReason.Suicide; }
@@ -318,8 +394,11 @@ public class PlayerState
         Drained,
         Shattered,
         Trap,
+        Targeted,
         Retribution,
+        WrongAnswer,
 
+        //Please add all new roles with deathreason & new deathreason in Susceptible.CallEnabledAndChange
         etc = -1,
     }
     public byte GetRealKiller()
@@ -327,7 +406,7 @@ public class PlayerState
     public int GetKillCount(bool ExcludeSelfKill = false)
     {
         int count = 0;
-        foreach (var state in Main.PlayerStates.Values)
+        foreach (var state in Main.PlayerStates.Values.ToArray())
             if (!(ExcludeSelfKill && state.PlayerId == PlayerId) && state.GetRealKiller() == PlayerId)
                 count++;
         return count;
@@ -375,8 +454,8 @@ public class TaskState
 
         if (AmongUsClient.Instance.AmHost)
         {
-            if (player.Is(CustomRoles.Captain)) Captain.OnTaskComplete(player);
             //FIXME:SpeedBooster class transplant
+            /*
             if (player.IsAlive()
             && player.Is(CustomRoles.SpeedBooster)
             && ((CompletedTasksCount + 1) <= Options.SpeedBoosterTimes.GetInt()))
@@ -386,6 +465,7 @@ public class TaskState
                 if (Main.AllPlayerSpeed[player.PlayerId] > 3) player.Notify(Translator.GetString("SpeedBoosterSpeedLimit"));
                 else player.Notify(string.Format(Translator.GetString("SpeedBoosterTaskDone"), Main.AllPlayerSpeed[player.PlayerId].ToString("0.0#####")));
             }
+            */
 
             /*
             //叛徒修理搞破坏
@@ -418,6 +498,9 @@ public class TaskState
                 }
             }
             */
+
+            if (player.Is(CustomRoles.Captain))
+                Captain.OnTaskComplete(player);
 
             //传送师完成任务
             if (player.IsAlive()
@@ -674,7 +757,16 @@ public static class GameStates
 {
     public static bool InGame = false;
     public static bool AlreadyDied = false;
-    public static bool IsModHost => PlayerControl.AllPlayerControls.ToArray().FirstOrDefault(x => x.PlayerId == 0 && x.IsModClient());
+    /**********Check Game Status***********/
+    public static bool IsModHost => Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId);
+    public static bool IsNormalGame => GameOptionsManager.Instance.CurrentGameOptions.GameMode == GameModes.Normal;
+    public static bool IsHideNSeek => GameOptionsManager.Instance.CurrentGameOptions.GameMode == GameModes.HideNSeek;
+    public static bool SkeldIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Skeld;
+    public static bool MiraHQIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Mira;
+    public static bool PolusIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Polus;
+    public static bool DleksIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Dleks;
+    public static bool AirshipIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Airship;
+    public static bool FungleIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Fungle;
     public static bool IsLobby => AmongUsClient.Instance.GameState == AmongUsClient.GameStates.Joined;
     public static bool IsInGame => InGame;
     public static bool IsEnded => AmongUsClient.Instance.GameState == AmongUsClient.GameStates.Ended;

@@ -15,7 +15,6 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Modules.CustomRoleSelector;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -27,13 +26,21 @@ internal class ChangeRoleSettings
         Main.OverrideWelcomeMsg = "";
         try
         {
-            //注:この時点では役職は設定されていません。
-            Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.GuardianAngel, 0, 0);
-            if (Options.DisableVanillaRoles.GetBool())
+            // Note: No positions are set at this time.
+            if (GameStates.IsNormalGame)
             {
-                Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Scientist, 0, 0);
-                Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Engineer, 0, 0);
-                Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Shapeshifter, 0, 0);
+                Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.GuardianAngel, 0, 0);
+                if (Options.DisableVanillaRoles.GetBool())
+                {
+                    Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Scientist, 0, 0);
+                    Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Engineer, 0, 0);
+                    Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Shapeshifter, 0, 0);
+                }
+            }
+            else if (GameStates.IsHideNSeek)
+            {
+                Main.HideNSeekOptions.NumImpostors = Options.NumImpostorsHnS.GetInt();
+                Main.AliveImpostorCount = Main.HideNSeekOptions.NumImpostors;
             }
 
             Main.PlayerStates = new();
@@ -127,16 +134,21 @@ internal class ChangeRoleSettings
 
             Options.UsedButtonCount = 0;
 
-            GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor = false;
             Main.RealOptionsData = new OptionBackupData(GameOptionsManager.Instance.CurrentGameOptions);
+
+            if (GameStates.IsNormalGame)
+            {
+                GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor = false;
+
+                MeetingTimeManager.Init();
+
+                Main.DefaultCrewmateVision = Main.RealOptionsData.GetFloat(FloatOptionNames.CrewLightMod);
+                Main.DefaultImpostorVision = Main.RealOptionsData.GetFloat(FloatOptionNames.ImpostorLightMod);
+            }
 
             Main.introDestroyed = false;
 
             RandomSpawn.CustomNetworkTransformPatch.NumOfTP = new();
-
-            MeetingTimeManager.Init();
-            Main.DefaultCrewmateVision = Main.RealOptionsData.GetFloat(FloatOptionNames.CrewLightMod);
-            Main.DefaultImpostorVision = Main.RealOptionsData.GetFloat(FloatOptionNames.ImpostorLightMod);
 
             Main.LastNotifyNames = new();
 
@@ -151,7 +163,7 @@ internal class ChangeRoleSettings
             Camouflage.Init();
 
             var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
-            if (invalidColor.Any())
+            if (invalidColor.Length > 0)
             {
                 var msg = GetString("Error.InvalidColor");
                 Logger.SendInGame(msg);
@@ -168,6 +180,7 @@ internal class ChangeRoleSettings
                     Main.LastNotifyNames[pair] = target.name;
                 }
             }
+
             foreach (var pc in Main.AllPlayerControls)
             {
                 var colorId = pc.Data.DefaultOutfit.ColorId;
@@ -176,7 +189,10 @@ internal class ChangeRoleSettings
                 //Main.AllPlayerNames[pc.PlayerId] = pc?.Data?.PlayerName;
 
                 Main.PlayerColors[pc.PlayerId] = Palette.PlayerColors[colorId];
-                Main.AllPlayerSpeed[pc.PlayerId] = Main.RealOptionsData.GetFloat(FloatOptionNames.PlayerSpeedMod); //移動速度をデフォルトの移動速度に変更
+                
+                if (GameStates.IsNormalGame)
+                    Main.AllPlayerSpeed[pc.PlayerId] = Main.RealOptionsData.GetFloat(FloatOptionNames.PlayerSpeedMod); //移動速度をデフォルトの移動速度に変更
+                
                 ReportDeadBodyPatch.CanReport[pc.PlayerId] = true;
                 ReportDeadBodyPatch.WaitReport[pc.PlayerId] = new();
                 pc.cosmetics.nameText.text = pc.name;
@@ -186,12 +202,14 @@ internal class ChangeRoleSettings
                 Camouflage.PlayerSkins[pc.PlayerId] = new GameData.PlayerOutfit().Set(outfit.PlayerName, outfit.ColorId, outfit.HatId, outfit.SkinId, outfit.VisorId, outfit.PetId, outfit.NamePlateId);
                 Main.clientIdList.Add(pc.GetClientId());
             }
+
             Main.VisibleTasksCount = true;
             if (__instance.AmHost)
             {
                 RPC.SyncCustomSettingsRPC();
                 Main.RefixCooldownDelay = 0;
             }
+
             FallFromLadder.Reset();
             BountyHunter.Init();
             SerialKiller.Init();
@@ -217,6 +235,7 @@ internal class ChangeRoleSettings
             Sheriff.Init();
             CopyCat.Init();
             Captain.Init();
+            GuessMaster.Init();
             Cleanser.Init();
             SwordsMan.Init();
             EvilTracker.Init();
@@ -246,6 +265,7 @@ internal class ChangeRoleSettings
             Benefactor.Init();
             Taskinator.Init();
             QuickShooter.Init();
+            Kamikaze.Init();
             Camouflager.Init();
             Divinator.Init();
             Jailer.Init();
@@ -336,7 +356,8 @@ internal class ChangeRoleSettings
             FFF.Init();
             Instigator.Init();
             OverKiller.Init();
-            
+            Quizmaster.Init();
+
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
 
@@ -367,6 +388,20 @@ internal class SelectRolesPatch
     public static void Prefix()
     {
         if (!AmongUsClient.Instance.AmHost) return;
+
+        if (GameStates.IsHideNSeek)
+        {
+            if (Main.EnableGM.Value)
+            {
+                PlayerControl.LocalPlayer.RpcSetCustomRole(CustomRoles.GM);
+                PlayerControl.LocalPlayer.RpcSetRole(RoleTypes.Crewmate);
+                PlayerControl.LocalPlayer.Data.IsDead = true;
+                Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
+            }
+
+            EAC.OriginalRoles = new();
+            return;
+        }
 
         try
         {
@@ -425,6 +460,25 @@ internal class SelectRolesPatch
 
         try
         {
+            if (GameStates.IsHideNSeek)
+            {
+                GameOptionsSender.AllSenders.Clear();
+                foreach (var pc in Main.AllPlayerControls)
+                {
+                    GameOptionsSender.AllSenders.Add(
+                        new PlayerGameOptionsSender(pc)
+                    );
+                }
+
+                //Utils.CountAlivePlayers(true);
+
+                EAC.LogAllRoles();
+                Utils.SyncAllSettings();
+                SetColorPatch.IsAntiGlitchDisabled = false;
+
+                return;
+            }
+
             List<(PlayerControl, RoleTypes)> newList = new();
             foreach (var sd in RpcSetRoleReplacer.StoragedData.ToArray())
             {
@@ -657,6 +711,9 @@ internal class SelectRolesPatch
                     case CustomRoles.Captain:
                         Captain.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.GuessMaster:
+                        GuessMaster.Add(pc.PlayerId);
+                        break;
                     case CustomRoles.TimeMaster:
                         Main.TimeMasterNum[pc.PlayerId] = 0;
                         Main.TimeMasterNumOfUsed.Add(pc.PlayerId, Options.TimeMasterMaxUses.GetInt());
@@ -881,6 +938,9 @@ internal class SelectRolesPatch
                     case CustomRoles.Pyromaniac:
                         Pyromaniac.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.Kamikaze:
+                        Kamikaze.Add(pc.PlayerId);
+                        break;
                     case CustomRoles.Werewolf:
                         Werewolf.Add(pc.PlayerId);
                         break;
@@ -983,6 +1043,9 @@ internal class SelectRolesPatch
                     case CustomRoles.Enigma:
                         Enigma.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.Quizmaster:
+                        Quizmaster.Add(pc.PlayerId);
+                        break;
                 }
                 foreach (var subRole in pc.GetCustomSubRoles().ToArray())
                 {
@@ -1029,10 +1092,10 @@ internal class SelectRolesPatch
             switch (Options.CurrentGameMode)
             {
                 case CustomGameMode.Standard:
-                    GameEndChecker.SetPredicateToNormal();
+                    GameEndCheckerForNormal.SetPredicateToNormal();
                     break;
                 case CustomGameMode.FFA:
-                    GameEndChecker.SetPredicateToFFA();
+                    GameEndCheckerForNormal.SetPredicateToFFA();
                     break;
             }
 

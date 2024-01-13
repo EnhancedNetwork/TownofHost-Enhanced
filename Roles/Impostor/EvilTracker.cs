@@ -131,7 +131,7 @@ public static class EvilTracker
             SetTarget();
             Utils.MarkEveryoneDirtySettings();
         }
-        foreach (var playerId in playerIdList)
+        foreach (var playerId in playerIdList.ToArray())
         {
             var pc = Utils.GetPlayerById(playerId);
             var target = Utils.GetPlayerById(GetTargetId(playerId));
@@ -149,7 +149,7 @@ public static class EvilTracker
     public static void SetTarget(byte trackerId = byte.MaxValue, byte targetId = byte.MaxValue)
     {
         if (trackerId == byte.MaxValue) // ターゲット再設定可能に
-            foreach (var playerId in playerIdList)
+            foreach (var playerId in playerIdList.ToArray())
                 CanSetTarget[playerId] = true;
         else if (targetId == byte.MaxValue) // ターゲット削除
             Target[trackerId] = byte.MaxValue;
@@ -187,7 +187,7 @@ public static class EvilTracker
         ImpostorsId[trackerId].RemoveWhere(id => Main.PlayerStates[id].IsDead);
 
         var sb = new StringBuilder(80);
-        if (ImpostorsId[trackerId].Any())
+        if (ImpostorsId[trackerId].Count > 0)
         {
             sb.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Impostor)}>");
             foreach (var impostorId in ImpostorsId[trackerId])

@@ -15,7 +15,7 @@ class RandomSpawn
         public static void Postfix(CustomNetworkTransform __instance, [HarmonyArgument(0)] Vector2 position)
         {
             if (!AmongUsClient.Instance.AmHost) return;
-            if (position == new Vector2(-25f, 40f)) return; //If it's the first spring, RETURN
+            if (position == new Vector2(-25f, 40f)) return; //If it's the first spring, return
             if (GameStates.IsInTask)
             {
                 var player = Main.AllPlayerControls.FirstOrDefault(p => p.NetTransform == __instance);
@@ -36,13 +36,16 @@ class RandomSpawn
                 if (NumOfTP[player.PlayerId] == 1)
                 {
                     //return if the map is not airship
-                    if (Main.NormalOptions.MapId != 4)
+                    if (!GameStates.AirshipIsActive)
                     {
                         return;
                     }
 
-                    // Reset cooldown player
-                    player.RpcResetAbilityCooldown();
+                    if (GameStates.IsNormalGame)
+                    {
+                        // Reset cooldown player
+                        player.RpcResetAbilityCooldown();
+                    }
 
                     //return if random spawn is off
                     if (!Options.RandomSpawn.GetBool())
@@ -62,6 +65,7 @@ class RandomSpawn
             var selectRand = (Options.SpawnRandomLocation.GetBool() && Options.SpawnRandomVents.GetBool()) ? IRandom.Instance.Next(0, 101) 
                 : Options.SpawnRandomLocation.GetBool() ? 50
                 : Options.SpawnRandomVents.GetBool() ? 51 : -1; // -1: Not Random Spawn
+
             if (Options.CurrentGameMode == CustomGameMode.FFA) selectRand = 50;
             if (selectRand == -1) return;
 

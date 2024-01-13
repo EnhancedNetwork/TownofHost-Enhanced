@@ -3,7 +3,9 @@ using Hazel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using InnerNet;
 using static TOHE.Translator;
+using TOHE.Modules.ChatManager;
 
 namespace TOHE;
 
@@ -26,7 +28,7 @@ internal class EAC
     public static bool ReceiveRpc(PlayerControl pc, byte callId, MessageReader reader)
     {
         if (!AmongUsClient.Instance.AmHost) return false;
-        if (pc == null || reader == null || pc.AmOwner) return false;
+        if (pc == null || reader == null) return false;
         try
         {
             MessageReader sr = MessageReader.Get(reader);
@@ -78,15 +80,14 @@ internal class EAC
                     break;
                 case RpcCalls.SendChat:
                     var text = sr.ReadString();
-                    if (text.StartsWith("/")) return false;
-                    if (
+                    if ((
                         text.Contains("░") ||
                         text.Contains("▄") ||
                         text.Contains("█") ||
                         text.Contains("▌") ||
                         text.Contains("▒") ||
                         text.Contains("习近平")
-                        )
+                        ))
                     {
                         Report(pc, "非法消息");
                         Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】发送非法消息，已驳回", "EAC");
@@ -94,20 +95,31 @@ internal class EAC
                     }
                     break;
                 case RpcCalls.StartMeeting:
-                    //Client will never send StartMeeting rpc
+                    //Only sent by host
                     WarnHost();
                     Report(pc, "Bad StartMeeting");
                     HandleCheat(pc, "Bad StartMeeting");
                     Logger.Fatal($"非法设置玩家【{pc.GetClientId()}:{pc.GetRealName()}】的游戏名称，已驳回", "EAC");
                     return true;
                 case RpcCalls.ReportDeadBody:
-                    var p1 = Utils.GetPlayerById(sr.ReadByte());
-                    if (p1 != null && p1.IsAlive() && !p1.Is(CustomRoles.Paranoia) && !p1.Is(CustomRoles.GM))
+                    if (!GameStates.IsInGame)
                     {
                         WarnHost();
-                        Report(pc, "非法报告尸体");
-                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法报告尸体：【{p1?.GetNameWithRole() ?? "null"}】，已驳回", "EAC");
+                        Report(pc, "Report body out of game A");
+                        HandleCheat(pc, "Report body out of game A");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非游戏内开会，已驳回", "EAC");
                         return true;
+                    }
+                    if (ReportTimes.TryGetValue(pc.PlayerId, out int rtimes))
+                    {
+                        if (rtimes > 14)
+                        {
+                            WarnHost();
+                            Report(pc, "Spam report bodies A");
+                            HandleCheat(pc, "Spam report bodies A");
+                            Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】刷报告尸体满14次，已驳回", "EAC");
+                            return true;
+                        }
                     }
                     break;
                 case RpcCalls.SetColor:
@@ -131,6 +143,13 @@ internal class EAC
                         Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法设置颜色，已驳回", "EAC");
                         return true;
                     }
+                    if (pc.AmOwner)
+                    {
+                        WarnHost();
+                        Report(pc, "非法设置房主颜色");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法设置房主颜色，已驳回", "EAC");
+                        return true;
+                    }
                     break;
                 case RpcCalls.CheckMurder:
                     if (GameStates.IsLobby)
@@ -143,11 +162,30 @@ internal class EAC
                     }
                     break;
                 case RpcCalls.MurderPlayer:
-                    //If using version protocol, client should never directly send Murder player rpc
+                    //Calls will only be sent by server / host
                     Report(pc, "Directly Murder Player");
                     HandleCheat(pc, "Directly Murder Player");
                     Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】直接击杀，已驳回", "EAC");
                     return true;
+                case RpcCalls.CheckShapeshift:
+                    if (GameStates.IsLobby)
+                    {
+                        Report(pc, "Lobby Check Shapeshift");
+                        HandleCheat(pc, "Lobby Check Shapeshift");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】直接变形，已驳回", "EAC");
+                        return true;
+                    }
+                    break;
+                case RpcCalls.Shapeshift:
+                    Report(pc, "Directly Shapeshift");
+                    var swriter = AmongUsClient.Instance.StartRpcImmediately(pc.NetId, (byte)RpcCalls.Shapeshift, SendOption.Reliable, -1);
+                    swriter.WriteNetObject(pc);
+                    swriter.Write(false);
+                    AmongUsClient.Instance.FinishRpcImmediately(swriter);
+                    HandleCheat(pc, "Directly Shapeshift");
+                    Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】直接变形，已驳回", "EAC");
+                    return true;
+
             }
             switch (callId)
             {
@@ -158,6 +196,7 @@ internal class EAC
                     HandleCheat(pc, GetString("EAC.CheatDetected.EAC"));
                     return true;
                 case 7:
+                case 8:
                     if (!GameStates.IsLobby)
                     {
                         WarnHost();
@@ -185,49 +224,46 @@ internal class EAC
                         return true;
                     }
                     break;
-                case 41:
+                case 38:
                     if (GameStates.IsInGame)
                     {
                         WarnHost();
-                        Report(pc, "非法设置宠物");
-                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法设置宠物，已驳回", "EAC");
+                        Report(pc, "Set level in game");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】游戏内改等级，已驳回", "EAC");
                         return true;
                     }
-                    break;
-                case 40:
-                    if (GameStates.IsInGame)
-                    {
-                        WarnHost();
-                        Report(pc, "非法设置皮肤");
-                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法设置皮肤，已驳回", "EAC");
-                        return true;
-                    }
-                    break;
-                case 42:
-                    if (GameStates.IsInGame)
-                    {
-                        WarnHost();
-                        Report(pc, "非法设置面部装扮");
-                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法设置面部装扮，已驳回", "EAC");
-                        return true;
-                    }
+                    //if (sr.ReadPackedUInt32() > 0)
+                    //{
+                    //    uint ClientDataLevel = pc.GetClient() == null ? pc.GetClient().PlayerLevel : 0;
+                    //    uint PlayerControlLevel = sr.ReadPackedUInt32();
+                    //    if (ClientDataLevel != 0 && Math.Abs(PlayerControlLevel - ClientDataLevel) > 4)
+                    //    {
+                    //        WarnHost();
+                    //        Report(pc, "Sus Level Change");
+                    //        AmongUsClient.Instance.KickPlayer(pc.GetClientId(), false);
+                    //        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】游戏内改等级，已驳回", "EAC");
+                    //        return true;
+                    //    }
+                    //}
+                    //Buggy
                     break;
                 case 39:
+                case 40:
+                case 41:
+                case 42:
+                case 43:
                     if (GameStates.IsInGame)
                     {
                         WarnHost();
-                        Report(pc, "非法设置帽子");
-                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法设置帽子，已驳回", "EAC");
+                        Report(pc, "Change skin in game");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】游戏内改皮肤，已驳回", "EAC");
                         return true;
                     }
-                    break;
-                case 43:
-                    if (sr.BytesRemaining > 0 && sr.ReadBoolean()) return false;
-                    if (GameStates.IsInGame)
+                    if (pc.AmOwner)
                     {
                         WarnHost();
-                        Report(pc, "非法设置游戏名称");
-                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】非法设置名称，已驳回", "EAC");
+                        Report(pc, "Change Host skin");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】改房主皮肤，已驳回", "EAC");
                         return true;
                     }
                     break;
@@ -259,9 +295,9 @@ internal class EAC
     public static bool RpcUpdateSystemCheck(PlayerControl player, SystemTypes systemType, byte amount)
     {
         //Update system rpc can not get received by playercontrol.handlerpc
-        var Mapid = Main.NormalOptions.MapId;
+        var Mapid = Utils.GetActiveMapId();
         Logger.Info("Check sabotage RPC" + ", PlayerName: " + player.GetNameWithRole() + ", SabotageType: " + systemType.ToString() + ", amount: " + amount.ToString(), "EAC");
-        if (player.AmOwner || !AmongUsClient.Instance.AmHost) return false;
+        if (!AmongUsClient.Instance.AmHost) return false;
         if (systemType == SystemTypes.Sabotage) //Normal sabotage using buttons
         {
             if (!player.HasImpKillButton(true))
@@ -389,12 +425,17 @@ internal class EAC
     {
         string msg = $"{pc.GetClientId()}|{pc.FriendCode}|{pc.Data.PlayerName}|{pc.GetClient().GetHashedPuid()}|{reason}";
         //Cloud.SendData(msg);
-        Logger.Fatal($"EAC报告：{pc.GetRealName()}: {reason}", "EAC Cloud");
-        Logger.SendInGame(string.Format(GetString("Message.NoticeByEAC"), pc?.Data?.PlayerName, reason));
-
+        Logger.Fatal($"EAC报告：{msg}", "EAC Cloud");
+        if (Options.CheatResponses.GetInt() != 5)
+            Logger.SendInGame(string.Format(GetString("Message.NoticeByEAC"), $"{pc?.Data?.PlayerName} | {pc.GetClient().GetHashedPuid()}", reason));
     }
     public static bool ReceiveInvalidRpc(PlayerControl pc, byte callId)
     {
+        if (Options.CheatResponses.GetInt() == 5)
+        {
+            Logger.Info("Cancel action bcz cheat response is cancel.", "MalumMenu on top!");
+            return false;
+        }
         switch (callId)
         {
             case unchecked((byte)42069):
@@ -410,7 +451,7 @@ internal class EAC
         {
             case 0:
                 AmongUsClient.Instance.KickPlayer(pc.GetClientId(), true);
-                string msg0 = string.Format(GetString("Message.BanedByEAC"), pc?.Data?.PlayerName, text);
+                string msg0 = string.Format(GetString("Message.BannedByEAC"), pc?.Data?.PlayerName, text);
                 Logger.Warn(msg0, "EAC");
                 Logger.SendInGame(msg0);
                 break;
@@ -431,9 +472,14 @@ internal class EAC
                 if (!BanManager.TempBanWhiteList.Contains(pc.GetClient().GetHashedPuid()))
                     BanManager.TempBanWhiteList.Add(pc.GetClient().GetHashedPuid());
                 AmongUsClient.Instance.KickPlayer(pc.GetClientId(), true);
-                string msg2 = string.Format(GetString("Message.TempBanedByEAC"), pc?.Data?.PlayerName, text);
+                string msg2 = string.Format(GetString("Message.TempBannedByEAC"), pc?.Data?.PlayerName, text);
                 Logger.Warn(msg2, "EAC");
                 Logger.SendInGame(msg2);
+                break;
+            case 5:
+                Logger.Info("No Handle Cheat", "MalumMenu_On_Top");
+                //Hope u like this scp =(
+                //Even handle the cheats brings lag
                 break;
         }
     }

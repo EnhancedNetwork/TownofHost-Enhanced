@@ -221,7 +221,7 @@ namespace TOHE.Roles.Impostor
 
         public static bool IsInActiveDeathpact(PlayerControl player)
         {
-            if (!ActiveDeathpacts.Any()) return false;
+            if (ActiveDeathpacts.Count == 0) return false;
             if (PlayersInDeathpact.Any(a => ActiveDeathpacts.Contains(a.Key) && a.Value.Any(b => b.PlayerId == player.PlayerId))) return true;
             return false;
         }
@@ -280,7 +280,7 @@ namespace TOHE.Roles.Impostor
 
         public static void OnReportDeadBody()
         {
-            foreach (var deathpact in ActiveDeathpacts.ToList())
+            foreach (var deathpact in ActiveDeathpacts.ToArray())
             {
                 if (KillDeathpactPlayersOnMeeting.GetBool())
                 {

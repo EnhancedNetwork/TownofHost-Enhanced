@@ -57,7 +57,7 @@ public class FallFromLadder
                     player.MurderPlayer(player, ExtendedPlayerControl.ResultFlags);
                     Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Fall;
                     Main.PlayerStates[player.PlayerId].SetDead();
-                }, 0.05f, "LadderFallTask");
+                }, 0.05f, "Ladder Fall Task");
             }
         }
     }

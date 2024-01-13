@@ -1,5 +1,6 @@
 ﻿using Hazel;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -109,7 +110,7 @@ public static class Cleanser
     {
         if (!IsEnable) return;
 
-        foreach (var pid in CleanserTarget.Keys)
+        foreach (var pid in CleanserTarget.Keys.ToArray())
         {
             DidVote[pid] = false;
             if (pid == byte.MaxValue) continue;

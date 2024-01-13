@@ -55,7 +55,7 @@ public static class Huntsman
         playerIdList.Add(playerId);
         IsEnable = true;
 
-        _ = new LateTask(ResetTargets, 8f);
+        _ = new LateTask(ResetTargets, 8f, "Huntsman Reset Targets");
         KCD = KillCooldown.GetFloat();
 
         if (!AmongUsClient.Instance.AmHost) return;

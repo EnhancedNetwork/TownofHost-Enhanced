@@ -58,7 +58,7 @@ public static class Pyromaniac
 
         if (DousedList.Contains(target.PlayerId))
         {
-            _ = new LateTask(() => { killer.SetKillCooldown(BurnCooldown.GetFloat()); }, 0.1f);
+            _ = new LateTask(() => { killer.SetKillCooldown(BurnCooldown.GetFloat()); }, 0.1f, "Pyromaniac Set Kill Cooldown");
             return true;
         }
         else

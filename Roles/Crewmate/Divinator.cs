@@ -1,5 +1,6 @@
 using Hazel;
 using System.Collections.Generic;
+using System.Linq;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -291,6 +292,8 @@ public static class Divinator
 
                 CustomRoles.EvilGuesser or
                 CustomRoles.NiceGuesser or
+                CustomRoles.Doomsayer or
+                CustomRoles.GuessMaster or
                 CustomRoles.DarkHide or
                 CustomRoles.Camouflager or
                 CustomRoles.Chameleon or
@@ -325,9 +328,10 @@ public static class Divinator
                 CustomRoles.Divinator or
                 CustomRoles.EvilDiviner or
                 CustomRoles.PotionMaster or
-                //CustomRoles.Occultist or
+                //CustomRoles.Occultist or <-- Also removed from divinator LANG 
+                CustomRoles.Kamikaze or
                 CustomRoles.HexMaster or
-                CustomRoles.Witch
+                CustomRoles.Witch 
                 => "Result23",
 
                 CustomRoles.Needy or
@@ -379,6 +383,7 @@ public static class Divinator
                 CustomRoles.Marshall or
                 CustomRoles.Workaholic or
                 CustomRoles.Phantom or
+                CustomRoles.Solsticer or
                 CustomRoles.NiceMini or
                 CustomRoles.EvilMini or
                 CustomRoles.Terrorist
@@ -543,7 +548,7 @@ public static class Divinator
     public static void OnReportDeadBody()
     {
         didVote.Clear();
-        foreach (var divinatorId in CheckLimit.Keys)
+        foreach (var divinatorId in CheckLimit.Keys.ToArray())
         {
             TempCheckLimit[divinatorId] = CheckLimit[divinatorId];
             SendRPC(divinatorId, isTemp: true);

@@ -157,7 +157,7 @@ namespace TOHE.Roles.Impostor
                 Main.AllPlayerSpeed[player.PlayerId] = DefaultSpeed;
                 ReportDeadBodyPatch.CanReport[player.PlayerId] = true;
                 player.MarkDirtySettings();
-            }, TrapFreezeTime.GetFloat(), "PitfallTrapPlayerFreeze");
+            }, TrapFreezeTime.GetFloat(), "Pitfall Trap Player Freeze");
         }
 
         private static void ReducePlayerVision(PlayerControl player)
@@ -171,7 +171,7 @@ namespace TOHE.Roles.Impostor
             {
                 ReducedVisionPlayers.Remove(player.PlayerId);
                 player.MarkDirtySettings();
-            }, TrapCauseVisionTime.GetFloat(), "PitfallTrapPlayerVision");
+            }, TrapCauseVisionTime.GetFloat(), "Pitfall Trap Player Vision");
         }
     }
 

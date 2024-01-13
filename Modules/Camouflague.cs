@@ -50,12 +50,12 @@ public static class Camouflage
 
         IsActive = Options.CommsCamouflage.GetBool() && !(Options.DisableOnSomeMaps.GetBool() &&
             (
-            (Options.DisableOnSkeld.GetBool() && Options.IsActiveSkeld) ||
-            (Options.DisableOnMira.GetBool() && Options.IsActiveMiraHQ) ||
-            (Options.DisableOnPolus.GetBool() && Options.IsActivePolus) ||
-            (Options.DisableOnDleks.GetBool() && Options.IsActiveDleks) ||
-            (Options.DisableOnFungle.GetBool() && Options.IsActiveFungle) ||
-            (Options.DisableOnAirship.GetBool() && Options.IsActiveAirship)
+            (Options.DisableOnSkeld.GetBool() && GameStates.SkeldIsActive) ||
+            (Options.DisableOnMira.GetBool() && GameStates.MiraHQIsActive) ||
+            (Options.DisableOnPolus.GetBool() && GameStates.PolusIsActive) ||
+            (Options.DisableOnDleks.GetBool() && GameStates.DleksIsActive) ||
+            (Options.DisableOnAirship.GetBool() && GameStates.AirshipIsActive) ||
+            (Options.DisableOnFungle.GetBool() && GameStates.FungleIsActive)
             ));
 
         switch (Options.KPDCamouflageMode.GetValue())
@@ -119,6 +119,11 @@ public static class Camouflage
             foreach (var pc in Main.AllPlayerControls)
             {
                 RpcSetSkin(pc);
+
+                if (!IsCamouflage && !pc.IsAlive())
+                {
+                    pc.RpcRemovePet();
+                }
             }
             Utils.NotifyRoles(NoCache: true);
         }
@@ -165,7 +170,7 @@ public static class Camouflage
         // if the current Outfit is the same, return it
         if (newOutfit.Compare(target.Data.DefaultOutfit)) return;
 
-        Logger.Info($"newOutfit={newOutfit.GetString()}", "RpcSetSkin");
+        Logger.Info($"newOutfit={newOutfit.GetString().RemoveHtmlTags()}", "RpcSetSkin");
 
         var sender = CustomRpcSender.Create(name: $"Camouflage.RpcSetSkin({target.Data.PlayerName})");
 

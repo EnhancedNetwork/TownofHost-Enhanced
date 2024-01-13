@@ -109,7 +109,7 @@ public static class BallLightning
     public static void OnFixedUpdate()
     {
         List<byte> deList = new();
-        foreach (var ghost in GhostPlayer)
+        foreach (var ghost in GhostPlayer.ToArray())
         {
             var gs = Utils.GetPlayerById(ghost);
             if (gs == null || !gs.IsAlive() || gs.Data.Disconnected)
@@ -134,16 +134,16 @@ public static class BallLightning
                 break;
             }
         }
-        if (deList.Any())
+        if (deList.Count > 0)
         {
             GhostPlayer.RemoveAll(deList.Contains);
-            foreach (var gs in deList) SendRPC(gs);
+            foreach (var gs in deList.ToArray()) SendRPC(gs);
             Utils.NotifyRoles();
         }
     }
     public static void OnReportDeadBody()
     {
-        foreach (var ghost in GhostPlayer)
+        foreach (var ghost in GhostPlayer.ToArray())
         {
             var gs = Utils.GetPlayerById(ghost);
             if (gs == null) continue;

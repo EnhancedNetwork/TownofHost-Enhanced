@@ -118,8 +118,8 @@ public static class ParityCop
 
         int operate = 0; // 1:ID 2:猜测
         msg = msg.ToLower().TrimStart().TrimEnd();
-        if (CheckCommond(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id")) operate = 1;
-        else if (CheckCommond(ref msg, "compare|cmp|比较", false)) operate = 2;
+        if (CheckCommond(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id|編號|玩家編號")) operate = 1;
+        else if (CheckCommond(ref msg, "compare|cmp|比较|比較", false)) operate = 2;
         else return false;
 
         if (!pc.IsAlive())
@@ -165,7 +165,7 @@ public static class ParityCop
                             if (!isUI) Utils.SendMessage(GetString("ParityCheckMax"), pc.PlayerId);
                             else pc.ShowPopUp(GetString("ParityCheckMax"));
                             Logger.Msg("Check attempted at max checks per game", "Parity Cop");
-                        }, 0.2f, "ParityCop");
+                        }, 0.2f, "Parity Cop Msg 1");
                     }
                     else
                     {
@@ -174,7 +174,7 @@ public static class ParityCop
                             if (!isUI) Utils.SendMessage(GetString("ParityCheckRound"), pc.PlayerId);
                             else pc.ShowPopUp(GetString("ParityCheckRound"));
                             Logger.Msg("Check attempted at max checks per meeting", "Parity Cop");
-                        }, 0.2f, "ParityCop");
+                        }, 0.2f, "Parity Cop Msg 2");
                     }
                     return true;
                 }
@@ -185,7 +185,7 @@ public static class ParityCop
                         if (!isUI) Utils.SendMessage(GetString("ParityCheckSelf"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.ParityCop), GetString("ParityCheckTitle")));
                         else pc.ShowPopUp(Utils.ColorString(Utils.GetRoleColor(CustomRoles.ParityCop), GetString("ParityCheckSelf")) + "\n" + GetString("ParityCheckTitle"));
                         Logger.Msg("Check attempted on self", "Parity Cop");
-                    }, 0.2f, "ParityCop");
+                    }, 0.2f, "Parity Cop Msg 3");
                     return true;
                 }
                 else if (target1.GetCustomRole().IsRevealingRole(target1) || target1.GetCustomSubRoles().Any(role => role.IsRevealingRole(target1)) || target2.GetCustomRole().IsRevealingRole(target2) || target2.GetCustomSubRoles().Any(role => role.IsRevealingRole(target2)))
@@ -195,7 +195,7 @@ public static class ParityCop
                         if (!isUI) Utils.SendMessage(GetString("ParityCheckReveal"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.ParityCop), GetString("ParityCheckTitle")));
                         else pc.ShowPopUp(Utils.ColorString(Utils.GetRoleColor(CustomRoles.ParityCop), GetString("ParityCheckReveal")) + "\n" + GetString("ParityCheckTitle"));
                         Logger.Msg("Check attempted on revealed role", "Parity Cop");
-                    }, 0.2f, "ParityCop");
+                    }, 0.2f, "Parity Cop Msg 4");
                     return true;
                 }
                 else
@@ -213,7 +213,7 @@ public static class ParityCop
                             if (!isUI) Utils.SendMessage(string.Format(GetString("ParityCheckTrue"), target1.GetRealName(), target2.GetRealName()), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.ParityCop), GetString("ParityCheckTitle")));
                             else pc.ShowPopUp(Utils.ColorString(Utils.GetRoleColor(CustomRoles.ParityCop), GetString("ParityCheckTrue")) + "\n" + GetString("ParityCheckTitle"));
                             Logger.Msg("Check attempt, result TRUE", "Parity Cop");
-                        }, 0.2f, "ParityCop");
+                        }, 0.2f, "Parity Cop Msg 5");
                     }
                     else
                     {
@@ -222,7 +222,7 @@ public static class ParityCop
                             if (!isUI) Utils.SendMessage(string.Format(GetString("ParityCheckFalse"), target1.GetRealName(), target2.GetRealName()), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.ParityCop), GetString("ParityCheckTitle")));
                             else pc.ShowPopUp(Utils.ColorString(Utils.GetRoleColor(CustomRoles.ParityCop), GetString("ParityCheckFalse")) + "\n" + GetString("ParityCheckTitle"));
                             Logger.Msg("Check attempt, result FALSE", "Parity Cop");
-                        }, 0.2f, "ParityCop");
+                        }, 0.2f, "Parity Cop Msg 6");
                     }
 
                     if (ParityCheckTargetKnow.GetBool())
@@ -242,7 +242,7 @@ public static class ParityCop
                             Utils.SendMessage(textToSend1, target2.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.ParityCop), GetString("ParityCheckTitle")));
                             Logger.Msg("Check attempt, target1 notified", "Parity Cop");
                             Logger.Msg("Check attempt, target2 notified", "Parity Cop");
-                        }, 0.2f, "ParityCop");
+                        }, 0.2f, "Parity Cop Msg 7");
 
                         if (ParityCheckRevealTargetTeam.GetBool() && pc.AllTasksCompleted())
                         {
@@ -262,7 +262,7 @@ public static class ParityCop
                                 Utils.SendMessage(string.Format(GetString("ParityCopTargetReveal"), target2.GetRealName(), roleT2), target1.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.ParityCop), GetString("ParityCheckTitle")));
                                 Utils.SendMessage(string.Format(GetString("ParityCopTargetReveal"), target1.GetRealName(), roleT1), target2.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.ParityCop), GetString("ParityCheckTitle")));
                                 Logger.Msg($"check attempt, target1 notified target2 as {roleT2} and target2 notified target1 as {roleT1}", "Parity Cop");
-                            }, 0.3f, "ParityCop");
+                            }, 0.3f, "Parity Cop Msg 8");
                         }
                     }
                     else

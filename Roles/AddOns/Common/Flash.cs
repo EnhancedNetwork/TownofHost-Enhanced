@@ -1,4 +1,5 @@
-﻿using static TOHE.Options;
+﻿using AmongUs.GameOptions;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
@@ -15,8 +16,11 @@ public static class Flash
             .SetParent(CustomRoleSpawnChances[CustomRoles.Flash])
             .SetValueFormat(OptionFormat.Multiplier);
     }
-    public static void SetSpeed(byte playerId)
+    public static void SetSpeed(byte playerId, bool clearAddOn)
     {
-        Main.AllPlayerSpeed[playerId] = OptionSpeed.GetFloat();
+        if (!clearAddOn)
+            Main.AllPlayerSpeed[playerId] = OptionSpeed.GetFloat();
+        else
+            Main.AllPlayerSpeed[playerId] = Main.RealOptionsData.GetFloat(FloatOptionNames.PlayerSpeedMod);
     }
 }

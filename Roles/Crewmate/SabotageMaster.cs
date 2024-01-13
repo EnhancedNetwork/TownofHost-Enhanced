@@ -54,7 +54,7 @@ public static class SabotageMaster
         UsedSkillCount.Add(playerId, 0);
         IsEnable = true;
     }
-    public static void RepairSystem(ShipStatus __instance, SystemTypes systemType, byte amount, byte playerId)
+    public static void UpdateSystem(ShipStatus __instance, SystemTypes systemType, byte amount, byte playerId)
     {
         switch (systemType)
         {
@@ -106,7 +106,7 @@ public static class SabotageMaster
                 if (!FixesDoors.GetBool()) break;
                 if (DoorsProgressing == true) break;
 
-                int mapId = Main.NormalOptions.MapId;
+                int mapId = Utils.GetActiveMapId();
                 if (AmongUsClient.Instance.NetworkMode == NetworkModes.FreePlay) mapId = AmongUsClient.Instance.TutorialMapId;
 
                 DoorsProgressing = true;
@@ -131,6 +131,7 @@ public static class SabotageMaster
                 DoorsProgressing = false;
                 break;
         }
+        Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(playerId));
     }
     public static void SwitchSystemRepair(SwitchSystem __instance, byte amount, byte playerId)
     {

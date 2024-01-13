@@ -17,13 +17,13 @@ public static class NameNotifyManager
         Notice.Add(pc.PlayerId, new(text, Utils.GetTimeStamp() + (long)time));
         SendRPC(pc.PlayerId);
         Utils.NotifyRoles(SpecifySeer: pc);
-        Logger.Info($"New name notify for {pc.GetNameWithRole()}: {text} ({time}s)", "Name Notify");
+        Logger.Info($"New name notify for {pc.GetNameWithRole().RemoveHtmlTags()}: {text} ({time}s)", "Name Notify");
     }
     public static void OnFixedUpdate(PlayerControl player)
     {
         if (!GameStates.IsInTask)
         {
-            Notice = new();
+            Notice.Clear();
             return;
         }
         if (Notice.ContainsKey(player.PlayerId) && Notice[player.PlayerId].Item2 < Utils.GetTimeStamp())
@@ -57,8 +57,9 @@ public static class NameNotifyManager
     {
         byte PlayerId = reader.ReadByte();
         Notice.Remove(PlayerId);
+        long now = Utils.GetTimeStamp();
         if (reader.ReadBoolean())
-            Notice.Add(PlayerId, new(reader.ReadString(), Utils.GetTimeStamp() + (long)reader.ReadSingle()));
-        Logger.Info($"New name notify for {Main.AllPlayerNames[PlayerId]}: {Notice[PlayerId].Item1} ({Notice[PlayerId].Item2 - Utils.GetTimeStamp()}s)", "Name Notify");
+            Notice.Add(PlayerId, new(reader.ReadString(), now + (long)reader.ReadSingle()));
+        Logger.Info($"New name notify for {Main.AllPlayerNames[PlayerId]}: {Notice[PlayerId].Item1} ({Notice[PlayerId].Item2 - now}s)", "Name Notify");
     }
 }

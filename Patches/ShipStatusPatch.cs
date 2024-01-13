@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.Crewmate;
+using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -36,6 +38,8 @@ public static class MessageReaderUpdateSystemPatch
     public static bool Prefix(ShipStatus __instance, [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
     {
         if (systemType is SystemTypes.Ventilation) return true;
+        if (GameStates.IsHideNSeek) return true;
+
         var amount = MessageReader.Get(reader).ReadByte();
         if (EAC.RpcUpdateSystemCheck(player, systemType, amount))
         {
@@ -48,6 +52,7 @@ public static class MessageReaderUpdateSystemPatch
     public static void Postfix(ShipStatus __instance, [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
     {
         if (systemType is SystemTypes.Ventilation) return;
+        if (GameStates.IsHideNSeek) return;
 
         RepairSystemPatch.Postfix(__instance, systemType, player, MessageReader.Get(reader).ReadByte());
     }
@@ -94,17 +99,14 @@ class RepairSystemPatch
         switch (player.GetCustomRole())
         {
             case CustomRoles.SabotageMaster:
-                SabotageMaster.RepairSystem(__instance, systemType, amount, player.PlayerId);
+                SabotageMaster.UpdateSystem(__instance, systemType, amount, player.PlayerId);
                 break;
-            //case CustomRoles.Repairman:
-            //    Repairman.RepairSystem(__instance, systemType, amount);
-            //    break;
             case CustomRoles.Alchemist when Alchemist.FixNextSabo:
-                Alchemist.RepairSystem(systemType, amount);
+                Alchemist.UpdateSystem(systemType, amount);
                 break;
         }
         if (player.Is(CustomRoles.Repairman))
-            Repairman.RepairSystem(__instance, systemType, amount);
+            Repairman.UpdateSystem(__instance, systemType, amount, player.PlayerId);
 
 
         if (player.Is(CustomRoles.Unlucky) && player.IsAlive()
@@ -129,6 +131,9 @@ class RepairSystemPatch
         [HarmonyArgument(2)] byte amount)
     {
         Camouflage.CheckCamouflage();
+
+        if (Quizmaster.IsEnable)
+            Quizmaster.OnSabotageCall(systemType);
 
         if (systemType == SystemTypes.Electrical && 0 <= amount && amount <= 4)
         {
@@ -215,6 +220,8 @@ class StartMeetingPatch
 {
     public static void Prefix(ShipStatus __instance, PlayerControl reporter, GameData.PlayerInfo target)
     {
+        if (GameStates.IsHideNSeek) return;
+
         MeetingStates.ReportTarget = target;
         MeetingStates.DeadBodies = UnityEngine.Object.FindObjectsOfType<DeadBody>();
     }

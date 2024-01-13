@@ -26,6 +26,7 @@ class HudManagerPatch
     public static void Postfix(HudManager __instance)
     {
         if (!GameStates.IsModHost) return;
+
         var player = PlayerControl.LocalPlayer;
         if (player == null) return;
         //壁抜け
@@ -53,7 +54,7 @@ class HudManagerPatch
             __instance.GameSettings.fontSizeMax = 1.1f;
         }
         //ゲーム中でなければ以下は実行されない
-        if (!AmongUsClient.Instance.IsGameStarted) return;
+        if (!AmongUsClient.Instance.IsGameStarted || GameStates.IsHideNSeek) return;
 
         Utils.CountAlivePlayers();
 
@@ -264,6 +265,9 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.AbilityButton.OverrideText(GetString("BomberShapeshiftText"));
                         break;
+                    case CustomRoles.Kamikaze:
+                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
+                        break;
                     case CustomRoles.Twister:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.AbilityButton.OverrideText(GetString("TwisterButtonText"));
@@ -455,6 +459,10 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("ChiefOfPoliceKillButtonText"));
                         break;
+                    case CustomRoles.Quizmaster:
+                        __instance.KillButton.OverrideText(GetString("QuizmasterKillButtonText"));
+                        Quizmaster.SetKillButtonText(__instance);
+                        break;
 
                     default:
                         __instance.KillButton.OverrideText(GetString("KillButtonText"));
@@ -582,6 +590,8 @@ class ToggleHighlightPatch
 {
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] bool active, [HarmonyArgument(1)] RoleTeamTypes team)
     {
+        if (GameStates.IsHideNSeek) return;
+
         var player = PlayerControl.LocalPlayer;
         if (!GameStates.IsInTask) return;
 
@@ -596,6 +606,8 @@ class SetVentOutlinePatch
 {
     public static void Postfix(Vent __instance, [HarmonyArgument(1)] ref bool mainTarget)
     {
+        if (GameStates.IsHideNSeek) return;
+
         var player = PlayerControl.LocalPlayer;
         Color color = PlayerControl.LocalPlayer.GetRoleColor();
         __instance.myRend.material.SetColor("_OutlineColor", color);
@@ -614,6 +626,7 @@ class SetHudActivePatch
     public static void Postfix(HudManager __instance, [HarmonyArgument(2)] bool isActive)
     {
         __instance.ReportButton.ToggleVisible(!GameStates.IsLobby && isActive);
+        if (GameStates.IsHideNSeek) return;
         if (!GameStates.IsModHost) return;
         IsActive = isActive;
         if (!isActive) return;
@@ -693,6 +706,8 @@ class VentButtonDoClickPatch
 {
     public static bool Prefix(VentButton __instance)
     {
+        if (GameStates.IsHideNSeek) return true;
+
         var pc = PlayerControl.LocalPlayer;
         {
             if (!pc.Is(CustomRoles.Swooper) || !pc.Is(CustomRoles.Wraith) || !pc.Is(CustomRoles.Chameleon) || pc.inVent || __instance.currentTarget == null || !pc.CanMove || !__instance.isActiveAndEnabled) return true;
@@ -706,7 +721,7 @@ class MapBehaviourShowPatch
 {
     public static void Prefix(MapBehaviour __instance, ref MapOptions opts)
     {
-        if (GameStates.IsMeeting) return;
+        if (GameStates.IsMeeting || GameStates.IsHideNSeek) return;
 
         if (opts.Mode is MapOptions.Modes.Normal or MapOptions.Modes.Sabotage)
         {
@@ -733,6 +748,13 @@ class TaskPanelBehaviourPatch
     public static void Postfix(TaskPanelBehaviour __instance)
     {
         if (!GameStates.IsModHost) return;
+
+        if (GameStates.IsHideNSeek)
+        {
+            __instance.open = false;
+            return;
+        }
+
         PlayerControl player = PlayerControl.LocalPlayer;
 
         var taskText = __instance.taskText.text;

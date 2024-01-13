@@ -15,7 +15,7 @@ namespace TOHE;
 public static class TemplateManager
 {
     private static readonly string TEMPLATE_FILE_PATH = "./TOHE-DATA/template.txt";
-    private static readonly Dictionary<string, Func<string>> _replaceDictionary = new()
+    private static readonly Dictionary<string, Func<string>> _replaceDictionaryNormalOptions = new()
     {
         ["RoomCode"] = () => InnerNet.GameCode.IntToGameName(AmongUsClient.Instance.GameId),
         ["HostName"] = () => DataManager.Player.Customization.Name,
@@ -38,6 +38,21 @@ public static class TemplateManager
         ["Time"] = () => DateTime.Now.ToShortTimeString(),
         ["PlayerName"] = () => ""
         
+    };
+
+    private static readonly Dictionary<string, Func<string>> _replaceDictionaryHideNSeekOptions = new()
+    {
+        ["RoomCode"] = () => InnerNet.GameCode.IntToGameNameV2(AmongUsClient.Instance.GameId),
+        ["HostName"] = () => DataManager.Player.Customization.Name,
+        ["AmongUsVersion"] = () => UnityEngine.Application.version,
+        ["InternalVersion"] = () => Main.PluginVersion,
+        ["ModVersion"] = () => Main.PluginDisplayVersion,
+        ["Map"] = () => Constants.MapNames[Main.HideNSeekOptions.MapId],
+        ["PlayerSpeedMod"] = () => Main.HideNSeekOptions.PlayerSpeedMod.ToString(),
+        ["Date"] = () => DateTime.Now.ToShortDateString(),
+        ["Time"] = () => DateTime.Now.ToShortTimeString(),
+        ["PlayerName"] = () => ""
+
     };
 
     public static void Init()
@@ -119,7 +134,9 @@ public static class TemplateManager
             playerName = () => Main.AllPlayerNames[playerId];   
         }
 
-        _replaceDictionary["PlayerName"] = playerName;
+        _replaceDictionaryNormalOptions["PlayerName"] = playerName;
+        _replaceDictionaryHideNSeekOptions["PlayerName"] = playerName;
+
         while ((text = sr.ReadLine()) != null)
         {
             tmp = text.Split(":");
@@ -129,21 +146,39 @@ public static class TemplateManager
                 if (tmp[0].ToLower() == str.ToLower()) sendList.Add(tmp.Skip(1).Join(delimiter: ":").Replace("\\n", "\n"));
             }
         }
-        if (!sendList.Any() && !noErr)
+        if (sendList.Count == 0 && !noErr)
         {
             if (playerId == 0xff)
                 HudManager.Instance.Chat.AddChat(PlayerControl.LocalPlayer, string.Format(GetString("Message.TemplateNotFoundHost"), str, tags.Join(delimiter: ", ")));
-            else Utils.SendMessage(string.Format(GetString("Message.TemplateNotFoundClient"), str), playerId);
+            else Utils.SendMessage(string.Format(GetString("Message.TemplateNotFoundClient"), str), playerId, replay: true);
         }
-        else foreach (string x in sendList.ToArray()) Utils.SendMessage(ApplyReplaceDictionary(x), playerId);
+        else foreach (string x in sendList.ToArray()) Utils.SendMessage(ApplyReplaceDictionary(x), playerId, replay:true);
     }
 
     private static string ApplyReplaceDictionary(string text)
     {
-        foreach (var kvp in _replaceDictionary)
+        try
         {
-            text = Regex.Replace(text, "{{" + kvp.Key + "}}", kvp.Value.Invoke() ?? "", RegexOptions.IgnoreCase);
+            if (GameStates.IsNormalGame)
+            {
+                foreach (var kvp in _replaceDictionaryNormalOptions.ToArray())
+                {
+                    text = Regex.Replace(text, "{{" + kvp.Key + "}}", kvp.Value.Invoke() ?? "", RegexOptions.IgnoreCase);
+                }
+            }
+            else if (GameStates.IsHideNSeek)
+            {
+                foreach (var kvp in _replaceDictionaryHideNSeekOptions.ToArray())
+                {
+                    text = Regex.Replace(text, "{{" + kvp.Key + "}}", kvp.Value.Invoke() ?? "", RegexOptions.IgnoreCase);
+                }
+            }
+            return text;
         }
-        return text;
+        catch //(Exception ex)
+        {
+            //Logger.Exception(ex, "TemplateManager.ApplyReplaceDictionary");
+            return text;
+        }
     }
 }

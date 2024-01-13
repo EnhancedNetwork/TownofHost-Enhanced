@@ -90,6 +90,7 @@ public static class Agitater
         AgitaterHasBombed = true;
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
+        
         _ = new LateTask(() =>
         {
             if (CurrentBombedPlayer != byte.MaxValue && GameStates.IsInTask)
@@ -105,7 +106,7 @@ public static class Agitater
                 }
 
             }
-        }, BombExplodeCooldown.GetFloat(), "AgitaterBombKill");
+        }, BombExplodeCooldown.GetFloat(), "Agitater Bomb Kill");
         return false;
     }
 
@@ -147,7 +148,7 @@ public static class Agitater
                 }
             }
 
-            if (targetDistance.Any())
+            if (targetDistance.Count > 0)
             {
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 var target = Utils.GetPlayerById(min.Key);

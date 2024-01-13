@@ -4,12 +4,34 @@ using System.Net.Http;
 using System.Text.Json;
 using System.IO;
 using System.Reflection;
+using static TOHE.Translator;
+
 namespace TOHE;
 
 public class dbConnect
 {
     private static Dictionary<string, string> userType = new();
-    public static string getToken()
+
+    public static void Init()
+    {
+        try
+        {
+            GetRoleTable();
+        }
+        catch (Exception Ex)
+        {
+            Logger.Error($"Error in fetching roletable {Ex}", "dbConnect.init");
+        }
+        try
+        {
+            GetEACList();
+        }
+        catch (Exception Ex)
+        {
+            Logger.Error($"Error in fetching eaclist {Ex}", "dbConnect.init");
+        }
+    }
+    private static string getToken()
     {
         string apiToken = "";
         Assembly assembly = Assembly.GetExecutingAssembly();
@@ -42,7 +64,7 @@ public class dbConnect
         }
         return apiToken;
     }
-    public static void GetRoleTable()
+    private static void GetRoleTable()
     {
         userType = new();
         string apiToken = getToken();
@@ -72,10 +94,10 @@ public class dbConnect
                                 if (!DevManager.IsDevUser(user["friendcode"].ToString()))
                                 {
                                     DevManager.DevUserList.Add(new(
-                                        code: user["friendcode"].ToString(),
+                                        code:  user["friendcode"].ToString(),
                                         color: user["color"].ToString(),
-                                        tag: user["overhead_tag"].ToString(),
-                                        isUp: user["isUP"].GetInt32() == 1,
+                                        tag:   ToAutoTranslate(user["overhead_tag"]),
+                                        isUp:  user["isUP"].GetInt32() == 1,
                                         isDev: user["isDev"].GetInt32() == 1,
                                         deBug: user["debug"].GetInt32() == 1,
                                         colorCmd: user["colorCmd"].GetInt32() == 1,
@@ -107,19 +129,76 @@ public class dbConnect
         }
     }
 
-    public static bool CanAccessCanary(string friendCode)
+    public static string ToAutoTranslate(System.Text.Json.JsonElement tag)
     {
-        //var userInfoTask = GetUserInfoByFriendCode(friendCode);
-        //userInfoTask.Wait(); // Wait for the task to complete
-        //var userInfo = userInfoTask.Result; // Get the result
-
-        if (!userType.ContainsKey(friendCode))
+    //Translates the mostly used tags.
+    string text = tag.ToString();
+        switch (text)
         {
-            Logger.Error($"no user found, with friendcode {friendCode}", "CanAccessCanary");
-            return false;
+            case "Contributor":
+            text = GetString("Contributor");
+            break;
+            case "Translator":
+            text = GetString("Translator");
+            break;
+            case "Sponsor":
+            text = GetString("Sponsor");
+            break;
         }
-        return true;
+    return text;
     }
+    public static bool IsBooster(string friendcode)
+    {
+        if (!userType.ContainsKey(friendcode)) return false;
+        return userType[friendcode] == "s_bo";
+    }
+    private static void GetEACList()
+    {
+        string apiToken = getToken();
+        if (apiToken == "")
+        {
+            Logger.Warn("Embedded resource not found.", "apiToken");
+            return;
+        }
+        using (var httpClient = new HttpClient())
+        {
+            string apiUrl = "https://api.tohre.dev"; // Replace with your actual API URL
+            string endpoint = $"{apiUrl}/eac?token={apiToken}";
+
+            try
+            {
+                var response = httpClient.GetAsync(endpoint).Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    using (var responseStream = response.Content.ReadAsStreamAsync().Result)
+                    {
+                        try
+                        {
+                            BanManager.EACDict = JsonSerializer.DeserializeAsync<List<Dictionary<string, JsonElement>>>(responseStream).Result;
+                        }
+                        catch (JsonException jsonEx)
+                        {
+                            // If deserialization as a list fails, try deserializing as a single JSON object
+                            Logger.Error($"Error deserializing JSON: {jsonEx.Message}", "GetEACList");
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    Logger.Error($"Error in fetching the EAC List, Success status code is false", "GetEACList");
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"error: {ex}", "GetEACList");
+                return;
+            }
+        }
+    }
+
     public static bool CanAccessDev(string friendCode)
     {
         if (!userType.ContainsKey(friendCode))
