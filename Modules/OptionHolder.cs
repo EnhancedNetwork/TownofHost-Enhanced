@@ -438,6 +438,7 @@ public static class Options
     public static OptionItem ImpCanGuessImp;
     public static OptionItem CrewCanGuessCrew;
     public static OptionItem HideGuesserCommands;
+    public static OptionItem ShowOnlyEnabledRolesInGuesserUI;
 
     public static OptionItem ImpCanBeOnbound;
     public static OptionItem CrewCanBeOnbound;
@@ -3622,6 +3623,12 @@ public static class Options
         HideGuesserCommands = BooleanOptionItem.Create(60688, "GuesserTryHideMsg", true, TabGroup.TaskSettings, false)
             .SetParent(GuesserMode)
             .SetColor(Color.green);
+
+        ShowOnlyEnabledRolesInGuesserUI = BooleanOptionItem.Create(60689, "ShowOnlyEnabledRolesInGuesserUI", true, TabGroup.TaskSettings, false)
+            .SetHeader(true)
+            .SetColor(Color.cyan);
+
+
         TextOptionItem.Create(10000029, "MenuTitle.GuesserModeRoles", TabGroup.TaskSettings)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(Color.yellow)
