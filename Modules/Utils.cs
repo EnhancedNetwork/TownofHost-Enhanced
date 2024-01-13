@@ -2712,6 +2712,7 @@ public static class Utils
         Main.ShamanTargetChoosen = false;
         Main.BurstBodies.Clear();
         OverKiller.MurderTargetLateTask = new();
+        RiftMaker.AfterMeetingTasks();
 
 
         if (Options.AirshipVariableElectrical.GetBool())
