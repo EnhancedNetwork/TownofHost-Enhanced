@@ -22,6 +22,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -102,19 +103,29 @@ public static class Utils
             return;
         }
 
+        var net = player.NetTransform;
+        var numHost = (ushort)(net.lastSequenceId + 2);
+        var numClient = (ushort)(net.lastSequenceId + 48);
+
         // Host side
         if (AmongUsClient.Instance.AmHost)
         {
-            var playerlastSequenceId = (int)player.NetTransform.lastSequenceId;
-            playerlastSequenceId += 10;
-            player.NetTransform.SnapTo(location, (ushort)playerlastSequenceId);
+            player.NetTransform.SnapTo(location, numHost);
+        }
+        else
+        {
+            // Local Teleport For Client
+            MessageWriter messageWriter2 = AmongUsClient.Instance.StartRpcImmediately(net.NetId, (byte)RpcCalls.SnapTo, SendOption.None, player.GetClientId());
+            NetHelpers.WriteVector2(location, messageWriter2);
+            messageWriter2.Write(numClient);
+            AmongUsClient.Instance.FinishRpcImmediately(messageWriter2);
         }
 
-        // For Client side
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.None);
-        NetHelpers.WriteVector2(location, messageWriter);
-        messageWriter.Write(player.NetTransform.lastSequenceId + 100U);
-        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+        // Global Teleport
+        MessageWriter messageWriter1 = AmongUsClient.Instance.StartRpcImmediately(net.NetId, (byte)RpcCalls.SnapTo, SendOption.None);
+        NetHelpers.WriteVector2(location, messageWriter1);
+        messageWriter1.Write(numClient);
+        AmongUsClient.Instance.FinishRpcImmediately(messageWriter1);
     }
     public static void RpcRandomVentTeleport(this PlayerControl player)
     {
