@@ -667,7 +667,7 @@ public enum CustomRoles
     SwordsMan, //knight
     Needy, //Lazy guy
     Lighter,
-    Luckey,
+   // Luckey,
     Lookout,
     Marshall,
     Mayor,
