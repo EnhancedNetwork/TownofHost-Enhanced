@@ -1207,6 +1207,8 @@ public static class GuessManager
                     or CustomRoles.Cyber
                     ) continue;
 
+                if (Options.ShowOnlyEnabledRolesInGuesserUI.GetBool() && !(role.IsEnable() || role.RoleExist(countDead: true))) continue;
+
                 CreateRole(role);
             }
             void CreateRole(CustomRoles role)
