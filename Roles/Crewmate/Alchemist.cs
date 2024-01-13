@@ -384,7 +384,7 @@ namespace TOHE.Roles.Crewmate
                     str.Append("<color=#42d1ff>§</color>");
                     break;
                 case 4: // Increased Speed
-                    str.Append("<color=#ffffff>»</color>");
+                    str.Append("<color=#77e0cb>»</color>");
                     break;
                 case 5: // Quick fix next sabo
                     str.Append("<color=#3333ff>★</color>");
@@ -396,7 +396,7 @@ namespace TOHE.Roles.Crewmate
                     str.Append("<color=#663399>◉</color>");
                     break;
                 case 8: //Invisibility
-                    str.Append("<color=#663399>◌</color>");
+                    str.Append("<color=#b3b3b3>◌</color>");
                     break;
                 default:
                     break;
