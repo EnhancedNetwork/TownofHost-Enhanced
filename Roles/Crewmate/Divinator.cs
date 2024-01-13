@@ -286,7 +286,7 @@ public static class Divinator
                 CustomRoles.Gangster or
                 CustomRoles.Godfather or
                 CustomRoles.Glitch or
-                CustomRoles.Luckey or
+                //CustomRoles.Luckey or
                 CustomRoles.Underdog
                 => "Result18",
 
@@ -416,7 +416,7 @@ public static class Divinator
 
                    CustomRoles.Miner or
                    CustomRoles.Scavenger or
-                   CustomRoles.Luckey or
+                   //CustomRoles.Luckey or
                    CustomRoles.Trickster or
                    CustomRoles.Needy or
                    CustomRoles.SabotageMaster or
