@@ -271,6 +271,9 @@ public static class CopyCat
                 case CustomRoles.Doomsayer:
                     role = CustomRoles.NiceGuesser;
                     break;
+                case CustomRoles.Taskinator:
+                    role = CustomRoles.Benefactor;
+                    break;
             }
             //if (role == CustomRoles.Eraser) role = CustomRoles.Cleanser;
             //if (role == CustomRoles.Mafia) role = CustomRoles.Retributionist;
