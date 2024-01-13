@@ -1,5 +1,6 @@
 ﻿using Hazel;
 using System.Collections.Generic;
+using System.Linq;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
@@ -53,6 +54,11 @@ public static class RiftMaker
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RiftMakerSyncData, SendOption.Reliable, -1);
         writer.Write(operate);
+        if (operate == 3)
+        {
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            return;
+        }
         writer.Write(riftID);
 
         if (operate == 0) //sync markedloaction and last tp
@@ -63,14 +69,24 @@ public static class RiftMaker
 
             writer.Write(LastTP[riftID].ToString());
         }
-        if (operate == 2) //sync last tp
+        else if (operate == 2) //sync last tp
         {
             writer.Write(LastTP[riftID].ToString());
         }
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC(MessageReader reader)
     {
         int operate = reader.ReadInt32();
+        if (operate == 3)
+        {
+            var now = Utils.GetTimeStamp();
+            foreach (byte pID in LastTP.Keys.ToArray())
+            {
+                LastTP[pID] = now;
+            }
+            return;
+        }
         byte riftID = reader.ReadByte();
         if (operate == 0) //sync  marked location and last tp
         {
@@ -83,11 +99,11 @@ public static class RiftMaker
             string stimeStamp = reader.ReadString();
             if (long.TryParse(stimeStamp, out long timeStamp)) LastTP[riftID] = timeStamp;
         }
-        if (operate == 1) //clear marked location
+        else if (operate == 1) //clear marked location
         {
             if (MarkedLocation.ContainsKey(riftID)) MarkedLocation[riftID].Clear();
         }
-        if (operate == 2) //sync last tp
+        else if (operate == 2) //sync last tp
         {
             string stimeStamp = reader.ReadString();
             if (long.TryParse(stimeStamp, out long timeStamp)) LastTP[riftID] = timeStamp;
@@ -182,5 +198,15 @@ public static class RiftMaker
         SendRPC(playerId, 2);
         player.RpcTeleport(TPto);
         return;
+    }
+
+    public static void AfterMeetingTasks()
+    {
+        var now = Utils.GetTimeStamp();
+        foreach (byte riftID in LastTP.Keys.ToArray())
+        {
+            LastTP[riftID] = now;
+        }
+        SendRPC(byte.MaxValue, 3);
     }
 }
