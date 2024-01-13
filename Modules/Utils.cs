@@ -114,17 +114,17 @@ public static class Utils
         else
         {
             // Local Teleport For Client
-            MessageWriter messageWriter2 = AmongUsClient.Instance.StartRpcImmediately(net.NetId, (byte)RpcCalls.SnapTo, SendOption.None, player.GetClientId());
-            NetHelpers.WriteVector2(location, messageWriter2);
-            messageWriter2.Write(numClient);
-            AmongUsClient.Instance.FinishRpcImmediately(messageWriter2);
+            MessageWriter localMessageWriter = AmongUsClient.Instance.StartRpcImmediately(net.NetId, (byte)RpcCalls.SnapTo, SendOption.None, player.GetClientId());
+            NetHelpers.WriteVector2(location, localMessageWriter);
+            localMessageWriter.Write(numClient);
+            AmongUsClient.Instance.FinishRpcImmediately(localMessageWriter);
         }
 
         // Global Teleport
-        MessageWriter messageWriter1 = AmongUsClient.Instance.StartRpcImmediately(net.NetId, (byte)RpcCalls.SnapTo, SendOption.None);
-        NetHelpers.WriteVector2(location, messageWriter1);
-        messageWriter1.Write(numClient);
-        AmongUsClient.Instance.FinishRpcImmediately(messageWriter1);
+        MessageWriter globalMessageWriter = AmongUsClient.Instance.StartRpcImmediately(net.NetId, (byte)RpcCalls.SnapTo, SendOption.None);
+        NetHelpers.WriteVector2(location, globalMessageWriter);
+        globalMessageWriter.Write(numClient);
+        AmongUsClient.Instance.FinishRpcImmediately(globalMessageWriter);
     }
     public static void RpcRandomVentTeleport(this PlayerControl player)
     {
