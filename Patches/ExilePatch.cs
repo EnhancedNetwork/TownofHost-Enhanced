@@ -124,6 +124,16 @@ class ExileControllerWrapUpPatch
                 }
             }
 
+            // Mini win
+            if (role.Is(CustomRoles.NiceMini) && Mini.Age < 18)
+            {
+                if (!CustomWinnerHolder.CheckForConvertedWinner(exiled.PlayerId))
+                {
+                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.NiceMini);
+                    CustomWinnerHolder.WinnerIds.Add(exiled.PlayerId);
+                }
+            }
+
             //Executioner check win
             if (Executioner.CheckExileTarget(exiled, DecidedWinner))
             {
