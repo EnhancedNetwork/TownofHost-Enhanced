@@ -197,7 +197,6 @@ public static class Benefactor
 
     public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
-        if (!IsEnable) return true;
         if (target == null || killer == null) return true;
         if (!shieldedPlayers.ContainsKey(target.PlayerId)) return true;
         if (ShieldIsOneTimeUse.GetBool())

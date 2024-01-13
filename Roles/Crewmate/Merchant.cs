@@ -206,11 +206,6 @@ namespace TOHE.Roles.Crewmate
 
         public static bool OnClientMurder(PlayerControl killer, PlayerControl target)
         {
-            if (!target.Is(CustomRoles.Merchant))
-            {
-                return false;
-            }
-
             if (bribedKiller[target.PlayerId].Contains(killer.PlayerId))
             {
                 NotifyBribery(killer, target);
