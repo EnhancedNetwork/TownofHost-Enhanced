@@ -3698,8 +3698,8 @@
   "DeathReason.WrongAnswer": "Wrong Quiz Answer",
 
   "TPCooldown": "Teleport Cooldown",
-  "IncorrectRifts": "Location too close to the first rift",
-  "RiftDone": "Rift made successfully",
-  "RiftsCleared": "All rifts locations cleared",
+  "RiftsTooClose": "Location too close to the first rift",
+  "RiftCreated": "Rift made successfully",
+  "RiftsDestroyed": "All rifts Destroyed",
   "RiftRadius": "Rift Radius"
 }

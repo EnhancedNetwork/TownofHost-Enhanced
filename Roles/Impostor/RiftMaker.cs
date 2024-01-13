@@ -111,14 +111,14 @@ public static class RiftMaker
 
         var currentPos = pc.GetCustomPosition();
         var totalMarked = MarkedLocation[pc.PlayerId].Count;
-        if (totalMarked == 1 && Vector2.Distance(currentPos, MarkedLocation[pc.PlayerId][0]) <= 4f)
+        if (totalMarked == 1 && Vector2.Distance(currentPos, MarkedLocation[pc.PlayerId][0]) <= 5f)
         {
-            pc.Notify(GetString("IncorrectRifts"));
+            pc.Notify(GetString("RiftsTooClose"));
             return;
         }
-        else if (totalMarked == 2 && Vector2.Distance(currentPos, MarkedLocation[pc.PlayerId][1]) <= 4f)
+        else if (totalMarked == 2 && Vector2.Distance(currentPos, MarkedLocation[pc.PlayerId][1]) <= 5f)
         {
-            pc.Notify(GetString("IncorrectRifts"));
+            pc.Notify(GetString("RiftsTooClose"));
             return;
         }
 
@@ -126,7 +126,7 @@ public static class RiftMaker
 
         MarkedLocation[pc.PlayerId].Add(pc.GetCustomPosition());
         if (MarkedLocation[pc.PlayerId].Count == 2) LastTP[pc.PlayerId] = Utils.GetTimeStamp();
-        pc.Notify(GetString("RiftDone"));
+        pc.Notify(GetString("RiftCreated"));
 
         SendRPC(pc.PlayerId, 0);
         //sendrpc for marked location and lasttp
@@ -137,14 +137,15 @@ public static class RiftMaker
         if (!IsEnable || pc == null) return;
         if (!pc.Is(CustomRoles.RiftMaker)) return;
 
-        MarkedLocation[pc.PlayerId].Clear();
-        //send rpc for clearing markedlocation
-        SendRPC(pc.PlayerId, 1);
-        pc.Notify(GetString("RiftsCleared"));
-
         _ = new LateTask(() =>
         {
             pc.MyPhysics?.RpcBootFromVent(ventId);
+
+            MarkedLocation[pc.PlayerId].Clear();
+            //send rpc for clearing markedlocation
+            SendRPC(pc.PlayerId, 1);
+            pc.Notify(GetString("RiftsDestroyed"));
+
         }, 0.5f, "RiftMakerOnVent");
 
     }
@@ -154,24 +155,17 @@ public static class RiftMaker
     {
         if (!GameStates.IsInTask) return;
         if (player == null) return;
-        if (Pelican.IsEaten(player.PlayerId) || !player.IsAlive()) return;
         if (!player.Is(CustomRoles.RiftMaker)) return;
+        if (Pelican.IsEaten(player.PlayerId) || !player.IsAlive()) return;
         byte playerId = player.PlayerId;
         if (!MarkedLocation.ContainsKey(playerId)) MarkedLocation[playerId] = new();
         if (MarkedLocation[playerId].Count != 2) return;
-        // already checked in SS
-        //if (Vector2.Distance(MarkedLocation[playerId][0], MarkedLocation[playerId][1]) <= 4f)
-        //{
-        //    player.Notify(GetString("IncorrectMarks"));
-        //    MarkedLocation[playerId].RemoveAt(1);
-        //    return;
-        //}
         var now = Utils.GetTimeStamp();
         if (!LastTP.ContainsKey(playerId)) LastTP[playerId] = now;
         if (now - LastTP[playerId] <= TPCooldown) return;
 
         Vector2 position = player.GetCustomPosition();
-        Vector2 TPto; ;
+        Vector2 TPto;
 
         if (Vector2.Distance(position, MarkedLocation[playerId][0]) <= RiftRadius.GetFloat())
         {
@@ -184,9 +178,9 @@ public static class RiftMaker
         else return;
 
         LastTP[playerId] = now;
-        player.RpcTeleport(TPto);
         //SENDRPC
         SendRPC(playerId, 2);
+        player.RpcTeleport(TPto);
         return;
     }
 }
