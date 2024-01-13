@@ -265,7 +265,7 @@ namespace TOHE.Roles.Crewmate
         private static long lastFixedTime;
         public static void OnFixedUpdateINV(PlayerControl player)
         {
-            if (!GameStates.IsInTask || !IsEnable) return;
+            if (GameStates.IsMeeting) return;
 
             var now = Utils.GetTimeStamp();
 
