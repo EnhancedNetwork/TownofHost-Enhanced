@@ -7,10 +7,8 @@ namespace TOHE.Roles.Crewmate
     using System.Linq;
     using System.Text;
     using TOHE.Modules;
-    using TOHE.Roles.AddOns.Common;
     using TOHE.Roles.Neutral;
     using UnityEngine;
-    using static Rewired.ComponentControls.Effects.RotateAroundAxis;
     using static TOHE.Options;
     using static TOHE.Translator;
 
