@@ -164,6 +164,7 @@ static class CustomRolesHelper
                 CustomRoles.Randomizer => CustomRoles.Crewmate,
                 CustomRoles.Enigma => CustomRoles.Crewmate,
                 CustomRoles.Instigator => CustomRoles.Impostor,
+                CustomRoles.RiftMaker => CustomRoles.Shapeshifter,
 
                 _ => role.IsImpostor() ? CustomRoles.Impostor : CustomRoles.Crewmate,
             };
@@ -673,6 +674,7 @@ static class CustomRolesHelper
             CustomRoles.Zombie or
             CustomRoles.Warlock or
             CustomRoles.Undertaker or
+            CustomRoles.RiftMaker or
             CustomRoles.Assassin or
             CustomRoles.Berserker or
             CustomRoles.Hacker or

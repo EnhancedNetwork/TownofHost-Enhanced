@@ -91,6 +91,7 @@ enum CustomRPC
     SwordsManKill,
     SetAlchemistTimer,
     UndertakerLocationSync,
+    RiftMakerSyncData,
     SetCounterfeiterSellLimit,
     SetPursuerSellLimit,
     SetMedicalerProtectLimit,
@@ -440,6 +441,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.UndertakerLocationSync:
                 Undertaker.ReceiveRPC(reader);
+                break;
+            case CustomRPC.RiftMakerSyncData:
+                RiftMaker.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetLoversPlayers:
                 Main.LoversPlayers.Clear();
@@ -1041,6 +1045,9 @@ internal static class RPC
                 break;
             case CustomRoles.Undertaker:
                 Undertaker.Add(targetId);
+                break;
+            case CustomRoles.RiftMaker:
+                RiftMaker.Add(targetId);
                 break;
             case CustomRoles.Crusader:
                 Crusader.Add(targetId);

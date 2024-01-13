@@ -920,6 +920,9 @@ static class ExtendedPlayerControl
             case CustomRoles.Undertaker:
                 Undertaker.SetKillCooldown(player.PlayerId);
                 break;
+            case CustomRoles.RiftMaker:
+                RiftMaker.SetKillCooldown(player.PlayerId);
+                break;
             case CustomRoles.Jackal:
                 Jackal.SetKillCooldown(player.PlayerId);
                 break;
