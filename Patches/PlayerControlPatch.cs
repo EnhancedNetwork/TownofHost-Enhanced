@@ -2925,10 +2925,6 @@ class FixedUpdateInNormalGamePatch
                             Chameleon.OnFixedUpdate(player);
                             break;
 
-                        //case CustomRoles.Alchemist:
-                        //    Alchemist.OnFixedUpdate(player);
-                        //    break;
-
                         case CustomRoles.BallLightning:
                             BallLightning.OnFixedUpdate();
                             break;
