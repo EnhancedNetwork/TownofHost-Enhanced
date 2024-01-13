@@ -147,10 +147,10 @@ static class ExtendedPlayerControl
         }
         Main.LastNotifyNames[(player.PlayerId, seer.PlayerId)] = name;
         HudManagerPatch.LastSetNameDesyncCount++;
-        Logger.Info($"Set:{player?.Data?.PlayerName}:{name} for {seer.GetNameWithRole()}", "RpcSetNamePrivate");
+        Logger.Info($"Set:{player?.Data?.PlayerName}:{name.RemoveHtmlTags()} for {seer.GetNameWithRole().RemoveHtmlTags()}", "RpcSetNamePrivate");
 
         var clientId = seer.GetClientId();
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetName, Hazel.SendOption.Reliable, clientId);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetName, SendOption.Reliable, clientId);
         writer.Write(name);
         writer.Write(DontShowOnModdedClient);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -165,7 +165,7 @@ static class ExtendedPlayerControl
             player.SetRole(role);
             return;
         }
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, Hazel.SendOption.Reliable, clientId);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, SendOption.Reliable, clientId);
         writer.Write((ushort)role);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
