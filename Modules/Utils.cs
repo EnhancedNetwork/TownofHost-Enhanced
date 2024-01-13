@@ -104,26 +104,28 @@ public static class Utils
 
         var net = player.NetTransform;
         var numHost = (ushort)(net.lastSequenceId + 2);
-        var numClient = (ushort)(net.lastSequenceId + 48);
+        var numLocalClient = (ushort)(net.lastSequenceId + 28);
+        var numGlobal = (ushort)(net.lastSequenceId + 48);
 
         // Host side
         if (AmongUsClient.Instance.AmHost)
         {
             player.NetTransform.SnapTo(location, numHost);
         }
-        else
+        
+        if (PlayerControl.LocalPlayer.PlayerId != player.PlayerId)
         {
             // Local Teleport For Client
             MessageWriter localMessageWriter = AmongUsClient.Instance.StartRpcImmediately(net.NetId, (byte)RpcCalls.SnapTo, SendOption.None, player.GetClientId());
             NetHelpers.WriteVector2(location, localMessageWriter);
-            localMessageWriter.Write(numClient);
+            localMessageWriter.Write(numLocalClient);
             AmongUsClient.Instance.FinishRpcImmediately(localMessageWriter);
         }
 
         // Global Teleport
         MessageWriter globalMessageWriter = AmongUsClient.Instance.StartRpcImmediately(net.NetId, (byte)RpcCalls.SnapTo, SendOption.None);
         NetHelpers.WriteVector2(location, globalMessageWriter);
-        globalMessageWriter.Write(numClient);
+        globalMessageWriter.Write(numGlobal);
         AmongUsClient.Instance.FinishRpcImmediately(globalMessageWriter);
     }
     public static void RpcRandomVentTeleport(this PlayerControl player)
