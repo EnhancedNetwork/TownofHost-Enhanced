@@ -265,7 +265,7 @@ namespace TOHE.Roles.Crewmate
         private static long lastFixedTime;
         public static void OnFixedUpdateINV(PlayerControl player)
         {
-            if (GameStates.IsMeeting) return;
+            if (.IsMeeting) return;
 
             var now = Utils.GetTimeStamp();
 
@@ -323,7 +323,7 @@ namespace TOHE.Roles.Crewmate
         
         public static string GetHudText(PlayerControl pc)
         {
-            if (pc == null || !GameStates.IsInTask || !PlayerControl.LocalPlayer.IsAlive()) return string.Empty;
+            if (pc == null || GameStates.IsMeeting || !PlayerControl.LocalPlayer.IsAlive()) return string.Empty;
             var str = new StringBuilder();
             if (IsInvis(pc.PlayerId))
             {
