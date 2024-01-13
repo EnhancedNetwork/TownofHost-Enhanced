@@ -1226,8 +1226,8 @@ static class ExtendedPlayerControl
     }
     public static bool IsAmneCrew(this PlayerControl target)
     {
-        return target.Is(CustomRoles.Luckey)
-            || target.Is(CustomRoles.Needy)
+        return //target.Is(CustomRoles.Luckey)
+            target.Is(CustomRoles.Needy)
             || target.Is(CustomRoles.SuperStar)
             || target.Is(CustomRoles.CyberStar)
             || target.Is(CustomRoles.Mayor)
