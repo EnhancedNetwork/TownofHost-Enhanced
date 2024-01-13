@@ -149,6 +149,11 @@ class CheckMurderPatch
                 Main.KilledDiseased.Add(killer.PlayerId, 1);
             }
         }
+
+        if (target.Is(CustomRoles.Susceptible))
+        {
+            Susceptible.CallEnabledAndChange(target);
+        }
         if (target.Is(CustomRoles.Antidote))
         {
             if (Main.KilledAntidote.ContainsKey(killer.PlayerId))
@@ -596,6 +601,10 @@ class CheckMurderPatch
                 case CustomRoles.ChiefOfPolice:
                     ChiefOfPolice.OnCheckMurder(killer, target);
                     return false;
+                case CustomRoles.Quizmaster:
+                    if (!Quizmaster.OnCheckMurder(killer, target))
+                        return false;
+                    break;
             }
         }
 
@@ -1342,6 +1351,9 @@ class MurderPlayerPatch
         if (target.AmOwner) RemoveDisableDevicesPatch.UpdateDisableDevices();
         if (!target.Data.IsDead || !AmongUsClient.Instance.AmHost) return;
 
+        if (Quizmaster.IsEnable)
+            Quizmaster.OnPlayerDead(target);
+
         if (Main.OverDeadPlayerList.Contains(target.PlayerId)) return;
 
         PlayerControl killer = __instance;
@@ -1400,10 +1412,10 @@ class MurderPlayerPatch
                 delay = Math.Max(delay, 0.15f);
                 if (delay > 0.15f && Options.BaitDelayNotify.GetBool()) killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), string.Format(GetString("KillBaitNotify"), (int)delay)), delay);
                 Logger.Info($"{killer.GetNameWithRole()} 击杀诱饵 => {target.GetNameWithRole()}", "MurderPlayer");
-                _ = new LateTask(() => { if (GameStates.IsInTask) killer.CmdReportDeadBody(target.Data); }, delay, "Bait Self Report");
+                _ = new LateTask(() => { if (GameStates.IsInTask && GameStates.IsInGame) killer.CmdReportDeadBody(target.Data); }, delay, "Bait Self Report");
             }
         }
-        if (target.Is(CustomRoles.Burst) && !killer.Data.IsDead)
+        if (target.Is(CustomRoles.Burst) && killer.IsAlive())
         {
             target.SetRealKiller(killer);
             Main.BurstBodies.Add(target.PlayerId);
@@ -1412,13 +1424,13 @@ class MurderPlayerPatch
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Burst), GetString("BurstNotify")));
                 _ = new LateTask(() =>
                 {
-                    if (!killer.inVent && !killer.Data.IsDead && !GameStates.IsMeeting)
+                    if (!killer.inVent && killer.IsAlive() && !GameStates.IsMeeting && GameStates.IsInGame)
                     {
                         Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
                         target.RpcMurderPlayerV3(killer);
                         killer.SetRealKiller(target);
                     }
-                    else
+                    else if (GameStates.IsInGame)
                     {
                         RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
                         killer.SetKillCooldown(time: Main.AllPlayerKillCooldown[killer.PlayerId] - Options.BurstKillDelay.GetFloat(), forceAnime: true);
@@ -1428,7 +1440,7 @@ class MurderPlayerPatch
                 }, Options.BurstKillDelay.GetFloat(), "Burst Suicide");
             }
         }
-
+        
         if (target.Is(CustomRoles.Trapper) && killer != target)
             killer.TrapperKilled(target);
 
@@ -1802,6 +1814,7 @@ class ShapeshiftPatch
 class ReportDeadBodyPatch
 {
     public static Dictionary<byte, bool> CanReport;
+    public static HashSet<byte> UnreportablePlayers = new ();
     public static Dictionary<byte, List<GameData.PlayerInfo>> WaitReport = new();
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo target)
     {
@@ -1866,6 +1879,8 @@ class ReportDeadBodyPatch
             }
             if (target != null) //拍灯事件
             {
+                if (UnreportablePlayers.Contains(target.PlayerId)) return false;
+
                 if (Bloodhound.UnreportablePlayers.Contains(target.PlayerId)) return false;
 
                 if (__instance.Is(CustomRoles.Bloodhound))
@@ -2287,6 +2302,7 @@ class ReportDeadBodyPatch
 
         if (target == null) //ボタン
         {
+            if (Quizmaster.IsEnable) Quizmaster.OnButtonPress(player);
             if (player.Is(CustomRoles.Mayor))
             {
                 Main.MayorUsedButtonCount[player.PlayerId] += 1;
@@ -2326,6 +2342,8 @@ class ReportDeadBodyPatch
 
             if (Virus.IsEnable && Main.InfectedBodies.Contains(target.PlayerId))
                 Virus.OnKilledBodyReport(player);
+
+            if (Quizmaster.IsEnable) Quizmaster.OnReportDeadBody(player, target);
         }
 
         Main.LastVotedPlayerInfo = null;
@@ -3511,12 +3529,12 @@ class EnterVentPatch
                 pc?.NoCheckStartMeeting(pc?.Data);
             }
         }
-        /*  if (pc.Is(CustomRoles.Wraith)) // THIS WAS FOR WEREWOLF TESTING PURPOSES, PLEASE IGNORE
-          {
-              pc?.MyPhysics?.RpcBootFromVent(__instance.Id);            
-          } */
+     /* if (pc.Is(CustomRoles.Wraith)) // THIS WAS FOR WEREWOLF TESTING PURPOSES, PLEASE IGNORE
+        {
+            pc?.MyPhysics?.RpcBootFromVent(__instance.Id);            
+        } */
 
-        else if (pc.Is(CustomRoles.Paranoia))
+     /* else if (pc.Is(CustomRoles.Paranoia))
         {
             if (Main.ParaUsedButtonCount.TryGetValue(pc.PlayerId, out var count) && count < Options.ParanoiaNumOfUseButton.GetInt())
             {
@@ -3531,7 +3549,7 @@ class EnterVentPatch
                 pc?.MyPhysics?.RpcBootFromVent(__instance.Id);
                 pc?.NoCheckStartMeeting(pc?.Data);
             }
-        }
+        } */
 
         else if (pc.Is(CustomRoles.Mario))
         {
@@ -3840,7 +3858,7 @@ class CoEnterVentPatch
             (__instance.myPlayer.Data.Role.Role != RoleTypes.Engineer
                 && !__instance.myPlayer.CanUseImpostorVentButton())
             || (__instance.myPlayer.Is(CustomRoles.Mayor) && Main.MayorUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count) && count >= Options.MayorNumOfUseButton.GetInt())
-            || (__instance.myPlayer.Is(CustomRoles.Paranoia) && Main.ParaUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count2) && count2 >= Options.ParanoiaNumOfUseButton.GetInt())
+          //|| (__instance.myPlayer.Is(CustomRoles.Paranoia) && Main.ParaUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count2) && count2 >= Options.ParanoiaNumOfUseButton.GetInt())
             || (__instance.myPlayer.Is(CustomRoles.Veteran) && Main.VeteranNumOfUsed.TryGetValue(__instance.myPlayer.PlayerId, out var count3) && count3 < 1)
             || (__instance.myPlayer.Is(CustomRoles.DovesOfNeace) && Main.DovesOfNeaceNumOfUsed.TryGetValue(__instance.myPlayer.PlayerId, out var count4) && count4 < 1)
         )

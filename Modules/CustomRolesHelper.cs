@@ -260,6 +260,7 @@ static class CustomRolesHelper
             CustomRoles.Agitater => RoleTypes.Impostor,
             CustomRoles.Spiritcaller => RoleTypes.Impostor,
             CustomRoles.ChiefOfPolice => RoleTypes.Impostor,
+            CustomRoles.Quizmaster => RoleTypes.Impostor,
             _ => RoleTypes.GuardianAngel
         };
     }
@@ -353,7 +354,8 @@ static class CustomRolesHelper
             CustomRoles.Hurried or
             CustomRoles.Oiiai or
             CustomRoles.Influenced or
-            CustomRoles.Silent;
+            CustomRoles.Silent or
+            CustomRoles.Susceptible;
     }
     
     public static bool IsBetrayalAddon(this CustomRoles role)
@@ -498,7 +500,8 @@ static class CustomRolesHelper
             CustomRoles.PlagueBearer or
             CustomRoles.Agitater or
             CustomRoles.RuthlessRomantic or
-            CustomRoles.Pestilence;
+            CustomRoles.Pestilence or
+            CustomRoles.Quizmaster;
     }
     public static bool IsNonNK(this CustomRoles role) // ROLE ASSIGNING, NOT NEUTRAL TYPE
     {
@@ -626,7 +629,8 @@ static class CustomRolesHelper
             CustomRoles.Agitater or
             CustomRoles.RuthlessRomantic or
             CustomRoles.Shroud or
-            CustomRoles.Pestilence;
+            CustomRoles.Pestilence or
+            CustomRoles.Quizmaster;
     }
     public static bool IsCK(this CustomRoles role)
     {
@@ -804,7 +808,8 @@ static class CustomRolesHelper
             CustomRoles.Virus or
             CustomRoles.Succubus or
             CustomRoles.Doomsayer or
-            CustomRoles.Spiritcaller;
+            CustomRoles.Spiritcaller or
+            CustomRoles.Quizmaster;
     }
 /*    public static bool IsCoven(this CustomRoles role)
     {
@@ -943,7 +948,8 @@ static class CustomRolesHelper
             CustomRoles.RuthlessRomantic or
             CustomRoles.VengefulRomantic or
             CustomRoles.Pixie or
-            CustomRoles.Seeker;
+            CustomRoles.Seeker or
+            CustomRoles.Quizmaster;
     }
     public static bool IsMadmate(this CustomRoles role)
     {
@@ -1302,6 +1308,7 @@ static class CustomRolesHelper
 
             case CustomRoles.Seer:
                 if (pc.Is(CustomRoles.Mortician)
+                    || pc.Is(CustomRoles.EvilTracker)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeSeer.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeSeer.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeSeer.GetBool()))
@@ -1504,6 +1511,7 @@ static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Bomber)
                     || pc.Is(CustomRoles.Nuker)
                     || pc.Is(CustomRoles.BoobyTrap)
+                    || pc.Is(CustomRoles.Kamikaze)
                     || pc.Is(CustomRoles.Swooper)
                     || pc.Is(CustomRoles.Vampire)
                     || pc.Is(CustomRoles.Vampiress)
@@ -1628,10 +1636,10 @@ static class CustomRolesHelper
                     return false;
                 break;
 
-            case CustomRoles.Rogue:
-                if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeRogue.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeRogue.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeRogue.GetBool()))
-                    return false;
-                break;
+            //case CustomRoles.Rogue:
+            //    if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeRogue.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeRogue.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeRogue.GetBool()))
+            //        return false;
+            //    break;
 
             case CustomRoles.Flash:
                 if (pc.Is(CustomRoles.Swooper) || pc.Is(CustomRoles.Solsticer))

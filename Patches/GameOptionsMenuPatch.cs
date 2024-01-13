@@ -85,7 +85,7 @@ public static class GameOptionsMenuStartPatch
                 if (gameSettings == null) return;
 
                 gameSettingMenu = Object.FindObjectOfType<GameSettingMenu>();
-                if (gameSettings == null) return;
+                if (gameSettingMenu == null) return;
 
                 GameObject.Find("Tint")?.SetActive(false);
 
@@ -210,7 +210,7 @@ public static class GameOptionsMenuStartPatch
                 }
 
                 var tohMenu = tohSettingsTransform.Find("GameGroup/SliderInner").GetComponent<GameOptionsMenu>();
-                foreach (var optionBehaviour in tohMenu.GetComponentsInChildren<OptionBehaviour>())
+                foreach (var optionBehaviour in tohMenu.GetComponentsInChildren<OptionBehaviour>().ToArray())
                 {
                     // Discard OptionBehaviour
                     Object.Destroy(optionBehaviour.gameObject);
@@ -465,7 +465,14 @@ public class StringOptionEnablePatch
         if (option == null) return true;
 
         __instance.OnValueChanged = new Action<OptionBehaviour>((o) => { });
-        __instance.TitleText.text = option.GetName();
+        if (option.IsVanillaText)
+        {
+            __instance.TitleText.text = option.GetNameVanilla();
+        }
+        else
+        {
+            __instance.TitleText.text = option.GetName();
+        }
         __instance.Value = __instance.oldValue = option.CurrentValue;
         __instance.ValueText.text = option.GetString();
 

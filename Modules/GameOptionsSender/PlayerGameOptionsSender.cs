@@ -213,13 +213,13 @@ public class PlayerGameOptionsSender : GameOptionsSender
                     : 300f;
                 AURoleOptions.EngineerInVentMaxTime = 1;
                 break;
-            case CustomRoles.Paranoia:
+         /* case CustomRoles.Paranoia:
                 AURoleOptions.EngineerCooldown =
                     !Main.ParaUsedButtonCount.TryGetValue(player.PlayerId, out var count2) || count2 < Options.ParanoiaNumOfUseButton.GetInt()
                     ? Options.ParanoiaVentCooldown.GetFloat()
                     : 300f;
                 AURoleOptions.EngineerInVentMaxTime = 1;
-                break;
+                break; */
          /* case CustomRoles.Mare:
                 Mare.ApplyGameOptions(player.PlayerId);
                 break; */

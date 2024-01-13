@@ -396,7 +396,9 @@ public class PlayerState
         Trap,
         Targeted,
         Retribution,
+        WrongAnswer,
 
+        //Please add all new roles with deathreason & new deathreason in Susceptible.CallEnabledAndChange
         etc = -1,
     }
     public byte GetRealKiller()
@@ -404,7 +406,7 @@ public class PlayerState
     public int GetKillCount(bool ExcludeSelfKill = false)
     {
         int count = 0;
-        foreach (var state in Main.PlayerStates.Values)
+        foreach (var state in Main.PlayerStates.Values.ToArray())
             if (!(ExcludeSelfKill && state.PlayerId == PlayerId) && state.GetRealKiller() == PlayerId)
                 count++;
         return count;
@@ -452,8 +454,8 @@ public class TaskState
 
         if (AmongUsClient.Instance.AmHost)
         {
-            if (player.Is(CustomRoles.Captain)) Captain.OnTaskComplete(player);
             //FIXME:SpeedBooster class transplant
+            /*
             if (player.IsAlive()
             && player.Is(CustomRoles.SpeedBooster)
             && ((CompletedTasksCount + 1) <= Options.SpeedBoosterTimes.GetInt()))
@@ -463,6 +465,7 @@ public class TaskState
                 if (Main.AllPlayerSpeed[player.PlayerId] > 3) player.Notify(Translator.GetString("SpeedBoosterSpeedLimit"));
                 else player.Notify(string.Format(Translator.GetString("SpeedBoosterTaskDone"), Main.AllPlayerSpeed[player.PlayerId].ToString("0.0#####")));
             }
+            */
 
             /*
             //叛徒修理搞破坏
@@ -495,6 +498,9 @@ public class TaskState
                 }
             }
             */
+
+            if (player.Is(CustomRoles.Captain))
+                Captain.OnTaskComplete(player);
 
             //传送师完成任务
             if (player.IsAlive()
@@ -751,9 +757,16 @@ public static class GameStates
 {
     public static bool InGame = false;
     public static bool AlreadyDied = false;
+    /**********Check Game Status***********/
     public static bool IsModHost => Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId);
     public static bool IsNormalGame => GameOptionsManager.Instance.CurrentGameOptions.GameMode == GameModes.Normal;
     public static bool IsHideNSeek => GameOptionsManager.Instance.CurrentGameOptions.GameMode == GameModes.HideNSeek;
+    public static bool SkeldIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Skeld;
+    public static bool MiraHQIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Mira;
+    public static bool PolusIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Polus;
+    public static bool DleksIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Dleks;
+    public static bool AirshipIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Airship;
+    public static bool FungleIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Fungle;
     public static bool IsLobby => AmongUsClient.Instance.GameState == AmongUsClient.GameStates.Joined;
     public static bool IsInGame => InGame;
     public static bool IsEnded => AmongUsClient.Instance.GameState == AmongUsClient.GameStates.Ended;

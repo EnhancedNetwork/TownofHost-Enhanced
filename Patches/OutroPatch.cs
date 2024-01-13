@@ -19,7 +19,6 @@ class EndGamePatch
     public static string KillLog = "";
     public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ref EndGameResult endGameResult)
     {
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         GameStates.InGame = false;
 
         Logger.Info("-----------Game over-----------", "Phase");

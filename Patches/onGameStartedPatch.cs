@@ -355,7 +355,8 @@ internal class ChangeRoleSettings
             FFF.Init();
             Instigator.Init();
             OverKiller.Init();
-            
+            Quizmaster.Init();
+
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
 
@@ -1037,6 +1038,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Enigma:
                         Enigma.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Quizmaster:
+                        Quizmaster.Add(pc.PlayerId);
                         break;
                 }
                 foreach (var subRole in pc.GetCustomSubRoles().ToArray())

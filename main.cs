@@ -40,14 +40,14 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "1.4.1.1";
-    public const string PluginDisplayVersion = "1.4.1 dev 1";
+    public const string PluginVersion = "1.4.1.2";
+    public const string PluginDisplayVersion = "1.4.1 Dev 2";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public const bool Canary = false; // Unused variable? ---- not unused anymore :)
-    public const bool fullRelease = true;
-    public const bool devRelease = false;
+    public const bool Canary = false; 
+    public const bool fullRelease = false;
+    public const bool devRelease = true;
 
     public static bool hasAccess = true;
 
@@ -778,6 +778,7 @@ public enum CustomRoles
     Mini,
     // Sorcerer,
     // Flux,
+    Quizmaster,
 
     //FFA
     Killer,
@@ -857,6 +858,7 @@ public enum CustomRoles
     Oiiai,
     Influenced,
     Silent,
+    Susceptible,
     Mundane
     // QuickFix
 }
@@ -894,6 +896,7 @@ public enum CustomWinner
     Poisoner = CustomRoles.Poisoner,
     HexMaster = CustomRoles.HexMaster,
     //Occultist = CustomRoles.Occultist,
+    Quizmaster = CustomRoles.Quizmaster,
     Succubus = CustomRoles.Succubus,
     Wraith = CustomRoles.Wraith,
     Bandit = CustomRoles.Bandit,
@@ -952,8 +955,9 @@ public enum AdditionalWinners
     Shaman = CustomRoles.Shaman,
     Taskinator = CustomRoles.Taskinator,
     Pixie = CustomRoles.Pixie,
- //   NiceMini = CustomRoles.NiceMini,
- //   Baker = CustomRoles.Baker,
+    Quizmaster = CustomRoles.Quizmaster,
+    //   NiceMini = CustomRoles.NiceMini,
+    //   Baker = CustomRoles.Baker,
 }
 public enum SuffixModes
 {

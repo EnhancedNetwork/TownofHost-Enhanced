@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TOHE.Modules;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
@@ -430,7 +431,7 @@ static class ExtendedPlayerControl
         {
             pc.RpcDesyncUpdateSystem(systemtypes, 16);
 
-            if (Options.IsActiveAirship)
+            if (GameStates.AirshipIsActive)
                 pc.RpcDesyncUpdateSystem(systemtypes, 17);
         }, 0.4f + delay, "Fix Desync Reactor");
     }
@@ -447,7 +448,7 @@ static class ExtendedPlayerControl
         {
             pc.RpcDesyncUpdateSystem(systemtypes, 16);
 
-            if (Options.IsActiveAirship)
+            if (GameStates.AirshipIsActive)
                 pc.RpcDesyncUpdateSystem(systemtypes, 17);
 
         }, FlashDuration + delay, "Fix Desync Reactor");
@@ -551,6 +552,7 @@ static class ExtendedPlayerControl
             CustomRoles.ChiefOfPolice => ChiefOfPolice.CanUseKillButton(pc.PlayerId),
             CustomRoles.EvilMini => pc.IsAlive(),
             CustomRoles.Doppelganger => pc.IsAlive(),
+            CustomRoles.Quizmaster => Quizmaster.CanUseKillButton(pc),
 
             _ => pc.Is(CustomRoleTypes.Impostor),
         };
@@ -647,6 +649,7 @@ static class ExtendedPlayerControl
             CustomRoles.ChiefOfPolice => true,
             CustomRoles.EvilMini => true,
             CustomRoles.Doppelganger => true,
+            CustomRoles.Quizmaster => true,
 
             _ => pc.Is(CustomRoleTypes.Impostor),
         };
@@ -669,10 +672,10 @@ static class ExtendedPlayerControl
             CustomRoles.Deputy or
             CustomRoles.Investigator or
             CustomRoles.Innocent or
-        //    CustomRoles.SwordsMan or
+            //    CustomRoles.SwordsMan or
             CustomRoles.FFF or
             CustomRoles.Medic or
-      //      CustomRoles.NWitch or
+            //      CustomRoles.NWitch or
             CustomRoles.Monarch or
             CustomRoles.Romantic or
             CustomRoles.Provocateur or
@@ -722,10 +725,11 @@ static class ExtendedPlayerControl
             CustomRoles.Wraith => true,
             CustomRoles.Pyromaniac => Pyromaniac.CanVent.GetBool(),
             CustomRoles.Amnesiac => true,
-         //   CustomRoles.Chameleon => true,
+            //   CustomRoles.Chameleon => true,
             CustomRoles.Parasite => true,
             CustomRoles.Refugee => true,
             CustomRoles.Spiritcaller => Spiritcaller.CanVent.GetBool(),
+            CustomRoles.Quizmaster => Quizmaster.CanUseVentButton(pc),
 
             CustomRoles.Arsonist => pc.IsDouseDone() || (Options.ArsonistCanIgniteAnytime.GetBool() && (Utils.GetDousedPlayerCount(pc.PlayerId).Item1 >= Options.ArsonistMinPlayersToIgnite.GetInt() || pc.inVent)),
             CustomRoles.Revolutionist => pc.IsDrawDone(),
@@ -792,7 +796,8 @@ static class ExtendedPlayerControl
             CustomRoles.Pestilence or
             CustomRoles.Werewolf or
     //        CustomRoles.Minion or
-            CustomRoles.Spiritcaller
+            CustomRoles.Spiritcaller or
+            CustomRoles.Quizmaster
             => false,
 
             CustomRoles.Bandit => Bandit.CanUseSabotage.GetBool(),
@@ -1014,9 +1019,9 @@ static class ExtendedPlayerControl
             case CustomRoles.Witness:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.WitnessCD.GetFloat();
                 break;
-            case CustomRoles.Capitalism:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Options.CapitalismSkillCooldown.GetFloat();
-                break;
+            //case CustomRoles.Capitalism:
+            //    Main.AllPlayerKillCooldown[player.PlayerId] = Options.CapitalismSkillCooldown.GetFloat();
+            //    break;
             case CustomRoles.Pelican:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Pelican.KillCooldown.GetFloat();
                 break;
@@ -1163,6 +1168,9 @@ static class ExtendedPlayerControl
             case CustomRoles.EvilMini:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Mini.GetKillCoolDown();
                 break;
+            case CustomRoles.Quizmaster:
+                Quizmaster.SetKillCooldown(player.PlayerId);
+                break;
         }
         if (player.PlayerId == LastImpostor.currentId)
             LastImpostor.SetKillCooldown();
@@ -1267,12 +1275,20 @@ static class ExtendedPlayerControl
     }
     public static void RpcExileV2(this PlayerControl player)
     {
+        if (player.Is(CustomRoles.Susceptible))
+        {
+            Susceptible.CallEnabledAndChange(player);
+        }
         player.Exiled();
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.None, -1);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void RpcMurderPlayerV3(this PlayerControl killer, PlayerControl target)
     {
+        if (target.Is(CustomRoles.Susceptible))
+        {
+            Susceptible.CallEnabledAndChange(target);
+        }
         if (killer.PlayerId == target.PlayerId && killer.shapeshifting)
         {
             _ = new LateTask(() => { killer.RpcMurderPlayer(target, true); }, 1.5f, "Shapeshifting Suicide Delay");
