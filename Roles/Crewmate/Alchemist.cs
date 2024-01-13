@@ -270,8 +270,8 @@ namespace TOHE.Roles.Crewmate
             if (lastFixedTime != now)
             {
                 lastFixedTime = now;
-                Dictionary<byte, long> newList = [];
-                List<byte> refreshList = [];
+                Dictionary<byte, long> newList = new(); // = [];
+                List<byte> refreshList = new(); // = [];
                 foreach (var it in InvisTime)
                 {
                     var pc = Utils.GetPlayerById(it.Key);
