@@ -339,6 +339,7 @@ internal class RPCHandlerPatch
                     // Set Preset 5 for modded non-host players
                     if (startAmount == 0 && option.Name == "Preset" && option.CurrentValue != 4)
                     {
+                        option.SetValue(reader.ReadPackedInt32()); // First set current value
                         option.SetValue(4); // 4 => Preset 5
                         continue;
                     }
