@@ -2862,6 +2862,8 @@ class FixedUpdateInNormalGamePatch
 
                 if (Kamikaze.IsEnable)
                     Kamikaze.MurderKamikazedPlayers(player);
+                if (Alchemist.IsEnable)
+                    Alchemist.OnFixedUpdateINV(player);
 
                 switch (playerRole)
                 {
@@ -2922,10 +2924,6 @@ class FixedUpdateInNormalGamePatch
                         case CustomRoles.Chameleon:
                             Chameleon.OnFixedUpdate(player);
                             break;
-
-                        //case CustomRoles.Alchemist:
-                        //    Alchemist.OnFixedUpdate(player);
-                        //    break;
 
                         case CustomRoles.BallLightning:
                             BallLightning.OnFixedUpdate();
@@ -3896,9 +3894,9 @@ class CoEnterVentPatch
 
         if (__instance.myPlayer.Is(CustomRoles.Chameleon))
             Chameleon.OnCoEnterVent(__instance, id);
-
-        /*    if (__instance.myPlayer.Is(CustomRoles.Alchemist) && Alchemist.PotionID == 6)
-                Alchemist.OnCoEnterVent(__instance, id); */
+        
+        if (__instance.myPlayer.Is(CustomRoles.Alchemist) && Alchemist.PotionID == 8)
+            Alchemist.OnCoEnterVent(__instance, id);
 
         if (__instance.myPlayer.Is(CustomRoles.DovesOfNeace)) __instance.myPlayer.Notify(GetString("DovesOfNeaceMaxUsage"));
         if (__instance.myPlayer.Is(CustomRoles.Veteran)) __instance.myPlayer.Notify(GetString("VeteranMaxUsage"));

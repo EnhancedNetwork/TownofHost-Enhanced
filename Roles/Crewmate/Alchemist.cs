@@ -18,7 +18,7 @@ namespace TOHE.Roles.Crewmate
         private static List<byte> playerIdList = new();
 
         public static Dictionary<byte, byte> BloodlustList = new();
-        //private static Dictionary<byte, int> ventedId = new();
+        private static Dictionary<byte, int> ventedId = new();
         private static Dictionary<byte, long> InvisTime = new();
 
         public static byte PotionID = 10;
@@ -32,6 +32,8 @@ namespace TOHE.Roles.Crewmate
         public static OptionItem Vision;
         public static OptionItem VisionOnLightsOut;
         public static OptionItem VisionDuration;
+        public static OptionItem Speed;
+        public static OptionItem InvisDuration;
 
         public static void SetupCustomOption()
         {
@@ -46,7 +48,11 @@ namespace TOHE.Roles.Crewmate
                 .SetValueFormat(OptionFormat.Multiplier);
             VisionDuration = FloatOptionItem.Create(Id + 18, "AlchemistVisionDur", new(5f, 70f, 1f), 20f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Alchemist])
                 .SetValueFormat(OptionFormat.Seconds);
-            OverrideTasksData.Create(Id + 20, TabGroup.CrewmateRoles, CustomRoles.Alchemist);
+            Speed = FloatOptionItem.Create(Id + 19, "AlchemistSpeed", new(0.1f, 5f, 0.1f), 1.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Alchemist])
+                 .SetValueFormat(OptionFormat.Multiplier);
+            InvisDuration = FloatOptionItem.Create(Id + 20, "AlchemistInvisDur", new(5f, 70f, 1f), 20f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Alchemist])
+                .SetValueFormat(OptionFormat.Seconds);
+            OverrideTasksData.Create(Id + 21, TabGroup.CrewmateRoles, CustomRoles.Alchemist);
         }
         public static void Init()
         {
@@ -54,7 +60,7 @@ namespace TOHE.Roles.Crewmate
             BloodlustList = new();
             PotionID = 10;
             PlayerName = string.Empty;
-            //ventedId = new();
+            ventedId = new();
             InvisTime = new();
             FixNextSabo = false;
             VisionPotionActive = false;
@@ -81,8 +87,8 @@ namespace TOHE.Roles.Crewmate
                 case 3: // TP to random player
                     pc.Notify(GetString("AlchemistGotTPPotion"), 15f);
                     break;
-                case 4: // Nothing
-                    pc.Notify(GetString("AlchemistGotNullPotion"), 15f);
+                case 4: // Speed
+                    pc.Notify(GetString("AlchemistGotSpeedPotion"), 15f);
                     break;
                 case 5: // Quick fix next sabo
                     FixNextSabo = true;
@@ -94,6 +100,9 @@ namespace TOHE.Roles.Crewmate
                     break;
                 case 7: // Increased vision
                     pc.Notify(GetString("AlchemistGotSightPotion"), 15f);
+                    break;
+                case 8:
+                    pc.Notify(GetString("AlchemistGotInvisibility"), 15f);
                     break;
                 default: // just in case
                     break;
@@ -143,8 +152,18 @@ namespace TOHE.Roles.Crewmate
                         tar1.RPCPlayCustomSound("Teleport");
                     }, 2f, "Alchemist teleported to random player");
                     break;
-                case 4: // Increased speed?? Right now it's only water (do nothing) case.
-                    player.Notify(GetString("AlchemistPotionDidNothing"));
+                case 4: // Increased speed.;
+                    int SpeedDuration = 10;
+                    player.Notify(GetString("AlchemistHasSpeed"));
+                    player.MarkDirtySettings();
+                    var tmpSpeed = Main.AllPlayerSpeed[player.PlayerId];
+                    Main.AllPlayerSpeed[player.PlayerId] = Speed.GetFloat();
+                    _ = new LateTask(() =>
+                    {
+                        Main.AllPlayerSpeed[player.PlayerId] = Main.AllPlayerSpeed[player.PlayerId] - Speed.GetFloat() + tmpSpeed;
+                        player.MarkDirtySettings();
+                        player.Notify(GetString("AlchemistSpeedOut"));
+                    }, SpeedDuration);
                     break;
                 case 5: // Quick fix next sabo
                     // Done when making the potion
@@ -167,6 +186,10 @@ namespace TOHE.Roles.Crewmate
                         player.Notify(GetString("AlchemistVisionOut"));
 
                     }, VisionDuration.GetFloat(), "Alchemist Vision Is Out");
+                    break;
+                case 8:
+                    // Invisibility
+                    // Handled in CoEnterVent
                     break;
                 case 10:
                     player.Notify("NoPotion");
@@ -192,7 +215,6 @@ namespace TOHE.Roles.Crewmate
         {
             InvisTime = new();
             long invis = long.Parse(reader.ReadString());
-            long last = long.Parse(reader.ReadString());
             if (invis > 0) InvisTime.Add(PlayerControl.LocalPlayer.PlayerId, invis);
         }
         public static void OnFixedUpdate(PlayerControl player)
@@ -238,7 +260,45 @@ namespace TOHE.Roles.Crewmate
                 }
             }
         }
-        /*    public static void OnCoEnterVent(PlayerPhysics __instance, int ventId)
+        private static long lastFixedTime;
+        public static void OnFixedUpdateINV(PlayerControl player)
+        {
+            if (GameStates.IsMeeting) return;
+
+            var now = Utils.GetTimeStamp();
+
+            if (lastFixedTime != now)
+            {
+                lastFixedTime = now;
+                Dictionary<byte, long> newList = [];
+                List<byte> refreshList = [];
+                foreach (var it in InvisTime)
+                {
+                    var pc = Utils.GetPlayerById(it.Key);
+                    if (pc == null) continue;
+                    var remainTime = it.Value + (long)InvisDuration.GetFloat() - now;
+                    if (remainTime < 0)
+                    {
+                        pc?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(pc.PlayerId, out var id) ? id : Main.LastEnteredVent[pc.PlayerId].Id);
+                        pc.Notify(GetString("ChameleonInvisStateOut"));
+                        pc.RpcResetAbilityCooldown();
+                        SendRPC(pc);
+                        continue;
+                    }
+                    else if (remainTime <= 10)
+                    {
+                        if (!pc.IsModClient()) pc.Notify(string.Format(GetString("ChameleonInvisStateCountdown"), remainTime + 1));
+                    }
+                    newList.Add(it.Key, it.Value);
+                }
+                InvisTime.Where(x => !newList.ContainsKey(x.Key)).Do(x => refreshList.Add(x.Key));
+                InvisTime = newList;
+                refreshList.Do(x => SendRPC(Utils.GetPlayerById(x)));
+            }
+        }
+
+        
+        public static void OnCoEnterVent(PlayerPhysics __instance, int ventId)
             {
                 PotionID = 10;
                 var pc = __instance.myPlayer;
@@ -255,54 +315,20 @@ namespace TOHE.Roles.Crewmate
 
                     InvisTime.Add(pc.PlayerId, Utils.GetTimeStamp());
                     SendRPC(pc);
-                //    NameNotifyManager.Notify(pc, GetString("ChameleonInvisState"), InvisDuration.GetFloat());
+                    NameNotifyManager.Notify(pc, GetString("ChameleonInvisState"), InvisDuration.GetFloat());
                 }, 0.5f, "Alchemist Invis");
-            } */
-        /*    public static void OnFixedUpdate(PlayerControl player)
-            {
-                if (!GameStates.IsInTask || !IsEnable) return;
-
-                var now = Utils.GetTimeStamp();
-
-                if (lastFixedTime != now)
-                {
-                    lastFixedTime = now;
-                    Dictionary<byte, long> newList = new();
-                    List<byte> refreshList = new();
-                    foreach (var it in InvisTime)
-                    {
-                        var pc = Utils.GetPlayerById(it.Key);
-                        if (pc == null) continue;
-                        var remainTime = it.Value + (long)InvisDuration.GetFloat() - now;
-                        if (remainTime < 0)
-                        {
-                            pc?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(pc.PlayerId, out var id) ? id : Main.LastEnteredVent[pc.PlayerId].Id);
-                            NameNotifyManager.Notify(pc, GetString("ChameleonInvisStateOut"));
-                            pc.RpcResetAbilityCooldown();
-                            SendRPC(pc);
-                            continue;
-                        }
-                        else if (remainTime <= 10)
-                        {
-                            if (!pc.IsModClient()) pc.Notify(string.Format(GetString("ChameleonInvisStateCountdown"), remainTime + 1));
-                        }
-                        newList.Add(it.Key, it.Value);
-                    }
-                    InvisTime.Where(x => !newList.ContainsKey(x.Key)).Do(x => refreshList.Add(x.Key));
-                    InvisTime = newList;
-                    refreshList.Do(x => SendRPC(Utils.GetPlayerById(x)));
-                }
-            } */
+            }
+        
         public static string GetHudText(PlayerControl pc)
         {
-            if (pc == null || !GameStates.IsInTask || !PlayerControl.LocalPlayer.IsAlive()) return string.Empty;
+            if (pc == null || GameStates.IsMeeting || !PlayerControl.LocalPlayer.IsAlive()) return string.Empty;
             var str = new StringBuilder();
-        /*    if (IsInvis(pc.PlayerId))
+            if (IsInvis(pc.PlayerId))
             {
                 var remainTime = InvisTime[pc.PlayerId] + (long)InvisDuration.GetFloat() - Utils.GetTimeStamp();
                 str.Append(string.Format(GetString("ChameleonInvisStateCountdown"), remainTime + 1));
             }
-            else */
+            else 
             {
                 switch (PotionID)
                 {
@@ -315,8 +341,8 @@ namespace TOHE.Roles.Crewmate
                     case 3: // TP to random player
                         str.Append(GetString("PotionStore") + GetString("StoreTP"));
                         break;
-                    case 4: // Nothing
-                        str.Append(GetString("PotionStore") + GetString("StoreWB"));
+                    case 4: // Increased Speed
+                        str.Append(GetString("PotionStore") + GetString("StoreSP"));
                         break;
                     case 5: // Quick fix next sabo
                         str.Append(GetString("PotionStore") + GetString("StoreQF"));
@@ -326,6 +352,9 @@ namespace TOHE.Roles.Crewmate
                         break;
                     case 7: // Increased vision
                         str.Append(GetString("PotionStore") + GetString("StoreNS"));
+                        break;
+                    case 8: // Invisibility
+                        str.Append(GetString("PotionStore") + GetString("StoreINV"));
                         break;
                     case 10:
                         str.Append(GetString("PotionStore") + GetString("StoreNull"));
@@ -352,8 +381,8 @@ namespace TOHE.Roles.Crewmate
                 case 3: // TP to random player
                     str.Append("<color=#42d1ff>§</color>");
                     break;
-                case 4: // Nothing
-                    str.Append("<color=#ffffff>◎</color>");
+                case 4: // Increased Speed
+                    str.Append("<color=#77e0cb>»</color>");
                     break;
                 case 5: // Quick fix next sabo
                     str.Append("<color=#3333ff>★</color>");
@@ -363,6 +392,9 @@ namespace TOHE.Roles.Crewmate
                     break;
                 case 7: // Increased vision
                     str.Append("<color=#663399>◉</color>");
+                    break;
+                case 8: //Invisibility
+                    str.Append("<color=#b3b3b3>◌</color>");
                     break;
                 default:
                     break;
