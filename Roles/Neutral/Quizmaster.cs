@@ -10,21 +10,22 @@ namespace TOHE.Roles.Neutral;
 
 public class Quizmaster
 {
+    private static readonly int Id = 27000;
+    //public static List<byte> playerIdList = new();
+    public static bool IsEnable = false;
     public static PlayerControl Player;
     public static OptionItem QuestionDifficulty;
     public static OptionItem CanKillAfterMark;
     public static OptionItem CanVentAfterMark;
     public static OptionItem NumOfKillAfterMark;
+    public static OptionItem CanGiveQuestionsAboutPastGames;
     public static QuizQuestionBase Question = new SetAnswersQuestion { Stage = 0, Answer = "Select Me", PossibleAnswers = { "Select me", "Die", "Die", "Die" }, Question = "This question is to prevent crashes answer the letter with the answer \"Select me\"", hasAnswersTranslation = false, hasQuestionTranslation = false };
     public static QuizQuestionBase previousQuestion = new SetAnswersQuestion { Stage = 0, Answer = "Select Me", PossibleAnswers = { "Select me", "Die", "Die", "Die" }, Question = "This question is to prevent crashes answer the letter with the answer \"Select me\"", hasAnswersTranslation = false, hasQuestionTranslation = false };
-    public static List<byte> playerIdList = new();
     public static Sabotages lastSabotage = Sabotages.None;
     public static Sabotages firstSabotageOfRound = Sabotages.None;
-    public static readonly int Id = 27000;
     public static int killsForRound = 0;
     public static bool allowedKilling = false;
     public static bool allowedVenting = true;
-    public static bool IsEnable = false;
     public static bool AlreadyMarked = false;
     public static byte MarkedPlayer = byte.MaxValue;
     public static string lastExiledColor = "None";
@@ -51,19 +52,37 @@ public class Quizmaster
         NumOfKillAfterMark = IntegerOptionItem.Create(Id + 13, "QuizmasterSettings.NumOfKillAfterMark", new(1, 15, 1), 1, tab, false)
             .SetValueFormat(OptionFormat.Players)
             .SetParent(CanKillAfterMark);
+        CanGiveQuestionsAboutPastGames = BooleanOptionItem.Create(Id + 14, "QuizmasterSettings.CanGiveQuestionsAboutPastGames", false, tab, false)
+           .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
     }
     public static void Init()
     {
-        playerIdList = new();
-        MarkedPlayer = byte.MaxValue;
+        //playerIdList = new();
         Player = null;
+        firstSabotageOfRound = Sabotages.None;
+        killsForRound = 0;
+        allowedKilling = false;
+        allowedVenting = true;
+        AlreadyMarked = false;
+        MarkedPlayer = byte.MaxValue;
+
+        if (!CanGiveQuestionsAboutPastGames.GetBool())
+        {
+            lastExiledColor = "None";
+            lastReportedColor = "None";
+            lastButtonPressedColor = "None";
+            lastSabotage = Sabotages.None;
+        }
+
+        thisReportedColor = "None";
+        thisButtonPressedColor = "None";
+        diedThisRound = 0;
         IsEnable = false;
     }
     public static void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        //playerIdList.Add(playerId);
         MarkedPlayer = byte.MaxValue;
-        firstSabotageOfRound = Sabotages.None;
         IsEnable = true;
     }
     private static void SendRPC(byte playerId)
@@ -85,6 +104,7 @@ public class Quizmaster
     public static bool CanUseKillButton(PlayerControl pc)
     {
         if (pc == null || !pc.IsAlive()) return false;
+
         bool canKill;
         if (CanKillAfterMark.GetBool())
         {
@@ -103,8 +123,9 @@ public class Quizmaster
     public static bool CanUseVentButton(PlayerControl pc)
     {
         if (pc == null || !pc.IsAlive()) return false;
+       
         bool canVent;
-        if (CanVentAfterMark.GetBool())
+        if (CanVentAfterMark.GetBool() && MarkedPlayer != byte.MaxValue)
         {
             canVent = true;
         }
@@ -112,6 +133,7 @@ public class Quizmaster
         {
             canVent = MarkedPlayer == byte.MaxValue && !allowedVenting;
         }
+
         return canVent;
     }
 
@@ -173,19 +195,23 @@ public class Quizmaster
         return chosenRole;
     }
 
-    public static void OnReportDeadBody(PlayerControl player, GameData.PlayerInfo targetInfo)
+    public static void OnButtonPress(PlayerControl player)
     {
-        lastReportedColor = thisReportedColor;
-        thisReportedColor = targetInfo.GetPlayerColorString();
+        if (player == null) return;
+
+        buttonMeeting++;
         meetingNum++;
+        lastButtonPressedColor = thisButtonPressedColor;
+        thisButtonPressedColor = player.Data.GetPlayerColorString();
         DoQuestion();
     }
 
-    public static void OnButtonPress(PlayerControl player)
+    public static void OnReportDeadBody(GameData.PlayerInfo targetInfo)
     {
-        buttonMeeting++;
-        lastButtonPressedColor = thisButtonPressedColor;
-        thisButtonPressedColor = player.Data.GetPlayerColorString();
+        if (targetInfo == null) return;
+
+        lastReportedColor = thisReportedColor;
+        thisReportedColor = targetInfo.GetPlayerColorString();
         meetingNum++;
         DoQuestion();
     }
@@ -197,7 +223,7 @@ public class Quizmaster
         {
             CustomRoles randomRole = GetRandomRole(CustomRolesHelper.AllRoles.ToList(), false);
             CustomRoles randomRoleWithAddon = GetRandomRole(CustomRolesHelper.AllRoles.ToList(), false);
-            List<QuizQuestionBase> Questions = new List<QuizQuestionBase>
+            List<QuizQuestionBase> Questions = new()
             {
                 new SabotageQuestion { Stage = 1, Question = "LastSabotage",/* JSON ENTRIES */ QuizmasterQuestionType = QuizmasterQuestionType.LatestSabotageQuestion },
                 new SabotageQuestion { Stage = 1, Question = "FirstRoundSabotage", QuizmasterQuestionType = QuizmasterQuestionType.FirstRoundSabotageQuestion },
@@ -235,6 +261,11 @@ public class Quizmaster
                 }
             }, 6.1f, "Quizmaster Chat Notice");
         }
+    }
+
+    public static void OnPlayerExile(GameData.PlayerInfo exiled)
+    {
+        lastExiledColor = exiled.GetPlayerColorString();
     }
 
     public static void OnMeetingEnd() /* NEW ROUND START */
@@ -276,29 +307,39 @@ public class Quizmaster
 
     public static void OnSabotageCall(SystemTypes systemType)
     {
-        switch (systemType)
+        if (systemType is
+                SystemTypes.HeliSabotage or
+                SystemTypes.Laboratory or
+                SystemTypes.Reactor or
+                SystemTypes.Electrical or
+                SystemTypes.LifeSupp or
+                SystemTypes.Comms or
+                SystemTypes.MushroomMixupSabotage)
         {
-            case SystemTypes.HeliSabotage:
-            case SystemTypes.Laboratory:
-            case SystemTypes.Reactor:
-                lastSabotage = Sabotages.Reactor;
-                break;
-            case SystemTypes.Electrical:
-                lastSabotage = Sabotages.Lights;
-                break;
-            case SystemTypes.LifeSupp:
-                lastSabotage = Sabotages.O2;
-                break;
-            case SystemTypes.Comms:
-                lastSabotage = Sabotages.Communications;
-                break;
-            case SystemTypes.MushroomMixupSabotage:
-                lastSabotage = Sabotages.MushroomMixup;
-                break;
-        }
+            switch (systemType)
+            {
+                case SystemTypes.HeliSabotage: //The Airhip
+                case SystemTypes.Laboratory: //Polus
+                case SystemTypes.Reactor: //Other maps
+                    lastSabotage = Sabotages.Reactor;
+                    break;
+                case SystemTypes.Electrical:
+                    lastSabotage = Sabotages.Lights;
+                    break;
+                case SystemTypes.LifeSupp:
+                    lastSabotage = Sabotages.O2;
+                    break;
+                case SystemTypes.Comms:
+                    lastSabotage = Sabotages.Communications;
+                    break;
+                case SystemTypes.MushroomMixupSabotage:
+                    lastSabotage = Sabotages.MushroomMixup;
+                    break;
+            }
 
-        if (firstSabotageOfRound == Sabotages.None)
-            firstSabotageOfRound = lastSabotage;
+            if (firstSabotageOfRound == Sabotages.None)
+                firstSabotageOfRound = lastSabotage;
+        }
     }
 
     public static void KillPlayer(PlayerControl plrToKill)
@@ -344,14 +385,12 @@ public class Quizmaster
         if (MarkedPlayer == plr.PlayerId)
         {
             var answerSyntaxValid = args.Length == 2;
-            var answerValid = false;
-            var answer = "";
             if (answerSyntaxValid)
             {
-                answer = args[1].ToUpper();
-                answerValid = (answer == "A" || answer == "B" || answer == "C");
+                string answer = args[1].ToUpper();
+                var answerValid = (answer == "A" || answer == "B" || answer == "C");
                 var rightAnswer = Question.AnswerLetter.Trim().ToUpper();
-                var quizmasterPlayer = Player;
+
                 if (answerValid)
                 {
                     if (rightAnswer == answer)
@@ -408,29 +447,32 @@ abstract public class QuizQuestionBase
 
 class PlrColorQuestion : QuizQuestionBase
 {
-
     public override void FixUnsetAnswers()
     {
-        Answers = new List<string>{ };
+        Answers = new List<string> { };
 
         foreach (PlayerControl plr in Main.AllPlayerControls)
         {
-            if (!PossibleAnswers.Contains(plr.Data.GetPlayerColorString())) PossibleAnswers.Add(plr.Data.GetPlayerColorString());
+            if (!PossibleAnswers.Contains(plr.Data.GetPlayerColorString())) 
+                PossibleAnswers.Add(plr.Data.GetPlayerColorString());
         }
 
         var rnd = IRandom.Instance;
-        int positionForRightAnswer = rnd.Next(0, 3);
+        int positionForRightAnswer = rnd.Next(3);
 
-        if (QuizmasterQuestionType == QuizmasterQuestionType.EjectionColorQuestion)
-            Answer = Quizmaster.lastReportedColor;
-        else if (QuizmasterQuestionType == QuizmasterQuestionType.ReportColorQuestion)
-            Answer = Quizmaster.lastReportedColor;
-        else if (QuizmasterQuestionType == QuizmasterQuestionType.LastMeetingColorQuestion)
-            Answer = Quizmaster.lastButtonPressedColor;
+        Answer = QuizmasterQuestionType switch
+        {
+            QuizmasterQuestionType.EjectionColorQuestion => Quizmaster.lastExiledColor,
+            QuizmasterQuestionType.ReportColorQuestion => Quizmaster.lastReportedColor,
+            QuizmasterQuestionType.LastMeetingColorQuestion => Quizmaster.lastButtonPressedColor,
+            _ => "None"
+        };
 
         hasAnswersTranslation = false;
 
-        PossibleAnswers.Remove(Answer);
+        if (PossibleAnswers.Contains(Answer))
+            PossibleAnswers.Remove(Answer);
+
         for (int numOfQuestionsDone = 0; numOfQuestionsDone < 3; numOfQuestionsDone++)
         {
             var prefix = "";
@@ -444,7 +486,7 @@ class PlrColorQuestion : QuizQuestionBase
             }
             else
             {
-                string thatAnswer = PossibleAnswers[rnd.Next(0, PossibleAnswers.Count)];
+                string thatAnswer = PossibleAnswers[rnd.Next(PossibleAnswers.Count)];
                 if (thatAnswer == "None") prefix = "Quizmaster.";
                 if (prefix != "")
                     thatAnswer = GetString(prefix + thatAnswer);
@@ -457,7 +499,6 @@ class PlrColorQuestion : QuizQuestionBase
 
 class DeathReasonQuestion : QuizQuestionBase
 {
-
     public override void FixUnsetAnswers()
     {
         Answers = new List<string> { };
@@ -485,7 +526,7 @@ class DeathReasonQuestion : QuizQuestionBase
             PossibleAnswers.Add(PlayerState.DeathReason.Kill.ToString());
         }
 
-        chosenPlayer = Main.AllPlayerControls[rnd.Next(0, Main.AllPlayerControls.Length)];
+        chosenPlayer = Main.AllPlayerControls[rnd.Next(Main.AllPlayerControls.Length)];
 
         foreach (PlayerControl plr in Main.AllPlayerControls)
         {
@@ -503,12 +544,13 @@ class DeathReasonQuestion : QuizQuestionBase
 
         showInvalid = false;
 
-        if (QuizmasterQuestionType == QuizmasterQuestionType.PlrDeathReasonQuestion)
-            Answer = chosenPlayer.Data.IsDead ? Main.PlayerStates[chosenPlayer.PlayerId].deathReason.ToString() : "None";
-        else if (QuizmasterQuestionType == QuizmasterQuestionType.PlrDeathMethodQuestion)
-            Answer = chosenPlayer.Data.Disconnected ? PlayerState.DeathReason.Disconnected.ToString() : (Main.PlayerStates[chosenPlayer.PlayerId].deathReason == PlayerState.DeathReason.Vote ? PlayerState.DeathReason.Vote.ToString() : PlayerState.DeathReason.Kill.ToString());
-        else if (QuizmasterQuestionType == QuizmasterQuestionType.PlrDeathKillerFactionQuestion)
-            Answer = CustomRolesHelper.GetRoleTypes(chosenPlayer.GetRealKiller().GetCustomRole()).ToString();
+        Answer = QuizmasterQuestionType switch
+        {
+            QuizmasterQuestionType.PlrDeathReasonQuestion => chosenPlayer.Data.IsDead ? Main.PlayerStates[chosenPlayer.PlayerId].deathReason.ToString() : "None",
+            QuizmasterQuestionType.PlrDeathMethodQuestion => chosenPlayer.Data.Disconnected ? PlayerState.DeathReason.Disconnected.ToString() : (Main.PlayerStates[chosenPlayer.PlayerId].deathReason == PlayerState.DeathReason.Vote ? PlayerState.DeathReason.Vote.ToString() : PlayerState.DeathReason.Kill.ToString()),
+            QuizmasterQuestionType.PlrDeathKillerFactionQuestion => CustomRolesHelper.GetRoleTypes(chosenPlayer.GetRealKiller().GetCustomRole()).ToString(),
+            _ => "None"
+        };
 
         PossibleAnswers.Remove(Answer);
         for (int numOfQuestionsDone = 0; numOfQuestionsDone < 3; numOfQuestionsDone++)
@@ -538,16 +580,17 @@ class DeathReasonQuestion : QuizQuestionBase
 
 class CountQuestion : QuizQuestionBase
 {
-
     public override void FixUnsetAnswers()
     {
         var rnd = IRandom.Instance;
-        if (QuizmasterQuestionType == QuizmasterQuestionType.MeetingCountQuestion)
-            Answer = Quizmaster.meetingNum.ToString();
-        else if (QuizmasterQuestionType == QuizmasterQuestionType.ButtonPressedBeforeThisQuestion)
-            Answer = (Quizmaster.buttonMeeting - 1).ToString();
-        else if (QuizmasterQuestionType == QuizmasterQuestionType.DiedFirstRoundCountQuestion)
-            Answer = Quizmaster.diedThisRound.ToString();
+
+        Answer = QuizmasterQuestionType switch
+        {
+            QuizmasterQuestionType.MeetingCountQuestion => Quizmaster.meetingNum.ToString(),
+            QuizmasterQuestionType.ButtonPressedBeforeThisQuestion => (Quizmaster.buttonMeeting - 1).ToString(),
+            QuizmasterQuestionType.DiedFirstRoundCountQuestion => Quizmaster.diedThisRound.ToString(),
+            _ => "None"
+        };
 
         Answers = new List<string> { };
         int ans = int.Parse(Answer);
@@ -597,10 +640,12 @@ class SetAnswersQuestion : QuizQuestionBase
         for (int numOfQuestionsDone = 0; numOfQuestionsDone < 3; numOfQuestionsDone++)
         {
             var prefix = "";
+
             if (QuizmasterQuestionType == QuizmasterQuestionType.FactionQuestion)
                 prefix = "QuizmasterAnswers.";
             if (QuizmasterQuestionType == QuizmasterQuestionType.RoleFactionQuestion || QuizmasterQuestionType == QuizmasterQuestionType.RoleBasisQuestion)
                 prefix = "Type";
+
             if (numOfQuestionsDone == positionForRightAnswer)
             {
                 AnswerLetter = new List<string> { "A", "B", "C" }[positionForRightAnswer];
@@ -620,16 +665,17 @@ class SetAnswersQuestion : QuizQuestionBase
 
 class SabotageQuestion : QuizQuestionBase
 {
-    private static List<Sabotages> AirshitSabotages = new List<Sabotages> { Sabotages.None, Sabotages.Lights, Sabotages.Reactor, Sabotages.Communications };
-    private static List<Sabotages> SkeldSabotages = new List<Sabotages> { Sabotages.None, Sabotages.Lights, Sabotages.Reactor, Sabotages.O2 };
-    private static List<Sabotages> PolusSabotages = new List<Sabotages> { Sabotages.None, Sabotages.Lights, Sabotages.Reactor, Sabotages.Communications };
-    private static List<Sabotages> MiraSabotages = new List<Sabotages> { Sabotages.None, Sabotages.Lights, Sabotages.Reactor, Sabotages.O2, Sabotages.Communications };
-    private static List<Sabotages> FungleSabotages = new List<Sabotages> { Sabotages.None, Sabotages.Communications, Sabotages.Reactor, Sabotages.MushroomMixup };
+    private static readonly List<Sabotages> SkeldSabotages = new() { Sabotages.None, Sabotages.Lights, Sabotages.Reactor, Sabotages.O2 };
+    private static readonly List<Sabotages> MiraSabotages = new() { Sabotages.None, Sabotages.Lights, Sabotages.Reactor, Sabotages.O2, Sabotages.Communications };
+    private static readonly List<Sabotages> PolusSabotages = new() { Sabotages.None, Sabotages.Lights, Sabotages.Reactor, Sabotages.Communications };
+    private static readonly List<Sabotages> AirshitSabotages = new() { Sabotages.None, Sabotages.Lights, Sabotages.Reactor, Sabotages.Communications };
+    private static readonly List<Sabotages> FungleSabotages = new() { Sabotages.None, Sabotages.Communications, Sabotages.Reactor, Sabotages.MushroomMixup };
 
     public override void FixUnsetAnswers()
     {
         Answers = new List<string> { };
-        PossibleAnswers = (MapNames)Main.NormalOptions.MapId switch
+
+        PossibleAnswers = Utils.GetActiveMapName() switch
         {
             MapNames.Skeld => SkeldSabotages.ConvertAll(f => f.ToString()),
             MapNames.Dleks => SkeldSabotages.ConvertAll(f => f.ToString()),
@@ -644,12 +690,15 @@ class SabotageQuestion : QuizQuestionBase
         var rnd = IRandom.Instance;
         int positionForRightAnswer = rnd.Next(0, 3);
 
-        if (QuizmasterQuestionType == QuizmasterQuestionType.LatestSabotageQuestion)
-            Answer = Quizmaster.lastSabotage.ToString();
-        else if (QuizmasterQuestionType == QuizmasterQuestionType.FirstRoundSabotageQuestion)
-            Answer = Quizmaster.firstSabotageOfRound.ToString();
+        Answer = QuizmasterQuestionType switch
+        {
+            QuizmasterQuestionType.LatestSabotageQuestion => Quizmaster.lastSabotage.ToString(),
+            QuizmasterQuestionType.FirstRoundSabotageQuestion => Quizmaster.firstSabotageOfRound.ToString(),
+            _ => Sabotages.None.ToString(),
+        };
 
         PossibleAnswers.Remove(Answer);
+
         for (int numOfQuestionsDone = 0; numOfQuestionsDone < 3; numOfQuestionsDone++)
         {
             var prefix = "QuizmasterSabotages.";

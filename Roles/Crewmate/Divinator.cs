@@ -219,6 +219,7 @@ public static class Divinator
                 CustomRoles.Addict or
                 CustomRoles.Escapee or
                 CustomRoles.Miner or
+                CustomRoles.RiftMaker or
                 CustomRoles.Bastion or
                 CustomRoles.Mole or
                 CustomRoles.Chronomancer or
