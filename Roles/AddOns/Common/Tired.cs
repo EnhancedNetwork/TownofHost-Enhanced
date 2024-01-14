@@ -25,7 +25,7 @@ public class Tired
              .SetValueFormat(OptionFormat.Multiplier);
         SetSpeed = FloatOptionItem.Create(Id + 11, "TiredSpeed", new(0.25f, 3f, 0.25f), 0.75f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Tired])
            .SetValueFormat(OptionFormat.Multiplier);
-        TiredDuration = FloatOptionItem.Create(Id + 12, "TiredDur", new(2f, 10f, 0.5f), 5f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Tired])
+        TiredDuration = FloatOptionItem.Create(Id + 12, "TiredDur", new(2f, 15f, 0.5f), 5f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Tired])
                 .SetValueFormat(OptionFormat.Seconds);
         CanBeOnImp = BooleanOptionItem.Create(Id + 13, "ImpCanBeTired", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Tired]);
         CanBeOnCrew = BooleanOptionItem.Create(Id + 14, "CrewCanBeTired", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Tired]);
