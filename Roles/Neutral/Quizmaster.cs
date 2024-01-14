@@ -307,29 +307,39 @@ public class Quizmaster
 
     public static void OnSabotageCall(SystemTypes systemType)
     {
-        switch (systemType)
+        if (systemType is
+                SystemTypes.HeliSabotage or
+                SystemTypes.Laboratory or
+                SystemTypes.Reactor or
+                SystemTypes.Electrical or
+                SystemTypes.LifeSupp or
+                SystemTypes.Comms or
+                SystemTypes.MushroomMixupSabotage)
         {
-            case SystemTypes.HeliSabotage:
-            case SystemTypes.Laboratory:
-            case SystemTypes.Reactor:
-                lastSabotage = Sabotages.Reactor;
-                break;
-            case SystemTypes.Electrical:
-                lastSabotage = Sabotages.Lights;
-                break;
-            case SystemTypes.LifeSupp:
-                lastSabotage = Sabotages.O2;
-                break;
-            case SystemTypes.Comms:
-                lastSabotage = Sabotages.Communications;
-                break;
-            case SystemTypes.MushroomMixupSabotage:
-                lastSabotage = Sabotages.MushroomMixup;
-                break;
-        }
+            switch (systemType)
+            {
+                case SystemTypes.HeliSabotage: //The Airhip
+                case SystemTypes.Laboratory: //Polus
+                case SystemTypes.Reactor: //Other maps
+                    lastSabotage = Sabotages.Reactor;
+                    break;
+                case SystemTypes.Electrical:
+                    lastSabotage = Sabotages.Lights;
+                    break;
+                case SystemTypes.LifeSupp:
+                    lastSabotage = Sabotages.O2;
+                    break;
+                case SystemTypes.Comms:
+                    lastSabotage = Sabotages.Communications;
+                    break;
+                case SystemTypes.MushroomMixupSabotage:
+                    lastSabotage = Sabotages.MushroomMixup;
+                    break;
+            }
 
-        if (firstSabotageOfRound == Sabotages.None)
-            firstSabotageOfRound = lastSabotage;
+            if (firstSabotageOfRound == Sabotages.None)
+                firstSabotageOfRound = lastSabotage;
+        }
     }
 
     public static void KillPlayer(PlayerControl plrToKill)
