@@ -1,16 +1,7 @@
-using AmongUs.GameOptions;
-using HarmonyLib;
 using Hazel;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using TOHE.Modules;
-using TOHE.Roles.Neutral;
-using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
-using static Rewired.ComponentControls.Effects.RotateAroundAxis;
-using Epic.OnlineServices;
 
 namespace TOHE.Roles.AddOns.Common;
 
@@ -45,21 +36,24 @@ public class Tired
     {
         playerIdList = new();
     }
+    
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId, false);
     }
+    
     public static void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.TiredRPC, SendOption.Reliable, -1);
         writer.Write(playerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static byte ReceiveRPC(MessageReader reader)
+    
+    public static void ReceiveRPC(MessageReader reader)
     {
         byte playerid = reader.ReadByte();
-        return playerid;
-    }
+    } // Do I need this?
+    
     public static void CallOnTask(PlayerControl player)
     {
         // Speed
