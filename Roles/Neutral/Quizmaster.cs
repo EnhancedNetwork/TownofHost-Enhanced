@@ -10,8 +10,8 @@ namespace TOHE.Roles.Neutral;
 
 public class Quizmaster
 {
-    public static readonly int Id = 27000;
-    public static List<byte> playerIdList = new();
+    private static readonly int Id = 27000;
+    //public static List<byte> playerIdList = new();
     public static bool IsEnable = false;
     public static PlayerControl Player;
     public static OptionItem QuestionDifficulty;
@@ -57,7 +57,7 @@ public class Quizmaster
     }
     public static void Init()
     {
-        playerIdList = new();
+        //playerIdList = new();
         Player = null;
         firstSabotageOfRound = Sabotages.None;
         killsForRound = 0;
@@ -81,7 +81,7 @@ public class Quizmaster
     }
     public static void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        //playerIdList.Add(playerId);
         MarkedPlayer = byte.MaxValue;
         IsEnable = true;
     }
@@ -125,7 +125,7 @@ public class Quizmaster
         if (pc == null || !pc.IsAlive()) return false;
        
         bool canVent;
-        if (CanVentAfterMark.GetBool())
+        if (CanVentAfterMark.GetBool() && MarkedPlayer != byte.MaxValue)
         {
             canVent = true;
         }
@@ -440,11 +440,12 @@ class PlrColorQuestion : QuizQuestionBase
 
     public override void FixUnsetAnswers()
     {
-        Answers = new List<string>{ };
+        Answers = new List<string> { };
 
         foreach (PlayerControl plr in Main.AllPlayerControls)
         {
-            if (!PossibleAnswers.Contains(plr.Data.GetPlayerColorString())) PossibleAnswers.Add(plr.Data.GetPlayerColorString());
+            if (!PossibleAnswers.Contains(plr.Data.GetPlayerColorString())) 
+                PossibleAnswers.Add(plr.Data.GetPlayerColorString());
         }
 
         var rnd = IRandom.Instance;
@@ -459,7 +460,9 @@ class PlrColorQuestion : QuizQuestionBase
 
         hasAnswersTranslation = false;
 
-        PossibleAnswers.Remove(Answer);
+        if (PossibleAnswers.Contains(Answer))
+            PossibleAnswers.Remove(Answer);
+
         for (int numOfQuestionsDone = 0; numOfQuestionsDone < 3; numOfQuestionsDone++)
         {
             var prefix = "";
@@ -473,7 +476,7 @@ class PlrColorQuestion : QuizQuestionBase
             }
             else
             {
-                string thatAnswer = PossibleAnswers[rnd.Next(0, PossibleAnswers.Count)];
+                string thatAnswer = PossibleAnswers[rnd.Next(PossibleAnswers.Count)];
                 if (thatAnswer == "None") prefix = "Quizmaster.";
                 if (prefix != "")
                     thatAnswer = GetString(prefix + thatAnswer);

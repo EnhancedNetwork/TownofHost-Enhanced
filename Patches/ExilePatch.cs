@@ -147,11 +147,6 @@ class ExileControllerWrapUpPatch
                 Utils.CheckTerroristWin(exiled);
             }
 
-            if (role.Is(CustomRoles.Quizmaster))
-            {
-                Quizmaster.OnVotedOut();
-            }
-
             //Devourer check win
             if (role.Is(CustomRoles.Devourer))
             {
@@ -222,6 +217,10 @@ class ExileControllerWrapUpPatch
 
                 case CustomRoles.Bard:
                     Bard.OnExileWrapUp(player, exiled);
+                    break;
+
+                case CustomRoles.Quizmaster:
+                    Quizmaster.OnVotedOut();
                     break;
             }
 

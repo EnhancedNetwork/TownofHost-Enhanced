@@ -3124,6 +3124,7 @@ class FixedUpdateInNormalGamePatch
 
                 if (Romantic.IsEnable)
                     Mark.Append(Romantic.TargetMark(seer, target));
+
                 if (Captain.IsEnable)
                     if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) &&
                         (target.GetPlayerTaskState().CompletedTasksCount >= Captain.OptionTaskRequiredToReveal.GetInt()) &&
@@ -3199,6 +3200,10 @@ class FixedUpdateInNormalGamePatch
 
                     case CustomRoles.Shroud:
                         Mark.Append(Shroud.TargetMark(seer, target));
+                        break;
+
+                    case CustomRoles.Quizmaster:
+                        Mark.Append(Quizmaster.TargetMark(seer, target));
                         break;
                 }
 
