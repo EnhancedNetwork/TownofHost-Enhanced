@@ -73,4 +73,22 @@ public class Tired
         }, TiredDuration.GetFloat());
     }
 
+    public static void OnCheckMurder(PlayerControl killer)
+    {
+        // Speed
+        killer.Notify(GetString("TiredNotify"));
+        killer.MarkDirtySettings();
+        var tmpSpeed = Main.AllPlayerSpeed[killer.PlayerId];
+        Main.AllPlayerSpeed[killer.PlayerId] = SetSpeed.GetFloat();
+
+        // Vision
+        playerIdList[killer.PlayerId] = true;
+
+        _ = new LateTask(() =>
+        {
+            Main.AllPlayerSpeed[killer.PlayerId] = Main.AllPlayerSpeed[killer.PlayerId] - SetSpeed.GetFloat() + tmpSpeed;
+            killer.MarkDirtySettings();
+            playerIdList[killer.PlayerId] = false;
+        }, TiredDuration.GetFloat());
+    }
 }
