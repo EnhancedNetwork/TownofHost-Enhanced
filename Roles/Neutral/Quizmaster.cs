@@ -201,8 +201,8 @@ public class Quizmaster
 
         buttonMeeting++;
         meetingNum++;
-        thisButtonPressedColor = player.Data.GetPlayerColorString();
         lastButtonPressedColor = thisButtonPressedColor;
+        thisButtonPressedColor = player.Data.GetPlayerColorString();
         DoQuestion();
     }
 
@@ -210,8 +210,8 @@ public class Quizmaster
     {
         if (targetInfo == null) return;
 
-        thisReportedColor = targetInfo.GetPlayerColorString();
         lastReportedColor = thisReportedColor;
+        thisReportedColor = targetInfo.GetPlayerColorString();
         meetingNum++;
         DoQuestion();
     }
@@ -437,7 +437,6 @@ abstract public class QuizQuestionBase
 
 class PlrColorQuestion : QuizQuestionBase
 {
-
     public override void FixUnsetAnswers()
     {
         Answers = new List<string> { };
@@ -449,7 +448,7 @@ class PlrColorQuestion : QuizQuestionBase
         }
 
         var rnd = IRandom.Instance;
-        int positionForRightAnswer = rnd.Next(0, 3);
+        int positionForRightAnswer = rnd.Next(3);
 
         if (QuizmasterQuestionType == QuizmasterQuestionType.EjectionColorQuestion)
             Answer = Quizmaster.lastExiledColor;
@@ -489,7 +488,6 @@ class PlrColorQuestion : QuizQuestionBase
 
 class DeathReasonQuestion : QuizQuestionBase
 {
-
     public override void FixUnsetAnswers()
     {
         Answers = new List<string> { };
@@ -517,7 +515,7 @@ class DeathReasonQuestion : QuizQuestionBase
             PossibleAnswers.Add(PlayerState.DeathReason.Kill.ToString());
         }
 
-        chosenPlayer = Main.AllPlayerControls[rnd.Next(0, Main.AllPlayerControls.Length)];
+        chosenPlayer = Main.AllPlayerControls[rnd.Next(Main.AllPlayerControls.Length)];
 
         foreach (PlayerControl plr in Main.AllPlayerControls)
         {
@@ -570,7 +568,6 @@ class DeathReasonQuestion : QuizQuestionBase
 
 class CountQuestion : QuizQuestionBase
 {
-
     public override void FixUnsetAnswers()
     {
         var rnd = IRandom.Instance;
