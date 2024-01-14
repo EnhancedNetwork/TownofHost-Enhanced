@@ -567,9 +567,9 @@ public class PlayerGameOptionsSender : GameOptionsSender
                         }
                         else
                         {
-                        opt.SetVision(false);
-                        opt.SetFloat(FloatOptionNames.CrewLightMod, Main.DefaultCrewmateVision);
-                        opt.SetFloat(FloatOptionNames.ImpostorLightMod, Main.DefaultCrewmateVision);
+                            opt.SetVision(false);
+                            opt.SetFloat(FloatOptionNames.CrewLightMod, Main.DefaultCrewmateVision);
+                            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Main.DefaultCrewmateVision);
                         }
                     }
                     break;
