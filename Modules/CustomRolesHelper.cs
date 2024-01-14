@@ -356,7 +356,8 @@ static class CustomRolesHelper
             CustomRoles.Oiiai or
             CustomRoles.Influenced or
             CustomRoles.Silent or
-            CustomRoles.Susceptible;
+            CustomRoles.Susceptible or
+            CustomRoles.Tired;
     }
     
     public static bool IsBetrayalAddon(this CustomRoles role)
@@ -1687,6 +1688,10 @@ static class CustomRolesHelper
             case CustomRoles.Silent:
                 if (pc.Is(CustomRoles.Dictator) || pc.Is(CustomRoles.VoidBallot)) return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Silent.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Silent.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Silent.CanBeOnImp.GetBool()))
+                    return false;
+                break;
+            case CustomRoles.Tired:
+                if ((pc.GetCustomRole().IsCrewmate() && !Tired.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Tired.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Tired.CanBeOnImp.GetBool()))
                     return false;
                 break;
         }
