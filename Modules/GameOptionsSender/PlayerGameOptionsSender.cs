@@ -569,7 +569,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
                         {
                             opt.SetVision(false);
                             opt.SetFloat(FloatOptionNames.CrewLightMod, Main.DefaultCrewmateVision);
-                            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Main.DefaultCrewmateVision);
+                            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Main.DefaultImpostorVision);
                         }
                     }
                     break;
