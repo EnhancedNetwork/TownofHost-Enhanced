@@ -118,6 +118,7 @@ enum CustomRPC
     SyncPsychicRedList,
     SetMorticianArrow,
     SetTracefinderArrow,
+    TiredRPC,
     Judge,
     Guess,
     PresidentEnd,
@@ -799,6 +800,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.QuizmasterMarkPlayer:
                 Quizmaster.ReceiveRPC(reader);
+                break;
+            case CustomRPC.TiredRPC:
+                Tired.ReceiveRPC(reader);
                 break;
         }
     }
