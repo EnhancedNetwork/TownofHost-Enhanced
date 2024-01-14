@@ -64,7 +64,8 @@ class ExileControllerWrapUpPatch
 
             var role = exiled.GetCustomRole();
 
-            if (Quizmaster.IsEnable) Quizmaster.lastExiledColor = exiled.GetPlayerColorString();
+            if (Quizmaster.IsEnable)
+                Quizmaster.OnPlayerExile(exiled);
 
             var pcArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId).ToArray();
             if (pcArray.Length > 0)

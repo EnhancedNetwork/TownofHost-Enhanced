@@ -3647,6 +3647,7 @@
   "QuizmasterSettings.CanVentAfterMark": "Can Vent After Marked Somebody For Quiz",
   "QuizmasterSettings.CanKillAfterMark": "Can Kill After Marked Somebody For Quiz",
   "QuizmasterSettings.NumOfKillAfterMark": "How Many Kills Per Round",
+  "QuizmasterSettings.CanGiveQuestionsAboutPastGames": "Can Give Questions About Past Games",
 
   "Quizmaster.None": "None",
 
