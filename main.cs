@@ -860,6 +860,7 @@ public enum CustomRoles
     Brakar, //tiebreaker
     Torch,
     Trapper,
+    Tired,
     Unlucky,
     VoidBallot,
     Watcher,
