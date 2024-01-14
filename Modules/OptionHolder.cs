@@ -2642,6 +2642,8 @@ public static class Options
         NeutralCanBeUnlucky = BooleanOptionItem.Create(21010, "NeutralCanBeUnlucky", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky]);
 
+        Tired.SetupCustomOption();
+
         SetupAdtRoleOptions(21100, CustomRoles.VoidBallot, canSetNum: true);
         ImpCanBeVoidBallot = BooleanOptionItem.Create(21103, "ImpCanBeVoidBallot", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.VoidBallot]);
