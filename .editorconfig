@@ -1,4 +1,4 @@
 ﻿[*.cs]
 
-# CA2211: Поля, не являющиеся константами, не должны быть видимыми
+# CA2211: Non-constant fields should not be visible
 dotnet_diagnostic.CA2211.severity = none
