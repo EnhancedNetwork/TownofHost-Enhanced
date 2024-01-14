@@ -620,7 +620,12 @@ public class TaskState
                 Spy.SendAbilityRPC(player.PlayerId);
 
             }
-
+            
+            if (player.Is(CustomRoles.Tired) && player.IsAlive())
+            {
+                Tired.SendRPC(player.PlayerId);
+                Tired.CallOnTask(player);
+            }
             if (player.Is(CustomRoles.Ghoul) && (CompletedTasksCount + 1) >= AllTasksCount && player.IsAlive())
             _ = new LateTask(() =>
             {
