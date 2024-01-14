@@ -947,7 +947,7 @@ internal class ChatCommands
                         {
                             var rand = IRandom.Instance;
                             int botResult = Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0];
-                            Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0] = rand.Next(playerChoice1, playerChoice2);
+                            Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0] = rand.Next(playerChoice1, playerChoice2+1);
                             botResult = Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0];
                             Utils.SendMessage(string.Format(GetString("RandResult"), Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0]), PlayerControl.LocalPlayer.PlayerId);
                             break;
@@ -2256,7 +2256,7 @@ internal class ChatCommands
                 {
                     var rand = IRandom.Instance;
                     int botResult = Main.GuessNumber[player.PlayerId][0];
-                    Main.GuessNumber[player.PlayerId][0] = rand.Next(playerChoice1, playerChoice2);
+                    Main.GuessNumber[player.PlayerId][0] = rand.Next(playerChoice1, playerChoice2+1);
                     botResult = Main.GuessNumber[player.PlayerId][0];
                     Utils.SendMessage(string.Format(GetString("RandResult"), Main.GuessNumber[player.PlayerId][0]), player.PlayerId);
                     break;
