@@ -1482,6 +1482,14 @@ internal class ChatCommands
                 Utils.ShowLastRoles(player.PlayerId);
                 break;
 
+            case "/rn":
+            case "/rename":
+            case "/renomear":
+                if (args.Length < 1) break;
+                if (args[1].Length is > 10 or < 1)
+                    Utils.SendMessage(GetString("Message.AllowNameLength"), PlayerControl.LocalPlayer.PlayerId);
+                player.RpcSetName(args[1]);
+                break;
 
             case "/n":
             case "/now":
