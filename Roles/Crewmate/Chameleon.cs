@@ -11,7 +11,7 @@ namespace TOHE.Roles.Crewmate;
 public static class Chameleon
 {
     private static readonly int Id = 7600;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     public static OptionItem ChameleonCooldown;
@@ -19,10 +19,10 @@ public static class Chameleon
     public static OptionItem UseLimitOpt;
     public static OptionItem ChameleonAbilityUseGainWithEachTaskCompleted;
 
-    private static Dictionary<byte, long> InvisTime = new();
-    private static Dictionary<byte, long> lastTime = new();
-    private static Dictionary<byte, int> ventedId = new();
-    public static Dictionary<byte, float> UseLimit = new();
+    private static Dictionary<byte, long> InvisTime = [];
+    private static Dictionary<byte, long> lastTime = [];
+    private static Dictionary<byte, int> ventedId = [];
+    public static Dictionary<byte, float> UseLimit = [];
 
     public static void SetupCustomOption()
     {
@@ -39,11 +39,11 @@ public static class Chameleon
     }
     public static void Init()
     {
-        playerIdList = new();
-        InvisTime = new();
-        lastTime = new();
-        ventedId = new();
-        UseLimit = new();
+        playerIdList = [];
+        InvisTime = [];
+        lastTime = [];
+        ventedId = [];
+        UseLimit = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -76,8 +76,8 @@ public static class Chameleon
         }
         else 
         { 
-            InvisTime = new();
-            lastTime = new();
+            InvisTime = [];
+            lastTime = [];
             long invis = long.Parse(reader.ReadString());
             long last = long.Parse(reader.ReadString());
             if (invis > 0) InvisTime.Add(pid, invis);
@@ -93,8 +93,8 @@ public static class Chameleon
     {
         if (!IsEnable) return;
 
-        lastTime = new();
-        InvisTime = new();
+        lastTime = [];
+        InvisTime = [];
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => playerIdList.Contains(x.PlayerId)).ToArray())
         {
             lastTime.Add(pc.PlayerId, Utils.GetTimeStamp());
@@ -115,8 +115,8 @@ public static class Chameleon
         if (lastFixedTime != now)
         {
             lastFixedTime = now;
-            Dictionary<byte, long> newList = new();
-            List<byte> refreshList = new();
+            Dictionary<byte, long> newList = [];
+            List<byte> refreshList = [];
             foreach (var it in InvisTime)
             {
                 var pc = Utils.GetPlayerById(it.Key);

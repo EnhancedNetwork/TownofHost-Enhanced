@@ -17,15 +17,15 @@ namespace TOHE.Roles.Crewmate
         private static readonly string fontSize = "1.5";
         public static bool IsEnable = false;
 
-        public static Dictionary<int, string> RandomRole = new();
-        public static Dictionary<byte, (PlayerControl, float)> FarseerTimer = new();
+        public static Dictionary<int, string> RandomRole = [];
+        public static Dictionary<byte, (PlayerControl, float)> FarseerTimer = [];
 
         public static OptionItem FarseerCooldown;
         public static OptionItem FarseerRevealTime;
         public static OptionItem Vision;
 
-        private static List<CustomRoles> randomRolesForTrickster = new()
-        {
+        private static readonly List<CustomRoles> randomRolesForTrickster =
+        [
             CustomRoles.Snitch,
             //CustomRoles.Luckey,
             CustomRoles.Needy,
@@ -66,7 +66,7 @@ namespace TOHE.Roles.Crewmate
             CustomRoles.Guardian,
             CustomRoles.Spiritualist,
             CustomRoles.Tracker,
-        };
+        ];
 
         public static void SetupCustomOption()
         {
@@ -80,8 +80,8 @@ namespace TOHE.Roles.Crewmate
         }
         public static void Init()
         {
-            FarseerTimer = new();
-            RandomRole = new();
+            FarseerTimer = [];
+            RandomRole = [];
             IsEnable = false;
         }
         public static void Add(byte playerId)
@@ -161,7 +161,7 @@ namespace TOHE.Roles.Crewmate
             var rd = IRandom.Instance;
             var randomRole = randomRolesForTrickster[rd.Next(0, randomRolesForTrickster.Count)];
 
-            string roleName = GetRoleName(randomRole);
+            //string roleName = GetRoleName(randomRole);
             string RoleText = ColorString(GetRoleColor(randomRole), GetString(randomRole.ToString()));
 
             return $"<size={fontSize}>{RoleText}</size>";

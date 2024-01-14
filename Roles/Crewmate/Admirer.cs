@@ -12,7 +12,7 @@ namespace TOHE.Roles.Crewmate;
 public static class Admirer
 {
     private static readonly int Id = 24800;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     public static OptionItem AdmireCooldown;
@@ -32,16 +32,16 @@ public static class Admirer
     }
     public static void Init()
     {
-        playerIdList = new();
-        AdmirerLimit = new();
-        AdmiredList = new();
+        playerIdList = [];
+        AdmirerLimit = [];
+        AdmiredList = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         AdmirerLimit.Add(playerId, SkillLimit.GetInt());
-        AdmiredList.Add(playerId, new());
+        AdmiredList.Add(playerId, []);
         IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
@@ -80,7 +80,7 @@ public static class Admirer
         {
             targetId = reader.ReadByte();
             if (!AdmiredList.ContainsKey(playerId))
-                AdmiredList.Add(playerId, new());
+                AdmiredList.Add(playerId, []);
             else AdmiredList[playerId].Add(targetId);
         }
     }
@@ -97,7 +97,7 @@ public static class Admirer
         if (!AdmirerLimit.ContainsKey(killer.PlayerId))
             Add(killer.PlayerId);
         if (!AdmiredList.ContainsKey(killer.PlayerId))
-            AdmiredList.Add(killer.PlayerId, new());
+            AdmiredList.Add(killer.PlayerId, []);
 
         if (AdmirerLimit[killer.PlayerId] < 1) return;
         if (CanBeAdmired(target, killer))
@@ -195,7 +195,7 @@ public static class Admirer
             if (AdmiredList[admirer.PlayerId].Contains(pc.PlayerId))
                 return false;
         }
-        else AdmiredList.Add(admirer.PlayerId, new());
+        else AdmiredList.Add(admirer.PlayerId, []);
 
         return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral())
             && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal)

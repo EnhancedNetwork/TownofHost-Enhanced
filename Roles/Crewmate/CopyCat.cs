@@ -7,11 +7,11 @@ namespace TOHE.Roles.Crewmate;
 public static class CopyCat
 {
     private static readonly int Id = 11500;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
-    public static Dictionary<byte, float> CurrentKillCooldown = new();
-    public static Dictionary<byte, int> MiscopyLimit = new();
+    public static Dictionary<byte, float> CurrentKillCooldown = [];
+    public static Dictionary<byte, int> MiscopyLimit = [];
 
     public static OptionItem KillCooldown;
     public static OptionItem CopyCrewVar;
@@ -31,9 +31,9 @@ public static class CopyCat
 
     public static void Init()
     {
-        playerIdList = new();
-        CurrentKillCooldown = new();
-        MiscopyLimit = new();
+        playerIdList = [];
+        CurrentKillCooldown = [];
+        MiscopyLimit = [];
         IsEnable = false;
     }
 
@@ -333,7 +333,7 @@ public static class CopyCat
                     break;
                 case CustomRoles.Merchant:
                     Merchant.addonsSold.Add(pc.PlayerId, 0);
-                    Merchant.bribedKiller.Add(pc.PlayerId, new List<byte>());
+                    Merchant.bribedKiller.Add(pc.PlayerId, []);
                     break;
                 case CustomRoles.Oracle:
                     Oracle.CheckLimit.TryAdd(pc.PlayerId, Oracle.CheckLimitOpt.GetInt());

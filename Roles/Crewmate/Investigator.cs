@@ -9,17 +9,17 @@ namespace TOHE.Roles.Crewmate;
 public static class Investigator
 {
     private static readonly int Id = 24900;
-    private static List<byte> playerIdList = new();
-    public static Dictionary<byte, byte> InvestigatedList = new();
+    private static List<byte> playerIdList = [];
+    public static Dictionary<byte, byte> InvestigatedList = [];
     public static bool IsEnable = false;
     public static readonly string[] ColorTypeText =
-    {
+    [
         "Color.Red", "Color.Green","Color.Gray"
-    };
+    ];
     public static readonly string[] RevealMode =
-    {
+    [
         "Investigator.Suspicion", "Investigator.Role"
-    };
+    ];
 
     public static OptionItem InvestigateCooldown;
     public static OptionItem InvestigateMax;
@@ -45,9 +45,9 @@ public static class Investigator
     }
     public static void Init()
     {
-        playerIdList = new();
+        playerIdList = [];
         InvestigateLimit = new();
-        InvestigatedList = new();
+        InvestigatedList = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)

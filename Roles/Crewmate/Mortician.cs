@@ -7,13 +7,13 @@ namespace TOHE.Roles.Crewmate;
 public static class Mortician
 {
     private static readonly int Id = 8900;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     private static OptionItem ShowArrows;
 
-    private static Dictionary<byte, string> lastPlayerName = new();
-    public static Dictionary<byte, string> msgToSend = new();
+    private static Dictionary<byte, string> lastPlayerName = [];
+    public static Dictionary<byte, string> msgToSend = [];
 
     public static void SetupCustomOption()
     {
@@ -22,9 +22,9 @@ public static class Mortician
     }
     public static void Init()
     {
-        playerIdList = new();
-        lastPlayerName = new();
-        msgToSend = new();
+        playerIdList = [];
+        lastPlayerName = [];
+        msgToSend = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)

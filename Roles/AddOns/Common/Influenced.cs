@@ -21,8 +21,8 @@ namespace TOHE.Roles.AddOns.Common
         public static void ChangeVotingData(Dictionary<byte, int> VotingData)
         { 
             //The incoming votedata does not count influenced votes
-            List<byte> playerIdList = new();
-            
+            List<byte> playerIdList = [];
+
             Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Influenced))
                 .Do(x => playerIdList.Add(x.PlayerId));
             

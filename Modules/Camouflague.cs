@@ -162,6 +162,7 @@ public static class Camouflage
                 newOutfit = PlayerSkins[id];
             }
         }
+
         // if the current Outfit is the same, return it
         if (newOutfit.Compare(target.Data.DefaultOutfit)) return;
 

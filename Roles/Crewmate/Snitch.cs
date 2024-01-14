@@ -9,7 +9,7 @@ namespace TOHE.Roles.Crewmate;
 public static class Snitch
 {
     private static readonly int Id = 9500;
-    private static readonly List<byte> playerIdList = new();
+    private static readonly List<byte> playerIdList = [];
     public static bool IsEnable = false;
     private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Snitch);
 
@@ -25,11 +25,11 @@ public static class Snitch
     private static bool CanFindMadmate;
     private static int RemainingTasksToBeFound;
 
-    public static readonly Dictionary<byte, bool> IsExposed = new();
-    public static readonly Dictionary<byte, bool> IsComplete = new();
+    public static readonly Dictionary<byte, bool> IsExposed = [];
+    public static readonly Dictionary<byte, bool> IsComplete = [];
 
-    private static readonly HashSet<byte> TargetList = new();
-    private static readonly Dictionary<byte, Color> TargetColorlist = new();
+    private static readonly HashSet<byte> TargetList = [];
+    private static readonly Dictionary<byte, Color> TargetColorlist = [];
 
     public static void SetupCustomOption()
     {

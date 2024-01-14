@@ -18,10 +18,10 @@ public static class Swapper
     public static OptionItem CanSwapSelf;
     public static OptionItem CanStartMeeting;
     public static OptionItem TryHideMsg;
-    public static List<byte> playerIdList = new();
-    public static List<byte> Vote = new();
-    public static List<byte> VoteTwo = new();
-    public static Dictionary<byte, int> Swappermax = new();
+    public static List<byte> playerIdList = [];
+    public static List<byte> Vote = [];
+    public static List<byte> VoteTwo = [];
+    public static Dictionary<byte, int> Swappermax = [];
     public static void SetupCustomOption()
     {   
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Swapper);
@@ -33,11 +33,11 @@ public static class Swapper
     }
     public static void Init()
     {
-        playerIdList = new();
+        playerIdList = [];
         IsEnable = false;
-        Vote = new();
-        VoteTwo = new();
-        Swappermax = new();
+        Vote = []; ;
+        VoteTwo = [];
+        Swappermax = [];
     }
     public static void Add(byte playerId)
     {
@@ -197,7 +197,7 @@ public static class Swapper
     public static bool CheckCommond(ref string msg, string command, bool exact = true)
     {
         var comList = command.Split('|');
-        for (int i = 0; i < comList.Count(); i++)
+        for (int i = 0; i < comList.Length; i++)
         {
             if (exact)
             {

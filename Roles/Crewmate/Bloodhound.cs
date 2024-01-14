@@ -10,12 +10,12 @@
     public static class Bloodhound
     {
         private static readonly int Id = 7700;
-        private static List<byte> playerIdList = new();
+        private static List<byte> playerIdList = [];
         public static bool IsEnable = false;
 
-        public static HashSet<byte> UnreportablePlayers = new();
-        public static Dictionary<byte, List<byte>> BloodhoundTargets = new();
-        public static Dictionary<byte, float> UseLimit = new();
+        public static HashSet<byte> UnreportablePlayers = [];
+        public static Dictionary<byte, List<byte>> BloodhoundTargets = [];
+        public static Dictionary<byte, float> UseLimit = [];
 
         public static OptionItem ArrowsPointingToDeadBody;
         public static OptionItem UseLimitOpt;
@@ -38,16 +38,16 @@
         public static void Init()
         {
             IsEnable = false;
-            playerIdList = new();
-            UseLimit = new();
-            UnreportablePlayers = new();
-            BloodhoundTargets = new Dictionary<byte, List<byte>>();
+            playerIdList = [];
+            UseLimit = [];
+            UnreportablePlayers = [];
+            BloodhoundTargets = [];
         }
         public static void Add(byte playerId)
         {
             playerIdList.Add(playerId);
             UseLimit.Add(playerId, UseLimitOpt.GetInt());
-            BloodhoundTargets.Add(playerId, new List<byte>());
+            BloodhoundTargets.Add(playerId, []);
             IsEnable = true;
         }
 
@@ -82,7 +82,7 @@
             if (opt != 2)
             {
                 byte tid = reader.ReadByte();
-                if (!BloodhoundTargets.ContainsKey(pid)) BloodhoundTargets[pid] = new();
+                if (!BloodhoundTargets.ContainsKey(pid)) BloodhoundTargets[pid] = [];
                 BloodhoundTargets[pid].Add(tid);
                 if (opt == 1) UnreportablePlayers.Add(tid);
             }

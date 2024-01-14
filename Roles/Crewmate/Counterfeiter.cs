@@ -8,12 +8,12 @@ namespace TOHE.Roles.Crewmate;
 public static class Counterfeiter
 {
     private static readonly int Id = 10500;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
-    private static Dictionary<byte, List<byte>> clientList = new();
-    private static List<byte> notActiveList = new();
-    public static Dictionary<byte, int> SeelLimit = new();
+    private static Dictionary<byte, List<byte>> clientList = [];
+    private static List<byte> notActiveList = [];
+    public static Dictionary<byte, int> SeelLimit = [];
     public static OptionItem CounterfeiterSkillCooldown;
     public static OptionItem CounterfeiterSkillLimitTimes;
     public static OptionItem CounterfeiterAbilityLost;
@@ -28,10 +28,10 @@ public static class Counterfeiter
     }
     public static void Init()
     {
-        playerIdList = new();
-        clientList = new();
-        notActiveList = new();
-        SeelLimit = new();
+        playerIdList = [];
+        clientList = [];
+        notActiveList = [];
+        SeelLimit = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -79,7 +79,7 @@ public static class Counterfeiter
         if (pc == null || target == null || !pc.Is(CustomRoles.Counterfeiter)) return;
         SeelLimit[pc.PlayerId]--;
         SendRPC(pc.PlayerId);
-        if (!clientList.ContainsKey(pc.PlayerId)) clientList.Add(pc.PlayerId, new());
+        if (!clientList.ContainsKey(pc.PlayerId)) clientList.Add(pc.PlayerId, []);
         clientList[pc.PlayerId].Add(target.PlayerId);
         if (!Options.DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);
         notActiveList.Add(pc.PlayerId);

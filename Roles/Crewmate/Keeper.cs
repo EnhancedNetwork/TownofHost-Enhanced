@@ -10,12 +10,12 @@ namespace TOHE.Roles.Crewmate;
 public static class Keeper
 {
     private static readonly int Id = 26500;
-    //public static List<byte> playerIdList = new();
+    //public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
-    public static List<byte> keeperTarget = new();
-    public static Dictionary<byte, int> keeperUses = new();
-    public static Dictionary<byte, bool> DidVote = new();
+    public static List<byte> keeperTarget = [];
+    public static Dictionary<byte, int> keeperUses = [];
+    public static Dictionary<byte, bool> DidVote = [];
 
     public static OptionItem KeeperUsesOpt;
     public static OptionItem HideVote;
@@ -33,10 +33,10 @@ public static class Keeper
     }
     public static void Init()
     {
-        //playerIdList = new();
-        keeperTarget = new();
-        keeperUses = new();
-        DidVote = new();
+        //playerIdList = [];
+        keeperTarget = [];
+        keeperUses = [];
+        DidVote = [];
         IsEnable = false;
     }
 

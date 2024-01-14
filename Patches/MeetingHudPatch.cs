@@ -146,7 +146,7 @@ class CheckForEndVotingPatch
                         {
                             if (!Captain.CaptainVoteTargets.ContainsKey(voteTarget.PlayerId)) Captain.CaptainVoteTargets[voteTarget.PlayerId] = [];
                             Captain.CaptainVoteTargets[voteTarget.PlayerId].Add(pc.PlayerId);
-                            Captain.sendRPCVoteAdd(voteTarget.PlayerId, pc.PlayerId);
+                            Captain.SendRPCVoteAdd(voteTarget.PlayerId, pc.PlayerId);
                         }
 
                     }

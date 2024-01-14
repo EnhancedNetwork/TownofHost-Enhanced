@@ -11,11 +11,11 @@ namespace TOHE.Roles.Crewmate;
 public static class ParityCop
 {
     private static readonly int Id = 8300;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
-    public static Dictionary<byte, float> MaxCheckLimit = new();
-    public static Dictionary<byte, int> RoundCheckLimit = new();
+    public static Dictionary<byte, float> MaxCheckLimit = [];
+    public static Dictionary<byte, int> RoundCheckLimit = [];
 
     private static OptionItem TryHideMsg;
     public static OptionItem ParityCheckLimitMax;
@@ -47,9 +47,9 @@ public static class ParityCop
     }
     public static void Init()
     {
-        playerIdList = new();
-        MaxCheckLimit = new();
-        RoundCheckLimit = new();
+        playerIdList = [];
+        MaxCheckLimit = [];
+        RoundCheckLimit = [];
         IsEnable = false;
     }
 
@@ -229,13 +229,13 @@ public static class ParityCop
                     {
                         string textToSend = $"{target1.GetRealName()}";
                         if (ParityCheckOtherTargetKnow.GetBool())
-                            textToSend = textToSend + $" and {target2.GetRealName()}";
-                        textToSend = textToSend + GetString("ParityCheckTargetMsg");
+                            textToSend += $" and {target2.GetRealName()}";
+                        textToSend += GetString("ParityCheckTargetMsg");
 
                         string textToSend1 = $"{target2.GetRealName()}";
                         if (ParityCheckOtherTargetKnow.GetBool())
-                            textToSend1 = textToSend1 + $" and {target1.GetRealName()}";
-                        textToSend1 = textToSend1 + GetString("ParityCheckTargetMsg");
+                            textToSend1 += $" and {target1.GetRealName()}";
+                        textToSend1 += GetString("ParityCheckTargetMsg");
                         _ = new LateTask(() =>
                         {
                             Utils.SendMessage(textToSend, target1.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.ParityCop), GetString("ParityCheckTitle")));
@@ -269,12 +269,12 @@ public static class ParityCop
                     {
                         if (target1.Is(CustomRoles.Aware))
                         {
-                            if (!Main.AwareInteracted.ContainsKey(target1.PlayerId)) Main.AwareInteracted[target1.PlayerId] = new();
+                            if (!Main.AwareInteracted.ContainsKey(target1.PlayerId)) Main.AwareInteracted[target1.PlayerId] = [];
                             if (!Main.AwareInteracted[target1.PlayerId].Contains(Utils.GetRoleName(CustomRoles.ParityCop))) Main.AwareInteracted[target1.PlayerId].Add(Utils.GetRoleName(CustomRoles.ParityCop));
                         }
                         if (target2.Is(CustomRoles.Aware))
                         {
-                            if (!Main.AwareInteracted.ContainsKey(target2.PlayerId)) Main.AwareInteracted[target2.PlayerId] = new();
+                            if (!Main.AwareInteracted.ContainsKey(target2.PlayerId)) Main.AwareInteracted[target2.PlayerId] = [];
                             if (!Main.AwareInteracted[target2.PlayerId].Contains(Utils.GetRoleName(CustomRoles.ParityCop))) Main.AwareInteracted[target2.PlayerId].Add(Utils.GetRoleName(CustomRoles.ParityCop));
                         }
                     }
@@ -354,7 +354,7 @@ public static class ParityCop
         List<CustomRoles> roles = CustomRolesHelper.AllRoles.Where(x => x is not CustomRoles.NotAssigned).ToList();
         var rd = IRandom.Instance;
         string msg;
-        string[] command = new string[] { "cmp", "compare", "比较" };
+        string[] command = ["cmp", "compare", "比较"];
         for (int i = 0; i < 20; i++)
         {
             msg = "/";

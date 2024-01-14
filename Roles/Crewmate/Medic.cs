@@ -10,12 +10,12 @@ namespace TOHE.Roles.Crewmate;
 public static class Medic
 {
     private static readonly int Id = 8600;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
-    public static List<byte> ProtectList = new();
+    public static List<byte> ProtectList = [];
     public static byte TempMarkProtected;
-    public static Dictionary<byte, int> ProtectLimit = new();
+    public static Dictionary<byte, int> ProtectLimit = [];
     public static int SkillLimit;
 
     public static OptionItem WhoCanSeeProtect;
@@ -26,27 +26,27 @@ public static class Medic
     public static OptionItem GuesserIgnoreShield;
 
     public static readonly string[] MedicWhoCanSeeProtectName =
-    {
+    [
         "SeeMedicAndTarget",
         "SeeMedic",
         "SeeTarget",
         "SeeNoone",
-    };
+    ];
 
     public static readonly string[] KnowShieldBrokenOption =
-    {
+    [
         "SeeMedicAndTarget",
         "SeeMedic",
         "SeeTarget",
         "SeeNoone",
-    };
+    ];
 
     public static readonly string[] ShieldDeactivationIsVisibleOption =
-    {
+    [
         "DeactivationImmediately",
         "DeactivationAfterMeeting",
         "DeactivationIsVisibleOFF",
-    };
+    ];
 
     public static void SetupCustomOption()
     {
@@ -67,9 +67,9 @@ public static class Medic
     }
     public static void Init()
     {
-        playerIdList = new();
-        ProtectList = new();
-        ProtectLimit = new();
+        playerIdList = [];
+        ProtectList = [];
+        ProtectLimit = [];
         TempMarkProtected = byte.MaxValue;
         SkillLimit = 1;
         IsEnable = false;
@@ -113,7 +113,7 @@ public static class Medic
     public static void ReceiveRPCForProtectList(MessageReader reader)
     {
         int count = reader.ReadInt32();
-        ProtectList = new();
+        ProtectList = [];
         for (int i = 0; i < count; i++)
             ProtectList.Add(reader.ReadByte());
     }

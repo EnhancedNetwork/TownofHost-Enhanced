@@ -328,7 +328,7 @@ public class Main : BasePlugin
                     Dictionary<string, string> jsonDict = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonData);
                     foreach (var kvp in jsonDict)
                     {
-                        if (Enum.TryParse<CustomRoles>(kvp.Key, out CustomRoles role))
+                        if (Enum.TryParse(kvp.Key, out CustomRoles role))
                         {
                             roleColors[role] = kvp.Value;
                         }

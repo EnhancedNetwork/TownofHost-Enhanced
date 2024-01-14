@@ -9,13 +9,13 @@ namespace TOHE.Roles.Crewmate;
 public static class Cleanser
 {
     private static readonly int Id = 6600;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
-    public static Dictionary<byte,byte> CleanserTarget = new();
-    public static Dictionary<byte, int> CleanserUses = new();
-    public static List<byte> CleansedPlayers = new();
-    public static Dictionary<byte, bool> DidVote = new();
+    public static Dictionary<byte,byte> CleanserTarget = [];
+    public static Dictionary<byte, int> CleanserUses = [];
+    public static List<byte> CleansedPlayers = [];
+    public static Dictionary<byte, bool> DidVote = [];
 
     public static OptionItem CleanserUsesOpt;
     public static OptionItem CleansedCanGetAddon;
@@ -35,11 +35,11 @@ public static class Cleanser
     }
     public static void Init()
     {
-        playerIdList = new();
-        CleanserTarget = new();
-        CleanserUses = new();
-        CleansedPlayers = new();
-        DidVote = new();
+        playerIdList = [];
+        CleanserTarget = [];
+        CleanserUses = [];
+        CleansedPlayers = [];
+        DidVote = [];
         IsEnable = false;
     }
 
