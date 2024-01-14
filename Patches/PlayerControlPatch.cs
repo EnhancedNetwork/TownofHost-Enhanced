@@ -68,7 +68,7 @@ class CmdCheckMurderPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckMurder))] // Upon Receive RPC / Local Host
 class CheckMurderPatch
 {
-    public static Dictionary<byte, float> TimeSinceLastKill = new();
+    public static Dictionary<byte, float> TimeSinceLastKill = [];
     public static void Update()
     {
         for (byte i = 0; i < 15; i++)
@@ -198,7 +198,7 @@ class CheckMurderPatch
                         case CustomRoles.Farseer:
                             if (!Main.AwareInteracted.ContainsKey(target.PlayerId))
                             {
-                                Main.AwareInteracted.Add(target.PlayerId, new());
+                                Main.AwareInteracted.Add(target.PlayerId, []);
                             }
                             if (!Main.AwareInteracted[target.PlayerId].Contains(Utils.GetRoleName(killerRole)))
                             {
@@ -1268,7 +1268,7 @@ class MurderPlayerPatch
         }
         return true;
     }
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] MurderResultFlags resultFlags)
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target/*, [HarmonyArgument(1)] MurderResultFlags resultFlags*/)
     {
         if (GameStates.IsHideNSeek) return;
         if (target.AmOwner) RemoveDisableDevicesPatch.UpdateDisableDevices();
@@ -1529,7 +1529,7 @@ class ShapeshiftPatch
                         {
                             var cp = Main.CursedPlayers[shapeshifter.PlayerId];
                             Vector2 cppos = cp.transform.position;
-                            Dictionary<PlayerControl, float> cpdistance = new();
+                            Dictionary<PlayerControl, float> cpdistance = [];
                             float dis;
                             foreach (PlayerControl p in Main.AllAlivePlayerControls)
                             {
@@ -1741,8 +1741,8 @@ class ShapeshiftPatch
 class ReportDeadBodyPatch
 {
     public static Dictionary<byte, bool> CanReport;
-    public static HashSet<byte> UnreportablePlayers = new ();
-    public static Dictionary<byte, List<GameData.PlayerInfo>> WaitReport = new();
+    public static HashSet<byte> UnreportablePlayers = [];
+    public static Dictionary<byte, List<GameData.PlayerInfo>> WaitReport = [];
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo target)
     {
         if (GameStates.IsMeeting || GameStates.IsHideNSeek) return false;
@@ -2349,7 +2349,7 @@ class ReportDeadBodyPatch
                     if (Options.AwareknowRole.GetBool())
                         rolelist = string.Join(", ", Main.AwareInteracted[pid]);
                     Utils.SendMessage(string.Format(GetString("AwareInteracted"), rolelist), pid, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Aware), GetString("AwareTitle")));
-                    Main.AwareInteracted[pid] = new();
+                    Main.AwareInteracted[pid] = [];
                 }, 0.5f, "Aware Check Msg");
             }
         }
@@ -2402,10 +2402,10 @@ class ReportDeadBodyPatch
 class FixedUpdateInNormalGamePatch
 {
     //private static long LastFixedUpdate = new(); //Doesn't seem to be working.
-    private static StringBuilder Mark = new(20);
-    private static StringBuilder Suffix = new(120);
+    private static readonly StringBuilder Mark = new(20);
+    private static readonly StringBuilder Suffix = new(120);
+    private static readonly Dictionary<int, int> BufferTime = [];
     private static int LevelKickBufferTime = 20;
-    private static Dictionary<int, int> BufferTime = new();
 
     public static void Postfix(PlayerControl __instance)
     {
@@ -3829,13 +3829,13 @@ class CoEnterVentPatch
     }
 }
 
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetName))]
+/*[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetName))]
 class SetNamePatch
 {
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] string name)
     {
     }
-}
+}*/
 [HarmonyPatch(typeof(GameData), nameof(GameData.CompleteTask))]
 class GameDataCompleteTaskPatch
 {

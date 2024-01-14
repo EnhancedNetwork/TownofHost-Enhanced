@@ -12,7 +12,7 @@ class ChatControllerUpdatePatch
 {
     public static int CurrentHistorySelection = -1;
 
-    static Dictionary<string, string> replaceDic = new()
+    static readonly Dictionary<string, string> replaceDic = new()
             {
                 { "（", " (" },
                 { "）", ") " },
@@ -57,7 +57,7 @@ class ChatControllerUpdatePatch
                     int remainingLength = __instance.freeChatField.textArea.characterLimit - __instance.freeChatField.textArea.text.Length;
                     if (remainingLength > 0)
                     {
-                        string text = replacedText.Substring(0, remainingLength);
+                        string text = replacedText[..remainingLength];
                         __instance.freeChatField.textArea.SetText(__instance.freeChatField.textArea.text + text);
                     }
                 }

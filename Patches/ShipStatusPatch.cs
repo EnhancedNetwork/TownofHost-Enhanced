@@ -14,7 +14,7 @@ namespace TOHE;
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.FixedUpdate))]
 class ShipFixedUpdatePatch
 {
-    public static void Postfix(ShipStatus __instance)
+    public static void Postfix(/*ShipStatus __instance*/)
     {
         //Above here, all of us will execute
         if (!AmongUsClient.Instance.AmHost) return;
@@ -167,7 +167,7 @@ class RepairSystemPatch
         {
             Ids.Add(i);
         }
-        CheckAndOpenDoors(__instance, amount, Ids.ToArray());
+        CheckAndOpenDoors(__instance, amount, [.. Ids]);
     }
     private static void CheckAndOpenDoors(ShipStatus __instance, int amount, params int[] DoorIds)
     {
@@ -181,7 +181,7 @@ class RepairSystemPatch
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.CloseDoorsOfType))]
 class CloseDoorsPatch
 {
-    public static bool Prefix(ShipStatus __instance)
+    public static bool Prefix(/*ShipStatus __instance*/)
     {
         bool allow;
         if (Options.CurrentGameMode == CustomGameMode.FFA || Options.DisableCloseDoor.GetBool()) allow = false;

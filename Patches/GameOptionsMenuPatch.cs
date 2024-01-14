@@ -162,16 +162,16 @@ public static class GameOptionsMenuStartPatch
             var roleTab = GameObject.Find("RoleTab");
             var gameTab = GameObject.Find("GameTab");
 
-            List<GameObject> menus = new() { gameSettingMenu.RegularGameSettings, gameSettingMenu.RolesSettings.gameObject };
-            List<SpriteRenderer> highlights = new() { gameSettingMenu.GameSettingsHightlight, gameSettingMenu.RolesSettingsHightlight };
-            List<GameObject> tabs = new() { gameTab, roleTab };
+            List<GameObject> menus = [gameSettingMenu.RegularGameSettings, gameSettingMenu.RolesSettings.gameObject];
+            List<SpriteRenderer> highlights = [gameSettingMenu.GameSettingsHightlight, gameSettingMenu.RolesSettingsHightlight];
+            List<GameObject> tabs = [gameTab, roleTab];
 
             // No add roleTab in Hide & Seek
             if (GameStates.IsHideNSeek)
             {
-                menus = new() { gameSettingMenu.RegularGameSettings };
-                highlights = new() { gameSettingMenu.GameSettingsHightlight };
-                tabs = new() { gameTab };
+                menus = [gameSettingMenu.RegularGameSettings];
+                highlights = [gameSettingMenu.GameSettingsHightlight];
+                tabs = [gameTab];
             }
 
             foreach (var tab in EnumHelper.GetAllValues<TabGroup>().Where(tab => GameStates.IsNormalGame || (GameStates.IsHideNSeek && (tab is TabGroup.SystemSettings or TabGroup.GameSettings or TabGroup.TaskSettings))).ToArray())
@@ -216,7 +216,7 @@ public static class GameOptionsMenuStartPatch
                     Object.Destroy(optionBehaviour.gameObject);
                 }
 
-                List<OptionBehaviour> scOptions = new();
+                List<OptionBehaviour> scOptions = [];
                 foreach (var option in OptionItem.AllOptions.Where(opt => opt.Tab == tab).ToArray())
                 {
                     if (option.OptionBehaviour == null)

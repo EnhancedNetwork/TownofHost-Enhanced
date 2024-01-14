@@ -13,9 +13,7 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
-using UnityEngine.TextCore;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 
 namespace TOHE;
@@ -23,13 +21,13 @@ namespace TOHE;
 [HarmonyPatch(typeof(ChatController), nameof(ChatController.SendChat))]
 internal class ChatCommands
 {
-    private static string modLogFiles = @"./TOHE-DATA/ModLogs.txt";
-    private static string modTagsFiles = @"./TOHE-DATA/Tags/MOD_TAGS";
-    private static string sponsorTagsFiles = @"./TOHE-DATA/Tags/SPONSOR_TAGS";
-    private static string vipTagsFiles = @"./TOHE-DATA/Tags/VIP_TAGS";
+    private static readonly string modLogFiles = @"./TOHE-DATA/ModLogs.txt";
+    private static readonly string modTagsFiles = @"./TOHE-DATA/Tags/MOD_TAGS";
+    private static readonly string sponsorTagsFiles = @"./TOHE-DATA/Tags/SPONSOR_TAGS";
+    private static readonly string vipTagsFiles = @"./TOHE-DATA/Tags/VIP_TAGS";
 
 
-    public static List<string> ChatHistory = new();
+    public static List<string> ChatHistory = [];
 
     public static bool Prefix(ChatController __instance)
     {
@@ -1349,10 +1347,10 @@ internal class ChatCommands
             return;
         }
         role = role.Trim().ToLower();
-        if (role.StartsWith("/r")) role.Replace("/r", string.Empty);
-        if (role.StartsWith("/up")) role.Replace("/up", string.Empty);
-        if (role.EndsWith("\r\n")) role.Replace("\r\n", string.Empty);
-        if (role.EndsWith("\n")) role.Replace("\n", string.Empty);
+        if (role.StartsWith("/r")) _ = role.Replace("/r", string.Empty);
+        if (role.StartsWith("/up")) _ = role.Replace("/up", string.Empty);
+        if (role.EndsWith("\r\n")) _ = role.Replace("\r\n", string.Empty);
+        if (role.EndsWith("\n")) _ = role.Replace("\n", string.Empty);
 
         if (role == "" || role == string.Empty)
         {
@@ -1526,7 +1524,7 @@ internal class ChatCommands
                     //sb.Append(String.Format(GetString("PlayerNameForRoleInfo"), Main.AllPlayerNames[player.PlayerId]));
                     sb.Append(GetString(role.ToString()) + Utils.GetRoleMode(role) + player.GetRoleInfo(true));
                     if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
-                        Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref sb, command: true);
+                        Utils.ShowChildrenSettings(opt, ref sb, command: true);
                     var txt = sb.ToString();
                     sb.Clear().Append(txt.RemoveHtmlTags());
                     foreach (var subRole in Main.PlayerStates[player.PlayerId].SubRoles.ToArray())
@@ -1540,7 +1538,7 @@ internal class ChatCommands
                 break;
 
             case "/up":
-                subArgs = text.Remove(0, 3);
+                _ = text.Remove(0, 3);
                 if (!Options.EnableUpMode.GetBool())
                 {
                     Utils.SendMessage(string.Format(GetString("Message.YTPlanDisabled"), GetString("EnableYTPlan")), player.PlayerId);
@@ -1729,7 +1727,7 @@ internal class ChatCommands
                     Utils.SendMessage(GetString("BanCommandNoAccess"), player.PlayerId);
                     break;
                 }
-                string banReason = "";
+                string banReason;
                 if (args.Length < 3)
                 {
                     Utils.SendMessage(GetString("BanCommandNoReason"), player.PlayerId);
@@ -1962,7 +1960,7 @@ internal class ChatCommands
                 else
                 {
                     subArgs = args.Length < 3 ? "" : args[1] + " " + args[2];
-                    Regex regex = new Regex(@"^[0-9A-Fa-f]{6}\s[0-9A-Fa-f]{6}$");
+                    Regex regex = new(@"^[0-9A-Fa-f]{6}\s[0-9A-Fa-f]{6}$");
                     if (string.IsNullOrEmpty(subArgs) || !regex.IsMatch(subArgs))
                     {
                         Logger.Msg($"{subArgs}", "modcolor");
@@ -2019,7 +2017,7 @@ internal class ChatCommands
                 else
                 {
                     subArgs = args.Length < 3 ? "" : args[1] + " " + args[2];
-                    Regex regexx = new Regex(@"^[0-9A-Fa-f]{6}\s[0-9A-Fa-f]{6}$");
+                    Regex regexx = new(@"^[0-9A-Fa-f]{6}\s[0-9A-Fa-f]{6}$");
                     if (string.IsNullOrEmpty(subArgs) || !regexx.IsMatch(subArgs))
                     {
                         Logger.Msg($"{subArgs}", "vipcolor");
@@ -2255,9 +2253,7 @@ internal class ChatCommands
                 else
                 {
                     var rand = IRandom.Instance;
-                    int botResult = Main.GuessNumber[player.PlayerId][0];
                     Main.GuessNumber[player.PlayerId][0] = rand.Next(playerChoice1, playerChoice2);
-                    botResult = Main.GuessNumber[player.PlayerId][0];
                     Utils.SendMessage(string.Format(GetString("RandResult"), Main.GuessNumber[player.PlayerId][0]), player.PlayerId);
                     break;
                 }

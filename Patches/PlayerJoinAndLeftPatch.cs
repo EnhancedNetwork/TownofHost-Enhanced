@@ -24,7 +24,7 @@ class OnGameJoinedPatch
         Logger.Info($"{__instance.GameId} Joining room", "OnGameJoined");
 
         Main.IsHostVersionCheating = false;
-        Main.playerVersion = new();
+        Main.playerVersion = [];
         if (!Main.VersionCheat.Value) RPC.RpcVersionCheck();
         SoundManager.Instance.ChangeAmbienceVolume(DataManager.Settings.Audio.AmbienceVolume);
 
@@ -55,11 +55,11 @@ class OnGameJoinedPatch
             GameStartManagerPatch.GameStartManagerUpdatePatch.exitTimer = -1;
             Main.DoBlockNameChange = false;
             Main.newLobby = true;
-            Main.DevRole = new();
+            Main.DevRole = [];
             EAC.DeNum = new();
-            Main.AllPlayerNames = new();
-            Main.PlayerQuitTimes = new();
-            KickPlayerPatch.AttemptedKickPlayerList = new();
+            Main.AllPlayerNames = [];
+            Main.PlayerQuitTimes = [];
+            KickPlayerPatch.AttemptedKickPlayerList = [];
 
             switch (GameOptionsManager.Instance.CurrentGameOptions.GameMode)
             {
@@ -384,7 +384,7 @@ class OnPlayerLeftPatch
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.CreatePlayer))]
 class CreatePlayerPatch
 {
-    public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ClientData client)
+    public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
@@ -416,7 +416,7 @@ class CreatePlayerPatch
         }
 
         _ = new LateTask(() => { if (client.Character == null || client == null) return; OptionItem.SyncAllOptions(client.Id); }, 3f, "Sync All Options For New Player");
-        Main.GuessNumber[client.Character.PlayerId] = new List<int> { -1, 7 };
+        Main.GuessNumber[client.Character.PlayerId] = [-1, 7];
 
         _ = new LateTask(() =>
         {

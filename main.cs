@@ -98,7 +98,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> GodMode { get; private set; }
     public static ConfigEntry<bool> AutoRehost { get; private set; }
 
-    public static Dictionary<int, PlayerVersion> playerVersion = new();
+    public static Dictionary<int, PlayerVersion> playerVersion = [];
     //Preset Name Options
     public static ConfigEntry<string> Preset1 { get; private set; }
     public static ConfigEntry<string> Preset2 { get; private set; }
@@ -111,108 +111,108 @@ public class Main : BasePlugin
     public static ConfigEntry<float> LastKillCooldown { get; private set; }
     public static ConfigEntry<float> LastShapeshifterCooldown { get; private set; }
     public static OptionBackupData RealOptionsData;
-    public static Dictionary<byte, PlayerState> PlayerStates = new();
-    public static Dictionary<byte, string> AllPlayerNames = new();
+    public static Dictionary<byte, PlayerState> PlayerStates = [];
+    public static Dictionary<byte, string> AllPlayerNames = [];
     public static Dictionary<byte, CustomRoles> AllPlayerCustomRoles;
     public static Dictionary<(byte, byte), string> LastNotifyNames;
-    public static Dictionary<byte, Color32> PlayerColors = new();
-    public static Dictionary<byte, PlayerState.DeathReason> AfterMeetingDeathPlayers = new();
+    public static Dictionary<byte, Color32> PlayerColors = [];
+    public static Dictionary<byte, PlayerState.DeathReason> AfterMeetingDeathPlayers = [];
     public static Dictionary<CustomRoles, string> roleColors;
     const string LANGUAGE_FOLDER_NAME = "Language";
     public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable() || CustomRoles.Vampiress.IsEnable();
     public static float RefixCooldownDelay = 0f;
     public static GameData.PlayerInfo LastVotedPlayerInfo;
     public static string LastVotedPlayer;
-    public static HashSet<byte> ResetCamPlayerList = new();
-    public static HashSet<byte> winnerList = new();
-    public static HashSet<byte> ForCrusade = new();
-    public static HashSet<byte> KillGhoul = new();
-    public static HashSet<string> winnerNameList = new();
-    public static HashSet<int> clientIdList = new();
-    public static List<(string, byte, string)> MessagesToSend = new();
+    public static HashSet<byte> ResetCamPlayerList = [];
+    public static HashSet<byte> winnerList = [];
+    public static HashSet<byte> ForCrusade = [];
+    public static HashSet<byte> KillGhoul = [];
+    public static HashSet<string> winnerNameList = [];
+    public static HashSet<int> clientIdList = [];
+    public static List<(string, byte, string)> MessagesToSend = [];
     public static bool isChatCommand = false;
     public static bool MeetingIsStarted = false;
-    public static HashSet<PlayerControl> LoversPlayers = new();
+    public static HashSet<PlayerControl> LoversPlayers = [];
     public static bool isLoversDead = true;
-    public static Dictionary<byte, float> AllPlayerKillCooldown = new();
-    public static Dictionary<byte, Vent> LastEnteredVent = new();
-    public static Dictionary<byte, Vector2> LastEnteredVentLocation = new();
-    public static Dictionary<byte, Vector2> TimeMasterBackTrack = new();
-    public static Dictionary<byte, int> MasochistKillMax = new();
-    public static Dictionary<byte, int> BerserkerKillMax = new();
-    public static Dictionary<byte, int> TimeMasterNum = new();
-    public static Dictionary<byte, long> TimeMasterInProtect = new();
-    //public static Dictionary<byte, long> FlashbangInProtect = new();
-    public static List<byte> CyberStarDead = new();
-    public static List<byte> CyberDead = new();
-    public static List<int> BombedVents = new();
-    public static List<byte> WorkaholicAlive = new();
-    public static List<byte> BurstBodies = new();
-    public static List<byte> BaitAlive = new();
-    public static List<byte> TasklessCrewmate = new();
-    public static List<byte> BoobyTrapBody = new();
-    public static List<byte> BoobyTrapKiller = new();
-    //public static List<byte> KilledDiseased = new();
-    public static Dictionary<byte, int> KilledDiseased = new();
-    public static Dictionary<byte, int> KilledAntidote = new();
-    //public static List<byte> ForFlashbang = new();
-    public static Dictionary<byte, byte> KillerOfBoobyTrapBody = new();
-    public static Dictionary<byte, string> DetectiveNotify = new();
-    public static Dictionary<byte, string> SleuthNotify = new();
-    public static Dictionary<byte, string> VirusNotify = new();
-    public static List<byte> OverDeadPlayerList = new();
+    public static Dictionary<byte, float> AllPlayerKillCooldown = [];
+    public static Dictionary<byte, Vent> LastEnteredVent = [];
+    public static Dictionary<byte, Vector2> LastEnteredVentLocation = [];
+    public static Dictionary<byte, Vector2> TimeMasterBackTrack = [];
+    public static Dictionary<byte, int> MasochistKillMax = [];
+    public static Dictionary<byte, int> BerserkerKillMax = [];
+    public static Dictionary<byte, int> TimeMasterNum = [];
+    public static Dictionary<byte, long> TimeMasterInProtect = [];
+    //public static Dictionary<byte, long> FlashbangInProtect = [];
+    public static List<byte> CyberStarDead = [];
+    public static List<byte> CyberDead = [];
+    public static List<int> BombedVents = [];
+    public static List<byte> WorkaholicAlive = [];
+    public static List<byte> BurstBodies = [];
+    public static List<byte> BaitAlive = [];
+    public static List<byte> TasklessCrewmate = [];
+    public static List<byte> BoobyTrapBody = [];
+    public static List<byte> BoobyTrapKiller = [];
+    //public static List<byte> KilledDiseased = [];
+    public static Dictionary<byte, int> KilledDiseased = [];
+    public static Dictionary<byte, int> KilledAntidote = [];
+    //public static List<byte> ForFlashbang = [];
+    public static Dictionary<byte, byte> KillerOfBoobyTrapBody = [];
+    public static Dictionary<byte, string> DetectiveNotify = [];
+    public static Dictionary<byte, string> SleuthNotify = [];
+    public static Dictionary<byte, string> VirusNotify = [];
+    public static List<byte> OverDeadPlayerList = [];
     public static bool DoBlockNameChange = false;
     public static int updateTime;
     public static bool newLobby = false;
-    public static Dictionary<int, int> SayStartTimes = new();
-    public static Dictionary<int, int> SayBanwordsTimes = new();
-    public static Dictionary<byte, float> AllPlayerSpeed = new();
+    public static Dictionary<int, int> SayStartTimes = [];
+    public static Dictionary<int, int> SayBanwordsTimes = [];
+    public static Dictionary<byte, float> AllPlayerSpeed = [];
     public const float MinSpeed = 0.0001f;
-    public static List<byte> CleanerBodies = new();
-    public static List<byte> MedusaBodies = new();
-    public static List<byte> InfectedBodies = new();
-    public static List<byte> BrakarVoteFor = new();
-    public static Dictionary<byte, (byte, float)> BitPlayers = new();
-    public static Dictionary<byte, float> WarlockTimer = new();
-    public static Dictionary<byte, float> AssassinTimer = new();
-    public static Dictionary<byte, PlayerControl> CursedPlayers = new();
-    public static Dictionary<byte, bool> isCurseAndKill = new();
-    public static Dictionary<byte, int> MafiaRevenged = new();
-    public static Dictionary<byte, int> RetributionistRevenged = new();
-    public static Dictionary<byte, int> GuesserGuessed = new();
-    public static Dictionary<byte, int> CapitalismAddTask = new();
-    public static Dictionary<byte, int> CapitalismAssignTask = new();
-    public static Dictionary<(byte, byte), bool> isDoused = new();
-    public static Dictionary<(byte, byte), bool> isDraw = new();
-    public static Dictionary<(byte, byte), bool> isRevealed = new();
-    public static Dictionary<byte, (PlayerControl, float)> ArsonistTimer = new();
-    public static Dictionary<byte, (PlayerControl, float)> RevolutionistTimer = new();
-    public static Dictionary<byte, long> RevolutionistStart = new();
-    public static Dictionary<byte, long> RevolutionistLastTime = new();
-    public static Dictionary<byte, int> RevolutionistCountdown = new();
-    public static Dictionary<byte, byte> SpeedBoostTarget = new();
-    public static Dictionary<byte, int> MayorUsedButtonCount = new();
-    public static Dictionary<byte, int> ParaUsedButtonCount = new();
-    public static Dictionary<byte, int> MarioVentCount = new();
-    public static Dictionary<byte, long> VeteranInProtect = new();
-    public static Dictionary<byte, float> VeteranNumOfUsed = new();
-    public static Dictionary<byte, long> GrenadierBlinding = new();
-    public static Dictionary<byte, long> MadGrenadierBlinding = new();
+    public static List<byte> CleanerBodies = [];
+    public static List<byte> MedusaBodies = [];
+    public static List<byte> InfectedBodies = [];
+    public static List<byte> BrakarVoteFor = [];
+    public static Dictionary<byte, (byte, float)> BitPlayers = [];
+    public static Dictionary<byte, float> WarlockTimer = [];
+    public static Dictionary<byte, float> AssassinTimer = [];
+    public static Dictionary<byte, PlayerControl> CursedPlayers = [];
+    public static Dictionary<byte, bool> isCurseAndKill = [];
+    public static Dictionary<byte, int> MafiaRevenged = [];
+    public static Dictionary<byte, int> RetributionistRevenged = [];
+    public static Dictionary<byte, int> GuesserGuessed = [];
+    public static Dictionary<byte, int> CapitalismAddTask = [];
+    public static Dictionary<byte, int> CapitalismAssignTask = [];
+    public static Dictionary<(byte, byte), bool> isDoused = [];
+    public static Dictionary<(byte, byte), bool> isDraw = [];
+    public static Dictionary<(byte, byte), bool> isRevealed = [];
+    public static Dictionary<byte, (PlayerControl, float)> ArsonistTimer = [];
+    public static Dictionary<byte, (PlayerControl, float)> RevolutionistTimer = [];
+    public static Dictionary<byte, long> RevolutionistStart = [];
+    public static Dictionary<byte, long> RevolutionistLastTime = [];
+    public static Dictionary<byte, int> RevolutionistCountdown = [];
+    public static Dictionary<byte, byte> SpeedBoostTarget = [];
+    public static Dictionary<byte, int> MayorUsedButtonCount = [];
+    public static Dictionary<byte, int> ParaUsedButtonCount = [];
+    public static Dictionary<byte, int> MarioVentCount = [];
+    public static Dictionary<byte, long> VeteranInProtect = [];
+    public static Dictionary<byte, float> VeteranNumOfUsed = [];
+    public static Dictionary<byte, long> GrenadierBlinding = [];
+    public static Dictionary<byte, long> MadGrenadierBlinding = [];
     public static float BastionNumberOfAbilityUses = 0;
-    public static Dictionary<byte, float> GrenadierNumOfUsed = new();
-    public static Dictionary<byte, long> Lighter = new();
-    public static Dictionary<byte, float> LighterNumOfUsed = new();
-    public static Dictionary<byte, long> AllKillers = new();
-    public static Dictionary<byte, float> TimeMasterNumOfUsed = new();
-    public static Dictionary<byte, int> CursedWolfSpellCount = new();
-    public static Dictionary<byte, int> JinxSpellCount = new();
+    public static Dictionary<byte, float> GrenadierNumOfUsed = [];
+    public static Dictionary<byte, long> Lighter = [];
+    public static Dictionary<byte, float> LighterNumOfUsed = [];
+    public static Dictionary<byte, long> AllKillers = [];
+    public static Dictionary<byte, float> TimeMasterNumOfUsed = [];
+    public static Dictionary<byte, int> CursedWolfSpellCount = [];
+    public static Dictionary<byte, int> JinxSpellCount = [];
     public static int AliveImpostorCount;
     public static bool isCursed;
-    public static Dictionary<byte, bool> CheckShapeshift = new();
-    public static Dictionary<byte, byte> ShapeshiftTarget = new();
-    public static Dictionary<(byte, byte), string> targetArrows = new();
-    public static Dictionary<byte, Vector2> EscapeeLocation = new();
-    public static Dictionary<byte, Vector2> TimeMasterLocation = new();
+    public static Dictionary<byte, bool> CheckShapeshift = [];
+    public static Dictionary<byte, byte> ShapeshiftTarget = [];
+    public static Dictionary<(byte, byte), string> targetArrows = [];
+    public static Dictionary<byte, Vector2> EscapeeLocation = [];
+    public static Dictionary<byte, Vector2> TimeMasterLocation = [];
     public static bool VisibleTasksCount = false;
     public static string nickName = "";
     public static bool introDestroyed = false;
@@ -230,19 +230,19 @@ public class Main : BasePlugin
     public static int MadmateNum = 0;
     public static int BardCreations = 0;
     public static int MeetingsPassed = 0;
-    public static Dictionary<byte, byte> Provoked = new();
-    public static Dictionary<byte, float> DovesOfNeaceNumOfUsed = new();
+    public static Dictionary<byte, byte> Provoked = [];
+    public static Dictionary<byte, float> DovesOfNeaceNumOfUsed = [];
     public static bool SwapSend;
 
-    public static Dictionary<byte, CustomRoles> DevRole = new();
-    public static List<byte> GodfatherTarget = new();
-    public static Dictionary<byte, int> CrewpostorTasksDone = new();
-    public static Dictionary<byte, List<string>> AwareInteracted = new();
+    public static Dictionary<byte, CustomRoles> DevRole = [];
+    public static List<byte> GodfatherTarget = [];
+    public static Dictionary<byte, int> CrewpostorTasksDone = [];
+    public static Dictionary<byte, List<string>> AwareInteracted = [];
     public static byte ShamanTarget = byte.MaxValue;
     public static bool ShamanTargetChoosen = false;
     
-    public static Dictionary<byte, CustomRoles> ErasedRoleStorage = new();
-    public static Dictionary<string, int> PlayerQuitTimes = new();
+    public static Dictionary<byte, CustomRoles> ErasedRoleStorage = [];
+    public static Dictionary<string, int> PlayerQuitTimes = [];
 
     //public static IEnumerable<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null);
     //public static IEnumerable<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId));
@@ -256,15 +256,12 @@ public class Main : BasePlugin
 
     public static Main Instance;
 
-    //一些很新的东东
-
     public static string OverrideWelcomeMsg = "";
     public static int HostClientId;
+    public static Dictionary<byte,List<int>> GuessNumber = [];
 
-    public static Dictionary<byte,List<int>> GuessNumber = new();
-
-    public static List<string> TName_Snacks_CN = new() { "冰激凌", "奶茶", "巧克力", "蛋糕", "甜甜圈", "可乐", "柠檬水", "冰糖葫芦", "果冻", "糖果", "牛奶", "抹茶", "烧仙草", "菠萝包", "布丁", "椰子冻", "曲奇", "红豆土司", "三彩团子", "艾草团子", "泡芙", "可丽饼", "桃酥", "麻薯", "鸡蛋仔", "马卡龙", "雪梅娘", "炒酸奶", "蛋挞", "松饼", "西米露", "奶冻", "奶酥", "可颂", "奶糖" };
-    public static List<string> TName_Snacks_EN = new() { "Ice cream", "Milk tea", "Chocolate", "Cake", "Donut", "Coke", "Lemonade", "Candied haws", "Jelly", "Candy", "Milk", "Matcha", "Burning Grass Jelly", "Pineapple Bun", "Pudding", "Coconut Jelly", "Cookies", "Red Bean Toast", "Three Color Dumplings", "Wormwood Dumplings", "Puffs", "Can be Crepe", "Peach Crisp", "Mochi", "Egg Waffle", "Macaron", "Snow Plum Niang", "Fried Yogurt", "Egg Tart", "Muffin", "Sago Dew", "panna cotta", "soufflé", "croissant", "toffee" };
+    public static List<string> TName_Snacks_CN = ["冰激凌", "奶茶", "巧克力", "蛋糕", "甜甜圈", "可乐", "柠檬水", "冰糖葫芦", "果冻", "糖果", "牛奶", "抹茶", "烧仙草", "菠萝包", "布丁", "椰子冻", "曲奇", "红豆土司", "三彩团子", "艾草团子", "泡芙", "可丽饼", "桃酥", "麻薯", "鸡蛋仔", "马卡龙", "雪梅娘", "炒酸奶", "蛋挞", "松饼", "西米露", "奶冻", "奶酥", "可颂", "奶糖"];
+    public static List<string> TName_Snacks_EN = ["Ice cream", "Milk tea", "Chocolate", "Cake", "Donut", "Coke", "Lemonade", "Candied haws", "Jelly", "Candy", "Milk", "Matcha", "Burning Grass Jelly", "Pineapple Bun", "Pudding", "Coconut Jelly", "Cookies", "Red Bean Toast", "Three Color Dumplings", "Wormwood Dumplings", "Puffs", "Can be Crepe", "Peach Crisp", "Mochi", "Egg Waffle", "Macaron", "Snow Plum Niang", "Fried Yogurt", "Egg Tart", "Muffin", "Sago Dew", "panna cotta", "soufflé", "croissant", "toffee"];
     public static string Get_TName_Snacks => TranslationController.Instance.currentLanguage.languageID is SupportedLangs.SChinese or SupportedLangs.TChinese ?
         TName_Snacks_CN[IRandom.Instance.Next(0, TName_Snacks_CN.Count)] :
         TName_Snacks_EN[IRandom.Instance.Next(0, TName_Snacks_EN.Count)];
@@ -284,7 +281,7 @@ public class Main : BasePlugin
             TOHE.Logger.Info($"Load custom Role Color file：{filename}", "LoadCustomRoleColor");
             using StreamReader sr = new(path, Encoding.GetEncoding("UTF-8"));
             string text;
-            string[] tmp = Array.Empty<string>();
+            string[] tmp = [];
             while ((text = sr.ReadLine()) != null)
             {
                 tmp = text.Split(":");
@@ -318,28 +315,27 @@ public class Main : BasePlugin
     {
         try
         {
-            roleColors = new();
+            roleColors = [];
             var assembly = Assembly.GetExecutingAssembly();
             string resourceName = "TOHE.Resources.roleColor.json";
             using (Stream stream = assembly.GetManifestResourceStream(resourceName))
             {
                 if (stream != null)
                 {
-                    using (StreamReader reader = new StreamReader(stream))
+                    using StreamReader reader = new(stream);
+                    
+                    string jsonData = reader.ReadToEnd();
+                    Dictionary<string, string> jsonDict = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonData);
+                    foreach (var kvp in jsonDict)
                     {
-                        string jsonData = reader.ReadToEnd();
-                        Dictionary<string, string> jsonDict = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonData);
-                        foreach (var kvp in jsonDict)
+                        if (Enum.TryParse<CustomRoles>(kvp.Key, out CustomRoles role))
                         {
-                            if (Enum.TryParse<CustomRoles>(kvp.Key, out CustomRoles role))
-                            {
-                                roleColors[role] = kvp.Value;
-                            }
-                            else
-                            {
-                                // Handle invalid or unrecognized enum keys
-                                TOHE.Logger.Error($"Invalid enum key: {kvp.Key}", "Reading Role Colors");
-                            }
+                            roleColors[role] = kvp.Value;
+                        }
+                        else
+                        {
+                            // Handle invalid or unrecognized enum keys
+                            TOHE.Logger.Error($"Invalid enum key: {kvp.Key}", "Reading Role Colors");
                         }
                     }
                 }
@@ -385,7 +381,7 @@ public class Main : BasePlugin
             TOHE.Logger.Info("Updating Custom Role Colors", "UpdateRoleColors");
             try
             {
-                List<string> roleList = new();
+                List<string> roleList = [];
                 using (StreamReader reader = new(path, Encoding.GetEncoding("UTF-8")))
                 {
                     string line;
