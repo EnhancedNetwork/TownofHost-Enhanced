@@ -9,7 +9,7 @@ namespace TOHE;
 public static class OptionShower
 {
     public static int currentPage = 0;
-    public static List<string> pages = new();
+    public static List<string> pages = [];
     private static byte DelayInUpdate = 0;
     static OptionShower()
     {
@@ -37,12 +37,13 @@ public static class OptionShower
     {
         //初期化
         StringBuilder sb = new();
-        pages = new()
-            {
-                //1ページに基本ゲーム設定を格納
+        pages =
+            [
+                // Vanilla Settings
                 GameOptionsManager.Instance.CurrentGameOptions.ToHudString(GameData.Instance ? GameData.Instance.PlayerCount : 10) + "\n\n"
-            };
-        //ゲームモードの表示
+            ];
+
+        // Mod Settings
         sb.Append($"{Options.GameMode.GetName()}: {Options.GameMode.GetString()}\n\n");
         if (Options.HideGameSettings.GetBool() && !AmongUsClient.Instance.AmHost)
         {

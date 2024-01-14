@@ -16,8 +16,7 @@ internal class CustomRoleSelector
 
     public static void SelectCustomRoles()
     {
-        // 开始职业抽取
-        RoleResult = new();
+        RoleResult = [];
         var rd = IRandom.Instance;
         int playerCount = Main.AllAlivePlayerControls.Length;
         int optImpNum = Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors);
@@ -37,26 +36,26 @@ internal class CustomRoleSelector
         int readyNonNeutralKillingNum = 0;
         int readyNeutralKillingNum = 0;
 
-        List<CustomRoles> rolesToAssign = new();
-        List<CustomRoles> roleList = new();
-        List<CustomRoles> roleOnList = new();
+        List<CustomRoles> rolesToAssign = [];
+        List<CustomRoles> roleList = [];
+        List<CustomRoles> roleOnList = [];
 
-        List<CustomRoles> ImpOnList = new();
-        List<CustomRoles> MiniOnList = new();
-        List<CustomRoles> ImpRateList = new();
-        List<CustomRoles> MiniRateList = new();
+        List<CustomRoles> ImpOnList = [];
+        List<CustomRoles> MiniOnList = [];
+        List<CustomRoles> ImpRateList = [];
+        List<CustomRoles> MiniRateList = [];
 
-        List<CustomRoles> NonNeutralKillingOnList = new();
-        List<CustomRoles> NonNeutralKillingRateList = new();
+        List<CustomRoles> NonNeutralKillingOnList = [];
+        List<CustomRoles> NonNeutralKillingRateList = [];
 
-        List<CustomRoles> NeutralKillingOnList = new();
-        List<CustomRoles> NeutralKillingRateList = new();
+        List<CustomRoles> NeutralKillingOnList = [];
+        List<CustomRoles> NeutralKillingRateList = [];
 
-        List<CustomRoles> roleRateList = new();
+        List<CustomRoles> roleRateList = [];
 
         if (Options.CurrentGameMode == CustomGameMode.FFA)
         {
-            RoleResult = new();
+            RoleResult = [];
             foreach (PlayerControl pc in Main.AllAlivePlayerControls)
             {
                 RoleResult.Add(pc, CustomRoles.Killer);
@@ -389,7 +388,6 @@ internal class CustomRoleSelector
     public static int addShapeshifterNum = 0;
     public static void CalculateVanillaRoleCount()
     {
-        // 计算原版特殊职业数量
         addEngineerNum = 0;
         addScientistNum = 0;
         addShapeshifterNum = 0;
@@ -408,7 +406,8 @@ internal class CustomRoleSelector
     public static void SelectAddonRoles()
     {
         if (Options.CurrentGameMode == CustomGameMode.FFA) return;
-        AddonRolesList = new();
+        
+        AddonRolesList = [];
         foreach (var cr in CustomRolesHelper.AllRoles)
         {
             CustomRoles role = (CustomRoles)Enum.Parse(typeof(CustomRoles), cr.ToString());

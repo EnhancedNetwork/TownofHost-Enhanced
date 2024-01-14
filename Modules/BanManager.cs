@@ -19,9 +19,9 @@ public static class BanManager
     private static readonly string MODERATOR_LIST_PATH = @"./TOHE-DATA/Moderators.txt";
     private static readonly string VIP_LIST_PATH = @"./TOHE-DATA/VIP-List.txt";
     private static readonly string WHITE_LIST_LIST_PATH = @"./TOHE-DATA/WhiteList.txt";
-    //private static List<string> EACList = new(); // Don't make it read-only
-    public static List<string> TempBanWhiteList = new(); //To prevent writing to ban list
-    public static List<Dictionary<string, System.Text.Json.JsonElement>> EACDict = new();
+    //private static List<string> EACList = []; // Don't make it read-only
+    public static List<string> TempBanWhiteList = []; //To prevent writing to ban list
+    public static List<Dictionary<string, System.Text.Json.JsonElement>> EACDict = [];
     public static void Init()
     {
         try
@@ -83,15 +83,14 @@ public static class BanManager
     {
         if (player == null) return "";
         string puid = player.ProductUserId;
-        using (SHA256 sha256 = SHA256.Create())
-        {
-            // get sha-256 hash
-            byte[] sha256Bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(puid));
-            string sha256Hash = BitConverter.ToString(sha256Bytes).Replace("-", "").ToLower();
+        using SHA256 sha256 = SHA256.Create();
+        
+        // get sha-256 hash
+        byte[] sha256Bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(puid));
+        string sha256Hash = BitConverter.ToString(sha256Bytes).Replace("-", "").ToLower();
 
-            // pick front 5 and last 4
-            return string.Concat(sha256Hash.AsSpan(0, 5), sha256Hash.AsSpan(sha256Hash.Length - 4));
-        }
+        // pick front 5 and last 4
+        return string.Concat(sha256Hash.AsSpan(0, 5), sha256Hash.AsSpan(sha256Hash.Length - 4));
     }
     public static void AddBanPlayer(InnerNet.ClientData player)
     {

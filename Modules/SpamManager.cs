@@ -270,36 +270,36 @@ public static class SpamManager
 
         //if (text.Length >= 3) return false;
 
-        if (text.Contains("了")) return false;
-        if (text.Contains("没")) return false;
-        if (text.Contains("吗")) return false;
-        if (text.Contains("哈")) return false;
-        if (text.Contains("还")) return false;
-        if (text.Contains("现")) return false;
-        if (text.Contains("不")) return false;
-        if (text.Contains("可")) return false;
-        if (text.Contains("刚")) return false;
-        if (text.Contains("的")) return false;
-        if (text.Contains("打")) return false;
-        if (text.Contains("门")) return false;
-        if (text.Contains("关")) return false;
-        if (text.Contains("怎")) return false;
-        if (text.Contains("要")) return false;
-        if (text.Contains("摆")) return false;
-        if (text.Contains("啦")) return false;
-        if (text.Contains("咯")) return false;
-        if (text.Contains("嘞")) return false;
-        if (text.Contains("勒")) return false;
-        if (text.Contains("心")) return false;
-        if (text.Contains("呢")) return false;
-        if (text.Contains("门")) return false;
-        if (text.Contains("总")) return false;
-        if (text.Contains("哥")) return false;
-        if (text.Contains("姐")) return false;
-        if (text.Contains("《")) return false;
-        if (text.Contains("?")) return false;
-        if (text.Contains("？")) return false;
+        if (text.Contains('了')) return false;
+        if (text.Contains('没')) return false;
+        if (text.Contains('吗')) return false;
+        if (text.Contains('哈')) return false;
+        if (text.Contains('还')) return false;
+        if (text.Contains('现')) return false;
+        if (text.Contains('不')) return false;
+        if (text.Contains('可')) return false;
+        if (text.Contains('刚')) return false;
+        if (text.Contains('的')) return false;
+        if (text.Contains('打')) return false;
+        if (text.Contains('门')) return false;
+        if (text.Contains('关')) return false;
+        if (text.Contains('怎')) return false;
+        if (text.Contains('要')) return false;
+        if (text.Contains('摆')) return false;
+        if (text.Contains('啦')) return false;
+        if (text.Contains('咯')) return false;
+        if (text.Contains('嘞')) return false;
+        if (text.Contains('勒')) return false;
+        if (text.Contains('心')) return false;
+        if (text.Contains('呢')) return false;
+        if (text.Contains('门')) return false;
+        if (text.Contains('总')) return false;
+        if (text.Contains('哥')) return false;
+        if (text.Contains('姐')) return false;
+        if (text.Contains('《')) return false;
+        if (text.Contains('?')) return false;
+        if (text.Contains('？')) return false;
 
-        return text.Contains("开") || text.Contains("kai");
+        return text.Contains('开') || text.Contains("kai");
     }
 }

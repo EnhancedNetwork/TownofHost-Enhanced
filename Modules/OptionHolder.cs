@@ -44,10 +44,10 @@ public static class Options
 
     // Presets
     private static readonly string[] presets =
-    {
+    [
         Main.Preset1.Value, Main.Preset2.Value, Main.Preset3.Value,
         Main.Preset4.Value, Main.Preset5.Value
-    };
+    ];
 
     // Custom Game Mode
     public static OptionItem GameMode;
@@ -60,13 +60,13 @@ public static class Options
         };
 
     public static readonly string[] gameModes =
-    {
+    [
         "Standard",
         "FFA",
 
 
         "Hide&SeekTOHE", // HidenSeekTOHE must be after other game modes
-    };
+    ];
 
     // 役職数・確率
     public static Dictionary<CustomRoles, int> roleCounts;
@@ -75,31 +75,31 @@ public static class Options
     public static Dictionary<CustomRoles, StringOptionItem> CustomRoleSpawnChances;
     public static Dictionary<CustomRoles, IntegerOptionItem> CustomAdtRoleSpawnRate;
     public static readonly string[] rates =
-    {
+    [
         "Rate0",  "Rate5",  "Rate10", "Rate20", "Rate30", "Rate40",
         "Rate50", "Rate60", "Rate70", "Rate80", "Rate90", "Rate100",
-    };
+    ];
     public static readonly string[] ratesZeroOne =
-    {
+    [
         "RoleOff", /*"Rate10", "Rate20", "Rate30", "Rate40", "Rate50",
         "Rate60", "Rate70", "Rate80", "Rate90", */"RoleRate",
-    };
+    ];
     public static readonly string[] ratesToggle =
-    {
+    [
         "RoleOff", "RoleRate", "RoleOn"
-    };
+    ];
     public static readonly string[] CheatResponsesName =
-    {
+    [
         "Ban", "Kick", "NoticeMe","NoticeEveryone", "TempBan", "OnlyCancel"
-    };
+    ];
     public static readonly string[] ConfirmEjectionsMode =
-    {
+    [
         "ConfirmEjections.None",
         "ConfirmEjections.Team",
         "ConfirmEjections.Role"
-    };
+    ];
     public static readonly string[] CamouflageMode =
-    {
+    [
         "CamouflageMode.Default",
         "CamouflageMode.Host",
         "CamouflageMode.Karpe",
@@ -109,7 +109,7 @@ public static class Options
         "CamouflageMode.ryuk",
         "CamouflageMode.Gurge44",
         "CamouflageMode.TommyXL"
-    };
+    ];
 
     // 各役職の詳細設定
     //public static OptionItem EnableGM;
@@ -919,42 +919,42 @@ public static class Options
     public static VoteMode GetWhenNonVote() => (VoteMode)WhenNonVote.GetValue();
 
     public static readonly string[] voteModes =
-    {
+    [
         "Default", "Suicide", "SelfVote", "Skip"
-    };
+    ];
     public static readonly string[] tieModes =
-    {
+    [
         "TieMode.Default", "TieMode.All", "TieMode.Random"
-    };
+    ];
     /* public static readonly string[] addonGuessModeCrew =
      {
          "GuesserMode.All", "GuesserMode.Harmful", "GuesserMode.Random"
      }; */
     public static readonly string[] madmateSpawnMode =
-    {
+    [
         "MadmateSpawnMode.Assign",
         "MadmateSpawnMode.FirstKill",
         "MadmateSpawnMode.SelfVote",
-    };
+    ];
     public static readonly string[] madmateCountMode =
-    {
+    [
         "MadmateCountMode.None",
         "MadmateCountMode.Imp",
         "MadmateCountMode.Original",
-    };
+    ];
     public static readonly string[] sidekickCountMode =
-    {
+    [
         "SidekickCountMode.Jackal",
         "SidekickCountMode.None",
         "SidekickCountMode.Original",
-    };
+    ];
     public static readonly string[] GodfatherChangeMode =
-    {
+    [
         "GodfatherCount.Refugee",
         "GodfatherCount.Madmate"
-    };
+    ];
     public static readonly string[] suffixModes =
-    {
+    [
         "SuffixMode.None",
         "SuffixMode.Version",
         "SuffixMode.Streaming",
@@ -963,21 +963,22 @@ public static class Options
         "SuffixMode.OriginalName",
         "SuffixMode.DoNotKillMe",
         "SuffixMode.NoAndroidPlz",
-        "SuffixMode.AutoHost"    };
+        "SuffixMode.AutoHost"    
+    ];
     public static readonly string[] roleAssigningAlgorithms =
-    {
+    [
         "RoleAssigningAlgorithm.Default",
         "RoleAssigningAlgorithm.NetRandom",
         "RoleAssigningAlgorithm.HashRandom",
         "RoleAssigningAlgorithm.Xorshift",
         "RoleAssigningAlgorithm.MersenneTwister",
-    };
+    ];
     public static readonly string[] formatNameModes =
-    {
+    [
         "FormatNameModes.None",
         "FormatNameModes.Color",
         "FormatNameModes.Snacks",
-    };
+    ];
     public static SuffixModes GetSuffixMode() => (SuffixModes)SuffixMode.GetValue();
 
 
@@ -1039,8 +1040,8 @@ public static class Options
     }
     public static void ResetRoleCounts()
     {
-        roleCounts = new Dictionary<CustomRoles, int>();
-        roleSpawnChances = new Dictionary<CustomRoles, float>();
+        roleCounts = [];
+        roleSpawnChances = [];
 
         foreach (var role in CustomRolesHelper.AllRoles)
         {
@@ -1102,9 +1103,9 @@ public static class Options
 
 
         #region Roles/Add-ons Settings
-        CustomRoleCounts = new();
-        CustomRoleSpawnChances = new();
-        CustomAdtRoleSpawnRate = new();
+        CustomRoleCounts = [];
+        CustomRoleSpawnChances = [];
+        CustomAdtRoleSpawnRate = [];
 
         // GM
         //EnableGM = BooleanOptionItem.Create(60001, "GM", false, TabGroup.GameSettings, false)
@@ -3868,7 +3869,7 @@ public static class Options
     }
     public class OverrideTasksData
     {
-        public static Dictionary<CustomRoles, OverrideTasksData> AllData = new();
+        public static Dictionary<CustomRoles, OverrideTasksData> AllData = [];
         public CustomRoles Role { get; private set; }
         public int IdStart { get; private set; }
         public OptionItem doOverride;

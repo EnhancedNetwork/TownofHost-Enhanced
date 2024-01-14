@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,33 +10,22 @@ using UnityEngine;
 
 namespace TOHE;
 
-public class PlayerState
+public class PlayerState(byte playerId)
 {
-    byte PlayerId;
-    public CustomRoles MainRole;
-    public List<CustomRoles> SubRoles;
-    public CountTypes countTypes;
-    public bool IsDead { get; set; }
-    public DeathReason deathReason { get; set; }
-    public TaskState taskState;
-    public bool IsBlackOut { get; set; }
-    public (DateTime, byte) RealKiller;
-    public PlainShipRoom LastRoom;
-    public Dictionary<byte, string> TargetColorData;
-    public PlayerState(byte playerId)
-    {
-        MainRole = CustomRoles.NotAssigned;
-        SubRoles = new();
-        countTypes = CountTypes.OutOfGame;
-        PlayerId = playerId;
-        IsDead = false;
-        deathReason = DeathReason.etc;
-        taskState = new();
-        IsBlackOut = false;
-        RealKiller = (DateTime.MinValue, byte.MaxValue);
-        LastRoom = null;
-        TargetColorData = new();
-    }
+    private readonly byte PlayerId = playerId;
+    public CustomRoles MainRole = CustomRoles.NotAssigned;
+    public List<CustomRoles> SubRoles = [];
+    public CountTypes countTypes = CountTypes.OutOfGame;
+    public bool IsDead { get; set; } = false;
+#pragma warning disable IDE1006 // Naming Styles
+    public DeathReason deathReason { get; set; } = DeathReason.etc;
+#pragma warning restore IDE1006
+    public TaskState taskState = new();
+    public bool IsBlackOut { get; set; } = false;
+    public (DateTime, byte) RealKiller = (DateTime.MinValue, byte.MaxValue);
+    public PlainShipRoom LastRoom = null;
+    public Dictionary<byte, string> TargetColorData = [];
+
     public CustomRoles GetCustomRole()
     {
         var RoleInfo = Utils.GetPlayerInfoById(PlayerId);
@@ -90,7 +78,7 @@ public class PlayerState
                     var taskstate = pc.GetPlayerTaskState();
                     if (taskstate != null)
                     {
-                        GameData.Instance.RpcSetTasks(pc.PlayerId, new byte[0]);
+                        GameData.Instance.RpcSetTasks(pc.PlayerId, Array.Empty<byte>());
                         taskstate.CompletedTasksCount = 0;
                         taskstate.AllTasksCount = pc.Data.Tasks.Count;
                         taskstate.hasTasks = true;
@@ -690,7 +678,7 @@ public class TaskState
                 }
                 else
                 {
-                    list = list.OrderBy(x => Vector2.Distance(player.transform.position, x.transform.position)).ToList();
+                    list = [.. list.OrderBy(x => Vector2.Distance(player.transform.position, x.transform.position))];
                     var target = list[0];
                     
                     if (!target.Is(CustomRoles.Pestilence))
@@ -734,20 +722,17 @@ public class TaskState
 
     }
 }
-public class PlayerVersion
+public class PlayerVersion(Version ver, string tag_str, string forkId)
 {
-    public readonly Version version;
-    public readonly string tag;
-    public readonly string forkId;
-    [Obsolete] public PlayerVersion(string ver, string tag_str) : this(Version.Parse(ver), tag_str, "") { }
-    [Obsolete] public PlayerVersion(Version ver, string tag_str) : this(ver, tag_str, "") { }
+    public readonly Version version = ver;
+    public readonly string tag = tag_str;
+    public readonly string forkId = forkId;
+#pragma warning disable CA1041 // Provide ObsoleteAttribute message
+    [Obsolete] public PlayerVersion(string ver, string tag_str) : this(Version.Parse(ver), tag_str, string.Empty) { }
+    [Obsolete] public PlayerVersion(Version ver, string tag_str) : this(ver, tag_str, string.Empty) { }
+#pragma warning restore CA1041
     public PlayerVersion(string ver, string tag_str, string forkId) : this(Version.Parse(ver), tag_str, forkId) { }
-    public PlayerVersion(Version ver, string tag_str, string forkId)
-    {
-        version = ver;
-        tag = tag_str;
-        this.forkId = forkId;
-    }
+
     public bool IsEqual(PlayerVersion pv)
     {
         return pv.version == version && pv.tag == tag;

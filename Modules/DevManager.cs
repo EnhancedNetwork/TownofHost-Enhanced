@@ -4,27 +4,16 @@ using System.Linq;
 
 namespace TOHE;
 
-public class DevUser
+public class DevUser(string code = "", string color = "null", string tag = "null", bool isUp = false, bool isDev = false, bool deBug = false, bool colorCmd = false, string upName = "未认证用户")
 {
-    public string Code { get; set; }
-    public string Color { get; set; }
-    public string Tag { get; set; }
-    public bool IsUp { get; set; }
-    public bool IsDev { get; set; }
-    public bool DeBug { get; set; }
-    public bool ColorCmd { get; set; }
-    public string UpName { get; set; }
-    public DevUser(string code = "", string color = "null", string tag = "null", bool isUp = false, bool isDev = false, bool deBug = false, bool colorCmd = false, string upName = "未认证用户")
-    {
-        Code = code;
-        Color = color;
-        Tag = tag;
-        IsUp = isUp;
-        IsDev = isDev;
-        DeBug = deBug;
-        ColorCmd = colorCmd;
-        UpName = upName;
-    }
+    public string Code { get; set; } = code;
+    public string Color { get; set; } = color;
+    public string Tag { get; set; } = tag;
+    public bool IsUp { get; set; } = isUp;
+    public bool IsDev { get; set; } = isDev;
+    public bool DeBug { get; set; } = deBug;
+    public bool ColorCmd { get; set; } = colorCmd;
+    public string UpName { get; set; } = upName;
 
     public bool HasTag() => Tag != "null";
     //public string GetTag() => Color == "null" ? $"<size=1.2>{Tag}</size>\r\n" : $"<color={Color}><size=1.2>{(Tag == "#Dev" ? Translator.GetString("Developer") : Tag)}</size></color>\r\n";
@@ -96,7 +85,7 @@ public class DevUser
 public static class DevManager
 {
     private readonly static DevUser DefaultDevUser = new();
-    public readonly static List<DevUser> DevUserList = new();
+    public readonly static List<DevUser> DevUserList = [];
     public static void Init()
     {
         // Dev

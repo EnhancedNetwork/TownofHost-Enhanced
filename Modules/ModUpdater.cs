@@ -35,7 +35,7 @@ public class ModUpdater
 
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPrefix]
     [HarmonyPriority(2)]
-    public static void Start_Prefix(MainMenuManager __instance)
+    public static void Start_Prefix(/*MainMenuManager __instance*/)
     {
         NewVersionCheck();
         DeleteOldFiles();
@@ -44,8 +44,7 @@ public class ModUpdater
         InfoPopup.TextAreaTMP.GetComponent<RectTransform>().sizeDelta = new(2.5f, 2f);
         if (!isChecked)
         {
-            var done = false;
-            done = CheckReleaseFromGithub(Main.BetaBuildURL.Value != "").GetAwaiter().GetResult();
+            bool done = CheckReleaseFromGithub(Main.BetaBuildURL.Value != "").GetAwaiter().GetResult();
             Logger.Warn("检查更新结果: " + done, "CheckRelease");
             Logger.Info("hasupdate: " + hasUpdate, "CheckRelease");
             Logger.Info("forceupdate: " + forceUpdate, "CheckRelease");
@@ -58,7 +57,7 @@ public class ModUpdater
     public static string Get(string url)
     {
         string result = "";
-        HttpClient req = new HttpClient();
+        HttpClient req = new();
         var res = req.GetAsync(url).Result;
         Stream stream = res.Content.ReadAsStreamAsync().Result;
         try
@@ -208,7 +207,7 @@ public class ModUpdater
             HttpResponseMessage response;
             var downloadCallBack = DownloadCallBack;
 
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = new())
             {
                 response = await client.GetAsync(url);
             }
@@ -232,9 +231,9 @@ public class ModUpdater
                     long readLength = 0;
                     int length;
 
-                    while ((length = await stream.ReadAsync(buffer, 0, buffer.Length)) != 0)
+                    while ((length = await stream.ReadAsync(buffer)) != 0)
                     {
-                        await fileStream.WriteAsync(buffer, 0, length);
+                        await fileStream.WriteAsync(buffer.AsMemory(0, length));
 
                         readLength += length;
                         double? progress = Math.Round((double)readLength / total * 100, 2, MidpointRounding.ToZero);
@@ -270,7 +269,7 @@ public class ModUpdater
             HttpResponseMessage response;
             var downloadCallBack = DownloadCallBack;
 
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = new())
             {
                 response = await client.GetAsync(url);
             }
@@ -286,19 +285,12 @@ public class ModUpdater
             {
                 // Specify the relative path within the ZIP archive where "TOHE.dll" is located
                 var entryPath = "BepInEx/plugins/TOHE.dll";
-                var entry = archive.GetEntry(entryPath);
-
-                if (entry == null)
-                {
-                    throw new Exception($"'{entryPath}' not found in the ZIP archive");
-                }
+                var entry = archive.GetEntry(entryPath) ?? throw new Exception($"'{entryPath}' not found in the ZIP archive");
 
                 // Extract "TOHE.dll" to the temporary file
-                using (var entryStream = entry.Open())
-                using (var fileStream = new FileStream(savePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true))
-                {
-                    await entryStream.CopyToAsync(fileStream);
-                }
+                using var entryStream = entry.Open();
+                using var fileStream = new FileStream(savePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true);
+                await entryStream.CopyToAsync(fileStream);
             }
 
             var fileName = Assembly.GetExecutingAssembly().Location;
