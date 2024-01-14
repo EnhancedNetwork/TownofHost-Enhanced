@@ -554,9 +554,9 @@ public class PlayerGameOptionsSender : GameOptionsSender
                     opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.TorchVision.GetFloat() * 5);
                     break;
                 case CustomRoles.Tired when Tired.playerIdList.ContainsKey(player.PlayerId):
-                    foreach (var tiredd in Tired.playerIdList)
+                    foreach (var tiredPlayer in Tired.playerIdList)
                     {
-                        bool value = tiredd.Value;
+                        bool value = tiredPlayer.Value;
                         if (value)
                         {
                             //Logger.Info($"{player.GetNameWithRole()} Succesfully decreased vision", "Tired");
