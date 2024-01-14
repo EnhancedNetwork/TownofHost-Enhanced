@@ -1441,7 +1441,7 @@ internal class ChatCommands
             canceled = true; 
             return; 
         }
-        
+
         switch (args[0])
         {
             case "/ans":
@@ -1486,8 +1486,10 @@ internal class ChatCommands
             case "/rename":
             case "/renomear":
                 if (args.Length < 1) break;
-                if (args[1].Length is > 10 or < 1)
-                    Utils.SendMessage(GetString("Message.AllowNameLength"), PlayerControl.LocalPlayer.PlayerId);
+                if (args[1].Length is > 10 or < 1) {
+                    Utils.SendMessage(GetString("Message.AllowNameLength"), player.PlayerId);
+                    break;
+                }
                 player.RpcSetName(args[1]);
                 break;
 
