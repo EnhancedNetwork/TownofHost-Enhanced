@@ -1173,7 +1173,17 @@ public static class GuessManager
                 CreatePage(true, __instance, container);
             }
             int ind = 0;
-            foreach (var role in CustomRolesHelper.AllRoles)
+
+            CustomRoles[] listOfRoles = Options.ShowOnlyEnabledRolesInGuesserUI.GetBool()
+                ? CustomRolesHelper.AllRoles.Where(role => role.IsEnable() || role.RoleExist(countDead: true)).ToArray()
+                : CustomRolesHelper.AllRoles.ToArray();
+
+            var roleMap = listOfRoles.ToDictionary(role => role, role => Utils.GetRoleName(role));
+
+            var orderedRoleList = roleMap.OrderBy(kv => kv.Value).Select(kv => kv.Key).ToArray();
+
+
+            foreach (var role in orderedRoleList)
             {
                 if (role is CustomRoles.GM
                     or CustomRoles.SpeedBooster
@@ -1207,7 +1217,7 @@ public static class GuessManager
                     or CustomRoles.Cyber
                     ) continue;
 
-                if (Options.ShowOnlyEnabledRolesInGuesserUI.GetBool() && !(role.IsEnable() || role.RoleExist(countDead: true))) continue;
+                //if (Options.ShowOnlyEnabledRolesInGuesserUI.GetBool() && !(role.IsEnable() || role.RoleExist(countDead: true))) continue;
 
                 CreateRole(role);
             }
