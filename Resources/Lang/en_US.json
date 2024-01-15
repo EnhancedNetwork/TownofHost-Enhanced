@@ -3647,6 +3647,7 @@
   "QuizmasterSettings.CanVentAfterMark": "Can Vent After Marked Somebody For Quiz",
   "QuizmasterSettings.CanKillAfterMark": "Can Kill After Marked Somebody For Quiz",
   "QuizmasterSettings.NumOfKillAfterMark": "How Many Kills Per Round",
+  "QuizmasterSettings.CanGiveQuestionsAboutPastGames": "Can Give Questions About Past Games",
 
   "Quizmaster.None": "None",
 
@@ -3679,8 +3680,8 @@
   "QuizmasterQuestions.LastSabotage": "What was the sabotage was called last?",
   "QuizmasterQuestions.FirstRoundSabotage": "What was the first sabotage called this round?",
   "QuizmasterQuestions.LastEjectedPlayerColor": "What was the color of the player that was last ejected?",
-  "QuizmasterQuestions.LastReportPlayerColor": "What was the color of the body that was last reported?",
-  "QuizmasterQuestions.LastButtonPressedPlayerColor": "Who called last meeting?",
+  "QuizmasterQuestions.LastReportPlayerColor": "What was the color of the body that was last reported before this meeting?",
+  "QuizmasterQuestions.LastButtonPressedPlayerColor": "Who called last meeting before this meeting?",
   "QuizmasterQuestions.MeetingPassed": "How many meetings have passed so far?",
   "QuizmasterQuestions.HowManyFactions": "How many factions are in the game?",
   "QuizmasterQuestions.BasisOfRole": "What's the basis of {QMRole}?",
