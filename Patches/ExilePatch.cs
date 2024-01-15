@@ -64,7 +64,8 @@ class ExileControllerWrapUpPatch
 
             var role = exiled.GetCustomRole();
 
-            if (Quizmaster.IsEnable) Quizmaster.lastExiledColor = exiled.GetPlayerColorString();
+            if (Quizmaster.IsEnable)
+                Quizmaster.OnPlayerExile(exiled);
 
             var pcArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId).ToArray();
             if (pcArray.Length > 0)
@@ -146,11 +147,6 @@ class ExileControllerWrapUpPatch
                 Utils.CheckTerroristWin(exiled);
             }
 
-            if (role.Is(CustomRoles.Quizmaster))
-            {
-                Quizmaster.OnVotedOut();
-            }
-
             //Devourer check win
             if (role.Is(CustomRoles.Devourer))
             {
@@ -221,6 +217,10 @@ class ExileControllerWrapUpPatch
 
                 case CustomRoles.Bard:
                     Bard.OnExileWrapUp(player, exiled);
+                    break;
+
+                case CustomRoles.Quizmaster:
+                    Quizmaster.OnVotedOut();
                     break;
             }
 

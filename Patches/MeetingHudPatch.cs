@@ -1340,8 +1340,13 @@ class MeetingHudStartPatch
                     sb.Append(Gamer.TargetMark(seer, target));
                     sb.Append(Snitch.GetWarningMark(seer, target));
                     break;
+
                 case CustomRoles.Tracker:
                     sb.Append(Tracker.GetTargetMark(seer, target));
+                    break;
+
+                case CustomRoles.Quizmaster:
+                    sb.Append(Quizmaster.TargetMark(seer, target));
                     break;
             }
 

@@ -336,6 +336,15 @@ internal class RPCHandlerPatch
                 // Sync Settings
                 foreach (var option in listOptions.ToArray())
                 {
+                    // Set Preset 5 for modded non-host players
+                    if (startAmount == 0 && option.Name == "Preset" && option.CurrentValue != 4)
+                    {
+                        option.SetValue(reader.ReadPackedInt32()); // First set current value
+                        option.SetValue(4); // 4 => Preset 5
+                        continue;
+                    }
+
+                    // Set Value Options
                     option.SetValue(reader.ReadPackedInt32());
                 }
                 OptionShower.GetText();
