@@ -203,33 +203,10 @@ public static class Camouflage
 
         Logger.Info($"newOutfit={newOutfit.GetString().RemoveHtmlTags()}", "RpcSetSkin");
 
-        var sender = CustomRpcSender.Create(name: $"Camouflage.RpcSetSkin({target.Data.PlayerName})");
-
-        target.SetColor(newOutfit.ColorId);
-        sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetColor)
-            .Write(newOutfit.ColorId)
-            .EndRpc();
-
-        target.SetHat(newOutfit.HatId, newOutfit.ColorId);
-        sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetHatStr)
-            .Write(newOutfit.HatId)
-            .EndRpc();
-
-        target.SetSkin(newOutfit.SkinId, newOutfit.ColorId);
-        sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetSkinStr)
-            .Write(newOutfit.SkinId)
-            .EndRpc();
-
-        target.SetVisor(newOutfit.VisorId, newOutfit.ColorId);
-        sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetVisorStr)
-            .Write(newOutfit.VisorId)
-            .EndRpc();
-
-        target.SetPet(newOutfit.PetId);
-        sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetPetStr)
-            .Write(newOutfit.PetId)
-            .EndRpc();
-
-        sender.SendMessage();
+        target.RpcSetColor((byte)newOutfit.ColorId); // Set Color
+        target.RpcSetHat(newOutfit.HatId); // Set Hat
+        target.RpcSetSkin(newOutfit.SkinId); // Set Skin
+        target.RpcSetVisor(newOutfit.VisorId); // Set Visor
+        target.RpcSetPet(newOutfit.PetId); // Set Pet
     }
 }
