@@ -50,6 +50,12 @@
             BloodhoundTargets.Add(playerId, new List<byte>());
             IsEnable = true;
         }
+        public static void Remove(byte playerId)
+        {
+            playerIdList.Remove(playerId);
+            UseLimit.Remove(playerId);
+            BloodhoundTargets.Remove(playerId);
+        }
 
         private static void SendRPC(byte playerId, bool add, Vector3 loc = new())
         {

@@ -43,6 +43,10 @@ internal class Monitor
         playerIdList.Add(playerId);
         IsEnable = true;
     }
+    public static void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+    }
 
     private static int Count = 0;
     public static void FixedUpdate()

@@ -3006,14 +3006,14 @@
   "notifyJailedOnMeeting": "Notify jailed player when meeting starts",
   "JailedNotifyMsg": "You have been locked up in jail by the Jailer. No one can guess or judge you and you can only guess Jailer.\n\nIf Jailer votes you, you will be executed after the meeting ends.",
   "JailerTitle": "Jailer",
+
   "CopyCatCopyCooldown": "Copy cooldown",
-  "CopyCatMiscopyLimit": "Number of miscopy until suicide",
   "CopyCatRoleChange": "Your role has been changed to <b>{0}</b>",
   "CopyCatAlreadyCopy": "You have already copied a role in this round",
   "CopyCatCanNotCopy": "You can not copy target's role",
-  "CopyCatCanKill": "CopyCat can kill when miscopy",
   "CopyButtonText": "Copy",
   "CopyCrewVar": "Can copy evil variants of crew roles",
+  "CopyTeamChangingAddon": "Can copy team changing addon",
 
   "MaxCleanserUses": "Max cleanses",
   "CleansedCanGetAddon": "Cleansed player can get Add-on",
