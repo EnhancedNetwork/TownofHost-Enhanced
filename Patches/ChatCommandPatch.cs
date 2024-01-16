@@ -180,9 +180,12 @@ internal class ChatCommands
                 case "/renomear":
                     canceled = true;
                     if (args.Length < 1) break;
-                    if (args[1].Length is > 10 or < 1)
+                    if (args.Skip(1).Join(delimiter: " ").Length is > 10 or < 1) { 
                         Utils.SendMessage(GetString("Message.AllowNameLength"), PlayerControl.LocalPlayer.PlayerId);
-                    else Main.nickName = args[1];
+                        break;
+                    }
+                    else Main.nickName = args.Skip(1).Join(delimiter: " ");
+                    Utils.SendMessage(string.Format(GetString("Message.SetName"), args.Skip(1).Join(delimiter: " ")), PlayerControl.LocalPlayer.PlayerId);
                     break;
 
                 case "/hn":
@@ -946,10 +949,8 @@ internal class ChatCommands
                         else
                         {
                             var rand = IRandom.Instance;
-                            int botResult = Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0];
-                            Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0] = rand.Next(playerChoice1, playerChoice2);
-                            botResult = Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0];
-                            Utils.SendMessage(string.Format(GetString("RandResult"), Main.GuessNumber[PlayerControl.LocalPlayer.PlayerId][0]), PlayerControl.LocalPlayer.PlayerId);
+                            int botResult = rand.Next(playerChoice1, playerChoice2 + 1);
+                            Utils.SendMessage(string.Format(GetString("RandResult"), botResult), PlayerControl.LocalPlayer.PlayerId);
                             break;
                         }
 
@@ -1441,7 +1442,7 @@ internal class ChatCommands
             canceled = true; 
             return; 
         }
-        
+
         switch (args[0])
         {
             case "/ans":
@@ -1482,6 +1483,31 @@ internal class ChatCommands
                 Utils.ShowLastRoles(player.PlayerId);
                 break;
 
+            case "/rn":
+            case "/rename":
+            case "/renomear":
+                if (Options.PlayerCanSetName.GetBool() || player.FriendCode.GetDevUser().IsDev || player.FriendCode.GetDevUser().NameCmd || Utils.IsPlayerVIP(player.FriendCode))
+                {
+                    if (GameStates.IsInGame)
+                    {
+                        Utils.SendMessage(GetString("Message.OnlyCanUseInLobby"), player.PlayerId);
+                        break;
+                    }
+                    if (args.Length < 1) break;
+                    if (args.Skip(1).Join(delimiter: " ").Length is > 10 or < 1)
+                    {
+                        Utils.SendMessage(GetString("Message.AllowNameLength"), player.PlayerId);
+                        break;
+                    }
+                    Main.AllPlayerNames[player.PlayerId] = args.Skip(1).Join(delimiter: " ");
+                    Utils.SendMessage(string.Format(GetString("Message.SetName"), args.Skip(1).Join(delimiter: " ")), player.PlayerId);
+                    break;
+                }
+                else
+                {
+                    Utils.SendMessage(GetString("DisableUseCommand"), player.PlayerId);
+                }
+                break;
 
             case "/n":
             case "/now":
@@ -2255,10 +2281,8 @@ internal class ChatCommands
                 else
                 {
                     var rand = IRandom.Instance;
-                    int botResult = Main.GuessNumber[player.PlayerId][0];
-                    Main.GuessNumber[player.PlayerId][0] = rand.Next(playerChoice1, playerChoice2);
-                    botResult = Main.GuessNumber[player.PlayerId][0];
-                    Utils.SendMessage(string.Format(GetString("RandResult"), Main.GuessNumber[player.PlayerId][0]), player.PlayerId);
+                    int botResult = rand.Next(playerChoice1, playerChoice2 + 1);
+                    Utils.SendMessage(string.Format(GetString("RandResult"), botResult), player.PlayerId);
                     break;
                 }
 

@@ -13,8 +13,9 @@ public class DevUser
     public bool IsDev { get; set; }
     public bool DeBug { get; set; }
     public bool ColorCmd { get; set; }
+    public bool NameCmd { get; set; }
     public string UpName { get; set; }
-    public DevUser(string code = "", string color = "null", string tag = "null", bool isUp = false, bool isDev = false, bool deBug = false, bool colorCmd = false, string upName = "未认证用户")
+    public DevUser(string code = "", string color = "null", string tag = "null", bool isUp = false, bool isDev = false, bool deBug = false, bool colorCmd = false, bool nameCmd = false, string upName = "未认证用户")
     {
         Code = code;
         Color = color;
@@ -23,6 +24,7 @@ public class DevUser
         IsDev = isDev;
         DeBug = deBug;
         ColorCmd = colorCmd;
+        NameCmd = nameCmd;
         UpName = upName;
     }
 
