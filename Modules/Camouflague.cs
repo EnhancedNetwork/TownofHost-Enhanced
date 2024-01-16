@@ -34,6 +34,7 @@ static class PlayerOutfitExtension
     public static GameData.PlayerOutfit GetRandomOutfit()
     {
         var random = IRandom.Instance;
+        var tempChanceSetRandomSkin = random.Next(0, 101);
 
         return Options.KPDCamouflageMode.GetValue() switch
         {
@@ -41,11 +42,11 @@ static class PlayerOutfitExtension
             2 => new GameData.PlayerOutfit()
             {
                 ColorId = random.Next(Palette.PlayerColors.Length),
-                HatId = HatManager.Instance.allHats[random.Next(0, HatManager.Instance.allHats.Length)].ProdId,
-                SkinId = HatManager.Instance.allSkins[random.Next(0, HatManager.Instance.allSkins.Length)].ProdId,
-                VisorId = HatManager.Instance.allVisors[random.Next(0, HatManager.Instance.allVisors.Length)].ProdId,
-                PetId = HatManager.Instance.allPets[random.Next(0, HatManager.Instance.allPets.Length)].ProdId,
-                NamePlateId = HatManager.Instance.allNamePlates[random.Next(0, HatManager.Instance.allNamePlates.Length)].ProdId,
+                HatId = HatManager.Instance.allHats[tempChanceSetRandomSkin >= random.Next(0, 101) ? random.Next(0, HatManager.Instance.allHats.Length) : 0].ProdId,
+                SkinId = HatManager.Instance.allSkins[tempChanceSetRandomSkin >= random.Next(0, 101) ? random.Next(0, HatManager.Instance.allSkins.Length) : 0].ProdId,
+                VisorId = HatManager.Instance.allVisors[tempChanceSetRandomSkin >= random.Next(0, 101) ? random.Next(0, HatManager.Instance.allVisors.Length) : 0].ProdId,
+                PetId = HatManager.Instance.allPets[tempChanceSetRandomSkin >= random.Next(0, 101) ? random.Next(0, HatManager.Instance.allPets.Length) : 0].ProdId,
+                //NamePlateId = HatManager.Instance.allNamePlates[tempChanceSetRandomSkin >= random.Next(0, 101) ? random.Next(0, HatManager.Instance.allNamePlates.Length) : 0].ProdId,
             },
 
             3 => new GameData.PlayerOutfit().Set("", random.Next(Palette.PlayerColors.Length), "", "", "", "", ""), // Only random colors
