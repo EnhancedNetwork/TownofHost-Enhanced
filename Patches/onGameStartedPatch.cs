@@ -231,6 +231,7 @@ internal class ChangeRoleSettings
             Sidekick.Init();
             Bandit.Init();
             Doppelganger.Init();
+            RiftMaker.Init();
             Sheriff.Init();
             CopyCat.Init();
             Captain.Init();
@@ -355,7 +356,8 @@ internal class ChangeRoleSettings
             FFF.Init();
             Instigator.Init();
             OverKiller.Init();
-            
+            Quizmaster.Init();
+
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
 
@@ -617,6 +619,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Undertaker:
                         Undertaker.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.RiftMaker:
+                        RiftMaker.Add(pc.PlayerId);
                         break;
                /*     case CustomRoles.Mare:
                         Mare.Add(pc.PlayerId);
@@ -1037,6 +1042,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Enigma:
                         Enigma.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Quizmaster:
+                        Quizmaster.Add(pc.PlayerId);
                         break;
                 }
                 foreach (var subRole in pc.GetCustomSubRoles().ToArray())

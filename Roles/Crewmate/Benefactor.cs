@@ -124,7 +124,7 @@ public static class Benefactor
     public static void AfterMeetingTasks()
     {
         if (!IsEnable) return;
-        foreach (var playerId in TaskMarkPerRound.Keys)
+        foreach (var playerId in TaskMarkPerRound.Keys.ToArray())
         {
             TaskMarkPerRound[playerId] = 0;
             if (taskIndex.ContainsKey(playerId)) taskIndex[playerId].Clear();
@@ -161,7 +161,7 @@ public static class Benefactor
         }
         else
         {
-            foreach (var benefactorId in taskIndex.Keys)
+            foreach (var benefactorId in taskIndex.Keys.ToArray())
             {
                 if (taskIndex[benefactorId].Contains(task.Index))
                 {
@@ -185,7 +185,7 @@ public static class Benefactor
     {
         if (!IsEnable) return;
         var now = Utils.GetTimeStamp();
-        foreach (var x in shieldedPlayers.Where(x => x.Value + ShieldDuration.GetInt() < now))
+        foreach (var x in shieldedPlayers.Where(x => x.Value + ShieldDuration.GetInt() < now).ToArray())
         {
             var target = x.Key;
             shieldedPlayers.Remove(target);
@@ -197,7 +197,6 @@ public static class Benefactor
 
     public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
-        if (!IsEnable) return true;
         if (target == null || killer == null) return true;
         if (!shieldedPlayers.ContainsKey(target.PlayerId)) return true;
         if (ShieldIsOneTimeUse.GetBool())

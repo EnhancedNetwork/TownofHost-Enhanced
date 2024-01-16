@@ -27,7 +27,7 @@ namespace TOHE.Roles.Crewmate
         private static List<CustomRoles> randomRolesForTrickster = new()
         {
             CustomRoles.Snitch,
-            CustomRoles.Luckey,
+            //CustomRoles.Luckey,
             CustomRoles.Needy,
             CustomRoles.SuperStar,
             CustomRoles.CyberStar,

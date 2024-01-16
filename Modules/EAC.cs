@@ -451,7 +451,7 @@ internal class EAC
         {
             case 0:
                 AmongUsClient.Instance.KickPlayer(pc.GetClientId(), true);
-                string msg0 = string.Format(GetString("Message.BanedByEAC"), pc?.Data?.PlayerName, text);
+                string msg0 = string.Format(GetString("Message.BannedByEAC"), pc?.Data?.PlayerName, text);
                 Logger.Warn(msg0, "EAC");
                 Logger.SendInGame(msg0);
                 break;
@@ -472,7 +472,7 @@ internal class EAC
                 if (!BanManager.TempBanWhiteList.Contains(pc.GetClient().GetHashedPuid()))
                     BanManager.TempBanWhiteList.Add(pc.GetClient().GetHashedPuid());
                 AmongUsClient.Instance.KickPlayer(pc.GetClientId(), true);
-                string msg2 = string.Format(GetString("Message.TempBanedByEAC"), pc?.Data?.PlayerName, text);
+                string msg2 = string.Format(GetString("Message.TempBannedByEAC"), pc?.Data?.PlayerName, text);
                 Logger.Warn(msg2, "EAC");
                 Logger.SendInGame(msg2);
                 break;

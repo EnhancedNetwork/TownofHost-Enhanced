@@ -85,7 +85,7 @@ public static class GameOptionsMenuStartPatch
                 if (gameSettings == null) return;
 
                 gameSettingMenu = Object.FindObjectOfType<GameSettingMenu>();
-                if (gameSettings == null) return;
+                if (gameSettingMenu == null) return;
 
                 GameObject.Find("Tint")?.SetActive(false);
 
@@ -210,7 +210,7 @@ public static class GameOptionsMenuStartPatch
                 }
 
                 var tohMenu = tohSettingsTransform.Find("GameGroup/SliderInner").GetComponent<GameOptionsMenu>();
-                foreach (var optionBehaviour in tohMenu.GetComponentsInChildren<OptionBehaviour>())
+                foreach (var optionBehaviour in tohMenu.GetComponentsInChildren<OptionBehaviour>().ToArray())
                 {
                     // Discard OptionBehaviour
                     Object.Destroy(optionBehaviour.gameObject);

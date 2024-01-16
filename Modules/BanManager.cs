@@ -156,14 +156,14 @@ public static class BanManager
         if (CheckBanList(player?.FriendCode, player?.GetHashedPuid()))
         {
             AmongUsClient.Instance.KickPlayer(player.Id, true);
-            Logger.SendInGame(string.Format(GetString("Message.BanedByBanList"), player.PlayerName));
+            Logger.SendInGame(string.Format(GetString("Message.BannedByBanList"), player.PlayerName));
             Logger.Info($"{player.PlayerName}は過去にBAN済みのためBANされました。", "BAN");
             return;
         }
         if (CheckEACList(player?.FriendCode, player?.GetHashedPuid()))
         {
             AmongUsClient.Instance.KickPlayer(player.Id, true);
-            Logger.SendInGame(string.Format(GetString("Message.BanedByEACList"), player.PlayerName));
+            Logger.SendInGame(string.Format(GetString("Message.BannedByEACList"), player.PlayerName));
             Logger.Info($"{player.PlayerName}存在于EAC封禁名单", "BAN");
             return;
         }

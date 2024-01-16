@@ -1,5 +1,6 @@
 using Hazel;
 using System.Collections.Generic;
+using System.Linq;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -218,6 +219,7 @@ public static class Divinator
                 CustomRoles.Addict or
                 CustomRoles.Escapee or
                 CustomRoles.Miner or
+                CustomRoles.RiftMaker or
                 CustomRoles.Bastion or
                 CustomRoles.Mole or
                 CustomRoles.Chronomancer or
@@ -285,7 +287,7 @@ public static class Divinator
                 CustomRoles.Gangster or
                 CustomRoles.Godfather or
                 CustomRoles.Glitch or
-                CustomRoles.Luckey or
+                //CustomRoles.Luckey or
                 CustomRoles.Underdog
                 => "Result18",
 
@@ -415,7 +417,7 @@ public static class Divinator
 
                    CustomRoles.Miner or
                    CustomRoles.Scavenger or
-                   CustomRoles.Luckey or
+                   //CustomRoles.Luckey or
                    CustomRoles.Trickster or
                    CustomRoles.Needy or
                    CustomRoles.SabotageMaster or
@@ -547,7 +549,7 @@ public static class Divinator
     public static void OnReportDeadBody()
     {
         didVote.Clear();
-        foreach (var divinatorId in CheckLimit.Keys)
+        foreach (var divinatorId in CheckLimit.Keys.ToArray())
         {
             TempCheckLimit[divinatorId] = CheckLimit[divinatorId];
             SendRPC(divinatorId, isTemp: true);

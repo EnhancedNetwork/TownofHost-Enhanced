@@ -71,7 +71,7 @@ public static class CopyCat
     {
         if (!IsEnable) return;
 
-        foreach (var player in playerIdList)
+        foreach (var player in playerIdList.ToArray())
         {
             var pc = Utils.GetPlayerById(player);
             if (pc == null) continue;
@@ -198,13 +198,16 @@ public static class CopyCat
                 case CustomRoles.GuessMaster:
                     GuessMaster.Remove(pc.PlayerId);
                     break;
+                case CustomRoles.Enigma:
+                    Enigma.Remove(pc.PlayerId);
+                    break;
             }
             pc.RpcSetCustomRole(CustomRoles.CopyCat);
             SetKillCooldown(player);
         }
     }
 
-    public static bool BlacklList(this CustomRoles role)
+    public static bool BlackList(this CustomRoles role)
     {
         return role is CustomRoles.CopyCat or
             //bcoz of vent cd
@@ -231,7 +234,7 @@ public static class CopyCat
     public static bool OnCheckMurder(PlayerControl pc, PlayerControl tpc)
     {
         CustomRoles role = tpc.GetCustomRole();
-        if (role.BlacklList())
+        if (role.BlackList())
         {
             pc.Notify(GetString("CopyCatCanNotCopy"));
             SetKillCooldown(pc.PlayerId);
@@ -270,6 +273,9 @@ public static class CopyCat
                 case CustomRoles.EvilGuesser:
                 case CustomRoles.Doomsayer:
                     role = CustomRoles.NiceGuesser;
+                    break;
+                case CustomRoles.Taskinator:
+                    role = CustomRoles.Benefactor;
                     break;
             }
             //if (role == CustomRoles.Eraser) role = CustomRoles.Cleanser;
@@ -422,6 +428,9 @@ public static class CopyCat
                     break;
                 case CustomRoles.GuessMaster:
                     GuessMaster.Add(pc.PlayerId);
+                    break;
+                case CustomRoles.Enigma:
+                    Enigma.Add(pc.PlayerId);
                     break;
             }
 

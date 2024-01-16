@@ -110,7 +110,7 @@ public static class Counterfeiter
     {
         notActiveList.Clear();
         foreach (var cl in clientList)
-            foreach (var pc in cl.Value)
+            foreach (var pc in cl.Value.ToArray())
             {
                 var target = Utils.GetPlayerById(pc);
                 if (target == null || !target.IsAlive()) continue;

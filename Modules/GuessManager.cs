@@ -613,18 +613,18 @@ public static class GuessManager
                     Logger.Info($"{pc.GetNameWithRole()} guessed {target.GetNameWithRole()}, guesser suicide because rebound", "GuessManager");
                 }
 
-                Logger.Info($"{pc.GetNameWithRole()} guessed => {target.GetNameWithRole()}", "Guesser");
+                Logger.Info($"{pc.GetNameWithRole().RemoveHtmlTags()} guessed => {target.GetNameWithRole().RemoveHtmlTags()}", "Guesser");
 
                 var dp = guesserSuicide ? pc : target;
                 target = dp;
 
-                Logger.Info($" Player：{target.GetNameWithRole()} was guessed", "Guesser");
+                Logger.Info($" Player：{target.GetNameWithRole().RemoveHtmlTags()} was guessed", "Guesser");
 
                 Main.GuesserGuessed[pc.PlayerId]++;
                 if (target.Is(CustomRoles.Rebound) && pc.Is(CustomRoles.Doomsayer) && !Doomsayer.DoesNotSuicideWhenMisguessing.GetBool() && !Doomsayer.GuessedRoles.Contains(role))
                 {
                     guesserSuicide = true;
-                    Logger.Info($"{pc.GetNameWithRole()} guessed {target.GetNameWithRole()}, doomsayer suicide because rebound", "GuessManager");
+                    Logger.Info($"{pc.GetNameWithRole().RemoveHtmlTags()} guessed {target.GetNameWithRole().RemoveHtmlTags()}, doomsayer suicide because rebound", "GuessManager");
                 }
 
                 else if (pc.Is(CustomRoles.Doomsayer) && Doomsayer.AdvancedSettings.GetBool())
@@ -1173,7 +1173,17 @@ public static class GuessManager
                 CreatePage(true, __instance, container);
             }
             int ind = 0;
-            foreach (var role in CustomRolesHelper.AllRoles)
+
+            CustomRoles[] listOfRoles = Options.ShowOnlyEnabledRolesInGuesserUI.GetBool()
+                ? CustomRolesHelper.AllRoles.Where(role => role.IsEnable() || role.RoleExist(countDead: true)).ToArray()
+                : CustomRolesHelper.AllRoles.ToArray();
+
+            var roleMap = listOfRoles.ToDictionary(role => role, role => Utils.GetRoleName(role));
+
+            var orderedRoleList = roleMap.OrderBy(kv => kv.Value).Select(kv => kv.Key).ToArray();
+
+
+            foreach (var role in orderedRoleList)
             {
                 if (role is CustomRoles.GM
                     or CustomRoles.SpeedBooster
@@ -1206,6 +1216,8 @@ public static class GuessManager
                     or CustomRoles.Mare
                     or CustomRoles.Cyber
                     ) continue;
+
+                //if (Options.ShowOnlyEnabledRolesInGuesserUI.GetBool() && !(role.IsEnable() || role.RoleExist(countDead: true))) continue;
 
                 CreateRole(role);
             }
@@ -1249,7 +1261,7 @@ public static class GuessManager
                     {
                         if (!(__instance.state == MeetingHud.VoteStates.Voted || __instance.state == MeetingHud.VoteStates.NotVoted) || !PlayerControl.LocalPlayer.IsAlive()) return;
 
-                        Logger.Msg($"Click: {pc.GetNameWithRole()} => {role}", "Guesser UI");
+                        Logger.Msg($"Click: {pc.GetNameWithRole().RemoveHtmlTags()} => {role}", "Guesser UI");
 
                         if (AmongUsClient.Instance.AmHost) GuesserMsg(PlayerControl.LocalPlayer, $"/bt {playerId} {GetString(role.ToString())}", true);
                         else SendRPC(playerId, role);
@@ -1281,8 +1293,13 @@ public static class GuessManager
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.OnDestroy))]
     class MeetingHudOnDestroyGuesserUIClose
     {
-        public static void Postfix()
+        public static void Postfix(MeetingHud __instance)
         {
+            if (__instance == null || textTemplate == null)
+            {
+                return;
+            }
+
             UnityEngine.Object.Destroy(textTemplate.gameObject);
         }
     }
@@ -1297,7 +1314,6 @@ public static class GuessManager
     }
     public static void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {
-        Logger.Msg($"{reader}", "MessageReader reader");
         Logger.Msg($"{pc}", "PlayerControl pc");
 
         int PlayerId = reader.ReadInt32();
