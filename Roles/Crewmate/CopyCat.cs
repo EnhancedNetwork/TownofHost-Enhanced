@@ -429,7 +429,7 @@ public static class CopyCat
                 case CustomRoles.GuessMaster:
                     GuessMaster.Add(pc.PlayerId);
                     break;
-                case CustomRoles.CopyCat:
+                case CustomRoles.Enigma:
                     Enigma.Add(pc.PlayerId);
                     break;
             }
