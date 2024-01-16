@@ -102,6 +102,8 @@ public static class Options
     {
         "CamouflageMode.Default",
         "CamouflageMode.Host",
+        "CamouflageMode.Random",
+        "CamouflageMode.OnlyRandomColor",
         "CamouflageMode.Karpe",
         "CamouflageMode.Lauryn",
         "CamouflageMode.Moe",
