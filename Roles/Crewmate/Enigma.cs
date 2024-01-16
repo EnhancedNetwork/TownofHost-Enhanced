@@ -81,6 +81,11 @@ namespace TOHE.Roles.Crewmate
             IsEnable = true;
             ShownClues.Add(playerId, []);
         }
+        public static void Remove(byte playerId)
+        {
+            playerIdList.Remove(playerId);
+            ShownClues.Remove(playerId);
+        }
 
         public static void OnReportDeadBody(PlayerControl player, GameData.PlayerInfo targetInfo)
         {
