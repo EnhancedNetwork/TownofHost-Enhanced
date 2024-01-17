@@ -16,7 +16,7 @@ public static class Undertaker
     public static OptionItem FreezeTime;
 
     public static Dictionary<byte, Vector2> MarkedLocation = [];
-    private static float DefaultSpeed = [];
+    private static float DefaultSpeed = new();
 
     public static void SetupCustomOption()
     {
@@ -33,7 +33,7 @@ public static class Undertaker
     {
         playerIdList = [];
         IsEnable = false;
-        DefaultSpeed = [];
+        DefaultSpeed = new();
         MarkedLocation = [];
     }
 
