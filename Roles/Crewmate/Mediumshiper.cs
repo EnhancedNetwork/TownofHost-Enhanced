@@ -41,6 +41,11 @@ public static class Mediumshiper
         ContactLimit.Add(playerId, ContactLimitOpt.GetInt());
         IsEnable = true;
     }
+    public static void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        ContactLimit.Remove(playerId);
+    }
     public static void SendRPC(byte playerId, byte targetId = 0xff, bool isUsed = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMediumLimit, SendOption.Reliable, -1);

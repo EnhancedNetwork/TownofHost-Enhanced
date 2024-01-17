@@ -129,6 +129,12 @@ namespace TOHE.Roles.Crewmate
             bribedKiller.Add(playerId, []);
             IsEnable = true;
         }
+        public static void Remove(byte playerId)
+        {
+            playerIdList.Remove(playerId);
+            addonsSold.Remove(playerId);
+            bribedKiller.Remove(playerId);
+        }
 
         public static void OnTaskFinished(PlayerControl player)
         {

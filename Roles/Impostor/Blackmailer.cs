@@ -6,11 +6,11 @@ namespace TOHE.Roles.Impostor;
 public static class Blackmailer
 {
     private static readonly int Id = 24600;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static OptionItem SkillCooldown;
     //public static OptionItem BlackmailerMax;
-    public static Dictionary<byte, int> BlackmailerMaxUp;
-    public static List<byte> ForBlackmailer = new ();
+    public static Dictionary<byte, int> BlackmailerMaxUp = [];
+    public static List<byte> ForBlackmailer = [];
     public static bool IsEnable = false;
 
     public static void SetupCustomOption()
@@ -23,9 +23,9 @@ public static class Blackmailer
     }
     public static void Init()
     {
-        playerIdList = new();
-        BlackmailerMaxUp = new();
-        ForBlackmailer = new();
+        playerIdList = [];
+        BlackmailerMaxUp = [];
+        ForBlackmailer = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)

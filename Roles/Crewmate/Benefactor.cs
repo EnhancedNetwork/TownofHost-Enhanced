@@ -43,9 +43,12 @@ public static class Benefactor
     }
     public static void Add(byte playerId)
     {
-        //playerIdList.Add(playerId);
         TaskMarkPerRound[playerId] = 0;
         IsEnable = true;
+    }
+    public static void Remove(byte playerId)
+    {
+        TaskMarkPerRound.Remove(playerId);
     }
 
     private static void SendRPC(int type, byte benefactorId = 0xff, byte targetId = 0xff, int taskIndex = -1)

@@ -84,6 +84,13 @@ public static class Sheriff
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
+
+    public static void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        CurrentKillCooldown.Remove(playerId);
+        ShotLimit.Remove(playerId);
+    }
     public static void SetUpNeutralOptions(int Id)
     {
         foreach (var neutral in CustomRolesHelper.AllRoles.Where(x => x.IsNeutral() && x is not CustomRoles.Konan && x is not CustomRoles.Pestilence && x is not CustomRoles.Glitch).ToArray())

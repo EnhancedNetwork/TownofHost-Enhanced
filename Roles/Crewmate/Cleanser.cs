@@ -51,6 +51,13 @@ public static class Cleanser
         DidVote.Add(playerId, false);
         IsEnable = true;
     }
+    public static void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        CleanserTarget.Remove(playerId);
+        CleanserUses.Remove(playerId);
+        DidVote.Remove(playerId);
+    }
 
     //public static string GetProgressText(byte playerId) => Utils.ColorString(CleanserUsesOpt.GetInt() - CleanserUses[playerId] > 0 ? Utils.GetRoleColor(CustomRoles.Cleanser).ShadeColor(0.25f) : Color.gray, CleanserUses.TryGetValue(playerId, out var x) ? $"({CleanserUsesOpt.GetInt() - x})" : "Invalid");
     public static string GetProgressText(byte playerId)

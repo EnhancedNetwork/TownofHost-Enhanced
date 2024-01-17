@@ -41,6 +41,12 @@ public static class Crusader
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
+    public static void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        CrusaderLimit.Remove(playerId);
+        CurrentKillCooldown.Remove(playerId);
+    }
 
     public static void ReceiveRPC(MessageReader reader)
     {

@@ -54,6 +54,12 @@ namespace TOHE.Roles.Crewmate
             TrackerTarget.Add(playerId, []);
             IsEnable = true;
         }
+        public static void Remove(byte playerId)
+        {
+            playerIdList.Remove(playerId);
+            TrackLimit.Remove(playerId);
+            TrackerTarget.Remove(playerId);
+        }
         public static void SendRPC(int operate, byte trackerId = byte.MaxValue, byte targetId = byte.MaxValue)
         {
             if (!AmongUsClient.Instance.AmHost) return;

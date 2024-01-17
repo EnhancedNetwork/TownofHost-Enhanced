@@ -61,6 +61,11 @@ public static class Judge
         TrialLimit.Add(playerId, TrialLimitPerMeeting.GetInt());
         IsEnable = true;
     }
+    public static void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        TrialLimit.Remove(playerId);
+    }
     public static void OnReportDeadBody()
     {
         foreach (var pid in TrialLimit.Keys)

@@ -50,6 +50,12 @@ public static class President
         RevealLimit.Add(playerId, 1);
         IsEnable = true;
     }
+    public static void Remove(byte playerId)
+    {
+        CheckPresidentReveal.Remove(playerId);
+        EndLimit.Remove(playerId);
+        RevealLimit.Remove(playerId);
+    }
     public static string GetEndLimit(byte playerId) => Utils.ColorString(EndLimit[playerId] > 0 ? Utils.GetRoleColor(CustomRoles.President) : Color.gray, EndLimit.TryGetValue(playerId, out var endLimit) ? $"({endLimit})" : "Invalid");
 
     public static void TryHideMsgForPresident()

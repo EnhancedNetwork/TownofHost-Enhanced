@@ -60,6 +60,12 @@ public static class ParityCop
         RoundCheckLimit.Add(playerId, ParityCheckLimitPerMeeting.GetInt());
         IsEnable = true;
     }
+    public static void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        MaxCheckLimit.Remove(playerId);
+        RoundCheckLimit.Remove(playerId);
+    }
     public static void SendRPC(byte playerId, int operate)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetParityCopLimit, SendOption.Reliable, -1);

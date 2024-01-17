@@ -8,15 +8,15 @@ namespace TOHE.Roles.Impostor;
 public static class Undertaker
 {
     private static readonly int Id = 4900;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     public static OptionItem SSCooldown;
     public static OptionItem KillCooldown;
     public static OptionItem FreezeTime;
 
-    public static Dictionary<byte, Vector2> MarkedLocation = new();
-    private static float DefaultSpeed = new();
+    public static Dictionary<byte, Vector2> MarkedLocation = [];
+    private static float DefaultSpeed = [];
 
     public static void SetupCustomOption()
     {
@@ -31,10 +31,10 @@ public static class Undertaker
 
     public static void Init()
     {
-        playerIdList = new();
+        playerIdList = [];
         IsEnable = false;
-        DefaultSpeed = new();
-        MarkedLocation = new();
+        DefaultSpeed = [];
+        MarkedLocation = [];
     }
 
     public static void Add(byte playerId)

@@ -45,6 +45,10 @@ public static class Deputy
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
+    public static void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+    }
 
     private static void SendRPC()
     {
