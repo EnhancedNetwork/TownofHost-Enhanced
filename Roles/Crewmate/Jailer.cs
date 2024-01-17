@@ -63,6 +63,13 @@ public static class Jailer
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
+    public static void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        JailerExeLimit.Remove(playerId);
+        JailerHasExe.Remove(playerId);
+        JailerDidVote.Remove(playerId);
+    }
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Utils.GetPlayerById(id).IsAlive() ? JailCooldown.GetFloat() : 300f;
     public static string GetProgressText(byte playerId) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer).ShadeColor(0.25f), JailerExeLimit.TryGetValue(playerId, out var exeLimit) ? $"({exeLimit})" : "Invalid");
 

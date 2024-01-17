@@ -32,6 +32,10 @@ public static class Mortician
         playerIdList.Add(playerId);
         IsEnable = true;
     }
+    public static void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+    }
     private static void SendRPC(byte playerId, bool add, Vector3 loc = new())
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMorticianArrow, SendOption.Reliable, -1);

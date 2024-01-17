@@ -52,6 +52,11 @@ public static class Oracle
         CheckLimit.TryAdd(playerId, CheckLimitOpt.GetInt());
         IsEnable = true;
     }
+    public static void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        CheckLimit.Remove(playerId);
+    }
     public static void SendRPC(byte playerId, bool isTemp = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetOracleLimit, SendOption.Reliable, -1);

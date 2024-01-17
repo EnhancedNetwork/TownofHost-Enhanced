@@ -47,6 +47,11 @@ public static class Divinator
         CheckLimit.TryAdd(playerId, CheckLimitOpt.GetInt());
         IsEnable = true;
     }
+    public static void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        CheckLimit.Remove(playerId);
+    }
 
     public static void SendRPC(byte playerId, bool isTemp = false, bool voted = false)
     {

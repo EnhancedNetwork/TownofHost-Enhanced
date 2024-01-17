@@ -1606,7 +1606,8 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Influenced)
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.NiceMini)
-                    || pc.Is(CustomRoles.EvilMini))
+                    || pc.Is(CustomRoles.EvilMini)
+                    || (pc.Is(CustomRoles.CopyCat) && CopyCat.CopyTeamChangingAddon.GetBool()))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor() && !pc.GetCustomRole().IsCrewmate())
                     return false;
