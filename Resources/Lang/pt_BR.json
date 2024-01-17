@@ -2638,6 +2638,8 @@
   "UseMoreRandomMapSelection": "Usar uma seleção de mapas mais aleatória",
   "CamouflageMode.Default": "Padrão",
   "CamouflageMode.Host": "<color=#FFFF00>Anfritrião</color>",
+  "CamouflageMode.Random": "Random",
+  "CamouflageMode.OnlyRandomColor": "Only Random Color",
   "CamouflageMode.Karpe": "<color=#ffc0cb>KARPED1EM</color>",
   "CamouflageMode.Lauryn": "Lauryn",
   "CamouflageMode.Moe": "Moe",
