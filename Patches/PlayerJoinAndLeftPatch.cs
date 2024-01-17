@@ -156,6 +156,13 @@ class OnPlayerJoinedPatch
             }
         }
 
+        if (Options.AllowOnlyWhiteList.GetBool() && !BanManager.CheckAllowList(client?.FriendCode) && !GameStates.IsLocalGame)
+        {
+            AmongUsClient.Instance.KickPlayer(client.Id, false);
+            Logger.SendInGame(string.Format(GetString("Message.KickedByWhiteList"), client.PlayerName));
+            Logger.Warn($"Kicked player {client?.PlayerName}, because friendcode: {client?.FriendCode} is not in WhiteList.txt", "Kick");
+        }
+
         Platforms platform = client.PlatformData.Platform;
         if (AmongUsClient.Instance.AmHost && Options.KickOtherPlatformPlayer.GetBool() && platform != Platforms.Unknown && !GameStates.IsLocalGame)
         {
