@@ -34,57 +34,61 @@ class CanUseVentPatch
     {
         if (GameStates.IsHideNSeek) return true;
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        PlayerControl playerControl = pc.Object;
 
-        //#######################################
-        //     ==ベント処理==
-        //#######################################
-        //参考:https://github.com/Eisbison/TheOtherRoles/blob/main/TheOtherRoles/Patches/UsablesPatch.cs
+        // First half, Mod-specific processing
 
-        bool VentForTrigger = false;
-        float num = float.MaxValue;
+        // Determine if vent is available based on custom role
+        // always true for engineer-based roles
+        couldUse = playerControl.CanUseImpostorVentButton() || pc.Role.Role == RoleTypes.Engineer;
 
-        var usableDistance = __instance.UsableDistance;
-
-        if (pc.IsDead) return false; //死んでる人は強制的にfalseに。
-
-        canUse = couldUse = pc.Object.CanUseImpostorVentButton();
-        switch (pc.GetCustomRole())
+        canUse = couldUse;
+        // Not available if custom roles are not available
+        if (!canUse)
         {
-            case CustomRoles.Arsonist:
-                if (pc.Object.IsDouseDone() && !Options.ArsonistCanIgniteAnytime.GetBool())
-                    VentForTrigger = true;
-                break;
-            case CustomRoles.Revolutionist://跳管解锁
-                if (pc.Object.IsDrawDone())
-                    VentForTrigger = true;
-                break;
-            default:
-                if (pc.Role.Role == RoleTypes.Engineer) // インポスター陣営ベースの役職とエンジニアベースの役職は常にtrue
-                    canUse = couldUse = true;
-                break;
-        }
-        if (!canUse) return false;
-
-        canUse = couldUse = (pc.Object.inVent || canUse) && (pc.Object.CanMove || pc.Object.inVent);
-
-        if (VentForTrigger && pc.Object.inVent)
-        {
-            canUse = couldUse = false;
             return false;
         }
+
+        // Mod's own processing up to this point
+        // Replace vanilla processing from here
+
+        IUsable usableVent = __instance.Cast<IUsable>();
+        // Distance between vent and player
+        float actualDistance = float.MaxValue;
+
+        couldUse =
+            // true for classic and for vanilla HnS
+            GameManager.Instance.LogicUsables.CanUse(usableVent, playerControl) &&
+            // CanUse(usableVent) && Ignore because the decision is based on custom role, not vanilla role
+            // there is no vent task in the target vent or you are in the target vent now
+            (!playerControl.MustCleanVent(__instance.Id) || (playerControl.inVent && Vent.currentVent == __instance)) &&
+            playerControl.IsAlive() &&
+            (playerControl.CanMove || playerControl.inVent);
+
+        // Check vent cleaning
+        if (ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Ventilation, out var systemType))
+        {
+            VentilationSystem ventilationSystem = systemType.TryCast<VentilationSystem>();
+            // If someone is cleaning a vent, you can't get into that vent
+            if (ventilationSystem != null && ventilationSystem.IsVentCurrentlyBeingCleaned(__instance.Id))
+            {
+                couldUse = false;
+            }
+        }
+
+        canUse = couldUse;
         if (canUse)
         {
-            Vector2 truePosition = pc.Object.GetTruePosition();
-            Vector3 position = __instance.transform.position;
-            num = Vector2.Distance(truePosition, position);
-            canUse &= num <= usableDistance && !PhysicsHelpers.AnythingBetween(truePosition, position, Constants.ShipOnlyMask, false);
+            Vector3 center = playerControl.Collider.bounds.center;
+            Vector3 ventPosition = __instance.transform.position;
+            actualDistance = Vector2.Distance(center, ventPosition);
+            canUse &= actualDistance <= __instance.UsableDistance && !PhysicsHelpers.AnythingBetween(playerControl.Collider, center, ventPosition, Constants.ShipOnlyMask, false);
         }
-        __result = num;
+        __result = actualDistance;
         return false;
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
 }
+
 [HarmonyPatch(typeof(PlayerPurchasesData), nameof(PlayerPurchasesData.GetPurchase))]
 public static class PlayerPurchasesDataPatch
 {
