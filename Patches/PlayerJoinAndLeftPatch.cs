@@ -273,6 +273,9 @@ class OnPlayerLeftPatch
                 PlayerGameOptionsSender.RemoveSender(data.Character);
             }
 
+            if (Main.HostClientId != data.Id && Main.playerVersion.ContainsKey(data.Id))
+                Main.playerVersion.Remove(data.Id);
+
             if (Main.HostClientId == data.Id && Main.playerVersion.ContainsKey(data.Id))
             {
                 var clientId = -1;
