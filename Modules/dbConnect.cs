@@ -73,6 +73,11 @@ public class dbConnect
             if (Main.devRelease && !CanAccessDev(EOSManager.Instance.friendCode))
                 Main.hasAccess = false;
         }
+        else
+        {
+            DestroyableSingleton<DisconnectPopup>.Instance.ShowCustom(GetString("dbConnect.nullFriendCode"));
+            DestroyableSingleton<EOSManager>.Instance.loginFlowFinished = false;
+        }
         return;
 
     firstFailure:
