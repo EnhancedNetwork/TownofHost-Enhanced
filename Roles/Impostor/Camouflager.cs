@@ -45,8 +45,10 @@ public static class Camouflager
 
         _ = new LateTask(() =>
         {
-            if (!Main.MeetingIsStarted)
+            if (!Main.MeetingIsStarted && GameStates.IsInTask)
+            {
                 Camouflage.CheckCamouflage();
+            }
         }, 1.2f, "Camouflager Use Shapeshift");
     }
     public static void OnReportDeadBody()
