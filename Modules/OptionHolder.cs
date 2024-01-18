@@ -532,6 +532,7 @@ public static class Options
     public static OptionItem KillCooldownAfterCleaning;
 
     public static OptionItem GodfatherChangeOpt;
+    public static OptionItem GodfatherUseCancelVote;
 
     public static OptionItem MafiaCanKillNum;
     public static OptionItem LegacyMafia;
@@ -642,6 +643,8 @@ public static class Options
     public static OptionItem VeteranAbilityUseGainWithEachTaskCompleted;
 
     public static OptionItem VigilanteKillCooldown;
+
+    public static OptionItem DictatorUseCancelVote;
 
     public static OptionItem MayorAdditionalVote;
     public static OptionItem MayorHasPortableButton;
@@ -1455,6 +1458,7 @@ public static class Options
         SetupRoleOptions(3400, TabGroup.ImpostorRoles, CustomRoles.Godfather);
         GodfatherChangeOpt = StringOptionItem.Create(3402, "GodfatherTargetCountMode", GodfatherChangeMode, 0, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Godfather]);
+        GodfatherUseCancelVote = BooleanOptionItem.Create(3403, "ShouldUseCancelVote", false, TabGroup.ImpostorRoles, false);
 
         /*
          * Kamikaze
@@ -2116,6 +2120,8 @@ public static class Options
         CopyCat.SetupCustomOption();
 
         SetupRoleOptions(11600, TabGroup.CrewmateRoles, CustomRoles.Dictator);
+        DictatorUseCancelVote = BooleanOptionItem.Create(11602, "ShouldUseCancelVote", false, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Dictator]);
 
         SetupRoleOptions(11700, TabGroup.CrewmateRoles, CustomRoles.Guardian);
         GuardianTasks = OverrideTasksData.Create(11702, TabGroup.CrewmateRoles, CustomRoles.Guardian);

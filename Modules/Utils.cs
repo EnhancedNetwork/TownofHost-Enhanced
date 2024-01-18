@@ -3035,6 +3035,46 @@ public static class Utils
         AmongUsClient.Instance.Spawn(MeetingHud.Instance, -2, SpawnFlags.None);
         MeetingHud.Instance.RpcClose();
     }
+    public static bool shouldNotifyAboutCancelVote(this PlayerControl pc)
+    {
+        if (pc == null || !pc.IsAlive()) return false;
+
+        switch (pc.GetCustomRole())
+        {
+            case CustomRoles.Eraser:
+                if (!Eraser.HideVote.GetBool()) return false;
+                if (Eraser.EraseLimit[pc.PlayerId] < 1) return false;
+                return true;
+            case CustomRoles.Cleanser:
+                if (!Cleanser.HideVote.GetBool()) return false;
+                if (Cleanser.CleanserUses[pc.PlayerId] < 1) return false;
+                return true;
+            case CustomRoles.Dictator:
+                if (Options.DictatorUseCancelVote.GetBool()) return true;
+                return false;
+            case CustomRoles.Divinator:
+                if (!Divinator.HideVote.GetBool()) return false;
+                if (Divinator.CheckLimit[pc.PlayerId] < 1) return false;
+                return true;
+            case CustomRoles.Tracker:
+                if (!Tracker.HideVote.GetBool()) return false;
+                if (Tracker.TrackLimit[pc.PlayerId] < 1) return false;
+                return true;
+            case CustomRoles.Keeper:
+                if (!Keeper.HideVote.GetBool()) return false;
+                if (Keeper.keeperUses[pc.PlayerId] < 1) return false;
+                return true;
+            case CustomRoles.Oracle:
+                if (!Oracle.HideVote.GetBool()) return false;
+                if (Oracle.CheckLimit[pc.PlayerId] < 1) return false;
+                return true;
+            case CustomRoles.Godfather:
+                if (!Options.GodfatherUseCancelVote.GetBool()) return false;
+                return true;
+        }
+
+        return false;
+    }
 
     public static bool TryCast<T>(this Il2CppObjectBase obj, out T casted)
     where T : Il2CppObjectBase
