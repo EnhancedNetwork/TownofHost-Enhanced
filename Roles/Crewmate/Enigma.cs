@@ -81,6 +81,11 @@ namespace TOHE.Roles.Crewmate
             IsEnable = true;
             ShownClues.Add(playerId, new List<EnigmaClue>());
         }
+        public static void Remove(byte playerId)
+        {
+            playerIdList.Remove(playerId);
+            ShownClues.Remove(playerId);
+        }
 
         public static void OnReportDeadBody(PlayerControl player, GameData.PlayerInfo targetInfo)
         {
@@ -96,7 +101,7 @@ namespace TOHE.Roles.Crewmate
             string msg;
             var rd = IRandom.Instance;
 
-            foreach (var playerId in playerIdList)
+            foreach (var playerId in playerIdList.ToArray())
             {
                 if (!EnigmaGetCluesWithoutReporting.GetBool() && playerId != player.PlayerId) continue;
 

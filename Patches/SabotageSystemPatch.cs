@@ -22,7 +22,7 @@ public class SabotageSystemPatch
         private static void Prefix(ReactorSystemType __instance)
         {
             if (!Options.SabotageTimeControl.GetBool()) return;
-            if (Options.IsActiveAirship) return;
+            if (GameStates.AirshipIsActive) return;
 
             // If Reactor sabotage is end
             if (!__instance.IsActive || !SetDurationForReactorSabotage)
@@ -64,7 +64,7 @@ public class SabotageSystemPatch
         private static void Prefix(HeliSabotageSystem __instance)
         {
             if (!Options.SabotageTimeControl.GetBool()) return;
-            if (!Options.IsActiveAirship) return;
+            if (!GameStates.AirshipIsActive) return;
 
             // If Reactor sabotage is end (Airship)
             if (!__instance.IsActive || ShipStatus.Instance == null || !SetDurationForReactorSabotage)
@@ -142,7 +142,7 @@ public class SabotageSystemPatch
             __state = __instance.IsActive;
 
             if (!Options.SabotageTimeControl.GetBool()) return;
-            if (!Options.IsActiveFungle) return;
+            if (!GameStates.FungleIsActive) return;
 
             // If Mushroom Mixup sabotage is end
             if (!__instance.IsActive || !SetDurationMushroomMixupSabotage)
@@ -219,7 +219,7 @@ public class SabotageSystemPatch
             }
 
             // Cancel if player can't fix a specific outage on Airship
-            if (Options.IsActiveAirship)
+            if (GameStates.AirshipIsActive)
             {
                 var truePosition = player.GetCustomPosition();
                 if (Options.DisableAirshipViewingDeckLightsPanel.GetBool() && Vector2.Distance(truePosition, new(-12.93f, -11.28f)) <= 2f) return false;

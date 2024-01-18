@@ -129,6 +129,12 @@ namespace TOHE.Roles.Crewmate
             bribedKiller.Add(playerId, new List<byte>());
             IsEnable = true;
         }
+        public static void Remove(byte playerId)
+        {
+            playerIdList.Remove(playerId);
+            addonsSold.Remove(playerId);
+            bribedKiller.Remove(playerId);
+        }
 
         public static void OnTaskFinished(PlayerControl player)
         {
@@ -206,11 +212,6 @@ namespace TOHE.Roles.Crewmate
 
         public static bool OnClientMurder(PlayerControl killer, PlayerControl target)
         {
-            if (!target.Is(CustomRoles.Merchant))
-            {
-                return false;
-            }
-
             if (bribedKiller[target.PlayerId].Contains(killer.PlayerId))
             {
                 NotifyBribery(killer, target);

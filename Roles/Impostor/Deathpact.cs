@@ -280,7 +280,7 @@ namespace TOHE.Roles.Impostor
 
         public static void OnReportDeadBody()
         {
-            foreach (var deathpact in ActiveDeathpacts.ToList())
+            foreach (var deathpact in ActiveDeathpacts.ToArray())
             {
                 if (KillDeathpactPlayersOnMeeting.GetBool())
                 {

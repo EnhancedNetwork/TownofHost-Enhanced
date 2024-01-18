@@ -1,8 +1,11 @@
-using AmongUs.GameOptions;
-using HarmonyLib;
-using Hazel;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using AmongUs.GameOptions;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
+using HarmonyLib;
+using Hazel;
+using UnityEngine;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -111,6 +114,12 @@ class GameEndCheckerForNormal
                             CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
                         }
                         break;
+                    case CustomWinner.Quizmaster:
+                        if (pc.Is(CustomRoles.Quizmaster) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                        {
+                            CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                        }
+                        break;
                     case CustomWinner.Spiritcaller:
                         if (pc.Is(CustomRoles.EvilSpirit) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         {
@@ -143,7 +152,7 @@ class GameEndCheckerForNormal
                 foreach (var pc in Main.AllPlayerControls)
                 {
                     if (pc.Is(CustomRoles.Phantom) && pc.GetPlayerTaskState().IsTaskFinished && pc.Data.IsDead
-                        && (((CustomWinnerHolder.WinnerTeam == CustomWinner.Impostor || CustomWinnerHolder.WinnerTeam == CustomWinner.Crewmate || CustomWinnerHolder.WinnerTeam == CustomWinner.Jackal || CustomWinnerHolder.WinnerTeam == CustomWinner.BloodKnight || CustomWinnerHolder.WinnerTeam == CustomWinner.SerialKiller || CustomWinnerHolder.WinnerTeam == CustomWinner.Juggernaut || CustomWinnerHolder.WinnerTeam == CustomWinner.Bandit || CustomWinnerHolder.WinnerTeam == CustomWinner.Doppelganger || CustomWinnerHolder.WinnerTeam == CustomWinner.PotionMaster || CustomWinnerHolder.WinnerTeam == CustomWinner.Poisoner || CustomWinnerHolder.WinnerTeam == CustomWinner.Succubus || CustomWinnerHolder.WinnerTeam == CustomWinner.Infectious || CustomWinnerHolder.WinnerTeam == CustomWinner.Jinx || CustomWinnerHolder.WinnerTeam == CustomWinner.Virus || CustomWinnerHolder.WinnerTeam == CustomWinner.Arsonist || CustomWinnerHolder.WinnerTeam == CustomWinner.Pelican || CustomWinnerHolder.WinnerTeam == CustomWinner.Wraith || CustomWinnerHolder.WinnerTeam == CustomWinner.Agitater || CustomWinnerHolder.WinnerTeam == CustomWinner.Pestilence || CustomWinnerHolder.WinnerTeam == CustomWinner.Bandit || CustomWinnerHolder.WinnerTeam == CustomWinner.Rogue || CustomWinnerHolder.WinnerTeam == CustomWinner.Spiritcaller ) && (Options.PhantomSnatchesWin.GetBool()))))  //|| CustomWinnerHolder.WinnerTeam == CustomWinner.Occultist
+                        && (((CustomWinnerHolder.WinnerTeam == CustomWinner.Impostor || CustomWinnerHolder.WinnerTeam == CustomWinner.Crewmate || CustomWinnerHolder.WinnerTeam == CustomWinner.Jackal || CustomWinnerHolder.WinnerTeam == CustomWinner.BloodKnight || CustomWinnerHolder.WinnerTeam == CustomWinner.SerialKiller || CustomWinnerHolder.WinnerTeam == CustomWinner.Juggernaut || CustomWinnerHolder.WinnerTeam == CustomWinner.Bandit || CustomWinnerHolder.WinnerTeam == CustomWinner.Doppelganger || CustomWinnerHolder.WinnerTeam == CustomWinner.PotionMaster || CustomWinnerHolder.WinnerTeam == CustomWinner.Poisoner || CustomWinnerHolder.WinnerTeam == CustomWinner.Succubus || CustomWinnerHolder.WinnerTeam == CustomWinner.Infectious || CustomWinnerHolder.WinnerTeam == CustomWinner.Jinx || CustomWinnerHolder.WinnerTeam == CustomWinner.Virus || CustomWinnerHolder.WinnerTeam == CustomWinner.Arsonist || CustomWinnerHolder.WinnerTeam == CustomWinner.Pelican || CustomWinnerHolder.WinnerTeam == CustomWinner.Wraith || CustomWinnerHolder.WinnerTeam == CustomWinner.Agitater || CustomWinnerHolder.WinnerTeam == CustomWinner.Pestilence || CustomWinnerHolder.WinnerTeam == CustomWinner.Bandit || CustomWinnerHolder.WinnerTeam == CustomWinner.Rogue || CustomWinnerHolder.WinnerTeam == CustomWinner.Spiritcaller || CustomWinnerHolder.WinnerTeam == CustomWinner.Quizmaster ) && (Options.PhantomSnatchesWin.GetBool()))))  //|| CustomWinnerHolder.WinnerTeam == CustomWinner.Occultist
                     {
                         reason = GameOverReason.ImpostorByKill;
                         if (!CustomWinnerHolder.CheckForConvertedWinner(pc.PlayerId))
@@ -238,6 +247,17 @@ class GameEndCheckerForNormal
                         }
                     }
                 }
+
+                //quizmaster win i guess
+                /*else if (CustomRoles.Quizmaster.RoleExist())
+                {
+                    if (CustomWinnerHolder.WinnerTeam is CustomWinner.Crewmate)
+                    {
+                        reason = GameOverReason.ImpostorByKill;
+                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Quizmaster);
+                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Quizmaster);
+                    }
+                }*/
 
                 //追加胜利
                 foreach (var pc in Main.AllPlayerControls)
@@ -441,23 +461,14 @@ class GameEndCheckerForNormal
     }
     public static void StartEndGame(GameOverReason reason)
     {
-        var sender = new CustomRpcSender("EndGameSender", SendOption.Reliable, true);
-        sender.StartMessage(-1); // 5: GameData
-        MessageWriter writer = sender.stream;
-
-        //changing back to original names so that summary has OG names.
-        //if (Doppelganger.IsEnable)
-        //{ 
-        //    foreach (var pid in Doppelganger.DoppelVictim.Keys)
-        //    {
-        //        var pc = Utils.GetPlayerById(pid);
-        //        if (pc == null) continue;
-        //        if (pid == PlayerControl.LocalPlayer.PlayerId) Main.nickName = Doppelganger.DoppelVictim[pid];
-        //        else pc.RpcSetName(Doppelganger.DoppelVictim[pid]);
-        //    }
-        //}
+        AmongUsClient.Instance.StartCoroutine(CoEndGame(AmongUsClient.Instance, reason).WrapToIl2Cpp());
+    }
+    private static IEnumerator CoEndGame(AmongUsClient self, GameOverReason reason)
+    {
+        if (Quizmaster.IsEnable) Quizmaster.ResetMarkedPlayer();
         if (Blackmailer.IsEnable) Blackmailer.ForBlackmailer.Clear();
-        //ゴーストロール化
+
+        // Set ghost role
         List<byte> ReviveRequiredPlayerIds = new();
         var winner = CustomWinnerHolder.WinnerTeam;
         foreach (var pc in Main.AllPlayerControls)
@@ -477,67 +488,54 @@ class GameEndCheckerForNormal
                 if (!pc.Data.IsDead) ReviveRequiredPlayerIds.Add(pc.PlayerId);
                 if (ToGhostImpostor)
                 {
-                    Logger.Info($"{pc.GetNameWithRole()}: changed to ImpostorGhost", "ResetRoleAndEndGame");
-                    sender.StartRpc(pc.NetId, RpcCalls.SetRole)
-                        .Write((ushort)RoleTypes.ImpostorGhost)
-                        .EndRpc();
-                    pc.SetRole(RoleTypes.ImpostorGhost);
+                    Logger.Info($"{pc.GetNameWithRole().RemoveHtmlTags()}: changed to ImpostorGhost", "ResetRoleAndEndGame");
+                    pc.RpcSetRole(RoleTypes.ImpostorGhost);
                 }
                 else
                 {
-                    Logger.Info($"{pc.GetNameWithRole()}: changed to CrewmateGhost", "ResetRoleAndEndGame");
-                    sender.StartRpc(pc.NetId, RpcCalls.SetRole)
-                        .Write((ushort)RoleTypes.CrewmateGhost)
-                        .EndRpc();
-                    pc.SetRole(RoleTypes.Crewmate);
+                    Logger.Info($"{pc.GetNameWithRole().RemoveHtmlTags()}: changed to CrewmateGhost", "ResetRoleAndEndGame");
+                    pc.RpcSetRole(RoleTypes.CrewmateGhost);
                 }
             }
             SetEverythingUpPatch.LastWinsReason = winner is CustomWinner.Crewmate or CustomWinner.Impostor ? GetString($"GameOverReason.{reason}") : "";
         }
 
-        // CustomWinnerHolderの情報の同期
-        sender.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.EndGame);
-        CustomWinnerHolder.WriteTo(sender.stream);
-        sender.EndRpc();
+        // Sync of CustomWinnerHolder info
+        var winnerWriter = self.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.EndGame, SendOption.Reliable);
+        CustomWinnerHolder.WriteTo(winnerWriter);
+        self.FinishRpcImmediately(winnerWriter);
 
-        // GameDataによる蘇生処理
-        writer.StartMessage(1); // Data
+        // Delay to ensure that resuscitation is delivered after the ghost roll setting
+        yield return new WaitForSeconds(EndGameDelay);
+
+        if (ReviveRequiredPlayerIds.Count > 0)
         {
-            writer.WritePacked(GameData.Instance.NetId); // NetId
-            foreach (var info in GameData.Instance.AllPlayers)
+            // Resuscitation Resuscitate one person per transmission to prevent the packet from swelling up and dying
+            for (int i = 0; i < ReviveRequiredPlayerIds.Count; i++)
             {
-                if (ReviveRequiredPlayerIds.Contains(info.PlayerId))
-                {
-                    // 蘇生&メッセージ書き込み
-                    info.IsDead = false;
-                    writer.StartMessage(info.PlayerId);
-                    info.Serialize(writer);
-                    writer.EndMessage();
-                }
+                var playerId = ReviveRequiredPlayerIds[i];
+                var playerInfo = GameData.Instance.GetPlayerById(playerId);
+                // resuscitation
+                playerInfo.IsDead = false;
+                // transmission
+                GameData.Instance.SetDirtyBit(0b_1u << playerId);
+                AmongUsClient.Instance.SendAllStreamedObjects();
             }
-            writer.EndMessage();
+            // Delay to ensure that the end of the game is delivered at the end of the game
+            yield return new WaitForSeconds(EndGameDelay);
         }
 
-        sender.EndMessage();
-
-        // バニラ側のゲーム終了RPC
-        writer.StartMessage(8); //8: EndGame
-        {
-            writer.Write(AmongUsClient.Instance.GameId); //GameId
-            writer.Write((byte)reason); //GameoverReason
-            writer.Write(false); //showAd
-        }
-        writer.EndMessage();
-
-        sender.SendMessage();
+        // Start End Game
+        GameManager.Instance.RpcEndGame(reason, false);
     }
+    private const float EndGameDelay = 0.2f;
 
     public static void SetPredicateToNormal() => predicate = new NormalGameEndPredicate();
     public static void SetPredicateToFFA() => predicate = new FFAGameEndPredicate();
 
 
-    // ===== ゲーム終了条件 =====
-    // 通常ゲーム用
+    // ===== Check Game End =====
+    // For Normal Games
     class NormalGameEndPredicate : GameEndPredicate
     {
         public override bool CheckForEndGame(out GameOverReason reason)
@@ -646,6 +644,7 @@ class GameEndCheckerForNormal
     }
 }
 
+// For FFA Games
 class FFAGameEndPredicate : GameEndPredicate
 {
     public override bool CheckForEndGame(out GameOverReason reason)

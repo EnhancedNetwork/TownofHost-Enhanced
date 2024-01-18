@@ -91,6 +91,7 @@ enum CustomRPC
     SwordsManKill,
     SetAlchemistTimer,
     UndertakerLocationSync,
+    RiftMakerSyncData,
     SetCounterfeiterSellLimit,
     SetPursuerSellLimit,
     SetMedicalerProtectLimit,
@@ -161,6 +162,7 @@ enum CustomRPC
     SyncShroud,
     SyncMiniCrewAge,
     SyncSabotageMasterSkill,
+    QuizmasterMarkPlayer,
     //FFA
     SyncFFAPlayer,
     SyncFFANameNotify,
@@ -334,6 +336,15 @@ internal class RPCHandlerPatch
                 // Sync Settings
                 foreach (var option in listOptions.ToArray())
                 {
+                    // Set Preset 5 for modded non-host players
+                    if (startAmount == 0 && option.Name == "Preset" && option.CurrentValue != 4)
+                    {
+                        option.SetValue(reader.ReadPackedInt32()); // First set current value
+                        option.SetValue(4); // 4 => Preset 5
+                        continue;
+                    }
+
+                    // Set Value Options
                     option.SetValue(reader.ReadPackedInt32());
                 }
                 OptionShower.GetText();
@@ -439,6 +450,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.UndertakerLocationSync:
                 Undertaker.ReceiveRPC(reader);
+                break;
+            case CustomRPC.RiftMakerSyncData:
+                RiftMaker.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetLoversPlayers:
                 Main.LoversPlayers.Clear();
@@ -783,6 +797,9 @@ internal class RPCHandlerPatch
             case CustomRPC.SyncMiniCrewAge:
                 Mini.ReceiveRPC(reader);
                 break;
+            case CustomRPC.QuizmasterMarkPlayer:
+                Quizmaster.ReceiveRPC(reader);
+                break;
         }
     }
 
@@ -1037,6 +1054,9 @@ internal static class RPC
                 break;
             case CustomRoles.Undertaker:
                 Undertaker.Add(targetId);
+                break;
+            case CustomRoles.RiftMaker:
+                RiftMaker.Add(targetId);
                 break;
             case CustomRoles.Crusader:
                 Crusader.Add(targetId);
@@ -1455,6 +1475,9 @@ internal static class RPC
                 break;
             case CustomRoles.Instigator:
                 Instigator.Add(targetId);
+                break;
+            case CustomRoles.Quizmaster:
+                Quizmaster.Add(targetId);
                 break;
         }
         HudManager.Instance.SetHudActive(true);

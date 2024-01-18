@@ -48,6 +48,12 @@ public static class Admirer
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
+    public static void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        AdmirerLimit.Remove(playerId);
+        AdmiredList.Remove(playerId);
+    }
 
     private static void SendRPC(byte playerId)
     {

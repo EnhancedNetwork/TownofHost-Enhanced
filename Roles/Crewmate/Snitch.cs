@@ -67,6 +67,13 @@ public static class Snitch
         IsExposed[playerId] = false;
         IsComplete[playerId] = false;
     }
+    public static void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+
+        IsExposed.Remove(playerId);
+        IsComplete.Remove(playerId);
+    }
 
     public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
     private static bool GetExpose(PlayerControl pc)

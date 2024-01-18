@@ -44,6 +44,11 @@ public static class Counterfeiter
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
+    public static void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        SeelLimit.Remove(playerId);
+    }
     private static void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCounterfeiterSellLimit, SendOption.Reliable, -1);
@@ -110,7 +115,7 @@ public static class Counterfeiter
     {
         notActiveList.Clear();
         foreach (var cl in clientList)
-            foreach (var pc in cl.Value)
+            foreach (var pc in cl.Value.ToArray())
             {
                 var target = Utils.GetPlayerById(pc);
                 if (target == null || !target.IsAlive()) continue;

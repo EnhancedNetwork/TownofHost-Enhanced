@@ -204,7 +204,7 @@ public static class Captain
     }
     public static void OnReportDeadBody()
     {
-        foreach (byte target in OriginalSpeed.Keys)
+        foreach (byte target in OriginalSpeed.Keys.ToArray())
         {
             PlayerControl targetPC = Utils.GetPlayerById(target);
             if (targetPC == null) continue;

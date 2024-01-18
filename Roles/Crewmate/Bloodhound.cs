@@ -50,6 +50,12 @@
             BloodhoundTargets.Add(playerId, new List<byte>());
             IsEnable = true;
         }
+        public static void Remove(byte playerId)
+        {
+            playerIdList.Remove(playerId);
+            UseLimit.Remove(playerId);
+            BloodhoundTargets.Remove(playerId);
+        }
 
         private static void SendRPC(byte playerId, bool add, Vector3 loc = new())
         {
@@ -103,7 +109,7 @@
 
         public static void Clear()
         {
-            foreach (var apc in playerIdList)
+            foreach (var apc in playerIdList.ToArray())
             {
                 LocateArrow.RemoveAllTarget(apc);
                 SendRPC(apc, false);
@@ -111,7 +117,7 @@
 
             foreach (var bloodhound in BloodhoundTargets)
             {
-                foreach (var target in bloodhound.Value)
+                foreach (var target in bloodhound.Value.ToArray())
                 {
                     TargetArrow.Remove(bloodhound.Key, target);
                 }

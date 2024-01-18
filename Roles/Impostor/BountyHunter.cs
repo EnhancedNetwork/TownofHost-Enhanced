@@ -215,7 +215,7 @@ public static class BountyHunter
     {
         if (!IsEnable) return;
 
-        foreach (var id in playerIdList)
+        foreach (var id in playerIdList.ToArray())
         {
             if (!Main.PlayerStates[id].IsDead)
             {

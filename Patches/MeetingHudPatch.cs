@@ -679,11 +679,22 @@ class CheckForEndVotingPatch
 
     public static void TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason deathReason, params byte[] playerIds)
     {
+
         var AddedIdList = new List<byte>();
         foreach (var playerId in playerIds)
+        {
+            var pc = Utils.GetPlayerById(playerId);
+            if (pc == null) return;
+            if (pc.Is(CustomRoles.Susceptible))
+            {
+                Susceptible.ChangeRandomDeath();
+                deathReason = Susceptible.randomReason;
+            }
+
             if (Main.AfterMeetingDeathPlayers.TryAdd(playerId, deathReason))
                 AddedIdList.Add(playerId);
-        CheckForDeathOnExile(deathReason, AddedIdList.ToArray());
+        }
+            CheckForDeathOnExile(deathReason, AddedIdList.ToArray());
     }
     public static void CheckForDeathOnExile(PlayerState.DeathReason deathReason, params byte[] playerIds)
     {
@@ -1126,14 +1137,14 @@ class MeetingHudStartPatch
             }
         }
 
-        if (Options.IsActiveDleks)
-        {
-            _ = new LateTask(() =>
-            {
-                Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")), replay: true);
+        //if (GameStates.DleksIsActive)
+        //{
+        //    _ = new LateTask(() =>
+        //    {
+        //        Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")), replay: true);
 
-            }, 6f, "Message: Warning Broken Vents In Dleks");
-        }
+        //    }, 6f, "Message: Warning Broken Vents In Dleks");
+        //}
 
         if (MeetingStates.FirstMeeting) TemplateManager.SendTemplate("OnFirstMeeting", noErr: true);
         TemplateManager.SendTemplate("OnMeeting", noErr: true);
@@ -1329,8 +1340,13 @@ class MeetingHudStartPatch
                     sb.Append(Gamer.TargetMark(seer, target));
                     sb.Append(Snitch.GetWarningMark(seer, target));
                     break;
+
                 case CustomRoles.Tracker:
                     sb.Append(Tracker.GetTargetMark(seer, target));
+                    break;
+
+                case CustomRoles.Quizmaster:
+                    sb.Append(Quizmaster.TargetMark(seer, target));
                     break;
             }
 
@@ -1518,6 +1534,9 @@ class MeetingHudOnDestroyPatch
         Logger.Info("------------End Meeting------------", "Phase");
         if (AmongUsClient.Instance.AmHost)
         {
+            if (Quizmaster.IsEnable) 
+                Quizmaster.OnMeetingEnd();
+
             AntiBlackout.SetIsDead();
             Main.AllPlayerControls.Do(pc => RandomSpawn.CustomNetworkTransformPatch.NumOfTP[pc.PlayerId] = 0);
 

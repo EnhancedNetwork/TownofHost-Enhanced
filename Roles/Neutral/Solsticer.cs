@@ -118,6 +118,9 @@ namespace TOHE.Roles.Neutral
             if (killer == null || target == null) return false;
             if (!GameStates.IsMeeting)
             {
+                if (killer.Is(CustomRoles.Quizmaster)) {
+                    return false;
+                }
                 Utils.RpcTeleport(target, ExtendedPlayerControl.GetBlackRoomPosition());
                 ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
                 NameNotifyManager.Notify(target, string.Format(GetString("SolsticerMurdered"), killer.GetRealName()));

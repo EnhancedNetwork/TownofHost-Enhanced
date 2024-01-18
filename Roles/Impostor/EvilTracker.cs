@@ -94,22 +94,18 @@ public static class EvilTracker
         __instance.AbilityButton.OverrideText(GetString("EvilTrackerChangeButtonText"));
     }
 
-    // 値取得の関数
+    public static bool KillFlashCheck() => CanSeeKillFlash;
+
     private static bool CanTarget(byte playerId)
         => !Main.PlayerStates[playerId].IsDead && CanSetTarget.TryGetValue(playerId, out var value) && value;
+    
     private static byte GetTargetId(byte playerId)
         => Target.TryGetValue(playerId, out var targetId) ? targetId : byte.MaxValue;
+    
     public static bool IsTrackTarget(PlayerControl seer, PlayerControl target)
         => seer.IsAlive() && playerIdList.Contains(seer.PlayerId)
         && target.IsAlive() && seer != target
         && (target.Is(CustomRoleTypes.Impostor) || GetTargetId(seer.PlayerId) == target.PlayerId);
-    public static bool KillFlashCheck(PlayerControl killer, PlayerControl target)
-    {
-        if (!CanSeeKillFlash) return false;
-        //インポスターによるキルかどうかの判別
-        var realKiller = target.GetRealKiller() ?? killer;
-        return realKiller.Is(CustomRoleTypes.Impostor) && realKiller != target;
-    }
 
     // 各所で呼ばれる処理
     public static void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting)
@@ -131,7 +127,7 @@ public static class EvilTracker
             SetTarget();
             Utils.MarkEveryoneDirtySettings();
         }
-        foreach (var playerId in playerIdList)
+        foreach (var playerId in playerIdList.ToArray())
         {
             var pc = Utils.GetPlayerById(playerId);
             var target = Utils.GetPlayerById(GetTargetId(playerId));
@@ -149,7 +145,7 @@ public static class EvilTracker
     public static void SetTarget(byte trackerId = byte.MaxValue, byte targetId = byte.MaxValue)
     {
         if (trackerId == byte.MaxValue) // ターゲット再設定可能に
-            foreach (var playerId in playerIdList)
+            foreach (var playerId in playerIdList.ToArray())
                 CanSetTarget[playerId] = true;
         else if (targetId == byte.MaxValue) // ターゲット削除
             Target[trackerId] = byte.MaxValue;

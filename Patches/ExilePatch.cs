@@ -61,10 +61,12 @@ class ExileControllerWrapUpPatch
 
             exiled.IsDead = true;
             Main.PlayerStates[exiled.PlayerId].deathReason = PlayerState.DeathReason.Vote;
-            
+
             var role = exiled.GetCustomRole();
 
-            // Innocent is dead
+            if (Quizmaster.IsEnable)
+                Quizmaster.OnPlayerExile(exiled);
+
             var pcArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId).ToArray();
             if (pcArray.Length > 0)
             {
@@ -120,6 +122,16 @@ class ExileControllerWrapUpPatch
                         }
                     }
                     DecidedWinner = true;
+                }
+            }
+
+            // Mini win
+            if (role.Is(CustomRoles.NiceMini) && Mini.Age < 18)
+            {
+                if (!CustomWinnerHolder.CheckForConvertedWinner(exiled.PlayerId))
+                {
+                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.NiceMini);
+                    CustomWinnerHolder.WinnerIds.Add(exiled.PlayerId);
                 }
             }
 
@@ -205,6 +217,10 @@ class ExileControllerWrapUpPatch
 
                 case CustomRoles.Bard:
                     Bard.OnExileWrapUp(player, exiled);
+                    break;
+
+                case CustomRoles.Quizmaster:
+                    Quizmaster.OnVotedOut();
                     break;
             }
 

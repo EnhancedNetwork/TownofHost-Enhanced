@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -73,13 +74,17 @@ class RepairSystemPatch
 
         if (!AmongUsClient.Instance.AmHost) return true;
 
+        // ###### Can Be Sabotage Started? ######
         if ((Options.CurrentGameMode == CustomGameMode.FFA) && systemType == SystemTypes.Sabotage) return false;
 
+        if (Options.DisableSabotage.GetBool() && systemType == SystemTypes.Sabotage) return false;
 
-        if (Options.DisableSabotage.GetBool() && systemType == SystemTypes.Sabotage)
-        {
-            return false;
-        }
+
+        // ###### Roles/Add-ons During Sabotages ######
+
+        if (Quizmaster.IsEnable)
+            Quizmaster.OnSabotageCall(systemType);
+
 
         if (player.Is(CustomRoles.Fool) && !Main.MeetingIsStarted && 
             systemType != SystemTypes.Sabotage &&
@@ -93,6 +98,7 @@ class RepairSystemPatch
         {
             return false;
         }
+
 
         // Fast fix critical saboatge
         switch (player.GetCustomRole())
@@ -142,9 +148,6 @@ class RepairSystemPatch
                         Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()} instant-fix-lights", "SwitchSystem");
                         SabotageMaster.SwitchSystemRepair(SwitchSystem, amount, player.PlayerId);
                         break;
-                    //case CustomRoles.Repairman:
-                    //    Repairman.SwitchSystemRepair(SwitchSystem, amount);
-                    //    break;
                     case CustomRoles.Alchemist when Alchemist.FixNextSabo:
                         Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()} instant-fix-lights", "SwitchSystem");
                         SwitchSystem.ActualSwitches = 0;

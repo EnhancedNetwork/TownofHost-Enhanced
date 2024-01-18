@@ -71,7 +71,7 @@ internal class CustomRoleSelector
             if (role.IsVanilla() || role.IsAdditionRole()) continue;
             if (role is CustomRoles.GM or CustomRoles.NotAssigned) continue;
 
-            if (Options.IsActiveFungle) // The Fungle
+            if (GameStates.FungleIsActive) // The Fungle
             {
                 if (role is CustomRoles.DarkHide) continue;
             }
@@ -106,7 +106,7 @@ internal class CustomRoleSelector
         }
 
         // 职业设置为：优先
-        foreach (var role in roleList) if (role.GetMode() == 2)
+        foreach (var role in roleList.ToArray()) if (role.GetMode() == 2)
         {
             if (role.IsImpostor()) ImpOnList.Add(role);
             else if (role.IsMini()) MiniOnList.Add(role);
@@ -115,7 +115,7 @@ internal class CustomRoleSelector
             else roleOnList.Add(role);
         }
         // 职业设置为：启用
-        foreach (var role in roleList) if (role.GetMode() == 1)
+        foreach (var role in roleList.ToArray()) if (role.GetMode() == 1)
         {
             if (role.IsImpostor()) ImpRateList.Add(role);
             else if (role.IsMini()) MiniRateList.Add(role);
@@ -348,7 +348,7 @@ internal class CustomRoleSelector
         while (AllPlayer.Count > 0 && rolesToAssign.Count > 0)
         {
             PlayerControl delPc = null;
-            foreach (var pc in AllPlayer)
+            foreach (var pc in AllPlayer.ToArray())
                 foreach (var dr in Main.DevRole.Where(x => pc.PlayerId == x.Key).ToArray())
                 {
                     if (dr.Key == PlayerControl.LocalPlayer.PlayerId && Main.EnableGM.Value) continue;
@@ -416,7 +416,7 @@ internal class CustomRoleSelector
             if (role is CustomRoles.Madmate && Options.MadmateSpawnMode.GetInt() != 0) continue;
             if (role is CustomRoles.Lovers or CustomRoles.LastImpostor or CustomRoles.Workhorse) continue;
 
-            if (Options.IsActiveFungle) // The Fungle
+            if (GameStates.FungleIsActive) // The Fungle
             {
                 if (role is CustomRoles.Mare) continue;
             }

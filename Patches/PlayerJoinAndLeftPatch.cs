@@ -23,39 +23,6 @@ class OnGameJoinedPatch
         while (!Options.IsLoaded) System.Threading.Tasks.Task.Delay(1);
         Logger.Info($"{__instance.GameId} Joining room", "OnGameJoined");
 
-        switch (GameOptionsManager.Instance.CurrentGameOptions.GameMode)
-        {
-            case GameModes.Normal:
-                Logger.Info(" Is Normal Game", "Game Mode");
-
-                // if custom game mode is HideNSeekTOHE in normal game, set standart
-                if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
-                {
-                    // Select standart
-                    Options.GameMode.SetValue(0);
-                }
-                break;
-
-            case GameModes.HideNSeek:
-                Logger.Info(" Is Hide & Seek", "Game Mode");
-
-                // if custom game mode is Standard/FFA in H&S game, set HideNSeekTOHE
-                if (Options.CurrentGameMode is CustomGameMode.Standard or CustomGameMode.FFA)
-                {
-                    // Select HideNSeekTOHE
-                    Options.GameMode.SetValue(2);
-                }
-                break;
-
-            case GameModes.None:
-                Logger.Info(" Is None", "Game Mode");
-                break;
-
-            default:
-                Logger.Info(" No find", "Game Mode");
-                break;
-        }
-
         Main.IsHostVersionCheating = false;
         Main.playerVersion = new();
         if (!Main.VersionCheat.Value) RPC.RpcVersionCheck();
@@ -93,6 +60,39 @@ class OnGameJoinedPatch
             Main.AllPlayerNames = new();
             Main.PlayerQuitTimes = new();
             KickPlayerPatch.AttemptedKickPlayerList = new();
+
+            switch (GameOptionsManager.Instance.CurrentGameOptions.GameMode)
+            {
+                case GameModes.Normal:
+                    Logger.Info(" Is Normal Game", "Game Mode");
+
+                    // if custom game mode is HideNSeekTOHE in normal game, set standart
+                    if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
+                    {
+                        // Select standart
+                        Options.GameMode.SetValue(0);
+                    }
+                    break;
+
+                case GameModes.HideNSeek:
+                    Logger.Info(" Is Hide & Seek", "Game Mode");
+
+                    // if custom game mode is Standard/FFA in H&S game, set HideNSeekTOHE
+                    if (Options.CurrentGameMode is CustomGameMode.Standard or CustomGameMode.FFA)
+                    {
+                        // Select HideNSeekTOHE
+                        Options.GameMode.SetValue(2);
+                    }
+                    break;
+
+                case GameModes.None:
+                    Logger.Info(" Is None", "Game Mode");
+                    break;
+
+                default:
+                    Logger.Info(" No find", "Game Mode");
+                    break;
+            }
 
             if (GameStates.IsNormalGame)
             {
@@ -154,6 +154,13 @@ class OnPlayerJoinedPatch
                 Logger.SendInGame(string.Format(GetString("Message.TempBannedByNoFriendCode"), client.PlayerName));
                 Logger.Info($"TempBanned a player {client?.PlayerName} without a friend code", "Temp Ban");
             }
+        }
+
+        if (Options.AllowOnlyWhiteList.GetBool() && !BanManager.CheckAllowList(client?.FriendCode) && !GameStates.IsLocalGame)
+        {
+            AmongUsClient.Instance.KickPlayer(client.Id, false);
+            Logger.SendInGame(string.Format(GetString("Message.KickedByWhiteList"), client.PlayerName));
+            Logger.Warn($"Kicked player {client?.PlayerName}, because friendcode: {client?.FriendCode} is not in WhiteList.txt", "Kick");
         }
 
         Platforms platform = client.PlatformData.Platform;

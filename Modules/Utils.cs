@@ -102,19 +102,31 @@ public static class Utils
             return;
         }
 
+        var playerNetTransform = player.NetTransform;
+        var numHost = (ushort)(playerNetTransform.lastSequenceId + 2);
+        var numLocalClient = (ushort)(playerNetTransform.lastSequenceId + 28);
+        var numGlobal = (ushort)(playerNetTransform.lastSequenceId + 48);
+
         // Host side
         if (AmongUsClient.Instance.AmHost)
         {
-            var playerlastSequenceId = (int)player.NetTransform.lastSequenceId;
-            playerlastSequenceId += 10;
-            player.NetTransform.SnapTo(location, (ushort)playerlastSequenceId);
+            playerNetTransform.SnapTo(location, numHost);
+        }
+        
+        if (PlayerControl.LocalPlayer.PlayerId != player.PlayerId)
+        {
+            // Local Teleport For Client
+            MessageWriter localMessageWriter = AmongUsClient.Instance.StartRpcImmediately(playerNetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.None, player.GetClientId());
+            NetHelpers.WriteVector2(location, localMessageWriter);
+            localMessageWriter.Write(numLocalClient);
+            AmongUsClient.Instance.FinishRpcImmediately(localMessageWriter);
         }
 
-        // For Client side
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.None);
-        NetHelpers.WriteVector2(location, messageWriter);
-        messageWriter.Write(player.NetTransform.lastSequenceId + 100U);
-        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+        // Global Teleport
+        MessageWriter globalMessageWriter = AmongUsClient.Instance.StartRpcImmediately(playerNetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.None);
+        NetHelpers.WriteVector2(location, globalMessageWriter);
+        globalMessageWriter.Write(numGlobal);
+        AmongUsClient.Instance.FinishRpcImmediately(globalMessageWriter);
     }
     public static void RpcRandomVentTeleport(this PlayerControl player)
     {
@@ -300,7 +312,7 @@ public static class Utils
     {
         if (seer.Is(CustomRoles.GM) || seer.Is(CustomRoles.Seer)) return true;
         if (seer.Data.IsDead || killer == seer || target == seer) return false;
-        if (seer.Is(CustomRoles.EvilTracker)) return EvilTracker.KillFlashCheck(killer, target);
+        if (seer.Is(CustomRoles.EvilTracker)) return EvilTracker.KillFlashCheck();
         return false;
     }
     public static void KillFlash(this PlayerControl player)
@@ -1287,12 +1299,12 @@ public static class Utils
             }
 
             if (opt.Value.Name == "Maximum") continue; //Maximumの項目は飛ばす
-            if (opt.Value.Name == "DisableSkeldDevices" && !Options.IsActiveSkeld && !Options.IsActiveDleks) continue;
-            if (opt.Value.Name == "DisableMiraHQDevices" && !Options.IsActiveMiraHQ) continue;
-            if (opt.Value.Name == "DisablePolusDevices" && !Options.IsActivePolus) continue;
-            if (opt.Value.Name == "DisableAirshipDevices" && !Options.IsActiveAirship) continue;
-            if (opt.Value.Name == "PolusReactorTimeLimit" && !Options.IsActivePolus) continue;
-            if (opt.Value.Name == "AirshipReactorTimeLimit" && !Options.IsActiveAirship) continue;
+            if (opt.Value.Name == "DisableSkeldDevices" && !GameStates.SkeldIsActive && !GameStates.DleksIsActive) continue;
+            if (opt.Value.Name == "DisableMiraHQDevices" && !GameStates.MiraHQIsActive) continue;
+            if (opt.Value.Name == "DisablePolusDevices" && !GameStates.PolusIsActive) continue;
+            if (opt.Value.Name == "DisableAirshipDevices" && !GameStates.AirshipIsActive) continue;
+            if (opt.Value.Name == "PolusReactorTimeLimit" && !GameStates.PolusIsActive) continue;
+            if (opt.Value.Name == "AirshipReactorTimeLimit" && !GameStates.AirshipIsActive) continue;
             if (deep > 0)
             {
                 sb.Append(string.Concat(Enumerable.Repeat("┃", Mathf.Max(deep - 1, 0))));
@@ -1962,8 +1974,8 @@ public static class Utils
                     _ => name
                 };
             }
-            
-            if (!name.Contains('\r') && player.FriendCode.GetDevUser().HasTag() && (player.AmOwner || player.IsModClient()))
+
+            if (!name.Contains($"\r\r") && player.FriendCode.GetDevUser().HasTag())
             {
                 name = player.FriendCode.GetDevUser().GetTag() + "<size=1.5>" + modtag + "</size>" + name;
             }
@@ -1975,6 +1987,10 @@ public static class Utils
     public static PlayerControl GetPlayerById(int PlayerId)
     {
         return Main.AllPlayerControls.FirstOrDefault(pc => pc.PlayerId == PlayerId);
+    }
+    public static PlayerControl GetPlayerByRole(CustomRoles Role)
+    {
+        return Main.AllPlayerControls.FirstOrDefault(pc => pc.GetCustomRole() == Role);
     }
     public static GameData.PlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);
@@ -2513,6 +2529,10 @@ public static class Utils
                                     TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + TargetPlayerName;
                                 break;
 
+                            case CustomRoles.Quizmaster:
+                                TargetMark.Append(Quizmaster.TargetMark(seer, target));
+                                break;
+
                         }
 
                         // ========= Only During Meeting =========
@@ -2692,6 +2712,7 @@ public static class Utils
         Main.ShamanTargetChoosen = false;
         Main.BurstBodies.Clear();
         OverKiller.MurderTargetLateTask = new();
+        RiftMaker.AfterMeetingTasks();
 
 
         if (Options.AirshipVariableElectrical.GetBool())
