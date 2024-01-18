@@ -16,52 +16,71 @@ public class dbConnect
     public static bool InitOnce = false;
     public static async void Init()
     {
-        bool success = true;
         Logger.Info("Begin dbConnect Login flow", "dbConnect.init");
-        try
+        if (!InitOnce)
         {
-            Logger.Info($"start fetching roletable", "dbConnect.init");
-            success = await Task.Run(() => GetRoleTable());
+            try
+            {
+                GetRoleTable();
+            }
+            catch (Exception Ex)
+            {
+                Logger.Error($"Error in fetching roletable {Ex}", "dbConnect.init");
+                goto firstFailure;
+            }
+            try
+            {
+                GetEACList();
+            }
+            catch (Exception Ex)
+            {
+                Logger.Error($"Error in fetching eaclist {Ex}", "dbConnect.init");
+                goto firstFailure;
+            }
         }
-        catch (Exception ex)
+        else //init once, following will be async
         {
-            Logger.Error($"Error in fetching roletable {ex}", "dbConnect.init");
-            success = false;
-        }
-        try
-        {
-            Logger.Info($"start fetching EACList", "dbConnect.init");
-            success = success && await Task.Run(() => GetEACList());
-        }
-        catch (Exception ex)
-        {
-            Logger.Error($"Error in fetching eaclist {ex}", "dbConnect.init");
-            success = false;
+            try
+            {
+                await Task.Run(() => GetRoleTable());
+            }
+            catch (Exception Ex)
+            {
+                Logger.Error($"Error in fetching roletable {Ex}", "dbConnect.init");
+            }
+            try
+            {
+                await Task.Run(() => GetEACList());
+            }
+            catch (Exception Ex)
+            {
+                Logger.Error($"Error in fetching eaclist {Ex}", "dbConnect.init");
+            }
         }
 
-        if (success)
+        if (!InitOnce)
+        {
+            Logger.Info("Finished first init flow.", "dbConnect.init");
+            InitOnce = true;
+        }
+        else
         {
             Logger.Info("Finished Sync flow.", "dbConnect.init");
-            InitOnce = true;
-            if (EOSManager.Instance.friendCode != null && EOSManager.Instance.friendCode != "")
-            {
-                if (Main.devRelease && !CanAccessDev(EOSManager.Instance.friendCode))
-                    Main.hasAccess = false;
-            }
         }
 
-        if (!success)
+        if (EOSManager.Instance.friendCode != null && EOSManager.Instance.friendCode != "")
         {
-            if (!InitOnce || GameStates.IsNotJoined)
-            {
-                if (AmongUsClient.Instance.mode != InnerNet.MatchMakerModes.None)
-                    AmongUsClient.Instance.ExitGame(DisconnectReasons.ExitGame);
-
-                DestroyableSingleton<EOSManager>.Instance.ContinueInOfflineMode();
-                DestroyableSingleton<DisconnectPopup>.Instance.ShowCustom(GetString("dbConnect.InitFailure"));
-            }
-            Logger.Info("Failed.", "dbConnect.init");
+            if (Main.devRelease && !CanAccessDev(EOSManager.Instance.friendCode))
+                Main.hasAccess = false;
         }
+        return;
+
+    firstFailure:
+        if (AmongUsClient.Instance.mode != InnerNet.MatchMakerModes.None)
+            AmongUsClient.Instance.ExitGame(DisconnectReasons.ExitGame);
+
+        DestroyableSingleton<DisconnectPopup>.Instance.ShowCustom(GetString("dbConnect.InitFailure"));
+        DestroyableSingleton<EOSManager>.Instance.loginFlowFinished = false;
     }
     private static string getToken()
     {
@@ -96,14 +115,14 @@ public class dbConnect
         }
         return apiToken;
     }
-    private static bool GetRoleTable()
+    private static void GetRoleTable()
     {
         var tempUserType = new Dictionary<string, string>(); // Create a temporary dictionary
         string apiToken = getToken();
         if (apiToken == "")
         {
             Logger.Warn("Embedded resource not found.", "apiToken");
-            return false;
+            return;
         }
         using (var httpClient = new HttpClient())
         {
@@ -139,27 +158,27 @@ public class dbConnect
                                     tempUserType[user["friendcode"].ToString()] = user["type"].ToString(); // Store the data in the temporary dictionary
                                 }
                                 userType = tempUserType; // Replace userType with the temporary dictionary
-                                return true;
+                                return;
                             }
                             catch (JsonException jsonEx)
                             {
                                 // If deserialization as a list fails, try deserializing as a single JSON object
                                 Logger.Error($"Error deserializing JSON: {jsonEx.Message}", "dbConnect");
-                                return false;
+                                return;
                             }
                         }
                     }
                     else
                     {
                         Logger.Error($"Error in fetching the User List, Success status code is false", "dbConnect");
-                        return false;
+                        return;
                     }
                 }
             }
             catch (Exception ex)
             {
                 Logger.Error($"error: {ex}", "dbConnect");
-                return false;
+                return;
             }
         }
     }
@@ -187,14 +206,13 @@ public class dbConnect
         if (!userType.ContainsKey(friendcode)) return false;
         return userType[friendcode] == "s_bo";
     }
-    private static bool GetEACList()
+    private static void GetEACList()
     {
-        var tempEACDict = new List<Dictionary<string, JsonElement>>(); // Create a temporary list
         string apiToken = getToken();
         if (apiToken == "")
         {
             Logger.Warn("Embedded resource not found.", "apiToken");
-            return false;
+            return;
         }
         using (var httpClient = new HttpClient())
         {
@@ -211,29 +229,29 @@ public class dbConnect
                         {
                             try
                             {
-                                tempEACDict = JsonSerializer.DeserializeAsync<List<Dictionary<string, JsonElement>>>(responseStream).Result; // Store the data in the temporary list
+                                List<Dictionary<string, JsonElement>> tempEACDict = JsonSerializer.DeserializeAsync<List<Dictionary<string, JsonElement>>>(responseStream).Result;
                                 BanManager.EACDict = BanManager.EACDict.Concat(tempEACDict).ToList(); // Merge the temporary list with BanManager.EACDict
-                                return true;
+                                return;
                             }
                             catch (JsonException jsonEx)
                             {
                                 // If deserialization as a list fails, try deserializing as a single JSON object
                                 Logger.Error($"Error deserializing JSON: {jsonEx.Message}", "GetEACList");
-                                return false;
+                                return;
                             }
                         }
                     }
                     else
                     {
                         Logger.Error($"Error in fetching the EAC List, Success status code is false", "GetEACList");
-                        return false;
+                        return;
                     }
                 }
             }
             catch (Exception ex)
             {
                 Logger.Error($"error: {ex}", "GetEACList");
-                return false;
+                return;
             }
         }
     }
