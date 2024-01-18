@@ -1207,6 +1207,33 @@ static class ExtendedPlayerControl
         {
             Susceptible.CallEnabledAndChange(target);
         }
+        
+        if (target.Is(CustomRoles.Solsticer))
+        {
+            if (!GameStates.IsMeeting)
+            {
+                if (target.PlayerId != killer.PlayerId)
+                {
+                    killer.RpcTeleport(target.GetTruePosition());
+                    killer.RpcGuardAndKill(target);
+                    killer.SetKillCooldown(forceAnime: true);
+                    NameNotifyManager.Notify(killer, GetString("MurderSolsticer"));
+                }
+
+                target.RpcGuardAndKill();
+                Solsticer.patched = true;
+                Solsticer.ResetTasks(target);
+                target.MarkDirtySettings();
+
+                NameNotifyManager.Notify(target, string.Format(GetString("SolsticerMurdered"), killer.GetRealName()));
+                if (Solsticer.SolsticerKnowKiller.GetBool())
+                    Solsticer.MurderMessage = string.Format(GetString("SolsticerMurderMessage"), killer.GetRealName(), GetString(killer.GetCustomRole().ToString()));
+                else Solsticer.MurderMessage = "";
+            }
+            //Solsticer wont die anyway.
+            return;
+        }
+
         if (killer.PlayerId == target.PlayerId && killer.shapeshifting)
         {
             _ = new LateTask(() => { killer.RpcMurderPlayer(target, true); }, 1.5f, "Shapeshifting Suicide Delay");
