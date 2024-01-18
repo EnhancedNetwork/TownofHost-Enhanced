@@ -641,7 +641,7 @@ class SetAnswersQuestion : QuizQuestionBase
         {
             var prefix = "";
 
-            if (QuizmasterQuestionType == QuizmasterQuestionType.FactionQuestion)
+            if (QuizmasterQuestionType == QuizmasterQuestionType.FactionQuestion || QuizmasterQuestionType == QuizmasterQuestionType.NameOriginQuestion)
                 prefix = "QuizmasterAnswers.";
             if (QuizmasterQuestionType == QuizmasterQuestionType.RoleFactionQuestion || QuizmasterQuestionType == QuizmasterQuestionType.RoleBasisQuestion)
                 prefix = "Type";
