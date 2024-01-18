@@ -3519,6 +3519,7 @@
   "AdditionalWinnerRoleText.Shaman": "Shaman",
   "AdditionalWinnerRoleText.Pixie": "Pixie",
   "AdditionalWinnerRoleText.NiceMini": "Nice Mini",
+  "AdditionalWinnerRoleText.Romantic": "Romantic",
   "ErrorEndText": "An error occurred",
   "ErrorEndTextDescription": "To avoid crashing, the game was forcibly ended.",
   "ForceEnd": "Aborted",
