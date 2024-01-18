@@ -1,4 +1,5 @@
 ﻿using Hazel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using static TOHE.Options;
@@ -17,16 +18,21 @@ public static class Divinator
     public static OptionItem HideVote;
     public static OptionItem ShowSpecificRole;
     public static OptionItem AbilityUseGainWithEachTaskCompleted;
+    public static OptionItem RandomActiveRoles;
+
 
     public static HashSet<byte> didVote = new();
     public static Dictionary<byte, float> CheckLimit = new();
     public static Dictionary<byte, float> TempCheckLimit = new();
+    public static Dictionary<byte, HashSet<byte>> targetList = [];
+
 
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Divinator);
         CheckLimitOpt = IntegerOptionItem.Create(Id + 10, "DivinatorSkillLimit", new(0, 20, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Divinator])
             .SetValueFormat(OptionFormat.Times);
+        RandomActiveRoles = BooleanOptionItem.Create(Id + 14, "RandomActiveRoles", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Divinator]);
         AccurateCheckMode = BooleanOptionItem.Create(Id + 12, "AccurateCheckMode", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Divinator]);
         ShowSpecificRole = BooleanOptionItem.Create(Id + 13, "ShowSpecificRole", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Divinator]);
         HideVote = BooleanOptionItem.Create(Id + 14, "DivinatorHideVote", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Divinator]);
@@ -40,17 +46,21 @@ public static class Divinator
         CheckLimit = new();
         TempCheckLimit = new();
         IsEnable = false;
+        targetList = [];
     }
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         CheckLimit.TryAdd(playerId, CheckLimitOpt.GetInt());
         IsEnable = true;
+        targetList[playerId] = [];
+
     }
     public static void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
         CheckLimit.Remove(playerId);
+        targetList.Remove(playerId);
     }
 
     public static void SendRPC(byte playerId, bool isTemp = false, bool voted = false)
@@ -90,7 +100,7 @@ public static class Divinator
 
     public static string GetTargetRoleList(HashSet<CustomRoles> roles)
     {
-        return string.Join("\n  ", roles.Select(role => $"★ {Utils.GetRoleName(role)}"));
+        return string.Join("\n", roles.Select(role => $"    ★ {Utils.GetRoleName(role)}"));
     }
 
     public static void OnVote(PlayerControl player, PlayerControl target)
@@ -103,6 +113,16 @@ public static class Divinator
         {
             Utils.SendMessage(GetString("DivinatorCheckReachLimit"), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Divinator), GetString("DivinatorCheckMsgTitle")));
             return;
+        }
+
+        if (RandomActiveRoles.GetBool())
+        {
+            if (!targetList.ContainsKey(player.PlayerId)) targetList[player.PlayerId] = [];
+            if (targetList[player.PlayerId].Contains(target.PlayerId))
+            {
+                Utils.SendMessage(GetString("DivinatorAlreadyCheckedMsg") + "\n\n" + string.Format(GetString("DivinatorCheckLimit"), CheckLimit[player.PlayerId]), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Divinator), GetString("DivinatorCheckMsgTitle")));
+                return;
+            }
         }
 
         CheckLimit[player.PlayerId] -= 1;
@@ -120,7 +140,29 @@ public static class Divinator
         {
             msg = string.Format(GetString("DivinatorCheck.TaskDone"), target.GetRealName(), GetString(target.GetCustomRole().ToString()));
         }
-        
+        else if (RandomActiveRoles.GetBool())
+        {
+            if (!targetList.ContainsKey(player.PlayerId)) targetList[player.PlayerId] = [];
+            targetList[player.PlayerId].Add(target.PlayerId);
+            var targetRole = target.GetCustomRole();
+            var activeRoleList = CustomRolesHelper.AllRoles.Where(role => (role.IsEnable() || role.RoleExist(countDead: true)) && role != targetRole && !role.IsAdditionRole()).ToList();
+            var count = Math.Min(4, activeRoleList.Count);
+            List<CustomRoles> roleList = [targetRole];
+            var rand = IRandom.Instance;
+            for (int i = 0; i < count; i++)
+            {
+                int randomIndex = rand.Next(activeRoleList.Count);
+                roleList.Add(activeRoleList[randomIndex]);
+                activeRoleList.RemoveAt(randomIndex);
+            }
+            for (int i = roleList.Count - 1; i > 0; i--)
+            {
+                int j = rand.Next(0, i + 1);
+                (roleList[j], roleList[i]) = (roleList[i], roleList[j]);
+            }
+            var text = GetTargetRoleList([.. roleList]);
+            msg = string.Format(GetString("DivinatorCheck.Result"), target.GetRealName(), text);
+        }
         else
         {
             HashSet<HashSet<CustomRoles>> completeRoleList =  [[CustomRoles.CrewmateTOHE,
