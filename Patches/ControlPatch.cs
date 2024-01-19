@@ -167,13 +167,22 @@ internal class ControllerManagerUpdatePatch
                     GameEndCheckerForNormal.StartEndGame(GameOverReason.ImpostorDisconnect);
                 }
             }
-            //强制结束会议或召开会议
+            // Forse start/end Meeting
             if (GetKeysDown(KeyCode.Return, KeyCode.M, KeyCode.LeftShift) && GameStates.IsInGame)
             {
                 if (GameStates.IsHideNSeek) return;
 
                 if (GameStates.IsMeeting)
                 {
+                    foreach (var pva in MeetingHud.Instance.playerStates)
+                    {
+                        if (pva == null) continue;
+
+                        if (pva.VotedFor < 253)
+                            MeetingHud.Instance.RpcClearVote(pva.TargetPlayerId);
+                    }
+                    List<MeetingHud.VoterState> statesList = [];
+                    MeetingHud.Instance.RpcVotingComplete(statesList.ToArray(), null, true);
                     MeetingHud.Instance.RpcClose();
                 }
                 else
