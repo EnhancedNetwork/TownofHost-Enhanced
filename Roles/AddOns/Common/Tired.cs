@@ -42,13 +42,6 @@ public class Tired
         playerIdList.Add(playerId, false);
     }
     
-    public static void SendRPC(byte playerId)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.TiredRPC, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-    
    // public static void ReceiveRPC(MessageReader reader)
   //  {
    //     byte playerid = reader.ReadByte();
