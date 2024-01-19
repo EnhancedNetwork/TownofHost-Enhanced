@@ -77,6 +77,8 @@ public class Quizmaster
         thisReportedColor = "None";
         thisButtonPressedColor = "None";
         diedThisRound = 0;
+        meetingNum = 0;
+        buttonMeeting = 0;
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -307,7 +309,8 @@ public class Quizmaster
 
     public static void OnSabotageCall(SystemTypes systemType)
     {
-        if (systemType is
+        if (!Main.MeetingIsStarted
+            && systemType is
                 SystemTypes.HeliSabotage or
                 SystemTypes.Laboratory or
                 SystemTypes.Reactor or
