@@ -1030,15 +1030,20 @@ static class CustomRolesHelper
             CustomRoles.Stubborn or
             CustomRoles.TicketsStealer;
     }
-    public static bool CheckAddonConfilct(CustomRoles role, PlayerControl pc)
+    public static bool CheckAddonConfilct(CustomRoles role, PlayerControl pc, bool checkLimitAddons = true)
     {
         // Only add-ons
         if (!role.IsAdditionRole()) return false;
 
-        if ((pc.Is(CustomRoles.RuthlessRomantic) || pc.Is(CustomRoles.Romantic) || pc.Is(CustomRoles.VengefulRomantic)) && role is CustomRoles.Lovers) return false;
+        // Checking Lovers and Romantics
+        else if ((pc.Is(CustomRoles.RuthlessRomantic) || pc.Is(CustomRoles.Romantic) || pc.Is(CustomRoles.VengefulRomantic)) && role is CustomRoles.Lovers) return false;
 
         // Checking for conflicts with roles
-        if (pc.Is(CustomRoles.GM) || role is CustomRoles.Lovers || pc.Is(CustomRoles.Needy) || (pc.HasSubRole() && pc.GetCustomSubRoles().Count >= Options.NoLimitAddonsNumMax.GetInt())) return false;
+        else if (pc.Is(CustomRoles.GM) || role is CustomRoles.Lovers || pc.Is(CustomRoles.Needy)) return false;
+
+
+        if (checkLimitAddons)
+            if (pc.HasSubRole() && pc.GetCustomSubRoles().Count >= Options.NoLimitAddonsNumMax.GetInt()) return false;
 
 
         // Checking for conflicts with roles and other add-ons
