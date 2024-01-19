@@ -309,7 +309,8 @@ public class Quizmaster
 
     public static void OnSabotageCall(SystemTypes systemType)
     {
-        if (systemType is
+        if (!Main.MeetingIsStarted
+            && systemType is
                 SystemTypes.HeliSabotage or
                 SystemTypes.Laboratory or
                 SystemTypes.Reactor or
