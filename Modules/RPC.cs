@@ -801,9 +801,9 @@ internal class RPCHandlerPatch
             case CustomRPC.QuizmasterMarkPlayer:
                 Quizmaster.ReceiveRPC(reader);
                 break;
-            case CustomRPC.TiredRPC:
-                Tired.ReceiveRPC(reader);
-                break;
+            //case CustomRPC.TiredRPC:
+              //  Tired.ReceiveRPC(reader);
+                //break;
         }
     }
 
