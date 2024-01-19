@@ -49,12 +49,12 @@ public class Tired
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     
-    public static void ReceiveRPC(MessageReader reader)
-    {
-        byte playerid = reader.ReadByte();
-    } // Do I need this?
+   // public static void ReceiveRPC(MessageReader reader)
+  //  {
+   //     byte playerid = reader.ReadByte();
+   // } // Do I need this?
     
-    public static void CallOnTask(PlayerControl player)
+    public static void AfterActionTasks(PlayerControl player)
     {
         // Speed
         player.Notify(GetString("TiredNotify"));
@@ -70,25 +70,6 @@ public class Tired
             Main.AllPlayerSpeed[player.PlayerId] = Main.AllPlayerSpeed[player.PlayerId] - SetSpeed.GetFloat() + tmpSpeed;
             player.MarkDirtySettings();
             playerIdList[player.PlayerId] = false;
-        }, TiredDuration.GetFloat());
-    }
-
-    public static void OnCheckMurder(PlayerControl killer)
-    {
-        // Speed
-        killer.Notify(GetString("TiredNotify"));
-        killer.MarkDirtySettings();
-        var tmpSpeed = Main.AllPlayerSpeed[killer.PlayerId];
-        Main.AllPlayerSpeed[killer.PlayerId] = SetSpeed.GetFloat();
-
-        // Vision
-        playerIdList[killer.PlayerId] = true;
-
-        _ = new LateTask(() =>
-        {
-            Main.AllPlayerSpeed[killer.PlayerId] = Main.AllPlayerSpeed[killer.PlayerId] - SetSpeed.GetFloat() + tmpSpeed;
-            killer.MarkDirtySettings();
-            playerIdList[killer.PlayerId] = false;
         }, TiredDuration.GetFloat());
     }
 }
