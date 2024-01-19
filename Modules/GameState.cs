@@ -624,7 +624,7 @@ public class TaskState
             if (player.Is(CustomRoles.Tired) && player.IsAlive())
             {            
                 Tired.SendRPC(player.PlayerId);
-                Tired.CallOnTask(player);
+                Tired.AfterActionTasks(player);
             }
 
             if (player.Is(CustomRoles.Ghoul) && (CompletedTasksCount + 1) >= AllTasksCount && player.IsAlive())
