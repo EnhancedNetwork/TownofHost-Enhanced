@@ -125,11 +125,11 @@ public static class Bandit
         var SelectedAddOn = SelectRandomAddon(target);
         if (SelectedAddOn == null) return true; // no stealable addons found on the target.
         if (StealMode.GetValue() == 1)
-        if (SelectedAddOn == CustomRoles.Tired) {
+        {    
+            if (SelectedAddOn == CustomRoles.Tired) {
             Tired.playerIdList.Add(killer.PlayerId, false);
             Tired.playerIdList.Remove(target.PlayerId);
-        }
-        {    
+            }
             Main.PlayerStates[target.PlayerId].RemoveSubRole((CustomRoles)SelectedAddOn);
             if (SelectedAddOn == CustomRoles.Aware) Main.AwareInteracted.Remove(target.PlayerId);
             Logger.Info($"Successfully removed {SelectedAddOn} addon from {target.GetNameWithRole()}", "Bandit");
