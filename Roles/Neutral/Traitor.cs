@@ -7,7 +7,7 @@ namespace TOHE.Roles.Neutral;
 public static class Traitor
 {
     private static readonly int Id = 18200;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     private static OptionItem KillCooldown;
@@ -27,7 +27,7 @@ public static class Traitor
     }
     public static void Init()
     {
-        playerIdList = new();
+        playerIdList = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)

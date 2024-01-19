@@ -419,7 +419,7 @@ internal class RPCHandlerPatch
                 Main.isDoused[(ArsonistId, DousedId)] = doused;
                 break;
             case CustomRPC.setPlaguedPlayer:
-                PlagueBearer.receiveRPC(reader);
+                PlagueBearer.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetDrawPlayer:
                 byte RevolutionistId = reader.ReadByte();

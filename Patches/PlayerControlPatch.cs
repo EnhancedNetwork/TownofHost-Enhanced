@@ -3160,7 +3160,7 @@ class FixedUpdateInNormalGamePatch
                         break;
 
                     case CustomRoles.PlagueBearer:
-                        if (PlagueBearer.isPlagued(seer.PlayerId, target.PlayerId))
+                        if (PlagueBearer.IsPlagued(seer.PlayerId, target.PlayerId))
                             Mark.Append($"<color={Utils.GetRoleColorCode(seerRole)}>●</color>");
                         break;
 

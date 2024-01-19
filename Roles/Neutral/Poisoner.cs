@@ -9,27 +9,21 @@ namespace TOHE.Roles.Neutral;
 
 public static class Poisoner
 {
-    private class PoisonedInfo
+    private class PoisonedInfo(byte poisonerId, float killTimer)
     {
-        public byte PoisonerId;
-        public float KillTimer;
-
-        public PoisonedInfo(byte poisonerId, float killTimer)
-        {
-            PoisonerId = poisonerId;
-            KillTimer = killTimer;
-        }
+        public byte PoisonerId = poisonerId;
+        public float KillTimer = killTimer;
     }
 
     private static readonly int Id = 17500;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
     private static OptionItem OptionKillDelay;
     private static float KillDelay;
     public static OptionItem CanVent;
     public static OptionItem KillCooldown;
     public static OptionItem HasImpostorVision;
-    private static readonly Dictionary<byte, PoisonedInfo> PoisonedPlayers = new();
+    private static readonly Dictionary<byte, PoisonedInfo> PoisonedPlayers = [];
     public static void SetupCustomOption()
     {
         Options.SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Poisoner, 1, zeroOne: false);
@@ -43,7 +37,7 @@ public static class Poisoner
 
     public static void Init()
     {
-        playerIdList = new();
+        playerIdList = [];
         PoisonedPlayers.Clear();
         IsEnable = false;
 

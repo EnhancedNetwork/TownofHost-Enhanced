@@ -2431,7 +2431,7 @@ public static class Utils
                         switch (seerRole)
                         {
                             case CustomRoles.PlagueBearer:
-                                if (PlagueBearer.isPlagued(seer.PlayerId, target.PlayerId))
+                                if (PlagueBearer.IsPlagued(seer.PlayerId, target.PlayerId))
                                 {
                                     TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.PlagueBearer)}>●</color>");
                                     PlagueBearer.SendRPC(seer, target);

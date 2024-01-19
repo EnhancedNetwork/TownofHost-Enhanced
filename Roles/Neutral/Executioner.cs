@@ -9,7 +9,7 @@ namespace TOHE.Roles.Neutral;
 public static class Executioner
 {
     private static readonly int Id = 14200;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
     public static byte WinnerID;
 
@@ -21,9 +21,9 @@ public static class Executioner
     public static OptionItem KnowTargetRole;
     public static OptionItem ChangeRolesAfterTargetKilled;
 
-    public static Dictionary<byte, byte> Target = new();
+    public static Dictionary<byte, byte> Target = [];
     public static readonly string[] ChangeRoles =
-    {
+    [
         "Role.Crewmate",
         "Role.Celebrity",
         "Role.Bodyguard",
@@ -33,11 +33,11 @@ public static class Executioner
         "Role.Jester",
         "Role.Opportunist",
         "Role.Convict",
-    };
+    ];
     public static readonly CustomRoles[] CRoleChangeRoles =
-    {
+    [
         CustomRoles.CrewmateTOHE, CustomRoles.CyberStar, CustomRoles.Bodyguard, CustomRoles.Dictator, CustomRoles.Mayor, CustomRoles.Doctor, CustomRoles.Jester, CustomRoles.Opportunist, CustomRoles.Convict,
-    };
+    ];
 
     public static void SetupCustomOption()
     {
@@ -52,8 +52,8 @@ public static class Executioner
     }
     public static void Init()
     {
-        playerIdList = new();
-        Target = new();
+        playerIdList = [];
+        Target = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -64,7 +64,7 @@ public static class Executioner
         //ターゲット割り当て
         if (AmongUsClient.Instance.AmHost)
         {
-            List<PlayerControl> targetList = new();
+            List<PlayerControl> targetList = [];
             var rand = IRandom.Instance;
             foreach (var target in Main.AllPlayerControls)
             {
