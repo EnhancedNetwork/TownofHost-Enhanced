@@ -2330,7 +2330,8 @@ class ReportDeadBodyPatch
         if (Romantic.IsEnable) Romantic.OnReportDeadBody();
         if (Captain.IsEnable) Captain.OnReportDeadBody();
 
-
+        // Alchemist & Bloodlust
+        Alchemist.OnReportDeadBody();
 
         if (Mortician.IsEnable) Mortician.OnReportDeadBody(player, target);
         if (Enigma.IsEnable) Enigma.OnReportDeadBody(player, target);
