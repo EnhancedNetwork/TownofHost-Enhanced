@@ -10,6 +10,7 @@ using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
+using LibCpp2IL.Elf;
 
 namespace TOHE;
 
@@ -587,7 +588,14 @@ class GameEndCheckerForNormal
 
             int totalNKAlive = neutralRoleCounts.Sum(kvp => kvp.Value);
 
-            if (Main.AllAlivePlayerControls.Length > 0 && Main.AllAlivePlayerControls.All(p => p.Is(CustomRoles.Lovers))) // if lover is alive lover wins
+            if (crewCount == 0 && impCount == 0 && totalNKAlive == 0) // Everyone is dead
+            {
+                reason = GameOverReason.ImpostorByKill;
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.None);
+                return true;
+            }
+
+            else if (Main.AllAlivePlayerControls.Length > 0 && Main.AllAlivePlayerControls.All(p => p.Is(CustomRoles.Lovers))) // if lover is alive lover wins
             {
                 reason = GameOverReason.ImpostorByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Lovers);
@@ -596,13 +604,7 @@ class GameEndCheckerForNormal
 
             else if (totalNKAlive == 0) // total number of nks alive 0
             {
-                if (crewCount == 0 && impCount == 0) // Crew and Imp both 0, everyone is dead
-                {
-                    reason = GameOverReason.ImpostorByKill;
-                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.None);
-                }
-
-                else if (crewCount <= impCount) // Crew less than or equal to Imps, Imp wins
+                if (crewCount <= impCount) // Crew less than or equal to Imps, Imp wins
                 {
                     reason = GameOverReason.ImpostorByKill;
                     CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Impostor);
