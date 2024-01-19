@@ -772,7 +772,7 @@ class CheckMurderPatch
                     break;
 
                 case CustomRoles.Tired:
-                    Tired.AfterActionTask(killer);
+                    Tired.AfterActionTasks(killer);
                     break;
 
                 case CustomRoles.Clumsy:
