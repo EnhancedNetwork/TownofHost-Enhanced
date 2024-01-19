@@ -158,11 +158,11 @@ namespace TOHE.Roles.Crewmate
                     &&
                     !x.Is(addon)
                     &&
-                    CustomRolesHelper.CheckAddonConfilct(addon, x)
+                    (!x.Is(CustomRoles.Stubborn))
+                    &&
+                    CustomRolesHelper.CheckAddonConfilct(addon, x, checkLimitAddons: false)
                     &&
                     (Cleanser.CleansedCanGetAddon.GetBool() || (!Cleanser.CleansedCanGetAddon.GetBool() && !x.Is(CustomRoles.Cleansed)))
-                    &&
-                    (!x.Is(CustomRoles.Stubborn))
                     &&
                     (
                         (OptionCanTargetCrew.GetBool() && x.GetCustomRole().IsCrewmate()) 

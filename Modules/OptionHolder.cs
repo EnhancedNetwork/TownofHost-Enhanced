@@ -129,6 +129,7 @@ public static class Options
     public static OptionItem TempBanLowLevelPlayer;
 
     public static OptionItem ApplyAllowList;
+    public static OptionItem AllowOnlyWhiteList;
 
     public static OptionItem KickOtherPlatformPlayer;
     public static OptionItem OptKickAndroidPlayer;
@@ -2976,6 +2977,8 @@ public static class Options
             .SetParent(KickLowLevelPlayer)
             .SetValueFormat(OptionFormat.Times);
         ApplyAllowList = BooleanOptionItem.Create(60060, "ApplyWhiteList", false, TabGroup.SystemSettings, false);
+        AllowOnlyWhiteList = BooleanOptionItem.Create(60061, "AllowOnlyWhiteList", false, TabGroup.SystemSettings, false);
+
         KickOtherPlatformPlayer = BooleanOptionItem.Create(60070, "KickOtherPlatformPlayer", false, TabGroup.SystemSettings, false);
         OptKickAndroidPlayer = BooleanOptionItem.Create(60071, "OptKickAndroidPlayer", false, TabGroup.SystemSettings, false)
             .SetParent(KickOtherPlatformPlayer);

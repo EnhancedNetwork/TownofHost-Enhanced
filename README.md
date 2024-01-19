@@ -1,5 +1,5 @@
 
-<h1 align="center">Town of Host: Enhanced</h1>
+<h1 align="center">Town of Host: Enhanced (TOHE)</h1>
 
 <br>
 
