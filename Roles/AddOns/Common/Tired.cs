@@ -42,11 +42,6 @@ public class Tired
         playerIdList.Add(playerId, false);
     }
     
-   // public static void ReceiveRPC(MessageReader reader)
-  //  {
-   //     byte playerid = reader.ReadByte();
-   // } // Do I need this?
-    
     public static void AfterActionTasks(PlayerControl player)
     {
         // Speed
