@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using LibCpp2IL.Elf;
 using System.Linq;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
