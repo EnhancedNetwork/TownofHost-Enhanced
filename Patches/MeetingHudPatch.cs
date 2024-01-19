@@ -371,10 +371,10 @@ class CheckForEndVotingPatch
 
             byte exileId = byte.MaxValue;
             int max = 0;
-            voteLog.Info("===Decision to expel player processing begins===");
+            voteLog.Info("=========Vote Result=========");
             foreach (var data in VotingData)
             {
-                voteLog.Info($"{data.Key}({Utils.GetVoteName(data.Key)}): {data.Value}");
+                voteLog.Info($"{data.Key}({Utils.GetVoteName(data.Key)}): {data.Value} votes");
                 if (data.Value > max)
                 {
                     voteLog.Info($"{data.Key} have a higher number of votes ({data.Value})");
