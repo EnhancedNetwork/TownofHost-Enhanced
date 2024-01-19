@@ -10,7 +10,7 @@ namespace TOHE.Roles.Crewmate;
 public static class Divinator
 {
     private static readonly int Id = 8000;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     public static OptionItem CheckLimitOpt;
