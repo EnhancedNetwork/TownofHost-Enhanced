@@ -10,7 +10,6 @@ using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
-using LibCpp2IL.Elf;
 
 namespace TOHE;
 
