@@ -296,29 +296,32 @@ namespace TOHE.Roles.Crewmate
                 refreshList.Do(x => SendRPC(Utils.GetPlayerById(x)));
             }
         }
+        public static void OnReportDeadBody()
+        {
+            BloodlustList = [];
+        }
 
-        
         public static void OnCoEnterVent(PlayerPhysics __instance, int ventId)
+        {
+            PotionID = 10;
+            var pc = __instance.myPlayer;
+            NameNotifyManager.Notice.Remove(pc.PlayerId);
+            if (!AmongUsClient.Instance.AmHost) return;
+            _ = new LateTask(() =>
             {
-                PotionID = 10;
-                var pc = __instance.myPlayer;
-                NameNotifyManager.Notice.Remove(pc.PlayerId);
-                if (!AmongUsClient.Instance.AmHost) return;
-                _ = new LateTask(() =>
-                {
-                    ventedId.Remove(pc.PlayerId);
-                    ventedId.Add(pc.PlayerId, ventId);
+                ventedId.Remove(pc.PlayerId);
+                ventedId.Add(pc.PlayerId, ventId);
 
-                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, 34, SendOption.Reliable, pc.GetClientId());
-                    writer.WritePacked(ventId);
-                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, 34, SendOption.Reliable, pc.GetClientId());
+                writer.WritePacked(ventId);
+                AmongUsClient.Instance.FinishRpcImmediately(writer);
 
-                    InvisTime.Add(pc.PlayerId, Utils.GetTimeStamp());
-                    SendRPC(pc);
-                    NameNotifyManager.Notify(pc, GetString("ChameleonInvisState"), InvisDuration.GetFloat());
-                }, 0.5f, "Alchemist Invis");
-            }
-        
+                InvisTime.Add(pc.PlayerId, Utils.GetTimeStamp());
+                SendRPC(pc);
+                NameNotifyManager.Notify(pc, GetString("ChameleonInvisState"), InvisDuration.GetFloat());
+            }, 0.5f, "Alchemist Invis");
+        }
+
         public static string GetHudText(PlayerControl pc)
         {
             if (pc == null || GameStates.IsMeeting || !PlayerControl.LocalPlayer.IsAlive()) return string.Empty;
