@@ -357,7 +357,7 @@ static class CustomRolesHelper
             CustomRoles.Influenced or
             CustomRoles.Silent or
             CustomRoles.Susceptible or
-            CustomRoles.;
+            CustomRoles.Tired;
     }
     
     public static bool IsBetrayalAddon(this CustomRoles role)
