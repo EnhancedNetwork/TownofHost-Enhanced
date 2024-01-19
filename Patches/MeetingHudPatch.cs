@@ -65,12 +65,12 @@ class CheckForEndVotingPatch
 
                     if (AntiBlackout.NeutralOverrideExiledPlayer || AntiBlackout.ImpostorOverrideExiledPlayer)
                     {
-                        __instance.RpcVotingComplete(states.ToArray(), null, true);
+                        __instance.RpcVotingComplete(states, null, true);
                         ExileControllerWrapUpPatch.AntiBlackout_LastExiled = voteTarget.Data;
                         AntiBlackout.ShowExiledInfo = true;
                         ConfirmEjections(voteTarget.Data, true);
                     }
-                    else __instance.RpcVotingComplete(states.ToArray(), voteTarget.Data, false); //通常処理
+                    else __instance.RpcVotingComplete(states, voteTarget.Data, false);
 
                     Logger.Info($"{voteTarget.GetNameWithRole()} 被独裁者驱逐", "Dictator");
                     CheckForDeathOnExile(PlayerState.DeathReason.Vote, pva.VotedFor);
@@ -796,6 +796,23 @@ class CastVotePatch
     {
         __instance.CheckForEndVoting();
         //For stuffs in check for end voting to work
+    }
+}
+[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.RpcClose))]
+class RpcClosePatch
+{
+    public static bool Prefix(MeetingHud __instance)
+    {
+        if (!AmongUsClient.Instance.AmHost) return true;
+
+        foreach (var pva in __instance.playerStates)
+        {
+            if (pva == null) continue;
+
+            if (pva.VotedFor < 253)
+                __instance.RpcClearVote(pva.TargetPlayerId);
+        }
+        return true;
     }
 }
 static class ExtendedMeetingHud
