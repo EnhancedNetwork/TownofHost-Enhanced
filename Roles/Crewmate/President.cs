@@ -71,11 +71,8 @@ public static class President
                 msg += "finish";
             else
                 msg += "reveal";
-            
             var player = Main.AllAlivePlayerControls.ToArray()[rd.Next(0, Main.AllAlivePlayerControls.Length)];
-            
             DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
-            
             var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
             writer.StartMessage(-1);
             writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)
@@ -126,7 +123,6 @@ public static class President
             }
 
             EndLimit[pc.PlayerId]--;
-
             MeetingHud.Instance.RpcClose();
         }
         else if (operate == 2)
