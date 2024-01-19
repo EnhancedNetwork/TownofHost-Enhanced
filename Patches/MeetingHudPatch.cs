@@ -801,9 +801,9 @@ class CastVotePatch
 [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.RpcClose))]
 class RpcClosePatch
 {
-    public static bool Prefix(MeetingHud __instance)
+    public static void Prefix(MeetingHud __instance)
     {
-        if (!AmongUsClient.Instance.AmHost) return true;
+        if (!AmongUsClient.Instance.AmHost) return;
 
         foreach (var pva in __instance.playerStates)
         {
@@ -812,7 +812,6 @@ class RpcClosePatch
             if (pva.VotedFor < 253)
                 __instance.RpcClearVote(pva.TargetPlayerId);
         }
-        return true;
     }
 }
 static class ExtendedMeetingHud
