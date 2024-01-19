@@ -14,7 +14,7 @@ public static class Virus
     private static readonly int Id = 18300;
     private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
-    private static int InfectLimit = [];
+    private static int InfectLimit = new();
     public static List<byte> InfectedPlayer = [];
 
     private static OptionItem KillCooldown;
@@ -51,7 +51,7 @@ public static class Virus
     public static void Init()
     {
         playerIdList = [];
-        InfectLimit = [];
+        InfectLimit = new();
         IsEnable = false;
     }
     public static void Add(byte playerId)
