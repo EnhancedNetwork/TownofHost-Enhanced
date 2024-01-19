@@ -379,7 +379,7 @@ public class PlayerState
         Eaten,
         Sacrifice,
         Quantization,
-        Overtired,
+        Over,
         Ashamed,
         PissedOff,
         Dismembered,
@@ -623,7 +623,6 @@ public class TaskState
 
             if (player.Is(CustomRoles.Tired) && player.IsAlive())
             {            
-                Tired.SendRPC(player.PlayerId);
                 Tired.AfterActionTasks(player);
             }
 
