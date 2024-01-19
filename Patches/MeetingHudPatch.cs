@@ -65,12 +65,12 @@ class CheckForEndVotingPatch
 
                     if (AntiBlackout.NeutralOverrideExiledPlayer || AntiBlackout.ImpostorOverrideExiledPlayer)
                     {
-                        __instance.RpcVotingComplete(states.ToArray(), null, true);
+                        __instance.RpcVotingComplete(states, null, true);
                         ExileControllerWrapUpPatch.AntiBlackout_LastExiled = voteTarget.Data;
                         AntiBlackout.ShowExiledInfo = true;
                         ConfirmEjections(voteTarget.Data, true);
                     }
-                    else __instance.RpcVotingComplete(states.ToArray(), voteTarget.Data, false); //通常処理
+                    else __instance.RpcVotingComplete(states, voteTarget.Data, false);
 
                     Logger.Info($"{voteTarget.GetNameWithRole()} 被独裁者驱逐", "Dictator");
                     CheckForDeathOnExile(PlayerState.DeathReason.Vote, pva.VotedFor);
@@ -227,12 +227,9 @@ class CheckForEndVotingPatch
                 if (CheckRole(ps.TargetPlayerId, CustomRoles.Cleanser) && Cleanser.HideVote.GetBool() && Cleanser.CleanserUses[ps.TargetPlayerId] > 0) continue;
                 // Hide Keeper Vote
                 if (CheckRole(ps.TargetPlayerId, CustomRoles.Keeper) && Keeper.HideVote.GetBool() && Keeper.keeperUses[ps.TargetPlayerId] > 0) continue;
-
                 // Hide Jester Vote
                 if (CheckRole(ps.TargetPlayerId, CustomRoles.Jester) && Options.HideJesterVote.GetBool()) continue;
-
-
-                //主动叛变模式下自票无效
+                // Assing Madmate Slef Vote
                 if (ps.TargetPlayerId == ps.VotedFor && Options.MadmateSpawnMode.GetInt() == 2) continue;
 
                 statesList.Add(new MeetingHud.VoterState()
@@ -241,7 +238,7 @@ class CheckForEndVotingPatch
                     VotedForId = ps.VotedFor
                 });
 
-                #region 换票师换票处理
+                #region Swapper swap votes
                 if (Swapper.Vote.Count > 0 && Swapper.VoteTwo.Count > 0)
                 {
                     List<byte> NiceList1 = new();
@@ -377,27 +374,27 @@ class CheckForEndVotingPatch
             voteLog.Info("===Decision to expel player processing begins===");
             foreach (var data in VotingData)
             {
-                voteLog.Info($"{data.Key}({Utils.GetVoteName(data.Key)}):{data.Value}票");
+                voteLog.Info($"{data.Key}({Utils.GetVoteName(data.Key)}): {data.Value}");
                 if (data.Value > max)
                 {
-                    voteLog.Info(data.Key + "拥有更高票数(" + data.Value + ")");
+                    voteLog.Info($"{data.Key} have a higher number of votes ({data.Value})");
                     exileId = data.Key;
                     max = data.Value;
                     tie = false;
                 }
                 else if (data.Value == max)
                 {
-                    voteLog.Info(data.Key + "与" + exileId + "的票数相同(" + data.Value + ")");
+                    voteLog.Info($"{data.Key} has the same number of votes as {exileId} ({data.Value})");
                     exileId = byte.MaxValue;
                     tie = true;
                 }
-                voteLog.Info($"驱逐ID: {exileId}, 最大: {max}票");
+                voteLog.Info($"Expulsion ID: {exileId}, max: {max} votes");
             }
 
-            voteLog.Info($"决定驱逐玩家: {exileId}({Utils.GetVoteName(exileId)})");
+            voteLog.Info($"Decision to exiled a player: {exileId} ({Utils.GetVoteName(exileId)})");
 
             bool braked = false;
-            if (tie) //破平者判断
+            if (tie)
             {
                 byte target = byte.MaxValue;
                 foreach (var data in VotingData.Where(x => x.Key < 15 && x.Value == max).ToArray())
