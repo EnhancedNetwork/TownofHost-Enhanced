@@ -554,10 +554,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
                     opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.TorchVision.GetFloat() * 5);
                     break;
                 case CustomRoles.Tired when Tired.playerIdList.ContainsKey(player.PlayerId):
-                    foreach (var tiredPlayer in Tired.playerIdList)
-                    {
-                        bool value = tiredPlayer.Value;
-                        if (value)
+                        if (Tired.playerIdList[player.PlayerId])
                         {
                             //Logger.Info($"{player.GetNameWithRole()} Succesfully decreased vision", "Tired");
                             opt.SetVision(false);
@@ -571,7 +568,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
                             opt.SetFloat(FloatOptionNames.CrewLightMod, Main.DefaultCrewmateVision);
                             opt.SetFloat(FloatOptionNames.ImpostorLightMod, Main.DefaultImpostorVision);
                         }
-                    }
+                    
                     break;
                 case CustomRoles.Bewilder:
                     opt.SetVision(false);
