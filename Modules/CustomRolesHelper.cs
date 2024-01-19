@@ -1698,6 +1698,8 @@ static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Farseer)
                || pc.Is(CustomRoles.Alchemist)
                || pc.Is(CustomRoles.Torch)
+               || pc.Is(CustomRoles.Bewilder)
+               || pc.Is(CustomRoles.Lighter)
                     ) return false;
             if ((pc.GetCustomRole().IsCrewmate() && !Tired.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Tired.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Tired.CanBeOnImp.GetBool())) 
                 return false;
