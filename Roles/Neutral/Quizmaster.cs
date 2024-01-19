@@ -77,6 +77,8 @@ public class Quizmaster
         thisReportedColor = "None";
         thisButtonPressedColor = "None";
         diedThisRound = 0;
+        meetingNum = 0;
+        buttonMeeting = 0;
         IsEnable = false;
     }
     public static void Add(byte playerId)
