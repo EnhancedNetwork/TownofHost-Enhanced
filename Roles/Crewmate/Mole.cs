@@ -8,7 +8,7 @@ namespace TOHE.Roles.Crewmate
     public static class Mole
     {
         private static readonly int Id = 26000;
-        //private static List<byte> playerIdList = new();
+        //private static List<byte> playerIdList = [];
         public static bool IsEnable = false;
 
         public static OptionItem VentCooldown;
@@ -21,7 +21,7 @@ namespace TOHE.Roles.Crewmate
         }
         public static void Init()
         {
-            //playerIdList = new();
+            //playerIdList = [];
             IsEnable = false;
         }
         public static void Add(byte playerId)

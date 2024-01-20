@@ -161,7 +161,7 @@ public static class RetributionistRevengeManager
         RetributionistMsgCheck(pc, $"/ret {PlayerId}", true);
     }
 
-    private static void RetributionistOnClick(byte playerId, MeetingHud __instance)
+    private static void RetributionistOnClick(byte playerId /*, MeetingHud __instance*/)
     {
         Logger.Msg($"Click: ID {playerId}", "Retributionist UI");
         var pc = Utils.GetPlayerById(playerId);
@@ -193,7 +193,7 @@ public static class RetributionistRevengeManager
             renderer.sprite = CustomButton.Get("TargetIcon");
             PassiveButton button = targetBox.GetComponent<PassiveButton>();
             button.OnClick.RemoveAllListeners();
-            button.OnClick.AddListener((Action)(() => RetributionistOnClick(pva.TargetPlayerId, __instance)));
+            button.OnClick.AddListener((Action)(() => RetributionistOnClick(pva.TargetPlayerId/*, __instance*/)));
         }
     }
 }

@@ -81,11 +81,11 @@ internal class EAC
                 case RpcCalls.SendChat:
                     var text = sr.ReadString();
                     if ((
-                        text.Contains("░") ||
-                        text.Contains("▄") ||
-                        text.Contains("█") ||
-                        text.Contains("▌") ||
-                        text.Contains("▒") ||
+                        text.Contains('░') ||
+                        text.Contains('▄') ||
+                        text.Contains('█') ||
+                        text.Contains('▌') ||
+                        text.Contains('▒') ||
                         text.Contains("习近平")
                         ))
                     {
@@ -277,7 +277,7 @@ internal class EAC
         WarnHost(-1);
         return false;
     }
-    public static Dictionary<byte, CustomRoles> OriginalRoles = new();
+    public static Dictionary<byte, CustomRoles> OriginalRoles = [];
     public static void LogAllRoles()
     {
         foreach (var pc in Main.AllPlayerControls.ToArray())
@@ -377,7 +377,7 @@ internal class EAC
         }
     }
 
-    public static Dictionary<byte, int> ReportTimes = new();
+    public static Dictionary<byte, int> ReportTimes = [];
     public static bool RpcReportDeadBodyCheck(PlayerControl player, GameData.PlayerInfo target)
     {
         if (!ReportTimes.ContainsKey(player.PlayerId))

@@ -80,8 +80,8 @@ public static class Zoom
 
 public static class Flag
 {
-    private static List<string> OneTimeList = new();
-    private static List<string> FirstRunList = new();
+    private static List<string> OneTimeList = [];
+    private static List<string> FirstRunList = [];
     public static void Run(Action action, string type, bool firstrun = false)
     {
         if (OneTimeList.Contains(type) || (firstrun && !FirstRunList.Contains(type)))

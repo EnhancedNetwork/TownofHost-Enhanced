@@ -13,7 +13,7 @@ public static class NWitch
     private static readonly int Id = 13800;
     public static bool IsEnable = false;
 
-    public static Dictionary<byte, byte> TaglockedList = new();
+    public static Dictionary<byte, byte> TaglockedList = [];
 
     private static OptionItem ControlCooldown;
     public static OptionItem CanVent;
@@ -29,7 +29,7 @@ public static class NWitch
     }
     public static void Init()
     {
-        TaglockedList = new();
+        TaglockedList = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -90,7 +90,7 @@ public static class NWitch
         else
         {
             var taglockedPos = taglocked.transform.position;
-            Dictionary<byte, float> targetDistance = new();
+            Dictionary<byte, float> targetDistance = [];
             float dis;
             foreach (var target in Main.AllAlivePlayerControls)
             {

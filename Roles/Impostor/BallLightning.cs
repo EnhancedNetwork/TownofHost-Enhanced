@@ -11,15 +11,15 @@ namespace TOHE.Roles.Impostor;
 public static class BallLightning
 {
     private static readonly int Id = 24100;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     private static OptionItem KillCooldown;
     private static OptionItem ConvertTime;
     private static OptionItem KillerConvertGhost;
 
-    private static List<byte> GhostPlayer;
-    private static Dictionary<byte, PlayerControl> RealKiller;
+    private static List<byte> GhostPlayer = [];
+    private static Dictionary<byte, PlayerControl> RealKiller = [];
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.BallLightning);
@@ -31,9 +31,9 @@ public static class BallLightning
     }
     public static void Init()
     {
-        playerIdList = new();
-        GhostPlayer = new();
-        RealKiller = new();
+        playerIdList = [];
+        GhostPlayer = [];
+        RealKiller = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -54,7 +54,7 @@ public static class BallLightning
         bool isGhost = reader.ReadBoolean();
         if (GhostId == byte.MaxValue)
         {
-            GhostPlayer = new();
+            GhostPlayer = [];
             return;
         }
         if (isGhost)
@@ -108,7 +108,7 @@ public static class BallLightning
     }
     public static void OnFixedUpdate()
     {
-        List<byte> deList = new();
+        List<byte> deList = [];
         foreach (var ghost in GhostPlayer.ToArray())
         {
             var gs = Utils.GetPlayerById(ghost);
@@ -151,7 +151,7 @@ public static class BallLightning
             gs.SetRealKiller(RealKiller[gs.PlayerId]);
             Logger.Info($"{gs.GetNameWithRole()} 作为量子幽灵参与会议，将在会议后死亡", "BallLightning");
         }
-        GhostPlayer = new();
+        GhostPlayer = [];
         SendRPC(byte.MaxValue);
         Utils.NotifyRoles();
     }

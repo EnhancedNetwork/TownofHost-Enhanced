@@ -7,7 +7,7 @@ namespace TOHE.Roles.Neutral;
 public static class Werewolf
 {
     private static readonly int Id = 18400;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
     
     public static OptionItem KillCooldown;
@@ -29,7 +29,7 @@ public static class Werewolf
     }
     public static void Init()
     {
-        playerIdList = new();
+        playerIdList = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)

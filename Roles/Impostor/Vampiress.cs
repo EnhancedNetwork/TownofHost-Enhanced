@@ -9,23 +9,17 @@ namespace TOHE.Roles.Impostor;
 
 public static class Vampiress
 {
-    private class BittenInfo
+    private class BittenInfo(byte vampierId, float killTimer)
     {
-        public byte VampiressId;
-        public float KillTimer;
-
-        public BittenInfo(byte vampierId, float killTimer)
-        {
-            VampiressId = vampierId;
-            KillTimer = killTimer;
-        }
+        public byte VampiressId = vampierId;
+        public float KillTimer = killTimer;
     }
 
-    private static readonly List<byte> PlayerIdList = new();
+    private static readonly List<byte> PlayerIdList = [];
     public static bool IsEnable = false;
 
     private static float KillDelay;
-    private static readonly Dictionary<byte, BittenInfo> BittenPlayers = new();
+    private static readonly Dictionary<byte, BittenInfo> BittenPlayers = [];
     public static void Init()
     {
         PlayerIdList.Clear();

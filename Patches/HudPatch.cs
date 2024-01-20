@@ -588,7 +588,7 @@ class HudManagerPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ToggleHighlight))]
 class ToggleHighlightPatch
 {
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] bool active, [HarmonyArgument(1)] RoleTeamTypes team)
+    public static void Postfix(PlayerControl __instance /*, [HarmonyArgument(0)] bool active, [HarmonyArgument(1)] RoleTeamTypes team*/)
     {
         if (GameStates.IsHideNSeek) return;
 
@@ -609,16 +609,16 @@ class SetVentOutlinePatch
         if (GameStates.IsHideNSeek) return;
 
         var player = PlayerControl.LocalPlayer;
-        Color color = PlayerControl.LocalPlayer.GetRoleColor();
+        Color color = player.GetRoleColor();
         __instance.myRend.material.SetColor("_OutlineColor", color);
         __instance.myRend.material.SetColor("_AddColor", mainTarget ? color : Color.clear);
     }
 }
-[HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive), new System.Type[] { typeof(PlayerControl), typeof(RoleBehaviour), typeof(bool) })]
+[HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive), [typeof(PlayerControl), typeof(RoleBehaviour), typeof(bool)])]
 class SetHudActivePatch
 {
     public static bool IsActive = false;
-    public static void Prefix(HudManager __instance, [HarmonyArgument(2)] ref bool isActive)
+    public static void Prefix(/*HudManager __instance,*/ [HarmonyArgument(2)] ref bool isActive)
     {
         isActive &= !GameStates.IsMeeting;
         return;
@@ -798,7 +798,7 @@ class TaskPanelBehaviourPatch
                     }
                     break;
                 case CustomGameMode.FFA:
-                    Dictionary<byte, string> SummaryText2 = new();
+                    Dictionary<byte, string> SummaryText2 = [];
                     foreach (var id in Main.PlayerStates.Keys)
                     {
                         string name = Main.AllPlayerNames[id].RemoveHtmlTags().Replace("\r\n", string.Empty);
@@ -807,7 +807,7 @@ class TaskPanelBehaviourPatch
                         SummaryText2[id] = summary;
                     }
 
-                    List<(int, byte)> list2 = new();
+                    List<(int, byte)> list2 = [];
                     foreach (var id in Main.PlayerStates.Keys) list2.Add((FFAManager.GetRankOfScore(id), id));
                     list2.Sort();
                     foreach (var id in list2.Where(x => SummaryText2.ContainsKey(x.Item2))) AllText += "\r\n" + SummaryText2[id.Item2];

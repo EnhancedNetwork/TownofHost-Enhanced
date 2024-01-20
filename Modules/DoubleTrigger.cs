@@ -6,17 +6,17 @@ namespace TOHE;
 
 static class DoubleTrigger
 {
-    public static List<byte> PlayerIdList = new();
+    public static List<byte> PlayerIdList = [];
 
-    public static Dictionary<byte, float> FirstTriggerTimer = new();
-    public static Dictionary<byte, byte> FirstTriggerTarget = new();
-    public static Dictionary<byte, Action> FirstTriggerAction = new();
+    public static Dictionary<byte, float> FirstTriggerTimer = [];
+    public static Dictionary<byte, byte> FirstTriggerTarget = [];
+    public static Dictionary<byte, Action> FirstTriggerAction = [];
 
     public static void Init()
     {
-        PlayerIdList = new();
-        FirstTriggerTimer = new();
-        FirstTriggerAction = new();
+        PlayerIdList = [];
+        FirstTriggerTimer = [];
+        FirstTriggerAction = [];
     }
     public static void AddDoubleTrigger(this PlayerControl killer)
     {

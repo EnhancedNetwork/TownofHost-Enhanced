@@ -103,7 +103,7 @@ static class ExtendedPlayerControl
         if (player == null)
         {
             Logger.Warn("tried to get CustomSubRole, but the target was null", "GetCustomSubRole");
-            return new() { CustomRoles.NotAssigned };
+            return [CustomRoles.NotAssigned];
         }
         return Main.PlayerStates[player.PlayerId].SubRoles;
     }
@@ -562,6 +562,10 @@ static class ExtendedPlayerControl
         if (pc == null) return false;
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
         role = pc.GetCustomRole();
+        if (!role.IsImpostor())
+        {
+            return role.GetDYRole() == RoleTypes.Impostor;
+        }
         return role.GetVNRole() switch
         { 
             CustomRoles.Impostor => true,
@@ -1283,7 +1287,7 @@ static class ExtendedPlayerControl
     public static List<PlayerControl> GetPlayersInAbilityRangeSorted(this PlayerControl player, Predicate<PlayerControl> predicate, bool ignoreColliders = false)
     {
         var rangePlayersIL = RoleBehaviour.GetTempPlayerList();
-        List<PlayerControl> rangePlayers = new();
+        List<PlayerControl> rangePlayers = [];
         player.Data.Role.GetPlayersInAbilityRangeSorted(rangePlayersIL, ignoreColliders);
         foreach (var pc in rangePlayersIL.ToArray())
         {
@@ -1384,7 +1388,7 @@ static class ExtendedPlayerControl
             _ => throw new NotImplementedException(),
         };
     }
-    public static Vector2 GetCustomPosition(this PlayerControl player) => new Vector2(player.transform.position.x, player.transform.position.y);
+    public static Vector2 GetCustomPosition(this PlayerControl player) => new (player.transform.position.x, player.transform.position.y);
     public static string GetRoleInfo(this PlayerControl player, bool InfoLong = false)
     {
         var role = player.GetCustomRole();

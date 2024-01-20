@@ -82,7 +82,7 @@ public abstract class OptionItem
         IsText = false;
 
         // Initialize Objects
-        Children = new();
+        Children = [];
 
         // Set default value
         if (Id == PresetId)
@@ -133,7 +133,7 @@ public abstract class OptionItem
         foreach (var role in Options.CustomRoleSpawnChances.Where(x => x.Value.Name == parent.Name).ToArray())
         {
             var roleName = Translator.GetString(Enum.GetName(typeof(CustomRoles), role.Key));
-            ReplacementDictionary ??= new();
+            ReplacementDictionary ??= [];
             ReplacementDictionary.TryAdd(roleName, Utils.ColorString(Utils.GetRoleColor(role.Key), roleName));
             break;
         }
@@ -148,7 +148,7 @@ public abstract class OptionItem
     public OptionItem AddReplacement((string key, string value) kvp)
         => Do(i =>
         {
-            ReplacementDictionary ??= new();
+            ReplacementDictionary ??= [];
             ReplacementDictionary.Add(kvp.key, kvp.value);
         });
     public OptionItem RemoveReplacement(string key)
@@ -285,15 +285,10 @@ public abstract class OptionItem
         }
     }
 
-    public class UpdateValueEventArgs : EventArgs
+    public class UpdateValueEventArgs(int beforeValue, int currentValue) : EventArgs
     {
-        public int CurrentValue { get; set; }
-        public int BeforeValue { get; set; }
-        public UpdateValueEventArgs(int beforeValue, int currentValue)
-        {
-            CurrentValue = currentValue;
-            BeforeValue = beforeValue;
-        }
+        public int CurrentValue { get; set; } = currentValue;
+        public int BeforeValue { get; set; } = beforeValue;
     }
 
     public const int NumPresets = 5;

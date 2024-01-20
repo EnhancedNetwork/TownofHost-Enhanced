@@ -2,19 +2,15 @@ using System;
 
 namespace TOHE;
 
-public class Xorshift : IRandom
+public class Xorshift(uint seed) : IRandom
 {
     // 参考元
     public const string REFERENCE = "https://ja.wikipedia.org/wiki/Xorshift";
 
-    private uint num;
+    private uint num = seed;
 
     public Xorshift() : this((uint)DateTime.UtcNow.Ticks)
     { }
-    public Xorshift(uint seed)
-    {
-        num = seed;
-    }
 
     public uint Next()
     {

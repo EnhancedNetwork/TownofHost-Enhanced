@@ -70,7 +70,7 @@ public class MersenneTwister : IRandom
 
     private readonly UInt32[] _mt = new UInt32[N];
     private Int16 _mtItems;
-    private readonly UInt32[] _mag01 = { 0x0, MatrixA };
+    private readonly UInt32[] _mag01 = [0x0, MatrixA];
 
     private void Init(UInt32 seed)
     {

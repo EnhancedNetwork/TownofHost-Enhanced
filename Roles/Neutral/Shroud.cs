@@ -12,7 +12,7 @@ public static class Shroud
     private static readonly int Id = 18000;
     public static bool IsEnable = false;
 
-    public static Dictionary<byte, byte> ShroudList = new();
+    public static Dictionary<byte, byte> ShroudList = [];
 
     private static OptionItem ShroudCooldown;
     public static OptionItem CanVent;
@@ -28,7 +28,7 @@ public static class Shroud
     }
     public static void Init()
     {
-        ShroudList = new();
+        ShroudList = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -89,7 +89,7 @@ public static class Shroud
         else
         {
             var shroudPos = shroud.transform.position;
-            Dictionary<byte, float> targetDistance = new();
+            Dictionary<byte, float> targetDistance = [];
             float dis;
             foreach (var target in Main.AllAlivePlayerControls)
             {
