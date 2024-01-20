@@ -378,7 +378,7 @@ public class PlayerState
         Eaten,
         Sacrifice,
         Quantization,
-        Overtired,
+        Over,
         Ashamed,
         PissedOff,
         Dismembered,
@@ -664,9 +664,7 @@ public class TaskState
                             break;
                         
                         case CustomRoles.Tired when player.IsAlive():
-                         {
                              Tired.AfterActionTasks(player);
-                         }
 
                         case CustomRoles.Bloodlust when player.IsAlive() && !Alchemist.BloodlustList.ContainsKey(player.PlayerId):
                             Alchemist.BloodlustList[player.PlayerId] = player.PlayerId;
