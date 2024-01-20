@@ -942,7 +942,7 @@ internal static class RPC
     }
     public static async void RpcVersionCheck()
     {
-        while (PlayerControl.LocalPlayer == null || AmongUsClient.Instance.GetHost().Character == null || PlayerControl.LocalPlayer.GetClientId() < 0) await Task.Delay(500);
+        while (PlayerControl.LocalPlayer == null || AmongUsClient.Instance.GetHost() == null || PlayerControl.LocalPlayer.GetClientId() < 0) await Task.Delay(500);
         var hostId = AmongUsClient.Instance.HostId;
         if (Main.playerVersion.ContainsKey(hostId) || !Main.VersionCheat.Value)
         {
