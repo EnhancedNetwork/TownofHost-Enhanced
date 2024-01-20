@@ -357,6 +357,7 @@ internal class ChangeRoleSettings
             Instigator.Init();
             OverKiller.Init();
             Quizmaster.Init();
+            Tired.Init();
 
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
@@ -1059,6 +1060,9 @@ internal class SelectRolesPatch
                             break;
                         case CustomRoles.Oiiai:
                             Oiiai.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.Tired:
+                            Tired.Add(pc.PlayerId);
                             break;
 
                         default:

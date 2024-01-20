@@ -777,6 +777,10 @@ class CheckMurderPatch
                     }
                     break;
 
+                case CustomRoles.Tired:
+                    Tired.AfterActionTasks(killer);
+                    break;
+
                 case CustomRoles.Clumsy:
                     var miss = IRandom.Instance;
                     if (miss.Next(0, 100) < Options.ChanceToMiss.GetInt())

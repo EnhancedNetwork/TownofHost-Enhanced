@@ -650,6 +650,10 @@ public class TaskState
                                 player.RpcMurderPlayerV3(player);
                             }
                             break;
+                        
+                        case CustomRoles.Tired when player.IsAlive():
+                             Tired.AfterActionTasks(player);
+                            break;
 
                         case CustomRoles.Bloodlust when player.IsAlive() && !Alchemist.BloodlustList.ContainsKey(player.PlayerId):
                             Alchemist.BloodlustList[player.PlayerId] = player.PlayerId;

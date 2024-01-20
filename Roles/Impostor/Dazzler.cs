@@ -18,7 +18,7 @@ public static class Dazzler
 
     private static OptionItem KillCooldown;
     private static OptionItem ShapeshiftCooldown;
-//    private static OptionItem ShapeshiftDuration;
+    //    private static OptionItem ShapeshiftDuration;
     private static OptionItem CauseVision;
     private static OptionItem DazzleLimit;
     private static OptionItem ResetDazzledVisionOnDeath;
@@ -30,8 +30,8 @@ public static class Dazzler
             .SetValueFormat(OptionFormat.Seconds);
         ShapeshiftCooldown = FloatOptionItem.Create(Id + 11, "DazzleCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler])
             .SetValueFormat(OptionFormat.Seconds);
-   //     ShapeshiftDuration = FloatOptionItem.Create(Id + 12, "ShapeshiftDuration", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler])
-     //       .SetValueFormat(OptionFormat.Seconds);
+        //     ShapeshiftDuration = FloatOptionItem.Create(Id + 12, "ShapeshiftDuration", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler])
+        //       .SetValueFormat(OptionFormat.Seconds);
         CauseVision = FloatOptionItem.Create(Id + 13, "DazzlerCauseVision", new(0f, 5f, 0.05f), 0.65f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler])
             .SetValueFormat(OptionFormat.Multiplier);
         DazzleLimit = IntegerOptionItem.Create(Id + 14, "DazzlerDazzleLimit", new(1, 15, 1), 3, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler])
@@ -41,15 +41,15 @@ public static class Dazzler
 
     public static void Init()
     {
-        playerIdList = [];
-        PlayersDazzled = [];
+        playerIdList = new();
+        PlayersDazzled = new();
         IsEnable = false;
     }
 
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        PlayersDazzled.TryAdd(playerId, []);
+        PlayersDazzled.TryAdd(playerId, new List<byte>());
         IsEnable = true;
     }
 
@@ -67,7 +67,8 @@ public static class Dazzler
 
         if (!PlayersDazzled[pc.PlayerId].Contains(target.PlayerId) && PlayersDazzled[pc.PlayerId].Count < DazzleLimit.GetInt())
         {
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Dazzler), GetString("DazzlerDazzled")));
+            Tired.playerIdList.Remove(pc.PlayerId);
+            target.Notify(ColorString(GetRoleColor(CustomRoles.Dazzler), GetString("DazzlerDazzled")));
             PlayersDazzled[pc.PlayerId].Add(target.PlayerId);
             MarkEveryoneDirtySettings();
         }
@@ -75,7 +76,7 @@ public static class Dazzler
 
     public static void SetDazzled(PlayerControl player, IGameOptions opt)
     {
-        if (PlayersDazzled.Any(a => a.Value.Contains(player.PlayerId) && 
+        if (PlayersDazzled.Any(a => a.Value.Contains(player.PlayerId) &&
            (!ResetDazzledVisionOnDeath.GetBool() || Main.AllAlivePlayerControls.Any(b => b.PlayerId == a.Key))))
         {
             opt.SetVision(false);
