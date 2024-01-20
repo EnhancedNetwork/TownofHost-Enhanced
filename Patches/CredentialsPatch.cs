@@ -40,9 +40,9 @@ public static class Credentials
             else if (ping < 100) pingcolor = "#7bc690";
             else if (ping < 200) pingcolor = "#f3920e";
             else if (ping < 400) pingcolor = "#ff146e";
-            sb.Append($"\r\n").Append($"<color={pingcolor}>Ping: {ping} ms</color>");
+            sb.Append("\r\n").Append($"<color={pingcolor}>Ping: {ping} ms</color>");
 
-            if (!GameStates.IsModHost) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("Warning.NoModHost")));
+            if (!GameStates.IsModHost) sb.Append("\r\n").Append(Utils.ColorString(Color.red, GetString("Warning.NoModHost")));
 
             if (Main.ShowFPS.Value)
             {
