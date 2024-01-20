@@ -169,7 +169,7 @@ public static class Medic
     {
         if (killer == null || target == null) return false;
         if (!ProtectList.Contains(target.PlayerId)) return false;
-
+        if (killer.Is(CustomRoles.Minimalism)) return false;
         SendRPCForProtectList();
 
         killer.RpcGuardAndKill(target);

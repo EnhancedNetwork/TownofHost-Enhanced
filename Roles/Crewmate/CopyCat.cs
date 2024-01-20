@@ -155,6 +155,9 @@ public static class CopyCat
                 case CustomRoles.Monitor:
                     Monitor.Remove(pc.PlayerId);
                     break;
+                case CustomRoles.Investigator:
+                    Investigator.Remove(pc.PlayerId);
+                    break;
             }
             pc.RpcSetCustomRole(CustomRoles.CopyCat);
             SetKillCooldown(player);
@@ -174,10 +177,9 @@ public static class CopyCat
             CustomRoles.Chameleon or
             CustomRoles.Alchemist or
             CustomRoles.TimeMaster or
-            CustomRoles.Mole or
+            CustomRoles.Mole;
             //bcoz of single role
             // Other
-            CustomRoles.Investigator;
     }
 
     public static bool OnCheckMurder(PlayerControl pc, PlayerControl tpc)
@@ -347,6 +349,10 @@ public static class CopyCat
                     break;
                 case CustomRoles.Monitor:
                     Monitor.Add(pc.PlayerId);
+                    break;
+
+                case CustomRoles.Investigator:
+                    Investigator.Add(pc.PlayerId);
                     break;
             }
 

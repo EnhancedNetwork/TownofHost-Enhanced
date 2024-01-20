@@ -1072,7 +1072,7 @@ public static class Utils
                     ProgressText.Append(Deputy.GetHandcuffLimit());
                     break;
                 case CustomRoles.Investigator:
-                    ProgressText.Append(Investigator.GetInvestigateLimit());
+                    ProgressText.Append(Investigator.GetInvestigateLimit(playerId));
                     break;
                 case CustomRoles.Virus:
                     ProgressText.Append(Virus.GetInfectLimit());

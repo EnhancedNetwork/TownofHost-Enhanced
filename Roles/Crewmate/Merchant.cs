@@ -138,10 +138,11 @@ namespace TOHE.Roles.Crewmate
 
         public static void OnTaskFinished(PlayerControl player)
         {
-            if (!player.IsAlive() || !player.Is(CustomRoles.Merchant) || (addonsSold[player.PlayerId] >= OptionMaxSell.GetInt()))
+            if (addonsSold[player.PlayerId] >= OptionMaxSell.GetInt())
             {
                 return;
             }
+
             if (addons.Count == 0)
             {
                 player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSellFail")));

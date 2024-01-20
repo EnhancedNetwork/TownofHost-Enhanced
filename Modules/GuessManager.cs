@@ -218,6 +218,12 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("SolsticerGuessMax"));
                     return true;
                 }
+                if (pc.Is(CustomRoles.NiceMini) && Mini.Age < 18 && Mini.misguessed)
+                {
+                    if (!isUI) Utils.SendMessage(GetString("MiniGuessMax"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("MiniGuessMax"));
+                    return true;
+                }
                 if (pc.Is(CustomRoles.Phantom) && !Options.PhantomCanGuess.GetBool())
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
@@ -691,7 +697,12 @@ public static class GuessManager
                     _ = new LateTask(() => { Utils.SendMessage(GetString("SolsticerMisGuessed"), dp.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("GuessKillTitle")), true); }, 0.6f, "Solsticer MisGuess Msg");
                     return true;
                 }
-
+                if (dp.Is(CustomRoles.NiceMini) && Mini.Age < 18)
+                {
+                    Mini.misguessed = true;
+                    _ = new LateTask(() => { Utils.SendMessage(GetString("MiniMisGuessed"), dp.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("GuessKillTitle")), true); }, 0.6f, "Mini MisGuess Msg");
+                    return true;
+                }
                 string Name = dp.GetRealName();
                 if (!Options.DisableKillAnimationOnGuess.GetBool()) CustomSoundsManager.RPCPlayCustomSoundAll("Gunfire");
 

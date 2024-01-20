@@ -77,7 +77,11 @@ public static class Pursuer
         
         SeelLimit[pc.PlayerId]--;
         SendRPC(pc.PlayerId);
-        
+        if (target.Is(CustomRoles.Minimalism)) 
+        {
+            Logger.Info("target is Killing Machine, ability used count reduced, but target will not die", "Purser");
+            return; 
+        }
         if (!clientList.ContainsKey(pc.PlayerId))
             clientList.Add(pc.PlayerId, []);
 
