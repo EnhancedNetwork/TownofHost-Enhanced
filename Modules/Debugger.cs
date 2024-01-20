@@ -29,8 +29,8 @@ class Webhook
 class Logger
 {
     public static bool isEnable;
-    public static List<string> disableList = new();
-    public static List<string> sendToGameList = new();
+    public static List<string> disableList = [];
+    public static List<string> sendToGameList = [];
     public static bool isDetail = false;
     public static bool isAlsoInGame = false;
     public static void Enable() => isEnable = true;
@@ -42,7 +42,7 @@ class Logger
         else sendToGameList.Remove(tag);
     }
     public static void Disable(string tag) { if (!disableList.Contains(tag)) disableList.Add(tag); }
-    public static void SendInGame(string text, bool isAlways = false)
+    public static void SendInGame(string text)
     {
         if (!isEnable) return;
         if (DestroyableSingleton<HudManager>._instance) DestroyableSingleton<HudManager>.Instance.Notifier.AddItem(text);

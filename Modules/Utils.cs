@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Diagnostics;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.AddOns.Crewmate;
@@ -39,7 +40,7 @@ public static class Utils
             
             _ = new LateTask(() =>
             {
-                Logger.SendInGame(GetString("AntiBlackOutLoggerSendInGame"), true);
+                Logger.SendInGame(GetString("AntiBlackOutLoggerSendInGame"));
             }, 3f, "Anti-Black Msg SendInGame 3");
             
             _ = new LateTask(() =>
@@ -58,14 +59,14 @@ public static class Utils
             {
                 _ = new LateTask(() =>
                 {
-                    Logger.SendInGame(GetString("AntiBlackOutRequestHostToForceEnd"), true);
+                    Logger.SendInGame(GetString("AntiBlackOutRequestHostToForceEnd"));
                 }, 3f, "Anti-Black Msg SendInGame 4");
             }
             else
             {
                 _ = new LateTask(() =>
                 {
-                    Logger.SendInGame(GetString("AntiBlackOutHostRejectForceEnd"), true);
+                    Logger.SendInGame(GetString("AntiBlackOutHostRejectForceEnd"));
                 }, 3f, "Anti-Black Msg SendInGame 5");
                 
                 _ = new LateTask(() =>
@@ -1260,10 +1261,10 @@ public static class Utils
             return;
         }
 
-        List<string> impsb = new();
-        List<string> neutralsb = new();
-        List<string> crewsb = new();
-        List<string> addonsb = new();
+        List<string> impsb = [];
+        List<string> neutralsb = [];
+        List<string> crewsb = [];
+        List<string> addonsb = [];
 
         foreach (var role in CustomRolesHelper.AllRoles)
         {
@@ -1333,7 +1334,7 @@ public static class Utils
         }
         if (Options.CurrentGameMode == CustomGameMode.FFA)
         {
-            List<(int, byte)> list = new();
+            List<(int, byte)> list = [];
             foreach (byte id in cloneRoles.ToArray())
             {
                 list.Add((FFAManager.GetRankOfScore(id), id));
@@ -1405,7 +1406,7 @@ public static class Utils
     {
         text = text.ToLowerInvariant();
         text = text.Replace("色", string.Empty);
-        int color = -1;
+        int color;
         try { color = int.Parse(text); } catch { color = -1; }
         switch (text)
         {
@@ -1775,15 +1776,13 @@ public static class Utils
     }
     public static bool CheckColorHex(string ColorCode)
     {
-        {
-            Regex regex = new Regex("^[0-9A-Fa-f]{6}$");
-            if (!regex.IsMatch(ColorCode)) return false;
-            return true;
-        }
+        Regex regex = new("^[0-9A-Fa-f]{6}$");
+        if (!regex.IsMatch(ColorCode)) return false;
+        return true;
     }
     public static bool CheckGradientCode(string ColorCode)
     {
-        Regex regex = new Regex(@"^[0-9A-Fa-f]{6}\s[0-9A-Fa-f]{6}$");
+        Regex regex = new(@"^[0-9A-Fa-f]{6}\s[0-9A-Fa-f]{6}$");
         if (!regex.IsMatch(ColorCode)) return false;
         return true;
     }
@@ -1882,7 +1881,7 @@ public static class Utils
                         if (File.Exists(colorFilePath))
                         {
                             string ColorCode = File.ReadAllText(colorFilePath);
-                            ColorCode.Trim();
+                            _ = ColorCode.Trim();
                             if (CheckColorHex(ColorCode)) startColorCode = ColorCode;
                         }
                         //"ffff00"
@@ -1923,11 +1922,10 @@ public static class Utils
                     if (!Options.GradientTagsOpt.GetBool())
                     { 
                         string startColorCode = "8bbee0";
-                        string ColorCode = "";
                         if (File.Exists(colorFilePath))
                         {
-                            ColorCode = File.ReadAllText(colorFilePath);
-                            ColorCode.Trim();
+                            string ColorCode = File.ReadAllText(colorFilePath);
+                            _ = ColorCode.Trim();
                             if (CheckColorHex(ColorCode)) startColorCode = ColorCode;
                         }
                         //"33ccff", "ff99cc"
@@ -1994,10 +1992,10 @@ public static class Utils
     }
     public static GameData.PlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);
-    private static StringBuilder SelfSuffix = new();
-    private static StringBuilder SelfMark = new(20);
-    private static StringBuilder TargetSuffix = new();
-    private static StringBuilder TargetMark = new(20);
+    private static readonly StringBuilder SelfSuffix = new();
+    private static readonly StringBuilder SelfMark = new(20);
+    private static readonly StringBuilder TargetSuffix = new();
+    private static readonly StringBuilder TargetMark = new(20);
     public static async void NotifyRoles(bool isForMeeting = false, PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool NoCache = false, bool ForceLoop = false, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
@@ -2030,11 +2028,11 @@ public static class Utils
         HudManagerPatch.LastSetNameDesyncCount = 0;
 
         PlayerControl[] seerList = SpecifySeer != null 
-            ? (new PlayerControl[] { SpecifySeer }) 
+            ? ([SpecifySeer]) 
             : Main.AllPlayerControls;
 
         PlayerControl[] targetList = SpecifyTarget != null
-            ? (new PlayerControl[] { SpecifyTarget })
+            ? ([SpecifyTarget])
             : Main.AllPlayerControls;
 
         if (!MushroomMixupIsActive)
@@ -2433,7 +2431,7 @@ public static class Utils
                         switch (seerRole)
                         {
                             case CustomRoles.PlagueBearer:
-                                if (PlagueBearer.isPlagued(seer.PlayerId, target.PlayerId))
+                                if (PlagueBearer.IsPlagued(seer.PlayerId, target.PlayerId))
                                 {
                                     TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.PlagueBearer)}>●</color>");
                                     PlagueBearer.SendRPC(seer, target);
@@ -2711,7 +2709,7 @@ public static class Utils
         Main.ShamanTarget = byte.MaxValue;
         Main.ShamanTargetChoosen = false;
         Main.BurstBodies.Clear();
-        OverKiller.MurderTargetLateTask = new();
+        OverKiller.MurderTargetLateTask = [];
         RiftMaker.AfterMeetingTasks();
 
 
@@ -2868,11 +2866,12 @@ public static class Utils
         if (!Directory.Exists(f)) Directory.CreateDirectory(f);
         FileInfo file = new(@$"{Environment.CurrentDirectory}/BepInEx/LogOutput.log");
         file.CopyTo(@filename);
+
         if (PlayerControl.LocalPlayer != null)
             HudManager.Instance?.Chat?.AddChat(PlayerControl.LocalPlayer, string.Format(GetString("Message.DumpfileSaved"), $"TOHE - v{Main.PluginVersion}-{t}.log"));
-        System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo("Explorer.exe")
-        { Arguments = "/e,/select," + @filename.Replace("/", "\\") };
-        System.Diagnostics.Process.Start(psi);
+
+        ProcessStartInfo psi = new("Explorer.exe") { Arguments = "/e,/select," + @filename.Replace("/", "\\") };
+        Process.Start(psi);
 
         if (!AmongUsClient.Instance.AmHost && GameStates.IsOnlineGame && GameStates.IsModHost)
         {
@@ -2907,7 +2906,7 @@ public static class Utils
         int all = Options.RevolutionistDrawCount.GetInt();
         int max = Main.AllAlivePlayerControls.Length;
         if (!Main.PlayerStates[playerId].IsDead) max--;
-        winnerList = new();
+        winnerList = [];
         if (all > max) all = max;
 
         foreach (var pc in Main.AllPlayerControls)
@@ -2938,8 +2937,8 @@ public static class Utils
     }
     public static string NewSummaryTexts(byte id, bool disableColor = true, bool check = false)
     {
-        var RolePos = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? 37 : 34;
-        var KillsPos = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? 14 : 12;
+        //var RolePos = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? 37 : 34;
+        //var KillsPos = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? 14 : 12;
         var name = Main.AllPlayerNames[id].RemoveHtmlTags().Replace("\r\n", string.Empty);
         if (id == PlayerControl.LocalPlayer.PlayerId) name = DataManager.player.Customization.Name;
         else name = GetPlayerById(id)?.Data.PlayerName ?? name;
@@ -2984,7 +2983,7 @@ public static class Utils
         })));
     }
 
-    public static Dictionary<string, Sprite> CachedSprites = new();
+    public static Dictionary<string, Sprite> CachedSprites = [];
     public static Sprite LoadSprite(string path, float pixelsPerUnit = 1f)
     {
         try

@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using System.Collections.Generic;
-using System.Linq;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -9,7 +8,7 @@ namespace TOHE.Roles.Neutral;
 public static class Necromancer
 {
     private static readonly int Id = 17100;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
 
     private static OptionItem KillCooldown;
     public static OptionItem CanVent;
@@ -34,7 +33,7 @@ public static class Necromancer
     }
     public static void Init()
     {
-        playerIdList = new();
+        playerIdList = [];
         IsRevenge = false;
         Success = false;
         Killer = null;

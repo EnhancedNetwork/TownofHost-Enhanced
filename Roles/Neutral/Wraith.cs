@@ -13,7 +13,7 @@ namespace TOHE.Roles.Neutral;
 public static class Wraith
 {
     private static readonly int Id = 18500;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     private static OptionItem WraithCooldown;
@@ -21,9 +21,9 @@ public static class Wraith
     private static OptionItem WraithVentNormallyOnCooldown;
     private static OptionItem HasImpostorVision;
 
-    private static Dictionary<byte, long> InvisTime = new();
-    private static Dictionary<byte, long> lastTime = new();
-    private static Dictionary<byte, int> ventedId = new();
+    private static Dictionary<byte, long> InvisTime = [];
+    private static Dictionary<byte, long> lastTime = [];
+    private static Dictionary<byte, int> ventedId = [];
 
     public static void SetupCustomOption()
     {
@@ -37,10 +37,10 @@ public static class Wraith
     }
     public static void Init()
     {
-        playerIdList = new();
-        InvisTime = new();
-        lastTime = new();
-        ventedId = new();
+        playerIdList = [];
+        InvisTime = [];
+        lastTime = [];
+        ventedId = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -63,8 +63,8 @@ public static class Wraith
     }
     public static void ReceiveRPC(MessageReader reader)
     {
-        InvisTime = new();
-        lastTime = new();
+        InvisTime = [];
+        lastTime = [];
         long invis = long.Parse(reader.ReadString());
         long last = long.Parse(reader.ReadString());
         if (invis > 0) InvisTime.Add(PlayerControl.LocalPlayer.PlayerId, invis);
@@ -79,8 +79,8 @@ public static class Wraith
     {
         if (!IsEnable) return;
 
-        lastTime = new();
-        InvisTime = new();
+        lastTime = [];
+        InvisTime = [];
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => playerIdList.Contains(x.PlayerId)).ToArray())
         {
             lastTime.Add(pc.PlayerId, Utils.GetTimeStamp());
@@ -101,8 +101,8 @@ public static class Wraith
         if (lastFixedTime != now)
         {
             lastFixedTime = now;
-            Dictionary<byte, long> newList = new();
-            List<byte> refreshList = new();
+            Dictionary<byte, long> newList = [];
+            List<byte> refreshList = [];
             foreach (var it in InvisTime)
             {
                 var pc = Utils.GetPlayerById(it.Key);

@@ -7,12 +7,12 @@ namespace TOHE.Roles.Neutral;
 public static class Collector
 {
     private static readonly int Id = 14700;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
-    public static Dictionary<byte, byte> CollectorVoteFor = new();
-    public static Dictionary<byte, int> CollectVote = new();
-    public static Dictionary<byte, int> NewVote = new();
+    public static Dictionary<byte, byte> CollectorVoteFor = [];
+    public static Dictionary<byte, int> CollectVote = [];
+    public static Dictionary<byte, int> NewVote = [];
 
     public static OptionItem CollectorCollectAmount;
 
@@ -24,9 +24,9 @@ public static class Collector
     }
     public static void Init()
     {
-        playerIdList = new();
-        CollectorVoteFor = new();
-        CollectVote = new();
+        playerIdList = [];
+        CollectorVoteFor = [];
+        CollectVote = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)

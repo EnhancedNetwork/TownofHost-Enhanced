@@ -12,9 +12,9 @@ public static class President
     private static readonly int Id = 12300;
     public static bool IsEnable = false;
 
-    public static Dictionary<byte, int> EndLimit;
-    public static Dictionary<byte, int> RevealLimit;
-    public static Dictionary<byte, bool> CheckPresidentReveal = new();
+    public static Dictionary<byte, int> EndLimit = [];
+    public static Dictionary<byte, int> RevealLimit = [];
+    public static Dictionary<byte, bool> CheckPresidentReveal = [];
 
 
     public static OptionItem PresidentAbilityUses;
@@ -38,9 +38,9 @@ public static class President
     }
     public static void Init()
     {
-        CheckPresidentReveal = new();
-        EndLimit = new();
-        RevealLimit = new();
+        CheckPresidentReveal = [];
+        EndLimit = [];
+        RevealLimit = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -92,7 +92,7 @@ public static class President
         if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false;
         if (!pc.Is(CustomRoles.President)) return false;
 
-        int operate = 0;
+        int operate;
         msg = msg.ToLower().TrimStart().TrimEnd();
         if (CheckCommond(ref msg, "finish|结束|结束会议|結束|結束會議")) operate = 1;
         else if (CheckCommond(ref msg, "reveal|展示")) operate = 2;
@@ -169,7 +169,7 @@ public static class President
     public static bool CheckCommond(ref string msg, string command, bool exact = true)
     {
         var comList = command.Split('|');
-        for (int i = 0; i < comList.Count(); i++)
+        for (int i = 0; i < comList.Length; i++)
         {
             if (exact)
             {

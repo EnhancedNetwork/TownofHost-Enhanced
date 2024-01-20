@@ -2,13 +2,9 @@ using System;
 
 namespace TOHE.Modules;
 
-class LogHandler : ILogHandler
+class LogHandler(string tag) : ILogHandler
 {
-    public string Tag { get; }
-    public LogHandler(string tag)
-    {
-        Tag = tag;
-    }
+    public string Tag { get; } = tag;
 
     public void Info(string text)
         => Logger.Info(text, Tag, true);

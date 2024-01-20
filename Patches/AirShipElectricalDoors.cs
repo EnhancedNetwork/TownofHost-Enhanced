@@ -16,8 +16,8 @@ public class AirshipElectricalDoors
     }
     public static byte[] GetClosedDoors()
     {
-        List<byte> DoorsArray = new();
-        if (Instance.Doors == null || Instance.Doors.Count == 0) return DoorsArray.ToArray();
+        List<byte> DoorsArray = [];
+        if (Instance.Doors == null || Instance.Doors.Count == 0) return [.. DoorsArray];
         for (byte i = 0; i < Instance.Doors.Count; i++)
         {
             var door = Instance.Doors[i];
@@ -42,7 +42,7 @@ public class AirshipElectricalDoors
 [HarmonyPatch(typeof(ElectricalDoors), nameof(ElectricalDoors.Initialize))]
 class ElectricalDoorsInitializePatch
 {
-    public static void Postfix(ElectricalDoors __instance)
+    public static void Postfix(/*ElectricalDoors __instance*/)
     {
         if (!GameStates.IsInGame) return;
         var closedoors = "";

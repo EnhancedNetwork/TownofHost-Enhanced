@@ -10,7 +10,7 @@ namespace TOHE.Roles.Impostor;
 public static class RiftMaker
 {
     private static readonly int Id = 27200;
-    //private static List<byte> playerIdList = new();
+    //private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     public static OptionItem SSCooldown;
@@ -18,8 +18,8 @@ public static class RiftMaker
     public static OptionItem TPCooldownOpt;
     public static OptionItem RiftRadius;
 
-    public static Dictionary<byte, List<Vector2>> MarkedLocation = new();
-    public static Dictionary<byte, long> LastTP = new();
+    public static Dictionary<byte, List<Vector2>> MarkedLocation = [];
+    public static Dictionary<byte, long> LastTP = [];
     private static float TPCooldown = new();
     public static void SetupCustomOption()
     {
@@ -37,14 +37,14 @@ public static class RiftMaker
     public static void Init()
     {
         IsEnable = false;
-        MarkedLocation = new();
-        LastTP = new();
+        MarkedLocation = [];
+        LastTP = [];
         TPCooldown = new();
     }
     public static void Add(byte playerId)
     {
         IsEnable = true;
-        MarkedLocation[playerId] = new();
+        MarkedLocation[playerId] = [];
         var now = Utils.GetTimeStamp();
         LastTP[playerId] = now;
         TPCooldown = TPCooldownOpt.GetFloat();
@@ -92,7 +92,7 @@ public static class RiftMaker
         {
             float xLoc = reader.ReadSingle();
             float yLoc = reader.ReadSingle();
-            if (!MarkedLocation.ContainsKey(riftID)) MarkedLocation[riftID] = new();
+            if (!MarkedLocation.ContainsKey(riftID)) MarkedLocation[riftID] = [];
             if (MarkedLocation[riftID].Count >= 2) MarkedLocation[riftID].RemoveAt(0);
             MarkedLocation[riftID].Add(new Vector2(xLoc, yLoc));
 
@@ -123,7 +123,7 @@ public static class RiftMaker
         if (!IsEnable || !pc.IsAlive() || !IsShapeshifting) return;
         if (!pc.Is(CustomRoles.RiftMaker)) return;
 
-        if (!MarkedLocation.ContainsKey(pc.PlayerId)) MarkedLocation[pc.PlayerId] = new();
+        if (!MarkedLocation.ContainsKey(pc.PlayerId)) MarkedLocation[pc.PlayerId] = [];
 
         var currentPos = pc.GetCustomPosition();
         var totalMarked = MarkedLocation[pc.PlayerId].Count;
@@ -174,7 +174,7 @@ public static class RiftMaker
         if (!player.Is(CustomRoles.RiftMaker)) return;
         if (Pelican.IsEaten(player.PlayerId) || !player.IsAlive()) return;
         byte playerId = player.PlayerId;
-        if (!MarkedLocation.ContainsKey(playerId)) MarkedLocation[playerId] = new();
+        if (!MarkedLocation.ContainsKey(playerId)) MarkedLocation[playerId] = [];
         if (MarkedLocation[playerId].Count != 2) return;
         var now = Utils.GetTimeStamp();
         if (!LastTP.ContainsKey(playerId)) LastTP[playerId] = now;

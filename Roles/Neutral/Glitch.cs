@@ -9,10 +9,10 @@ namespace TOHE.Roles.Neutral;
 public static class Glitch
 {
     private static readonly int Id = 16300;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
-    public static Dictionary<byte, long> hackedIdList = new();
+    public static Dictionary<byte, long> hackedIdList = [];
 
     public static OptionItem KillCooldown;
     public static OptionItem HackCooldown;
@@ -52,8 +52,8 @@ public static class Glitch
     }
     public static void Init()
     {
-        playerIdList = new();
-        hackedIdList = new();
+        playerIdList = [];
+        hackedIdList = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -84,7 +84,7 @@ public static class Glitch
     }
     public static void SetHudActive(HudManager __instance, bool isActive)
     {
-        __instance.SabotageButton.ToggleVisible(true);
+        __instance.SabotageButton.ToggleVisible(isActive);
     }
 
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 1f;

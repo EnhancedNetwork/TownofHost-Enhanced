@@ -10,13 +10,12 @@ namespace TOHE.Roles.Crewmate;
 public static class Monarch
 {
     private static readonly int Id = 12100;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     public static OptionItem KnightCooldown;
     public static OptionItem KnightMax;
     
-
     private static int KnightLimit = new();
 
     public static void SetupCustomOption()
@@ -29,7 +28,7 @@ public static class Monarch
     }
     public static void Init()
     {
-        playerIdList = new();
+        playerIdList = [];
         KnightLimit = new();
         IsEnable = false;
     }

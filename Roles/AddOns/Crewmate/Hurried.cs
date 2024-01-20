@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-
+﻿
 namespace TOHE.Roles.AddOns.Crewmate
 {
     public static class Hurried

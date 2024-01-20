@@ -9,72 +9,56 @@ public abstract class OptionBackupValue
     public abstract void Restore(IGameOptions option);
 }
 
-public abstract class OptionBackupValueBase<NameT, ValueT> : OptionBackupValue
+public abstract class OptionBackupValueBase<NameT, ValueT>(NameT name, ValueT value) : OptionBackupValue
 where NameT : Enum
 {
-    public readonly NameT OptionName;
-    public readonly ValueT Value;
-    public OptionBackupValueBase(NameT name, ValueT value)
-    {
-        OptionName = name;
-        Value = value;
-    }
+    public readonly NameT OptionName = name;
+    public readonly ValueT Value = value;
 }
 
-public class ByteOptionBackupValue : OptionBackupValueBase<ByteOptionNames, byte>
+public class ByteOptionBackupValue(ByteOptionNames name, byte value) : OptionBackupValueBase<ByteOptionNames, byte>(name, value)
 {
-    public ByteOptionBackupValue(ByteOptionNames name, byte value) : base(name, value) { }
     public override void Restore(IGameOptions option)
     {
         option.SetByte(OptionName, Value);
     }
 }
-public class BoolOptionBackupValue : OptionBackupValueBase<BoolOptionNames, bool>
+public class BoolOptionBackupValue(BoolOptionNames name, bool value) : OptionBackupValueBase<BoolOptionNames, bool>(name, value)
 {
-    public BoolOptionBackupValue(BoolOptionNames name, bool value) : base(name, value) { }
     public override void Restore(IGameOptions option)
     {
         if (OptionName != BoolOptionNames.GhostsDoTasks)
             option.SetBool(OptionName, Value);
     }
 }
-public class FloatOptionBackupValue : OptionBackupValueBase<FloatOptionNames, float>
+public class FloatOptionBackupValue(FloatOptionNames name, float value) : OptionBackupValueBase<FloatOptionNames, float>(name, value)
 {
-    public FloatOptionBackupValue(FloatOptionNames name, float value) : base(name, value) { }
     public override void Restore(IGameOptions option)
     {
         option.SetFloat(OptionName, Value);
     }
 }
-public class IntOptionBackupValue : OptionBackupValueBase<Int32OptionNames, int>
+public class IntOptionBackupValue(Int32OptionNames name, int value) : OptionBackupValueBase<Int32OptionNames, int>(name, value)
 {
-    public IntOptionBackupValue(Int32OptionNames name, int value) : base(name, value) { }
     public override void Restore(IGameOptions option)
     {
         option.SetInt(OptionName, Value);
     }
 }
-public class UIntOptionBackupValue : OptionBackupValueBase<UInt32OptionNames, uint>
+public class UIntOptionBackupValue(UInt32OptionNames name, uint value) : OptionBackupValueBase<UInt32OptionNames, uint>(name, value)
 {
-    public UIntOptionBackupValue(UInt32OptionNames name, uint value) : base(name, value) { }
     public override void Restore(IGameOptions option)
     {
         option.SetUInt(OptionName, Value);
     }
 }
 
-public class RoleRateBackupValue : OptionBackupValue
+public class RoleRateBackupValue(RoleTypes type, int maxCount, int chance) : OptionBackupValue
 {
-    public RoleTypes roleType;
-    public int maxCount;
-    public int chance;
+    public RoleTypes roleType = type;
+    public int maxCount = maxCount;
+    public int chance = chance;
 
-    public RoleRateBackupValue(RoleTypes type, int maxCount, int chance)
-    {
-        this.roleType = type;
-        this.maxCount = maxCount;
-        this.chance = chance;
-    }
     public override void Restore(IGameOptions option)
     {
         option.RoleOptions.SetRoleRate(roleType, maxCount, chance);

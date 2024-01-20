@@ -469,7 +469,7 @@ class GameEndCheckerForNormal
         if (Blackmailer.IsEnable) Blackmailer.ForBlackmailer.Clear();
 
         // Set ghost role
-        List<byte> ReviveRequiredPlayerIds = new();
+        List<byte> ReviveRequiredPlayerIds = [];
         var winner = CustomWinnerHolder.WinnerTeam;
         foreach (var pc in Main.AllPlayerControls)
         {
@@ -546,7 +546,7 @@ class GameEndCheckerForNormal
             return false;
         }
 
-        public bool CheckGameEndByLivingPlayers(out GameOverReason reason)
+        public static bool CheckGameEndByLivingPlayers(out GameOverReason reason)
         {
             reason = GameOverReason.ImpostorByKill;
 
@@ -670,7 +670,7 @@ class FFAGameEndPredicate : GameEndPredicate
 
             Logger.Warn($"Winner: {Utils.GetPlayerById(winnerId).GetRealName().RemoveHtmlTags()}", "FFA");
 
-            CustomWinnerHolder.WinnerIds = new() { winnerId };
+            CustomWinnerHolder.WinnerIds = [winnerId];
 
             Main.DoBlockNameChange = true;
 
@@ -682,7 +682,7 @@ class FFAGameEndPredicate : GameEndPredicate
 
             Logger.Info($"Winner: {winner.GetRealName().RemoveHtmlTags()}", "FFA");
 
-            CustomWinnerHolder.WinnerIds = new() { winner.PlayerId };
+            CustomWinnerHolder.WinnerIds = [winner.PlayerId];
 
             Main.DoBlockNameChange = true;
 

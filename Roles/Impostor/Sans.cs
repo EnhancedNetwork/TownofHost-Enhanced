@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using static TOHE.Options;
 
-namespace TOHE;
+namespace TOHE.Roles.Impostor;
 
 public static class Sans
 {
     private static readonly int Id = 500;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     private static OptionItem DefaultKillCooldown;
@@ -15,7 +15,7 @@ public static class Sans
     private static OptionItem MinKillCooldown;
     public static OptionItem BardChance;
 
-    private static Dictionary<byte, float> NowCooldown;
+    private static Dictionary<byte, float> NowCooldown = [];
 
     public static void SetupCustomOption()
     {
@@ -32,8 +32,8 @@ public static class Sans
     }
     public static void Init()
     {
-        playerIdList = new();
-        NowCooldown = new();
+        playerIdList = [];
+        NowCooldown = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)

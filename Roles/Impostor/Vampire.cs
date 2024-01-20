@@ -9,27 +9,21 @@ namespace TOHE.Roles.Impostor;
 
 public static class Vampire
 {
-    private class BittenInfo
+    private class BittenInfo(byte vampierId, float killTimer)
     {
-        public byte VampireId;
-        public float KillTimer;
-
-        public BittenInfo(byte vampierId, float killTimer)
-        {
-            VampireId = vampierId;
-            KillTimer = killTimer;
-        }
+        public byte VampireId = vampierId;
+        public float KillTimer = killTimer;
     }
 
     private static readonly int Id = 5000;
-    private static readonly List<byte> PlayerIdList = new();
+    private static readonly List<byte> PlayerIdList = [];
     public static bool IsEnable = false;
 
     public static OptionItem OptionKillDelay;
     public static OptionItem CanVent;
     public static OptionItem VampiressChance;
     private static float KillDelay;
-    private static readonly Dictionary<byte, BittenInfo> BittenPlayers = new();
+    private static readonly Dictionary<byte, BittenInfo> BittenPlayers = [];
     public static void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Vampire);

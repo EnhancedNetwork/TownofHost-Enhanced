@@ -7,7 +7,7 @@ namespace TOHE.Roles.Impostor;
 public static class Mare
 {
     private static readonly int Id = 23000;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
 
     public static OptionItem KillCooldownInLightsOut;
     //private static OptionItem KillCooldownNormally;
@@ -34,7 +34,7 @@ public static class Mare
     }
     public static void Init()
     {
-        playerIdList = new();
+        playerIdList = [];
     }
     public static void Add(byte mare)
     {

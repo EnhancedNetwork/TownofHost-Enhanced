@@ -11,7 +11,7 @@ namespace TOHE.Roles.Neutral;
 public class Quizmaster
 {
     private static readonly int Id = 27000;
-    //public static List<byte> playerIdList = new();
+    //public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
     public static PlayerControl Player;
     public static OptionItem QuestionDifficulty;
@@ -19,8 +19,8 @@ public class Quizmaster
     public static OptionItem CanVentAfterMark;
     public static OptionItem NumOfKillAfterMark;
     public static OptionItem CanGiveQuestionsAboutPastGames;
-    public static QuizQuestionBase Question = new SetAnswersQuestion { Stage = 0, Answer = "Select Me", PossibleAnswers = { "Select me", "Die", "Die", "Die" }, Question = "This question is to prevent crashes answer the letter with the answer \"Select me\"", hasAnswersTranslation = false, hasQuestionTranslation = false };
-    public static QuizQuestionBase previousQuestion = new SetAnswersQuestion { Stage = 0, Answer = "Select Me", PossibleAnswers = { "Select me", "Die", "Die", "Die" }, Question = "This question is to prevent crashes answer the letter with the answer \"Select me\"", hasAnswersTranslation = false, hasQuestionTranslation = false };
+    public static QuizQuestionBase Question = new SetAnswersQuestion { Stage = 0, Answer = "Select Me", PossibleAnswers = { "Select me", "Die", "Die", "Die" }, Question = "This question is to prevent crashes answer the letter with the answer \"Select me\"", HasAnswersTranslation = false, HasQuestionTranslation = false };
+    public static QuizQuestionBase previousQuestion = new SetAnswersQuestion { Stage = 0, Answer = "Select Me", PossibleAnswers = { "Select me", "Die", "Die", "Die" }, Question = "This question is to prevent crashes answer the letter with the answer \"Select me\"", HasAnswersTranslation = false, HasQuestionTranslation = false };
     public static Sabotages lastSabotage = Sabotages.None;
     public static Sabotages firstSabotageOfRound = Sabotages.None;
     public static int killsForRound = 0;
@@ -223,10 +223,10 @@ public class Quizmaster
         Player = Utils.GetPlayerByRole(CustomRoles.Quizmaster);
         if (MarkedPlayer != byte.MaxValue)
         {
-            CustomRoles randomRole = GetRandomRole(CustomRolesHelper.AllRoles.ToList(), false);
-            CustomRoles randomRoleWithAddon = GetRandomRole(CustomRolesHelper.AllRoles.ToList(), false);
-            List<QuizQuestionBase> Questions = new()
-            {
+            CustomRoles randomRole = GetRandomRole([.. CustomRolesHelper.AllRoles], false);
+            CustomRoles randomRoleWithAddon = GetRandomRole([.. CustomRolesHelper.AllRoles], false);
+            List<QuizQuestionBase> Questions =
+            [
                 new SabotageQuestion { Stage = 1, Question = "LastSabotage",/* JSON ENTRIES */ QuizmasterQuestionType = QuizmasterQuestionType.LatestSabotageQuestion },
                 new SabotageQuestion { Stage = 1, Question = "FirstRoundSabotage", QuizmasterQuestionType = QuizmasterQuestionType.FirstRoundSabotageQuestion },
                 new PlrColorQuestion { Stage = 1, Question = "LastEjectedPlayerColor", QuizmasterQuestionType = QuizmasterQuestionType.EjectionColorQuestion },
@@ -235,8 +235,8 @@ public class Quizmaster
 
                 new CountQuestion { Stage = 2, Question = "MeetingPassed", QuizmasterQuestionType = QuizmasterQuestionType.MeetingCountQuestion },
                 new SetAnswersQuestion { Stage = 2, Question = "HowManyFactions", Answer = "Three", PossibleAnswers = { "One", "Two", "Three", "Four", "Five" }, QuizmasterQuestionType = QuizmasterQuestionType.FactionQuestion },
-                new SetAnswersQuestion { Stage = 2, Question = GetString("BasisOfRole").Replace("{QMROLE}", randomRoleWithAddon.ToString()), hasQuestionTranslation = false, Answer = CustomRolesHelper.GetCustomRoleTypes(randomRoleWithAddon).ToString(), PossibleAnswers = { "Crewmate", "Impostor", "Neutral", "Addon" }, QuizmasterQuestionType = QuizmasterQuestionType.RoleBasisQuestion },
-                new SetAnswersQuestion { Stage = 2, Question = GetString("FactionOfRole").Replace("{QMROLE}", randomRole.ToString()), hasQuestionTranslation = false, Answer = CustomRolesHelper.GetRoleTypes(randomRole).ToString(), PossibleAnswers = { "Crewmate", "Impostor", "Neutral" }, QuizmasterQuestionType = QuizmasterQuestionType.RoleFactionQuestion },
+                new SetAnswersQuestion { Stage = 2, Question = GetString("BasisOfRole").Replace("{QMROLE}", randomRoleWithAddon.ToString()), HasQuestionTranslation = false, Answer = CustomRolesHelper.GetCustomRoleTypes(randomRoleWithAddon).ToString(), PossibleAnswers = { "Crewmate", "Impostor", "Neutral", "Addon" }, QuizmasterQuestionType = QuizmasterQuestionType.RoleBasisQuestion },
+                new SetAnswersQuestion { Stage = 2, Question = GetString("FactionOfRole").Replace("{QMROLE}", randomRole.ToString()), HasQuestionTranslation = false, Answer = CustomRolesHelper.GetRoleTypes(randomRole).ToString(), PossibleAnswers = { "Crewmate", "Impostor", "Neutral" }, QuizmasterQuestionType = QuizmasterQuestionType.RoleFactionQuestion },
 
                 new SetAnswersQuestion { Stage = 3, Question = "FactionRemovedName", Answer = "Coven", PossibleAnswers = { "Sabotuer", "Sorcerers", "Coven", "Killer" }, QuizmasterQuestionType = QuizmasterQuestionType.RemovedFactionQuestion },
                 new SetAnswersQuestion { Stage = 3, Question = "WhatDoesEOgMeansInName", Answer = "Edited", PossibleAnswers = { "Edition", "Experimental", "Enhanced", "Edited" }, QuizmasterQuestionType = QuizmasterQuestionType.NameOriginQuestion },
@@ -247,7 +247,7 @@ public class Quizmaster
                 new DeathReasonQuestion { Stage = 4, Question = "PlrDieMethod", QuizmasterQuestionType = QuizmasterQuestionType.PlrDeathMethodQuestion},
                 new SetAnswersQuestion { Stage = 4, Question = "LastAddedRoleForKarped", Answer = "Pacifist", PossibleAnswers = { "Pacifist", "Vampire", "Snitch", "Vigilante", "Jackal", "Mole", "Sniper" }, QuizmasterQuestionType = QuizmasterQuestionType.RoleAddedQuestion },
                 new DeathReasonQuestion { Stage = 4, Question = "PlrDieFaction", QuizmasterQuestionType = QuizmasterQuestionType.PlrDeathKillerFactionQuestion},
-            };
+            ];
             
             Question = GetRandomQuestion(Questions);
             _ = new LateTask(() =>
@@ -305,7 +305,7 @@ public class Quizmaster
     }
 
     public static string TargetMark(PlayerControl seer, PlayerControl target)
-        => (target.PlayerId == MarkedPlayer) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : "";
+        => (seer != null && target.PlayerId == MarkedPlayer) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : "";
 
     public static void OnSabotageCall(SystemTypes systemType)
     {
@@ -421,8 +421,8 @@ public class Quizmaster
     {
         if (plr.PlayerId == MarkedPlayer)
         {
-            Utils.SendMessage(GetString("QuizmasterChat.MarkedBy").Replace("{QMCOLOR}", Utils.GetRoleColorCode(CustomRoles.Quizmaster)).Replace("{QMQUESTION}", Question.hasQuestionTranslation ? GetString("QuizmasterQuestions." + Question.Question) : Question.Question), MarkedPlayer, GetString("QuizmasterChat.Title"));
-            Utils.SendMessage(GetString("QuizmasterChat.Answers").Replace("{QMA}", Question.hasAnswersTranslation ? GetString(Question.Answers[0], showInvalid: Question.showInvalid) : Question.Answers[0]).Replace("{QMB}", Question.hasAnswersTranslation ? GetString(Question.Answers[1], showInvalid: Question.showInvalid) : Question.Answers[1]).Replace("{QMC}", Question.hasAnswersTranslation ? GetString(Question.Answers[2], showInvalid: Question.showInvalid) : Question.Answers[2]), MarkedPlayer, GetString("QuizmasterChat.Title"));
+            Utils.SendMessage(GetString("QuizmasterChat.MarkedBy").Replace("{QMCOLOR}", Utils.GetRoleColorCode(CustomRoles.Quizmaster)).Replace("{QMQUESTION}", Question.HasQuestionTranslation ? GetString("QuizmasterQuestions." + Question.Question) : Question.Question), MarkedPlayer, GetString("QuizmasterChat.Title"));
+            Utils.SendMessage(GetString("QuizmasterChat.Answers").Replace("{QMA}", Question.HasAnswersTranslation ? GetString(Question.Answers[0], showInvalid: Question.ShowInvalid) : Question.Answers[0]).Replace("{QMB}", Question.HasAnswersTranslation ? GetString(Question.Answers[1], showInvalid: Question.ShowInvalid) : Question.Answers[1]).Replace("{QMC}", Question.HasAnswersTranslation ? GetString(Question.Answers[2], showInvalid: Question.ShowInvalid) : Question.Answers[2]), MarkedPlayer, GetString("QuizmasterChat.Title"));
         }
     }
 
@@ -441,10 +441,10 @@ abstract public class QuizQuestionBase
     public string Answer { get; set; }
     public string AnswerLetter { get; set; }
     public List<string> Answers { get; set; }
-    public List<string> PossibleAnswers { get; set; } = new List<string> { };
-    public bool hasAnswersTranslation { get; set; } = true;
-    public bool hasQuestionTranslation { get; set; } = true;
-    public bool showInvalid { get; set; } = true;
+    public List<string> PossibleAnswers { get; set; } = [];
+    public bool HasAnswersTranslation { get; set; } = true;
+    public bool HasQuestionTranslation { get; set; } = true;
+    public bool ShowInvalid { get; set; } = true;
     public abstract void FixUnsetAnswers();
 }
 
@@ -452,7 +452,7 @@ class PlrColorQuestion : QuizQuestionBase
 {
     public override void FixUnsetAnswers()
     {
-        Answers = new List<string> { };
+        Answers = [];
 
         foreach (PlayerControl plr in Main.AllPlayerControls)
         {
@@ -471,7 +471,7 @@ class PlrColorQuestion : QuizQuestionBase
             _ => "None"
         };
 
-        hasAnswersTranslation = false;
+        HasAnswersTranslation = false;
 
         if (PossibleAnswers.Contains(Answer))
             PossibleAnswers.Remove(Answer);
@@ -504,7 +504,7 @@ class DeathReasonQuestion : QuizQuestionBase
 {
     public override void FixUnsetAnswers()
     {
-        Answers = new List<string> { };
+        Answers = [];
 
         var rnd = IRandom.Instance;
 
@@ -542,10 +542,10 @@ class DeathReasonQuestion : QuizQuestionBase
 
         int positionForRightAnswer = rnd.Next(0, 3);
 
-        hasQuestionTranslation = false; //doing this do i can just change the player name in question
+        HasQuestionTranslation = false; //doing this do i can just change the player name in question
         Question = GetString("QuizmasterQuestions." + Question).Replace("{PLR}", chosenPlayer.GetRealName());
 
-        showInvalid = false;
+        ShowInvalid = false;
 
         Answer = QuizmasterQuestionType switch
         {
@@ -595,7 +595,7 @@ class CountQuestion : QuizQuestionBase
             _ => "None"
         };
 
-        Answers = new List<string> { };
+        Answers = [];
         int ans = int.Parse(Answer);
         if (ans < 1)
         {
@@ -608,7 +608,7 @@ class CountQuestion : QuizQuestionBase
             PossibleAnswers.Add((ans - 1).ToString());
         }
 
-        hasAnswersTranslation = false;
+        HasAnswersTranslation = false;
 
         int positionForRightAnswer = rnd.Next(0, 3);
 
@@ -634,7 +634,7 @@ class SetAnswersQuestion : QuizQuestionBase
 {
     public override void FixUnsetAnswers()
     {
-        Answers = new List<string> { };
+        Answers = [];
 
         var rnd = IRandom.Instance;
         int positionForRightAnswer = rnd.Next(0, 3);
@@ -668,15 +668,15 @@ class SetAnswersQuestion : QuizQuestionBase
 
 class SabotageQuestion : QuizQuestionBase
 {
-    private static readonly List<Sabotages> SkeldSabotages = new() { Sabotages.None, Sabotages.Lights, Sabotages.Reactor, Sabotages.O2 };
-    private static readonly List<Sabotages> MiraSabotages = new() { Sabotages.None, Sabotages.Lights, Sabotages.Reactor, Sabotages.O2, Sabotages.Communications };
-    private static readonly List<Sabotages> PolusSabotages = new() { Sabotages.None, Sabotages.Lights, Sabotages.Reactor, Sabotages.Communications };
-    private static readonly List<Sabotages> AirshitSabotages = new() { Sabotages.None, Sabotages.Lights, Sabotages.Reactor, Sabotages.Communications };
-    private static readonly List<Sabotages> FungleSabotages = new() { Sabotages.None, Sabotages.Communications, Sabotages.Reactor, Sabotages.MushroomMixup };
+    private static readonly List<Sabotages> SkeldSabotages = [Sabotages.None, Sabotages.Lights, Sabotages.Reactor, Sabotages.O2];
+    private static readonly List<Sabotages> MiraSabotages = [Sabotages.None, Sabotages.Lights, Sabotages.Reactor, Sabotages.O2, Sabotages.Communications];
+    private static readonly List<Sabotages> PolusSabotages = [Sabotages.None, Sabotages.Lights, Sabotages.Reactor, Sabotages.Communications];
+    private static readonly List<Sabotages> AirshitSabotages = [Sabotages.None, Sabotages.Lights, Sabotages.Reactor, Sabotages.Communications];
+    private static readonly List<Sabotages> FungleSabotages = [Sabotages.None, Sabotages.Communications, Sabotages.Reactor, Sabotages.MushroomMixup];
 
     public override void FixUnsetAnswers()
     {
-        Answers = new List<string> { };
+        Answers = [];
 
         PossibleAnswers = Utils.GetActiveMapName() switch
         {

@@ -12,7 +12,7 @@ namespace TOHE;
 
 public class dbConnect
 {
-    private static Dictionary<string, string> userType = new();
+    private static Dictionary<string, string> userType = [];
     public static bool InitOnce = false;
     public static async void Init()
     {
@@ -87,7 +87,7 @@ public class dbConnect
         DestroyableSingleton<DisconnectPopup>.Instance.ShowCustom(GetString("dbConnect.InitFailure"));
         DestroyableSingleton<EOSManager>.Instance.loginFlowFinished = false;
     }
-    private static string getToken()
+    private static string GetToken()
     {
         string apiToken = "";
         Assembly assembly = Assembly.GetExecutingAssembly();
@@ -104,7 +104,7 @@ public class dbConnect
         {
             if (stream != null)
             {
-                using (StreamReader reader = new StreamReader(stream))
+                using (StreamReader reader = new(stream))
                 {
                     // Read the content of the .env file
                     string content = reader.ReadToEnd();
@@ -123,7 +123,7 @@ public class dbConnect
     private static void GetRoleTable()
     {
         var tempUserType = new Dictionary<string, string>(); // Create a temporary dictionary
-        string apiToken = getToken();
+        string apiToken = GetToken();
         if (apiToken == "")
         {
             Logger.Warn("Embedded resource not found.", "apiToken");
@@ -188,7 +188,7 @@ public class dbConnect
         }
     }
 
-    public static string ToAutoTranslate(System.Text.Json.JsonElement tag)
+    public static string ToAutoTranslate(JsonElement tag)
     {
         //Translates the mostly used tags.
         string text = tag.ToString();
@@ -213,7 +213,7 @@ public class dbConnect
     }
     private static void GetEACList()
     {
-        string apiToken = getToken();
+        string apiToken = GetToken();
         if (apiToken == "")
         {
             Logger.Warn("Embedded resource not found.", "apiToken");
@@ -277,4 +277,3 @@ public class dbConnect
         return true;
     }
 }
-
