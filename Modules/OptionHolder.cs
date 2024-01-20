@@ -1087,7 +1087,7 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 27200 lasted id for roles/add-ons (Next use 27300)
+        // 27300 lasted id for roles/add-ons (Next use 27400)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
 
@@ -2710,6 +2710,8 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky]);
         NeutralCanBeUnlucky = BooleanOptionItem.Create(21010, "NeutralCanBeUnlucky", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky]);
+
+        Tired.SetupCustomOptions();
 
         SetupAdtRoleOptions(21100, CustomRoles.VoidBallot, canSetNum: true);
         ImpCanBeVoidBallot = BooleanOptionItem.Create(21103, "ImpCanBeVoidBallot", true, TabGroup.Addons, false)

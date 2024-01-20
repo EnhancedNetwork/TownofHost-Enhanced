@@ -478,7 +478,7 @@ public class TaskState
                     if ((CompletedTasksCount + 1) <= Options.TransporterTeleportMax.GetInt())
                     {
                         Logger.Info($"Transporter: {player.GetNameWithRole().RemoveHtmlTags()} completed the task", "Transporter");
-                        
+
                         var rd = IRandom.Instance;
                         List<PlayerControl> AllAlivePlayer = Main.AllAlivePlayerControls.Where(x => x.CanBeTeleported()).ToList();
 
@@ -486,7 +486,7 @@ public class TaskState
                         {
                             var target1 = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
                             var positionTarget1 = target1.GetCustomPosition();
-                            
+
                             AllAlivePlayer.Remove(target1);
 
                             var target2 = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
@@ -603,7 +603,7 @@ public class TaskState
 
                     RPC.CrewpostorTasksSendRPC(player.PlayerId, Main.CrewpostorTasksDone[player.PlayerId]);
                     List<PlayerControl> list = Main.AllAlivePlayerControls.Where(x => x.PlayerId != player.PlayerId && (Options.CrewpostorCanKillAllies.GetBool() || !x.GetCustomRole().IsImpostorTeam())).ToList();
-                    
+
                     if (list.Count <= 0)
                     {
                         Logger.Info($"No target to kill", "Crewpostor");
@@ -662,6 +662,10 @@ public class TaskState
                                 player.RpcMurderPlayerV3(player);
                             }
                             break;
+                        
+                        case CustomRoles.Tired when player.IsAlive():
+                             Tired.AfterActionTasks(player);
+                            break;
 
                         case CustomRoles.Bloodlust when player.IsAlive() && !Alchemist.BloodlustList.ContainsKey(player.PlayerId):
                             Alchemist.BloodlustList[player.PlayerId] = player.PlayerId;
@@ -693,7 +697,7 @@ public class TaskState
 
                         case CustomRoles.Workaholic when (CompletedTasksCount + 1) >= AllTasksCount && !(Options.WorkaholicCannotWinAtDeath.GetBool() && !player.IsAlive()):
                             Logger.Info("The Workaholic task is done", "Workaholic");
-                            
+
                             RPC.PlaySoundRPC(player.PlayerId, Sounds.KillSound);
                             foreach (var pc in Main.AllAlivePlayerControls)
                             {
@@ -701,7 +705,7 @@ public class TaskState
                                 {
                                     Main.PlayerStates[pc.PlayerId].deathReason = pc.PlayerId == player.PlayerId ?
                                         PlayerState.DeathReason.Overtired : PlayerState.DeathReason.Ashamed;
-                                    
+
                                     pc.RpcMurderPlayerV3(pc);
                                     Main.PlayerStates[pc.PlayerId].SetDead();
                                     pc.SetRealKiller(player);
