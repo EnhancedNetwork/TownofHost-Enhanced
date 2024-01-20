@@ -12,24 +12,15 @@ public static class Investigator
     private static List<byte> playerIdList = new();
     public static Dictionary<byte, byte> InvestigatedList = new();
     public static bool IsEnable = false;
-    public static readonly string[] ColorTypeText =
-    {
-        "Color.Red", "Color.Green","Color.Gray"
-    };
-    public static readonly string[] RevealMode =
-    {
-        "Investigator.Suspicion", "Investigator.Role"
-    };
+
 
     public static OptionItem InvestigateCooldown;
     public static OptionItem InvestigateMax;
-    public static OptionItem RoleRevealMode;
-//    public static OptionItem CrewKillingShowAs;
-//    public static OptionItem PassiveNeutralsShowAs;
-//    public static OptionItem NeutralKillingShowAs;
+    public static OptionItem InvestigateRoundMax;
     
 
-    private static int InvestigateLimit = new();
+    private static Dictionary<byte, int> MaxInvestigateLimit = new();
+    private static Dictionary<byte, int> RoundInvestigateLimit = new();
 
     public static void SetupCustomOption()
     {
@@ -37,8 +28,9 @@ public static class Investigator
         InvestigateCooldown = FloatOptionItem.Create(Id + 10, "InvestigateCooldown", new(0f, 180f, 2.5f), 27.5f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Investigator])
             .SetValueFormat(OptionFormat.Seconds);
         InvestigateMax = IntegerOptionItem.Create(Id + 11, "InvestigateMax", new(1, 15, 1), 5, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Investigator])
+            .SetValueFormat(OptionFormat.Times); 
+        InvestigateRoundMax = IntegerOptionItem.Create(Id + 12, "InvestigateRoundMax", new(1, 15, 1), 1, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Investigator])
             .SetValueFormat(OptionFormat.Times);
-        RoleRevealMode = StringOptionItem.Create(Id + 12, "RoleRevealMode", RevealMode, 1, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Investigator]);
     //    CrewKillingShowAs = StringOptionItem.Create(Id + 12, "CrewKillingShowAs", ColorTypeText, 1, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Investigator]);
     //    PassiveNeutralsShowAs = StringOptionItem.Create(Id + 13, "PassiveNeutralsShowAs", ColorTypeText, 2, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Investigator]);
     //    NeutralKillingShowAs = StringOptionItem.Create(Id + 14, "NeutralKillingShowAs", ColorTypeText, 0, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Investigator]);
@@ -46,14 +38,16 @@ public static class Investigator
     public static void Init()
     {
         playerIdList = new();
-        InvestigateLimit = new();
+        MaxInvestigateLimit = new();
+        RoundInvestigateLimit = new();
         InvestigatedList = new();
         IsEnable = false;
     }
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        InvestigateLimit = InvestigateMax.GetInt();
+        MaxInvestigateLimit[playerId] = InvestigateMax.GetInt();
+        RoundInvestigateLimit[playerId] = InvestigateRoundMax.GetInt();
         IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
