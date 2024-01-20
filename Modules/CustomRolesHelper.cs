@@ -1250,6 +1250,7 @@ static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Bewilder)
                     //|| pc.Is(CustomRoles.Sunglasses)
                     || pc.Is(CustomRoles.Lighter)
+                    || pc.Is(CustomRoles.Tired)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
                 if (!pc.GetCustomRole().IsCrewmate())
@@ -1348,6 +1349,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Randomizer)
                     || pc.Is(CustomRoles.Lighter)
                     || pc.Is(CustomRoles.Solsticer)
+                    || pc.Is(CustomRoles.Tired)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeBewilder.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeBewilder.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeBewilder.GetBool()))
@@ -1505,7 +1507,8 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.BoobyTrap)
                     || pc.Is(CustomRoles.Capitalism)
                     || pc.Is(CustomRoles.Onbound)
-                    || pc.Is(CustomRoles.Rebound))
+                    || pc.Is(CustomRoles.Rebound)
+                    || pc.Is(CustomRoles.Tired))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -1646,7 +1649,9 @@ static class CustomRolesHelper
             //    break;
 
             case CustomRoles.Flash:
-                if (pc.Is(CustomRoles.Swooper) || pc.Is(CustomRoles.Solsticer))
+                if (pc.Is(CustomRoles.Swooper) 
+                    || pc.Is(CustomRoles.Solsticer)
+                    || pc.Is(CustomRoles.Tired))
                     return false;
                 break;
 
