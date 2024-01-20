@@ -316,6 +316,12 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("GuessNotifiedBait"));
                     return true;
                 }
+                if (target.Is(CustomRoles.Rainbow))
+                {
+                    if (!isUI) Utils.SendMessage(GetString("GuessRainbow"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("GuessRainbow"));
+                    return true;
+                }
                 if (role == CustomRoles.LastImpostor || role == CustomRoles.Mare || role == CustomRoles.Cyber || role == CustomRoles.Flash)//(role == CustomRoles.Glow || role == CustomRoles.LastImpostor || role == CustomRoles.Mare || role == CustomRoles.Cyber)
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessObviousAddon"), pc.PlayerId);

@@ -1688,6 +1688,7 @@
   "ImpCanBeRainbow": "<color=#ff1919>Impostors</color>can become Rainbow",
   "NeutralCanBeRainbow": "<color=#7f8c8d>Neutrals</color>can become Rainbow",
   "CrewCanBeRainbow": "<color=#8cffff>Crewmates</color>can become Rainbow",
+  "GuessRainbow": "He seems too obvious, doesn't he?",
   "BaitDelayMin": "Minimum Report Delay",
   "BaitDelayMax": "Maximum Report Delay",
   "BaitDelayNotify": "<color=#ffff00>Warn the killer about the upcoming self-report</color>",
