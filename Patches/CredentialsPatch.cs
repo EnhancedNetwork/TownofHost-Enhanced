@@ -16,6 +16,7 @@ public static class Credentials
     class PingTrackerUpdatePatch
     {
         private static int DelayUpdate = 0;
+        private static bool CheckIsModHost = true;
         private static readonly StringBuilder sb = new();
 
         private static bool Prefix(PingTracker __instance)
@@ -25,11 +26,18 @@ public static class Credentials
             if (DelayUpdate > 0 && sb.Length > 0)
             {
                 __instance.text.alignment = TextAlignmentOptions.TopRight;
+
+                if (CheckIsModHost && GameStates.IsModHost)
+                {
+                    sb.Remove(2, $"\r\n{Utils.ColorString(Color.red, GetString("Warning.NoModHost"))}".Length);
+                    CheckIsModHost = false;
+                }
+
                 __instance.text.text = sb.ToString();
                 return false;
             }
 
-            DelayUpdate = 600;
+            DelayUpdate = 500;
 
             __instance.text.alignment = TextAlignmentOptions.TopRight;
 
@@ -45,7 +53,11 @@ public static class Credentials
             else if (ping < 400) pingcolor = "#ff146e";
             sb.Append($"\r\n<color={pingcolor}>Ping: {ping} ms</color>");
 
-            if (!GameStates.IsModHost) sb.Append($"\r\n{Utils.ColorString(Color.red, GetString("Warning.NoModHost"))}");
+            if (!GameStates.IsModHost)
+            {
+                CheckIsModHost = true;
+                sb.Append($"\r\n{Utils.ColorString(Color.red, GetString("Warning.NoModHost"))}");
+            }
 
             if (Main.ShowFPS.Value)
             {
