@@ -108,6 +108,7 @@ enum CustomRPC
     TaskinatorMarkedTask,
     BenefactorRPC,
     SetSwapperVotes,
+    SetSwapperSkill,
     SetQuickShooterShotLimit,
     SetEraseLimit,
     GuessKill,
@@ -786,7 +787,10 @@ internal class RPCHandlerPatch
                 Bloodhound.ReceiveRPCLimit(reader);
                 break;
             case CustomRPC.SetSwapperVotes:
-                Swapper.ReceiveRPC(reader, __instance);
+                Swapper.ReceiveSwapRPC(reader, __instance);
+                break;
+            case CustomRPC.SetSwapperSkill:
+                Swapper.ReceiveSkillRPC(reader);
                 break;
             case CustomRPC.SetPoliceLimlit:
                 ChiefOfPolice.ReceiveRPC(reader);
