@@ -130,9 +130,7 @@ public static class Captain
     public static void OnTaskComplete(PlayerControl pc)
     {
         if (pc == null) return;
-        if (!IsEnable) return;
         if (pc.GetPlayerTaskState().CompletedTasksCount < OptionTaskRequiredToSlow.GetInt()) return;
-        if (!pc.Is(CustomRoles.Captain) || !pc.IsAlive()) return;
         var allTargets = Main.AllAlivePlayerControls.Where(x => (x != null) && (!OriginalSpeed.ContainsKey(x.PlayerId)) &&
                                                            (x.GetCustomRole().IsImpostorTeamV3() ||
                                                            (CaptainCanTargetNB.GetBool() && x.GetCustomRole().IsNB()) ||
@@ -147,7 +145,7 @@ public static class Captain
         var target = targetPC.PlayerId;
         OriginalSpeed[target] = Main.AllPlayerSpeed[target];
         sendRPCSetSpeed(target);
-        Logger.Info($"{targetPC.GetNameWithRole()} is chosen as the captain's target", "Captain Target");
+        Logger.Info($"{targetPC.GetNameWithRole().RemoveHtmlTags()} is chosen as the captain's target", "Captain Target");
         Main.AllPlayerSpeed[target] = OptionReducedSpeed.GetFloat();
         targetPC.SyncSettings();
         targetPC.Notify(GetString("CaptainSpeedReduced"), OptionReducedSpeedTime.GetFloat());
