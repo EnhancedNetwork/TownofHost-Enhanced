@@ -75,6 +75,20 @@ public static class Wraith
     public static bool IsInvis(byte id) => InvisTime.ContainsKey(id);
 
     private static long lastFixedTime = 0;
+    public static void OnReportDeadBody()
+    {
+        lastTime = [];
+        InvisTime = [];
+
+        foreach (var wraithId in playerIdList.ToArray())
+        {
+            var wraith = Utils.GetPlayerById(wraithId);
+            if (wraith == null) return;
+
+            wraith?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(wraithId, out var id) ? id : Main.LastEnteredVent[wraithId].Id);
+            SendRPC(wraith);
+        }
+    }
     public static void AfterMeetingTasks()
     {
         if (!IsEnable) return;

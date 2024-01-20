@@ -2340,6 +2340,9 @@ class ReportDeadBodyPatch
         if (Romantic.IsEnable) Romantic.OnReportDeadBody();
         if (Captain.IsEnable) Captain.OnReportDeadBody();
         if (Investigator.IsEnable) Investigator.OnReportDeadBody();
+        if (Swooper.IsEnable) Swooper.OnReportDeadBody();
+        if (Chameleon.IsEnable) Chameleon.OnReportDeadBody();
+        if (Wraith.IsEnable) Wraith.OnReportDeadBody();
 
         // Alchemist & Bloodlust
         Alchemist.OnReportDeadBody();

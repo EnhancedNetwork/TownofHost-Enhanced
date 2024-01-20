@@ -89,6 +89,20 @@ public static class Chameleon
     public static bool IsInvis(byte id) => InvisTime.ContainsKey(id);
 
     private static long lastFixedTime = 0;
+    public static void OnReportDeadBody()
+    {
+        lastTime = [];
+        InvisTime = [];
+
+        foreach (var chameleonId in playerIdList.ToArray())
+        {
+            var chameleon = Utils.GetPlayerById(chameleonId);
+            if (chameleon == null) return;
+
+            chameleon?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(chameleonId, out var id) ? id : Main.LastEnteredVent[chameleonId].Id);
+            SendRPC(chameleon);
+        }
+    }
     public static void AfterMeetingTasks()
     {
         if (!IsEnable) return;
