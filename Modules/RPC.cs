@@ -958,7 +958,7 @@ internal static class RPC
     }
     public static async void RpcRequestRetryVersionCheck()
     {
-        while (PlayerControl.LocalPlayer == null || AmongUsClient.Instance.GetHost().Character == null) await Task.Delay(500);
+        while (PlayerControl.LocalPlayer == null || AmongUsClient.Instance.GetHost() == null) await Task.Delay(500);
         var hostId = AmongUsClient.Instance.HostId;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck, SendOption.Reliable, hostId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
