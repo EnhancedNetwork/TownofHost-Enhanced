@@ -2329,6 +2329,7 @@ class ReportDeadBodyPatch
         if (Jailer.IsEnable) Jailer.OnReportDeadBody();
         if (Romantic.IsEnable) Romantic.OnReportDeadBody();
         if (Captain.IsEnable) Captain.OnReportDeadBody();
+        if (Investigator.IsEnable) Investigator.OnReportDeadBody();
 
         // Alchemist & Bloodlust
         Alchemist.OnReportDeadBody();

@@ -908,7 +908,7 @@
   "MerchantInfoLong": "(Crewmates):\\As a merchant, you sell a random add-on to a random player for each task you complete. Each add-on sold earns you money. If you have a certain amount of money, you can avert the next killing attempt against you by bribing the murderer. The bribed player won't be able to kill you, but you don't know who it is. The bribe money used is lost and is not available for additional bribes.",
   "RetributionistInfoLong": "(Crewmates):\nAs the Retributionist, you can kill a limited amount of players after your death.\n\nUse /ret [playerID] to kill.",
   "DeputyInfoLong": "(Crewmates):\nAs the Deputy, use your kill button on a player to reset their kill cooldown.\n\nIf the target does not have a kill button, then the handcuff was a waste.",
-  "InvestigatorInfoLong": "(Crewmates):\nAs the Investigator, use your kill button on a player to learn something about them.\n\nDepending on the settings, it'll be either sus/not sus or their exact role.",
+  "InvestigatorInfoLong": "(Crewmates):\nAs an Investigator, you can use your kill button to investigate someone. When you investigate someone, their name will appear in either red if they possess a kill button (impostor/SS basis) or light blue if they lack a kill button (crewmate/engineer/scientist basis). However, please note that the color of the names will return to normal when a meeting is called.",
   "GuardianInfoLong": "(Crewmates):\nAs the Guardian, you become immortal upon tasks completion. You can't even be guessed in meetings.",
   "AddictInfoLong": "(Crewmates):\nAs the Addict, you have a suicide timer. When it expires you kill yourself.\nThe timer is indicated by the vent cooldown. When the vent cooldown is at 0 seconds, you still have a short time to vent.\nIf you don't make it you die, if you make it the suicide timer is reset.\nAlso, after you are ventilated, no one can interact with you for a defined period of time.\nAfter this period is over, you are immobilized for another defined period of time and cannot report any bodies.",
   "MoleInfoLong": "(Crewmates):\nAs the Mole, when you vent, you stay in the vent for 1 second. When you come out of the vent, you will spawn near a random vent in the map (Except the one you just used).",
@@ -1993,8 +1993,11 @@
   "DeputyInvalidTarget": "Target cannot be handcuffed",
   "DeputyHandcuffText": "Handcuff",
   "DeputyHandcuffCDForTarget": "Kill Cooldown for handcuffed player",
+
   "InvestigateCooldown": "Investigate Cooldown",
   "InvestigateMax": "Maximum Investigations",
+  "InvestigateRoundMax": "Maximum Investigations in one round",
+
   "CrewKillingShowAs": "<color=#8cffff>Crewmate Killing</color> show as",
   "NeutralKillingShowAs": "<color=#7f8c8d>Neutral Killers</color> show as",
   "PassiveNeutralsShowAs": "<color=#7f8c8d>Passive Neutrals</color> show as",

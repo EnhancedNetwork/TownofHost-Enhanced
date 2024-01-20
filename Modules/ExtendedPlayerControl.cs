@@ -562,6 +562,10 @@ static class ExtendedPlayerControl
         if (pc == null) return false;
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
         role = pc.GetCustomRole();
+        if (!role.IsImpostor())
+        {
+            return role.GetDYRole() == RoleTypes.Impostor;
+        }
         return role.GetVNRole() switch
         { 
             CustomRoles.Impostor => true,
