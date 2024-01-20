@@ -378,7 +378,7 @@ public class PlayerState
         Eaten,
         Sacrifice,
         Quantization,
-        Over,
+        Overtired,
         Ashamed,
         PissedOff,
         Dismembered,
