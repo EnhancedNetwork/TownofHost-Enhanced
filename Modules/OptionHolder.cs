@@ -892,6 +892,10 @@ public static class Options
     public static OptionItem ImpCanBeEgoist;
     public static OptionItem ImpEgoistVisibalToAllies;
     public static OptionItem EgoistCountAsConverted;
+    public static OptionItem CrewCanBeRainbow;
+    public static OptionItem ImpCanBeRainbow;
+    public static OptionItem NeutralCanBeRainbow;
+    //public static OptionItem RainbowColorChangeTime;
 
     public static OptionItem LoverSpawnChances;
     public static OptionItem LoverKnowRoles;
@@ -1087,7 +1091,7 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 27200 lasted id for roles/add-ons (Next use 27300)
+        // 27300 lasted id for roles/add-ons (Next use 27400)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
 
@@ -2909,6 +2913,17 @@ public static class Options
         SetupLoversRoleOptionsToggle(23600);
         
         SetupAdtRoleOptions(23700, CustomRoles.Reach, canSetNum: true);
+
+        SetupAdtRoleOptions(27300, CustomRoles.Rainbow, canSetNum: true, tab: TabGroup.Addons);
+        //RainbowColorChangeTime = FloatOptionItem.Create(27303, "RainbowColorChangeTime", new(0.1f, 5f, 2.5f), 0.5f, TabGroup.Addons, false)
+        //    .SetParent(CustomRoleSpawnChances[CustomRoles.Rainbow])
+        //    .SetValueFormat(OptionFormat.Seconds);
+        CrewCanBeRainbow = BooleanOptionItem.Create(27303, "CrewCanBeRainbow", true, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Rainbow]);
+        ImpCanBeRainbow = BooleanOptionItem.Create(27304, "ImpCanBeRainbow", true, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Rainbow]);
+        NeutralCanBeRainbow = BooleanOptionItem.Create(27305, "NeutralCanBeRainbow", true, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Rainbow]);
         
         Workhorse.SetupCustomOption();
 
