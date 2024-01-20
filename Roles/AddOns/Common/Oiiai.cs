@@ -55,7 +55,7 @@ namespace TOHE.Roles.AddOns.Common
         {
             if (killer == null || target == null) return;
             if (killer.PlayerId == target.PlayerId) return;
-
+            if (killer.Is(CustomRoles.Minimalism)) return;
             if (!target.Is(CustomRoles.Oiiai)) return;
             if (!CanGetOiiaied(killer)) return;
 
