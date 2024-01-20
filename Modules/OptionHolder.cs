@@ -1919,9 +1919,14 @@ public static class Options
             .SetValueFormat(OptionFormat.Times);
 
         /*
-         * ParityCop
+         * Inspector
          */
         ParityCop.SetupCustomOption();
+
+        /*
+         * Investigator
+         */
+        Investigator.SetupCustomOption();
 
         /*
          *  Keeper
@@ -2945,9 +2950,7 @@ public static class Options
             .SetValueFormat(OptionFormat.Times); */
 
         //Divinator.SetupCustomOption();
-        
-        Investigator.SetupCustomOption();
-        
+                
         // 中立
         TextOptionItem.Create(10000022, "OtherRoles.NeutralRoles", TabGroup.OtherRoles)
             .SetGameMode(CustomGameMode.Standard)
