@@ -3,16 +3,11 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using System.Globalization;
 using static TOHE.Translator;
 using Newtonsoft.Json.Linq;
 using System.IO.Compression;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace TOHE;
 
@@ -143,11 +138,11 @@ public class ModUpdater
         ShowPopup(GetString("updatePleaseWait"), StringNames.Cancel, true, false);
         if (!github)
         {
-        _ = DownloadDLL(url);
+            _ = DownloadDLL(url);
         }
         else
         {
-        _ = DownloadDLLGithub(url);
+            _ = DownloadDLLGithub(url);
         }
         return;
     }
@@ -181,8 +176,8 @@ public class ModUpdater
             {
                 if (Path.GetFileName(filePath).EndsWith(".bak") || Path.GetFileName(filePath).EndsWith(".temp"))
                 {
-                Logger.Info($"{filePath} will be deleted", "DeleteOldFiles");
-                File.Delete(filePath);
+                    Logger.Info($"{filePath} will be deleted", "DeleteOldFiles");
+                    File.Delete(filePath);
                 }
             }
         }
@@ -231,9 +226,9 @@ public class ModUpdater
                     long readLength = 0;
                     int length;
 
-                    while ((length = await stream.ReadAsync(buffer)) != 0)
+                    while ((length = await stream.ReadAsync(buffer, 0, buffer.Length)) != 0)
                     {
-                        await fileStream.WriteAsync(buffer.AsMemory(0, length));
+                        await fileStream.WriteAsync(buffer, 0, length);
 
                         readLength += length;
                         double? progress = Math.Round((double)readLength / total * 100, 2, MidpointRounding.ToZero);
@@ -285,12 +280,19 @@ public class ModUpdater
             {
                 // Specify the relative path within the ZIP archive where "TOHE.dll" is located
                 var entryPath = "BepInEx/plugins/TOHE.dll";
-                var entry = archive.GetEntry(entryPath) ?? throw new Exception($"'{entryPath}' not found in the ZIP archive");
+                var entry = archive.GetEntry(entryPath);
+
+                if (entry == null)
+                {
+                    throw new Exception($"'{entryPath}' not found in the ZIP archive");
+                }
 
                 // Extract "TOHE.dll" to the temporary file
-                using var entryStream = entry.Open();
-                using var fileStream = new FileStream(savePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true);
-                await entryStream.CopyToAsync(fileStream);
+                using (var entryStream = entry.Open())
+                using (var fileStream = new FileStream(savePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true))
+                {
+                    await entryStream.CopyToAsync(fileStream);
+                }
             }
 
             var fileName = Assembly.GetExecutingAssembly().Location;
