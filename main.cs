@@ -232,7 +232,6 @@ public class Main : BasePlugin
     public static int MeetingsPassed = 0;
     public static Dictionary<byte, byte> Provoked = new();
     public static Dictionary<byte, float> DovesOfNeaceNumOfUsed = new();
-    //public static bool SwapSend;
 
     public static Dictionary<byte, CustomRoles> DevRole = new();
     public static List<byte> GodfatherTarget = new();
