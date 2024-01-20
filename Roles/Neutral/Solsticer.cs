@@ -118,7 +118,8 @@ namespace TOHE.Roles.Neutral
             if (killer == null || target == null) return false;
             if (!GameStates.IsMeeting)
             {
-                if (killer.Is(CustomRoles.Quizmaster)) {
+                if (killer.Is(CustomRoles.Quizmaster))
+                {
                     return false;
                 }
                 Utils.RpcTeleport(target, ExtendedPlayerControl.GetBlackRoomPosition());

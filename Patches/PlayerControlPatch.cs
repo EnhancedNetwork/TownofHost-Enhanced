@@ -1603,7 +1603,7 @@ class ShapeshiftPatch
                             var pos = shapeshifter.transform.position;
                             var dis = Vector2.Distance(pos, tg.transform.position);
 
-                            if (!tg.IsAlive() || Pelican.IsEaten(tg.PlayerId) || Medic.ProtectList.Contains(tg.PlayerId) || (tg.Is(CustomRoleTypes.Impostor) && Options.ImpostorsSurviveBombs.GetBool()) || tg.inVent || tg.Is(CustomRoles.Pestilence)) continue;
+                            if (!tg.IsAlive() || Pelican.IsEaten(tg.PlayerId) || Medic.ProtectList.Contains(tg.PlayerId) || (tg.Is(CustomRoleTypes.Impostor) && Options.ImpostorsSurviveBombs.GetBool()) || tg.inVent || tg.Is(CustomRoles.Pestilence) || tg.Is(CustomRoles.Solsticer)) continue;
                             if (dis > Options.BomberRadius.GetFloat()) continue;
                             if (tg.PlayerId == shapeshifter.PlayerId) continue;
 
@@ -1639,7 +1639,7 @@ class ShapeshiftPatch
                             var pos = shapeshifter.transform.position;
                             var dis = Vector2.Distance(pos, tg.transform.position);
 
-                            if (!tg.IsAlive() || Pelican.IsEaten(tg.PlayerId) || Medic.ProtectList.Contains(tg.PlayerId) || tg.inVent || tg.Is(CustomRoles.Pestilence)) continue;
+                            if (!tg.IsAlive() || Pelican.IsEaten(tg.PlayerId) || Medic.ProtectList.Contains(tg.PlayerId) || tg.inVent || tg.Is(CustomRoles.Pestilence) || tg.Is(CustomRoles.Solsticer)) continue;
                             if (dis > Options.NukeRadius.GetFloat()) continue;
                             if (tg.PlayerId == shapeshifter.PlayerId) continue;
 
@@ -2330,7 +2330,8 @@ class ReportDeadBodyPatch
         if (Romantic.IsEnable) Romantic.OnReportDeadBody();
         if (Captain.IsEnable) Captain.OnReportDeadBody();
 
-
+        // Alchemist & Bloodlust
+        Alchemist.OnReportDeadBody();
 
         if (Mortician.IsEnable) Mortician.OnReportDeadBody(player, target);
         if (Enigma.IsEnable) Enigma.OnReportDeadBody(player, target);

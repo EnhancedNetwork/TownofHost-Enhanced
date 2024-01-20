@@ -123,6 +123,16 @@ public static class President
             }
 
             EndLimit[pc.PlayerId]--;
+
+            foreach (var pva in MeetingHud.Instance.playerStates)
+            {
+                if (pva == null) continue;
+
+                if (pva.VotedFor < 253)
+                    MeetingHud.Instance.RpcClearVote(pva.TargetPlayerId);
+            }
+            List<MeetingHud.VoterState> statesList = [];
+            MeetingHud.Instance.RpcVotingComplete(statesList.ToArray(), null, true);
             MeetingHud.Instance.RpcClose();
         }
         else if (operate == 2)
