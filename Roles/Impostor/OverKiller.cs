@@ -14,7 +14,7 @@ namespace TOHE.Roles.Impostor
         public static Dictionary<byte, (int, int, Vector2)> MurderTargetLateTask = new();
         public static void SetupCustomOption()
         {
-            SetupRoleOptions(Id, TabGroup.OtherRoles, CustomRoles.OverKiller);
+            SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.OverKiller);
         }
         public static void Init()
         {

@@ -15,10 +15,19 @@ public static class Credentials
     [HarmonyPatch(typeof(PingTracker), nameof(PingTracker.Update))]
     class PingTrackerUpdatePatch
     {
+        private static byte DelayUpdate = 0;
         private static readonly StringBuilder sb = new();
 
         private static void Postfix(PingTracker __instance)
         {
+            DelayUpdate--;
+
+            __instance.text.text = sb.ToString();
+
+            if (DelayUpdate > 0 && sb.Length > 0) return;
+
+            DelayUpdate = byte.MaxValue;
+
             __instance.text.alignment = TextAlignmentOptions.TopRight;
 
             sb.Clear();
@@ -31,9 +40,9 @@ public static class Credentials
             else if (ping < 100) pingcolor = "#7bc690";
             else if (ping < 200) pingcolor = "#f3920e";
             else if (ping < 400) pingcolor = "#ff146e";
-            sb.Append($"\r\n").Append($"<color={pingcolor}>Ping: {ping} ms</color>");
+            sb.Append("\r\n").Append($"<color={pingcolor}>Ping: {ping} ms</color>");
 
-            if (!GameStates.IsModHost) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("Warning.NoModHost")));
+            if (!GameStates.IsModHost) sb.Append("\r\n").Append(Utils.ColorString(Color.red, GetString("Warning.NoModHost")));
 
             if (Main.ShowFPS.Value)
             {
@@ -48,11 +57,11 @@ public static class Credentials
 
             if (Main.ShowTextOverlay.Value)
             {
-                if (Options.NoGameEnd.GetBool()) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("Overlay.NoGameEnd")));
-                if (Options.AllowConsole.GetBool() && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("Overlay.AllowConsole")));
-                if (DebugModeManager.IsDebugMode) sb.Append("\r\n").Append(Utils.ColorString(Color.green, GetString("Overlay.DebugMode")));
                 if (Options.LowLoadMode.GetBool()) sb.Append("\r\n").Append(Utils.ColorString(Color.green, GetString("Overlay.LowLoadMode")));
+                if (Options.NoGameEnd.GetBool()) sb.Append("\r\n").Append(Utils.ColorString(Color.red, GetString("Overlay.NoGameEnd")));
                 if (Options.GuesserMode.GetBool()) sb.Append("\r\n").Append(Utils.ColorString(Color.yellow, GetString("Overlay.GuesserMode")));
+                if (Options.AllowConsole.GetBool() && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug) sb.Append("\r\n").Append(Utils.ColorString(Color.red, GetString("Overlay.AllowConsole")));
+                if (DebugModeManager.IsDebugMode) sb.Append("\r\n").Append(Utils.ColorString(Color.green, GetString("Overlay.DebugMode")));
             }
 
             var offset_x = 1.2f; //右端からのオフセット
