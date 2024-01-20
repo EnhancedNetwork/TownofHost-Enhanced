@@ -12,7 +12,7 @@ public static class OverKiller
     public static Dictionary<byte, (int, int, Vector2)> MurderTargetLateTask = [];
     public static void SetupCustomOption()
     {
-        SetupRoleOptions(Id, TabGroup.OtherRoles, CustomRoles.OverKiller);
+        SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.OverKiller);
     }
     public static void Init()
     {
@@ -71,7 +71,7 @@ public static class OverKiller
         if (MurderTargetLateTask[target.PlayerId].Item1 > 19) //on fix update updates 30 times pre second
         {
             if (MurderTargetLateTask[target.PlayerId].Item2 < 5)
-            {   
+            {
                 var rd = IRandom.Instance;
 
                 Vector2 location = new(ops.x + ((float)(rd.Next(1, 200) - 100) / 100), ops.y + ((float)(rd.Next(1, 200) - 100) / 100));
