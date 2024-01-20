@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.Neutral;
+using TOHE.Roles.AddOns.Common;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -41,15 +42,15 @@ public static class Dazzler
 
     public static void Init()
     {
-        playerIdList = new();
-        PlayersDazzled = new();
+        playerIdList = [];
+        PlayersDazzled = [];
         IsEnable = false;
     }
 
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        PlayersDazzled.TryAdd(playerId, new List<byte>());
+        PlayersDazzled.TryAdd(playerId, []);
         IsEnable = true;
     }
 
