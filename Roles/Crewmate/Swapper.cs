@@ -22,6 +22,7 @@ public static class Swapper
     public static Dictionary<byte, byte> Vote = new();
     public static Dictionary<byte, byte> VoteTwo = new();
     public static Dictionary<byte, int> Swappermax = new();
+    public static List<byte> ResultSent = [];
     public static void SetupCustomOption()
     {   
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Swapper);
@@ -38,6 +39,7 @@ public static class Swapper
         Vote = new();
         VoteTwo = new();
         Swappermax = new();
+        ResultSent = [];
     }
     public static void Add(byte playerId)
     {
@@ -86,17 +88,30 @@ public static class Swapper
             }
             else if (pc.AmOwner && !isUI) Utils.SendMessage(originMsg, 255, pc.GetRealName());
 
-            if (!MsgToPlayerAndRole(msg, out byte targetId, out string error))
+            if (!MsgToPlayerAndRole(msg, out byte targetId, out string error) && targetId != 253)
             {
                 Utils.SendMessage(error, pc.PlayerId);
                 return true;
             }
+
+            if (targetId == 253)
+            {
+                Vote.TryAdd(pc.PlayerId, 253);
+                VoteTwo.TryAdd(pc.PlayerId, 253);
+                Vote[pc.PlayerId] = 253;
+                VoteTwo[pc.PlayerId] = 253;
+
+                if (!isUI) Utils.SendMessage(GetString("CancelSwap"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
+                return true;
+            }
+
             var target = Utils.GetPlayerById(targetId);
+
             if (target != null)
             {
                 if (Swappermax[pc.PlayerId] < 1)
                 {
-                    if (!isUI) Utils.SendMessage(GetString("SwapperTrialMax"), pc.PlayerId);
+                    if (!isUI) Utils.SendMessage(GetString("SwapperTrialMax"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
                     pc.ShowPopUp(GetString("SwapperTrialMax"));
                     return true;
                 }
@@ -111,7 +126,7 @@ public static class Swapper
                     Vote[pc.PlayerId] = 253;
                     VoteTwo[pc.PlayerId] = 253;
 
-                    if (!isUI) Utils.SendMessage(GetString("SwapNull"), pc.PlayerId);
+                    if (!isUI) Utils.SendMessage(GetString("SwapNull"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
                     else pc.ShowPopUp(GetString("SwapNull"));
 
                     return true;
@@ -120,13 +135,13 @@ public static class Swapper
                 var dp = target;
                 if (pc.PlayerId == dp.PlayerId && !CanSwapSelf.GetBool())
                 {
-                    if (!isUI) Utils.SendMessage(GetString("CantSwapSelf"), pc.PlayerId);
+                    if (!isUI) Utils.SendMessage(GetString("CantSwapSelf"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
                     else pc.ShowPopUp(GetString("CantSwapSelf"));
                     return true;
                 }
                 if (dp == null || !dp.IsAlive())
                 {
-                    if (!isUI) Utils.SendMessage(GetString("SwapNull"), pc.PlayerId);
+                    if (!isUI) Utils.SendMessage(GetString("SwapNull"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
                     else pc.ShowPopUp(GetString("SwapNull"));
                     return true;
                 }
@@ -143,17 +158,17 @@ public static class Swapper
                         Vote[pc.PlayerId] = 253;
                         VoteTwo[pc.PlayerId] = 253;
 
-                        if (!isUI) Utils.SendMessage(GetString("CancelSwapDueToTarget"), pc.PlayerId);
+                        if (!isUI) Utils.SendMessage(GetString("CancelSwapDueToTarget"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
                         else pc.ShowPopUp(GetString("CancelSwapDueToTarget"));
                     }
-                    else Utils.SendMessage(string.Format(GetString("SwapperPreResult"), target1.GetRealName(), target2.GetRealName()));
+                    else Utils.SendMessage(string.Format(GetString("SwapperPreResult"), target1.GetRealName(), target2.GetRealName()), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
 
                     return true;
                 }
                 else if (Vote[pc.PlayerId] == 253 && VoteTwo[pc.PlayerId] == 253)
                 {
                     Vote[pc.PlayerId] = dp.PlayerId;
-                    Utils.SendMessage(GetString("Swap1"), pc.PlayerId);
+                    Utils.SendMessage(GetString("Swap1"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
 
                     return true;
                 }
@@ -162,7 +177,7 @@ public static class Swapper
                     if (dp.PlayerId != Vote[pc.PlayerId])
                     {
                         VoteTwo[pc.PlayerId] = dp.PlayerId;
-                        Utils.SendMessage(GetString("Swap2"), pc.PlayerId);
+                        Utils.SendMessage(GetString("Swap2"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
 
                         var target1 = Utils.GetPlayerById(Vote[pc.PlayerId]);
                         var target2 = Utils.GetPlayerById(VoteTwo[pc.PlayerId]);
@@ -174,12 +189,12 @@ public static class Swapper
                             Vote[pc.PlayerId] = 253;
                             VoteTwo[pc.PlayerId] = 253;
 
-                            if (!isUI) Utils.SendMessage(GetString("CancelSwapDueToTarget"), pc.PlayerId);
+                            if (!isUI) Utils.SendMessage(GetString("CancelSwapDueToTarget"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
                             else pc.ShowPopUp(GetString("CancelSwapDueToTarget"));
                         }
-                        else Utils.SendMessage(string.Format(GetString("SwapperPreResult"), target1.GetRealName(), target2.GetRealName()));
+                        else Utils.SendMessage(string.Format(GetString("SwapperPreResult"), target1.GetRealName(), target2.GetRealName()), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
                     }
-                    else Utils.SendMessage(GetString("Swap1=Swap2"), pc.PlayerId);
+                    else Utils.SendMessage(GetString("Swap1=Swap2"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
 
                     return true;
                 }
@@ -190,22 +205,15 @@ public static class Swapper
                     Vote[pc.PlayerId] = 253;
                     VoteTwo[pc.PlayerId] = 253;
 
-                    if (!isUI) Utils.SendMessage(GetString("CancelSwapDueToTarget"), pc.PlayerId);
+                    if (!isUI) Utils.SendMessage(GetString("CancelSwapDueToTarget"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
                     else pc.ShowPopUp(GetString("CancelSwapDueToTarget"));
                     return true;
                 }
             }
-            else if (targetId == 253)
+            else
             {
-                Vote.TryAdd(pc.PlayerId, 253);
-                VoteTwo.TryAdd(pc.PlayerId, 253);
-                Vote[pc.PlayerId] = 253;
-                VoteTwo[pc.PlayerId] = 253;
-
-                if (!isUI) Utils.SendMessage(GetString("CancelSwap"), pc.PlayerId);
-                else pc.ShowPopUp(GetString("CancelSwap"));
-
-                return true;
+                if (!isUI) Utils.SendMessage(GetString("SwapNull"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
+                else pc.ShowPopUp(GetString("SwapNull"));
             }
         }
         return true;
@@ -223,7 +231,7 @@ public static class Swapper
                 Vote[pid] = 253;
                 VoteTwo[pid] = 253;
 
-                Utils.SendMessage(GetString("CancelSwapDueToTarget"), pid);
+                Utils.SendMessage(GetString("CancelSwapDueToTarget"), pid, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
             }
         }
     }
@@ -239,7 +247,7 @@ public static class Swapper
             result += mc[i];//匹配结果是完整的数字，此处可以不做拼接的
         }
 
-        if (int.TryParse(result, out int num))
+        if (int.TryParse(result, out int num) && num <= byte.MaxValue)
         {
             id = Convert.ToByte(num);
         }
@@ -248,14 +256,14 @@ public static class Swapper
             //并不是玩家编号，判断是否颜色
             //byte color = GetColorFromMsg(msg);
             //好吧我不知道怎么取某位玩家的颜色，等会了的时候再来把这里补上
-            id = byte.MaxValue;
+            id = byte.MinValue;
             error = GetString("SwapHelp");
             return false;
         }
 
         //判断选择的玩家是否合理
         PlayerControl target = Utils.GetPlayerById(id);
-        if (target == null || target.Data.IsDead)
+        if (target == null || !target.IsAlive())
         {
             error = GetString("SwapNull");
             return false;
@@ -349,8 +357,9 @@ public static class Swapper
                     Vote.Add(pc.PlayerId, 253);
                     VoteTwo.Add(pc.PlayerId, 253);
 
-                    MeetingHudStartPatch.msgToSend.Add((GetString("SwapHelp"), pc.PlayerId, GetString("SwapTitle")));
+                    MeetingHudStartPatch.msgToSend.Add((GetString("SwapHelp"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle"))));
                     SendSkillRPC(pc.PlayerId);
+                    ResultSent = [];
                 }
             }
         }

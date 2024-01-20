@@ -243,6 +243,8 @@ class CheckForEndVotingPatch
                 //Swapper swap votes
                 foreach (var pid in Swapper.playerIdList)
                 {
+                    if (Swapper.ResultSent.Contains(pid)) continue;
+                    //idk why this would be triggered repeatedly.
                     var pc = Utils.GetPlayerById(pid);
                     if (pc == null || !pc.IsAlive()) continue;
 
@@ -272,9 +274,13 @@ class CheckForEndVotingPatch
                         ReturnChangedPva(pva);
                     }
 
-                    Utils.SendMessage(string.Format(GetString("SwapVote"), target1.GetRealName(), target2.GetRealName()), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
-                    Swapper.Swappermax[pid] -= 1;
-                    Swapper.SendSkillRPC(pid);
+                    if (!Swapper.ResultSent.Contains(pid))
+                    {
+                        Swapper.ResultSent.Add(pid);
+                        Utils.SendMessage(string.Format(GetString("SwapVote"), target1.GetRealName(), target2.GetRealName()), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
+                        Swapper.Swappermax[pid] -= 1;
+                        Swapper.SendSkillRPC(pid);
+                    }
                 }
 
                 if (CheckRole(ps.TargetPlayerId, CustomRoles.Mayor) && !Options.MayorHideVote.GetBool()) //Mayorの投票数
