@@ -54,6 +54,11 @@ public static class SabotageMaster
         UsedSkillCount.Add(playerId, 0);
         IsEnable = true;
     }
+    public static void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        UsedSkillCount.Remove(playerId);
+    }
     public static void UpdateSystem(ShipStatus __instance, SystemTypes systemType, byte amount, byte playerId)
     {
         switch (systemType)

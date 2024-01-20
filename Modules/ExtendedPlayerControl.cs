@@ -559,99 +559,18 @@ static class ExtendedPlayerControl
     }
     public static bool HasKillButton(PlayerControl pc = null, CustomRoles role = new())
     {
-        if (pc != null)
+        if (pc == null) return false;
+        if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
+        role = pc.GetCustomRole();
+        if (!role.IsImpostor())
         {
-            if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
-            role = pc.GetCustomRole();
+            return role.GetDYRole() == RoleTypes.Impostor;
         }
-
-        return role switch
-        {
-            CustomRoles.FireWorks => true,
-            CustomRoles.Mafia => true,
-            CustomRoles.Shaman => true,
-            CustomRoles.Underdog => true,
-            CustomRoles.Inhibitor => true,
-            CustomRoles.Saboteur => true,
-            CustomRoles.Sniper => true,
-            CustomRoles.Sheriff => true,
-            CustomRoles.Jailer => true,
-            CustomRoles.Crusader => true,
-            CustomRoles.CopyCat => true,
-            CustomRoles.Pelican => true,
-            CustomRoles.Mastermind => true,
-            CustomRoles.Arsonist => true,
-            CustomRoles.Revolutionist =>true,
-            CustomRoles.Pyromaniac => true,
-            CustomRoles.Huntsman => true,
-            CustomRoles.SwordsMan => true,
-            CustomRoles.Jackal => true,
-            CustomRoles.Bandit => true,
-            CustomRoles.Sidekick => true,
-            CustomRoles.Necromancer => true,
-            CustomRoles.HexMaster => true,
-            //CustomRoles.Occultist => true,
-            CustomRoles.Poisoner => true,
-            CustomRoles.Juggernaut => true,
-            CustomRoles.Reverie => true,
-            CustomRoles.PotionMaster => true,
-            CustomRoles.NSerialKiller => true,
-            CustomRoles.Werewolf => true,
-            CustomRoles.Medusa => true,
-            CustomRoles.Traitor => true,
-            CustomRoles.Glitch => true,
-            CustomRoles.Pickpocket => true,
-            CustomRoles.Maverick => true,
-            CustomRoles.Jinx => true,
-            CustomRoles.Parasite => true,
-            CustomRoles.Refugee => true,
-    //        CustomRoles.Minion => true,
-            CustomRoles.NWitch => true,
-            CustomRoles.Witness => true,
-            CustomRoles.Shroud => true,
-            CustomRoles.Wraith => true,
-            CustomRoles.Bomber => true,
-            CustomRoles.Nuker => true,
-            CustomRoles.Innocent => true,
-            CustomRoles.Counterfeiter => true,
-            CustomRoles.Pursuer => true,
-            CustomRoles.Morphling => true,
-            CustomRoles.FFF => true,
-            CustomRoles.Medic => true,
-            CustomRoles.Gamer => true,
-            CustomRoles.DarkHide => true,
-            CustomRoles.Provocateur => true,
-            CustomRoles.Assassin => true,
-            CustomRoles.BloodKnight => true,
-            CustomRoles.Amnesiac => true,
-            CustomRoles.Totocalcio => true,
-            CustomRoles.Romantic => true,
-            CustomRoles.RuthlessRomantic => true,
-            CustomRoles.VengefulRomantic => true,
-            CustomRoles.Succubus => true,
-            CustomRoles.CursedSoul => true,
-            CustomRoles.Admirer => true,
-            CustomRoles.Imitator => true,
-            //CustomRoles.Warlock => !Main.isCurseAndKill.TryGetValue(pc.PlayerId, out bool wcs) || !wcs,
-            CustomRoles.Infectious => true,
-            CustomRoles.Monarch => true,
-            CustomRoles.Deputy => true,
-            CustomRoles.Investigator => true,
-            CustomRoles.Virus => true,
-            CustomRoles.Farseer => true,
-            CustomRoles.Spiritcaller => true,
-            CustomRoles.PlagueBearer => true,
-            CustomRoles.Pestilence => true,
-            CustomRoles.Pirate => true,
-            CustomRoles.Pixie => true,
-            CustomRoles.Seeker => true,
-            CustomRoles.Agitater => true,
-            CustomRoles.ChiefOfPolice => true,
-            CustomRoles.EvilMini => true,
-            CustomRoles.Doppelganger => true,
-            CustomRoles.Quizmaster => true,
-
-            _ => pc.Is(CustomRoleTypes.Impostor),
+        return role.GetVNRole() switch
+        { 
+            CustomRoles.Impostor => true,
+            CustomRoles.Shapeshifter => true,
+            _ => false
         };
     }
     public static bool CanUseImpostorVentButton(this PlayerControl pc)
@@ -1292,6 +1211,33 @@ static class ExtendedPlayerControl
         {
             Susceptible.CallEnabledAndChange(target);
         }
+        
+        if (target.Is(CustomRoles.Solsticer))
+        {
+            if (!GameStates.IsMeeting)
+            {
+                if (target.PlayerId != killer.PlayerId)
+                {
+                    killer.RpcTeleport(target.GetTruePosition());
+                    killer.RpcGuardAndKill(target);
+                    killer.SetKillCooldown(forceAnime: true);
+                    NameNotifyManager.Notify(killer, GetString("MurderSolsticer"));
+                }
+
+                target.RpcGuardAndKill();
+                Solsticer.patched = true;
+                Solsticer.ResetTasks(target);
+                target.MarkDirtySettings();
+
+                NameNotifyManager.Notify(target, string.Format(GetString("SolsticerMurdered"), killer.GetRealName()));
+                if (Solsticer.SolsticerKnowKiller.GetBool())
+                    Solsticer.MurderMessage = string.Format(GetString("SolsticerMurderMessage"), killer.GetRealName(), GetString(killer.GetCustomRole().ToString()));
+                else Solsticer.MurderMessage = "";
+            }
+            //Solsticer wont die anyway.
+            return;
+        }
+
         if (killer.PlayerId == target.PlayerId && killer.shapeshifting)
         {
             _ = new LateTask(() => { killer.RpcMurderPlayer(target, true); }, 1.5f, "Shapeshifting Suicide Delay");

@@ -31,6 +31,29 @@ static class PlayerOutfitExtension
     {
         return $"{instance.PlayerName} Color:{instance.ColorId} {instance.HatId} {instance.SkinId} {instance.VisorId} {instance.PetId}";
     }
+    public static GameData.PlayerOutfit GetRandomOutfit()
+    {
+        var random = IRandom.Instance;
+        var tempChanceSetRandomSkin = random.Next(0, 101);
+
+        return Options.KPDCamouflageMode.GetValue() switch
+        {
+            // Random outfit
+            2 => new GameData.PlayerOutfit()
+            {
+                ColorId = random.Next(Palette.PlayerColors.Length),
+                HatId = HatManager.Instance.allHats[tempChanceSetRandomSkin >= random.Next(0, 101) ? random.Next(0, HatManager.Instance.allHats.Length) : 0].ProdId,
+                SkinId = HatManager.Instance.allSkins[tempChanceSetRandomSkin >= random.Next(0, 101) ? random.Next(0, HatManager.Instance.allSkins.Length) : 0].ProdId,
+                VisorId = HatManager.Instance.allVisors[tempChanceSetRandomSkin >= random.Next(0, 101) ? random.Next(0, HatManager.Instance.allVisors.Length) : 0].ProdId,
+                PetId = HatManager.Instance.allPets[tempChanceSetRandomSkin >= random.Next(0, 101) ? random.Next(0, HatManager.Instance.allPets.Length) : 0].ProdId,
+                //NamePlateId = HatManager.Instance.allNamePlates[tempChanceSetRandomSkin >= random.Next(0, 101) ? random.Next(0, HatManager.Instance.allNamePlates.Length) : 0].ProdId,
+            },
+
+            3 => new GameData.PlayerOutfit().Set("", random.Next(Palette.PlayerColors.Length), "", "", "", "", ""), // Only random colors
+
+            _ => new GameData.PlayerOutfit().Set("", 15, "", "", "", "", ""), // defalt
+        };
+    }
 }
 public static class Camouflage
 {
@@ -70,37 +93,42 @@ public static class Camouflage
                     .Set("", DataManager.Player.Customization.Color, DataManager.Player.Customization.Hat, DataManager.Player.Customization.Skin, DataManager.Player.Customization.Visor, DataManager.Player.Customization.Pet, "");
                 break;
 
-            case 2: // Karpe
+            case 2: // Random outfit
+            case 3: // Only random color
+                CamouflageOutfit = PlayerOutfitExtension.GetRandomOutfit();
+                break;
+
+            case 4: // Karpe
                 CamouflageOutfit = new GameData.PlayerOutfit()
                     .Set("", 13, "hat_pk05_Plant", "", "visor_BubbleBumVisor", "", "");
                 break;
 
-            case 3: // Lauryn
+            case 5: // Lauryn
                 CamouflageOutfit = new GameData.PlayerOutfit()
                     .Set("", 13, "hat_rabbitEars", "skin_Bananaskin", "visor_BubbleBumVisor", "pet_Pusheen", "");
                 break;
 
-            case 4: // Moe
+            case 6: // Moe
                 CamouflageOutfit = new GameData.PlayerOutfit()
                     .Set("", 0, "hat_mira_headset_yellow", "skin_SuitB", "visor_lollipopCrew", "pet_EmptyPet", "");
                 break;
 
-            case 5: // Pyro
+            case 7: // Pyro
                 CamouflageOutfit = new GameData.PlayerOutfit()
                     .Set("", 17, "hat_pkHW01_Witch", "skin_greedygrampaskin", "visor_Plsno", "pet_Pusheen", "");
                 break;
 
-            case 6: // ryuk
+            case 8: // ryuk
                 CamouflageOutfit = new GameData.PlayerOutfit()
                     .Set("", 7, "hat_crownDouble", "skin_D2Saint14", "visor_anime", "pet_Bush", "");
                 break;
 
-            case 7: // Gurge44
+            case 9: // Gurge44
                 CamouflageOutfit = new GameData.PlayerOutfit()
                     .Set("", 7, "hat_pk04_Snowman", "", "", "", "");
                 break;
 
-            case 8: // TommyXL
+            case 10: // TommyXL
                 CamouflageOutfit = new GameData.PlayerOutfit()
                     .Set("", 17, "hat_baseball_Black", "skin_Scientist-Darkskin", "visor_pusheenSmileVisor", "pet_Pip", "");
                 break;
@@ -140,7 +168,10 @@ public static class Camouflage
             return;
         }
 
-        var newOutfit = CamouflageOutfit;
+        var newOutfit = Options.KPDCamouflageMode.GetValue() is 2 or 3
+            ? PlayerOutfitExtension.GetRandomOutfit()
+            : CamouflageOutfit;
+
 
         if (!IsCamouflage || ForceRevert)
         {

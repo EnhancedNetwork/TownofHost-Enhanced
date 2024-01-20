@@ -312,7 +312,7 @@ public static class Utils
     {
         if (seer.Is(CustomRoles.GM) || seer.Is(CustomRoles.Seer)) return true;
         if (seer.Data.IsDead || killer == seer || target == seer) return false;
-        if (killer.Is(CustomRoles.EvilTracker) || seer.Is(CustomRoles.EvilTracker)) return EvilTracker.KillFlashCheck(killer, target);
+        if (seer.Is(CustomRoles.EvilTracker)) return EvilTracker.KillFlashCheck();
         return false;
     }
     public static void KillFlash(this PlayerControl player)
@@ -1071,7 +1071,7 @@ public static class Utils
                     ProgressText.Append(Deputy.GetHandcuffLimit());
                     break;
                 case CustomRoles.Investigator:
-                    ProgressText.Append(Investigator.GetInvestigateLimit());
+                    ProgressText.Append(Investigator.GetInvestigateLimit(playerId));
                     break;
                 case CustomRoles.Virus:
                     ProgressText.Append(Virus.GetInfectLimit());
@@ -2720,6 +2720,13 @@ public static class Utils
 
         DoorsReset.ResetDoors();
 
+        // Empty Deden bug support Empty vent after meeting
+        var ventilationSystem = ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Ventilation, out var systemType) ? systemType.TryCast<VentilationSystem>() : null;
+        if (ventilationSystem != null)
+        {
+            ventilationSystem.PlayersInsideVents.Clear();
+            ventilationSystem.IsDirty = true;
+        }
     }
     public static void AfterPlayerDeathTasks(PlayerControl target, bool onMeeting = false)
     {

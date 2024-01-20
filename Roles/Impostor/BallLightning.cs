@@ -22,12 +22,12 @@ public static class BallLightning
     private static Dictionary<byte, PlayerControl> RealKiller;
     public static void SetupCustomOption()
     {
-        SetupRoleOptions(Id, TabGroup.OtherRoles, CustomRoles.BallLightning);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "BallLightningKillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.BallLightning])
+        SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.BallLightning);
+        KillCooldown = FloatOptionItem.Create(Id + 10, "BallLightningKillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.BallLightning])
             .SetValueFormat(OptionFormat.Seconds);
-        ConvertTime = FloatOptionItem.Create(Id + 12, "BallLightningConvertTime", new(0f, 180f, 2.5f), 10f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.BallLightning])
+        ConvertTime = FloatOptionItem.Create(Id + 12, "BallLightningConvertTime", new(0f, 180f, 2.5f), 10f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.BallLightning])
             .SetValueFormat(OptionFormat.Seconds);
-        KillerConvertGhost = BooleanOptionItem.Create(Id + 14, "BallLightningKillerConvertGhost", true, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.BallLightning]);
+        KillerConvertGhost = BooleanOptionItem.Create(Id + 14, "BallLightningKillerConvertGhost", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.BallLightning]);
     }
     public static void Init()
     {

@@ -136,6 +136,12 @@ class CheckMurderPatch
         }
         TimeSinceLastKill[killer.PlayerId] = 0f;
 
+        // added here because it bypasses every shield and just kills the player and antidote, diseased etc.. wont take effect
+        if (killer.Is(CustomRoles.Minimalism))
+        {
+            killer.RpcMurderPlayerV3(target);
+            return false;
+        }
         foreach (var targetSubRole in target.GetCustomSubRoles().ToArray())
         {
             switch (targetSubRole)
@@ -1313,7 +1319,7 @@ class MurderPlayerPatch
         }
 
         //看看UP是不是被首刀了
-        if (Main.FirstDied == "" && target.Is(CustomRoles.Youtuber))
+        if (Main.FirstDied == "" && target.Is(CustomRoles.Youtuber) && !killer.Is(CustomRoles.Minimalism))
         {
             CustomSoundsManager.RPCPlayCustomSoundAll("Congrats");
             if (!CustomWinnerHolder.CheckForConvertedWinner(target.PlayerId))
@@ -1329,7 +1335,7 @@ class MurderPlayerPatch
 
         if (target.Is(CustomRoles.Bait))
         {
-            if (killer.PlayerId != target.PlayerId || (target.GetRealKiller()?.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Wraith) || !killer.Is(CustomRoles.Oblivious) || (killer.Is(CustomRoles.Oblivious) && !Options.ObliviousBaitImmune.GetBool()))
+            if (killer.PlayerId != target.PlayerId || (target.GetRealKiller()?.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Wraith or CustomRoles.Minimalism) || !killer.Is(CustomRoles.Oblivious) || (killer.Is(CustomRoles.Oblivious) && !Options.ObliviousBaitImmune.GetBool()))
             {
                 killer.RPCPlayCustomSound("Congrats");
                 target.RPCPlayCustomSound("Congrats");
@@ -1342,7 +1348,7 @@ class MurderPlayerPatch
                 _ = new LateTask(() => { if (GameStates.IsInTask && GameStates.IsInGame) killer.CmdReportDeadBody(target.Data); }, delay, "Bait Self Report");
             }
         }
-        if (target.Is(CustomRoles.Burst) && killer.IsAlive())
+        if (target.Is(CustomRoles.Burst) && killer.IsAlive() && !killer.Is(CustomRoles.Minimalism))
         {
             target.SetRealKiller(killer);
             Main.BurstBodies.Add(target.PlayerId);
@@ -1368,7 +1374,7 @@ class MurderPlayerPatch
             }
         }
         
-        if (target.Is(CustomRoles.Trapper) && killer != target)
+        if (target.Is(CustomRoles.Trapper) && killer != target && !killer.Is(CustomRoles.Minimalism))
             killer.TrapperKilled(target);
 
         if (Main.AllKillers.ContainsKey(killer.PlayerId))
@@ -1607,7 +1613,7 @@ class ShapeshiftPatch
                             var pos = shapeshifter.transform.position;
                             var dis = Vector2.Distance(pos, tg.transform.position);
 
-                            if (!tg.IsAlive() || Pelican.IsEaten(tg.PlayerId) || Medic.ProtectList.Contains(tg.PlayerId) || (tg.Is(CustomRoleTypes.Impostor) && Options.ImpostorsSurviveBombs.GetBool()) || tg.inVent || tg.Is(CustomRoles.Pestilence)) continue;
+                            if (!tg.IsAlive() || Pelican.IsEaten(tg.PlayerId) || Medic.ProtectList.Contains(tg.PlayerId) || (tg.Is(CustomRoleTypes.Impostor) && Options.ImpostorsSurviveBombs.GetBool()) || tg.inVent || tg.Is(CustomRoles.Pestilence) || tg.Is(CustomRoles.Solsticer)) continue;
                             if (dis > Options.BomberRadius.GetFloat()) continue;
                             if (tg.PlayerId == shapeshifter.PlayerId) continue;
 
@@ -1643,7 +1649,7 @@ class ShapeshiftPatch
                             var pos = shapeshifter.transform.position;
                             var dis = Vector2.Distance(pos, tg.transform.position);
 
-                            if (!tg.IsAlive() || Pelican.IsEaten(tg.PlayerId) || Medic.ProtectList.Contains(tg.PlayerId) || tg.inVent || tg.Is(CustomRoles.Pestilence)) continue;
+                            if (!tg.IsAlive() || Pelican.IsEaten(tg.PlayerId) || Medic.ProtectList.Contains(tg.PlayerId) || tg.inVent || tg.Is(CustomRoles.Pestilence) || tg.Is(CustomRoles.Solsticer)) continue;
                             if (dis > Options.NukeRadius.GetFloat()) continue;
                             if (tg.PlayerId == shapeshifter.PlayerId) continue;
 
@@ -2333,8 +2339,10 @@ class ReportDeadBodyPatch
         if (Jailer.IsEnable) Jailer.OnReportDeadBody();
         if (Romantic.IsEnable) Romantic.OnReportDeadBody();
         if (Captain.IsEnable) Captain.OnReportDeadBody();
+        if (Investigator.IsEnable) Investigator.OnReportDeadBody();
 
-
+        // Alchemist & Bloodlust
+        Alchemist.OnReportDeadBody();
 
         if (Mortician.IsEnable) Mortician.OnReportDeadBody(player, target);
         if (Enigma.IsEnable) Enigma.OnReportDeadBody(player, target);

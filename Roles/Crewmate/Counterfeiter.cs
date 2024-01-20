@@ -44,6 +44,11 @@ public static class Counterfeiter
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
+    public static void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        SeelLimit.Remove(playerId);
+    }
     private static void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCounterfeiterSellLimit, SendOption.Reliable, -1);
@@ -79,6 +84,11 @@ public static class Counterfeiter
         if (pc == null || target == null || !pc.Is(CustomRoles.Counterfeiter)) return;
         SeelLimit[pc.PlayerId]--;
         SendRPC(pc.PlayerId);
+        if (target.Is(CustomRoles.Minimalism))
+        {
+            Logger.Info("target is Killing Machine, ability used count reduced, but target will not die", "Deceiver");
+            return;
+        }
         if (!clientList.ContainsKey(pc.PlayerId)) clientList.Add(pc.PlayerId, new());
         clientList[pc.PlayerId].Add(target.PlayerId);
         if (!Options.DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);

@@ -156,6 +156,13 @@ class OnPlayerJoinedPatch
             }
         }
 
+        if (Options.AllowOnlyWhiteList.GetBool() && !BanManager.CheckAllowList(client?.FriendCode) && !GameStates.IsLocalGame)
+        {
+            AmongUsClient.Instance.KickPlayer(client.Id, false);
+            Logger.SendInGame(string.Format(GetString("Message.KickedByWhiteList"), client.PlayerName));
+            Logger.Warn($"Kicked player {client?.PlayerName}, because friendcode: {client?.FriendCode} is not in WhiteList.txt", "Kick");
+        }
+
         Platforms platform = client.PlatformData.Platform;
         if (AmongUsClient.Instance.AmHost && Options.KickOtherPlatformPlayer.GetBool() && platform != Platforms.Unknown && !GameStates.IsLocalGame)
         {
@@ -262,9 +269,14 @@ class OnPlayerLeftPatch
                     Utils.DoNotifyRoles(SpecifyTarget: data.Character, ForceLoop: true);
                 }
 
+                data.Character.RpcSetName(data.Character.GetRealName(isMeeting: true));
+
                 AntiBlackout.OnDisconnect(data.Character.Data);
                 PlayerGameOptionsSender.RemoveSender(data.Character);
             }
+
+            if (Main.HostClientId != data.Id && Main.playerVersion.ContainsKey(data.Id))
+                Main.playerVersion.Remove(data.Id);
 
             if (Main.HostClientId == data.Id && Main.playerVersion.ContainsKey(data.Id))
             {
@@ -370,6 +382,7 @@ class OnPlayerLeftPatch
 
                 if (GameStates.IsMeeting)
                 {
+                    Swapper.CheckSwapperTarget(data.Character.PlayerId);
                     MeetingHud.Instance.CheckForEndVoting();
                 }
             }

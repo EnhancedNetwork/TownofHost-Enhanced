@@ -218,6 +218,12 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("SolsticerGuessMax"));
                     return true;
                 }
+                if (pc.Is(CustomRoles.NiceMini) && Mini.Age < 18 && Mini.misguessed)
+                {
+                    if (!isUI) Utils.SendMessage(GetString("MiniGuessMax"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("MiniGuessMax"));
+                    return true;
+                }
                 if (pc.Is(CustomRoles.Phantom) && !Options.PhantomCanGuess.GetBool())
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
@@ -691,7 +697,12 @@ public static class GuessManager
                     _ = new LateTask(() => { Utils.SendMessage(GetString("SolsticerMisGuessed"), dp.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("GuessKillTitle")), true); }, 0.6f, "Solsticer MisGuess Msg");
                     return true;
                 }
-
+                if (dp.Is(CustomRoles.NiceMini) && Mini.Age < 18)
+                {
+                    Mini.misguessed = true;
+                    _ = new LateTask(() => { Utils.SendMessage(GetString("MiniMisGuessed"), dp.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("GuessKillTitle")), true); }, 0.6f, "Mini MisGuess Msg");
+                    return true;
+                }
                 string Name = dp.GetRealName();
                 if (!Options.DisableKillAnimationOnGuess.GetBool()) CustomSoundsManager.RPCPlayCustomSoundAll("Gunfire");
 
@@ -779,8 +790,9 @@ public static class GuessManager
             var voteAreaPlayer = Utils.GetPlayerById(playerVoteArea.TargetPlayerId);
             if (!voteAreaPlayer.AmOwner) continue;
             meetingHud.ClearVote();
-            meetingHud.CheckForEndVoting();
         }
+        Swapper.CheckSwapperTarget(pc.PlayerId);
+        meetingHud.CheckForEndVoting();
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GuessKill, SendOption.Reliable, -1);
         writer.Write(pc.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -1173,7 +1185,17 @@ public static class GuessManager
                 CreatePage(true, __instance, container);
             }
             int ind = 0;
-            foreach (var role in CustomRolesHelper.AllRoles)
+
+            CustomRoles[] listOfRoles = Options.ShowOnlyEnabledRolesInGuesserUI.GetBool()
+                ? CustomRolesHelper.AllRoles.Where(role => role.IsEnable() || role.RoleExist(countDead: true)).ToArray()
+                : CustomRolesHelper.AllRoles.ToArray();
+
+            var roleMap = listOfRoles.ToDictionary(role => role, role => Utils.GetRoleName(role));
+
+            var orderedRoleList = roleMap.OrderBy(kv => kv.Value).Select(kv => kv.Key).ToArray();
+
+
+            foreach (var role in orderedRoleList)
             {
                 if (role is CustomRoles.GM
                     or CustomRoles.SpeedBooster
@@ -1207,7 +1229,7 @@ public static class GuessManager
                     or CustomRoles.Cyber
                     ) continue;
 
-                if (Options.ShowOnlyEnabledRolesInGuesserUI.GetBool() && !(role.IsEnable() || role.RoleExist(countDead: true))) continue;
+                //if (Options.ShowOnlyEnabledRolesInGuesserUI.GetBool() && !(role.IsEnable() || role.RoleExist(countDead: true))) continue;
 
                 CreateRole(role);
             }

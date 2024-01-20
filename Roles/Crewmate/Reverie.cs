@@ -55,6 +55,11 @@ public static class Reverie
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
+    public static void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        NowCooldown.Remove(playerId);
+    }
     public static void OnReportDeadBody()
     {
         foreach(var playerId in NowCooldown.Keys)

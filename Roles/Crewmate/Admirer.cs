@@ -23,11 +23,11 @@ public static class Admirer
 
     public static void SetupCustomOption()
     {
-        SetupRoleOptions(Id, TabGroup.OtherRoles, CustomRoles.Admirer);
-        AdmireCooldown = FloatOptionItem.Create(Id + 10, "AdmireCooldown", new(1f, 180f, 1f), 5f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Admirer])
+        SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Admirer);
+        AdmireCooldown = FloatOptionItem.Create(Id + 10, "AdmireCooldown", new(1f, 180f, 1f), 5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Admirer])
             .SetValueFormat(OptionFormat.Seconds);
-        KnowTargetRole = BooleanOptionItem.Create(Id + 11, "AdmirerKnowTargetRole", true, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Admirer]);
-        SkillLimit = IntegerOptionItem.Create(Id + 12, "AdmirerSkillLimit", new(0, 100, 1), 1, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Admirer])
+        KnowTargetRole = BooleanOptionItem.Create(Id + 11, "AdmirerKnowTargetRole", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Admirer]);
+        SkillLimit = IntegerOptionItem.Create(Id + 12, "AdmirerSkillLimit", new(0, 100, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Admirer])
             .SetValueFormat(OptionFormat.Times);
     }
     public static void Init()
@@ -47,6 +47,12 @@ public static class Admirer
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
+    }
+    public static void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        AdmirerLimit.Remove(playerId);
+        AdmiredList.Remove(playerId);
     }
 
     private static void SendRPC(byte playerId)

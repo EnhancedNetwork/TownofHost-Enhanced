@@ -50,6 +50,12 @@ public static class President
         RevealLimit.Add(playerId, 1);
         IsEnable = true;
     }
+    public static void Remove(byte playerId)
+    {
+        CheckPresidentReveal.Remove(playerId);
+        EndLimit.Remove(playerId);
+        RevealLimit.Remove(playerId);
+    }
     public static string GetEndLimit(byte playerId) => Utils.ColorString(EndLimit[playerId] > 0 ? Utils.GetRoleColor(CustomRoles.President) : Color.gray, EndLimit.TryGetValue(playerId, out var endLimit) ? $"({endLimit})" : "Invalid");
 
     public static void TryHideMsgForPresident()
@@ -117,6 +123,16 @@ public static class President
             }
 
             EndLimit[pc.PlayerId]--;
+
+            foreach (var pva in MeetingHud.Instance.playerStates)
+            {
+                if (pva == null) continue;
+
+                if (pva.VotedFor < 253)
+                    MeetingHud.Instance.RpcClearVote(pva.TargetPlayerId);
+            }
+            List<MeetingHud.VoterState> statesList = [];
+            MeetingHud.Instance.RpcVotingComplete(statesList.ToArray(), null, true);
             MeetingHud.Instance.RpcClose();
         }
         else if (operate == 2)

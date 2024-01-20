@@ -44,6 +44,12 @@ namespace TOHE.Roles.Crewmate
             ShowGhostArrowUntil.Add(playerId, 0);
             IsEnable = true;
         }
+        public static void Remove(byte playerId)
+        {
+            playerIdList.Remove(playerId);
+            LastGhostArrowShowTime.Remove(playerId);
+            ShowGhostArrowUntil.Remove(playerId);
+        }
 
         private static bool ShowArrow(byte playerId)
         {

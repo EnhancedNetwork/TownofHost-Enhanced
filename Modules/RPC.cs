@@ -108,6 +108,7 @@ enum CustomRPC
     TaskinatorMarkedTask,
     BenefactorRPC,
     SetSwapperVotes,
+    SetSwapperSkill,
     SetQuickShooterShotLimit,
     SetEraseLimit,
     GuessKill,
@@ -786,7 +787,10 @@ internal class RPCHandlerPatch
                 Bloodhound.ReceiveRPCLimit(reader);
                 break;
             case CustomRPC.SetSwapperVotes:
-                Swapper.ReceiveRPC(reader, __instance);
+                Swapper.ReceiveSwapRPC(reader, __instance);
+                break;
+            case CustomRPC.SetSwapperSkill:
+                Swapper.ReceiveSkillRPC(reader);
                 break;
             case CustomRPC.SetPoliceLimlit:
                 ChiefOfPolice.ReceiveRPC(reader);
@@ -938,7 +942,7 @@ internal static class RPC
     }
     public static async void RpcVersionCheck()
     {
-        while (PlayerControl.LocalPlayer == null || AmongUsClient.Instance.GetHost().Character == null || PlayerControl.LocalPlayer.GetClientId() < 0) await Task.Delay(500);
+        while (PlayerControl.LocalPlayer == null || AmongUsClient.Instance.GetHost() == null || PlayerControl.LocalPlayer.GetClientId() < 0) await Task.Delay(500);
         var hostId = AmongUsClient.Instance.HostId;
         if (Main.playerVersion.ContainsKey(hostId) || !Main.VersionCheat.Value)
         {
@@ -954,7 +958,7 @@ internal static class RPC
     }
     public static async void RpcRequestRetryVersionCheck()
     {
-        while (PlayerControl.LocalPlayer == null || AmongUsClient.Instance.GetHost().Character == null) await Task.Delay(500);
+        while (PlayerControl.LocalPlayer == null || AmongUsClient.Instance.GetHost() == null) await Task.Delay(500);
         var hostId = AmongUsClient.Instance.HostId;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck, SendOption.Reliable, hostId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

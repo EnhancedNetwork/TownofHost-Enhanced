@@ -1031,15 +1031,20 @@ static class CustomRolesHelper
             CustomRoles.Stubborn or
             CustomRoles.TicketsStealer;
     }
-    public static bool CheckAddonConfilct(CustomRoles role, PlayerControl pc)
+    public static bool CheckAddonConfilct(CustomRoles role, PlayerControl pc, bool checkLimitAddons = true)
     {
         // Only add-ons
         if (!role.IsAdditionRole()) return false;
 
-        if ((pc.Is(CustomRoles.RuthlessRomantic) || pc.Is(CustomRoles.Romantic) || pc.Is(CustomRoles.VengefulRomantic)) && role is CustomRoles.Lovers) return false;
+        // Checking Lovers and Romantics
+        else if ((pc.Is(CustomRoles.RuthlessRomantic) || pc.Is(CustomRoles.Romantic) || pc.Is(CustomRoles.VengefulRomantic)) && role is CustomRoles.Lovers) return false;
 
         // Checking for conflicts with roles
-        if (pc.Is(CustomRoles.GM) || role is CustomRoles.Lovers || pc.Is(CustomRoles.Needy) || (pc.HasSubRole() && pc.GetCustomSubRoles().Count >= Options.NoLimitAddonsNumMax.GetInt())) return false;
+        else if (pc.Is(CustomRoles.GM) || role is CustomRoles.Lovers || pc.Is(CustomRoles.Needy)) return false;
+
+
+        if (checkLimitAddons)
+            if (pc.HasSubRole() && pc.GetCustomSubRoles().Count >= Options.NoLimitAddonsNumMax.GetInt()) return false;
 
 
         // Checking for conflicts with roles and other add-ons
@@ -1533,7 +1538,8 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Wildling)
                     || pc.Is(CustomRoles.EvilDiviner)
                     || pc.Is(CustomRoles.Capitalism)
-                    || pc.Is(CustomRoles.OverKiller))
+                    || pc.Is(CustomRoles.OverKiller)
+                    || pc.Is(CustomRoles.Minimalism))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -1564,7 +1570,8 @@ static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Swift)
                     || pc.Is(CustomRoles.Bomber)
                     || pc.Is(CustomRoles.Nuker)
-                    || pc.Is(CustomRoles.Capitalism))
+                    || pc.Is(CustomRoles.Capitalism)
+                    || pc.Is(CustomRoles.Minimalism))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -1610,7 +1617,8 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Influenced)
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.NiceMini)
-                    || pc.Is(CustomRoles.EvilMini))
+                    || pc.Is(CustomRoles.EvilMini)
+                    || (pc.Is(CustomRoles.CopyCat) && CopyCat.CopyTeamChangingAddon.GetBool()))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor() && !pc.GetCustomRole().IsCrewmate())
                     return false;
@@ -1736,7 +1744,7 @@ static class CustomRolesHelper
     public static bool IsImpostorTeam(this CustomRoles role) => role.IsImpostor() || role == CustomRoles.Madmate;
     public static bool IsCrewmate(this CustomRoles role) => !role.IsImpostor() && !role.IsNeutral() && !role.IsMadmate();
 
-    public static bool IsImpostorTeamV2(this CustomRoles role) => (role.IsImpostorTeamV3() && role != CustomRoles.Trickster && !role.IsConverted()) || role == CustomRoles.Rascal;
+    public static bool IsImpostorTeamV2(this CustomRoles role) => (role.IsImpostorTeamV3() && role != CustomRoles.Trickster && !role.IsConverted()) || role == CustomRoles.Rascal || role == CustomRoles.Madmate;
     public static bool IsNeutralTeamV2(this CustomRoles role) => (role.IsConverted() || role.IsNeutral() && role != CustomRoles.Madmate);
 
     public static bool IsCrewmateTeamV2(this CustomRoles role) => ((!role.IsImpostorTeamV2() && !role.IsNeutralTeamV2()) || (role == CustomRoles.Trickster && !role.IsConverted()));

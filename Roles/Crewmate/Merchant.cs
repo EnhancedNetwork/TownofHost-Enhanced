@@ -129,13 +129,20 @@ namespace TOHE.Roles.Crewmate
             bribedKiller.Add(playerId, new List<byte>());
             IsEnable = true;
         }
+        public static void Remove(byte playerId)
+        {
+            playerIdList.Remove(playerId);
+            addonsSold.Remove(playerId);
+            bribedKiller.Remove(playerId);
+        }
 
         public static void OnTaskFinished(PlayerControl player)
         {
-            if (!player.IsAlive() || !player.Is(CustomRoles.Merchant) || (addonsSold[player.PlayerId] >= OptionMaxSell.GetInt()))
+            if (addonsSold[player.PlayerId] >= OptionMaxSell.GetInt())
             {
                 return;
             }
+
             if (addons.Count == 0)
             {
                 player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSellFail")));
@@ -152,11 +159,11 @@ namespace TOHE.Roles.Crewmate
                     &&
                     !x.Is(addon)
                     &&
-                    CustomRolesHelper.CheckAddonConfilct(addon, x)
+                    (!x.Is(CustomRoles.Stubborn))
+                    &&
+                    CustomRolesHelper.CheckAddonConfilct(addon, x, checkLimitAddons: false)
                     &&
                     (Cleanser.CleansedCanGetAddon.GetBool() || (!Cleanser.CleansedCanGetAddon.GetBool() && !x.Is(CustomRoles.Cleansed)))
-                    &&
-                    (!x.Is(CustomRoles.Stubborn))
                     &&
                     (
                         (OptionCanTargetCrew.GetBool() && x.GetCustomRole().IsCrewmate()) 

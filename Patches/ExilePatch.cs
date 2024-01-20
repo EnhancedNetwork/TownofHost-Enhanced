@@ -184,20 +184,6 @@ class ExileControllerWrapUpPatch
 
         if (HexMaster.IsEnable)
             HexMaster.RemoveHexedPlayer();
-
-        if (Swapper.Vote.Count > 0 && Swapper.VoteTwo.Count > 0)
-        {
-            foreach (var swapper in Main.AllAlivePlayerControls)
-            {
-                if (swapper.Is(CustomRoles.Swapper))
-                {
-                    Swapper.Swappermax[swapper.PlayerId]--;
-                    Swapper.Vote.Clear();
-                    Swapper.VoteTwo.Clear();
-                    Main.SwapSend = false;
-                }
-            }
-        }
         
         foreach (var player in Main.AllPlayerControls)
         {
