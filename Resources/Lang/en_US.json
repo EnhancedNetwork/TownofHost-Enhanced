@@ -3373,6 +3373,8 @@
   "CantRecruit": "You can't recruit a Mini that hasn't grown up.",
   "ExiledNiceMini": "You ejected a <color=#8cffff>Nice Mini</color> before they grew up.\n<color=#ff1919>You all lose</color>",
   "MiniUp": "You're a year older!",
+  "MiniMisGuessed": "You are supposed to misguess to death!\nHowever you are still a kid, so you are free of guilty while you can no longer guess.\nYou can guess again after you have grown up.",
+  "MiniGuessMax": "You have misguessed, so you are no longer allowed to guess!",
   "CountMeetingTime": "Meeting time can continue to grow",
   "YouKillRandomizer1": "You kill Randomizer, Self report!",
   "YouKillRandomizer2": "You kill Randomizer, Cannot move!",

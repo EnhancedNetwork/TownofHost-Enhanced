@@ -23,6 +23,7 @@ public class Mini
     public static OptionItem EveryoneCanKnowMini;
     public static OptionItem CountMeetingTime;
     public static bool IsEnable = false;
+    public static bool misguessed = false;
     public static OptionItem EvilMiniSpawnChances;
     public static OptionItem CanBeEvil;
     public static OptionItem UpDateAge;
@@ -51,6 +52,7 @@ public class Mini
         GrowUp = GrowUpDuration.GetInt() / 18;
         IsEnable = false;
         Age = 0;
+        misguessed = false;
     }
     public static void Add(byte playerId)
     {
