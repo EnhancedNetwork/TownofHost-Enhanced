@@ -694,7 +694,7 @@ class CheckForEndVotingPatch
     }
     private static PlayerControl PickRevengeTarget(PlayerControl exiledplayer)//道連れ先選定
     {
-        List<PlayerControl> TargetList = new();
+        List<PlayerControl> TargetList = [];
         foreach (var candidate in Main.AllAlivePlayerControls)
         {
             if (candidate == exiledplayer || Main.AfterMeetingDeathPlayers.ContainsKey(candidate.PlayerId)) continue;
