@@ -89,12 +89,14 @@ class CheckForEndVotingPatch
                     {
                         Utils.SendMessage(GetString("VoteDead"), pc.PlayerId);
                         __instance.RpcClearVote(pc.GetClientId());
+                        Swapper.CheckSwapperTarget(pva.VotedFor);
                         continue;
                     }
                     else if (!voteTarget.IsAlive() || voteTarget.Data.Disconnected)
                     {
                         Utils.SendMessage(GetString("VoteDead"), pc.PlayerId);
                         __instance.RpcClearVote(pc.GetClientId());
+                        Swapper.CheckSwapperTarget(pva.VotedFor);
                         continue;
                     }
 
@@ -238,80 +240,42 @@ class CheckForEndVotingPatch
                     VotedForId = ps.VotedFor
                 });
 
-                #region Swapper swap votes
-                if (Swapper.Vote.Count > 0 && Swapper.VoteTwo.Count > 0)
+                //Swapper swap votes
+                foreach (var pid in Swapper.playerIdList)
                 {
-                    List<byte> NiceList1 = new();
-                    List<byte> NiceList2 = new();
-                    PlayerVoteArea pva = new();
-                    var meetingHud = MeetingHud.Instance;
-                    PlayerControl swap1 = null;
-                    foreach (var playerId in Swapper.Vote.ToArray())
+                    var pc = Utils.GetPlayerById(pid);
+                    if (pc == null || !pc.IsAlive()) continue;
+
+                    if (!Swapper.Vote.TryGetValue(pc.PlayerId, out var tid1) || !Swapper.VoteTwo.TryGetValue(pc.PlayerId, out var tid2)) continue;
+                    if (tid1 == 253 || tid2 == 253 || tid1 == tid2) continue;
+
+                    var target1 = Utils.GetPlayerById(tid1);
+                    var target2 = Utils.GetPlayerById(tid2);
+
+                    if (target1 == null || target2 == null || !target1.IsAlive() || !target2.IsAlive()) continue;
+
+                    List<byte> templist = [];
+
+                    foreach (var pva in __instance.playerStates.ToArray())
                     {
-                        var player = Utils.GetPlayerById(playerId);
-                        if (player != null)
-                        {
-                            swap1 = player;
-                            break;
-                        }
+                        if (pva.VotedFor != target1.PlayerId || pva.AmDead) continue;
+                        templist.Add(pva.TargetPlayerId);
+                        pva.VotedFor = target2.PlayerId;
+                        ReturnChangedPva(pva);
                     }
-                    PlayerControl swap2 = null;
-                    foreach (var playerId in Swapper.VoteTwo.ToArray())
+
+                    foreach (var pva in __instance.playerStates.ToArray())
                     {
-                        var player = Utils.GetPlayerById(playerId);
-                        if (player != null)
-                        {
-                            swap2 = player;
-                            break;
-                        }
+                        if (pva.VotedFor != target2.PlayerId || pva.AmDead) continue;
+                        if (templist.Contains(pva.TargetPlayerId)) continue;
+                        pva.VotedFor = target1.PlayerId;
+                        ReturnChangedPva(pva);
                     }
-                    if (swap1 != null && swap2 != null)
-                    {
-                        foreach (var playerVoteArea in __instance.playerStates.ToArray())
-                        {
-                            var voteAreaPlayer = Utils.GetPlayerById(playerVoteArea.TargetPlayerId);
-                            if (playerVoteArea.VotedFor == swap1.PlayerId && !playerVoteArea.AmDead)
-                            {
-                                //playerVoteArea.UnsetVote();
-                                //meetingHud.CastVote(voteAreaPlayer.PlayerId, swap2.PlayerId);
-                                playerVoteArea.VotedFor = swap2.PlayerId;
-                                NiceList1.Add(voteAreaPlayer.PlayerId);
-                            }
-                        }
-                        foreach (var playerVoteArea in __instance.playerStates.ToArray()) //Loops through all players
-                        {
-                            var voteAreaPlayer = Utils.GetPlayerById(playerVoteArea.TargetPlayerId);
-                            if (playerVoteArea.VotedFor == swap1.PlayerId && !playerVoteArea.AmDead && !NiceList1.Contains(voteAreaPlayer.PlayerId))
-                            {
-                                //if (NiceList1.Contains(voteAreaPlayer.PlayerId)) continue;
-                                //playerVoteArea.UnsetVote();
-                                playerVoteArea.VotedFor = swap1.PlayerId;
-                                //meetingHud.CastVote(voteAreaPlayer.PlayerId, swap1.PlayerId);
-                                NiceList2.Add(voteAreaPlayer.PlayerId);
-                            }
-                        }
-                        foreach (var playerVoteArea in __instance.playerStates.ToArray()) //Loops through all players
-                        {
-                            var voteAreaPlayer = Utils.GetPlayerById(playerVoteArea.TargetPlayerId);
-                            if (playerVoteArea.VotedFor == swap1.PlayerId && !playerVoteArea.AmDead && !NiceList2.Contains(voteAreaPlayer.PlayerId))
-                            {
-                                //playerVoteArea.UnsetVote();
-                                //meetingHud.CastVote(voteAreaPlayer.PlayerId, swap2.PlayerId);
-                                playerVoteArea.VotedFor = swap2.PlayerId;
-                                NiceList1.Add(voteAreaPlayer.PlayerId);
-                            }
-                        }
-                        if (Main.SwapSend == false)
-                        {
-                            Utils.SendMessage(string.Format(GetString("SwapVote"), swap1.GetRealName(), swap2.GetRealName()), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
-                            Main.SwapSend = true;
-                            NiceList1.Clear();
-                        }
-                        Swapper.Vote.Clear();
-                        Swapper.VoteTwo.Clear();
-                    }
+
+                    Utils.SendMessage(string.Format(GetString("SwapVote"), target1.GetRealName(), target2.GetRealName()), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
+                    Swapper.Swappermax[pid] -= 1;
+                    Swapper.SendSkillRPC(pid);
                 }
-                #endregion
 
                 if (CheckRole(ps.TargetPlayerId, CustomRoles.Mayor) && !Options.MayorHideVote.GetBool()) //Mayorの投票数
                 {
@@ -757,6 +721,7 @@ class CastVotePatch
             {
                 Utils.SendMessage(GetString("VoteDead"), srcPlayerId);
                 __instance.RpcClearVote(voter.GetClientId());
+                Swapper.CheckSwapperTarget(suspectPlayerId);
                 return false;
             }
 
@@ -880,13 +845,14 @@ static class ExtendedMeetingHud
 [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
 class MeetingHudStartPatch
 {
+    public static List<(string, byte, string)> msgToSend = [];
     public static void NotifyRoleSkillOnMeetingStart()
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
         Main.MeetingIsStarted = true;
 
-        List<(string, byte, string)> msgToSend = new();
+        msgToSend = [];
 
         void AddMsg(string text, byte sendTo = 255, string title = "")
             => msgToSend.Add((text, sendTo, title));
