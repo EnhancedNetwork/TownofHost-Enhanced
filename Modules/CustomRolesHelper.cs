@@ -1534,7 +1534,8 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Wildling)
                     || pc.Is(CustomRoles.EvilDiviner)
                     || pc.Is(CustomRoles.Capitalism)
-                    || pc.Is(CustomRoles.OverKiller))
+                    || pc.Is(CustomRoles.OverKiller)
+                    || pc.Is(CustomRoles.Minimalism))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -1565,7 +1566,8 @@ static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Swift)
                     || pc.Is(CustomRoles.Bomber)
                     || pc.Is(CustomRoles.Nuker)
-                    || pc.Is(CustomRoles.Capitalism))
+                    || pc.Is(CustomRoles.Capitalism)
+                    || pc.Is(CustomRoles.Minimalism))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;

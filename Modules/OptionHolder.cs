@@ -1345,6 +1345,14 @@ public static class Options
         Instigator.SetupCustomOption();
 
         /*
+         * Killing Machine
+         */
+        SetupRoleOptions(23800, TabGroup.ImpostorRoles, CustomRoles.Minimalism);
+        MNKillCooldown = FloatOptionItem.Create(23805, "KillCooldown", new(2.5f, 180f, 2.5f), 10f, TabGroup.ImpostorRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Minimalism])
+            .SetValueFormat(OptionFormat.Seconds);
+
+        /*
          * Ludopath
          */
         SetupRoleOptions(1800, TabGroup.ImpostorRoles, CustomRoles.Ludopath);
@@ -2924,11 +2932,7 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(247, 70, 49, byte.MaxValue));
 
-        SetupRoleOptions(23800, TabGroup.OtherRoles, CustomRoles.Minimalism);
-        MNKillCooldown = FloatOptionItem.Create(23805, "KillCooldown", new(2.5f, 180f, 2.5f), 10f, TabGroup.OtherRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Minimalism])
-            .SetValueFormat(OptionFormat.Seconds);
-
+        
         /*SetupRoleOptions(24000, TabGroup.OtherRoles, CustomRoles.Capitalism);
         CapitalismSkillCooldown = FloatOptionItem.Create(24003, "CapitalismSkillCooldown", new(2.5f, 180f, 2.5f), 20f, TabGroup.OtherRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Capitalism])
