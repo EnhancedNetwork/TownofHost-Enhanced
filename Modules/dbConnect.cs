@@ -6,13 +6,12 @@ using System.IO;
 using System.Reflection;
 using static TOHE.Translator;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace TOHE;
 
 public class dbConnect
 {
-    private static Dictionary<string, string> userType = new();
+    private static Dictionary<string, string> userType = [];
     public static bool InitOnce = false;
     public static async void Init()
     {
@@ -87,7 +86,7 @@ public class dbConnect
         DestroyableSingleton<DisconnectPopup>.Instance.ShowCustom(GetString("dbConnect.InitFailure"));
         DestroyableSingleton<EOSManager>.Instance.loginFlowFinished = false;
     }
-    private static string getToken()
+    private static string GetToken()
     {
         string apiToken = "";
         Assembly assembly = Assembly.GetExecutingAssembly();
@@ -104,14 +103,12 @@ public class dbConnect
         {
             if (stream != null)
             {
-                using (StreamReader reader = new StreamReader(stream))
-                {
-                    // Read the content of the .env file
-                    string content = reader.ReadToEnd();
+                using StreamReader reader = new(stream);
+                // Read the content of the .env file
+                string content = reader.ReadToEnd();
 
-                    // Process the content as needed
-                    apiToken = content.Replace("API_TOKEN=", string.Empty).Trim();
-                }
+                // Process the content as needed
+                apiToken = content.Replace("API_TOKEN=", string.Empty).Trim();
             }
             if (stream == null || apiToken == "")
             {
@@ -123,68 +120,62 @@ public class dbConnect
     private static void GetRoleTable()
     {
         var tempUserType = new Dictionary<string, string>(); // Create a temporary dictionary
-        string apiToken = getToken();
+        string apiToken = GetToken();
         if (apiToken == "")
         {
             Logger.Warn("Embedded resource not found.", "apiToken");
             return;
         }
-        using (var httpClient = new HttpClient())
+
+        using var httpClient = new HttpClient();
+        string apiUrl = "https://api.tohre.dev"; // Replace with your actual API URL
+        string endpoint = $"{apiUrl}/userInfo?token={apiToken}";
+        try
         {
-            string apiUrl = "https://api.tohre.dev"; // Replace with your actual API URL
-            string endpoint = $"{apiUrl}/userInfo?token={apiToken}";
-
-            try
+            using var response = httpClient.GetAsync(endpoint).Result; // Move the using statement inside the try block
+            if (response.IsSuccessStatusCode)
             {
-                using (var response = httpClient.GetAsync(endpoint).Result) // Move the using statement inside the try block
+                using var responseStream = response.Content.ReadAsStreamAsync().Result;
+                try
                 {
-                    if (response.IsSuccessStatusCode)
+                    var userList = JsonSerializer.DeserializeAsync<List<Dictionary<string, JsonElement>>>(responseStream).Result;
+                    foreach (var user in userList)
                     {
-                        using (var responseStream = response.Content.ReadAsStreamAsync().Result)
+                        if (!DevManager.IsDevUser(user["friendcode"].ToString()))
                         {
-                            try
-                            {
-                                var userList = JsonSerializer.DeserializeAsync<List<Dictionary<string, JsonElement>>>(responseStream).Result;
-                                foreach (var user in userList)
-                                {
-                                    if (!DevManager.IsDevUser(user["friendcode"].ToString()))
-                                    {
-                                        DevManager.DevUserList.Add(new(
-                                            code: user["friendcode"].ToString(),
-                                            color: user["color"].ToString(),
-                                            tag: ToAutoTranslate(user["overhead_tag"]),
-                                            isUp: user["isUP"].GetInt32() == 1,
-                                            isDev: user["isDev"].GetInt32() == 1,
-                                            deBug: user["debug"].GetInt32() == 1,
-                                            colorCmd: user["colorCmd"].GetInt32() == 1,
-                                            upName: user["name"].ToString()));
+                            DevManager.DevUserList.Add(new(
+                                code: user["friendcode"].ToString(),
+                                color: user["color"].ToString(),
+                                tag: ToAutoTranslate(user["overhead_tag"]),
+                                isUp: user["isUP"].GetInt32() == 1,
+                                isDev: user["isDev"].GetInt32() == 1,
+                                deBug: user["debug"].GetInt32() == 1,
+                                colorCmd: user["colorCmd"].GetInt32() == 1,
+                                upName: user["name"].ToString()));
 
-                                    }
-                                    tempUserType[user["friendcode"].ToString()] = user["type"].ToString(); // Store the data in the temporary dictionary
-                                }
-                                userType = tempUserType; // Replace userType with the temporary dictionary
-                                return;
-                            }
-                            catch (JsonException jsonEx)
-                            {
-                                // If deserialization as a list fails, try deserializing as a single JSON object
-                                Logger.Error($"Error deserializing JSON: {jsonEx.Message}", "dbConnect");
-                                return;
-                            }
                         }
+                        tempUserType[user["friendcode"].ToString()] = user["type"].ToString(); // Store the data in the temporary dictionary
                     }
-                    else
-                    {
-                        Logger.Error($"Error in fetching the User List, Success status code is false", "dbConnect");
-                        return;
-                    }
+                    userType = tempUserType; // Replace userType with the temporary dictionary
+                    return;
+                }
+                catch (JsonException jsonEx)
+                {
+                    // If deserialization as a list fails, try deserializing as a single JSON object
+                    Logger.Error($"Error deserializing JSON: {jsonEx.Message}", "dbConnect");
+                    return;
                 }
             }
-            catch (Exception ex)
+            else
             {
-                Logger.Error($"error: {ex}", "dbConnect");
+                Logger.Error($"Error in fetching the User List, Success status code is false", "dbConnect");
                 return;
             }
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"error: {ex}", "dbConnect");
+            return;
         }
     }
 
@@ -213,51 +204,45 @@ public class dbConnect
     }
     private static void GetEACList()
     {
-        string apiToken = getToken();
+        string apiToken = GetToken();
         if (apiToken == "")
         {
             Logger.Warn("Embedded resource not found.", "apiToken");
             return;
         }
-        using (var httpClient = new HttpClient())
-        {
-            string apiUrl = "https://api.tohre.dev"; // Replace with your actual API URL
-            string endpoint = $"{apiUrl}/eac?token={apiToken}";
 
-            try
+        using var httpClient = new HttpClient();
+        string apiUrl = "https://api.tohre.dev"; // Replace with your actual API URL
+        string endpoint = $"{apiUrl}/eac?token={apiToken}";
+        try
+        {
+            using var response = httpClient.GetAsync(endpoint).Result; // Move the using statement inside the try block
+            if (response.IsSuccessStatusCode)
             {
-                using (var response = httpClient.GetAsync(endpoint).Result) // Move the using statement inside the try block
+                using var responseStream = response.Content.ReadAsStreamAsync().Result;
+                try
                 {
-                    if (response.IsSuccessStatusCode)
-                    {
-                        using (var responseStream = response.Content.ReadAsStreamAsync().Result)
-                        {
-                            try
-                            {
-                                List<Dictionary<string, JsonElement>> tempEACDict = JsonSerializer.DeserializeAsync<List<Dictionary<string, JsonElement>>>(responseStream).Result;
-                                BanManager.EACDict = BanManager.EACDict.Concat(tempEACDict).ToList(); // Merge the temporary list with BanManager.EACDict
-                                return;
-                            }
-                            catch (JsonException jsonEx)
-                            {
-                                // If deserialization as a list fails, try deserializing as a single JSON object
-                                Logger.Error($"Error deserializing JSON: {jsonEx.Message}", "GetEACList");
-                                return;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Logger.Error($"Error in fetching the EAC List, Success status code is false", "GetEACList");
-                        return;
-                    }
+                    List<Dictionary<string, JsonElement>> tempEACDict = JsonSerializer.DeserializeAsync<List<Dictionary<string, JsonElement>>>(responseStream).Result;
+                    BanManager.EACDict = [.. BanManager.EACDict, .. tempEACDict]; // Merge the temporary list with BanManager.EACDict
+                    return;
+                }
+                catch (JsonException jsonEx)
+                {
+                    // If deserialization as a list fails, try deserializing as a single JSON object
+                    Logger.Error($"Error deserializing JSON: {jsonEx.Message}", "GetEACList");
+                    return;
                 }
             }
-            catch (Exception ex)
+            else
             {
-                Logger.Error($"error: {ex}", "GetEACList");
+                Logger.Error($"Error in fetching the EAC List, Success status code is false", "GetEACList");
                 return;
             }
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"error: {ex}", "GetEACList");
+            return;
         }
     }
 
