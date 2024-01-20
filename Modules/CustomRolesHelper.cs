@@ -356,6 +356,7 @@ static class CustomRolesHelper
             CustomRoles.Oiiai or
             CustomRoles.Influenced or
             CustomRoles.Silent or
+            CustomRoles.Rainbow or
             CustomRoles.Susceptible;
     }
     
@@ -1695,6 +1696,11 @@ static class CustomRolesHelper
                 if ((pc.GetCustomRole().IsCrewmate() && !Silent.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Silent.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Silent.CanBeOnImp.GetBool()))
                     return false;
                 break;
+
+            case CustomRoles.Rainbow:
+                if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeRainbow.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeRainbow.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeRainbow.GetBool()))
+                return false;
+            break;
         }
 
         // Code not used:
