@@ -232,7 +232,7 @@ public class Main : BasePlugin
     public static int MeetingsPassed = 0;
     public static Dictionary<byte, byte> Provoked = [];
     public static Dictionary<byte, float> DovesOfNeaceNumOfUsed = [];
-    public static bool SwapSend;
+    //public static bool SwapSend;
 
     public static Dictionary<byte, CustomRoles> DevRole = [];
     public static List<byte> GodfatherTarget = [];

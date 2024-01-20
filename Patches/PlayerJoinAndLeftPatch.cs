@@ -382,6 +382,7 @@ class OnPlayerLeftPatch
 
                 if (GameStates.IsMeeting)
                 {
+                    Swapper.CheckSwapperTarget(data.Character.PlayerId);
                     MeetingHud.Instance.CheckForEndVoting();
                 }
             }
