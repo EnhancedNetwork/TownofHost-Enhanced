@@ -7,7 +7,7 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 public static class Credentials
 {
     public static SpriteRenderer ToheLogo { get; private set; }
@@ -15,18 +15,21 @@ public static class Credentials
     [HarmonyPatch(typeof(PingTracker), nameof(PingTracker.Update))]
     class PingTrackerUpdatePatch
     {
-        private static byte DelayUpdate = 0;
+        private static int DelayUpdate = 0;
         private static readonly StringBuilder sb = new();
 
-        private static void Postfix(PingTracker __instance)
+        private static bool Prefix(PingTracker __instance)
         {
             DelayUpdate--;
 
-            __instance.text.text = sb.ToString();
+            if (DelayUpdate > 0 && sb.Length > 0)
+            {
+                __instance.text.alignment = TextAlignmentOptions.TopRight;
+                __instance.text.text = sb.ToString();
+                return false;
+            }
 
-            if (DelayUpdate > 0 && sb.Length > 0) return;
-
-            DelayUpdate = byte.MaxValue;
+            DelayUpdate = 600;
 
             __instance.text.alignment = TextAlignmentOptions.TopRight;
 
@@ -40,9 +43,9 @@ public static class Credentials
             else if (ping < 100) pingcolor = "#7bc690";
             else if (ping < 200) pingcolor = "#f3920e";
             else if (ping < 400) pingcolor = "#ff146e";
-            sb.Append("\r\n").Append($"<color={pingcolor}>Ping: {ping} ms</color>");
+            sb.Append($"\r\n<color={pingcolor}>Ping: {ping} ms</color>");
 
-            if (!GameStates.IsModHost) sb.Append("\r\n").Append(Utils.ColorString(Color.red, GetString("Warning.NoModHost")));
+            if (!GameStates.IsModHost) sb.Append($"\r\n{Utils.ColorString(Color.red, GetString("Warning.NoModHost"))}");
 
             if (Main.ShowFPS.Value)
             {
@@ -52,24 +55,30 @@ public static class Credentials
                 if (FPSGame < 20f) fpscolor = Color.red;
                 else if (FPSGame < 40f) fpscolor = Color.yellow;
 
-                sb.Append("\r\n").Append(Utils.ColorString(fpscolor, Utils.ColorString(Color.cyan, GetString("FPSGame")) + ((int)FPSGame).ToString()));
+                sb.Append($"\r\n{Utils.ColorString(fpscolor, Utils.ColorString(Color.cyan, GetString("FPSGame")) + ((int)FPSGame).ToString())}");
             }
 
             if (Main.ShowTextOverlay.Value)
             {
-                if (Options.LowLoadMode.GetBool()) sb.Append("\r\n").Append(Utils.ColorString(Color.green, GetString("Overlay.LowLoadMode")));
-                if (Options.NoGameEnd.GetBool()) sb.Append("\r\n").Append(Utils.ColorString(Color.red, GetString("Overlay.NoGameEnd")));
-                if (Options.GuesserMode.GetBool()) sb.Append("\r\n").Append(Utils.ColorString(Color.yellow, GetString("Overlay.GuesserMode")));
-                if (Options.AllowConsole.GetBool() && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug) sb.Append("\r\n").Append(Utils.ColorString(Color.red, GetString("Overlay.AllowConsole")));
-                if (DebugModeManager.IsDebugMode) sb.Append("\r\n").Append(Utils.ColorString(Color.green, GetString("Overlay.DebugMode")));
+                var sbOverlay = new StringBuilder();
+                if (Options.LowLoadMode.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.green, GetString("Overlay.LowLoadMode"))}");
+                if (Options.NoGameEnd.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.red, GetString("Overlay.NoGameEnd"))}");
+                if (Options.GuesserMode.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.yellow, GetString("Overlay.GuesserMode"))}");
+                if (Options.AllowConsole.GetBool() && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug) sbOverlay.Append($"\r\n{Utils.ColorString(Color.red, GetString("Overlay.AllowConsole"))}");
+                if (DebugModeManager.IsDebugMode) sbOverlay.Append($"\r\n{Utils.ColorString(Color.green, GetString("Overlay.DebugMode"))}");
+
+                if (sbOverlay.Length > 0)
+                    sb.Append(sbOverlay);
             }
 
-            var offset_x = 1.2f; //右端からのオフセット
-            if (HudManager.InstanceExists && HudManager._instance.Chat.chatButton.active) offset_x += 0.8f; //チャットボタンがある場合の追加オフセット
-            if (FriendsListManager.InstanceExists && FriendsListManager._instance.FriendsListButton.Button.active) offset_x += 0.8f; //フレンドリストボタンがある場合の追加オフセット
+            var offset_x = 1.2f; //Offset from right edge
+            if (HudManager.InstanceExists && HudManager._instance.Chat.chatButton.active) offset_x += 0.8f; // Additional offsets for chat button if present
+            if (FriendsListManager.InstanceExists && FriendsListManager._instance.FriendsListButton.Button.active) offset_x += 0.8f; // Additional offsets if friend list button is present
             __instance.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(offset_x, 0f, 0f);
 
             __instance.text.text = sb.ToString();
+
+            return false;
         }
     }
     [HarmonyPatch(typeof(VersionShower), nameof(VersionShower.Start))]
