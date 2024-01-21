@@ -797,6 +797,9 @@ static class ExtendedPlayerControl
             case CustomRoles.Agitater:
                 Agitater.SetKillCooldown(player.PlayerId);
                 break;
+            case CustomRoles.PlagueDoctor:
+                PlagueDoctor.SetKillCooldown(player.PlayerId);
+                break;
             case CustomRoles.Berserker:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.BerserkerKillCooldown.GetFloat();
                 break;
