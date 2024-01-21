@@ -2298,8 +2298,6 @@ public static class Options
         Collector.SetupCustomOption();
         
         Succubus.SetupCustomOption();
-
-        
         
         SetupRoleOptions(14900, TabGroup.NeutralRoles, CustomRoles.Phantom);
         PhantomCanVent = BooleanOptionItem.Create(14902, "CanVent", false, TabGroup.NeutralRoles, false)
