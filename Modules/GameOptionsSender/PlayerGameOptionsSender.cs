@@ -12,7 +12,7 @@ using Mathf = UnityEngine.Mathf;
 
 namespace TOHE.Modules;
 
-public class PlayerGameOptionsSender : GameOptionsSender
+public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
 {
     public static void SetDirty(PlayerControl player) => SetDirty(player.PlayerId);
     public static void SetDirty(byte playerId)
@@ -34,12 +34,8 @@ public class PlayerGameOptionsSender : GameOptionsSender
             Main.RealOptionsData.Restore(new NormalGameOptionsV07(new UnityLogger().Cast<ILogger>()).Cast<IGameOptions>()) : Main.RealOptionsData.Restore(new HideNSeekGameOptionsV07(new UnityLogger().Cast<ILogger>()).Cast<IGameOptions>());
     public override bool IsDirty { get; protected set; }
 
-    public PlayerControl player;
+    public PlayerControl player = player;
 
-    public PlayerGameOptionsSender(PlayerControl player)
-    {
-        this.player = player;
-    }
     public void SetDirty() => IsDirty = true;
 
     public override void SendGameOptions()
@@ -77,7 +73,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
     }
     public override IGameOptions BuildGameOptions()
     {
-        if (Main.RealOptionsData == null) Main.RealOptionsData = new OptionBackupData(GameOptionsManager.Instance.CurrentGameOptions);
+        Main.RealOptionsData ??= new OptionBackupData(GameOptionsManager.Instance.CurrentGameOptions);
 
         var opt = BasedGameOptions;
         if (GameStates.IsNormalGame) AURoleOptions.SetOpt(opt);
@@ -552,6 +548,23 @@ public class PlayerGameOptionsSender : GameOptionsSender
                         opt.SetVision(true);
                     opt.SetFloat(FloatOptionNames.CrewLightMod, Options.TorchVision.GetFloat() * 5);
                     opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.TorchVision.GetFloat() * 5);
+                    break;
+                case CustomRoles.Tired when Tired.playerIdList.ContainsKey(player.PlayerId):
+                        if (Tired.playerIdList[player.PlayerId])
+                        {
+                            //Logger.Info($"{player.GetNameWithRole()} Succesfully decreased vision", "Tired");
+                            opt.SetVision(false);
+                            opt.SetFloat(FloatOptionNames.CrewLightMod, Tired.SetVision.GetFloat());
+                            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Tired.SetVision.GetFloat());
+                            break;
+                        }
+                        else
+                        {
+                            opt.SetVision(false);
+                            opt.SetFloat(FloatOptionNames.CrewLightMod, Main.DefaultCrewmateVision);
+                            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Main.DefaultImpostorVision);
+                        }
+                    
                     break;
                 case CustomRoles.Bewilder:
                     opt.SetVision(false);

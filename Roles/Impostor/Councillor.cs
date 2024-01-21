@@ -14,7 +14,7 @@ namespace TOHE.Roles.Impostor;
 public static class Councillor
 {
     private static readonly int Id = 1000;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     private static OptionItem MurderLimitPerMeeting;
@@ -23,8 +23,8 @@ public static class Councillor
     private static OptionItem CanMurderMadmate;
     private static OptionItem CanMurderImpostor;
     public static OptionItem KillCooldown;
-    private static Dictionary<byte, int> MurderLimit;
-   // private static Dictionary<byte, int> MurderLimitGame;
+    private static Dictionary<byte, int> MurderLimit = [];
+    // private static Dictionary<byte, int> MurderLimitGame;
 
     public static void SetupCustomOption()
     {
@@ -42,8 +42,8 @@ public static class Councillor
     }
     public static void Init()
     {
-        playerIdList = new();
-        MurderLimit = new();
+        playerIdList = [];
+        MurderLimit = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)

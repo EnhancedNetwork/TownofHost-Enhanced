@@ -8,11 +8,11 @@ namespace TOHE.Roles.Neutral;
 public static class Gamer
 {
     private static readonly int Id = 16200;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
-    private static Dictionary<byte, int> PlayerHealth;
-    private static Dictionary<byte, int> GamerHealth;
+    private static Dictionary<byte, int> PlayerHealth = [];
+    private static Dictionary<byte, int> GamerHealth = [];
 
     private static OptionItem KillCooldown;
     public static OptionItem CanVent;
@@ -41,9 +41,9 @@ public static class Gamer
     }
     public static void Init()
     {
-        playerIdList = new();
-        GamerHealth = new();
-        PlayerHealth = new();
+        playerIdList = [];
+        GamerHealth = [];
+        PlayerHealth = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)

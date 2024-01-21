@@ -7,7 +7,7 @@ namespace TOHE.Roles.Crewmate
     public static class Addict
     {
         private static readonly int Id = 6300;
-        private static List<byte> playerIdList = new();
+        private static List<byte> playerIdList = [];
         public static bool IsEnable = false;
 
         public static OptionItem VentCooldown;
@@ -16,8 +16,8 @@ namespace TOHE.Roles.Crewmate
    //     public static OptionItem SpeedWhileImmortal;
         public static OptionItem FreezeTimeAfterImmortal;
 
-        private static Dictionary<byte, float> SuicideTimer = new();
-        private static Dictionary<byte, float> ImmortalTimer = new();
+        private static Dictionary<byte, float> SuicideTimer = [];
+        private static Dictionary<byte, float> ImmortalTimer = [];
 
         private static float DefaultSpeed = new();
 
@@ -37,9 +37,9 @@ namespace TOHE.Roles.Crewmate
         }
         public static void Init()
         {
-            playerIdList = new();
-            SuicideTimer = new();
-            ImmortalTimer = new();
+            playerIdList = [];
+            SuicideTimer = [];
+            ImmortalTimer = [];
             DefaultSpeed = new();
             IsEnable = false;
         }

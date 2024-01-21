@@ -9,31 +9,31 @@ namespace TOHE.Roles.Impostor;
 internal static class Eraser
 {
     private static readonly int Id = 24200;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     private static OptionItem EraseLimitOpt;
     public static OptionItem HideVote;
 
-    private static List<byte> didVote = new();
-    public static Dictionary<byte, int> EraseLimit = new();
-    private static List<byte> PlayerToErase = new();
-    public static Dictionary<byte, int> TempEraseLimit = new();
+    private static List<byte> didVote = [];
+    public static Dictionary<byte, int> EraseLimit = [];
+    private static List<byte> PlayerToErase = [];
+    public static Dictionary<byte, int> TempEraseLimit = [];
 
     public static void SetupCustomOption()
     {
-        Options.SetupRoleOptions(Id, TabGroup.OtherRoles, CustomRoles.Eraser);
-        EraseLimitOpt = IntegerOptionItem.Create(Id + 10, "EraseLimit", new(1, 15, 1), 2, TabGroup.OtherRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Eraser])
+        Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Eraser);
+        EraseLimitOpt = IntegerOptionItem.Create(Id + 10, "EraseLimit", new(1, 15, 1), 2, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Eraser])
             .SetValueFormat(OptionFormat.Times);
-        HideVote = BooleanOptionItem.Create(Id + 11, "EraserHideVote", false, TabGroup.OtherRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Eraser]);
+        HideVote = BooleanOptionItem.Create(Id + 11, "EraserHideVote", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Eraser]);
     }
     public static void Init()
     {
-        playerIdList = new();
-        EraseLimit = new();
-        PlayerToErase = new();
-        didVote = new();
-        TempEraseLimit = new();
+        playerIdList = [];
+        EraseLimit = [];
+        PlayerToErase = [];
+        didVote = [];
+        TempEraseLimit = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -100,8 +100,8 @@ internal static class Eraser
             TempEraseLimit[eraserId] = EraseLimit[eraserId];
         }
 
-        PlayerToErase = new();
-        didVote = new();
+        PlayerToErase = [];
+        didVote = [];
     }
     public static void AfterMeetingTasks()
     {

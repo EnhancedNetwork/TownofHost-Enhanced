@@ -53,6 +53,7 @@ class ExileControllerWrapUpPatch
 
         Logger.Info($"{!Collector.CollectorWin(false)}", "!Collector.CollectorWin(false)");
         Logger.Info($"{exiled != null}", "exiled != null");
+
         if (!Collector.CollectorWin(false) && exiled != null)
         {
             // Deal with the darkening bug for the spirit world

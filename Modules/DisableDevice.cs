@@ -9,7 +9,7 @@ namespace TOHE;
 class DisableDevice
 {
     public static bool DoDisable => Options.DisableDevices.GetBool();
-    private static List<byte> DesyncComms = new();
+    private static readonly List<byte> DesyncComms = [];
     private static int frame = 0;
     public static readonly Dictionary<string, Vector2> DevicePos = new()
     {

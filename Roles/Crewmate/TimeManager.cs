@@ -5,7 +5,7 @@ namespace TOHE.Roles.Crewmate;
 public static class TimeManager
 {
     private static readonly int Id = 9800;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     public static OptionItem IncreaseMeetingTime;
@@ -25,7 +25,7 @@ public static class TimeManager
     }
     public static void Init()
     {
-        playerIdList = new();
+        playerIdList = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)

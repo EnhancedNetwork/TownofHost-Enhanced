@@ -9,7 +9,7 @@ namespace TOHE.Roles.Crewmate;
 public static class Marshall
 {
     private static readonly int Id = 11900;
-    private static readonly List<byte> playerIdList = new();
+    private static readonly List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Marshall);
@@ -18,11 +18,11 @@ public static class Marshall
 
     public static bool MadmateCanFindMarshall = false;
 
-    private static readonly Dictionary<byte, bool> IsExposed = new();
-    private static readonly Dictionary<byte, bool> IsComplete = new();
+    private static readonly Dictionary<byte, bool> IsExposed = [];
+    private static readonly Dictionary<byte, bool> IsComplete = [];
 
-    private static readonly HashSet<byte> TargetList = new();
-    private static readonly Dictionary<byte, Color> TargetColorlist = new();
+    private static readonly HashSet<byte> TargetList = [];
+    private static readonly Dictionary<byte, Color> TargetColorlist = [];
 
     public static void SetupCustomOption()
     {
@@ -66,16 +66,16 @@ public static class Marshall
         if (!marshall.IsAlive() || marshall.Is(CustomRoles.Madmate)) return;
 
         var marshallId = marshall.PlayerId;
-        var marshallTask = marshall.GetPlayerTaskState();
+        //var marshallTask = marshall.GetPlayerTaskState();
 
         if (!IsExposed[marshallId])
         {
-            foreach (var target in Main.AllAlivePlayerControls)
-            {
+           // foreach (var target in Main.AllAlivePlayerControls)
+           // {
            //     if (!IsMarshallTarget(target)) continue;
 
            //     TargetArrow.Add(target.PlayerId, snitchId);
-            }
+           // }
             IsExposed[marshallId] = true;
         }
 
@@ -103,21 +103,9 @@ public static class Marshall
         IsComplete[marshallId] = true;
     }
 
-    /// <summary>
-    /// タスクが進んだスニッチに警告マーク
-    /// </summary>
-    /// <param name="seer">キラーの場合有効</param>
-    /// <param name="target">スニッチの場合有効</param>
-    /// <returns></returns>
     public static string GetWarningMark(PlayerControl seer, PlayerControl target)
         => IsMarshallTarget(seer) && GetExpose(target) ? Utils.ColorString(RoleColor, "★") : "";
 
-    /// <summary>
-    /// キラーからスニッチに対する矢印
-    /// </summary>
-    /// <param name="seer">キラーの場合有効</param>
-    /// <param name="target">キラーの場合有効</param>
-    /// <returns></returns>
     public static string GetWarningArrow(PlayerControl seer, PlayerControl target = null)
     {
         if (GameStates.IsMeeting || !IsMarshallTarget(seer)) return "";
@@ -131,12 +119,6 @@ public static class Marshall
 
         return Utils.ColorString(RoleColor, warning);
     }
-    /// <summary>
-    /// スニッチからキラーへの矢印
-    /// </summary>
-    /// <param name="seer">スニッチの場合有効</param>
-    /// <param name="target">スニッチの場合有効</param>
-    /// <returns></returns>
     
     public static void OnCompleteTask(PlayerControl player)
     {

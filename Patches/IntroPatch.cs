@@ -80,7 +80,7 @@ class CoBeginPatch
         }
         else
         {
-            StringBuilder logStringBuilder = new StringBuilder();
+            StringBuilder logStringBuilder = new();
             logStringBuilder.AppendLine("------------Roles / Add-ons------------");
 
             foreach (var pc in allPlayerControlsArray)
@@ -91,7 +91,7 @@ class CoBeginPatch
             try
             {
                 byte[] logBytes = Encoding.UTF8.GetBytes(logStringBuilder.ToString());
-                byte[] encryptedBytes = EncryptDES(logBytes, $"TOHE{PlayerControl.LocalPlayer.PlayerId}00000000".Substring(0, 8));
+                byte[] encryptedBytes = EncryptDES(logBytes, $"TOHE{PlayerControl.LocalPlayer.PlayerId}00000000"[..8]);
                 string encryptedString = Convert.ToBase64String(encryptedBytes);
                 logger.Info(encryptedString);
             }
@@ -196,23 +196,19 @@ class CoBeginPatch
     }
     public static byte[] EncryptDES(byte[] data, string key)
     {
-        using (SymmetricAlgorithm desAlg = DES.Create())
+        using SymmetricAlgorithm desAlg = DES.Create();
+        
+        // Incoming key must be 8 bit or will cause error
+        desAlg.Key = Encoding.UTF8.GetBytes(key);
+        desAlg.IV = Encoding.UTF8.GetBytes(key);
+
+        using MemoryStream msEncrypt = new();
+        using (CryptoStream csEncrypt = new(msEncrypt, desAlg.CreateEncryptor(), CryptoStreamMode.Write))
         {
-            // Incoming key must be 8 bit or will cause error
-            desAlg.Key = Encoding.UTF8.GetBytes(key);
-            desAlg.IV = Encoding.UTF8.GetBytes(key);
-
-            using (MemoryStream msEncrypt = new MemoryStream())
-            {
-                using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, desAlg.CreateEncryptor(), CryptoStreamMode.Write))
-                {
-                    csEncrypt.Write(data, 0, data.Length);
-                }
-                return msEncrypt.ToArray();
-            }
+            csEncrypt.Write(data, 0, data.Length);
         }
+        return msEncrypt.ToArray();
     }
-
 }
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.BeginCrewmate))]
 class BeginCrewmatePatch

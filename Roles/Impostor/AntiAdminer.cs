@@ -13,7 +13,7 @@ namespace TOHE.Roles.Impostor;
 internal class AntiAdminer
 {
     private static readonly int Id = 2800;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     private static OptionItem CanCheckCamera;
@@ -29,7 +29,7 @@ internal class AntiAdminer
     }
     public static void Init()
     {
-        playerIdList = new();
+        playerIdList = [];
         IsAdminWatch = false;
         IsVitalWatch = false;
         IsDoorLogWatch = false;

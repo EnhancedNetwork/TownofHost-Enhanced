@@ -8,12 +8,12 @@ namespace TOHE.Roles.Neutral;
 public static class SoulCollector
 {
     private static readonly int Id = 15300;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
-    public static Dictionary<byte, byte> SoulCollectorTarget = new();
-    public static Dictionary<byte, int> SoulCollectorPoints = new();
-    public static Dictionary<byte, bool> DidVote = new();
+    public static Dictionary<byte, byte> SoulCollectorTarget = [];
+    public static Dictionary<byte, int> SoulCollectorPoints = [];
+    public static Dictionary<byte, bool> DidVote = [];
 
     public static OptionItem SoulCollectorPointsOpt;
     public static OptionItem CollectOwnSoulOpt;
@@ -27,10 +27,10 @@ public static class SoulCollector
     }
     public static void Init()
     {
-        playerIdList = new();
-        SoulCollectorTarget = new();
-        SoulCollectorPoints = new();
-        DidVote = new();
+        playerIdList = [];
+        SoulCollectorTarget = [];
+        SoulCollectorPoints = [];
+        DidVote = [];
         IsEnable = false;
     }
 

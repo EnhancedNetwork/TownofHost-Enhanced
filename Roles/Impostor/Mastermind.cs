@@ -10,12 +10,12 @@ namespace TOHE.Roles.Impostor
     internal class Mastermind
     {
         private static readonly int Id = 4100;
-        public static List<byte> playerIdList = new();
+        public static List<byte> playerIdList = [];
         public static bool IsEnable = false;
 
-        public static Dictionary<byte, long> ManipulatedPlayers = new();
-        public static Dictionary<byte, long> ManipulateDelays = new();
-        public static Dictionary<byte, float> TempKCDs = new();
+        public static Dictionary<byte, long> ManipulatedPlayers = [];
+        public static Dictionary<byte, long> ManipulateDelays = [];
+        public static Dictionary<byte, float> TempKCDs = [];
 
         public static OptionItem KillCooldown;
         //public static OptionItem ManipulateCDOpt;
@@ -40,10 +40,10 @@ namespace TOHE.Roles.Impostor
 
         public static void Init()
         {
-            playerIdList = new();
-            ManipulatedPlayers = new();
-            ManipulateDelays = new();
-            TempKCDs = new();
+            playerIdList = [];
+            ManipulatedPlayers = [];
+            ManipulateDelays = [];
+            TempKCDs = [];
             IsEnable = false;
         }
 

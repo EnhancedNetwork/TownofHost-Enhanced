@@ -7,7 +7,7 @@ namespace TOHE.Roles.Neutral;
 public static class Seeker
 {
     private static readonly int Id = 14600;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     public static OptionItem PointsToWin;
@@ -15,8 +15,8 @@ public static class Seeker
 
     public static int PointsToWinOpt;
 
-    public static Dictionary<byte, byte> Targets = new();
-    public static Dictionary<byte, int> TotalPoints = new();
+    public static Dictionary<byte, byte> Targets = [];
+    public static Dictionary<byte, int> TotalPoints = [];
     private static float DefaultSpeed = new();
 
     public static void SetupCustomOption()
@@ -28,10 +28,10 @@ public static class Seeker
     }
     public static void Init()
     {
-        playerIdList = new();
+        playerIdList = [];
+        Targets = [];
+        TotalPoints = [];
         DefaultSpeed = new();
-        Targets = new();
-        TotalPoints = new();
         IsEnable = false;
     }
 
@@ -139,7 +139,7 @@ public static class Seeker
     public static byte GetTarget(PlayerControl player)
     {
         if (player == null) return 0xff;
-        if (Targets == null) Targets = new();
+        if (Targets == null) Targets = [];
 
         if (!Targets.TryGetValue(player.PlayerId, out var targetId))
             targetId = ResetTarget(player);
@@ -163,7 +163,7 @@ public static class Seeker
 
         var playerId = player.PlayerId;
 
-        var cTargets = new List<PlayerControl>(Main.AllAlivePlayerControls.Where(pc => !pc.Is(CustomRoles.Seeker)));
+        var cTargets = new List<PlayerControl>(Main.AllAlivePlayerControls.Where(pc => !pc.Is(CustomRoles.Seeker) && !pc.Is(CustomRoles.Solsticer)));
 
         if (cTargets.Count >= 2 && Targets.TryGetValue(player.PlayerId, out var nowTarget))
             cTargets.RemoveAll(x => x.PlayerId == nowTarget);

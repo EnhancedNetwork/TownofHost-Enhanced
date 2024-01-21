@@ -7,15 +7,11 @@ namespace TOHE;
 
 static class TargetArrow
 {
-    class ArrowInfo
+    class ArrowInfo(byte from, byte to)
     {
-        public byte From;
-        public byte To;
-        public ArrowInfo(byte from, byte to)
-        {
-            From = from;
-            To = to;
-        }
+        public byte From = from;
+        public byte To = to;
+
         public bool Equals(ArrowInfo obj)
         {
             return From == obj.From && To == obj.To;
@@ -26,8 +22,8 @@ static class TargetArrow
         }
     }
 
-    static readonly Dictionary<ArrowInfo, string> TargetArrows = new();
-    static readonly string[] Arrows = {
+    static readonly Dictionary<ArrowInfo, string> TargetArrows = [];
+    static readonly string[] Arrows = [
         "↑",
         "↗",
         "→",
@@ -37,7 +33,7 @@ static class TargetArrow
         "←",
         "↖",
         "・"
-    };
+    ];
 
     public static void Init()
     {

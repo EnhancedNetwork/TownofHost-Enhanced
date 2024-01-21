@@ -5,8 +5,8 @@ namespace TOHE;
 
 public static class NameNotifyManager
 {
-    public static Dictionary<byte, (string, long)> Notice = new();
-    public static void Reset() => Notice = new();
+    public static Dictionary<byte, (string, long)> Notice = [];
+    public static void Reset() => Notice = [];
     public static bool Notifying(this PlayerControl pc) => Notice.ContainsKey(pc.PlayerId);
     public static void Notify(this PlayerControl pc, string text, float time = 4f)
     {
@@ -23,7 +23,7 @@ public static class NameNotifyManager
     {
         if (!GameStates.IsInTask)
         {
-            Notice.Clear();
+            if (Notice.Count > 0) Notice = [];
             return;
         }
         if (Notice.ContainsKey(player.PlayerId) && Notice[player.PlayerId].Item2 < Utils.GetTimeStamp())

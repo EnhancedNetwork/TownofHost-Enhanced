@@ -15,7 +15,7 @@ class ShowFolderPatch
 
         if (__instance.Root == taskFolder && CustomRolesFolder == null)
         {
-            TaskFolder rolesFolder = Object.Instantiate<TaskFolder>(
+            TaskFolder rolesFolder = Object.Instantiate(
                 __instance.RootFolderPrefab,
                 __instance.transform
             );

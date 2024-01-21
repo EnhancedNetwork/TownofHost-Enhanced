@@ -12,14 +12,14 @@ namespace TOHE.Modules.ChatManager
     public class ChatManager
     {
         public static bool cancel = false;
-        private static List<Dictionary<byte, string>> chatHistory = new();
-        private static Dictionary<byte, string> LastSystemChatMsg = new();
+        private static List<Dictionary<byte, string>> chatHistory = [];
+        private static Dictionary<byte, string> LastSystemChatMsg = [];
         private const int maxHistorySize = 20;
-        public static List<string> ChatSentBySystem = new();
+        public static List<string> ChatSentBySystem = [];
         public static void ResetHistory()
         {
-            chatHistory = new();
-            LastSystemChatMsg = new();
+            chatHistory = [];
+            LastSystemChatMsg = [];
         }
         public static void ClearLastSysMsg()
         {
@@ -76,15 +76,14 @@ namespace TOHE.Modules.ChatManager
 
         public static string getTextHash(string text)
         {
-            using (SHA256 sha256 = SHA256.Create())
-            {
-                // get sha-256 hash
-                byte[] sha256Bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(text));
-                string sha256Hash = BitConverter.ToString(sha256Bytes).Replace("-", "").ToLower();
+            using SHA256 sha256 = SHA256.Create();
 
-                // pick front 5 and last 4
-                return string.Concat(sha256Hash.AsSpan(0, 5), sha256Hash.AsSpan(sha256Hash.Length - 4));
-            }
+            // get sha-256 hash
+            byte[] sha256Bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(text));
+            string sha256Hash = BitConverter.ToString(sha256Bytes).Replace("-", "").ToLower();
+
+            // pick front 5 and last 4
+            return string.Concat(sha256Hash.AsSpan(0, 5), sha256Hash.AsSpan(sha256Hash.Length - 4));
         }
 
         public static void AddToHostMessage(string text)

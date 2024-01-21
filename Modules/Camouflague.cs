@@ -61,15 +61,15 @@ public static class Camouflage
 
     static GameData.PlayerOutfit CamouflageOutfit = new GameData.PlayerOutfit().Set("", 15, "", "", "", "", ""); // Default
 
-    public static List<byte> ResetSkinAfterDeathPlayers = new();
-    public static Dictionary<byte, GameData.PlayerOutfit> PlayerSkins = new();
+    public static List<byte> ResetSkinAfterDeathPlayers = [];
+    public static Dictionary<byte, GameData.PlayerOutfit> PlayerSkins = [];
     public static bool IsActive;
 
     public static void Init()
     {
         IsCamouflage = false;
         PlayerSkins.Clear();
-        ResetSkinAfterDeathPlayers = new();
+        ResetSkinAfterDeathPlayers = [];
 
         IsActive = Options.CommsCamouflage.GetBool() && !(Options.DisableOnSomeMaps.GetBool() &&
             (
@@ -188,16 +188,12 @@ public static class Camouflage
             {
                 if (GameEnd && Doppelganger.DoppelVictim.ContainsKey(id))
                 {
-                    //if (id == PlayerControl.LocalPlayer.PlayerId) Main.nickName = Doppelganger.DoppelVictim[id];
-                    //else 
-                    //{ 
-                    var dpc = Utils.GetPlayerById(id);
-                    if (dpc != null) dpc.RpcSetName(Doppelganger.DoppelVictim[id]);
-                    //}
+                    Utils.GetPlayerById(id)?.RpcSetName(Doppelganger.DoppelVictim[id]);
                 }
                 newOutfit = PlayerSkins[id];
             }
         }
+
         // if the current Outfit is the same, return it
         if (newOutfit.Compare(target.Data.DefaultOutfit)) return;
 

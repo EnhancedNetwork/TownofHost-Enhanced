@@ -125,9 +125,9 @@ public static class TemplateManager
         CreateIfNotExists();
         using StreamReader sr = new(TEMPLATE_FILE_PATH, Encoding.GetEncoding("UTF-8"));
         string text;
-        string[] tmp = Array.Empty<string>();
-        List<string> sendList = new();
-        HashSet<string> tags = new();
+        string[] tmp = [];
+        List<string> sendList = [];
+        HashSet<string> tags = [];
         Func<string> playerName = () => "";
         if (playerId != 0xff)
         {

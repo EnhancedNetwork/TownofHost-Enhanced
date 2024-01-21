@@ -27,9 +27,12 @@ public static class MainMenuManagerPatch
     public static void Postfix(MainMenuManager __instance)
     {
         if (__instance == null) return;
+
         __instance.playButton.transform.gameObject.SetActive(Options.IsLoaded);
+
         if (TitleLogoPatch.LoadingHint != null)
             TitleLogoPatch.LoadingHint.SetActive(!Options.IsLoaded);
+
         var PlayOnlineButton = __instance.PlayOnlineButton;
         if (PlayOnlineButton != null)
         {

@@ -14,13 +14,13 @@ namespace TOHE;
 [HarmonyPatch(typeof(ControllerManager), nameof(ControllerManager.Update))]
 internal class ControllerManagerUpdatePatch
 {
-    private static readonly (int, int)[] resolutions = { (480, 270), (640, 360), (800, 450), (1280, 720), (1600, 900), (1920, 1080) };
+    private static readonly (int, int)[] resolutions = [(480, 270), (640, 360), (800, 450), (1280, 720), (1600, 900), (1920, 1080)];
     private static int resolutionIndex = 0;
 
-    public static List<string> addDes = new();
+    public static List<string> addDes = [];
     public static int addonIndex = -1;
 
-    public static void Postfix(ControllerManager __instance)
+    public static void Postfix(/*ControllerManager __instance*/)
     {
         try
         {
@@ -81,7 +81,7 @@ internal class ControllerManagerUpdatePatch
                     var lp = PlayerControl.LocalPlayer;
                     if (Main.PlayerStates[lp.PlayerId].SubRoles.Count == 0) return;
 
-                    addDes = new();
+                    addDes = [];
                     foreach (var subRole in Main.PlayerStates[lp.PlayerId].SubRoles.Where(x => x is not CustomRoles.Charmed).ToArray())
                     {
                         addDes.Add(GetString($"{subRole}") + Utils.GetRoleMode(subRole) + GetString($"{subRole}InfoLong"));

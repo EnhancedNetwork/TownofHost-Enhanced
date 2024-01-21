@@ -16,7 +16,9 @@ public class ErrorText : MonoBehaviour
         }
     }
     private static ErrorText _instance;
+#pragma warning disable IDE0051 // Remove unused private members
     private void Awake()
+#pragma warning restore IDE0051
     {
         if (_instance != null)
         {

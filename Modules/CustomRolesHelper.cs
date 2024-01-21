@@ -356,7 +356,8 @@ static class CustomRolesHelper
             CustomRoles.Oiiai or
             CustomRoles.Influenced or
             CustomRoles.Silent or
-            CustomRoles.Susceptible;
+            CustomRoles.Susceptible or
+            CustomRoles.Tired;
     }
     
     public static bool IsBetrayalAddon(this CustomRoles role)
@@ -1254,6 +1255,7 @@ static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Bewilder)
                     //|| pc.Is(CustomRoles.Sunglasses)
                     || pc.Is(CustomRoles.Lighter)
+                    || pc.Is(CustomRoles.Tired)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
                 if (!pc.GetCustomRole().IsCrewmate())
@@ -1352,6 +1354,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Randomizer)
                     || pc.Is(CustomRoles.Lighter)
                     || pc.Is(CustomRoles.Solsticer)
+                    || pc.Is(CustomRoles.Tired)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeBewilder.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeBewilder.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeBewilder.GetBool()))
@@ -1509,7 +1512,8 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.BoobyTrap)
                     || pc.Is(CustomRoles.Capitalism)
                     || pc.Is(CustomRoles.Onbound)
-                    || pc.Is(CustomRoles.Rebound))
+                    || pc.Is(CustomRoles.Rebound)
+                    || pc.Is(CustomRoles.Tired))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -1534,7 +1538,8 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Wildling)
                     || pc.Is(CustomRoles.EvilDiviner)
                     || pc.Is(CustomRoles.Capitalism)
-                    || pc.Is(CustomRoles.OverKiller))
+                    || pc.Is(CustomRoles.OverKiller)
+                    || pc.Is(CustomRoles.Minimalism))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -1565,7 +1570,8 @@ static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Swift)
                     || pc.Is(CustomRoles.Bomber)
                     || pc.Is(CustomRoles.Nuker)
-                    || pc.Is(CustomRoles.Capitalism))
+                    || pc.Is(CustomRoles.Capitalism)
+                    || pc.Is(CustomRoles.Minimalism))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -1651,7 +1657,9 @@ static class CustomRolesHelper
             //    break;
 
             case CustomRoles.Flash:
-                if (pc.Is(CustomRoles.Swooper) || pc.Is(CustomRoles.Solsticer))
+                if (pc.Is(CustomRoles.Swooper) 
+                    || pc.Is(CustomRoles.Solsticer)
+                    || pc.Is(CustomRoles.Tired))
                     return false;
                 break;
 
@@ -1695,6 +1703,21 @@ static class CustomRolesHelper
                 if ((pc.GetCustomRole().IsCrewmate() && !Silent.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Silent.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Silent.CanBeOnImp.GetBool()))
                     return false;
                 break;
+            case CustomRoles.Susceptible:
+                if ((pc.GetCustomRole().IsCrewmate() && !Susceptible.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Susceptible.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Susceptible.CanBeOnImp.GetBool()))
+                return false;
+                break;
+            case CustomRoles.Tired:
+                if (pc.Is(CustomRoles.Farseer)
+               || pc.Is(CustomRoles.Alchemist)
+               || pc.Is(CustomRoles.Torch)
+               || pc.Is(CustomRoles.Bewilder)
+               || pc.Is(CustomRoles.Lighter)
+               || pc.Is(CustomRoles.Flash)
+               || pc.Is(CustomRoles.Mare)) return false;
+            if ((pc.GetCustomRole().IsCrewmate() && !Tired.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Tired.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Tired.CanBeOnImp.GetBool())) 
+                return false;
+            break;
         }
 
         // Code not used:

@@ -7,7 +7,7 @@ namespace TOHE.Roles.Crewmate;
 public static class CopyCat
 {
     private static readonly int Id = 11500;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     public static float CurrentKillCooldown = new();
@@ -27,7 +27,7 @@ public static class CopyCat
 
     public static void Init()
     {
-        playerIdList = new();
+        playerIdList = [];
         CurrentKillCooldown = new();
         IsEnable = false;
     }
@@ -35,7 +35,7 @@ public static class CopyCat
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        CurrentKillCooldown =  KillCooldown.GetFloat();
+        CurrentKillCooldown = KillCooldown.GetFloat();
         IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
@@ -155,6 +155,9 @@ public static class CopyCat
                 case CustomRoles.Monitor:
                     Monitor.Remove(pc.PlayerId);
                     break;
+                case CustomRoles.Investigator:
+                    Investigator.Remove(pc.PlayerId);
+                    break;
             }
             pc.RpcSetCustomRole(CustomRoles.CopyCat);
             SetKillCooldown(player);
@@ -174,10 +177,9 @@ public static class CopyCat
             CustomRoles.Chameleon or
             CustomRoles.Alchemist or
             CustomRoles.TimeMaster or
-            CustomRoles.Mole or
+            CustomRoles.Mole;
             //bcoz of single role
             // Other
-            CustomRoles.Investigator;
     }
 
     public static bool OnCheckMurder(PlayerControl pc, PlayerControl tpc)
@@ -348,11 +350,15 @@ public static class CopyCat
                 case CustomRoles.Monitor:
                     Monitor.Add(pc.PlayerId);
                     break;
+
+                case CustomRoles.Investigator:
+                    Investigator.Add(pc.PlayerId);
+                    break;
             }
 
             pc.RpcSetCustomRole(role);
             if (CopyTeamChangingAddon.GetBool())
-            { 
+            {
                 if (tpc.Is(CustomRoles.Madmate) || tpc.Is(CustomRoles.Rascal)) pc.RpcSetCustomRole(CustomRoles.Madmate);
                 if (tpc.Is(CustomRoles.Charmed)) pc.RpcSetCustomRole(CustomRoles.Charmed);
                 if (tpc.Is(CustomRoles.Infected)) pc.RpcSetCustomRole(CustomRoles.Infected);

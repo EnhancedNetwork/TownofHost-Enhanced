@@ -218,6 +218,12 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("SolsticerGuessMax"));
                     return true;
                 }
+                if (pc.Is(CustomRoles.NiceMini) && Mini.Age < 18 && Mini.misguessed)
+                {
+                    if (!isUI) Utils.SendMessage(GetString("MiniGuessMax"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("MiniGuessMax"));
+                    return true;
+                }
                 if (pc.Is(CustomRoles.Phantom) && !Options.PhantomCanGuess.GetBool())
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
@@ -691,7 +697,12 @@ public static class GuessManager
                     _ = new LateTask(() => { Utils.SendMessage(GetString("SolsticerMisGuessed"), dp.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("GuessKillTitle")), true); }, 0.6f, "Solsticer MisGuess Msg");
                     return true;
                 }
-
+                if (dp.Is(CustomRoles.NiceMini) && Mini.Age < 18)
+                {
+                    Mini.misguessed = true;
+                    _ = new LateTask(() => { Utils.SendMessage(GetString("MiniMisGuessed"), dp.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("GuessKillTitle")), true); }, 0.6f, "Mini MisGuess Msg");
+                    return true;
+                }
                 string Name = dp.GetRealName();
                 if (!Options.DisableKillAnimationOnGuess.GetBool()) CustomSoundsManager.RPCPlayCustomSoundAll("Gunfire");
 
@@ -740,9 +751,9 @@ public static class GuessManager
         return true;
     }
 
-    public static TextMeshPro nameText(this PlayerControl p) => p.cosmetics.nameText;
+    public static TextMeshPro NameText(this PlayerControl p) => p.cosmetics.nameText;
     public static TextMeshPro NameText(this PoolablePlayer p) => p.cosmetics.nameText;
-    public static void RpcGuesserMurderPlayer(this PlayerControl pc, float delay = 0f) //ゲッサー用の殺し方
+    public static void RpcGuesserMurderPlayer(this PlayerControl pc) //ゲッサー用の殺し方
     {
         // DEATH STUFF //
         var amOwner = pc.AmOwner;
@@ -756,7 +767,7 @@ public static class GuessManager
         if (amOwner)
         {
             hudManager.ShadowQuad.gameObject.SetActive(false);
-            pc.nameText().GetComponent<MeshRenderer>().material.SetInt("_Mask", 0);
+            pc.NameText().GetComponent<MeshRenderer>().material.SetInt("_Mask", 0);
             pc.RpcSetScanner(false);
             ImportantTextTask importantTextTask = new GameObject("_Player").AddComponent<ImportantTextTask>();
             importantTextTask.transform.SetParent(AmongUsClient.Instance.transform, false);
@@ -796,7 +807,7 @@ public static class GuessManager
         if (amOwner)
         {
             hudManager.ShadowQuad.gameObject.SetActive(false);
-            pc.nameText().GetComponent<MeshRenderer>().material.SetInt("_Mask", 0);
+            pc.NameText().GetComponent<MeshRenderer>().material.SetInt("_Mask", 0);
             pc.RpcSetScanner(false);
             ImportantTextTask importantTextTask = new GameObject("_Player").AddComponent<ImportantTextTask>();
             importantTextTask.transform.SetParent(AmongUsClient.Instance.transform, false);
@@ -874,7 +885,7 @@ public static class GuessManager
         var roles = CustomRolesHelper.AllRoles.Where(x => x is not CustomRoles.NotAssigned).ToArray();
         var rd = IRandom.Instance;
         string msg;
-        string[] command = new string[] { "bet", "bt", "guess", "gs", "shoot", "st", "赌", "猜", "审判", "tl", "判", "审" };
+        string[] command = ["bet", "bt", "guess", "gs", "shoot", "st", "赌", "猜", "审判", "tl", "判", "审"];
         for (int i = 0; i < 20; i++)
         {
             msg = "/";
@@ -1008,16 +1019,16 @@ public static class GuessManager
         try
         {
             Page = 1;
-            RoleButtons = new();
-            RoleSelectButtons = new();
-            PageButtons = new();
+            RoleButtons = [];
+            RoleSelectButtons = [];
+            PageButtons = [];
             __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(false));
 
             Transform container = UnityEngine.Object.Instantiate(GameObject.Find("PhoneUI").transform, __instance.transform);
             container.transform.localPosition = new Vector3(0, 0, -200f);
             guesserUI = container.gameObject;
 
-            List<int> i = new() { 0, 0, 0, 0 };
+            List<int> i = [0, 0, 0, 0];
             var buttonTemplate = __instance.playerStates[0].transform.FindChild("votePlayerBase");
             var maskTemplate = __instance.playerStates[0].transform.FindChild("MaskArea");
             var smallButtonTemplate = __instance.playerStates[0].Buttons.transform.Find("CancelButton");
@@ -1043,7 +1054,7 @@ public static class GuessManager
             }));
             ExitButton = exitButton.GetComponent<PassiveButton>();
 
-            List<Transform> buttons = new();
+            List<Transform> buttons = [];
             Transform selectedButton = null;
 
             int tabCount = 0;
@@ -1234,7 +1245,7 @@ public static class GuessManager
                 button.GetComponent<SpriteRenderer>().sprite = CustomButton.Get("GuessPlate");
                 if (!RoleButtons.ContainsKey(role.GetCustomRoleTypes()))
                 {
-                    RoleButtons.Add(role.GetCustomRoleTypes(), new());
+                    RoleButtons.Add(role.GetCustomRoleTypes(), []);
                 }
                 RoleButtons[role.GetCustomRoleTypes()].Add(button);
                 buttons.Add(button);

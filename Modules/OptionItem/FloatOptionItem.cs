@@ -1,15 +1,9 @@
 namespace TOHE;
 
-public class FloatOptionItem : OptionItem
+public class FloatOptionItem(int id, string name, float defaultValue, TabGroup tab, bool isSingleValue, FloatValueRule rule, bool vanilla) : OptionItem(id, name, rule.GetNearestIndex(defaultValue), tab, isSingleValue, vanillaStr:vanilla)
 {
-    public FloatValueRule Rule;
+    public FloatValueRule Rule = rule;
 
-    // コンストラクタ
-    public FloatOptionItem(int id, string name, float defaultValue, TabGroup tab, bool isSingleValue, FloatValueRule rule, bool vanilla)
-    : base(id, name, rule.GetNearestIndex(defaultValue), tab, isSingleValue, vanillaStr:vanilla)
-    {
-        Rule = rule;
-    }
     public static FloatOptionItem Create(int id, string name, FloatValueRule rule, float defaultValue, TabGroup tab, bool isSingleValue, bool vanillaText = false)
     {
         return new FloatOptionItem(id, name, defaultValue, tab, isSingleValue, rule, vanillaText);
