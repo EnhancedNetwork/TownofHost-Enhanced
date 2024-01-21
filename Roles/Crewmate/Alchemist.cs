@@ -305,10 +305,9 @@ namespace TOHE.Roles.Crewmate
             {
                 foreach (var alchemistId in playerIdList.ToArray())
                 {
+                    if (!ventedId.ContainsKey(alchemistId)) continue;
                     var alchemist = Utils.GetPlayerById(alchemistId);
                     if (alchemist == null) return;
-
-                    if (!ventedId.ContainsKey(alchemistId)) continue;
 
                     alchemist?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(alchemistId, out var id) ? id : Main.LastEnteredVent[alchemistId].Id);
                     SendRPC(alchemist);

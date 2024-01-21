@@ -74,10 +74,9 @@ public static class Swooper
 
         foreach (var swooperId in playerIdList.ToArray())
         {
+            if (!ventedId.ContainsKey(swooperId)) continue;
             var swooper = Utils.GetPlayerById(swooperId);
             if (swooper == null) return;
-
-            if (!ventedId.ContainsKey(swooperId)) continue;
 
             swooper?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(swooperId, out var id) ? id : Main.LastEnteredVent[swooperId].Id);
             SendRPC(swooper);

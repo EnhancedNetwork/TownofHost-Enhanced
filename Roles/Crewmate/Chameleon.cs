@@ -96,10 +96,9 @@ public static class Chameleon
 
         foreach (var chameleonId in playerIdList.ToArray())
         {
+            if (!ventedId.ContainsKey(chameleonId)) continue;
             var chameleon = Utils.GetPlayerById(chameleonId);
             if (chameleon == null) return;
-
-            if (!ventedId.ContainsKey(chameleonId)) continue;
 
             chameleon?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(chameleonId, out var id) ? id : Main.LastEnteredVent[chameleonId].Id);
             SendRPC(chameleon);
