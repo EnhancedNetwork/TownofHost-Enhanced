@@ -892,10 +892,6 @@ public static class Options
     public static OptionItem ImpCanBeEgoist;
     public static OptionItem ImpEgoistVisibalToAllies;
     public static OptionItem EgoistCountAsConverted;
-    public static OptionItem CrewCanBeRainbow;
-    public static OptionItem ImpCanBeRainbow;
-    public static OptionItem NeutralCanBeRainbow;
-    //public static OptionItem RainbowColorChangeTime;
 
     public static OptionItem LoverSpawnChances;
     public static OptionItem LoverKnowRoles;

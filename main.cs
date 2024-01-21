@@ -838,6 +838,7 @@ public enum CustomRoles
     Oiiai,
     Onbound,
     Overclocked,
+    Rainbow,
     Rascal,
     Reach,
     Rebound,
@@ -862,13 +863,14 @@ public enum CustomRoles
     Watcher,
     //Sunglasses,
     Workhorse,
-    Rainbow,
     Youtuber
 
    // Reflective,
     //Glow,
 
     // QuickFix
+    
+    //You need to put roles in order by their name
 }
 //WinData
 public enum CustomWinner
