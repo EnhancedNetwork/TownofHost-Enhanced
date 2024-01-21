@@ -1092,10 +1092,9 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 27300 lasted id for roles/add-ons (Next use 27400)
+        // 27400 lasted id for roles/add-ons (Next use 27500)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
-        // 27400 lasted id for roles/add-ons (Next use 27500)
         // Start Load Settings
         if (IsLoaded) return;
         OptionSaver.Initialize();
