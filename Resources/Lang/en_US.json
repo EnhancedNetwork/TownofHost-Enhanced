@@ -2658,7 +2658,7 @@
   "DeathCmd.YourRole": "Your role is ",
   "DeathCmd.Ejected": "You were <b>ejected</b> during a meeting",
   "DeathCmd.Misfired": "You <b>misfired</b>.",
-  "DeathCmd.Shrouded": "You were<b>shrouded</b> by a <b><color=#6697FF>Shroud</color></b> and didn't make a kill, so you suicided.",
+  "DeathCmd.Shrouded": "You were <b>shrouded</b> by a <b><color=#6697FF>Shroud</color></b> and didn't make a kill, so you suicided.",
   "DeathCmd.Lovers": "Your <color=#ff9ace>lover</color> had died.",
 
   "RpsCommandInfo": "<b>This Command can only be used when in lobby or after you die.</b>\n\ntype <b>/rps X</b> to play Rock Paper Scissors with the system. X can be 0 (rock), 1 (paper) or 2 (scissors). \n\nExample :- /rps 0",
