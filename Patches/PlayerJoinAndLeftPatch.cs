@@ -2,6 +2,7 @@ using AmongUs.Data;
 using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
+using Il2CppSystem.Threading.Tasks;
 using InnerNet;
 using System;
 using System.Collections.Generic;
@@ -107,17 +108,33 @@ class OnGameJoinedPatch
 
         _ = new LateTask(() =>
         {
-            if (!GameStates.IsOnlineGame) return;
-            if (!GameStates.IsModHost)
-                RPC.RpcRequestRetryVersionCheck();
-            if (BanManager.CheckEACList(PlayerControl.LocalPlayer.FriendCode, PlayerControl.LocalPlayer.GetClient().GetHashedPuid()) && GameStates.IsOnlineGame)
+            try
             {
-                AmongUsClient.Instance.ExitGame(DisconnectReasons.Banned);
-                SceneChanger.ChangeScene("MainMenu");
-                return;
+                if (!GameStates.IsOnlineGame) return;
+                if (!GameStates.IsModHost)
+                    RPC.RpcRequestRetryVersionCheck();
+                if (BanManager.CheckEACList(PlayerControl.LocalPlayer.FriendCode, PlayerControl.LocalPlayer.GetClient().GetHashedPuid()) && GameStates.IsOnlineGame)
+                {
+                    AmongUsClient.Instance.ExitGame(DisconnectReasons.Banned);
+                    SceneChanger.ChangeScene("MainMenu");
+                    return;
+                }
+                var client = AmongUsClient.Instance.GetClientFromCharacter(PlayerControl.LocalPlayer);
+                Logger.Info($"{client.PlayerName.RemoveHtmlTags()}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) finished join room", "Session: OnGameJoined");
             }
-            var client = PlayerControl.LocalPlayer.GetClient();
-            Logger.Info($"{client.PlayerName.RemoveHtmlTags()}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) finished join room", "Session: OnGameJoined");
+            catch
+            {
+                Logger.Error("Error while trying to log local client data.", "OnGameJoinedPatch");
+                _ = new LateTask(() =>
+                {
+                    try
+                    {
+                        var client = AmongUsClient.Instance.GetClientFromCharacter(PlayerControl.LocalPlayer);
+                        Logger.Info($"{client.PlayerName.RemoveHtmlTags()}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) finished join room", "Session: OnGameJoined Retry");
+                    }
+                    catch { };
+                }, 1f, "Retry Log Local Client");
+            }
         }, 0.6f, "OnGameJoinedPatch");
     }
 }
