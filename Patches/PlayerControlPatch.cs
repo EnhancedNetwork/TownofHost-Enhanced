@@ -2388,9 +2388,17 @@ class ReportDeadBodyPatch
         Main.RevolutionistStart.Clear();
         Main.RevolutionistLastTime.Clear();
 
-        // Check shapeshift and revert skin to default
+
         foreach (var pc in Main.AllPlayerControls)
         {
+            // Update skins again, since players have different skins
+            // And can be easily distinguished from each other
+            if (Camouflage.IsCamouflage && Options.KPDCamouflageMode.GetValue() is 2 or 3)
+            {
+                Camouflage.RpcSetSkin(pc);
+            }
+
+            // Check shapeshift and revert skin to default
             if (Main.CheckShapeshift.ContainsKey(pc.PlayerId) && !Doppelganger.DoppelVictim.ContainsKey(pc.PlayerId))
             {
                 Camouflage.RpcSetSkin(pc, RevertToDefault: true);
