@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+using AmongUs.GameOptions; // testing
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
@@ -598,6 +598,7 @@ public enum CustomRoles
     Parasite,
     Pitfall,
     Puppeteer,
+    PlagueDoctor,
     QuickShooter,
     Refugee,
     RiftMaker,
@@ -614,6 +615,7 @@ public enum CustomRoles
     Twister,
     Underdog,
     Undertaker,
+    Penguin,
     Vampire,
     Vampiress,
     Vindicator,
@@ -777,6 +779,7 @@ public enum CustomRoles
     NWitch, //witch
     Workaholic,
     Wraith,
+    Stealth,
 
    //two-way camp
     Mini,
@@ -929,6 +932,7 @@ public enum CustomWinner
     Spiritcaller = CustomRoles.Spiritcaller,
     Glitch = CustomRoles.Glitch,
     Plaguebearer = CustomRoles.PlagueBearer,
+    PlagueDoctor = CustomRoles.PlagueDoctor,
     Masochist = CustomRoles.Masochist,
     Doomsayer = CustomRoles.Doomsayer,
     Shroud = CustomRoles.Shroud,

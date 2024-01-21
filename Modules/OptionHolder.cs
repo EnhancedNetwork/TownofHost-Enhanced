@@ -1669,6 +1669,11 @@ public static class Options
         Dazzler.SetupCustomOption();
 
         /*
+         * Stealth
+         */
+        Stealth.SetupCustomOption();
+
+        /*
          * Devourer
          */
         Devourer.SetupCustomOption();
@@ -1682,6 +1687,11 @@ public static class Options
          * Pitfall
          */
         Pitfall.SetupCustomOption();
+
+        /*
+         * Penguin
+         */
+        Penguin.SetupCustomOption();
 
         /*
          * Twister
@@ -2288,6 +2298,8 @@ public static class Options
         Collector.SetupCustomOption();
         
         Succubus.SetupCustomOption();
+
+        
         
         SetupRoleOptions(14900, TabGroup.NeutralRoles, CustomRoles.Phantom);
         PhantomCanVent = BooleanOptionItem.Create(14902, "CanVent", false, TabGroup.NeutralRoles, false)
@@ -2975,6 +2987,8 @@ public static class Options
             Quizmaster.SetupCustomOption();
 
         Spiritcaller.SetupCustomOption();
+
+        PlagueDoctor.SetupCustomOption(); 
 
         // 副职
         TextOptionItem.Create(10000023, "OtherRoles.Addons", TabGroup.OtherRoles)

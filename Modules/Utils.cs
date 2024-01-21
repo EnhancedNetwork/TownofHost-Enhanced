@@ -84,6 +84,7 @@ public static class Utils
             pc.RpcTeleport(location);
         }
     }
+
     public static void RpcTeleport(this PlayerControl player, Vector2 location)
     {
         Logger.Info($" {player.GetNameWithRole().RemoveHtmlTags()} => {location}", "RpcTeleport");
@@ -548,6 +549,7 @@ public static class Utils
             case CustomRoles.Jester:
             case CustomRoles.Pirate:
             case CustomRoles.Pixie:
+            case CustomRoles.PlagueDoctor:
             case CustomRoles.NWitch:
             case CustomRoles.Shroud:
             case CustomRoles.Mario:
@@ -887,6 +889,9 @@ public static class Utils
                     break;
                 case CustomRoles.Alchemist:
                     ProgressText.Append(Alchemist.GetProgressText(playerId));
+                    break;
+                case CustomRoles.PlagueDoctor:
+                    ProgressText.Append(PlagueDoctor.GetProgressText(comms));
                     break;
                 case CustomRoles.Chameleon:
                     var taskState13 = Main.PlayerStates?[playerId].GetTaskState();
@@ -2101,7 +2106,7 @@ public static class Utils
 
                 if (Sniper.IsEnable)
                     SelfMark.Append(Sniper.GetShotNotify(seer.PlayerId));
-
+                
 
 
                 // ====== Add SelfSuffix for seer ======
@@ -2428,6 +2433,11 @@ public static class Utils
                             }
                         }
 
+                        if (PlagueDoctor.IsEnable)
+                        {
+                            TargetMark.Append(PlagueDoctor.GetMarkOthers(seer, target));
+                        }
+
                         switch (seerRole)
                         {
                             case CustomRoles.PlagueBearer:
@@ -2615,6 +2625,9 @@ public static class Utils
                         // ====== Add TargetSuffix for target (TargetSuffix visible ​​only to the seer) ======
                         TargetSuffix.Clear();
 
+                        TargetSuffix.Append(PlagueDoctor.GetLowerTextOthers(seer, target));
+                        TargetSuffix.Append(Stealth.GetSuffix(seer, target));
+
 
                         // ====== Target Death Reason for target (Death Reason visible ​​only to the seer) ======
                         string TargetDeathReason = "";
@@ -2696,9 +2709,11 @@ public static class Utils
         EvilTracker.AfterMeetingTasks();
         SerialKiller.AfterMeetingTasks();
         Spiritualist.AfterMeetingTasks();
+        Penguin.AfterMeetingTasks();
         Vulture.AfterMeetingTasks();
         Taskinator.AfterMeetingTasks();
         Benefactor.AfterMeetingTasks();
+        if (PlagueDoctor.IsEnable) PlagueDoctor.AfterMeetingTasks();
         //Baker.AfterMeetingTasks();
         Jailer.AfterMeetingTasks();
         CopyCat.AfterMeetingTasks();  //all crew after meeting task should be before this
@@ -2747,6 +2762,9 @@ public static class Utils
                     Lawyer.Target.Remove(target.PlayerId);
                     Lawyer.SendRPC(target.PlayerId);
                 }
+                break;
+            case CustomRoles.PlagueDoctor:
+                PlagueDoctor.OnPDdeath(target.GetRealKiller());
                 break;
             case CustomRoles.CyberStar:
                 if (GameStates.IsMeeting)

@@ -42,8 +42,10 @@ public static class AntiBlackout
         || HexMaster.IsEnable || Jinx.IsEnable
         || Medusa.IsEnable || Poisoner.IsEnable
         || PotionMaster.IsEnable || Wraith.IsEnable
-        || Necromancer.IsEnable || Doppelganger.IsEnable
-        || CustomRoles.Sidekick.RoleExist(true) || (CustomRoles.Arsonist.RoleExist(true) && Options.ArsonistCanIgniteAnytime.GetBool());
+        || Necromancer.IsEnable || Doppelganger.IsEnable 
+        || PlagueDoctor.IsEnable || CustomRoles.Sidekick.RoleExist(true)
+        || (CustomRoles.Arsonist.RoleExist(true) && Options.ArsonistCanIgniteAnytime.GetBool()); 
+        
     ///<summary>
     ///Difference between the number of non-impostors and the number of imposters
     ///</summary>
