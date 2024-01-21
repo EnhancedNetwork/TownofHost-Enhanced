@@ -99,7 +99,7 @@ public static class Chameleon
             var chameleon = Utils.GetPlayerById(chameleonId);
             if (chameleon == null) return;
 
-            if (!ventedId.ContainsKey(chameleonId)) return;
+            if (!ventedId.ContainsKey(chameleonId)) continue;
 
             chameleon?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(chameleonId, out var id) ? id : Main.LastEnteredVent[chameleonId].Id);
             SendRPC(chameleon);

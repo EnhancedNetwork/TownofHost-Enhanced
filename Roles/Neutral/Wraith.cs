@@ -85,7 +85,7 @@ public static class Wraith
             var wraith = Utils.GetPlayerById(wraithId);
             if (wraith == null) return;
 
-            if (!ventedId.ContainsKey(wraithId)) return;
+            if (!ventedId.ContainsKey(wraithId)) continue;
 
             wraith?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(wraithId, out var id) ? id : Main.LastEnteredVent[wraithId].Id);
             SendRPC(wraith);
