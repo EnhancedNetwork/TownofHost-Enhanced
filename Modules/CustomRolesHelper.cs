@@ -1706,8 +1706,8 @@ static class CustomRolesHelper
                 break;
 
             case CustomRoles.Rainbow:
-                if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeRainbow.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeRainbow.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeRainbow.GetBool()))
-                  return false;
+                if ((pc.GetCustomRole().IsCrewmate() && !Rainbow.CrewCanBeRainbow.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Rainbow.NeutralCanBeRainbow.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Rainbow.ImpCanBeRainbow.GetBool()))
+                    return false;
                 break;
             
             case CustomRoles.Susceptible:

@@ -1095,7 +1095,7 @@ public static class Options
         // 27300 lasted id for roles/add-ons (Next use 27400)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
-
+        // 27400 lasted id for roles/add-ons (Next use 27500)
         // Start Load Settings
         if (IsLoaded) return;
         OptionSaver.Initialize();
@@ -2930,16 +2930,7 @@ public static class Options
         
         SetupAdtRoleOptions(23700, CustomRoles.Reach, canSetNum: true);
 
-        SetupAdtRoleOptions(27300, CustomRoles.Rainbow, canSetNum: true, tab: TabGroup.Addons);
-        //RainbowColorChangeTime = FloatOptionItem.Create(27303, "RainbowColorChangeTime", new(0.1f, 5f, 2.5f), 0.5f, TabGroup.Addons, false)
-        //    .SetParent(CustomRoleSpawnChances[CustomRoles.Rainbow])
-        //    .SetValueFormat(OptionFormat.Seconds);
-        CrewCanBeRainbow = BooleanOptionItem.Create(27303, "CrewCanBeRainbow", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Rainbow]);
-        ImpCanBeRainbow = BooleanOptionItem.Create(27304, "ImpCanBeRainbow", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Rainbow]);
-        NeutralCanBeRainbow = BooleanOptionItem.Create(27305, "NeutralCanBeRainbow", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Rainbow]);
+        Rainbow.SetupCustomOptions();
         
         Workhorse.SetupCustomOption();
 
