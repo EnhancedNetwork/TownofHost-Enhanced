@@ -3688,7 +3688,7 @@
   "QuizmasterQuestions.PlrDieReason": "What was {PLR}'s cause of death?",
   "QuizmasterQuestions.PlrDieMethod": "How did {PLR} die?",
   "LastAddedRoleForKarped": "What was the last role added to TOHE before KARPED1EM stepped down?",
-  "PlrDieFaction": "What kind of faction killed {PLR}?",
+  "QuizmasterQuestions.PlrDieFaction": "What kind of faction killed {PLR}?",
 
   "DeathReason.WrongAnswer": "Wrong Quiz Answer",
 
