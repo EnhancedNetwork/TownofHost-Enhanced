@@ -559,7 +559,7 @@ class DeathReasonQuestion : QuizQuestionBase
         for (int numOfQuestionsDone = 0; numOfQuestionsDone < 3; numOfQuestionsDone++)
         {
             var prefix = "";
-            if (QuizmasterQuestionType == QuizmasterQuestionType.PlrDeathKillerFactionQuestion) prefix = "Type";
+            if (QuizmasterQuestionType == QuizmasterQuestionType.PlrDeathKillerFactionQuestion) prefix = "Type.";
             if (numOfQuestionsDone == positionForRightAnswer)
             {
                 AnswerLetter = new List<string> { "A", "B", "C" }[positionForRightAnswer];
