@@ -40,8 +40,8 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.1.21.15011";
-    public const string PluginDisplayVersion = "1.5.0 Canary 1.1";
+    public const string PluginVersion = "2024.1.21.1502";
+    public const string PluginDisplayVersion = "1.5.0 Canary 2";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
 
     /******************* Change one of the three variables to true before making a release. *******************/
