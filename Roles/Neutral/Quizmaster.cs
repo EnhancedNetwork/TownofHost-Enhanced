@@ -645,7 +645,7 @@ class SetAnswersQuestion : QuizQuestionBase
             var prefix = QuizmasterQuestionType switch
             {
                 QuizmasterQuestionType.FactionQuestion or QuizmasterQuestionType.NameOriginQuestion or QuizmasterQuestionType.RemovedFactionQuestion or QuizmasterQuestionType.RoleAddedQuestion => "QuizmasterAnswers.",
-                QuizmasterQuestionType.RoleFactionQuestion or QuizmasterQuestionType.RoleBasisQuestion => "Type",
+                QuizmasterQuestionType.RoleFactionQuestion or QuizmasterQuestionType.RoleBasisQuestion => "Type.",
                 _ => ""
             };
 
