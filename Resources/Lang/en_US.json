@@ -3729,5 +3729,7 @@
   "PlagueDoctorInfectDistance": "Infect Distance",
   "PlagueDoctorInfectInactiveTime": "Infect Invalid Time",
   "PlagueDoctorCanInfectSelf": "Can Infect Self",
-  "PlagueDoctorCanInfectVent": "Can Infect While In Vent"
+  "PlagueDoctorCanInfectVent": "Can Infect While In Vent",
+
+  "WinnerRoleText.PlagueDoctor": "Plague Scientist Wins!"
 }
