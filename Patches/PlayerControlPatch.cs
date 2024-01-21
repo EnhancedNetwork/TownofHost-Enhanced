@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TOHE.Modules;
-using TOHE.Patches;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Crewmate;
@@ -2788,6 +2787,7 @@ class FixedUpdateInNormalGamePatch
                         Main.RevolutionistStart.TryAdd(playerId, Utils.GetTimeStamp());
                     }
                 }
+<<<<<<< Updated upstream
                 //来源：TOHY https://github.com/Yumenopai/TownOfHost_Y
                 if (GameStates.IsInTask && player.Is(CustomRoles.Rainbow))
                 {
@@ -2812,7 +2812,10 @@ class FixedUpdateInNormalGamePatch
                     else if (rndNum is >= 17 and < 18) player.RpcSetColor(16);
                 }
                 #endregion
+=======
+>>>>>>> Stashed changes
             }
+            #endregion
 
 
             if (!lowLoad)
@@ -2866,8 +2869,12 @@ class FixedUpdateInNormalGamePatch
                     if (Pitfall.IsEnable)
                         Pitfall.OnFixedUpdate(player);
 
+<<<<<<< Updated upstream
                     if (Rainbow.IsEnable)
                         Rainbow.OnFixedUpdate(player);
+=======
+                        Rainbow.OnFixedUpdate();
+>>>>>>> Stashed changes
 
                     if (Alchemist.BloodlustList.ContainsKey(player.PlayerId))
                         Alchemist.OnFixedUpdate(player);

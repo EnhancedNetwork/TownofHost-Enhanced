@@ -1,8 +1,15 @@
+<<<<<<< Updated upstream
+=======
+using System.Linq;
+using static TOHE.Options;
+
+>>>>>>> Stashed changes
 namespace TOHE.Roles.AddOns.Common
 {
     public static class Rainbow
     {
         private static readonly int Id = 27400;
+<<<<<<< Updated upstream
         public static bool IsEnable = false;
         public static OptionItem CrewCanBeRainbow;
         public static OptionItem ImpCanBeRainbow;
@@ -47,6 +54,56 @@ namespace TOHE.Roles.AddOns.Common
                 else if (rndNum is >= 16 and < 17) player.RpcSetColor(9);
                 else if (rndNum is >= 17 and < 18) player.RpcSetColor(16);
             }
+=======
+        public static OptionItem CrewCanBeRainbow;
+        public static OptionItem ImpCanBeRainbow;
+        public static OptionItem NeutralCanBeRainbow;
+        public static OptionItem RainbowColorChangeCoolDown;
+        public static long LastColorChange;
+        public static void SetupCustomOptions()
+        {
+            SetupAdtRoleOptions(Id, CustomRoles.Rainbow, canSetNum: true, tab: TabGroup.Addons);
+            CrewCanBeRainbow = BooleanOptionItem.Create(Id + 10, "CrewCanBeRainbow", true, TabGroup.Addons, false)
+                .SetParent(CustomRoleSpawnChances[CustomRoles.Rainbow]);
+            ImpCanBeRainbow = BooleanOptionItem.Create(Id + 11, "ImpCanBeRainbow", true, TabGroup.Addons, false)
+                .SetParent(CustomRoleSpawnChances[CustomRoles.Rainbow]);
+            NeutralCanBeRainbow = BooleanOptionItem.Create(Id + 12, "NeutralCanBeRainbow", true, TabGroup.Addons, false)
+                .SetParent(CustomRoleSpawnChances[CustomRoles.Rainbow]);
+            RainbowColorChangeCoolDown = IntegerOptionItem.Create(Id + 13, "RainbowColorChangeCoolDown", new(1, 100, 1), 3, TabGroup.Addons, false)
+                .SetParent(CustomRoleSpawnChances[CustomRoles.Rainbow]);
+        }
+        public static void Init()
+        {
+            LastColorChange = Utils.GetTimeStamp();
+        }
+        public static void OnFixedUpdate()
+        {
+            if (!CustomRoles.Rainbow.RoleExist()) return;
+
+            if (LastColorChange + RainbowColorChangeCoolDown.GetInt() <= Utils.GetTimeStamp())
+            {
+                LastColorChange = Utils.GetTimeStamp();
+                ChangeAllColor();
+            }
+
+        }
+        private static void ChangeAllColor()
+        {
+            var sender = CustomRpcSender.Create("Rainbow Sender");
+            foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Rainbow)))
+            {
+                int color = PickRandomColor();
+                pc.SetColor(color);
+                sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetColor)
+                    .Write(color)
+                    .EndRpc();
+            }
+            sender.SendMessage();
+        }
+        private static int PickRandomColor()
+        {
+            return IRandom.Instance.Next(0, 17);
+>>>>>>> Stashed changes
         }
     }
 }

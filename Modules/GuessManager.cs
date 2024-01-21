@@ -322,7 +322,11 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("GuessNotifiedBait"));
                     return true;
                 }
+<<<<<<< Updated upstream
                 if (target.Is(CustomRoles.Rainbow))
+=======
+                if (role == CustomRoles.Rainbow && target.Is(CustomRoles.Rainbow))
+>>>>>>> Stashed changes
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessRainbow"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessRainbow"));
