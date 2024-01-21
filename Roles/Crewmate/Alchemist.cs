@@ -277,6 +277,7 @@ namespace TOHE.Roles.Crewmate
                     if (remainTime < 0)
                     {
                         pc?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(pc.PlayerId, out var id) ? id : Main.LastEnteredVent[pc.PlayerId].Id);
+                        ventedId.Remove(pc.PlayerId);
                         pc.Notify(GetString("ChameleonInvisStateOut"));
                         pc.RpcResetAbilityCooldown();
                         SendRPC(pc);
@@ -307,11 +308,15 @@ namespace TOHE.Roles.Crewmate
                     var alchemist = Utils.GetPlayerById(alchemistId);
                     if (alchemist == null) return;
 
+                    if (!ventedId.ContainsKey(alchemistId)) return;
+
                     alchemist?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(alchemistId, out var id) ? id : Main.LastEnteredVent[alchemistId].Id);
                     SendRPC(alchemist);
                 }
                 InviseIsActive = false;
             }
+
+            ventedId = [];
         }
 
         public static void OnCoEnterVent(PlayerPhysics __instance, int ventId)

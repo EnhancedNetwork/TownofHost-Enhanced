@@ -85,9 +85,13 @@ public static class Wraith
             var wraith = Utils.GetPlayerById(wraithId);
             if (wraith == null) return;
 
+            if (!ventedId.ContainsKey(wraithId)) return;
+
             wraith?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(wraithId, out var id) ? id : Main.LastEnteredVent[wraithId].Id);
             SendRPC(wraith);
         }
+
+        ventedId = [];
     }
     public static void AfterMeetingTasks()
     {
@@ -126,6 +130,7 @@ public static class Wraith
                 {
                     lastTime.Add(pc.PlayerId, now);
                     pc?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(pc.PlayerId, out var id) ? id : Main.LastEnteredVent[pc.PlayerId].Id);
+                    ventedId.Remove(pc.PlayerId);
                     NameNotifyManager.Notify(pc, GetString("WraithInvisStateOut"));
                     SendRPC(pc);
                     continue;

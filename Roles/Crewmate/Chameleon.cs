@@ -99,9 +99,13 @@ public static class Chameleon
             var chameleon = Utils.GetPlayerById(chameleonId);
             if (chameleon == null) return;
 
+            if (!ventedId.ContainsKey(chameleonId)) return;
+
             chameleon?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(chameleonId, out var id) ? id : Main.LastEnteredVent[chameleonId].Id);
             SendRPC(chameleon);
         }
+
+        ventedId = [];
     }
     public static void AfterMeetingTasks()
     {
@@ -140,6 +144,7 @@ public static class Chameleon
                 {
                     lastTime.Add(pc.PlayerId, now);
                     pc?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(pc.PlayerId, out var id) ? id : Main.LastEnteredVent[pc.PlayerId].Id);
+                    ventedId.Remove(pc.PlayerId);
                     NameNotifyManager.Notify(pc, GetString("ChameleonInvisStateOut"));
                     pc.RpcResetAbilityCooldown();
                     SendRPC(pc);

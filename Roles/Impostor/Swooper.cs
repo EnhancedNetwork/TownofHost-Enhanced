@@ -77,9 +77,13 @@ public static class Swooper
             var swooper = Utils.GetPlayerById(swooperId);
             if (swooper == null) return;
 
+            if (!ventedId.ContainsKey(swooperId)) return;
+
             swooper?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(swooperId, out var id) ? id : Main.LastEnteredVent[swooperId].Id);
             SendRPC(swooper);
         }
+
+        ventedId = [];
     }
     public static void AfterMeetingTasks()
     {
@@ -119,6 +123,7 @@ public static class Swooper
                 {
                     lastTime.Add(pc.PlayerId, now);
                     pc?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(pc.PlayerId, out var id) ? id : Main.LastEnteredVent[pc.PlayerId].Id);
+                    ventedId.Remove(pc.PlayerId);
                     NameNotifyManager.Notify(pc, GetString("SwooperInvisStateOut"));
                     SendRPC(pc);
                     continue;
