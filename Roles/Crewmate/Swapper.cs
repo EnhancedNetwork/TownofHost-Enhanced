@@ -102,6 +102,7 @@ public static class Swapper
                 VoteTwo[pc.PlayerId] = 253;
 
                 if (!isUI) Utils.SendMessage(GetString("CancelSwap"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
+                else pc.ShowPopUp(GetString("SwapperTrialMax"));
                 return true;
             }
 
@@ -112,7 +113,7 @@ public static class Swapper
                 if (Swappermax[pc.PlayerId] < 1)
                 {
                     if (!isUI) Utils.SendMessage(GetString("SwapperTrialMax"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
-                    pc.ShowPopUp(GetString("SwapperTrialMax"));
+                    else pc.ShowPopUp(GetString("SwapperTrialMax"));
                     return true;
                 }
                 //Swapper skill limit is changed in after meeting task
