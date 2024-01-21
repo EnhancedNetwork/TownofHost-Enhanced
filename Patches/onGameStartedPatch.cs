@@ -685,6 +685,9 @@ internal class SelectRolesPatch
                     case CustomRoles.Poisoner:
                         Poisoner.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.PlagueDoctor:
+                        PlagueDoctor.Add(pc.PlayerId);
+                        break;
                     case CustomRoles.Sheriff:
                         Sheriff.Add(pc.PlayerId);
                         break;

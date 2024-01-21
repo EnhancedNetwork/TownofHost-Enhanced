@@ -1126,6 +1126,9 @@ internal static class RPC
             case CustomRoles.Poisoner:
                 Poisoner.Add(targetId);
                 break;
+            case CustomRoles.PlagueDoctor:
+                PlagueDoctor.Add(targetId);
+                break;
             case CustomRoles.Sheriff:
                 Sheriff.Add(targetId);
                 break;
