@@ -2227,6 +2227,11 @@ class ReportDeadBodyPatch
         {
             Logger.Exception(e, "ReportDeadBodyPatch");
             Logger.SendInGame("Error: " + e.ToString());
+
+            // If there is an error in ReportDeadBodyPatch, update the player nicknames anyway
+            NameNotifyManager.Notice.Clear();
+            Utils.DoNotifyRoles(isForMeeting: true, NoCache: true, CamouflageIsForMeeting: true);
+            _ = new LateTask(Utils.SyncAllSettings, 3f, "Sync all settings after report");
         }
 
         return true;
