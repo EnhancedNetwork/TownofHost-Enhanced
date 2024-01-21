@@ -3727,7 +3727,6 @@
   "PlagueDoctorInfectWhenKilled": "Infect Killer When Killed",
   "PlagueDoctorInfectTime": "Infect Time",
   "PlagueDoctorInfectDistance": "Infect Distance",
-  "PlagueDoctorInfectInactiveTime": "Infect Invalid Time",
   "PlagueDoctorCanInfectSelf": "Can Infect Self",
   "PlagueDoctorCanInfectVent": "Can Infect While In Vent",
 

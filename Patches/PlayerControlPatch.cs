@@ -2586,6 +2586,12 @@ class FixedUpdateInNormalGamePatch
                     case CustomRoles.Penguin:
                         Penguin.OnFixedUpdate(player);
                         break;
+                    case CustomRoles.PlagueDoctor:
+                        if (GameStates.IsInTask && player != null && player.IsAlive() && PlagueDoctor.IsEnable)
+                        {
+                            PlagueDoctor.OnCheckPlayerPosition(player); break;
+                        }
+                        break;
                     case CustomRoles.Vampire:
                         Vampire.OnFixedUpdate(player);
                         break;
@@ -2817,8 +2823,7 @@ class FixedUpdateInNormalGamePatch
 
                 playerRole = player.GetCustomRole();
 
-                if(GameStates.IsInTask && player != null && player.IsAlive() && PlagueDoctor.IsEnable)
-                    PlagueDoctor.OnCheckPlayerPosition(player);
+                
                 if (Kamikaze.IsEnable)
                     Kamikaze.MurderKamikazedPlayers(player);
                 if (Alchemist.IsEnable)

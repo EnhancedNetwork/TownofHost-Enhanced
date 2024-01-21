@@ -2763,9 +2763,6 @@ public static class Utils
                     Lawyer.SendRPC(target.PlayerId);
                 }
                 break;
-            case CustomRoles.PlagueDoctor:
-                PlagueDoctor.OnPDdeath(target.GetRealKiller());
-                break;
             case CustomRoles.CyberStar:
                 if (GameStates.IsMeeting)
                 {
