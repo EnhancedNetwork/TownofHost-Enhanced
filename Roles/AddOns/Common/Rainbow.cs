@@ -10,6 +10,8 @@ namespace TOHE.Roles.AddOns.Common
         public static OptionItem ImpCanBeRainbow;
         public static OptionItem NeutralCanBeRainbow;
         public static OptionItem RainbowColorChangeCoolDown;
+
+        public static bool isEnabled = false;
         public static long LastColorChange;
         public static void SetupCustomOptions()
         {
@@ -26,10 +28,14 @@ namespace TOHE.Roles.AddOns.Common
         public static void Init()
         {
             LastColorChange = Utils.GetTimeStamp();
+            isEnabled = false;
+        }
+        public static void Add()
+        {
+            isEnabled = true;
         }
         public static void OnFixedUpdate()
         {
-            if (!CustomRoles.Rainbow.RoleExist()) return;
 
             if (LastColorChange + RainbowColorChangeCoolDown.GetInt() <= Utils.GetTimeStamp())
             {

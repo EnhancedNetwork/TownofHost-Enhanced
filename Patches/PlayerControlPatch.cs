@@ -2842,6 +2842,7 @@ class FixedUpdateInNormalGamePatch
                     if (Pitfall.IsEnable)
                         Pitfall.OnFixedUpdate(player);
 
+                    if (Rainbow.isEnabled)
                         Rainbow.OnFixedUpdate();
 
                     if (Alchemist.BloodlustList.ContainsKey(player.PlayerId))

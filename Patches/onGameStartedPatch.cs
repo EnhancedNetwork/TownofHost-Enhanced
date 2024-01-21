@@ -1065,6 +1065,9 @@ internal class SelectRolesPatch
                         case CustomRoles.Tired:
                             Tired.Add(pc.PlayerId);
                             break;
+                        case CustomRoles.Rainbow:
+                            Rainbow.Add();
+                            break;
 
                         default:
                             break;
