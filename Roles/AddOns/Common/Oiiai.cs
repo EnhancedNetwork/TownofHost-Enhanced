@@ -8,7 +8,7 @@ namespace TOHE.Roles.AddOns.Common
     public static class Oiiai
     {
         private static readonly int Id = 25700;
-        public static List<byte> playerIdList = new();
+        public static List<byte> playerIdList = [];
         public static bool IsEnable = false;
 
         public static OptionItem CanBeOnCrew;
@@ -18,18 +18,18 @@ namespace TOHE.Roles.AddOns.Common
         public static OptionItem ChangeNeutralRole;
 
         public static readonly string[] NChangeRoles =
-        {
+        [
             "Role.NoChange",
             "Role.Amnesiac",
             "Role.Imitator",
             //   CustomRoles.Crewmate.ToString(), CustomRoles.Jester.ToString(), CustomRoles.Opportunist.ToString(),
-        };
+        ];
 
         public static readonly CustomRoles[] NRoleChangeRoles =
-        {
+        [
             CustomRoles.Amnesiac,
             CustomRoles.Imitator,
-        }; //Just -1 to use this LOL
+        ]; //Just -1 to use this LOL
 
         public static void SetupCustomOptions()
         {
@@ -42,7 +42,7 @@ namespace TOHE.Roles.AddOns.Common
         }
         public static void Init()
         {
-            playerIdList = new();
+            playerIdList = [];
             IsEnable = false;
         }
         public static void Add(byte playerId)
@@ -55,7 +55,7 @@ namespace TOHE.Roles.AddOns.Common
         {
             if (killer == null || target == null) return;
             if (killer.PlayerId == target.PlayerId) return;
-
+            if (killer.Is(CustomRoles.Minimalism)) return;
             if (!target.Is(CustomRoles.Oiiai)) return;
             if (!CanGetOiiaied(killer)) return;
 

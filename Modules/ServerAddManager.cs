@@ -10,14 +10,14 @@ namespace TOHE;
 
 public static class ServerAddManager
 {
-    private static ServerManager serverManager = DestroyableSingleton<ServerManager>.Instance;
+    private static readonly ServerManager serverManager = DestroyableSingleton<ServerManager>.Instance;
     public static void Init()
     {
         if (CultureInfo.CurrentCulture.Name.StartsWith("zh") && serverManager.AvailableRegions.Count == 10) return;
         if (!CultureInfo.CurrentCulture.Name.StartsWith("zh") && serverManager.AvailableRegions.Count == 7) return;
 
         serverManager.AvailableRegions = ServerManager.DefaultRegions;
-        List<IRegionInfo> regionInfos = new();
+        List<IRegionInfo> regionInfos = [];
 
         if (CultureInfo.CurrentCulture.Name.StartsWith("zh"))
         {
@@ -36,8 +36,8 @@ public static class ServerAddManager
     public static IRegionInfo CreateHttp(string ip, string name, ushort port, bool ishttps)
     {
         string serverIp = (ishttps ? "https://" : "http://") + ip;
-        ServerInfo serverInfo = new ServerInfo(name, serverIp, port, false);
-        ServerInfo[] ServerInfo = new ServerInfo[] { serverInfo };
+        ServerInfo serverInfo = new(name, serverIp, port, false);
+        ServerInfo[] ServerInfo = [serverInfo];
         return new StaticHttpRegionInfo(name, (StringNames)1003, ip, ServerInfo).CastFast<IRegionInfo>();
     }
 

@@ -5,7 +5,7 @@ namespace TOHE.Roles.AddOns.Common;
 public static class Repairman
 {
     private static readonly int Id = 19900;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     public static OptionItem FixesDoors;
@@ -33,7 +33,7 @@ public static class Repairman
     }
     public static void Init()
     {
-        playerIdList = new();
+        playerIdList = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)

@@ -7,7 +7,7 @@ namespace TOHE.Roles.Crewmate
     {
         private static readonly int Id = 26800;
         private static bool IsEnable = false;
-        private static HashSet<byte> playerIdList = new();
+        private static HashSet<byte> playerIdList = [];
         public static void SetupCustomOption()
         {
             Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.GuessMaster);
@@ -16,7 +16,7 @@ namespace TOHE.Roles.Crewmate
         public static void Init()
         {
             IsEnable = false;
-            playerIdList = new();
+            playerIdList = [];
         }
         public static void Add(byte playerId)
         {

@@ -170,7 +170,7 @@ public class GameStartManagerPatch
             if (AmongUsClient.Instance.AmHost)
             {
                 bool canStartGame = true;
-                List<string> mismatchedPlayerNameList = new();
+                List<string> mismatchedPlayerNameList = [];
                 foreach (var client in AmongUsClient.Instance.allClients.ToArray())
                 {
                     if (client.Character == null) continue;
@@ -307,7 +307,7 @@ public class GameStartRandomMap
     public static byte SelectRandomMap()
     {
         var rand = IRandom.Instance;
-        List<byte> randomMaps = new();
+        List<byte> randomMaps = [];
         /*
             The Skeld    = 0
             MIRA HQ      = 1

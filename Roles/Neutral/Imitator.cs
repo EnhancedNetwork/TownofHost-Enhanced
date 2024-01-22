@@ -10,23 +10,23 @@ namespace TOHE.Roles.Neutral;
 public static class Imitator
 {
     private static readonly int Id = 13000;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     public static OptionItem RememberCooldown;
     public static OptionItem RefugeeKillCD;
     public static OptionItem IncompatibleNeutralMode;
     public static readonly string[] ImitatorIncompatibleNeutralMode =
-    {
+    [
         "Role.Imitator",
         "Role.Witch",
         "Role.Pursuer",
         "Role.Follower",
         "Role.Maverick",
         "Role.Amnesiac",
-    };
+    ];
 
-    private static Dictionary<byte, int> RememberLimit = new();
+    private static Dictionary<byte, int> RememberLimit = [];
 
     public static void SetupCustomOption()
     {
@@ -37,8 +37,8 @@ public static class Imitator
     }
     public static void Init()
     {
-        playerIdList = new();
-        RememberLimit = new();
+        playerIdList = [];
+        RememberLimit = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)

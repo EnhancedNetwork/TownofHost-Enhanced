@@ -5,12 +5,12 @@ namespace TOHE.Roles.Impostor;
 public static class Chronomancer
 {
     private static readonly int Id = 900;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
-    public static Dictionary<byte, long> firstKill = new();
-    public static Dictionary<byte, long> lastCooldownStart = new();
-    public static Dictionary<byte, float> ChargedTime = new();
+    public static Dictionary<byte, long> firstKill = [];
+    public static Dictionary<byte, long> lastCooldownStart = [];
+    public static Dictionary<byte, float> ChargedTime = [];
 
     private static OptionItem KillCooldown;
 
@@ -23,10 +23,10 @@ public static class Chronomancer
 
     public static void Init()
     {
-        playerIdList = new();
-        firstKill = new();
-        lastCooldownStart = new();
-        ChargedTime = new();
+        playerIdList = [];
+        firstKill = [];
+        lastCooldownStart = [];
+        ChargedTime = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)

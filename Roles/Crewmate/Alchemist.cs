@@ -15,11 +15,11 @@ namespace TOHE.Roles.Crewmate
     public static class Alchemist
     {
         private static readonly int Id = 6400;
-        private static List<byte> playerIdList = new();
+        private static List<byte> playerIdList = [];
 
-        public static Dictionary<byte, byte> BloodlustList = new();
-        private static Dictionary<byte, int> ventedId = new();
-        private static Dictionary<byte, long> InvisTime = new();
+        public static Dictionary<byte, byte> BloodlustList = [];
+        private static Dictionary<byte, int> ventedId = [];
+        private static Dictionary<byte, long> InvisTime = [];
 
         public static byte PotionID = 10;
         public static string PlayerName = string.Empty;
@@ -56,12 +56,12 @@ namespace TOHE.Roles.Crewmate
         }
         public static void Init()
         {
-            playerIdList = new();
-            BloodlustList = new();
+            playerIdList = [];
+            BloodlustList = [];
             PotionID = 10;
             PlayerName = string.Empty;
-            ventedId = new();
-            InvisTime = new();
+            ventedId = [];
+            InvisTime = [];
             FixNextSabo = false;
             VisionPotionActive = false;
         }
@@ -140,11 +140,7 @@ namespace TOHE.Roles.Crewmate
                     _ = new LateTask(() =>
                     {
                         var rd = IRandom.Instance;
-                        List<PlayerControl> AllAlivePlayer = new();
-                        foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.CanBeTeleported()).ToArray())
-                        {
-                            AllAlivePlayer.Add(pc);
-                        }
+                        List<PlayerControl> AllAlivePlayer = [.. Main.AllAlivePlayerControls.Where(x => x.CanBeTeleported()).ToArray()];
                         var tar1 = AllAlivePlayer[player.PlayerId];
                         AllAlivePlayer.Remove(tar1);
                         var tar2 = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
@@ -213,7 +209,7 @@ namespace TOHE.Roles.Crewmate
         }
         public static void ReceiveRPC(MessageReader reader)
         {
-            InvisTime = new();
+            InvisTime = [];
             long invis = long.Parse(reader.ReadString());
             if (invis > 0) InvisTime.Add(PlayerControl.LocalPlayer.PlayerId, invis);
         }
@@ -228,7 +224,7 @@ namespace TOHE.Roles.Crewmate
             else
             {
                 Vector2 bloodlustPos = player.transform.position;
-                Dictionary<byte, float> targetDistance = new();
+                Dictionary<byte, float> targetDistance = [];
                 float dis;
                 foreach (var target in Main.AllAlivePlayerControls)
                 {
@@ -261,6 +257,7 @@ namespace TOHE.Roles.Crewmate
             }
         }
         private static long lastFixedTime;
+        private static bool InviseIsActive = false;
         public static void OnFixedUpdateINV(PlayerControl player)
         {
             if (GameStates.IsMeeting) return;
@@ -270,8 +267,8 @@ namespace TOHE.Roles.Crewmate
             if (lastFixedTime != now)
             {
                 lastFixedTime = now;
-                Dictionary<byte, long> newList = new(); // = [];
-                List<byte> refreshList = new(); // = [];
+                Dictionary<byte, long> newList = [];
+                List<byte> refreshList = [];
                 foreach (var it in InvisTime)
                 {
                     var pc = Utils.GetPlayerById(it.Key);
@@ -280,9 +277,11 @@ namespace TOHE.Roles.Crewmate
                     if (remainTime < 0)
                     {
                         pc?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(pc.PlayerId, out var id) ? id : Main.LastEnteredVent[pc.PlayerId].Id);
+                        ventedId.Remove(pc.PlayerId);
                         pc.Notify(GetString("ChameleonInvisStateOut"));
                         pc.RpcResetAbilityCooldown();
                         SendRPC(pc);
+                        InviseIsActive = false;
                         continue;
                     }
                     else if (remainTime <= 10)
@@ -298,7 +297,25 @@ namespace TOHE.Roles.Crewmate
         }
         public static void OnReportDeadBody()
         {
+            lastFixedTime = new();
             BloodlustList = [];
+            InvisTime = [];
+
+            if (InviseIsActive)
+            {
+                foreach (var alchemistId in playerIdList.ToArray())
+                {
+                    if (!ventedId.ContainsKey(alchemistId)) continue;
+                    var alchemist = Utils.GetPlayerById(alchemistId);
+                    if (alchemist == null) return;
+
+                    alchemist?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(alchemistId, out var id) ? id : Main.LastEnteredVent[alchemistId].Id);
+                    SendRPC(alchemist);
+                }
+                InviseIsActive = false;
+            }
+
+            ventedId = [];
         }
 
         public static void OnCoEnterVent(PlayerPhysics __instance, int ventId)
@@ -318,6 +335,7 @@ namespace TOHE.Roles.Crewmate
 
                 InvisTime.Add(pc.PlayerId, Utils.GetTimeStamp());
                 SendRPC(pc);
+                InviseIsActive = true;
                 NameNotifyManager.Notify(pc, GetString("ChameleonInvisState"), InvisDuration.GetFloat());
             }, 0.5f, "Alchemist Invis");
         }

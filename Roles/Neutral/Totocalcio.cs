@@ -12,7 +12,7 @@ namespace TOHE.Roles.Neutral;
 public static class Totocalcio
 {
     private static readonly int Id = 12800;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     private static OptionItem MaxBetTimes;
@@ -22,8 +22,8 @@ public static class Totocalcio
     private static OptionItem KnowTargetRole;
     private static OptionItem BetTargetKnowTotocalcio;
 
-    private static Dictionary<byte, int> BetTimes = new();
-    public static Dictionary<byte, byte> BetPlayer = new();
+    private static Dictionary<byte, int> BetTimes = [];
+    public static Dictionary<byte, byte> BetPlayer = [];
 
     public static void SetupCustomOption()
     {
@@ -41,9 +41,9 @@ public static class Totocalcio
     }
     public static void Init()
     {
-        playerIdList = new();
-        BetTimes = new();
-        BetPlayer = new();
+        playerIdList = [];
+        BetTimes = [];
+        BetPlayer = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)

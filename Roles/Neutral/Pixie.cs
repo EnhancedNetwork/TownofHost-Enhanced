@@ -8,11 +8,11 @@ namespace TOHE.Roles.Neutral;
 public static class Pixie
 {
     private static readonly int Id = 25900;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
-    public static Dictionary<byte, HashSet<byte>> PixieTargets = new();
-    public static Dictionary<byte, int> PixiePoints = new();
+    public static Dictionary<byte, HashSet<byte>> PixieTargets = [];
+    public static Dictionary<byte, int> PixiePoints = [];
 
     public static OptionItem PixiePointsToWin;
     public static OptionItem PixieMaxTargets;
@@ -32,15 +32,15 @@ public static class Pixie
     }
     public static void Init()
     {
-        playerIdList = new();
-        PixieTargets = new();
-        PixiePoints = new();
+        playerIdList = [];
+        PixieTargets = [];
+        PixiePoints = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        PixieTargets[playerId] = new();
+        PixieTargets[playerId] = [];
         PixiePoints.Add(playerId, 0);
         IsEnable = true;
 
@@ -75,7 +75,7 @@ public static class Pixie
         bool operate = reader.ReadBoolean();
         if (!operate)
         {
-            if (!PixieTargets.ContainsKey(pixieId)) PixieTargets[pixieId] = new();
+            if (!PixieTargets.ContainsKey(pixieId)) PixieTargets[pixieId] = [];
             byte targetId = reader.ReadByte();
             PixieTargets[pixieId].Add(targetId);
         }
@@ -93,7 +93,7 @@ public static class Pixie
         if (killer == null || target == null) return;
         byte targetId = target.PlayerId;
         byte killerId = killer.PlayerId;
-        if (!PixieTargets.ContainsKey(killerId)) PixieTargets[killerId] = new();
+        if (!PixieTargets.ContainsKey(killerId)) PixieTargets[killerId] = [];
         if (PixieTargets[killerId].Count >= PixieMaxTargets.GetInt())
         {
             killer.Notify(GetString("PixieMaxTargetReached"));

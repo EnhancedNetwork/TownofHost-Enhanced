@@ -8,15 +8,15 @@ namespace TOHE.Roles.Crewmate;
 public static class Mediumshiper
 {
     private static readonly int Id = 8700;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     public static OptionItem ContactLimitOpt;
     public static OptionItem OnlyReceiveMsgFromCrew;
     public static OptionItem MediumAbilityUseGainWithEachTaskCompleted;
 
-    public static Dictionary<byte, byte> ContactPlayer = new();
-    public static Dictionary<byte, float> ContactLimit = new();
+    public static Dictionary<byte, byte> ContactPlayer = [];
+    public static Dictionary<byte, float> ContactLimit = [];
 
     public static void SetupCustomOption()
     {
@@ -30,9 +30,9 @@ public static class Mediumshiper
     }
     public static void Init()
     {
-        playerIdList = new();
-        ContactPlayer = new();
-        ContactLimit = new();
+        playerIdList = [];
+        ContactPlayer = [];
+        ContactLimit = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -64,13 +64,13 @@ public static class Mediumshiper
         if (isUsed)
         {
             byte targetId = reader.ReadByte();
-            ContactPlayer = new();
+            ContactPlayer = [];
             ContactPlayer.TryAdd(targetId, pid);
         }
     }
     public static void OnReportDeadBody(GameData.PlayerInfo target)
     {
-        ContactPlayer = new();
+        ContactPlayer = [];
         if (target == null) return;
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => playerIdList.Contains(x.PlayerId) && x.PlayerId != target.PlayerId).ToArray())
         {
@@ -92,8 +92,8 @@ public static class Mediumshiper
         if (!CheckCommond(ref msg, "通灵|ms|mediumship|medium", false)) return false;
 
         bool ans;
-        if (msg.Contains("n") || msg.Contains(GetString("No")) || msg.Contains("错") || msg.Contains("不是")) ans = false;
-        else if (msg.Contains("y") || msg.Contains(GetString("Yes")) || msg.Contains("对")) ans = true;
+        if (msg.Contains('n') || msg.Contains(GetString("No")) || msg.Contains('错') || msg.Contains("不是")) ans = false;
+        else if (msg.Contains('y') || msg.Contains(GetString("Yes")) || msg.Contains('对')) ans = true;
         else
         {
             Utils.SendMessage(GetString("MediumshipHelp"), pc.PlayerId);

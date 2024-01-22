@@ -240,7 +240,7 @@ internal class RPCHandlerPatch
                     Main.OverrideWelcomeMsg = string.Format(GetString("RpcAntiBlackOutNotifyInLobby"), __instance?.Data?.PlayerName, GetString("EndWhenPlayerBug"));
                     _ = new LateTask(() =>
                     {
-                        Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutEndGame"), __instance?.Data?.PlayerName), true);
+                        Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutEndGame"), __instance?.Data?.PlayerName));
                     }, 3f, "Anti-Black Msg SendInGame 1");
 
                     _ = new LateTask(() =>
@@ -255,7 +255,7 @@ internal class RPCHandlerPatch
                     Logger.Fatal($"{__instance?.Data?.PlayerName}({__instance.PlayerId}): Change Role Setting Postfix 错误，根据设定继续游戏", "Anti-black");
                     _ = new LateTask(() =>
                     {
-                        Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutIgnored"), __instance?.Data?.PlayerName), true);
+                        Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutIgnored"), __instance?.Data?.PlayerName));
                     }, 3f, "Anti-Black Msg SendInGame 2");
                 }
                 break;
@@ -317,8 +317,8 @@ internal class RPCHandlerPatch
             case CustomRPC.SyncCustomSettings:
                 if (AmongUsClient.Instance.AmHost) break;
 
-                List<OptionItem> listOptions = new();
-                List<OptionItem> allOptionsList = OptionItem.AllOptions.ToList();
+                List<OptionItem> listOptions = [];
+                List<OptionItem> allOptionsList = [.. OptionItem.AllOptions];
 
                 var startAmount = reader.ReadInt32();
                 var lastAmount = reader.ReadInt32();
@@ -420,7 +420,7 @@ internal class RPCHandlerPatch
                 Main.isDoused[(ArsonistId, DousedId)] = doused;
                 break;
             case CustomRPC.setPlaguedPlayer:
-                PlagueBearer.receiveRPC(reader);
+                PlagueBearer.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetDrawPlayer:
                 byte RevolutionistId = reader.ReadByte();
@@ -623,7 +623,7 @@ internal class RPCHandlerPatch
                 FFAManager.ReceiveRPCSyncFFAPlayer(reader);
                 break;
             case CustomRPC.SyncAllPlayerNames:
-                Main.AllPlayerNames = new();
+                Main.AllPlayerNames = [];
                 int num = reader.ReadInt32();
                 for (int i = 0; i < num; i++)
                     Main.AllPlayerNames.TryAdd(reader.ReadByte(), reader.ReadString());
@@ -877,8 +877,8 @@ internal static class RPC
         writer.Write(startAmount);
         writer.Write(lastAmount);
 
-        List<OptionItem> listOptions = new();
-        List<OptionItem> allOptionsList = OptionItem.AllOptions.ToList();
+        List<OptionItem> listOptions = [];
+        List<OptionItem> allOptionsList = [.. OptionItem.AllOptions];
 
         // Add Options
         for (var option = startAmount; option < amountAllOptions && option <= lastAmount; option++)
@@ -942,19 +942,27 @@ internal static class RPC
     }
     public static async void RpcVersionCheck()
     {
-        while (PlayerControl.LocalPlayer == null || AmongUsClient.Instance.GetHost() == null || PlayerControl.LocalPlayer.GetClientId() < 0) await Task.Delay(500);
-        var hostId = AmongUsClient.Instance.HostId;
-        if (Main.playerVersion.ContainsKey(hostId) || !Main.VersionCheat.Value)
+        try
         {
-            bool cheating = Main.VersionCheat.Value;
-            MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.VersionCheck, SendOption.Reliable);
-            writer.Write(cheating ? Main.playerVersion[hostId].version.ToString() : Main.PluginVersion);
-            writer.Write(cheating ? Main.playerVersion[hostId].tag : $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})");
-            writer.Write(cheating ? Main.playerVersion[hostId].forkId : Main.ForkId);
-            writer.Write(cheating);
-            writer.EndMessage();
+            while (PlayerControl.LocalPlayer == null || AmongUsClient.Instance.HostId < 0 || PlayerControl.LocalPlayer.GetClientId() < 0) await Task.Delay(500);
+            var hostId = AmongUsClient.Instance.HostId;
+            if (Main.playerVersion.ContainsKey(hostId) || !Main.VersionCheat.Value)
+            {
+                bool cheating = Main.VersionCheat.Value;
+                MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.VersionCheck, SendOption.Reliable);
+                writer.Write(cheating ? Main.playerVersion[hostId].version.ToString() : Main.PluginVersion);
+                writer.Write(cheating ? Main.playerVersion[hostId].tag : $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})");
+                writer.Write(cheating ? Main.playerVersion[hostId].forkId : Main.ForkId);
+                writer.Write(cheating);
+                writer.EndMessage();
+            }
+            Main.playerVersion[PlayerControl.LocalPlayer.GetClientId()] = new PlayerVersion(Main.PluginVersion, $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})", Main.ForkId);
         }
-        Main.playerVersion[PlayerControl.LocalPlayer.GetClientId()] = new PlayerVersion(Main.PluginVersion, $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})", Main.ForkId);
+        catch
+        {
+            Logger.Error("Error while trying to send RPCVersionCheck, retry later", "RpcVersionCheck");
+            _ = new LateTask(() => RpcVersionCheck(), 1f, "Retry RPCVersionCheck");
+        }
     }
     public static async void RpcRequestRetryVersionCheck()
     {
@@ -1174,7 +1182,7 @@ internal static class RPC
                 LastImpostor.Add(targetId);
                 break;
             case CustomRoles.Aware:
-                Main.AwareInteracted[targetId] = new();
+                Main.AwareInteracted[targetId] = [];
                 break;
             case CustomRoles.Crewpostor:
                 Main.CrewpostorTasksDone[targetId] = 0;
@@ -1628,7 +1636,7 @@ internal static class RPC
 [HarmonyPatch(typeof(InnerNet.InnerNetClient), nameof(InnerNet.InnerNetClient.StartRpc))]
 internal class StartRpcPatch
 {
-    public static void Prefix(InnerNet.InnerNetClient __instance, [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId)
+    public static void Prefix(/*InnerNet.InnerNetClient __instance,*/ [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId)
     {
         RPC.SendRpcLogger(targetNetId, callId);
     }
@@ -1636,7 +1644,7 @@ internal class StartRpcPatch
 [HarmonyPatch(typeof(InnerNet.InnerNetClient), nameof(InnerNet.InnerNetClient.StartRpcImmediately))]
 internal class StartRpcImmediatelyPatch
 {
-    public static void Prefix(InnerNet.InnerNetClient __instance, [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId, [HarmonyArgument(3)] int targetClientId = -1)
+    public static void Prefix(/*InnerNet.InnerNetClient __instance,*/ [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId, [HarmonyArgument(3)] int targetClientId = -1)
     {
         RPC.SendRpcLogger(targetNetId, callId, targetClientId);
     }

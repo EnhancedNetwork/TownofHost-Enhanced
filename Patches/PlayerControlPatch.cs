@@ -68,7 +68,7 @@ class CmdCheckMurderPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckMurder))] // Upon Receive RPC / Local Host
 class CheckMurderPatch
 {
-    public static Dictionary<byte, float> TimeSinceLastKill = new();
+    public static Dictionary<byte, float> TimeSinceLastKill = [];
     public static void Update()
     {
         for (byte i = 0; i < 15; i++)
@@ -136,6 +136,12 @@ class CheckMurderPatch
         }
         TimeSinceLastKill[killer.PlayerId] = 0f;
 
+        // added here because it bypasses every shield and just kills the player and antidote, diseased etc.. wont take effect
+        if (killer.Is(CustomRoles.Minimalism))
+        {
+            killer.RpcMurderPlayerV3(target);
+            return false;
+        }
         foreach (var targetSubRole in target.GetCustomSubRoles().ToArray())
         {
             switch (targetSubRole)
@@ -198,7 +204,7 @@ class CheckMurderPatch
                         case CustomRoles.Farseer:
                             if (!Main.AwareInteracted.ContainsKey(target.PlayerId))
                             {
-                                Main.AwareInteracted.Add(target.PlayerId, new());
+                                Main.AwareInteracted.Add(target.PlayerId, []);
                             }
                             if (!Main.AwareInteracted[target.PlayerId].Contains(Utils.GetRoleName(killerRole)))
                             {
@@ -771,6 +777,10 @@ class CheckMurderPatch
                     }
                     break;
 
+                case CustomRoles.Tired:
+                    Tired.AfterActionTasks(killer);
+                    break;
+
                 case CustomRoles.Clumsy:
                     var miss = IRandom.Instance;
                     if (miss.Next(0, 100) < Options.ChanceToMiss.GetInt())
@@ -1268,7 +1278,7 @@ class MurderPlayerPatch
         }
         return true;
     }
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] MurderResultFlags resultFlags)
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target/*, [HarmonyArgument(1)] MurderResultFlags resultFlags*/)
     {
         if (GameStates.IsHideNSeek) return;
         if (target.AmOwner) RemoveDisableDevicesPatch.UpdateDisableDevices();
@@ -1309,7 +1319,7 @@ class MurderPlayerPatch
         }
 
         //看看UP是不是被首刀了
-        if (Main.FirstDied == "" && target.Is(CustomRoles.Youtuber))
+        if (Main.FirstDied == "" && target.Is(CustomRoles.Youtuber) && !killer.Is(CustomRoles.Minimalism))
         {
             CustomSoundsManager.RPCPlayCustomSoundAll("Congrats");
             if (!CustomWinnerHolder.CheckForConvertedWinner(target.PlayerId))
@@ -1325,7 +1335,7 @@ class MurderPlayerPatch
 
         if (target.Is(CustomRoles.Bait))
         {
-            if (killer.PlayerId != target.PlayerId || (target.GetRealKiller()?.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Wraith) || !killer.Is(CustomRoles.Oblivious) || (killer.Is(CustomRoles.Oblivious) && !Options.ObliviousBaitImmune.GetBool()))
+            if (killer.PlayerId != target.PlayerId || (target.GetRealKiller()?.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Wraith or CustomRoles.Minimalism) || !killer.Is(CustomRoles.Oblivious) || (killer.Is(CustomRoles.Oblivious) && !Options.ObliviousBaitImmune.GetBool()))
             {
                 killer.RPCPlayCustomSound("Congrats");
                 target.RPCPlayCustomSound("Congrats");
@@ -1338,7 +1348,7 @@ class MurderPlayerPatch
                 _ = new LateTask(() => { if (GameStates.IsInTask && GameStates.IsInGame) killer.CmdReportDeadBody(target.Data); }, delay, "Bait Self Report");
             }
         }
-        if (target.Is(CustomRoles.Burst) && killer.IsAlive())
+        if (target.Is(CustomRoles.Burst) && killer.IsAlive() && !killer.Is(CustomRoles.Minimalism))
         {
             target.SetRealKiller(killer);
             Main.BurstBodies.Add(target.PlayerId);
@@ -1364,7 +1374,7 @@ class MurderPlayerPatch
             }
         }
         
-        if (target.Is(CustomRoles.Trapper) && killer != target)
+        if (target.Is(CustomRoles.Trapper) && killer != target && !killer.Is(CustomRoles.Minimalism))
             killer.TrapperKilled(target);
 
         if (Main.AllKillers.ContainsKey(killer.PlayerId))
@@ -1529,7 +1539,7 @@ class ShapeshiftPatch
                         {
                             var cp = Main.CursedPlayers[shapeshifter.PlayerId];
                             Vector2 cppos = cp.transform.position;
-                            Dictionary<PlayerControl, float> cpdistance = new();
+                            Dictionary<PlayerControl, float> cpdistance = [];
                             float dis;
                             foreach (PlayerControl p in Main.AllAlivePlayerControls)
                             {
@@ -1741,8 +1751,8 @@ class ShapeshiftPatch
 class ReportDeadBodyPatch
 {
     public static Dictionary<byte, bool> CanReport;
-    public static HashSet<byte> UnreportablePlayers = new ();
-    public static Dictionary<byte, List<GameData.PlayerInfo>> WaitReport = new();
+    public static HashSet<byte> UnreportablePlayers = [];
+    public static Dictionary<byte, List<GameData.PlayerInfo>> WaitReport = [];
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo target)
     {
         if (GameStates.IsMeeting || GameStates.IsHideNSeek) return false;
@@ -2217,6 +2227,11 @@ class ReportDeadBodyPatch
         {
             Logger.Exception(e, "ReportDeadBodyPatch");
             Logger.SendInGame("Error: " + e.ToString());
+
+            // If there is an error in ReportDeadBodyPatch, update the player nicknames anyway
+            NameNotifyManager.Notice.Clear();
+            Utils.DoNotifyRoles(isForMeeting: true, NoCache: true, CamouflageIsForMeeting: true);
+            _ = new LateTask(Utils.SyncAllSettings, 3f, "Sync all settings after report");
         }
 
         return true;
@@ -2330,6 +2345,9 @@ class ReportDeadBodyPatch
         if (Romantic.IsEnable) Romantic.OnReportDeadBody();
         if (Captain.IsEnable) Captain.OnReportDeadBody();
         if (Investigator.IsEnable) Investigator.OnReportDeadBody();
+        if (Swooper.IsEnable) Swooper.OnReportDeadBody();
+        if (Chameleon.IsEnable) Chameleon.OnReportDeadBody();
+        if (Wraith.IsEnable) Wraith.OnReportDeadBody();
 
         // Alchemist & Bloodlust
         Alchemist.OnReportDeadBody();
@@ -2351,7 +2369,7 @@ class ReportDeadBodyPatch
                     if (Options.AwareknowRole.GetBool())
                         rolelist = string.Join(", ", Main.AwareInteracted[pid]);
                     Utils.SendMessage(string.Format(GetString("AwareInteracted"), rolelist), pid, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Aware), GetString("AwareTitle")));
-                    Main.AwareInteracted[pid] = new();
+                    Main.AwareInteracted[pid] = [];
                 }, 0.5f, "Aware Check Msg");
             }
         }
@@ -2370,9 +2388,17 @@ class ReportDeadBodyPatch
         Main.RevolutionistStart.Clear();
         Main.RevolutionistLastTime.Clear();
 
-        // Check shapeshift and revert skin to default
+
         foreach (var pc in Main.AllPlayerControls)
         {
+            // Update skins again, since players have different skins
+            // And can be easily distinguished from each other
+            if (Camouflage.IsCamouflage && Options.KPDCamouflageMode.GetValue() is 2 or 3)
+            {
+                Camouflage.RpcSetSkin(pc);
+            }
+
+            // Check shapeshift and revert skin to default
             if (Main.CheckShapeshift.ContainsKey(pc.PlayerId) && !Doppelganger.DoppelVictim.ContainsKey(pc.PlayerId))
             {
                 Camouflage.RpcSetSkin(pc, RevertToDefault: true);
@@ -2404,10 +2430,10 @@ class ReportDeadBodyPatch
 class FixedUpdateInNormalGamePatch
 {
     //private static long LastFixedUpdate = new(); //Doesn't seem to be working.
-    private static StringBuilder Mark = new(20);
-    private static StringBuilder Suffix = new(120);
+    private static readonly StringBuilder Mark = new(20);
+    private static readonly StringBuilder Suffix = new(120);
+    private static readonly Dictionary<int, int> BufferTime = [];
     private static int LevelKickBufferTime = 20;
-    private static Dictionary<int, int> BufferTime = new();
 
     public static void Postfix(PlayerControl __instance)
     {
@@ -3162,7 +3188,7 @@ class FixedUpdateInNormalGamePatch
                         break;
 
                     case CustomRoles.PlagueBearer:
-                        if (PlagueBearer.isPlagued(seer.PlayerId, target.PlayerId))
+                        if (PlagueBearer.IsPlagued(seer.PlayerId, target.PlayerId))
                             Mark.Append($"<color={Utils.GetRoleColorCode(seerRole)}>●</color>");
                         break;
 
@@ -3831,13 +3857,13 @@ class CoEnterVentPatch
     }
 }
 
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetName))]
+/*[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetName))]
 class SetNamePatch
 {
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] string name)
     {
     }
-}
+}*/
 [HarmonyPatch(typeof(GameData), nameof(GameData.CompleteTask))]
 class GameDataCompleteTaskPatch
 {

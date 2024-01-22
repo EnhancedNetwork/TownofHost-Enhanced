@@ -12,7 +12,7 @@ namespace TOHE.Roles.Impostor;
 public static class Sniper
 {
     private static readonly int Id = 2400;
-    private static List<byte> PlayerIdList = new();
+    private static List<byte> PlayerIdList = [];
     public static bool IsEnable = false;
 
     private static OptionItem SniperBulletCount;
@@ -20,13 +20,13 @@ public static class Sniper
     private static OptionItem SniperAimAssist;
     private static OptionItem SniperAimAssistOnshot;
     public static OptionItem CanKillWithBullets;
-    public static Dictionary<byte, byte> snipeTarget = new();
-    private static Dictionary<byte, Vector3> snipeBasePosition = new();
-    private static Dictionary<byte, Vector3> LastPosition = new();
-    private static Dictionary<byte, int> bulletCount = new();
-    private static Dictionary<byte, List<byte>> shotNotify = new();
-    private static Dictionary<byte, bool> IsAim = new();
-    private static Dictionary<byte, float> AimTime = new();
+    public static Dictionary<byte, byte> snipeTarget = [];
+    private static Dictionary<byte, Vector3> snipeBasePosition = [];
+    private static Dictionary<byte, Vector3> LastPosition = [];
+    private static Dictionary<byte, int> bulletCount = [];
+    private static Dictionary<byte, List<byte>> shotNotify = [];
+    private static Dictionary<byte, bool> IsAim = [];
+    private static Dictionary<byte, float> AimTime = [];
     private static bool meetingReset;
     private static int maxBulletCount;
     private static bool precisionShooting;
@@ -46,15 +46,15 @@ public static class Sniper
     {
         Logger.Disable("Sniper");
 
-        PlayerIdList = new();
+        PlayerIdList = [];
 
-        snipeBasePosition = new();
-        LastPosition = new();
-        snipeTarget = new();
-        bulletCount = new();
-        shotNotify = new();
-        IsAim = new();
-        AimTime = new();
+        snipeBasePosition = [];
+        LastPosition = [];
+        snipeTarget = [];
+        bulletCount = [];
+        shotNotify = [];
+        IsAim = [];
+        AimTime = [];
         meetingReset = false;
         IsEnable = false;
 

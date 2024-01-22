@@ -8,8 +8,8 @@ namespace TOHE.Roles.Crewmate;
 public static class ChiefOfPolice
 {
     private static readonly int Id = 12600;
-    private static List<byte> playerIdList = new();
-    public static Dictionary<byte, int> PoliceLimit = new();
+    private static List<byte> playerIdList = [];
+    public static Dictionary<byte, int> PoliceLimit = [];
     public static bool IsEnable = false;
     public static OptionItem SkillCooldown;
     public static OptionItem CanImpostorAndNeutarl;
@@ -23,8 +23,8 @@ public static class ChiefOfPolice
     }
     public static void Init()
     {
-        playerIdList = new();
-        PoliceLimit = new();
+        playerIdList = [];
+        PoliceLimit = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)

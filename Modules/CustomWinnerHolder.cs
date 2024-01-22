@@ -22,9 +22,9 @@ public static class CustomWinnerHolder
     public static void Reset()
     {
         WinnerTeam = CustomWinner.Default;
-        AdditionalWinnerTeams = new();
-        WinnerRoles = new();
-        WinnerIds = new();
+        AdditionalWinnerTeams = [];
+        WinnerRoles = [];
+        WinnerIds = [];
     }
     public static void ClearWinners()
     {
@@ -102,17 +102,17 @@ public static class CustomWinnerHolder
     {
         WinnerTeam = (CustomWinner)reader.ReadPackedInt32();
 
-        AdditionalWinnerTeams = new();
+        AdditionalWinnerTeams = [];
         int AdditionalWinnerTeamsCount = reader.ReadPackedInt32();
         for (int i = 0; i < AdditionalWinnerTeamsCount; i++)
             AdditionalWinnerTeams.Add((AdditionalWinners)reader.ReadPackedInt32());
 
-        WinnerRoles = new();
+        WinnerRoles = [];
         int WinnerRolesCount = reader.ReadPackedInt32();
         for (int i = 0; i < WinnerRolesCount; i++)
             WinnerRoles.Add((CustomRoles)reader.ReadPackedInt32());
 
-        WinnerIds = new();
+        WinnerIds = [];
         int WinnerIdsCount = reader.ReadPackedInt32();
         for (int i = 0; i < WinnerIdsCount; i++)
             WinnerIds.Add(reader.ReadByte());

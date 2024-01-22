@@ -12,7 +12,7 @@ namespace TOHE.Roles.Impostor;
 public static class EvilTracker
 {
     private static readonly int Id = 1400;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     private static OptionItem OptionCanSeeKillFlash;
@@ -32,16 +32,16 @@ public static class EvilTracker
         Always,
     };
     private static readonly string[] TargetModeText =
-    {
+    [
         "EvilTrackerTargetMode.Never",
         "EvilTrackerTargetMode.OnceInGame",
         "EvilTrackerTargetMode.EveryMeeting",
         "EvilTrackerTargetMode.Always",
-    };
+    ];
 
-    public static Dictionary<byte, byte> Target = new();
-    public static Dictionary<byte, bool> CanSetTarget = new();
-    private static Dictionary<byte, HashSet<byte>> ImpostorsId = new();
+    public static Dictionary<byte, byte> Target = [];
+    public static Dictionary<byte, bool> CanSetTarget = [];
+    private static Dictionary<byte, HashSet<byte>> ImpostorsId = [];
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.EvilTracker);
@@ -54,10 +54,10 @@ public static class EvilTracker
     }
     public static void Init()
     {
-        playerIdList = new();
-        Target = new();
-        CanSetTarget = new();
-        ImpostorsId = new();
+        playerIdList = [];
+        Target = [];
+        CanSetTarget = [];
+        ImpostorsId = [];
         IsEnable = false;
 
         CanSeeKillFlash = OptionCanSeeKillFlash.GetBool();
@@ -72,7 +72,7 @@ public static class EvilTracker
         Target.Add(playerId, byte.MaxValue);
         CanSetTarget.Add(playerId, CurrentTargetMode != TargetMode.Never);
         //ImpostorsIdはEvilTracker内で共有
-        ImpostorsId[playerId] = new();
+        ImpostorsId[playerId] = [];
         foreach (var target in Main.AllAlivePlayerControls)
         {
             var targetId = target.PlayerId;

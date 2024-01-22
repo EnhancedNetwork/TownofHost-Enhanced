@@ -8,18 +8,18 @@ namespace TOHE.Roles.Crewmate;
 public static class Investigator
 {
     private static readonly int Id = 24900;
-    private static List<byte> playerIdList = new();
-    public static Dictionary<byte, HashSet<byte>> InvestigatedList = new();
+    private static List<byte> playerIdList = [];
+    public static Dictionary<byte, HashSet<byte>> InvestigatedList = [];
     public static bool IsEnable = false;
 
 
     public static OptionItem InvestigateCooldown;
     public static OptionItem InvestigateMax;
     public static OptionItem InvestigateRoundMax;
-    
 
-    private static Dictionary<byte, int> MaxInvestigateLimit = new();
-    private static Dictionary<byte, int> RoundInvestigateLimit = new();
+
+    private static Dictionary<byte, int> MaxInvestigateLimit = [];
+    private static Dictionary<byte, int> RoundInvestigateLimit = [];
 
     public static void SetupCustomOption()
     {
@@ -27,19 +27,19 @@ public static class Investigator
         InvestigateCooldown = FloatOptionItem.Create(Id + 10, "InvestigateCooldown", new(0f, 180f, 2.5f), 27.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Investigator])
             .SetValueFormat(OptionFormat.Seconds);
         InvestigateMax = IntegerOptionItem.Create(Id + 11, "InvestigateMax", new(1, 15, 1), 5, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Investigator])
-            .SetValueFormat(OptionFormat.Times); 
+            .SetValueFormat(OptionFormat.Times);
         InvestigateRoundMax = IntegerOptionItem.Create(Id + 12, "InvestigateRoundMax", new(1, 15, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Investigator])
             .SetValueFormat(OptionFormat.Times);
-    //    CrewKillingShowAs = StringOptionItem.Create(Id + 12, "CrewKillingShowAs", ColorTypeText, 1, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Investigator]);
-    //    PassiveNeutralsShowAs = StringOptionItem.Create(Id + 13, "PassiveNeutralsShowAs", ColorTypeText, 2, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Investigator]);
-    //    NeutralKillingShowAs = StringOptionItem.Create(Id + 14, "NeutralKillingShowAs", ColorTypeText, 0, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Investigator]);
+        //    CrewKillingShowAs = StringOptionItem.Create(Id + 12, "CrewKillingShowAs", ColorTypeText, 1, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Investigator]);
+        //    PassiveNeutralsShowAs = StringOptionItem.Create(Id + 13, "PassiveNeutralsShowAs", ColorTypeText, 2, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Investigator]);
+        //    NeutralKillingShowAs = StringOptionItem.Create(Id + 14, "NeutralKillingShowAs", ColorTypeText, 0, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Investigator]);
     }
     public static void Init()
     {
-        playerIdList = new();
-        MaxInvestigateLimit = new();
-        RoundInvestigateLimit = new();
-        InvestigatedList = new();
+        playerIdList = [];
+        InvestigatedList = [];
+        MaxInvestigateLimit = [];
+        RoundInvestigateLimit = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -67,7 +67,7 @@ public static class Investigator
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetInvestgatorLimit, SendOption.Reliable, -1);
         writer.Write(operate);
         if (operate == 0)
-        { 
+        {
             writer.Write(playerId);
             writer.Write(targetId);
             writer.Write(MaxInvestigateLimit[playerId]);
@@ -127,6 +127,7 @@ public static class Investigator
         InvestigatedList[killer.PlayerId].Add(target.PlayerId);
         //sendRPC for max, round and targetlist
         //SendRPC();
+        SendRPC(operate: 0, playerId: killer.PlayerId, targetId: target.PlayerId);
         SendRPC(operate: 0, playerId:  killer.PlayerId, targetId: target.PlayerId);
         Utils.NotifyRoles(SpecifySeer: killer, ForceLoop: true);
 
