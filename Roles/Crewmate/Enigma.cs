@@ -8,9 +8,9 @@ namespace TOHE.Roles.Crewmate
     public class Enigma
     {
         private static readonly int Id = 8100;
-        private static List<byte> playerIdList = new();
+        private static List<byte> playerIdList = [];
         public static bool IsEnable = false;
-        private static Dictionary<byte, List<EnigmaClue>> ShownClues = new();
+        private static Dictionary<byte, List<EnigmaClue>> ShownClues = [];
 
         public static OptionItem EnigmaClueStage1Tasks;
         public static OptionItem EnigmaClueStage2Tasks;
@@ -19,11 +19,11 @@ namespace TOHE.Roles.Crewmate
         public static OptionItem EnigmaClueStage3Probability;
         public static OptionItem EnigmaGetCluesWithoutReporting;
 
-        public static Dictionary<byte, string> MsgToSend = new();
-        public static Dictionary<byte, string> MsgToSendTitle = new();
+        public static Dictionary<byte, string> MsgToSend = [];
+        public static Dictionary<byte, string> MsgToSendTitle = [];
 
-        private static List<EnigmaClue> EnigmaClues = new List<EnigmaClue>
-        {
+        private static readonly List<EnigmaClue> EnigmaClues =
+        [
             new EnigmaHatClue { ClueStage = 1, EnigmaClueType = EnigmaClueType.HatClue },
             new EnigmaHatClue { ClueStage = 3, EnigmaClueType = EnigmaClueType.HatClue },
             new EnigmaVisorClue { ClueStage = 1, EnigmaClueType = EnigmaClueType.VisorClue },
@@ -48,7 +48,7 @@ namespace TOHE.Roles.Crewmate
             new EnigmaKillerLevelClue { ClueStage = 2, EnigmaClueType = EnigmaClueType.KillerLevelClue },
             new EnigmaKillerLevelClue { ClueStage = 3, EnigmaClueType = EnigmaClueType.KillerLevelClue },
             new EnigmaFriendCodeClue { ClueStage = 3, EnigmaClueType = EnigmaClueType.FriendCodeClue },
-        };
+        ];
 
         public static void SetupCustomOption()
         {
@@ -69,17 +69,17 @@ namespace TOHE.Roles.Crewmate
         }
         public static void Init()
         {
-            playerIdList = new();
+            playerIdList = [];
             IsEnable = false;
-            ShownClues = new();
-            MsgToSend = new();
-            MsgToSendTitle = new();
+            ShownClues = [];
+            MsgToSend = [];
+            MsgToSendTitle = [];
         }
         public static void Add(byte playerId)
         {
             playerIdList.Add(playerId);
             IsEnable = true;
-            ShownClues.Add(playerId, new List<EnigmaClue>());
+            ShownClues.Add(playerId, []);
         }
         public static void Remove(byte playerId)
         {
@@ -256,7 +256,7 @@ namespace TOHE.Roles.Crewmate
         }
         private class EnigmaNameClue : EnigmaClue
         {
-            private IRandom rd = IRandom.Instance;
+            private readonly IRandom rd = IRandom.Instance;
 
             public override string Title { get { return GetString("EnigmaClueNameTitle"); } }
 
@@ -291,7 +291,7 @@ namespace TOHE.Roles.Crewmate
                     return string.Format(GetString("EnigmaClueName1"), randomLetter, letter);
             }
 
-            private string GetStage2Clue(string letter)
+            private static string GetStage2Clue(string letter)
             {
                 return string.Format(GetString("EnigmaClueName2"), letter);
             }
@@ -319,7 +319,7 @@ namespace TOHE.Roles.Crewmate
         }
         private class EnigmaNameLengthClue : EnigmaClue
         {
-            private IRandom rd = IRandom.Instance;
+            private readonly IRandom rd = IRandom.Instance;
 
             public override string Title { get { return GetString("EnigmaClueNameLengthTitle"); } }
 
@@ -367,7 +367,7 @@ namespace TOHE.Roles.Crewmate
                 return string.Format(GetString("EnigmaClueNameLength1"), start, end);
             }
 
-            private string GetStage3Clue(int length)
+            private static string GetStage3Clue(int length)
             {
                 return string.Format(GetString("EnigmaClueNameLength2"), length);
             }
@@ -393,33 +393,14 @@ namespace TOHE.Roles.Crewmate
                 return GetStage1Clue(killerOutfit.ColorId);
             }
 
-            private string GetStage1Clue(int colorId)
+            private static string GetStage1Clue(int colorId)
             {
-                switch (colorId)
+                return colorId switch
                 {
-                    case 0:
-                    case 3:
-                    case 4:
-                    case 5:
-                    case 7:
-                    case 10:
-                    case 11:
-                    case 13:
-                    case 14:
-                    case 17:
-                        return GetString("EnigmaClueColor1");
-                    case 1:
-                    case 2:
-                    case 6:
-                    case 8:
-                    case 9:
-                    case 12:
-                    case 15:
-                    case 16:
-                        return GetString("EnigmaClueColor2");
-                }
-
-                return null;
+                    0 or 3 or 4 or 5 or 7 or 10 or 11 or 13 or 14 or 17 => GetString("EnigmaClueColor1"),
+                    1 or 2 or 6 or 8 or 9 or 12 or 15 or 16 => GetString("EnigmaClueColor2"),
+                    _ => null,
+                };
             }
         }
         private class EnigmaLocationClue : EnigmaClue
@@ -475,7 +456,7 @@ namespace TOHE.Roles.Crewmate
         }
         private class EnigmaKillerLevelClue : EnigmaClue
         {
-            private IRandom rd = IRandom.Instance;
+            private readonly IRandom rd = IRandom.Instance;
 
             public override string Title { get { return GetString("EnigmaClueLevelTitle"); } }
 
@@ -499,20 +480,20 @@ namespace TOHE.Roles.Crewmate
                 return null;
             }
 
-            private string GetStage1Clue(int level)
+            private static string GetStage1Clue(int level)
             {
                 if (level > 50) return GetString("EnigmaClueLevel1");
                 return GetString("EnigmaClueLevel2");
             }
 
-            private string GetStage2Clue(int level)
+            private static string GetStage2Clue(int level)
             {
                 int rangeStart = level - 15;
                 int rangeEnd = level + 15;
                 return string.Format(GetString("EnigmaClueLevel3"), rangeStart, rangeEnd >= 100 ? 100 : rangeEnd);
             }
 
-            private string GetStage3Clue(int level)
+            private static string GetStage3Clue(int level)
             {
                 return string.Format(GetString("EnigmaClueLevel4"), level);
             }

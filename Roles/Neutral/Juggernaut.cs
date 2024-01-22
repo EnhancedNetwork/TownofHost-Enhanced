@@ -7,7 +7,7 @@ namespace TOHE;
 public static class Juggernaut
 {
     private static readonly int Id = 16900;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     private static OptionItem DefaultKillCooldown;
@@ -16,7 +16,7 @@ public static class Juggernaut
     public static OptionItem HasImpostorVision;
     public static OptionItem CanVent;
 
-    private static Dictionary<byte, float> NowCooldown;
+    private static Dictionary<byte, float> NowCooldown = [];
 
     public static void SetupCustomOption()
     {
@@ -32,8 +32,8 @@ public static class Juggernaut
     }
     public static void Init()
     {
-        playerIdList = new();
-        NowCooldown = new();
+        playerIdList = [];
+        NowCooldown = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)

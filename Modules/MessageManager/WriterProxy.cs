@@ -4,14 +4,10 @@ using InnerNet;
 
 namespace TOHE;
 
-public class WriterProxy : ICustomWriter
+public class WriterProxy(MessageWriter writer) : ICustomWriter
 {
-    public MessageWriter Writer { get; private set; }
+    public MessageWriter Writer { get; private set; } = writer;
 
-    public WriterProxy(MessageWriter writer)
-    {
-        this.Writer = writer;
-    }
 
     public void Write(float val) => Writer.Write(val);
     public void Write(string val) => Writer.Write(val);

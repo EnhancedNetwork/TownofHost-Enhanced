@@ -11,7 +11,7 @@ class RandomSpawn
     [HarmonyPatch(typeof(CustomNetworkTransform), nameof(CustomNetworkTransform.SnapTo), typeof(Vector2), typeof(ushort))]
     public class CustomNetworkTransformPatch
     {
-        public static Dictionary<byte, int> NumOfTP = new();
+        public static Dictionary<byte, int> NumOfTP = [];
         public static void Postfix(CustomNetworkTransform __instance, [HarmonyArgument(0)] Vector2 position)
         {
             if (!AmongUsClient.Instance.AmHost) return;

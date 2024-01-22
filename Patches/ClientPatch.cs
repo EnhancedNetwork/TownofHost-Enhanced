@@ -10,7 +10,7 @@ namespace TOHE;
 [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.MakePublic))]
 internal class MakePublicPatch
 {
-    public static bool Prefix(GameStartManager __instance)
+    public static bool Prefix(/*GameStartManager __instance*/)
     {
         // 定数設定による公開ルームブロック
         if (!Main.AllowPublicRoom)
@@ -36,7 +36,7 @@ internal class MakePublicPatch
 [HarmonyPatch(typeof(MMOnlineManager), nameof(MMOnlineManager.Start))]
 internal class MMOnlineManagerStartPatch
 {
-    public static void Postfix(MMOnlineManager __instance)
+    public static void Postfix(/*MMOnlineManager __instance*/)
     {
         if (!((ModUpdater.hasUpdate && ModUpdater.forceUpdate) || ModUpdater.isBroken || !VersionChecker.IsSupported)) return;
         var obj = GameObject.Find("FindGameButton");
@@ -120,20 +120,20 @@ internal class BanMenuSetVisiblePatch
         return false;
     }
 }
-[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNet.InnerNetClient.CanBan))]
+[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.CanBan))]
 internal class InnerNetClientCanBanPatch
 {
-    public static bool Prefix(InnerNet.InnerNetClient __instance, ref bool __result)
+    public static bool Prefix(InnerNetClient __instance, ref bool __result)
     {
         __result = __instance.AmHost;
         return false;
     }
 }
-[HarmonyPatch(typeof(InnerNet.InnerNetClient), nameof(InnerNet.InnerNetClient.KickPlayer))]
+[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.KickPlayer))]
 internal class KickPlayerPatch
 {
-    public static Dictionary<string, int> AttemptedKickPlayerList = new();
-    public static bool Prefix(InnerNet.InnerNetClient __instance, int clientId, bool ban)
+    public static Dictionary<string, int> AttemptedKickPlayerList = [];
+    public static bool Prefix(InnerNetClient __instance, int clientId, bool ban)
     {
         if (!AmongUsClient.Instance.AmHost) return true;
         if (AmongUsClient.Instance.ClientId == clientId)

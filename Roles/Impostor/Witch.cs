@@ -18,16 +18,16 @@ public static class Witch
         DoubleTrigger,
     };
     public static readonly string[] SwitchTriggerText =
-    {
+    [
         "TriggerKill", "TriggerVent","TriggerDouble"
-    };
+    ];
 
     private static readonly int Id = 2500;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
-    public static Dictionary<byte, bool> SpellMode = new();
-    public static Dictionary<byte, List<byte>> SpelledPlayer = new();
+    public static Dictionary<byte, bool> SpellMode = [];
+    public static Dictionary<byte, List<byte>> SpelledPlayer = [];
 
     public static OptionItem ModeSwitchAction;
     public static SwitchTrigger NowSwitchTrigger;
@@ -38,16 +38,16 @@ public static class Witch
     }
     public static void Init()
     {
-        playerIdList = new();
-        SpellMode = new();
-        SpelledPlayer = new();
+        playerIdList = [];
+        SpellMode = [];
+        SpelledPlayer = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         SpellMode.Add(playerId, false);
-        SpelledPlayer.Add(playerId, new());
+        SpelledPlayer.Add(playerId, []);
         NowSwitchTrigger = (SwitchTrigger)ModeSwitchAction.GetValue();
         IsEnable = true;
 
@@ -204,7 +204,7 @@ public static class Witch
                 Main.AfterMeetingDeathPlayers.Remove(pc.PlayerId);
             }
         }
-        CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Spell, spelledIdList.ToArray());
+        CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Spell, [.. spelledIdList]);
         RemoveSpelledPlayer();
     }
     public static string GetSpelledMark(byte target, bool isMeeting)

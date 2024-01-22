@@ -10,13 +10,13 @@ namespace TOHE.Roles.Neutral;
 public static class Vulture
 {
     private static readonly int Id = 15600;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
-    public static List<byte> UnreportablePlayers = new();
-    public static Dictionary<byte, int> BodyReportCount = new();
-    public static Dictionary<byte, int> AbilityLeftInRound = new();
-    public static Dictionary<byte, long> LastReport = new();
+    public static List<byte> UnreportablePlayers = [];
+    public static Dictionary<byte, int> BodyReportCount = [];
+    public static Dictionary<byte, int> AbilityLeftInRound = [];
+    public static Dictionary<byte, long> LastReport = [];
 
     public static OptionItem ArrowsPointingToDeadBody;
     public static OptionItem NumberOfReportsToWin;
@@ -38,11 +38,11 @@ public static class Vulture
     }
     public static void Init()
     {
-        playerIdList = new();
-        UnreportablePlayers = new List<byte>();
-        BodyReportCount = new();
-        AbilityLeftInRound = new();
-        LastReport = new();
+        playerIdList = [];
+        UnreportablePlayers = [];
+        BodyReportCount = [];
+        AbilityLeftInRound = [];
+        LastReport = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)

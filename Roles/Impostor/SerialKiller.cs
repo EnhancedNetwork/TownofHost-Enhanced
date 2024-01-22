@@ -7,7 +7,7 @@ namespace TOHE.Roles.Impostor;
 public static class SerialKiller
 {
     private static readonly int Id = 2000;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
 
     public static bool IsEnable = false;
     private static float OptTimeLimit;
@@ -15,7 +15,7 @@ public static class SerialKiller
     private static OptionItem KillCooldown;
     private static OptionItem TimeLimit;
 
-    private static Dictionary<byte, float> SuicideTimer = new();
+    private static Dictionary<byte, float> SuicideTimer = [];
 
     public static void SetupCustomOption()
     {
@@ -27,8 +27,8 @@ public static class SerialKiller
     }
     public static void Init()
     {
-        playerIdList = new();
-        SuicideTimer = new();
+        playerIdList = [];
+        SuicideTimer = [];
         IsEnable = false;
     }
     public static void Add(byte serial)

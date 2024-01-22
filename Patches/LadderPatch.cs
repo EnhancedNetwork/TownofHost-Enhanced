@@ -10,7 +10,7 @@ public class FallFromLadder
     private static int Chance => (Options.LadderDeathChance as StringOptionItem).GetChance();
     public static void Reset()
     {
-        TargetLadderData = new();
+        TargetLadderData = [];
     }
     public static void OnClimbLadder(PlayerPhysics player, Ladder source)
     {

@@ -14,7 +14,7 @@ namespace TOHE.Roles.Neutral;
 public static class Jackal
 {
     private static readonly int Id = 16700;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     public static OptionItem KillCooldown;
@@ -36,14 +36,14 @@ public static class Jackal
     public static OptionItem CanUseSabotageSK;
     public static OptionItem SidekickCanKillJackal;
     public static OptionItem SidekickCanKillSidekick;
-    public static Dictionary<byte, int> RecruitLimit = new();
+    public static Dictionary<byte, int> RecruitLimit = [];
 
     public static readonly string[] sidekickAssignMode =
-    {
+    [
         "SidekickAssignMode.SidekickAndRecruit",
         "SidekickAssignMode.Sidekick",
         "SidekickAssignMode.Recruit",
-    };
+    ];
 
 
     public static void SetupCustomOption()
@@ -80,8 +80,8 @@ public static class Jackal
     }
     public static void Init()
     {
-        playerIdList = new();
-        RecruitLimit = new();
+        playerIdList = [];
+        RecruitLimit = [];
         IsEnable = false;
         ResetKillCooldownWhenSbGetKilled = OptionResetKillCooldownWhenSbGetKilled;
     }

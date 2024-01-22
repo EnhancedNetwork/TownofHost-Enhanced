@@ -2,18 +2,12 @@ using System;
 
 namespace TOHE;
 
-public abstract class ValueRule<T>
+public abstract class ValueRule<T>(T minValue, T maxValue, T step)
 {
-    public T MinValue { get; protected set; }
-    public T MaxValue { get; protected set; }
-    public T Step { get; protected set; }
+    public T MinValue { get; protected set; } = minValue;
+    public T MaxValue { get; protected set; } = maxValue;
+    public T Step { get; protected set; } = step;
 
-    public ValueRule(T minValue, T maxValue, T step)
-    {
-        MinValue = minValue;
-        MaxValue = maxValue;
-        Step = step;
-    }
     public ValueRule((T, T, T) tuple)
     : this(tuple.Item1, tuple.Item2, tuple.Item3)
     { }
@@ -36,7 +30,7 @@ public class IntegerValueRule : ValueRule<int>
     public override int RepeatIndex(int value)
     {
         int MaxIndex = (MaxValue - MinValue) / Step;
-        value = value % (MaxIndex + 1);
+        value %= (MaxIndex + 1);
         if (value < 0) value = MaxIndex;
         return value;
     }
@@ -63,7 +57,7 @@ public class FloatValueRule : ValueRule<float>
     public override int RepeatIndex(int value)
     {
         int MaxIndex = (int)((MaxValue - MinValue) / Step);
-        value = value % (MaxIndex + 1);
+        value %= (MaxIndex + 1);
         if (value < 0) value = MaxIndex;
         return value;
     }

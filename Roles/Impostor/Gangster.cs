@@ -12,7 +12,7 @@ namespace TOHE.Roles.Impostor;
 public static class Gangster
 {
     private static readonly int Id = 3300;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     private static OptionItem RecruitLimitOpt;
@@ -25,7 +25,7 @@ public static class Gangster
     public static OptionItem FarseerCanBeMadmate;
     public static OptionItem RetributionistCanBeMadmate;
 
-    public static Dictionary<byte, int> RecruitLimit = new();
+    public static Dictionary<byte, int> RecruitLimit = [];
 
     public static void SetupCustomOption()
     {
@@ -46,8 +46,8 @@ public static class Gangster
     }
     public static void Init()
     {
-        playerIdList = new();
-        RecruitLimit = new();
+        playerIdList = [];
+        RecruitLimit = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)

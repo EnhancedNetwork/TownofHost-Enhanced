@@ -58,7 +58,7 @@ class CheckMurderInHidenSeekPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
 class MurderPlayerInHidenSeekPatch
 {
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] MurderResultFlags resultFlags)
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target/*, [HarmonyArgument(1)] MurderResultFlags resultFlags*/)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (!target.Data.IsDead || GameStates.IsNormalGame) return;
@@ -98,7 +98,7 @@ class MurderPlayerInHidenSeekPatch
 class FixedUpdateInHidenSeekPatch
 {
     private static int LevelKickBufferTime = 20;
-    private static Dictionary<int, int> BufferTime = new();
+    private static readonly Dictionary<int, int> BufferTime = [];
     public static void Postfix(PlayerControl __instance)
     {
         if (GameStates.IsNormalGame) return;

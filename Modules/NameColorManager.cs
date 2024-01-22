@@ -116,6 +116,13 @@ public static class NameColorManager
         if (seer.Is(CustomRoles.Infected) && target.Is(CustomRoles.Infected) && Infectious.TargetKnowOtherTarget.GetBool()) color = Main.roleColors[CustomRoles.Infectious];
         //Spy
         if (seer.Is(CustomRoles.Spy) && Spy.SpyRedNameList.ContainsKey(target.PlayerId)) color = "#BA4A00";
+        //Investigator
+        if (seer.Is(CustomRoles.Investigator))
+        {
+            var targetColor = Investigator.InvestigatedColor(seer, target);
+            if (targetColor != string.Empty) color = targetColor;
+        }
+                    
         //Seeker
         if (seer.Is(CustomRoles.Seeker) && Seeker.Targets.ContainsValue(target.PlayerId)) color = Main.roleColors[CustomRoles.Seeker];
         //Pixie

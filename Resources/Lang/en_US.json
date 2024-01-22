@@ -371,6 +371,7 @@
   "Influenced": "Influenced",
   "Silent": "Silent",
   "Susceptible": "Susceptible",
+  "Tired": "Tired",
   "Prefix.Ntr": "Neptune ",
   "Prefix.Watcher": "Watcher ",
   "Prefix.Overclocked": "Overclocked ",
@@ -434,6 +435,7 @@
   "Prefix.Cyber": "Cyber ",
   "Prefix.Silent": "Silent ",
   "Prefix.Susceptible": "Susceptible ",
+  "Prefix.Tired": "Tired ",
   "PrefixB.Ntr": "(Neptune) ",
   "PrefixB.Watcher": "(Watcher) ",
   "PrefixB.Overclocked": "(Overclocked) ",
@@ -497,6 +499,7 @@
   "PrefixB.Influenced": "(Influenced) ",
   "PrefixB.Silent": "(Silent) ",
   "PrefixB.Susceptible": "(Susceptible) ",
+  "PrefixB.Tired": "(Tired) ",
   "BracketAddons": "Add Brackets To Add-ons",
   "EngineerTOHEInfo": "Use the vents to catch the <color=#ff1919>Impostors</color>",
   "ScientistTOHEInfo": "Access portable vitals from anywhere",
@@ -785,6 +788,7 @@
   "InfluencedInfo": "You lack decisiveness!",
   "SilentInfo": "Vote like a Ghost!",
   "SusceptibleInfo": "Deathreason lotto!",
+  "TiredInfo": "Labor makes you rest Zzz..",
   "GMInfo": "Spectate the chaos!",
   "NotAssignedInfo": "No assigned role",
   "SunnyboyInfo": "Shine, shine my sunshine!",
@@ -910,7 +914,7 @@
   "MerchantInfoLong": "(Crewmates):\\As a merchant, you sell a random add-on to a random player for each task you complete. Each add-on sold earns you money. If you have a certain amount of money, you can avert the next killing attempt against you by bribing the murderer. The bribed player won't be able to kill you, but you don't know who it is. The bribe money used is lost and is not available for additional bribes.",
   "RetributionistInfoLong": "(Crewmates):\nAs the Retributionist, you can kill a limited amount of players after your death.\n\nUse /ret [playerID] to kill.",
   "DeputyInfoLong": "(Crewmates):\nAs the Deputy, use your kill button on a player to reset their kill cooldown.\n\nIf the target does not have a kill button, then the handcuff was a waste.",
-  "InvestigatorInfoLong": "(Crewmates):\nAs the Investigator, use your kill button on a player to learn something about them.\n\nDepending on the settings, it'll be either sus/not sus or their exact role.",
+  "InvestigatorInfoLong": "(Crewmates):\nAs an Investigator, you can use your kill button to investigate someone. When you investigate someone, their name will appear in either red if they possess a kill button (impostor/SS basis) or light blue if they lack a kill button (crewmate/engineer/scientist basis). However, please note that the color of the names will return to normal when a meeting is called.",
   "GuardianInfoLong": "(Crewmates):\nAs the Guardian, you become immortal upon tasks completion. You can't even be guessed in meetings.",
   "AddictInfoLong": "(Crewmates):\nAs the Addict, you have a suicide timer. When it expires you kill yourself.\nThe timer is indicated by the vent cooldown. When the vent cooldown is at 0 seconds, you still have a short time to vent.\nIf you don't make it you die, if you make it the suicide timer is reset.\nAlso, after you are ventilated, no one can interact with you for a defined period of time.\nAfter this period is over, you are immobilized for another defined period of time and cannot report any bodies.",
   "MoleInfoLong": "(Crewmates):\nAs the Mole, when you vent, you stay in the vent for 1 second. When you come out of the vent, you will spawn near a random vent in the map (Except the one you just used).",
@@ -1077,6 +1081,7 @@
   "InfluencedInfoLong": "(Add-ons):\nAs the Influenced, your vote will be forced to the player with the most votes.\nInfluenced vote won't be counted while choosing the exiled player'\nNote that your vote skill still functions on the player you voted first\nIf all the alive players are Influenced,then the vote result won't shift\nCollector cannot become influenced.",
   "SilentInfoLong": "(Add-ons):\nAs the Silent, your vote icon won't appear on the result screen.\nSo nobody knows who you voted for.",
   "SusceptibleInfoLong": "(Add-ons):\nAs the Susceptible, your death reason will be random.",
+  "TiredInfoLong": "(Add-ons):\nWhenever Tired kills (or uses kill ability on) someone, alternatively whenever they complete a task, they will temporarily get lower vision & lower speed.",
   "CyberInfoLong": "(Add-ons):\nAs the Cyber, you cannot be killed while in a group.\nAdditionally, your death will be known.",
   "HurriedInfoLong": "(Add-ons):\nAs the hurried, you must finish all your tasks to win with your team! If you failed with your tasks, you lose.\nHurried hurries to his goal so it won't get madmate,charmed or so.",
   "OiiaiInfoLong": "(Add-ons):\nAs the Oiiai, when you die, you will make your killer forget their role.\nAdditionally, you may pass Oiiai on to the killer, depending on settings.",
@@ -1984,7 +1989,7 @@
   "DeathReason.Trap": "Trapped",
   "DeathReason.Targeted": "Targeted",
   "DeathReason.Retribution": "Retribution",
-  "OnlyEnabledDeathReasons": "OnlyEnabledDeathReasons",
+  "OnlyEnabledDeathReasons": "Only Enabled Death Reasons",
   "Alive": "Alive",
   "Win": " Wins!",
   "Last-": "Last ",
@@ -1996,8 +2001,11 @@
   "DeputyInvalidTarget": "Target cannot be handcuffed",
   "DeputyHandcuffText": "Handcuff",
   "DeputyHandcuffCDForTarget": "Kill Cooldown for handcuffed player",
+
   "InvestigateCooldown": "Investigate Cooldown",
   "InvestigateMax": "Maximum Investigations",
+  "InvestigateRoundMax": "Maximum Investigations in one round",
+
   "CrewKillingShowAs": "<color=#8cffff>Crewmate Killing</color> show as",
   "NeutralKillingShowAs": "<color=#7f8c8d>Neutral Killers</color> show as",
   "PassiveNeutralsShowAs": "<color=#7f8c8d>Passive Neutrals</color> show as",
@@ -2653,7 +2661,7 @@
   "DeathCmd.YourRole": "Your role is ",
   "DeathCmd.Ejected": "You were <b>ejected</b> during a meeting",
   "DeathCmd.Misfired": "You <b>misfired</b>.",
-  "DeathCmd.Shrouded": "You were<b>shrouded</b> by a <b><color=#6697FF>Shroud</color></b> and didn't make a kill, so you suicided.",
+  "DeathCmd.Shrouded": "You were <b>shrouded</b> by a <b><color=#6697FF>Shroud</color></b> and didn't make a kill, so you suicided.",
   "DeathCmd.Lovers": "Your <color=#ff9ace>lover</color> had died.",
 
   "RpsCommandInfo": "<b>This Command can only be used when in lobby or after you die.</b>\n\ntype <b>/rps X</b> to play Rock Paper Scissors with the system. X can be 0 (rock), 1 (paper) or 2 (scissors). \n\nExample :- /rps 0",
@@ -3376,6 +3384,8 @@
   "CantRecruit": "You can't recruit a Mini that hasn't grown up.",
   "ExiledNiceMini": "You ejected a <color=#8cffff>Nice Mini</color> before they grew up.\n<color=#ff1919>You all lose</color>",
   "MiniUp": "You're a year older!",
+  "MiniMisGuessed": "You are supposed to misguess to death!\nHowever you are still a kid, so you are free of guilty while you can no longer guess.\nYou can guess again after you have grown up.",
+  "MiniGuessMax": "You have misguessed, so you are no longer allowed to guess!",
   "CountMeetingTime": "Meeting time can continue to grow",
   "YouKillRandomizer1": "You kill Randomizer, Self report!",
   "YouKillRandomizer2": "You kill Randomizer, Cannot move!",
@@ -3682,7 +3692,7 @@
   "QuizmasterQuestions.PlrDieReason": "What was {PLR}'s cause of death?",
   "QuizmasterQuestions.PlrDieMethod": "How did {PLR} die?",
   "LastAddedRoleForKarped": "What was the last role added to TOHE before KARPED1EM stepped down?",
-  "PlrDieFaction": "What kind of faction killed {PLR}?",
+  "QuizmasterQuestions.PlrDieFaction": "What kind of faction killed {PLR}?",
 
   "DeathReason.WrongAnswer": "Wrong Quiz Answer",
 
@@ -3690,5 +3700,14 @@
   "RiftsTooClose": "Location too close to the first rift",
   "RiftCreated": "Rift made successfully",
   "RiftsDestroyed": "All rifts Destroyed",
-  "RiftRadius": "Rift Radius"
+  "RiftRadius": "Rift Radius",
+
+  "TiredVision": "Vision When Tired",
+  "TiredSpeed": "Speed When Tired",
+  "TiredDur": "Tired Duration",
+  "ImpCanBeTired": "<color=#ff1919>Impostors</color> can become Tired",
+  "CrewCanBeTired": "<color=#8cffff>Crewmates</color> can become Tired",
+  "NeutralCanBeTired": "<color=#7f8c8d>Neutrals</color> can become Tired",
+
+  "TiredNotify": "Zzz.."
 }

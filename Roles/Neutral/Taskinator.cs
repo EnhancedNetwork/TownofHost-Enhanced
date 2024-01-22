@@ -8,11 +8,11 @@ namespace TOHE.Roles.Neutral;
 public static class Taskinator
 {
     private static readonly int Id = 13700;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
-    public static Dictionary<byte, List<int>> taskIndex = new();
-    public static Dictionary<byte, int> TaskMarkPerRound = new();
+    public static Dictionary<byte, List<int>> taskIndex = [];
+    public static Dictionary<byte, int> TaskMarkPerRound = [];
     private static int maxTasksMarkedPerRound = new();
 
     public static OptionItem TaskMarkPerRoundOpt;
@@ -27,9 +27,9 @@ public static class Taskinator
 
     public static void Init()
     {
-        playerIdList = new();
-        taskIndex = new();
-        TaskMarkPerRound = new();
+        playerIdList = [];
+        taskIndex = [];
+        TaskMarkPerRound = [];
         IsEnable = false;
         maxTasksMarkedPerRound = TaskMarkPerRoundOpt.GetInt();
     }
@@ -66,7 +66,7 @@ public static class Taskinator
             TaskMarkPerRound[taskinatorID] = uses;
             if (!clearAll) 
             { 
-                if (!taskIndex.ContainsKey(taskinatorID)) taskIndex[taskinatorID] = new();
+                if (!taskIndex.ContainsKey(taskinatorID)) taskIndex[taskinatorID] = [];
                 taskIndex[taskinatorID].Add(taskInd);
             }
         }
@@ -113,7 +113,7 @@ public static class Taskinator
                 return;
             }
             TaskMarkPerRound[playerId]++;
-            if (!taskIndex.ContainsKey(playerId)) taskIndex[playerId] = new();
+            if (!taskIndex.ContainsKey(playerId)) taskIndex[playerId] = [];
             taskIndex[playerId].Add(task.Index);
             SendRPC(taskinatorID : playerId, taskIndex : task.Index);
             player.Notify(GetString("TaskinatorBombPlanted"));
