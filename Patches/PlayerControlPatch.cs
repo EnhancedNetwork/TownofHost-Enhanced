@@ -140,6 +140,7 @@ class CheckMurderPatch
         if (killer.Is(CustomRoles.Minimalism))
         {
             killer.RpcMurderPlayerV3(target);
+            killer.ResetKillCooldown();
             return false;
         }
         foreach (var targetSubRole in target.GetCustomSubRoles().ToArray())
