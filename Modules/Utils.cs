@@ -965,6 +965,9 @@ public static class Utils
                 case CustomRoles.Seeker:
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Seeker).ShadeColor(0.25f), $"({Seeker.TotalPoints[playerId]}/{Seeker.PointsToWin.GetInt()})"));
                     break;
+                case CustomRoles.SchrodingersCat:
+                    ProgressText.Append(SchrodingersCat.GetProgressText(playerId));
+                    break;
 
                 case CustomRoles.Sniper:
                     ProgressText.Append(Sniper.GetBulletCount(playerId));

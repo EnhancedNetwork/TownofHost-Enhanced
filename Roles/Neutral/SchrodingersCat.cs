@@ -32,13 +32,13 @@ public static class SchrodingersCat
         writer.Write(teammate[catID]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-
     public static void ReceiveRPC(MessageReader reader)
     {
         byte catID = reader.ReadByte();
         byte teammateID = reader.ReadByte();
         teammate[catID] = teammateID;
     }
+    public static string GetProgressText(byte catID) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.SchrodingersCat).ShadeColor(0.25f), $"({(teammate.TryGetValue(catID, out var value) ? (value != byte.MaxValue ? "0" : "1") : "0")})");
 
     public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
@@ -52,8 +52,8 @@ public static class SchrodingersCat
 
         teammate[target.PlayerId] = killer.PlayerId;
         SendRPC(target.PlayerId);
-        Utils.NotifyRoles(SpecifySeer: killer);
-        Utils.NotifyRoles(SpecifySeer: target);
+        Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
+        Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
         killer.SetKillCooldown();
 
         return false;

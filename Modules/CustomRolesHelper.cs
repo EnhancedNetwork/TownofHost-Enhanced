@@ -1864,6 +1864,7 @@ static class CustomRolesHelper
 
            CustomRoles.Spiritcaller => CountTypes.Spiritcaller,
            CustomRoles.RuthlessRomantic => CountTypes.RuthlessRomantic,
+           CustomRoles.SchrodingersCat => CountTypes.None,
            _ => role.IsImpostorTeam() ? CountTypes.Impostor : CountTypes.Crew,
        };
     public static CustomWinner GetNeutralCustomWinnerFromRole(this CustomRoles role) // only to be used for Neutrals
