@@ -760,6 +760,7 @@ public enum CustomRoles
     Revolutionist,
     Romantic,
     RuthlessRomantic,
+    SchrodingersCat,
     Seeker,
     NSerialKiller, //serial killer
     Shaman,
@@ -966,6 +967,7 @@ public enum AdditionalWinners
     Taskinator = CustomRoles.Taskinator,
     Pixie = CustomRoles.Pixie,
     Quizmaster = CustomRoles.Quizmaster,
+    SchrodingersCat = CustomRoles.SchrodingersCat,
     //   NiceMini = CustomRoles.NiceMini,
     //   Baker = CustomRoles.Baker,
 }

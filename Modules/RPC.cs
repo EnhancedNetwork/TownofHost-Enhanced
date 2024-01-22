@@ -79,6 +79,7 @@ enum CustomRPC
     SetJailerExeLimit,
     SetCleanserCleanLimit,
     SetSoulCollectorLimit,
+    SyncSchrodingerData,
     SetPixieTargets,
     SetDivinatorLimit,
     SetDivinatorTempLimit,
@@ -762,6 +763,9 @@ internal class RPCHandlerPatch
             case CustomRPC.SetSoulCollectorLimit:
                 SoulCollector.ReceiveRPC(reader);
                 break;
+            case CustomRPC.SyncSchrodingerData:
+                SchrodingersCat.ReceiveRPC(reader);
+                break;
             case CustomRPC.SetPixieTargets:
                 Pixie.ReceiveRPC(reader);
                 break;
@@ -1133,6 +1137,9 @@ internal static class RPC
                 break;
             case CustomRoles.SoulCollector:
                 SoulCollector.Add(targetId);
+                break;
+            case CustomRoles.SchrodingersCat:
+                SchrodingersCat.Add(targetId);
                 break;
             case CustomRoles.Agitater:
                 Agitater.Add(targetId);

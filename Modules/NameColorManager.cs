@@ -116,6 +116,10 @@ public static class NameColorManager
         if (seer.Is(CustomRoles.Infected) && target.Is(CustomRoles.Infected) && Infectious.TargetKnowOtherTarget.GetBool()) color = Main.roleColors[CustomRoles.Infectious];
         //Spy
         if (seer.Is(CustomRoles.Spy) && Spy.SpyRedNameList.ContainsKey(target.PlayerId)) color = "#BA4A00";
+        {
+            Logger.Warn($"RUNNING COLOR NAME CHANGE FOR {seer.GetCustomRole()}", "NAME COLOR MANAGER TESTING");
+            color = "#BA4A00"; 
+        }
         //Seeker
         if (seer.Is(CustomRoles.Seeker) && Seeker.Targets.ContainsValue(target.PlayerId)) color = Main.roleColors[CustomRoles.Seeker];
         //Pixie
@@ -125,7 +129,23 @@ public static class NameColorManager
 
         // Cyber
         if (target.Is(CustomRoles.Cyber) && Options.CyberKnown.GetBool()) color = Main.roleColors[CustomRoles.Cyber];
-
+        //Schrodingers Cat
+        if (seer.Is(CustomRoles.SchrodingersCat))
+        {
+            if (SchrodingersCat.teammate.ContainsKey(seer.PlayerId) && target.PlayerId == SchrodingersCat.teammate[seer.PlayerId])
+            {
+                if (target.GetCustomRole().IsCrewmate()) color = "#8CFFFF";
+                else color = Main.roleColors[target.GetCustomRole()];
+            }
+        }
+        if (target.Is(CustomRoles.SchrodingersCat))
+        {
+            if (SchrodingersCat.teammate.ContainsKey(target.PlayerId) && seer.PlayerId == SchrodingersCat.teammate[target.PlayerId])
+            {
+                if (seer.GetCustomRole().IsCrewmate()) color = "#8CFFFF";
+                else color = Main.roleColors[seer.GetCustomRole()];
+            }
+        }
         // Necroview
         if (seer.Is(CustomRoles.Necroview) && seer.IsAlive())
         {

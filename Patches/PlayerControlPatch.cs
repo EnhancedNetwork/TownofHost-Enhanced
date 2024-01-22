@@ -218,6 +218,9 @@ class CheckMurderPatch
 
         switch (targetRole)
         {
+            case CustomRoles.SchrodingersCat:
+                if (!SchrodingersCat.OnCheckMurder(killer, target)) return false;
+                break;
             case CustomRoles.Shaman:
                 if (Main.ShamanTarget != byte.MaxValue && target.IsAlive())
                 {
