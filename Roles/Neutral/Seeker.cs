@@ -183,6 +183,7 @@ public static class Seeker
 
 
         SendRPC(player.PlayerId, targetId: targetId);
+        Utils.NotifyRoles(SpecifySeer: player, ForceLoop: true);
         FreezeSeeker(player);
         return targetId;
     }

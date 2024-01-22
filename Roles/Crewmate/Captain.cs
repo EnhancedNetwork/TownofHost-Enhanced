@@ -131,6 +131,7 @@ public static class Captain
     {
         if (pc == null) return;
         if (!IsEnable) return;
+        if (pc.GetPlayerTaskState().CompletedTasksCount >= OptionTaskRequiredToReveal.GetInt()) Utils.NotifyRoles(SpecifyTarget: pc, ForceLoop: true);
         if (pc.GetPlayerTaskState().CompletedTasksCount < OptionTaskRequiredToSlow.GetInt()) return;
         if (!pc.Is(CustomRoles.Captain) || !pc.IsAlive()) return;
         var allTargets = Main.AllAlivePlayerControls.Where(x => (x != null) && (!OriginalSpeed.ContainsKey(x.PlayerId)) &&
