@@ -128,7 +128,6 @@ public static class Investigator
         //sendRPC for max, round and targetlist
         //SendRPC();
         SendRPC(operate: 0, playerId: killer.PlayerId, targetId: target.PlayerId);
-        SendRPC(operate: 0, playerId:  killer.PlayerId, targetId: target.PlayerId);
         Utils.NotifyRoles(SpecifySeer: killer, ForceLoop: true);
 
         killer.ResetKillCooldown();
