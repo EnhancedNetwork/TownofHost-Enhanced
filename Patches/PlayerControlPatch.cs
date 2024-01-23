@@ -3910,9 +3910,10 @@ class PlayerControlCompleteTaskPatch
 
         var pc = __instance;
         Snitch.OnCompleteTask(pc);
-        int taskIndex = Convert.ToInt32(__args[0]);
-        if (pc != null)
+        if (pc != null && __args != null && __args.Length > 0)
         {
+            int taskIndex = Convert.ToInt32(__args[0]);
+
             var playerTask = pc.myTasks[taskIndex];
             Benefactor.OnTasKComplete(pc, playerTask);
             Taskinator.OnTasKComplete(pc, playerTask);
