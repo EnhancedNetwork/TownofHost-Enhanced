@@ -3482,6 +3482,7 @@
   "AdditionalWinnerRoleText.Pixie": "Fée",
   "AdditionalWinnerRoleText.NiceMini": "Gamin Gentil",
   "AdditionalWinnerRoleText.Romantic": "Romantic",
+  "AdditionalWinnerRoleText.VengefulRomantic": "Vengeful Romantic",
   "ErrorEndText": "Une erreur s'est produite",
   "ErrorEndTextDescription": "Pour éviter un plantage, la partie a été interrompue de force.",
   "ForceEnd": "Abandonné",
