@@ -96,6 +96,10 @@ public class PlayerState(byte playerId)
                 _ => throw new NotImplementedException()
             };
         }
+        if (pc.Is(CustomRoles.Infected))
+        {
+            countTypes = CountTypes.Infectious;
+        }
         if (pc.Is(CustomRoles.Contagious))
         {
             countTypes = Virus.ContagiousCountMode.GetInt() switch
