@@ -1,9 +1,7 @@
 ﻿namespace TOHE.Roles.Crewmate
 {
     using Hazel;
-    using MS.Internal.Xml.XPath;
     using System.Collections.Generic;
-    using System.Linq;
     using UnityEngine;
     using static TOHE.Options;
     using static TOHE.Translator;
