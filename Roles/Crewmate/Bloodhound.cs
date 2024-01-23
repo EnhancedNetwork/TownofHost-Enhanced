@@ -2,7 +2,6 @@
 {
     using Hazel;
     using System.Collections.Generic;
-    using System.Linq;
     using UnityEngine;
     using static TOHE.Options;
     using static TOHE.Translator;
@@ -93,6 +92,31 @@
                 if (opt == 1) UnreportablePlayers.Add(tid);
             }
         }
+        public static void SendRPCKiller(byte playerId, byte killerId, bool add)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetBloodhoundkKillerArrow, SendOption.Reliable, -1);
+            writer.Write(playerId);
+            writer.Write(killerId);
+            writer.Write(add);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+        }
+        public static void ReceiveRPCKiller(MessageReader reader)
+        {
+            byte playerId = reader.ReadByte();
+            byte killerId = reader.ReadByte();
+            bool add = reader.ReadBoolean();
+            if (add)
+            {
+                BloodhoundTargets[playerId].Add(killerId);
+                TargetArrow.Add(playerId, killerId);
+            }
+            else
+            {
+                BloodhoundTargets[playerId].Remove(killerId);
+                TargetArrow.Remove(playerId, killerId);
+            }
+        }
 
         public static void ReceiveRPC(MessageReader reader)
         {
@@ -120,6 +144,7 @@
                 foreach (var target in bloodhound.Value.ToArray())
                 {
                     TargetArrow.Remove(bloodhound.Key, target);
+                    SendRPCKiller(bloodhound.Key, target, add: false);
                 }
 
                 BloodhoundTargets[bloodhound.Key].Clear();
@@ -153,6 +178,7 @@
             {
                 BloodhoundTargets[pc.PlayerId].Add(killer.PlayerId);
                 TargetArrow.Add(pc.PlayerId, killer.PlayerId);
+                SendRPCKiller(pc.PlayerId, killer.PlayerId, add: true);
 
                 pc.Notify(GetString("BloodhoundTrackRecorded"));
                 UseLimit[pc.PlayerId] -= 1;
