@@ -3482,6 +3482,7 @@
   "AdditionalWinnerRoleText.Pixie": "Pixie",
   "AdditionalWinnerRoleText.NiceMini": "Guter Mini",
   "AdditionalWinnerRoleText.Romantic": "Romantic",
+  "AdditionalWinnerRoleText.VengefulRomantic": "Vengeful Romantic",
   "ErrorEndText": "Ein Problem ist aufgetreten",
   "ErrorEndTextDescription": "To avoid crashing, the game was forcibly ended.",
   "ForceEnd": "Abbrechen",
