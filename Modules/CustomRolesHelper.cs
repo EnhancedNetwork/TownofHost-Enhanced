@@ -1857,6 +1857,8 @@ static class CustomRolesHelper
            CustomRoles.HexMaster => CountTypes.HexMaster,
            //CustomRoles.Occultist => CountTypes.Occultist,
            CustomRoles.Necromancer => CountTypes.Necromancer,
+           CustomRoles.DarkHide => !DarkHide.SnatchesWin.GetBool() ? CountTypes.DarkHide : CountTypes.Crew,
+           CustomRoles.Arsonist => Options.ArsonistCanIgniteAnytime.GetBool() ? CountTypes.Arsonist : CountTypes.Crew,
            CustomRoles.NWitch => CountTypes.NWitch,
            CustomRoles.Shroud => CountTypes.Shroud,
            CustomRoles.Werewolf => CountTypes.Werewolf,
@@ -1868,7 +1870,7 @@ static class CustomRolesHelper
            CustomRoles.NSerialKiller => CountTypes.NSerialKiller,
            CustomRoles.Juggernaut => CountTypes.Juggernaut,
            CustomRoles.Jinx => CountTypes.Jinx,
-           CustomRoles.Infectious => CountTypes.Infectious,
+           CustomRoles.Infectious or CustomRoles.Infected => CountTypes.Infectious,
            CustomRoles.Crewpostor => CountTypes.Impostor,
            CustomRoles.Pyromaniac => CountTypes.Pyromaniac,
            CustomRoles.Virus => CountTypes.Virus,
@@ -1879,14 +1881,14 @@ static class CustomRolesHelper
            CustomRoles.Refugee => CountTypes.Impostor,
            CustomRoles.Huntsman => CountTypes.Huntsman,
            CustomRoles.Glitch => CountTypes.Glitch,
-           CustomRoles.Convict => CountTypes.Impostor,
-           // CustomRoles.Phantom => CountTypes.OutOfGame,
-           //   CustomRoles.CursedSoul => CountTypes.OutOfGame, // if they count as OutOfGame, it prevents them from winning lmao
-
+           CustomRoles.Convict => CountTypes.Impostor,           
            CustomRoles.Spiritcaller => CountTypes.Spiritcaller,
            CustomRoles.RuthlessRomantic => CountTypes.RuthlessRomantic,
            CustomRoles.SchrodingersCat => CountTypes.None,
            _ => role.IsImpostorTeam() ? CountTypes.Impostor : CountTypes.Crew,
+
+           // CustomRoles.Phantom => CountTypes.OutOfGame,
+           //   CustomRoles.CursedSoul => CountTypes.OutOfGame, // if they count as OutOfGame, it prevents them from winning lmao
        };
     public static CustomWinner GetNeutralCustomWinnerFromRole(this CustomRoles role) // only to be used for Neutrals
         => role switch

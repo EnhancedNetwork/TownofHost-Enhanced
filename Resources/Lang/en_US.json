@@ -3534,6 +3534,7 @@
   "AdditionalWinnerRoleText.Pixie": "Pixie",
   "AdditionalWinnerRoleText.NiceMini": "Nice Mini",
   "AdditionalWinnerRoleText.Romantic": "Romantic",
+  "AdditionalWinnerRoleText.VengefulRomantic": "Vengeful Romantic",
   "AdditionalWinnerRoleText.SchrodingersCat": "Schrodingers Cat",
   "ErrorEndText": "An error occurred",
   "ErrorEndTextDescription": "To avoid crashing, the game was forcibly ended.",
