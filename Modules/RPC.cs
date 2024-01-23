@@ -143,6 +143,7 @@ enum CustomRPC
     SetBanditStealLimit,
     SetDoppelgangerStealLimit,
     SetBloodhoundArrow,
+    SetBloodhoundkKillerArrow,
     SetVultureArrow,
     SetSpiritcallerSpiritLimit,
     SetDoomsayerProgress,
@@ -731,6 +732,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetBloodhoundArrow:
                 Bloodhound.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SetBloodhoundkKillerArrow:
+                Bloodhound.ReceiveRPCKiller(reader);
                 break;
             case CustomRPC.SetVultureArrow:
                 Vulture.ReceiveRPC(reader);
