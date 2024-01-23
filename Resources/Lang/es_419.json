@@ -3482,6 +3482,7 @@
   "AdditionalWinnerRoleText.Pixie": "Duendecito",
   "AdditionalWinnerRoleText.NiceMini": "Mini Benigno",
   "AdditionalWinnerRoleText.Romantic": "Romantic",
+  "AdditionalWinnerRoleText.VengefulRomantic": "Vengeful Romantic",
   "ErrorEndText": "Un error ocurrió",
   "ErrorEndTextDescription": "Para evitar crasheo, el juego terminó de manera forzosa.",
   "ForceEnd": "Abortado",
