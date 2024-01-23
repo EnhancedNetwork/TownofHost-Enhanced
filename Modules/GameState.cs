@@ -47,28 +47,7 @@ public class PlayerState(byte playerId)
         MainRole = role;
         countTypes = role.GetCountTypes();
         var pc = Utils.GetPlayerById(PlayerId);
-        if (role == CustomRoles.DarkHide)
-        {
-            if (!DarkHide.SnatchesWin.GetBool())
-            {
-                countTypes = CountTypes.DarkHide;
-            }
-            if (DarkHide.SnatchesWin.GetBool())
-            {
-                countTypes = CountTypes.Crew;
-            }
-        }
-        if (role == CustomRoles.Arsonist)
-        {
-            if (Options.ArsonistCanIgniteAnytime.GetBool())
-            {
-                countTypes = CountTypes.Arsonist;
-            }
-            if (!Options.ArsonistCanIgniteAnytime.GetBool())
-            {
-                countTypes = CountTypes.Crew;
-            }
-        }
+
         if (role == CustomRoles.Opportunist)
         {
             if (AmongUsClient.Instance.AmHost)
@@ -116,10 +95,6 @@ public class PlayerState(byte playerId)
                 2 => countTypes,
                 _ => throw new NotImplementedException()
             };
-        }
-        if (pc.Is(CustomRoles.Infected))
-        {
-            countTypes = CountTypes.Infectious;
         }
         if (pc.Is(CustomRoles.Contagious))
         {
