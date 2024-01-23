@@ -107,7 +107,7 @@ public class ModNewsHistory
                         "\n     - Japanese (By: Sunnyboi)" +
                         "\n     - Latin American (By: CreepPower)" +
                         "\n     - Russian (By: chill_ultimated, Nevermore59, Shoulder Devil, TommyXL)" +
-                        "\n     - Simplified Chinese (By: CrewCyan, Hinharrrrr, LezaiYa, NikoCat223)" +
+                        "\n     - Simplified Chinese (By: CrewCyan, LezaiYa, NikoCat223)" +
                         "\n     - Spanish (By: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
                         "\n     - Traditional Chinese (By: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
                         "\n<b> Check out all of our translators on our website</b>\r\n" +
@@ -488,7 +488,7 @@ public class ModNewsHistory
                         "\n     - Японский (Автор: Sunnyboi)" +
                         "\n     - Латиноамерика (Автор: CreepPower)" +
                         "\n     - Русский (Автор: TommyXL, Shoulder Devil (Тэм), chill_ultimated, Nevermore59)" +
-                        "\n     - Упрощенный Китайский (Автор: CrewCyan, Hinharrrrr, LezaiYa, NikoCat223)" +
+                        "\n     - Упрощенный Китайский (Автор: CrewCyan, LezaiYa, NikoCat223)" +
                         "\n     - Испанский (Автор: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
                         "\n     - Традиционный Китайский (Автор: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
                         "\n<b> Ознакомьтесь со всеми нашими переводчиками на нашем сайте</b>\r\n" +
@@ -836,7 +836,7 @@ public class ModNewsHistory
                         "\n     - 添加了聊天指令 /tpin、/tpout - 在房间中对尝试出图的玩家进行TP (By: ryuk)" +
                         "\n     - 新设置： 防止/qt因恶意使用而退出 (By: Furo)" +
                         "\n     - 新设置：更改关门消毒的时间 (非常酷！试试这个！ By: TommyXL)" +
-                        "\n     - 重新引入设置：玩家死亡后强制删除宠物" +
+                        "\n     - 重新引入设置：玩家死亡后强制删除宠物 (By: TommyXL)" +
                         "\n     - 新服务器：Modded南美洲 (By: Pietro)" +
                         "\n     - 新服务器：多个Modded中国服务器 (By: NikoCat223)" +
                         "\n     - 新按钮： Mod更新！现在可自动更新 Mod！ (By: Pietro)" +
@@ -844,8 +844,8 @@ public class ModNewsHistory
                     "\n<b>【更改】</b>" +
                         "\n     - 添加了技能图标： 秃鹫、起诉人和清理工 (By: LezaiYa)" +
                         "\n     - 更新日志可读性 (By: TommyXL)" +
-                        "\n     - 增强型反作弊 （EAC）现在可通过TOHE在线接口（API）完成 (By: ryuk & Moe)" +
-                        "\n     - 蠢蛋（附加职业）现在与维修员（附加职业）不兼容，以避免出现问题 (By: ryuk)" +
+                        "\n     - Enhanced的反作弊（EAC）现在可通过TOHE在线接口（API）完成 (By: ryuk & Moe)" +
+                        "\n     - 蠢蛋（附加职业）现在与维修员（附加职业）不再兼容，以避免出现问题 (By: ryuk)" +
                         "\n     - 系统现在会在刷屏后发送上一条系统信息 - 非常有用！ (By: ryuk)" +
 
                     "\n<b>【Bug修复】</b>" +
@@ -865,7 +865,7 @@ public class ModNewsHistory
                         "\n     - 日语 (By: Sunnyboi)" +
                         "\n     - 拉丁美洲语 (By: CreepPower)" +
                         "\n     - 俄语 (By: chill_ultimated, Nevermore59, Shoulder Devil, TommyXL)" +
-                        "\n     - 简体中文 (By: CrewCyan（船员小青）, LezaiYa（乐崽吖）, NikoCat223)" +
+                        "\n     - 简体中文 (By: CrewCyan, LezaiYa, NikoCat223)" +
                         "\n     - 西班牙语 (By: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
                         "\n     - 繁体中文 (By: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
                         "\n<b> 在我们的网站上查看我们所有的翻译人员</b>\r\n" +
@@ -1446,7 +1446,7 @@ public class ModNewsHistory
                         "\n - 日本語 (By: Sunnyboi)" +
                         "\n - ラテンアメリカ語 (By: CreepPower)" +
                         "\n - ロシア語 (By: chill_ultimated, Nevermore59, Shoulder Devil, TommyXL)" +
-                        "\n - 簡体字中国語 (By: CrewCyan, Hinharrrrr, LezaiYa, NikoCat223)" +
+                        "\n - 簡体字中国語 (By: CrewCyan, LezaiYa, NikoCat223)" +
                         "\n - スペイン語 (By: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
                         "\n - 繁体字中国語 (By: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
                         "\n<b> 当社のウェブサイトで翻訳者全員をチェックしてください</b>\r\n" +
@@ -1521,7 +1521,7 @@ public class ModNewsHistory
                         "\n     - Japonais (Par: Sunnyboi)" +
                         "\n     - Latino-Américain (Par: CreepPower)" +
                         "\n     - Russe (Par: chill_ultimated, Nevermore59, Shoulder Devil, TommyXL)" +
-                        "\n     - Chinois simplifié (Par: CrewCyan, Hinharrrrr, LezaiYa, NikoCat223)" +
+                        "\n     - Chinois simplifié (Par: CrewCyan, LezaiYa, NikoCat223)" +
                         "\n     - Espagnol (Par: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
                         "\n     - Chinois traditionnel (Par: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
                         "\n<b> Découvrez tous nos traducteurs sur notre site</b>\r\n" +
@@ -1809,7 +1809,7 @@ public class ModNewsHistory
                         "\n     - Japans (Door: Sunnyboi)" +
                         "\n     - Latijns Amerikaan (Door: CreepPower)" +
                         "\n     - Russisch (Door: chill_ultimated, Nevermore59, Shoulder Devil, TommyXL)" +
-                        "\n     - Simpel Chinees (Door: CrewCyan, Hinharrrrr, LezaiYa, NikoCat223)" +
+                        "\n     - Simpel Chinees (Door: CrewCyan, LezaiYa, NikoCat223)" +
                         "\n     - Spaans (Door: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
                         "\n     - Traditioneel Chinees (Door: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
                         "\n<b> Zie alle vertalers op onze website</b>\r\n" +
@@ -1885,7 +1885,7 @@ public class ModNewsHistory
                         "\n     - Giapponese (Da: Sunnyboi)" +
                         "\n     - Latino Americano (Da: CreepPower)" +
                         "\n     - Russo (Da: chill_ultimated, Nevermore59, Shoulder Devil, TommyXL)" +
-                        "\n     - Cinese Semplificato (Da: CrewCyan, Hinharrrrr, LezaiYa, NikoCat223)" +
+                        "\n     - Cinese Semplificato (Da: CrewCyan, LezaiYa, NikoCat223)" +
                         "\n     - Spagnolo (Da: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
                         "\n     - Cinese Tradizionale (Da: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
                         "\n<b> Scopri tutti i nostri traduttori sul nostro sito web</b>\r\n" +
@@ -1962,7 +1962,7 @@ public class ModNewsHistory
                         "\n     - Japanese (By: Sunnyboi)" +
                         "\n     - Latin American (By: CreepPower)" +
                         "\n     - Russian (By: chill_ultimated, Nevermore59, Shoulder Devil, TommyXL)" +
-                        "\n     - Simplified Chinese (By: CrewCyan, Hinharrrrr, LezaiYa, NikoCat223)" +
+                        "\n     - Simplified Chinese (By: CrewCyan, LezaiYa, NikoCat223)" +
                         "\n     - Spanish (By: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
                         "\n     - Traditional Chinese (By: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
                         "\n<b> Check out all of our translators on our website</b>\r\n" +
@@ -2034,7 +2034,7 @@ public class ModNewsHistory
                         "\n     - Japonês (por: Sunnyboi)" +
                         "\n     - Latino Americano (por: CreepPower)" +
                         "\n     - Russo (por: chill_ultimated, Nevermore59, Shoulder Devil, TommyXL)" +
-                        "\n     - Chinês Simplificado (por: CrewCyan, Hinharrrrr, LezaiYa, NikoCat223)" +
+                        "\n     - Chinês Simplificado (por: CrewCyan, LezaiYa, NikoCat223)" +
                         "\n     - Espanhol (por: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
                         "\n     - Chinês Tradicional (por: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
                         "\n<b> Confira todos os nossos tradutores em nosso site</b>\r\n" +
@@ -2108,7 +2108,7 @@ public class ModNewsHistory
                         "\n     - Japanese (By: Sunnyboi)" +
                         "\n     - Latin American (By: CreepPower)" +
                         "\n     - Russian (By: chill_ultimated, Nevermore59, Shoulder Devil, TommyXL)" +
-                        "\n     - Simplified Chinese (By: CrewCyan, Hinharrrrr, LezaiYa, NikoCat223)" +
+                        "\n     - Simplified Chinese (By: CrewCyan, LezaiYa, NikoCat223)" +
                         "\n     - Spanish (By: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
                         "\n     - Traditional Chinese (By: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
                         "\n<b> Check out all of our translators on our website</b>\r\n" +

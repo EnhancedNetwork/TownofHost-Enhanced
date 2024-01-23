@@ -40,7 +40,7 @@ class CanUseVentPatch
 
         // Determine if vent is available based on custom role
         // always true for engineer-based roles
-        couldUse = playerControl.CanUseImpostorVentButton() || (pc.Role.Role == RoleTypes.Engineer && !Utils.IsActive(SystemTypes.Comms));
+        couldUse = playerControl.CanUseImpostorVentButton() || (pc.Role.Role == RoleTypes.Engineer && pc.Role.CanUse(__instance.Cast<IUsable>()));
 
         canUse = couldUse;
         // Not available if custom roles are not available
