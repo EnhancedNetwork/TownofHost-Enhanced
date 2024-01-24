@@ -59,7 +59,8 @@ namespace TOHE.Roles.AddOns.Common
         }
         private static int PickRandomColor()
         {
-            return IRandom.Instance.Next(0, 17);
+            //make this function so we may extend it in the future
+            return IRandom.Instance.Next(0, 18);
         }
     }
 }
