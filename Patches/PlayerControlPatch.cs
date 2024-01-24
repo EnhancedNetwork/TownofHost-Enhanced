@@ -2607,11 +2607,9 @@ class FixedUpdateInNormalGamePatch
                     case CustomRoles.Penguin:
                         Penguin.OnFixedUpdate(player);
                         break;
+
                     case CustomRoles.PlagueDoctor:
-                        if (GameStates.IsInTask && player != null && player.IsAlive() && PlagueDoctor.IsEnable)
-                        {
-                            PlagueDoctor.OnCheckPlayerPosition(player); break;
-                        }
+                        PlagueDoctor.OnCheckPlayerPosition(player);
                         break;
                     case CustomRoles.Vampire:
                         Vampire.OnFixedUpdate(player);

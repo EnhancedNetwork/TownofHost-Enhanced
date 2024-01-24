@@ -302,8 +302,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.EngineerInVentMaxTime = 1;
                 break;
             case CustomRoles.Penguin:
-                Penguin.ApplyGameOptions(opt);
-                AURoleOptions.ShapeshifterDuration = 1f;
+                Penguin.ApplyGameOptions();
                 break;
             case CustomRoles.Bastion:
                 AURoleOptions.EngineerInVentMaxTime = 1;

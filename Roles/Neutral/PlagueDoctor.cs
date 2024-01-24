@@ -149,10 +149,9 @@ public static class PlagueDoctor
     }
     public static void OnCheckPlayerPosition(PlayerControl player)
     {
-        if (!IsEnable) return;
         if (!AmongUsClient.Instance.AmHost) return;
+        if (player == null || !player.IsAlive() || !GameStates.IsInTask) return;
 
-        if (!GameStates.IsInTask) return;
         if (LateCheckWin)
         {
             // After hanging/killing, check the victory conditions just to be sure.
