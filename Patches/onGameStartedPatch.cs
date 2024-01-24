@@ -290,6 +290,7 @@ internal class ChangeRoleSettings
             Swooper.Init();
             Wraith.Init();
             SoulCollector.Init();
+            SchrodingersCat.Init();
             BloodKnight.Init();
             Totocalcio.Init();
             Romantic.Init();
@@ -878,6 +879,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.SoulCollector:
                         SoulCollector.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.SchrodingersCat:
+                        SchrodingersCat.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Chameleon:
                         Chameleon.Add(pc.PlayerId);

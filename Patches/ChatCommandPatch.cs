@@ -75,7 +75,6 @@ internal class ChatCommands
         switch (args[0])
         {
             case "/dump":
-                canceled = true;
                 Utils.DumpLog();
                 break;
             case "/v":
@@ -976,10 +975,6 @@ internal class ChatCommands
         text = text.Replace("着", "者").Trim().ToLower();
         return text switch
         {
-            // Part of the string thanks to WuQing for helping
-            // 部分string感谢WuQing帮忙
-            // 第一个为繁体中文，第二个为简体中文
-
             // Note for translators
             // This file should contain not only Simplified and Traditional Chinese strings
             // If the role has other nicknames or common misspellings in your language
@@ -995,7 +990,6 @@ internal class ChatCommands
             // eg : "A" or "B" => GetString("RealRoleName"),
             // eg : "Vector" or "Mario" => GetString("Mario"),
             // If you need to remove the roles, please delete them directly instead of commenting them out
-            // 如果需要删除职业，请直接删掉，而不是注释掉
 
             // GM
             "GM(遊戲大師)" or "管理员" or "管理" or "gm" or "GM" => GetString("GM"),
@@ -1034,6 +1028,7 @@ internal class ChatCommands
             "時間竊賊" or "蚀时者" or "蚀时" or "偷时" => GetString("TimeThief"),
             "狙擊手" or "狙击手" or "狙击" => GetString("Sniper"),
             "送葬者" or "暗杀者" => GetString("Undertaker"),
+            "裂縫製造者" or "裂缝制造者" => GetString("RiftMaker"),
             "邪惡的追踪者" or "邪恶追踪者" or "邪恶的追踪者" => GetString("EvilTracker"),
             "邪惡賭怪" or "邪恶赌怪" or "坏赌" or "恶赌" or "邪恶赌怪" => GetString("EvilGuesser"),
             "監管者" or "监管者" or "监管" => GetString("AntiAdminer"),
@@ -1084,7 +1079,6 @@ internal class ChatCommands
             "教唆者" or "教唆" => GetString("Instigator"),
 
             // 船员阵营职业
-            //"幸運兒" or "幸运儿" or "幸运" => GetString("Luckey"),
             "擺爛人" or "摆烂人" or "摆烂" => GetString("Needy"),
             "大明星" or "明星" => GetString("SuperStar"),
             "網紅" or "网红" => GetString("CyberStar"),
@@ -1156,6 +1150,7 @@ internal class ChatCommands
             "猜想者" or "猜想" or "谜团" => GetString("Enigma"),
             "船長" or "舰长" or "船长" => GetString("Captain"),
             "慈善家" or "恩人" => GetString("Benefactor"),
+            "測驗者" or "测验长" => GetString("Quizmaster"),
 
             // 中立阵营职业
             "小丑" or "丑皇" => GetString("Jester"),
@@ -1261,6 +1256,7 @@ internal class ChatCommands
             "被感染" or "感染" => GetString("Infected"),
             "防賭" or "不可被赌" => GetString("Onbound"),
             "反擊者" or "回弹者" or "回弹" => GetString("Rebound"),
+            "平凡者" or "平凡" => GetString("Mundane"),
             "騎士" or "骑士" => GetString("Knighted"),
             "漠視" or "不受重视" or "被漠視的" => GetString("Unreportable"),
             "被傳染" or "传染性" => GetString("Contagious"),
@@ -1299,8 +1295,8 @@ internal class ChatCommands
             "OIIAI" => GetString("Oiiai"),
             "順從者" or "影响者" or "順從" or "影响" => GetString("Influenced"),
             "沉默者" or "沉默" => GetString("Silent"),
-            "" or "" => GetString("Susceptible"),
-            "平凡者" or "平凡" => GetString("Mundane"),
+            "易感者" or "易感" => GetString("Susceptible"),
+            "疲勞者" or "疲劳者" or "疲勞" or "疲劳" => GetString("Tired"),
 
             // 随机阵营职业
             "迷你船員" or "迷你船员" or "迷你" or "小孩" => GetString("Mini"),
@@ -2372,6 +2368,11 @@ class RpcSendChatPatch
         {
             __result = false;
             return false;
+        }
+        if (!GameStates.IsModHost)
+        {
+            __result = false;
+            return true;
         }
         int return_count = PlayerControl.LocalPlayer.name.Count(x => x == '\n');
         chatText = new StringBuilder(chatText).Insert(0, "\n", return_count).ToString();

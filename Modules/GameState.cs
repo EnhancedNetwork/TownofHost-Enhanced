@@ -47,28 +47,7 @@ public class PlayerState(byte playerId)
         MainRole = role;
         countTypes = role.GetCountTypes();
         var pc = Utils.GetPlayerById(PlayerId);
-        if (role == CustomRoles.DarkHide)
-        {
-            if (!DarkHide.SnatchesWin.GetBool())
-            {
-                countTypes = CountTypes.DarkHide;
-            }
-            if (DarkHide.SnatchesWin.GetBool())
-            {
-                countTypes = CountTypes.Crew;
-            }
-        }
-        if (role == CustomRoles.Arsonist)
-        {
-            if (Options.ArsonistCanIgniteAnytime.GetBool())
-            {
-                countTypes = CountTypes.Arsonist;
-            }
-            if (!Options.ArsonistCanIgniteAnytime.GetBool())
-            {
-                countTypes = CountTypes.Crew;
-            }
-        }
+
         if (role == CustomRoles.Opportunist)
         {
             if (AmongUsClient.Instance.AmHost)
@@ -583,6 +562,30 @@ public class TaskState
                     Merchant.OnTaskFinished(player);
                     break;
 
+                case CustomRoles.Workaholic when (CompletedTasksCount + 1) >= AllTasksCount && !(Options.WorkaholicCannotWinAtDeath.GetBool() && !player.IsAlive()):
+                    Logger.Info("The Workaholic task is done", "Workaholic");
+
+                    RPC.PlaySoundRPC(player.PlayerId, Sounds.KillSound);
+                    foreach (var pc in Main.AllAlivePlayerControls)
+                    {
+                        if (pc.PlayerId != player.PlayerId)
+                        {
+                            Main.PlayerStates[pc.PlayerId].deathReason = pc.PlayerId == player.PlayerId ?
+                                PlayerState.DeathReason.Overtired : PlayerState.DeathReason.Ashamed;
+
+                            pc.RpcMurderPlayerV3(pc);
+                            Main.PlayerStates[pc.PlayerId].SetDead();
+                            pc.SetRealKiller(player);
+                        }
+                    }
+
+                    if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
+                    {
+                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Workaholic); //Workaholic win
+                        CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
+                    }
+                    break;
+
                 case CustomRoles.Crewpostor:
                     if (Main.CrewpostorTasksDone.ContainsKey(player.PlayerId))
                         Main.CrewpostorTasksDone[player.PlayerId]++;
@@ -680,30 +683,6 @@ public class TaskState
                                         player.RpcMurderPlayerV3(pc);
                                     }
                                 }
-                            }
-                            break;
-
-                        case CustomRoles.Workaholic when (CompletedTasksCount + 1) >= AllTasksCount && !(Options.WorkaholicCannotWinAtDeath.GetBool() && !player.IsAlive()):
-                            Logger.Info("The Workaholic task is done", "Workaholic");
-
-                            RPC.PlaySoundRPC(player.PlayerId, Sounds.KillSound);
-                            foreach (var pc in Main.AllAlivePlayerControls)
-                            {
-                                if (pc.PlayerId != player.PlayerId)
-                                {
-                                    Main.PlayerStates[pc.PlayerId].deathReason = pc.PlayerId == player.PlayerId ?
-                                        PlayerState.DeathReason.Overtired : PlayerState.DeathReason.Ashamed;
-
-                                    pc.RpcMurderPlayerV3(pc);
-                                    Main.PlayerStates[pc.PlayerId].SetDead();
-                                    pc.SetRealKiller(player);
-                                }
-                            }
-
-                            if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
-                            {
-                                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Workaholic); //Workaholic win
-                                CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
                             }
                             break;
                     }

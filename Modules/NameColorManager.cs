@@ -132,7 +132,23 @@ public static class NameColorManager
 
         // Cyber
         if (target.Is(CustomRoles.Cyber) && Options.CyberKnown.GetBool()) color = Main.roleColors[CustomRoles.Cyber];
-
+        //Schrodingers Cat
+        if (seer.Is(CustomRoles.SchrodingersCat))
+        {
+            if (SchrodingersCat.teammate.ContainsKey(seer.PlayerId) && target.PlayerId == SchrodingersCat.teammate[seer.PlayerId])
+            {
+                if (target.GetCustomRole().IsCrewmate()) color = "#8CFFFF";
+                else color = Main.roleColors[target.GetCustomRole()];
+            }
+        }
+        if (target.Is(CustomRoles.SchrodingersCat))
+        {
+            if (SchrodingersCat.teammate.ContainsKey(target.PlayerId) && seer.PlayerId == SchrodingersCat.teammate[target.PlayerId])
+            {
+                if (seer.GetCustomRole().IsCrewmate()) color = "#8CFFFF";
+                else color = Main.roleColors[seer.GetCustomRole()];
+            }
+        }
         // Necroview
         if (seer.Is(CustomRoles.Necroview) && seer.IsAlive())
         {

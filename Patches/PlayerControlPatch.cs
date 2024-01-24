@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using TOHE.Modules;
 using TOHE.Patches;
@@ -140,6 +142,7 @@ class CheckMurderPatch
         if (killer.Is(CustomRoles.Minimalism))
         {
             killer.RpcMurderPlayerV3(target);
+            killer.ResetKillCooldown();
             return false;
         }
         foreach (var targetSubRole in target.GetCustomSubRoles().ToArray())
@@ -218,6 +221,9 @@ class CheckMurderPatch
 
         switch (targetRole)
         {
+            case CustomRoles.SchrodingersCat:
+                if (!SchrodingersCat.OnCheckMurder(killer, target)) return false;
+                break;
             case CustomRoles.Shaman:
                 if (Main.ShamanTarget != byte.MaxValue && target.IsAlive())
                 {
@@ -2242,6 +2248,11 @@ class ReportDeadBodyPatch
         {
             Logger.Exception(e, "ReportDeadBodyPatch");
             Logger.SendInGame("Error: " + e.ToString());
+
+            // If there is an error in ReportDeadBodyPatch, update the player nicknames anyway
+            NameNotifyManager.Notice.Clear();
+            Utils.DoNotifyRoles(isForMeeting: true, NoCache: true, CamouflageIsForMeeting: true);
+            _ = new LateTask(Utils.SyncAllSettings, 3f, "Sync all settings after report");
         }
 
         return true;
@@ -2358,6 +2369,9 @@ class ReportDeadBodyPatch
         if (Romantic.IsEnable) Romantic.OnReportDeadBody();
         if (Captain.IsEnable) Captain.OnReportDeadBody();
         if (Investigator.IsEnable) Investigator.OnReportDeadBody();
+        if (Swooper.IsEnable) Swooper.OnReportDeadBody();
+        if (Chameleon.IsEnable) Chameleon.OnReportDeadBody();
+        if (Wraith.IsEnable) Wraith.OnReportDeadBody();
 
         // Alchemist & Bloodlust
         Alchemist.OnReportDeadBody();
@@ -2398,9 +2412,17 @@ class ReportDeadBodyPatch
         Main.RevolutionistStart.Clear();
         Main.RevolutionistLastTime.Clear();
 
-        // Check shapeshift and revert skin to default
+
         foreach (var pc in Main.AllPlayerControls)
         {
+            // Update skins again, since players have different skins
+            // And can be easily distinguished from each other
+            if (Camouflage.IsCamouflage && Options.KPDCamouflageMode.GetValue() is 2 or 3)
+            {
+                Camouflage.RpcSetSkin(pc);
+            }
+
+            // Check shapeshift and revert skin to default
             if (Main.CheckShapeshift.ContainsKey(pc.PlayerId) && !Doppelganger.DoppelVictim.ContainsKey(pc.PlayerId))
             {
                 Camouflage.RpcSetSkin(pc, RevertToDefault: true);
@@ -3934,9 +3956,10 @@ class PlayerControlCompleteTaskPatch
 
         var pc = __instance;
         Snitch.OnCompleteTask(pc);
-        int taskIndex = Convert.ToInt32(__args[0]);
-        if (pc != null)
+        if (pc != null && __args != null && __args.Length > 0)
         {
+            int taskIndex = Convert.ToInt32(__args[0]);
+
             var playerTask = pc.myTasks[taskIndex];
             Benefactor.OnTasKComplete(pc, playerTask);
             Taskinator.OnTasKComplete(pc, playerTask);
@@ -3976,7 +3999,7 @@ class PlayerControlRemoveProtectionPatch
 {
     public static void Postfix(PlayerControl __instance)
     {
-        Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()}", "RemoveProtection");
+    Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()}", "RemoveProtection");
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MixUpOutfit))]

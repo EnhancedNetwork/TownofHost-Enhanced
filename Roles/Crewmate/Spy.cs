@@ -107,7 +107,7 @@ namespace TOHE.Roles.Crewmate
                 SendRPC(killer.PlayerId);                
                 if (SpyInteractionBlocked.GetBool()) 
                     killer.SetKillCooldown(time: 10f);
-                NotifyRoles(SpecifySeer: target);
+                NotifyRoles(SpecifySeer: target, ForceLoop: true);
                 return false;
             }
             return true;
@@ -130,7 +130,7 @@ namespace TOHE.Roles.Crewmate
                     }
                 }
             }
-            if (change && GameStates.IsInTask) { NotifyRoles(SpecifySeer: pc); }
+            if (change && GameStates.IsInTask) { NotifyRoles(SpecifySeer: pc, ForceLoop: true); }
         }
         public static string GetProgressText(byte playerId, bool comms)
         {

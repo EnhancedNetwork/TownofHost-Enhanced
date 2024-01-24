@@ -257,6 +257,7 @@ namespace TOHE.Roles.Crewmate
             }
         }
         private static long lastFixedTime;
+        private static bool InviseIsActive = false;
         public static void OnFixedUpdateINV(PlayerControl player)
         {
             if (GameStates.IsMeeting) return;
@@ -276,9 +277,11 @@ namespace TOHE.Roles.Crewmate
                     if (remainTime < 0)
                     {
                         pc?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(pc.PlayerId, out var id) ? id : Main.LastEnteredVent[pc.PlayerId].Id);
+                        ventedId.Remove(pc.PlayerId);
                         pc.Notify(GetString("ChameleonInvisStateOut"));
                         pc.RpcResetAbilityCooldown();
                         SendRPC(pc);
+                        InviseIsActive = false;
                         continue;
                     }
                     else if (remainTime <= 10)
@@ -294,7 +297,25 @@ namespace TOHE.Roles.Crewmate
         }
         public static void OnReportDeadBody()
         {
+            lastFixedTime = new();
             BloodlustList = [];
+            InvisTime = [];
+
+            if (InviseIsActive)
+            {
+                foreach (var alchemistId in playerIdList.ToArray())
+                {
+                    if (!ventedId.ContainsKey(alchemistId)) continue;
+                    var alchemist = Utils.GetPlayerById(alchemistId);
+                    if (alchemist == null) return;
+
+                    alchemist?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(alchemistId, out var id) ? id : Main.LastEnteredVent[alchemistId].Id);
+                    SendRPC(alchemist);
+                }
+                InviseIsActive = false;
+            }
+
+            ventedId = [];
         }
 
         public static void OnCoEnterVent(PlayerPhysics __instance, int ventId)
@@ -314,6 +335,7 @@ namespace TOHE.Roles.Crewmate
 
                 InvisTime.Add(pc.PlayerId, Utils.GetTimeStamp());
                 SendRPC(pc);
+                InviseIsActive = true;
                 NameNotifyManager.Notify(pc, GetString("ChameleonInvisState"), InvisDuration.GetFloat());
             }, 0.5f, "Alchemist Invis");
         }

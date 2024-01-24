@@ -83,6 +83,7 @@ enum CustomRPC
     SetJailerExeLimit,
     SetCleanserCleanLimit,
     SetSoulCollectorLimit,
+    SyncSchrodingerData,
     SetPixieTargets,
     SetDivinatorLimit,
     SetDivinatorTempLimit,
@@ -147,6 +148,7 @@ enum CustomRPC
     SetBanditStealLimit,
     SetDoppelgangerStealLimit,
     SetBloodhoundArrow,
+    SetBloodhoundkKillerArrow,
     SetVultureArrow,
     SetSpiritcallerSpiritLimit,
     SetDoomsayerProgress,
@@ -745,6 +747,9 @@ internal class RPCHandlerPatch
             case CustomRPC.SetBloodhoundArrow:
                 Bloodhound.ReceiveRPC(reader);
                 break;
+            case CustomRPC.SetBloodhoundkKillerArrow:
+                Bloodhound.ReceiveRPCKiller(reader);
+                break;
             case CustomRPC.SetVultureArrow:
                 Vulture.ReceiveRPC(reader);
                 break;
@@ -774,6 +779,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetSoulCollectorLimit:
                 SoulCollector.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SyncSchrodingerData:
+                SchrodingersCat.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetPixieTargets:
                 Pixie.ReceiveRPC(reader);
@@ -955,19 +963,27 @@ internal static class RPC
     }
     public static async void RpcVersionCheck()
     {
-        while (PlayerControl.LocalPlayer == null || AmongUsClient.Instance.GetHost() == null || PlayerControl.LocalPlayer.GetClientId() < 0) await Task.Delay(500);
-        var hostId = AmongUsClient.Instance.HostId;
-        if (Main.playerVersion.ContainsKey(hostId) || !Main.VersionCheat.Value)
+        try
         {
-            bool cheating = Main.VersionCheat.Value;
-            MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.VersionCheck, SendOption.Reliable);
-            writer.Write(cheating ? Main.playerVersion[hostId].version.ToString() : Main.PluginVersion);
-            writer.Write(cheating ? Main.playerVersion[hostId].tag : $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})");
-            writer.Write(cheating ? Main.playerVersion[hostId].forkId : Main.ForkId);
-            writer.Write(cheating);
-            writer.EndMessage();
+            while (PlayerControl.LocalPlayer == null || AmongUsClient.Instance.HostId < 0 || PlayerControl.LocalPlayer.GetClientId() < 0) await Task.Delay(500);
+            var hostId = AmongUsClient.Instance.HostId;
+            if (Main.playerVersion.ContainsKey(hostId) || !Main.VersionCheat.Value)
+            {
+                bool cheating = Main.VersionCheat.Value;
+                MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.VersionCheck, SendOption.Reliable);
+                writer.Write(cheating ? Main.playerVersion[hostId].version.ToString() : Main.PluginVersion);
+                writer.Write(cheating ? Main.playerVersion[hostId].tag : $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})");
+                writer.Write(cheating ? Main.playerVersion[hostId].forkId : Main.ForkId);
+                writer.Write(cheating);
+                writer.EndMessage();
+            }
+            Main.playerVersion[PlayerControl.LocalPlayer.GetClientId()] = new PlayerVersion(Main.PluginVersion, $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})", Main.ForkId);
         }
-        Main.playerVersion[PlayerControl.LocalPlayer.GetClientId()] = new PlayerVersion(Main.PluginVersion, $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})", Main.ForkId);
+        catch
+        {
+            Logger.Error("Error while trying to send RPCVersionCheck, retry later", "RpcVersionCheck");
+            _ = new LateTask(() => RpcVersionCheck(), 1f, "Retry RPCVersionCheck");
+        }
     }
     public static async void RpcRequestRetryVersionCheck()
     {
@@ -1149,6 +1165,9 @@ internal static class RPC
                 break;
             case CustomRoles.SoulCollector:
                 SoulCollector.Add(targetId);
+                break;
+            case CustomRoles.SchrodingersCat:
+                SchrodingersCat.Add(targetId);
                 break;
             case CustomRoles.Agitater:
                 Agitater.Add(targetId);

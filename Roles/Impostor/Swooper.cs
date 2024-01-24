@@ -67,6 +67,23 @@ public static class Swooper
     public static bool IsInvis(byte id) => InvisTime.ContainsKey(id);
 
     private static long lastFixedTime = 0;
+    public static void OnReportDeadBody()
+    {
+        lastTime = [];
+        InvisTime = [];
+
+        foreach (var swooperId in playerIdList.ToArray())
+        {
+            if (!ventedId.ContainsKey(swooperId)) continue;
+            var swooper = Utils.GetPlayerById(swooperId);
+            if (swooper == null) return;
+
+            swooper?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(swooperId, out var id) ? id : Main.LastEnteredVent[swooperId].Id);
+            SendRPC(swooper);
+        }
+
+        ventedId = [];
+    }
     public static void AfterMeetingTasks()
     {
         if (!IsEnable) return;
@@ -105,6 +122,7 @@ public static class Swooper
                 {
                     lastTime.Add(pc.PlayerId, now);
                     pc?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(pc.PlayerId, out var id) ? id : Main.LastEnteredVent[pc.PlayerId].Id);
+                    ventedId.Remove(pc.PlayerId);
                     NameNotifyManager.Notify(pc, GetString("SwooperInvisStateOut"));
                     SendRPC(pc);
                     continue;

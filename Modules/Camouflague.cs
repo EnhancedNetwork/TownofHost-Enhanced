@@ -163,33 +163,38 @@ public static class Camouflage
 
         var id = target.PlayerId;
 
+        // if player dead, and Camouflage active, return
         if (IsCamouflage && Main.PlayerStates[id].IsDead)
         {
             return;
         }
 
+        // Check which Outfit needs to be set
         var newOutfit = Options.KPDCamouflageMode.GetValue() is 2 or 3
             ? PlayerOutfitExtension.GetRandomOutfit()
             : CamouflageOutfit;
 
 
+        // if is not Camouflage or need force revert skins
         if (!IsCamouflage || ForceRevert)
         {
-            //コミュサボ解除または強制解除
-
+            // if player are a shapeshifter, change to the id of your current Outfit
             if (Main.CheckShapeshift.TryGetValue(id, out var shapeshifting) && shapeshifting && !RevertToDefault)
             {
-                //シェイプシフターなら今の姿のidに変更
                 id = Main.ShapeshiftTarget[id];
             }
 
+            // if game not end and Doppelganger clone skins
             if (!GameEnd && Doppelganger.DoppelPresentSkin.ContainsKey(id)) newOutfit = Doppelganger.DoppelPresentSkin[id];
             else
             {
+                // if game end, set normal name
                 if (GameEnd && Doppelganger.DoppelVictim.ContainsKey(id))
                 {
                     Utils.GetPlayerById(id)?.RpcSetName(Doppelganger.DoppelVictim[id]);
                 }
+
+                // Set Outfit
                 newOutfit = PlayerSkins[id];
             }
         }
@@ -199,6 +204,7 @@ public static class Camouflage
 
         Logger.Info($"newOutfit={newOutfit.GetString().RemoveHtmlTags()}", "RpcSetSkin");
 
+        // Start to set Outfit
         var sender = CustomRpcSender.Create(name: $"Camouflage.RpcSetSkin({target.Data.PlayerName})");
 
         target.SetColor(newOutfit.ColorId);
