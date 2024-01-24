@@ -5,7 +5,7 @@ namespace TOHE.Roles.AddOns.Common
 {
     public static class Rainbow
     {
-        private static readonly int Id = 27400;
+        private static readonly int Id = 27700;
         public static OptionItem CrewCanBeRainbow;
         public static OptionItem ImpCanBeRainbow;
         public static OptionItem NeutralCanBeRainbow;
