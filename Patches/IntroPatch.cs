@@ -566,11 +566,6 @@ class IntroCutsceneDestroyPatch
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
             }
 
-            if (Main.NormalOptions.MapId == 4)
-            {
-                Penguin.OnSpawnAirship();
-            }
-
             if (GameStates.IsNormalGame && (Options.RandomSpawn.GetBool() || Options.CurrentGameMode == CustomGameMode.FFA))
             {
                 RandomSpawn.SpawnMap map;

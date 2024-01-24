@@ -151,7 +151,7 @@ public static class Penguin
     }
     public static void AfterMeetingTasks()
     {
-        if (Main.NormalOptions.MapId == 4) return;
+        if (GameStates.AirshipIsActive) return;
 
         //Maps other than Airship
         RestartAbduct();
