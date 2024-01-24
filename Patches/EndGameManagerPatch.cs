@@ -29,10 +29,14 @@ public class EndGameManagerPatch
     {
         if (!IsRestarting)
         {
-            if (CountdownTextText.isActiveAndEnabled)
+            try
             {
-                CountdownTextText.text = string.Format(GetString("CancelStartCountDown"), seconds);
+                if (CountdownTextText != null && CountdownTextText.isActiveAndEnabled)
+                {
+                    CountdownTextText.text = string.Format(GetString("CancelStartCountDown"), seconds);
+                }
             }
+            catch { }
             return;
         }
         if (endGameManager == null) return;

@@ -79,6 +79,7 @@ enum CustomRPC
     SetJailerExeLimit,
     SetCleanserCleanLimit,
     SetSoulCollectorLimit,
+    SyncSchrodingerData,
     SetPixieTargets,
     SetDivinatorLimit,
     SetDivinatorTempLimit,
@@ -143,6 +144,7 @@ enum CustomRPC
     SetBanditStealLimit,
     SetDoppelgangerStealLimit,
     SetBloodhoundArrow,
+    SetBloodhoundkKillerArrow,
     SetVultureArrow,
     SetSpiritcallerSpiritLimit,
     SetDoomsayerProgress,
@@ -732,6 +734,9 @@ internal class RPCHandlerPatch
             case CustomRPC.SetBloodhoundArrow:
                 Bloodhound.ReceiveRPC(reader);
                 break;
+            case CustomRPC.SetBloodhoundkKillerArrow:
+                Bloodhound.ReceiveRPCKiller(reader);
+                break;
             case CustomRPC.SetVultureArrow:
                 Vulture.ReceiveRPC(reader);
                 break;
@@ -761,6 +766,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetSoulCollectorLimit:
                 SoulCollector.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SyncSchrodingerData:
+                SchrodingersCat.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetPixieTargets:
                 Pixie.ReceiveRPC(reader);
@@ -1141,6 +1149,9 @@ internal static class RPC
                 break;
             case CustomRoles.SoulCollector:
                 SoulCollector.Add(targetId);
+                break;
+            case CustomRoles.SchrodingersCat:
+                SchrodingersCat.Add(targetId);
                 break;
             case CustomRoles.Agitater:
                 Agitater.Add(targetId);

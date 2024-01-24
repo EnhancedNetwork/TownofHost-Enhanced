@@ -140,6 +140,7 @@ class CheckMurderPatch
         if (killer.Is(CustomRoles.Minimalism))
         {
             killer.RpcMurderPlayerV3(target);
+            killer.ResetKillCooldown();
             return false;
         }
         foreach (var targetSubRole in target.GetCustomSubRoles().ToArray())
@@ -218,6 +219,9 @@ class CheckMurderPatch
 
         switch (targetRole)
         {
+            case CustomRoles.SchrodingersCat:
+                if (!SchrodingersCat.OnCheckMurder(killer, target)) return false;
+                break;
             case CustomRoles.Shaman:
                 if (Main.ShamanTarget != byte.MaxValue && target.IsAlive())
                 {
@@ -3909,9 +3913,10 @@ class PlayerControlCompleteTaskPatch
 
         var pc = __instance;
         Snitch.OnCompleteTask(pc);
-        int taskIndex = Convert.ToInt32(__args[0]);
-        if (pc != null)
+        if (pc != null && __args != null && __args.Length > 0)
         {
+            int taskIndex = Convert.ToInt32(__args[0]);
+
             var playerTask = pc.myTasks[taskIndex];
             Benefactor.OnTasKComplete(pc, playerTask);
             Taskinator.OnTasKComplete(pc, playerTask);
