@@ -2311,6 +2311,7 @@ public static class Utils
 
             // Start run loop for target only if condition is "true"
             if (seer.Data.IsDead || !seer.IsAlive()
+                || targetList.Length == 1
                 || MushroomMixupIsActive
                 || NoCache
                 || ForceLoop)

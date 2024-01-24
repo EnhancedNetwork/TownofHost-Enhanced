@@ -1412,7 +1412,9 @@ class MeetingHudStartPatch
 
 
             sb.Append(Lawyer.LawyerMark(seer, target));
-            sb.Append(PlagueDoctor.GetMarkOthers(seer, target, isForMeeting: true));
+
+            if (PlagueDoctor.IsEnable)
+                sb.Append(PlagueDoctor.GetMarkOthers(seer, target, isForMeeting: true));
 
             //会議画面ではインポスター自身の名前にSnitchマークはつけません。
 
