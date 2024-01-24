@@ -49,7 +49,6 @@ public static class Stealth
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Options.DefaultKillCooldown;
     public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
-        if (!IsEnable) return;
         if (!killer.CanUseKillButton() || killer == null || target == null)
         {
             return;
