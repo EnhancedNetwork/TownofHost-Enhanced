@@ -1306,7 +1306,7 @@ class MurderPlayerPatch
 
         if (PlagueDoctor.IsEnable)
         {
-            PlagueDoctor.OnInfectDeath(__instance);
+            PlagueDoctor.OnInfectDeath(killer);
             PlagueDoctor.OnAnyMurder();
         }
 
