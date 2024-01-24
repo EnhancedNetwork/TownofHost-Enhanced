@@ -37,7 +37,7 @@ class OnGameJoinedPatch
         GameStates.InGame = false;
         ErrorText.Instance.Clear();
 
-        if (HorseModePatch.GetRealConstant() != Constants.GetBroadcastVersion() - 25 && GameStates.IsOnlineGame)
+        if (HorseModePatch.GetRealConstant() != Constants.GetBroadcastVersion() - 25 && GameStates.IsOnlineGame && !DevManager.IsDevUser(EOSManager.Instance.FriendCode))
         {
             AmongUsClient.Instance.ExitGame(DisconnectReasons.Hacking);
             SceneChanger.ChangeScene("MainMenu");
