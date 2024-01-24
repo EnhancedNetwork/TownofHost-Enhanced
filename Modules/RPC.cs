@@ -1524,6 +1524,9 @@ internal static class RPC
             case CustomRoles.Quizmaster:
                 Quizmaster.Add(targetId);
                 break;
+            case CustomRoles.Rainbow:
+                Rainbow.Add();
+                break;
         }
         HudManager.Instance.SetHudActive(true);
     //    HudManager.Instance.Chat.SetVisible(true);

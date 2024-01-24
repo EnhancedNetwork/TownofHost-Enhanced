@@ -841,6 +841,7 @@ public enum CustomRoles
     Oiiai,
     Onbound,
     Overclocked,
+    Rainbow,
     Rascal,
     Reach,
     Rebound,
@@ -871,6 +872,8 @@ public enum CustomRoles
     //Glow,
 
     // QuickFix
+    
+    //You need to put roles in order by their name
 }
 //WinData
 public enum CustomWinner

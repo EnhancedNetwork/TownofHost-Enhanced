@@ -360,6 +360,7 @@ static class CustomRolesHelper
             CustomRoles.Oiiai or
             CustomRoles.Influenced or
             CustomRoles.Silent or
+            CustomRoles.Rainbow or
             CustomRoles.Susceptible or
             CustomRoles.Tired;
     }
@@ -1719,20 +1720,28 @@ static class CustomRolesHelper
                 if ((pc.GetCustomRole().IsCrewmate() && !Silent.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Silent.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Silent.CanBeOnImp.GetBool()))
                     return false;
                 break;
+
+            case CustomRoles.Rainbow:
+                if ((pc.GetCustomRole().IsCrewmate() && !Rainbow.CrewCanBeRainbow.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Rainbow.NeutralCanBeRainbow.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Rainbow.ImpCanBeRainbow.GetBool()))
+                    return false;
+                break;
+            
             case CustomRoles.Susceptible:
                 if ((pc.GetCustomRole().IsCrewmate() && !Susceptible.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Susceptible.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Susceptible.CanBeOnImp.GetBool()))
-                return false;
+                  return false;
                 break;
+
             case CustomRoles.Tired:
                 if (pc.Is(CustomRoles.Farseer)
-               || pc.Is(CustomRoles.Alchemist)
-               || pc.Is(CustomRoles.Torch)
-               || pc.Is(CustomRoles.Bewilder)
-               || pc.Is(CustomRoles.Lighter)
-               || pc.Is(CustomRoles.Flash)
-               || pc.Is(CustomRoles.Mare)) return false;
-            if ((pc.GetCustomRole().IsCrewmate() && !Tired.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Tired.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Tired.CanBeOnImp.GetBool())) 
-                return false;
+                  || pc.Is(CustomRoles.Alchemist)
+                  || pc.Is(CustomRoles.Torch)
+                  || pc.Is(CustomRoles.Bewilder)
+                  || pc.Is(CustomRoles.Lighter)
+                  || pc.Is(CustomRoles.Flash)
+                  || pc.Is(CustomRoles.Mare)) 
+                  return false;
+                if ((pc.GetCustomRole().IsCrewmate() && !Tired.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Tired.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Tired.CanBeOnImp.GetBool())) 
+                  return false;
             break;
         }
 

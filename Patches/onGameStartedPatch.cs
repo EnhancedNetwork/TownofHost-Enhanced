@@ -362,6 +362,7 @@ internal class ChangeRoleSettings
             OverKiller.Init();
             Quizmaster.Init();
             Tired.Init();
+            Rainbow.Init();
 
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
@@ -1079,6 +1080,9 @@ internal class SelectRolesPatch
                             break;
                         case CustomRoles.Tired:
                             Tired.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.Rainbow:
+                            Rainbow.Add();
                             break;
 
                         default:

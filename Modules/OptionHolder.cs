@@ -1088,10 +1088,10 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 27300 lasted id for roles/add-ons (Next use 27400)
+        // 27700 lasted id for roles/add-ons (Next use 27800)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
-
+        
         // Start Load Settings
         if (IsLoaded) return;
         OptionSaver.Initialize();
@@ -2937,6 +2937,8 @@ public static class Options
         SetupLoversRoleOptionsToggle(23600);
         
         SetupAdtRoleOptions(23700, CustomRoles.Reach, canSetNum: true);
+
+        Rainbow.SetupCustomOptions();
         
         Workhorse.SetupCustomOption();
 
