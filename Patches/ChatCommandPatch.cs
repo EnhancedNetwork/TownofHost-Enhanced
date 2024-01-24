@@ -1408,27 +1408,38 @@ internal class ChatCommands
             ChatManager.SendMessage(player, text);
         }
 
+        Logger.Info($"player.PlayerId {player.PlayerId} send message: ''{text}''", "OnReceiveChat");
+
         if (text.StartsWith("\n")) text = text[1..];
         //if (!text.StartsWith("/")) return;
         string[] args = text.Split(' ');
         string subArgs = "";
         string subArgs2 = "";
+
+        if (text.Length <= 11) // Check command if Length < or = 11
+        {
+            Logger.Info($"Message now: ''{text}''", "OnReceiveChat");
+            Logger.Info($"Args: ''{args}''", "OnReceiveChat");
+        }
+
         //if (text.Length >= 3) if (text[..2] == "/r" && text[..3] != "/rn") args[0] = "/r";
         //   if (SpamManager.CheckSpam(player, text)) return;
-        if (GuessManager.GuesserMsg(player, text)) { canceled = true; return; }
-        if (Judge.TrialMsg(player, text)) { canceled = true; return; }
-        if (President.EndMsg(player, text)) { canceled = true; return; }
-        if (ParityCop.ParityCheckMsg(player, text)) { canceled = true; return; }
-        if (Pirate.DuelCheckMsg(player, text)) { canceled = true; return; }
-        if (Councillor.MurderMsg(player, text)) { canceled = true; return; }
-        if (Swapper.SwapMsg(player, text)) { canceled = true; return; }
-        if (Mediumshiper.MsMsg(player, text)) return;
-        if (MafiaRevengeManager.MafiaMsgCheck(player, text)) return;
-        if (RetributionistRevengeManager.RetributionistMsgCheck(player, text)) return;
+        if (GuessManager.GuesserMsg(player, text)) { canceled = true; Logger.Info($"Is Guesser command", "OnReceiveChat"); return; }
+        if (Judge.TrialMsg(player, text)) { canceled = true; Logger.Info($"Is Judge command", "OnReceiveChat"); return; }
+        if (President.EndMsg(player, text)) { canceled = true; Logger.Info($"Is President command", "OnReceiveChat"); return; }
+        if (ParityCop.ParityCheckMsg(player, text)) { canceled = true; Logger.Info($"Is ParityCop command", "OnReceiveChat"); return; }
+        if (Pirate.DuelCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Pirate command", "OnReceiveChat"); return; }
+        if (Councillor.MurderMsg(player, text)) { canceled = true; Logger.Info($"Is Councillor command", "OnReceiveChat"); return; }
+        if (Swapper.SwapMsg(player, text)) { canceled = true; Logger.Info($"Is Swapper command", "OnReceiveChat"); return; }
+        if (Mediumshiper.MsMsg(player, text)) { Logger.Info($"Is Medium command", "OnReceiveChat"); return; }
+        if (MafiaRevengeManager.MafiaMsgCheck(player, text)) { Logger.Info($"Is Mafia Revenge command", "OnReceiveChat"); return; }
+        if (RetributionistRevengeManager.RetributionistMsgCheck(player, text)) { Logger.Info($"Is Retributionist Revenge command", "OnReceiveChat"); return; }
+
         Directory.CreateDirectory(modTagsFiles);
         Directory.CreateDirectory(vipTagsFiles);
         Directory.CreateDirectory(sponsorTagsFiles);
 
+        Logger.Info($"This player was Blackmailed?", "OnReceiveChat");
         if (Blackmailer.ForBlackmailer.Contains(player.PlayerId) && player.IsAlive() && player.PlayerId != 0)
         {
             ChatManager.SendPreviousMessagesToAll();
@@ -1437,8 +1448,49 @@ internal class ChatCommands
             return; 
         }
 
+        if (text.Length <= 11)
+        {
+            Logger.Info($"args[0] has message: ''{args[0]}''", "OnReceiveChat");
+        }
         switch (args[0])
         {
+            case "/r":
+            case "/role":
+                Logger.Info($"Command '/r' was activated", "OnReceiveChat");
+                subArgs = text.Remove(0, 2);
+                SendRolesInfo(subArgs, player.PlayerId, player.FriendCode.GetDevUser().DeBug);
+                break;
+
+            case "/m":
+            case "/myrole":
+            case "/minhafunção":
+                Logger.Info($"Command '/m' was activated", "OnReceiveChat");
+                var role = player.GetCustomRole();
+                if (GameStates.IsInGame)
+                {
+                    var sb = new StringBuilder();
+                    //sb.Append(String.Format(GetString("PlayerNameForRoleInfo"), Main.AllPlayerNames[player.PlayerId]));
+                    sb.Append(GetString(role.ToString()) + Utils.GetRoleMode(role) + player.GetRoleInfo(true));
+                    if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
+                        Utils.ShowChildrenSettings(opt, ref sb, command: true);
+                    var txt = sb.ToString();
+                    sb.Clear().Append(txt.RemoveHtmlTags());
+                    foreach (var subRole in Main.PlayerStates[player.PlayerId].SubRoles.ToArray())
+                        sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleMode(subRole) + GetString($"{subRole}InfoLong"));
+                    if (CustomRolesHelper.RoleExist(CustomRoles.Ntr) && (role is not CustomRoles.GM and not CustomRoles.Ntr))
+                        sb.Append($"\n\n" + GetString($"Lovers") + Utils.GetRoleMode(CustomRoles.Lovers) + GetString($"LoversInfoLong"));
+                    Utils.SendMessage(sb.ToString(), player.PlayerId);
+                }
+                else
+                    Utils.SendMessage(GetString("Message.CanNotUseInLobby"), player.PlayerId);
+                break;
+
+            case "/h":
+            case "/help":
+            case "/ajuda":
+                Utils.ShowHelpToClient(player.PlayerId);
+                break;
+
             case "/ans":
             case "/asw":
             case "/answer":
@@ -1523,40 +1575,6 @@ internal class ChatCommands
                         Utils.ShowActiveSettings(player.PlayerId);
                         break;
                 }
-                break;
-
-            case "/r":
-                subArgs = text.Remove(0, 2);
-                SendRolesInfo(subArgs, player.PlayerId, player.FriendCode.GetDevUser().DeBug);
-                break;
-
-            case "/h":
-            case "/help":
-            case "/ajuda":
-                Utils.ShowHelpToClient(player.PlayerId);
-                break;
-
-            case "/m":
-            case "/myrole":
-            case "/minhafunção":
-                var role = player.GetCustomRole();
-                if (GameStates.IsInGame)
-                {
-                    var sb = new StringBuilder();
-                    //sb.Append(String.Format(GetString("PlayerNameForRoleInfo"), Main.AllPlayerNames[player.PlayerId]));
-                    sb.Append(GetString(role.ToString()) + Utils.GetRoleMode(role) + player.GetRoleInfo(true));
-                    if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
-                        Utils.ShowChildrenSettings(opt, ref sb, command: true);
-                    var txt = sb.ToString();
-                    sb.Clear().Append(txt.RemoveHtmlTags());
-                    foreach (var subRole in Main.PlayerStates[player.PlayerId].SubRoles.ToArray())
-                        sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleMode(subRole) + GetString($"{subRole}InfoLong"));
-                    if (CustomRolesHelper.RoleExist(CustomRoles.Ntr) && (role is not CustomRoles.GM and not CustomRoles.Ntr))
-                        sb.Append($"\n\n" + GetString($"Lovers") + Utils.GetRoleMode(CustomRoles.Lovers) + GetString($"LoversInfoLong"));
-                    Utils.SendMessage(sb.ToString(), player.PlayerId);
-                }
-                else
-                    Utils.SendMessage(GetString("Message.CanNotUseInLobby"), player.PlayerId);
                 break;
 
             case "/up":
