@@ -2805,7 +2805,7 @@
   "StealthExcludeImpostors": "Ignore Impostors when Blinding",
   "StealthDarkenDuration": "Blinding Duration",
   "PenguinAbductTimerLimit": "Dragging Time",
-  "PenguinMeetingKill": "Kill the target if a meeting starts during dragging.",
+  "PenguinMeetingKill": "Kill the target if a meeting starts during dragging",
   "PenguinKillButtonText": "Drag",
   "PenguinTimerText": "Drag Timer",
   "WitnessTime": "Max Time after killing where killer appears red",

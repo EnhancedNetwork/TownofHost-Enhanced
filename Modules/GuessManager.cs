@@ -1194,7 +1194,7 @@ public static class GuessManager
 
             CustomRoles[] listOfRoles = Options.ShowOnlyEnabledRolesInGuesserUI.GetBool()
                 ? CustomRolesHelper.AllRoles.Where(role => role.IsEnable() || role.RoleExist(countDead: true)).ToArray()
-                : CustomRolesHelper.AllRoles.ToArray();
+                : [.. CustomRolesHelper.AllRoles];
 
             var roleMap = listOfRoles.ToDictionary(role => role, role => Utils.GetRoleName(role));
 
