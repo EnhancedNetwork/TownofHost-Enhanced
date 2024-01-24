@@ -163,6 +163,7 @@ static class CustomRolesHelper
                 CustomRoles.Spy => CustomRoles.Crewmate,
                 CustomRoles.Randomizer => CustomRoles.Crewmate,
                 CustomRoles.Enigma => CustomRoles.Crewmate,
+                CustomRoles.SchrodingersCat => CustomRoles.Crewmate,
                 CustomRoles.Instigator => CustomRoles.Impostor,
                 CustomRoles.RiftMaker => CustomRoles.Shapeshifter,
 
@@ -435,6 +436,7 @@ static class CustomRolesHelper
             CustomRoles.RuthlessRomantic or
             CustomRoles.VengefulRomantic or
             CustomRoles.Doppelganger or
+            CustomRoles.SchrodingersCat or
             //     CustomRoles.Juggernaut or
             //      CustomRoles.Jinx or
             //     CustomRoles.Poisoner or
@@ -545,6 +547,7 @@ static class CustomRolesHelper
             CustomRoles.Revolutionist or
             CustomRoles.Romantic or
             CustomRoles.VengefulRomantic or
+            CustomRoles.SchrodingersCat or
             CustomRoles.Provocateur;
     }
     public static bool IsNB(this CustomRoles role)
@@ -565,6 +568,7 @@ static class CustomRolesHelper
             CustomRoles.Romantic or
             CustomRoles.VengefulRomantic or
             CustomRoles.Pixie or
+            CustomRoles.SchrodingersCat or
             CustomRoles.Sunnyboy;
     }
     public static bool IsNE(this CustomRoles role)
@@ -813,6 +817,7 @@ static class CustomRolesHelper
             CustomRoles.Succubus or
             CustomRoles.Doomsayer or
             CustomRoles.Spiritcaller or
+            CustomRoles.SchrodingersCat or
             CustomRoles.Quizmaster;
     }
 /*    public static bool IsCoven(this CustomRoles role)
@@ -953,6 +958,7 @@ static class CustomRolesHelper
             CustomRoles.VengefulRomantic or
             CustomRoles.Pixie or
             CustomRoles.Seeker or
+            CustomRoles.SchrodingersCat or
             CustomRoles.Quizmaster;
     }
     public static bool IsMadmate(this CustomRoles role)
@@ -1878,7 +1884,7 @@ static class CustomRolesHelper
            CustomRoles.Convict => CountTypes.Impostor,           
            CustomRoles.Spiritcaller => CountTypes.Spiritcaller,
            CustomRoles.RuthlessRomantic => CountTypes.RuthlessRomantic,
-
+           CustomRoles.SchrodingersCat => CountTypes.None,
            _ => role.IsImpostorTeam() ? CountTypes.Impostor : CountTypes.Crew,
 
            // CustomRoles.Phantom => CountTypes.OutOfGame,

@@ -542,6 +542,7 @@ public static class Utils
             case CustomRoles.Agitater:
             case CustomRoles.Jinx:
             case CustomRoles.SoulCollector:
+            case CustomRoles.SchrodingersCat:
             case CustomRoles.Parasite:
             case CustomRoles.Crusader:
             case CustomRoles.Refugee:
@@ -964,6 +965,9 @@ public static class Utils
                     break;
                 case CustomRoles.Seeker:
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Seeker).ShadeColor(0.25f), $"({Seeker.TotalPoints[playerId]}/{Seeker.PointsToWin.GetInt()})"));
+                    break;
+                case CustomRoles.SchrodingersCat:
+                    ProgressText.Append(SchrodingersCat.GetProgressText(playerId));
                     break;
 
                 case CustomRoles.Sniper:
