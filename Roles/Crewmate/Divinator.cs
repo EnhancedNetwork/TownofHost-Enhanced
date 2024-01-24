@@ -220,7 +220,8 @@ public static class Divinator
                 CustomRoles.Tracefinder,
                 CustomRoles.Seeker,
                 CustomRoles.Tracker,
-                CustomRoles.Romantic], 
+                CustomRoles.Romantic, 
+                CustomRoles.SchrodingersCat], 
                 
                 [CustomRoles.Bodyguard,
                 CustomRoles.Bomber,

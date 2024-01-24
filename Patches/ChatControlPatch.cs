@@ -35,6 +35,7 @@ class ChatControllerUpdatePatch
     public static void Postfix(ChatController __instance)
     {
         if (!__instance.freeChatField.textArea.hasFocus) return;
+        if (!GameStates.IsModHost) return;
         __instance.freeChatField.textArea.characterLimit = AmongUsClient.Instance.AmHost ? 999 : 300;
 
         if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.C))

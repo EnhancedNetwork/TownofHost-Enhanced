@@ -130,6 +130,7 @@ public static class Captain
     public static void OnTaskComplete(PlayerControl pc)
     {
         if (pc == null) return;
+        if (pc.GetPlayerTaskState().CompletedTasksCount >= OptionTaskRequiredToReveal.GetInt()) Utils.NotifyRoles(SpecifyTarget: pc, ForceLoop: true);
         if (pc.GetPlayerTaskState().CompletedTasksCount < OptionTaskRequiredToSlow.GetInt()) return;
         var allTargets = Main.AllAlivePlayerControls.Where(x => (x != null) && (!OriginalSpeed.ContainsKey(x.PlayerId)) &&
                                                            (x.GetCustomRole().IsImpostorTeamV3() ||

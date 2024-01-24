@@ -40,8 +40,8 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.1.21.1501";
-    public const string PluginDisplayVersion = "1.5.0 Canary 1";
+    public const string PluginVersion = "2024.1.21.1502";
+    public const string PluginDisplayVersion = "1.5.0 Canary 2";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
 
     /******************* Change one of the three variables to true before making a release. *******************/
@@ -232,7 +232,6 @@ public class Main : BasePlugin
     public static int MeetingsPassed = 0;
     public static Dictionary<byte, byte> Provoked = [];
     public static Dictionary<byte, float> DovesOfNeaceNumOfUsed = [];
-    //public static bool SwapSend;
 
     public static Dictionary<byte, CustomRoles> DevRole = [];
     public static List<byte> GodfatherTarget = [];
@@ -756,6 +755,7 @@ public enum CustomRoles
     Revolutionist,
     Romantic,
     RuthlessRomantic,
+    SchrodingersCat,
     Seeker,
     NSerialKiller, //serial killer
     Shaman,
@@ -966,6 +966,7 @@ public enum AdditionalWinners
     Taskinator = CustomRoles.Taskinator,
     Pixie = CustomRoles.Pixie,
     Quizmaster = CustomRoles.Quizmaster,
+    SchrodingersCat = CustomRoles.SchrodingersCat,
     //   NiceMini = CustomRoles.NiceMini,
     //   Baker = CustomRoles.Baker,
 }
