@@ -3953,25 +3953,12 @@ class PlayerControlProtectPlayerPatch
         Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}", "ProtectPlayer");
     }
 }
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ResetForMeeting))]
-class PlayerControlResetMeetingPatch
-{
-    public static void Prefix(PlayerControl __instance)
-    {
-    if (__instance != PlayerControl.LocalPlayer) return;
-    Logger.Info("------------Remove Guardian Protections ------------", null);
-    }
-}
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RemoveProtection))]
 class PlayerControlRemoveProtectionPatch
 {
     public static void Postfix()
     {
-        StringBuilder logStringBuilder = new StringBuilder();
-        byte[] loggedBytes = Encoding.UTF8.GetBytes(logStringBuilder.ToString());
-        byte[] encryptBytes = CoBeginPatch.EncryptDES(loggedBytes, $"TOHE{PlayerControl.LocalPlayer.PlayerId}00000000".Substring(0, 8));
-        string encryptString = Convert.ToBase64String(encryptBytes);
-        Logger.Info($"{encryptString}", "RemoveProtection");
+    Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()}", "RemoveProtection");
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MixUpOutfit))]
