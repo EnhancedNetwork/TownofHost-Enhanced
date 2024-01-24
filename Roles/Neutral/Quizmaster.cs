@@ -559,7 +559,7 @@ class DeathReasonQuestion : QuizQuestionBase
         for (int numOfQuestionsDone = 0; numOfQuestionsDone < 3; numOfQuestionsDone++)
         {
             var prefix = "";
-            if (QuizmasterQuestionType == QuizmasterQuestionType.PlrDeathKillerFactionQuestion) prefix = "Type";
+            if (QuizmasterQuestionType == QuizmasterQuestionType.PlrDeathKillerFactionQuestion) prefix = "Type.";
             if (numOfQuestionsDone == positionForRightAnswer)
             {
                 AnswerLetter = new List<string> { "A", "B", "C" }[positionForRightAnswer];
@@ -642,12 +642,12 @@ class SetAnswersQuestion : QuizQuestionBase
         PossibleAnswers.Remove(Answer);
         for (int numOfQuestionsDone = 0; numOfQuestionsDone < 3; numOfQuestionsDone++)
         {
-            var prefix = "";
-
-            if (QuizmasterQuestionType == QuizmasterQuestionType.FactionQuestion || QuizmasterQuestionType == QuizmasterQuestionType.NameOriginQuestion)
-                prefix = "QuizmasterAnswers.";
-            if (QuizmasterQuestionType == QuizmasterQuestionType.RoleFactionQuestion || QuizmasterQuestionType == QuizmasterQuestionType.RoleBasisQuestion)
-                prefix = "Type";
+            var prefix = QuizmasterQuestionType switch
+            {
+                QuizmasterQuestionType.FactionQuestion or QuizmasterQuestionType.NameOriginQuestion or QuizmasterQuestionType.RemovedFactionQuestion or QuizmasterQuestionType.RoleAddedQuestion => "QuizmasterAnswers.",
+                QuizmasterQuestionType.RoleFactionQuestion or QuizmasterQuestionType.RoleBasisQuestion => "Type.",
+                _ => ""
+            };
 
             if (numOfQuestionsDone == positionForRightAnswer)
             {

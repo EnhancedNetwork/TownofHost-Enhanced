@@ -2232,6 +2232,8 @@ public static class Options
 
         Romantic.SetupCustomOption();
 
+        SchrodingersCat.SetupCustomOption();
+
         SetupRoleOptions(13600, TabGroup.NeutralRoles, CustomRoles.Shaman);
         VoodooCooldown = FloatOptionItem.Create(13602, "VoodooCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shaman])

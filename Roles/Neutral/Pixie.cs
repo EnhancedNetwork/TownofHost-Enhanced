@@ -107,6 +107,7 @@ public static class Pixie
         }
         PixieTargets[killerId].Add(targetId);
         SendRPC(killerId, false, targetId);
+        Utils.NotifyRoles(SpecifySeer: killer, ForceLoop: true);
         if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(killer);
         SetKillCooldown(killer.PlayerId);
         return;
