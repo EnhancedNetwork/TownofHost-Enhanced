@@ -2256,6 +2256,7 @@
   "Message.BannedByBanList": "<b>{0}</b> was banned because they were banned in the past.",
   "Message.BannedByEACList": "<b>{0}</b> has been banned because he is in EAC list of Banned people.",
   "Message.DumpfileSaved": "The log file was successfully saved to the desktop, filename: {0}",
+  "Message.DumpcmdUsed": "{0} used /dump command.",
   "Message.KickedByNoFriendCode": "<b>{0}</b> was kicked because their friend code does not exist.",
   "Message.TempBannedByNoFriendCode": "<b>{0}</b> was temporary banned because their friend code does not exist.",
   "Message.AddedPlayerToBanList": "Added <b>{0}</b> to the ban list",
