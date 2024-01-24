@@ -75,7 +75,6 @@ internal class ChatCommands
         switch (args[0])
         {
             case "/dump":
-                canceled = true;
                 Utils.DumpLog();
                 break;
             case "/v":

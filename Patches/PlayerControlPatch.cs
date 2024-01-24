@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using TOHE.Modules;
 using TOHE.Patches;
@@ -3956,7 +3958,7 @@ class PlayerControlRemoveProtectionPatch
 {
     public static void Postfix(PlayerControl __instance)
     {
-        Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()}", "RemoveProtection");
+    Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()}", "RemoveProtection");
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MixUpOutfit))]
