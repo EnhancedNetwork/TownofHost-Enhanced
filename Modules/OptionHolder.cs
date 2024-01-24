@@ -1088,10 +1088,10 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 27300 lasted id for roles/add-ons (Next use 27400)
+        // 27700 lasted id for roles/add-ons (Next use 27800)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
-
+        
         // Start Load Settings
         if (IsLoaded) return;
         OptionSaver.Initialize();
@@ -1669,6 +1669,11 @@ public static class Options
         Dazzler.SetupCustomOption();
 
         /*
+         * Stealth
+         */
+        Stealth.SetupCustomOption();
+
+        /*
          * Devourer
          */
         Devourer.SetupCustomOption();
@@ -1682,6 +1687,11 @@ public static class Options
          * Pitfall
          */
         Pitfall.SetupCustomOption();
+
+        /*
+         * Penguin
+         */
+        Penguin.SetupCustomOption();
 
         /*
          * Twister
@@ -2232,6 +2242,8 @@ public static class Options
         Pursuer.SetupCustomOption();
 
         Romantic.SetupCustomOption();
+
+        SchrodingersCat.SetupCustomOption();
 
         SetupRoleOptions(13600, TabGroup.NeutralRoles, CustomRoles.Shaman);
         VoodooCooldown = FloatOptionItem.Create(13602, "VoodooCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false)
@@ -2925,6 +2937,8 @@ public static class Options
         SetupLoversRoleOptionsToggle(23600);
         
         SetupAdtRoleOptions(23700, CustomRoles.Reach, canSetNum: true);
+
+        Rainbow.SetupCustomOptions();
         
         Workhorse.SetupCustomOption();
 
@@ -2975,6 +2989,8 @@ public static class Options
             Quizmaster.SetupCustomOption();
 
         Spiritcaller.SetupCustomOption();
+
+        PlagueDoctor.SetupCustomOption(); 
 
         // 副职
         TextOptionItem.Create(10000023, "OtherRoles.Addons", TabGroup.OtherRoles)

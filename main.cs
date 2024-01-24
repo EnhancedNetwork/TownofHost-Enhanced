@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+using AmongUs.GameOptions; 
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
@@ -40,7 +40,7 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.1.21.1502";
+    public const string PluginVersion = "2024.1.24.1502";
     public const string PluginDisplayVersion = "1.5.0 Canary 2";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
 
@@ -597,6 +597,7 @@ public enum CustomRoles
     Parasite,
     Pitfall,
     Puppeteer,
+    PlagueDoctor,
     QuickShooter,
     Refugee,
     RiftMaker,
@@ -613,6 +614,7 @@ public enum CustomRoles
     Twister,
     Underdog,
     Undertaker,
+    Penguin,
     Vampire,
     Vampiress,
     Vindicator,
@@ -755,6 +757,7 @@ public enum CustomRoles
     Revolutionist,
     Romantic,
     RuthlessRomantic,
+    SchrodingersCat,
     Seeker,
     NSerialKiller, //serial killer
     Shaman,
@@ -776,6 +779,7 @@ public enum CustomRoles
     NWitch, //witch
     Workaholic,
     Wraith,
+    Stealth,
 
    //two-way camp
     Mini,
@@ -837,6 +841,7 @@ public enum CustomRoles
     Oiiai,
     Onbound,
     Overclocked,
+    Rainbow,
     Rascal,
     Reach,
     Rebound,
@@ -867,6 +872,8 @@ public enum CustomRoles
     //Glow,
 
     // QuickFix
+    
+    //You need to put roles in order by their name
 }
 //WinData
 public enum CustomWinner
@@ -928,6 +935,7 @@ public enum CustomWinner
     Spiritcaller = CustomRoles.Spiritcaller,
     Glitch = CustomRoles.Glitch,
     Plaguebearer = CustomRoles.PlagueBearer,
+    PlagueDoctor = CustomRoles.PlagueDoctor,
     Masochist = CustomRoles.Masochist,
     Doomsayer = CustomRoles.Doomsayer,
     Shroud = CustomRoles.Shroud,
@@ -962,6 +970,7 @@ public enum AdditionalWinners
     Taskinator = CustomRoles.Taskinator,
     Pixie = CustomRoles.Pixie,
     Quizmaster = CustomRoles.Quizmaster,
+    SchrodingersCat = CustomRoles.SchrodingersCat,
     //   NiceMini = CustomRoles.NiceMini,
     //   Baker = CustomRoles.Baker,
 }

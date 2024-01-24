@@ -290,6 +290,7 @@ internal class ChangeRoleSettings
             Swooper.Init();
             Wraith.Init();
             SoulCollector.Init();
+            SchrodingersCat.Init();
             BloodKnight.Init();
             Totocalcio.Init();
             Romantic.Init();
@@ -327,6 +328,9 @@ internal class ChangeRoleSettings
             Spiritualist.Init();
             Vulture.Init();
             Alchemist.Init();
+            Stealth.Init();
+            PlagueDoctor.Init();
+            Penguin.Init();
             Chameleon.Init();
             Wildling.Init();
             Morphling.Init();
@@ -358,6 +362,7 @@ internal class ChangeRoleSettings
             OverKiller.Init();
             Quizmaster.Init();
             Tired.Init();
+            Rainbow.Init();
 
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
@@ -682,6 +687,9 @@ internal class SelectRolesPatch
                     case CustomRoles.Poisoner:
                         Poisoner.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.PlagueDoctor:
+                        PlagueDoctor.Add(pc.PlayerId);
+                        break;
                     case CustomRoles.Sheriff:
                         Sheriff.Add(pc.PlayerId);
                         break;
@@ -788,6 +796,12 @@ internal class SelectRolesPatch
                     case CustomRoles.DarkHide:
                         DarkHide.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.Stealth:
+                        Stealth.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Penguin:
+                        Penguin.Add(pc.PlayerId);
+                        break;
                     case CustomRoles.Greedier:
                         Greedier.Add(pc.PlayerId);
                         break;
@@ -866,6 +880,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.SoulCollector:
                         SoulCollector.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.SchrodingersCat:
+                        SchrodingersCat.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Chameleon:
                         Chameleon.Add(pc.PlayerId);
@@ -1063,6 +1080,9 @@ internal class SelectRolesPatch
                             break;
                         case CustomRoles.Tired:
                             Tired.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.Rainbow:
+                            Rainbow.Add();
                             break;
 
                         default:

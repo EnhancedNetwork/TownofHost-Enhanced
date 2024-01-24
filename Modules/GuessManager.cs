@@ -322,6 +322,12 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("GuessNotifiedBait"));
                     return true;
                 }
+                if (role == CustomRoles.Rainbow && target.Is(CustomRoles.Rainbow))
+                {
+                    if (!isUI) Utils.SendMessage(GetString("GuessRainbow"), pc.PlayerId);
+                    else pc.ShowPopUp(GetString("GuessRainbow"));
+                    return true;
+                }
                 if (role == CustomRoles.LastImpostor || role == CustomRoles.Mare || role == CustomRoles.Cyber || role == CustomRoles.Flash)//(role == CustomRoles.Glow || role == CustomRoles.LastImpostor || role == CustomRoles.Mare || role == CustomRoles.Cyber)
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessObviousAddon"), pc.PlayerId);
@@ -1188,7 +1194,7 @@ public static class GuessManager
 
             CustomRoles[] listOfRoles = Options.ShowOnlyEnabledRolesInGuesserUI.GetBool()
                 ? CustomRolesHelper.AllRoles.Where(role => role.IsEnable() || role.RoleExist(countDead: true)).ToArray()
-                : CustomRolesHelper.AllRoles.ToArray();
+                : [.. CustomRolesHelper.AllRoles];
 
             var roleMap = listOfRoles.ToDictionary(role => role, role => Utils.GetRoleName(role));
 

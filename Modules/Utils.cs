@@ -84,6 +84,7 @@ public static class Utils
             pc.RpcTeleport(location);
         }
     }
+
     public static void RpcTeleport(this PlayerControl player, Vector2 location)
     {
         Logger.Info($" {player.GetNameWithRole().RemoveHtmlTags()} => {location}", "RpcTeleport");
@@ -542,12 +543,14 @@ public static class Utils
             case CustomRoles.Agitater:
             case CustomRoles.Jinx:
             case CustomRoles.SoulCollector:
+            case CustomRoles.SchrodingersCat:
             case CustomRoles.Parasite:
             case CustomRoles.Crusader:
             case CustomRoles.Refugee:
             case CustomRoles.Jester:
             case CustomRoles.Pirate:
             case CustomRoles.Pixie:
+            case CustomRoles.PlagueDoctor:
             case CustomRoles.NWitch:
             case CustomRoles.Shroud:
             case CustomRoles.Mario:
@@ -888,6 +891,9 @@ public static class Utils
                 case CustomRoles.Alchemist:
                     ProgressText.Append(Alchemist.GetProgressText(playerId));
                     break;
+                case CustomRoles.PlagueDoctor:
+                    ProgressText.Append(PlagueDoctor.GetProgressText(comms));
+                    break;
                 case CustomRoles.Chameleon:
                     var taskState13 = Main.PlayerStates?[playerId].GetTaskState();
                     Color TextColor13;
@@ -964,6 +970,9 @@ public static class Utils
                     break;
                 case CustomRoles.Seeker:
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Seeker).ShadeColor(0.25f), $"({Seeker.TotalPoints[playerId]}/{Seeker.PointsToWin.GetInt()})"));
+                    break;
+                case CustomRoles.SchrodingersCat:
+                    ProgressText.Append(SchrodingersCat.GetProgressText(playerId));
                     break;
 
                 case CustomRoles.Sniper:
@@ -1973,7 +1982,7 @@ public static class Utils
                 };
             }
 
-            if (!name.Contains($"\r\r") && player.FriendCode.GetDevUser().HasTag())
+            if (!name.Contains($"\r\r") && player.FriendCode.GetDevUser().HasTag() && (player.AmOwner || player.IsModClient()))
             {
                 name = player.FriendCode.GetDevUser().GetTag() + "<size=1.5>" + modtag + "</size>" + name;
             }
@@ -2101,7 +2110,7 @@ public static class Utils
 
                 if (Sniper.IsEnable)
                     SelfMark.Append(Sniper.GetShotNotify(seer.PlayerId));
-
+                
 
 
                 // ====== Add SelfSuffix for seer ======
@@ -2302,6 +2311,7 @@ public static class Utils
 
             // Start run loop for target only if condition is "true"
             if (seer.Data.IsDead || !seer.IsAlive()
+                || targetList.Length == 1
                 || MushroomMixupIsActive
                 || NoCache
                 || ForceLoop)
@@ -2426,6 +2436,11 @@ public static class Utils
                             {
                                 TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Medic), "✚"));
                             }
+                        }
+
+                        if (PlagueDoctor.IsEnable)
+                        {
+                            TargetMark.Append(PlagueDoctor.GetMarkOthers(seer, target));
                         }
 
                         switch (seerRole)
@@ -2615,6 +2630,9 @@ public static class Utils
                         // ====== Add TargetSuffix for target (TargetSuffix visible ​​only to the seer) ======
                         TargetSuffix.Clear();
 
+                        TargetSuffix.Append(PlagueDoctor.GetLowerTextOthers(seer, target));
+                        TargetSuffix.Append(Stealth.GetSuffix(seer, target));
+
 
                         // ====== Target Death Reason for target (Death Reason visible ​​only to the seer) ======
                         string TargetDeathReason = "";
@@ -2696,9 +2714,11 @@ public static class Utils
         EvilTracker.AfterMeetingTasks();
         SerialKiller.AfterMeetingTasks();
         Spiritualist.AfterMeetingTasks();
+        Penguin.AfterMeetingTasks();
         Vulture.AfterMeetingTasks();
         Taskinator.AfterMeetingTasks();
         Benefactor.AfterMeetingTasks();
+        if (PlagueDoctor.IsEnable) PlagueDoctor.AfterMeetingTasks();
         //Baker.AfterMeetingTasks();
         Jailer.AfterMeetingTasks();
         CopyCat.AfterMeetingTasks();  //all crew after meeting task should be before this
@@ -2870,19 +2890,10 @@ public static class Utils
         if (PlayerControl.LocalPlayer != null)
             HudManager.Instance?.Chat?.AddChat(PlayerControl.LocalPlayer, string.Format(GetString("Message.DumpfileSaved"), $"TOHE - v{Main.PluginVersion}-{t}.log"));
 
+        SendMessage(string.Format(GetString("Message.DumpcmdUsed"), PlayerControl.LocalPlayer.GetNameWithRole()));
+
         ProcessStartInfo psi = new("Explorer.exe") { Arguments = "/e,/select," + @filename.Replace("/", "\\") };
         Process.Start(psi);
-
-        if (!AmongUsClient.Instance.AmHost && GameStates.IsOnlineGame && GameStates.IsModHost)
-        {
-            if (!PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug)
-            {
-                var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
-                    (byte)CustomRPC.DumpLog, SendOption.Reliable, AmongUsClient.Instance.HostId);
-                writer.Write(PlayerControl.LocalPlayer.PlayerId);
-                AmongUsClient.Instance.FinishRpcImmediately(writer);
-            }
-        }
     }
     public static (int, int) GetDousedPlayerCount(byte playerId)
     {

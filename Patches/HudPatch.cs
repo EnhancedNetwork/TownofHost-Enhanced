@@ -2,6 +2,7 @@ using HarmonyLib;
 using Il2CppSystem.Text;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 using TMPro;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
@@ -133,6 +134,7 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("ShamanButtonText"));
                         break;
+                    case CustomRoles.PlagueDoctor:
                     case CustomRoles.PlagueBearer:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("InfectiousKillButtonText"));
@@ -171,6 +173,11 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("RevolutionistDrawButtonText"));
                         __instance.ImpostorVentButton.buttonLabelText.text = GetString("RevolutionistVentButtonText");
+                        break;
+                    case CustomRoles.Penguin:
+                        __instance.KillButton?.OverrideText(Penguin.OverrideKillButtonText());
+                        __instance.AbilityButton?.OverrideText(Penguin.GetAbilityButtonText());
+                        __instance.AbilityButton?.ToggleVisible(Penguin.CanUseAbilityButton());
                         break;
                     case CustomRoles.Farseer:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
@@ -506,6 +513,8 @@ class HudManagerPatch
                             CustomRoles.Glitch => Glitch.GetHudText(player),
                             CustomRoles.BloodKnight => BloodKnight.GetHudText(player),
                             CustomRoles.Wildling => Wildling.GetHudText(player),
+                            CustomRoles.PlagueDoctor => PlagueDoctor.GetLowerTextOthers(player, isForHud: true),
+                            CustomRoles.Stealth => Stealth.GetSuffix(player, isHUD: true),
                             _ => string.Empty,
                         };
                         break;
@@ -614,7 +623,8 @@ class SetVentOutlinePatch
         __instance.myRend.material.SetColor("_AddColor", mainTarget ? color : Color.clear);
     }
 }
-[HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive), [typeof(PlayerControl), typeof(RoleBehaviour), typeof(bool)])]
+[HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive))]
+[HarmonyPatch(new Type[] { typeof(PlayerControl), typeof(RoleBehaviour), typeof(bool) })]
 class SetHudActivePatch
 {
     public static bool IsActive = false;

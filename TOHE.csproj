@@ -6,7 +6,7 @@
         <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
         <Description>Town Of Host Enhanced</Description>
         <Authors>Moe</Authors>
-        <langVersion>latest</langVersion>
+        <langVersion>preview</langVersion>
 	<!--<AmongUs>C:\Program Files (x86)\Steam\steamapps\common\Among Us (v11.28_Town of Host Enhanced v1.4.1)</AmongUs>-->
         <Configurations>Debug;Release;Canary</Configurations>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -23,8 +23,8 @@
     <ItemGroup>
         <PackageReference Include="AmongUs.GameLibs.Steam" Version="2023.11.28" PrivateAssets="all" />
 		<PackageReference Include="BepInEx.IL2CPP.MSBuild" Version="2.1.0-rc.1">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.674" Private="false" ExcludeAssets="runtime;native" />
 	</ItemGroup>

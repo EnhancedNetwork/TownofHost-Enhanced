@@ -5,9 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using TOHE.Modules;
-using TOHE.Patches;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Crewmate;
@@ -219,6 +220,9 @@ class CheckMurderPatch
 
         switch (targetRole)
         {
+            case CustomRoles.SchrodingersCat:
+                if (!SchrodingersCat.OnCheckMurder(killer, target)) return false;
+                break;
             case CustomRoles.Shaman:
                 if (Main.ShamanTarget != byte.MaxValue && target.IsAlive())
                 {
@@ -234,6 +238,7 @@ class CheckMurderPatch
 
         if (killerRole.Is(CustomRoles.Chronomancer))
             Chronomancer.OnCheckMurder(killer);
+
 
         killer.ResetKillCooldown();
 
@@ -369,11 +374,17 @@ class CheckMurderPatch
                 case CustomRoles.HexMaster:
                     if (!HexMaster.OnCheckMurder(killer, target)) return false;
                     break;
+                case CustomRoles.PlagueDoctor:
+                    if (!PlagueDoctor.OnPDinfect(killer, target)) return false;
+                    break;
                 case CustomRoles.Glitch:
                     if (!Glitch.OnCheckMurder(killer, target)) return false;
                     break;
                 case CustomRoles.Huntsman:
                     Huntsman.OnCheckMurder(killer, target);
+                    break;
+                case CustomRoles.Stealth:
+                    Stealth.OnCheckMurder(killer, target);
                     break;
                 //case CustomRoles.Occultist:
                 //    if (!Occultist.OnCheckMurder(killer, target)) return false;
@@ -430,6 +441,9 @@ class CheckMurderPatch
                     break;
                 case CustomRoles.Juggernaut:
                     Juggernaut.OnCheckMurder(killer);
+                    break;
+                case CustomRoles.Penguin:
+                    if (!Penguin.OnCheckMurderAsKiller(killer, target)) return false;
                     break;
                 case CustomRoles.Reverie:
                     Reverie.OnCheckMurder(killer, target);
@@ -1285,13 +1299,19 @@ class MurderPlayerPatch
         if (target.AmOwner) RemoveDisableDevicesPatch.UpdateDisableDevices();
         if (!target.Data.IsDead || !AmongUsClient.Instance.AmHost) return;
 
-        if (Quizmaster.IsEnable)
-            Quizmaster.OnPlayerDead(target);
-
         if (Main.OverDeadPlayerList.Contains(target.PlayerId)) return;
 
         PlayerControl killer = __instance;
         bool needUpadteNotifyRoles = true;
+
+        if (PlagueDoctor.IsEnable)
+        {
+            PlagueDoctor.OnInfectDeath(killer);
+            PlagueDoctor.OnAnyMurder();
+        }
+
+        if (Quizmaster.IsEnable)
+            Quizmaster.OnPlayerDead(target);
 
         if (Pelican.IsEnable && target.Is(CustomRoles.Pelican))
             Pelican.OnPelicanDied(target.PlayerId);
@@ -1673,6 +1693,8 @@ class ShapeshiftPatch
                     break;
                 case CustomRoles.Assassin:
                     Assassin.OnShapeshift(shapeshifter, shapeshifting);
+                    break;
+                case CustomRoles.Penguin:
                     break;
                 case CustomRoles.ImperiusCurse:
                     if (shapeshifting)
@@ -2322,6 +2344,8 @@ class ReportDeadBodyPatch
         if (Vampiress.IsEnable) Vampiress.OnStartMeeting();
         if (Bloodhound.IsEnable) Bloodhound.Clear();
         if (Vulture.IsEnable) Vulture.Clear();
+        if (Stealth.IsEnable) Stealth.OnReportDeadBody();
+        if (Penguin.IsEnable) Penguin.OnReportDeadBody(); 
         if (Pelican.IsEnable) Pelican.OnReportDeadBody();
         if (Bandit.IsEnable) Bandit.OnReportDeadBody();
         if (Agitater.IsEnable) Agitater.OnReportDeadBody();
@@ -2338,6 +2362,7 @@ class ReportDeadBodyPatch
         if (Oracle.IsEnable) Oracle.OnReportDeadBody();
         if (Deathpact.IsEnable) Deathpact.OnReportDeadBody();
         if (ParityCop.IsEnable) ParityCop.OnReportDeadBody();
+        if (PlagueDoctor.IsEnable) PlagueDoctor.OnReportDeadBody();
         if (Doomsayer.IsEnable) Doomsayer.OnReportDeadBody();
         if (BallLightning.IsEnable) BallLightning.OnReportDeadBody();
         if (NWitch.IsEnable) NWitch.OnReportDeadBody();
@@ -2582,6 +2607,13 @@ class FixedUpdateInNormalGamePatch
 
                 switch (playerRole)
                 {
+                    case CustomRoles.Penguin:
+                        Penguin.OnFixedUpdate(player);
+                        break;
+
+                    case CustomRoles.PlagueDoctor:
+                        PlagueDoctor.OnCheckPlayerPosition(player);
+                        break;
                     case CustomRoles.Vampire:
                         Vampire.OnFixedUpdate(player);
                         break;
@@ -2813,6 +2845,7 @@ class FixedUpdateInNormalGamePatch
 
                 playerRole = player.GetCustomRole();
 
+                
                 if (Kamikaze.IsEnable)
                     Kamikaze.MurderKamikazedPlayers(player);
                 if (Alchemist.IsEnable)
@@ -2834,11 +2867,15 @@ class FixedUpdateInNormalGamePatch
                     case CustomRoles.Glitch:
                         Glitch.UpdateHackCooldown(player);
                         break;
+                    
                 }
 
                 if (GameStates.IsInTask)
                 {
 
+                    if (Stealth.IsEnable)
+                        Stealth.OnFixedUpdate(player);
+                    
                     if (BountyHunter.IsEnable)
                         BountyHunter.OnFixedUpdate(player);
 
@@ -2856,6 +2893,9 @@ class FixedUpdateInNormalGamePatch
 
                     if (Pitfall.IsEnable)
                         Pitfall.OnFixedUpdate(player);
+
+                    if (Rainbow.isEnabled)
+                        Rainbow.OnFixedUpdate();
 
                     if (Alchemist.BloodlustList.ContainsKey(player.PlayerId))
                         Alchemist.OnFixedUpdate(player);
@@ -3128,7 +3168,10 @@ class FixedUpdateInNormalGamePatch
                             Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Marshall), "★"));
                     }
                 }
-
+                
+                if (PlagueDoctor.IsEnable) 
+                    Mark.Append(PlagueDoctor.GetMarkOthers(seer, target));
+                
                 if (Snitch.IsEnable)
                 {
                     Mark.Append(Snitch.GetWarningMark(seer, target));
@@ -3283,8 +3326,14 @@ class FixedUpdateInNormalGamePatch
                 if (Mortician.IsEnable)
                     Suffix.Append(Mortician.GetTargetArrow(seer, target));
 
+                if (Stealth.IsEnable) 
+                    Suffix.Append(Stealth.GetSuffix(seer, target));
+
                 if (EvilTracker.IsEnable)
                     Suffix.Append(EvilTracker.GetTargetArrow(seer, target));
+
+                if (PlagueDoctor.IsEnable)
+                    Suffix.Append(PlagueDoctor.GetLowerTextOthers(seer, target));
 
                 if (Tracker.IsEnable)
                     Suffix.Append(Tracker.GetTrackerArrow(seer, target));
@@ -3953,7 +4002,7 @@ class PlayerControlRemoveProtectionPatch
 {
     public static void Postfix(PlayerControl __instance)
     {
-        Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()}", "RemoveProtection");
+    Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()}", "RemoveProtection");
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MixUpOutfit))]

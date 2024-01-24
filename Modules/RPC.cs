@@ -29,6 +29,7 @@ enum CustomRPC
     SetCustomRole,
     SetBountyTarget,
     SyncPuppet,
+    SyncPlagueDoctor,
     SyncKami,
     SetKillOrSpell,
     SetKillOrHex,
@@ -43,10 +44,12 @@ enum CustomRPC
     SetDousedPlayer,
     setPlaguedPlayer,
     SetNameColorData,
+    PenguinSync,
     DoSpell,
     DoHex,
     DoCurse,
     SniperSync,
+    StealthDarken,
     SetLoversPlayers,
     SetExecutionerTarget,
     RemoveExecutionerTarget,
@@ -56,6 +59,7 @@ enum CustomRPC
     SetCurrentDousingTarget,
     SetEvilTrackerTarget,
     SetRealKiller,
+
 
     // TOHE
     AntiBlackout,
@@ -79,6 +83,7 @@ enum CustomRPC
     SetJailerExeLimit,
     SetCleanserCleanLimit,
     SetSoulCollectorLimit,
+    SyncSchrodingerData,
     SetPixieTargets,
     SetDivinatorLimit,
     SetDivinatorTempLimit,
@@ -492,6 +497,12 @@ internal class RPCHandlerPatch
             case CustomRPC.SetEvilTrackerTarget:
                 EvilTracker.ReceiveRPC(reader);
                 break;
+            case CustomRPC.SyncPlagueDoctor:
+                PlagueDoctor.ReceiveRPC(reader);
+                break;
+            case CustomRPC.PenguinSync:
+                Penguin.ReceiveRPC(reader);
+                break;
             case CustomRPC.SetRealKiller:
                 byte targetId = reader.ReadByte();
                 byte killerId = reader.ReadByte();
@@ -523,6 +534,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetPursuerSellLimit:
                 Pursuer.ReceiveRPC(reader);
+                break;
+            case CustomRPC.StealthDarken:
+                Stealth.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetMedicalerProtectLimit:
                 Medic.ReceiveRPC(reader);
@@ -765,6 +779,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetSoulCollectorLimit:
                 SoulCollector.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SyncSchrodingerData:
+                SchrodingersCat.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetPixieTargets:
                 Pixie.ReceiveRPC(reader);
@@ -1125,6 +1142,9 @@ internal static class RPC
             case CustomRoles.Poisoner:
                 Poisoner.Add(targetId);
                 break;
+            case CustomRoles.PlagueDoctor:
+                PlagueDoctor.Add(targetId);
+                break;
             case CustomRoles.Sheriff:
                 Sheriff.Add(targetId);
                 break;
@@ -1145,6 +1165,9 @@ internal static class RPC
                 break;
             case CustomRoles.SoulCollector:
                 SoulCollector.Add(targetId);
+                break;
+            case CustomRoles.SchrodingersCat:
+                SchrodingersCat.Add(targetId);
                 break;
             case CustomRoles.Agitater:
                 Agitater.Add(targetId);
@@ -1238,6 +1261,12 @@ internal static class RPC
                 break;
             case CustomRoles.DarkHide:
                 DarkHide.Add(targetId);
+                break;
+            case CustomRoles.Stealth:
+                Stealth.Add(targetId);
+                break;
+            case CustomRoles.Penguin:
+                Penguin.Add(targetId);
                 break;
             case CustomRoles.Greedier:
                 Greedier.Add(targetId);
@@ -1494,6 +1523,9 @@ internal static class RPC
                 break;
             case CustomRoles.Quizmaster:
                 Quizmaster.Add(targetId);
+                break;
+            case CustomRoles.Rainbow:
+                Rainbow.Add();
                 break;
         }
         HudManager.Instance.SetHudActive(true);
