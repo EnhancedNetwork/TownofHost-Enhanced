@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
@@ -563,6 +564,11 @@ class IntroCutsceneDestroyPatch
             {
                 PlayerControl.LocalPlayer.RpcExile();
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
+            }
+
+            if (Main.NormalOptions.MapId == 4)
+            {
+                Penguin.OnSpawnAirship();
             }
 
             if (GameStates.IsNormalGame && (Options.RandomSpawn.GetBool() || Options.CurrentGameMode == CustomGameMode.FFA))

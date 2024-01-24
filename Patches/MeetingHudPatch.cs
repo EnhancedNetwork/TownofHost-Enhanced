@@ -1242,6 +1242,7 @@ class MeetingHudStartPatch
                 case CustomRoles.RuthlessRomantic:
                 case CustomRoles.Necromancer:
                 case CustomRoles.Virus:
+                case CustomRoles.PlagueDoctor:
                 case CustomRoles.Pyromaniac:
                 case CustomRoles.Medusa:
                 case CustomRoles.Succubus:
@@ -1411,6 +1412,7 @@ class MeetingHudStartPatch
 
 
             sb.Append(Lawyer.LawyerMark(seer, target));
+            sb.Append(PlagueDoctor.GetMarkOthers(seer, target, isForMeeting: true));
 
             //会議画面ではインポスター自身の名前にSnitchマークはつけません。
 

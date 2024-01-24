@@ -490,6 +490,7 @@ static class ExtendedPlayerControl
             CustomRoles.Arsonist => Options.ArsonistCanIgniteAnytime.GetBool() ? Utils.GetDousedPlayerCount(pc.PlayerId).Item1 < Options.ArsonistMaxPlayersToIgnite.GetInt() : !pc.IsDouseDone(),
             CustomRoles.Revolutionist => !pc.IsDrawDone(),
             CustomRoles.Pyromaniac => pc.IsAlive(),
+            CustomRoles.PlagueDoctor => pc.IsAlive() && PlagueDoctor.CanUseKillButton(),
             CustomRoles.Huntsman => pc.IsAlive(),
             CustomRoles.SwordsMan => pc.IsAlive(),
             CustomRoles.Jackal => pc.IsAlive(),
@@ -606,6 +607,7 @@ static class ExtendedPlayerControl
             CustomRoles.Succubus or
             CustomRoles.CursedSoul or
             CustomRoles.PlagueBearer or
+            CustomRoles.PlagueDoctor or
             CustomRoles.Admirer or
             CustomRoles.Doppelganger or
             CustomRoles.Crusader or
@@ -686,6 +688,7 @@ static class ExtendedPlayerControl
             CustomRoles.Medusa or
             CustomRoles.SwordsMan or
             CustomRoles.Pyromaniac or
+            CustomRoles.PlagueDoctor or
             CustomRoles.Reverie or
             CustomRoles.Innocent or
             CustomRoles.Pelican or
@@ -798,15 +801,21 @@ static class ExtendedPlayerControl
             case CustomRoles.Agitater:
                 Agitater.SetKillCooldown(player.PlayerId);
                 break;
+            case CustomRoles.PlagueDoctor:
+                PlagueDoctor.SetKillCooldown(player.PlayerId);
+                break;
             case CustomRoles.Berserker:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.BerserkerKillCooldown.GetFloat();
                 break;
             case CustomRoles.Kamikaze:
                 Kamikaze.SetKillCooldown(player.PlayerId);
                 break;
-           /* case CustomRoles.Mare:
-                Mare.SetKillCooldown(player.PlayerId);
-                break; */
+            case CustomRoles.Penguin:
+                Penguin.SetKillCooldown(player.PlayerId);
+                break;
+            /* case CustomRoles.Mare:
+                 Mare.SetKillCooldown(player.PlayerId);
+                 break; */
             case CustomRoles.EvilDiviner:
                 EvilDiviner.SetKillCooldown(player.PlayerId);
                 break;
@@ -900,6 +909,9 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Chronomancer:
                 Chronomancer.SetKillCooldown(player.PlayerId);
+                break;
+            case CustomRoles.Stealth:
+                Stealth.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Shroud:
                 Shroud.SetKillCooldown(player.PlayerId);

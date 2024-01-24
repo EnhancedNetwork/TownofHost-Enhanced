@@ -240,6 +240,7 @@ class CheckMurderPatch
         if (killerRole.Is(CustomRoles.Chronomancer))
             Chronomancer.OnCheckMurder(killer);
 
+
         killer.ResetKillCooldown();
 
         // killable decision
@@ -374,11 +375,17 @@ class CheckMurderPatch
                 case CustomRoles.HexMaster:
                     if (!HexMaster.OnCheckMurder(killer, target)) return false;
                     break;
+                case CustomRoles.PlagueDoctor:
+                    if (!PlagueDoctor.OnPDinfect(killer, target)) return false;
+                    break;
                 case CustomRoles.Glitch:
                     if (!Glitch.OnCheckMurder(killer, target)) return false;
                     break;
                 case CustomRoles.Huntsman:
                     Huntsman.OnCheckMurder(killer, target);
+                    break;
+                case CustomRoles.Stealth:
+                    Stealth.OnCheckMurder(killer, target);
                     break;
                 //case CustomRoles.Occultist:
                 //    if (!Occultist.OnCheckMurder(killer, target)) return false;
@@ -435,6 +442,9 @@ class CheckMurderPatch
                     break;
                 case CustomRoles.Juggernaut:
                     Juggernaut.OnCheckMurder(killer);
+                    break;
+                case CustomRoles.Penguin:
+                    if (!Penguin.OnCheckMurderAsKiller(killer, target)) return false;
                     break;
                 case CustomRoles.Reverie:
                     Reverie.OnCheckMurder(killer, target);
@@ -1290,6 +1300,9 @@ class MurderPlayerPatch
         if (target.AmOwner) RemoveDisableDevicesPatch.UpdateDisableDevices();
         if (!target.Data.IsDead || !AmongUsClient.Instance.AmHost) return;
 
+        if(PlagueDoctor.IsEnable)
+            PlagueDoctor.OnAnyMurder();
+
         if (Quizmaster.IsEnable)
             Quizmaster.OnPlayerDead(target);
 
@@ -1678,6 +1691,8 @@ class ShapeshiftPatch
                     break;
                 case CustomRoles.Assassin:
                     Assassin.OnShapeshift(shapeshifter, shapeshifting);
+                    break;
+                case CustomRoles.Penguin:
                     break;
                 case CustomRoles.ImperiusCurse:
                     if (shapeshifting)
@@ -2327,6 +2342,8 @@ class ReportDeadBodyPatch
         if (Vampiress.IsEnable) Vampiress.OnStartMeeting();
         if (Bloodhound.IsEnable) Bloodhound.Clear();
         if (Vulture.IsEnable) Vulture.Clear();
+        if (Stealth.IsEnable) Stealth.OnReportDeadBody();
+        if (Penguin.IsEnable) Penguin.OnReportDeadBody(); 
         if (Pelican.IsEnable) Pelican.OnReportDeadBody();
         if (Bandit.IsEnable) Bandit.OnReportDeadBody();
         if (Agitater.IsEnable) Agitater.OnReportDeadBody();
@@ -2343,6 +2360,7 @@ class ReportDeadBodyPatch
         if (Oracle.IsEnable) Oracle.OnReportDeadBody();
         if (Deathpact.IsEnable) Deathpact.OnReportDeadBody();
         if (ParityCop.IsEnable) ParityCop.OnReportDeadBody();
+        if (PlagueDoctor.IsEnable) PlagueDoctor.OnReportDeadBody();
         if (Doomsayer.IsEnable) Doomsayer.OnReportDeadBody();
         if (BallLightning.IsEnable) BallLightning.OnReportDeadBody();
         if (NWitch.IsEnable) NWitch.OnReportDeadBody();
@@ -2587,6 +2605,15 @@ class FixedUpdateInNormalGamePatch
 
                 switch (playerRole)
                 {
+                    case CustomRoles.Penguin:
+                        Penguin.OnFixedUpdate(player);
+                        break;
+                    case CustomRoles.PlagueDoctor:
+                        if (GameStates.IsInTask && player != null && player.IsAlive() && PlagueDoctor.IsEnable)
+                        {
+                            PlagueDoctor.OnCheckPlayerPosition(player); break;
+                        }
+                        break;
                     case CustomRoles.Vampire:
                         Vampire.OnFixedUpdate(player);
                         break;
@@ -2818,6 +2845,7 @@ class FixedUpdateInNormalGamePatch
 
                 playerRole = player.GetCustomRole();
 
+                
                 if (Kamikaze.IsEnable)
                     Kamikaze.MurderKamikazedPlayers(player);
                 if (Alchemist.IsEnable)
@@ -2839,11 +2867,15 @@ class FixedUpdateInNormalGamePatch
                     case CustomRoles.Glitch:
                         Glitch.UpdateHackCooldown(player);
                         break;
+                    
                 }
 
                 if (GameStates.IsInTask)
                 {
 
+                    if (Stealth.IsEnable)
+                        Stealth.OnFixedUpdate(player);
+                    
                     if (BountyHunter.IsEnable)
                         BountyHunter.OnFixedUpdate(player);
 
@@ -3133,7 +3165,10 @@ class FixedUpdateInNormalGamePatch
                             Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Marshall), "★"));
                     }
                 }
-
+                
+                if (PlagueDoctor.IsEnable) 
+                    Mark.Append(PlagueDoctor.GetMarkOthers(seer, target));
+                
                 if (Snitch.IsEnable)
                 {
                     Mark.Append(Snitch.GetWarningMark(seer, target));
@@ -3288,8 +3323,14 @@ class FixedUpdateInNormalGamePatch
                 if (Mortician.IsEnable)
                     Suffix.Append(Mortician.GetTargetArrow(seer, target));
 
+                if (Stealth.IsEnable) 
+                    Suffix.Append(Stealth.GetSuffix(seer, target));
+
                 if (EvilTracker.IsEnable)
                     Suffix.Append(EvilTracker.GetTargetArrow(seer, target));
+
+                if (PlagueDoctor.IsEnable)
+                    Suffix.Append(PlagueDoctor.GetLowerTextOthers(seer, target));
 
                 if (Tracker.IsEnable)
                     Suffix.Append(Tracker.GetTrackerArrow(seer, target));

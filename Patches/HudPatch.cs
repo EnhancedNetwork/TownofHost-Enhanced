@@ -134,6 +134,7 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("ShamanButtonText"));
                         break;
+                    case CustomRoles.PlagueDoctor:
                     case CustomRoles.PlagueBearer:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("InfectiousKillButtonText"));
@@ -172,6 +173,11 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("RevolutionistDrawButtonText"));
                         __instance.ImpostorVentButton.buttonLabelText.text = GetString("RevolutionistVentButtonText");
+                        break;
+                    case CustomRoles.Penguin:
+                        __instance.KillButton?.OverrideText(Penguin.OverrideKillButtonText());
+                        __instance.AbilityButton?.OverrideText(Penguin.GetAbilityButtonText());
+                        __instance.AbilityButton?.ToggleVisible(Penguin.CanUseAbilityButton());
                         break;
                     case CustomRoles.Farseer:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
@@ -507,6 +513,8 @@ class HudManagerPatch
                             CustomRoles.Glitch => Glitch.GetHudText(player),
                             CustomRoles.BloodKnight => BloodKnight.GetHudText(player),
                             CustomRoles.Wildling => Wildling.GetHudText(player),
+                            CustomRoles.PlagueDoctor => PlagueDoctor.GetLowerTextOthers(player, isForHud: true),
+                            CustomRoles.Stealth => Stealth.GetSuffix(player, isHUD: true),
                             _ => string.Empty,
                         };
                         break;
