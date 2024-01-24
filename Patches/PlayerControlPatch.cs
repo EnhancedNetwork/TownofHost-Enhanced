@@ -3956,7 +3956,7 @@ class PlayerControlProtectPlayerPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RemoveProtection))]
 class PlayerControlRemoveProtectionPatch
 {
-    public static void Postfix()
+    public static void Postfix(PlayerControl __instance)
     {
     Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()}", "RemoveProtection");
     }
