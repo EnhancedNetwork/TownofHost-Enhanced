@@ -29,6 +29,7 @@ enum CustomRPC
     SetCustomRole,
     SetBountyTarget,
     SyncPuppet,
+    SyncPlagueDoctor,
     SyncKami,
     SetKillOrSpell,
     SetKillOrHex,
@@ -43,10 +44,12 @@ enum CustomRPC
     SetDousedPlayer,
     setPlaguedPlayer,
     SetNameColorData,
+    PenguinSync,
     DoSpell,
     DoHex,
     DoCurse,
     SniperSync,
+    StealthDarken,
     SetLoversPlayers,
     SetExecutionerTarget,
     RemoveExecutionerTarget,
@@ -56,6 +59,7 @@ enum CustomRPC
     SetCurrentDousingTarget,
     SetEvilTrackerTarget,
     SetRealKiller,
+
 
     // TOHE
     AntiBlackout,
@@ -493,6 +497,12 @@ internal class RPCHandlerPatch
             case CustomRPC.SetEvilTrackerTarget:
                 EvilTracker.ReceiveRPC(reader);
                 break;
+            case CustomRPC.SyncPlagueDoctor:
+                PlagueDoctor.ReceiveRPC(reader);
+                break;
+            case CustomRPC.PenguinSync:
+                Penguin.ReceiveRPC(reader);
+                break;
             case CustomRPC.SetRealKiller:
                 byte targetId = reader.ReadByte();
                 byte killerId = reader.ReadByte();
@@ -524,6 +534,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetPursuerSellLimit:
                 Pursuer.ReceiveRPC(reader);
+                break;
+            case CustomRPC.StealthDarken:
+                Stealth.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetMedicalerProtectLimit:
                 Medic.ReceiveRPC(reader);
@@ -1129,6 +1142,9 @@ internal static class RPC
             case CustomRoles.Poisoner:
                 Poisoner.Add(targetId);
                 break;
+            case CustomRoles.PlagueDoctor:
+                PlagueDoctor.Add(targetId);
+                break;
             case CustomRoles.Sheriff:
                 Sheriff.Add(targetId);
                 break;
@@ -1245,6 +1261,12 @@ internal static class RPC
                 break;
             case CustomRoles.DarkHide:
                 DarkHide.Add(targetId);
+                break;
+            case CustomRoles.Stealth:
+                Stealth.Add(targetId);
+                break;
+            case CustomRoles.Penguin:
+                Penguin.Add(targetId);
                 break;
             case CustomRoles.Greedier:
                 Greedier.Add(targetId);

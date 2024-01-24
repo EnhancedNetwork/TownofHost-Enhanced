@@ -328,6 +328,9 @@ internal class ChangeRoleSettings
             Spiritualist.Init();
             Vulture.Init();
             Alchemist.Init();
+            Stealth.Init();
+            PlagueDoctor.Init();
+            Penguin.Init();
             Chameleon.Init();
             Wildling.Init();
             Morphling.Init();
@@ -684,6 +687,9 @@ internal class SelectRolesPatch
                     case CustomRoles.Poisoner:
                         Poisoner.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.PlagueDoctor:
+                        PlagueDoctor.Add(pc.PlayerId);
+                        break;
                     case CustomRoles.Sheriff:
                         Sheriff.Add(pc.PlayerId);
                         break;
@@ -789,6 +795,12 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.DarkHide:
                         DarkHide.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Stealth:
+                        Stealth.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Penguin:
+                        Penguin.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Greedier:
                         Greedier.Add(pc.PlayerId);

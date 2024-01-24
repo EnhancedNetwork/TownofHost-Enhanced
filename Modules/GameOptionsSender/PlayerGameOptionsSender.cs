@@ -269,6 +269,9 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Poisoner:
                 Poisoner.ApplyGameOptions(opt);
                 break;
+            case CustomRoles.PlagueDoctor:
+                PlagueDoctor.ApplyGameOptions(opt);
+                break;
             case CustomRoles.Bandit:
                 Bandit.ApplyGameOptions(opt);
                 break;
@@ -297,6 +300,10 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.TimeMaster:
                 AURoleOptions.EngineerCooldown = Options.TimeMasterSkillCooldown.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 1;
+                break;
+            case CustomRoles.Penguin:
+                Penguin.ApplyGameOptions(opt);
+                AURoleOptions.ShapeshifterDuration = 1f;
                 break;
             case CustomRoles.Bastion:
                 AURoleOptions.EngineerInVentMaxTime = 1;
