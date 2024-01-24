@@ -1977,7 +1977,7 @@ public static class Utils
                 };
             }
 
-            if (!name.Contains($"\r\r") && player.FriendCode.GetDevUser().HasTag())
+            if (!name.Contains($"\r\r") && player.FriendCode.GetDevUser().HasTag() && (player.AmOwner || player.IsModClient()))
             {
                 name = player.FriendCode.GetDevUser().GetTag() + "<size=1.5>" + modtag + "</size>" + name;
             }
