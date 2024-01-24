@@ -1299,16 +1299,19 @@ class MurderPlayerPatch
         if (target.AmOwner) RemoveDisableDevicesPatch.UpdateDisableDevices();
         if (!target.Data.IsDead || !AmongUsClient.Instance.AmHost) return;
 
-        if(PlagueDoctor.IsEnable)
-            PlagueDoctor.OnAnyMurder();
-
-        if (Quizmaster.IsEnable)
-            Quizmaster.OnPlayerDead(target);
-
         if (Main.OverDeadPlayerList.Contains(target.PlayerId)) return;
 
         PlayerControl killer = __instance;
         bool needUpadteNotifyRoles = true;
+
+        if (PlagueDoctor.IsEnable)
+        {
+            PlagueDoctor.OnInfectDeath(__instance);
+            PlagueDoctor.OnAnyMurder();
+        }
+
+        if (Quizmaster.IsEnable)
+            Quizmaster.OnPlayerDead(target);
 
         if (Pelican.IsEnable && target.Is(CustomRoles.Pelican))
             Pelican.OnPelicanDied(target.PlayerId);
