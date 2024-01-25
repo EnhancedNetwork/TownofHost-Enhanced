@@ -1,8 +1,8 @@
-﻿using AmongUs.GameOptions;
-using Hazel;
+﻿using Hazel;
 using System.Collections.Generic;
 using UnityEngine;
 using static TOHE.Translator;
+using static TOHE.Options;
 
 // https://github.com/tukasa0001/TownOfHost/blob/main/Roles/Impostor/Penguin.cs
 namespace TOHE.Roles.Impostor;
@@ -26,12 +26,12 @@ public static class Penguin
     public static bool IsKiller => AbductVictim == null;
     public static void SetupCustomOption()
     {
-        Options.SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Penguin, 1);
+        SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Penguin, 1);
         OptionAbductTimerLimit = FloatOptionItem.Create(Id + 11, "PenguinAbductTimerLimit", new(1f, 20f, 1f), 10f, TabGroup.ImpostorRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Penguin])
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Penguin])
             .SetValueFormat(OptionFormat.Seconds);
         OptionMeetingKill = BooleanOptionItem.Create(Id + 12, "PenguinMeetingKill", false, TabGroup.ImpostorRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Penguin]);
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Penguin]);
     }
     public static void Init()
     {
@@ -196,21 +196,33 @@ public static class Penguin
                     var abductVictim = AbductVictim;
                     _ = new LateTask(() =>
                     {
-                        var sId = abductVictim.NetTransform.lastSequenceId + 5;
-                        abductVictim.NetTransform.SnapTo(Utils.GetPlayerById(playerIdList[0]).transform.position, (ushort)sId);
-                        Utils.GetPlayerById(playerIdList[0]).RpcMurderPlayerV3(abductVictim);
+                        var sId = abductVictim.NetTransform.lastSequenceId;
+                        //Host side
+                        abductVictim.NetTransform.SnapTo(Utils.GetPlayerById(playerIdList[0]).transform.position, (ushort)(sId + 2));
+                        Utils.GetPlayerById(playerIdList[0]).MurderPlayer(abductVictim, ExtendedPlayerControl.ResultFlags);
 
                         var sender = CustomRpcSender.Create("PenguinMurder");
                         {
+                            //Use the same code like Utils.TP
+                            if (abductVictim.PlayerId != PlayerControl.LocalPlayer.PlayerId)
+                            {
+                                sender.AutoStartRpc(abductVictim.NetTransform.NetId, (byte)RpcCalls.SnapTo, abductVictim.GetClientId());
+                                {
+                                    NetHelpers.WriteVector2(Utils.GetPlayerById(playerIdList[0]).transform.position, sender.stream);
+                                    sender.Write((ushort)(sId + 28));
+                                }
+                                sender.EndRpc();
+                            }    
                             sender.AutoStartRpc(abductVictim.NetTransform.NetId, (byte)RpcCalls.SnapTo);
                             {
                                 NetHelpers.WriteVector2(Utils.GetPlayerById(playerIdList[0]).transform.position, sender.stream);
-                                sender.Write(abductVictim.NetTransform.lastSequenceId);
+                                sender.Write((ushort)(sId + 48));
                             }
                             sender.EndRpc();
                             sender.AutoStartRpc(Utils.GetPlayerById(playerIdList[0]).NetId, (byte)RpcCalls.MurderPlayer);
                             {
                                 sender.WriteNetObject(abductVictim);
+                                sender.Write((int)ExtendedPlayerControl.ResultFlags);
                             }
                             sender.EndRpc();
                         }
