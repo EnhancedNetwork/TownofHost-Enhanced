@@ -85,9 +85,9 @@ public static class Utils
         }
     }
 
-    public static void RpcTeleport(this PlayerControl player, Vector2 location, bool needLogs = true)
+    public static void RpcTeleport(this PlayerControl player, Vector2 location, bool sendInfoInLogs = true)
     {
-        if (needLogs)
+        if (sendInfoInLogs)
         {
             Logger.Info($" {player.GetNameWithRole().RemoveHtmlTags()} => {location}", "RpcTeleport");
             Logger.Info($" Player Id: {player.PlayerId}", "RpcTeleport");
