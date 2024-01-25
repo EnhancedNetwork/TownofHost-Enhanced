@@ -237,7 +237,7 @@ public static class Penguin
                 var position = Utils.GetPlayerById(playerIdList[0]).transform.position;
                 if (Utils.GetPlayerById(playerIdList[0]).PlayerId != 0)
                 {
-                    Utils.RpcTeleport(AbductVictim, position);
+                    AbductVictim.RpcTeleport(position, sendInfoInLogs: false);
                 }
                 else
                 {
