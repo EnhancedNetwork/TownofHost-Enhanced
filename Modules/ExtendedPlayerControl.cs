@@ -1223,6 +1223,7 @@ static class ExtendedPlayerControl
     }
     public static void RpcMurderPlayerV3(this PlayerControl killer, PlayerControl target)
     {
+
         if (target.Is(CustomRoles.Susceptible))
         {
             Susceptible.CallEnabledAndChange(target);

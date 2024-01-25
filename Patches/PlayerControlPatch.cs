@@ -1310,6 +1310,14 @@ class MurderPlayerPatch
             PlagueDoctor.OnAnyMurder();
         }
 
+
+        if (Options.GhostAssign(CustomRoles.GuardianAngelTOHE))
+        {
+            target.RpcSetRole(RoleTypes.GuardianAngel);
+            target.RpcSetCustomRole(CustomRoles.GuardianAngelTOHE);
+        }
+            
+
         if (Quizmaster.IsEnable)
             Quizmaster.OnPlayerDead(target);
 
