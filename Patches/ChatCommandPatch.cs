@@ -1471,15 +1471,24 @@ internal class ChatCommands
                     var sb = new StringBuilder();
                     //sb.Append(String.Format(GetString("PlayerNameForRoleInfo"), Main.AllPlayerNames[player.PlayerId]));
                     sb.Append(GetString(role.ToString()) + Utils.GetRoleMode(role) + player.GetRoleInfo(true));
+
                     if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
                         Utils.ShowChildrenSettings(opt, ref sb, command: true);
+
                     var txt = sb.ToString();
+
                     sb.Clear().Append(txt.RemoveHtmlTags());
+
                     foreach (var subRole in Main.PlayerStates[player.PlayerId].SubRoles.ToArray())
+                    {
                         sb.Append($"\n\n" + GetString($"{subRole}") + Utils.GetRoleMode(subRole) + GetString($"{subRole}InfoLong"));
-                    if (CustomRolesHelper.RoleExist(CustomRoles.Ntr) && (role is not CustomRoles.GM and not CustomRoles.Ntr))
-                        sb.Append($"\n\n" + GetString($"Lovers") + Utils.GetRoleMode(CustomRoles.Lovers) + GetString($"LoversInfoLong"));
+
+                        if (CustomRoles.Ntr.RoleExist() && (role is not CustomRoles.GM and not CustomRoles.Ntr))
+                            sb.Append($"\n\n" + GetString($"Lovers") + Utils.GetRoleMode(CustomRoles.Lovers) + GetString($"LoversInfoLong"));
+                    }
                     Utils.SendMessage(sb.ToString(), player.PlayerId);
+
+                    Logger.Info($"Command '/m' should be send message", "OnReceiveChat");
                 }
                 else
                     Utils.SendMessage(GetString("Message.CanNotUseInLobby"), player.PlayerId);
