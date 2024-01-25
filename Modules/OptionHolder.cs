@@ -3847,7 +3847,7 @@ public static class Options
             .SetGameMode(customGameMode);
 
         if(CustomGhostRoleCounts.ContainsKey(role))
-            CustomRoleCounts.Remove(role);
+            CustomGhostRoleCounts.Remove(role);
 
 
         CustomRoleSpawnChances.Add(role, spawnOption);
