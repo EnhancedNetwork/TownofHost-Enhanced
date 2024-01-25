@@ -412,7 +412,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.ShapeshifterDuration = Options.ShapeImperiusCurseShapeshiftDuration.GetFloat();
                 break;
             case CustomRoles.QuickShooter:
-                AURoleOptions.ShapeshifterCooldown = QuickShooter.ShapeshiftCooldown.GetFloat();
+                QuickShooter.ApplyGameOptions();
                 break;
             case CustomRoles.Camouflager:
                 Camouflager.ApplyGameOptions();

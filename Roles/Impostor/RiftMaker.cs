@@ -113,7 +113,8 @@ public static class RiftMaker
     public static void ApplyGameOptions()
     {
         AURoleOptions.ShapeshifterCooldown = SSCooldown.GetFloat();
-        AURoleOptions.ShapeshifterLeaveSkin = true;
+        //AURoleOptions.ShapeshifterLeaveSkin = true;
+        //You set leave skin here only influences the rifter it own. Its not global
         AURoleOptions.ShapeshifterDuration = 1f;
     }
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();

@@ -2169,6 +2169,8 @@
   "PoisonerTargetDead": "Target died",
   "BloodlustAdded": "Your bloodlust is now active!",
   "WarlockNoTarget": "Manipulation failed due to no target",
+  "WarlockNoTargetYet": "You haven't mark a target.",
+  "WarlockTargetDead": "Manipulation failed due to target dead",
   "WarlockControlKill": "Target died",
   "OnCyberStarDead": "Warning: Celebrity death!",
   "OnCyberDead": "Warning: Cyber died!",
