@@ -19,6 +19,8 @@ namespace TOHE;
 
 enum CustomRPC
 {
+    // RpcCalls can increase with each AU version
+    // On version 2023.11.28 the last id in RpcCalls: 61
     VersionCheck = 80,
     RequestRetryVersionCheck = 81,
     SyncCustomSettings = 82,
