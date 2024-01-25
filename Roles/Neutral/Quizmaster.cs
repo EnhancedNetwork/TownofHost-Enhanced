@@ -25,7 +25,7 @@ public class Quizmaster
     public static Sabotages firstSabotageOfRound = Sabotages.None;
     public static int killsForRound = 0;
     public static bool allowedKilling = false;
-    public static bool allowedVenting = true;
+    //public static bool allowedVenting = true;
     public static bool AlreadyMarked = false;
     public static byte MarkedPlayer = byte.MaxValue;
     public static string lastExiledColor = "None";
@@ -62,7 +62,7 @@ public class Quizmaster
         firstSabotageOfRound = Sabotages.None;
         killsForRound = 0;
         allowedKilling = false;
-        allowedVenting = true;
+        //allowedVenting = true;
         AlreadyMarked = false;
         MarkedPlayer = byte.MaxValue;
 
@@ -89,7 +89,7 @@ public class Quizmaster
     }
     private static void SendRPC(byte targetId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMarkedPlayer, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.QuizmasterMarkPlayer, SendOption.Reliable, -1);
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
@@ -99,9 +99,18 @@ public class Quizmaster
 
         if (targetId != byte.MaxValue)
         {
-            allowedVenting = false;
+            //allowedVenting = false;
             AlreadyMarked = true;
             MarkedPlayer = targetId;
+
+            if (CanKillAfterMark.GetBool())
+            {
+                allowedKilling = AlreadyMarked;
+            }
+            else
+            {
+                allowedKilling = false;
+            }
         }
     }
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 15;
@@ -109,33 +118,17 @@ public class Quizmaster
     {
         if (pc == null || !pc.IsAlive()) return false;
 
-        bool canKill;
-        if (CanKillAfterMark.GetBool())
-        {
-            bool didLimit = killsForRound >= NumOfKillAfterMark.GetInt();
-            canKill = !didLimit;
-            allowedKilling = AlreadyMarked == true;
-        }
-        else
-        {
-            allowedKilling = false;
-            canKill = MarkedPlayer == byte.MaxValue && AlreadyMarked == false;
-        }
-        return canKill;
+        return true;
     }
 
     public static bool CanUseVentButton(PlayerControl pc)
     {
         if (pc == null || !pc.IsAlive()) return false;
        
-        bool canVent;
+        bool canVent = false;
         if (CanVentAfterMark.GetBool() && MarkedPlayer != byte.MaxValue)
         {
             canVent = true;
-        }
-        else
-        {
-            canVent = MarkedPlayer == byte.MaxValue && !allowedVenting;
         }
 
         return canVent;
@@ -145,16 +138,27 @@ public class Quizmaster
     {
         if (AlreadyMarked == false)
         {
-            allowedVenting = false;
+            //allowedVenting = false;
             AlreadyMarked = true;
             MarkedPlayer = target.PlayerId;
-            Utils.DoNotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
-
             SendRPC(target.PlayerId);
+
+            Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
+
+            if (CanKillAfterMark.GetBool())
+            {
+                allowedKilling = AlreadyMarked;
+            }
+            else
+            {
+                allowedKilling = false;
+            }
+
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
             killer.SyncSettings();
             killer.RPCPlayCustomSound("Clothe");
+
             return false;
         }
         return allowedKilling && AlreadyMarked;
@@ -276,7 +280,7 @@ public class Quizmaster
     {
         firstSabotageOfRound = Sabotages.None;
         killsForRound = 0;
-        allowedVenting = true;
+        //allowedVenting = true;
         allowedKilling = false;
         diedThisRound = 0;
         if (MarkedPlayer != byte.MaxValue)
@@ -307,7 +311,7 @@ public class Quizmaster
     }
 
     public static string TargetMark(PlayerControl seer, PlayerControl target)
-        => (seer != null && target.PlayerId == MarkedPlayer) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : "";
+        => (seer != null && seer.PlayerId != target.PlayerId && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : "";
 
     public static void OnSabotageCall(SystemTypes systemType)
     {
