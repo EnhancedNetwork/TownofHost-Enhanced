@@ -895,7 +895,7 @@ internal static class RPC
             amountAllOptions = OptionItem.AllOptions.Count;
         }
 
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, 80, SendOption.Reliable, targetId);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncCustomSettings, SendOption.Reliable, targetId);
 
         writer.Write(startAmount);
         writer.Write(lastAmount);
