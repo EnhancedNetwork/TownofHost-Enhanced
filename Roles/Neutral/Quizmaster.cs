@@ -156,7 +156,7 @@ public class Quizmaster
 
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
-            killer.SyncSettings();
+            killer.MarkDirtySettings();
             killer.RPCPlayCustomSound("Clothe");
 
             return false;
