@@ -87,20 +87,22 @@ public class Quizmaster
         MarkedPlayer = byte.MaxValue;
         IsEnable = true;
     }
-    private static void SendRPC(byte playerId)
+    private static void SendRPC(byte targetId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMarkedPlayer, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.Write(MarkedPlayer);
+        writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC(MessageReader reader)
     {
-        byte playerId = reader.ReadByte();
         byte targetId = reader.ReadByte();
 
         if (targetId != byte.MaxValue)
+        {
+            allowedVenting = false;
+            AlreadyMarked = true;
             MarkedPlayer = targetId;
+        }
     }
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 15;
     public static bool CanUseKillButton(PlayerControl pc)
@@ -148,7 +150,7 @@ public class Quizmaster
             MarkedPlayer = target.PlayerId;
             Utils.DoNotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
 
-            SendRPC(killer.PlayerId);
+            SendRPC(target.PlayerId);
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
             killer.SyncSettings();
