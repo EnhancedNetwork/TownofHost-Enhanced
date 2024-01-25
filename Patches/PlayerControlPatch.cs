@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.IO;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
@@ -1509,6 +1507,94 @@ class MurderPlayerPatch
                 Utils.NotifyRoles(ForceLoop: true);
             }
         }
+    }
+}
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckShapeshift))]
+class CheckShapeShiftPatch
+{
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool shouldAnimate)
+    {
+        if (!AmongUsClient.Instance.AmHost || !GameStates.IsModHost) return true;
+        var player = __instance;
+        Logger.Info($"{player.GetRealName()} => {target.GetRealName()}, shouldAnimate = {shouldAnimate}", "Check ShapeShift");
+        var role = player.GetCustomRole();
+
+        if (role.GetVNRole() != CustomRoles.Shapeshifter)
+        {
+            player.RpcRejectShapeshift();
+            Logger.Info($"Rejected bcz {player.GetRealName()} is not shapeshifter in mod roles", "Check ShapeShift");
+            return false;
+        }
+
+        switch (role)
+        {
+            case CustomRoles.Sniper:
+                //Work later
+                break;
+            case CustomRoles.BountyHunter:
+                Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
+                player.RpcRejectShapeshift();
+                return false;
+            case CustomRoles.Penguin:
+                Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
+                player.RpcRejectShapeshift();
+                return false;
+            case CustomRoles.Warlock:
+                //This role should be reworked to meet check shapeshift
+                break;
+            case CustomRoles.Undertaker:
+                //Work later
+                break;
+            case CustomRoles.SerialKiller:
+                Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
+                player.RpcRejectShapeshift();
+                break;
+            case CustomRoles.FireWorks:
+                //Work later
+                break;
+            case CustomRoles.EvilTracker:
+                //Work later
+                break;
+            case CustomRoles.Miner:
+                //
+                break;
+            case CustomRoles.Hacker:
+                //
+                break;
+            case CustomRoles.Assassin:
+                //
+                break;
+            case CustomRoles.Escapee:
+                //
+                break;
+            case CustomRoles.Bomber:
+                //
+                break;
+            case CustomRoles.Nuker:
+                //
+                break;
+            case CustomRoles.QuickShooter:
+                //
+                break;
+            case CustomRoles.Dazzler:
+                //
+                break;
+            case CustomRoles.Devourer:
+                //
+                break;
+            case CustomRoles.Deathpact:
+                //
+                break;
+            case CustomRoles.Blackmailer:
+                //
+                break;
+            case CustomRoles.RiftMaker:
+                //
+                break;
+
+        }
+
+        return true;
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Shapeshift))]
