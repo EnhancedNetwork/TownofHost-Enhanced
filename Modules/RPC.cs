@@ -19,9 +19,9 @@ namespace TOHE;
 
 enum CustomRPC
 {
-    VersionCheck = 60,
-    RequestRetryVersionCheck = 61,
-    SyncCustomSettings = 80,
+    VersionCheck = 80,
+    RequestRetryVersionCheck = 81,
+    SyncCustomSettings = 82,
     RestTOHESetting,
     SetDeathReason,
     EndGame,
