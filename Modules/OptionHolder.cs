@@ -3837,9 +3837,10 @@ public static class Options
     }
     public static void SetupGhostRoleOptions(int id, TabGroup tab, CustomRoles role, CustomGameMode customGameMode = CustomGameMode.Standard, bool zeroOne = false)
     {
-        var spawnOption = StringOptionItem.Create(id, role.ToString(), zeroOne ? ratesZeroOne : ratesToggle, 0, tab, false).SetColor(Utils.GetRoleColor(role))
+        var spawnOption = StringOptionItem.Create(id, role.ToString(), ratesZeroOne, 0, tab, false).SetColor(Utils.GetRoleColor(role))
             .SetHeader(true)
             .SetGameMode(customGameMode) as StringOptionItem;
+
         var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(1, 15, 1), 1, tab, false)
          .SetParent(spawnOption)
             .SetValueFormat(OptionFormat.Players)
@@ -3849,7 +3850,7 @@ public static class Options
             CustomRoleCounts.Remove(role);
 
 
-        //CustomRoleSpawnChances.Add(role, spawnOption);
+        CustomRoleSpawnChances.Add(role, spawnOption);
         CustomRoleCounts.Add(role, countOption);
         //if (role.RoleExist())
             CustomGhostRoleCounts.Add(role, countOption);
