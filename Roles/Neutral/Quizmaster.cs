@@ -103,7 +103,7 @@ public class Quizmaster
             AlreadyMarked = true;
             MarkedPlayer = targetId;
 
-            allowedKilling = CanKillAfterMark.GetBool() && AlreadyMarked;
+            allowedKilling = CanKillAfterMark.GetBool();
         }
     }
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 15;
@@ -138,7 +138,7 @@ public class Quizmaster
 
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
 
-            allowedKilling = CanKillAfterMark.GetBool() && AlreadyMarked;
+            allowedKilling = CanKillAfterMark.GetBool();
 
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
