@@ -244,7 +244,7 @@ public static class Penguin
                     _ = new LateTask(() =>
                     {
                         if (AbductVictim != null)
-                            Utils.RpcTeleport(AbductVictim, position);
+                            AbductVictim.RpcTeleport(position, needLogs: false);
                     }
                     , 0.25f, "");
                 }

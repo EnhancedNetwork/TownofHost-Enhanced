@@ -223,7 +223,7 @@ public static class Pelican
                 var dis = Vector2.Distance(pos, target.GetCustomPosition());
                 if (dis < 1f) continue;
 
-                target.RpcTeleport(pos);
+                target.RpcTeleport(pos, needLogs: false);
                 //Utils.NotifyRoles(SpecifySeer: target, ForceLoop: false);
             }
         }
