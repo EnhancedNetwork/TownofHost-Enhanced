@@ -120,7 +120,9 @@ class OnGameJoinedPatch
                     return;
                 }
                 var client = AmongUsClient.Instance.GetClientFromCharacter(PlayerControl.LocalPlayer);
+                var host = AmongUsClient.Instance.GetHost();
                 Logger.Info($"{client.PlayerName.RemoveHtmlTags()}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) finished join room", "Session: OnGameJoined");
+                Logger.Info($"{host.PlayerName.RemoveHtmlTags()}(ClientID:{host.Id}/FriendCode:{host.FriendCode}/HashPuid:{host.GetHashedPuid()}/Platform:{host.PlatformData.Platform}) is the host", "Session: OnGameJoined");
             }
             catch
             {
@@ -129,11 +131,14 @@ class OnGameJoinedPatch
                 {
                     try
                     {
+                        if (!GameStates.IsOnlineGame && !GameStates.IsLocalGame) return;
                         var client = AmongUsClient.Instance.GetClientFromCharacter(PlayerControl.LocalPlayer);
+                        var host = AmongUsClient.Instance.GetHost();
                         Logger.Info($"{client.PlayerName.RemoveHtmlTags()}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) finished join room", "Session: OnGameJoined Retry");
+                        Logger.Info($"{host.PlayerName.RemoveHtmlTags()}(ClientID:{host.Id}/FriendCode:{host.FriendCode}/HashPuid:{host.GetHashedPuid()}/Platform:{host.PlatformData.Platform}) is the host", "Session: OnGameJoined Retry");
                     }
                     catch { };
-                }, 1f, "Retry Log Local Client");
+                }, 1.5f, "Retry Log Local Client");
             }
         }, 0.6f, "OnGameJoinedPatch");
     }
