@@ -85,10 +85,13 @@ public static class Utils
         }
     }
 
-    public static void RpcTeleport(this PlayerControl player, Vector2 location)
+    public static void RpcTeleport(this PlayerControl player, Vector2 location, bool needLogs = true)
     {
-        Logger.Info($" {player.GetNameWithRole().RemoveHtmlTags()} => {location}", "RpcTeleport");
-        Logger.Info($" Player Id: {player.PlayerId}", "RpcTeleport");
+        if (needLogs)
+        {
+            Logger.Info($" {player.GetNameWithRole().RemoveHtmlTags()} => {location}", "RpcTeleport");
+            Logger.Info($" Player Id: {player.PlayerId}", "RpcTeleport");
+        }
 
         if (player.inVent
             || player.MyPhysics.Animations.IsPlayingEnterVentAnimation())
@@ -105,9 +108,9 @@ public static class Utils
         }
 
         var playerNetTransform = player.NetTransform;
-        var numHost = (ushort)(playerNetTransform.lastSequenceId + 2);
-        var numLocalClient = (ushort)(playerNetTransform.lastSequenceId + 28);
-        var numGlobal = (ushort)(playerNetTransform.lastSequenceId + 48);
+        var numHost = (ushort)(playerNetTransform.lastSequenceId + 6);
+        var numLocalClient = (ushort)(playerNetTransform.lastSequenceId + 48);
+        var numGlobal = (ushort)(playerNetTransform.lastSequenceId + 100);
 
         // Host side
         if (AmongUsClient.Instance.AmHost)
