@@ -1320,10 +1320,10 @@ class MurderPlayerPatch
 
         // ========================= GHOST ASSIGN PATCH ========================
 
-        var GetKillerRole = killer.GetCustomRole();
-        bool IsImpostor = CustomRolesHelper.IsImpostor(GetKillerRole);
-        bool IsNeutral = CustomRolesHelper.IsNeutral(GetKillerRole);
-        bool IsGhostRole = CustomRolesHelper.IsGhostRole(GetKillerRole);
+        var GetTargetRole = target.GetCustomRole();
+        bool IsImpostor = CustomRolesHelper.IsImpostor(GetTargetRole);
+        bool IsNeutral = CustomRolesHelper.IsNeutral(GetTargetRole);
+        bool IsGhostRole = CustomRolesHelper.IsGhostRole(GetTargetRole);
 
         if (!IsImpostor && !IsImpostor && !IsGhostRole)
         {

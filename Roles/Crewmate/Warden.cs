@@ -7,7 +7,7 @@ namespace TOHE.Roles.Crewmate;
 
 public class Warden
 {
-    private static readonly int Id = 27300;
+    private static readonly int Id = 27900;
     public static OptionItem AbilityCooldown;
 
     public static void SetupCustomOptions()
