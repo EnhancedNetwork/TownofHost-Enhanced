@@ -157,6 +157,20 @@ class OnPlayerJoinedPatch
     public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
     {
         Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Joining room", "Session: OnPlayerJoined");
+        _ = new LateTask(() =>
+        {
+            try
+            {
+                if (client.Character != null)
+                {
+                    RPC.RpcVersionCheck();
+                    Logger.Info("On player joined version check, target player id " + client.Character.PlayerId, "OnPlayerJoinedPatch");
+                }
+                else Logger.Error("New coming client character is null!" + client.Id, "OnPlayerJoinedPatch");
+            }
+            catch { }
+        }, 0.8f, "OnPlayerJoined Client<=>Client VersionCheck", false);
+
 
         if (AmongUsClient.Instance.AmHost && client.FriendCode == "" && Options.KickPlayerFriendCodeNotExist.GetBool() && !GameStates.IsLocalGame)
         {

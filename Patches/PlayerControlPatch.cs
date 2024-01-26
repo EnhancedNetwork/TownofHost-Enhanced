@@ -31,6 +31,7 @@ class PlayerControlOnEnablePatch
             {
                 Logger.Info("am owner version check, local player id is " + __instance.PlayerId, "PlayerControlOnEnable");
                 RPC.RpcVersionCheck();
+                return;
             }
 
             if (AmongUsClient.Instance.AmHost && __instance.PlayerId != PlayerControl.LocalPlayer.PlayerId)
@@ -41,6 +42,7 @@ class PlayerControlOnEnablePatch
         }, 0.2f, "Player Spawn LateTask ", false);
 
         //This late task happens where a playercontrol spawns, it will cause huge logs, so we have to hide it.
+        //Its for host and joining client to recognize each other. Client and client recognize should be put in playerjoin latetask
     }
 }
 
