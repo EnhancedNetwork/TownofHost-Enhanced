@@ -7,6 +7,7 @@ class LateTask
 {
     public string name;
     public float timer;
+    public bool shouldLog;
     public Action action;
     public static List<LateTask> Tasks = [];
     public bool Run(float deltaTime)
@@ -19,13 +20,14 @@ class LateTask
         }
         return false;
     }
-    public LateTask(Action action, float time, string name = "No Name Task")
+    public LateTask(Action action, float time, string name = "No Name Task", bool shoudLog = true)
     {
         this.action = action;
         this.timer = time;
         this.name = name;
         Tasks.Add(this);
         if (name != "")
+            if (shoudLog)
             Logger.Info("\"" + name + "\" is created", "LateTask");
     }
     public static void Update(float deltaTime)
@@ -38,7 +40,8 @@ class LateTask
                 if (task.Run(deltaTime))
                 {
                     if (task.name != "")
-                        Logger.Info($"\"{task.name}\" is finished", "LateTask");
+                        if (task.shouldLog)
+                            Logger.Info($"\"{task.name}\" is finished", "LateTask");
                     TasksToRemove.Add(task);
                 }
             }
