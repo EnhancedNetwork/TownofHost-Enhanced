@@ -36,7 +36,6 @@ enum CustomRPC
     SetKillOrSpell,
     SetKillOrHex,
     SetKillOrCurse,
-    SetSheriffShotLimit,
     //SetCopyCatMiscopyLimit,
     SetCaptainTargetSpeed,
     RevertCaptainTargetSpeed,
@@ -89,8 +88,6 @@ enum CustomRPC
     SetPixieTargets,
     SetParityCopLimit,
     KeeperRPC,
-    SetOracleLimit,
-    SetMediumLimit,
     SetPelicanEatenNum,
     SwordsManKill,
     SetAlchemistTimer,
@@ -134,7 +131,6 @@ enum CustomRPC
     SyncTotocalcioTargetAndTimes,
     SetSuccubusCharmLimit,
     SetCursedSoulCurseLimit,
-    SetMonarchKnightLimit,
     SetInvestgatorLimit,
     SyncInvestigator, // Unused
     SetVirusInfectLimit,
@@ -162,7 +158,6 @@ enum CustomRPC
     SyncNWitch,
     SyncShroud,
     SyncMiniCrewAge,
-    SyncSabotageMasterSkill,
     QuizmasterMarkPlayer,
     //FFA
     SyncFFAPlayer,
@@ -392,10 +387,6 @@ internal class RPCHandlerPatch
             //case CustomRPC.SetKillOrCurse:
             //    Occultist.ReceiveRPC(reader, false);
             //    break;
-
-            case CustomRPC.SetSheriffShotLimit:
-                Sheriff.ReceiveRPC(reader);
-                break;
 
             case CustomRPC.SetCaptainTargetSpeed:
                 Captain.ReceiveRPCSetSpeed(reader);
@@ -703,9 +694,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SetCursedSoulCurseLimit:
                 CursedSoul.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetMonarchKnightLimit:
-                Monarch.ReceiveRPC(reader);
-                break;
             case CustomRPC.SetEvilDiviner:
                 EvilDiviner.ReceiveRPC(reader);
                 break;
@@ -768,26 +756,17 @@ internal class RPCHandlerPatch
             case CustomRPC.SetPixieTargets:
                 Pixie.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetMediumLimit:
-                Mediumshiper.ReceiveRPC(reader);
-                break;
             case CustomRPC.SetParityCopLimit:
                 ParityCop.ReceiveRPC(reader);
                 break;
             case CustomRPC.KeeperRPC:
                 Keeper.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetOracleLimit:
-                Oracle.ReceiveRPC(reader);
-                break;
             case CustomRPC.SetSwapperVotes:
                 Swapper.ReceiveSwapRPC(reader, __instance);
                 break;
             case CustomRPC.SetSwapperSkill:
                 Swapper.ReceiveSkillRPC(reader);
-                break;
-            case CustomRPC.SyncSabotageMasterSkill:
-                SabotageMaster.ReceiveRPC(reader);
                 break;
             case CustomRPC.SyncMiniCrewAge:
                 Mini.ReceiveRPC(reader);
@@ -1538,6 +1517,21 @@ internal static class RPC
                 break;
             case CustomRoles.Medic:
                 Medic.ReceiveRPC(reader);
+                break;
+            case CustomRoles.Mediumshiper:
+                Mediumshiper.ReceiveRPC(reader);
+                break;
+            case CustomRoles.Monarch:
+                Monarch.ReceiveRPC(reader);
+                break;
+            case CustomRoles.Oracle:
+                Oracle.ReceiveRPC(reader);
+                break;
+            case CustomRoles.SabotageMaster:
+                SabotageMaster.ReceiveRPC(reader);
+                break;
+            case CustomRoles.Sheriff:
+                Sheriff.ReceiveRPC(reader);
                 break;
         }
     }
