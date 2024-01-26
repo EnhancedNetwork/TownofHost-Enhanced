@@ -3734,7 +3734,7 @@ class EnterVentPatch
                         }
                         if (pc == player)
                         {
-                            player?.MyPhysics?.RpcBootFromVent(Main.LastEnteredVent.ContainsKey(player.PlayerId) ? Main.LastEnteredVent[pc.PlayerId].Id : player.PlayerId);
+                            player?.MyPhysics?.RpcBootFromVent(Main.LastEnteredVent.TryGetValue(player.PlayerId, out var vent) ? vent.Id : player.PlayerId);
                         }
 
                         Main.TimeMasterBackTrack.Remove(player.PlayerId);
