@@ -72,6 +72,7 @@ enum CustomRPC
     ShowPopUp,
     KillFlash,
     DumpLog,
+    SyncRoleSkill,
 
     //Roles
     SetDrawPlayer,
@@ -83,13 +84,11 @@ enum CustomRPC
     SyncVengefulRomanticTarget,
     SetJailerTarget,
     SetJailerExeLimit,
-    SetCleanserCleanLimit,
     SetSoulCollectorLimit,
     SyncSchrodingerData,
     SetPixieTargets,
     SetDivinatorLimit,
     SetDivinatorTempLimit,
-    SetBloodhoundLimit,
     SetParityCopLimit,
     KeeperRPC,
     SetOracleLimit,
@@ -160,10 +159,8 @@ enum CustomRPC
     SpyAbilitySync,
     SpyRedNameSync,
     SpyRedNameRemove,
-    SetPoliceLimlit,
     SetPotionMaster,
     SetChameleonTimer,
-    SetAdmireLimit,
     SyncAdmiredList,
     SetRememberLimit,
     SetImitateLimit,
@@ -379,6 +376,9 @@ internal class RPCHandlerPatch
                 CustomRoles role = (CustomRoles)reader.ReadPackedInt32();
                 RPC.SetCustomRole(CustomRoleTargetId, role);
                 break;
+            case CustomRPC.SyncRoleSkill:
+                RPC.SyncRoleSkillReader(reader);
+                break;
             case CustomRPC.SetBountyTarget:
                 BountyHunter.ReceiveRPC(reader);
                 break;
@@ -557,9 +557,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetDoppelgangerStealLimit:
                 Doppelganger.ReceiveRPC(reader);
-                break;
-            case CustomRPC.SetAdmireLimit:
-                Admirer.ReceiveRPC(reader, false);
                 break;
             case CustomRPC.SyncAdmiredList:
                 Admirer.ReceiveRPC(reader, true);
@@ -776,9 +773,6 @@ internal class RPCHandlerPatch
             case CustomRPC.RpcPassBomb:
                 Agitater.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetCleanserCleanLimit:
-                Cleanser.ReceiveRPC(reader);
-                break;
             case CustomRPC.SetSoulCollectorLimit:
                 SoulCollector.ReceiveRPC(reader);
                 break;
@@ -806,17 +800,11 @@ internal class RPCHandlerPatch
             case CustomRPC.SetOracleLimit:
                 Oracle.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetBloodhoundLimit:
-                Bloodhound.ReceiveRPCLimit(reader);
-                break;
             case CustomRPC.SetSwapperVotes:
                 Swapper.ReceiveSwapRPC(reader, __instance);
                 break;
             case CustomRPC.SetSwapperSkill:
                 Swapper.ReceiveSkillRPC(reader);
-                break;
-            case CustomRPC.SetPoliceLimlit:
-                ChiefOfPolice.ReceiveRPC(reader);
                 break;
             case CustomRPC.SyncSabotageMasterSkill:
                 SabotageMaster.ReceiveRPC(reader);
@@ -1533,6 +1521,29 @@ internal static class RPC
         HudManager.Instance.SetHudActive(true);
     //    HudManager.Instance.Chat.SetVisible(true);
         if (PlayerControl.LocalPlayer.PlayerId == targetId) RemoveDisableDevicesPatch.UpdateDisableDevices();
+    }
+    public static void SyncRoleSkillReader(MessageReader reader)
+    {
+        CustomRoles role = (CustomRoles)reader.ReadPackedInt32();
+
+        switch (role)
+        {
+            case CustomRoles.Admirer:
+                Admirer.ReceiveRPC(reader, false);
+                break;
+            case CustomRoles.Bloodhound:
+                Bloodhound.ReceiveRPCLimit(reader);
+                break;
+            case CustomRoles.Chameleon:
+                Chameleon.ReceiveRPC(reader);
+                break;
+            case CustomRoles.ChiefOfPolice:
+                ChiefOfPolice.ReceiveRPC(reader);
+                break;
+            case CustomRoles.Cleanser:
+                Cleanser.ReceiveRPC(reader);
+                break;
+        }
     }
     public static void RpcDoSpell(byte targetId, byte killerId)
     {

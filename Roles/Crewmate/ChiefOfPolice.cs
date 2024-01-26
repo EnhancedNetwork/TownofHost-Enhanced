@@ -39,7 +39,8 @@ public static class ChiefOfPolice
     }
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetPoliceLimlit, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.ChiefOfPolice);
         writer.Write(playerId);
         writer.Write(PoliceLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -61,6 +62,7 @@ public static class ChiefOfPolice
     public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
         PoliceLimit[killer.PlayerId]--;
+        SendRPC(killer.PlayerId);
         if (CanBeSheriff(target))
         {
             target.RpcSetCustomRole(CustomRoles.Sheriff);
@@ -77,10 +79,11 @@ public static class ChiefOfPolice
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), GetString("BeSheriffByPolice")));
 
             killer.ResetKillCooldown();
-            killer.SetKillCooldown();
+            target.ResetKillCooldown();
             killer.RpcGuardAndKill(target);
+            killer.SetKillCooldown(forceAnime: true);
             target.RpcGuardAndKill(killer);
-            target.RpcGuardAndKill(target);
+            target.SetKillCooldown(forceAnime: true);
         }
         else
         {
