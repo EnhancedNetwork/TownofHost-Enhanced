@@ -20,7 +20,6 @@ public static class Bandit
     public static OptionItem CanStealImpOnlyAddon;
     public static OptionItem CanUseSabotage;
     public static OptionItem CanVent;
-    public static OptionItem DoubleClickKill;
 
     public static Dictionary<byte, int> TotalSteals = [];
     public static Dictionary<byte, Dictionary<byte, CustomRoles>> Targets = [];
