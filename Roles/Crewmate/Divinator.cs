@@ -65,24 +65,26 @@ public static class Divinator
 
     public static void SendRPC(byte playerId, bool isTemp = false, bool voted = false)
     {
-        MessageWriter writer;
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Divinator);
+        writer.Write(isTemp);
+
         if (!isTemp)
         {
-            writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDivinatorLimit, SendOption.Reliable, -1);
             writer.Write(playerId);
             writer.Write(CheckLimit[playerId]);
             writer.Write(voted);
         }
         else
         {
-            writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDivinatorTempLimit, SendOption.Reliable, -1);
             writer.Write(playerId);
             writer.Write(TempCheckLimit[playerId]);
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader, bool isTemp = false)
+    public static void ReceiveRPC(MessageReader reader)
     {
+        bool isTemp = reader.ReadBoolean();
         byte playerId = reader.ReadByte();
         float limit = reader.ReadSingle();
         if (!isTemp)

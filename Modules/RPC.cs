@@ -87,8 +87,6 @@ enum CustomRPC
     SetSoulCollectorLimit,
     SyncSchrodingerData,
     SetPixieTargets,
-    SetDivinatorLimit,
-    SetDivinatorTempLimit,
     SetParityCopLimit,
     KeeperRPC,
     SetOracleLimit,
@@ -98,9 +96,7 @@ enum CustomRPC
     SetAlchemistTimer,
     UndertakerLocationSync,
     RiftMakerSyncData,
-    SetCounterfeiterSellLimit,
     SetPursuerSellLimit,
-    SetMedicalerProtectLimit,
     //SetMiniLimit,
     //SetMiniSellLimit,
     SetGangsterRecruitLimit,
@@ -139,7 +135,6 @@ enum CustomRPC
     SetSuccubusCharmLimit,
     SetCursedSoulCurseLimit,
     SetMonarchKnightLimit,
-    SetDeputyHandcuffLimit,
     SetInvestgatorLimit,
     SyncInvestigator, // Unused
     SetVirusInfectLimit,
@@ -525,9 +520,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SwordsManKill:
                 SwordsMan.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetCounterfeiterSellLimit:
-                Counterfeiter.ReceiveRPC(reader);
-                break;
             case CustomRPC.SetJailerExeLimit:
                 Jailer.ReceiveRPC(reader, setTarget: false);
                 break;
@@ -539,9 +531,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.StealthDarken:
                 Stealth.ReceiveRPC(reader);
-                break;
-            case CustomRPC.SetMedicalerProtectLimit:
-                Medic.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetGangsterRecruitLimit:
                 Gangster.ReceiveRPC(reader);
@@ -723,9 +712,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SetPotionMaster:
                 PotionMaster.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetDeputyHandcuffLimit:
-                Deputy.ReceiveRPC(reader);
-                break;
             case CustomRPC.SetInvestgatorLimit:
                 Investigator.ReceiveRPC(reader);
                 break;
@@ -781,12 +767,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetPixieTargets:
                 Pixie.ReceiveRPC(reader);
-                break;
-            case CustomRPC.SetDivinatorTempLimit:
-                Divinator.ReceiveRPC(reader, isTemp: true);
-                break;
-            case CustomRPC.SetDivinatorLimit:
-                Divinator.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetMediumLimit:
                 Mediumshiper.ReceiveRPC(reader);
@@ -1525,6 +1505,7 @@ internal static class RPC
     public static void SyncRoleSkillReader(MessageReader reader)
     {
         CustomRoles role = (CustomRoles)reader.ReadPackedInt32();
+        Logger.Info($"Received Sync Role Skill RPC for role {role.ToString()}", "SyncRoleSkillReader");
 
         switch (role)
         {
@@ -1542,6 +1523,21 @@ internal static class RPC
                 break;
             case CustomRoles.Cleanser:
                 Cleanser.ReceiveRPC(reader);
+                break;
+            case CustomRoles.Counterfeiter:
+                Counterfeiter.ReceiveRPC(reader);
+                break;
+            case CustomRoles.Crusader:
+                Crusader.ReceiveRPC(reader);
+                break;
+            case CustomRoles.Deputy:
+                Deputy.ReceiveRPC(reader);
+                break; //Waiting for fix
+            case CustomRoles.Divinator:
+                Divinator.ReceiveRPC(reader);
+                break;
+            case CustomRoles.Medic:
+                Medic.ReceiveRPC(reader);
                 break;
         }
     }
