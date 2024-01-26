@@ -195,7 +195,7 @@ public static class PlagueDoctor
                 CheckWin();
                 foreach (PlayerControl x in updates.ToArray())
                 {
-                    Utils.NotifyRoles(SpecifySeer: x, SpecifyTarget: player);
+                    Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: x);
                 }
             }
         }
