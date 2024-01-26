@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.IO;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
@@ -19,6 +17,32 @@ using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE;
+
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.OnEnable))]
+class PlayerControlOnEnablePatch
+{
+    public static void Postfix(PlayerControl __instance)
+    {
+        //Shortly after this postfix, playercontrol is started but the amowner is not installed.
+        //Need to delay for amowner to work
+        _ = new LateTask(() =>
+        {
+            if (__instance.AmOwner)
+            {
+                Logger.Info("am owner version check, local player id is " + __instance.PlayerId, "PlayerControlOnEnable");
+                RPC.RpcVersionCheck();
+            }
+
+            if (AmongUsClient.Instance.AmHost && __instance.PlayerId != PlayerControl.LocalPlayer.PlayerId)
+            {
+                Logger.Info("Host send version check, target player id is " + __instance.PlayerId, "PlayerControlOnEnable");
+                RPC.RpcVersionCheck();
+            }
+        }, 0.2f, "Player Spawn LateTask ", false);
+
+        //This late task happens where a playercontrol spawns, it will cause huge logs, so we have to hide it.
+    }
+}
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckProtect))]
 class CheckProtectPatch

@@ -26,7 +26,6 @@ class OnGameJoinedPatch
 
         Main.IsHostVersionCheating = false;
         Main.playerVersion = [];
-        if (!Main.VersionCheat.Value) RPC.RpcVersionCheck();
         SoundManager.Instance.ChangeAmbienceVolume(DataManager.Settings.Audio.AmbienceVolume);
 
         Main.HostClientId = AmongUsClient.Instance.HostId;
@@ -158,7 +157,6 @@ class OnPlayerJoinedPatch
     public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
     {
         Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Joining room", "Session: OnPlayerJoined");
-        RPC.RpcVersionCheck();
 
         if (AmongUsClient.Instance.AmHost && client.FriendCode == "" && Options.KickPlayerFriendCodeNotExist.GetBool() && !GameStates.IsLocalGame)
         {
