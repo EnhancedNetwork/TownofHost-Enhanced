@@ -124,16 +124,16 @@ public static class PlagueDoctor
         {
             InfectCount--;
             killer.RpcGuardAndKill(target);
-            DirectInfect(target);
+            DirectInfect(target, killer);
         }
         return false;
     }
-    public static void OnInfectDeath(PlayerControl killer)
+    public static void OnPDdeath(PlayerControl killer, PlayerControl target)
     {
         if (InfectWhenKilled && InfectCount > 0)
         {
             InfectCount = 0;
-            DirectInfect(killer);
+            DirectInfect(killer, target);
         }
     }
     public static void OnAnyMurder()
@@ -148,7 +148,6 @@ public static class PlagueDoctor
     public static void OnCheckPlayerPosition(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (player == null || !player.IsAlive() || !GameStates.IsInTask) return;
 
         if (LateCheckWin)
         {
@@ -156,7 +155,7 @@ public static class PlagueDoctor
             LateCheckWin = false;
             CheckWin();
         }
-        if (!player.IsAlive() || !InfectActive) return;
+        if (!player.IsAlive() || player == null || !InfectActive) return;
 
         if (InfectInfos.TryGetValue(player.PlayerId, out var rate) && rate >= 100)
         {
@@ -196,7 +195,7 @@ public static class PlagueDoctor
                 CheckWin();
                 foreach (PlayerControl x in updates.ToArray())
                 {
-                    Utils.NotifyRoles(SpecifySeer: x);
+                    Utils.NotifyRoles(SpecifySeer: x, SpecifyTarget: player);
                 }
             }
         }
@@ -254,14 +253,13 @@ public static class PlagueDoctor
             _ => string.Empty,
         };
     }
-    public static void DirectInfect(PlayerControl player)
+    public static void DirectInfect(PlayerControl target, PlayerControl plague)
     {
-        if (playerIdList.Count == 0 || player == null) return;
-        Logger.Info($"InfectRate [{player.GetNameWithRole()}]: 100%", "PlagueDoctor");
-        InfectInfos[player.PlayerId] = 100;
-        SendRPC(player.PlayerId, 100);
-        Utils.NotifyRoles(SpecifySeer: player);
-        Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(playerIdList[0]));
+        if (playerIdList.Count == 0 || target == null) return;
+        Logger.Info($"InfectRate [{target.GetNameWithRole()}]: 100%", "PlagueDoctor");
+        InfectInfos[target.PlayerId] = 100;
+        SendRPC(target.PlayerId, 100);
+        Utils.NotifyRoles(SpecifySeer: plague, SpecifyTarget: target);
         CheckWin();
     }
     public static void CheckWin()
