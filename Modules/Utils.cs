@@ -2114,8 +2114,9 @@ public static class Utils
 
                 if (Sniper.IsEnable)
                     SelfMark.Append(Sniper.GetShotNotify(seer.PlayerId));
-                
 
+                if (Romantic.IsEnable)
+                    SelfMark.Append(Romantic.SelfMark(seer));
 
                 // ====== Add SelfSuffix for seer ======
 
@@ -2411,7 +2412,6 @@ public static class Utils
 
                         if (Romantic.IsEnable)
                             TargetMark.Append(Romantic.TargetMark(seer, target));
-
 
                         if (Lawyer.IsEnable)
                             TargetMark.Append(Lawyer.LawyerMark(seer, target));
