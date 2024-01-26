@@ -89,7 +89,6 @@ enum CustomRPC
     SetParityCopLimit,
     KeeperRPC,
     SetPelicanEatenNum,
-    SwordsManKill,
     SetAlchemistTimer,
     UndertakerLocationSync,
     RiftMakerSyncData,
@@ -107,7 +106,6 @@ enum CustomRPC
     TaskinatorMarkedTask,
     BenefactorRPC,
     SetSwapperVotes,
-    SetSwapperSkill,
     SetQuickShooterShotLimit,
     SetEraseLimit,
     GuessKill,
@@ -147,7 +145,6 @@ enum CustomRPC
     SetTrackerTarget,
     SetSeekerTarget,
     SetSeekerPoints,
-    SpyAbilitySync,
     SpyRedNameSync,
     SpyRedNameRemove,
     SetPotionMaster,
@@ -508,9 +505,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SetTrackerTarget:
                 Tracker.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SwordsManKill:
-                SwordsMan.ReceiveRPC(reader);
-                break;
             case CustomRPC.SetJailerExeLimit:
                 Jailer.ReceiveRPC(reader, setTarget: false);
                 break;
@@ -738,9 +732,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SpyRedNameSync:
                 Spy.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SpyAbilitySync:
-                Spy.ReceiveRPC(reader, isAbility: true);
-                break;
             case CustomRPC.SpyRedNameRemove:
                 Spy.ReceiveRPC(reader, isRemove: true);
                 break;
@@ -764,9 +755,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetSwapperVotes:
                 Swapper.ReceiveSwapRPC(reader, __instance);
-                break;
-            case CustomRPC.SetSwapperSkill:
-                Swapper.ReceiveSkillRPC(reader);
                 break;
             case CustomRPC.SyncMiniCrewAge:
                 Mini.ReceiveRPC(reader);
@@ -1532,6 +1520,15 @@ internal static class RPC
                 break;
             case CustomRoles.Sheriff:
                 Sheriff.ReceiveRPC(reader);
+                break;
+            case CustomRoles.Spy:
+                Spy.ReceiveRPC(reader, isAbility: true);
+                break;
+            case CustomRoles.Swapper:
+                Swapper.ReceiveSkillRPC(reader);
+                break;
+            case CustomRoles.SwordsMan:
+                SwordsMan.ReceiveRPC(reader);
                 break;
         }
     }
