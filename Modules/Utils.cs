@@ -605,6 +605,7 @@ public static class Utils
             case CustomRoles.Romantic:
             case CustomRoles.VengefulRomantic:
             case CustomRoles.RuthlessRomantic:
+            case CustomRoles.Quizmaster:
                 hasTasks = false;
                 break;
             case CustomRoles.Workaholic:
