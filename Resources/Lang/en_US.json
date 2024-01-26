@@ -3744,6 +3744,7 @@
   "PlagueDoctorInfectWhenKilled": "Infect Killer When Killed",
   "PlagueDoctorInfectTime": "Infect Time",
   "PlagueDoctorInfectDistance": "Infect Distance",
+  "PlagueDoctorInfectInactiveTime": "Delay Infection After Start The Game And After Meetings",
   "PlagueDoctorCanInfectSelf": "Can Infect Self",
   "PlagueDoctorCanInfectVent": "Can Infect While In Vent",
 

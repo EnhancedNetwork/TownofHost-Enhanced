@@ -23,6 +23,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -2187,9 +2188,13 @@ public static class Utils
                             SelfSuffix.Append(HexMaster.GetHexModeText(seer, false));
                             break;
 
-                            //case CustomRoles.Occultist:
-                            //    SelfSuffix.Append(Occultist.GetHexModeText(seer, false));
-                            //    break;
+                        //case CustomRoles.Occultist:
+                        //    SelfSuffix.Append(Occultist.GetHexModeText(seer, false));
+                        //    break;
+
+                        case CustomRoles.PlagueDoctor:
+                            SelfSuffix.Append(PlagueDoctor.GetLowerTextOthers(seer));
+                            break;
                     }
                 }
                 else // Only during meeting
@@ -2634,7 +2639,7 @@ public static class Utils
                         // ====== Add TargetSuffix for target (TargetSuffix visible ​​only to the seer) ======
                         TargetSuffix.Clear();
 
-                        TargetSuffix.Append(PlagueDoctor.GetLowerTextOthers(seer, target));
+
                         TargetSuffix.Append(Stealth.GetSuffix(seer, target));
 
 
