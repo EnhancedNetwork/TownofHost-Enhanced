@@ -918,7 +918,7 @@
   "MorticianInfoLong": "(船员阵营):\n入殓师可以看到指向所有尸体的箭头，入殓师报告尸体可以在会议上得知被害者生前最后一个接触的玩家。请注意：入殓师不会成为胆小鬼或灵媒。",
   "MediumshiperInfoLong": "(船员阵营):\n当场上有玩家被击杀，通灵师会收到提示。每次会议召开时通灵师会与被报告的尸体建立联系（只有被报告的尸体而不是被发现的所有尸体），在本次会议结束前，被害者拥有一次机会回答通灵师的问题，只能回答是或否。请注意：通灵师不会成为胆小鬼。",
   "ObserverInfoLong": "(船员阵营):\n观察者可以看到其他玩家的碎盾动画。首次会议召开前观察者的技能不会生效。",
-  "MonarchInfoLong": "(船员阵营):\n君主可以让玩家成为骑士来给他们额外的票数。君主不能让已经有额外票数的人当选骑士（比如市长）",
+  "MonarchInfoLong": "(Crewmates):\nAs the Monarch, you can knight players to give them an extra vote.\n\nYou cannot knight someone who already has extra votes.\n\nKnighted players appear with a golden name. If a knighted player is alive, the Monarch cannot be guessed or exhiled.",
   "DovesOfNeaceInfoLong": "(船员阵营):\n和平之鸽可以通过使用通风管道进行歌颂，在场所有拥有击杀键的玩家的击杀/技能冷却时间会被重置。当和平之鸽成为叛徒时歌颂只对船员生效。",
   "FarseerInfoLong": "(船员阵营):\n预言家的视野非常有限。但预言家可以使用击杀按钮来揭示附近玩家的身份。使用揭示按钮开始预言时\n○将在显示玩家目标旁边。在指定的时间内靠近目标，以展示他的身份。如果你移动得离目标太远，预言就会中止",
   "BloodhoundInfoLong": "(船员阵营):\n验尸官不能报告尸体。在试图报告尸体后，验尸官会看到一个指向凶手的箭头。如果召开会议，箭头将消失。根据房主设置，你发现的尸体无法报告。",
