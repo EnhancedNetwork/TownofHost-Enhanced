@@ -1074,6 +1074,10 @@ public static class Options
     public static int GetRoleSpawnMode(CustomRoles role)
     {
         var mode = CustomRoleSpawnChances.TryGetValue(role, out var sc) ? sc.GetChance() : 0;
+        if (CustomRolesHelper.IsGhostRole(role))
+        {
+            mode = 0;
+        }
         return mode switch
         {
             0 => 0,

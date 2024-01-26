@@ -1344,7 +1344,7 @@ class MurderPlayerPatch
             }
 
         }
-;
+
 
 
 

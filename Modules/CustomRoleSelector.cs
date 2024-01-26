@@ -122,7 +122,10 @@ internal class CustomRoleSelector
             else if (role.IsNK()) NeutralKillingRateList.Add(role);
             else roleRateList.Add(role);
         }
-
+        /*foreach (var CheckGhost in roleRateList)
+        {
+            if (CustomRolesHelper.IsGhostRole(CheckGhost)) roleRateList.Remove(CheckGhost);
+        }*/
         while (MiniOnList.Count == 1)
         {
             var select = MiniOnList[rd.Next(0, MiniOnList.Count)];
