@@ -630,7 +630,6 @@ public enum CustomRoles
     // Vanilla Remakes
     CrewmateTOHE,
     EngineerTOHE,
-    GuardianAngelTOHE,
     ScientistTOHE,
 
     //Crewmate
@@ -866,7 +865,7 @@ public enum CustomRoles
     Watcher,
     //Sunglasses,
     Workhorse,
-    Youtuber
+    Youtuber,
 
    // Reflective,
     //Glow,
@@ -874,6 +873,9 @@ public enum CustomRoles
     // QuickFix
     
     //You need to put roles in order by their name
+    IsNotDeadRole = 13000,
+    Warden,
+    GuardianAngelTOHE,
 }
 //WinData
 public enum CustomWinner

@@ -1771,8 +1771,7 @@ public static class Options
         /*
         * Guardian Angel
         */
-         SetupGhostRoleOptions(27900, TabGroup.CrewmateRoles, CustomRoles.GuardianAngelTOHE); 
-         //Logger.Warn($"{ex}", "GuardianAngelException"); 
+         //SetupGhostRoleOptions(27900, TabGroup.CrewmateRoles, CustomRoles.GuardianAngelTOHE); 
 
         /*
          * BASIC ROLES
@@ -2227,6 +2226,15 @@ public static class Options
         Monitor.SetupCustomOption();
 
         //ChiefOfPolice.SetupCustomOption();
+
+        /*
+         * Ghost Roles
+         */
+        TextOptionItem.Create(10000101, "Roletype.CrewmateGhost", TabGroup.CrewmateRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(169, 190, 194, byte.MaxValue));
+
+        Warden.SetupCustomOptions();
 
         #endregion
 
@@ -3846,13 +3854,14 @@ public static class Options
             .SetValueFormat(OptionFormat.Players)
             .SetGameMode(customGameMode);
 
-        if(CustomGhostRoleCounts.ContainsKey(role))
+        if(CustomGhostRoleCounts.ContainsKey(role)) // Just incase
             CustomGhostRoleCounts.Remove(role);
 
 
         CustomRoleSpawnChances.Add(role, spawnOption);
         CustomRoleCounts.Add(role, countOption);
-        //if (role.RoleExist())
+        if (CustomRoleSpawnChances.ContainsKey(role)) // I will test role.RoleExist() later
+            Logger.Info($"Added {role} because custom spawn option activated", $"{role} SetupGhostRole");
             CustomGhostRoleCounts.Add(role, countOption);
     }
     public static bool GhostAssign(CustomRoles role)

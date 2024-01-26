@@ -1223,9 +1223,7 @@ public static class GuessManager
                     or CustomRoles.Konan
                     or CustomRoles.Oblivious
                     //     or CustomRoles.Reflective
-                    or CustomRoles.GuardianAngelTOHE
                     or CustomRoles.Solsticer
-                    or CustomRoles.GuardianAngel
                     or CustomRoles.Killer
                     or CustomRoles.Mini
                     or CustomRoles.Onbound

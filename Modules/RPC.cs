@@ -1058,7 +1058,7 @@ internal static class RPC
         {
             Main.PlayerStates[targetId].SetMainRole(role);
         }
-        else if (role >= CustomRoles.NotAssigned)   //500:NoSubRole 501~:SubRole
+        else if (role >= CustomRoles.NotAssigned && role < CustomRoles.IsNotDeadRole)   //500:NoSubRole 501~:SubRole // IsNotDeathRole(13000) Ghost- Role Assign patch
         {
             Main.PlayerStates[targetId].SetSubRole(role);
         }

@@ -93,6 +93,7 @@ static class CustomRolesHelper
                 CustomRoles.Detective => CustomRoles.Crewmate,
                 CustomRoles.God => CustomRoles.Crewmate,
                 CustomRoles.GuardianAngelTOHE => CustomRoles.GuardianAngel,
+                CustomRoles.Warden => CustomRoles.GuardianAngel,
                 CustomRoles.Zombie => CustomRoles.Impostor,
                 CustomRoles.Mario => CustomRoles.Engineer,
                 CustomRoles.AntiAdminer => CustomRoles.Impostor,
@@ -284,7 +285,13 @@ static class CustomRolesHelper
 
         return vanillaSideHasKillButton;
     }
-    //This is a overall check for vanilla clients to see if they are imp basis
+    //This is a overall check for vanilla clients to see if they are imp basis 
+    public static bool IsGhostRole(this CustomRoles role)
+    {
+        return role is
+            CustomRoles.GuardianAngelTOHE or
+            CustomRoles.Warden;
+    }
     public static bool IsAdditionRole(this CustomRoles role)
     {
         return role is

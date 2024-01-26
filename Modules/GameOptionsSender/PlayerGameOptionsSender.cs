@@ -484,6 +484,9 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Blackmailer:
                 Blackmailer.ApplyGameOptions();
                 break;
+            case CustomRoles.Warden:
+                AURoleOptions.GuardianAngelCooldown = Warden.AbilityCooldown.GetFloat();
+                break;
             default:
                 opt.SetVision(false);
                 break;

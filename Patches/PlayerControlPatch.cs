@@ -27,7 +27,8 @@ class CheckProtectPatch
     {
         if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek) return false;
         Logger.Info("CheckProtect occurs: " + __instance.GetNameWithRole() + "=>" + target.GetNameWithRole(), "CheckProtect");
-
+        var playerole = __instance;
+        
         if (__instance.Is(CustomRoles.EvilSpirit))
         {
             if (target.Is(CustomRoles.Spiritcaller))
@@ -51,6 +52,10 @@ class CheckProtectPatch
                 return false;
             }
         }
+
+
+
+
         return true;
     }
 }
@@ -1278,6 +1283,7 @@ class MurderPlayerPatch
             Camouflage.RpcSetSkin(target, ForceRevert: true);
         }
 
+
         if (AmongUsClient.Instance.AmHost)
         {
             if (resultFlags == MurderResultFlags.Succeeded)
@@ -1311,12 +1317,38 @@ class MurderPlayerPatch
         }
 
 
-        if (Options.GhostAssign(CustomRoles.GuardianAngelTOHE))
+
+        // ========================= GHOST ASSIGN PATCH ========================
+
+        var GetKillerRole = killer.GetCustomRole();
+        bool IsImpostor = CustomRolesHelper.IsImpostor(GetKillerRole);
+        bool IsNeutral = CustomRolesHelper.IsNeutral(GetKillerRole);
+        bool IsGhostRole = CustomRolesHelper.IsGhostRole(GetKillerRole);
+
+        if (!IsImpostor && !IsImpostor && !IsGhostRole)
         {
-            target.RpcSetRole(RoleTypes.GuardianAngel);
-            target.RpcSetCustomRole(CustomRoles.GuardianAngelTOHE);
+            System.Random random = new System.Random(); // Don't worry 😂 I will work on a better system, this is temporary
+            //int getrand = random.Next(0);
+            int num = 0;
+
+            switch (num)
+            {
+                case 0: // (Ghost)Warden
+                    killer.SetRole(RoleTypes.GuardianAngel);
+                    killer.RpcSetCustomRole(CustomRoles.Warden);
+                    break;
+
+                default:
+                    break;
+
+            }
+
         }
-            
+;
+
+
+
+
 
         if (Quizmaster.IsEnable)
             Quizmaster.OnPlayerDead(target);

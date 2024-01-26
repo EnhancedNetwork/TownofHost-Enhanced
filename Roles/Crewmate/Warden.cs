@@ -1,12 +1,27 @@
-﻿using System;
+﻿using Hazel;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using static TOHE.Options;
+using static TOHE.Translator;
 
-namespace TOHE.Roles.Crewmate
+namespace TOHE.Roles.Crewmate;
+
+public class Warden
 {
-    internal class Warden
+    private static readonly int Id = 27300;
+    public static OptionItem AbilityCooldown;
+
+    public static void SetupCustomOptions()
     {
+        SetupGhostRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Warden);
+        AbilityCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Warden])
+            .SetValueFormat(OptionFormat.Seconds);
+    }
+
+    public static bool OnCheckProtect(PlayerControl Killer, PlayerControl target)
+    {
+        Killer.Notify($"You've marked {target}");
+        target.Notify($"DANGER! RUN RUN RUN!");
+        
+        return false;
     }
 }
