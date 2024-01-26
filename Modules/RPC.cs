@@ -1472,7 +1472,7 @@ internal static class RPC
     public static void SyncRoleSkillReader(MessageReader reader)
     {
         CustomRoles role = (CustomRoles)reader.ReadPackedInt32();
-        Logger.Info($"Received Sync Role Skill RPC for role {role.ToString()}", "SyncRoleSkillReader");
+        Logger.Info($"Received Sync Role Skill RPC for role {role}", "SyncRoleSkillReader");
 
         switch (role)
         {
@@ -1529,6 +1529,10 @@ internal static class RPC
                 break;
             case CustomRoles.SwordsMan:
                 SwordsMan.ReceiveRPC(reader);
+                break;
+
+            default:
+                Logger.Error($"Role {role} can not be handled!", "SyncRoleSkillReader");
                 break;
         }
     }
