@@ -3,7 +3,6 @@ using Hazel;
 using System.Collections.Generic;
 using TOHE.Roles.AddOns.Common;
 using UnityEngine;
-using TOHE.Roles.Double;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
