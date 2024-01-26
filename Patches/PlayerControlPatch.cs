@@ -1057,14 +1057,11 @@ class CheckMurderPatch
                     {
                         foreach (var player in Main.AllPlayerControls)
                         {
-                            if (!killer.Is(CustomRoles.Pestilence))
+                            if (!killer.Is(CustomRoles.Pestilence) && Main.TimeMasterBackTrack.TryGetValue(player.PlayerId, out var position))
                             {
-                                if (Main.TimeMasterBackTrack.TryGetValue(player.PlayerId, out var position))
+                                if (player.CanBeTeleported())
                                 {
-                                    if (player.CanBeTeleported())
-                                    {
-                                        player.RpcTeleport(position);
-                                    }
+                                    player.RpcTeleport(position);
                                 }
                             }
                         }
@@ -3731,13 +3728,13 @@ class EnterVentPatch
                 {
                     if (Main.TimeMasterBackTrack.TryGetValue(player.PlayerId, out var position))
                     {
-                        if (player.CanBeTeleported() || player.PlayerId == pc.PlayerId)
+                        if (player.CanBeTeleported() || player.PlayerId != pc.PlayerId)
                         {
                             player.RpcTeleport(position);
                         }
-                        if (pc != player)
+                        if (pc == player)
                         {
-                            player?.MyPhysics?.RpcBootFromVent(player.PlayerId);
+                            player?.MyPhysics?.RpcBootFromVent(Main.LastEnteredVent.TryGetValue(player.PlayerId, out var vent) ? vent.Id : player.PlayerId);
                         }
 
                         Main.TimeMasterBackTrack.Remove(player.PlayerId);
