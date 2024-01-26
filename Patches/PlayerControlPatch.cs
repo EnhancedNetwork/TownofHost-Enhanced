@@ -1334,8 +1334,8 @@ class MurderPlayerPatch
             switch (num)
             {
                 case 0: // (Ghost)Warden
-                    killer.SetRole(RoleTypes.GuardianAngel);
-                    killer.RpcSetCustomRole(CustomRoles.Warden);
+                    target.SetRole(RoleTypes.GuardianAngel);
+                    target.RpcSetCustomRole(CustomRoles.Warden);
                     break;
 
                 default:
