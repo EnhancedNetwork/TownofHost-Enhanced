@@ -3,6 +3,7 @@ using Hazel;
 using System.Collections.Generic;
 using TOHE.Roles.AddOns.Common;
 using UnityEngine;
+using TOHE.Roles.Double;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
@@ -19,6 +20,7 @@ public static class Bandit
     public static OptionItem CanStealImpOnlyAddon;
     public static OptionItem CanUseSabotage;
     public static OptionItem CanVent;
+    public static OptionItem DoubleClickKill;
 
     public static Dictionary<byte, int> TotalSteals = [];
     public static Dictionary<byte, Dictionary<byte, CustomRoles>> Targets = [];
@@ -56,6 +58,9 @@ public static class Bandit
         IsEnable = true;
         TotalSteals.Add(playerId, 0);
         Targets[playerId] = [];
+
+        var pc = Utils.GetPlayerById(playerId);
+        pc?.AddDoubleTrigger();
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -112,26 +117,15 @@ public static class Bandit
         return addon;
     }
 
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public static void StealAddon(PlayerControl killer, PlayerControl target, CustomRoles? SelectedAddOn)
     {
-        if (!IsEnable) return true;
-        if (!target.HasSubRole() || target.Is(CustomRoles.Stubborn)) return true;
-        if (TotalSteals[killer.PlayerId] >= MaxSteals.GetInt())
-        {
-            Logger.Info("Max steals reached killing the player", "Bandit");
-            TotalSteals[killer.PlayerId] = MaxSteals.GetInt();
-            return true;
-        }
-        var SelectedAddOn = SelectRandomAddon(target);
-        if (SelectedAddOn == null) return true; // no stealable addons found on the target.
-        
         if (StealMode.GetValue() == 1)
-        {    
-            
-            if (SelectedAddOn == CustomRoles.Tired) {
-            Tired.playerIdList.Add(killer.PlayerId, false);
-            Tired.playerIdList.Remove(target.PlayerId);
-            }    
+        {
+            if (SelectedAddOn == CustomRoles.Tired)
+            {
+                Tired.playerIdList.Add(killer.PlayerId, false);
+                Tired.playerIdList.Remove(target.PlayerId);
+            }
             Main.PlayerStates[target.PlayerId].RemoveSubRole((CustomRoles)SelectedAddOn);
             if (SelectedAddOn == CustomRoles.Aware) Main.AwareInteracted.Remove(target.PlayerId);
             Logger.Info($"Successfully removed {SelectedAddOn} addon from {target.GetNameWithRole()}", "Bandit");
@@ -142,10 +136,10 @@ public static class Bandit
         }
         else
         {
-            
-            if (SelectedAddOn == CustomRoles.Tired) {
-            Tired.playerIdList.Add(killer.PlayerId, false);
-            Tired.playerIdList.Remove(target.PlayerId);
+            if (SelectedAddOn == CustomRoles.Tired)
+            {
+                Tired.playerIdList.Add(killer.PlayerId, false);
+                Tired.playerIdList.Remove(target.PlayerId);
             }
             Targets[killer.PlayerId][target.PlayerId] = (CustomRoles)SelectedAddOn;
             Logger.Info($"{killer.GetNameWithRole()} will steal {SelectedAddOn} addon from {target.GetNameWithRole()} after meeting starts", "Bandit");
@@ -161,8 +155,29 @@ public static class Bandit
 
         if (!DisableShieldAnimations.GetBool())
             killer.RpcGuardAndKill(target);
-        
-        return false;
+
+        return;
+    }
+
+    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    {
+        if (!IsEnable) return true;
+        bool flag = false;
+        if (!target.HasSubRole() || target.Is(CustomRoles.Stubborn)) flag = true;
+        var SelectedAddOn = SelectRandomAddon(target);
+        if (SelectedAddOn == null || flag) // no stealable addons found on the target.
+        {
+            killer.Notify(Translator.GetString("NoStealableAddons"));
+            return true;
+        }
+        if (TotalSteals[killer.PlayerId] >= MaxSteals.GetInt())
+        {
+            Logger.Info("Max steals reached killing the player", "Bandit");
+            TotalSteals[killer.PlayerId] = MaxSteals.GetInt();
+            return true;
+        }
+
+        return killer.CheckDoubleTrigger(target, () => { StealAddon(killer, target, SelectedAddOn); });
     }
 
     public static void OnReportDeadBody()
