@@ -918,7 +918,7 @@
   "MorticianInfoLong": "(船員陣營):\n殯葬師可以看到指向所有屍體的箭頭，當殯葬師報告屍體時可以在會議上得知被害者生前最後一個接觸的玩家。請注意: 殯葬師不會成為膽小鬼。",
   "MediumshiperInfoLong": "(船員陣營):\n當場上有玩家被殺死，通靈師會收到提示。當每次報告屍體時通靈師可以與被報告的屍體建立聯繫(只有被報告的而不是全部被害者)，在此次會議結束前，被害者擁有一次機會回答通靈師的問題，只能回答是或否。請注意: 通靈師不會成為膽小鬼。",
   "ObserverInfoLong": "(船員陣營):\n窺視者可以在第一次會議後看到所有玩家的碎盾動畫(包括技能的碎盾提示)。",
-  "MonarchInfoLong": "(船員陣營):\n君主可以嘗試對一名玩家使用殺人鍵讓他成為騎士，騎士擁有額外的票數，並且名字會變為金色(僅君主可見)，此外，君主無法讓已經擁有額外票數的人當選騎士(例如市長)。",
+  "MonarchInfoLong": "(Crewmates):\nAs the Monarch, you can knight players to give them an extra vote.\n\nYou cannot knight someone who already has extra votes.\n\nKnighted players appear with a golden name. If a knighted player is alive, the Monarch cannot be guessed or exhiled.",
   "DovesOfNeaceInfoLong": "(船員陣營):\n和平之鴿可以通過進入通風管來進行歌頌，\n在場所有擁有殺人鍵的玩家的殺人/技能冷卻時間會被重置。當和平之鴿成為叛徒時歌頌只對船員生效。",
   "FarseerInfoLong": "(船員陣營):\n預言家可以嘗試對一名玩家使用殺人鍵來揭示最近玩家的職業，在開始預言時，目標名字旁會出現「○」符號，預言家必須跟隨此玩家以完成預言，如果預言家離目標太遠，則預言停止，此外，預言家的視野極小。",
   "BloodhoundInfoLong": "(船員陣營):\n驗屍官可以嘗試報告一具屍體以獲得箭頭，箭頭會指向殺害該名玩家的兇手，如果途中進入會議，則箭頭消失。依據房主設定，驗屍官報告後的屍體其他人可能無法報告。",
