@@ -2625,6 +2625,9 @@ class FixedUpdateInNormalGamePatch
                 if (Agitater.IsEnable && Agitater.CurrentBombedPlayer == player.PlayerId)
                     Agitater.OnFixedUpdate(player);
 
+                if (PlagueDoctor.IsEnable)
+                    PlagueDoctor.OnCheckPlayerPosition(player);
+
                 //OverKiller LateKill
                 if (OverKiller.MurderTargetLateTask.ContainsKey(player.PlayerId))
                 {
@@ -2635,10 +2638,6 @@ class FixedUpdateInNormalGamePatch
                 {
                     case CustomRoles.Penguin:
                         Penguin.OnFixedUpdate(player);
-                        break;
-
-                    case CustomRoles.PlagueDoctor:
-                        PlagueDoctor.OnCheckPlayerPosition(player);
                         break;
 
                     case CustomRoles.Vampire:

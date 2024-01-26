@@ -195,7 +195,7 @@ public static class PlagueDoctor
                 CheckWin();
                 foreach (PlayerControl x in updates.ToArray())
                 {
-                    Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: x);
+                    Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(playerIdList[0]), SpecifyTarget: x);
                 }
             }
         }
@@ -222,11 +222,10 @@ public static class PlagueDoctor
     }
     public static string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if (!IsEnable) return string.Empty;
         seen ??= seer;
         if (!seen.Is(CustomRoles.PlagueDoctor)) return string.Empty;
         if (!seer.Is(CustomRoles.PlagueDoctor) && seer.IsAlive()) return string.Empty;
-        if (!isForHud && seer.IsModClient()) return string.Empty;
+
         var str = new StringBuilder(40);
         foreach (PlayerControl player in Main.AllAlivePlayerControls)
         {
