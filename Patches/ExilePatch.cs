@@ -56,8 +56,8 @@ class ExileControllerWrapUpPatch
 
         if (!Collector.CollectorWin(false) && exiled != null)
         {
-            // Reset player cam for exiled desync impostor
-            if (Main.ResetCamPlayerList.Contains(exiled.PlayerId))
+            if (Main.ResetCamPlayerList.Contains(exiled.PlayerId) // Reset player cam for exiled desync impostor
+                || exiled.Object.GetCustomRole().IsImpostor()) // Reset player cam for exiled Impostor
             {
                 exiled.Object?.ResetPlayerCam(1f);
             }
@@ -226,6 +226,14 @@ class ExileControllerWrapUpPatch
                 Shroud.MurderShroudedPlayers(player);
             }
 
+            if (player.GetCustomRole().IsImpostor() 
+                && !player.IsAlive() // if player is dead impostor
+                && AntiBlackout.BlackOutIsActive // if Black Out activated
+                && AntiBlackout_LastExiled.PlayerId != player.PlayerId) // Not the last exiled
+            {
+                player.ResetPlayerCam(1f);
+            }
+
             player.RpcRemovePet();
 
             player.ResetKillCooldown();
@@ -297,7 +305,7 @@ class ExileControllerWrapUpPatch
                     var player = Utils.GetPlayerById(x.Key);
                     var state = Main.PlayerStates[x.Key];
                     
-                    Logger.Info($"{player.GetNameWithRole()} died with {x.Value}", "AfterMeetingDeath");
+                    Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()} died with {x.Value}", "AfterMeetingDeath");
 
                     state.deathReason = x.Value;
                     state.SetDead();
@@ -306,8 +314,10 @@ class ExileControllerWrapUpPatch
                     if (x.Value == PlayerState.DeathReason.Suicide)
                         player?.SetRealKiller(player, true);
 
-                    if (Main.ResetCamPlayerList.Contains(x.Key))
+                    if (Main.ResetCamPlayerList.Contains(x.Key)) // Reset player cam for dead Impostor
+                    {
                         player?.ResetPlayerCam(1f);
+                    }
 
                     Utils.AfterPlayerDeathTasks(player);
                 });
