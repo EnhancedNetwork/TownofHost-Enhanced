@@ -1941,7 +1941,7 @@ static class CustomRolesHelper
             CustomRoles.Wraith => CustomWinner.Wraith,
             CustomRoles.Bandit => CustomWinner.Bandit,
             CustomRoles.Pirate => CustomWinner.Pirate,
-            CustomRoles.SerialKiller => CustomWinner.Mercenary,
+            CustomRoles.SerialKiller => CustomWinner.SerialKiller,
             CustomRoles.Werewolf => CustomWinner.Werewolf,
             CustomRoles.Necromancer => CustomWinner.Necromancer,
             CustomRoles.Huntsman => CustomWinner.Huntsman,
