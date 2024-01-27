@@ -10,6 +10,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using static Unity.Profiling.ProfilerRecorder;
 
 namespace TOHE;
 

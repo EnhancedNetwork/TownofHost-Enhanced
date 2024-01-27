@@ -4096,14 +4096,14 @@ public static class PlayerControlDiePatch
         var getTargetRole = target.GetCustomRole();
         bool IsGhost = CustomRolesHelper.IsGhostRole(getTargetRole);
 
-        if (IsGhost)
-        {
-           roleType = RoleTypes.GuardianAngel;
-           return false;
-        }
+            if (IsGhost)
+            {
+                 roleType = RoleTypes.GuardianAngel;
+                 return false;
+            }
         return true;
         
-    }
+        }
     }
    /* [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetRole))]
                class PlayerControlSetRolePatchtrue

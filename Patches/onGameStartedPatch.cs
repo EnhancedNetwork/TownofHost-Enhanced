@@ -508,6 +508,21 @@ internal class SelectRolesPatch
 
             //Utils.ApplySuffix();
 
+            foreach (var roleplr in Options.CustomRoleCounts.Keys) // Special case to add ghost-roles and detect on/off option
+            {
+                var isghost = CustomRolesHelper.IsGhostRole(roleplr);
+
+                if (isghost)
+                {
+                    Options.GetRoleSpawnMode(roleplr);
+                    if (Options.spawntest != 0)
+                    {
+                        OptionItem option = Options.CustomRoleCounts[roleplr];
+                        Options.CustomGhostRoleCounts.Add(roleplr, option);
+                    }
+                }
+            }
+
             foreach (var pc in Main.AllPlayerControls)
             {
                 pc.Data.IsDead = false; //プレイヤーの死を解除する
@@ -1187,7 +1202,7 @@ internal class SelectRolesPatch
             }
         }
     }
-
+    
     private static void AssignCustomRole(CustomRoles role, PlayerControl player)
     {
         if (player == null) return;
@@ -1196,6 +1211,10 @@ internal class SelectRolesPatch
         Main.PlayerStates[player.PlayerId].SetMainRole(role);
         Logger.Info($"Registered Role： {player?.Data?.PlayerName} => {role}", "AssignRoles");
 
+        foreach (var ghost in Options.CustomGhostRoleCounts.Keys)
+        {
+            Logger.Info($"{ghost} exist in customghostroles", "CustomGhostCount");
+        }
         SetColorPatch.IsAntiGlitchDisabled = false;
     }
     private static void ForceAssignRole(CustomRoles role, List<PlayerControl> AllPlayers, CustomRpcSender sender, RoleTypes BaseRole, RoleTypes hostBaseRole = RoleTypes.Crewmate, bool skip = false, int Count = -1)

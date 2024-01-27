@@ -12,6 +12,7 @@ using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
+using static Unity.Profiling.ProfilerRecorder;
 
 namespace TOHE;
 
@@ -1071,12 +1072,14 @@ public static class Options
     public static int GetRoleSpawnMode(CustomRoles role)
     {
         var mode = CustomRoleSpawnChances.TryGetValue(role, out var sc) ? sc.GetChance() : 0;
+        
         if (CustomRolesHelper.IsGhostRole(role))
         {
-            if (mode != 0)
-                trueghostenable = true;
             
-            return mode = 0;
+            spawntest = mode;
+            
+
+            mode = 0; // reject ghost-roles from every spawning patch
         }
         return mode switch
         {
@@ -1772,11 +1775,7 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.ScientistTOHE])
             .SetValueFormat(OptionFormat.Seconds);
 
-        /*
-        * Guardian Angel
-        */
-         //SetupGhostRoleOptions(27900, TabGroup.CrewmateRoles, CustomRoles.GuardianAngelTOHE); 
-
+        
         /*
          * BASIC ROLES
          */
@@ -3847,6 +3846,7 @@ public static class Options
         CustomRoleSpawnChances.Add(role, spawnOption);
         CustomRoleCounts.Add(role, countOption);
     }
+    public static int spawntest;
     public static void SetupGhostRoleOptions(int id, TabGroup tab, CustomRoles role, CustomGameMode customGameMode = CustomGameMode.Standard, bool zeroOne = false)
     {
         var spawnOption = StringOptionItem.Create(id, role.ToString(), ratesZeroOne, 0, tab, false).SetColor(Utils.GetRoleColor(role))
@@ -3858,18 +3858,16 @@ public static class Options
             .SetValueFormat(OptionFormat.Players)
             .SetGameMode(customGameMode);
 
-        trueghostenable = false;
+        
+
         if(CustomGhostRoleCounts.ContainsKey(role)) // Just incase
             CustomGhostRoleCounts.Remove(role);
         
 
         CustomRoleSpawnChances.Add(role, spawnOption);
         CustomRoleCounts.Add(role, countOption);
-        GetRoleSpawnMode(role);
+
         
-        if (trueghostenable) 
-            Logger.Info($"Added {role} because custom spawn option activated", $"{role} SetupGhostRole");
-            CustomGhostRoleCounts.Add(role, countOption);
     }
     public static bool GhostAssign(CustomRoles role)
     {
