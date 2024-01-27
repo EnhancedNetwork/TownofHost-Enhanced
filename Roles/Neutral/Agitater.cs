@@ -153,8 +153,7 @@ public static class Agitater
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 var target = Utils.GetPlayerById(min.Key);
                 var KillRange = GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.currentNormalGameOptions.KillDistance, 0, 2)];
-
-                if (min.Value <= KillRange && player.CanMove && target.CanMove)
+                if (min.Value <= KillRange && !player.inVent && !target.inVent)
                 {
                     PassBomb(player, target);
                 }

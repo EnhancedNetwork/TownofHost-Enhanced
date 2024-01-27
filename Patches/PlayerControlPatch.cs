@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.IO;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
@@ -20,6 +18,34 @@ using static TOHE.Translator;
 using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
+
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.OnEnable))]
+class PlayerControlOnEnablePatch
+{
+    public static void Postfix(PlayerControl __instance)
+    {
+        //Shortly after this postfix, playercontrol is started but the amowner is not installed.
+        //Need to delay for amowner to work
+        _ = new LateTask(() =>
+        {
+            if (__instance.AmOwner)
+            {
+                Logger.Info("am owner version check, local player id is " + __instance.PlayerId, "PlayerControlOnEnable");
+                RPC.RpcVersionCheck();
+                return;
+            }
+
+            if (AmongUsClient.Instance.AmHost && __instance.PlayerId != PlayerControl.LocalPlayer.PlayerId)
+            {
+                Logger.Info("Host send version check, target player id is " + __instance.PlayerId, "PlayerControlOnEnable");
+                RPC.RpcVersionCheck();
+            }
+        }, 0.2f, "Player Spawn LateTask ", false);
+
+        //This late task happens where a playercontrol spawns, it will cause huge logs, so we have to hide it.
+        //Its for host and joining client to recognize each other. Client and client recognize should be put in playerjoin latetask
+    }
+}
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckProtect))]
 class CheckProtectPatch
@@ -1043,14 +1069,11 @@ class CheckMurderPatch
                     {
                         foreach (var player in Main.AllPlayerControls)
                         {
-                            if (!killer.Is(CustomRoles.Pestilence))
+                            if (!killer.Is(CustomRoles.Pestilence) && Main.TimeMasterBackTrack.TryGetValue(player.PlayerId, out var position))
                             {
-                                if (Main.TimeMasterBackTrack.TryGetValue(player.PlayerId, out var position))
+                                if (player.CanBeTeleported())
                                 {
-                                    if (player.CanBeTeleported())
-                                    {
-                                        player.RpcTeleport(position);
-                                    }
+                                    player.RpcTeleport(position);
                                 }
                             }
                         }
@@ -1319,7 +1342,7 @@ class MurderPlayerPatch
 
         if (PlagueDoctor.IsEnable)
         {
-            PlagueDoctor.OnInfectDeath(killer);
+            PlagueDoctor.OnPDdeath(killer, target);
             PlagueDoctor.OnAnyMurder();
         }
 
@@ -2616,6 +2639,9 @@ class FixedUpdateInNormalGamePatch
                 if (Agitater.IsEnable && Agitater.CurrentBombedPlayer == player.PlayerId)
                     Agitater.OnFixedUpdate(player);
 
+                if (PlagueDoctor.IsEnable)
+                    PlagueDoctor.OnCheckPlayerPosition(player);
+
                 //OverKiller LateKill
                 if (OverKiller.MurderTargetLateTask.ContainsKey(player.PlayerId))
                 {
@@ -2628,9 +2654,6 @@ class FixedUpdateInNormalGamePatch
                         Penguin.OnFixedUpdate(player);
                         break;
 
-                    case CustomRoles.PlagueDoctor:
-                        PlagueDoctor.OnCheckPlayerPosition(player);
-                        break;
                     case CustomRoles.Vampire:
                         Vampire.OnFixedUpdate(player);
                         break;
@@ -3722,13 +3745,13 @@ class EnterVentPatch
                 {
                     if (Main.TimeMasterBackTrack.TryGetValue(player.PlayerId, out var position))
                     {
-                        if (player.CanBeTeleported() || player.PlayerId == pc.PlayerId)
+                        if (player.CanBeTeleported() || player.PlayerId != pc.PlayerId)
                         {
                             player.RpcTeleport(position);
                         }
-                        if (pc != player)
+                        if (pc == player)
                         {
-                            player?.MyPhysics?.RpcBootFromVent(player.PlayerId);
+                            player?.MyPhysics?.RpcBootFromVent(Main.LastEnteredVent.TryGetValue(player.PlayerId, out var vent) ? vent.Id : player.PlayerId);
                         }
 
                         Main.TimeMasterBackTrack.Remove(player.PlayerId);

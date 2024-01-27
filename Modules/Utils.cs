@@ -85,10 +85,13 @@ public static class Utils
         }
     }
 
-    public static void RpcTeleport(this PlayerControl player, Vector2 location)
+    public static void RpcTeleport(this PlayerControl player, Vector2 location, bool sendInfoInLogs = true)
     {
-        Logger.Info($" {player.GetNameWithRole().RemoveHtmlTags()} => {location}", "RpcTeleport");
-        Logger.Info($" Player Id: {player.PlayerId}", "RpcTeleport");
+        if (sendInfoInLogs)
+        {
+            Logger.Info($" {player.GetNameWithRole().RemoveHtmlTags()} => {location}", "RpcTeleport");
+            Logger.Info($" Player Id: {player.PlayerId}", "RpcTeleport");
+        }
 
         if (player.inVent
             || player.MyPhysics.Animations.IsPlayingEnterVentAnimation())
@@ -105,9 +108,9 @@ public static class Utils
         }
 
         var playerNetTransform = player.NetTransform;
-        var numHost = (ushort)(playerNetTransform.lastSequenceId + 2);
-        var numLocalClient = (ushort)(playerNetTransform.lastSequenceId + 28);
-        var numGlobal = (ushort)(playerNetTransform.lastSequenceId + 48);
+        var numHost = (ushort)(playerNetTransform.lastSequenceId + 6);
+        var numLocalClient = (ushort)(playerNetTransform.lastSequenceId + 48);
+        var numGlobal = (ushort)(playerNetTransform.lastSequenceId + 100);
 
         // Host side
         if (AmongUsClient.Instance.AmHost)
@@ -659,6 +662,7 @@ public static class Utils
             case CustomRoles.Romantic:
             case CustomRoles.VengefulRomantic:
             case CustomRoles.RuthlessRomantic:
+            case CustomRoles.Quizmaster:
                 hasTasks = false;
                 break;
             case CustomRoles.Workaholic:
@@ -2167,8 +2171,9 @@ public static class Utils
 
                 if (Sniper.IsEnable)
                     SelfMark.Append(Sniper.GetShotNotify(seer.PlayerId));
-                
 
+                if (Romantic.IsEnable)
+                    SelfMark.Append(Romantic.SelfMark(seer));
 
                 // ====== Add SelfSuffix for seer ======
 
@@ -2240,9 +2245,13 @@ public static class Utils
                             SelfSuffix.Append(HexMaster.GetHexModeText(seer, false));
                             break;
 
-                            //case CustomRoles.Occultist:
-                            //    SelfSuffix.Append(Occultist.GetHexModeText(seer, false));
-                            //    break;
+                        //case CustomRoles.Occultist:
+                        //    SelfSuffix.Append(Occultist.GetHexModeText(seer, false));
+                        //    break;
+
+                        case CustomRoles.PlagueDoctor:
+                            SelfSuffix.Append(PlagueDoctor.GetLowerTextOthers(seer));
+                            break;
                     }
                 }
                 else // Only during meeting
@@ -2460,7 +2469,6 @@ public static class Utils
 
                         if (Romantic.IsEnable)
                             TargetMark.Append(Romantic.TargetMark(seer, target));
-
 
                         if (Lawyer.IsEnable)
                             TargetMark.Append(Lawyer.LawyerMark(seer, target));
@@ -2687,7 +2695,7 @@ public static class Utils
                         // ====== Add TargetSuffix for target (TargetSuffix visible ​​only to the seer) ======
                         TargetSuffix.Clear();
 
-                        TargetSuffix.Append(PlagueDoctor.GetLowerTextOthers(seer, target));
+
                         TargetSuffix.Append(Stealth.GetSuffix(seer, target));
 
 

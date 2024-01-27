@@ -325,7 +325,6 @@ static class CustomRolesHelper
             CustomRoles.Workhorse or
             CustomRoles.Fool or
             CustomRoles.Autopsy or
-            CustomRoles.Repairman or
             CustomRoles.Necroview or
             CustomRoles.Avanger or
             CustomRoles.Sleuth or
@@ -1088,14 +1087,6 @@ static class CustomRolesHelper
                     return false;
                 break;
 
-            case CustomRoles.Repairman:
-                if (pc.Is(CustomRoles.SabotageMaster)
-                || pc.Is(CustomRoles.Fool))
-                    return false;
-                if ((pc.GetCustomRole().IsCrewmate() && !Repairman.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Repairman.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Repairman.CanBeOnImp.GetBool()))
-                    return false;
-                break;
-
             case CustomRoles.Bait:
                 if (pc.Is(CustomRoles.Trapper)
                     || pc.Is(CustomRoles.Provocateur)
@@ -1689,8 +1680,7 @@ static class CustomRolesHelper
 
             case CustomRoles.Fool:
                 if (pc.Is(CustomRoles.SabotageMaster)
-                    || pc.Is(CustomRoles.GuardianAngelTOHE)
-                    || pc.Is(CustomRoles.Repairman))
+                    || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeFool.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeFool.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeFool.GetBool()))
                     return false;
@@ -1776,10 +1766,9 @@ static class CustomRolesHelper
     public static bool IsImpostorTeam(this CustomRoles role) => role.IsImpostor() || role == CustomRoles.Madmate;
     public static bool IsCrewmate(this CustomRoles role) => !role.IsImpostor() && !role.IsNeutral() && !role.IsMadmate();
 
-    public static bool IsImpostorTeamV2(this CustomRoles role) => (role.IsImpostorTeamV3() && role != CustomRoles.Trickster && !role.IsConverted()) || role == CustomRoles.Rascal || role == CustomRoles.Madmate;
-    public static bool IsNeutralTeamV2(this CustomRoles role) => (role.IsConverted() || role.IsNeutral() && role != CustomRoles.Madmate);
-
-    public static bool IsCrewmateTeamV2(this CustomRoles role) => ((!role.IsImpostorTeamV2() && !role.IsNeutralTeamV2()) || (role == CustomRoles.Trickster && !role.IsConverted()));
+    public static bool IsImpostorTeamV2(this CustomRoles role) => role == CustomRoles.Rascal || role == CustomRoles.Madmate || (role.IsImpostorTeamV3() && role != CustomRoles.Trickster && !role.IsConverted());
+    public static bool IsNeutralTeamV2(this CustomRoles role) => (role.IsConverted() || role.IsNeutral()) && role != CustomRoles.Madmate;
+    public static bool IsCrewmateTeamV2(this CustomRoles role) => !(role.IsImpostorTeamV2() || role.IsNeutralTeamV2()) || role == CustomRoles.Trickster;
 
     public static bool IsConverted(this CustomRoles role)
     {
@@ -1801,9 +1790,9 @@ static class CustomRolesHelper
             ((role is CustomRoles.President) && President.CheckPresidentReveal[target.PlayerId] == true)) ||
             (role is CustomRoles.Captain && Captain.OptionCrewCanFindCaptain.GetBool());
     }
-    public static bool IsImpostorTeamV3(this CustomRoles role) => (role.IsImpostor() || role.IsMadmate());
-    public static bool IsNeutralKillerTeam(this CustomRoles role) => (role.IsNK() && !role.IsMadmate());
-    public static bool IsPassiveNeutralTeam(this CustomRoles role) => (role.IsNonNK() && !role.IsMadmate());
+    public static bool IsImpostorTeamV3(this CustomRoles role) => role.IsImpostor() || role.IsMadmate();
+    public static bool IsNeutralKillerTeam(this CustomRoles role) => role.IsNK() && !role.IsMadmate();
+    public static bool IsPassiveNeutralTeam(this CustomRoles role) => role.IsNonNK() && !role.IsMadmate();
     public static bool IsNNK(this CustomRoles role) => role.IsNeutral() && !role.IsNK();
     public static bool IsVanilla(this CustomRoles role)
     {

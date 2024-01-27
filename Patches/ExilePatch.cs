@@ -233,39 +233,42 @@ class ExileControllerWrapUpPatch
         Main.MeetingIsStarted = false;
         Main.MeetingsPassed++;
 
-        if (Options.RandomSpawn.GetBool() || Options.CurrentGameMode == CustomGameMode.FFA)
-        {
-            RandomSpawn.SpawnMap map;
-            switch (Utils.GetActiveMapId())
-            {
-                case 0:
-                    map = new RandomSpawn.SkeldSpawnMap();
-                    Main.AllPlayerControls.Do(map.RandomTeleport);
-                    break;
-                case 1:
-                    map = new RandomSpawn.MiraHQSpawnMap();
-                    Main.AllPlayerControls.Do(map.RandomTeleport);
-                    break;
-                case 2:
-                    map = new RandomSpawn.PolusSpawnMap();
-                    Main.AllPlayerControls.Do(map.RandomTeleport);
-                    break;
-                case 3:
-                    map = new RandomSpawn.DleksSpawnMap();
-                    Main.AllPlayerControls.Do(map.RandomTeleport);
-                    break;
-                case 5:
-                    map = new RandomSpawn.FungleSpawnMap();
-                    Main.AllPlayerControls.Do(map.RandomTeleport);
-                    break;
-            }
-        }
-
         FallFromLadder.Reset();
         Utils.CountAlivePlayers(true);
         Utils.AfterMeetingTasks();
         Utils.SyncAllSettings();
         Utils.NotifyRoles(ForceLoop: true);
+
+        _ = new LateTask(() =>
+        {
+            if (Options.RandomSpawn.GetBool() || Options.CurrentGameMode == CustomGameMode.FFA)
+            {
+                RandomSpawn.SpawnMap map;
+                switch (Utils.GetActiveMapId())
+                {
+                    case 0:
+                        map = new RandomSpawn.SkeldSpawnMap();
+                        Main.AllPlayerControls.Do(map.RandomTeleport);
+                        break;
+                    case 1:
+                        map = new RandomSpawn.MiraHQSpawnMap();
+                        Main.AllPlayerControls.Do(map.RandomTeleport);
+                        break;
+                    case 2:
+                        map = new RandomSpawn.PolusSpawnMap();
+                        Main.AllPlayerControls.Do(map.RandomTeleport);
+                        break;
+                    case 3:
+                        map = new RandomSpawn.DleksSpawnMap();
+                        Main.AllPlayerControls.Do(map.RandomTeleport);
+                        break;
+                    case 5:
+                        map = new RandomSpawn.FungleSpawnMap();
+                        Main.AllPlayerControls.Do(map.RandomTeleport);
+                        break;
+                }
+            }
+        }, 0.8f, "Random Spawn After Meeting");
     }
 
     static void WrapUpFinalizer(GameData.PlayerInfo exiled)
@@ -283,7 +286,7 @@ class ExileControllerWrapUpPatch
                 {
                     exiled.Object.RpcExileV2();
                 }
-            }, 0.5f, "Restore IsDead Task");
+            }, 0.8f, "Restore IsDead Task");
 
             _ = new LateTask(() =>
             {
@@ -308,8 +311,11 @@ class ExileControllerWrapUpPatch
                 });
                 Main.AfterMeetingDeathPlayers.Clear();
 
-            }, 0.5f, "AfterMeetingDeathPlayers Task");
+            }, 0.8f, "AfterMeetingDeathPlayers Task");
         }
+        //This should happen shortly after the Exile Controller wrap up finished for clients
+        //For Certain Laggy clients 0.8f delay is still not enough. The finish time can differ.
+        //If the delay is too long, it will influence other normal players' view
 
         GameStates.AlreadyDied |= !Utils.IsAllAlive;
         RemoveDisableDevicesPatch.UpdateDisableDevices();

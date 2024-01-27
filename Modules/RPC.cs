@@ -19,9 +19,11 @@ namespace TOHE;
 
 enum CustomRPC
 {
-    VersionCheck = 60,
-    RequestRetryVersionCheck = 61,
-    SyncCustomSettings = 80,
+    // RpcCalls can increase with each AU version
+    // On version 2023.11.28 the last id in RpcCalls: 61
+    VersionCheck = 80,
+    RequestRetryVersionCheck = 81,
+    SyncCustomSettings = 82,
     RestTOHESetting,
     SetDeathReason,
     EndGame,
@@ -893,7 +895,7 @@ internal static class RPC
             amountAllOptions = OptionItem.AllOptions.Count;
         }
 
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, 80, SendOption.Reliable, targetId);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncCustomSettings, SendOption.Reliable, targetId);
 
         writer.Write(startAmount);
         writer.Write(lastAmount);
@@ -1180,9 +1182,6 @@ internal static class RPC
                 break;
             case CustomRoles.SabotageMaster:
                 SabotageMaster.Add(targetId);
-                break;
-            case CustomRoles.Repairman:
-                Repairman.Add(targetId);
                 break;
             case CustomRoles.Snitch:
                 Snitch.Add(targetId);

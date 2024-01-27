@@ -40,14 +40,14 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.1.24.1502";
-    public const string PluginDisplayVersion = "1.5.0 Canary 2";
+    public const string PluginVersion = "2024.0126.151.03"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "1.5.1 Dev 3";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public const bool Canary = true; 
-    public const bool fullRelease = false;
-    public const bool devRelease = false;
+    public const bool Canary = false; // INACTIVE - Latest: V1.5.0 Canary 1.1
+    public const bool fullRelease = false; // INACTIVE - Latest: V1.4.0
+    public const bool devRelease = true; // ACTIVE - Latest: V1.5.1 Dev 3
 
     public static bool hasAccess = true;
 
@@ -457,11 +457,11 @@ public class Main : BasePlugin
         //TOHE.Logger.Disable("NotifyRoles");
         TOHE.Logger.Disable("SwitchSystem");
         TOHE.Logger.Disable("ModNews");
+        TOHE.Logger.Disable("CustomRpcSender");
         if (!DebugModeManager.AmDebugger)
         {
             TOHE.Logger.Disable("2018k");
             TOHE.Logger.Disable("Github");
-            TOHE.Logger.Disable("CustomRpcSender");
             //TOHE.Logger.Disable("ReceiveRPC");
             TOHE.Logger.Disable("SendRPC");
             TOHE.Logger.Disable("SetRole");
@@ -477,6 +477,7 @@ public class Main : BasePlugin
             //TOHE.Logger.Disable("CheckMurder");
             TOHE.Logger.Disable("PlayerControl.RpcSetRole");
             TOHE.Logger.Disable("SyncCustomSettings");
+            TOHE.Logger.Disable("DoNotifyRoles");
         }
         //TOHE.Logger.isDetail = true;
 
@@ -847,7 +848,7 @@ public enum CustomRoles
     Reach,
     Rebound,
     Recruit,
-    Repairman,
+    //Repairman,
     Rogue,
     DualPersonality, //Schizophrenic
     Seer,
