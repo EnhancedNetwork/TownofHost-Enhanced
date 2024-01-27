@@ -328,6 +328,7 @@ static class ExtendedPlayerControl
         messageWriter.Write((byte)amount);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
     }
+
     /*public static void RpcBeKilled(this PlayerControl player, PlayerControl KilledBy = null) {
         if(!AmongUsClient.Instance.AmHost) return;
         byte KilledById;
@@ -416,7 +417,6 @@ static class ExtendedPlayerControl
         {
             pc.RpcDesyncUpdateSystem(systemtypes, 128);
         }, 0f + delay, "Reactor Desync");
-
 
         _ = new LateTask(() =>
         {

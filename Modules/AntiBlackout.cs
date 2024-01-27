@@ -23,27 +23,27 @@ public static class AntiBlackout
     {
         List<byte> Impostors = [];
         List<byte> Crewmates = [];
-        List<byte> Neutrals = [];
+        List<byte> NeutralKillers = [];
 
         foreach (var pc in Main.AllAlivePlayerControls)
         {
             if (pc.GetCustomRole().IsImpostor()) Impostors.Add(pc.PlayerId); // Impostors
             else if (Main.PlayerStates[pc.PlayerId].countTypes == CountTypes.Impostor) Impostors.Add(pc.PlayerId); // Madmates
 
-            else if (pc.GetCustomRole().IsNK() && !pc.Is(CustomRoles.Arsonist)) Neutrals.Add(pc.PlayerId); // Neutral Killers
-            else if (pc.Is(CustomRoles.Arsonist) && Options.ArsonistCanIgniteAnytime.GetBool()) Neutrals.Add(pc.PlayerId);
-            else if (pc.Is(CustomRoles.Succubus)) Neutrals.Add(pc.PlayerId);
+            else if (pc.GetCustomRole().IsNK() && !pc.Is(CustomRoles.Arsonist)) NeutralKillers.Add(pc.PlayerId); // Neutral Killers
+            else if (pc.Is(CustomRoles.Arsonist) && Options.ArsonistCanIgniteAnytime.GetBool()) NeutralKillers.Add(pc.PlayerId);
+            else if (pc.Is(CustomRoles.Succubus)) NeutralKillers.Add(pc.PlayerId);
 
             else Crewmates.Add(pc.PlayerId);
         }
 
         var numAliveImpostors = Impostors.Count;
         var numAliveCrewmates = Crewmates.Count;
-        var numAliveNeutrals = Neutrals.Count;
+        var numAliveNeutralKillers = NeutralKillers.Count;
 
         Logger.Info($" {numAliveImpostors}", "AntiBlackout Num Alive Impostors");
         Logger.Info($" {numAliveCrewmates}", "AntiBlackout Num Alive Crewmates");
-        Logger.Info($" {numAliveCrewmates}", "AntiBlackout Num Alive Neutrals");
+        Logger.Info($" {numAliveNeutralKillers}", "AntiBlackout Num Alive Neutral Killers");
 
         var BlackOutIsActive = false;
 
@@ -56,7 +56,7 @@ public static class AntiBlackout
             BlackOutIsActive = true;
 
         // if num alive Impostors > or = num alive non-impostors players
-        if (numAliveImpostors >= (numAliveNeutrals + numAliveCrewmates))
+        if (numAliveImpostors >= (numAliveNeutralKillers + numAliveCrewmates))
             BlackOutIsActive = true;
 
         Logger.Info($" {BlackOutIsActive}", "BlackOut Is Active");
