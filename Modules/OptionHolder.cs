@@ -2224,9 +2224,9 @@ public static class Options
         /*
          * Ghost Roles
          */
-        TextOptionItem.Create(10000101, "Roletype.CrewmateGhost", TabGroup.CrewmateRoles)
+        TextOptionItem.Create(10000101, "RoleType.CrewGhost", TabGroup.CrewmateRoles)
             .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(169, 190, 194, byte.MaxValue));
+            .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
         Warden.SetupCustomOptions();
 
