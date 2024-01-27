@@ -469,7 +469,7 @@ class CheckMurderPatch
                     Juggernaut.OnCheckMurder(killer);
                     break;
                 case CustomRoles.Penguin:
-                    if (!Penguin.OnCheckMurderASerialKiller(killer, target)) return false;
+                    if (!Penguin.OnCheckMurderAsKiller(killer, target)) return false;
                     break;
                 case CustomRoles.Reverie:
                     Reverie.OnCheckMurder(killer, target);
