@@ -1,6 +1,5 @@
 using Hazel;
 using System.Collections.Generic;
-using System.Linq;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -67,7 +66,7 @@ public static class Fireworker
     public static void SendRPC(byte playerId)
     {
         Logger.Info($"Player{playerId}:SendRPC", "Fireworker");
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SendFireworkerState, Hazel.SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SendFireworkerState, SendOption.Reliable, -1);
         writer.Write(playerId);
         writer.Write(nowFireworkerCount[playerId]);
         writer.Write((int)state[playerId]);
