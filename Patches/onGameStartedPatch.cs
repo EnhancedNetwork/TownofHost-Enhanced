@@ -274,7 +274,7 @@ internal class ChangeRoleSettings
             Assassin.Init();
             Sans.Init();
             Juggernaut.Init();
-            Hacker.Init();
+            Anonymous.Init();
             Psychic.Init();
             Glitch.Init();
             Huntsman.Init();
@@ -833,8 +833,8 @@ internal class SelectRolesPatch
                     case CustomRoles.Juggernaut:
                         Juggernaut.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Hacker:
-                        Hacker.Add(pc.PlayerId);
+                    case CustomRoles.Anonymous:
+                        Anonymous.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Psychic:
                         Psychic.Add(pc.PlayerId);

@@ -420,8 +420,8 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Assassin:
                 Assassin.ApplyGameOptions();
                 break;
-            case CustomRoles.Hacker:
-                Hacker.ApplyGameOptions();
+            case CustomRoles.Anonymous:
+                Anonymous.ApplyGameOptions();
                 break;
             case CustomRoles.Hangman:
                 Hangman.ApplyGameOptions();

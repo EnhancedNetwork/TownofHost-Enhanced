@@ -305,9 +305,9 @@ class HudManagerPatch
                         Assassin.SetKillButtonText(player.PlayerId);
                         Assassin.GetAbilityButtonText(__instance, player.PlayerId);
                         break;
-                    case CustomRoles.Hacker:
+                    case CustomRoles.Anonymous:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        Hacker.GetAbilityButtonText(__instance, player.PlayerId);
+                        Anonymous.GetAbilityButtonText(__instance, player.PlayerId);
                         break;
                     case CustomRoles.Cleaner:
                         __instance.ReportButton.OverrideText(GetString("CleanerReportButtonText"));

@@ -1661,7 +1661,7 @@ public static class Options
         /*
          * Anonymous
          */
-        Hacker.SetupCustomOption();
+        Anonymous.SetupCustomOption();
 
         /*
          * Dazzler

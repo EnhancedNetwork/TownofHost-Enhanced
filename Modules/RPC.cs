@@ -627,7 +627,7 @@ internal class RPCHandlerPatch
                 Medic.ReceiveRPCForProtectList(reader);
                 break;
             case CustomRPC.SetHackerHackLimit:
-                Hacker.ReceiveRPC(reader);
+                Anonymous.ReceiveRPC(reader);
                 break;
             case CustomRPC.SyncPsychicRedList:
                 Psychic.ReceiveRPC(reader);
@@ -1304,8 +1304,8 @@ internal static class RPC
             case CustomRoles.Reverie:
                 Reverie.Add(targetId);
                 break;
-            case CustomRoles.Hacker:
-                Hacker.Add(targetId);
+            case CustomRoles.Anonymous:
+                Anonymous.Add(targetId);
                 break;
             case CustomRoles.Psychic:
                 Psychic.Add(targetId);

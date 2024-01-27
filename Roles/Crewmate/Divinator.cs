@@ -281,7 +281,7 @@ public static class Divinator
                 CustomRoles.Blackmailer,
                 CustomRoles.ParityCop],
                 
-                [CustomRoles.Hacker,
+                [CustomRoles.Anonymous,
                 CustomRoles.Mayor,
                 CustomRoles.Paranoia,
                 CustomRoles.Mastermind,
@@ -506,7 +506,7 @@ public static class Divinator
                    => "Blockbuster",
 
                    CustomRoles.Warlock or
-                   CustomRoles.Hacker or
+                   CustomRoles.Anonymous or
                    CustomRoles.Mafia or
                    CustomRoles.Retributionist or
                    CustomRoles.Doctor or

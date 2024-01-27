@@ -1017,7 +1017,7 @@ internal class ChatCommands
             "術士" or "术士" => GetString("Warlock"),
             "刺客" or "忍者" => GetString("Assassin"),
             "僵屍" or "僵尸" or"殭屍" or "丧尸" => GetString("Zombie"),
-            "駭客" or "骇客" or "黑客" => GetString("Hacker"),
+            "駭客" or "骇客" or "黑客" => GetString("Anonymous"),
             "礦工" or "矿工" => GetString("Miner"),
             "殺人機器" or "杀戮机器" or "杀戮" or "机器" or "杀戮兵器" => GetString("Minimalism"),
             "通緝犯" or "逃逸者" or "逃逸" => GetString("Escapee"),

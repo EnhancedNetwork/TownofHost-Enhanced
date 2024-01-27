@@ -1490,7 +1490,7 @@ class MurderPlayerPatch
         if (Lawyer.Target.ContainsValue(target.PlayerId))
             Lawyer.ChangeRoleByTarget(target);
 
-        if (Hacker.IsEnable) Hacker.AddDeadBody(target);
+        if (Anonymous.IsEnable) Anonymous.AddDeadBody(target);
         if (Mortician.IsEnable) Mortician.OnPlayerDead(target);
         if (Bloodhound.IsEnable) Bloodhound.OnPlayerDead(target);
         if (Tracefinder.IsEnable) Tracefinder.OnPlayerDead(target);
@@ -1742,8 +1742,8 @@ class ShapeshiftPatch
                     if (!shapeshifting)
                         Camouflager.OnReportDeadBody();
                     break;
-                case CustomRoles.Hacker:
-                    Hacker.OnShapeshift(shapeshifter, shapeshifting, target);
+                case CustomRoles.Anonymous:
+                    Anonymous.OnShapeshift(shapeshifter, shapeshifting, target);
                     break;
                 case CustomRoles.Disperser:
                     if (shapeshifting)
@@ -2375,7 +2375,7 @@ class ReportDeadBodyPatch
         if (Counterfeiter.IsEnable) Counterfeiter.OnReportDeadBody();
         if (QuickShooter.IsEnable) QuickShooter.OnReportDeadBody();
         if (Eraser.IsEnable) Eraser.OnReportDeadBody();
-        if (Hacker.IsEnable) Hacker.OnReportDeadBody();
+        if (Anonymous.IsEnable) Anonymous.OnReportDeadBody();
         if (Divinator.IsEnable) Divinator.OnReportDeadBody();
         if (Tracefinder.IsEnable) Tracefinder.OnReportDeadBody();
         if (Judge.IsEnable) Judge.OnReportDeadBody();

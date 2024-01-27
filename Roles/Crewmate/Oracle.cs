@@ -137,7 +137,7 @@ public static class Oracle
                 //      CustomRoles.Zombie or
                 //      CustomRoles.Warlock or
                 //      CustomRoles.Assassin or
-                //      CustomRoles.Hacker or
+                //      CustomRoles.Anonymous or
                 //      CustomRoles.Miner or
                 //      CustomRoles.Escapee or
                 //      CustomRoles.SerialKiller or

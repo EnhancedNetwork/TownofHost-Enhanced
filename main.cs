@@ -550,7 +550,7 @@ public enum CustomRoles
 
     //Impostor
     Sans, //arrogance
-    Hacker, //anonymous
+    Anonymous, //anonymous
     AntiAdminer,
     Bard,
     Berserker,

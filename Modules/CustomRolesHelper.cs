@@ -81,7 +81,7 @@ static class CustomRolesHelper
                 CustomRoles.Needy => CustomRoles.Crewmate,
                 CustomRoles.Twister => CustomRoles.Shapeshifter,
                 CustomRoles.SuperStar => CustomRoles.Crewmate,
-                CustomRoles.Hacker => CustomRoles.Shapeshifter,
+                CustomRoles.Anonymous => CustomRoles.Shapeshifter,
                 CustomRoles.Visionary => CustomRoles.Impostor,
                 CustomRoles.Assassin => CustomRoles.Shapeshifter,
             //    CustomRoles.Luckey => CustomRoles.Crewmate,
@@ -690,7 +690,7 @@ static class CustomRolesHelper
             CustomRoles.RiftMaker or
             CustomRoles.Assassin or
             CustomRoles.Berserker or
-            CustomRoles.Hacker or
+            CustomRoles.Anonymous or
             CustomRoles.Visionary or
             CustomRoles.Miner or
             CustomRoles.Escapee or

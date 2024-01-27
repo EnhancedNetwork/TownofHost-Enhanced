@@ -72,7 +72,7 @@ public static class HudSpritePatch
                 else
                     newAbilityButton = CustomButton.Get("FireworkP");
                 break;
-            case CustomRoles.Hacker:
+            case CustomRoles.Anonymous:
                 newAbilityButton = CustomButton.Get("Hack");
                 break;
             case CustomRoles.Hangman:

@@ -1051,8 +1051,8 @@ public static class Utils
                 case CustomRoles.Keeper:
                     ProgressText.Append(Keeper.GetProgressText(playerId, comms));
                     break;
-                case CustomRoles.Hacker:
-                    ProgressText.Append(Hacker.GetHackLimit(playerId));
+                case CustomRoles.Anonymous:
+                    ProgressText.Append(Anonymous.GetHackLimit(playerId));
                     break;
                 case CustomRoles.Killer:
                     ProgressText.Append(FFAManager.GetDisplayScore(playerId));

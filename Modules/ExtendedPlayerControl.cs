@@ -1018,8 +1018,8 @@ static class ExtendedPlayerControl
             case CustomRoles.Reverie:
                 Reverie.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.Hacker:
-                Hacker.SetKillCooldown(player.PlayerId);
+            case CustomRoles.Anonymous:
+                Anonymous.SetKillCooldown(player.PlayerId);
                 break;
             //FFA
             case CustomRoles.Killer:
