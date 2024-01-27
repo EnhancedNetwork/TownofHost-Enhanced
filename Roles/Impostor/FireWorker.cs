@@ -31,8 +31,8 @@ public static class Fireworker
     private static Dictionary<byte, List<Vector3>> FireworkerPosition = [];
     private static Dictionary<byte, FireworkerState> state = [];
     private static Dictionary<byte, int> FireworkerBombKill = [];
-    private static int FireworkerCount = 1;
-    private static float FireworkerRadius = 1;
+    private static int fireworkerCount = 1;
+    private static float fireworkerRadius = 1;
 
     public static void SetupCustomOption()
     {
@@ -51,13 +51,13 @@ public static class Fireworker
         FireworkerPosition = [];
         state = [];
         FireworkerBombKill = [];
-        FireworkerCount = FireworkerCount.GetInt();
-        FireworkerRadius = FireworkerRadius.GetFloat();
+        fireworkerCount = FireworkerCount.GetInt();
+        fireworkerRadius = FireworkerRadius.GetFloat();
     }
 
     public static void Add(byte playerId)
     {
-        nowFireworkerCount[playerId] = FireworkerCount;
+        nowFireworkerCount[playerId] = fireworkerCount;
         FireworkerPosition[playerId] = [];
         state[playerId] = FireworkerState.Initial;
         FireworkerBombKill[playerId] = 0;
@@ -122,7 +122,7 @@ public static class Fireworker
                     foreach (var pos in FireworkerPosition[pc.PlayerId])
                     {
                         var dis = Vector2.Distance(pos, target.transform.position);
-                        if (dis > FireworkerRadius) continue;
+                        if (dis > fireworkerRadius) continue;
 
                         if (target == pc)
                         {
