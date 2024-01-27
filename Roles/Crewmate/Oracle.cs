@@ -150,7 +150,7 @@ public static class Oracle
                 ////      CustomRoles.Trickster or // Trickster appears as crew to Oracle
                 //      CustomRoles.Mafia or
                 //      CustomRoles.Minimalism or
-                //      CustomRoles.FireWorks or
+                //      CustomRoles.Fireworker or
                 //      CustomRoles.Sniper or
                 //      CustomRoles.EvilTracker or
                 //      CustomRoles.EvilGuesser or

@@ -1009,7 +1009,7 @@ internal class ChatCommands
 
             // 内鬼阵营职业
             "賞金獵人" or "赏金猎人" or "赏金" => GetString("BountyHunter"),
-            "煙火工匠" or "烟花商人" or "烟花爆破者" or "烟花" => GetString("FireWorks"),
+            "煙火工匠" or "烟花商人" or "烟花爆破者" or "烟花" => GetString("Fireworker"),
             "嗜血殺手" or "嗜血杀手" or "嗜血" => GetString("Mercenary"),
             "百变怪" or "千面鬼" or "千面" => GetString("ShapeMaster"),
             "吸血鬼" or "吸血" => GetString("Vampire"),

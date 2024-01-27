@@ -214,7 +214,7 @@ internal class ChangeRoleSettings
             BountyHunter.Init();
             Mercenary.Init();
             EvilDiviner.Init();
-            FireWorks.Init();
+            Fireworker.Init();
             Sniper.Init();
             Undertaker.Init();
             TimeThief.Init();
@@ -605,8 +605,8 @@ internal class SelectRolesPatch
                         Main.CursedPlayers.Add(pc.PlayerId, null);
                         Main.isCurseAndKill.Add(pc.PlayerId, false);
                         break;
-                    case CustomRoles.FireWorks:
-                        FireWorks.Add(pc.PlayerId);
+                    case CustomRoles.Fireworker:
+                        Fireworker.Add(pc.PlayerId);
                         break;
                     case CustomRoles.TimeThief:
                         TimeThief.Add(pc.PlayerId);

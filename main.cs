@@ -576,7 +576,7 @@ public enum CustomRoles
     EvilGuesser,
     EvilMini,
     EvilTracker,
-    FireWorks,
+    Fireworker,
     Gangster,
     Godfather,
     Greedier, //greedy

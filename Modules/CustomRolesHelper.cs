@@ -59,7 +59,7 @@ static class CustomRolesHelper
                 CustomRoles.Warlock => CustomRoles.Shapeshifter,
                 CustomRoles.Undertaker => CustomRoles.Shapeshifter,
                 CustomRoles.Mercenary => CustomRoles.Shapeshifter,
-                CustomRoles.FireWorks => CustomRoles.Shapeshifter,
+                CustomRoles.Fireworker => CustomRoles.Shapeshifter,
                 CustomRoles.SpeedBooster => CustomRoles.Crewmate,
                 CustomRoles.Dictator => CustomRoles.Crewmate,
                 CustomRoles.Inhibitor => CustomRoles.Impostor,
@@ -708,7 +708,7 @@ static class CustomRolesHelper
             CustomRoles.Stealth or
             CustomRoles.Penguin or
             CustomRoles.Minimalism or
-            CustomRoles.FireWorks or
+            CustomRoles.Fireworker or
             CustomRoles.Sniper or
             CustomRoles.EvilTracker or
             CustomRoles.EvilGuesser or
@@ -1517,7 +1517,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Swift)
                     || pc.Is(CustomRoles.Mafia)
                     || pc.Is(CustomRoles.Sniper)
-                    || pc.Is(CustomRoles.FireWorks)
+                    || pc.Is(CustomRoles.Fireworker)
                     || pc.Is(CustomRoles.Ludopath)
                     || pc.Is(CustomRoles.Swooper)
                     || pc.Is(CustomRoles.Vampire)

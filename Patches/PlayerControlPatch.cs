@@ -1573,8 +1573,8 @@ class ShapeshiftPatch
                 case CustomRoles.RiftMaker:
                     RiftMaker.OnShapeshift(shapeshifter, shapeshifting);
                     break;
-                case CustomRoles.FireWorks:
-                    FireWorks.ShapeShiftState(shapeshifter, shapeshifting);
+                case CustomRoles.Fireworker:
+                    Fireworker.ShapeShiftState(shapeshifter, shapeshifting);
                     break;
                 case CustomRoles.Warlock:
                     if (Main.CursedPlayers[shapeshifter.PlayerId] != null)

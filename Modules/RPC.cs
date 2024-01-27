@@ -57,7 +57,7 @@ enum CustomRPC
     RemoveExecutionerTarget,
     SetLawyerTarget,
     RemoveLawyerTarget,
-    SendFireWorksState,
+    SendFireworkerState,
     SetCurrentDousingTarget,
     SetEvilTrackerTarget,
     SetRealKiller,
@@ -481,8 +481,8 @@ internal class RPCHandlerPatch
             case CustomRPC.RemoveLawyerTarget:
                 Lawyer.ReceiveRPC(reader, SetTarget: false);
                 break;
-            case CustomRPC.SendFireWorksState:
-                FireWorks.ReceiveRPC(reader);
+            case CustomRPC.SendFireworkerState:
+                Fireworker.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetCurrentDousingTarget:
                 byte arsonistId = reader.ReadByte();
@@ -1072,8 +1072,8 @@ internal static class RPC
             case CustomRoles.Mercenary:
                 Mercenary.Add(targetId);
                 break;
-            case CustomRoles.FireWorks:
-                FireWorks.Add(targetId);
+            case CustomRoles.Fireworker:
+                Fireworker.Add(targetId);
                 break;
             case CustomRoles.TimeThief:
                 TimeThief.Add(targetId);

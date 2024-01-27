@@ -2139,8 +2139,8 @@ public static class Utils
                             SelfSuffix.Append(EvilTracker.GetTargetArrow(seer, seer));
                             break;
 
-                        case CustomRoles.FireWorks:
-                            SelfSuffix.Append(FireWorks.GetStateText(seer));
+                        case CustomRoles.Fireworker:
+                            SelfSuffix.Append(Fireworker.GetStateText(seer));
                             break;
 
                         case CustomRoles.AntiAdminer:

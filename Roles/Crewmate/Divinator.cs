@@ -226,7 +226,7 @@ public static class Divinator
                 [CustomRoles.Bodyguard,
                 CustomRoles.Bomber,
                 CustomRoles.Agitater,
-                CustomRoles.FireWorks,
+                CustomRoles.Fireworker,
                 CustomRoles.RuthlessRomantic,
                 CustomRoles.VengefulRomantic,
                 CustomRoles.Lookout,
@@ -536,7 +536,7 @@ public static class Divinator
                    CustomRoles.Provocateur
                    => "Incomprehensible",
 
-                   CustomRoles.FireWorks or
+                   CustomRoles.Fireworker or
                    CustomRoles.EvilTracker or
                    CustomRoles.Gangster or
                    CustomRoles.Dictator or

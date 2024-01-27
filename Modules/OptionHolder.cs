@@ -1478,7 +1478,7 @@ public static class Options
         /*
          * Fireworker
          */
-        FireWorks.SetupCustomOption();
+        Fireworker.SetupCustomOption();
 
         /*
          * Gangster

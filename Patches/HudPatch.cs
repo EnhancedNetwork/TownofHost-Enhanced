@@ -93,12 +93,12 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         Sniper.OverrideShapeText(player.PlayerId);
                         break;
-                    case CustomRoles.FireWorks:
+                    case CustomRoles.Fireworker:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        if (FireWorks.nowFireWorksCount[player.PlayerId] == 0)
-                            __instance.AbilityButton.OverrideText(GetString("FireWorksExplosionButtonText"));
+                        if (Fireworker.nowFireworkerCount[player.PlayerId] == 0)
+                            __instance.AbilityButton.OverrideText(GetString("FireworkerExplosionButtonText"));
                         else
-                            __instance.AbilityButton.OverrideText(GetString("FireWorksInstallAtionButtonText"));
+                            __instance.AbilityButton.OverrideText(GetString("FireworkerInstallAtionButtonText"));
                         break;
                     case CustomRoles.Mercenary:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
@@ -504,7 +504,7 @@ class HudManagerPatch
                             CustomRoles.BountyHunter => BountyHunter.GetTargetText(player, true),
                             CustomRoles.Witch => Witch.GetSpellModeText(player, true),
                             CustomRoles.HexMaster => HexMaster.GetHexModeText(player, true),
-                            CustomRoles.FireWorks => FireWorks.GetStateText(player),
+                            CustomRoles.Fireworker => Fireworker.GetStateText(player),
                             CustomRoles.Swooper => Swooper.GetHudText(player),
                             CustomRoles.Wraith => Wraith.GetHudText(player),
                             CustomRoles.Chameleon => Chameleon.GetHudText(player),
