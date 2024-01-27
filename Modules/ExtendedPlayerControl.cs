@@ -267,13 +267,13 @@ static class ExtendedPlayerControl
     {
         if (seer.AmOwner)
         {
-            killer.MurderPlayer(target, ResultFlags);
+            killer.MurderPlayer(target, MurderResultFlags.Succeeded);
         }
         else
         {
-            MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable, seer.GetClientId());
+            MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.None, seer.GetClientId());
             messageWriter.WriteNetObject(target);
-            messageWriter.Write((int)ResultFlags);
+            messageWriter.Write((int)MurderResultFlags.Succeeded);
             AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
         }
     } //Must provide seer, target
@@ -420,13 +420,6 @@ static class ExtendedPlayerControl
 
         _ = new LateTask(() =>
         {
-            // For some reason, the players are protected after the meeting
-            // Need to remeve protection
-            if (!pc.IsProtected())
-            {
-                pc.RpcSpecificMurderPlayer(pc, pc);
-            }
-
             pc.RpcSpecificMurderPlayer(pc, pc);
         }, 0.2f + delay, "Murder To Reset Cam");
 
