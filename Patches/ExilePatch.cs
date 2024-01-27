@@ -286,7 +286,7 @@ class ExileControllerWrapUpPatch
                 {
                     exiled.Object.RpcExileV2();
                 }
-            }, 0.5f, "Restore IsDead Task");
+            }, 0.8f, "Restore IsDead Task");
 
             _ = new LateTask(() =>
             {
@@ -311,8 +311,11 @@ class ExileControllerWrapUpPatch
                 });
                 Main.AfterMeetingDeathPlayers.Clear();
 
-            }, 0.5f, "AfterMeetingDeathPlayers Task");
+            }, 0.8f, "AfterMeetingDeathPlayers Task");
         }
+        //This should happen shortly after the Exile Controller wrap up finished for clients
+        //For Certain Laggy clients 0.8f delay is still not enough. The finish time can differ.
+        //If the delay is too long, it will influence other normal players' view
 
         GameStates.AlreadyDied |= !Utils.IsAllAlive;
         RemoveDisableDevicesPatch.UpdateDisableDevices();
