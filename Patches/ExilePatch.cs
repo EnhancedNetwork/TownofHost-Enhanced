@@ -238,7 +238,7 @@ class ExileControllerWrapUpPatch
             // Check for remove pet
             player.RpcRemovePet();
 
-            // Reset Ability/Kill cooldown
+            // Reset Kill/Ability cooldown
             player.ResetKillCooldown();
             player.RpcResetAbilityCooldown();
         }
@@ -317,7 +317,7 @@ class ExileControllerWrapUpPatch
                     if (x.Value == PlayerState.DeathReason.Suicide)
                         player?.SetRealKiller(player, true);
 
-                    if (Main.ResetCamPlayerList.Contains(x.Key)) // Reset player cam for dead Impostor
+                    if (Main.ResetCamPlayerList.Contains(x.Key)) // Reset player cam for dead desync impostor
                     {
                         player?.ResetPlayerCam(1f);
                     }
