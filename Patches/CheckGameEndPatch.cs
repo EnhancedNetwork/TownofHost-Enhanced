@@ -371,6 +371,7 @@ class GameEndCheckerForNormal
                         CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Totocalcio);
                     }
                 }
+
                 //Romantic win condition
                 foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Romantic)).ToArray())
                 {
@@ -408,6 +409,7 @@ class GameEndCheckerForNormal
                         CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.VengefulRomantic);
                     }
                 }
+
                 //Lawyer win cond
                 foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Lawyer)).ToArray())
                 {

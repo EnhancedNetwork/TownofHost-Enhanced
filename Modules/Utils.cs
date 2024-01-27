@@ -605,6 +605,7 @@ public static class Utils
             case CustomRoles.Romantic:
             case CustomRoles.VengefulRomantic:
             case CustomRoles.RuthlessRomantic:
+            case CustomRoles.Quizmaster:
                 hasTasks = false;
                 break;
             case CustomRoles.Workaholic:
@@ -2113,8 +2114,9 @@ public static class Utils
 
                 if (Sniper.IsEnable)
                     SelfMark.Append(Sniper.GetShotNotify(seer.PlayerId));
-                
 
+                if (Romantic.IsEnable)
+                    SelfMark.Append(Romantic.SelfMark(seer));
 
                 // ====== Add SelfSuffix for seer ======
 
@@ -2186,9 +2188,13 @@ public static class Utils
                             SelfSuffix.Append(HexMaster.GetHexModeText(seer, false));
                             break;
 
-                            //case CustomRoles.Occultist:
-                            //    SelfSuffix.Append(Occultist.GetHexModeText(seer, false));
-                            //    break;
+                        //case CustomRoles.Occultist:
+                        //    SelfSuffix.Append(Occultist.GetHexModeText(seer, false));
+                        //    break;
+
+                        case CustomRoles.PlagueDoctor:
+                            SelfSuffix.Append(PlagueDoctor.GetLowerTextOthers(seer));
+                            break;
                     }
                 }
                 else // Only during meeting
@@ -2406,7 +2412,6 @@ public static class Utils
 
                         if (Romantic.IsEnable)
                             TargetMark.Append(Romantic.TargetMark(seer, target));
-
 
                         if (Lawyer.IsEnable)
                             TargetMark.Append(Lawyer.LawyerMark(seer, target));
@@ -2633,7 +2638,7 @@ public static class Utils
                         // ====== Add TargetSuffix for target (TargetSuffix visible ​​only to the seer) ======
                         TargetSuffix.Clear();
 
-                        TargetSuffix.Append(PlagueDoctor.GetLowerTextOthers(seer, target));
+
                         TargetSuffix.Append(Stealth.GetSuffix(seer, target));
 
 
