@@ -3568,7 +3568,7 @@
   "MenuTitle.Hide&Seek": "Hide & Seek Settings",
   "NumImpostorsHnS": "Num Impostors",
   "EveryOneKnowSolsticer": "Tout le monde sait qui est le Solsticer",
-  "SolsticerKnowItSerialKiller": "Le Solsticer connaît le rôle de celui qui a utilisé le bouton Tuer sur lui",
+  "SolsticerKnowItsKiller": "Le Solsticer connaît le rôle de celui qui a utilisé le bouton Tuer sur lui",
   "SolsticerSpeed": "Vitesse de déplacement du Solsticer",
   "SolsticerRemainingTaskWarned": "Tâches restantes pour être connu",
   "SAddTasksPreDeadPlayer": "Combien de tâches supplémentaires courtes le Solsticer obtient lorsqu'un joueur meurt",

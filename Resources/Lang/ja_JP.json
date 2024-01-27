@@ -3568,7 +3568,7 @@
   "MenuTitle.Hide&Seek": "かくれんぼの設定",
   "NumImpostorsHnS": "インポスターの数",
   "EveryOneKnowSolsticer": "みんながソルスティスが誰であるかを知っています",
-  "SolsticerKnowItSerialKiller": "ソルスティスは、自身にキルボタンを使用した人の役割を知っています",
+  "SolsticerKnowItsKiller": "ソルスティスは、自身にキルボタンを使用した人の役割を知っています",
   "SolsticerSpeed": "ソルスティスの移動速度",
   "SolsticerRemainingTaskWarned": "知られるべき残りのタスク",
   "SAddTasksPreDeadPlayer": "プレイヤーが死んだとき、ソルスティスが得る追加の短いタスクは何個ですか",

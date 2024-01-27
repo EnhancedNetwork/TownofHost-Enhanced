@@ -3568,7 +3568,7 @@
   "MenuTitle.Hide&Seek": "躲貓貓遊戲設定",
   "NumImpostorsHnS": "偽裝者數量",
   "EveryOneKnowSolsticer": "所有人都知道誰是至聖者",
-  "SolsticerKnowItSerialKiller": "至聖者能夠知道嘗試擊殺他的人的職業",
+  "SolsticerKnowItsKiller": "至聖者能夠知道嘗試擊殺他的人的職業",
   "SolsticerSpeed": "至聖者的移動速度",
   "SolsticerRemainingTaskWarned": "在剩餘多少任務時會被發現",
   "SAddTasksPreDeadPlayer": "每死一人增加的短任務數量",

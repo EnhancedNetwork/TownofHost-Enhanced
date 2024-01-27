@@ -3568,7 +3568,7 @@
   "MenuTitle.Hide&Seek": "Opciones del Escondite",
   "NumImpostorsHnS": "Número de Impostores",
   "EveryOneKnowSolsticer": "Todos conocen al Empleado del Mes",
-  "SolsticerKnowItSerialKiller": "El Empleado del Mes conoce el rol de quien lo haya matado",
+  "SolsticerKnowItsKiller": "El Empleado del Mes conoce el rol de quien lo haya matado",
   "SolsticerSpeed": "Velocidad de movimiento del Empleado del Mes",
   "SolsticerRemainingTaskWarned": "Tareas restantes para ser conocido",
   "SAddTasksPreDeadPlayer": "Tareas adicionales para el Empleado del Mes cuando un jugador muera",

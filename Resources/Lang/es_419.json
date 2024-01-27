@@ -3568,7 +3568,7 @@
   "MenuTitle.Hide&Seek": "Opciones del al escondite",
   "NumImpostorsHnS": "Número de Impostores",
   "EveryOneKnowSolsticer": "Todos saben quien es el Solicitador",
-  "SolsticerKnowItSerialKiller": "El Solisitor conoce el rol de quien lo haya tratado matar",
+  "SolsticerKnowItsKiller": "El Solisitor conoce el rol de quien lo haya tratado matar",
   "SolsticerSpeed": "Velocidad de movimiento del Solicitador",
   "SolsticerRemainingTaskWarned": "Tareas restantes para ser conocido",
   "SAddTasksPreDeadPlayer": "Tareas cortas adicionales para el Solicitador cuando un jugador muere",

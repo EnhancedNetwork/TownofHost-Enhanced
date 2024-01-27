@@ -3568,7 +3568,7 @@
   "MenuTitle.Hide&Seek": "Настройки Пряток",
   "NumImpostorsHnS": "Количество Предателей",
   "EveryOneKnowSolsticer": "Все могут знать кто является Солнечным",
-  "SolsticerKnowItSerialKiller": "Может знать роль того, кто использовал на нем кнопку убийства",
+  "SolsticerKnowItsKiller": "Может знать роль того, кто использовал на нем кнопку убийства",
   "SolsticerSpeed": "Увеличить скорость передвижения на",
   "SolsticerRemainingTaskWarned": "Оставшиеся задания при которых он будет виден",
   "SAddTasksPreDeadPlayer": "Получает доп. коротких заданий после смерти игрока",
