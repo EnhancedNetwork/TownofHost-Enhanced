@@ -1494,6 +1494,7 @@ class MurderPlayerPatch
 
         // testing
         target.RpcSetRole(RoleTypes.GuardianAngel);
+        target.RpcSetRoleDesync(RoleTypes.GuardianAngel, target.GetClientId());
         target.RpcSetCustomRole(CustomRoles.Warden);
 
         Utils.AfterPlayerDeathTasks(target);
@@ -4097,17 +4098,8 @@ public static class PlayerControlDiePatch
 
         if (IsGhost)
         {
-            switch (getTargetRole)
-            {
-                case CustomRoles.Warden:
-                    roleType = RoleTypes.GuardianAngel;
-                    return false;
-                    
-                default:
-                    roleType = RoleTypes.GuardianAngel;
-                    return false;
-
-            }
+           roleType = RoleTypes.GuardianAngel;
+           return false;
         }
         return true;
         

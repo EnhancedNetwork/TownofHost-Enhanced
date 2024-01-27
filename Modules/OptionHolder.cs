@@ -74,6 +74,7 @@ public static class Options
     public static Dictionary<CustomRoles, float> roleSpawnChances;
     public static Dictionary<CustomRoles, OptionItem> CustomRoleCounts;
     public static Dictionary<CustomRoles, OptionItem> CustomGhostRoleCounts;
+    public static bool trueghostenable;
     public static Dictionary<CustomRoles, StringOptionItem> CustomRoleSpawnChances;
     public static Dictionary<CustomRoles, IntegerOptionItem> CustomAdtRoleSpawnRate;
     public static readonly string[] rates =
@@ -1065,10 +1066,6 @@ public static class Options
         {
             option.SetValue(count - 1);
         }
-        if (CustomGhostRoleCounts.TryGetValue(role, out option))
-        {
-            option.SetValue(count - 1);
-        }
     }
 
     public static int GetRoleSpawnMode(CustomRoles role)
@@ -1076,7 +1073,10 @@ public static class Options
         var mode = CustomRoleSpawnChances.TryGetValue(role, out var sc) ? sc.GetChance() : 0;
         if (CustomRolesHelper.IsGhostRole(role))
         {
-            mode = 0;
+            if (mode != 0)
+                trueghostenable = true;
+            
+            return mode = 0;
         }
         return mode switch
         {
@@ -3858,13 +3858,16 @@ public static class Options
             .SetValueFormat(OptionFormat.Players)
             .SetGameMode(customGameMode);
 
+        trueghostenable = false;
         if(CustomGhostRoleCounts.ContainsKey(role)) // Just incase
             CustomGhostRoleCounts.Remove(role);
-
+        
 
         CustomRoleSpawnChances.Add(role, spawnOption);
         CustomRoleCounts.Add(role, countOption);
-        if (CustomRoleSpawnChances.ContainsKey(role)) // I will test role.RoleExist() later
+        GetRoleSpawnMode(role);
+        
+        if (trueghostenable) 
             Logger.Info($"Added {role} because custom spawn option activated", $"{role} SetupGhostRole");
             CustomGhostRoleCounts.Add(role, countOption);
     }
