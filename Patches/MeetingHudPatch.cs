@@ -1081,22 +1081,14 @@ class MeetingHudStartPatch
         }
 
         // AntiBlackout Message
-        //if (AntiBlackout.NeutralOverrideExiledPlayer)
-        //{
-        //    _ = new LateTask(() =>
-        //    {
-        //        Utils.SendMessage(GetString("Warning.TemporaryAntiBlackoutFix"), 255, Utils.ColorString(Color.blue, GetString("AntiBlackoutFixTitle")), replay: true);
+        if (AntiBlackout.BlackOutIsActive)
+        {
+            _ = new LateTask(() =>
+            {
+                Utils.SendMessage(GetString("Warning.AntiBlackoutProtectionMsg"), 255, Utils.ColorString(Color.blue, GetString("AntiBlackoutProtectionTitle")), replay: true);
 
-        //    }, 5f, "Warning NeutralOverrideExiledPlayer");
-        //}
-        //else if (AntiBlackout.ImpostorOverrideExiledPlayer)
-        //{
-        //    _ = new LateTask(() =>
-        //    {
-        //        Utils.SendMessage(GetString("Warning.OverrideExiledPlayer"), 255, Utils.ColorString(Color.red, GetString("DefaultSystemMessageTitle")), replay: true);
-
-        //    }, 5f, "Warning ImpostorOverrideExiledPlayer");
-        //}
+            }, 5f, "Warning Black Out Is Active");
+        }
 
         if (AntiBlackout.ShowExiledInfo)
         {
