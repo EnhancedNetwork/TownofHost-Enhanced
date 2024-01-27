@@ -12,7 +12,7 @@ public class Warden
 
     public static void SetupCustomOptions()
     {
-        SetupGhostRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Warden);
+        SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Warden);
         AbilityCooldown = FloatOptionItem.Create(Id + 10, "AbilityCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Warden])
             .SetValueFormat(OptionFormat.Seconds);
     }

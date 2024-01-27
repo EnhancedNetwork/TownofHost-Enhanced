@@ -1490,12 +1490,7 @@ class MurderPlayerPatch
         if (Medic.IsEnable) Medic.IsDead(target);
 
         //================GHOST ASSIGN PATCH============
-        // If player is a custom ghost role PlayerControl.SetRole will be rejected (it runs after checkmurder, lucky!)
-
-        // testing
-        target.RpcSetRole(RoleTypes.GuardianAngel);
-        target.RpcSetRoleDesync(RoleTypes.GuardianAngel, target.GetClientId());
-        target.RpcSetCustomRole(CustomRoles.Warden);
+        Utils.GhostAssignPatch(target);
 
         Utils.AfterPlayerDeathTasks(target);
 

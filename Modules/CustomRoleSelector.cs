@@ -107,6 +107,7 @@ internal class CustomRoleSelector
         // 职业设置为：优先
         foreach (var role in roleList.ToArray()) if (role.GetMode() == 2)
         {
+            if (CustomRolesHelper.IsGhostRole(role)) continue; // Prevent ghost-spawn
             if (role.IsImpostor()) ImpOnList.Add(role);
             else if (role.IsMini()) MiniOnList.Add(role);
             else if (role.IsNonNK()) NonNeutralKillingOnList.Add(role);
@@ -116,16 +117,13 @@ internal class CustomRoleSelector
         // 职业设置为：启用
         foreach (var role in roleList.ToArray()) if (role.GetMode() == 1)
         {
+            if (CustomRolesHelper.IsGhostRole(role)) continue; // Prevent ghost-spawn
             if (role.IsImpostor()) ImpRateList.Add(role);
             else if (role.IsMini()) MiniRateList.Add(role);
             else if (role.IsNonNK()) NonNeutralKillingRateList.Add(role);
             else if (role.IsNK()) NeutralKillingRateList.Add(role);
             else roleRateList.Add(role);
         }
-        /*foreach (var CheckGhost in roleRateList)
-        {
-            if (CustomRolesHelper.IsGhostRole(CheckGhost)) roleRateList.Remove(CheckGhost);
-        }*/
         while (MiniOnList.Count == 1)
         {
             var select = MiniOnList[rd.Next(0, MiniOnList.Count)];

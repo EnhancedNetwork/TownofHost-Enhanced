@@ -508,21 +508,6 @@ internal class SelectRolesPatch
 
             //Utils.ApplySuffix();
 
-            foreach (var roleplr in Options.CustomRoleCounts.Keys) // Special case to add ghost-roles and detect on/off option
-            {
-                var isghost = CustomRolesHelper.IsGhostRole(roleplr);
-
-                if (isghost)
-                {
-                    Options.GetRoleSpawnMode(roleplr);
-                    if (Options.spawntest != 0)
-                    {
-                        OptionItem option = Options.CustomRoleCounts[roleplr];
-                        Options.CustomGhostRoleCounts.Add(roleplr, option);
-                    }
-                }
-            }
-
             foreach (var pc in Main.AllPlayerControls)
             {
                 pc.Data.IsDead = false; //プレイヤーの死を解除する

@@ -280,6 +280,63 @@ public static class Utils
         }
         return;
     }
+    public static void GhostAssignPatch(PlayerControl player)
+    {
+        var getplrRole = player.GetCustomRole();
+        if (!CustomRolesHelper.IsCrewmate(getplrRole) || getplrRole == CustomRoles.Retributionist) return; //might make a RestrictGhostRole method later if needed
+
+        List<CustomRoles> HauntedList = [];
+        List<CustomRoles> RateHauntedList = [];
+        CustomRoles ChosenRole = CustomRoles.NotAssigned;
+        bool IsSetRole = false;
+
+        foreach (var ghostRole in Options.CustomGhostRoleCounts.Keys) if(ghostRole.GetMode() == 2)
+        {
+                if (HauntedList.Contains(ghostRole) && !Options.GhostAssign(ghostRole))
+                    HauntedList.Remove(ghostRole);
+                
+                if (HauntedList.Contains(ghostRole) || !Options.GhostAssign(ghostRole))
+                    continue;
+                
+                HauntedList.Add(ghostRole);
+        }
+        foreach (var ghostRole in Options.CustomGhostRoleCounts.Keys) if (ghostRole.GetMode() == 1)
+        {
+                if (RateHauntedList.Contains(ghostRole) && !Options.GhostAssign(ghostRole))
+                    RateHauntedList.Remove(ghostRole);
+
+                if (RateHauntedList.Contains(ghostRole) || !Options.GhostAssign(ghostRole))
+                    continue;
+
+                RateHauntedList.Add(ghostRole);
+        }
+
+        if (HauntedList.Count > 0)
+        {
+            System.Random rnd = new System.Random();
+            int randindx = rnd.Next(HauntedList.Count);
+            ChosenRole = HauntedList[randindx];
+            IsSetRole = true;
+        } 
+        else if(RateHauntedList.Count > 0 && !IsSetRole)
+        {
+            System.Random rnd = new System.Random();
+            int randindx = rnd.Next(HauntedList.Count);
+            ChosenRole = RateHauntedList[randindx];
+        }
+
+        switch (ChosenRole)
+        {
+            case CustomRoles.Warden:
+                player.RpcSetRole(RoleTypes.GuardianAngel);
+                player.RpcSetRoleDesync(RoleTypes.GuardianAngel, player.GetClientId());
+                player.RpcSetCustomRole(CustomRoles.Warden);
+                break;
+
+            default:
+                break;
+        }
+    }
     public static void TargetDies(PlayerControl killer, PlayerControl target)
     {
         if (!target.Data.IsDead || GameStates.IsMeeting) return;

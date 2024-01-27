@@ -1075,11 +1075,7 @@ public static class Options
         
         if (CustomRolesHelper.IsGhostRole(role))
         {
-            
             spawntest = mode;
-            
-
-            mode = 0; // reject ghost-roles from every spawning patch
         }
         return mode switch
         {
@@ -3843,32 +3839,16 @@ public static class Options
             .SetValueFormat(OptionFormat.Players)
             .SetGameMode(customGameMode);
 
+        if (CustomRolesHelper.IsGhostRole(role))
+        {
+            CustomGhostRoleCounts.Add(role, countOption);
+        }
+
         CustomRoleSpawnChances.Add(role, spawnOption);
         CustomRoleCounts.Add(role, countOption);
     }
     public static int spawntest;
-    public static void SetupGhostRoleOptions(int id, TabGroup tab, CustomRoles role, CustomGameMode customGameMode = CustomGameMode.Standard, bool zeroOne = false)
-    {
-        var spawnOption = StringOptionItem.Create(id, role.ToString(), ratesZeroOne, 0, tab, false).SetColor(Utils.GetRoleColor(role))
-            .SetHeader(true)
-            .SetGameMode(customGameMode) as StringOptionItem;
-
-        var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(1, 15, 1), 1, tab, false)
-         .SetParent(spawnOption)
-            .SetValueFormat(OptionFormat.Players)
-            .SetGameMode(customGameMode);
-
-        
-
-        if(CustomGhostRoleCounts.ContainsKey(role)) // Just incase
-            CustomGhostRoleCounts.Remove(role);
-        
-
-        CustomRoleSpawnChances.Add(role, spawnOption);
-        CustomRoleCounts.Add(role, countOption);
-
-        
-    }
+ 
     public static bool GhostAssign(CustomRoles role)
     {
         int getCount = CustomGhostRoleCounts[role].GetInt();
