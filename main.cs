@@ -915,7 +915,6 @@ public enum CustomWinner
     Wraith = CustomRoles.Wraith,
     Bandit = CustomRoles.Bandit,
     Pirate = CustomRoles.Pirate,
-    Mercenary = CustomRoles.Mercenary,
     SerialKiller = CustomRoles.SerialKiller,
     Werewolf = CustomRoles.Werewolf,
     Necromancer = CustomRoles.Necromancer,
