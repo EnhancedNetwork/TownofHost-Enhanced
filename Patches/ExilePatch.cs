@@ -226,6 +226,7 @@ class ExileControllerWrapUpPatch
                 Shroud.MurderShroudedPlayers(player);
             }
 
+            // Check Anti BlackOut
             if (player.GetCustomRole().IsImpostor() 
                 && !player.IsAlive() // if player is dead impostor
                 && AntiBlackout.BlackOutIsActive // if Black Out activated
@@ -234,8 +235,10 @@ class ExileControllerWrapUpPatch
                 player.ResetPlayerCam(1f);
             }
 
+            // Check for remove pet
             player.RpcRemovePet();
 
+            // Reset Ability/Kill cooldown
             player.ResetKillCooldown();
             player.RpcResetAbilityCooldown();
         }
