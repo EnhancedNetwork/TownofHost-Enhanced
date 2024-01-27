@@ -63,7 +63,7 @@ class CheckForEndVotingPatch
                     });
                     states = [.. statesList];
 
-                    if (AntiBlackout.NeutralOverrideExiledPlayer || AntiBlackout.ImpostorOverrideExiledPlayer)
+                    if (AntiBlackout.BlackOutIsActive)
                     {
                         //__instance.RpcVotingComplete(states, null, true);
                         __instance.AntiBlackRpcVotingComplete(states, voteTarget.Data, false);
@@ -425,7 +425,7 @@ class CheckForEndVotingPatch
             exiledPlayer?.Object.SetRealKiller(null);
 
             //RPC
-            if (AntiBlackout.NeutralOverrideExiledPlayer || AntiBlackout.ImpostorOverrideExiledPlayer)
+            if (AntiBlackout.BlackOutIsActive)
             {
                 //__instance.RpcVotingComplete(states, null, true);
                 __instance.AntiBlackRpcVotingComplete(states, exiledPlayer, tie);
@@ -1081,22 +1081,22 @@ class MeetingHudStartPatch
         }
 
         // AntiBlackout Message
-        if (AntiBlackout.NeutralOverrideExiledPlayer)
-        {
-            _ = new LateTask(() =>
-            {
-                Utils.SendMessage(GetString("Warning.TemporaryAntiBlackoutFix"), 255, Utils.ColorString(Color.blue, GetString("AntiBlackoutFixTitle")), replay: true);
+        //if (AntiBlackout.NeutralOverrideExiledPlayer)
+        //{
+        //    _ = new LateTask(() =>
+        //    {
+        //        Utils.SendMessage(GetString("Warning.TemporaryAntiBlackoutFix"), 255, Utils.ColorString(Color.blue, GetString("AntiBlackoutFixTitle")), replay: true);
 
-            }, 5f, "Warning NeutralOverrideExiledPlayer");
-        }
-        else if (AntiBlackout.ImpostorOverrideExiledPlayer)
-        {
-            _ = new LateTask(() =>
-            {
-                Utils.SendMessage(GetString("Warning.OverrideExiledPlayer"), 255, Utils.ColorString(Color.red, GetString("DefaultSystemMessageTitle")), replay: true);
+        //    }, 5f, "Warning NeutralOverrideExiledPlayer");
+        //}
+        //else if (AntiBlackout.ImpostorOverrideExiledPlayer)
+        //{
+        //    _ = new LateTask(() =>
+        //    {
+        //        Utils.SendMessage(GetString("Warning.OverrideExiledPlayer"), 255, Utils.ColorString(Color.red, GetString("DefaultSystemMessageTitle")), replay: true);
 
-            }, 5f, "Warning ImpostorOverrideExiledPlayer");
-        }
+        //    }, 5f, "Warning ImpostorOverrideExiledPlayer");
+        //}
 
         if (AntiBlackout.ShowExiledInfo)
         {

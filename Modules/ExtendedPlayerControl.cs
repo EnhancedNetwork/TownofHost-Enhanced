@@ -173,32 +173,24 @@ static class ExtendedPlayerControl
     public static void RpcGuardAndKill(this PlayerControl killer, PlayerControl target = null, int colorId = 0, bool forObserver = false)
     {
         if (target == null) target = killer;
+
         if (!forObserver && !MeetingStates.FirstMeeting)
             Main.AllPlayerControls
                 .Where(x => x.Is(CustomRoles.Observer) && killer.PlayerId != x.PlayerId)
                 .Do(x => x.RpcGuardAndKill(target, colorId, true));
-        
+
         // Host
         if (killer.AmOwner)
         {
-            killer.ProtectPlayer(target, colorId);
-            killer.MurderPlayer(target, MurderResultFlags.FailedProtected | MurderResultFlags.DecisionByHost);
+            killer.MurderPlayer(target, MurderResultFlags.FailedProtected);
         }
         // Other Clients
         if (killer.PlayerId != 0)
         {
-            var sender = CustomRpcSender.Create("GuardAndKill Sender", SendOption.None);
-            sender.StartMessage(killer.GetClientId());
-            sender.StartRpc(killer.NetId, (byte)RpcCalls.ProtectPlayer)
-                .WriteNetObject(target)
-                .Write(colorId)
-                .EndRpc();
-            sender.StartRpc(killer.NetId, (byte)RpcCalls.MurderPlayer)
-                .WriteNetObject(target)
-                .Write((int)(MurderResultFlags.FailedProtected | MurderResultFlags.DecisionByHost))
-                .EndRpc();
-            sender.EndMessage();
-            sender.SendMessage();
+            var writer = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable);
+            writer.WriteNetObject(target);
+            writer.Write((int)MurderResultFlags.FailedProtected);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
     }
     public static void SetKillCooldownV2(this PlayerControl player, float time = -1f)
@@ -336,7 +328,6 @@ static class ExtendedPlayerControl
         messageWriter.Write((byte)amount);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
     }
-
     /*public static void RpcBeKilled(this PlayerControl player, PlayerControl KilledBy = null) {
         if(!AmongUsClient.Instance.AmHost) return;
         byte KilledById;
@@ -426,8 +417,16 @@ static class ExtendedPlayerControl
             pc.RpcDesyncUpdateSystem(systemtypes, 128);
         }, 0f + delay, "Reactor Desync");
 
+
         _ = new LateTask(() =>
         {
+            // For some reason, the players are protected after the meeting
+            // Need to remeve protection
+            if (!pc.IsProtected())
+            {
+                pc.RpcSpecificMurderPlayer(pc, pc);
+            }
+
             pc.RpcSpecificMurderPlayer(pc, pc);
         }, 0.2f + delay, "Murder To Reset Cam");
 

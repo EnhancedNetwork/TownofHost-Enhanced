@@ -12,79 +12,60 @@ namespace TOHE;
 public static class AntiBlackout
 {
     ///<summary>
-    ///Whether to override the expulsion process due to one Impostor and Neutral killers
+    /// Check num alive Impostors & Crewmates & NeutralKillers
     ///</summary>
-    public static bool ImpostorOverrideExiledPlayer => IsRequired && (IsSingleImpostor || Diff_CrewImp == 1);
+    public static bool BlackOutIsActive => CheckBlackOut();
+
     ///<summary>
-    ///Whether to override the expulsion process due to Neutral Killers
+    /// Count alive players and check black out 
     ///</summary>
-    public static bool NeutralOverrideExiledPlayer => Options.TemporaryAntiBlackoutFix.GetBool() && CountNeutralKiller > 1 && !(IsSingleImpostor || Diff_CrewImp == 1);
-    ///<summary>
-    ///Whether there is only one impostors present in the setting
-    ///</summary>
-    public static bool IsSingleImpostor => Main.RealOptionsData != null ? Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors) <= 1 : Main.NormalOptions.NumImpostors <= 1;
-    ///<summary>
-    ///Whether processing within AntiBlackout is required
-    ///</summary>
-    public static bool IsRequired => Options.NoGameEnd.GetBool()
-        // Neutrals
-        || Jackal.IsEnable || BloodKnight.IsEnable
-        || Glitch.IsEnable || Infectious.IsEnable
-        || Juggernaut.IsEnable || Pelican.IsEnable
-        || Pickpocket.IsEnable || NSerialKiller.IsEnable
-        || Shroud.IsEnable || Traitor.IsEnable
-        || Virus.IsEnable || Werewolf.IsEnable
-        || Gamer.IsEnable || Succubus.IsEnable
-        || NWitch.IsEnable || Maverick.IsEnable
-        || RuthlessRomantic.IsEnable || Bandit.IsEnable
-        || Spiritcaller.IsEnable //|| Occultist.IsEnable
-        || Pyromaniac.IsEnable || Huntsman.IsEnable
-        || PlagueBearer.IsEnable || CustomRoles.Pestilence.RoleExist(true)
-        || HexMaster.IsEnable || Jinx.IsEnable
-        || Medusa.IsEnable || Poisoner.IsEnable
-        || PotionMaster.IsEnable || Wraith.IsEnable
-        || Necromancer.IsEnable || Doppelganger.IsEnable 
-        || PlagueDoctor.IsEnable || CustomRoles.Sidekick.RoleExist(true)
-        || (CustomRoles.Arsonist.RoleExist(true) && Options.ArsonistCanIgniteAnytime.GetBool()); 
-        
-    ///<summary>
-    ///Difference between the number of non-impostors and the number of imposters
-    ///</summary>
-    public static int Diff_CrewImp
+    public static bool CheckBlackOut()
     {
-        get
+        List<byte> Impostors = [];
+        List<byte> Crewmates = [];
+        List<byte> Neutrals = [];
+
+        foreach (var pc in Main.AllAlivePlayerControls)
         {
-            int numCrewmates = 0;
-            int numImpostors = 0;
+            if (pc.GetCustomRole().IsImpostor()) Impostors.Add(pc.PlayerId); // Impostors
+            else if (Main.PlayerStates[pc.PlayerId].countTypes == CountTypes.Impostor) Impostors.Add(pc.PlayerId); // Madmates
 
-            foreach (var pc in Main.AllPlayerControls)
-            {
-                if (pc.Data.Role.IsImpostor) numImpostors++;
-                else numCrewmates++;
-            }
+            else if (pc.GetCustomRole().IsNK() && !pc.Is(CustomRoles.Arsonist)) Neutrals.Add(pc.PlayerId); // Neutral Killers
+            else if (pc.Is(CustomRoles.Arsonist) && Options.ArsonistCanIgniteAnytime.GetBool()) Neutrals.Add(pc.PlayerId);
+            else if (pc.Is(CustomRoles.Succubus)) Neutrals.Add(pc.PlayerId);
 
-            Logger.Info($" {numCrewmates}", "AntiBlackout Num Crewmates");
-            Logger.Info($" {numImpostors}", "AntiBlackout Num Impostors");
-            return numCrewmates - numImpostors;
+            else Crewmates.Add(pc.PlayerId);
         }
-    }
-    public static int CountNeutralKiller
-    {
-        get
+
+        var numAliveImpostors = Impostors.Count;
+        var numAliveCrewmates = Crewmates.Count;
+        var numAliveNeutrals = Neutrals.Count;
+
+        Logger.Info($" {numAliveImpostors}", "AntiBlackout Num Alive Impostors");
+        Logger.Info($" {numAliveCrewmates}", "AntiBlackout Num Alive Crewmates");
+        Logger.Info($" {numAliveCrewmates}", "AntiBlackout Num Alive Neutrals");
+
+        var BlackOutIsActive = false;
+
+        if (numAliveCrewmates <= 0)
         {
-            int numNeutrals = 0;
+            if (numAliveImpostors > 0 && numAliveImpostors <= 3 && numAliveNeutrals >= 1)
+                BlackOutIsActive = true;
 
-            foreach (var pc in Main.AllPlayerControls)
-            {
-                if ((pc.GetCustomRole().IsNK() && !pc.Is(CustomRoles.Arsonist))) numNeutrals++;
-                else if (pc.Is(CustomRoles.Arsonist) && Options.ArsonistCanIgniteAnytime.GetBool()) numNeutrals++;
-                else if (pc.Is(CustomRoles.Succubus)) numNeutrals++;
-            }
-
-            Logger.Info($" {numNeutrals}", "AntiBlackout Num Neutrals");
-            return numNeutrals;
+            if (numAliveImpostors <= numAliveNeutrals)
+                BlackOutIsActive = true;
         }
+
+        if (numAliveImpostors == (numAliveNeutrals + numAliveCrewmates))
+            BlackOutIsActive = true;
+
+        if (numAliveImpostors == 0 && numAliveNeutrals >= 1)
+            BlackOutIsActive = true;
+
+        Logger.Info($" {BlackOutIsActive}", "BlackOut Is Active");
+        return BlackOutIsActive;
     }
+
     public static bool IsCached { get; private set; } = false;
     private static Dictionary<byte, (bool isDead, bool Disconnected)> isDeadCache = [];
     private readonly static LogHandler logger = Logger.Handler("AntiBlackout");
