@@ -318,7 +318,6 @@ static class CustomRolesHelper
             CustomRoles.Workhorse or
             CustomRoles.Fool or
             CustomRoles.Autopsy or
-            CustomRoles.Repairman or
             CustomRoles.Necroview or
             CustomRoles.Avanger or
             CustomRoles.Sleuth or
@@ -1081,14 +1080,6 @@ static class CustomRolesHelper
                     return false;
                 break;
 
-            case CustomRoles.Repairman:
-                if (pc.Is(CustomRoles.SabotageMaster)
-                || pc.Is(CustomRoles.Fool))
-                    return false;
-                if ((pc.GetCustomRole().IsCrewmate() && !Repairman.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Repairman.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Repairman.CanBeOnImp.GetBool()))
-                    return false;
-                break;
-
             case CustomRoles.Bait:
                 if (pc.Is(CustomRoles.Trapper)
                     || pc.Is(CustomRoles.Provocateur)
@@ -1682,8 +1673,7 @@ static class CustomRolesHelper
 
             case CustomRoles.Fool:
                 if (pc.Is(CustomRoles.SabotageMaster)
-                    || pc.Is(CustomRoles.GuardianAngelTOHE)
-                    || pc.Is(CustomRoles.Repairman))
+                    || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeFool.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeFool.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeFool.GetBool()))
                     return false;

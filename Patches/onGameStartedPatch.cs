@@ -224,7 +224,6 @@ internal class ChangeRoleSettings
             HexMaster.Init();
             //Occultist.Init();
             SabotageMaster.Init();
-            Repairman.Init();
             Executioner.Init();
             Lawyer.Init();
             Jackal.Init();
@@ -1071,9 +1070,6 @@ internal class SelectRolesPatch
                     {
                         case CustomRoles.Aware:
                             Main.AwareInteracted[pc.PlayerId] = [];
-                            break;
-                        case CustomRoles.Repairman:
-                            Repairman.Add(pc.PlayerId);
                             break;
                         case CustomRoles.Oiiai:
                             Oiiai.Add(pc.PlayerId);

@@ -200,6 +200,8 @@ public class CustomRpcSender
     public CustomRpcSender WritePacked(int val) => Write(w => w.WritePacked(val));
     public CustomRpcSender WritePacked(uint val) => Write(w => w.WritePacked(val));
     public CustomRpcSender WriteNetObject(InnerNetObject obj) => Write(w => w.WriteNetObject(obj));
+    public CustomRpcSender WriteMessageType(byte val) => Write(w => w.StartMessage(val));
+    public CustomRpcSender WriteEndMessage() => Write(w => w.EndMessage());
     #endregion
 
     private CustomRpcSender Write(Action<MessageWriter> action)

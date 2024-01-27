@@ -65,7 +65,8 @@ class CheckForEndVotingPatch
 
                     if (AntiBlackout.NeutralOverrideExiledPlayer || AntiBlackout.ImpostorOverrideExiledPlayer)
                     {
-                        __instance.RpcVotingComplete(states, null, true);
+                        //__instance.RpcVotingComplete(states, null, true);
+                        __instance.AntiBlackRpcVotingComplete(states, voteTarget.Data, false);
                         ExileControllerWrapUpPatch.AntiBlackout_LastExiled = voteTarget.Data;
                         AntiBlackout.ShowExiledInfo = true;
                         ConfirmEjections(voteTarget.Data, true);
@@ -426,7 +427,8 @@ class CheckForEndVotingPatch
             //RPC
             if (AntiBlackout.NeutralOverrideExiledPlayer || AntiBlackout.ImpostorOverrideExiledPlayer)
             {
-                __instance.RpcVotingComplete(states, null, true);
+                //__instance.RpcVotingComplete(states, null, true);
+                __instance.AntiBlackRpcVotingComplete(states, exiledPlayer, tie);
                 ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiledPlayer;
                 if (exiledPlayer != null)
                 {
@@ -589,30 +591,32 @@ class CheckForEndVotingPatch
         }
 
     EndOfSession:
-
-
         name += "<size=0>";
-        if (!AntiBlackoutStore)
+        _ = new LateTask(() =>
         {
-            _ = new LateTask(() =>
+            Main.DoBlockNameChange = true;
+            if (GameStates.IsInGame)
             {
-                Main.DoBlockNameChange = true;
-                if (GameStates.IsInGame)
-                {
-                    player.RpcSetName(name);
-                }
-            }, 3.0f, "Change Exiled Player Name");
+                player.RpcSetName(name);
+            }
+        }, 3.0f, "Change Exiled Player Name");
 
-            _ = new LateTask(() =>
+        _ = new LateTask(() =>
+        {
+            if (GameStates.IsInGame && !player.Data.Disconnected)
             {
-                if (GameStates.IsInGame && !player.Data.Disconnected)
-                {
-                    player.RpcSetName(realName);
-                    Main.DoBlockNameChange = false;
-                }
-            }, 11.5f, "Change Exiled Player Name Back");
-        }
-        else
+                player.RpcSetName(realName);
+                Main.DoBlockNameChange = false;
+            }
+
+            if (GameStates.IsInGame && player.Data.Disconnected)
+            {
+                player.Data.PlayerName = realName;
+                //Await Next Send Data or Next Meeting
+            }
+        }, 11.5f, "Change Exiled Player Name Back");
+
+        if (AntiBlackoutStore)
         {
             AntiBlackout.StoreExiledMessage = name;
             Logger.Info(AntiBlackout.StoreExiledMessage, "AntiBlackoutStore");
