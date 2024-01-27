@@ -1091,7 +1091,10 @@ public static class Options
         // 27700 lasted id for roles/add-ons (Next use 27800)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
-        
+
+        // You can use: 19900 (Was for Repairman)
+
+
         // Start Load Settings
         if (IsLoaded) return;
         OptionSaver.Initialize();
@@ -2586,8 +2589,6 @@ public static class Options
         OverclockedReduction = FloatOptionItem.Create(19803, "OverclockedReduction", new(0f, 90f, 5f), 40f, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Overclocked])
             .SetValueFormat(OptionFormat.Percent);
-        
-        Repairman.SetupCustomOption(); //Repairman
         
         SetupAdtRoleOptions(20000, CustomRoles.Seer, canSetNum: true);
         ImpCanBeSeer = BooleanOptionItem.Create(20003, "ImpCanBeSeer", true, TabGroup.Addons, false)

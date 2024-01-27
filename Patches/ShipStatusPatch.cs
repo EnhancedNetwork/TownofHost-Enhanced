@@ -110,8 +110,6 @@ class RepairSystemPatch
                 Alchemist.UpdateSystem(systemType, amount);
                 break;
         }
-        if (player.Is(CustomRoles.Repairman))
-            Repairman.UpdateSystem(__instance, systemType, amount, player.PlayerId);
 
 
         if (player.Is(CustomRoles.Unlucky) && player.IsAlive()
@@ -155,8 +153,6 @@ class RepairSystemPatch
                         Alchemist.FixNextSabo = false;
                         break;
                 }
-                if (player.Is(CustomRoles.Repairman))
-                    Repairman.SwitchSystemRepair(SwitchSystem, amount);
             }
         }
     }
