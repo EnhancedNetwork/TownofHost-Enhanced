@@ -503,7 +503,7 @@ static class ExtendedPlayerControl
             CustomRoles.Juggernaut => pc.IsAlive(),
             CustomRoles.Reverie => pc.IsAlive(),
             CustomRoles.PotionMaster => pc.IsAlive(),
-            CustomRoles.NSerialKiller => pc.IsAlive(),
+            CustomRoles.SerialKiller => pc.IsAlive(),
             CustomRoles.Werewolf => pc.IsAlive(),
             CustomRoles.Medusa => pc.IsAlive(),
             CustomRoles.Traitor => pc.IsAlive(),
@@ -626,7 +626,7 @@ static class ExtendedPlayerControl
             CustomRoles.Vampiress => Vampire.CanVent.GetBool(),
             CustomRoles.Vampire => Vampire.CanVent.GetBool(),
             CustomRoles.DarkHide => DarkHide.CanVent.GetBool(),
-            CustomRoles.NSerialKiller => NSerialKiller.CanVent.GetBool(),
+            CustomRoles.SerialKiller => SerialKiller.CanVent.GetBool(),
             CustomRoles.Werewolf => Werewolf.CanVent.GetBool(),
             CustomRoles.Pestilence => PlagueBearer.PestilenceCanVent.GetBool(),
             CustomRoles.Medusa => Medusa.CanVent.GetBool(),
@@ -707,7 +707,7 @@ static class ExtendedPlayerControl
             CustomRoles.Provocateur or
             CustomRoles.BloodKnight or
             CustomRoles.Poisoner or
-            CustomRoles.NSerialKiller or
+            CustomRoles.SerialKiller or
             CustomRoles.Maverick or
             CustomRoles.NWitch or
             CustomRoles.Shroud or
@@ -786,8 +786,8 @@ static class ExtendedPlayerControl
         Main.AllPlayerKillCooldown[player.PlayerId] = GameStates.IsNormalGame ? Options.DefaultKillCooldown : 1f; //キルクールをデフォルトキルクールに変更
         switch (player.GetCustomRole())
         {
-            case CustomRoles.SerialKiller:
-                SerialKiller.ApplyKillCooldown(player.PlayerId); //シリアルキラーはシリアルキラーのキルクールに。
+            case CustomRoles.Mercenary:
+                Mercenary.ApplyKillCooldown(player.PlayerId); //シリアルキラーはシリアルキラーのキルクールに。
                 break;
             case CustomRoles.Jailer:
                 Jailer.SetKillCooldown(player.PlayerId); //シリアルキラーはシリアルキラーのキルクールに。
@@ -886,8 +886,8 @@ static class ExtendedPlayerControl
             case CustomRoles.Refugee:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.RefugeeKillCD.GetFloat();
                 break;
-            case CustomRoles.NSerialKiller:
-                NSerialKiller.SetKillCooldown(player.PlayerId);
+            case CustomRoles.SerialKiller:
+                SerialKiller.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Werewolf:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Werewolf.KillCooldown.GetFloat();

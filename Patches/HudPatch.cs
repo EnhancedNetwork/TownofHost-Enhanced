@@ -100,9 +100,9 @@ class HudManagerPatch
                         else
                             __instance.AbilityButton.OverrideText(GetString("FireWorksInstallAtionButtonText"));
                         break;
-                    case CustomRoles.SerialKiller:
+                    case CustomRoles.Mercenary:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        SerialKiller.GetAbilityButtonText(__instance, player);
+                        Mercenary.GetAbilityButtonText(__instance, player);
                         break;
                     case CustomRoles.Warlock:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
@@ -227,7 +227,7 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         Gangster.SetKillButtonText(player.PlayerId);
                         break;
-                    case CustomRoles.NSerialKiller:
+                    case CustomRoles.SerialKiller:
                     case CustomRoles.Juggernaut:
                     case CustomRoles.Pyromaniac:
                     case CustomRoles.Jackal:

@@ -140,7 +140,7 @@ public static class Oracle
                 //      CustomRoles.Anonymous or
                 //      CustomRoles.Miner or
                 //      CustomRoles.Escapee or
-                //      CustomRoles.SerialKiller or
+                //      CustomRoles.Mercenary or
                 // //     CustomRoles.Mare or
                 //      CustomRoles.Inhibitor or
                 //      CustomRoles.Councillor or
@@ -208,7 +208,7 @@ public static class Oracle
                 //      CustomRoles.Masochist or
                 //      CustomRoles.Innocent or
                 //      CustomRoles.Pursuer or
-                //      CustomRoles.NSerialKiller or
+                //      CustomRoles.SerialKiller or
                 //      CustomRoles.Pelican or
                 //      CustomRoles.Revolutionist or
                 //      CustomRoles.FFF or

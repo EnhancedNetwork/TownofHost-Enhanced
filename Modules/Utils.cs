@@ -535,7 +535,7 @@ public static class Utils
             case CustomRoles.Sidekick:
             case CustomRoles.Poisoner:
             case CustomRoles.Necromancer:
-            case CustomRoles.NSerialKiller:
+            case CustomRoles.SerialKiller:
             case CustomRoles.Pyromaniac:
             case CustomRoles.Werewolf:
             case CustomRoles.Traitor:
@@ -2720,7 +2720,7 @@ public static class Utils
         BountyHunter.AfterMeetingTasks();
         //Undertaker.AfterMeetingTasks();
         EvilTracker.AfterMeetingTasks();
-        SerialKiller.AfterMeetingTasks();
+        Mercenary.AfterMeetingTasks();
         Spiritualist.AfterMeetingTasks();
         Penguin.AfterMeetingTasks();
         Vulture.AfterMeetingTasks();

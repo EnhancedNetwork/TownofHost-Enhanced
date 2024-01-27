@@ -1233,7 +1233,7 @@ class MeetingHudStartPatch
                 //   case CustomRoles.Jackal:
                 //   case CustomRoles.Sidekick:
                 case CustomRoles.Poisoner:
-                case CustomRoles.NSerialKiller:
+                case CustomRoles.SerialKiller:
                 case CustomRoles.Werewolf:
                 case CustomRoles.Pelican:
                 case CustomRoles.DarkHide:

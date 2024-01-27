@@ -589,7 +589,7 @@ public enum CustomRoles
     Ludopath,
     Lurker,
     Mastermind,
-    SerialKiller, //mercenary
+    Mercenary, //mercenary
     Miner,
     Morphling,
     Mafia, //nemesis
@@ -760,7 +760,7 @@ public enum CustomRoles
     RuthlessRomantic,
     SchrodingersCat,
     Seeker,
-    NSerialKiller, //serial killer
+    SerialKiller, //serial killer
     Shaman,
     Shroud,
     Sidekick,
@@ -915,7 +915,7 @@ public enum CustomWinner
     Wraith = CustomRoles.Wraith,
     Bandit = CustomRoles.Bandit,
     Pirate = CustomRoles.Pirate,
-    SerialKiller = CustomRoles.NSerialKiller,
+    Mercenary = CustomRoles.SerialKiller,
     Werewolf = CustomRoles.Werewolf,
     Necromancer = CustomRoles.Necromancer,
     Huntsman = CustomRoles.Huntsman,

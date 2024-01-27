@@ -212,7 +212,7 @@ internal class ChangeRoleSettings
 
             FallFromLadder.Reset();
             BountyHunter.Init();
-            SerialKiller.Init();
+            Mercenary.Init();
             EvilDiviner.Init();
             FireWorks.Init();
             Sniper.Init();
@@ -312,7 +312,7 @@ internal class ChangeRoleSettings
             Tracker.Init();
             Merchant.Init();
             Pyromaniac.Init();
-            NSerialKiller.Init();
+            SerialKiller.Init();
             Maverick.Init();
             Jinx.Init();
             DoubleShot.Init();
@@ -585,8 +585,8 @@ internal class SelectRolesPatch
                     case CustomRoles.Reverie:
                         Reverie.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.SerialKiller:
-                        SerialKiller.Add(pc.PlayerId);
+                    case CustomRoles.Mercenary:
+                        Mercenary.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Witch:
                         Witch.Add(pc.PlayerId);
@@ -950,8 +950,8 @@ internal class SelectRolesPatch
                     case CustomRoles.Merchant:
                         Merchant.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.NSerialKiller:
-                        NSerialKiller.Add(pc.PlayerId);
+                    case CustomRoles.SerialKiller:
+                        SerialKiller.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Pyromaniac:
                         Pyromaniac.Add(pc.PlayerId);

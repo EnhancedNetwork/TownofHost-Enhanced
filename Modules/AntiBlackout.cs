@@ -30,7 +30,7 @@ public static class AntiBlackout
         || Jackal.IsEnable || BloodKnight.IsEnable
         || Glitch.IsEnable || Infectious.IsEnable
         || Juggernaut.IsEnable || Pelican.IsEnable
-        || Pickpocket.IsEnable || NSerialKiller.IsEnable
+        || Pickpocket.IsEnable || SerialKiller.IsEnable
         || Shroud.IsEnable || Traitor.IsEnable
         || Virus.IsEnable || Werewolf.IsEnable
         || Gamer.IsEnable || Succubus.IsEnable

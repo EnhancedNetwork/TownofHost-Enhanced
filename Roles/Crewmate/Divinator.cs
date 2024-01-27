@@ -348,7 +348,7 @@ public static class Divinator
                 
                 [CustomRoles.BoobyTrap,
                 CustomRoles.QuickShooter,
-                CustomRoles.NSerialKiller,
+                CustomRoles.SerialKiller,
                 CustomRoles.Sheriff,
                 CustomRoles.Admirer,
                 CustomRoles.Warlock],
@@ -397,7 +397,7 @@ public static class Divinator
                 CustomRoles.Deputy,
                 CustomRoles.Transporter,
                 CustomRoles.Twister,
-                CustomRoles.SerialKiller],
+                CustomRoles.Mercenary],
                 
                 [CustomRoles.Crewpostor,
                 CustomRoles.Taskinator,
@@ -466,7 +466,7 @@ public static class Divinator
                    CustomRoles.Disperser
                    => "Honest",
 
-                   CustomRoles.SerialKiller or
+                   CustomRoles.Mercenary or
                    CustomRoles.BountyHunter or
                    CustomRoles.Minimalism or
                    CustomRoles.Sans or
@@ -485,7 +485,7 @@ public static class Divinator
                    CustomRoles.Assassin or
                    CustomRoles.Escapee or
                    CustomRoles.Sniper or
-                   CustomRoles.NSerialKiller or
+                   CustomRoles.SerialKiller or
                    CustomRoles.SwordsMan or
                    CustomRoles.Bodyguard or
                    CustomRoles.Opportunist or

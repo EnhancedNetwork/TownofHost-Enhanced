@@ -1069,8 +1069,8 @@ internal static class RPC
             case CustomRoles.BountyHunter:
                 BountyHunter.Add(targetId);
                 break;
-            case CustomRoles.SerialKiller:
-                SerialKiller.Add(targetId);
+            case CustomRoles.Mercenary:
+                Mercenary.Add(targetId);
                 break;
             case CustomRoles.FireWorks:
                 FireWorks.Add(targetId);
@@ -1427,8 +1427,8 @@ internal static class RPC
             case CustomRoles.Merchant:
                 Merchant.Add(targetId);
                 break;
-            case CustomRoles.NSerialKiller:
-                NSerialKiller.Add(targetId);
+            case CustomRoles.SerialKiller:
+                SerialKiller.Add(targetId);
                 break;
             case CustomRoles.Pyromaniac:
                 Pyromaniac.Add(targetId);

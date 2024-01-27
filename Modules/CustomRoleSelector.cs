@@ -268,10 +268,10 @@ internal class CustomRoleSelector
         if (rd.Next(0, 100) < Vampire.VampiressChance.GetInt() && rolesToAssign.Remove(CustomRoles.Vampire)) rolesToAssign.Add(CustomRoles.Vampiress);
         if (rd.Next(0, 100) < Options.NukerChance.GetInt() && rolesToAssign.Remove(CustomRoles.Bomber)) rolesToAssign.Add(CustomRoles.Nuker);
 
-        if (NSerialKiller.HasSerialKillerBuddy.GetBool() && rolesToAssign.Contains(CustomRoles.NSerialKiller))
+        if (SerialKiller.HasSerialKillerBuddy.GetBool() && rolesToAssign.Contains(CustomRoles.SerialKiller))
         {
-            if (rd.Next(0, 100) < NSerialKiller.ChanceToSpawn.GetInt()) rolesToAssign.Add(CustomRoles.NSerialKiller);
-            //if (rd.Next(0, 100) < NSerialKiller.ChanceToSpawnAnother.GetInt()) rolesToAssign.Add(CustomRoles.NSerialKiller);
+            if (rd.Next(0, 100) < SerialKiller.ChanceToSpawn.GetInt()) rolesToAssign.Add(CustomRoles.SerialKiller);
+            //if (rd.Next(0, 100) < SerialKiller.ChanceToSpawnAnother.GetInt()) rolesToAssign.Add(CustomRoles.SerialKiller);
         }
 
         if (Options.NeutralKillingRolesMaxPlayer.GetInt() > 1 && !Options.TemporaryAntiBlackoutFix.GetBool())
@@ -402,7 +402,7 @@ internal class CustomRoleSelector
         }
     }
 
-    public static List<CustomRoles> AddonRolesList = new();
+    public static List<CustomRoles> AddonRolesList = [];
     public static void SelectAddonRoles()
     {
         if (Options.CurrentGameMode == CustomGameMode.FFA) return;

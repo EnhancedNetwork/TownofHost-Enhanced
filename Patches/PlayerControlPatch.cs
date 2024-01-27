@@ -342,8 +342,8 @@ class CheckMurderPatch
                 case CustomRoles.BountyHunter:
                     BountyHunter.OnCheckMurder(killer, target);
                     break;
-                case CustomRoles.SerialKiller:
-                    SerialKiller.OnCheckMurder(killer);
+                case CustomRoles.Mercenary:
+                    Mercenary.OnCheckMurder(killer);
                     break;
                 case CustomRoles.Vampire:
                     if (!Vampire.OnCheckMurder(killer, target)) return false;
@@ -469,7 +469,7 @@ class CheckMurderPatch
                     Juggernaut.OnCheckMurder(killer);
                     break;
                 case CustomRoles.Penguin:
-                    if (!Penguin.OnCheckMurderAsKiller(killer, target)) return false;
+                    if (!Penguin.OnCheckMurderASerialKiller(killer, target)) return false;
                     break;
                 case CustomRoles.Reverie:
                     Reverie.OnCheckMurder(killer, target);
@@ -634,7 +634,7 @@ class CheckMurderPatch
                     Medic.OnCheckMurderFormedicaler(killer, target);
                     return false;
                 case CustomRoles.Counterfeiter:
-                    if (target.Is(CustomRoles.NSerialKiller)) return true;
+                    if (target.Is(CustomRoles.SerialKiller)) return true;
                     if (Counterfeiter.CanBeClient(target) && Counterfeiter.CanSeel(killer.PlayerId))
                         Counterfeiter.SeelToClient(killer, target);
                     return false;
@@ -649,7 +649,7 @@ class CheckMurderPatch
                     }
                     break;
                 case CustomRoles.Pursuer:
-                    if (target.Is(CustomRoles.NSerialKiller)) return true;
+                    if (target.Is(CustomRoles.SerialKiller)) return true;
                     if (Pursuer.CanBeClient(target) && Pursuer.CanSeel(killer.PlayerId))
                         Pursuer.SeelToClient(killer, target);
                     return false;
@@ -902,7 +902,7 @@ class CheckMurderPatch
         {
             case CustomRoles.Traitor when target.Is(CustomRoleTypes.Impostor):
             case CustomRoles.Traitor when target.Is(CustomRoles.Traitor):
-            case CustomRoles.NSerialKiller when target.Is(CustomRoles.NSerialKiller):
+            case CustomRoles.SerialKiller when target.Is(CustomRoles.SerialKiller):
             case CustomRoles.Juggernaut when target.Is(CustomRoles.Juggernaut):
             case CustomRoles.Werewolf when target.Is(CustomRoles.Werewolf):
             case CustomRoles.NWitch when target.Is(CustomRoles.NWitch):
@@ -2356,7 +2356,7 @@ class ReportDeadBodyPatch
         if (Psychic.IsEnable) Psychic.OnReportDeadBody();
         if (BountyHunter.IsEnable) BountyHunter.OnReportDeadBody();
         if (Huntsman.IsEnable) Huntsman.OnReportDeadBody();
-        if (SerialKiller.IsEnable) SerialKiller.OnReportDeadBody();
+        if (Mercenary.IsEnable) Mercenary.OnReportDeadBody();
         if (SoulCollector.IsEnable) SoulCollector.OnReportDeadBody();
         if (Puppeteer.IsEnable) Puppeteer.OnReportDeadBody();
         if (Sniper.IsEnable) Sniper.OnReportDeadBody();
@@ -2649,8 +2649,8 @@ class FixedUpdateInNormalGamePatch
                         Poisoner.OnFixedUpdate(player);
                         break;
 
-                    case CustomRoles.SerialKiller:
-                        SerialKiller.OnFixedUpdate(player);
+                    case CustomRoles.Mercenary:
+                        Mercenary.OnFixedUpdate(player);
                         break;
 
                     case CustomRoles.Seeker:
@@ -3686,8 +3686,8 @@ class EnterVentPatch
                     x.RPCPlayCustomSound("Dove");
                     x.ResetKillCooldown();
                     x.SetKillCooldown();
-                    if (x.Is(CustomRoles.SerialKiller))
-                    { SerialKiller.OnReportDeadBody(); }
+                    if (x.Is(CustomRoles.Mercenary))
+                    { Mercenary.OnReportDeadBody(); }
                     x.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DovesOfNeace), GetString("DovesOfNeaceSkillNotify")));
                 });
                 pc.RPCPlayCustomSound("Dove");
@@ -4098,19 +4098,19 @@ class PlayerControlSetRolePatch
         if (!ShipStatus.Instance.enabled) return true;
         if (roleType is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost)
         {
-            var targetIsKiller = target.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(target.PlayerId);
+            var targetISerialKiller = target.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(target.PlayerId);
             var ghostRoles = new Dictionary<PlayerControl, RoleTypes>();
 
             foreach (var seer in Main.AllPlayerControls)
             {
                 var self = seer.PlayerId == target.PlayerId;
-                var seerIsKiller = seer.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(seer.PlayerId);
+                var seerISerialKiller = seer.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(seer.PlayerId);
 
                 if (target.Is(CustomRoles.EvilSpirit))
                 {
                     ghostRoles[seer] = RoleTypes.GuardianAngel;
                 }
-                else if ((self && targetIsKiller) || (!seerIsKiller && target.Is(CustomRoleTypes.Impostor)))
+                else if ((self && targetISerialKiller) || (!seerISerialKiller && target.Is(CustomRoleTypes.Impostor)))
                 {
                     ghostRoles[seer] = RoleTypes.ImpostorGhost;
                 }

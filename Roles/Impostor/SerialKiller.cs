@@ -4,7 +4,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
-public static class SerialKiller
+public static class Mercenary
 {
     private static readonly int Id = 2000;
     public static List<byte> playerIdList = [];
@@ -19,10 +19,10 @@ public static class SerialKiller
 
     public static void SetupCustomOption()
     {
-        Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.SerialKiller);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.SerialKiller])
+        Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Mercenary);
+        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mercenary])
             .SetValueFormat(OptionFormat.Seconds);
-        TimeLimit = FloatOptionItem.Create(Id + 11, "SerialKillerLimit", new(5f, 180f, 5f), 60f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.SerialKiller])
+        TimeLimit = FloatOptionItem.Create(Id + 11, "SerialKillerLimit", new(5f, 180f, 5f), 60f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mercenary])
             .SetValueFormat(OptionFormat.Seconds);
     }
     public static void Init()
@@ -47,10 +47,10 @@ public static class SerialKiller
     ///シリアルキラー＋生存＋一人以上キルしている
     ///</summary>
     public static bool HasKilled(PlayerControl pc)
-        => pc != null && pc.Is(CustomRoles.SerialKiller) && pc.IsAlive() && Main.PlayerStates[pc.PlayerId].GetKillCount(true) > 0;
+        => pc != null && pc.Is(CustomRoles.Mercenary) && pc.IsAlive() && Main.PlayerStates[pc.PlayerId].GetKillCount(true) > 0;
     public static void OnCheckMurder(PlayerControl killer, bool CanMurder = true)
     {
-        if (!killer.Is(CustomRoles.SerialKiller)) return;
+        if (!killer.Is(CustomRoles.Mercenary)) return;
         
         SuicideTimer.Remove(killer.PlayerId);
         if (CanMurder)

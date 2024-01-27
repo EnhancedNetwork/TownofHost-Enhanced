@@ -23,7 +23,7 @@ public static class Penguin
     public static bool IsEnable;
 
     // Measures to prevent the opponent who is about to be killed during abduction from using their abilities
-    public static bool IsKiller => AbductVictim == null;
+    public static bool ISerialKiller => AbductVictim == null;
     public static void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Penguin, 1);
@@ -99,7 +99,7 @@ public static class Penguin
         Utils.GetPlayerById(playerIdList[0]).RpcResetAbilityCooldown();
         SendRPC();
     }
-    public static bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public static bool OnCheckMurderASerialKiller(PlayerControl killer, PlayerControl target)
     {
         bool doKill = true;
         if (AbductVictim != null)

@@ -58,7 +58,7 @@ static class CustomRolesHelper
                 CustomRoles.Morphling => CustomRoles.Shapeshifter,
                 CustomRoles.Warlock => CustomRoles.Shapeshifter,
                 CustomRoles.Undertaker => CustomRoles.Shapeshifter,
-                CustomRoles.SerialKiller => CustomRoles.Shapeshifter,
+                CustomRoles.Mercenary => CustomRoles.Shapeshifter,
                 CustomRoles.FireWorks => CustomRoles.Shapeshifter,
                 CustomRoles.SpeedBooster => CustomRoles.Crewmate,
                 CustomRoles.Dictator => CustomRoles.Crewmate,
@@ -241,7 +241,7 @@ static class CustomRolesHelper
             CustomRoles.Provocateur => RoleTypes.Impostor,
             CustomRoles.BloodKnight => RoleTypes.Impostor,
             CustomRoles.Poisoner => RoleTypes.Impostor,
-            CustomRoles.NSerialKiller => RoleTypes.Impostor,
+            CustomRoles.SerialKiller => RoleTypes.Impostor,
             CustomRoles.Werewolf => RoleTypes.Impostor,
             CustomRoles.Maverick => RoleTypes.Impostor,
             CustomRoles.Parasite => RoleTypes.Impostor,
@@ -462,7 +462,7 @@ static class CustomRolesHelper
     //        CustomRoles.Minion or
             CustomRoles.Parasite or
             CustomRoles.PlagueDoctor or
-            CustomRoles.NSerialKiller or
+            CustomRoles.SerialKiller or
             CustomRoles.Werewolf or
             CustomRoles.Pickpocket or
             CustomRoles.Traitor or
@@ -496,7 +496,7 @@ static class CustomRolesHelper
             CustomRoles.Refugee or
             CustomRoles.Parasite or
             CustomRoles.PlagueDoctor or
-            CustomRoles.NSerialKiller or
+            CustomRoles.SerialKiller or
             CustomRoles.Pyromaniac or
             CustomRoles.Werewolf or
             CustomRoles.PotionMaster or
@@ -626,7 +626,7 @@ static class CustomRolesHelper
             CustomRoles.Poisoner or
         //    CustomRoles.Sorcerer or
             CustomRoles.Parasite or
-            CustomRoles.NSerialKiller or
+            CustomRoles.SerialKiller or
             CustomRoles.Werewolf or
             CustomRoles.PotionMaster or
             CustomRoles.PlagueDoctor or
@@ -694,7 +694,7 @@ static class CustomRolesHelper
             CustomRoles.Visionary or
             CustomRoles.Miner or
             CustomRoles.Escapee or
-            CustomRoles.SerialKiller or
+            CustomRoles.Mercenary or
             CustomRoles.Underdog or
             CustomRoles.Inhibitor or
             CustomRoles.Councillor or
@@ -797,7 +797,7 @@ static class CustomRolesHelper
             CustomRoles.Pixie or
         //    CustomRoles.Sidekick or
             CustomRoles.Poisoner or
-            CustomRoles.NSerialKiller or
+            CustomRoles.SerialKiller or
             CustomRoles.PotionMaster or
             CustomRoles.Pickpocket or
             CustomRoles.Werewolf or
@@ -852,7 +852,7 @@ static class CustomRolesHelper
             CustomRoles.BloodKnight or
             CustomRoles.Virus or
             CustomRoles.Medusa or
-            CustomRoles.NSerialKiller or
+            CustomRoles.SerialKiller or
             CustomRoles.Traitor or
             CustomRoles.HexMaster or
             CustomRoles.Werewolf or
@@ -939,7 +939,7 @@ static class CustomRolesHelper
             CustomRoles.Pursuer or
         //    CustomRoles.Sidekick or
             CustomRoles.Poisoner or
-            CustomRoles.NSerialKiller or
+            CustomRoles.SerialKiller or
             CustomRoles.Pelican or
             CustomRoles.Revolutionist or
             CustomRoles.FFF or
@@ -1885,7 +1885,7 @@ static class CustomRolesHelper
            CustomRoles.PlagueBearer => CountTypes.PlagueBearer,
            CustomRoles.Agitater => CountTypes.Agitater,
            CustomRoles.Parasite => CountTypes.Impostor,
-           CustomRoles.NSerialKiller => CountTypes.NSerialKiller,
+           CustomRoles.SerialKiller => CountTypes.SerialKiller,
            CustomRoles.Juggernaut => CountTypes.Juggernaut,
            CustomRoles.Jinx => CountTypes.Jinx,
            CustomRoles.Infectious or CustomRoles.Infected => CountTypes.Infectious,
@@ -1941,7 +1941,7 @@ static class CustomRolesHelper
             CustomRoles.Wraith => CustomWinner.Wraith,
             CustomRoles.Bandit => CustomWinner.Bandit,
             CustomRoles.Pirate => CustomWinner.Pirate,
-            CustomRoles.NSerialKiller => CustomWinner.SerialKiller,
+            CustomRoles.SerialKiller => CustomWinner.Mercenary,
             CustomRoles.Werewolf => CustomWinner.Werewolf,
             CustomRoles.Necromancer => CustomWinner.Necromancer,
             CustomRoles.Huntsman => CustomWinner.Huntsman,
@@ -1995,7 +1995,7 @@ static class CustomRolesHelper
             CountTypes.Pestilence => CustomRoles.Pestilence,
             CountTypes.PlagueBearer => CustomRoles.PlagueBearer,
             CountTypes.Agitater => CustomRoles.Agitater,
-            CountTypes.NSerialKiller => CustomRoles.NSerialKiller,
+            CountTypes.SerialKiller => CustomRoles.SerialKiller,
             CountTypes.Juggernaut => CustomRoles.Juggernaut,
             CountTypes.Jinx => CustomRoles.Jinx,
             CountTypes.Infectious => CustomRoles.Infectious,
@@ -2049,7 +2049,7 @@ public enum CountTypes
     HexMaster,
     NWitch,
     Wraith,
-    NSerialKiller,
+    SerialKiller,
     Juggernaut,
     Infectious,
     Virus,

@@ -158,8 +158,8 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.ShapeshifterCooldown = Options.MinerSSCD.GetFloat();
                 AURoleOptions.ShapeshifterDuration = Options.MinerSSDuration.GetFloat();
                 break;
-            case CustomRoles.SerialKiller:
-                SerialKiller.ApplyGameOptions(player);
+            case CustomRoles.Mercenary:
+                Mercenary.ApplyGameOptions(player);
                 break;
             case CustomRoles.Tracefinder:
                 Tracefinder.ApplyGameOptions();
@@ -312,8 +312,8 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Pursuer:
                 opt.SetVision(true);
                 break;
-            case CustomRoles.NSerialKiller:
-                NSerialKiller.ApplyGameOptions(opt);
+            case CustomRoles.SerialKiller:
+                SerialKiller.ApplyGameOptions(opt);
                 break;
             case CustomRoles.Pyromaniac:
                 Pyromaniac.ApplyGameOptions(opt);

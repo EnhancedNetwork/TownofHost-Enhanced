@@ -1371,7 +1371,7 @@ public static class Options
         /*
          * Mercenary
          */
-        SerialKiller.SetupCustomOption();
+        Mercenary.SetupCustomOption();
 
         /*
          * Ninja
@@ -2433,7 +2433,7 @@ public static class Options
         if (!Quizmaster.InExperimental)
             Quizmaster.SetupCustomOption();
 
-        NSerialKiller.SetupCustomOption(); // Serial Killer
+        SerialKiller.SetupCustomOption(); // Serial Killer
 
         Shroud.SetupCustomOption();
 
