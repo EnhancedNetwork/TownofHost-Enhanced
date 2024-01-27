@@ -65,7 +65,8 @@ class CheckForEndVotingPatch
 
                     if (AntiBlackout.NeutralOverrideExiledPlayer || AntiBlackout.ImpostorOverrideExiledPlayer)
                     {
-                        __instance.RpcVotingComplete(states, null, true);
+                        //__instance.RpcVotingComplete(states, null, true);
+                        __instance.AntiBlackRpcVotingComplete(states, voteTarget.Data, false);
                         ExileControllerWrapUpPatch.AntiBlackout_LastExiled = voteTarget.Data;
                         AntiBlackout.ShowExiledInfo = true;
                         ConfirmEjections(voteTarget.Data, true);
@@ -426,7 +427,8 @@ class CheckForEndVotingPatch
             //RPC
             if (AntiBlackout.NeutralOverrideExiledPlayer || AntiBlackout.ImpostorOverrideExiledPlayer)
             {
-                __instance.RpcVotingComplete(states, null, true);
+                //__instance.RpcVotingComplete(states, null, true);
+                __instance.AntiBlackRpcVotingComplete(states, exiledPlayer, tie);
                 ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiledPlayer;
                 if (exiledPlayer != null)
                 {

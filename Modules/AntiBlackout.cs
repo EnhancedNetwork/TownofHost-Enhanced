@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using Hazel;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using TOHE.Modules;
 using TOHE.Roles.Neutral;
@@ -179,7 +180,52 @@ public static class AntiBlackout
             logger.Info("==/Temp Restore==");
         }
     }
+    public static void AntiBlackRpcVotingComplete(this MeetingHud __instance, MeetingHud.VoterState[] states, GameData.PlayerInfo exiled, bool tie)
+    {
+        if (AmongUsClient.Instance.AmClient)
+        {
+            __instance.VotingComplete(states, exiled, tie);
+        }
 
+        var sender = CustomRpcSender.Create("AntiBlack RpcVotingComplete", SendOption.None);
+        foreach (var pc in Main.AllPlayerControls)
+        {
+            if (pc.AmOwner) continue;
+            if (pc.IsModClient()) //For mod client show real result
+            {
+                sender.AutoStartRpc(__instance.NetId, (byte)RpcCalls.VotingComplete, pc.GetClientId());
+                {
+                    sender.WritePacked(states.Length);
+                    foreach (MeetingHud.VoterState voterState in states)
+                    {
+                        sender.WriteMessageType(voterState.VoterId);
+                        sender.Write(voterState.VotedForId);
+                        sender.WriteEndMessage();
+                    }
+                    sender.Write(exiled != null ? exiled.PlayerId : byte.MaxValue);
+                    sender.Write(tie);
+                    sender.EndRpc();
+                }
+            }
+            else //For vanilla client show a tie
+            {
+                sender.AutoStartRpc(__instance.NetId, (byte)RpcCalls.VotingComplete, pc.GetClientId());
+                {
+                    sender.WritePacked(states.Length);
+                    foreach (MeetingHud.VoterState voterState in states)
+                    {
+                        sender.WriteMessageType(voterState.VoterId);
+                        sender.Write(voterState.VotedForId);
+                        sender.WriteEndMessage();
+                    }
+                    sender.Write(byte.MaxValue);
+                    sender.Write(true);
+                    sender.EndRpc();
+                }
+            }
+        }
+        sender.SendMessage();
+    }
     public static void Reset()
     {
         logger.Info("==Reset==");
