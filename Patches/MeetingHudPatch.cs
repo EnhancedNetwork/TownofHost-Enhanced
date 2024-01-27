@@ -1087,7 +1087,7 @@ class MeetingHudStartPatch
             {
                 Utils.SendMessage(GetString("Warning.AntiBlackoutProtectionMsg"), 255, Utils.ColorString(Color.blue, GetString("AntiBlackoutProtectionTitle")), replay: true);
 
-            }, 5f, "Warning Black Out Is Active");
+            }, 5f, "Warning BlackOut Is Active");
         }
 
         if (AntiBlackout.ShowExiledInfo)
