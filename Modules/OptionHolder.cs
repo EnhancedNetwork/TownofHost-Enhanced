@@ -1348,9 +1348,9 @@ public static class Options
         /*
          * Killing Machine
          */
-        SetupRoleOptions(23800, TabGroup.ImpostorRoles, CustomRoles.Minimalism);
+        SetupRoleOptions(23800, TabGroup.ImpostorRoles, CustomRoles.KillingMachine);
         MNKillCooldown = FloatOptionItem.Create(23805, "KillCooldown", new(2.5f, 180f, 2.5f), 10f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Minimalism])
+            .SetParent(CustomRoleSpawnChances[CustomRoles.KillingMachine])
             .SetValueFormat(OptionFormat.Seconds);
 
         /*
@@ -2917,7 +2917,7 @@ public static class Options
         
         SetupAdtRoleOptions(23300, CustomRoles.Swift, canSetNum: true, tab: TabGroup.Addons);
 
-      //SetupAdtRoleOptions(23400, CustomRoles.Minimalism, canSetNum: true, tab: TabGroup.Addons);
+      //SetupAdtRoleOptions(23400, CustomRoles.KillingMachine, canSetNum: true, tab: TabGroup.Addons);
 
 
         TextOptionItem.Create(10000019, "RoleType.Misc", TabGroup.Addons) // NEUTRAL

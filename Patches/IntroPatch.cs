@@ -373,7 +373,7 @@ class BeginCrewmatePatch
             case CustomRoles.Sheriff:
             case CustomRoles.Veteran:
             case CustomRoles.SwordsMan:
-            case CustomRoles.Minimalism:
+            case CustomRoles.KillingMachine:
             case CustomRoles.Reverie:
             case CustomRoles.NiceGuesser:
             case CustomRoles.Vigilante:

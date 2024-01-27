@@ -590,7 +590,7 @@ static class ExtendedPlayerControl
 
         return pc.GetCustomRole() switch
         {
-            CustomRoles.Minimalism or
+            CustomRoles.KillingMachine or
             CustomRoles.Sheriff or
             CustomRoles.Vigilante or
             CustomRoles.Deputy or
@@ -931,7 +931,7 @@ static class ExtendedPlayerControl
             case CustomRoles.CopyCat:
                 CopyCat.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.Minimalism:
+            case CustomRoles.KillingMachine:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.MNKillCooldown.GetFloat();
                 break;
             case CustomRoles.SwordsMan:

@@ -584,7 +584,7 @@ public enum CustomRoles
     Inhibitor,
     Instigator,
     Kamikaze,
-    Minimalism, //killing machine
+    KillingMachine, //killing machine
     BallLightning, //Lightning
     Ludopath,
     Lurker,

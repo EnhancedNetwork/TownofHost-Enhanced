@@ -669,7 +669,7 @@ class SetHudActivePatch
                 __instance.ImpostorVentButton.ToggleVisible(false);
                 break;
 
-            case CustomRoles.Minimalism:
+            case CustomRoles.KillingMachine:
                 __instance.SabotageButton.ToggleVisible(false);
                 __instance.AbilityButton.ToggleVisible(false);
                 __instance.ReportButton.ToggleVisible(false);

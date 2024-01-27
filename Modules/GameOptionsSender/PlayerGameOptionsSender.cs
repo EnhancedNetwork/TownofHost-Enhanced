@@ -201,7 +201,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 opt.SetVision(Virus.ImpostorVision.GetBool());
                 break;
             case CustomRoles.Zombie:
-            case CustomRoles.Minimalism:
+            case CustomRoles.KillingMachine:
                 opt.SetFloat(FloatOptionNames.ImpostorLightMod, 0.2f);
                 break;
             case CustomRoles.Doctor:

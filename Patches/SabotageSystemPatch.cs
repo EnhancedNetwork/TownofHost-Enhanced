@@ -308,7 +308,7 @@ public class SabotageSystemPatch
         {
             var playerRole = player.GetCustomRole();
 
-            if (player.Is(CustomRoles.Minimalism)) return false;
+            if (player.Is(CustomRoles.KillingMachine)) return false;
 
             if (systemType is SystemTypes.Comms)
             {

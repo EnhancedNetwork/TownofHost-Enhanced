@@ -707,7 +707,7 @@ static class CustomRolesHelper
             CustomRoles.Chronomancer or
             CustomRoles.Stealth or
             CustomRoles.Penguin or
-            CustomRoles.Minimalism or
+            CustomRoles.KillingMachine or
             CustomRoles.Fireworker or
             CustomRoles.Sniper or
             CustomRoles.EvilTracker or
@@ -1556,7 +1556,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.EvilDiviner)
                     || pc.Is(CustomRoles.Capitalism)
                     || pc.Is(CustomRoles.OverKiller)
-                    || pc.Is(CustomRoles.Minimalism))
+                    || pc.Is(CustomRoles.KillingMachine))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -1576,7 +1576,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Witch) && Witch.ModeSwitchAction.GetValue() == 1
                     || pc.Is(CustomRoles.Swooper)
                     || pc.Is(CustomRoles.Wildling)
-                    || pc.Is(CustomRoles.Minimalism)
+                    || pc.Is(CustomRoles.KillingMachine)
                     || pc.Is(CustomRoles.Lurker))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
@@ -1588,7 +1588,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Bomber)
                     || pc.Is(CustomRoles.Nuker)
                     || pc.Is(CustomRoles.Capitalism)
-                    || pc.Is(CustomRoles.Minimalism))
+                    || pc.Is(CustomRoles.KillingMachine))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
