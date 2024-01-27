@@ -56,7 +56,7 @@ class ExileControllerWrapUpPatch
 
         if (!Collector.CollectorWin(false) && exiled != null)
         {
-            // Reset player cam for Desync Impostor
+            // Reset player cam for exiled desync impostor
             if (Main.ResetCamPlayerList.Contains(exiled.PlayerId))
             {
                 exiled.Object?.ResetPlayerCam(1f);
