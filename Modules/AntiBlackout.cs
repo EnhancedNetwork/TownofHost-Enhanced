@@ -1,11 +1,8 @@
-using AmongUs.GameOptions;
 using Hazel;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using TOHE.Modules;
-using TOHE.Roles.Neutral;
 
 namespace TOHE;
 

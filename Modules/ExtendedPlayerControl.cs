@@ -1456,9 +1456,9 @@ static class ExtendedPlayerControl
     public static bool Is(this CustomRoles trueRole, CustomRoles checkRole) { return trueRole == checkRole; }
     public static bool IsAlive(this PlayerControl target)
     {
-        //ロビーなら生きている
-        //targetがnullならば切断者なので生きていない
-        //targetがnullでなく取得できない場合は登録前なので生きているとする
+        //In lobby all is alive
+        //If target is null, it is not alive
+        //If target is not null and target is dead
         if (target == null || target.Is(CustomRoles.GM)) return false;
         return GameStates.IsLobby || (target != null && (!Main.PlayerStates.TryGetValue(target.PlayerId, out var ps) || !ps.IsDead));
     }

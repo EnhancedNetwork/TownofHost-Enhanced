@@ -49,6 +49,7 @@ class ExileControllerWrapUpPatch
         bool DecidedWinner = false;
         if (!AmongUsClient.Instance.AmHost) return;
         AntiBlackout.RestoreIsDead(doSend: false);
+        
         Pixie.CheckExileTarget(exiled);
 
         Logger.Info($"{!Collector.CollectorWin(false)}", "!Collector.CollectorWin(false)");
@@ -56,8 +57,8 @@ class ExileControllerWrapUpPatch
 
         if (!Collector.CollectorWin(false) && exiled != null)
         {
-            if (Main.ResetCamPlayerList.Contains(exiled.PlayerId) // Reset player cam for exiled desync impostor
-                || exiled.Object.GetCustomRole().IsImpostor()) // Reset player cam for exiled Impostor
+            // Reset player cam for exiled desync impostor
+            if (Main.ResetCamPlayerList.Contains(exiled.PlayerId))
             {
                 exiled.Object?.ResetPlayerCam(1f);
             }
@@ -229,8 +230,7 @@ class ExileControllerWrapUpPatch
             // Check Anti BlackOut
             if (player.GetCustomRole().IsImpostor() 
                 && !player.IsAlive() // if player is dead impostor
-                && AntiBlackout.BlackOutIsActive // if Black Out activated
-                && AntiBlackout_LastExiled.PlayerId != player.PlayerId) // Not the last exiled
+                && AntiBlackout.BlackOutIsActive) // if Anti BlackOut is activated
             {
                 player.ResetPlayerCam(1f);
             }
@@ -252,9 +252,9 @@ class ExileControllerWrapUpPatch
         Utils.SyncAllSettings();
         Utils.NotifyRoles(ForceLoop: true);
 
-        _ = new LateTask(() =>
+        if (Options.RandomSpawn.GetBool() || Options.CurrentGameMode == CustomGameMode.FFA)
         {
-            if (Options.RandomSpawn.GetBool() || Options.CurrentGameMode == CustomGameMode.FFA)
+            _ = new LateTask(() =>
             {
                 RandomSpawn.SpawnMap map;
                 switch (Utils.GetActiveMapId())
@@ -280,8 +280,8 @@ class ExileControllerWrapUpPatch
                         Main.AllPlayerControls.Do(map.RandomTeleport);
                         break;
                 }
-            }
-        }, 0.8f, "Random Spawn After Meeting");
+            }, 0.8f, "Random Spawn After Meeting");
+        }
     }
 
     static void WrapUpFinalizer(GameData.PlayerInfo exiled)
@@ -317,7 +317,8 @@ class ExileControllerWrapUpPatch
                     if (x.Value == PlayerState.DeathReason.Suicide)
                         player?.SetRealKiller(player, true);
 
-                    if (Main.ResetCamPlayerList.Contains(x.Key)) // Reset player cam for dead desync impostor
+                    // Reset player cam for dead desync impostor
+                    if (Main.ResetCamPlayerList.Contains(x.Key))
                     {
                         player?.ResetPlayerCam(1f);
                     }
