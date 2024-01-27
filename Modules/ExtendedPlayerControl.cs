@@ -26,7 +26,7 @@ static class ExtendedPlayerControl
         {
             Main.PlayerStates[player.PlayerId].SetMainRole(role);
         }
-        else if (role >= CustomRoles.NotAssigned && role < CustomRoles.IsNotDeadRole)   //500:NoSubRole 501~:SubRole // IsNotDeadRole(13000) == Ghost-Roles patch
+        else if (role >= CustomRoles.NotAssigned)   //500:NoSubRole 501~:SubRole 
         {
             if (!Cleanser.CleansedCanGetAddon.GetBool() && player.Is(CustomRoles.Cleansed)) return;
             if (role == CustomRoles.Cleansed) Main.PlayerStates[player.PlayerId].SetSubRole(role, pc: player);
