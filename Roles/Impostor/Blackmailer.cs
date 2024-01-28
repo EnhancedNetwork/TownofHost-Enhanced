@@ -38,4 +38,8 @@ public static class Blackmailer
         AURoleOptions.ShapeshifterCooldown = SkillCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = 1f;
     }
+    public static void AfterMeetingTasks()
+    {
+        Blackmailer.ForBlackmailer.Clear();
+    }
 }

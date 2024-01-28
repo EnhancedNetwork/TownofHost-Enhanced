@@ -87,7 +87,6 @@ public static class Taskinator
 
     public static void AfterMeetingTasks()
     {
-        if (!IsEnable) return;
         foreach (var playerId in TaskMarkPerRound.Keys)
         {
             TaskMarkPerRound[playerId] = 0;

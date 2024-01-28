@@ -23,6 +23,8 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using MS.Internal.Xml.XPath;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -2708,37 +2710,39 @@ public static class Utils
             }
             Main.KilledAntidote.Clear();
         }
-        if (Blackmailer.IsEnable) Blackmailer.ForBlackmailer.Clear();
 
-        Swooper.AfterMeetingTasks();
-        Glitch.AfterMeetingTasks();
-        Wraith.AfterMeetingTasks();
-        Chameleon.AfterMeetingTasks();
-        Eraser.AfterMeetingTasks();
-        Cleanser.AfterMeetingTasks();
-        Keeper.AfterMeetingTasks();
-        BountyHunter.AfterMeetingTasks();
-        //Undertaker.AfterMeetingTasks();
-        EvilTracker.AfterMeetingTasks();
-        Mercenary.AfterMeetingTasks();
-        Spiritualist.AfterMeetingTasks();
-        Penguin.AfterMeetingTasks();
-        Vulture.AfterMeetingTasks();
-        Taskinator.AfterMeetingTasks();
-        Benefactor.AfterMeetingTasks();
+        AntiBlackout.AfterMeetingTasks();
+
+        if (Eraser.IsEnable) Eraser.AfterMeetingTasks(notifyPlayer: false);
+        if (Cleanser.IsEnable) Cleanser.AfterMeetingTasks(notifyPlayer: false);
+        if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: false);
+        if (Seeker.IsEnable) Seeker.AfterMeetingTasks(notifyPlayer: false);
+
+        if (Blackmailer.IsEnable) Blackmailer.AfterMeetingTasks();
+        if (Swooper.IsEnable) Swooper.AfterMeetingTasks();
+        if (Chameleon.IsEnable) Chameleon.AfterMeetingTasks();
+        if (Wraith.IsEnable) Wraith.AfterMeetingTasks();
+        if (Glitch.IsEnable) Glitch.AfterMeetingTasks();
+        if (Keeper.IsEnable) Keeper.AfterMeetingTasks();
+        if (BountyHunter.IsEnable) BountyHunter.AfterMeetingTasks();
+        if (EvilTracker.IsEnable) EvilTracker.AfterMeetingTasks();
+        if (Mercenary.IsEnable) Mercenary.AfterMeetingTasks();
+        if (Spiritualist.IsEnable) Spiritualist.AfterMeetingTasks();
+        if (Penguin.IsEnable) Penguin.AfterMeetingTasks();
+        if (Taskinator.IsEnable) Taskinator.AfterMeetingTasks();
+        if (Benefactor.IsEnable) Benefactor.AfterMeetingTasks();
         if (PlagueDoctor.IsEnable) PlagueDoctor.AfterMeetingTasks();
-        //Baker.AfterMeetingTasks();
-        Jailer.AfterMeetingTasks();
-        CopyCat.AfterMeetingTasks();  //all crew after meeting task should be before this
-        Pirate.AfterMeetingTask();
-        Chronomancer.AfterMeetingTask();
-        Seeker.AfterMeetingTasks();
-        Solsticer.AfterMeetingTasks();
+        if (Jailer.IsEnable) Jailer.AfterMeetingTasks();
+        if (CopyCat.IsEnable) CopyCat.AfterMeetingTasks();  //all crew after meeting task should be before this
+        if (Pirate.IsEnable) Pirate.AfterMeetingTask();
+        if (Chronomancer.IsEnable) Chronomancer.AfterMeetingTask();
+        if (Solsticer.IsEnable) Solsticer.AfterMeetingTasks();
+        if (RiftMaker.IsEnable) RiftMaker.AfterMeetingTasks();
+
         Main.ShamanTarget = byte.MaxValue;
         Main.ShamanTargetChoosen = false;
         Main.BurstBodies.Clear();
         OverKiller.MurderTargetLateTask = [];
-        RiftMaker.AfterMeetingTasks();
 
 
         if (Options.AirshipVariableElectrical.GetBool())

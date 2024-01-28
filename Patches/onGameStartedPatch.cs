@@ -156,6 +156,9 @@ internal class ChangeRoleSettings
             Main.currentDrawTarget = byte.MaxValue;
             Main.PlayerColors = [];
 
+            // Clear last exiled
+            ExileControllerWrapUpPatch.AntiBlackout_LastExiled = null;
+
             //名前の記録
             //Main.AllPlayerNames = [];
             RPC.SyncAllPlayerNames();

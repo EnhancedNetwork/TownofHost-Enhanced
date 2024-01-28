@@ -11,7 +11,6 @@ public static class PetsPatch
 
         var sender = CustomRpcSender.Create(name: "Remove Pet At Dead Player");
 
-        pc.RpcSetPet("");
         sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetPetStr)
             .Write("")
             .EndRpc();
