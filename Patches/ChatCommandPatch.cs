@@ -170,6 +170,11 @@ internal class ChatCommands
                     Utils.ShowLastRoles();
                     break;
 
+                case "ghostinfo":
+                    Utils.SendMessage(GetString("Message.GhostRoleInfo"), PlayerControl.LocalPlayer.PlayerId);
+                    canceled = true;
+                    break;
+
 
 
                 case "/rn":
@@ -1536,6 +1541,15 @@ internal class ChatCommands
             case "/sumário":
             case "/summary":
                 Utils.ShowLastRoles(player.PlayerId);
+                break;
+
+            case "ghostinfo":
+                if (GameStates.IsInGame)
+                {
+                    Utils.SendMessage(GetString("Message.OnlyCanUseInLobby"), player.PlayerId);
+                    break;
+                }
+                Utils.SendMessage(GetString("Message.GhostRoleInfo"), PlayerControl.LocalPlayer.PlayerId);
                 break;
 
             case "/rn":

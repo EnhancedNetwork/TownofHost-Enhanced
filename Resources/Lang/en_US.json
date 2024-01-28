@@ -2315,6 +2315,7 @@
   "Message.YTPlanNotice": "Note: The [YouTuber Plan] is enabled in this lobby, which means the Host can specify their role in the next game to make it easier to get content. In case the Host abuses this feature, please exit the game or report it.\nCurrent Creator Credentials:",
   "Message.OnlyCanBeUsedByHost": "<color=#ff1919><size=150%><b>ERROR</b></size></color>\n\n<color=#ff1919>This command may only be used by the host.</color>",
   "Message.MaxPlayers": "Maximum players set to ",
+  "Message.GhostRoleInfo":  "<size=90%><b>Ghost Role Info</b></size>\nHiya! A little bit about ghost roles...\n\nGhost roles drastically impact the game, so not recommened for smaller lobbies, if you're unfamiliar.\n\n<b>Spawning:</b>\nGhost-roles only spawn after death, the first x people from (team) to die get them. \"Always\" role are prioritized, if they are exhausted then \"On\" roles get assigned..",
   "Warning.TemporaryAntiBlackoutFix": "<size=150%>Warning:</size>\n\nThe setting <b>Black Screen Prevention</b> is enabled.\nAll ejections will be displayed as a tie because there are more than one Neutral Killers in game, but will not effect the outcome of the ejection.\n\nThis is recommended to keep enabled to prevent black screens.",
   "TemporaryAntiBlackoutFix": "Black Screen Prevention (Recommended)",
   "AntiBlackoutFixTitle": "ANTI BLACKOUT FIX",
