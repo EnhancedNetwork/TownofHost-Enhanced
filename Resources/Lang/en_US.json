@@ -1391,6 +1391,7 @@
   "ApplyBanList": "Apply BanList",
   "EndWhenPlayerBug": "End the game when a player has a critical error",
   "RemovePetsAtDeadPlayers": "Remove pets at dead players",
+  "DisableShapeshiftAnimations": "Disable Shapeshift Animations",
   "KillFlashDuration": "Kill-Flash Duration",
   "ConfirmEjectionsMode": "Confirm Ejections Mode",
   "ConfirmEjections.None": "None",

@@ -172,6 +172,7 @@ public static class Options
     public static OptionItem EndWhenPlayerBug;
     public static OptionItem HideExileChat;
     public static OptionItem RemovePetsAtDeadPlayers;
+    public static OptionItem DisableShapeshiftAnimations;
 
     public static OptionItem CheatResponses;
     public static OptionItem NewHideMsg;
@@ -3382,6 +3383,9 @@ public static class Options
             .SetColor(new Color32(255, 153, 153, byte.MaxValue))
             .HideInHnS();
 
+        DisableShapeshiftAnimations = BooleanOptionItem.Create(60559, "DisableShapeshiftAnimations", true, TabGroup.GameSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(255, 153, 153, byte.MaxValue));
         DisableShieldAnimations = BooleanOptionItem.Create(60560, "DisableShieldAnimations", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true)
