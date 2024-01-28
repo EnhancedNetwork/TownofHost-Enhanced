@@ -1292,8 +1292,7 @@ class CheckMurderPatch
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Exiled))]
 class ExilePlayerFix
-{
-        
+{    
     public static void Postfix(PlayerControl __instance)
     {
         CustomRoleSelector.GhostAssignPatch(__instance);
@@ -1519,7 +1518,7 @@ class MurderPlayerPatch
         //================GHOST ASSIGN PATCH============
         CustomRoleSelector.GhostAssignPatch(target);
 
-        if (target.Is(CustomRoles.EvilSpirit)) // RpcSetRole(GuardianAngel) can't switch imp basis yet, unfortunately.
+        if (target.Is(CustomRoles.EvilSpirit)) 
         {
             target.RpcSetRole(RoleTypes.GuardianAngel);
             target.RpcSetRoleDesync(RoleTypes.GuardianAngel, target.GetClientId());

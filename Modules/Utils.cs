@@ -2757,7 +2757,7 @@ public static class Utils
     }
     public static void AfterPlayerDeathTasks(PlayerControl target, bool onMeeting = false)
     {
-        CustomRoleSelector.GhostAssignPatch(target);
+        // CustomRoleSelector.GhostAssignPatch(target); should be handled in exiled() patch, if not we remove commenting.
 
         switch (target.GetCustomRole())
         {
