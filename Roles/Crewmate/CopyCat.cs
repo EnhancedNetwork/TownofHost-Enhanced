@@ -157,7 +157,10 @@ public static class CopyCat
                     Investigator.Remove(pc.PlayerId);
                     break;
             }
-            pc.RpcSetCustomRole(CustomRoles.CopyCat);
+
+            if (pc.GetCustomRole() != CustomRoles.Sidekick)
+                pc.RpcSetCustomRole(CustomRoles.CopyCat);
+
             SetKillCooldown(player);
         }
     }
@@ -176,8 +179,8 @@ public static class CopyCat
             CustomRoles.Alchemist or
             CustomRoles.TimeMaster or
             CustomRoles.Mole;
-            //bcoz of single role
-            // Other
+        //bcoz of single role
+        // Other
     }
 
     public static bool OnCheckMurder(PlayerControl pc, PlayerControl tpc)
