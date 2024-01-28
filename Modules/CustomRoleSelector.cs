@@ -69,6 +69,7 @@ internal class CustomRoleSelector
             var role = (CustomRoles)Enum.Parse(typeof(CustomRoles), cr.ToString());
             if (role.IsVanilla() || role.IsAdditionRole()) continue;
             if (role is CustomRoles.GM or CustomRoles.NotAssigned) continue;
+            if (role.IsGhostRole()) continue;
 
             if (GameStates.FungleIsActive) // The Fungle
             {
@@ -107,7 +108,6 @@ internal class CustomRoleSelector
         // 职业设置为：优先
         foreach (var role in roleList.ToArray()) if (role.GetMode() == 2)
         {
-            if (CustomRolesHelper.IsGhostRole(role)) continue; // Prevent ghost-spawn
             if (role.IsImpostor()) ImpOnList.Add(role);
             else if (role.IsMini()) MiniOnList.Add(role);
             else if (role.IsNonNK()) NonNeutralKillingOnList.Add(role);
@@ -117,7 +117,6 @@ internal class CustomRoleSelector
         // 职业设置为：启用
         foreach (var role in roleList.ToArray()) if (role.GetMode() == 1)
         {
-            if (CustomRolesHelper.IsGhostRole(role)) continue; // Prevent ghost-spawn
             if (role.IsImpostor()) ImpRateList.Add(role);
             else if (role.IsMini()) MiniRateList.Add(role);
             else if (role.IsNonNK()) NonNeutralKillingRateList.Add(role);
