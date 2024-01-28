@@ -28,6 +28,9 @@ public static class AntiBlackout
 
         foreach (var pc in Main.AllAlivePlayerControls)
         {
+            // if player is ejected, do not count him as alive
+            if (pc.PlayerId == ExileControllerWrapUpPatch.AntiBlackout_LastExiled.PlayerId) continue;
+
             if (pc.GetCustomRole().IsImpostor()) Impostors.Add(pc.PlayerId); // Impostors
             else if (Main.PlayerStates[pc.PlayerId].countTypes == CountTypes.Impostor) Impostors.Add(pc.PlayerId); // Madmates
 
