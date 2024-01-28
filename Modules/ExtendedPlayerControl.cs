@@ -409,7 +409,7 @@ static class ExtendedPlayerControl
     }
     public static void ResetPlayerCam(this PlayerControl pc, float delay = 0f)
     {
-        if (pc == null || !AmongUsClient.Instance.AmHost || pc.AmOwner) return;
+        if (pc == null || !AmongUsClient.Instance.AmHost || pc.AmOwner || pc.IsModClient()) return;
 
         var systemtypes = Utils.GetCriticalSabotageSystemType();
 
