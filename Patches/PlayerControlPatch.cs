@@ -1513,7 +1513,7 @@ class MurderPlayerPatch
         if (Medic.IsEnable) Medic.IsDead(target);
 
         //================GHOST ASSIGN PATCH============
-        Utils.GhostAssignPatch(target);
+        CustomRoleSelector.GhostAssignPatch(target);
 
         Utils.AfterPlayerDeathTasks(target);
 

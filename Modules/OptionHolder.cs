@@ -3842,21 +3842,6 @@ public static class Options
         CustomRoleSpawnChances.Add(role, spawnOption);
         CustomRoleCounts.Add(role, countOption);
     }
-    
- 
-    public static bool GhostAssign(CustomRoles role)
-    {
-        int getCount = CustomGhostRoleCounts[role].GetInt();
-        
-        if (getCount > 0)
-        {
-            Logger.Info($"{role} previous value was {getCount}", $"{role}-Assign");
-            getCount --;
-            Logger.Info($"{role} new value is {getCount}", $"{role}");
-            return true;
-        }
-        return false;
-    }
     private static void SetupLoversRoleOptionsToggle(int id, CustomGameMode customGameMode = CustomGameMode.Standard)
     {
         var role = CustomRoles.Lovers;

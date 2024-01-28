@@ -1794,6 +1794,14 @@ static class CustomRolesHelper
     public static bool IsNeutralKillerTeam(this CustomRoles role) => role.IsNK() && !role.IsMadmate();
     public static bool IsPassiveNeutralTeam(this CustomRoles role) => role.IsNonNK() && !role.IsMadmate();
     public static bool IsNNK(this CustomRoles role) => role.IsNeutral() && !role.IsNK();
+    public static bool IsSpeedRole(this CustomRoles role)
+    {
+        return role is
+            CustomRoles.Flash or
+            CustomRoles.Alchemist or
+            CustomRoles.Tired;
+
+    }
     public static bool IsVanilla(this CustomRoles role)
     {
         return role is
