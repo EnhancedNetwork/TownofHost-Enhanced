@@ -234,7 +234,7 @@ public static class Divinator
                 
                 [CustomRoles.BountyHunter,
                 CustomRoles.Detective,
-                CustomRoles.FFF,
+                CustomRoles.Hater,
                 CustomRoles.Cleaner,
                 CustomRoles.Medusa,
                 CustomRoles.Psychic],
@@ -475,7 +475,7 @@ public static class Divinator
                    CustomRoles.Sheriff or
                    CustomRoles.Arsonist or
                    CustomRoles.Innocent or
-                   CustomRoles.FFF or
+                   CustomRoles.Hater or
                    CustomRoles.Greedier or
                    CustomRoles.Tracker
                    => "Impulse",

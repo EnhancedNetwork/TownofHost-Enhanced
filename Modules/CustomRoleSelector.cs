@@ -293,8 +293,8 @@ internal class CustomRoleSelector
             }
         }
 
-        /*  if (!rolesToAssign.Contains(CustomRoles.Lovers) && rolesToAssign.Contains(CustomRoles.FFF) || !rolesToAssign.Contains(CustomRoles.Ntr) && rolesToAssign.Contains(CustomRoles.FFF))
-              rolesToAssign.Remove(CustomRoles.FFF); 
+        /*  if (!rolesToAssign.Contains(CustomRoles.Lovers) && rolesToAssign.Contains(CustomRoles.Hater) || !rolesToAssign.Contains(CustomRoles.Ntr) && rolesToAssign.Contains(CustomRoles.Hater))
+              rolesToAssign.Remove(CustomRoles.Hater); 
               rolesToAssign.Add(CustomRoles.Jester); */
 
         /*   if (!Options.DisableSaboteur.GetBool()) // no longer hidden

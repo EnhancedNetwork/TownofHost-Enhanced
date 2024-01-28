@@ -549,8 +549,8 @@ public enum CustomRoles
     ShapeshifterTOHE,
 
     //Impostor
-    Arrogance, //arrogance
-    Anonymous, //anonymous
+    Arrogance,
+    Anonymous,
     AntiAdminer,
     Bard,
     Berserker,
@@ -572,7 +572,7 @@ public enum CustomRoles
     Devourer,
     Disperser,
     Eraser,
-    Escapist, //escapist
+    Escapist,
     EvilGuesser,
     EvilMini,
     EvilTracker,
@@ -584,7 +584,7 @@ public enum CustomRoles
     Inhibitor,
     Instigator,
     Kamikaze,
-    KillingMachine, //killing machine
+    KillingMachine,
     BallLightning, //Lightning
     Ludopath,
     Lurker,
@@ -724,7 +724,7 @@ public enum CustomRoles
     Totocalcio, //follower
     Glitch,
     God,
-    FFF, //hater
+    Hater,
     HexMaster,
     Huntsman,
     Imitator,
@@ -954,7 +954,7 @@ public enum AdditionalWinners
     Opportunist = CustomRoles.Opportunist,
     Executioner = CustomRoles.Executioner,
     Lawyer = CustomRoles.Lawyer,
-    FFF = CustomRoles.FFF,
+    Hater = CustomRoles.Hater,
     Provocateur = CustomRoles.Provocateur,
     Sunnyboy = CustomRoles.Sunnyboy,
     Witch = CustomRoles.NWitch,
