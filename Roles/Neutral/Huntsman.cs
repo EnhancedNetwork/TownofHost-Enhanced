@@ -55,7 +55,11 @@ public static class Huntsman
         playerIdList.Add(playerId);
         IsEnable = true;
 
-        _ = new LateTask(ResetTargets, 8f, "Huntsman Reset Targets");
+        _ = new LateTask(() =>
+        {
+            ResetTargets(isStartedGame: true);
+        }, 8f, "Huntsman Reset Targets");
+
         KCD = KillCooldown.GetFloat();
 
         if (!AmongUsClient.Instance.AmHost) return;
@@ -65,7 +69,7 @@ public static class Huntsman
     public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(HasImpostorVision.GetBool());
     public static void OnReportDeadBody()
     {
-        ResetTargets();
+        ResetTargets(isStartedGame: false);
     }
     public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
@@ -85,10 +89,12 @@ public static class Huntsman
         for (int i = 0; i < Targets.Count; i++) { byte playerId = Targets[i]; if (i != 0) output += ", "; output += Utils.GetPlayerById(playerId).GetRealName(); }
         return targetId != 0xff ? GetString("Targets") + $"<b><color=#ff1919>{output}</color></b>" : string.Empty;
     }
-    public static void ResetTargets()
+    public static void ResetTargets(bool isStartedGame = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
+
         Targets.Clear();
+
         int potentialTargetCount = Main.AllAlivePlayerControls.Length - 1;
         if (potentialTargetCount < 0) potentialTargetCount = 0;
         int maxLimit = Math.Min(potentialTargetCount, NumOfTargets.GetInt());
@@ -108,5 +114,8 @@ public static class Huntsman
                 break;
             }
         }
+
+        if (isStartedGame)
+            Utils.NotifyRoles(ForceLoop: true);
     }
 }

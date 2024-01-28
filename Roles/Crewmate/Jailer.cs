@@ -180,8 +180,6 @@ public static class Jailer
 
     public static void AfterMeetingTasks()
     {
-        if (!IsEnable) return;
-
         foreach (var pid in JailerHasExe.Keys)
         {
             var targetId = JailerTarget[pid];

@@ -16,6 +16,7 @@ namespace TOHE;
 [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CheckForEndVoting))]
 class CheckForEndVotingPatch
 {
+    public static string TempExileMsg;
     public static bool Prefix(MeetingHud __instance)
     {
         if (!AmongUsClient.Instance.AmHost) return true;
@@ -63,11 +64,15 @@ class CheckForEndVotingPatch
                     });
                     states = [.. statesList];
 
-                    if (AntiBlackout.NeutralOverrideExiledPlayer || AntiBlackout.ImpostorOverrideExiledPlayer)
+                    if (AntiBlackout.BlackOutIsActive)
                     {
-                        //__instance.RpcVotingComplete(states, null, true);
-                        __instance.AntiBlackRpcVotingComplete(states, voteTarget.Data, false);
                         ExileControllerWrapUpPatch.AntiBlackout_LastExiled = voteTarget.Data;
+                        //__instance.RpcVotingComplete(states, null, true);
+
+                        // Need check BlackOutIsActive again
+                        if (AntiBlackout.BlackOutIsActive)
+                            __instance.AntiBlackRpcVotingComplete(states, voteTarget.Data, false);
+
                         AntiBlackout.ShowExiledInfo = true;
                         ConfirmEjections(voteTarget.Data, true);
                     }
@@ -425,11 +430,15 @@ class CheckForEndVotingPatch
             exiledPlayer?.Object.SetRealKiller(null);
 
             //RPC
-            if (AntiBlackout.NeutralOverrideExiledPlayer || AntiBlackout.ImpostorOverrideExiledPlayer)
+            if (AntiBlackout.BlackOutIsActive)
             {
-                //__instance.RpcVotingComplete(states, null, true);
-                __instance.AntiBlackRpcVotingComplete(states, exiledPlayer, tie);
                 ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiledPlayer;
+                //__instance.RpcVotingComplete(states, null, true);
+
+                // Need check BlackOutIsActive again
+                if (AntiBlackout.BlackOutIsActive)
+                    __instance.AntiBlackRpcVotingComplete(states, exiledPlayer, tie);
+
                 if (exiledPlayer != null)
                 {
                     AntiBlackout.ShowExiledInfo = true;
@@ -592,6 +601,8 @@ class CheckForEndVotingPatch
 
     EndOfSession:
         name += "<size=0>";
+        TempExileMsg = name;
+
         _ = new LateTask(() =>
         {
             Main.DoBlockNameChange = true;
@@ -1081,21 +1092,13 @@ class MeetingHudStartPatch
         }
 
         // AntiBlackout Message
-        if (AntiBlackout.NeutralOverrideExiledPlayer)
+        if (AntiBlackout.BlackOutIsActive)
         {
             _ = new LateTask(() =>
             {
-                Utils.SendMessage(GetString("Warning.TemporaryAntiBlackoutFix"), 255, Utils.ColorString(Color.blue, GetString("AntiBlackoutFixTitle")), replay: true);
+                Utils.SendMessage(GetString("Warning.AntiBlackoutProtectionMsg"), 255, Utils.ColorString(Color.blue, GetString("AntiBlackoutProtectionTitle")), replay: true);
 
-            }, 5f, "Warning NeutralOverrideExiledPlayer");
-        }
-        else if (AntiBlackout.ImpostorOverrideExiledPlayer)
-        {
-            _ = new LateTask(() =>
-            {
-                Utils.SendMessage(GetString("Warning.OverrideExiledPlayer"), 255, Utils.ColorString(Color.red, GetString("DefaultSystemMessageTitle")), replay: true);
-
-            }, 5f, "Warning ImpostorOverrideExiledPlayer");
+            }, 5f, "Warning BlackOut Is Active");
         }
 
         if (AntiBlackout.ShowExiledInfo)
