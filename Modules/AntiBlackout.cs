@@ -11,7 +11,7 @@ public static class AntiBlackout
     ///<summary>
     /// Check num alive Impostors & Crewmates & NeutralKillers
     ///</summary>
-    public static bool BlackOutIsActive => CheckBlackOut();
+    public static bool BlackOutIsActive => !Options.DisableAntiBlackoutProtects.GetBool() && CheckBlackOut();
 
     ///<summary>
     /// Count alive players and check black out 

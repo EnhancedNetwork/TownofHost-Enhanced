@@ -2313,7 +2313,7 @@
   "Message.MaxPlayers": "Maximum players set to ",
   "AntiBlackoutProtectionTitle": "Anti Blackout",
   "Warning.AntiBlackoutProtectionMsg": "<size=120%>Warning:</size>\n\nBlack screen protection has been activated, due to the low number of alive Impostors, Crewmates and Neutral Killers",
-  "TemporaryAntiBlackoutFix": "Black Screen Prevention (Recommended)",
+  "DisableAntiBlackoutProtects": "Disable AntiBlackout Protects (recommended for testing)",
 
   "EnableGadientTags": "Enable Gradient Tags <color=#ff0000>(can cause disconnect issues)</color>",
   "Warning.GradientTags": "<color=#ff0000><size=150%>Warning:</size></color>\n\nHost has enabled gradient tags. This feature is not recommended to use because it can cause <b>disconnect issues</b>",
