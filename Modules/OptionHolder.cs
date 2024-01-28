@@ -2,7 +2,6 @@ using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TMPro;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
@@ -12,7 +11,6 @@ using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
-using static Unity.Profiling.ProfilerRecorder;
 
 namespace TOHE;
 
@@ -75,7 +73,6 @@ public static class Options
     public static Dictionary<CustomRoles, float> roleSpawnChances;
     public static Dictionary<CustomRoles, OptionItem> CustomRoleCounts;
     public static Dictionary<CustomRoles, OptionItem> CustomGhostRoleCounts;
-    public static bool trueghostenable;
     public static Dictionary<CustomRoles, StringOptionItem> CustomRoleSpawnChances;
     public static Dictionary<CustomRoles, IntegerOptionItem> CustomAdtRoleSpawnRate;
     public static readonly string[] rates =
