@@ -173,32 +173,24 @@ static class ExtendedPlayerControl
     public static void RpcGuardAndKill(this PlayerControl killer, PlayerControl target = null, int colorId = 0, bool forObserver = false)
     {
         if (target == null) target = killer;
+
         if (!forObserver && !MeetingStates.FirstMeeting)
             Main.AllPlayerControls
                 .Where(x => x.Is(CustomRoles.Observer) && killer.PlayerId != x.PlayerId)
                 .Do(x => x.RpcGuardAndKill(target, colorId, true));
-        
+
         // Host
         if (killer.AmOwner)
         {
-            killer.ProtectPlayer(target, colorId);
-            killer.MurderPlayer(target, MurderResultFlags.FailedProtected | MurderResultFlags.DecisionByHost);
+            killer.MurderPlayer(target, MurderResultFlags.FailedProtected);
         }
         // Other Clients
         if (killer.PlayerId != 0)
         {
-            var sender = CustomRpcSender.Create("GuardAndKill Sender", SendOption.None);
-            sender.StartMessage(killer.GetClientId());
-            sender.StartRpc(killer.NetId, (byte)RpcCalls.ProtectPlayer)
-                .WriteNetObject(target)
-                .Write(colorId)
-                .EndRpc();
-            sender.StartRpc(killer.NetId, (byte)RpcCalls.MurderPlayer)
-                .WriteNetObject(target)
-                .Write((int)(MurderResultFlags.FailedProtected | MurderResultFlags.DecisionByHost))
-                .EndRpc();
-            sender.EndMessage();
-            sender.SendMessage();
+            var writer = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable);
+            writer.WriteNetObject(target);
+            writer.Write((int)MurderResultFlags.FailedProtected);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
     }
     public static void SetKillCooldownV2(this PlayerControl player, float time = -1f)
@@ -275,13 +267,13 @@ static class ExtendedPlayerControl
     {
         if (seer.AmOwner)
         {
-            killer.MurderPlayer(target, ResultFlags);
+            killer.MurderPlayer(target, MurderResultFlags.Succeeded);
         }
         else
         {
-            MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable, seer.GetClientId());
+            MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.None, seer.GetClientId());
             messageWriter.WriteNetObject(target);
-            messageWriter.Write((int)ResultFlags);
+            messageWriter.Write((int)MurderResultFlags.Succeeded);
             AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
         }
     } //Must provide seer, target
@@ -417,7 +409,7 @@ static class ExtendedPlayerControl
     }
     public static void ResetPlayerCam(this PlayerControl pc, float delay = 0f)
     {
-        if (pc == null || !AmongUsClient.Instance.AmHost || pc.AmOwner) return;
+        if (pc == null || !AmongUsClient.Instance.AmHost || pc.AmOwner || pc.IsModClient()) return;
 
         var systemtypes = Utils.GetCriticalSabotageSystemType();
 
@@ -1464,9 +1456,9 @@ static class ExtendedPlayerControl
     public static bool Is(this CustomRoles trueRole, CustomRoles checkRole) { return trueRole == checkRole; }
     public static bool IsAlive(this PlayerControl target)
     {
-        //ロビーなら生きている
-        //targetがnullならば切断者なので生きていない
-        //targetがnullでなく取得できない場合は登録前なので生きているとする
+        //In lobby all is alive
+        //If target is null, it is not alive
+        //If target is not null and target is dead
         if (target == null || target.Is(CustomRoles.GM)) return false;
         return GameStates.IsLobby || (target != null && (!Main.PlayerStates.TryGetValue(target.PlayerId, out var ps) || !ps.IsDead));
     }

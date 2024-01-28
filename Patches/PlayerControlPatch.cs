@@ -1286,7 +1286,7 @@ class CheckMurderPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
 class MurderPlayerPatch
 {
-    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] MurderResultFlags resultFlags)
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] MurderResultFlags resultFlags, ref bool __state)
     {
         Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}{(target.IsProtected() ? "(Protected)" : "")}, flags : {resultFlags}", "MurderPlayer Prefix");
 
@@ -1295,10 +1295,54 @@ class MurderPlayerPatch
             RandomSpawn.CustomNetworkTransformPatch.NumOfTP[__instance.PlayerId] = 3;
         }
 
-        if (!target.IsProtected() && !Doppelganger.DoppelVictim.ContainsKey(target.PlayerId) && !Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
+        var isProtectedByClient = resultFlags.HasFlag(MurderResultFlags.DecisionByHost) && target.IsProtected();
+        var isProtectedByHost = resultFlags.HasFlag(MurderResultFlags.FailedProtected);
+        var isFailed = resultFlags.HasFlag(MurderResultFlags.FailedError);
+        var isSucceeded = __state = !isProtectedByClient && !isProtectedByHost && !isFailed;
+        
+        if (isProtectedByClient)
         {
-            Camouflage.ResetSkinAfterDeathPlayers.Add(target.PlayerId);
-            Camouflage.RpcSetSkin(target, ForceRevert: true);
+            Logger.Info("The kill will fail because it is protected", "MurderPlayer Prefix");
+        }
+        if (isProtectedByHost)
+        {
+            Logger.Info("The kill was canceled by the host because it is protected", "MurderPlayer Prefix");
+        }
+        if (isFailed)
+        {
+            Logger.Info("The kill was cancelled by the host", "MurderPlayer Prefix");
+        }
+
+        if (isSucceeded)
+        {
+            if (target.shapeshifting)
+            {
+                // During shapeshift animation
+                // Delay 1s to account for animation time, plus +0.5s to account for lag with the client
+                _ = new LateTask(
+                    () =>
+                    {
+                        if (GameStates.IsInTask)
+                        {
+                            target.RpcShapeshift(target, false);
+                        }
+                    },
+                    1.5f, "Revert Shapeshift After Murder");
+            }
+            else
+            {
+                if (Main.CheckShapeshift.TryGetValue(target.PlayerId, out var shapeshifting) && shapeshifting)
+                {
+                    //Shapeshift revert
+                    target.RpcShapeshift(target, false);
+                }
+            }
+
+            if (!target.IsProtected() && !Doppelganger.DoppelVictim.ContainsKey(target.PlayerId) && !Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
+            {
+                Camouflage.ResetSkinAfterDeathPlayers.Add(target.PlayerId);
+                Camouflage.RpcSetSkin(target, ForceRevert: true, RevertToDefault: true);
+            }
         }
 
         if (AmongUsClient.Instance.AmHost)
@@ -1316,8 +1360,12 @@ class MurderPlayerPatch
         }
         return true;
     }
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target/*, [HarmonyArgument(1)] MurderResultFlags resultFlags*/)
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target/*, [HarmonyArgument(1)] MurderResultFlags resultFlags*/, bool __state)
     {
+        if (!__state)
+        {
+            return;
+        }
         if (GameStates.IsHideNSeek) return;
         if (target.AmOwner) RemoveDisableDevicesPatch.UpdateDisableDevices();
         if (!target.Data.IsDead || !AmongUsClient.Instance.AmHost) return;

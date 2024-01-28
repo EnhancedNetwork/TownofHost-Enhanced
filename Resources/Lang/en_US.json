@@ -2245,6 +2245,7 @@
   "MerchantNotifyBribery": "Inform <color=#D27D2D>Merchant</color> when a killer gets bribed",
   "MerchantTargetCrew": "Can sell to <color=#8cffff>Crewmates</color>",
   "MerchantTargetImpostor": "Can sell to <color=#ff1919>Impostors</color>",
+
   "MerchantTargetNeutral": "Can sell to <color=#7f8c8d>Neutrals</color>",
   "MerchantSellHelpful": "Can sell <color=#8cffff>Helpful</color> Add-ons",
   "MerchantSellHarmful": "Can sell <color=#ff1919>Harmful</color> Add-ons",
@@ -2315,9 +2316,6 @@
   "Message.YTPlanNotice": "Note: The [YouTuber Plan] is enabled in this lobby, which means the Host can specify their role in the next game to make it easier to get content. In case the Host abuses this feature, please exit the game or report it.\nCurrent Creator Credentials:",
   "Message.OnlyCanBeUsedByHost": "<color=#ff1919><size=150%><b>ERROR</b></size></color>\n\n<color=#ff1919>This command may only be used by the host.</color>",
   "Message.MaxPlayers": "Maximum players set to ",
-  "Warning.TemporaryAntiBlackoutFix": "<size=150%>Warning:</size>\n\nThe setting <b>Black Screen Prevention</b> is enabled.\nAll ejections will be displayed as a tie because there are more than one Neutral Killers in game, but will not effect the outcome of the ejection.\n\nThis is recommended to keep enabled to prevent black screens.",
-  "TemporaryAntiBlackoutFix": "Black Screen Prevention (Recommended)",
-  "AntiBlackoutFixTitle": "ANTI BLACKOUT FIX",
 
   "EnableGadientTags": "Enable Gradient Tags <color=#ff0000>(can cause disconnect issues)</color>",
   "Warning.GradientTags": "<color=#ff0000><size=150%>Warning:</size></color>\n\nHost has enabled gradient tags. This feature is not recommended to use because it can cause <b>disconnect issues</b>",
@@ -2326,8 +2324,12 @@
   "Warning.BrokenVentsInDleksSendInGame": "Warning! The vents on this map are broken",
   "Warning.BrokenVentsInDleksMessage": "<b>On the «dlekS ehT» map the vents are broken</b>, they cannot be fixed in host-only mods, this is a vanilla bug, <b>so any roles using vent as an ability will not spawns on this map</b>",
 
-  "Warning.OverrideExiledPlayer": "Warning: Since the number of Impostors is set to 1, in order to avoid black screen, the voting screen will always show as a tied vote or a skip vote (only affects the visual, not the voting results). Please set more number of Impostors to avoid this problem.",
+  "AntiBlackoutProtectionTitle": "Anti Blackout",
+  "Warning.AntiBlackoutProtectionMsg": "<size=110%>Warning:</size>\n\r<b>Black screen protection has been activated,</b> due to the low number of alive <color=#ff1919>Impostors</color>, <color=#8cffff>Crewmates</color> and <color=#7f8c8d>Neutral Killers</color>\n<b>The voting screen will show as a tied vote (only affects the visual, not the results voting)</b>\n<size=70%>Modded players will see voting screen normaly</size>",
   "Warning.ShowAntiBlackExiledPlayer": "<b>Last meeting triggered Black Screen Prevention!\nFollowing is the information of the player exiled in last meeting.</b>\n",
+  "DisableAntiBlackoutProtects": "Disable AntiBlackout Protects (Recommended for testing)",
+
+
   "Warning.InvalidRpc": "Kicked <b>{0}</b> because an invalid RPC was received.\nPlease check that no mods other than TOHE installed.",
   "Warning.NoModHost": "TOHE is not installed on the host",
   "Warning.MismatchedVersion": "<b>{0}</b> has a different version of <b>{1}</b>",
@@ -2335,7 +2337,6 @@
   "Warning.CanNotUseBepInExConsole": "The use of the console is prohibited\nso your console has been off",
   "Error.MeetingException": "Error: {0}\r\nPlease use SHIFT+M+ENTER to end the meeting",
   "Error.InvalidRoleAssignment": "Error: Invalid role found for a player during role assignment({0})",
-  "NeutralKillingBlackoutWarning": "Maximum neutral killers is above 1 and black screen prevention is disabled.\nUnmodded players will likely experience black screens.",
   "Error.InvalidColor": "Error: Only default colors are available",
   "Error.InvalidColorPreventStart": "Other players are not allowed to use other colors, otherwise it will result in a serious error",
   "ErrorLevel1": "Bugs may occur.",
