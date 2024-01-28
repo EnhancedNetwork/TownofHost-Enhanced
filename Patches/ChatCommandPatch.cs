@@ -1168,7 +1168,7 @@ internal class ChatCommands
             "冤罪師" or "冤罪师" or "冤罪" => GetString("Innocent"),
             "鵜鶘" or "鹈鹕" => GetString("Pelican"),
             "革命家" or "革命者" => GetString("Revolutionist"),
-            "單身狗" or "FFF团" or "fff" or "FFF" or "fff团" => GetString("Hater"),
+            "單身狗" => GetString("Hater"),
             "柯南" => GetString("Konan"),
             "玩家" => GetString("Gamer"),
             "潛藏者" or "潜藏" => GetString("DarkHide"),
