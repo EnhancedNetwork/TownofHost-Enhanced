@@ -1460,7 +1460,7 @@
   "FPSGame": "FPS: ",
   "Cooldown": "Cooldown",
   "KillCooldown": "Kill Cooldown",
-  "AbilityCooldown":  "Ability Cooldown",
+  "AbilityCooldown": "Ability Cooldown",
   "VentCooldown": "Vent Cooldown",
   "ControlCooldown": "Control Cooldown",
   "PoisonCooldown": "Poison Cooldown",
@@ -2315,7 +2315,7 @@
   "Message.YTPlanNotice": "Note: The [YouTuber Plan] is enabled in this lobby, which means the Host can specify their role in the next game to make it easier to get content. In case the Host abuses this feature, please exit the game or report it.\nCurrent Creator Credentials:",
   "Message.OnlyCanBeUsedByHost": "<color=#ff1919><size=150%><b>ERROR</b></size></color>\n\n<color=#ff1919>This command may only be used by the host.</color>",
   "Message.MaxPlayers": "Maximum players set to ",
-  "Message.GhostRoleInfo":  "<size=90%><b>Ghost Role Info</b></size>\nHiya! A little bit about ghost roles...\n\nGhost roles drastically impact the game, so not recommened for smaller lobbies, if you're unfamiliar.\n\n<b>Spawning:</b>\nGhost-roles only spawn after death, the first x people from (team) to die get them. \"Always\" role are prioritized, if they are exhausted then \"On\" roles get assigned..",
+  "Message.GhostRoleInfo": "<size=90%><b>Ghost Role Info</b></size>\nHiya! A little bit about ghost roles...<size=75%>\n\nGhost roles drastically impact the game, so not recommended for smaller lobbies, if you're unfamiliar.\n\n<b>Spawning:</b>\nGhost-roles only spawn after death, the first x people from (team) to die get them.\n\"Always\" role are prioritized, if they are exhausted then \"On\" roles get assigned..</size>",
   "Warning.TemporaryAntiBlackoutFix": "<size=150%>Warning:</size>\n\nThe setting <b>Black Screen Prevention</b> is enabled.\nAll ejections will be displayed as a tie because there are more than one Neutral Killers in game, but will not effect the outcome of the ejection.\n\nThis is recommended to keep enabled to prevent black screens.",
   "TemporaryAntiBlackoutFix": "Black Screen Prevention (Recommended)",
   "AntiBlackoutFixTitle": "ANTI BLACKOUT FIX",
@@ -3459,7 +3459,7 @@
   "RoleType.CrewPower": "<color=#ffff00>★</color> Crewmate <color=#ffff00>Power</color> Roles",
   "RoleType.CrewKilling": "<color=#ff1919>★</color> Crewmate <color=#ff1919>Killing</color> Roles",
   "RoleType.CrewBasic": "<color=#FF6600>★</color> Crewmate <color=#FF6600>Basic</color> Roles",
-  "RoleType.CrewGhost": "<color=#afc3c9>★</color> Crewmate <color=#afc3c9>Ghost</color> Roles\n/ghostinfo",
+  "RoleType.CrewGhost": "<color=#afc3c9>★</color> Crewmate <color=#afc3c9>Ghost</color> Roles | /ghostinfo",
   "RoleType.NeutralEvil": "<color=#912900>★</color> Neutral <color=#912900>Evil</color> Roles",
   "RoleType.NeutralBenign": "<color=#046300>★</color> Neutral <color=#046300>Benign</color> Roles",
   "RoleType.NeutralChaos": "<color=#D4AF37>★</color> Neutral <color=#D4AF37>Chaos</color> Roles",
@@ -3749,5 +3749,5 @@
 
   "WinnerRoleText.PlagueDoctor": "Plague Scientist Wins!",
 
-  "WardenIncreaseSpeed":  "Increase Speed By"
+  "WardenIncreaseSpeed": "Increase Speed By"
 }
