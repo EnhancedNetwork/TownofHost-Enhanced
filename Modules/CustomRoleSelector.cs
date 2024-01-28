@@ -425,7 +425,7 @@ internal class CustomRoleSelector
     public static void GhostAssignPatch(PlayerControl player)
     {
         var getplrRole = player.GetCustomRole();
-        if (!CustomRolesHelper.IsCrewmate(getplrRole) || getplrRole == CustomRoles.Retributionist || GameStates.IsHideNSeek) return; //might make a RestrictGhostRole method later if needed
+        if (!CustomRolesHelper.IsCrewmate(getplrRole) || getplrRole == CustomRoles.Retributionist || GameStates.IsHideNSeek || CustomRolesHelper.IsGhostRole(getplrRole)) return; //might make a RestrictGhostRole method later if needed
         GhostGetPreviousRole.Add(player.PlayerId, getplrRole);
 
         List<CustomRoles> HauntedList = [];
