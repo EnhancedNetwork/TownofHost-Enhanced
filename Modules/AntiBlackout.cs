@@ -56,16 +56,18 @@ public static class AntiBlackout
         if (numAliveNeutralKillers >= 1)
         {
             // if all Crewmates is dead
-            if (numAliveCrewmates <= 0)
-                BlackOutIsActive = true;
+            BlackOutIsActive = numAliveCrewmates <= 0;
 
             // if all Impostors is dead and neutral killers > or = num alive crewmates
-            if (numAliveImpostors <= 0 && (numAliveNeutralKillers >= numAliveCrewmates))
-                BlackOutIsActive = true;
+            BlackOutIsActive = numAliveImpostors <= 0 && (numAliveNeutralKillers >= numAliveCrewmates);
 
             // if num alive Impostors > or = num alive Crewmates/Neutral killers
-            if (numAliveImpostors >= (numAliveNeutralKillers + numAliveCrewmates))
-                BlackOutIsActive = true;
+            BlackOutIsActive = numAliveImpostors >= (numAliveNeutralKillers + numAliveCrewmates);
+        }
+        else
+        {
+            // if the number of living players is very small
+            BlackOutIsActive = (numAliveImpostors + numAliveCrewmates) <= 2;
         }
 
         Logger.Info($" {BlackOutIsActive}", "BlackOut Is Active");
