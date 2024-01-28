@@ -49,10 +49,10 @@ public static class AntiBlackout
             BlackOutIsActive = true;
 
         // if all Impostors is dead and neutral killers > or = num alive crewmates
-        if ((numAliveNeutralKillers >= numAliveCrewmates) && numAliveImpostors == 0)
+        if (numAliveImpostors <= 0 && (numAliveNeutralKillers >= numAliveCrewmates))
             BlackOutIsActive = true;
 
-        // if num alive Impostors > or = num alive non-impostors players
+        // if num alive Impostors > or = num alive Crewmates/Neutral killers
         if (numAliveImpostors >= (numAliveNeutralKillers + numAliveCrewmates))
             BlackOutIsActive = true;
 
