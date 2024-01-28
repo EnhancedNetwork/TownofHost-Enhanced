@@ -18,7 +18,7 @@ public class Warden
         AbilityCooldown = FloatOptionItem.Create(Id + 10, "AbilityCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Warden])
             .SetValueFormat(OptionFormat.Seconds);
         IncreaseSpeed = FloatOptionItem.Create(Id + 11, "WardenIncreaseSpeed", new(1f, 5f, 0.5f), 2.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Warden])
-            .SetValueFormat(OptionFormat.Multiplier);
+            .SetValueFormat(OptionFormat.Times);
     }
 
     public static bool OnCheckProtect(PlayerControl killer, PlayerControl target)
