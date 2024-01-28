@@ -1859,7 +1859,7 @@ public static class CheckShapeShiftPatch
                 return false;
 
             case CustomRoles.Disperser:
-                Disperser.DispersePlayers(player, shapeshiftIsHiddenn: true);
+                Disperser.DispersePlayers(player, shapeshiftIsHidden: true);
                 player.RejectShapeshiftAndReset();
                 return false;
         }
@@ -2081,7 +2081,7 @@ class ShapeshiftPatch
                     break;
                 case CustomRoles.Disperser:
                     if (shapeshifting)
-                        Disperser.DispersePlayers(shapeshifter, shapeshiftIsHiddenn: false);
+                        Disperser.DispersePlayers(shapeshifter, shapeshiftIsHidden: false);
                     break;
                 case CustomRoles.Dazzler:
                     if (shapeshifting)

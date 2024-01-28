@@ -25,11 +25,11 @@ public static class Disperser
         AURoleOptions.ShapeshifterCooldown = DisperserShapeshiftCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = DisableShapeshiftAnimations.GetBool() ? 1f : DisperserShapeshiftDuration.GetFloat();
     }
-    public static void DispersePlayers(PlayerControl shapeshifter, bool shapeshiftIsHiddenn)
+    public static void DispersePlayers(PlayerControl shapeshifter, bool shapeshiftIsHidden)
     {
         foreach (var pc in PlayerControl.AllPlayerControls)
         {
-            if ((!shapeshiftIsHiddenn && shapeshifter.PlayerId == pc.PlayerId) || !pc.CanBeTeleported())
+            if ((!shapeshiftIsHidden && shapeshifter.PlayerId == pc.PlayerId) || !pc.CanBeTeleported())
             {
                 if (!pc.Is(CustomRoles.Disperser) && pc.IsAlive())
                     pc.Notify(ColorString(GetRoleColor(CustomRoles.Disperser), string.Format(GetString("ErrorTeleport"), pc.GetRealName())));
