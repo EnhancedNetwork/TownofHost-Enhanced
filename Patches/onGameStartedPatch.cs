@@ -1192,10 +1192,6 @@ internal class SelectRolesPatch
         Main.PlayerStates[player.PlayerId].SetMainRole(role);
         Logger.Info($"Registered Role： {player?.Data?.PlayerName} => {role}", "AssignRoles");
 
-        foreach (var ghost in Options.CustomGhostRoleCounts.Keys)
-        {
-            Logger.Info($"{ghost} exist in customghostroles", "CustomGhostCount");
-        }
         SetColorPatch.IsAntiGlitchDisabled = false;
     }
     private static void ForceAssignRole(CustomRoles role, List<PlayerControl> AllPlayers, CustomRpcSender sender, RoleTypes BaseRole, RoleTypes hostBaseRole = RoleTypes.Crewmate, bool skip = false, int Count = -1)

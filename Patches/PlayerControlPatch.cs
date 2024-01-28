@@ -54,39 +54,36 @@ class CheckProtectPatch
         if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek) return false;
         Logger.Info("CheckProtect occurs: " + __instance.GetNameWithRole() + "=>" + target.GetNameWithRole(), "CheckProtect");
         var angel = __instance;
-        
-        if (__instance.Is(CustomRoles.EvilSpirit))
-        {
-            if (target.Is(CustomRoles.Spiritcaller))
-            {
-                Spiritcaller.ProtectSpiritcaller();
-            }
-            else
-            {
-                Spiritcaller.HauntPlayer(target);
-            }
+        var getAngelRole = angel.GetCustomRole();
 
-            __instance.RpcResetAbilityCooldown();
-            return true;
-        }
-
-        if (angel.Is(CustomRoles.Warden))
+        switch (getAngelRole)
         {
-            return Warden.OnCheckProtect(angel, target);
-        }
-
-        if (__instance.Is(CustomRoles.Sheriff))
-        {
-            if (__instance.Data.IsDead)
-            {
-                Logger.Info("Blocked protection", "CheckProtect");
+            case CustomRoles.EvilSpirit:
+                if (target.Is(CustomRoles.Spiritcaller))
+                {
+                    Spiritcaller.ProtectSpiritcaller();
+                }
+                else
+                {
+                    Spiritcaller.HauntPlayer(target);
+                    
+                }
+                angel.RpcResetAbilityCooldown();
                 return false;
-            }
+
+            case CustomRoles.Warden:
+                return Warden.OnCheckProtect(angel, target);
+
+            default:
+                break;
         }
-
-
-
-
+        
+        if (angel.Is(CustomRoles.Sheriff) && angel.Data.IsDead)
+        {
+                Logger.Info("Blocked protection", "CheckProtect");
+                return false; // What is this for? sheriff dosen't become guardian angel lmao
+        }
+        
         return true;
     }
 }
