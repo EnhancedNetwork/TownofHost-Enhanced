@@ -40,8 +40,8 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0126.151.03"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "1.5.1 Dev 3";
+    public const string PluginVersion = "2024.0128.151.04"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "1.5.1 Dev 4";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
 
     /******************* Change one of the three variables to true before making a release. *******************/
@@ -847,7 +847,7 @@ public enum CustomRoles
     Reach,
     Rebound,
     Recruit,
-    Repairman,
+    //Repairman,
     Rogue,
     DualPersonality, //Schizophrenic
     Seer,
