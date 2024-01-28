@@ -16,8 +16,6 @@ namespace TOHE;
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameEnd))]
 class EndGamePatch
 {
-
-    
     public static Dictionary<byte, string> SummaryText = [];
     public static string KillLog = "";
     public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ref EndGameResult endGameResult)
@@ -25,7 +23,7 @@ class EndGamePatch
         GameStates.InGame = false;
         foreach (var pvc in CustomRoleSelector.GhostGetPreviousRole.Keys) // Sets role back to original so it shows up in /l results.
         {
-            // Will add an exception handler if ghost-role has new win reason
+            // Currently not needed, but later might add exception handler.
             CustomRoles prevrole = CustomRoleSelector.GhostGetPreviousRole[pvc];
             Main.PlayerStates[pvc].SetMainRole(prevrole);
             
