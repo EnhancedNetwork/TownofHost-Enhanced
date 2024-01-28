@@ -10,6 +10,7 @@ namespace TOHE.Roles.Neutral
     public static class Solsticer
     {
         private static readonly int Id = 26200;
+        public static bool IsEnable = false;
 
         public static OptionItem EveryOneKnowSolsticer;
         public static OptionItem SolsticerCanVent;
@@ -54,11 +55,13 @@ namespace TOHE.Roles.Neutral
             Count = 0;
             CanGuess = true;
             MurderMessage = "";
+            IsEnable = false;
         }
         
         public static void Add(byte playerId)
         {
             playerid = playerId;
+            IsEnable = true;
         }
         public static void ApplyGameOptions()
         {
