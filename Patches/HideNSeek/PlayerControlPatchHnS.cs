@@ -111,7 +111,7 @@ class FixedUpdateInHidenSeekPatch
         }
         catch (Exception ex)
         {
-            Logger.Error($"Error for {__instance.GetNameWithRole().RemoveHtmlTags()}:  {ex}", "FixedUpdatePatch");
+            Logger.Error($"Error for {__instance.GetNameWithRole().RemoveHtmlTags()}:  {ex}", "FixedUpdateInHidenSeekPatch");
         }
     }
 
