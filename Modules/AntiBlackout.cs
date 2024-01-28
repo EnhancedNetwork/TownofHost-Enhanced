@@ -18,9 +18,9 @@ public static class AntiBlackout
     ///</summary>
     public static bool CheckBlackOut()
     {
-        List<byte> Impostors = [];
-        List<byte> Crewmates = [];
-        List<byte> NeutralKillers = [];
+        HashSet<byte> Impostors = [];
+        HashSet<byte> Crewmates = [];
+        HashSet<byte> NeutralKillers = [];
 
         foreach (var pc in Main.AllAlivePlayerControls)
         {
