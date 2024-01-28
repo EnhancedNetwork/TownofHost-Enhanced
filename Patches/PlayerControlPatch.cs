@@ -1860,7 +1860,6 @@ public static class CheckShapeShiftPatch
 
             case CustomRoles.Disperser:
                 Disperser.DispersePlayers(player, shapeshiftIsHiddenn: true);
-                player.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 player.RejectShapeshiftAndReset();
                 return false;
         }
