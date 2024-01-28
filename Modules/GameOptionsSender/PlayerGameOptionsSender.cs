@@ -308,7 +308,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.EngineerInVentMaxTime = 1;
                 AURoleOptions.EngineerCooldown = Options.BastionBombCooldown.GetFloat();
                 break;
-            case CustomRoles.FFF:
+            case CustomRoles.Hater:
             case CustomRoles.Pursuer:
                 opt.SetVision(true);
                 break;

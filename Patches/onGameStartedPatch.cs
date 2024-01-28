@@ -156,6 +156,9 @@ internal class ChangeRoleSettings
             Main.currentDrawTarget = byte.MaxValue;
             Main.PlayerColors = [];
 
+            // Clear last exiled
+            ExileControllerWrapUpPatch.AntiBlackout_LastExiled = null;
+
             //名前の記録
             //Main.AllPlayerNames = [];
             RPC.SyncAllPlayerNames();
@@ -356,7 +359,7 @@ internal class ChangeRoleSettings
             Blackmailer.Init();
             Spy.Init();
             Oiiai.Init();
-            FFF.Init();
+            Hater.Init();
             Instigator.Init();
             OverKiller.Init();
             Quizmaster.Init();
@@ -554,7 +557,7 @@ internal class SelectRolesPatch
                 AssignCustomRole(kv.Value, kv.Key);
             }
 
-            if (CustomRoles.Lovers.IsEnable() && (CustomRoles.FFF.IsEnable() ? -1 : rd.Next(1, 100)) <= Options.LoverSpawnChances.GetInt()) AssignLoversRolesFromList();
+            if (CustomRoles.Lovers.IsEnable() && (CustomRoles.Hater.IsEnable() ? -1 : rd.Next(1, 100)) <= Options.LoverSpawnChances.GetInt()) AssignLoversRolesFromList();
             foreach (var role in AddonRolesList)
             {
                 if (rd.Next(1, 100) <= (Options.CustomAdtRoleSpawnRate.TryGetValue(role, out var sc) ? sc.GetFloat() : 0))
@@ -1054,8 +1057,8 @@ internal class SelectRolesPatch
                     case CustomRoles.Crewpostor:
                         Main.CrewpostorTasksDone[pc.PlayerId] = 0;
                         break;
-                    case CustomRoles.FFF:
-                        FFF.Add(pc.PlayerId);
+                    case CustomRoles.Hater:
+                        Hater.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Enigma:
                         Enigma.Add(pc.PlayerId);
@@ -1258,7 +1261,7 @@ internal class SelectRolesPatch
                 || pc.Is(CustomRoles.Ntr) 
                 || pc.Is(CustomRoles.Dictator) 
                 || pc.Is(CustomRoles.God) 
-                || pc.Is(CustomRoles.FFF) 
+                || pc.Is(CustomRoles.Hater) 
                 || pc.Is(CustomRoles.Sunnyboy)
                 || pc.Is(CustomRoles.Bomber)
                 || pc.Is(CustomRoles.Nuker) 

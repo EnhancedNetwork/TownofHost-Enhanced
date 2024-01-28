@@ -228,7 +228,7 @@ static class CustomRolesHelper
             CustomRoles.Witness => RoleTypes.Impostor,
             CustomRoles.Pursuer => RoleTypes.Impostor,
             CustomRoles.Revolutionist => RoleTypes.Impostor,
-            CustomRoles.FFF => RoleTypes.Impostor,
+            CustomRoles.Hater => RoleTypes.Impostor,
             CustomRoles.Medic => RoleTypes.Impostor,
             CustomRoles.Gamer => RoleTypes.Impostor,
             CustomRoles.HexMaster => RoleTypes.Impostor,
@@ -418,7 +418,7 @@ static class CustomRolesHelper
             CustomRoles.Revolutionist or
             CustomRoles.Provocateur or
             CustomRoles.Gamer or
-            CustomRoles.FFF or
+            CustomRoles.Hater or
             CustomRoles.Workaholic or
             CustomRoles.Solsticer or
         //    CustomRoles.Pelican or
@@ -520,7 +520,7 @@ static class CustomRolesHelper
         return role is
             CustomRoles.Amnesiac or
             CustomRoles.Totocalcio or
-            CustomRoles.FFF or
+            CustomRoles.Hater or
             CustomRoles.Lawyer or
             CustomRoles.Imitator or
             CustomRoles.Maverick or
@@ -560,7 +560,7 @@ static class CustomRolesHelper
         return role is
             CustomRoles.Amnesiac or
             CustomRoles.Totocalcio or
-            CustomRoles.FFF or
+            CustomRoles.Hater or
             CustomRoles.Imitator or
             CustomRoles.Lawyer or
             CustomRoles.Maverick or
@@ -804,7 +804,7 @@ static class CustomRolesHelper
             CustomRoles.PlagueDoctor or
             CustomRoles.Traitor or
             CustomRoles.Revolutionist or
-            CustomRoles.FFF or
+            CustomRoles.Hater or
             CustomRoles.Konan or
             CustomRoles.Gamer or
             CustomRoles.Maverick or
@@ -892,7 +892,7 @@ static class CustomRolesHelper
             CustomRoles.Totocalcio or
             CustomRoles.Imitator or
             CustomRoles.Farseer or
-            CustomRoles.FFF or
+            CustomRoles.Hater or
             CustomRoles.SwordsMan or
             CustomRoles.CursedSoul or
             CustomRoles.Admirer or
@@ -941,7 +941,7 @@ static class CustomRolesHelper
             CustomRoles.SerialKiller or
             CustomRoles.Pelican or
             CustomRoles.Revolutionist or
-            CustomRoles.FFF or
+            CustomRoles.Hater or
             CustomRoles.Traitor or
             CustomRoles.Konan or
             CustomRoles.Gamer or
@@ -991,7 +991,7 @@ static class CustomRolesHelper
             CustomRoles.Agitater or
             CustomRoles.PlagueBearer or
             CustomRoles.Pirate or
-            CustomRoles.FFF or
+            CustomRoles.Hater or
             CustomRoles.Totocalcio or
             CustomRoles.Provocateur or
             CustomRoles.DarkHide or
@@ -1395,7 +1395,7 @@ static class CustomRolesHelper
 
             case CustomRoles.Ntr:
                 if (pc.Is(CustomRoles.Lovers)
-                    || pc.Is(CustomRoles.FFF)
+                    || pc.Is(CustomRoles.Hater)
                     || pc.Is(CustomRoles.GuardianAngelTOHE)
                     || pc.Is(CustomRoles.RuthlessRomantic)
                     || pc.Is(CustomRoles.Romantic)

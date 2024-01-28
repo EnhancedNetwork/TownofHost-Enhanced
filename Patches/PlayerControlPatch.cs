@@ -538,8 +538,8 @@ class CheckMurderPatch
                         target.RPCPlayCustomSound("Eat");
                     }
                     return false;
-                case CustomRoles.FFF:
-                    if (!FFF.OnCheckMurder(killer, target)) return false;
+                case CustomRoles.Hater:
+                    if (!Hater.OnCheckMurder(killer, target)) return false;
                     break;
                 case CustomRoles.Gamer:
                     Gamer.CheckGamerMurder(killer, target);
@@ -1286,7 +1286,7 @@ class CheckMurderPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
 class MurderPlayerPatch
 {
-    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] MurderResultFlags resultFlags)
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] MurderResultFlags resultFlags, ref bool __state)
     {
         Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}{(target.IsProtected() ? "(Protected)" : "")}, flags : {resultFlags}", "MurderPlayer Prefix");
 
@@ -1295,10 +1295,54 @@ class MurderPlayerPatch
             RandomSpawn.CustomNetworkTransformPatch.NumOfTP[__instance.PlayerId] = 3;
         }
 
-        if (!target.IsProtected() && !Doppelganger.DoppelVictim.ContainsKey(target.PlayerId) && !Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
+        var isProtectedByClient = resultFlags.HasFlag(MurderResultFlags.DecisionByHost) && target.IsProtected();
+        var isProtectedByHost = resultFlags.HasFlag(MurderResultFlags.FailedProtected);
+        var isFailed = resultFlags.HasFlag(MurderResultFlags.FailedError);
+        var isSucceeded = __state = !isProtectedByClient && !isProtectedByHost && !isFailed;
+        
+        if (isProtectedByClient)
         {
-            Camouflage.ResetSkinAfterDeathPlayers.Add(target.PlayerId);
-            Camouflage.RpcSetSkin(target, ForceRevert: true);
+            Logger.Info("The kill will fail because it is protected", "MurderPlayer Prefix");
+        }
+        if (isProtectedByHost)
+        {
+            Logger.Info("The kill was canceled by the host because it is protected", "MurderPlayer Prefix");
+        }
+        if (isFailed)
+        {
+            Logger.Info("The kill was cancelled by the host", "MurderPlayer Prefix");
+        }
+
+        if (isSucceeded)
+        {
+            if (target.shapeshifting)
+            {
+                // During shapeshift animation
+                // Delay 1s to account for animation time, plus +0.5s to account for lag with the client
+                _ = new LateTask(
+                    () =>
+                    {
+                        if (GameStates.IsInTask)
+                        {
+                            target.RpcShapeshift(target, false);
+                        }
+                    },
+                    1.5f, "Revert Shapeshift After Murder");
+            }
+            else
+            {
+                if (Main.CheckShapeshift.TryGetValue(target.PlayerId, out var shapeshifting) && shapeshifting)
+                {
+                    //Shapeshift revert
+                    target.RpcShapeshift(target, false);
+                }
+            }
+
+            if (!target.IsProtected() && !Doppelganger.DoppelVictim.ContainsKey(target.PlayerId) && !Camouflage.ResetSkinAfterDeathPlayers.Contains(target.PlayerId))
+            {
+                Camouflage.ResetSkinAfterDeathPlayers.Add(target.PlayerId);
+                Camouflage.RpcSetSkin(target, ForceRevert: true, RevertToDefault: true);
+            }
         }
 
         if (AmongUsClient.Instance.AmHost)
@@ -1316,8 +1360,12 @@ class MurderPlayerPatch
         }
         return true;
     }
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target/*, [HarmonyArgument(1)] MurderResultFlags resultFlags*/)
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target/*, [HarmonyArgument(1)] MurderResultFlags resultFlags*/, bool __state)
     {
+        if (!__state)
+        {
+            return;
+        }
         if (GameStates.IsHideNSeek) return;
         if (target.AmOwner) RemoveDisableDevicesPatch.UpdateDisableDevices();
         if (!target.Data.IsDead || !AmongUsClient.Instance.AmHost) return;
@@ -2478,19 +2526,48 @@ class ReportDeadBodyPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
 class FixedUpdateInNormalGamePatch
 {
-    //private static long LastFixedUpdate = new(); //Doesn't seem to be working.
     private static readonly StringBuilder Mark = new(20);
     private static readonly StringBuilder Suffix = new(120);
     private static readonly Dictionary<int, int> BufferTime = [];
     private static int LevelKickBufferTime = 20;
 
-    public static void Postfix(PlayerControl __instance)
+    public static async void Postfix(PlayerControl __instance)
     {
         if (GameStates.IsHideNSeek) return;
-
-        var player = __instance;
-
         if (!GameStates.IsModHost) return;
+        if (__instance == null) return;
+
+        byte id = __instance.PlayerId;
+        if (GameStates.IsInTask && ReportDeadBodyPatch.CanReport[id] && ReportDeadBodyPatch.WaitReport[id].Count > 0)
+        {
+            if (Glitch.hackedIdList.ContainsKey(id))
+            {
+                __instance.Notify(string.Format(GetString("HackedByGlitch"), "Report"));
+                Logger.Info("Dead Body Report Blocked (player is hacked by Glitch)", "FixedUpdate.ReportDeadBody");
+                ReportDeadBodyPatch.WaitReport[id].Clear();
+            }
+            else
+            {
+                var info = ReportDeadBodyPatch.WaitReport[id][0];
+                ReportDeadBodyPatch.WaitReport[id].Clear();
+                Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()}: The report will be processed now that it is available for reporting", "ReportDeadbody");
+                __instance.ReportDeadBody(info);
+            }
+        }
+
+        try
+        {
+            await DoPostfix(__instance);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"Error for {__instance.GetNameWithRole().RemoveHtmlTags()}:  {ex}", "FixedUpdateInNormalGamePatch");
+        }
+    }
+
+    public static Task DoPostfix(PlayerControl __instance)
+    {
+        var player = __instance;
 
         bool lowLoad = false;
         if (Options.LowLoadMode.GetBool())
@@ -2601,23 +2678,6 @@ class FixedUpdateInNormalGamePatch
 
             if (GameStates.IsInTask)
             {
-                if (ReportDeadBodyPatch.CanReport[__instance.PlayerId] && ReportDeadBodyPatch.WaitReport[__instance.PlayerId].Count > 0)
-                {
-                    if (Glitch.hackedIdList.ContainsKey(__instance.PlayerId))
-                    {
-                        __instance.Notify(string.Format(GetString("HackedByGlitch"), GetString("GlitchReport")));
-                        Logger.Info("Dead Body Report Blocked (player is hacked by Glitch)", "FixedUpdate.ReportDeadBody");
-                        ReportDeadBodyPatch.WaitReport[__instance.PlayerId].Clear();
-                    }
-                    else
-                    {
-                        var info = ReportDeadBodyPatch.WaitReport[__instance.PlayerId][0];
-                        ReportDeadBodyPatch.WaitReport[__instance.PlayerId].Clear();
-                        Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()} : Now that it is possible to report, we will process the report", "ReportDeadbody");
-                        __instance.ReportDeadBody(info);
-                    }
-                }
-
                 // Agitater
                 if (Agitater.IsEnable && Agitater.CurrentBombedPlayer == player.PlayerId)
                     Agitater.OnFixedUpdate(player);
@@ -3448,6 +3508,7 @@ class FixedUpdateInNormalGamePatch
                 RoleText.transform.SetLocalY(0.2f);
             }
         }
+        return Task.CompletedTask;
     }
     //FIXME: 役職クラス化のタイミングで、このメソッドは移動予定
     public static void LoversSuicide(byte deathId = 0x7f, bool isExiled = false)
@@ -4025,7 +4086,7 @@ class PlayerControlRemoveProtectionPatch
 {
     public static void Postfix(PlayerControl __instance)
     {
-    Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()}", "RemoveProtection");
+        Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()}", "RemoveProtection");
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MixUpOutfit))]

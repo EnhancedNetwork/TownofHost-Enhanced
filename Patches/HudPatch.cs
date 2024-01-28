@@ -251,9 +251,9 @@ class HudManagerPatch
                         __instance.KillButton.OverrideText(GetString("KillButtonText"));
                         __instance.SabotageButton.OverrideText(GetString("MimicButtonText"));
                         break;
-                    case CustomRoles.FFF:
+                    case CustomRoles.Hater:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        __instance.KillButton.OverrideText(GetString("FFFButtonText"));
+                        __instance.KillButton.OverrideText(GetString("HaterButtonText"));
                         break;
                     case CustomRoles.Medic:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
@@ -657,7 +657,7 @@ class SetHudActivePatch
             case CustomRoles.Reverie:
             case CustomRoles.Pelican:
             case CustomRoles.Revolutionist:
-            case CustomRoles.FFF:
+            case CustomRoles.Hater:
             case CustomRoles.Medic:
             case CustomRoles.Gamer:
             case CustomRoles.DarkHide:

@@ -1044,7 +1044,7 @@ public class ModNewsHistory
                         "\n     - 将破坏者重新命名为反对管理员（仅限英文版本）" +
                         "\n     - 新迷彩皮肤" +
                         "\n     - 添加了Default_Template.txt" +
-                        "\n     - 重做遐想者和FFF团" +
+                        "\n     - 重做遐想者和Hater团" +
 
                     "\n其他一些Bug更改(当我说几个时,我指的是几个)" +
 
