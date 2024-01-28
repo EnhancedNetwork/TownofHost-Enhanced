@@ -1,8 +1,8 @@
 ﻿using HarmonyLib;
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TOHE.Modules;
-using TOHE.Roles.Neutral;
-using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Patches.HideNSeek;
@@ -99,13 +99,25 @@ class FixedUpdateInHidenSeekPatch
 {
     private static int LevelKickBufferTime = 20;
     private static readonly Dictionary<int, int> BufferTime = [];
-    public static void Postfix(PlayerControl __instance)
+    public static async void Postfix(PlayerControl __instance)
     {
         if (GameStates.IsNormalGame) return;
-
-        var player = __instance;
-
         if (!GameStates.IsModHost) return;
+        if (__instance == null) return;
+
+        try
+        {
+            await DoPostfix(__instance);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"Error for {__instance.GetNameWithRole().RemoveHtmlTags()}:  {ex}", "FixedUpdatePatch");
+        }
+    }
+
+    public static Task DoPostfix(PlayerControl __instance)
+    {
+        var player = __instance;
 
         bool lowLoad = false;
         if (Options.LowLoadMode.GetBool())
@@ -135,7 +147,7 @@ class FixedUpdateInHidenSeekPatch
             Zoom.OnFixedUpdate();
         }
 
-        if (!AmongUsClient.Instance.AmHost) return;
+        if (!AmongUsClient.Instance.AmHost) return Task.CompletedTask;
 
         if (GameStates.IsLobby)
         {
@@ -207,5 +219,7 @@ class FixedUpdateInHidenSeekPatch
 
         if (!Main.DoBlockNameChange)
             Utils.ApplySuffix(__instance);
+
+        return Task.CompletedTask;
     }
 }

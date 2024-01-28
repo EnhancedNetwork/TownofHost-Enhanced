@@ -2486,9 +2486,8 @@ class FixedUpdateInNormalGamePatch
     public static async void Postfix(PlayerControl __instance)
     {
         if (GameStates.IsHideNSeek) return;
-
-        if (__instance == null) return;
         if (!GameStates.IsModHost) return;
+        if (__instance == null) return;
 
         byte id = __instance.PlayerId;
         if (GameStates.IsInTask && ReportDeadBodyPatch.CanReport[id] && ReportDeadBodyPatch.WaitReport[id].Count > 0)
