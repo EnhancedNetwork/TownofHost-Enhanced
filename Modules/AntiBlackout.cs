@@ -214,7 +214,7 @@ public static class AntiBlackout
         if (BlackOutIsActive)
         {
             var timeNotify = 4f;
-            foreach (var pc in Main.AllPlayerControls.Where(p => p.AmOwner || p.IsModClient()).ToArray())
+            foreach (var pc in Main.AllPlayerControls.Where(p => !(p.AmOwner || p.IsModClient())).ToArray())
             {
                 pc.Notify(CheckForEndVotingPatch.TempExileMsg, time: timeNotify);
             }
