@@ -40,7 +40,6 @@ public class Warden
 
     Notifiers:
         target.Notify(Utils.ColorString(new Color32(179, 0, 0, byte.MaxValue), GetString("WardenWarn")));
-        killer.Notify($"You've marked target");
 
         killer.RpcResetAbilityCooldown();
 
