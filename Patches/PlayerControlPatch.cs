@@ -1290,6 +1290,15 @@ class CheckMurderPatch
         return true;
     }
 }
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Exiled))]
+class ExilePlayerFix
+{
+        
+    public static void Postfix(PlayerControl __instance)
+    {
+        CustomRoleSelector.GhostAssignPatch(__instance);
+    }
+}
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
 class MurderPlayerPatch
