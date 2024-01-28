@@ -169,7 +169,7 @@ class OnPlayerJoinedPatch
                 else Logger.Error("New coming client character is null!" + client.Id, "OnPlayerJoinedPatch");
             }
             catch { }
-        }, 0.8f, "OnPlayerJoined Client<=>Client VersionCheck", false);
+        }, 2.5f, "OnPlayerJoined Client<=>Client VersionCheck", false);
 
 
         if (AmongUsClient.Instance.AmHost && client.FriendCode == "" && Options.KickPlayerFriendCodeNotExist.GetBool() && !GameStates.IsLocalGame)
