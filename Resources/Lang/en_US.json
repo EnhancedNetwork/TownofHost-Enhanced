@@ -1100,7 +1100,7 @@
   "SunnyboyInfoLong": "(Neutrals):\nAs the Sunnyboy, you win if you are dead by the end of the game. When you are alive, the game will not end due to killers gaining majority.\nAdditionally, you have access to portable vitals.",
   "BardInfoLong": "(Impostors):\nWhen a bard is alive, the exile confirmation will display a sentence composed by the bard. Whenever the bard completes a creation, the bard's kill cooldown is permanently halved.",
   "NukerInfoLong": "(Impostors):\nAs the Nuker, you're a stronger Bomber.\n\nShapeshift to nuke everyone.",
-  "WardenInfoLong": "(Crewmates-[Ghost]):\nAs the warden, alert someone of nearby danger, additionally giving them a speed boost.",
+  "WardenInfoLong": "(Crewmates-[Ghost]):\nAs the Warden, alert someone of nearby danger, additionally giving them a temporary speed boost.",
   "ShowTextOverlay": "Text Overlay",
   "Overlay.GuesserMode": "<size=50%>Guesser Mode</size>",
   "Overlay.NoGameEnd": "<size=50%>No Game End</size>",
@@ -3458,7 +3458,7 @@
   "RoleType.CrewPower": "<color=#ffff00>★</color> Crewmate <color=#ffff00>Power</color> Roles",
   "RoleType.CrewKilling": "<color=#ff1919>★</color> Crewmate <color=#ff1919>Killing</color> Roles",
   "RoleType.CrewBasic": "<color=#FF6600>★</color> Crewmate <color=#FF6600>Basic</color> Roles",
-  "RoleType.CrewGhost": "<color=#afc3c9>★</color> Crewmate <color=#afc3c9>Ghost</color> Roles",
+  "RoleType.CrewGhost": "<color=#afc3c9>★</color> Crewmate <color=#afc3c9>Ghost</color> Roles\n/ghostinfo",
   "RoleType.NeutralEvil": "<color=#912900>★</color> Neutral <color=#912900>Evil</color> Roles",
   "RoleType.NeutralBenign": "<color=#046300>★</color> Neutral <color=#046300>Benign</color> Roles",
   "RoleType.NeutralChaos": "<color=#D4AF37>★</color> Neutral <color=#D4AF37>Chaos</color> Roles",
@@ -3746,5 +3746,7 @@
   "PlagueDoctorCanInfectSelf": "Can Infect Self",
   "PlagueDoctorCanInfectVent": "Can Infect While In Vent",
 
-  "WinnerRoleText.PlagueDoctor": "Plague Scientist Wins!"
+  "WinnerRoleText.PlagueDoctor": "Plague Scientist Wins!",
+
+  "WardenIncreaseSpeed":  "Increase Speed By"
 }
