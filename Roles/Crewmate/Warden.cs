@@ -1,7 +1,9 @@
 ﻿using Hazel;
 using System.Collections.Generic;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -36,8 +38,8 @@ public class Warden
             target.MarkDirtySettings();
         }, 2f);
 
-        Notifiers:
-        target.Notify(GetString("WardenWarn"));
+    Notifiers:
+        target.Notify(Utils.ColorString(new Color32(179, 0, 0, byte.MaxValue), GetString("WardenWarn")));
         killer.Notify($"You've marked target");
 
         killer.RpcResetAbilityCooldown();
