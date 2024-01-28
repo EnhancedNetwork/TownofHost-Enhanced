@@ -279,7 +279,7 @@ public static class Divinator
                 CustomRoles.Pirate,
                 CustomRoles.Visionary,
                 CustomRoles.Blackmailer,
-                CustomRoles.ParityCop],
+                CustomRoles.Inspector],
                 
                 [CustomRoles.Anonymous,
                 CustomRoles.Mayor,

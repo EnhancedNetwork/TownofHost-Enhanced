@@ -519,9 +519,9 @@ public class TaskState
                     Mediumshiper.SendRPC(player.PlayerId);
                     break;
 
-                case CustomRoles.ParityCop when player.IsAlive():
-                    ParityCop.MaxCheckLimit[player.PlayerId] += ParityCop.ParityAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    ParityCop.SendRPC(player.PlayerId, 2);
+                case CustomRoles.Inspector when player.IsAlive():
+                    Inspector.MaxCheckLimit[player.PlayerId] += Inspector.InspectAbilityUseGainWithEachTaskCompleted.GetFloat();
+                    Inspector.SendRPC(player.PlayerId, 2);
                     break;
 
                 case CustomRoles.Oracle when player.IsAlive():

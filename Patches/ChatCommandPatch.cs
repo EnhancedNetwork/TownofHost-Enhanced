@@ -55,7 +55,7 @@ internal class ChatCommands
         if (GuessManager.GuesserMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Judge.TrialMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (President.EndMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
-        if (ParityCop.ParityCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
+        if (Inspector.InspectCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Pirate.DuelCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Councillor.MurderMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Mediumshiper.MsMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
@@ -1132,7 +1132,7 @@ internal class ChatCommands
             "先知" or "神谕" or "神谕者" => GetString("Oracle"),
             "靈魂論者" or "灵魂论者" => GetString("Spiritualist"),
             "變色龍" or "变色龙" or "变色" => GetString("Chameleon"),
-            "檢查員" or "检查员" or "检查" => GetString("ParityCop"),
+            "檢查員" or "检查员" or "检查" => GetString("Inspector"),
             "仰慕者" or "仰慕" => GetString("Admirer"),
             "時間之主" or "时间之主" or "回溯时间" => GetString("TimeMaster"),
             "十字軍" or "十字军" => GetString("Crusader"),
@@ -1427,7 +1427,7 @@ internal class ChatCommands
         if (GuessManager.GuesserMsg(player, text)) { canceled = true; Logger.Info($"Is Guesser command", "OnReceiveChat"); return; }
         if (Judge.TrialMsg(player, text)) { canceled = true; Logger.Info($"Is Judge command", "OnReceiveChat"); return; }
         if (President.EndMsg(player, text)) { canceled = true; Logger.Info($"Is President command", "OnReceiveChat"); return; }
-        if (ParityCop.ParityCheckMsg(player, text)) { canceled = true; Logger.Info($"Is ParityCop command", "OnReceiveChat"); return; }
+        if (Inspector.InspectCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Inspector command", "OnReceiveChat"); return; }
         if (Pirate.DuelCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Pirate command", "OnReceiveChat"); return; }
         if (Councillor.MurderMsg(player, text)) { canceled = true; Logger.Info($"Is Councillor command", "OnReceiveChat"); return; }
         if (Swapper.SwapMsg(player, text)) { canceled = true; Logger.Info($"Is Swapper command", "OnReceiveChat"); return; }

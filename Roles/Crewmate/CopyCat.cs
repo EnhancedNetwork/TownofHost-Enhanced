@@ -65,8 +65,8 @@ public static class CopyCat
                 case CustomRoles.Deputy:
                     Deputy.Remove(player);
                     break;
-                case CustomRoles.ParityCop:
-                    ParityCop.Remove(player);
+                case CustomRoles.Inspector:
+                    Inspector.Remove(player);
                     break;
                 case CustomRoles.Medic:
                     Medic.Remove(player);
@@ -259,8 +259,8 @@ public static class CopyCat
                     if (!Main.ResetCamPlayerList.Contains(pc.PlayerId))
                         Main.ResetCamPlayerList.Add(pc.PlayerId);
                     break;
-                case CustomRoles.ParityCop:
-                    ParityCop.Add(pc.PlayerId);
+                case CustomRoles.Inspector:
+                    Inspector.Add(pc.PlayerId);
                     break;
                 case CustomRoles.Medic:
                     Medic.Add(pc.PlayerId);

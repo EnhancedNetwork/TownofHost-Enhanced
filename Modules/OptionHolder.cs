@@ -1943,7 +1943,7 @@ public static class Options
         /*
          * Inspector
          */
-        ParityCop.SetupCustomOption();
+        Inspector.SetupCustomOption();
 
         /*
          * Investigator

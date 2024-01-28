@@ -90,7 +90,7 @@ enum CustomRPC
     SetDivinatorLimit,
     SetDivinatorTempLimit,
     SetBloodhoundLimit,
-    SetParityCopLimit,
+    SetInspectorLimit,
     KeeperRPC,
     SetOracleLimit,
     SetMediumLimit,
@@ -797,8 +797,8 @@ internal class RPCHandlerPatch
             case CustomRPC.SetMediumLimit:
                 Mediumshiper.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetParityCopLimit:
-                ParityCop.ReceiveRPC(reader);
+            case CustomRPC.SetInspectorLimit:
+                Inspector.ReceiveRPC(reader);
                 break;
             case CustomRPC.KeeperRPC:
                 Keeper.ReceiveRPC(reader);
@@ -1316,8 +1316,8 @@ internal static class RPC
             case CustomRoles.President:
                 President.Add(targetId);
                 break;
-            case CustomRoles.ParityCop:
-                ParityCop.Add(targetId);
+            case CustomRoles.Inspector:
+                Inspector.Add(targetId);
                 break;
             case CustomRoles.Keeper:
                 Keeper.Add(targetId);

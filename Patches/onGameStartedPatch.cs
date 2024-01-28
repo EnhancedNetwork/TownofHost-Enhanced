@@ -333,7 +333,7 @@ internal class ChangeRoleSettings
             Chameleon.Init();
             Wildling.Init();
             Morphling.Init();
-            ParityCop.Init(); // *giggle* party cop
+            Inspector.Init(); // *giggle* party cop
             Keeper.Init(); // *giggle* party cop
             Spiritcaller.Init();
             Lurker.Init();
@@ -1000,8 +1000,8 @@ internal class SelectRolesPatch
                     case CustomRoles.PlagueBearer:
                         PlagueBearer.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.ParityCop:
-                        ParityCop.Add(pc.PlayerId);
+                    case CustomRoles.Inspector:
+                        Inspector.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Keeper:
                         Keeper.Add(pc.PlayerId);
