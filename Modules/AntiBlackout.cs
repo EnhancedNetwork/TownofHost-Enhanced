@@ -1,6 +1,7 @@
 using Hazel;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using TOHE.Modules;
 using TOHE.Roles.Crewmate;
@@ -213,7 +214,7 @@ public static class AntiBlackout
         if (BlackOutIsActive)
         {
             var timeNotify = 4f;
-            foreach (var pc in Main.AllPlayerControls)
+            foreach (var pc in Main.AllPlayerControls.Where(p => p.AmOwner || p.IsModClient()).ToArray())
             {
                 pc.Notify(CheckForEndVotingPatch.TempExileMsg, time: timeNotify);
             }
