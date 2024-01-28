@@ -157,7 +157,7 @@ public static class Oracle
                 //      CustomRoles.AntiAdminer or
                 //      CustomRoles.Ludopath or
                 //      CustomRoles.Godfather or
-                //      CustomRoles.Sans or
+                //      CustomRoles.Arrogance or
                 //      CustomRoles.Bomber or
                 //      CustomRoles.Nuker or
                 //      CustomRoles.Scavenger or

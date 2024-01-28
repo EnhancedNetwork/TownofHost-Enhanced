@@ -271,7 +271,7 @@ internal class ChangeRoleSettings
             Oracle.Init();
             Eraser.Init();
             Assassin.Init();
-            Sans.Init();
+            Arrogance.Init();
             Juggernaut.Init();
             Anonymous.Init();
             Psychic.Init();
@@ -826,8 +826,8 @@ internal class SelectRolesPatch
                     case CustomRoles.Assassin:
                         Assassin.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Sans:
-                        Sans.Add(pc.PlayerId);
+                    case CustomRoles.Arrogance:
+                        Arrogance.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Juggernaut:
                         Juggernaut.Add(pc.PlayerId);

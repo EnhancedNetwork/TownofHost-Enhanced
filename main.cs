@@ -549,7 +549,7 @@ public enum CustomRoles
     ShapeshifterTOHE,
 
     //Impostor
-    Sans, //arrogance
+    Arrogance, //arrogance
     Anonymous, //anonymous
     AntiAdminer,
     Bard,

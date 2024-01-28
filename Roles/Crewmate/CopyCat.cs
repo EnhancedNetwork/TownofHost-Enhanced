@@ -217,7 +217,7 @@ public static class CopyCat
                 case CustomRoles.Councillor:
                     role = CustomRoles.Judge;
                     break;
-                case CustomRoles.Sans:
+                case CustomRoles.Arrogance:
                 case CustomRoles.Juggernaut:
                     role = CustomRoles.Reverie;
                     break;

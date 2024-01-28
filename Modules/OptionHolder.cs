@@ -1211,7 +1211,7 @@ public static class Options
         /*
          * Arrogance
          */
-        Sans.SetupCustomOption();
+        Arrogance.SetupCustomOption();
 
         /*
          * Berserker

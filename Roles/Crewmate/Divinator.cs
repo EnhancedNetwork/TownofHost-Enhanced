@@ -209,7 +209,7 @@ public static class Divinator
                 CustomRoles.Juggernaut,
                 CustomRoles.Reverie,
                 CustomRoles.Vigilante,
-                CustomRoles.Sans,
+                CustomRoles.Arrogance,
                 CustomRoles.KillingMachine,
                 CustomRoles.Berserker,
                 CustomRoles.OverKiller],
@@ -469,7 +469,7 @@ public static class Divinator
                    CustomRoles.Mercenary or
                    CustomRoles.BountyHunter or
                    CustomRoles.KillingMachine or
-                   CustomRoles.Sans or
+                   CustomRoles.Arrogance or
                    CustomRoles.Juggernaut or
                    CustomRoles.SpeedBooster or
                    CustomRoles.Sheriff or

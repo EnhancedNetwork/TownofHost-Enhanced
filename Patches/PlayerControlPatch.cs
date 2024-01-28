@@ -462,8 +462,8 @@ class CheckMurderPatch
                 case CustomRoles.QuickShooter:
                     QuickShooter.QuickShooterKill(killer);
                     break;
-                case CustomRoles.Sans:
-                    Sans.OnCheckMurder(killer);
+                case CustomRoles.Arrogance:
+                    Arrogance.OnCheckMurder(killer);
                     break;
                 case CustomRoles.Juggernaut:
                     Juggernaut.OnCheckMurder(killer);

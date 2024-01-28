@@ -1009,8 +1009,8 @@ static class ExtendedPlayerControl
             case CustomRoles.Vampiress:
                 Vampiress.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.Sans:
-                Sans.SetKillCooldown(player.PlayerId);
+            case CustomRoles.Arrogance:
+                Arrogance.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Juggernaut:
                 Juggernaut.SetKillCooldown(player.PlayerId);

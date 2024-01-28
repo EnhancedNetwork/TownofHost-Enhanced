@@ -1292,8 +1292,8 @@ internal static class RPC
             case CustomRoles.Assassin:
                 Assassin.Add(targetId);
                 break;
-            case CustomRoles.Sans:
-                Sans.Add(targetId);
+            case CustomRoles.Arrogance:
+                Arrogance.Add(targetId);
                 break;
             case CustomRoles.Juggernaut:
                 Juggernaut.Add(targetId);

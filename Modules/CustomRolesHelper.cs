@@ -96,7 +96,7 @@ static class CustomRolesHelper
                 CustomRoles.Zombie => CustomRoles.Impostor,
                 CustomRoles.Mario => CustomRoles.Engineer,
                 CustomRoles.AntiAdminer => CustomRoles.Impostor,
-                CustomRoles.Sans => CustomRoles.Impostor,
+                CustomRoles.Arrogance => CustomRoles.Impostor,
                 CustomRoles.Bomber => CustomRoles.Shapeshifter,
                 CustomRoles.Nuker => CustomRoles.Shapeshifter,
                 CustomRoles.Kamikaze => CustomRoles.Impostor,
@@ -712,7 +712,7 @@ static class CustomRolesHelper
             CustomRoles.EvilTracker or
             CustomRoles.EvilGuesser or
             CustomRoles.AntiAdminer or
-            CustomRoles.Sans or
+            CustomRoles.Arrogance or
             CustomRoles.Bomber or
             CustomRoles.Nuker or
             CustomRoles.Kamikaze or
@@ -1513,7 +1513,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Swooper)
                     || pc.Is(CustomRoles.Vampire)
                     || pc.Is(CustomRoles.Vampiress)
-                    || pc.Is(CustomRoles.Sans)
+                    || pc.Is(CustomRoles.Arrogance)
                     || pc.Is(CustomRoles.LastImpostor)
                     || pc.Is(CustomRoles.Bomber)
                     || pc.Is(CustomRoles.Nuker)
