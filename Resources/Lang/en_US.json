@@ -2245,6 +2245,7 @@
   "MerchantNotifyBribery": "Inform <color=#D27D2D>Merchant</color> when a killer gets bribed",
   "MerchantTargetCrew": "Can sell to <color=#8cffff>Crewmates</color>",
   "MerchantTargetImpostor": "Can sell to <color=#ff1919>Impostors</color>",
+
   "MerchantTargetNeutral": "Can sell to <color=#7f8c8d>Neutrals</color>",
   "MerchantSellHelpful": "Can sell <color=#8cffff>Helpful</color> Add-ons",
   "MerchantSellHarmful": "Can sell <color=#ff1919>Harmful</color> Add-ons",

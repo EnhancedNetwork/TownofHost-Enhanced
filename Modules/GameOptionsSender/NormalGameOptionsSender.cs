@@ -15,7 +15,7 @@ public class NormalGameOptionsSender : GameOptionsSender
             {
                 if (_logicOptions == null || !GameManager.Instance.LogicComponents.Contains(_logicOptions))
                 {
-                    foreach (var glc in GameManager.Instance?.LogicComponents.ToArray())
+                    foreach (var glc in GameManager.Instance?.LogicComponents)
                         if (glc.TryCast<LogicOptions>(out var lo))
                             _logicOptions = lo;
                 }
@@ -23,7 +23,7 @@ public class NormalGameOptionsSender : GameOptionsSender
             }
             catch (Exception error)
             {
-                Logger.Fatal(error.ToString(), "NormalGameOptionsSender.IsDirty.Get");
+                Logger.Warn($"_logicOptions == null {_logicOptions == null} --- GameManager.Instance.LogicComponents == null {GameManager.Instance.LogicComponents == null} - Error: {error}", "NormalGameOptionsSender.IsDirty.Get");
                 return _logicOptions != null && _logicOptions.IsDirty;
             }
         }
@@ -35,7 +35,7 @@ public class NormalGameOptionsSender : GameOptionsSender
             }
             catch (Exception error)
             {
-                Logger.Fatal(error.ToString(), "NormalGameOptionsSender.IsDirty.ProtectedSet");
+                Logger.Warn(error.ToString(), "NormalGameOptionsSender.IsDirty.ProtectedSet");
             }
         }
     }

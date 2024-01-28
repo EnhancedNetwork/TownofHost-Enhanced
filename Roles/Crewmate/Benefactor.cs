@@ -126,7 +126,6 @@ public static class Benefactor
 
     public static void AfterMeetingTasks()
     {
-        if (!IsEnable) return;
         foreach (var playerId in TaskMarkPerRound.Keys.ToArray())
         {
             TaskMarkPerRound[playerId] = 0;

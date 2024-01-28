@@ -122,7 +122,6 @@ public static class Options
 
 
     // ------------ System Settings Tab ------------
-    public static OptionItem TemporaryAntiBlackoutFix;
     public static OptionItem GradientTagsOpt;
     public static OptionItem EnableKillerLeftCommand;
     public static OptionItem SeeEjectedRolesInMeeting;
@@ -198,6 +197,7 @@ public static class Options
 
     public static OptionItem NoGameEnd;
     public static OptionItem AllowConsole;
+    public static OptionItem DisableAntiBlackoutProtects;
 
     public static OptionItem RoleAssigningAlgorithm;
     public static OptionItem KPDCamouflageMode;
@@ -3018,10 +3018,6 @@ public static class Options
         #endregion
 
         #region System Settings
-        TemporaryAntiBlackoutFix = BooleanOptionItem.Create(60030, "TemporaryAntiBlackoutFix", true, TabGroup.SystemSettings, false)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetHeader(true)
-            .SetColor(Color.red);
         GradientTagsOpt = BooleanOptionItem.Create(60031, "EnableGadientTags", false, TabGroup.SystemSettings, false)
             .SetHeader(true);
         EnableKillerLeftCommand = BooleanOptionItem.Create(60040, "EnableKillerLeftCommand", true, TabGroup.SystemSettings, false)
@@ -3131,8 +3127,12 @@ public static class Options
         NoGameEnd = BooleanOptionItem.Create(60380, "NoGameEnd", false, TabGroup.SystemSettings, false)
             .SetColor(Color.red)
             .SetHeader(true);
-        AllowConsole = BooleanOptionItem.Create(60390, "AllowConsole", false, TabGroup.SystemSettings, false)
+        AllowConsole = BooleanOptionItem.Create(60382, "AllowConsole", false, TabGroup.SystemSettings, false)
             .SetColor(Color.red);
+        DisableAntiBlackoutProtects = BooleanOptionItem.Create(60384, "DisableAntiBlackoutProtects", false, TabGroup.SystemSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(Color.red);
+
         RoleAssigningAlgorithm = StringOptionItem.Create(60400, "RoleAssigningAlgorithm", roleAssigningAlgorithms, 4, TabGroup.SystemSettings, true)
             .RegisterUpdateValueEvent((object obj, OptionItem.UpdateValueEventArgs args) => IRandom.SetInstanceById(args.CurrentValue))
             .SetHeader(true);

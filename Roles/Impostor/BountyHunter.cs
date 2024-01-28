@@ -213,8 +213,6 @@ public static class BountyHunter
     public static void SetAbilityButtonText(HudManager __instance) => __instance.AbilityButton.OverrideText(GetString("BountyHunterChangeButtonText"));
     public static void AfterMeetingTasks()
     {
-        if (!IsEnable) return;
-
         foreach (var id in playerIdList.ToArray())
         {
             if (!Main.PlayerStates[id].IsDead)

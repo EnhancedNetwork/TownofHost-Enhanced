@@ -108,8 +108,6 @@ public static class Chameleon
     }
     public static void AfterMeetingTasks()
     {
-        if (!IsEnable) return;
-
         lastTime = [];
         InvisTime = [];
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => playerIdList.Contains(x.PlayerId)).ToArray())

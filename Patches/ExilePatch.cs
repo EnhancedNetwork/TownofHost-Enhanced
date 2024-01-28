@@ -44,11 +44,12 @@ class ExileControllerWrapUpPatch
     }
     static void WrapUpPostfix(GameData.PlayerInfo exiled)
     {
-        if (AntiBlackout.ImpostorOverrideExiledPlayer || AntiBlackout.NeutralOverrideExiledPlayer) exiled = AntiBlackout_LastExiled;
+        if (AntiBlackout.BlackOutIsActive) exiled = AntiBlackout_LastExiled;
 
         bool DecidedWinner = false;
         if (!AmongUsClient.Instance.AmHost) return;
         AntiBlackout.RestoreIsDead(doSend: false);
+        
         Pixie.CheckExileTarget(exiled);
 
         Logger.Info($"{!Collector.CollectorWin(false)}", "!Collector.CollectorWin(false)");
@@ -56,9 +57,11 @@ class ExileControllerWrapUpPatch
 
         if (!Collector.CollectorWin(false) && exiled != null)
         {
-            // Deal with the darkening bug for the spirit world
-            if (!(AntiBlackout.ImpostorOverrideExiledPlayer || AntiBlackout.NeutralOverrideExiledPlayer) && Main.ResetCamPlayerList.Contains(exiled.PlayerId))
+            // Reset player cam for exiled desync impostor
+            if (Main.ResetCamPlayerList.Contains(exiled.PlayerId))
+            {
                 exiled.Object?.ResetPlayerCam(1f);
+            }
 
             exiled.IsDead = true;
             Main.PlayerStates[exiled.PlayerId].deathReason = PlayerState.DeathReason.Vote;
@@ -224,8 +227,18 @@ class ExileControllerWrapUpPatch
                 Shroud.MurderShroudedPlayers(player);
             }
 
+            // Check Anti BlackOut
+            if (player.GetCustomRole().IsImpostor() 
+                && !player.IsAlive() // if player is dead impostor
+                && AntiBlackout.BlackOutIsActive) // if Anti BlackOut is activated
+            {
+                player.ResetPlayerCam(1f);
+            }
+
+            // Check for remove pet
             player.RpcRemovePet();
 
+            // Reset Kill/Ability cooldown
             player.ResetKillCooldown();
             player.RpcResetAbilityCooldown();
         }
@@ -239,9 +252,9 @@ class ExileControllerWrapUpPatch
         Utils.SyncAllSettings();
         Utils.NotifyRoles(ForceLoop: true);
 
-        _ = new LateTask(() =>
+        if (Options.RandomSpawn.GetBool() || Options.CurrentGameMode == CustomGameMode.FFA)
         {
-            if (Options.RandomSpawn.GetBool() || Options.CurrentGameMode == CustomGameMode.FFA)
+            _ = new LateTask(() =>
             {
                 RandomSpawn.SpawnMap map;
                 switch (Utils.GetActiveMapId())
@@ -267,8 +280,8 @@ class ExileControllerWrapUpPatch
                         Main.AllPlayerControls.Do(map.RandomTeleport);
                         break;
                 }
-            }
-        }, 0.8f, "Random Spawn After Meeting");
+            }, 0.8f, "Random Spawn After Meeting");
+        }
     }
 
     static void WrapUpFinalizer(GameData.PlayerInfo exiled)
@@ -280,7 +293,7 @@ class ExileControllerWrapUpPatch
             {
                 exiled = AntiBlackout_LastExiled;
                 AntiBlackout.SendGameData();
-                if ((AntiBlackout.ImpostorOverrideExiledPlayer || AntiBlackout.NeutralOverrideExiledPlayer) && // State in which the expulsion target is overwritten (need not be executed if the expulsion target is not overwritten)
+                if (AntiBlackout.BlackOutIsActive && // State in which the expulsion target is overwritten (need not be executed if the expulsion target is not overwritten)
                     exiled != null && // exiled is not null
                     exiled.Object != null) //exiled.Object is not null
                 {
@@ -295,7 +308,7 @@ class ExileControllerWrapUpPatch
                     var player = Utils.GetPlayerById(x.Key);
                     var state = Main.PlayerStates[x.Key];
                     
-                    Logger.Info($"{player.GetNameWithRole()} died with {x.Value}", "AfterMeetingDeath");
+                    Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()} died with {x.Value}", "AfterMeetingDeath");
 
                     state.deathReason = x.Value;
                     state.SetDead();
@@ -304,8 +317,11 @@ class ExileControllerWrapUpPatch
                     if (x.Value == PlayerState.DeathReason.Suicide)
                         player?.SetRealKiller(player, true);
 
+                    // Reset player cam for dead desync impostor
                     if (Main.ResetCamPlayerList.Contains(x.Key))
+                    {
                         player?.ResetPlayerCam(1f);
+                    }
 
                     Utils.AfterPlayerDeathTasks(player);
                 });

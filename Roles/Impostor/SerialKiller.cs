@@ -91,8 +91,6 @@ public static class SerialKiller
     }
     public static void AfterMeetingTasks()
     {
-        if (!IsEnable) return;
-
         foreach (var id in playerIdList)
         {
             if (!Main.PlayerStates[id].IsDead)
