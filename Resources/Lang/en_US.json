@@ -2316,16 +2316,20 @@
   "Message.OnlyCanBeUsedByHost": "<color=#ff1919><size=150%><b>ERROR</b></size></color>\n\n<color=#ff1919>This command may only be used by the host.</color>",
   "Message.MaxPlayers": "Maximum players set to ",
   "Message.GhostRoleInfo": "<size=90%><b>Ghost Role Info</b></size>\nHiya! A little bit about ghost roles...<size=75%>\n\nGhost roles drastically impact the game, so not recommended for smaller lobbies, if you're unfamiliar.\n\n<b>Spawning:</b>\nGhost-roles only spawn after death, the first x people from (team) to die get them.\n\"Always\" role are prioritized, if they are exhausted then \"On\" roles get assigned..</size>",
+ 
   "AntiBlackoutFixTitle": "ANTI BLACKOUT FIX",
+
   "EnableGadientTags": "Enable Gradient Tags <color=#ff0000>(can cause disconnect issues)</color>",
   "Warning.GradientTags": "<color=#ff0000><size=150%>Warning:</size></color>\n\nHost has enabled gradient tags. This feature is not recommended to use because it can cause <b>disconnect issues</b>",
   "WarningTitle": "Warning!",
   "Warning.BrokenVentsInDleksSendInGame": "Warning! The vents on this map are broken",
   "Warning.BrokenVentsInDleksMessage": "<b>On the «dlekS ehT» map the vents are broken</b>, they cannot be fixed in host-only mods, this is a vanilla bug, <b>so any roles using vent as an ability will not spawns on this map</b>",
+ 
   "AntiBlackoutProtectionTitle": "Anti Blackout",
   "Warning.AntiBlackoutProtectionMsg": "<size=110%>Warning:</size>\n\r<b>Black screen protection has been activated,</b> due to the low number of alive <color=#ff1919>Impostors</color>, <color=#8cffff>Crewmates</color> and <color=#7f8c8d>Neutral Killers</color>\n<b>The voting screen will show as a tied vote (only affects the visual, not the results voting)</b>\n<size=70%>Modded players will see voting screen normaly</size>",
   "Warning.ShowAntiBlackExiledPlayer": "<b>Last meeting triggered Black Screen Prevention!\nFollowing is the information of the player exiled in last meeting.</b>\n",
   "DisableAntiBlackoutProtects": "Disable AntiBlackout Protects (Recommended for testing)",
+
   "Warning.InvalidRpc": "Kicked <b>{0}</b> because an invalid RPC was received.\nPlease check that no mods other than TOHE installed.",
   "Warning.NoModHost": "TOHE is not installed on the host",
   "Warning.MismatchedVersion": "<b>{0}</b> has a different version of <b>{1}</b>",
