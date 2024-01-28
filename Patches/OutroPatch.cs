@@ -37,6 +37,7 @@ class EndGamePatch
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
             }
         }
+        CustomRoleSelector.GhostGetPreviousRole = [];
 
         Logger.Info("-----------Game over-----------", "Phase");
         if (!GameStates.IsModHost) return;
