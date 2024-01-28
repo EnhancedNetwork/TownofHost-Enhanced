@@ -88,7 +88,9 @@ public static class Huntsman
     public static void ResetTargets()
     {
         if (!AmongUsClient.Instance.AmHost) return;
+
         Targets.Clear();
+
         int potentialTargetCount = Main.AllAlivePlayerControls.Length - 1;
         if (potentialTargetCount < 0) potentialTargetCount = 0;
         int maxLimit = Math.Min(potentialTargetCount, NumOfTargets.GetInt());
@@ -108,5 +110,7 @@ public static class Huntsman
                 break;
             }
         }
+
+        Utils.NotifyRoles(ForceLoop: true);
     }
 }
