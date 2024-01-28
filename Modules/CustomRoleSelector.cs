@@ -430,10 +430,12 @@ internal class CustomRoleSelector
             AddonRolesList.Add(role);
         }
     }
+    public static Dictionary<byte, CustomRoles> GhostGetPreviousRole = [];
     public static void GhostAssignPatch(PlayerControl player)
     {
         var getplrRole = player.GetCustomRole();
         if (!CustomRolesHelper.IsCrewmate(getplrRole) || getplrRole == CustomRoles.Retributionist || GameStates.IsHideNSeek) return; //might make a RestrictGhostRole method later if needed
+        GhostGetPreviousRole.Add(player.PlayerId, getplrRole);
 
         List<CustomRoles> HauntedList = [];
         List<CustomRoles> RateHauntedList = [];

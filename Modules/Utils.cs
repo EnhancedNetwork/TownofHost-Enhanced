@@ -2757,6 +2757,8 @@ public static class Utils
     }
     public static void AfterPlayerDeathTasks(PlayerControl target, bool onMeeting = false)
     {
+        CustomRoleSelector.GhostAssignPatch(target);
+
         switch (target.GetCustomRole())
         {
             case CustomRoles.Terrorist:

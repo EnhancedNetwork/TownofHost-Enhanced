@@ -1,4 +1,5 @@
 using HarmonyLib;
+using Hazel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,11 +16,27 @@ namespace TOHE;
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameEnd))]
 class EndGamePatch
 {
+
+    
     public static Dictionary<byte, string> SummaryText = [];
     public static string KillLog = "";
     public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ref EndGameResult endGameResult)
     {
         GameStates.InGame = false;
+        foreach (var pvc in CustomRoleSelector.GhostGetPreviousRole.Keys) // Sets role back to original so it shows up in /l results.
+        {
+            // Will add an exception handler if ghost-role has new win reason
+            CustomRoles prevrole = CustomRoleSelector.GhostGetPreviousRole[pvc];
+            Main.PlayerStates[pvc].SetMainRole(prevrole);
+            
+            if (AmongUsClient.Instance.AmHost)
+            {
+                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, Hazel.SendOption.Reliable, -1);
+                writer.Write(pvc);
+                writer.WritePacked((int)prevrole);
+                AmongUsClient.Instance.FinishRpcImmediately(writer);
+            }
+        }
 
         Logger.Info("-----------Game over-----------", "Phase");
         if (!GameStates.IsModHost) return;
