@@ -290,6 +290,7 @@ static class CustomRolesHelper
     {
         return role is
             CustomRoles.GuardianAngelTOHE or
+            CustomRoles.EvilSpirit or
             CustomRoles.Warden;
     }
     public static bool IsAdditionRole(this CustomRoles role)
