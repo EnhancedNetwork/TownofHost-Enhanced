@@ -46,8 +46,6 @@ public static class CopyCat
 
     public static void AfterMeetingTasks()
     {
-        if (!IsEnable) return;
-
         foreach (var player in playerIdList.ToArray())
         {
             var pc = Utils.GetPlayerById(player);

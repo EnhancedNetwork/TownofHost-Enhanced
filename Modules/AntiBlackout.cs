@@ -3,6 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using TOHE.Modules;
+using TOHE.Roles.Crewmate;
+using TOHE.Roles.Impostor;
+using TOHE.Roles.Neutral;
 
 namespace TOHE;
 
@@ -204,6 +207,32 @@ public static class AntiBlackout
             }
         }
         sender.SendMessage();
+    }
+    public static void AfterMeetingTasks()
+    {
+        if (BlackOutIsActive)
+        {
+            var timeNotify = 4f;
+            foreach (var pc in Main.AllPlayerControls)
+            {
+                pc.Notify(CheckForEndVotingPatch.TempExileMsg, time: timeNotify);
+            }
+
+            _ = new LateTask(() =>
+            {
+                if (Eraser.IsEnable) Eraser.AfterMeetingTasks(notifyPlayer: true);
+                if (Cleanser.IsEnable) Cleanser.AfterMeetingTasks(notifyPlayer: true);
+                if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: true);
+                if (Seeker.IsEnable) Seeker.AfterMeetingTasks(notifyPlayer: true);
+            }, timeNotify + 0.1f, "Notify AfterMeetingTasks");
+        }
+        else
+        {
+            if (Eraser.IsEnable) Eraser.AfterMeetingTasks(notifyPlayer: true);
+            if (Cleanser.IsEnable) Cleanser.AfterMeetingTasks(notifyPlayer: true);
+            if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: true);
+            if (Seeker.IsEnable) Seeker.AfterMeetingTasks(notifyPlayer: true);
+        }
     }
     public static void Reset()
     {

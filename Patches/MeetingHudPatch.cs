@@ -16,6 +16,7 @@ namespace TOHE;
 [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CheckForEndVoting))]
 class CheckForEndVotingPatch
 {
+    public static string TempExileMsg;
     public static bool Prefix(MeetingHud __instance)
     {
         if (!AmongUsClient.Instance.AmHost) return true;
@@ -592,6 +593,8 @@ class CheckForEndVotingPatch
 
     EndOfSession:
         name += "<size=0>";
+        TempExileMsg = name;
+
         _ = new LateTask(() =>
         {
             Main.DoBlockNameChange = true;
