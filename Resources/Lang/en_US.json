@@ -2312,8 +2312,8 @@
   "Message.OnlyCanBeUsedByHost": "<color=#ff1919><size=150%><b>ERROR</b></size></color>\n\n<color=#ff1919>This command may only be used by the host.</color>",
   "Message.MaxPlayers": "Maximum players set to ",
   "AntiBlackoutProtectionTitle": "Anti Blackout",
-  "Warning.AntiBlackoutProtectionMsg": "<size=120%>Warning:</size>\n\nBlack screen protection has been activated, due to the low number of alive Impostors, Crewmates and Neutral Killers",
-  "DisableAntiBlackoutProtects": "Disable AntiBlackout Protects (recommended for testing)",
+  "Warning.AntiBlackoutProtectionMsg": "<size=110%>Warning:</size>\n\r<b>Black screen protection has been activated,</b> due to the low number of alive Impostors, Crewmates and Neutral Killers\n<b>The voting screen will show as a tied vote (only affects the visual, not the voting results)</b>",
+  "DisableAntiBlackoutProtects": "Disable AntiBlackout Protects (Recommended for testing)",
 
   "EnableGadientTags": "Enable Gradient Tags <color=#ff0000>(can cause disconnect issues)</color>",
   "Warning.GradientTags": "<color=#ff0000><size=150%>Warning:</size></color>\n\nHost has enabled gradient tags. This feature is not recommended to use because it can cause <b>disconnect issues</b>",
