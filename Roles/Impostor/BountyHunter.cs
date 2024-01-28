@@ -130,7 +130,7 @@ public static class BountyHunter
     public static byte GetTarget(PlayerControl player)
     {
         if (player == null) return 0xff;
-        if (Targets == null) Targets = [];
+        Targets ??= [];
 
         if (!Targets.TryGetValue(player.PlayerId, out var targetId))
             targetId = ResetTarget(player);
