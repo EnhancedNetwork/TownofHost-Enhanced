@@ -57,7 +57,7 @@ public static class Huntsman
 
         _ = new LateTask(() =>
         {
-            ResetTargets(isStartedGame: false);
+            ResetTargets(isStartedGame: true);
         }, 8f, "Huntsman Reset Targets");
 
         KCD = KillCooldown.GetFloat();
