@@ -156,7 +156,7 @@ public static class HudSpritePatch
             case CustomRoles.Wraith:
                 newAbilityButton = CustomButton.Get("invisible");
                 break;
-            case CustomRoles.Escapee:
+            case CustomRoles.Escapist:
                 newAbilityButton = CustomButton.Get("abscond");
                 break;
             case CustomRoles.Farseer:

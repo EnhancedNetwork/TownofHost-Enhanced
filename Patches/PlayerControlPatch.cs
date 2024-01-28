@@ -1619,20 +1619,20 @@ class ShapeshiftPatch
                         Main.CursedPlayers[shapeshifter.PlayerId] = null;
                     }
                     break;
-                case CustomRoles.Escapee:
+                case CustomRoles.Escapist:
                     if (shapeshifting)
                     {
-                        if (Main.EscapeeLocation.ContainsKey(shapeshifter.PlayerId))
+                        if (Main.EscapistLocation.ContainsKey(shapeshifter.PlayerId))
                         {
-                            var position = Main.EscapeeLocation[shapeshifter.PlayerId];
-                            Main.EscapeeLocation.Remove(shapeshifter.PlayerId);
-                            Logger.Msg($"{shapeshifter.GetNameWithRole()}:{position}", "EscapeeTeleport");
+                            var position = Main.EscapistLocation[shapeshifter.PlayerId];
+                            Main.EscapistLocation.Remove(shapeshifter.PlayerId);
+                            Logger.Msg($"{shapeshifter.GetNameWithRole()}:{position}", "EscapistTeleport");
                             shapeshifter.RpcTeleport(position);
                             shapeshifter.RPCPlayCustomSound("Teleport");
                         }
                         else
                         {
-                            Main.EscapeeLocation.Add(shapeshifter.PlayerId, shapeshifter.GetCustomPosition());
+                            Main.EscapistLocation.Add(shapeshifter.PlayerId, shapeshifter.GetCustomPosition());
                         }
                     }
                     break;

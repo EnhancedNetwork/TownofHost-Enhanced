@@ -256,7 +256,7 @@ public static class Divinator
                 CustomRoles.Keeper],
                 
                 [CustomRoles.Addict,
-                CustomRoles.Escapee,
+                CustomRoles.Escapist,
                 CustomRoles.Miner,
                 CustomRoles.RiftMaker,
                 CustomRoles.Bastion,
@@ -483,7 +483,7 @@ public static class Divinator
                    CustomRoles.Vampire or
                    CustomRoles.Poisoner or
                    CustomRoles.Assassin or
-                   CustomRoles.Escapee or
+                   CustomRoles.Escapist or
                    CustomRoles.Sniper or
                    CustomRoles.SerialKiller or
                    CustomRoles.SwordsMan or

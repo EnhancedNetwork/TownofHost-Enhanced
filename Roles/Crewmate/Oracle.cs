@@ -139,7 +139,7 @@ public static class Oracle
                 //      CustomRoles.Assassin or
                 //      CustomRoles.Anonymous or
                 //      CustomRoles.Miner or
-                //      CustomRoles.Escapee or
+                //      CustomRoles.Escapist or
                 //      CustomRoles.Mercenary or
                 // //     CustomRoles.Mare or
                 //      CustomRoles.Inhibitor or

@@ -211,7 +211,7 @@ public class Main : BasePlugin
     public static Dictionary<byte, bool> CheckShapeshift = [];
     public static Dictionary<byte, byte> ShapeshiftTarget = [];
     public static Dictionary<(byte, byte), string> targetArrows = [];
-    public static Dictionary<byte, Vector2> EscapeeLocation = [];
+    public static Dictionary<byte, Vector2> EscapistLocation = [];
     public static Dictionary<byte, Vector2> TimeMasterLocation = [];
     public static bool VisibleTasksCount = false;
     public static string nickName = "";
@@ -572,7 +572,7 @@ public enum CustomRoles
     Devourer,
     Disperser,
     Eraser,
-    Escapee, //escapist
+    Escapist, //escapist
     EvilGuesser,
     EvilMini,
     EvilTracker,

@@ -1020,7 +1020,7 @@ internal class ChatCommands
             "駭客" or "骇客" or "黑客" => GetString("Anonymous"),
             "礦工" or "矿工" => GetString("Miner"),
             "殺人機器" or "杀戮机器" or "杀戮" or "机器" or "杀戮兵器" => GetString("KillingMachine"),
-            "通緝犯" or "逃逸者" or "逃逸" => GetString("Escapee"),
+            "通緝犯" or "逃逸者" or "逃逸" => GetString("Escapist"),
             "女巫" => GetString("Witch"),
             "黑手黨" or "黑手党" or "黑手" => GetString("Mafia"),
             "傀儡師" or "傀儡师" or "傀儡" => GetString("Puppeteer"),

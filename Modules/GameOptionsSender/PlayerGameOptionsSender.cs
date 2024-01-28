@@ -150,9 +150,9 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.ShapeshifterCooldown = Main.isCursed ? 1f : Options.DefaultKillCooldown;
                 AURoleOptions.ShapeshifterDuration = Options.WarlockShiftDuration.GetFloat();
                 break;
-            case CustomRoles.Escapee:
-                AURoleOptions.ShapeshifterCooldown = Options.EscapeeSSCD.GetFloat();
-                AURoleOptions.ShapeshifterDuration = Options.EscapeeSSDuration.GetFloat();
+            case CustomRoles.Escapist:
+                AURoleOptions.ShapeshifterCooldown = Options.EscapistSSCD.GetFloat();
+                AURoleOptions.ShapeshifterDuration = Options.EscapistSSDuration.GetFloat();
                 break;
             case CustomRoles.Miner:
                 AURoleOptions.ShapeshifterCooldown = Options.MinerSSCD.GetFloat();
