@@ -847,7 +847,7 @@ public enum CustomRoles
     Reach,
     Rebound,
     Recruit,
-    Repairman,
+    //Repairman,
     Rogue,
     DualPersonality, //Schizophrenic
     Seer,

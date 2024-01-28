@@ -1183,9 +1183,6 @@ internal static class RPC
             case CustomRoles.SabotageMaster:
                 SabotageMaster.Add(targetId);
                 break;
-            case CustomRoles.Repairman:
-                Repairman.Add(targetId);
-                break;
             case CustomRoles.Snitch:
                 Snitch.Add(targetId);
                 break;

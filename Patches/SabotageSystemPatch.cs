@@ -308,15 +308,21 @@ public class SabotageSystemPatch
         {
             var playerRole = player.GetCustomRole();
 
-            if (player.Is(CustomRoles.KillingMachine)) return false;
+            if (player.Is(CustomRoleTypes.Impostor) && Options.DeadImpCantSabotage.GetBool() && !player.IsAlive())
+            {
+                return false;
+            }
+
+            if (player.Is(CustomRoles.KillingMachine))
+            {
+                return false;
+            }
 
             if (systemType is SystemTypes.Comms)
             {
                 if (playerRole.Is(CustomRoles.Camouflager) && !Camouflager.CanUseCommsSabotage.GetBool())
                     return false;
             }
-
-            if (player.Is(CustomRoleTypes.Impostor) && (player.IsAlive() || !Options.DeadImpCantSabotage.GetBool())) return true;
 
             switch (playerRole)
             {
@@ -346,7 +352,7 @@ public class SabotageSystemPatch
                     return true;
             }
 
-            return false;
+            return player.Is(CustomRoleTypes.Impostor);
         }
 
         public static void Postfix(SabotageSystemType __instance, bool __runOriginal)
