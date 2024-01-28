@@ -1639,6 +1639,7 @@ public static class CheckShapeShiftPatch
 
             case CustomRoles.Undertaker:
                 Undertaker.OnShapeshift(player, shapeshifting);
+                player.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 player.RejectShapeshiftAndReset();
                 return false;
 
@@ -1654,6 +1655,7 @@ public static class CheckShapeShiftPatch
 
             case CustomRoles.EvilTracker:
                 EvilTracker.OnShapeshift(player, target, shapeshifting);
+                player.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 player.RejectShapeshiftAndReset();
                 return false;
 
@@ -1669,6 +1671,7 @@ public static class CheckShapeShiftPatch
 
             case CustomRoles.Hacker:
                 Hacker.OnShapeshift(player, shapeshifting, target);
+                player.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 player.RejectShapeshiftAndReset();
                 return false;
 
@@ -1696,6 +1699,7 @@ public static class CheckShapeShiftPatch
 
             case CustomRoles.Bomber:
                 player.RejectShapeshiftAndReset();
+                player.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 Logger.Info("The bomb went off", "Bomber");
                 CustomSoundsManager.RPCPlayCustomSoundAll("Boom");
                 foreach (var tg in Main.AllPlayerControls)
@@ -1726,11 +1730,12 @@ public static class CheckShapeShiftPatch
                         }
                     }
                     Utils.NotifyRoles();
-                }, 1.5f, "Bomber Suiscide");
+                }, 0.5f, "Bomber Suiscide");
                 return false;
 
             case CustomRoles.Nuker:
                 player.RejectShapeshiftAndReset();
+                player.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 Logger.Info("The bomb went off", "Nuker");
                 CustomSoundsManager.RPCPlayCustomSoundAll("Boom");
                 foreach (var tg in Main.AllPlayerControls)
@@ -1757,7 +1762,7 @@ public static class CheckShapeShiftPatch
                         player.RpcMurderPlayerV3(player);
                     }
                     Utils.NotifyRoles();
-                }, 1.5f, "Nuker");
+                }, 0.5f, "Nuker");
                 return false;
 
             case CustomRoles.QuickShooter:
@@ -1767,6 +1772,7 @@ public static class CheckShapeShiftPatch
 
             case CustomRoles.Dazzler:
                 Dazzler.OnShapeshift(player, target);
+                player.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 player.RejectShapeshiftAndReset();
                 return false;
 
@@ -1787,6 +1793,7 @@ public static class CheckShapeShiftPatch
                     break;
                 }
                 Blackmailer.ForBlackmailer.Add(target.PlayerId);
+                player.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 player.RejectShapeshiftAndReset();
                 return false;
 
@@ -1797,6 +1804,7 @@ public static class CheckShapeShiftPatch
 
             case CustomRoles.Pitfall:
                 Pitfall.OnShapeshift(player);
+                player.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 player.RejectShapeshiftAndReset();
                 return false;
         }
