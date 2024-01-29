@@ -20,10 +20,10 @@ public class Warden
         IncreaseSpeed = FloatOptionItem.Create(Id + 11, "WardenIncreaseSpeed", new(1f, 3f, 0.5f), 1f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Warden])
             .SetValueFormat(OptionFormat.Times);
     }
-
+    
+    private static List<byte> IsAffected = [];
     public static bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
-        List<byte> IsAffected = [];
         var getTargetRole = target.GetCustomRole();
         if (CustomRolesHelper.IsSpeedRole(getTargetRole) || IsAffected.Contains(target.PlayerId)) goto Notifiers; // Incompactible speed-roles 
 
