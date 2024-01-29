@@ -426,6 +426,7 @@ internal class CustomRoleSelector
     {
         var getplrRole = player.GetCustomRole();
         if (!CustomRolesHelper.IsCrewmate(getplrRole) || GameStates.IsHideNSeek || CustomRolesHelper.IsGhostRole(getplrRole)) return; // imp/neutral ghost roles will be added later, rn only crewmates.
+        if (getplrRole == CustomRoles.Retributionist || getplrRole == CustomRoles.Mafia) return;
         GhostGetPreviousRole.Add(player.PlayerId, getplrRole);
 
         List<CustomRoles> HauntedList = [];
