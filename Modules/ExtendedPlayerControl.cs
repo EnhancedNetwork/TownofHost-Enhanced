@@ -172,6 +172,8 @@ static class ExtendedPlayerControl
 
     public static void RpcGuardAndKill(this PlayerControl killer, PlayerControl target = null, int colorId = 0, bool forObserver = false)
     {
+        if (!AmongUsClient.Instance.AmHost) return;
+
         if (target == null) target = killer;
 
         if (!forObserver && !MeetingStates.FirstMeeting)
@@ -185,13 +187,13 @@ static class ExtendedPlayerControl
             killer.MurderPlayer(target, MurderResultFlags.FailedProtected);
         }
         // Other Clients
-        if (killer.PlayerId != 0)
-        {
-            var writer = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable);
-            writer.WriteNetObject(target);
-            writer.Write((int)MurderResultFlags.FailedProtected);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-        }
+        //if (killer.PlayerId != 0)
+        //{
+        //    var writer = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable);
+        //    writer.WriteNetObject(target);
+        //    writer.Write((int)MurderResultFlags.FailedProtected);
+        //    AmongUsClient.Instance.FinishRpcImmediately(writer);
+        //}
     }
     public static void SetKillCooldownV2(this PlayerControl player, float time = -1f)
     {
