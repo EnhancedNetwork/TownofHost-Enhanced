@@ -1569,7 +1569,6 @@ class MurderPlayerPatch
         if (target.Is(CustomRoles.EvilSpirit)) 
         {
             target.RpcSetRole(RoleTypes.GuardianAngel);
-            target.RpcSetRoleDesync(RoleTypes.GuardianAngel, target.GetClientId());
         }
 
         Utils.AfterPlayerDeathTasks(target);

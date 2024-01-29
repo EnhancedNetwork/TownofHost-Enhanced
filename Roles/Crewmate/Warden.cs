@@ -23,10 +23,11 @@ public class Warden
 
     public static bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
+        List<byte> IsAffected = [];
         var getTargetRole = target.GetCustomRole();
-        if (CustomRolesHelper.IsSpeedRole(getTargetRole)) goto Notifiers; // Incompactible roles (speed-based) are ignored for the speed function
+        if (CustomRolesHelper.IsSpeedRole(getTargetRole) || IsAffected.Contains(target.PlayerId)) goto Notifiers; // Incompactible speed-roles 
 
-        
+        IsAffected.Add(target.PlayerId);
         target.MarkDirtySettings();
         var tmpSpeed = Main.AllPlayerSpeed[target.PlayerId];
         Main.AllPlayerSpeed[target.PlayerId] = Main.AllPlayerSpeed[target.PlayerId] + IncreaseSpeed.GetFloat();
@@ -34,6 +35,7 @@ public class Warden
 
         _ = new LateTask(() =>
         {
+            if (IsAffected.Contains(target.PlayerId)) IsAffected.Remove(target.PlayerId);
             Main.AllPlayerSpeed[target.PlayerId] = Main.AllPlayerSpeed[target.PlayerId] - Main.AllPlayerSpeed[target.PlayerId] + tmpSpeed;
             target.MarkDirtySettings();
         }, 2f);
