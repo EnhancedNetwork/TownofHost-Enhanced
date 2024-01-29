@@ -172,6 +172,8 @@ static class ExtendedPlayerControl
 
     public static void RpcGuardAndKill(this PlayerControl killer, PlayerControl target = null, int colorId = 0, bool forObserver = false)
     {
+        if (!AmongUsClient.Instance.AmHost) return;
+
         if (target == null) target = killer;
         if (!forObserver && !MeetingStates.FirstMeeting)
             Main.AllPlayerControls
