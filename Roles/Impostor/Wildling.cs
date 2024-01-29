@@ -87,11 +87,4 @@ public static class Wildling
         return str.ToString();
     }
 
-    public static void CanUseVent(PlayerControl player)
-    {
-        bool canUse = false;
-        DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(canUse && !player.Data.IsDead);
-        player.Data.Role.CanVent = canUse;
-    }
-
 }
