@@ -983,9 +983,9 @@ class CheckMurderPatch
                 return false;
             case CustomRoles.Pestilence: // 🗿🗿
                 if (killer != null && killer != target)
-                    { ExtendedPlayerControl.RpcMurderPlayerV3(killer, target); Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.PissedOff; }
+                    { Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.PissedOff; ExtendedPlayerControl.RpcMurderPlayerV3(killer, target); }
                     else if (target.GetRealKiller() != null && target.GetRealKiller() != target && killer != null)
-                        { ExtendedPlayerControl.RpcMurderPlayerV3(target.GetRealKiller(), target); Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.PissedOff; }
+                        { Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.PissedOff; ExtendedPlayerControl.RpcMurderPlayerV3(target.GetRealKiller(), target);  }
                 return false;
             case CustomRoles.NiceMini:
             case CustomRoles.EvilMini:
