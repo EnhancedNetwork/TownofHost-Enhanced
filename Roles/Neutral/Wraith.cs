@@ -94,8 +94,6 @@ public static class Wraith
     }
     public static void AfterMeetingTasks()
     {
-        if (!IsEnable) return;
-
         lastTime = [];
         InvisTime = [];
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => playerIdList.Contains(x.PlayerId)).ToArray())
@@ -156,7 +154,7 @@ public static class Wraith
                 ventedId.Remove(pc.PlayerId);
                 ventedId.Add(pc.PlayerId, ventId);
 
-                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, 34, SendOption.Reliable, pc.GetClientId());
+                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.BootFromVent, SendOption.Reliable, pc.GetClientId());
                 writer.WritePacked(ventId);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
 

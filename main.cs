@@ -40,14 +40,14 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.1.24.1502";
-    public const string PluginDisplayVersion = "1.5.0 Canary 2";
+    public const string PluginVersion = "2024.0128.151.1100"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "1.5.1 Canary 1.1";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public const bool Canary = true; 
-    public const bool fullRelease = false;
-    public const bool devRelease = false;
+    public const bool Canary = true; // ACTIVE - Latest: V1.5.1 Canary 1
+    public const bool fullRelease = false; // INACTIVE - Latest: V1.4.0
+    public const bool devRelease = false; // INACTIVE - Latest: V1.5.1 Dev 3
 
     public static bool hasAccess = true;
 
@@ -211,7 +211,7 @@ public class Main : BasePlugin
     public static Dictionary<byte, bool> CheckShapeshift = [];
     public static Dictionary<byte, byte> ShapeshiftTarget = [];
     public static Dictionary<(byte, byte), string> targetArrows = [];
-    public static Dictionary<byte, Vector2> EscapeeLocation = [];
+    public static Dictionary<byte, Vector2> EscapistLocation = [];
     public static Dictionary<byte, Vector2> TimeMasterLocation = [];
     public static bool VisibleTasksCount = false;
     public static string nickName = "";
@@ -457,11 +457,11 @@ public class Main : BasePlugin
         //TOHE.Logger.Disable("NotifyRoles");
         TOHE.Logger.Disable("SwitchSystem");
         TOHE.Logger.Disable("ModNews");
+        TOHE.Logger.Disable("CustomRpcSender");
         if (!DebugModeManager.AmDebugger)
         {
             TOHE.Logger.Disable("2018k");
             TOHE.Logger.Disable("Github");
-            TOHE.Logger.Disable("CustomRpcSender");
             //TOHE.Logger.Disable("ReceiveRPC");
             TOHE.Logger.Disable("SendRPC");
             TOHE.Logger.Disable("SetRole");
@@ -477,6 +477,7 @@ public class Main : BasePlugin
             //TOHE.Logger.Disable("CheckMurder");
             TOHE.Logger.Disable("PlayerControl.RpcSetRole");
             TOHE.Logger.Disable("SyncCustomSettings");
+            TOHE.Logger.Disable("DoNotifyRoles");
         }
         //TOHE.Logger.isDetail = true;
 
@@ -548,8 +549,8 @@ public enum CustomRoles
     ShapeshifterTOHE,
 
     //Impostor
-    Sans, //arrogance
-    Hacker, //anonymous
+    Arrogance,
+    Anonymous,
     AntiAdminer,
     Bard,
     Berserker,
@@ -571,11 +572,11 @@ public enum CustomRoles
     Devourer,
     Disperser,
     Eraser,
-    Escapee, //escapist
+    Escapist,
     EvilGuesser,
     EvilMini,
     EvilTracker,
-    FireWorks,
+    Fireworker,
     Gangster,
     Godfather,
     Greedier, //greedy
@@ -583,12 +584,12 @@ public enum CustomRoles
     Inhibitor,
     Instigator,
     Kamikaze,
-    Minimalism, //killing machine
+    KillingMachine,
     BallLightning, //Lightning
     Ludopath,
     Lurker,
     Mastermind,
-    SerialKiller, //mercenary
+    Mercenary, //mercenary
     Miner,
     Morphling,
     Mafia, //nemesis
@@ -657,7 +658,7 @@ public enum CustomRoles
     Guardian,
     GuessMaster,
     Grenadier,
-    ParityCop, //inspector
+    Inspector, //inspector
     Investigator,
     Jailer,
     Judge,
@@ -723,7 +724,7 @@ public enum CustomRoles
     Totocalcio, //follower
     Glitch,
     God,
-    FFF, //hater
+    Hater,
     HexMaster,
     Huntsman,
     Imitator,
@@ -759,7 +760,7 @@ public enum CustomRoles
     RuthlessRomantic,
     SchrodingersCat,
     Seeker,
-    NSerialKiller, //serial killer
+    SerialKiller, //serial killer
     Shaman,
     Shroud,
     Sidekick,
@@ -846,7 +847,7 @@ public enum CustomRoles
     Reach,
     Rebound,
     Recruit,
-    Repairman,
+    //Repairman,
     Rogue,
     DualPersonality, //Schizophrenic
     Seer,
@@ -914,7 +915,7 @@ public enum CustomWinner
     Wraith = CustomRoles.Wraith,
     Bandit = CustomRoles.Bandit,
     Pirate = CustomRoles.Pirate,
-    SerialKiller = CustomRoles.NSerialKiller,
+    SerialKiller = CustomRoles.SerialKiller,
     Werewolf = CustomRoles.Werewolf,
     Necromancer = CustomRoles.Necromancer,
     Huntsman = CustomRoles.Huntsman,
@@ -953,7 +954,7 @@ public enum AdditionalWinners
     Opportunist = CustomRoles.Opportunist,
     Executioner = CustomRoles.Executioner,
     Lawyer = CustomRoles.Lawyer,
-    FFF = CustomRoles.FFF,
+    Hater = CustomRoles.Hater,
     Provocateur = CustomRoles.Provocateur,
     Sunnyboy = CustomRoles.Sunnyboy,
     Witch = CustomRoles.NWitch,

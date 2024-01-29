@@ -120,8 +120,6 @@ public static class EvilTracker
     }
     public static void AfterMeetingTasks()
     {
-        if (!IsEnable) return;
-
         if (CurrentTargetMode == TargetMode.EveryMeeting)
         {
             SetTarget();

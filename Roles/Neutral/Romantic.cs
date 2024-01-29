@@ -123,11 +123,11 @@ public static class Romantic
         {
             BetTimes[killer.PlayerId]--;
 
-            if (BetPlayer.TryGetValue(killer.PlayerId, out var originalTarget) && Utils.GetPlayerById(originalTarget) != null)
-            {
-                Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: Utils.GetPlayerById(originalTarget), ForceLoop: true);
-                Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(originalTarget), SpecifyTarget: killer, ForceLoop: true);
-            }
+            //if (BetPlayer.TryGetValue(killer.PlayerId, out var originalTarget) && Utils.GetPlayerById(originalTarget) != null)
+            //{
+            //    Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: Utils.GetPlayerById(originalTarget), ForceLoop: true);
+            //    Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(originalTarget), SpecifyTarget: killer, ForceLoop: true);
+            //}
 
             BetPlayer.Remove(killer.PlayerId);
             BetPlayer.Add(killer.PlayerId, target.PlayerId);
@@ -138,10 +138,14 @@ public static class Romantic
             killer.RPCPlayCustomSound("Bet");
 
             killer.Notify(GetString("RomanticBetPlayer"));
+
             if (BetTargetKnowRomantic.GetBool())
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), GetString("RomanticBetOnYou")));
 
-            Logger.Info($"赌徒下注：{killer.GetNameWithRole()} => {target.GetNameWithRole()}", "Romantic");
+            Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
+            Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
+
+            Logger.Info($"Romantic：{killer.GetNameWithRole().RemoveHtmlTags()} bet player => {target.GetNameWithRole().RemoveHtmlTags()}", "Romantic");
         }
         else
         {
@@ -159,14 +163,22 @@ public static class Romantic
                 {
                     if (!GameStates.IsInTask || !tpc.IsAlive()) return;
                     isPartnerProtected = false;
-                    killer.Notify("ProtectingOver");
-                    tpc.Notify("ProtectingOver");
+                    killer.Notify(GetString("ProtectingOver"));
+                    tpc.Notify(GetString("ProtectingOver"));
                     killer.SetKillCooldown();
                 }, ProtectDuration.GetFloat(), "Romantic Protecting Is Over");
             }
         }
 
         return false;
+    }
+    public static string SelfMark(PlayerControl seer)
+    {
+        if (seer == null || seer.Is(CustomRoles.Romantic)) return string.Empty;
+        if (!BetPlayer.ContainsValue(seer.PlayerId)) return string.Empty;
+        if (!BetTargetKnowRomantic.GetBool()) return string.Empty;
+
+        return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), "♥");
     }
     public static string TargetMark(PlayerControl seer, PlayerControl target)
     {
@@ -206,12 +218,18 @@ public static class Romantic
         {
             Logger.Info($"Impostor Romantic Partner Died changing {pc.GetNameWithRole()} to Refugee", "Romantic");
             pc.RpcSetCustomRole(CustomRoles.Refugee);
+            Utils.NotifyRoles(ForceLoop: true);
+            pc.ResetKillCooldown();
+            pc.SetKillCooldown();
         }
         else if (player.IsNeutralKiller())
         {
             Logger.Info($"Neutral Romantic Partner Died changing {pc.GetNameWithRole()} to Ruthless Romantic", "Romantic");
             RuthlessRomantic.Add(Romantic);
             pc.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
+            Utils.NotifyRoles(ForceLoop: true);
+            pc.ResetKillCooldown();
+            pc.SetKillCooldown();
         }
         else
         {
@@ -223,11 +241,11 @@ public static class Romantic
                 VengefulRomantic.Add(pc.PlayerId, killerId);
                 VengefulRomantic.SendRPC(pc.PlayerId);
                 pc.RpcSetCustomRole(CustomRoles.VengefulRomantic);
+                Utils.NotifyRoles(ForceLoop: true);
+                pc.ResetKillCooldown();
+                pc.SetKillCooldown();
             }, 0.2f, "Convert to Vengeful Romantic");
         }
-
-        pc.ResetKillCooldown();
-        pc.SetKillCooldown();
     }
 }
 

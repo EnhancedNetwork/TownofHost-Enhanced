@@ -139,8 +139,6 @@ public static class Keeper
 
     public static void AfterMeetingTasks()
     {
-        if (!IsEnable) return;
-
         foreach (var pid in DidVote.Keys)
         {
             DidVote[pid] = false;

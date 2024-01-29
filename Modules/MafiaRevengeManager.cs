@@ -25,7 +25,7 @@ public static class MafiaRevengeManager
             return true;
         }
 
-        if (!pc.Data.IsDead)
+        if (pc.IsAlive())
         {
             Utils.SendMessage(GetString("MafiaAliveKill"), pc.PlayerId);
             return true;
@@ -69,7 +69,7 @@ public static class MafiaRevengeManager
             return true;
         }
 
-        if (target == null || target.Data.IsDead)
+        if (target == null || !target.IsAlive())
         {
             if (!isUI) Utils.SendMessage(GetString("MafiaKillDead"), pc.PlayerId);
             else pc.ShowPopUp(GetString("MafiaKillDead"));

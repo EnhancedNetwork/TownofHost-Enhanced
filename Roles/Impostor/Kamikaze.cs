@@ -80,7 +80,7 @@ public static class Kamikaze
         if (!kamikameha.IsAlive())
         {
             KamikazedList.Remove(kamikameha.PlayerId);
-            SendRPC(KamiId: KamikazedList[kamikameha.PlayerId], targetId:kamikameha.PlayerId, checkMurder:false); // to remove playerid
+            SendRPC(KamiId: byte.MaxValue, targetId:kamikameha.PlayerId, checkMurder:false); // to remove playerid
             return;
         }
         var kami = Utils.GetPlayerById(KamikazedList[kamikameha.PlayerId]);

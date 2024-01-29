@@ -346,17 +346,17 @@ class GameEndCheckerForNormal
                     }
                 }
 
-                //FFF
-                if (FFF.isWon)
+                // Hater
+                if (Hater.isWon)
                 {
-                    CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.FFF);
+                    CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Hater);
                     // You have a player id list, no need for another list; also use a for loop instead of LINQ
-                    //FFF.winnerFFFList.Do(x => CustomWinnerHolder.WinnerIds.Add(x));
-                    
-                    var FFFArray = FFF.playerIdList.ToArray();
-                    foreach (var FFF in FFFArray)
+                    //Hater.winnerHaterList.Do(x => CustomWinnerHolder.WinnerIds.Add(x));
+
+                    var HaterArray = Hater.playerIdList.ToArray();
+                    foreach (var Hater in HaterArray)
                     {
-                        CustomWinnerHolder.WinnerIds.Add(FFF);
+                        CustomWinnerHolder.WinnerIds.Add(Hater);
                     }
                 }
 
@@ -371,6 +371,7 @@ class GameEndCheckerForNormal
                         CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Totocalcio);
                     }
                 }
+
                 //Romantic win condition
                 foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Romantic)).ToArray())
                 {
@@ -408,6 +409,7 @@ class GameEndCheckerForNormal
                         CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.VengefulRomantic);
                     }
                 }
+
                 //Lawyer win cond
                 foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Lawyer)).ToArray())
                 {

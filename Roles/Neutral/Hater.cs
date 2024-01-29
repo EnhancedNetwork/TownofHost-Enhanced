@@ -4,7 +4,7 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
 
-public static class FFF
+public static class Hater
 {
     private static readonly int Id = 12900;
     public static List<byte> playerIdList = [];
@@ -26,17 +26,17 @@ public static class FFF
     public static bool isWon = false; // There's already a playerIdList, so replaced this with a boolean value
     public static void SetupCustomOption()
     {
-        SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.FFF, zeroOne: false);
-        MisFireKillTarget = BooleanOptionItem.Create(Id + 11, "FFFMisFireKillTarget", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.FFF]);
-        ChooseConverted = BooleanOptionItem.Create(Id + 12, "FFFChooseConverted", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.FFF]);
-        CanKillMadmate = BooleanOptionItem.Create(Id + 13, "FFFCanKillMadmate", true, TabGroup.NeutralRoles, false).SetParent(ChooseConverted);
-        CanKillCharmed = BooleanOptionItem.Create(Id + 14, "FFFCanKillCharmed", true, TabGroup.NeutralRoles, false).SetParent(ChooseConverted);
-        CanKillLovers = BooleanOptionItem.Create(Id + 15, "FFFCanKillLovers", true, TabGroup.NeutralRoles, false).SetParent(ChooseConverted);
-        CanKillSidekicks = BooleanOptionItem.Create(Id + 16, "FFFCanKillSidekick", true, TabGroup.NeutralRoles, false).SetParent(ChooseConverted);
-        CanKillEgoists = BooleanOptionItem.Create(Id + 17, "FFFCanKillEgoist", true, TabGroup.NeutralRoles, false).SetParent(ChooseConverted);
-        CanKillInfected = BooleanOptionItem.Create(Id + 18, "FFFCanKillInfected", true, TabGroup.NeutralRoles, false).SetParent(ChooseConverted);
-        CanKillContagious = BooleanOptionItem.Create(Id + 19, "FFFCanKillContagious", true, TabGroup.NeutralRoles, false).SetParent(ChooseConverted);
-        CanKillAdmired = BooleanOptionItem.Create(Id + 20, "FFFCanKillAdmired", true, TabGroup.NeutralRoles, false).SetParent(ChooseConverted);
+        SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Hater, zeroOne: false);
+        MisFireKillTarget = BooleanOptionItem.Create(Id + 11, "HaterMisFireKillTarget", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hater]);
+        ChooseConverted = BooleanOptionItem.Create(Id + 12, "HaterChooseConverted", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hater]);
+        CanKillMadmate = BooleanOptionItem.Create(Id + 13, "HaterCanKillMadmate", true, TabGroup.NeutralRoles, false).SetParent(ChooseConverted);
+        CanKillCharmed = BooleanOptionItem.Create(Id + 14, "HaterCanKillCharmed", true, TabGroup.NeutralRoles, false).SetParent(ChooseConverted);
+        CanKillLovers = BooleanOptionItem.Create(Id + 15, "HaterCanKillLovers", true, TabGroup.NeutralRoles, false).SetParent(ChooseConverted);
+        CanKillSidekicks = BooleanOptionItem.Create(Id + 16, "HaterCanKillSidekick", true, TabGroup.NeutralRoles, false).SetParent(ChooseConverted);
+        CanKillEgoists = BooleanOptionItem.Create(Id + 17, "HaterCanKillEgoist", true, TabGroup.NeutralRoles, false).SetParent(ChooseConverted);
+        CanKillInfected = BooleanOptionItem.Create(Id + 18, "HaterCanKillInfected", true, TabGroup.NeutralRoles, false).SetParent(ChooseConverted);
+        CanKillContagious = BooleanOptionItem.Create(Id + 19, "HaterCanKillContagious", true, TabGroup.NeutralRoles, false).SetParent(ChooseConverted);
+        CanKillAdmired = BooleanOptionItem.Create(Id + 20, "HaterCanKillAdmired", true, TabGroup.NeutralRoles, false).SetParent(ChooseConverted);
     }
 
     public static void Init()
