@@ -16,6 +16,7 @@ namespace TOHE;
 [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CheckForEndVoting))]
 class CheckForEndVotingPatch
 {
+    public static string TempExileMsg;
     public static bool Prefix(MeetingHud __instance)
     {
         if (!AmongUsClient.Instance.AmHost) return true;
@@ -63,10 +64,15 @@ class CheckForEndVotingPatch
                     });
                     states = [.. statesList];
 
-                    if (AntiBlackout.NeutralOverrideExiledPlayer || AntiBlackout.ImpostorOverrideExiledPlayer)
+                    if (AntiBlackout.BlackOutIsActive)
                     {
-                        __instance.RpcVotingComplete(states, null, true);
                         ExileControllerWrapUpPatch.AntiBlackout_LastExiled = voteTarget.Data;
+                        //__instance.RpcVotingComplete(states, null, true);
+
+                        // Need check BlackOutIsActive again
+                        if (AntiBlackout.BlackOutIsActive)
+                            __instance.AntiBlackRpcVotingComplete(states, voteTarget.Data, false);
+
                         AntiBlackout.ShowExiledInfo = true;
                         ConfirmEjections(voteTarget.Data, true);
                     }
@@ -424,10 +430,15 @@ class CheckForEndVotingPatch
             exiledPlayer?.Object.SetRealKiller(null);
 
             //RPC
-            if (AntiBlackout.NeutralOverrideExiledPlayer || AntiBlackout.ImpostorOverrideExiledPlayer)
+            if (AntiBlackout.BlackOutIsActive)
             {
-                __instance.RpcVotingComplete(states, null, true);
                 ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiledPlayer;
+                //__instance.RpcVotingComplete(states, null, true);
+
+                // Need check BlackOutIsActive again
+                if (AntiBlackout.BlackOutIsActive)
+                    __instance.AntiBlackRpcVotingComplete(states, exiledPlayer, tie);
+
                 if (exiledPlayer != null)
                 {
                     AntiBlackout.ShowExiledInfo = true;
@@ -589,30 +600,34 @@ class CheckForEndVotingPatch
         }
 
     EndOfSession:
-
-
         name += "<size=0>";
-        if (!AntiBlackoutStore)
-        {
-            _ = new LateTask(() =>
-            {
-                Main.DoBlockNameChange = true;
-                if (GameStates.IsInGame)
-                {
-                    player.RpcSetName(name);
-                }
-            }, 3.0f, "Change Exiled Player Name");
+        TempExileMsg = name;
 
-            _ = new LateTask(() =>
+        _ = new LateTask(() =>
+        {
+            Main.DoBlockNameChange = true;
+            if (GameStates.IsInGame)
             {
-                if (GameStates.IsInGame && !player.Data.Disconnected)
-                {
-                    player.RpcSetName(realName);
-                    Main.DoBlockNameChange = false;
-                }
-            }, 11.5f, "Change Exiled Player Name Back");
-        }
-        else
+                player.RpcSetName(name);
+            }
+        }, 3.0f, "Change Exiled Player Name");
+
+        _ = new LateTask(() =>
+        {
+            if (GameStates.IsInGame && !player.Data.Disconnected)
+            {
+                player.RpcSetName(realName);
+                Main.DoBlockNameChange = false;
+            }
+
+            if (GameStates.IsInGame && player.Data.Disconnected)
+            {
+                player.Data.PlayerName = realName;
+                //Await Next Send Data or Next Meeting
+            }
+        }, 11.5f, "Change Exiled Player Name Back");
+
+        if (AntiBlackoutStore)
         {
             AntiBlackout.StoreExiledMessage = name;
             Logger.Info(AntiBlackout.StoreExiledMessage, "AntiBlackoutStore");
@@ -1077,21 +1092,13 @@ class MeetingHudStartPatch
         }
 
         // AntiBlackout Message
-        if (AntiBlackout.NeutralOverrideExiledPlayer)
+        if (AntiBlackout.BlackOutIsActive)
         {
             _ = new LateTask(() =>
             {
-                Utils.SendMessage(GetString("Warning.TemporaryAntiBlackoutFix"), 255, Utils.ColorString(Color.blue, GetString("AntiBlackoutFixTitle")), replay: true);
+                Utils.SendMessage(GetString("Warning.AntiBlackoutProtectionMsg"), 255, Utils.ColorString(Color.blue, GetString("AntiBlackoutProtectionTitle")), replay: true);
 
-            }, 5f, "Warning NeutralOverrideExiledPlayer");
-        }
-        else if (AntiBlackout.ImpostorOverrideExiledPlayer)
-        {
-            _ = new LateTask(() =>
-            {
-                Utils.SendMessage(GetString("Warning.OverrideExiledPlayer"), 255, Utils.ColorString(Color.red, GetString("DefaultSystemMessageTitle")), replay: true);
-
-            }, 5f, "Warning ImpostorOverrideExiledPlayer");
+            }, 5f, "Warning BlackOut Is Active");
         }
 
         if (AntiBlackout.ShowExiledInfo)
@@ -1153,7 +1160,7 @@ class MeetingHudStartPatch
             // Guesser Mode //
             if (Options.GuesserMode.GetBool())
             {
-                if (Options.CrewmatesCanGuess.GetBool() && seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Judge) && !seer.Is(CustomRoles.Lookout) && !seer.Is(CustomRoles.Swapper) && !seer.Is(CustomRoles.ParityCop))
+                if (Options.CrewmatesCanGuess.GetBool() && seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Judge) && !seer.Is(CustomRoles.Lookout) && !seer.Is(CustomRoles.Swapper) && !seer.Is(CustomRoles.Inspector))
                     if (!seer.Data.IsDead && !target.Data.IsDead)
                         pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + pva.NameText.text;
                 if (Options.ImpostorsCanGuess.GetBool() && seer.GetCustomRole().IsImpostor() && !seer.Is(CustomRoles.Councillor))
@@ -1233,7 +1240,7 @@ class MeetingHudStartPatch
                 //   case CustomRoles.Jackal:
                 //   case CustomRoles.Sidekick:
                 case CustomRoles.Poisoner:
-                case CustomRoles.NSerialKiller:
+                case CustomRoles.SerialKiller:
                 case CustomRoles.Werewolf:
                 case CustomRoles.Pelican:
                 case CustomRoles.DarkHide:
@@ -1297,9 +1304,9 @@ class MeetingHudStartPatch
                     if (!seer.Data.IsDead && !target.Data.IsDead)
                         pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doomsayer), target.PlayerId.ToString()) + " " + pva.NameText.text;
                     break;
-                case CustomRoles.ParityCop:
+                case CustomRoles.Inspector:
                     if (!seer.Data.IsDead && !target.Data.IsDead)
-                        pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.ParityCop), target.PlayerId.ToString()) + " " + pva.NameText.text;
+                        pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Inspector), target.PlayerId.ToString()) + " " + pva.NameText.text;
                     break;
 
                 case CustomRoles.Councillor:
@@ -1516,7 +1523,7 @@ class MeetingHudOnDestroyPatch
             Main.AllPlayerControls.Do(pc => RandomSpawn.CustomNetworkTransformPatch.NumOfTP[pc.PlayerId] = 0);
 
             Main.LastVotedPlayerInfo = null;
-            EAC.ReportTimes = new();
+            EAC.ReportTimes = [];
         }
     }
 }

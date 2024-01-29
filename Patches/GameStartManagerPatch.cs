@@ -340,7 +340,7 @@ public class GameStartRandomMap
 
         if (randomMaps.Count > 0)
         {
-            var mapsId = randomMaps[0];
+            var mapsId = randomMaps[rand.Next(randomMaps.Count)];
 
             Logger.Info($"{mapsId}", "Chance Select MapId");
             return mapsId;

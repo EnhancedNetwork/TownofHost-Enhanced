@@ -107,7 +107,7 @@ public static class Infectious
     {
         if (target.Is(CustomRoles.Pestilence)) return true;
         if (target.Is(CustomRoles.Infectious)) return true;
-        if (target.Is(CustomRoles.NSerialKiller)) return true;
+        if (target.Is(CustomRoles.SerialKiller)) return true;
 
         if (BiteLimit < 1) return false;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))

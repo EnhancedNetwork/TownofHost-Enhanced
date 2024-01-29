@@ -65,7 +65,7 @@ public static class Deputy
     public static bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && HandcuffLimit >= 1;
     public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
-        if (target.Is(CustomRoles.NSerialKiller)) return true;
+        if (target.Is(CustomRoles.SerialKiller)) return true;
         if (HandcuffLimit < 1) return false;
         if (CanBeHandcuffed(target))
         {

@@ -78,8 +78,6 @@ namespace TOHE.Roles.Crewmate
 
         public static void AfterMeetingTasks()
         {
-            if (!IsEnable) return;
-
             foreach (var spiritualist in playerIdList)
             {
                 PlayerControl player = Main.AllPlayerControls.FirstOrDefault(a => a.PlayerId == spiritualist);

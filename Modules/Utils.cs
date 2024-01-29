@@ -23,6 +23,8 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using MS.Internal.Xml.XPath;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -535,7 +537,7 @@ public static class Utils
             case CustomRoles.Sidekick:
             case CustomRoles.Poisoner:
             case CustomRoles.Necromancer:
-            case CustomRoles.NSerialKiller:
+            case CustomRoles.SerialKiller:
             case CustomRoles.Pyromaniac:
             case CustomRoles.Werewolf:
             case CustomRoles.Traitor:
@@ -564,7 +566,7 @@ public static class Utils
             case CustomRoles.Pelican:
             case CustomRoles.Medusa:
             case CustomRoles.Revolutionist:
-            case CustomRoles.FFF:
+            case CustomRoles.Hater:
             case CustomRoles.Gamer:
             case CustomRoles.HexMaster:
             //case CustomRoles.Occultist:
@@ -822,7 +824,7 @@ public static class Utils
                     ProgressText.Append(ColorString(TextColor7, $"({Completed7}/{taskState7.AllTasksCount})"));
                     ProgressText.Append(ColorString(TextColor71, $" <color=#ffffff>-</color> {Math.Round(Mediumshiper.ContactLimit[playerId], 1)}"));
                     break;
-                case CustomRoles.ParityCop:
+                case CustomRoles.Inspector:
                     var taskState8 = Main.PlayerStates?[playerId].GetTaskState();
                     Color TextColor8;
                     var TaskCompleteColor8 = Color.green;
@@ -831,10 +833,10 @@ public static class Utils
                     TextColor8 = comms ? Color.gray : NormalColor8;
                     string Completed8 = comms ? "?" : $"{taskState8.CompletedTasksCount}";
                     Color TextColor81;
-                    if (ParityCop.MaxCheckLimit[playerId] < 1) TextColor81 = Color.red;
+                    if (Inspector.MaxCheckLimit[playerId] < 1) TextColor81 = Color.red;
                     else TextColor81 = Color.white;
                     ProgressText.Append(ColorString(TextColor8, $"({Completed8}/{taskState8.AllTasksCount})"));
-                    ProgressText.Append(ColorString(TextColor81, $" <color=#ffffff>-</color> {Math.Round(ParityCop.MaxCheckLimit[playerId], 1)}"));
+                    ProgressText.Append(ColorString(TextColor81, $" <color=#ffffff>-</color> {Math.Round(Inspector.MaxCheckLimit[playerId], 1)}"));
                     break;
                 case CustomRoles.Oracle:
                     var taskState9 = Main.PlayerStates?[playerId].GetTaskState();
@@ -1051,8 +1053,8 @@ public static class Utils
                 case CustomRoles.Keeper:
                     ProgressText.Append(Keeper.GetProgressText(playerId, comms));
                     break;
-                case CustomRoles.Hacker:
-                    ProgressText.Append(Hacker.GetHackLimit(playerId));
+                case CustomRoles.Anonymous:
+                    ProgressText.Append(Anonymous.GetHackLimit(playerId));
                     break;
                 case CustomRoles.Killer:
                     ProgressText.Append(FFAManager.GetDisplayScore(playerId));
@@ -2139,8 +2141,8 @@ public static class Utils
                             SelfSuffix.Append(EvilTracker.GetTargetArrow(seer, seer));
                             break;
 
-                        case CustomRoles.FireWorks:
-                            SelfSuffix.Append(FireWorks.GetStateText(seer));
+                        case CustomRoles.Fireworker:
+                            SelfSuffix.Append(Fireworker.GetStateText(seer));
                             break;
 
                         case CustomRoles.AntiAdminer:
@@ -2571,9 +2573,9 @@ public static class Utils
                                         TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Judge), target.PlayerId.ToString()) + " " + TargetPlayerName;
                                     break;
 
-                                case CustomRoles.ParityCop:
+                                case CustomRoles.Inspector:
                                     if (seer.IsAlive() && target.IsAlive())
-                                        TargetPlayerName = ColorString(GetRoleColor(CustomRoles.ParityCop), target.PlayerId.ToString()) + " " + TargetPlayerName;
+                                        TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Inspector), target.PlayerId.ToString()) + " " + TargetPlayerName;
                                     break;
 
                                 case CustomRoles.Councillor:
@@ -2596,7 +2598,7 @@ public static class Utils
                                     var GetTragetId = ColorString(GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + TargetPlayerName;
 
                                     //Crewmates
-                                    if (Options.CrewmatesCanGuess.GetBool() && seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Judge) && !seer.Is(CustomRoles.ParityCop) && !seer.Is(CustomRoles.Lookout) && !seer.Is(CustomRoles.Swapper))
+                                    if (Options.CrewmatesCanGuess.GetBool() && seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Judge) && !seer.Is(CustomRoles.Inspector) && !seer.Is(CustomRoles.Lookout) && !seer.Is(CustomRoles.Swapper))
                                         TargetPlayerName = GetTragetId;
 
                                     else if (seer.Is(CustomRoles.NiceGuesser) && !Options.CrewmatesCanGuess.GetBool())
@@ -2625,9 +2627,9 @@ public static class Utils
                             {
                                 if (seer.IsAlive() && target.IsAlive())
                                 {
-                                    Logger.Warn($"Guesser condtion {(seer.Is(CustomRoles.Guesser) && !seer.Is(CustomRoles.ParityCop) && !seer.Is(CustomRoles.Swapper) && !seer.Is(CustomRoles.Lookout))}", "ID BUG");
+                                    Logger.Warn($"Guesser condtion {(seer.Is(CustomRoles.Guesser) && !seer.Is(CustomRoles.Inspector) && !seer.Is(CustomRoles.Swapper) && !seer.Is(CustomRoles.Lookout))}", "ID BUG");
                                     if (seer.Is(CustomRoles.NiceGuesser) || seer.Is(CustomRoles.EvilGuesser) ||
-                                        (seer.Is(CustomRoles.Guesser) && !seer.Is(CustomRoles.ParityCop) && !seer.Is(CustomRoles.Swapper) && !seer.Is(CustomRoles.Lookout)))
+                                        (seer.Is(CustomRoles.Guesser) && !seer.Is(CustomRoles.Inspector) && !seer.Is(CustomRoles.Swapper) && !seer.Is(CustomRoles.Lookout)))
                                         TargetPlayerName = ColorString(GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + TargetPlayerName;
                                 }
                             }
@@ -2708,37 +2710,39 @@ public static class Utils
             }
             Main.KilledAntidote.Clear();
         }
-        if (Blackmailer.IsEnable) Blackmailer.ForBlackmailer.Clear();
 
-        Swooper.AfterMeetingTasks();
-        Glitch.AfterMeetingTasks();
-        Wraith.AfterMeetingTasks();
-        Chameleon.AfterMeetingTasks();
-        Eraser.AfterMeetingTasks();
-        Cleanser.AfterMeetingTasks();
-        Keeper.AfterMeetingTasks();
-        BountyHunter.AfterMeetingTasks();
-        //Undertaker.AfterMeetingTasks();
-        EvilTracker.AfterMeetingTasks();
-        SerialKiller.AfterMeetingTasks();
-        Spiritualist.AfterMeetingTasks();
-        Penguin.AfterMeetingTasks();
-        Vulture.AfterMeetingTasks();
-        Taskinator.AfterMeetingTasks();
-        Benefactor.AfterMeetingTasks();
+        AntiBlackout.AfterMeetingTasks();
+
+        if (Eraser.IsEnable) Eraser.AfterMeetingTasks(notifyPlayer: false);
+        if (Cleanser.IsEnable) Cleanser.AfterMeetingTasks(notifyPlayer: false);
+        if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: false);
+        if (Seeker.IsEnable) Seeker.AfterMeetingTasks(notifyPlayer: false);
+
+        if (Blackmailer.IsEnable) Blackmailer.AfterMeetingTasks();
+        if (Swooper.IsEnable) Swooper.AfterMeetingTasks();
+        if (Chameleon.IsEnable) Chameleon.AfterMeetingTasks();
+        if (Wraith.IsEnable) Wraith.AfterMeetingTasks();
+        if (Glitch.IsEnable) Glitch.AfterMeetingTasks();
+        if (Keeper.IsEnable) Keeper.AfterMeetingTasks();
+        if (BountyHunter.IsEnable) BountyHunter.AfterMeetingTasks();
+        if (EvilTracker.IsEnable) EvilTracker.AfterMeetingTasks();
+        if (Mercenary.IsEnable) Mercenary.AfterMeetingTasks();
+        if (Spiritualist.IsEnable) Spiritualist.AfterMeetingTasks();
+        if (Penguin.IsEnable) Penguin.AfterMeetingTasks();
+        if (Taskinator.IsEnable) Taskinator.AfterMeetingTasks();
+        if (Benefactor.IsEnable) Benefactor.AfterMeetingTasks();
         if (PlagueDoctor.IsEnable) PlagueDoctor.AfterMeetingTasks();
-        //Baker.AfterMeetingTasks();
-        Jailer.AfterMeetingTasks();
-        CopyCat.AfterMeetingTasks();  //all crew after meeting task should be before this
-        Pirate.AfterMeetingTask();
-        Chronomancer.AfterMeetingTask();
-        Seeker.AfterMeetingTasks();
-        Solsticer.AfterMeetingTasks();
+        if (Jailer.IsEnable) Jailer.AfterMeetingTasks();
+        if (CopyCat.IsEnable) CopyCat.AfterMeetingTasks();  //all crew after meeting task should be before this
+        if (Pirate.IsEnable) Pirate.AfterMeetingTask();
+        if (Chronomancer.IsEnable) Chronomancer.AfterMeetingTask();
+        if (Solsticer.IsEnable) Solsticer.AfterMeetingTasks();
+        if (RiftMaker.IsEnable) RiftMaker.AfterMeetingTasks();
+
         Main.ShamanTarget = byte.MaxValue;
         Main.ShamanTargetChoosen = false;
         Main.BurstBodies.Clear();
         OverKiller.MurderTargetLateTask = [];
-        RiftMaker.AfterMeetingTasks();
 
 
         if (Options.AirshipVariableElectrical.GetBool())
