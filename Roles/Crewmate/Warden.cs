@@ -12,6 +12,7 @@ public class Warden
     private static readonly int Id = 27800;
     public static OptionItem AbilityCooldown;
     public static OptionItem IncreaseSpeed;
+    private static List<byte> IsAffected;
     public static void SetupCustomOptions()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Warden);
@@ -20,8 +21,10 @@ public class Warden
         IncreaseSpeed = FloatOptionItem.Create(Id + 11, "WardenIncreaseSpeed", new(1f, 3f, 0.5f), 1f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Warden])
             .SetValueFormat(OptionFormat.Times);
     }
-    
-    private static List<byte> IsAffected = [];
+    public static void Init()
+    {
+        IsAffected = [];
+    }
     public static bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
         var getTargetRole = target.GetCustomRole();

@@ -325,6 +325,7 @@ internal class ChangeRoleSettings
             Tracefinder.Init();
             Devourer.Init();
             PotionMaster.Init();
+            Warden.Init();
             NWitch.Init();
             Traitor.Init();
             Spiritualist.Init();
