@@ -25,7 +25,7 @@ There may be some improvement in performance
 - Fixed bug that the option that the CrowPostor can kill teammates is opposite to the actual situation
 - Fixed bug that Cursed targets still die after the witch dies or is ejected
 - Fixed bug that Kill button blinking constantly in Low Load Mode
-- Fixed bug that Arsonists, Revolutionist, Witche, Puppeteer, Vampire, and SerialKiller cannot use their skills normally in Low Load Mode
+- Fixed bug that Arsonists, Revolutionist, Witche, Puppeteer, Vampire, and Mercenary cannot use their skills normally in Low Load Mode
 - Fixed bug that the skill buttons of Guesser, Judge, and Mafia can still be used after the voting ends
 - Fixed bug that Local game doesn't show the number of players but a useless countdown
 - Fixed bug that Deceiver has tasks

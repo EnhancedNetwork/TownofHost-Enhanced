@@ -313,7 +313,7 @@ public class SabotageSystemPatch
                 return false;
             }
 
-            if (player.Is(CustomRoles.Minimalism))
+            if (player.Is(CustomRoles.KillingMachine))
             {
                 return false;
             }

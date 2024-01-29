@@ -57,7 +57,7 @@ enum CustomRPC
     RemoveExecutionerTarget,
     SetLawyerTarget,
     RemoveLawyerTarget,
-    SendFireWorksState,
+    SendFireworkerState,
     SetCurrentDousingTarget,
     SetEvilTrackerTarget,
     SetRealKiller,
@@ -90,7 +90,7 @@ enum CustomRPC
     SetDivinatorLimit,
     SetDivinatorTempLimit,
     SetBloodhoundLimit,
-    SetParityCopLimit,
+    SetInspectorLimit,
     KeeperRPC,
     SetOracleLimit,
     SetMediumLimit,
@@ -481,8 +481,8 @@ internal class RPCHandlerPatch
             case CustomRPC.RemoveLawyerTarget:
                 Lawyer.ReceiveRPC(reader, SetTarget: false);
                 break;
-            case CustomRPC.SendFireWorksState:
-                FireWorks.ReceiveRPC(reader);
+            case CustomRPC.SendFireworkerState:
+                Fireworker.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetCurrentDousingTarget:
                 byte arsonistId = reader.ReadByte();
@@ -627,7 +627,7 @@ internal class RPCHandlerPatch
                 Medic.ReceiveRPCForProtectList(reader);
                 break;
             case CustomRPC.SetHackerHackLimit:
-                Hacker.ReceiveRPC(reader);
+                Anonymous.ReceiveRPC(reader);
                 break;
             case CustomRPC.SyncPsychicRedList:
                 Psychic.ReceiveRPC(reader);
@@ -797,8 +797,8 @@ internal class RPCHandlerPatch
             case CustomRPC.SetMediumLimit:
                 Mediumshiper.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetParityCopLimit:
-                ParityCop.ReceiveRPC(reader);
+            case CustomRPC.SetInspectorLimit:
+                Inspector.ReceiveRPC(reader);
                 break;
             case CustomRPC.KeeperRPC:
                 Keeper.ReceiveRPC(reader);
@@ -1069,11 +1069,11 @@ internal static class RPC
             case CustomRoles.BountyHunter:
                 BountyHunter.Add(targetId);
                 break;
-            case CustomRoles.SerialKiller:
-                SerialKiller.Add(targetId);
+            case CustomRoles.Mercenary:
+                Mercenary.Add(targetId);
                 break;
-            case CustomRoles.FireWorks:
-                FireWorks.Add(targetId);
+            case CustomRoles.Fireworker:
+                Fireworker.Add(targetId);
                 break;
             case CustomRoles.TimeThief:
                 TimeThief.Add(targetId);
@@ -1292,8 +1292,8 @@ internal static class RPC
             case CustomRoles.Assassin:
                 Assassin.Add(targetId);
                 break;
-            case CustomRoles.Sans:
-                Sans.Add(targetId);
+            case CustomRoles.Arrogance:
+                Arrogance.Add(targetId);
                 break;
             case CustomRoles.Juggernaut:
                 Juggernaut.Add(targetId);
@@ -1301,8 +1301,8 @@ internal static class RPC
             case CustomRoles.Reverie:
                 Reverie.Add(targetId);
                 break;
-            case CustomRoles.Hacker:
-                Hacker.Add(targetId);
+            case CustomRoles.Anonymous:
+                Anonymous.Add(targetId);
                 break;
             case CustomRoles.Psychic:
                 Psychic.Add(targetId);
@@ -1316,8 +1316,8 @@ internal static class RPC
             case CustomRoles.President:
                 President.Add(targetId);
                 break;
-            case CustomRoles.ParityCop:
-                ParityCop.Add(targetId);
+            case CustomRoles.Inspector:
+                Inspector.Add(targetId);
                 break;
             case CustomRoles.Keeper:
                 Keeper.Add(targetId);
@@ -1424,8 +1424,8 @@ internal static class RPC
             case CustomRoles.Merchant:
                 Merchant.Add(targetId);
                 break;
-            case CustomRoles.NSerialKiller:
-                NSerialKiller.Add(targetId);
+            case CustomRoles.SerialKiller:
+                SerialKiller.Add(targetId);
                 break;
             case CustomRoles.Pyromaniac:
                 Pyromaniac.Add(targetId);

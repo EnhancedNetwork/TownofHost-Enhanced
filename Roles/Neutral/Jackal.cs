@@ -4,6 +4,7 @@ using Hazel;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.AddOns.Crewmate;
+using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
@@ -159,6 +160,9 @@ public static class Jackal
                 RecruitLimit[killer.PlayerId]--;
                 SendRPC(killer.PlayerId);
                 //if (!AttendantCantRoles.GetBool() && Mini.Age == 18 || !AttendantCantRoles.GetBool() &&  Mini.Age != 18 && !(target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
+                
+                if (CopyCat.playerIdList.Contains(target.PlayerId))
+                    CopyCat.Remove(target.PlayerId);
                 target.RpcSetCustomRole(CustomRoles.Sidekick);
 
                 if (!Main.ResetCamPlayerList.Contains(target.PlayerId))
