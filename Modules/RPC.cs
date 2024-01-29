@@ -86,6 +86,7 @@ enum CustomRPC
     SetSoulCollectorLimit,
     SyncSchrodingerData,
     SetPixieTargets,
+    SetInspectorLimit,
     KeeperRPC,
     SetPelicanEatenNum,
     SetAlchemistTimer,
@@ -745,6 +746,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetPixieTargets:
                 Pixie.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SetInspectorLimit:
+                Inspector.ReceiveRPC(reader);
                 break;
             case CustomRPC.KeeperRPC:
                 Keeper.ReceiveRPC(reader);
