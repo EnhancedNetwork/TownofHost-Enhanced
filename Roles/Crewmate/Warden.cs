@@ -35,9 +35,9 @@ public class Warden
 
         _ = new LateTask(() =>
         {
-            if (IsAffected.Contains(target.PlayerId)) IsAffected.Remove(target.PlayerId);
             Main.AllPlayerSpeed[target.PlayerId] = Main.AllPlayerSpeed[target.PlayerId] - Main.AllPlayerSpeed[target.PlayerId] + tmpSpeed;
             target.MarkDirtySettings();
+            if (IsAffected.Contains(target.PlayerId)) IsAffected.Remove(target.PlayerId);
         }, 2f);
 
     Notifiers:
