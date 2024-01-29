@@ -120,7 +120,6 @@ public static class Options
 
 
     // ------------ System Settings Tab ------------
-    public static OptionItem TemporaryAntiBlackoutFix;
     public static OptionItem GradientTagsOpt;
     public static OptionItem EnableKillerLeftCommand;
     public static OptionItem SeeEjectedRolesInMeeting;
@@ -196,6 +195,7 @@ public static class Options
 
     public static OptionItem NoGameEnd;
     public static OptionItem AllowConsole;
+    public static OptionItem DisableAntiBlackoutProtects;
 
     public static OptionItem RoleAssigningAlgorithm;
     public static OptionItem KPDCamouflageMode;
@@ -542,8 +542,8 @@ public static class Options
     public static OptionItem VindicatorAdditionalVote;
     public static OptionItem VindicatorHideVote;
 
-    public static OptionItem EscapeeSSDuration;
-    public static OptionItem EscapeeSSCD;
+    public static OptionItem EscapistSSDuration;
+    public static OptionItem EscapistSSCD;
 
     public static OptionItem MinerSSDuration;
     public static OptionItem MinerSSCD;
@@ -1088,9 +1088,12 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 27300 lasted id for roles/add-ons (Next use 27400)
+        // 27700 lasted id for roles/add-ons (Next use 27800)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
+
+        // You can use: 19900 (Was for Repairman)
+
 
         // Start Load Settings
         if (IsLoaded) return;
@@ -1208,7 +1211,7 @@ public static class Options
         /*
          * Arrogance
          */
-        Sans.SetupCustomOption();
+        Arrogance.SetupCustomOption();
 
         /*
          * Berserker
@@ -1348,9 +1351,9 @@ public static class Options
         /*
          * Killing Machine
          */
-        SetupRoleOptions(23800, TabGroup.ImpostorRoles, CustomRoles.Minimalism);
+        SetupRoleOptions(23800, TabGroup.ImpostorRoles, CustomRoles.KillingMachine);
         MNKillCooldown = FloatOptionItem.Create(23805, "KillCooldown", new(2.5f, 180f, 2.5f), 10f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Minimalism])
+            .SetParent(CustomRoleSpawnChances[CustomRoles.KillingMachine])
             .SetValueFormat(OptionFormat.Seconds);
 
         /*
@@ -1371,7 +1374,7 @@ public static class Options
         /*
          * Mercenary
          */
-        SerialKiller.SetupCustomOption();
+        Mercenary.SetupCustomOption();
 
         /*
          * Ninja
@@ -1478,7 +1481,7 @@ public static class Options
         /*
          * Fireworker
          */
-        FireWorks.SetupCustomOption();
+        Fireworker.SetupCustomOption();
 
         /*
          * Gangster
@@ -1548,12 +1551,12 @@ public static class Options
         /*
          * Escapist
          */
-        SetupRoleOptions(4000, TabGroup.ImpostorRoles, CustomRoles.Escapee);
-        EscapeeSSDuration = FloatOptionItem.Create(4002, "ShapeshiftDuration", new(1f, 180f, 1f), 1, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Escapee])
+        SetupRoleOptions(4000, TabGroup.ImpostorRoles, CustomRoles.Escapist);
+        EscapistSSDuration = FloatOptionItem.Create(4002, "ShapeshiftDuration", new(1f, 180f, 1f), 1, TabGroup.ImpostorRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Escapist])
             .SetValueFormat(OptionFormat.Seconds);
-        EscapeeSSCD = FloatOptionItem.Create(4003, "ShapeshiftCooldown", new(1f, 180f, 1f), 5f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Escapee])
+        EscapistSSCD = FloatOptionItem.Create(4003, "ShapeshiftCooldown", new(1f, 180f, 1f), 5f, TabGroup.ImpostorRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Escapist])
             .SetValueFormat(OptionFormat.Seconds);
 
         /*
@@ -1661,12 +1664,17 @@ public static class Options
         /*
          * Anonymous
          */
-        Hacker.SetupCustomOption();
+        Anonymous.SetupCustomOption();
 
         /*
          * Dazzler
          */
         Dazzler.SetupCustomOption();
+
+        /*
+         * Stealth
+         */
+        Stealth.SetupCustomOption();
 
         /*
          * Devourer
@@ -1682,6 +1690,11 @@ public static class Options
          * Pitfall
          */
         Pitfall.SetupCustomOption();
+
+        /*
+         * Penguin
+         */
+        Penguin.SetupCustomOption();
 
         /*
          * Twister
@@ -1930,7 +1943,7 @@ public static class Options
         /*
          * Inspector
          */
-        ParityCop.SetupCustomOption();
+        Inspector.SetupCustomOption();
 
         /*
          * Investigator
@@ -2216,7 +2229,7 @@ public static class Options
 
         Totocalcio.SetupCustomOption();
 
-        FFF.SetupCustomOption();
+        Hater.SetupCustomOption();
 
         Imitator.SetupCustomOption();
 
@@ -2423,7 +2436,7 @@ public static class Options
         if (!Quizmaster.InExperimental)
             Quizmaster.SetupCustomOption();
 
-        NSerialKiller.SetupCustomOption(); // Serial Killer
+        SerialKiller.SetupCustomOption(); // Serial Killer
 
         Shroud.SetupCustomOption();
 
@@ -2576,8 +2589,6 @@ public static class Options
         OverclockedReduction = FloatOptionItem.Create(19803, "OverclockedReduction", new(0f, 90f, 5f), 40f, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Overclocked])
             .SetValueFormat(OptionFormat.Percent);
-        
-        Repairman.SetupCustomOption(); //Repairman
         
         SetupAdtRoleOptions(20000, CustomRoles.Seer, canSetNum: true);
         ImpCanBeSeer = BooleanOptionItem.Create(20003, "ImpCanBeSeer", true, TabGroup.Addons, false)
@@ -2907,7 +2918,7 @@ public static class Options
         
         SetupAdtRoleOptions(23300, CustomRoles.Swift, canSetNum: true, tab: TabGroup.Addons);
 
-      //SetupAdtRoleOptions(23400, CustomRoles.Minimalism, canSetNum: true, tab: TabGroup.Addons);
+      //SetupAdtRoleOptions(23400, CustomRoles.KillingMachine, canSetNum: true, tab: TabGroup.Addons);
 
 
         TextOptionItem.Create(10000019, "RoleType.Misc", TabGroup.Addons) // NEUTRAL
@@ -2927,6 +2938,8 @@ public static class Options
         SetupLoversRoleOptionsToggle(23600);
         
         SetupAdtRoleOptions(23700, CustomRoles.Reach, canSetNum: true);
+
+        Rainbow.SetupCustomOptions();
         
         Workhorse.SetupCustomOption();
 
@@ -2978,6 +2991,8 @@ public static class Options
 
         Spiritcaller.SetupCustomOption();
 
+        PlagueDoctor.SetupCustomOption(); 
+
         // 副职
         TextOptionItem.Create(10000023, "OtherRoles.Addons", TabGroup.OtherRoles)
             .SetGameMode(CustomGameMode.Standard)
@@ -2991,10 +3006,6 @@ public static class Options
         #endregion
 
         #region System Settings
-        TemporaryAntiBlackoutFix = BooleanOptionItem.Create(60030, "TemporaryAntiBlackoutFix", true, TabGroup.SystemSettings, false)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetHeader(true)
-            .SetColor(Color.red);
         GradientTagsOpt = BooleanOptionItem.Create(60031, "EnableGadientTags", false, TabGroup.SystemSettings, false)
             .SetHeader(true);
         EnableKillerLeftCommand = BooleanOptionItem.Create(60040, "EnableKillerLeftCommand", true, TabGroup.SystemSettings, false)
@@ -3104,8 +3115,12 @@ public static class Options
         NoGameEnd = BooleanOptionItem.Create(60380, "NoGameEnd", false, TabGroup.SystemSettings, false)
             .SetColor(Color.red)
             .SetHeader(true);
-        AllowConsole = BooleanOptionItem.Create(60390, "AllowConsole", false, TabGroup.SystemSettings, false)
+        AllowConsole = BooleanOptionItem.Create(60382, "AllowConsole", false, TabGroup.SystemSettings, false)
             .SetColor(Color.red);
+        DisableAntiBlackoutProtects = BooleanOptionItem.Create(60384, "DisableAntiBlackoutProtects", false, TabGroup.SystemSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(Color.red);
+
         RoleAssigningAlgorithm = StringOptionItem.Create(60400, "RoleAssigningAlgorithm", roleAssigningAlgorithms, 4, TabGroup.SystemSettings, true)
             .RegisterUpdateValueEvent((object obj, OptionItem.UpdateValueEventArgs args) => IRandom.SetInstanceById(args.CurrentValue))
             .SetHeader(true);

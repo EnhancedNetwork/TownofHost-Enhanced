@@ -264,22 +264,14 @@ internal class CustomRoleSelector
     EndOfAssign:
 
         if (rd.Next(0, 100) < Options.SunnyboyChance.GetInt() && rolesToAssign.Remove(CustomRoles.Jester)) rolesToAssign.Add(CustomRoles.Sunnyboy);
-        if (rd.Next(0, 100) < Sans.BardChance.GetInt() && rolesToAssign.Remove(CustomRoles.Sans)) rolesToAssign.Add(CustomRoles.Bard);
+        if (rd.Next(0, 100) < Arrogance.BardChance.GetInt() && rolesToAssign.Remove(CustomRoles.Arrogance)) rolesToAssign.Add(CustomRoles.Bard);
         if (rd.Next(0, 100) < Vampire.VampiressChance.GetInt() && rolesToAssign.Remove(CustomRoles.Vampire)) rolesToAssign.Add(CustomRoles.Vampiress);
         if (rd.Next(0, 100) < Options.NukerChance.GetInt() && rolesToAssign.Remove(CustomRoles.Bomber)) rolesToAssign.Add(CustomRoles.Nuker);
 
-        if (NSerialKiller.HasSerialKillerBuddy.GetBool() && rolesToAssign.Contains(CustomRoles.NSerialKiller))
+        if (SerialKiller.HasSerialKillerBuddy.GetBool() && rolesToAssign.Contains(CustomRoles.SerialKiller))
         {
-            if (rd.Next(0, 100) < NSerialKiller.ChanceToSpawn.GetInt()) rolesToAssign.Add(CustomRoles.NSerialKiller);
-            //if (rd.Next(0, 100) < NSerialKiller.ChanceToSpawnAnother.GetInt()) rolesToAssign.Add(CustomRoles.NSerialKiller);
-        }
-
-        if (Options.NeutralKillingRolesMaxPlayer.GetInt() > 1 && !Options.TemporaryAntiBlackoutFix.GetBool())
-        {
-            _ = new LateTask(() =>
-            {
-                Logger.SendInGame(GetString("NeutralKillingBlackoutWarning"));
-            }, 4f, "Neutral Killing Blackout Warning");
+            if (rd.Next(0, 100) < SerialKiller.ChanceToSpawn.GetInt()) rolesToAssign.Add(CustomRoles.SerialKiller);
+            //if (rd.Next(0, 100) < SerialKiller.ChanceToSpawnAnother.GetInt()) rolesToAssign.Add(CustomRoles.SerialKiller);
         }
 
         if (Romantic.IsEnable)
@@ -293,8 +285,8 @@ internal class CustomRoleSelector
             }
         }
 
-        /*  if (!rolesToAssign.Contains(CustomRoles.Lovers) && rolesToAssign.Contains(CustomRoles.FFF) || !rolesToAssign.Contains(CustomRoles.Ntr) && rolesToAssign.Contains(CustomRoles.FFF))
-              rolesToAssign.Remove(CustomRoles.FFF); 
+        /*  if (!rolesToAssign.Contains(CustomRoles.Lovers) && rolesToAssign.Contains(CustomRoles.Hater) || !rolesToAssign.Contains(CustomRoles.Ntr) && rolesToAssign.Contains(CustomRoles.Hater))
+              rolesToAssign.Remove(CustomRoles.Hater); 
               rolesToAssign.Add(CustomRoles.Jester); */
 
         /*   if (!Options.DisableSaboteur.GetBool()) // no longer hidden
@@ -402,7 +394,7 @@ internal class CustomRoleSelector
         }
     }
 
-    public static List<CustomRoles> AddonRolesList = new();
+    public static List<CustomRoles> AddonRolesList = [];
     public static void SelectAddonRoles()
     {
         if (Options.CurrentGameMode == CustomGameMode.FFA) return;

@@ -66,13 +66,13 @@ public static class HudSpritePatch
                 newKillButton = CustomButton.Get("Douse");
                 if (player.IsDouseDone() || (Options.ArsonistCanIgniteAnytime.GetBool() && Utils.GetDousedPlayerCount(player.PlayerId).Item1 >= Options.ArsonistMinPlayersToIgnite.GetInt())) newVentButton = CustomButton.Get("Ignite");
                 break;
-            case CustomRoles.FireWorks:
-                if (FireWorks.nowFireWorksCount[player.PlayerId] == 0)
+            case CustomRoles.Fireworker:
+                if (Fireworker.nowFireworkerCount[player.PlayerId] == 0)
                     newAbilityButton = CustomButton.Get("FireworkD");
                 else
                     newAbilityButton = CustomButton.Get("FireworkP");
                 break;
-            case CustomRoles.Hacker:
+            case CustomRoles.Anonymous:
                 newAbilityButton = CustomButton.Get("Hack");
                 break;
             case CustomRoles.Hangman:
@@ -156,7 +156,7 @@ public static class HudSpritePatch
             case CustomRoles.Wraith:
                 newAbilityButton = CustomButton.Get("invisible");
                 break;
-            case CustomRoles.Escapee:
+            case CustomRoles.Escapist:
                 newAbilityButton = CustomButton.Get("abscond");
                 break;
             case CustomRoles.Farseer:
@@ -165,6 +165,9 @@ public static class HudSpritePatch
             case CustomRoles.Jailer:
                 newKillButton = CustomButton.Get("penitentiary");
                 break;
+            //case CustomRoles.Penguin:
+            //    newAbilityButton = CustomButton.Get("Timer");
+            //    break;
             case CustomRoles.Agitater:
                 newKillButton = CustomButton.Get("bombshell");
                 break;

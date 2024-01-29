@@ -139,7 +139,7 @@ public static class Seeker
     public static byte GetTarget(PlayerControl player)
     {
         if (player == null) return 0xff;
-        if (Targets == null) Targets = [];
+        Targets ??= [];
 
         if (!Targets.TryGetValue(player.PlayerId, out var targetId))
             targetId = ResetTarget(player);
@@ -187,19 +187,29 @@ public static class Seeker
         FreezeSeeker(player);
         return targetId;
     }
-    public static void AfterMeetingTasks()
+    public static void AfterMeetingTasks(bool notifyPlayer = false)
     {
-        if (!IsEnable) return;
-
-        foreach (var id in playerIdList)
+        if (notifyPlayer)
         {
-            if (!Main.PlayerStates[id].IsDead)
+            foreach (var id in playerIdList.ToArray())
             {
-                FreezeSeeker(Utils.GetPlayerById(id));
-                var targetId = GetTarget(Utils.GetPlayerById(id));
-                Utils.GetPlayerById(id).Notify(string.Format(GetString("SeekerNotify"), Utils.GetPlayerById(targetId).GetRealName()));
-                Utils.GetPlayerById(targetId).Notify(GetString("SeekerTargetNotify"));
+                if (!Main.PlayerStates[id].IsDead)
+                {
+                    var targetId = GetTarget(Utils.GetPlayerById(id));
+                    Utils.GetPlayerById(id).Notify(string.Format(GetString("SeekerNotify"), Utils.GetPlayerById(targetId).GetRealName()));
+                    Utils.GetPlayerById(targetId).Notify(GetString("SeekerTargetNotify"));
 
+                }
+            }
+        }
+        else
+        {
+            foreach (var id in playerIdList.ToArray())
+            {
+                if (!Main.PlayerStates[id].IsDead)
+                {
+                    FreezeSeeker(Utils.GetPlayerById(id));
+                }
             }
         }
     }

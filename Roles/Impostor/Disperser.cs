@@ -29,9 +29,9 @@ public static class Disperser
     {
         foreach (var pc in PlayerControl.AllPlayerControls)
         {
-            if (shapeshifter.PlayerId == pc.PlayerId || pc.Data.IsDead || pc.onLadder || GameStates.IsMeeting)
+            if (shapeshifter.PlayerId == pc.PlayerId || !pc.CanBeTeleported())
             {
-                if (!pc.Is(CustomRoles.Disperser))
+                if (!pc.Is(CustomRoles.Disperser) && pc.IsAlive())
                     pc.Notify(ColorString(GetRoleColor(CustomRoles.Disperser), string.Format(GetString("ErrorTeleport"), pc.GetRealName())));
                 
                 continue;

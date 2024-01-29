@@ -97,8 +97,6 @@ public static class Pirate
     }
     public static void AfterMeetingTask()
     {
-        if (!IsEnable) return;
-
         var pirateId = playerIdList[0];
         if (PirateTarget != byte.MaxValue)
         {
