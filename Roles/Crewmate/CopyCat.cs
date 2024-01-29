@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -41,6 +42,11 @@ public static class CopyCat
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
+    }
+    public static void Remove(byte playerId) //only to be used when copycat's role is going to be changed permanently
+    {
+        playerIdList.Remove(playerId);
+        if (!playerIdList.Any()) IsEnable = false;
     }
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Utils.GetPlayerById(id).IsAlive() ? CurrentKillCooldown : 300f;
 
