@@ -434,7 +434,7 @@ internal class CustomRoleSelector
         CustomRoles ChosenRole = CustomRoles.NotAssigned;
         bool IsSetRole = false;
 
-        var IsCrewmate = CustomRolesHelper.IsCrewmate(getplrRole);
+        var IsCrewmate = CustomRolesHelper.IsCrewmate(getplrRole); 
         var IsImpostor = CustomRolesHelper.IsImpostor(getplrRole);
         var IsNeutral = CustomRolesHelper.IsNeutral(getplrRole);
 
@@ -446,7 +446,7 @@ internal class CustomRoleSelector
                 if (HauntedList.Contains(ghostRole) || !GhostAssign(ghostRole))
                     continue;
 
-                HauntedList.Add(ghostRole);
+                if(CustomRolesHelper.IsCrewmate(ghostRole)) HauntedList.Add(ghostRole);
             }
         foreach (var ghostRole in Options.CustomGhostRoleCounts.Keys) if (ghostRole.GetMode() == 1)
             {
@@ -456,7 +456,7 @@ internal class CustomRoleSelector
                 if (RateHauntedList.Contains(ghostRole) || !GhostAssign(ghostRole))
                     continue;
 
-                RateHauntedList.Add(ghostRole);
+                if (CustomRolesHelper.IsCrewmate(ghostRole)) RateHauntedList.Add(ghostRole);
             }
 
         
