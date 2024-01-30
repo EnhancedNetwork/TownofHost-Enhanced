@@ -431,7 +431,12 @@ internal class CustomRoleSelector
 
         List<CustomRoles> HauntedList = [];
         List<CustomRoles> RateHauntedList = [];
+        
+        List<CustomRoles> ImpHauntedList = [];
+        List<CustomRoles> ImpRateHauntedList = [];
+
         CustomRoles ChosenRole = CustomRoles.NotAssigned;
+
         bool IsSetRole = false;
 
         var IsCrewmate = CustomRolesHelper.IsCrewmate(getplrRole); 
@@ -440,23 +445,49 @@ internal class CustomRoleSelector
 
         foreach (var ghostRole in Options.CustomGhostRoleCounts.Keys) if (ghostRole.GetMode() == 2)
             {
-                if (HauntedList.Contains(ghostRole) && !GhostAssign(ghostRole))
-                    HauntedList.Remove(ghostRole);
+                if (CustomRolesHelper.IsCrewmate(ghostRole))
+                {
+                    if (HauntedList.Contains(ghostRole) && !GhostAssign(ghostRole))
+                        HauntedList.Remove(ghostRole);
+                    
+                    if (HauntedList.Contains(ghostRole) || !GhostAssign(ghostRole))
+                        continue;
 
-                if (HauntedList.Contains(ghostRole) || !GhostAssign(ghostRole))
-                    continue;
+                    HauntedList.Add(ghostRole); continue;
+                }
+                if (CustomRolesHelper.IsImpostor(ghostRole))
+                {
+                    if (ImpHauntedList.Contains(ghostRole) && !GhostAssign(ghostRole))
+                        ImpHauntedList.Remove(ghostRole);
 
-                if(CustomRolesHelper.IsCrewmate(ghostRole)) HauntedList.Add(ghostRole);
+                    if (ImpHauntedList.Contains(ghostRole) || !GhostAssign(ghostRole))
+                        continue;
+
+                    ImpHauntedList.Add(ghostRole); 
+                }
             }
         foreach (var ghostRole in Options.CustomGhostRoleCounts.Keys) if (ghostRole.GetMode() == 1)
             {
-                if (RateHauntedList.Contains(ghostRole) && !GhostAssign(ghostRole))
-                    RateHauntedList.Remove(ghostRole);
+                if (CustomRolesHelper.IsCrewmate(ghostRole))
+                {
+                    if (RateHauntedList.Contains(ghostRole) && !GhostAssign(ghostRole))
+                        RateHauntedList.Remove(ghostRole);
 
-                if (RateHauntedList.Contains(ghostRole) || !GhostAssign(ghostRole))
-                    continue;
+                    if (RateHauntedList.Contains(ghostRole) || !GhostAssign(ghostRole))
+                        continue;
 
-                if (CustomRolesHelper.IsCrewmate(ghostRole)) RateHauntedList.Add(ghostRole);
+                    RateHauntedList.Add(ghostRole); continue;
+                }
+                if (CustomRolesHelper.IsImpostor(ghostRole))
+                {
+                    if (ImpRateHauntedList.Contains(ghostRole) && !GhostAssign(ghostRole))
+                        ImpRateHauntedList.Remove(ghostRole);
+
+                    if (ImpRateHauntedList.Contains(ghostRole) || !GhostAssign(ghostRole))
+                        continue;
+
+                    ImpRateHauntedList.Add(ghostRole); 
+                }
             }
 
         
@@ -478,15 +509,37 @@ internal class CustomRoleSelector
                 ChosenRole = RateHauntedList[randindx];
 
             }
-
-            player.RpcSetRole(RoleTypes.GuardianAngel);
-            player.RpcSetCustomRole(ChosenRole);
+            if (ChosenRole != CustomRoles.NotAssigned) 
+            {
+                player.RpcSetRole(RoleTypes.GuardianAngel);
+                player.RpcSetCustomRole(ChosenRole);
+            }
             return;
         }
 
 
         if (IsImpostor)
         {
+            if (ImpHauntedList.Count > 0)
+            {
+                System.Random rnd = new System.Random();
+                int randindx = rnd.Next(ImpHauntedList.Count);
+                ChosenRole = ImpHauntedList[randindx];
+                IsSetRole = true;
+
+            }
+            else if (ImpRateHauntedList.Count > 0 && !IsSetRole)
+            {
+                System.Random rnd = new System.Random();
+                int randindx = rnd.Next(ImpHauntedList.Count);
+                ChosenRole = ImpRateHauntedList[randindx];
+
+            }
+            if (ChosenRole != CustomRoles.NotAssigned)
+            {
+                player.RpcSetRole(RoleTypes.GuardianAngel);
+                player.RpcSetCustomRole(ChosenRole);
+            }
             return;
         }
 

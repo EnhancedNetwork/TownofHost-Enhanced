@@ -11,6 +11,7 @@ public static class Camouflager
     public static OptionItem CanUseCommsSabotage;
     public static OptionItem DisableReportWhenCamouflageIsActive;
 
+
     public static bool AbilityActivated;
 
     public static void SetupCustomOption()
