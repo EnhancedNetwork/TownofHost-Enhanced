@@ -94,6 +94,7 @@ static class CustomRolesHelper
                 CustomRoles.God => CustomRoles.Crewmate,
                 CustomRoles.GuardianAngelTOHE => CustomRoles.GuardianAngel,
                 CustomRoles.Warden => CustomRoles.GuardianAngel,
+                CustomRoles.Minion => CustomRoles.GuardianAngel,
                 CustomRoles.Zombie => CustomRoles.Impostor,
                 CustomRoles.Mario => CustomRoles.Engineer,
                 CustomRoles.AntiAdminer => CustomRoles.Impostor,
@@ -291,7 +292,9 @@ static class CustomRolesHelper
         return role is
             CustomRoles.GuardianAngelTOHE or
             CustomRoles.EvilSpirit or
-            CustomRoles.Warden;
+            CustomRoles.Warden or
+            CustomRoles.Minion;
+
     }
     public static bool IsAdditionRole(this CustomRoles role)
     {

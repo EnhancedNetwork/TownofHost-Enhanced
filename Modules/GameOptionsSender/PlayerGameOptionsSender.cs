@@ -487,6 +487,9 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Warden:
                 AURoleOptions.GuardianAngelCooldown = Warden.AbilityCooldown.GetFloat();
                 break;
+            case CustomRoles.Minion:
+                AURoleOptions.GuardianAngelCooldown = Minion.AbilityCooldown.GetFloat();
+                break;
             default:
                 opt.SetVision(false);
                 break;

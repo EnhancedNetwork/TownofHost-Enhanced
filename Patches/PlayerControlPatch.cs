@@ -74,6 +74,9 @@ class CheckProtectPatch
             case CustomRoles.Warden:
                 return Warden.OnCheckProtect(angel, target);
 
+            case CustomRoles.Minion:
+                return Minion.OnCheckProtect(angel, target);
+
             default:
                 break;
         }

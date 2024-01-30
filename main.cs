@@ -593,6 +593,7 @@ public enum CustomRoles
     Miner,
     Morphling,
     Mafia, //nemesis
+    Minion,
     Assassin, //ninja
     Nuker,
     Parasite,

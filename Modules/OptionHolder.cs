@@ -1093,8 +1093,6 @@ public static class Options
         // 27800 lasted id for roles/add-ons (Next use 27900)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
-
-        // You can use: 19900 (Was for Repairman), please remove this string once you do.
       
         // Start Load Settings
         if (IsLoaded) return;
@@ -1733,6 +1731,12 @@ public static class Options
         ParasiteCD = FloatOptionItem.Create(5902, "KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Parasite])
             .SetValueFormat(OptionFormat.Seconds);
+
+        TextOptionItem.Create(10000111, "RoleType.ImpGhost", TabGroup.ImpostorRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(255, 25, 25, byte.MaxValue));
+
+        Minion.SetupCustomOption();
 
         #endregion
 
@@ -3936,6 +3940,11 @@ public static class Options
         .SetParent(spawnOption)
             .SetHidden(true)
             .SetGameMode(customGameMode);
+
+        if (CustomRolesHelper.IsGhostRole(role))
+        {
+            CustomGhostRoleCounts.Add(role, countOption);
+        }
 
         CustomRoleSpawnChances.Add(role, spawnOption);
         CustomRoleCounts.Add(role, countOption);

@@ -304,6 +304,7 @@
   "PotionMaster": "Potion Master",
   "Necromancer": "Necromancer",
   "Warden": "Warden",
+  "Minion": "Minion",
   "LastImpostor": "Last Impostor",
   "Overclocked": "Overclocked",
   "Lovers": "Lovers",
@@ -730,6 +731,7 @@
   "PotionMasterInfo": "Use your potions to your advantage",
   "NecromancerInfo": "Kill your killer to defy death",
   "WardenInfo": "(Ghost) Alert about danger",
+  "MinionInfo": "(Ghost) Reset Impostor Cooldowns",
   "LoversInfo": "Stay alive and win together",
   "MadmateInfo": "Help the Impostors",
   "NtrInfo": "Everyone sees you as their Lover",
@@ -1101,6 +1103,7 @@
   "BardInfoLong": "(Impostors):\nWhen a bard is alive, the exile confirmation will display a sentence composed by the bard. Whenever the bard completes a creation, the bard's kill cooldown is permanently halved.",
   "NukerInfoLong": "(Impostors):\nAs the Nuker, you're a stronger Bomber.\n\nShapeshift to nuke everyone.",
   "WardenInfoLong": "(Crewmates [Ghost]):\nAs the Warden, alert someone of nearby danger, additionally giving them a temporary speed boost.",
+  "MinionInfoLong":  "(Impostor [Ghost]):\nAs the Minion, you can skip fellow impostors kill cooldown.",
   "ShowTextOverlay": "Text Overlay",
   "Overlay.GuesserMode": "<size=50%>Guesser Mode</size>",
   "Overlay.NoGameEnd": "<size=50%>No Game End</size>",
@@ -3751,5 +3754,7 @@
   "WinnerRoleText.PlagueDoctor": "Plague Scientist Wins!",
 
   "WardenIncreaseSpeed": "Increase Speed By",
-  "WardenWarn": "DANGER! RUN!"
+  "WardenWarn": "DANGER! RUN!",
+
+  "MinionNotify":  "A minion skipped your KCD"
 }
