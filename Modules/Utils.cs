@@ -551,6 +551,7 @@ public static class Utils
             case CustomRoles.SoulCollector:
             case CustomRoles.SchrodingersCat:
             case CustomRoles.Parasite:
+            case CustomRoles.Minion:
             case CustomRoles.Crusader:
             case CustomRoles.Refugee:
             case CustomRoles.Jester:

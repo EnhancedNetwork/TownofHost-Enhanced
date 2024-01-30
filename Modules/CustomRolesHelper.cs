@@ -1879,6 +1879,7 @@ static class CustomRolesHelper
            CustomRoles.Bandit => CountTypes.Bandit,
            CustomRoles.Poisoner => CountTypes.Poisoner,
            CustomRoles.Pelican => CountTypes.Pelican,
+           CustomRoles.Minion => CountTypes.Impostor,
            CustomRoles.Gamer => CountTypes.Gamer,
            CustomRoles.BloodKnight => CountTypes.BloodKnight,
            CustomRoles.Succubus => CountTypes.Succubus,
