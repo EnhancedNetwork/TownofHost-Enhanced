@@ -981,7 +981,12 @@ class CheckMurderPatch
             case CustomRoles.Guardian when target.AllTasksCompleted():
             case CustomRoles.Monarch when CustomRoles.Knighted.RoleExist():
                 return false;
-
+            case CustomRoles.Pestilence: // 🗿🗿
+                if (killer != null && killer != target)
+                    { Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.PissedOff; ExtendedPlayerControl.RpcMurderPlayerV3(killer, target); }
+                    else if (target.GetRealKiller() != null && target.GetRealKiller() != target && killer != null)
+                        { Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.PissedOff; ExtendedPlayerControl.RpcMurderPlayerV3(target.GetRealKiller(), target);  }
+                return false;
             case CustomRoles.NiceMini:
             case CustomRoles.EvilMini:
                 if (Mini.Age < 18)
