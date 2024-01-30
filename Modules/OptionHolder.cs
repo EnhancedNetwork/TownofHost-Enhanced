@@ -1729,7 +1729,7 @@ public static class Options
         /*
          * Parasite
          */
-        SetupSingleRoleOptions(5900, TabGroup.ImpostorRoles, CustomRoles.Parasite, 1, zeroOne: false);
+        SetupSingleRoleOptions(5900, TabGroup.ImpostorRoles, CustomRoles.Parasite, zeroOne: false);
         ParasiteCD = FloatOptionItem.Create(5902, "KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Parasite])
             .SetValueFormat(OptionFormat.Seconds);
@@ -3926,7 +3926,7 @@ public static class Options
         CustomRoleCounts.Add(role, countOption);
     }
 
-    public static void SetupSingleRoleOptions(int id, TabGroup tab, CustomRoles role, int count, CustomGameMode customGameMode = CustomGameMode.Standard, bool zeroOne = false)
+    public static void SetupSingleRoleOptions(int id, TabGroup tab, CustomRoles role, int count = 1, CustomGameMode customGameMode = CustomGameMode.Standard, bool zeroOne = false)
     {
         var spawnOption = StringOptionItem.Create(id, role.ToString(), zeroOne ? ratesZeroOne : ratesToggle, 0, tab, false).SetColor(Utils.GetRoleColor(role))
             .SetHeader(true)

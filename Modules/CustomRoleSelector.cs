@@ -425,7 +425,7 @@ internal class CustomRoleSelector
     public static void GhostAssignPatch(PlayerControl player)
     {
         var getplrRole = player.GetCustomRole();
-        if (!CustomRolesHelper.IsCrewmate(getplrRole) || GameStates.IsHideNSeek || CustomRolesHelper.IsGhostRole(getplrRole)) return; // imp/neutral ghost roles will be added later, rn only crewmates.
+        if (GameStates.IsHideNSeek || CustomRolesHelper.IsGhostRole(getplrRole)) return;
         if (getplrRole == CustomRoles.Retributionist || getplrRole == CustomRoles.Mafia) return;
         GhostGetPreviousRole.Add(player.PlayerId, getplrRole);
 
@@ -433,6 +433,10 @@ internal class CustomRoleSelector
         List<CustomRoles> RateHauntedList = [];
         CustomRoles ChosenRole = CustomRoles.NotAssigned;
         bool IsSetRole = false;
+
+        var IsCrewmate = CustomRolesHelper.IsCrewmate(getplrRole);
+        var IsImpostor = CustomRolesHelper.IsImpostor(getplrRole);
+        var IsNeutral = CustomRolesHelper.IsNeutral(getplrRole);
 
         foreach (var ghostRole in Options.CustomGhostRoleCounts.Keys) if (ghostRole.GetMode() == 2)
             {
@@ -455,31 +459,43 @@ internal class CustomRoleSelector
                 RateHauntedList.Add(ghostRole);
             }
 
-        if (HauntedList.Count > 0)
+        
+
+        if (IsCrewmate)
         {
-            System.Random rnd = new System.Random();
-            int randindx = rnd.Next(HauntedList.Count);
-            ChosenRole = HauntedList[randindx];
-            IsSetRole = true;
-        }
-        else if (RateHauntedList.Count > 0 && !IsSetRole)
-        {
-            System.Random rnd = new System.Random();
-            int randindx = rnd.Next(HauntedList.Count);
-            ChosenRole = RateHauntedList[randindx];
+            if (HauntedList.Count > 0)
+            {
+                System.Random rnd = new System.Random();
+                int randindx = rnd.Next(HauntedList.Count);
+                ChosenRole = HauntedList[randindx];
+                IsSetRole = true;
+
+            }
+            else if (RateHauntedList.Count > 0 && !IsSetRole)
+            {
+                System.Random rnd = new System.Random();
+                int randindx = rnd.Next(HauntedList.Count);
+                ChosenRole = RateHauntedList[randindx];
+
+            }
+
+            player.RpcSetRole(RoleTypes.GuardianAngel);
+            player.RpcSetCustomRole(ChosenRole);
+            return;
         }
 
-        switch (ChosenRole)
-        {
-            case CustomRoles.Warden:
-                player.RpcSetRole(RoleTypes.GuardianAngel);
-                player.RpcSetCustomRole(CustomRoles.Warden);
-                break;
 
-            default:
-                break;
+        if (IsImpostor)
+        {
+            //To be added
         }
-    }
+
+        if (IsNeutral)
+        {
+            //To be added. But I don't see us having more than 1 or 2 neutral- ghosts.
+        }
+
+        }
     public static bool GhostAssign(CustomRoles role)
     {
         int getCount = Options.CustomGhostRoleCounts[role].GetInt();
