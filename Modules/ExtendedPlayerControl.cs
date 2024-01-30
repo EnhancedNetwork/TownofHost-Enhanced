@@ -1105,7 +1105,6 @@ static class ExtendedPlayerControl
                 if (Main.AllPlayerKillCooldown[player.PlayerId] == 1f) 
                 { 
                     Main.AllPlayerKillCooldown[player.PlayerId] = Options.DefaultKillCooldown;
-                    player.SyncSettings();
                 }
                 break;
 
