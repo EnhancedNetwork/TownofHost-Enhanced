@@ -22,7 +22,8 @@ public static class Minion
         var ImpPVC = CustomRolesHelper.IsImpostor(target.GetCustomRole());
         if (ImpPVC)
         {
-            Main.AllPlayerKillCooldown[target.PlayerId] = 1;
+            Main.AllPlayerKillCooldown[target.PlayerId] = 1f;
+            target.SyncSettings();
             target.Notify(GetString("MinionNotify"));
             killer.RpcResetAbilityCooldown();
         }

@@ -127,6 +127,8 @@ class CheckMurderPatch
         var killerRole = __instance.GetCustomRole();
         var targetRole = target.GetCustomRole();
 
+        if (Main.AllPlayerKillCooldown[killer.PlayerId] == 1f) { killer.ResetKillCooldown(); }
+
         Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}", "CheckMurder");
 
         // Killer is already dead
@@ -1381,6 +1383,8 @@ class MurderPlayerPatch
     }
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target/*, [HarmonyArgument(1)] MurderResultFlags resultFlags*/, bool __state)
     {
+        
+
         if (!__state)
         {
             return;

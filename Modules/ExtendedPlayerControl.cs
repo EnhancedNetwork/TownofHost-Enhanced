@@ -1101,6 +1101,14 @@ static class ExtendedPlayerControl
             case CustomRoles.Quizmaster:
                 Quizmaster.SetKillCooldown(player.PlayerId);
                 break;
+            default:
+                if (Main.AllPlayerKillCooldown[player.PlayerId] == 1f) 
+                { 
+                    Main.AllPlayerKillCooldown[player.PlayerId] = Options.DefaultKillCooldown;
+                    player.SyncSettings();
+                }
+                break;
+
         }
         if (player.PlayerId == LastImpostor.currentId)
             LastImpostor.SetKillCooldown();
