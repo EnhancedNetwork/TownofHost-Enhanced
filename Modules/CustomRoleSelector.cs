@@ -487,12 +487,12 @@ internal class CustomRoleSelector
 
         if (IsImpostor)
         {
-            //To be added
+            return;
         }
 
         if (IsNeutral)
         {
-            //To be added. But I don't see us having more than 1 or 2 neutral- ghosts.
+            return;
         }
 
         }
