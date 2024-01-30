@@ -754,7 +754,8 @@ static class CustomRolesHelper
             CustomRoles.EvilMini or
             CustomRoles.Blackmailer or
             CustomRoles.Pitfall or
-            CustomRoles.Instigator;
+            CustomRoles.Instigator or
+            CustomRoles.Minion;
     }
     public static bool IsNeutral(this CustomRoles role)
     {
