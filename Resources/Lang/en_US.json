@@ -1103,7 +1103,7 @@
   "BardInfoLong": "(Impostors):\nWhen a bard is alive, the exile confirmation will display a sentence composed by the bard. Whenever the bard completes a creation, the bard's kill cooldown is permanently halved.",
   "NukerInfoLong": "(Impostors):\nAs the Nuker, you're a stronger Bomber.\n\nShapeshift to nuke everyone.",
   "WardenInfoLong": "(Crewmates [Ghost]):\nAs the Warden, alert someone of nearby danger, additionally giving them a temporary speed boost.",
-  "MinionInfoLong":  "(Impostor [Ghost]):\nAs the Minion, you can skip fellow impostors kill cooldown.",
+  "MinionInfoLong": "(Impostor [Ghost]):\nAs the Minion, you can skip fellow impostors kill cooldown.",
   "ShowTextOverlay": "Text Overlay",
   "Overlay.GuesserMode": "<size=50%>Guesser Mode</size>",
   "Overlay.NoGameEnd": "<size=50%>No Game End</size>",
@@ -3457,6 +3457,7 @@
   "RoleType.ImpSupport": "<color=#00ffff>★</color> Impostor <color=#00ffff>Support</color> Roles",
   "RoleType.ImpConcealing": "<color=#6e003a>★</color> Impostor <color=#6e003a>Concealing</color> Roles",
   "RoleType.ImpHindering": "<color=#636363>★</color> Impostor <color=#636363>Hindering</color> Roles",
+  "RoleType.ImpGhost": "<color=#bd8b88>★</color> Impostor <color=#bd8b88>Ghost</color> Roles  /ghostinfo",
   "RoleType.Madmate": "★ Madmate Roles",
   "RoleType.CrewSupport": "<color=#00ffff>★</color> Crewmate <color=#00ffff>Support</color> Roles",
   "RoleType.CrewInvestigative": "<color=#008080>★</color> Crewmate <color=#008080>Investigative</color> Roles",
@@ -3756,5 +3757,5 @@
   "WardenIncreaseSpeed": "Increase Speed By",
   "WardenWarn": "DANGER! RUN!",
 
-  "MinionNotify":  "A minion skipped your KCD"
+  "MinionNotify": "A minion skipped your KCD"
 }
