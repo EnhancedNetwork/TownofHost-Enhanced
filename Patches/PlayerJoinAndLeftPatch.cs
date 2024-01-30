@@ -161,15 +161,14 @@ class OnPlayerJoinedPatch
         {
             try
             {
-                if (client.Character != null)
+                if (client.Character != null && Main.playerVersion.ContainsKey(client.Id))
                 {
                     RPC.RpcVersionCheck();
-                    Logger.Info("On player joined version check, target player id " + client.Character.PlayerId, "OnPlayerJoinedPatch");
+                    Logger.Info("On player joined version check, target is mod " + client.Character.PlayerId, "OnPlayerJoinedPatch");
                 }
-                else Logger.Error("New coming client character is null!" + client.Id, "OnPlayerJoinedPatch");
             }
             catch { }
-        }, 2.5f, "OnPlayerJoined Client<=>Client VersionCheck", false);
+        }, 3.5f, "OnPlayerJoined Client <=> Client VersionCheck", false);
 
 
         if (AmongUsClient.Instance.AmHost && client.FriendCode == "" && Options.KickPlayerFriendCodeNotExist.GetBool() && !GameStates.IsLocalGame)
