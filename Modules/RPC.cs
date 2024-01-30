@@ -152,6 +152,7 @@ enum CustomRPC
     SetBloodhoundArrow,
     SetBloodhoundkKillerArrow,
     SetVultureArrow,
+    SyncVultureBodyAmount,
     SetSpiritcallerSpiritLimit,
     SetDoomsayerProgress,
     SetTrackerTarget,
@@ -754,6 +755,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetVultureArrow:
                 Vulture.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SyncVultureBodyAmount:
+                Vulture.ReceiveBodyRPC(reader);
                 break;
             case CustomRPC.SetSpiritcallerSpiritLimit:
                 Spiritcaller.ReceiveRPC(reader);
