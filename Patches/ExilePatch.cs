@@ -243,7 +243,6 @@ class ExileControllerWrapUpPatch
             // Reset Kill/Ability cooldown
             player.ResetKillCooldown();
             player.RpcResetAbilityCooldown();
-            if (Main.AllPlayerKillCooldown[player.PlayerId] == 1f) { player.SyncSettings(); }
         }
 
         Main.MeetingIsStarted = false;

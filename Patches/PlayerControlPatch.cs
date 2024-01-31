@@ -127,8 +127,6 @@ class CheckMurderPatch
         var killerRole = __instance.GetCustomRole();
         var targetRole = target.GetCustomRole();
 
-        if (Main.AllPlayerKillCooldown[killer.PlayerId] == 1f) { killer.ResetKillCooldown(); killer.SyncSettings(); }
-
         Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}", "CheckMurder");
 
         // Killer is already dead
