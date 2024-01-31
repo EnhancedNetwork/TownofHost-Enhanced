@@ -513,7 +513,7 @@ class HudManagerPatch
                             CustomRoles.Glitch => Glitch.GetHudText(player),
                             CustomRoles.BloodKnight => BloodKnight.GetHudText(player),
                             CustomRoles.Wildling => Wildling.GetHudText(player),
-                            CustomRoles.PlagueDoctor => PlagueDoctor.GetLowerTextOthers(player, isForHud: true),
+                            CustomRoles.PlagueDoctor => PlagueDoctor.GetLowerTextOthers(player),
                             CustomRoles.Stealth => Stealth.GetSuffix(player, isHUD: true),
                             _ => string.Empty,
                         };

@@ -2429,6 +2429,8 @@ public static class Options
 
         PlagueBearer.SetupCustomOption();
 
+        PlagueDoctor.SetupCustomOption();
+
         PotionMaster.SetupCustomOption();
 
         Pyromaniac.SetupCustomOption();
@@ -2990,8 +2992,6 @@ public static class Options
             Quizmaster.SetupCustomOption();
 
         Spiritcaller.SetupCustomOption();
-
-        PlagueDoctor.SetupCustomOption(); 
 
         // 副职
         TextOptionItem.Create(10000023, "OtherRoles.Addons", TabGroup.OtherRoles)
