@@ -87,7 +87,7 @@
 > - Provided role: Swapper
 ### :star: [Stellar Roles](https://github.com/Mr-Fluuff/StellarRolesAU)
 >
-> - Provided role: ParityCop (Inspector)
+> - Provided role: Inspector (Inspector)
 
 ---
 

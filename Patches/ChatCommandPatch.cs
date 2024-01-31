@@ -55,7 +55,7 @@ internal class ChatCommands
         if (GuessManager.GuesserMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Judge.TrialMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (President.EndMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
-        if (ParityCop.ParityCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
+        if (Inspector.InspectCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Pirate.DuelCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Councillor.MurderMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Mediumshiper.MsMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
@@ -1009,18 +1009,18 @@ internal class ChatCommands
 
             // 内鬼阵营职业
             "賞金獵人" or "赏金猎人" or "赏金" => GetString("BountyHunter"),
-            "煙火工匠" or "烟花商人" or "烟花爆破者" or "烟花" => GetString("FireWorks"),
-            "嗜血殺手" or "嗜血杀手" or "嗜血" => GetString("SerialKiller"),
+            "煙火工匠" or "烟花商人" or "烟花爆破者" or "烟花" => GetString("Fireworker"),
+            "嗜血殺手" or "嗜血杀手" or "嗜血" => GetString("Mercenary"),
             "百变怪" or "千面鬼" or "千面" => GetString("ShapeMaster"),
             "吸血鬼" or "吸血" => GetString("Vampire"),
             "吸血鬼之王" or "吸血鬼女王"  => GetString("Vampiress"),
             "術士" or "术士" => GetString("Warlock"),
             "刺客" or "忍者" => GetString("Assassin"),
             "僵屍" or "僵尸" or"殭屍" or "丧尸" => GetString("Zombie"),
-            "駭客" or "骇客" or "黑客" => GetString("Hacker"),
+            "駭客" or "骇客" or "黑客" => GetString("Anonymous"),
             "礦工" or "矿工" => GetString("Miner"),
-            "殺人機器" or "杀戮机器" or "杀戮" or "机器" or "杀戮兵器" => GetString("Minimalism"),
-            "通緝犯" or "逃逸者" or "逃逸" => GetString("Escapee"),
+            "殺人機器" or "杀戮机器" or "杀戮" or "机器" or "杀戮兵器" => GetString("KillingMachine"),
+            "通緝犯" or "逃逸者" or "逃逸" => GetString("Escapist"),
             "女巫" => GetString("Witch"),
             "黑手黨" or "黑手党" or "黑手" => GetString("Mafia"),
             "傀儡師" or "傀儡师" or "傀儡" => GetString("Puppeteer"),
@@ -1032,7 +1032,7 @@ internal class ChatCommands
             "邪惡的追踪者" or "邪恶追踪者" or "邪恶的追踪者" => GetString("EvilTracker"),
             "邪惡賭怪" or "邪恶赌怪" or "坏赌" or "恶赌" or "邪恶赌怪" => GetString("EvilGuesser"),
             "監管者" or "监管者" or "监管" => GetString("AntiAdminer"),
-            "狂妄殺手" or "狂妄杀手" => GetString("Sans"),
+            "狂妄殺手" or "狂妄杀手" => GetString("Arrogance"),
             "自爆兵" or "自爆" => GetString("Bomber"),
             "清道夫" or "清道" => GetString("Scavenger"),
             "陷阱師" or "诡雷" => GetString("BoobyTrap"),
@@ -1132,7 +1132,7 @@ internal class ChatCommands
             "先知" or "神谕" or "神谕者" => GetString("Oracle"),
             "靈魂論者" or "灵魂论者" => GetString("Spiritualist"),
             "變色龍" or "变色龙" or "变色" => GetString("Chameleon"),
-            "檢查員" or "检查员" or "检查" => GetString("ParityCop"),
+            "檢查員" or "检查员" or "检查" => GetString("Inspector"),
             "仰慕者" or "仰慕" => GetString("Admirer"),
             "時間之主" or "时间之主" or "回溯时间" => GetString("TimeMaster"),
             "十字軍" or "十字军" => GetString("Crusader"),
@@ -1168,7 +1168,7 @@ internal class ChatCommands
             "冤罪師" or "冤罪师" or "冤罪" => GetString("Innocent"),
             "鵜鶘" or "鹈鹕" => GetString("Pelican"),
             "革命家" or "革命者" => GetString("Revolutionist"),
-            "單身狗" or "FFF团" or "fff" or "FFF" or "fff团" => GetString("FFF"),
+            "單身狗" => GetString("Hater"),
             "柯南" => GetString("Konan"),
             "玩家" => GetString("Gamer"),
             "潛藏者" or "潜藏" => GetString("DarkHide"),
@@ -1184,7 +1184,7 @@ internal class ChatCommands
             "巫婆" => GetString("NWitch"),
             "追隨者" or "赌徒" or "下注" => GetString("Totocalcio"),
             "魅魔" => GetString("Succubus"),
-            "連環殺手" or "连环杀手" => GetString("NSerialKiller"),
+            "連環殺手" or "连环杀手" => GetString("SerialKiller"),
             "劍聖" or "天启" => GetString("Juggernaut"),
             "感染者" or "感染" => GetString("Infectious"),
             "病原體" or "病毒" => GetString("Virus"),
@@ -1427,7 +1427,7 @@ internal class ChatCommands
         if (GuessManager.GuesserMsg(player, text)) { canceled = true; Logger.Info($"Is Guesser command", "OnReceiveChat"); return; }
         if (Judge.TrialMsg(player, text)) { canceled = true; Logger.Info($"Is Judge command", "OnReceiveChat"); return; }
         if (President.EndMsg(player, text)) { canceled = true; Logger.Info($"Is President command", "OnReceiveChat"); return; }
-        if (ParityCop.ParityCheckMsg(player, text)) { canceled = true; Logger.Info($"Is ParityCop command", "OnReceiveChat"); return; }
+        if (Inspector.InspectCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Inspector command", "OnReceiveChat"); return; }
         if (Pirate.DuelCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Pirate command", "OnReceiveChat"); return; }
         if (Councillor.MurderMsg(player, text)) { canceled = true; Logger.Info($"Is Councillor command", "OnReceiveChat"); return; }
         if (Swapper.SwapMsg(player, text)) { canceled = true; Logger.Info($"Is Swapper command", "OnReceiveChat"); return; }
