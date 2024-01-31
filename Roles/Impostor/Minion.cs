@@ -16,7 +16,7 @@ public static class Minion
         SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Minion);
         AbilityCooldown = FloatOptionItem.Create(Id + 10, "AbilityCooldown", new(2.5f, 180f, 2.5f), 40f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Minion])
             .SetValueFormat(OptionFormat.Seconds);
-        AbilityTime = FloatOptionItem.Create(Id + 10, "AbilityCooldown", new(1f, 3f, 1f), 2f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Minion])
+        AbilityTime = FloatOptionItem.Create(Id + 11, "AbilityCooldown", new(1f, 10f, 1f), 5f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Minion])
             .SetValueFormat(OptionFormat.Seconds);
     }
 
@@ -27,7 +27,6 @@ public static class Minion
         {
             Main.PlayerStates[target.PlayerId].IsBlackOut = true;
             target.MarkDirtySettings();
-            target.Notify(GetString("MinionNotify"));
             _ = new LateTask(() =>
             {
                 Main.PlayerStates[target.PlayerId].IsBlackOut = false;
