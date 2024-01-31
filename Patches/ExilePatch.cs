@@ -1,6 +1,5 @@
 using AmongUs.Data;
 using HarmonyLib;
-using MS.Internal.Xml.XPath;
 using System.Linq;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
@@ -194,7 +193,6 @@ class ExileControllerWrapUpPatch
         {
             //PlayerControl player = allPlayerControls[item];
             CustomRoles playerRole = player.GetCustomRole(); // Only roles (no add-ons)
-            
 
             switch (playerRole)
             {

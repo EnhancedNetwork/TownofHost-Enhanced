@@ -1381,8 +1381,6 @@ class MurderPlayerPatch
     }
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target/*, [HarmonyArgument(1)] MurderResultFlags resultFlags*/, bool __state)
     {
-        
-
         if (!__state)
         {
             return;
@@ -1401,7 +1399,6 @@ class MurderPlayerPatch
             PlagueDoctor.OnPDdeath(killer, target);
             PlagueDoctor.OnAnyMurder();
         }
-
 
         if (Quizmaster.IsEnable)
             Quizmaster.OnPlayerDead(target);
@@ -4169,7 +4166,6 @@ public static class PlayerControlCheckUseZiplinePatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
 public static class PlayerControlDiePatch
 {
-   
     public static void Postfix(PlayerControl __instance)
     {
         if (!AmongUsClient.Instance.AmHost) return;
