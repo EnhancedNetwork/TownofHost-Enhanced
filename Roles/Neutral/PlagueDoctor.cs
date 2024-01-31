@@ -121,7 +121,7 @@ public static class PlagueDoctor
 
         if (firstInfect)
         {
-            InfectCount--;
+            InfectCount = 0;
         }
         InfectInfos[targetId] = rate;
     }
