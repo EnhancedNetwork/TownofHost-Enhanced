@@ -1713,6 +1713,7 @@
   "CrewCanBeRainbow": "<color=#8cffff>Crewmates</color> can become Rainbow",
   "GuessRainbow": "He seems too obvious, doesn't he?",
   "RainbowColorChangeCoolDown": "The cooldown for changing colors",
+  "RainbowInCamouflage": "Rainbow color changes during Camouflage",
   "BaitDelayMin": "Minimum Report Delay",
   "BaitDelayMax": "Maximum Report Delay",
   "BaitDelayNotify": "<color=#ffff00>Warn the killer about the upcoming self-report</color>",
