@@ -898,7 +898,7 @@ public static class Utils
                     ProgressText.Append(Alchemist.GetProgressText(playerId));
                     break;
                 case CustomRoles.PlagueDoctor:
-                    ProgressText.Append(PlagueDoctor.GetProgressText(comms));
+                    ProgressText.Append(PlagueDoctor.GetProgressText());
                     break;
                 case CustomRoles.Chameleon:
                     var taskState13 = Main.PlayerStates?[playerId].GetTaskState();
