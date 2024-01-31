@@ -3755,6 +3755,8 @@
   "WinnerRoleText.PlagueDoctor": "Plague Scientist Wins!",
 
   "WardenIncreaseSpeed": "Increase Speed By",
-  "WardenWarn": "DANGER! RUN!"
+  "WardenWarn": "DANGER! RUN!",
+
+  "MinionAbilityTime": "Ability Duration"
 
 }
