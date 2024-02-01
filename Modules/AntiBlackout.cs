@@ -217,29 +217,25 @@ public static class AntiBlackout
     }
     public static void AfterMeetingTasks()
     {
+        var timeNotify = 0f;
+
         if (BlackOutIsActive && CheckForEndVotingPatch.TempExileMsg != null)
         {
-            var timeNotify = 4f;
+            timeNotify = 4f;
             foreach (var pc in Main.AllPlayerControls.Where(p => p != null && !(p.AmOwner || p.IsModClient())).ToArray())
             {
                 pc.Notify(CheckForEndVotingPatch.TempExileMsg, time: timeNotify);
             }
-
-            _ = new LateTask(() =>
-            {
-                if (Eraser.IsEnable) Eraser.AfterMeetingTasks(notifyPlayer: true);
-                if (Cleanser.IsEnable) Cleanser.AfterMeetingTasks(notifyPlayer: true);
-                if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: true);
-                if (Seeker.IsEnable) Seeker.AfterMeetingTasks(notifyPlayer: true);
-            }, timeNotify + 0.1f, "Notify AfterMeetingTasks");
         }
-        else
+
+        _ = new LateTask(() =>
         {
             if (Eraser.IsEnable) Eraser.AfterMeetingTasks(notifyPlayer: true);
             if (Cleanser.IsEnable) Cleanser.AfterMeetingTasks(notifyPlayer: true);
             if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: true);
             if (Seeker.IsEnable) Seeker.AfterMeetingTasks(notifyPlayer: true);
-        }
+
+        }, timeNotify + 0.2f, "Notify AfterMeetingTasks");
     }
     public static void Reset()
     {
