@@ -3106,7 +3106,7 @@
   "GanFarseerCanBeMadmate": "<color=#BA55D3>Overseer</color> can be converted",
   "RascalAppearAsMadmate": "Appear As <color=#ff1919>Madmate</color> On Ejection",
   "CouncillorDead": "Sorry, you can't murder from the dead.",
-  "CouncillorMurderMax": "Sorry, you've reached the maximum amount of murders.",
+  "CouncillorMurderMax": "Sorry, you've reached the maximum amount of murders for the meeting.",
   "LaughToWhoMurderSelf": "Hahaha, who would've thought someone was stupid enough to murder themselves?\n\nGuess it happens to be... YOU!",
   "MurderKill": "<b>{0}</b> was judged.",
   "MurderHelp": "Command: /tl [player ID]\nYou can see the players' IDs before the players' names.\nOr use /id to view the list of all player IDs.",

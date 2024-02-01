@@ -52,10 +52,12 @@ public static class Councillor
         MurderLimit.Add(playerId, MurderLimitPerMeeting.GetInt());
         IsEnable = true;
     }
-    public static void OnReportDeadBody()
+    public static void AfterMeetingTasks()
     {
-        MurderLimit.Clear();
-        foreach (var pc in playerIdList.ToArray()) MurderLimit.Add(pc, MurderLimitPerMeeting.GetInt());
+        foreach (byte playerId in MurderLimit.Keys)
+        {
+            MurderLimit[playerId] = MurderLimitPerMeeting.GetInt();
+        }
     }
     public static bool MurderMsg(PlayerControl pc, string msg, bool isUI = false)
     {
@@ -104,6 +106,7 @@ public static class Councillor
             {
                 Logger.Info($"{pc.GetNameWithRole()} 审判了 {target.GetNameWithRole()}", "Councillor");
                 bool CouncillorSuicide = true;
+                if (!MurderLimit.ContainsKey(pc.PlayerId)) MurderLimit[pc.PlayerId] = MurderLimitPerMeeting.GetInt();
                 if (MurderLimit[pc.PlayerId] < 1)
                 {
                     if (!isUI) Utils.SendMessage(GetString("CouncillorMurderMax"), pc.PlayerId);
