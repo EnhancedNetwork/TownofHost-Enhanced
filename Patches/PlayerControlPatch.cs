@@ -597,7 +597,14 @@ class CheckMurderPatch
                         return false;
                     break;
                 case CustomRoles.Bandit:
-                    if (!Bandit.OnCheckMurder(killer, target)) return false;
+                    if (!Bandit.OnCheckMurder(killer, target))
+                    {
+                        Bandit.killCooldown[killer.PlayerId] = Bandit.StealCooldown.GetFloat();
+                        return false;
+                    }
+                    else Bandit.killCooldown[killer.PlayerId] = Bandit.KillCooldownOpt.GetFloat();
+                    killer.ResetKillCooldown();
+                    killer.SyncSettings();
                     break;
                 case CustomRoles.Shaman:
                     if (Main.ShamanTargetChoosen == false)

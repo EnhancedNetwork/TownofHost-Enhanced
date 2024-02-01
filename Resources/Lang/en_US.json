@@ -2935,6 +2935,7 @@
   "BanditCanStealImpOnlyAddon": "Can Steal <color=#ff1919>Impostor</color> Only Addons",
   "BanditCanUseSabotage": "Can Sabotage",
   "NoStealableAddons": "Could not steal addon from the player",
+  "StealCooldown": "Steal cooldown",
 
   "DoppelMaxSteals": "Maximum Steals",
   "DoppelKillCooldown": "Kill cooldown",
