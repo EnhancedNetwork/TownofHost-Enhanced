@@ -603,7 +603,6 @@ static class ExtendedPlayerControl
             CustomRoles.PlagueBearer or
             CustomRoles.PlagueDoctor or
             CustomRoles.Admirer or
-            CustomRoles.Doppelganger or
             CustomRoles.Crusader or
             CustomRoles.ChiefOfPolice or
             CustomRoles.Wildling
@@ -635,6 +634,7 @@ static class ExtendedPlayerControl
             CustomRoles.BloodKnight => BloodKnight.CanVent.GetBool(),
             CustomRoles.Juggernaut => Juggernaut.CanVent.GetBool(),
             CustomRoles.Infectious => Infectious.CanVent.GetBool(),
+            CustomRoles.Doppelganger => Doppelganger.CanVent.GetBool(),
             CustomRoles.PotionMaster => PotionMaster.CanVent.GetBool(),
             CustomRoles.Virus => Virus.CanVent.GetBool(),
             CustomRoles.SwordsMan => SwordsMan.CanVent.GetBool(),

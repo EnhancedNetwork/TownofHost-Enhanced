@@ -2647,7 +2647,7 @@ public static class Utils
                         // ====== Target Death Reason for target (Death Reason visible ​​only to the seer) ======
                         string TargetDeathReason = "";
                         if (seer.KnowDeathReason(target))
-                            TargetDeathReason = $"({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))})";
+                            TargetDeathReason = $" ({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))})";
 
 
                         // Devourer
@@ -2663,7 +2663,7 @@ public static class Utils
                             TargetPlayerName = $"<size=0%>{TargetPlayerName}</size>";
 
                         // Target Name
-                        string TargetName = $"{TargetRoleText}{TargetPlayerName}{TargetDeathReason}{TargetMark}";
+                        string TargetName = $"{TargetRoleText}{TargetPlayerName} {TargetDeathReason}{TargetMark}";
                         TargetName += TargetSuffix.ToString() == "" ? "" : ("\r\n" + TargetSuffix.ToString());
 
                         target.RpcSetNamePrivate(TargetName, true, seer, force: NoCache);
