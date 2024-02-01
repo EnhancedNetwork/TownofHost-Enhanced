@@ -816,6 +816,9 @@ static class ExtendedPlayerControl
             case CustomRoles.Bandit:
                 Bandit.SetKillCooldown(player.PlayerId);
                 break;
+            case CustomRoles.Instigator:
+                Instigator.SetKillCooldown(player.PlayerId);
+                break;
             case CustomRoles.Doppelganger:
                 Doppelganger.SetKillCooldown(player.PlayerId);
                 break;
