@@ -371,6 +371,9 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Infectious:
                 opt.SetVision(Infectious.HasImpostorVision.GetBool());
                 break;
+            case CustomRoles.Doppelganger:
+                opt.SetVision(Doppelganger.HasImpostorVision.GetBool());
+                break;
             case CustomRoles.Lawyer:
                 //Main.NormalOptions.CrewLightMod = Lawyer.LawyerVision.GetFloat();
                 break;
