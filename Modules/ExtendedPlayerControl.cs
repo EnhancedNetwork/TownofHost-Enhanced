@@ -661,77 +661,35 @@ static class ExtendedPlayerControl
     }
     public static bool CanUseSabotage(this PlayerControl pc) // NOTE: THIS IS FOR THE HUD FOR MODDED CLIENTS, THIS DOES NOT DETERMINE WHETHER A ROLE CAN SABOTAGE
     {
-        if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel) return false;
-      //  if (CopyCat.playerIdList.Contains(pc.PlayerId)) return true;
+        if (pc.Data.Role.Role == RoleTypes.GuardianAngel) return false;
 
-        return pc.GetCustomRole() switch
+        if (pc.Is(CustomRoleTypes.Impostor))
         {
-            CustomRoles.Sheriff or
-            CustomRoles.Crusader or
-            CustomRoles.Pirate or
-            CustomRoles.Pixie or
-            CustomRoles.CopyCat or
-            CustomRoles.CursedSoul or
-            CustomRoles.Admirer or
-            CustomRoles.Huntsman or
-            CustomRoles.Amnesiac or
-            CustomRoles.Investigator or
-            CustomRoles.Monarch or
-            CustomRoles.Deputy or
-            CustomRoles.Arsonist or
-            CustomRoles.Medusa or
-            CustomRoles.SwordsMan or
-            CustomRoles.Pyromaniac or
-            CustomRoles.PlagueDoctor or
-            CustomRoles.Reverie or
-            CustomRoles.Innocent or
-            CustomRoles.Pelican or
-            CustomRoles.Counterfeiter or
-            CustomRoles.Pursuer or
-            CustomRoles.Revolutionist or
-            CustomRoles.Hater or
-            CustomRoles.Medic or
-            CustomRoles.Gamer or
-            CustomRoles.HexMaster or
-            //CustomRoles.Occultist or
-            CustomRoles.Wraith or
-            CustomRoles.Juggernaut or
-            CustomRoles.Jinx or
-            CustomRoles.DarkHide or
-            CustomRoles.Provocateur or
-            CustomRoles.BloodKnight or
-            CustomRoles.Poisoner or
-            CustomRoles.SerialKiller or
-            CustomRoles.Maverick or
-            CustomRoles.NWitch or
-            CustomRoles.Shroud or
-            CustomRoles.Totocalcio or
-            CustomRoles.Succubus or
-            CustomRoles.Infectious or
-            CustomRoles.Virus or
-            CustomRoles.Farseer or
-            CustomRoles.Pickpocket or
-            CustomRoles.PlagueBearer or
-            CustomRoles.Necromancer or
-            CustomRoles.Pestilence or
-            CustomRoles.Werewolf or
-    //        CustomRoles.Minion or
-            CustomRoles.Spiritcaller or
-            CustomRoles.Quizmaster
-            => false,
+            return pc.GetCustomRole() switch
+            {
+                CustomRoles.KillingMachine => false,
 
-            CustomRoles.Bandit => Bandit.CanUseSabotage.GetBool(),
-            CustomRoles.Jackal => Jackal.CanUseSabotage.GetBool(),
-            CustomRoles.Sidekick => Jackal.CanUseSabotageSK.GetBool(),
-            CustomRoles.Traitor => Traitor.CanUseSabotage.GetBool(),
-            CustomRoles.Parasite => true,
-            CustomRoles.Glitch => true,
-            CustomRoles.PotionMaster => true,
-            CustomRoles.Refugee => true,
-            
+                _ => !(!pc.IsAlive() && Options.DeadImpCantSabotage.GetBool()),
+            };
+        }
+        else
+        {
+            return pc.GetCustomRole() switch
+            {
+                CustomRoles.Bandit => Bandit.CanUseSabotage.GetBool(),
+                CustomRoles.Jackal => Jackal.CanUseSabotage.GetBool(),
+                CustomRoles.Sidekick => Jackal.CanUseSabotageSK.GetBool(),
+                CustomRoles.Traitor => Traitor.CanUseSabotage.GetBool(),
 
-            _ => pc.Is(CustomRoleTypes.Impostor),
-        };
+                CustomRoles.Parasite or
+                CustomRoles.Glitch or
+                CustomRoles.PotionMaster or
+                CustomRoles.Refugee
+                => true,
+
+                _ => false,
+            };
+        }
     }
     public static bool IsDousedPlayer(this PlayerControl arsonist, PlayerControl target)
     {
