@@ -445,6 +445,7 @@ internal class CustomRoleSelector
 
         foreach (var ghostRole in Options.CustomGhostRoleCounts.Keys) if (ghostRole.GetMode() == 2)
             {
+                int getcount = Options.CustomGhostRoleCounts[ghostRole].GetInt();
                 if (CustomRolesHelper.IsCrewmate(ghostRole))
                 {
                     if (HauntedList.Contains(ghostRole) && !GhostAssign(ghostRole))
@@ -453,6 +454,7 @@ internal class CustomRoleSelector
                     if (HauntedList.Contains(ghostRole) || !GhostAssign(ghostRole))
                         continue;
 
+                    getcount--;
                     HauntedList.Add(ghostRole); continue;
                 }
                 if (CustomRolesHelper.IsImpostor(ghostRole))
@@ -462,12 +464,14 @@ internal class CustomRoleSelector
 
                     if (ImpHauntedList.Contains(ghostRole) || !GhostAssign(ghostRole))
                         continue;
-
+                    
+                    getcount--;
                     ImpHauntedList.Add(ghostRole); 
                 }
             }
         foreach (var ghostRole in Options.CustomGhostRoleCounts.Keys) if (ghostRole.GetMode() == 1)
             {
+                int getcount = Options.CustomGhostRoleCounts[ghostRole].GetInt();
                 if (CustomRolesHelper.IsCrewmate(ghostRole))
                 {
                     if (RateHauntedList.Contains(ghostRole) && !GhostAssign(ghostRole))
@@ -475,7 +479,8 @@ internal class CustomRoleSelector
 
                     if (RateHauntedList.Contains(ghostRole) || !GhostAssign(ghostRole))
                         continue;
-
+                    
+                    getcount--;
                     RateHauntedList.Add(ghostRole); continue;
                 }
                 if (CustomRolesHelper.IsImpostor(ghostRole))
@@ -485,7 +490,8 @@ internal class CustomRoleSelector
 
                     if (ImpRateHauntedList.Contains(ghostRole) || !GhostAssign(ghostRole))
                         continue;
-
+                    
+                    getcount--;
                     ImpRateHauntedList.Add(ghostRole); 
                 }
             }
@@ -554,10 +560,8 @@ internal class CustomRoleSelector
         int getCount = Options.CustomGhostRoleCounts[role].GetInt();
 
         if (getCount > 0)
-        {
-            getCount--;
             return true;
-        }
+
         return false;
     }
 }
