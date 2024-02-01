@@ -152,8 +152,22 @@ class DisconnectInternalPatch
     }
 }
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerJoined))]
-class OnPlayerJoinedPatch
+public static class OnPlayerJoinedPatch
 {
+    public static bool IsDisconnected(this ClientData client)
+    {
+        var __instance = AmongUsClient.Instance;
+        for (int i = 0; i < __instance.allClients.Count; i++)
+        {
+            ClientData clientData = __instance.allClients[i];
+            if (clientData.Id == client.Id)
+            {
+                return true;
+            }
+        }
+        return false;
+        //When a client disconnects, it is removed from allClients in method amongusclient.removeplayer
+    }
     public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
     {
         Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Joining room", "Session: OnPlayerJoined");
@@ -161,14 +175,20 @@ class OnPlayerJoinedPatch
         {
             try
             {
-                if (client.Character != null && Main.playerVersion.ContainsKey(client.Id))
+                if (!client.IsDisconnected() && !AmongUsClient.Instance.AmHost)
                 {
                     RPC.RpcVersionCheck();
-                    Logger.Info("On player joined version check, target is mod " + client.Character.PlayerId, "OnPlayerJoinedPatch");
+                }
+
+                if (AmongUsClient.Instance.AmHost && !client.IsDisconnected() && client.Character == null)
+                {
+                    Logger.SendInGame(GetString("Error.InvalidColor") + $" {client.Id}/{client.PlayerName}");
+                    AmongUsClient.Instance.KickPlayer(client.Id, false);
+                    Logger.Info($"Kicked client {client.Id}/{client.PlayerName} bcz PlayerControl is not spawned in time.", "OnPlayerJoinedPatchPostfix");
                 }
             }
             catch { }
-        }, 3.5f, "OnPlayerJoined Client <=> Client VersionCheck", false);
+        }, 2.5f, "OnPlayerJoined Client <=> Client VersionCheck", false);
 
 
         if (AmongUsClient.Instance.AmHost && client.FriendCode == "" && Options.KickPlayerFriendCodeNotExist.GetBool() && !GameStates.IsLocalGame)

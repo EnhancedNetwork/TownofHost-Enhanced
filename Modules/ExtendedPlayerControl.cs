@@ -452,8 +452,9 @@ static class ExtendedPlayerControl
         }, FlashDuration + delay, "Fix Desync Reactor");
     }
 
-    public static string GetRealName(this PlayerControl player, bool isMeeting = false)
+    public static string GetRealName(this PlayerControl player, bool isMeeting = false, bool clientData = false)
     {
+        if (clientData) return player.GetClient().PlayerName;
         return isMeeting ? player?.Data?.PlayerName : player?.name;
     }
     public static bool CanUseKillButton(this PlayerControl pc)
