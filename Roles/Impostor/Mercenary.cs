@@ -22,7 +22,7 @@ public static class Mercenary
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Mercenary);
         KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mercenary])
             .SetValueFormat(OptionFormat.Seconds);
-        TimeLimit = FloatOptionItem.Create(Id + 11, "SerialKillerLimit", new(5f, 180f, 5f), 60f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mercenary])
+        TimeLimit = FloatOptionItem.Create(Id + 11, "MercenaryLimit", new(5f, 180f, 5f), 60f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mercenary])
             .SetValueFormat(OptionFormat.Seconds);
     }
     public static void Init()
@@ -87,7 +87,7 @@ public static class Mercenary
     public static void GetAbilityButtonText(HudManager __instance, PlayerControl pc)
     {
         __instance.AbilityButton.ToggleVisible(pc.IsAlive() && HasKilled(pc));
-        __instance.AbilityButton.OverrideText(GetString("SerialKillerSuicideButtonText"));
+        __instance.AbilityButton.OverrideText(GetString("MercenarySuicideButtonText"));
     }
     public static void AfterMeetingTasks()
     {
