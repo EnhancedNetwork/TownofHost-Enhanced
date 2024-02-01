@@ -217,10 +217,10 @@ public static class AntiBlackout
     }
     public static void AfterMeetingTasks()
     {
-        if (BlackOutIsActive)
+        if (BlackOutIsActive && CheckForEndVotingPatch.TempExileMsg != null)
         {
             var timeNotify = 4f;
-            foreach (var pc in Main.AllPlayerControls.Where(p => !(p.AmOwner || p.IsModClient())).ToArray())
+            foreach (var pc in Main.AllPlayerControls.Where(p => p != null && !(p.AmOwner || p.IsModClient())).ToArray())
             {
                 pc.Notify(CheckForEndVotingPatch.TempExileMsg, time: timeNotify);
             }

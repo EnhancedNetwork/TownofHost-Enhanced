@@ -2738,6 +2738,7 @@ public static class Utils
         if (Chronomancer.IsEnable) Chronomancer.AfterMeetingTask();
         if (Solsticer.IsEnable) Solsticer.AfterMeetingTasks();
         if (RiftMaker.IsEnable) RiftMaker.AfterMeetingTasks();
+        if (Councillor.IsEnable) Councillor.AfterMeetingTasks();
 
         Main.ShamanTarget = byte.MaxValue;
         Main.ShamanTargetChoosen = false;
