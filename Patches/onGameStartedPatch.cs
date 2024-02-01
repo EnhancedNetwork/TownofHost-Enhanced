@@ -108,6 +108,7 @@ internal class ChangeRoleSettings
             Main.GrenadierBlinding = [];
             Main.LighterNumOfUsed = [];
             Main.Lighter = [];
+            Main.rejectghost = [];
             Main.AllKillers = [];
             Main.MadGrenadierBlinding = [];
             Main.CursedWolfSpellCount = [];

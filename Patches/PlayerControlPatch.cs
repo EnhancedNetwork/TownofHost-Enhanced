@@ -1566,12 +1566,15 @@ class MurderPlayerPatch
         if (Medic.IsEnable) Medic.IsDead(target);
 
         //================GHOST ASSIGN PATCH============
-        CustomRoleSelector.GhostAssignPatch(target);
-
-        if (target.Is(CustomRoles.EvilSpirit)) 
+        if (target.Is(CustomRoles.EvilSpirit))
         {
+            Main.rejectghost.Add(target.PlayerId);
             target.RpcSetRole(RoleTypes.GuardianAngel);
         }
+
+        CustomRoleSelector.GhostAssignPatch(target);
+
+        
 
         Utils.AfterPlayerDeathTasks(target);
 
