@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TOHE.Modules;
 using TOHE.Roles.Crewmate;
+using TOHE.Roles.Double;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Options;
@@ -68,7 +69,7 @@ public static class Puppeteer
     }
     public static bool OnCheckPuppet(PlayerControl killer, PlayerControl target)
     {
-        if (target.Is(CustomRoles.Needy) || target.Is(CustomRoles.Lazy) || Medic.ProtectList.Contains(target.PlayerId)) return false;
+        if (target.Is(CustomRoles.Needy) || target.Is(CustomRoles.Lazy) || target.Is(CustomRoles.NiceMini) && Mini.Age < 18 || Medic.ProtectList.Contains(target.PlayerId)) return false;
             return killer.CheckDoubleTrigger(target, () => 
             {         
                 PuppeteerList[target.PlayerId] = killer.PlayerId;
