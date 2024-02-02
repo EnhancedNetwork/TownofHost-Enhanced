@@ -382,6 +382,9 @@ internal class ChangeRoleSettings
             MeetingStates.FirstMeeting = true;
             GameStates.AlreadyDied = false;
             EAC.ReportTimes = [];
+
+            SetEverythingUpPatch.LastWinsText = "";
+            SetEverythingUpPatch.LastWinsReason = "";
         }
         catch (Exception ex)
         {

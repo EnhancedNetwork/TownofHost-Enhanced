@@ -469,6 +469,9 @@ class GameEndCheckerForNormal
     }
     public static void StartEndGame(GameOverReason reason)
     {
+        var winner = CustomWinnerHolder.WinnerTeam;
+        SetEverythingUpPatch.LastWinsReason = winner is CustomWinner.Crewmate or CustomWinner.Impostor ? GetString($"GameOverReason.{reason}") : "";
+
         AmongUsClient.Instance.StartCoroutine(CoEndGame(AmongUsClient.Instance, reason).WrapToIl2Cpp());
     }
     private static IEnumerator CoEndGame(AmongUsClient self, GameOverReason reason)
@@ -505,7 +508,6 @@ class GameEndCheckerForNormal
                     pc.RpcSetRole(RoleTypes.CrewmateGhost);
                 }
             }
-            SetEverythingUpPatch.LastWinsReason = winner is CustomWinner.Crewmate or CustomWinner.Impostor ? GetString($"GameOverReason.{reason}") : "";
         }
 
         // Sync of CustomWinnerHolder info
