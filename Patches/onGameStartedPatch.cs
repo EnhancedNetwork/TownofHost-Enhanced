@@ -560,11 +560,8 @@ internal class SelectRolesPatch
             }
 
             if (CustomRoles.Lovers.IsEnable() && (CustomRoles.Hater.IsEnable() ? -1 : rd.Next(1, 100)) <= Options.LoverSpawnChances.GetInt()) AssignLoversRolesFromList();
-            foreach (var role in AddonRolesList)
-            {
-                if (rd.Next(1, 100) <= (Options.CustomAdtRoleSpawnRate.TryGetValue(role, out var sc) ? sc.GetFloat() : 0))
-                    if (role.IsEnable()) AssignSubRoles(role);
-            }
+
+            AssignAddonRoles();
 
             //RPCによる同期
             foreach (var pair in Main.PlayerStates)
@@ -1292,7 +1289,7 @@ internal class SelectRolesPatch
         }
         RPC.SyncLoversPlayers();
     }
-    private static void AssignSubRoles(CustomRoles role, int RawCount = -1)
+    public static void AssignSubRoles(CustomRoles role, int RawCount = -1)
     {
         var allPlayers = Main.AllAlivePlayerControls.Where(x => CustomRolesHelper.CheckAddonConfilct(role, x)).ToList();
         var count = Math.Clamp(RawCount, 0, allPlayers.Count);
@@ -1300,7 +1297,7 @@ internal class SelectRolesPatch
         if (count <= 0) return;
         for (var i = 0; i < count; i++)
         {
-            var player = allPlayers[IRandom.Instance.Next(0, allPlayers.Count)];
+            var player = allPlayers[IRandom.Instance.Next(allPlayers.Count)];
             Main.PlayerStates[player.PlayerId].SetSubRole(role);
             Logger.Info($"Registered Add-on: {player?.Data?.PlayerName} = {player.GetCustomRole()} + {role}", $"Assign {role}");
         }

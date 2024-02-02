@@ -5,7 +5,6 @@ using System.Linq;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using static TOHE.Translator;
 
 namespace TOHE.Modules;
 
@@ -419,6 +418,59 @@ internal class CustomRoleSelector
             //}
 
             AddonRolesList.Add(role);
+        }
+    }
+
+    public static void AssignAddonRoles()
+    {
+        if (Options.CurrentGameMode == CustomGameMode.FFA) return;
+
+        var rd = IRandom.Instance;
+        List<CustomRoles> addonsList = [];
+        List<CustomRoles> addonsIsEnableList = [];
+
+        // Sort Add-ons by spawn rate
+        var sortAddOns = Options.CustomAdtRoleSpawnRate.OrderByDescending(role => role.Value.GetFloat());
+        var dictionarSortAddOns = sortAddOns.ToDictionary(x => x.Key, x => x.Value);
+
+        // Add only enabled add-ons
+        foreach (var addonKVP in dictionarSortAddOns.Where(a => a.Key.IsEnable()).ToArray())
+        {
+            addonsIsEnableList.Add(addonKVP.Key);
+        }
+
+        // Add addons which have a percentage greater than 90
+        foreach (var addon in dictionarSortAddOns.Where(a => a.Key.IsEnable() && a.Value.GetFloat() >= 90).ToArray())
+        {
+            if (AddonRolesList.Contains(addon.Key))
+            {
+                addonsList.Add(addon.Key);
+                addonsIsEnableList.Remove(addon.Key);
+            }
+        }
+
+        // Add addons randomly
+        while (addonsIsEnableList.Count > 0)
+        {
+            int randomItem = rd.Next(addonsIsEnableList.Count);
+            var randomAddOn = addonsIsEnableList[randomItem];
+
+            if (!addonsList.Contains(randomAddOn))
+            {
+                addonsList.Add(randomAddOn);
+                addonsIsEnableList.Remove(randomAddOn);
+            }
+        }
+
+        Logger.Info($"Is Started", "Add-ons Assign");
+
+        // Assign add-ons
+        foreach (var role in addonsList.ToArray())
+        {
+            if (rd.Next(1, 101) <= (Options.CustomAdtRoleSpawnRate.TryGetValue(role, out var sc) ? sc.GetFloat() : 0))
+            {
+                SelectRolesPatch.AssignSubRoles(role);
+            }
         }
     }
 }
