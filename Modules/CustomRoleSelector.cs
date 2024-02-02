@@ -459,7 +459,7 @@ internal class CustomRoleSelector
             int randomItem = rd.Next(addonsIsEnableList.Count);
             var randomAddOn = addonsIsEnableList[randomItem];
 
-            if (!addonsList.Contains(randomAddOn))
+            if (!addonsList.Contains(randomAddOn) && AddonRolesList.Contains(randomAddOn))
             {
                 addonsList.Add(randomAddOn);
                 addonsIsEnableList.Remove(randomAddOn);
