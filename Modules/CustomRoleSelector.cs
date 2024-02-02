@@ -462,7 +462,7 @@ internal class CustomRoleSelector
             }
         }
 
-        Logger.Info($"Is Started", "Add-ons Assign");
+        Logger.Info($" Is Started", "Assign Add-ons");
 
         // Assign add-ons
         foreach (var role in addonsList.ToArray())
