@@ -16,7 +16,6 @@ public static class Amnesiac
     public static readonly string[] amnesiacIncompatibleNeutralMode =
     [
         "Role.Amnesiac",
-        "Role.Witch",
         "Role.Pursuer",
         "Role.Follower",
         "Role.Maverick",

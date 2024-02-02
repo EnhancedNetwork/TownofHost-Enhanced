@@ -393,7 +393,6 @@ public static class Divinator
                 CustomRoles.Sniper],
                 
                 [CustomRoles.Puppeteer,
-                CustomRoles.NWitch,
                 CustomRoles.Deputy,
                 CustomRoles.Transporter,
                 CustomRoles.Twister,

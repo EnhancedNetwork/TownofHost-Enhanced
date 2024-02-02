@@ -373,7 +373,7 @@ class CheckMurderPatch
                 case CustomRoles.Warlock:
                     if (!Main.CheckShapeshift[killer.PlayerId] && !Main.isCurseAndKill[killer.PlayerId])
                     { //Warlockが変身時以外にキルしたら、呪われる処理
-                        if (target.Is(CustomRoles.Needy) || target.Is(CustomRoles.Lazy)) return false;
+                        if (target.Is(CustomRoles.Needy) || target.Is(CustomRoles.Lazy) || target.Is(CustomRoles.NiceMini) && Mini.Age < 18) return false;
                         Main.isCursed = true;
                         killer.SetKillCooldown();
                         //RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
@@ -423,9 +423,6 @@ class CheckMurderPatch
                     break;
                 case CustomRoles.Necromancer: //必须在击杀发生前处理
                     if (!Necromancer.OnCheckMurder(killer, target)) return false;
-                    break;
-                case CustomRoles.NWitch:
-                    if (!NWitch.OnCheckMurder(killer, target)) return false;
                     break;
                 case CustomRoles.Shroud:
                     if (!Shroud.OnCheckMurder(killer, target)) return false;
@@ -597,7 +594,14 @@ class CheckMurderPatch
                         return false;
                     break;
                 case CustomRoles.Bandit:
-                    if (!Bandit.OnCheckMurder(killer, target)) return false;
+                    if (!Bandit.OnCheckMurder(killer, target))
+                    {
+                        Bandit.killCooldown[killer.PlayerId] = Bandit.StealCooldown.GetFloat();
+                        return false;
+                    }
+                    else Bandit.killCooldown[killer.PlayerId] = Bandit.KillCooldownOpt.GetFloat();
+                    killer.ResetKillCooldown();
+                    killer.SyncSettings();
                     break;
                 case CustomRoles.Shaman:
                     if (Main.ShamanTargetChoosen == false)
@@ -905,7 +909,6 @@ class CheckMurderPatch
             case CustomRoles.SerialKiller when target.Is(CustomRoles.SerialKiller):
             case CustomRoles.Juggernaut when target.Is(CustomRoles.Juggernaut):
             case CustomRoles.Werewolf when target.Is(CustomRoles.Werewolf):
-            case CustomRoles.NWitch when target.Is(CustomRoles.NWitch):
             case CustomRoles.Shroud when target.Is(CustomRoles.Shroud):
             case CustomRoles.Jinx when target.Is(CustomRoles.Jinx):
             case CustomRoles.Wraith when target.Is(CustomRoles.Wraith):
@@ -2178,33 +2181,26 @@ class ReportDeadBodyPatch
                         }
                         if (Amnesiac.IncompatibleNeutralMode.GetValue() == 1)
                         {
-                            NWitch.Add(__instance.PlayerId);
-                            __instance.RpcSetCustomRole(CustomRoles.NWitch);
-                            __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
-                            tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
-                        }
-                        if (Amnesiac.IncompatibleNeutralMode.GetValue() == 2)
-                        {
                             Pursuer.Add(__instance.PlayerId);
                             __instance.RpcSetCustomRole(CustomRoles.Pursuer);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         }
-                        if (Amnesiac.IncompatibleNeutralMode.GetValue() == 3)
+                        if (Amnesiac.IncompatibleNeutralMode.GetValue() == 2)
                         {
                             Totocalcio.Add(__instance.PlayerId);
                             __instance.RpcSetCustomRole(CustomRoles.Totocalcio);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         }
-                        if (Amnesiac.IncompatibleNeutralMode.GetValue() == 4)
+                        if (Amnesiac.IncompatibleNeutralMode.GetValue() == 3)
                         {
                             Maverick.Add(__instance.PlayerId);
                             __instance.RpcSetCustomRole(CustomRoles.Maverick);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         }
-                        if (Amnesiac.IncompatibleNeutralMode.GetValue() == 5)
+                        if (Amnesiac.IncompatibleNeutralMode.GetValue() == 4)
                         {
                             Imitator.Add(__instance.PlayerId);
                             __instance.RpcSetCustomRole(CustomRoles.Imitator);
@@ -2424,6 +2420,7 @@ class ReportDeadBodyPatch
         if (Penguin.IsEnable) Penguin.OnReportDeadBody(); 
         if (Pelican.IsEnable) Pelican.OnReportDeadBody();
         if (Bandit.IsEnable) Bandit.OnReportDeadBody();
+        if (Cleanser.IsEnable) Cleanser.OnReportDeadBody();
         if (Agitater.IsEnable) Agitater.OnReportDeadBody();
         if (Counterfeiter.IsEnable) Counterfeiter.OnReportDeadBody();
         if (QuickShooter.IsEnable) QuickShooter.OnReportDeadBody();
@@ -2441,7 +2438,6 @@ class ReportDeadBodyPatch
         if (PlagueDoctor.IsEnable) PlagueDoctor.OnReportDeadBody();
         if (Doomsayer.IsEnable) Doomsayer.OnReportDeadBody();
         if (BallLightning.IsEnable) BallLightning.OnReportDeadBody();
-        if (NWitch.IsEnable) NWitch.OnReportDeadBody();
         if (Seeker.IsEnable) Seeker.OnReportDeadBody();
         if (Jailer.IsEnable) Jailer.OnReportDeadBody();
         if (Romantic.IsEnable) Romantic.OnReportDeadBody();
@@ -2970,9 +2966,6 @@ class FixedUpdateInNormalGamePatch
                     if (Puppeteer.IsEnable)
                         Puppeteer.OnFixedUpdate(player);
 
-                    if (NWitch.IsEnable)
-                        NWitch.OnFixedUpdate(player);
-
                     if (Shroud.IsEnable)
                         Shroud.OnFixedUpdate(player);
 
@@ -3354,10 +3347,6 @@ class FixedUpdateInNormalGamePatch
                         Mark.Append(Puppeteer.TargetMark(seer, target));
                         break;
 
-                    case CustomRoles.NWitch:
-                        Mark.Append(NWitch.TargetMark(seer, target));
-                        break;
-
                     case CustomRoles.Shroud:
                         Mark.Append(Shroud.TargetMark(seer, target));
                         break;
@@ -3494,7 +3483,7 @@ class FixedUpdateInNormalGamePatch
                 //    RealName = $"<size=0%>{RealName}</size> ";
 
 
-                string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target) ? $"({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})" : "";
+                string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target) ? $" ({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})" : "";
 
                 target.cosmetics.nameText.text = $"{RealName}{DeathReason}{Mark}";
 

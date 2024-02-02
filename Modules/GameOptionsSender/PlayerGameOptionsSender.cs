@@ -333,9 +333,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Glitch:
                 Glitch.ApplyGameOptions(opt);
                 break;
-            case CustomRoles.NWitch:
-                NWitch.ApplyGameOptions(opt);
-                break;
             case CustomRoles.Shroud:
                 Shroud.ApplyGameOptions(opt);
                 break;
@@ -370,6 +367,9 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
             case CustomRoles.Infectious:
                 opt.SetVision(Infectious.HasImpostorVision.GetBool());
+                break;
+            case CustomRoles.Doppelganger:
+                opt.SetVision(Doppelganger.HasImpostorVision.GetBool());
                 break;
             case CustomRoles.Lawyer:
                 //Main.NormalOptions.CrewLightMod = Lawyer.LawyerVision.GetFloat();

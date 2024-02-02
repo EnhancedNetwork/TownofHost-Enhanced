@@ -1093,6 +1093,7 @@ public static class Options
         //#######################################
 
         // You can use: 19900 (Was for Repairman)
+        // You can use: 13800 (Was for NWitch)
 
 
         // Start Load Settings
@@ -2006,7 +2007,7 @@ public static class Options
         /*
          * Observer
          */
-        SetupRoleOptions(9000, TabGroup.CrewmateRoles, CustomRoles.Observer);
+        Observer.SetupCustomOption();
 
         /*
          * Oracle
@@ -2255,8 +2256,6 @@ public static class Options
 
         Taskinator.SetupCustomOption();
 
-        NWitch.SetupCustomOption();
-
 
         TextOptionItem.Create(10000012, "RoleType.NeutralEvil", TabGroup.NeutralRoles)
             .SetGameMode(CustomGameMode.Standard)
@@ -2428,6 +2427,8 @@ public static class Options
         Poisoner.SetupCustomOption();
 
         PlagueBearer.SetupCustomOption();
+
+        PlagueDoctor.SetupCustomOption();
 
         PotionMaster.SetupCustomOption();
 
@@ -2990,8 +2991,6 @@ public static class Options
             Quizmaster.SetupCustomOption();
 
         Spiritcaller.SetupCustomOption();
-
-        PlagueDoctor.SetupCustomOption(); 
 
         // 副职
         TextOptionItem.Create(10000023, "OtherRoles.Addons", TabGroup.OtherRoles)

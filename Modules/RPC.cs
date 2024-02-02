@@ -168,7 +168,6 @@ enum CustomRPC
     SyncAdmiredList,
     SetRememberLimit,
     SetImitateLimit,
-    SyncNWitch,
     SyncShroud,
     SyncMiniCrewAge,
     SyncSabotageMasterSkill,
@@ -651,9 +650,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SyncSolsticerNotify:
                 Solsticer.ReceiveRPC(reader);
-                break;
-            case CustomRPC.SyncNWitch:
-                NWitch.ReceiveRPC(reader);
                 break;
             case CustomRPC.SyncShroud:
                 Shroud.ReceiveRPC(reader);
@@ -1181,6 +1177,9 @@ internal static class RPC
             case CustomRoles.QuickShooter:
                 QuickShooter.Add(targetId);
                 break;
+            case CustomRoles.Observer:
+                Observer.Add(targetId);
+                break;
             case CustomRoles.SwordsMan:
                 SwordsMan.Add(targetId);
                 break;
@@ -1445,9 +1444,6 @@ internal static class RPC
                 break;
             case CustomRoles.Kamikaze:
                 Kamikaze.Add(targetId);
-                break;
-            case CustomRoles.NWitch:
-                NWitch.Add(targetId);
                 break;
             case CustomRoles.Shroud:
                 Shroud.Add(targetId);

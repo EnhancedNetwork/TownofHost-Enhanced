@@ -187,10 +187,6 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("KillButtonText"));
                         break;
-                    case CustomRoles.NWitch:
-                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        __instance.KillButton.OverrideText($"{GetString("WitchControlButtonText")}");
-                        break;
                     case CustomRoles.Shroud:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText($"{GetString("ShroudButtonText")}");
@@ -513,7 +509,7 @@ class HudManagerPatch
                             CustomRoles.Glitch => Glitch.GetHudText(player),
                             CustomRoles.BloodKnight => BloodKnight.GetHudText(player),
                             CustomRoles.Wildling => Wildling.GetHudText(player),
-                            CustomRoles.PlagueDoctor => PlagueDoctor.GetLowerTextOthers(player, isForHud: true),
+                            CustomRoles.PlagueDoctor => PlagueDoctor.GetLowerTextOthers(player),
                             CustomRoles.Stealth => Stealth.GetSuffix(player, isHUD: true),
                             _ => string.Empty,
                         };
@@ -651,7 +647,6 @@ class SetHudActivePatch
             case CustomRoles.Deputy:
             case CustomRoles.Investigator:
             case CustomRoles.Monarch:
-            case CustomRoles.NWitch:
             case CustomRoles.Shroud:
             case CustomRoles.Innocent:
             case CustomRoles.Reverie:

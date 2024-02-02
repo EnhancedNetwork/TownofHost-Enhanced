@@ -556,7 +556,6 @@ public static class Utils
             case CustomRoles.Pirate:
             case CustomRoles.Pixie:
             case CustomRoles.PlagueDoctor:
-            case CustomRoles.NWitch:
             case CustomRoles.Shroud:
             case CustomRoles.Mario:
             case CustomRoles.Vulture:
@@ -898,7 +897,7 @@ public static class Utils
                     ProgressText.Append(Alchemist.GetProgressText(playerId));
                     break;
                 case CustomRoles.PlagueDoctor:
-                    ProgressText.Append(PlagueDoctor.GetProgressText(comms));
+                    ProgressText.Append(PlagueDoctor.GetProgressText());
                     break;
                 case CustomRoles.Chameleon:
                     var taskState13 = Main.PlayerStates?[playerId].GetTaskState();
@@ -2322,6 +2321,7 @@ public static class Utils
 
             // Start run loop for target only if condition is "true"
             if (seer.Data.IsDead || !seer.IsAlive()
+                || seerList.Length == 1
                 || targetList.Length == 1
                 || MushroomMixupIsActive
                 || NoCache
@@ -2491,10 +2491,6 @@ public static class Utils
                             case CustomRoles.Shroud:
                                 TargetMark.Append(Shroud.TargetMark(seer, target));
                                 break;
-
-                            case CustomRoles.NWitch:
-                                TargetMark.Append(NWitch.TargetMark(seer, target));
-                                break;
                         }
 
 
@@ -2647,7 +2643,7 @@ public static class Utils
                         // ====== Target Death Reason for target (Death Reason visible ​​only to the seer) ======
                         string TargetDeathReason = "";
                         if (seer.KnowDeathReason(target))
-                            TargetDeathReason = $"({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))})";
+                            TargetDeathReason = $" ({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))})";
 
 
                         // Devourer
@@ -2663,7 +2659,7 @@ public static class Utils
                             TargetPlayerName = $"<size=0%>{TargetPlayerName}</size>";
 
                         // Target Name
-                        string TargetName = $"{TargetRoleText}{TargetPlayerName}{TargetDeathReason}{TargetMark}";
+                        string TargetName = $"{TargetRoleText}{TargetPlayerName} {TargetDeathReason}{TargetMark}";
                         TargetName += TargetSuffix.ToString() == "" ? "" : ("\r\n" + TargetSuffix.ToString());
 
                         target.RpcSetNamePrivate(TargetName, true, seer, force: NoCache);
@@ -2738,6 +2734,7 @@ public static class Utils
         if (Chronomancer.IsEnable) Chronomancer.AfterMeetingTask();
         if (Solsticer.IsEnable) Solsticer.AfterMeetingTasks();
         if (RiftMaker.IsEnable) RiftMaker.AfterMeetingTasks();
+        if (Councillor.IsEnable) Councillor.AfterMeetingTasks();
 
         Main.ShamanTarget = byte.MaxValue;
         Main.ShamanTargetChoosen = false;
