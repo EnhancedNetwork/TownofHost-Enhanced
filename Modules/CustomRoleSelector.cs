@@ -425,7 +425,10 @@ internal class CustomRoleSelector
         // Add only enabled add-ons
         foreach (var addonKVP in dictionarSortAddOns.Where(a => a.Key.IsEnable()).ToArray())
         {
-            addonsIsEnableList.Add(addonKVP.Key);
+            if (!NotAssignAddOnInGameStarted(addonKVP.Key))
+            {
+                addonsIsEnableList.Add(addonKVP.Key);
+            }
         }
 
         Logger.Info($"Number enabled of add-ons (before priority): {addonsIsEnableList.Count}", "Check Add-ons Count");
@@ -438,11 +441,6 @@ internal class CustomRoleSelector
             if (AddonRolesList.Contains(addon))
             {
                 addonsList.Add(addon);
-                addonsIsEnableList.Remove(addon);
-            }
-
-            if (NotAssignAddOnInGameStarted(addon))
-            {
                 addonsIsEnableList.Remove(addon);
             }
         }
@@ -458,11 +456,6 @@ internal class CustomRoleSelector
             if (!addonsList.Contains(randomAddOn) && AddonRolesList.Contains(randomAddOn))
             {
                 addonsList.Add(randomAddOn);
-                addonsIsEnableList.Remove(randomAddOn);
-            }
-
-            if (NotAssignAddOnInGameStarted(randomAddOn))
-            {
                 addonsIsEnableList.Remove(randomAddOn);
             }
         }
