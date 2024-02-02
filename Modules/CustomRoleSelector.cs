@@ -439,6 +439,8 @@ internal class CustomRoleSelector
             addonsIsEnableList.Add(addonKVP.Key);
         }
 
+        Logger.Info($"Number enabled of add-ons (before priority): {addonsIsEnableList.Count}", "Check Add-ons Count");
+
         // Add addons which have a percentage greater than 90
         foreach (var addon in dictionarSortAddOns.Where(a => a.Key.IsEnable() && a.Value.GetFloat() >= 90).ToArray())
         {
@@ -448,6 +450,8 @@ internal class CustomRoleSelector
                 addonsIsEnableList.Remove(addon.Key);
             }
         }
+
+        Logger.Info($"Number enabled of add-ons (after priority): {addonsIsEnableList.Count}", "Check Add-ons Count");
 
         // Add addons randomly
         while (addonsIsEnableList.Count > 0)
