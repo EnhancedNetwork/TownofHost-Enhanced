@@ -288,12 +288,6 @@ class GameEndCheckerForNormal
                         CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
                         CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Taskinator);
                     }
-                    //Witch
-                    if (pc.Is(CustomRoles.NWitch) && pc.IsAlive() && CustomWinnerHolder.WinnerTeam != CustomWinner.Crewmate && CustomWinnerHolder.WinnerTeam != CustomWinner.Lovers)
-                    {
-                        CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
-                        CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Witch);
-                    }
                     if (pc.Is(CustomRoles.Pursuer) && pc.IsAlive() && CustomWinnerHolder.WinnerTeam != CustomWinner.Jester && CustomWinnerHolder.WinnerTeam != CustomWinner.Lovers && CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist && CustomWinnerHolder.WinnerTeam != CustomWinner.Executioner && CustomWinnerHolder.WinnerTeam != CustomWinner.Collector && CustomWinnerHolder.WinnerTeam != CustomWinner.Innocent && CustomWinnerHolder.WinnerTeam != CustomWinner.Youtuber)
                     {
                         CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
@@ -575,7 +569,6 @@ class GameEndCheckerForNormal
                 {
                     case CountTypes.OutOfGame:
                     case CountTypes.None:
-                    case CountTypes.NWitch:
                         continue;
                     case CountTypes.Impostor:
                         impCount++;

@@ -777,7 +777,6 @@ public enum CustomRoles
     Virus,
     Vulture,
     Werewolf,
-    NWitch, //witch
     Workaholic,
     Wraith,
     Stealth,
@@ -919,7 +918,6 @@ public enum CustomWinner
     Werewolf = CustomRoles.Werewolf,
     Necromancer = CustomRoles.Necromancer,
     Huntsman = CustomRoles.Huntsman,
-    Witch = CustomRoles.NWitch,
     Juggernaut = CustomRoles.Juggernaut,
     Infectious = CustomRoles.Infectious,
     Virus = CustomRoles.Virus,
@@ -957,7 +955,6 @@ public enum AdditionalWinners
     Hater = CustomRoles.Hater,
     Provocateur = CustomRoles.Provocateur,
     Sunnyboy = CustomRoles.Sunnyboy,
-    Witch = CustomRoles.NWitch,
     Totocalcio = CustomRoles.Totocalcio,
     Romantic = CustomRoles.Romantic,
     VengefulRomantic = CustomRoles.VengefulRomantic,

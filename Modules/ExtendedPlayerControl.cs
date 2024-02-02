@@ -517,7 +517,6 @@ static class ExtendedPlayerControl
             CustomRoles.Parasite => pc.IsAlive(),
             CustomRoles.Refugee => pc.IsAlive(),
     //        CustomRoles.Minion => pc.IsAlive(),
-            CustomRoles.NWitch => pc.IsAlive(),
             CustomRoles.Witness => pc.IsAlive(),
             CustomRoles.Shroud => pc.IsAlive(),
             CustomRoles.Wraith => pc.IsAlive(),
@@ -633,7 +632,6 @@ static class ExtendedPlayerControl
             CustomRoles.Pestilence => PlagueBearer.PestilenceCanVent.GetBool(),
             CustomRoles.Medusa => Medusa.CanVent.GetBool(),
             CustomRoles.Traitor => Traitor.CanVent.GetBool(),
-            CustomRoles.NWitch => NWitch.CanVent.GetBool(),
             CustomRoles.Necromancer => Necromancer.CanVent.GetBool(),
             CustomRoles.Shroud => Shroud.CanVent.GetBool(),
             CustomRoles.Maverick => Maverick.CanVent.GetBool(),
@@ -867,9 +865,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Huntsman:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Huntsman.KCD;
-                break;
-            case CustomRoles.NWitch:
-                NWitch.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Chronomancer:
                 Chronomancer.SetKillCooldown(player.PlayerId);

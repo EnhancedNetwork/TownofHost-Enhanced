@@ -333,9 +333,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Glitch:
                 Glitch.ApplyGameOptions(opt);
                 break;
-            case CustomRoles.NWitch:
-                NWitch.ApplyGameOptions(opt);
-                break;
             case CustomRoles.Shroud:
                 Shroud.ApplyGameOptions(opt);
                 break;

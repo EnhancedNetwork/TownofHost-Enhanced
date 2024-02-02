@@ -1093,6 +1093,7 @@ public static class Options
         //#######################################
 
         // You can use: 19900 (Was for Repairman)
+        // You can use: 13800 (Was for NWitch)
 
 
         // Start Load Settings
@@ -2254,8 +2255,6 @@ public static class Options
             .SetValueFormat(OptionFormat.Seconds);
 
         Taskinator.SetupCustomOption();
-
-        NWitch.SetupCustomOption();
 
 
         TextOptionItem.Create(10000012, "RoleType.NeutralEvil", TabGroup.NeutralRoles)
