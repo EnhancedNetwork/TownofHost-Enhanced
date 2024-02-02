@@ -459,11 +459,9 @@ internal class CustomRoleSelector
 
             if (!addonsList.Contains(randomAddOn) && AddonRolesList.Contains(randomAddOn))
             {
-                Logger.Info($"Role: {randomAddOn} count {addonsIsEnableList.Count}", "Check Add-ons Count1");
                 addonsList.Add(randomAddOn);
                 addonsIsEnableList.Remove(randomAddOn);
             }
-            Logger.Info($"Role: {randomAddOn} count {addonsIsEnableList.Count}", "Check Add-ons Count2");
         }
 
         Logger.Info($" Is Started", "Assign Add-ons");
