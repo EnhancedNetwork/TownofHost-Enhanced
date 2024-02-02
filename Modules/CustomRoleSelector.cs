@@ -403,10 +403,8 @@ internal class CustomRoleSelector
         {
             CustomRoles role = (CustomRoles)Enum.Parse(typeof(CustomRoles), cr.ToString());
             if (!role.IsAdditionRole()) continue;
-            if (role is CustomRoles.Madmate && Options.MadmateSpawnMode.GetInt() != 0) continue;
-            if (role is CustomRoles.Lovers or CustomRoles.LastImpostor or CustomRoles.Workhorse) continue;
 
-            if (CheckAddonConflictsOnMaps(role)) continue;
+            if (NotAssignAddOnInGameStarted(role)) continue;
 
             AddonRolesList.Add(role);
         }
@@ -443,7 +441,7 @@ internal class CustomRoleSelector
                 addonsIsEnableList.Remove(addon);
             }
 
-            if (CheckAddonConflictsOnMaps(addon))
+            if (NotAssignAddOnInGameStarted(addon))
             {
                 addonsIsEnableList.Remove(addon);
             }
@@ -462,6 +460,11 @@ internal class CustomRoleSelector
                 addonsList.Add(randomAddOn);
                 addonsIsEnableList.Remove(randomAddOn);
             }
+
+            if (NotAssignAddOnInGameStarted(randomAddOn))
+            {
+                addonsIsEnableList.Remove(randomAddOn);
+            }
         }
 
         Logger.Info($" Is Started", "Assign Add-ons");
@@ -475,8 +478,11 @@ internal class CustomRoleSelector
             }
         }
     }
-    public static bool CheckAddonConflictsOnMaps(CustomRoles role)
+    public static bool NotAssignAddOnInGameStarted(CustomRoles role)
     {
+        if (role is CustomRoles.Madmate && Options.MadmateSpawnMode.GetInt() != 0) return true;
+        if (role is CustomRoles.Lovers or CustomRoles.LastImpostor or CustomRoles.Workhorse) return true;
+
         if (GameStates.FungleIsActive) // The Fungle
         {
             if (role is CustomRoles.Mare) return true;
