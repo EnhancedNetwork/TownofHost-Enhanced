@@ -556,7 +556,6 @@ public static class Utils
             case CustomRoles.Pirate:
             case CustomRoles.Pixie:
             case CustomRoles.PlagueDoctor:
-            case CustomRoles.NWitch:
             case CustomRoles.Shroud:
             case CustomRoles.Mario:
             case CustomRoles.Vulture:
@@ -2491,10 +2490,6 @@ public static class Utils
 
                             case CustomRoles.Shroud:
                                 TargetMark.Append(Shroud.TargetMark(seer, target));
-                                break;
-
-                            case CustomRoles.NWitch:
-                                TargetMark.Append(NWitch.TargetMark(seer, target));
                                 break;
                         }
 
