@@ -105,22 +105,22 @@ internal class CustomRoleSelector
 
         // 职业设置为：优先
         foreach (var role in roleList.ToArray()) if (role.GetMode() == 2)
-        {
-            if (role.IsImpostor()) ImpOnList.Add(role);
-            else if (role.IsMini()) MiniOnList.Add(role);
-            else if (role.IsNonNK()) NonNeutralKillingOnList.Add(role);
-            else if (role.IsNK()) NeutralKillingOnList.Add(role);
-            else roleOnList.Add(role);
-        }
+            {
+                if (role.IsImpostor()) ImpOnList.Add(role);
+                else if (role.IsMini()) MiniOnList.Add(role);
+                else if (role.IsNonNK()) NonNeutralKillingOnList.Add(role);
+                else if (role.IsNK()) NeutralKillingOnList.Add(role);
+                else roleOnList.Add(role);
+            }
         // 职业设置为：启用
         foreach (var role in roleList.ToArray()) if (role.GetMode() == 1)
-        {
-            if (role.IsImpostor()) ImpRateList.Add(role);
-            else if (role.IsMini()) MiniRateList.Add(role);
-            else if (role.IsNonNK()) NonNeutralKillingRateList.Add(role);
-            else if (role.IsNK()) NeutralKillingRateList.Add(role);
-            else roleRateList.Add(role);
-        }
+            {
+                if (role.IsImpostor()) ImpRateList.Add(role);
+                else if (role.IsMini()) MiniRateList.Add(role);
+                else if (role.IsNonNK()) NonNeutralKillingRateList.Add(role);
+                else if (role.IsNK()) NeutralKillingRateList.Add(role);
+                else roleRateList.Add(role);
+            }
 
         while (MiniOnList.Count == 1)
         {
@@ -368,7 +368,7 @@ internal class CustomRoleSelector
 
         if (AllPlayer.Count > 0)
             Logger.Error("Role assignment error: There are players who have not been assigned role", "CustomRoleSelector");
-        
+
         if (rolesToAssign.Count > 0)
             Logger.Error("Role assignment error: There is an unassigned role", "CustomRoleSelector");
 
@@ -397,25 +397,14 @@ internal class CustomRoleSelector
     public static void SelectAddonRoles()
     {
         if (Options.CurrentGameMode == CustomGameMode.FFA) return;
-        
+
         AddonRolesList = [];
         foreach (var cr in CustomRolesHelper.AllRoles)
         {
             CustomRoles role = (CustomRoles)Enum.Parse(typeof(CustomRoles), cr.ToString());
             if (!role.IsAdditionRole()) continue;
-            if (role is CustomRoles.Madmate && Options.MadmateSpawnMode.GetInt() != 0) continue;
-            if (role is CustomRoles.Lovers or CustomRoles.LastImpostor or CustomRoles.Workhorse) continue;
 
-            if (GameStates.FungleIsActive) // The Fungle
-            {
-                if (role is CustomRoles.Mare) continue;
-            }
-            //else if (Options.IsActiveDleks) // Dleks
-            //{
-            //    if (role is CustomRoles.Nimble
-            //        or CustomRoles.Burst
-            //        or CustomRoles.Circumvent) continue;
-            //}
+            if (NotAssignAddOnInGameStarted(role)) continue;
 
             AddonRolesList.Add(role);
         }
@@ -436,18 +425,23 @@ internal class CustomRoleSelector
         // Add only enabled add-ons
         foreach (var addonKVP in dictionarSortAddOns.Where(a => a.Key.IsEnable()).ToArray())
         {
-            addonsIsEnableList.Add(addonKVP.Key);
+            if (!NotAssignAddOnInGameStarted(addonKVP.Key))
+            {
+                addonsIsEnableList.Add(addonKVP.Key);
+            }
         }
 
         Logger.Info($"Number enabled of add-ons (before priority): {addonsIsEnableList.Count}", "Check Add-ons Count");
 
         // Add addons which have a percentage greater than 90
-        foreach (var addon in dictionarSortAddOns.Where(a => a.Key.IsEnable() && a.Value.GetFloat() >= 90).ToArray())
+        foreach (var addonKVP in dictionarSortAddOns.Where(a => a.Key.IsEnable() && a.Value.GetFloat() >= 90).ToArray())
         {
-            if (AddonRolesList.Contains(addon.Key))
+            var addon = addonKVP.Key;
+
+            if (AddonRolesList.Contains(addon))
             {
-                addonsList.Add(addon.Key);
-                addonsIsEnableList.Remove(addon.Key);
+                addonsList.Add(addon);
+                addonsIsEnableList.Remove(addon);
             }
         }
 
@@ -476,5 +470,24 @@ internal class CustomRoleSelector
                 SelectRolesPatch.AssignSubRoles(role);
             }
         }
+    }
+    public static bool NotAssignAddOnInGameStarted(CustomRoles role)
+    {
+        if (role is CustomRoles.Madmate && Options.MadmateSpawnMode.GetInt() != 0) return true;
+        if (role is CustomRoles.Lovers or CustomRoles.LastImpostor or CustomRoles.Workhorse) return true;
+
+        if (GameStates.FungleIsActive) // The Fungle
+        {
+            if (role is CustomRoles.Mare) return true;
+        }
+
+        /*else if (Options.IsActiveDleks) // Dleks
+        {
+            if (role is CustomRoles.Nimble
+                or CustomRoles.Burst
+                or CustomRoles.Circumvent) continue;
+        */
+
+        return false;
     }
 }
