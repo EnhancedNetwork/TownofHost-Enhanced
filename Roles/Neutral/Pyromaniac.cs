@@ -67,7 +67,7 @@ public static class Pyromaniac
             { 
                 DousedList.Add(target.PlayerId);
                 killer.SetKillCooldown(DouseCooldown.GetFloat());
-                Utils.NotifyRoles(SpecifySeer: killer); 
+                Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);
             });
         }
     }
