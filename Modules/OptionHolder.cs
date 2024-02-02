@@ -2006,7 +2006,7 @@ public static class Options
         /*
          * Observer
          */
-        SetupRoleOptions(9000, TabGroup.CrewmateRoles, CustomRoles.Observer);
+        Observer.SetupCustomOption();
 
         /*
          * Oracle

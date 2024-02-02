@@ -1181,6 +1181,9 @@ internal static class RPC
             case CustomRoles.QuickShooter:
                 QuickShooter.Add(targetId);
                 break;
+            case CustomRoles.Observer:
+                Observer.Add(targetId);
+                break;
             case CustomRoles.SwordsMan:
                 SwordsMan.Add(targetId);
                 break;

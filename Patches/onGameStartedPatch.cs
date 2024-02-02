@@ -15,6 +15,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Modules.CustomRoleSelector;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -263,6 +264,7 @@ internal class ChangeRoleSettings
             BallLightning.Init();
             DarkHide.Init();
             Greedier.Init();
+            Observer.Init();
             Collector.Init();
             Benefactor.Init();
             Taskinator.Init();
@@ -815,6 +817,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Benefactor:
                         Benefactor.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Observer:
+                        Observer.Add(pc.PlayerId);
                         break;
                     case CustomRoles.CursedWolf:
                         Main.CursedWolfSpellCount[pc.PlayerId] = Options.GuardSpellTimes.GetInt();
