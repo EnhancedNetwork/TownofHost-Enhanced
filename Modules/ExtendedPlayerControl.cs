@@ -172,14 +172,23 @@ static class ExtendedPlayerControl
 
     public static void RpcGuardAndKill(this PlayerControl killer, PlayerControl target = null, int colorId = 0, bool forObserver = false)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
+        if (!AmongUsClient.Instance.AmHost)
+        {
+            var caller = new System.Diagnostics.StackFrame(1, false);
+            var callerMethod = caller.GetMethod();
+            string callerMethodName = callerMethod.Name;
+            string callerClassName = callerMethod.DeclaringType.FullName;
+            Logger.Warn($"Modded non-host client activated RpcGuardAndKill from {callerClassName}.{callerMethodName}", "RpcGuardAndKill");
+            return;
+        }
 
         if (target == null) target = killer;
 
-        if (!forObserver && !MeetingStates.FirstMeeting)
-            Main.AllPlayerControls
-                .Where(x => x.Is(CustomRoles.Observer) && killer.PlayerId != x.PlayerId)
-                .Do(x => x.RpcGuardAndKill(target, colorId, true));
+        // Check Observer
+        if (Observer.IsEnable && !forObserver && !MeetingStates.FirstMeeting)
+        {
+            Observer.ActivateGuardAnimation(killer.PlayerId, target, colorId);
+        }
 
         // Host
         if (killer.AmOwner)
