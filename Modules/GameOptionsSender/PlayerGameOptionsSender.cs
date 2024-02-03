@@ -546,32 +546,10 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                     Flash.SetSpeed(player.PlayerId, false);
                     break;
                 case CustomRoles.Torch:
-                    if (!Utils.IsActive(SystemTypes.Electrical))
-                        opt.SetVision(true);
-                    opt.SetFloat(FloatOptionNames.CrewLightMod, Torch.TorchVision.GetFloat());
-                    opt.SetFloat(FloatOptionNames.ImpostorLightMod, Torch.TorchVision.GetFloat());
-
-                    if (Utils.IsActive(SystemTypes.Electrical) && !Torch.TorchAffectedByLights.GetBool())
-                        opt.SetVision(true);
-                    opt.SetFloat(FloatOptionNames.CrewLightMod, Torch.TorchVision.GetFloat() * 5);
-                    opt.SetFloat(FloatOptionNames.ImpostorLightMod, Torch.TorchVision.GetFloat() * 5);
+                    Torch.ApplyGameOptions(opt);
                     break;
                 case CustomRoles.Tired when Tired.playerIdList.ContainsKey(player.PlayerId):
-                        if (Tired.playerIdList[player.PlayerId])
-                        {
-                            //Logger.Info($"{player.GetNameWithRole()} Succesfully decreased vision", "Tired");
-                            opt.SetVision(false);
-                            opt.SetFloat(FloatOptionNames.CrewLightMod, Tired.SetVision.GetFloat());
-                            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Tired.SetVision.GetFloat());
-                            break;
-                        }
-                        else
-                        {
-                            opt.SetVision(false);
-                            opt.SetFloat(FloatOptionNames.CrewLightMod, Main.DefaultCrewmateVision);
-                            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Main.DefaultImpostorVision);
-                        }
-                    
+                    Tired.ApplyGameOptions(opt, player);
                     break;
                 case CustomRoles.Bewilder:
                     opt.SetVision(false);

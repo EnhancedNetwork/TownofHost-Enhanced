@@ -664,23 +664,7 @@ public class TaskState
                             break;
 
                         case CustomRoles.Ghoul when (CompletedTasksCount + 1) >= AllTasksCount:
-                            if (player.IsAlive())
-                            {
-                                _ = new LateTask(() =>
-                                {
-                                    Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-                                    player.RpcMurderPlayerV3(player);
-
-                                }, 0.2f, "Ghoul Suicide");
-                            }
-                            else
-                            {
-                                foreach (var pc in Main.AllAlivePlayerControls.Where(x => Ghoul.KillGhoul.Contains(x.PlayerId)))
-                                {
-                                    Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Kill;
-                                    player.RpcMurderPlayerV3(pc);
-                                }
-                            }
+                            Ghoul.OnTaskComplete(player);
                             break;
                     }
                 }

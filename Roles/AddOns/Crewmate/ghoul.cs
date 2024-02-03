@@ -42,5 +42,26 @@ public class Ghoul
         }
     }
 
+    public static void OnTaskComplete(PlayerControl player)
+    {
+        if (player.IsAlive())
+        {
+            _ = new LateTask(() =>
+            {
+                Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
+                player.RpcMurderPlayerV3(player);
+
+            }, 0.2f, "Ghoul Suicide");
+        }
+        else
+        {
+            foreach (var pc in Main.AllAlivePlayerControls.Where(x => KillGhoul.Contains(x.PlayerId)))
+            {
+                Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Kill;
+                player.RpcMurderPlayerV3(pc);
+            }
+        }
+    }
+
 
 }
