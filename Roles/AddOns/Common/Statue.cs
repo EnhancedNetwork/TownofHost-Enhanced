@@ -53,8 +53,6 @@ namespace TOHE.Roles.AddOns.Common
 
         public static void OnFixedUpdate(PlayerControl victim) 
         {
-
-
             foreach (var PVC in Main.AllAlivePlayerControls)
             {
                 if (CountNearplr.Contains(PVC.PlayerId) && PVC.PlayerId != victim.PlayerId && Vector2.Distance(PVC.transform.position, victim.transform.position) > 2f)
