@@ -45,7 +45,7 @@ namespace TOHE.Roles.AddOns.Common
             foreach (var Statue in tempSpeed.Keys)
             {
                 float tmpFloat = tempSpeed[Statue];
-                Main.AllPlayerSpeed[Statue] = Main.AllPlayerSpeed[Statue] - SlowDown.GetFloat() + tmpFloat;
+                Main.AllPlayerSpeed[Statue] = Main.AllPlayerSpeed[Statue] - Main.AllPlayerSpeed[Statue] + tmpFloat;
             }
             Active = false;
             CountNearplr = [];
