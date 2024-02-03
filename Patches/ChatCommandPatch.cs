@@ -1241,7 +1241,7 @@ internal class ChatCommands
             "閃電俠" or "闪电侠" or "閃電" or "闪电" => GetString("Flash"),
             "持燈人" or "火炬" or "持燈" => GetString("Torch"),
             "靈媒" or "灵媒" or "靈媒" => GetString("Seer"),
-            "破平者" or "破平" => GetString("Brakar"),
+            "破平者" or "破平" => GetString("Tiebreaker"),
             "膽小鬼" or "胆小鬼" or "膽小" or "胆小" => GetString("Oblivious"),
             "視障" or "迷幻者" or "視障" or "迷幻" => GetString("Bewilder"),
             "墨鏡" or "患者" => GetString("Sunglasses"),

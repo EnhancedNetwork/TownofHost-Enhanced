@@ -766,12 +766,6 @@ public static class Options
     public static OptionItem CrewCanBeSeer;
     public static OptionItem NeutralCanBeSeer;
 
-    
-
-    public static OptionItem ImpCanBeTiebreaker;
-    public static OptionItem CrewCanBeTiebreaker;
-    public static OptionItem NeutralCanBeTiebreaker;
-
     public static OptionItem ImpCanBeWatcher;
     public static OptionItem CrewCanBeWatcher;
     public static OptionItem NeutralCanBeWatcher;
@@ -2597,14 +2591,8 @@ public static class Options
 
         Sleuth.SetupCustomOptions();
 
-        SetupAdtRoleOptions(20200, CustomRoles.Brakar, canSetNum: true);
-        ImpCanBeTiebreaker = BooleanOptionItem.Create(20203, "ImpCanBeTiebreaker", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Brakar]);
-        CrewCanBeTiebreaker = BooleanOptionItem.Create(20204, "CrewCanBeTiebreaker", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Brakar]);
-        NeutralCanBeTiebreaker = BooleanOptionItem.Create(20205, "NeutralCanBeTiebreaker", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Brakar]);
-
+        Tiebreaker.SetupCustomOptions();
+    
         Torch.SetupCustomOptions();
 
         SetupAdtRoleOptions(20400, CustomRoles.Watcher, canSetNum: true);

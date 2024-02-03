@@ -169,7 +169,6 @@ public class Main : BasePlugin
     public static List<byte> CleanerBodies = [];
     public static List<byte> MedusaBodies = [];
     public static List<byte> InfectedBodies = [];
-    public static List<byte> BrakarVoteFor = [];
     public static Dictionary<byte, (byte, float)> BitPlayers = [];
     public static Dictionary<byte, float> WarlockTimer = [];
     public static Dictionary<byte, float> AssassinTimer = [];
@@ -855,7 +854,7 @@ public enum CustomRoles
     Stubborn,
     Susceptible,
     Swift,
-    Brakar, //tiebreaker
+    Tiebreaker,
     Torch,
     Trapper,
     Tired,

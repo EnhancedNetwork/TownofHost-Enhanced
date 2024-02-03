@@ -377,7 +377,7 @@ class CheckForEndVotingPatch
                 byte target = byte.MaxValue;
                 foreach (var data in VotingData.Where(x => x.Key < 15 && x.Value == max).ToArray())
                 {
-                    if (Main.BrakarVoteFor.Contains(data.Key))
+                    if (Tiebreaker.TiebreakerVoteFor.Contains(data.Key))
                     {
                         if (target != byte.MaxValue)
                         {
@@ -389,7 +389,7 @@ class CheckForEndVotingPatch
                 }
                 if (target != byte.MaxValue)
                 {
-                    Logger.Info("Flat breakers cover expulsion of players", "Brakar Vote");
+                    Logger.Info("Flat breakers cover expulsion of players", "Tiebreaker Vote");
                     exiledPlayer = Utils.GetPlayerInfoById(target);
                     tie = false;
                     braked = true;
@@ -789,7 +789,7 @@ static class ExtendedMeetingHud
     {
         Logger.Info("===Start of vote counting processing===", "Vote");
         Dictionary<byte, int> dic = [];
-        Main.BrakarVoteFor = [];
+        Tiebreaker.TiebreakerVoteFor = [];
         Collector.CollectorVoteFor = [];
         //| 投票された人 | 投票された回数 |
         foreach (var ps in __instance.playerStates.ToArray())
@@ -809,9 +809,9 @@ static class ExtendedMeetingHud
                     //Solsticer can not get voted out
                     if (target.Is(CustomRoles.Solsticer)) VoteNum = 0;
                     // 记录破平者投票
-                    if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Brakar))
-                        if (!Main.BrakarVoteFor.Contains(target.PlayerId))
-                            Main.BrakarVoteFor.Add(target.PlayerId);
+                    if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Tiebreaker))
+                        if (!Tiebreaker.TiebreakerVoteFor.Contains(target.PlayerId))
+                            Tiebreaker.TiebreakerVoteFor.Add(target.PlayerId);
                     // 集票者记录数据
                     Collector.CollectorVotes(target, ps);
                 }

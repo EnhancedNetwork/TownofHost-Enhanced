@@ -309,7 +309,7 @@ static class CustomRolesHelper
             CustomRoles.Gravestone or
             CustomRoles.Trapper or
             CustomRoles.Mare or
-            CustomRoles.Brakar or
+            CustomRoles.Tiebreaker or
             CustomRoles.Oblivious or
             CustomRoles.Bewilder or
             //CustomRoles.Sunglasses or
@@ -1297,7 +1297,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Dictator)
                     || pc.Is(CustomRoles.Influenced)
                     || pc.Is(CustomRoles.Silent)
-                    || pc.Is(CustomRoles.Brakar))
+                    || pc.Is(CustomRoles.Tiebreaker))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeVoidBallot.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeVoidBallot.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeVoidBallot.GetBool()))
                     return false;
@@ -1423,12 +1423,12 @@ static class CustomRolesHelper
                     return false;
                 break;
 
-            case CustomRoles.Brakar:
+            case CustomRoles.Tiebreaker:
                 if (pc.Is(CustomRoles.Dictator)
                     || pc.Is(CustomRoles.VoidBallot)
                     || pc.Is(CustomRoles.Influenced)
                     || pc.Is(CustomRoles.GuardianAngelTOHE)) return false;
-                if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeTiebreaker.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeTiebreaker.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeTiebreaker.GetBool())) return false;
+                if ((pc.GetCustomRole().IsCrewmate() && !Tiebreaker.CrewCanBeTiebreaker.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Tiebreaker.NeutralCanBeTiebreaker.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Tiebreaker.ImpCanBeTiebreaker.GetBool())) return false;
                 break;
 
             case CustomRoles.Youtuber:
@@ -1676,7 +1676,7 @@ static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Dictator)
                     || pc.Is(CustomRoles.Loyal)
                     || pc.Is(CustomRoles.VoidBallot)
-                    || pc.Is(CustomRoles.Brakar)
+                    || pc.Is(CustomRoles.Tiebreaker)
                     || pc.Is(CustomRoles.Collector)
                     || pc.Is(CustomRoles.Keeper))
                     return false;
