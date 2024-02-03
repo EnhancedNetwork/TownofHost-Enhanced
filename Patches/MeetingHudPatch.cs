@@ -671,7 +671,7 @@ class CheckForEndVotingPatch
             if (pc == null) return;
             if (pc.Is(CustomRoles.Susceptible))
             {
-                Susceptible.ChangeRandomDeath();
+                Susceptible.CallEnabledAndChange(pc);
                 deathReason = Susceptible.randomReason;
             }
 
