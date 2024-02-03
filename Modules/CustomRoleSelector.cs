@@ -462,8 +462,11 @@ internal class CustomRoleSelector
             if (!addonsList.Contains(randomAddOn) && AddonRolesList.Contains(randomAddOn))
             {
                 addonsList.Add(randomAddOn);
-                addonsIsEnableList.Remove(randomAddOn);
             }
+
+            // Even if an add-on cannot be added, it must be removed from the "addonsIsEnableList"
+            // To prevent the game from freezing
+            addonsIsEnableList.Remove(randomAddOn);
         }
 
         Logger.Info($" Is Started", "Assign Add-ons");
