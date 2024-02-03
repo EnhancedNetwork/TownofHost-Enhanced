@@ -762,10 +762,6 @@ public static class Options
 
     public static OptionItem OverclockedReduction;
 
-    public static OptionItem ImpCanBeSeer;
-    public static OptionItem CrewCanBeSeer;
-    public static OptionItem NeutralCanBeSeer;
-
     public static OptionItem ImpCanBeWatcher;
     public static OptionItem CrewCanBeWatcher;
     public static OptionItem NeutralCanBeWatcher;
@@ -2579,13 +2575,7 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.Overclocked])
             .SetValueFormat(OptionFormat.Percent);
         
-        SetupAdtRoleOptions(20000, CustomRoles.Seer, canSetNum: true);
-        ImpCanBeSeer = BooleanOptionItem.Create(20003, "ImpCanBeSeer", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Seer]);
-        CrewCanBeSeer = BooleanOptionItem.Create(20004, "CrewCanBeSeer", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Seer]);
-        NeutralCanBeSeer = BooleanOptionItem.Create(20005, "NeutralCanBeSeer", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Seer]);
+       
 
         Silent.SetupCustomOptions();
 

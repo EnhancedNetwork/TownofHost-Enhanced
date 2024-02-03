@@ -1322,7 +1322,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.EvilTracker)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
-                if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeSeer.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeSeer.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeSeer.GetBool()))
+                if ((pc.GetCustomRole().IsCrewmate() && !Seer.CrewCanBeSeer.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Seer.NeutralCanBeSeer.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Seer.ImpCanBeSeer.GetBool()))
                     return false;
                 break;
 
