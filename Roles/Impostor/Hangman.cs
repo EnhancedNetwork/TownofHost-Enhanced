@@ -52,6 +52,7 @@ public static class Hangman
             Main.PlayerStates[target.PlayerId].SetDead();
             target.SetRealKiller(killer);
             killer.SetKillCooldown();
+            Utils.AfterPlayerDeathTasks(target);
             return false;
         }
         return true;
