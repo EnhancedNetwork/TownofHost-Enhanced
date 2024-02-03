@@ -42,6 +42,11 @@ namespace TOHE.Roles.AddOns.Common
 
         public static void AfterMeetingTasks()
         {
+            foreach (var Statue in tempSpeed.Keys)
+            {
+                float tmpFloat = tempSpeed[Statue];
+                Main.AllPlayerSpeed[Statue] = Main.AllPlayerSpeed[Statue] - SlowDown.GetFloat() + tmpFloat;
+            }
             Active = false;
             CountNearplr = [];
             _ = new LateTask(() => 
