@@ -2706,10 +2706,6 @@ class FixedUpdateInNormalGamePatch
                         Vampiress.OnFixedUpdate(player);
                         break;
 
-                    case CustomRoles.Statue:
-                        Statue.OnFixedUpdate(player);
-                        break;
-
                     case CustomRoles.Poisoner:
                         Poisoner.OnFixedUpdate(player);
                         break;
@@ -2817,10 +2813,18 @@ class FixedUpdateInNormalGamePatch
                         Solsticer.OnFixedUpdate(player);
                         break;
                 }
-
-                // Revolutionist
-                #region Revolutionist Timer
-                if (Main.RevolutionistTimer.TryGetValue(player.PlayerId, out var revolutionistTimerData))
+                foreach (var subRole in player.GetCustomSubRoles().ToArray())
+                {
+                    switch (subRole)
+                    {
+                        case CustomRoles.Statue:
+                            Statue.OnFixedUpdate(player);
+                            break;
+                    }
+                }
+                    // Revolutionist
+                    #region Revolutionist Timer
+                    if (Main.RevolutionistTimer.TryGetValue(player.PlayerId, out var revolutionistTimerData))
                 {
                     var playerId = player.PlayerId;
                     if (!player.IsAlive() || Pelican.IsEaten(playerId))
