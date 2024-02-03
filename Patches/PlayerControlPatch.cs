@@ -2817,7 +2817,7 @@ class FixedUpdateInNormalGamePatch
                 {
                     switch (subRole)
                     {
-                        case CustomRoles.Statue:
+                        case CustomRoles.Statue when player.IsAlive():
                             Statue.OnFixedUpdate(player);
                             break;
                     }
