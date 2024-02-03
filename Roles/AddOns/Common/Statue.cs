@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using System;
+using static TOHE.PlayerState;
 
 namespace TOHE.Roles.AddOns.Common
 {
@@ -47,6 +48,8 @@ namespace TOHE.Roles.AddOns.Common
             {
                 float tmpFloat = tempSpeed[Statue];
                 Main.AllPlayerSpeed[Statue] = Main.AllPlayerSpeed[Statue] - Main.AllPlayerSpeed[Statue] + tmpFloat;
+                var pc = Utils.GetPlayerById(Statue);
+                pc.MarkDirtySettings();
             }
             Active = false;
             CountNearplr = [];
