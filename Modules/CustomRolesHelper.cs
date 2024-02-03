@@ -1730,9 +1730,10 @@ static class CustomRolesHelper
             break;
 
             case CustomRoles.Statue:
-                if(pc.Is(CustomRoles.Alchemist)
+                if (pc.Is(CustomRoles.Alchemist)
                     || pc.Is(CustomRoles.Flash)
                     || pc.Is(CustomRoles.Tired))
+                    return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Statue.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Statue.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Statue.CanBeOnImp.GetBool()))
                     return false;
                 break;
