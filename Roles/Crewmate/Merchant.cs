@@ -210,6 +210,7 @@ namespace TOHE.Roles.Crewmate
 
                 if (addon == CustomRoles.Tired)
                     Tired.playerIdList.Add(target.PlayerId, false);
+                if(addon == CustomRoles.Statue) Statue.Add(target.PlayerId); 
                 
                 addonsSold[player.PlayerId] += 1;
             }

@@ -133,6 +133,7 @@ public static class Bandit
                 Tired.playerIdList.Add(killer.PlayerId, false);
                 Tired.playerIdList.Remove(target.PlayerId);
             }
+            if (SelectedAddOn == CustomRoles.Statue) Statue.Add(killer.PlayerId);
             Main.PlayerStates[target.PlayerId].RemoveSubRole((CustomRoles)SelectedAddOn);
             if (SelectedAddOn == CustomRoles.Aware) Main.AwareInteracted.Remove(target.PlayerId);
             Logger.Info($"Successfully removed {SelectedAddOn} addon from {target.GetNameWithRole()}", "Bandit");
@@ -148,6 +149,7 @@ public static class Bandit
                 Tired.playerIdList.Add(killer.PlayerId, false);
                 Tired.playerIdList.Remove(target.PlayerId);
             }
+            if (SelectedAddOn == CustomRoles.Statue) Statue.Add(killer.PlayerId);
             Targets[killer.PlayerId][target.PlayerId] = (CustomRoles)SelectedAddOn;
             Logger.Info($"{killer.GetNameWithRole()} will steal {SelectedAddOn} addon from {target.GetNameWithRole()} after meeting starts", "Bandit");
         }
