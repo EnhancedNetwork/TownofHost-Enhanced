@@ -65,7 +65,6 @@ internal class ChangeRoleSettings
             Main.isCurseAndKill = [];
             Main.isCursed = false;
             Main.DetectiveNotify = [];
-            Main.SleuthNotify = [];
             Main.ForCrusade = [];
             Main.CyberStarDead = [];
             Main.CyberDead = [];
@@ -277,6 +276,7 @@ internal class ChangeRoleSettings
             Juggernaut.Init();
             Anonymous.Init();
             Psychic.Init();
+            Sleuth.Init();
             Glitch.Init();
             Huntsman.Init();
             Deputy.Init();

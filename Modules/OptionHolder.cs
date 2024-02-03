@@ -766,10 +766,7 @@ public static class Options
     public static OptionItem CrewCanBeSeer;
     public static OptionItem NeutralCanBeSeer;
 
-    public static OptionItem ImpCanBeSleuth;
-    public static OptionItem CrewCanBeSleuth;
-    public static OptionItem NeutralCanBeSleuth;
-    public static OptionItem SleuthCanKnowKillerRole;
+    
 
     public static OptionItem ImpCanBeTiebreaker;
     public static OptionItem CrewCanBeTiebreaker;
@@ -2601,15 +2598,7 @@ public static class Options
 
         Silent.SetupCustomOptions();
 
-        SetupAdtRoleOptions(20100, CustomRoles.Sleuth, canSetNum: true);
-        ImpCanBeSleuth = BooleanOptionItem.Create(20103, "ImpCanBeSleuth", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Sleuth]);
-        CrewCanBeSleuth = BooleanOptionItem.Create(20104, "CrewCanBeSleuth", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Sleuth]);
-        NeutralCanBeSleuth = BooleanOptionItem.Create(20105, "NeutralCanBeSleuth", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Sleuth]);
-        SleuthCanKnowKillerRole = BooleanOptionItem.Create(20106, "SleuthCanKnowKillerRole", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Sleuth]);
+        Sleuth.SetupCustomOptions();
 
         SetupAdtRoleOptions(20200, CustomRoles.Brakar, canSetNum: true);
         ImpCanBeTiebreaker = BooleanOptionItem.Create(20203, "ImpCanBeTiebreaker", true, TabGroup.Addons, false)

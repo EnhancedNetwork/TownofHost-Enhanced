@@ -979,8 +979,8 @@ class MeetingHudStartPatch
             //侦探报告线索
             if (Main.DetectiveNotify.ContainsKey(pc.PlayerId))
                 AddMsg(Main.DetectiveNotify[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Detective), GetString("DetectiveNoticeTitle")));
-            if (Main.SleuthNotify.ContainsKey(pc.PlayerId))
-                AddMsg(Main.SleuthNotify[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sleuth), GetString("SleuthNoticeTitle")));
+            if (Sleuth.SleuthNotify.ContainsKey(pc.PlayerId))
+                AddMsg(Sleuth.SleuthNotify[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sleuth), GetString("SleuthNoticeTitle")));
             //宝箱怪的消息（记录）
             if (pc.Is(CustomRoles.Mimic) && !pc.IsAlive())
                 Main.AllAlivePlayerControls.Where(x => x.GetRealKiller()?.PlayerId == pc.PlayerId).Do(x => MimicMsg += $"\n{x.GetNameWithRole(true)}");
@@ -1028,7 +1028,7 @@ class MeetingHudStartPatch
         Main.CyberStarDead.Clear();
         Main.CyberDead.Clear();
         Main.DetectiveNotify.Clear();
-        Main.SleuthNotify.Clear();
+        Sleuth.SleuthNotify.Clear();
         Main.VirusNotify.Clear();
         Enigma.MsgToSend.Clear();
         Mortician.msgToSend.Clear();

@@ -157,7 +157,6 @@ public class Main : BasePlugin
     //public static List<byte> ForFlashbang = [];
     public static Dictionary<byte, byte> KillerOfBoobyTrapBody = [];
     public static Dictionary<byte, string> DetectiveNotify = [];
-    public static Dictionary<byte, string> SleuthNotify = [];
     public static Dictionary<byte, string> VirusNotify = [];
     public static List<byte> OverDeadPlayerList = [];
     public static bool DoBlockNameChange = false;

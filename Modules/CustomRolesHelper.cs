@@ -1335,7 +1335,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Vulture)
                     || pc.Is(CustomRoles.Bloodhound))
                     return false;
-                if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeSleuth.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeSleuth.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeSleuth.GetBool()))
+                if ((pc.GetCustomRole().IsCrewmate() && !Sleuth.CrewCanBeSleuth.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Sleuth.NeutralCanBeSleuth.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Sleuth.ImpCanBeSleuth.GetBool()))
                     return false;
                 break;
 

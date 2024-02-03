@@ -2369,13 +2369,13 @@ class ReportDeadBodyPatch
                 {
                     string msg;
                     msg = string.Format(GetString("SleuthNoticeVictim"), tpc.GetRealName(), tpc.GetDisplayRoleName());
-                    if (Options.SleuthCanKnowKillerRole.GetBool())
+                    if (Sleuth.SleuthCanKnowKillerRole.GetBool())
                     {
                         var realKiller = tpc.GetRealKiller();
                         if (realKiller == null) msg += "；" + GetString("SleuthNoticeKillerNotFound");
                         else msg += "；" + string.Format(GetString("SleuthNoticeKiller"), realKiller.GetDisplayRoleName());
                     }
-                    Main.SleuthNotify.Add(player.PlayerId, msg);
+                    Sleuth.SleuthNotify.Add(player.PlayerId, msg);
                 }
             }
 
