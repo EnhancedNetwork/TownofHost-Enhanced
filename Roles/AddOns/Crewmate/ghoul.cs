@@ -8,11 +8,7 @@ namespace TOHE.Roles.AddOns.Common;
 public class Ghoul
 {
     private static readonly int Id = 21900;
-
     public static HashSet<byte> KillGhoul = [];
-
-    public static Dictionary<byte, bool> playerIdList; // Target Action player for Vision
-
     public static void Init()
     {
         KillGhoul = [];
