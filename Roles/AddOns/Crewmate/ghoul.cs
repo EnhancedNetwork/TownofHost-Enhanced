@@ -20,7 +20,7 @@ public class Ghoul
     public static void Init()
     {
         KillGhoul = [];
-        IsEnable = true;
+        IsEnable = false;
     }
 
     public static void Add()
