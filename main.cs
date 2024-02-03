@@ -832,6 +832,7 @@ public enum CustomRoles
     Lucky,
     Madmate,
     Mare,
+    Tricky,
     Mimic,
     Mundane,
     Necroview,
