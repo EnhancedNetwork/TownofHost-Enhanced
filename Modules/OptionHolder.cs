@@ -1093,7 +1093,6 @@ public static class Options
         //#######################################
 
         // You can use: 19900 (Was for Repairman)
-        // You can use: 13800 (Was for NWitch)
 
 
         // Start Load Settings
