@@ -2686,11 +2686,6 @@ class FixedUpdateInNormalGamePatch
                 if (PlagueDoctor.IsEnable)
                     PlagueDoctor.OnCheckPlayerPosition(player);
 
-                if (CustomRoles.Statue.RoleExist())
-                {
-                    Statue.OnFixedUpdate(player);
-                }
-
                 //OverKiller LateKill
                 if (OverKiller.MurderTargetLateTask.ContainsKey(player.PlayerId))
                 {
@@ -2709,6 +2704,10 @@ class FixedUpdateInNormalGamePatch
 
                     case CustomRoles.Vampiress:
                         Vampiress.OnFixedUpdate(player);
+                        break;
+
+                    case CustomRoles.Statue:
+                        Statue.OnFixedUpdate(player);
                         break;
 
                     case CustomRoles.Poisoner:
