@@ -360,6 +360,7 @@ static class CustomRolesHelper
             CustomRoles.Silent or
             CustomRoles.Rainbow or
             CustomRoles.Susceptible or
+            CustomRoles.Statue or
             CustomRoles.Tired;
     }
     
@@ -1660,7 +1661,8 @@ static class CustomRolesHelper
             case CustomRoles.Flash:
                 if (pc.Is(CustomRoles.Swooper) 
                     || pc.Is(CustomRoles.Solsticer)
-                    || pc.Is(CustomRoles.Tired))
+                    || pc.Is(CustomRoles.Tired)
+                    || pc.Is(CustomRoles.Statue))
                     return false;
                 break;
 
@@ -1726,6 +1728,14 @@ static class CustomRolesHelper
                 if ((pc.GetCustomRole().IsCrewmate() && !Tired.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Tired.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Tired.CanBeOnImp.GetBool())) 
                   return false;
             break;
+
+            case CustomRoles.Statue:
+                if(pc.Is(CustomRoles.Alchemist)
+                    || pc.Is(CustomRoles.Flash)
+                    || pc.Is(CustomRoles.Tired))
+                if ((pc.GetCustomRole().IsCrewmate() && !Statue.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Statue.CanBeOnNeutral.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Statue.CanBeOnImp.GetBool()))
+                    return false;
+                break;
         }
 
         // Code not used:

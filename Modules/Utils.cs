@@ -25,6 +25,7 @@ using UnityEngine;
 using static TOHE.Translator;
 using MS.Internal.Xml.XPath;
 using static UnityEngine.GraphicsBuffer;
+using TOHE.Roles.AddOns.Common;
 
 namespace TOHE;
 
@@ -2735,6 +2736,7 @@ public static class Utils
         if (Solsticer.IsEnable) Solsticer.AfterMeetingTasks();
         if (RiftMaker.IsEnable) RiftMaker.AfterMeetingTasks();
         if (Councillor.IsEnable) Councillor.AfterMeetingTasks();
+        if (CustomRoles.Statue.RoleExist()) Statue.AfterMeetingTasks();
 
         Main.ShamanTarget = byte.MaxValue;
         Main.ShamanTargetChoosen = false;

@@ -851,6 +851,7 @@ public enum CustomRoles
     DualPersonality, //Schizophrenic
     Seer,
     Silent,
+    Statue,
     Sleuth,
     Soulless,
     TicketsStealer, //stealer

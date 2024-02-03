@@ -2672,6 +2672,8 @@ public static class Options
         FragileKillerLunge = BooleanOptionItem.Create(20609, "FragileKillerLunge", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
 
+        Statue.SetupCustomOptions();
+
         Hurried.SetupCustomOption();
 
         Influenced.SetupCustomOption();

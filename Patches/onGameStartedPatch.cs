@@ -363,6 +363,7 @@ internal class ChangeRoleSettings
             OverKiller.Init();
             Quizmaster.Init();
             Tired.Init();
+            Statue.Init();
             Rainbow.Init();
 
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
@@ -1081,6 +1082,9 @@ internal class SelectRolesPatch
                             break;
                         case CustomRoles.Rainbow:
                             Rainbow.Add();
+                            break;
+                        case CustomRoles.Statue:
+                            Statue.Add(pc.PlayerId);
                             break;
 
                         default:
