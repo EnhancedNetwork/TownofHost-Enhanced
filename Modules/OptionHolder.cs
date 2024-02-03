@@ -772,9 +772,6 @@ public static class Options
     public static OptionItem CrewCanBeTiebreaker;
     public static OptionItem NeutralCanBeTiebreaker;
 
-    public static OptionItem TorchVision;
-    public static OptionItem TorchAffectedByLights;
-
     public static OptionItem ImpCanBeWatcher;
     public static OptionItem CrewCanBeWatcher;
     public static OptionItem NeutralCanBeWatcher;
@@ -2607,14 +2604,9 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.Brakar]);
         NeutralCanBeTiebreaker = BooleanOptionItem.Create(20205, "NeutralCanBeTiebreaker", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Brakar]);
-        
-        SetupAdtRoleOptions(20300, CustomRoles.Torch, canSetNum: true);
-        TorchVision = FloatOptionItem.Create(20303, "TorchVision", new(0.5f, 5f, 0.25f), 1.25f, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Torch])
-            .SetValueFormat(OptionFormat.Multiplier);
-        TorchAffectedByLights = BooleanOptionItem.Create(20304, "TorchAffectedByLights", false, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Torch]);
-        
+
+        Torch.SetupCustomOptions();
+
         SetupAdtRoleOptions(20400, CustomRoles.Watcher, canSetNum: true);
         ImpCanBeWatcher = BooleanOptionItem.Create(20403, "ImpCanBeWatcher", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Watcher]);

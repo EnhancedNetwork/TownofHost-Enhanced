@@ -5,6 +5,7 @@ using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem.Linq;
 using InnerNet;
 using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -553,13 +554,13 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 case CustomRoles.Torch:
                     if (!Utils.IsActive(SystemTypes.Electrical))
                         opt.SetVision(true);
-                    opt.SetFloat(FloatOptionNames.CrewLightMod, Options.TorchVision.GetFloat());
-                    opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.TorchVision.GetFloat());
+                    opt.SetFloat(FloatOptionNames.CrewLightMod, Torch.TorchVision.GetFloat());
+                    opt.SetFloat(FloatOptionNames.ImpostorLightMod, Torch.TorchVision.GetFloat());
 
-                    if (Utils.IsActive(SystemTypes.Electrical) && !Options.TorchAffectedByLights.GetBool())
+                    if (Utils.IsActive(SystemTypes.Electrical) && !Torch.TorchAffectedByLights.GetBool())
                         opt.SetVision(true);
-                    opt.SetFloat(FloatOptionNames.CrewLightMod, Options.TorchVision.GetFloat() * 5);
-                    opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.TorchVision.GetFloat() * 5);
+                    opt.SetFloat(FloatOptionNames.CrewLightMod, Torch.TorchVision.GetFloat() * 5);
+                    opt.SetFloat(FloatOptionNames.ImpostorLightMod, Torch.TorchVision.GetFloat() * 5);
                     break;
                 case CustomRoles.Tired when Tired.playerIdList.ContainsKey(player.PlayerId):
                         if (Tired.playerIdList[player.PlayerId])
