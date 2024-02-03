@@ -67,7 +67,6 @@ internal class ChangeRoleSettings
             Main.DetectiveNotify = [];
             Main.SleuthNotify = [];
             Main.ForCrusade = [];
-            Main.KillGhoul = [];
             Main.CyberStarDead = [];
             Main.CyberDead = [];
             Main.KilledDiseased = [];
@@ -363,6 +362,7 @@ internal class ChangeRoleSettings
             OverKiller.Init();
             Quizmaster.Init();
             Tired.Init();
+            Ghoul.Init();
             Rainbow.Init();
 
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();

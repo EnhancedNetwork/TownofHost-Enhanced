@@ -507,7 +507,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
 
         if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Ghoul) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId))
         {
-            Main.KillGhoul.Add(player.PlayerId);
+            Ghoul.KillGhoul.Add(player.PlayerId);
         }
 
         // Grenadier or Mad Grenadier enter the vent

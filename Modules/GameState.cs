@@ -677,7 +677,7 @@ public class TaskState
                             {
                                 foreach (var pc in Main.AllAlivePlayerControls)
                                 {
-                                    if (!pc.Is(CustomRoles.Pestilence) && player.PlayerId != pc.PlayerId && Main.KillGhoul.Contains(pc.PlayerId))
+                                    if (!pc.Is(CustomRoles.Pestilence) && player.PlayerId != pc.PlayerId && Ghoul.KillGhoul.Contains(pc.PlayerId))
                                     {
                                         Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                                         player.RpcMurderPlayerV3(pc);

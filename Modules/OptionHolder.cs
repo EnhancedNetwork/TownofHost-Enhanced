@@ -2785,8 +2785,8 @@ public static class Options
             .SetValueFormat(OptionFormat.Seconds);
         DiseasedCDReset = BooleanOptionItem.Create(21807, "DiseasedCDReset", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Diseased]);
-        
-        SetupAdtRoleOptions(21900, CustomRoles.Ghoul, canSetNum: true);
+
+        Ghoul.SetupCustomOptions();
 
         //BYE GLOW, SEE YOU NEVER - LOOOOOL
         // SetupAdtRoleOptions(22000, CustomRoles.Glow, canSetNum: true);

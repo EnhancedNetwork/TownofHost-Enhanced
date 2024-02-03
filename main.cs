@@ -126,7 +126,6 @@ public class Main : BasePlugin
     public static HashSet<byte> ResetCamPlayerList = [];
     public static HashSet<byte> winnerList = [];
     public static HashSet<byte> ForCrusade = [];
-    public static HashSet<byte> KillGhoul = [];
     public static HashSet<string> winnerNameList = [];
     public static HashSet<int> clientIdList = [];
     public static List<(string, byte, string)> MessagesToSend = [];
