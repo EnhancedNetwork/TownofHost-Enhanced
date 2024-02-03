@@ -13,6 +13,7 @@ namespace TOHE.Roles.AddOns.Common
         public static OptionItem CanBeOnNeutral;
         public static OptionItem SlowDown;
         public static OptionItem PeopleAmount;
+       
         public static List<byte> CountNearplr;
         public static bool Active;
         public static Dictionary<byte, float> tempSpeed;
@@ -59,7 +60,7 @@ namespace TOHE.Roles.AddOns.Common
         {
             foreach (var PVC in Main.AllAlivePlayerControls)
             {
-                if (CountNearplr.Contains(PVC.PlayerId) && PVC.PlayerId != victim.PlayerId && Vector2.Distance(PVC.transform.position, victim.transform.position) > 2f)
+                if (CountNearplr.Contains(PVC.PlayerId) && Vector2.Distance(PVC.transform.position, victim.transform.position) > 2f)
                 {
                     CountNearplr.Remove(PVC.PlayerId);
                 }
