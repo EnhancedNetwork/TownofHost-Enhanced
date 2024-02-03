@@ -46,9 +46,10 @@ namespace TOHE.Roles.AddOns.Common
         {
             foreach (var Statue in tempSpeed.Keys)
             {
+                var pc = Utils.GetPlayerById(Statue);
+                if (pc == null) continue;
                 float tmpFloat = tempSpeed[Statue];
                 Main.AllPlayerSpeed[Statue] = Main.AllPlayerSpeed[Statue] - Main.AllPlayerSpeed[Statue] + tmpFloat;
-                var pc = Utils.GetPlayerById(Statue);
                 pc.MarkDirtySettings();
             }
             Active = false;
