@@ -23,7 +23,7 @@ enum CustomRPC
     // On version 2023.11.28 the last id in RpcCalls: 61
     VersionCheck = 80,
     RequestRetryVersionCheck = 81,
-    SyncCustomSettings = 82,
+    SyncCustomSettings = 100,
     RestTOHESetting,
     SetDeathReason,
     EndGame,
@@ -220,15 +220,15 @@ internal class RPCHandlerPatch
                 break;
         }
         if (__instance.PlayerId != 0
-            && Enum.IsDefined(typeof(CustomRPC), (int)callId)
-            && !TrustedRpc(callId)) //ホストではなく、CustomRPCで、VersionCheckではない
+    && Enum.IsDefined(typeof(CustomRPC), (int)callId)
+    && !TrustedRpc(callId)) //ホストではなく、CustomRPCで、VersionCheckではない
         {
-            Logger.Warn($"{__instance?.Data?.PlayerName}:{callId}({RPC.GetRpcName(callId)}) 已取消，因为它是由主机以外的其他人发送的。", "CustomRPC");
+            Logger.Warn($"{__instance?.Data?.PlayerName}:{callId}({RPC.GetRpcName(callId)}) has been canceled because it was sent by someone other than the host", "CustomRPC");
             if (AmongUsClient.Instance.AmHost)
             {
                 if (!EAC.ReceiveInvalidRpc(__instance, callId)) return false;
                 AmongUsClient.Instance.KickPlayer(__instance.GetClientId(), false);
-                Logger.Warn($"收到来自 {__instance?.Data?.PlayerName} 的不受信用的RPC，因此将其踢出。", "Kick");
+                Logger.Warn($"Received an uncredited RPC from {__instance?.Data?.PlayerName} and kicked it out", "Kick");
                 Logger.SendInGame(string.Format(GetString("Warning.InvalidRpc"), __instance?.Data?.PlayerName));
             }
             return false;

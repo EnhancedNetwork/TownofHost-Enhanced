@@ -40,7 +40,7 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0202.151.2000"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginVersion = "2024.0203.151.2000"; // YEAR.MMDD.VERSION.CANARYDEV
     public const string PluginDisplayVersion = "1.5.1 Canary 2";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
 
@@ -832,6 +832,7 @@ public enum CustomRoles
     Lucky,
     Madmate,
     Mare,
+    Tricky,
     Mimic,
     Mundane,
     Necroview,

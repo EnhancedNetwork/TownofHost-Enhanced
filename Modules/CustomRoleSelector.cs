@@ -104,7 +104,9 @@ internal class CustomRoleSelector
         }
 
         // 职业设置为：优先
-        foreach (var role in roleList.ToArray()) if (role.GetMode() == 2)
+        foreach (var role in roleList.ToArray())
+        {
+            if (role.GetMode() == 2)
             {
                 if (role.IsImpostor()) ImpOnList.Add(role);
                 else if (role.IsMini()) MiniOnList.Add(role);
@@ -112,8 +114,11 @@ internal class CustomRoleSelector
                 else if (role.IsNK()) NeutralKillingOnList.Add(role);
                 else roleOnList.Add(role);
             }
+        }
         // 职业设置为：启用
-        foreach (var role in roleList.ToArray()) if (role.GetMode() == 1)
+        foreach (var role in roleList.ToArray())
+        {
+            if (role.GetMode() == 1)
             {
                 if (role.IsImpostor()) ImpRateList.Add(role);
                 else if (role.IsMini()) MiniRateList.Add(role);
@@ -121,6 +126,7 @@ internal class CustomRoleSelector
                 else if (role.IsNK()) NeutralKillingRateList.Add(role);
                 else roleRateList.Add(role);
             }
+        }
 
         while (MiniOnList.Count == 1)
         {
@@ -456,8 +462,11 @@ internal class CustomRoleSelector
             if (!addonsList.Contains(randomAddOn) && AddonRolesList.Contains(randomAddOn))
             {
                 addonsList.Add(randomAddOn);
-                addonsIsEnableList.Remove(randomAddOn);
             }
+
+            // Even if an add-on cannot be added, it must be removed from the "addonsIsEnableList"
+            // To prevent the game from freezing
+            addonsIsEnableList.Remove(randomAddOn);
         }
 
         Logger.Info($" Is Started", "Assign Add-ons");
