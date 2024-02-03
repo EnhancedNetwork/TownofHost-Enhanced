@@ -1526,6 +1526,7 @@ internal static class RPC
             case CustomRoles.Rainbow:
                 Rainbow.Add();
                 break;
+
         }
         HudManager.Instance.SetHudActive(true);
     //    HudManager.Instance.Chat.SetVisible(true);

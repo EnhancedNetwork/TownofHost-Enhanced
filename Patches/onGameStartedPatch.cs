@@ -1082,6 +1082,9 @@ internal class SelectRolesPatch
                         case CustomRoles.Rainbow:
                             Rainbow.Add();
                             break;
+                        case CustomRoles.Ghoul:
+                            Ghoul.Add();
+                            break;
 
                         default:
                             break;

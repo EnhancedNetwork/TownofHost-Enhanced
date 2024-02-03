@@ -505,16 +505,10 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             opt.SetFloat(FloatOptionNames.CrewLightMod, Options.BewilderVision.GetFloat());
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.BewilderVision.GetFloat());
         }
-
-        if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Ghoul) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId))
+        
+        if (Ghoul.IsEnable)
         {
-            var pc = Utils.GetPlayerById(player.PlayerId);
-            if (pc != null) 
-            {
-                if (!pc.Is(CustomRoles.Pestilence))
-                    Ghoul.KillGhoul.Add(player.PlayerId);
-            }
-            
+            Ghoul.ApplyGameOptions(player);
         }
 
         // Grenadier or Mad Grenadier enter the vent
