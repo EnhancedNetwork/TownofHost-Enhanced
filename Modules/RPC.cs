@@ -23,7 +23,7 @@ enum CustomRPC
     // On version 2023.11.28 the last id in RpcCalls: 61
     VersionCheck = 80,
     RequestRetryVersionCheck = 81,
-    SyncCustomSettings = 82,
+    SyncCustomSettings = 100,
     RestTOHESetting,
     SetDeathReason,
     EndGame,
