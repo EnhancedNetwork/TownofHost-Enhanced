@@ -1092,7 +1092,6 @@ public static class Options
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
 
-        // You can use: 19900 (Was for Repairman)
         // You can use: 13800 (Was for NWitch)
 
 
@@ -2918,6 +2917,11 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.TicketsStealer]);
         
         SetupAdtRoleOptions(23300, CustomRoles.Swift, canSetNum: true, tab: TabGroup.Addons);
+
+        /*
+         * Tricky
+         */
+        Tricky.SetupCustomOption();
 
       //SetupAdtRoleOptions(23400, CustomRoles.KillingMachine, canSetNum: true, tab: TabGroup.Addons);
 

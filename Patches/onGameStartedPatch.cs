@@ -364,6 +364,7 @@ internal class ChangeRoleSettings
             Quizmaster.Init();
             Tired.Init();
             Rainbow.Init();
+            Tricky.Init();
 
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
