@@ -25,6 +25,7 @@ using UnityEngine;
 using static TOHE.Translator;
 using MS.Internal.Xml.XPath;
 using static UnityEngine.GraphicsBuffer;
+using TOHE.Roles.AddOns.Common;
 
 namespace TOHE;
 
@@ -2738,7 +2739,7 @@ public static class Utils
 
         Main.ShamanTarget = byte.MaxValue;
         Main.ShamanTargetChoosen = false;
-        Main.BurstBodies.Clear();
+        Burst.BurstBodies = [];
         OverKiller.MurderTargetLateTask = [];
 
 

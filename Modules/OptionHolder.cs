@@ -702,11 +702,6 @@ public static class Options
 
     // Add-Ons settings 
 
-    public static OptionItem ImpCanBeBurst;
-    public static OptionItem CrewCanBeBurst;
-    public static OptionItem NeutralCanBeBurst;
-    public static OptionItem BurstKillDelay;
-
     public static OptionItem ImpCanBeCyber;
     public static OptionItem CrewCanBeCyber;
     public static OptionItem NeutralCanBeCyber;
@@ -2384,16 +2379,7 @@ public static class Options
 
         Bewilder.SetupCustomOptions();
 
-        SetupAdtRoleOptions(19000, CustomRoles.Burst, canSetNum: true);
-        ImpCanBeBurst = BooleanOptionItem.Create(19003, "ImpCanBeBurst", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Burst]);
-        CrewCanBeBurst = BooleanOptionItem.Create(19004, "CrewCanBeBurst", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Burst]);
-        NeutralCanBeBurst = BooleanOptionItem.Create(19005, "NeutralCanBeBurst", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Burst]);
-        BurstKillDelay = FloatOptionItem.Create(19006, "BurstKillDelay", new(1f, 180f, 1f), 5f, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Burst])
-            .SetValueFormat(OptionFormat.Seconds);
+        Burst.SetupCustomOptions();
         
         SetupAdtRoleOptions(19100, CustomRoles.Cyber, canSetNum: true);
         ImpCanBeCyber = BooleanOptionItem.Create(19103, "ImpCanBeCyber", true, TabGroup.Addons, false)

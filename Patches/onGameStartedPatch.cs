@@ -75,7 +75,6 @@ internal class ChangeRoleSettings
             Main.TasklessCrewmate = [];
             Main.KillerOfBoobyTrapBody = [];
             Main.CleanerBodies = [];
-            Main.BurstBodies = [];
             Main.MedusaBodies = [];
             Main.InfectedBodies = [];
             Main.VirusNotify = [];
@@ -311,6 +310,7 @@ internal class ChangeRoleSettings
             Virus.Init();
             Bloodhound.Init();
             Tracker.Init();
+            Burst.Init();
             Merchant.Init();
             Pyromaniac.Init();
             SerialKiller.Init();

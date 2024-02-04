@@ -146,7 +146,6 @@ public class Main : BasePlugin
     public static List<byte> CyberDead = [];
     public static List<int> BombedVents = [];
     public static List<byte> WorkaholicAlive = [];
-    public static List<byte> BurstBodies = [];
     public static List<byte> TasklessCrewmate = [];
     public static List<byte> BoobyTrapBody = [];
     public static List<byte> BoobyTrapKiller = [];

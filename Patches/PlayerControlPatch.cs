@@ -1417,28 +1417,7 @@ class MurderPlayerPatch
 
         if (target.Is(CustomRoles.Burst) && killer.IsAlive() && !killer.Is(CustomRoles.KillingMachine))
         {
-            target.SetRealKiller(killer);
-            Main.BurstBodies.Add(target.PlayerId);
-            if (killer.PlayerId != target.PlayerId && !killer.Is(CustomRoles.Pestilence))
-            {
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Burst), GetString("BurstNotify")));
-                _ = new LateTask(() =>
-                {
-                    if (!killer.inVent && killer.IsAlive() && !GameStates.IsMeeting && GameStates.IsInGame)
-                    {
-                        Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
-                        target.RpcMurderPlayerV3(killer);
-                        killer.SetRealKiller(target);
-                    }
-                    else if (GameStates.IsInGame)
-                    {
-                        RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
-                        killer.SetKillCooldown(time: Main.AllPlayerKillCooldown[killer.PlayerId] - Options.BurstKillDelay.GetFloat(), forceAnime: true);
-                        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Burst), GetString("BurstFailed")));
-                    }
-                    Main.BurstBodies.Remove(target.PlayerId);
-                }, Options.BurstKillDelay.GetFloat(), "Burst Suicide");
-            }
+            Burst.AfterBurstDeadTasks(killer, target);
         }
         
         if (target.Is(CustomRoles.Trapper) && killer != target && !killer.Is(CustomRoles.KillingMachine))
