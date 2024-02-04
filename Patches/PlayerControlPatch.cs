@@ -813,14 +813,8 @@ class CheckMurderPatch
                     }
                     break;
 
-                case CustomRoles.Swift when !targetRole.Is(CustomRoles.Pestilence):
-                    target.RpcMurderPlayerV3(target);
-                    if (!Options.DisableShieldAnimations.GetBool())
-                        killer.RpcGuardAndKill(killer);
-                    killer.SetKillCooldown();
-                    target.SetRealKiller(killer);
-                    RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
-                    return false;
+                case CustomRoles.Swift:
+                    return Swift.OnCheckMurder(killer, target);
             }
         }
 

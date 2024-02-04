@@ -2587,8 +2587,8 @@ public static class Options
         Mimic.SetupCustomOption();
 
         Stealer.SetupCustomOption();
-        
-        SetupAdtRoleOptions(23300, CustomRoles.Swift, canSetNum: true, tab: TabGroup.Addons);
+
+        Swift.SetupCustomOption();
 
         /*
          * Tricky
