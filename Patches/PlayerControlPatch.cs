@@ -205,25 +205,7 @@ class CheckMurderPatch
                     break;
 
                 case CustomRoles.Fragile:
-                    if (
-                        (killerRole.IsImpostorTeamV3() && Options.ImpCanKillFragile.GetBool()) ||
-                        (killerRole.IsNeutral() && Options.NeutralCanKillFragile.GetBool()) ||
-                        (killerRole.IsCrewmate() && Options.CrewCanKillFragile.GetBool()))
-                    {
-                        Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Shattered;
-                        target.SetRealKiller(killer);
-                        if (Options.FragileKillerLunge.GetBool())
-                        {
-                            killer.RpcMurderPlayerV3(target);
-                        }
-                        else
-                        {
-                            target.RpcMurderPlayerV3(target);
-                        }
-                        killer.ResetKillCooldown();
-                        return false;
-                    }
-                    break;
+                    return Fragile.KillFragile(killer, target);
 
                 case CustomRoles.Aware:
                     switch (killerRole)
