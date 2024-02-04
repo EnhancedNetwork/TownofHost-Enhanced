@@ -49,7 +49,7 @@ public static class SchrodingersCat
         teammate[target.PlayerId] = killer.PlayerId;
         SendRPC(target.PlayerId);
 
-        killer.RpcGuardAndKill();
+        killer.RpcGuardAndKill(target);
         target.RpcGuardAndKill();
 
         Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
