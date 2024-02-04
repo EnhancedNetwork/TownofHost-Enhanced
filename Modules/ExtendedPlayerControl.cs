@@ -1245,6 +1245,10 @@ static class ExtendedPlayerControl
             case CustomRoles.Bewilder:
                 Bewilder.Add();
                 break;
+            case CustomRoles.Lucky:
+                Lucky.LuckyAvoid.Remove(Killed.PlayerId);
+                Lucky.Add(target.PlayerId);
+                break;
         }
     }
     public static bool RpcCheckAndMurder(this PlayerControl killer, PlayerControl target, bool check = false) => CheckMurderPatch.RpcCheckAndMurder(killer, target, check);

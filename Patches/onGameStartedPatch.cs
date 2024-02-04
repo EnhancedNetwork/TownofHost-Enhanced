@@ -340,6 +340,7 @@ internal class ChangeRoleSettings
             PlagueBearer.Init();
             Reverie.Init();
             Doomsayer.Init();
+            Lucky.Init();
             Pirate.Init();
             Pixie.Init();
             Shroud.Init();
@@ -1093,6 +1094,9 @@ internal class SelectRolesPatch
                             break;
                         case CustomRoles.Bewilder:
                             Bewilder.Add();
+                            break;
+                        case CustomRoles.Lucky:
+                            Lucky.Add(pc.PlayerId);
                             break;
 
                         default:

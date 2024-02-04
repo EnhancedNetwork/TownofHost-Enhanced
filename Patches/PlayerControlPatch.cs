@@ -923,12 +923,8 @@ class CheckMurderPatch
 
         if (target.Is(CustomRoles.Lucky))
         {
-            var rd = IRandom.Instance;
-            if (rd.Next(0, 100) < Options.LuckyProbability.GetInt())
-            {
-                killer.RpcGuardAndKill(target);
-                return false;
-            }
+            Lucky.AvoidDeathChance(killer, target);
+            if (Lucky.LuckyAvoid[target.PlayerId]) return false;
         }
 
         // Shield Player

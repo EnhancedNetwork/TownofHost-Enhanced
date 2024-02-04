@@ -1371,7 +1371,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Fragile))
                     return false;
-                if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeLucky.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeLucky.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeLucky.GetBool()))
+                if ((pc.GetCustomRole().IsCrewmate() && !Lucky.CrewCanBeLucky.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Lucky.NeutralCanBeLucky.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Lucky.ImpCanBeLucky.GetBool()))
                     return false;
                 break;
 

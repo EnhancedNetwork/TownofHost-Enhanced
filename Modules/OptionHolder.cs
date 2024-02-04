@@ -702,10 +702,6 @@ public static class Options
 
     // Add-Ons settings 
 
-    public static OptionItem LuckyProbability;
-    public static OptionItem ImpCanBeLucky;
-    public static OptionItem CrewCanBeLucky;
-    public static OptionItem NeutralCanBeLucky;
 
     public static OptionItem ImpCanBeNecroview;
     public static OptionItem CrewCanBeNecroview;
@@ -2372,17 +2368,8 @@ public static class Options
         Lazy.SetupCustomOptions();
 
         Loyal.SetupCustomOptions();
-        
-        SetupAdtRoleOptions(19500, CustomRoles.Lucky, canSetNum: true);
-        LuckyProbability = IntegerOptionItem.Create(19503, "LuckyProbability", new(0, 100, 5), 50, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Lucky])
-            .SetValueFormat(OptionFormat.Percent);
-        ImpCanBeLucky = BooleanOptionItem.Create(19504, "ImpCanBeLucky", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Lucky]);
-        CrewCanBeLucky = BooleanOptionItem.Create(19505, "CrewCanBeLucky", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Lucky]);
-        NeutralCanBeLucky = BooleanOptionItem.Create(19506, "NeutralCanBeLucky", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Lucky]);
+
+        Lucky.SetupCustomOptions();
         
         SetupAdtRoleOptions(19600, CustomRoles.Necroview, canSetNum: true, tab: TabGroup.Addons);
         ImpCanBeNecroview = BooleanOptionItem.Create(19603, "ImpCanBeNecroview", true, TabGroup.Addons, false)
