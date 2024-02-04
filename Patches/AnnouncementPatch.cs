@@ -71,9 +71,8 @@ public class ModNewsHistory
                         "\n     - Tricky (Impostor Add-on - By: ryuk)" +
                         "\n     - Rainbow (Miscellaneous Addon - Codded by dev TOH-Y - By: NikoCat223 and LezaiYa)" +
 
-                    "\n<b>【Reworked/Rebased/Improved Roles】(5 roles)</i></b>" +
+                    "\n<b>【Reworked/Rebased/Improved Roles】(4 roles)</i></b>" +
                         "\n     - Killing Machine (Reworked - By: ryuk)" +
-                        "\n     - Bandit (Improved - By: ryuk)" +
                         "\n     - Investigator (Reworked - By: ryuk)" +
                         "\n     - Swapper (Rebased - By: NikoCat223)" +
                         "\n     - Copycat (Improved - By: ryuk)" +
@@ -85,12 +84,11 @@ public class ModNewsHistory
 
                     "\n\r<b>【Performance/Code Improvements】</b>" +
                         "\n     - «FixedUpdate» in code now work async (By: TommyXL)" +
-                        "\n     - Ported code «Vent.CanUse» from TOH (By: TommyXL)" +
                         "\n     - Optimize Ping Tracker Update (By: TommyXL)" +
                         "\n     - Improved Code In «CheckMurder» (By: TommyXL)" +
                         "\n     - Improved Code When Players Complite Task (By: TommyXL)" +
                         "\n     - Сode improvements in «HasKillButton» (By: ryuk)" +
-                        "\n     - Сode improvements in «DivinatorCheck.Result» (Fortune Teller - By: ryuk)" +
+                        "\n     - Сode improvements in «DivinatorCheck.Result» for Fortune Teller (By: ryuk)" +
 
                     "\n\r<b>【New Features】</b>" +
                         "\n     - Support Vanilla Hide & Seek (By: TommyXL)" +
@@ -112,10 +110,11 @@ public class ModNewsHistory
                     "\n<b>【Some Changes】</b>" +
                         "\n     - Display sorted role names for all langs in guesser UI (By: ryuk)" +
                         "\n     - Preset 5 will be used to sync with host's setting for modded client (By: TommyXL)" +
+                        "\n     - Ported code «Vent.CanUse» from TOH (By: TommyXL)" +
                         "\n     - Some roles have been removed from Experimental (By: ryuk)" +
-                        "\n     - Make /rand inclusive (By: Marg)" +
+                        "\n     - Make «/rand» inclusive (By: Marg)" +
                         "\n     - Prevent bans from InnerSloth servers if not modded host (By: Pietro)" +
-                        "\n     - Warn when /dump is used (By: Pietro)" +
+                        "\n     - Warn when «/dump» is used (By: Pietro)" +
                         "\n     - Translate API tags, if translation available (By: Pietro)" +
                         "\n     - Updated several roles' names internally to be consistent and not spaghetti code (By: Moe)" +
                         "\n     - Add-ons with a spawn chance greater than or equal to 90% have higher priority (By: TommyXL)" +
@@ -153,6 +152,7 @@ public class ModNewsHistory
                         "\n     - Fixed bug when Pyromaniac not showing the douse on vanilla (for vanilla - By: TommyXL)" +
                         "\n     - Fixed bug when Impostor ghosts didn't see the sabotage button (By: TommyXL)" +
                         "\n     - Fixed bug when the reason for the end win was sometimes displayed incorrectly (By: TommyXL)" +
+                        "\n     - Fixed bug when the add-on had a 100% chance of spawning but would sometimes not spawn in the game (By: TommyXL)" +
                         "\n     - Some fixes for Romantics (By: TommyXL and ryuk)" +
                         "\n     - Fixed Undertaker for modded clients (By: ryuk)" +
                         "\n     - Fixed bug when Copycat copying taskinator will give benefactor if Copycat can copy crew varaint (By: ryuk)" +
