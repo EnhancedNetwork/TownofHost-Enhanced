@@ -1102,95 +1102,95 @@ public class ModNewsHistory
                 {
                     Number = 100008,
                     Title = "Town of Host: Enhanced v1.5.0",
-                    SubTitle = "★★ Big update! ★★",
+                    SubTitle = "★★ 重大更新！ ★★",
                     ShortTitle = "TOH: Enhanced v1.5.0",
                     BeforeNumber = 100007,
-                    Text = "<size=150%>Welcome to TOH: Enhanced v1.5.0!</size>\n" +
-                    "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.4.0\r\n" +
+                    Text = "<size=150%>欢迎来到 TOH: Enhanced v1.5.0!</size>\n" +
+                    "\n<b>【基于官方版本】</b>\n - 基于 TOH: Enhanced v1.4.0\r\n" +
 
-                    "\n<b>【New Roles/Addons】(6 roles, 4 Addons)</i></b>" +
-                        "\n     - Rift Maker (Support Impostor - By: ryuk)" +
-                        "\n     - Penguin (Hindering Impostor - Codded by dev TOH and Ported from TOHE+ - By: Drakos)" +
-                        "\n     - Stealth (Hindering Impostor - Codded by dev TOH and Ported from TOHE+ - By: Drakos)" +
-                        "\n     - Plague Scientist (Neutral Killer - Codded by dev TOH and Ported from TOHE+ - By: Drakos)" +
-                        "\n     - Schrodinger's Cat (Neutral Benign - Codded by dev TOH - By: ryuk)" +
-                        "\n     - Quizmaster (Experemental role - By: Furo)" +
-                        "\n     - Susceptible (Helpful Addon - By: Drakos)" +
-                        "\n     - Tired (Helpful Addon - By: Drakos)" +
-                        "\n     - Tricky (Impostor Add-on - By: ryuk)" +
-                        "\n     - Rainbow (Miscellaneous Addon - Codded by dev TOH-Y - By: NikoCat223 and LezaiYa)" +
+                    "\n<b>【新职业/附加职业】(6个职业, 4个附加职业)</i></b>" +
+                        "\n     - 裂缝制造者 (支援类内鬼 - By: ryuk)" +
+                        "\n     - 企鹅 (阻碍类内鬼 - 由 TOH 开发人员编写，并从 TOHE+ 移植而来 - By: Drakos)" +
+                        "\n     - 隐形者 (阻碍类内鬼 - 由 TOH 开发人员编写，并从 TOHE+ 移植而来 - By: Drakos)" +
+                        "\n     - 瘟疫学家(带刀类中立 - 由 TOH 开发人员编写，并从 TOHE+ 移植而来 - By: Drakos)" +
+                        "\n     - 薛定谔的猫(友好类中立 - 由 TOH 开发人员编写 - By: ryuk)" +
+                        "\n     - 测验长 (实验性职业 - By: Furo)" +
+                        "\n     - 易感者 (帮助类附加职业 - By: Drakos)" +
+                        "\n     - 疲劳者 (帮助类附加职业 - By: Drakos)" +
+                        "\n     - 棘手者 (内鬼附加职业 - By: ryuk)" +
+                        "\n     - 彩虹 (杂项附加职业 - 由 TOH-Y 开发人员编写 - By: NikoCat223 and LezaiYa)" +
 
-                    "\n<b>【Reworked/Rebased/Improved Roles】(4 roles)</i></b>" +
-                        "\n     - Killing Machine (Reworked - By: ryuk)" +
-                        "\n     - Investigator (Reworked - By: ryuk)" +
-                        "\n     - Swapper (Rebased - By: NikoCat223)" +
-                        "\n     - Copycat (Improved - By: ryuk)" +
+                    "\n<b>【重新编写/重置/改进职业】(4个职业)</i></b>" +
+                        "\n     - 杀戮机器 (重新编写 - By: ryuk)" +
+                        "\n     - 研究员 (重新编写 - By: ryuk)" +
+                        "\n     - 换票师 (重置 - By: NikoCat223)" +
+                        "\n     - 模仿猫 (改进职业 - By: ryuk)" +
 
-                    "\n<b>【Removed Roles/Addons】(2 role, 1 Addon)</i></b>" +
-                        "\n     - Luckey (Сrew role - By: ryuk)" +
-                        "\n     - Witch (Neutral Killer - By: TommyXL)" +
-                        "\n     - Repairman (Common Addon - By: TommyXL)" +
+                    "\n<b>【已删除的 职业/附加职业】(2个职业, 1个附加职业)</i></b>" +
+                        "\n     - 幸运儿 (船员职业 - By: ryuk)" +
+                        "\n     - 巫婆 (击杀中立 - By: TommyXL)" +
+                        "\n     - 维修员 (通用附加职业 - By: TommyXL)" +
 
-                    "\n\r<b>【Performance/Code Improvements】</b>" +
-                        "\n     - «FixedUpdate» in code now work async (By: TommyXL)" +
-                        "\n     - Optimize Ping Tracker Update (By: TommyXL)" +
-                        "\n     - Improved Code In «CheckMurder» (By: TommyXL)" +
-                        "\n     - Improved Code When Players Complite Task (By: TommyXL)" +
-                        "\n     - Сode improvements in «HasKillButton» (By: ryuk)" +
-                        "\n     - Сode improvements in «DivinatorCheck.Result» for Fortune Teller (By: ryuk)" +
+                    "\n\r<b>【提高性能/改进代码】</b>" +
+                        "\n     - 代码中的«FixedUpdate»现在可以同步运行了 (By: TommyXL)" +
+                        "\n     - 优化延迟追踪更新 (By: TommyXL)" +
+                        "\n     - 改进«CheckMurder»中的代码 (By: TommyXL)" +
+                        "\n     - 改进玩家完成任务时的代码 (By: TommyXL)" +
+                        "\n     - 改进«HasKillButton»中的代码 (By: ryuk)" +
+                        "\n     - 调查员«DivinatorCheck.Result»的模式改进 (By: ryuk)" +
 
-                    "\n\r<b>【New Features】</b>" +
-                        "\n     - Support Vanilla Hide & Seek (By: TommyXL)" +
-                        "\n     - Added random skins & colors in camouflage (By: TommyXL)" +
-                        "\n     - Black screen (Anti Blackout) protection system has been improved (By: TommyXL)" +
-                        "\n     - Add-ons assign was recoded (By: TommyXL)" +
+                    "\n\r<b>【新功能】</b>" +
+                        "\n     - 支持原版捉迷藏 (By: TommyXL)" +
+                        "\n     - 迷彩中添加了随机皮肤和颜色 (By: TommyXL)" +
+                        "\n     - 改进了黑屏（防黑屏）保护系统 (By: TommyXL)" +
+                        "\n     - 附加职业分配已重新编码 (By: TommyXL)" +
 
-                    "\n<b>【New Settings】</b>" +
-                        "\n     - Show Only Enabled Roles In Guesser UI (By: TommyXL)" +
-                        "\n     - Only allow whitelisted players to join lobbies (By: ryuk)" +
-                        "\n     - Hide «Host♥» text (By: Pietro)" +
-                        "\n     - Players can use the «/rn» command (By: Marg)" +
-                        "\n     - Copycat: «Can copy team changing addon» (By: ryuk)" +
-                        "\n     - Fortune Teller: «Show random active roles in Fortune Teller hints» (By: ryuk)" +
-                        "\n     - Alchemist: «Potion Of Speed» (Ported from TOHE+ - By: Drakos)" +
-                        "\n     - Doppelganger: «Can vent» and «Has imp vision» (By: ryuk)" +
-                        "\n     - Bandit: «Steal cooldown» (different from kill cooldown - By: ryuk)" +
+                    "\n<b>【新设置】</b>" +
+                        "\n     - 在赌怪PC的UI界面中只显示已启用的职业 (By: TommyXL)" +
+                        "\n     - 只允许白名单玩家加入大厅 (By: ryuk)" +
+                        "\n     - 隐藏«TOHE♥»文本 (By: Pietro)" +
+                        "\n     - 玩家可以使用«/rn»指令 (By: Marg)" +
+                        "\n     - 模仿猫：«可模仿阵营更改附加职业» (By: ryuk)" +
+                        "\n     - 调查员：«随机将目标职业与已启用职业混合显示给调查员» (By: ryuk)" +
+                        "\n     - 炼金术士：«速度药水» (从移植 TOHE+ 移植而来 - By: Drakos)" +
+                        "\n     - 分身者：«可以使用通风管» 和 «拥有内鬼视野» (By: ryuk)" +
+                        "\n     - 强盗：«盗窃冷却时间» (与击杀冷却时间不同 - By: ryuk)" +
 
-                    "\n<b>【Some Changes】</b>" +
-                        "\n     - Display sorted role names for all langs in guesser UI (By: ryuk)" +
-                        "\n     - Preset 5 will be used to sync with host's setting for modded client (By: TommyXL)" +
-                        "\n     - Ported code «Vent.CanUse» from TOH (By: TommyXL)" +
-                        "\n     - Some roles have been removed from Experimental (By: ryuk)" +
-                        "\n     - Make «/rand» inclusive (By: Marg)" +
-                        "\n     - Prevent bans from InnerSloth servers if not modded host (By: Pietro)" +
-                        "\n     - Warn when «/dump» is used (By: Pietro)" +
-                        "\n     - Translate API tags, if translation available (By: Pietro)" +
-                        "\n     - Updated several roles' names internally to be consistent and not spaghetti code (By: Moe)" +
-                        "\n     - Add-ons with a spawn chance greater than or equal to 90% have higher priority (By: TommyXL)" +
-                        "\n     - Added delay teleport after meeting (By: TommyXL)" +
-                        "\n     - Roles using abilities using vents will now spawns on the Dleks (dlekS ehT) map (By: TommyXL)" +
+                    "\n<b>【一些更改】</b>" +
+                        "\n     - 在赌怪PC的UI界面中显示所有语言的排序职业名称 (By: ryuk)" +
+                        "\n     - 预设 5 将用于与房主设置同步的修改客户端 (By: TommyXL)" +
+                        "\n     - 从 TOH 移植 «Vent.CanUse» 代码 (By: TommyXL)" +
+                        "\n     - 某些职业已从试验性职业中删除 (By: ryuk)" +
+                        "\n     - 使«/rand»包含 (By: Marg)" +
+                        "\n     - 如果房主不是mod，则防止 InnerSloth 服务器的封禁 (By: Pietro)" +
+                        "\n     - 使用«/dump»时发出警告 (By: Pietro)" +
+                        "\n     - 翻译使用 API 记录（如果有翻译） (By: Pietro)" +
+                        "\n     - 在内部更新了多个职业的名称，使其保持一致，不再是杂乱无章的代码 (By: Moe)" +
+                        "\n     - 出现概率大于或等于 90% 的附加职业具有更高的优先级 (By: TommyXL)" +
+                        "\n     - 增加了会议后延迟传送功能 (By: TommyXL)" +
+                        "\n     - 使用通风口技能的职业现在会在 Dleks (舰髅骷) 地图上生成 (By: TommyXL)" +
 
-                    "\n<b>【Bug Fixes】</b>" +
-                        "\n     - Fixed vents on Dleks map for modded players (By: TommyXL)" +
-                        "\n     - Provocateur now cannot get Bait (By: TommyXL)" +
-                        "\n     - Kamikaze now cannot get Swift (By: TommyXL)" +
-                        "\n     - Evil Tracker now cannot get Seer (By: TommyXL)" +
-                        "\n     - Fixed bug when Bard not work (By: TommyXL)" +
-                        "\n     - Fixed Tracker error In logs (By: TommyXL)" +
-                        "\n     - Fixed Burst error when game end (By: TommyXL)" +
-                        "\n     - Fixed other errors In logs (By: TommyXL)" +
-                        "\n     - Fixed check game end (By: TommyXL)" +
-                        "\n     - Fixed bug when Alchemist & Bloodlust could kill after end meeting (By: TommyXL)" +
-                        "\n     - Possibly fixed bug when sometimes non modded player does not teleported (By: TommyXL)" +
-                        "\n     - Fixed Save Presets (Coded by dev TOH - By: TommyXL)" +
-                        "\n     - Fixed Disconnect At Game End (Coded by dev TOH - By: TommyXL)" +
-                        "\n     - Fixed spam LateTask about Mole on exit vent (By: TommyXL)" +
-                        "\n     - Fixed bug where Evil Tracker «Can See Kill Flash» option sometimes not work (By: TommyXL)" +
-                        "\n     - Fixed bug when some roles can be stuck in vent during comms sabotage (By: TommyXL)" +
-                        "\n     - Fixed some strings (By: TommyXL)" +
-                        "\n     - Fixed errors in logs when Modded Client left the game (By: TommyXL)" +
-                        "\n     - Fixed bug when Merchant checks Add-ons limit (By: TommyXL)" +
-                        "\n     - Fixed bug when President skips meeting and someone will be ejected (By: TommyXL)" +
+                    "\n<b>【Bug修复】</b>" +
+                        "\n     - 为Mod玩家修复了 Dleks 地图上的通风口 (By: TommyXL)" +
+                        "\n     - 自爆卡车现在无法获得诱饵 (By: TommyXL)" +
+                        "\n     - 神风特攻队现在无法获得迅捷 (By: TommyXL)" +
+                        "\n     - 邪恶追踪者现在无法获得灵媒 (By: TommyXL)" +
+                        "\n     - 修复了吟游诗人不工作时的bug (By: TommyXL)" +
+                        "\n     - 修复了日志中正义追踪者的bug (By: TommyXL)" +
+                        "\n     - 修复了游戏结束时爆破者的bug (By: TommyXL)" +
+                        "\n     - 修复了日志中的其他bug (By: TommyXL)" +
+                        "\n     - 修复了检查游戏结束 (By: TommyXL)" +
+                        "\n     - 修复了炼金术士和嗜血者可能在会议结束后击杀玩家的bug (By: TommyXL)" +
+                        "\n     - 可能修复了非Mod玩家有时无法传送的bug (By: TommyXL)" +
+                        "\n     - 修复了保存预设 (由 TOH 开发人员编写 - By: TommyXL)" +
+                        "\n     - 修复了游戏结束时断开连接的bug (由 TOH 开发人员编写 - By: TommyXL)" +
+                        "\n     - 修复了鼹鼠离开通风口的 垃圾LateTask (By: TommyXL)" +
+                        "\n     - 修复了邪恶追踪者«可以看到击杀闪光»选项有时不起作用的bug (By: TommyXL)" +
+                        "\n     - 修复了某些职业在破坏通讯时可能被困在通风口的bug (By: TommyXL)" +
+                        "\n     - 修复了一些字符串 (By: TommyXL)" +
+                        "\n     - 修复了Mod客户端离开游戏时日志中出现的bug (By: TommyXL)" +
+                        "\n     - 修复了商人检查附加职业限制时的bug (By: TommyXL)" +
+                        "\n     - 修复了当总统跳过会议时有人会被驱逐的bug (By: TommyXL)" +
                         "\n     - Fixed bug when the player's name was not cleared during end the meeting when player left the game (By: TommyXL)" +
                         "\n     - Fixed bug when Swooper & Chameleon & Wraith & Alchemist teleport in vent after meeting (By: TommyXL)" +
                         "\n     - Fixed Cleanser issues (By: TommyXL)" +
@@ -1234,9 +1234,9 @@ public class ModNewsHistory
                         "\n     - Simplified Chinese (By: CrewCyan, LezaiYa, NikoCat223)" +
                         "\n     - Spanish (By: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
                         "\n     - Traditional Chinese (By: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
-                        "\n<b> Check out all of our translators on our website</b>\r\n" +
+                        "\n<b> 在我们的网站上查看我们所有的翻译人员</b>\r\n" +
 
-                    "\n\n★ Welcome to Town of Host: Enhanced v1.5.0 ★",
+                    "\n\n★ 欢迎来到 Town of Host: Enhanced v1.5.0 ★",
 
                     Date = "2024-2-4T03:00:00Z"
                 };
