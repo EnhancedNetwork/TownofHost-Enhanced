@@ -1076,7 +1076,7 @@ static class ExtendedPlayerControl
             Main.AllPlayerKillCooldown[player.PlayerId] = Mare.KillCooldownInLightsOut.GetFloat();
 
         if (player.Is(CustomRoles.Overclocked))
-            Main.AllPlayerKillCooldown[player.PlayerId] -= Main.AllPlayerKillCooldown[player.PlayerId] * (Options.OverclockedReduction.GetFloat() / 100);
+            Main.AllPlayerKillCooldown[player.PlayerId] -= Main.AllPlayerKillCooldown[player.PlayerId] * (Overclocked.OverclockedReduction.GetFloat() / 100);
         
         if (Main.KilledDiseased.ContainsKey(player.PlayerId))
         {

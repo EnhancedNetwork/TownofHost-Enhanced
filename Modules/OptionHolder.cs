@@ -702,8 +702,6 @@ public static class Options
 
     // Add-Ons settings 
 
-    public static OptionItem OverclockedReduction;
-
     public static OptionItem ImpCanBeWatcher;
     public static OptionItem CrewCanBeWatcher;
     public static OptionItem NeutralCanBeWatcher;
@@ -2367,12 +2365,7 @@ public static class Options
 
         Nimble.SetupCustomOptions();
 
-        SetupAdtRoleOptions(19800, CustomRoles.Overclocked, canSetNum: true);
-        OverclockedReduction = FloatOptionItem.Create(19803, "OverclockedReduction", new(0f, 90f, 5f), 40f, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Overclocked])
-            .SetValueFormat(OptionFormat.Percent);
-        
-       
+        Overclocked.SetupCustomOptions();
 
         Silent.SetupCustomOptions();
 
