@@ -23,8 +23,6 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
-using MS.Internal.Xml.XPath;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -2952,26 +2950,28 @@ public static class Utils
         var name = Main.AllPlayerNames[id].RemoveHtmlTags().Replace("\r\n", string.Empty);
         if (id == PlayerControl.LocalPlayer.PlayerId) name = DataManager.player.Customization.Name;
         else name = GetPlayerById(id)?.Data.PlayerName ?? name;
+
         var taskState = Main.PlayerStates?[id].TaskState;
         string TaskCount;
 
         if (taskState.hasTasks)
         {
-            Color TextColor;
+            Color CurrentСolor;
             var TaskCompleteColor = Color.green; // Color after task completion
             var NonCompleteColor = taskState.CompletedTasksCount > 0 ? Color.yellow : Color.white; // Uncountable out of person is white
 
             if (Workhorse.IsThisRole(id))
                 NonCompleteColor = Workhorse.RoleColor;
 
-            var NormalColor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
+            CurrentСolor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
 
-            if (Main.PlayerStates.TryGetValue(id, out var ps) && ps.MainRole == CustomRoles.Crewpostor)
-                NormalColor = Color.red;
+            if (Main.PlayerStates.TryGetValue(id, out var ps) && ps.MainRole.Is(CustomRoles.Crewpostor))
+                CurrentСolor = Color.red;
 
-            TextColor = NormalColor;
-            string Completed = $"{taskState.CompletedTasksCount}";
-            TaskCount = ColorString(TextColor, $" ({Completed}/{taskState.AllTasksCount})");
+            if (ps.SubRoles.Contains(CustomRoles.Workhorse))
+                GetRoleColor(ps.MainRole).ShadeColor(0.5f);
+
+            TaskCount = ColorString(CurrentСolor, $" ({taskState.CompletedTasksCount}/{taskState.AllTasksCount})");
         }
         else { TaskCount = GetProgressText(id); }
 
