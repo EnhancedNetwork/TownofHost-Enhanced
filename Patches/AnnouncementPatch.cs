@@ -578,11 +578,11 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
-                    Number = 90008,
+                    Number = 100008,
                     Title = "Town of Host: Enhanced v1.5.0",
                     SubTitle = "★★ Big update! ★★",
                     ShortTitle = "TOH: Enhanced v1.5.0",
-                    BeforeNumber = 90007,
+                    BeforeNumber = 100007,
                     Text = "<size=150%>Welcome to TOH: Enhanced v1.5.0!</size>\n" +
                     "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.4.0\r\n" +
 
@@ -723,11 +723,11 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
-                    Number = 90007,
+                    Number = 100007,
                     Title = "Town of Host: Enhanced v1.4.0",
                     SubTitle = "★★ Постоянные обновления, ура! ★★",
                     ShortTitle = "TOH: Enhanced v1.4.0",
-                    BeforeNumber = 90006,
+                    BeforeNumber = 100006,
                     Text = "<size=150%>Добро пожаловать в TOH: Enhanced v1.4.0!</size>\n" +
                     "\n<b>【Основан】</b>\n - Онован на TOH: Enhanced v1.3.0\r\n" +
 
@@ -796,11 +796,11 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
-                    Number = 90006,
+                    Number = 100006,
                     Title = "Town of Host: Enhanced v1.3.0",
                     SubTitle = "★★ Новые роли? Атрибуты? Исправление багов?! ★★",
                     ShortTitle = "TOH: Enhanced v1.3.0",
-                    BeforeNumber = 90005,
+                    BeforeNumber = 100005,
                     Text = "<size=150%>Добро пожаловать в TOH: Enhanced v1.3.0!</size>\n" +
                     "\n<b>【Основан】</b>\n - Основан на TOH: Enhanced v1.2.0\r\n" +
 
@@ -865,11 +865,11 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
-                    Number = 90005,
+                    Number = 100005,
                     Title = "Town of Host: Enhanced v1.2.0",
                     SubTitle = "★★ Поддержка карты The Fungle! ★★",
                     ShortTitle = "TOH: Enhanced v1.2.0",
-                    BeforeNumber = 90004,
+                    BeforeNumber = 100004,
                     Text = "<size=150%>Добро пожаловать в TOH: Enhanced v1.2.0!</size>\n" +
                     "\n<b>【Основан】</b>\n - Основан на TOH: Enhanced v1.1.1\r\n" +
 
@@ -886,11 +886,11 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
-                    Number = 90004,
+                    Number = 100004,
                     Title = "Town of Host: Enhanced v1.1.1",
                     SubTitle = "★★ Обновление с починкой багов и оптимизацией! ★★",
                     ShortTitle = "TOH: Enhanced v1.1.1",
-                    BeforeNumber = 90003,
+                    BeforeNumber = 100003,
                     Text = "<size=150%>Добро пожаловать в TOH: Enhanced v1.1.1!</size>\n" +
                     "\n<b>【Основан】</b>\n - Основан на TOH: Enhanced v1.1.0\r\n" +
 
@@ -914,11 +914,11 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
-                    Number = 90003,
+                    Number = 100003,
                     Title = "Town of Host: Enhanced v1.1.0",
                     SubTitle = "★★ Обновление уже?! Ух ты! ★★",
                     ShortTitle = "TOH: Enhanced v1.1.0",
-                    BeforeNumber = 90002,
+                    BeforeNumber = 100002,
                     Text = "<size=150%>Добро пожаловать в TOH: Enhanced v1.1.0!</size>\n" +
                     "\n<b>【Основан】</b>\n - Основан на TOH: Enhanced v1.1.0\r\n" +
 
@@ -965,11 +965,11 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
-                    Number = 90002,
+                    Number = 100002,
                     Title = "Town of Host: Enhanced v1.0.1",
                     SubTitle = "★★ Новая Эра ★★",
                     ShortTitle = "TOH: Enhanced v1.0.1",
-                    BeforeNumber = 90001,
+                    BeforeNumber = 100001,
                     Text = "<size=150%>Добро Пожаловать в TOH: Enhanced v1.0.1!</size>\n\n<size=125%>Поддерживает версию Among Us v2023.7.11 и v2023.7.12</size>\n" +
                     "\n<b>【Основан】</b>\n - Основан на TOH-RE v3.1.0\r\n" +
                     "\n<b>【Исправления】</b>" +
@@ -985,11 +985,11 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
-                    Number = 90001,
+                    Number = 100001,
                     Title = "Town of Host: Enhanced v1.0.0",
                     SubTitle = "★★ Новая Эра ★★",
                     ShortTitle = "TOH: Enhanced v1.0.0",
-                    BeforeNumber = 90000,
+                    BeforeNumber = 100000,
                     Text = "<size=150%>Добро Пожаловать в TOH: Enhanced v1.0.0!</size>\n\n<size=125%>Поддерживает версию Among Us v2023.7.11 и v2023.7.12</size>\n" +
                     "\n<b>【Основан】</b>\n - Основан на TOH-RE v3.1.0\r\n" +
                     "\n<b>【Изменения/Исправления】</b>" +
@@ -1006,7 +1006,7 @@ public class ModNewsHistory
                 // TOHE v3.1.0
                 var news = new ModNews
                 {
-                    Number = 90000,
+                    Number = 100000,
                     Title = "Town of Host Re-Edited v3.1.0",
                     SubTitle = "★★Следующее небольшое обновление★★",
                     ShortTitle = "★TOH-RE v3.1.0",
@@ -1100,11 +1100,11 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
-                    Number = 80007,
+                    Number = 100008,
                     Title = "Town of Host: Enhanced v1.5.0",
                     SubTitle = "★★ Big update! ★★",
                     ShortTitle = "TOH: Enhanced v1.5.0",
-                    BeforeNumber = 80006,
+                    BeforeNumber = 100007,
                     Text = "<size=150%>Welcome to TOH: Enhanced v1.5.0!</size>\n" +
                     "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.4.0\r\n" +
 
@@ -1245,11 +1245,11 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
-                    Number = 80006,
+                    Number = 100007,
                     Title = "Town of Host: Enhanced v1.4.0",
                     SubTitle = "★★ 持续更新，耶！ ★★",
                     ShortTitle = "TOH: Enhanced v1.4.0",
-                    BeforeNumber = 80005,
+                    BeforeNumber = 100006,
                     Text = "<size=150%>欢迎来到TOH: Enhanced v1.4.0！</size>\n" +
                     "\n<b>【基于官方版本】</b>\n - 基于TOH: Enhanced v1.3.0\r\n" +
 
@@ -1318,11 +1318,11 @@ public class ModNewsHistory
                 // TOHE 1.3.0
                 var news = new ModNews
                 {
-                    Number = 80005,
+                    Number = 100006,
                     Title = "Town of Host: Enhanced v1.3.0",
                     SubTitle = "★★ 新职业？附加职业？Bug修复？ ★★",
                     ShortTitle = "TOH: Enhanced v1.3.0",
-                    BeforeNumber = 80004,
+                    BeforeNumber = 100005,
                     Text = "<size=150%>欢迎来到 TOH: Enhanced v1.3.0！</size>\n" +
                     "\n<b>【基于官方版本】</b>\n - 基于 TOH: Enhanced v1.2.0\r\n" +
 
@@ -1388,11 +1388,11 @@ public class ModNewsHistory
                 // TOHE v1.2.0
                 var news = new ModNews
                 {
-                    Number = 80004,
+                    Number = 100005,
                     Title = "Town of Host: Enhanced v1.2.0",
                     SubTitle = "★★ 支持真菌密林 ! ★★",
                     ShortTitle = "TOH: Enhanced v1.2.0",
-                    BeforeNumber = 80003,
+                    BeforeNumber = 100004,
                     Text = "<size=150%>欢迎来到TOH: Enhanced v1.2.0!</size>\n" +
                     "\n<b>【基于官方版本】</b>\n - 基于TOH: Enhanced v1.1.1\r\n" +
 
@@ -1410,11 +1410,11 @@ public class ModNewsHistory
                 // TOHE v1.1.1
                 var news = new ModNews
                 {
-                    Number = 80003,
+                    Number = 100004,
                     Title = "Town of Host: Enhanced v1.1.1",
                     SubTitle = "★★ 性能更新和bug修复！★★",
                     ShortTitle = "TOH: Enhanced v1.1.1",
-                    BeforeNumber = 80002,
+                    BeforeNumber = 100003,
                     Text = "<size=150%>欢迎来到TOH: Enhanced v1.1.1!</size>\n" +
                     "\n<b>【基于官方版本】</b>\n - 基于TOH: Enhanced v1.1.0\r\n" +
 
@@ -1439,11 +1439,11 @@ public class ModNewsHistory
                 // TOHE v1.1.0
                 var news = new ModNews
                 {
-                    Number = 80002,
+                    Number = 100003,
                     Title = "Town of Host: Enhanced v1.1.0",
                     SubTitle = "★★ 已经更新了？哇哦！ ★★",
                     ShortTitle = "TOH: Enhanced v1.1.0",
-                    BeforeNumber = 80001,
+                    BeforeNumber = 100002,
                     Text = "<size=150%>欢迎来到TOH: Enhanced v1.1.0！</size>\n" +
                     "\n<b>【基于官方版本】</b>\n - 基于TOH: Enhanced v1.0.1\r\n" +
 
@@ -1493,11 +1493,11 @@ public class ModNewsHistory
                 // TOHE v1.0.1
                 var news = new ModNews
                 {
-                    Number = 80001,
+                    Number = 100002,
                     Title = "Town of Host: Enhanced v1.0.1",
                     SubTitle = "★★ 新时代 ★★",
                     ShortTitle = "TOH: Enhanced v1.0.1",
-                    BeforeNumber = 80000,
+                    BeforeNumber = 100001,
                     Text = "<size=150%>欢迎来到 TOH: Enhanced v1.0.1！</size>\n\n<size=125%>适配 Among Us v2023.7.11 和 v2023.7.12</size>\n" +
                     "\n<b>【基于官方版本】</b>\n - 基于 TOH-RE v3.1.0 (备注可用)\r\n" +
                     "\n<b>【修复】</b>" +
@@ -1515,7 +1515,7 @@ public class ModNewsHistory
                 // TOHE v1.0.0
                 var news = new ModNews
                 {
-                    Number = 80000,
+                    Number = 100001,
                     Title = "Town of Host: Enhanced v1.0.0",
                     SubTitle = "★★ 新时代 ★★",
                     ShortTitle = "TOH: Enhanced v1.0.0",
@@ -1538,11 +1538,11 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
-                    Number = 70007,
+                    Number = 100008,
                     Title = "Town of Host: Enhanced v1.5.0",
                     SubTitle = "★★ Big update! ★★",
                     ShortTitle = "TOH: Enhanced v1.5.0",
-                    BeforeNumber = 70006,
+                    BeforeNumber = 100007,
                     Text = "<size=150%>Welcome to TOH: Enhanced v1.5.0!</size>\n" +
                     "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.4.0\r\n" +
 
@@ -1683,11 +1683,11 @@ public class ModNewsHistory
             {
                 var news = new ModNews()
                 {
-                    Number = 70006,
+                    Number = 100007,
                     Title = "Town of Host: Enhanced v1.4.0",
                     SubTitle = "★★ 持續更新，耶! ★★",
                     ShortTitle = "TOH: Enhanced v1.4.0",
-                    BeforeNumber = 70005,
+                    BeforeNumber = 100006,
                     Text = "<size=150%>歡迎來到 TOH: Enhanced v1.4.0!</size>\n" +
                     "\n<b>【基於版本】</b>\n - 基於 TOH: Enhanced v1.3.0\r\n" +
 
@@ -1753,11 +1753,11 @@ public class ModNewsHistory
             {
                 var news = new ModNews()
                 {
-                    Number = 70005,
+                    Number = 100006,
                     Title = "Town of Host: Enhanced v1.3.0",
                     SubTitle = "★★ 新職業? 附加職業? Bug修復?! ★★",
                     ShortTitle = "TOH: Enhanced v1.3.0",
-                    BeforeNumber = 70004,
+                    BeforeNumber = 100005,
                     Text = "<size=150%>歡迎來到 TOH: Enhanced v1.3.0!</size>\n" +
                     "\n<b>【基於版本】</b>\n - 基於 TOH: Enhanced v1.2.0\r\n" +
 
@@ -1822,11 +1822,11 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
-                    Number = 70004,
+                    Number = 100005,
                     Title = "Town of Host: Enhanced v1.2.0",
                     SubTitle = "★★ 支援The Fungle! ★★",
                     ShortTitle = "TOH: Enhanced v1.2.0",
-                    BeforeNumber = 70003,
+                    BeforeNumber = 100004,
                     Text = "<size=150%>歡迎來到 TOH: Enhanced v1.2.0!</size>\n" +
                         "\n<b>【基於版本】</b>\n - 基於 TOH: Enhanced v1.1.1\r\n" +
 
@@ -1844,11 +1844,11 @@ public class ModNewsHistory
                 // TOHE v1.1.1
                 var news = new ModNews
                 {
-                    Number = 70003,
+                    Number = 100004,
                     Title = "Town of Host: Enhanced v1.1.1",
                     SubTitle = "★★性能與修復Bug的更新! ★★",
                     ShortTitle = "TOH: Enhanced v1.1.1",
-                    BeforeNumber = 70002,
+                    BeforeNumber = 100003,
                     Text = "<size=150%>歡迎來到 TOH: Enhanced v1.1.1!</size>\n" +
                     "\n<b>【基於版本】</b>\n - 基於 TOH: Enhanced v1.1.0\r\n" +
 
@@ -1873,11 +1873,11 @@ public class ModNewsHistory
                 // TOHE 1.1.0
                 var news = new ModNews
                 {
-                    Number = 70002,
+                    Number = 100003,
                     Title = "Town of Host: Enhanced v1.1.0",
                     SubTitle = "★★ 已經更新啦? 哇喔!★★",
                     ShortTitle = "TOH: Enhanced v1.1.0",
-                    BeforeNumber = 70001,
+                    BeforeNumber = 100002,
                     Text = "<size=150%>歡迎來到 TOH: Enhanced v1.1.0!</size>\n" +
                     "\n<b>【基於版本】</b>\n - 基於 TOH: Enhanced v1.0.1\r\n" +
 
@@ -1926,11 +1926,11 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
-                    Number = 70001,
+                    Number = 100002,
                     Title = "Town of Host: Enhanced v1.0.1",
                     SubTitle = "★★ 新時代 ★★",
                     ShortTitle = "TOH: Enhanced v1.0.1",
-                    BeforeNumber = 70000,
+                    BeforeNumber = 100001,
                     Text = "<size=150%>歡迎來到 TOH: Enhanced v1.0.1!</size>\n\n<size=125%>支援版本 Among Us v2023.7.11、v2023.7.12</size>\n" +
                 "\n<b>【基於版本】</b>\n - 基於TOH-RE v3.1.0 (備註: 目前可以使用)\r\n" +
                 "\n<b>【修復】</b>" +
@@ -1947,7 +1947,7 @@ public class ModNewsHistory
                 // TOHE v1.0.0
                 var news = new ModNews
                 {
-                    Number = 70000,
+                    Number = 100001,
                     Title = "Town of Host: Enhanced v1.0.0",
                     SubTitle = "★★ 新時代的開始 ★★",
                     ShortTitle = "TOH: Enhanced v1.0.0",
@@ -3066,11 +3066,11 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
-                    Number = 100009,
+                    Number = 100008,
                     Title = "Town of Host: Enhanced v1.5.0",
                     SubTitle = "★★ Big update! ★★",
                     ShortTitle = "TOH: Enhanced v1.5.0",
-                    BeforeNumber = 100008,
+                    BeforeNumber = 100007,
                     Text = "<size=150%>Welcome to TOH: Enhanced v1.5.0!</size>\n" +
                     "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.4.0\r\n" +
 
@@ -3211,11 +3211,11 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
-                    Number = 100008,
+                    Number = 100007,
                     Title = "Town of Host: Enhanced v1.4.0",
                     SubTitle = "★★ Consistent Updates, yay! ★★",
                     ShortTitle = "TOH: Enhanced v1.4.0",
-                    BeforeNumber = 100007,
+                    BeforeNumber = 100006,
                     Text = "<size=150%>Welcome to TOH: Enhanced v1.4.0!</size>\n" +
                     "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.3.0\r\n" +
 
@@ -3284,11 +3284,11 @@ public class ModNewsHistory
             {
                 var news = new ModNews()
                 {
-                    Number = 100007,
+                    Number = 100006,
                     Title = "Town of Host: Enhanced v1.4.0",
                     SubTitle = "★★ Atualizações constantes, yay! ★★",
                     ShortTitle = "TOH: Enhanced v1.4.0",
-                    BeforeNumber = 100006,
+                    BeforeNumber = 100005,
                     Text = "<size=150%>Bem vindo ao TOH: Enhanced v1.4.0!</size>\n" +
                     "\n<b>【Base】</b>\n - Baseado no TOH: Enhanced v1.3.0\r\n" +
 
@@ -3358,11 +3358,11 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
-                    Number = 100009,
+                    Number = 100008,
                     Title = "Town of Host: Enhanced v1.5.0",
                     SubTitle = "★★ Big update! ★★",
                     ShortTitle = "TOH: Enhanced v1.5.0",
-                    BeforeNumber = 100008,
+                    BeforeNumber = 100007,
                     Text = "<size=150%>Welcome to TOH: Enhanced v1.5.0!</size>\n" +
                     "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.4.0\r\n" +
 
@@ -3503,7 +3503,7 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
-                    Number = 100008,
+                    Number = 100007,
                     Title = "Town of Host: Enhanced v1.4.0",
                     SubTitle = "★★ Consistent Updates, yay! ★★",
                     ShortTitle = "TOH: Enhanced v1.4.0",
