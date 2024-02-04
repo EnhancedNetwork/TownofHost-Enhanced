@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -646,12 +647,7 @@ public class TaskState
                     switch (subRole)
                     {
                         case CustomRoles.Unlucky when player.IsAlive():
-                            var Ue = IRandom.Instance;
-                            if (Ue.Next(1, 100) <= Options.UnluckyTaskSuicideChance.GetInt())
-                            {
-                                Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-                                player.RpcMurderPlayerV3(player);
-                            }
+                            Unlucky.SuicideRand(player);
                             break;
                         
                         case CustomRoles.Tired when player.IsAlive():

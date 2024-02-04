@@ -1382,7 +1382,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Taskinator))
                     return false;
-                if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeUnlucky.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeUnlucky.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeUnlucky.GetBool()))
+                if ((pc.GetCustomRole().IsCrewmate() && !Unlucky.CrewCanBeUnlucky.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Unlucky.NeutralCanBeUnlucky.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Unlucky.ImpCanBeUnlucky.GetBool()))
                     return false;
                 break;
 

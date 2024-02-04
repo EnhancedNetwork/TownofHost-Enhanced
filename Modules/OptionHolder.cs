@@ -772,15 +772,6 @@ public static class Options
     //public static OptionItem CrewCanBeSunglasses;
     //public static OptionItem NeutralCanBeSunglasses;
 
-    public static OptionItem UnluckyTaskSuicideChance;
-    public static OptionItem UnluckyKillSuicideChance;
-    public static OptionItem UnluckyVentSuicideChance;
-    public static OptionItem UnluckyReportSuicideChance;
-    public static OptionItem UnluckySabotageSuicideChance;
-    public static OptionItem ImpCanBeUnlucky;
-    public static OptionItem CrewCanBeUnlucky;
-    public static OptionItem NeutralCanBeUnlucky;
-
     public static OptionItem ImpCanBeVoidBallot;
     public static OptionItem CrewCanBeVoidBallot;
     public static OptionItem NeutralCanBeVoidBallot;
@@ -2599,28 +2590,7 @@ public static class Options
         //NeutralCanBeSunglasses = BooleanOptionItem.Create(20906, "NeutralCanBeSunglasses", true, TabGroup.Addons, false)
         //    .SetParent(CustomRoleSpawnChances[CustomRoles.Sunglasses]);
 
-        SetupAdtRoleOptions(21000, CustomRoles.Unlucky, canSetNum: true);
-        UnluckyKillSuicideChance = IntegerOptionItem.Create(21003, "UnluckyKillSuicideChance", new(0, 100, 1), 2, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky])
-            .SetValueFormat(OptionFormat.Percent);
-        UnluckyTaskSuicideChance = IntegerOptionItem.Create(21004, "UnluckyTaskSuicideChance", new(0, 100, 1), 5, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky])
-            .SetValueFormat(OptionFormat.Percent);
-        UnluckyVentSuicideChance = IntegerOptionItem.Create(21005, "UnluckyVentSuicideChance", new(0, 100, 1), 3, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky])
-            .SetValueFormat(OptionFormat.Percent);
-        UnluckyReportSuicideChance = IntegerOptionItem.Create(21006, "UnluckyReportSuicideChance", new(0, 100, 1), 1, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky])
-            .SetValueFormat(OptionFormat.Percent);
-        UnluckySabotageSuicideChance = IntegerOptionItem.Create(21007, "UnluckySabotageSuicideChance", new(0, 100, 1), 4, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky])
-            .SetValueFormat(OptionFormat.Percent);
-        ImpCanBeUnlucky = BooleanOptionItem.Create(21008, "ImpCanBeUnlucky", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky]);
-        CrewCanBeUnlucky = BooleanOptionItem.Create(21009, "CrewCanBeUnlucky", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky]);
-        NeutralCanBeUnlucky = BooleanOptionItem.Create(21010, "NeutralCanBeUnlucky", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky]);
+        Unlucky.SetupCustomOptions();
         
         Tired.SetupCustomOptions();
 
