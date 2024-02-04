@@ -2542,7 +2542,7 @@ public static class Options
         /*
          * Circumvent
          */
-        SetupAdtRoleOptions(22600, CustomRoles.Circumvent, canSetNum: true, tab: TabGroup.Addons);
+        Circumvent.SetupCustomOption();
 
         /*
          * Clumsy
