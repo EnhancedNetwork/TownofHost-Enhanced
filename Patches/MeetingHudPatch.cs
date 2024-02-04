@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -487,7 +488,7 @@ class CheckForEndVotingPatch
         if (Options.ConfirmLoversOnEject.GetBool() && player.Is(CustomRoles.Lovers))
             coloredRole = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), coloredRole.RemoveHtmlTags());
 
-        if (Options.RascalAppearAsMadmate.GetBool() && player.Is(CustomRoles.Rascal))
+        if (Rascal.RascalAppearAsMadmate.GetBool() && player.Is(CustomRoles.Rascal))
             coloredRole = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetRoleString("Mad-") + coloredRole.RemoveHtmlTags());
 
         var name = "";

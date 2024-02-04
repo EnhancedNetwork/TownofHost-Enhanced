@@ -767,13 +767,6 @@ public static class Options
     public static OptionItem NeutralCanBeWatcher;
     //public static OptionItem EvilWatcherChance;
 
-    public static OptionItem ImpCanBeOblivious;
-    public static OptionItem CrewCanBeOblivious;
-    public static OptionItem NeutralCanBeOblivious;
-    public static OptionItem ObliviousBaitImmune;
-
-    public static OptionItem RascalAppearAsMadmate;
-
     //public static OptionItem SunglassesVision;
     //public static OptionItem ImpCanBeSunglasses;
     //public static OptionItem CrewCanBeSunglasses;
@@ -2591,19 +2584,9 @@ public static class Options
 
         Mundane.SetupCustomOption();
 
-        SetupAdtRoleOptions(20700, CustomRoles.Oblivious, canSetNum: true);
-        ImpCanBeOblivious = BooleanOptionItem.Create(20703, "ImpCanBeOblivious", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Oblivious]);
-        CrewCanBeOblivious = BooleanOptionItem.Create(20704, "CrewCanBeOblivious", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Oblivious]);
-        NeutralCanBeOblivious = BooleanOptionItem.Create(20705, "NeutralCanBeOblivious", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Oblivious]);
-        ObliviousBaitImmune = BooleanOptionItem.Create(20706, "ObliviousBaitImmune", false, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Oblivious]);
-        
-        SetupAdtRoleOptions(20800, CustomRoles.Rascal, canSetNum: true, tab: TabGroup.Addons);
-        RascalAppearAsMadmate = BooleanOptionItem.Create(20803, "RascalAppearAsMadmate", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Rascal]);
+        Oblivious.SetupCustomOptions();
+
+        Rascal.SetupCustomOptions();
 
         //SetupAdtRoleOptions(20900, CustomRoles.Sunglasses, canSetNum: true);
         //SunglassesVision = FloatOptionItem.Create(20903, "SunglassesVision", new(0f, 5f, 0.05f), 0.75f, TabGroup.Addons, false)
@@ -2638,7 +2621,7 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky]);
         NeutralCanBeUnlucky = BooleanOptionItem.Create(21010, "NeutralCanBeUnlucky", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky]);
-
+        
         Tired.SetupCustomOptions();
 
         SetupAdtRoleOptions(21100, CustomRoles.VoidBallot, canSetNum: true);

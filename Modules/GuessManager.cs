@@ -1264,7 +1264,6 @@ public static class GuessManager
                     //or CustomRoles.Paranoia 
                     or CustomRoles.SuperStar
                     or CustomRoles.Konan
-                    or CustomRoles.Oblivious
                     //     or CustomRoles.Reflective
                     or CustomRoles.GuardianAngelTOHE
                     or CustomRoles.Solsticer
