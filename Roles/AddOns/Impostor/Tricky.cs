@@ -1,44 +1,41 @@
-using System;
+﻿using System.Collections.Generic;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using static TOHE.Options;
 
-namespace TOHE.Roles.AddOns.Common;
-
-public class Susceptible
+namespace TOHE.Roles.AddOns.Impostor;
+public static class Tricky
 {
-    private static readonly int Id = 27100;
-    public static OptionItem CanBeOnCrew;
-    public static OptionItem CanBeOnImp;
-    public static OptionItem CanBeOnNeutral;
-    public static OptionItem EnabledDeathReasons;
-    public static PlayerState.DeathReason randomReason;
+    private static readonly int Id = 19900;
+    private static OptionItem EnabledDeathReasons;
+    private static Dictionary<byte, PlayerState.DeathReason> randomReason = [];
 
-
-    public static void SetupCustomOptions()
+    public static void SetupCustomOption()
     {
-        Options.SetupAdtRoleOptions(Id, CustomRoles.Susceptible, canSetNum: true, tab: TabGroup.Addons);
-        EnabledDeathReasons = BooleanOptionItem.Create(Id + 11, "OnlyEnabledDeathReasons", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Susceptible]);
-        CanBeOnImp = BooleanOptionItem.Create(Id + 12, "ImpCanBeSusceptible", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Susceptible]);
-        CanBeOnCrew = BooleanOptionItem.Create(Id + 13, "CrewCanBeSusceptible", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Susceptible]);
-        CanBeOnNeutral = BooleanOptionItem.Create(Id + 14, "NeutralCanBeSusceptible", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Susceptible]);
+        SetupAdtRoleOptions(Id, CustomRoles.Tricky, canSetNum: true, tab: TabGroup.Addons);
+        EnabledDeathReasons = BooleanOptionItem.Create(Id + 11, "OnlyEnabledDeathReasons", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Tricky]);
     }
-
-    public static void ChangeRandomDeath()
+    public static void Init()
+    {
+        randomReason = [];
+    }
+    private static void ChangeRandomDeath(byte killerId)
     {
         PlayerState.DeathReason[] deathReasons = EnumHelper.GetAllValues<PlayerState.DeathReason>();
-        Random random = new();
+        var random = IRandom.Instance;
         int randomIndex = random.Next(deathReasons.Length);
-        randomReason = deathReasons[randomIndex];
+        randomReason[killerId] = deathReasons[randomIndex];
     }
 
-    public static void CallEnabledAndChange(PlayerControl victim)
+    private static void CallEnabledAndChange(PlayerControl victim, PlayerControl killer)
     {
-        ChangeRandomDeath();
+        if (victim == null || killer == null) return;
+        ChangeRandomDeath(killer.PlayerId);
         if (EnabledDeathReasons.GetBool())
         {
-            Logger.Info($"{victim.GetNameWithRole().RemoveHtmlTags()} had the death reason {randomReason}", "Susceptible");
-            switch (randomReason)
+            Logger.Info($"{victim.GetNameWithRole().RemoveHtmlTags()} had the death reason {randomReason[killer.PlayerId]}", "Tricky");
+            switch (randomReason[killer.PlayerId])
             {
                 case PlayerState.DeathReason.Eaten:
                     if (!Pelican.IsEnable)
@@ -329,17 +326,28 @@ public class Susceptible
                     break;
 
                 default:
-                    while (Main.PlayerStates[victim.PlayerId].deathReason != randomReason)
-                        Main.PlayerStates[victim.PlayerId].deathReason = randomReason;
+                    while (Main.PlayerStates[victim.PlayerId].deathReason != randomReason[killer.PlayerId])
+                        Main.PlayerStates[victim.PlayerId].deathReason = randomReason[killer.PlayerId];
                     break;
             }
         }
         else
         {
-            while (Main.PlayerStates[victim.PlayerId].deathReason != randomReason)
-                Main.PlayerStates[victim.PlayerId].deathReason = randomReason;
+            while (Main.PlayerStates[victim.PlayerId].deathReason != randomReason[killer.PlayerId])
+                Main.PlayerStates[victim.PlayerId].deathReason = randomReason[killer.PlayerId];
         }
 
     }
-
+    public static void AfterPlayerDeathTasks(PlayerControl target)
+    {
+        if (target == null) return;
+        _ = new LateTask(() =>
+        {
+            var killer = target.GetRealKiller();
+            if (killer == null || !killer.Is(CustomRoles.Tricky)) return;
+            CallEnabledAndChange(target, killer);
+            Main.PlayerStates[target.PlayerId].deathReason = randomReason[killer.PlayerId];
+            Main.PlayerStates[target.PlayerId].SetDead();
+        }, 0.3f, "Tricky random death reason");
+    }
 }

@@ -330,6 +330,7 @@ static class CustomRolesHelper
             CustomRoles.Recruit or
             //CustomRoles.Glow or
             CustomRoles.TicketsStealer or
+            CustomRoles.Tricky or
             CustomRoles.DualPersonality or
             CustomRoles.Mimic or
             CustomRoles.Reach or
@@ -380,6 +381,7 @@ static class CustomRolesHelper
     {
         return role is CustomRoles.Mare or
             CustomRoles.LastImpostor or
+            CustomRoles.Tricky or
             CustomRoles.Mare or
             CustomRoles.Clumsy or
             CustomRoles.Mimic or
@@ -1492,7 +1494,10 @@ static class CustomRolesHelper
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
                 break;
-
+            case CustomRoles.Tricky:
+                if (!pc.GetCustomRole().IsImpostor())
+                    return false;
+                break;
             case CustomRoles.Mare:
                 if (pc.Is(CustomRoles.Underdog)
                     || pc.Is(CustomRoles.Berserker)

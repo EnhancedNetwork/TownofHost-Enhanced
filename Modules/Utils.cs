@@ -2837,6 +2837,8 @@ public static class Utils
             Lawyer.ChangeRoleByTarget(target);
 
         FixedUpdateInNormalGamePatch.LoversSuicide(target.PlayerId, onMeeting);
+
+        Tricky.AfterPlayerDeathTasks(target);
     }
     public static void ChangeInt(ref int ChangeTo, int input, int max)
     {

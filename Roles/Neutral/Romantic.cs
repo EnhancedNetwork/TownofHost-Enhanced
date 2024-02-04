@@ -235,12 +235,22 @@ public static class Romantic
         {
             _ = new LateTask(() =>
             {
-                Logger.Info($"Crew/nnk Romantic Partner Died changing {pc.GetNameWithRole()} to Vengeful romantic", "Romantic");
-
-                var killerId = player.GetRealKiller().PlayerId;
-                VengefulRomantic.Add(pc.PlayerId, killerId);
-                VengefulRomantic.SendRPC(pc.PlayerId);
-                pc.RpcSetCustomRole(CustomRoles.VengefulRomantic);
+                Logger.Info($"Crew/nnk Romantic Partner Died changing {pc.GetNameWithRole().RemoveHtmlTags()} to Vengeful romantic", "Romantic");
+                var killer = player.GetRealKiller();
+                if (killer == null) //change role to RuthlessRomantic if there is no killer for partner in game
+                {
+                    RuthlessRomantic.Add(Romantic);
+                    pc.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
+                    Logger.Info($"No real killer for {player.GetRealName().RemoveHtmlTags()}, role changed to ruthless romantic", "Romantic");
+                }
+                else 
+                { 
+                    var killerId = killer.PlayerId;
+                    VengefulRomantic.Add(pc.PlayerId, killerId);
+                    VengefulRomantic.SendRPC(pc.PlayerId);
+                    pc.RpcSetCustomRole(CustomRoles.VengefulRomantic);
+                    Logger.Info($"Vengeful romantic target: {killer.GetRealName().RemoveHtmlTags()}, [{killerId}]", "Vengeful Romantic");
+                }
                 Utils.NotifyRoles(ForceLoop: true);
                 pc.ResetKillCooldown();
                 pc.SetKillCooldown();

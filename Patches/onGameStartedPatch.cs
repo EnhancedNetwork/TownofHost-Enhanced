@@ -365,6 +365,7 @@ internal class ChangeRoleSettings
             Ghoul.Init();
             Rainbow.Init();
             Unlucky.Init();
+            Tricky.Init();
 
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
