@@ -1191,49 +1191,49 @@ public class ModNewsHistory
                         "\n     - 修复了Mod客户端离开游戏时日志中出现的bug (By: TommyXL)" +
                         "\n     - 修复了商人检查附加职业限制时的bug (By: TommyXL)" +
                         "\n     - 修复了当总统跳过会议时有人会被驱逐的bug (By: TommyXL)" +
-                        "\n     - Fixed bug when the player's name was not cleared during end the meeting when player left the game (By: TommyXL)" +
-                        "\n     - Fixed bug when Swooper & Chameleon & Wraith & Alchemist teleport in vent after meeting (By: TommyXL)" +
-                        "\n     - Fixed Cleanser issues (By: TommyXL)" +
-                        "\n     - Fixed bug when Inspector seeing Rascal as Crew and Impostor (By: TommyXL)" +
-                        "\n     - Fixed bug when Time Master works incorrectly (By: TommyXL)" +
-                        "\n     - Fixed bug when Disperser teleport players when they were in vent (By: TommyXL)" +
-                        "\n     - Fixed bug when Huntsman not colored names targets at the beginning of the game (for vanilla - By: TommyXL)" +
-                        "\n     - Fixed bug when Pyromaniac not showing the douse on vanilla (for vanilla - By: TommyXL)" +
-                        "\n     - Fixed bug when Impostor ghosts didn't see the sabotage button (By: TommyXL)" +
-                        "\n     - Fixed bug when the reason for the end win was sometimes displayed incorrectly (By: TommyXL)" +
-                        "\n     - Fixed bug when the add-on had a 100% chance of spawning but would sometimes not spawn in the game (By: TommyXL)" +
-                        "\n     - Some fixes for Romantics (By: TommyXL and ryuk)" +
-                        "\n     - Fixed Undertaker for modded clients (By: ryuk)" +
-                        "\n     - Fixed bug when Copycat copying taskinator will give benefactor if Copycat can copy crew varaint (By: ryuk)" +
-                        "\n     - Fix copycat copying enigma doesnt give clue (By: ryuk)" +
-                        "\n     - Fixed inspector doesnt give madmate as imp team (By: ryuk)" +
-                        "\n     - Fixed telecommunication doesnt work when copycat copies (By: ryuk)" +
-                        "\n     - Fixed Bug where Jackal recruits Copycat and Copycat's role resets after meeting (By: ryuk and Moe)" +
-                        "\n     - Fixed bug when shield animation banning modded clients (By: ryuk)" +
-                        "\n     - Fixed instigator using vanilla kill cooldown (By: ryuk)" +
-                        "\n     - Fixed counillor per meeting limit (By: ryuk)" +
-                        "\n     - Exclude Solsticer from Seeker's target (By: NikoCat223)" +
-                        "\n     - Fixed when solsticer can be murdered (By: NikoCat223)" +
-                        "\n     - Fixed bug when sometimes caused game to crash after version check (By: NikoCat223)" +
-                        "\n     - Fixed bug when Mini can misguess to death (By: NikoCat223)" +
-                        "\n     - Fixed bug when Vulture body amount not showing correctly for mod clients (By: NikoCat223)" +
-                        "\n     - Fixed bug when the host did not choose a spawn location on Airship for a long time and EAC banned players who tried to cause sabotage (By: NikoCat223)" +
-                        "\n     - Fixed bug when Nice Mini can be killed by Warlock, Puppeteer, Shroud and can be target for anonymous (By: NikoCat223 and LezaiYa)" +
-                        "\n     - Fixed bug when Mini could not be exiled (By: LezaiYa)" +
-                        "\n     - Fixed bug where «/gno» and «/rand» gave same result (By: Marg)" +
+                        "\n     - 修复了当玩家离开游戏时，在会议结束时玩家的名字没有被清除 (By: TommyXL)" +
+                        "\n     - 修复了会议后隐匿者、变色龙、魅影 和炼金术士在通风口时传送的bug (By: TommyXL)" +
+                        "\n     - 修复了清洗者问题 (By: TommyXL)" +
+                        "\n     - 修复了当把流氓看成船员和内鬼的bug (By: TommyXL)" +
+                        "\n     - 修复了时间之主工作不正确的bug (By: TommyXL)" +
+                        "\n     - 修复了分散者在通风口时传送玩家的bug (By: TommyXL)" +
+                        "\n     - 修复了游戏开始时猎人没有为目标职业的bug (来自原版 - By: TommyXL)" +
+                        "\n     - 修复了原版中焚烧狂不显示浇灭的bug (来自原版 - By: TommyXL)" +
+                        "\n     - 修复了内鬼看不到破坏按钮的bug (By: TommyXL)" +
+                        "\n     - 修复了有时会错误显示最终获胜原因的bug (By: TommyXL)" +
+                        "\n     - 修复了附加职业有 100% 的出现概率，但有时在游戏中不会出现的bug (By: TommyXL)" +
+                        "\n     - 对浪漫主义者的一些修复 (By: TommyXL and ryuk)" +
+                        "\n     - 修复了针对Mod客户端的暗杀者 (By: ryuk)" +
+                        "\n     - 修复了模仿猫模仿任务执行者时，如果模仿猫可以模仿船员邪恶体，则会给任务执行者恩惠的bug (By: ryuk)" +
+                        "\n     - 修复了模仿猫模仿猜想者不提供线索的bug (By: ryuk)" +
+                        "\n     - 修复了检查员不把叛徒作为内鬼阵营的bug (By: ryuk)" +
+                        "\n     - 修复了模仿者模仿通信员不工作的bug (By: ryuk)" +
+                        "\n     - 修复了豺狼招募模仿猫后，模仿猫的职业会重置的bug (By: ryuk and Moe)" +
+                        "\n     - 修复了护盾动画禁止Mod客户端时的bug (By: ryuk)" +
+                        "\n     - 修复了煽动者使用原版击杀冷却时间的bug (By: ryuk)" +
+                        "\n     - 每次会议修复了参加人数限制 (By: ryuk)" +
+                        "\n     - 将至日者排除在探索者目标之外 (By: NikoCat223)" +
+                        "\n     - 修复了当至日者可能被击杀时的bug (By: NikoCat223)" +
+                        "\n     - 修复了版本检查后有时会导致游戏崩溃的bug (By: NikoCat223)" +
+                        "\n     - 修复了迷你船员可能误判死亡的bug (By: NikoCat223)" +
+                        "\n     - 修复了Mod客户端无法正确显示秃鹫尸体数量的bug (By: NikoCat223)" +
+                        "\n     - 修复了房主长时间不在飞艇上选择出生地点，EAC 会禁止试图造成破坏的玩家的bug (By: NikoCat223)" +
+                        "\n     - 修复了好迷你船员可被术士、傀儡师、裹尸布使用击杀（技能）并成为骇客目标的bug (By: NikoCat223 and LezaiYa)" +
+                        "\n     - 修复了好迷你船员驱逐后无法胜利的bug (By: LezaiYa)" +
+                        "\n     - 修复了 «/gno» 和 «/rand» 结果相同的 bug (By: Marg)" +
 
 
-                    "\n<b>【Translator Credits】</b>" +
-                        "\n     - Brazilian (By: Dx7405)" +
-                        "\n     - Dutch (By: apemv, madmazel_)" +
-                        "\n     - French (By: FuroYT, KevOut, Klaomi, Sansationnelle)" +
-                        "\n     - Italian (By: alot, Baphojack, Mattix606)" +
-                        "\n     - Japanese (By: Sunnyboi)" +
-                        "\n     - Latin American (By: CreepPower)" +
-                        "\n     - Russian (By: TommyXL, Shoulder Devil, chill_ultimated, Nevermore59)" +
-                        "\n     - Simplified Chinese (By: CrewCyan, LezaiYa, NikoCat223)" +
-                        "\n     - Spanish (By: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
-                        "\n     - Traditional Chinese (By: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
+                    "\n<b>【翻译荣誉】</b>" +
+                        "\n     - 巴西语 (By: Dx7405)" +
+                        "\n     - 荷兰语 (By: apemv, madmazel_)" +
+                        "\n     - 法语 (By: FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                        "\n     - 意大利语 (By: alot, Baphojack, Mattix606)" +
+                        "\n     - 日语 (By: Sunnyboi)" +
+                        "\n     - 拉丁美洲 (By: CreepPower)" +
+                        "\n     - 俄文 (By: TommyXL, Shoulder Devil, chill_ultimated, Nevermore59)" +
+                        "\n     - 简体中文 (By: CrewCyan, LezaiYa, NikoCat223)" +
+                        "\n     - 西班牙语 (By: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
+                        "\n     - 繁体中文 (By: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
                         "\n<b> 在我们的网站上查看我们所有的翻译人员</b>\r\n" +
 
                     "\n\n★ 欢迎来到 Town of Host: Enhanced v1.5.0 ★",
