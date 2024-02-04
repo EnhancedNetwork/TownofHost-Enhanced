@@ -3688,6 +3688,7 @@ public static class Options
 
         ShowOnlyEnabledRolesInGuesserUI = BooleanOptionItem.Create(60689, "ShowOnlyEnabledRolesInGuesserUI", true, TabGroup.TaskSettings, false)
             .SetHeader(true)
+            .SetGameMode(CustomGameMode.Standard)
             .SetColor(Color.cyan);
 
 
