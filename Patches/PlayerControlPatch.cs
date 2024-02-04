@@ -792,8 +792,8 @@ class CheckMurderPatch
         {
             switch (killerSubRole)
             {
-                case CustomRoles.Mare when !Utils.IsActive(SystemTypes.Electrical):
-                    return false;
+                case CustomRoles.Mare:
+                    return Mare.IsLightsOut;
 
                 case CustomRoles.Unlucky:
                     Unlucky.SuicideRand(killer);
