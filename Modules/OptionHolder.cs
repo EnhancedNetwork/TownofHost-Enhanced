@@ -702,11 +702,6 @@ public static class Options
 
     // Add-Ons settings 
 
-
-
-    //public static OptionItem NeutralCanBeNimble;
-    //public static OptionItem CrewCanBeNimble;
-
     public static OptionItem OverclockedReduction;
 
     public static OptionItem ImpCanBeWatcher;
@@ -2369,12 +2364,8 @@ public static class Options
         Lucky.SetupCustomOptions();
 
         Necroview.SetupCustomOptions();
-        
-        SetupAdtRoleOptions(19700, CustomRoles.Nimble, canSetNum: true, tab: TabGroup.Addons);
-        /*CrewCanBeNimble = BooleanOptionItem.Create(19704, "CrewCanBeNimble", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Nimble]);
-        NeutralCanBeNimble = BooleanOptionItem.Create(19705, "NeutralCanBeNimble", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Nimble]); */
+
+        Nimble.SetupCustomOptions();
 
         SetupAdtRoleOptions(19800, CustomRoles.Overclocked, canSetNum: true);
         OverclockedReduction = FloatOptionItem.Create(19803, "OverclockedReduction", new(0f, 90f, 5f), 40f, TabGroup.Addons, false)
