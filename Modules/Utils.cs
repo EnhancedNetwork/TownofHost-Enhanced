@@ -2953,7 +2953,7 @@ public static class Utils
         if (id == PlayerControl.LocalPlayer.PlayerId) name = DataManager.player.Customization.Name;
         else name = GetPlayerById(id)?.Data.PlayerName ?? name;
         var taskState = Main.PlayerStates?[id].TaskState;
-        string TaskCount = GetProgressText(id);
+        string TaskCount;
 
         if (taskState.hasTasks)
         {
@@ -2973,6 +2973,7 @@ public static class Utils
             string Completed = $"{taskState.CompletedTasksCount}";
             TaskCount = ColorString(TextColor, $" ({Completed}/{taskState.AllTasksCount})");
         }
+        else { TaskCount = GetProgressText(id); }
 
         string summary = $"{ColorString(Main.PlayerColors[id], name)} - {GetDisplayRoleName(id, true)}{TaskCount}{GetKillCountText(id)} ({GetVitalText(id, true)})";
         switch (Options.CurrentGameMode)
