@@ -1968,6 +1968,7 @@
   "midCommandNoAccess": "You do not have access to the mid command.",
   "WarnCommandDisabled": "The warn command is currently disabled.",
   "WarnCommandNoAccess": "You do not have access to the warn command.",
+  "DisableVoteBan": "Disable VoteKick System",
   "WarnCommandInvalidID": "Invalid player ID specified.\nPlease use '/warn [playerID] [reason]' to warn a player. \nExample :- /warn 5 lava chatting",
   "WarnCommandWarnHost": "You are not permitted to warn the host.",
   "WarnCommandWarnMod": "You are not permitted to warn other moderators.",

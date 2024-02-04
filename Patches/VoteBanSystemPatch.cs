@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using TOHE.Modules;
 
 namespace TOHE.Patches;
 
@@ -13,6 +14,11 @@ internal class VoteBanSystemPatch
         var ClientData = AmongUsClient.Instance.GetClient(clientId);
         var VoterPc = VoterClient.Character;
         var ClientPc = ClientData.Character;
+
+        if (Options.DisableVoteBan.GetBool())
+        {
+        return false;
+        }
 
         if (VoterPc == null || ClientPc == null)
         {
