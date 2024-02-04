@@ -3123,17 +3123,17 @@ public class ModNewsHistory
 
                     "\n<b>【Algumas alterações】</b>" +
                         "\n     - Exibe nomes de funções classificados para todos os idiomas na UI do adivinhador (por: ryuk)" +
-                        "\n     - A predefinição 5 será usada para sincronizar com a configuração do host para o cliente modificado (por: TommyXL)" +
+                        "\n     - A predefinição 5 será usada para sincronizar com a configuração do anfitrião para clientes modificados (por: TommyXL)" +
                         "\n     - Código portado «Vent.CanUse» de TOH (Por: TommyXL)" +
-                        "\n     - Algumas funções foram removidas do Experimental (Por: ryuk)" +
+                        "\n     - Algumas funções foram removidas da aba Experimental (Por: ryuk)" +
                         "\n     - Tornar «/rand» inclusivo (Por: Marg)" +
-                        "\n     - Impedir banimentos de servidores InnerSloth se o host não for modificado (Por: Pietro)" +
+                        "\n     - Impedir banimentos dos servidores da InnerSloth se o anfitrião não for modificado (Por: Pietro)" +
                         "\n     - Avisar quando «/dump» for usado (Por: Pietro)" +
                         "\n     - Traduzir tags de API, se houver tradução disponível (Por: Pietro)" +
-                        "\n     - Atualizados os nomes de vários papéis internamente para serem consistentes e não código espaguete (Por: Moe)" +
-                        "\n     - Add-ons com chance de spawn maior ou igual a 90% têm maior prioridade (Por: TommyXL)" +
+                        "\n     - Atualizados os nomes de várias funções internamente para serem consistentes e não um código misturado (Por: Moe)" +
+                        "\n     - Atributos com chance de spawn maior ou igual a 90% têm maior prioridade (Por: TommyXL)" +
                         "\n     - Adicionado atraso no teletransporte após reunião (Por: TommyXL)" +
-                        "\n     - Funções que usam habilidades usando aberturas agora aparecerão no mapa Dleks (dlekS ehT) (Por: TommyXL)" +
+                        "\n     - Funções que precisam usar os dutos para usar a habilidade agora aparecerão no mapa Dleks (dlekS ehT) (Por: TommyXL)" +
 
                     "\n<b>【Correções de bugs】</b>" +
                         "\n     - Foi corrigido os dutos no mapa Dleks para jogadores modificados (Por: TommyXL)" +
@@ -3149,12 +3149,12 @@ public class ModNewsHistory
                         "\n     - Bug possivelmente corrigido quando às vezes um jogador não modificado não se teletransportava (Por: TommyXL)" +
                         "\n     - Predefinições de salvamento corrigidas (codificadas por dev TOH - Por: TommyXL)" +
                         "\n     - Corrigida desconexão no final do jogo (codificado por dev TOH - Por: TommyXL)" +
-                        "\n     - Corrigido spam LateTask sobre o Toupeira na saída de ventilação (Por: TommyXL)" +
+                        "\n     - Corrigido spam LateTask sobre o Toupeira nos dutos (Por: TommyXL)" +
                         "\n     - Corrigido bug onde a opção do Rastreador «Pode ver o Flash de Abate» às vezes não funcionava (Por: TommyXL)" +
                         "\n     - Corrigido bug quando algumas funções podiam ficar presas na ventilação durante sabotagem de comunicação (Por: TommyXL)" +
                         "\n     - Corrigidas algumas strings (Por: TommyXL)" +
                         "\n     - Corrigidos erros nos logs quando algum Cliente Modificado saía do jogo (Por: TommyXL)" +
-                        "\n     - Corrigido bug quando o Atribuidor verifica o limite de complementos (por: TommyXL)" +
+                        "\n     - Corrigido bug quando o Atribuidor verifica o limite de atributos (por: TommyXL)" +
                         "\n     - Corrigido bug quando o Presidente pulava à reunião e alguém era expulso (Por: TommyXL)" +
                         "\n     - Corrigido bug quando o nome do jogador não era apagado ao final da reunião quando o jogador saía do jogo (Por: TommyXL)" +
                         "\n     - Corrigido bug quando Camaleão, Transparente, Invisível e Alquimista se teletransportavam para os dutos após a reunião (Por: TommyXL)" +
@@ -3164,12 +3164,12 @@ public class ModNewsHistory
                         "\n     - Corrigido bug quando o Dispersor teletransportava jogadores quando eles estavam nos dutos (Por: TommyXL)" +
                         "\n     - Corrigido bug quando o Predador não coloria os nomes dos alvos no início do jogo (para vanilla - Por: TommyXL)" +
                         "\n     - Corrigido bug quando o Pirômano Maníaco não mostrava quando molhava no vanilla (para vanilla - Por: TommyXL)" +
-                        "\n     - Corrigido bug quando fantasmas Impostores não viam o botão de sabotagem (Por: TommyXL)" +
+                        "\n     - Corrigido bug quando os fantasmas Impostores não viam o botão de sabotagem (Por: TommyXL)" +
                         "\n     - Corrigido bug quando o motivo da vitória final às vezes era exibido incorretamente (Por: TommyXL)" +
                         "\n     - Corrigido bug quando o Atributo tinha 100% de chance de aparecer, mas às vezes não aparecia no jogo (Por: TommyXL)" +
                         "\n     - Algumas correções para os Românticos (Por: TommyXL e ryuk)" +
                         "\n     - Corrigido Conjurador para clientes modificados (Por: ryuk)" +
-                        "\n     - Corrigido bug quando o Copiador copiava o Sabota-Tarefas daria Benfeitor se o Copiador pudesse copiar a variante do tripulante (Por: ryuk)" +
+                        "\n     - Corrigido bug quando o Copiador copiava o Sabota-Tarefas daria Benfeitor se o Copiador pudesse copiar a variante de tripulante (Por: ryuk)" +
                         "\n     - Corrigido o Imitador que quando imitava o Informante não dava nenhuma pista (Por: ryuk)" +
                         "\n     - Corrigido o Inspetor que não mostra os Cúmplices como equipe de Impostor (Por: ryuk)" +
                         "\n     - Corrigido quando o Telecomunicador não funcionava quando o Copiador copia (Por: ryuk)" +
@@ -3180,10 +3180,10 @@ public class ModNewsHistory
                         "\n     - Excluir o Speedrunner do alvo do Procurador (Por: NikoCat223)" +
                         "\n     - Corrigido quando o Speedrunner pode ser assassinado (Por: NikoCat223)" +
                         "\n     - Corrigido bug que às vezes fazia o jogo travar após verificação de versão (Por: NikoCat223)" +
-                        "\n     - Corrigido bug quando Mini conseguia adivinhar até a morte (Por: NikoCat223)" +
+                        "\n     - Corrigido bug quando Mini conseguia adivinhar até morrer (Por: NikoCat223)" +
                         "\n     - Corrigido bug quando a quantidade de corpo do Canibal não era exibida corretamente para clientes modificados (Por: NikoCat223)" +
                         "\n     - Corrigido bug quando o Anfitrião não escolhia um local de para nascer no Airship por um longo tempo e a EAC bania jogadores que tentavam causar sabotagem (Por: NikoCat223)" +
-                        "\n     - Corrigido bug quando o Mini pode ser morto por Controlador de Mentes, Marionetista, Encobertador e pode ser alvo do Ilusionista (Por: NikoCat223 e LezaiYa)" +
+                        "\n     - Corrigido bug quando o Mini podia ser morto por Controlador de Mentes, Marionetista, Encobertador e podia ser alvo do Ilusionista (Por: NikoCat223 e LezaiYa)" +
                         "\n     - Corrigido o bug que impedia o jogo de terminar quando o Mini era expulso (Por: LezaiYa)" +
                         "\n     - Corrigido bug onde «/gno» e «/rand» davam o mesmo resultado (Por: Marg)" +
 
