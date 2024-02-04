@@ -771,8 +771,6 @@ public static class Options
     public static OptionItem MadSnitchTasks;
     public static OptionItem JudgeCanBeMadmate;
 
-    public static OptionItem MimicCanSeeDeadRoles;
-
     public static OptionItem TicketsPerKill;
 
     public static OptionItem CrewCanBeEgoist;
@@ -2588,9 +2586,7 @@ public static class Options
         /*
          * Mimic
          */
-        SetupAdtRoleOptions(23100, CustomRoles.Mimic, canSetNum: true, tab: TabGroup.Addons);
-        MimicCanSeeDeadRoles = BooleanOptionItem.Create(23103, "MimicCanSeeDeadRoles", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Mimic]);
+        Mimic.SetupCustomOption();
         
         SetupAdtRoleOptions(23200, CustomRoles.TicketsStealer, canSetNum: true, tab: TabGroup.Addons);
         TicketsPerKill = FloatOptionItem.Create(23203, "TicketsPerKill", new(0.1f, 10f, 0.1f), 0.5f, TabGroup.Addons, false)
