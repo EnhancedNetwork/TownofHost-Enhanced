@@ -702,13 +702,6 @@ public static class Options
 
     // Add-Ons settings 
 
-    public static OptionItem ImpCanBeDoubleShot;
-    public static OptionItem CrewCanBeDoubleShot;
-    public static OptionItem NeutralCanBeDoubleShot;
-
-    public static OptionItem TasklessCrewCanBeLazy;
-    public static OptionItem TaskBasedCrewCanBeLazy;
-
     public static OptionItem ImpCanBeLoyal;
     public static OptionItem CrewCanBeLoyal;
 
@@ -2374,22 +2367,12 @@ public static class Options
         Burst.SetupCustomOptions();
 
         Cyber.SetupCustomOptions();
-        
-        SetupAdtRoleOptions(19200, CustomRoles.DoubleShot, canSetNum: true, tab: TabGroup.Addons);
-        ImpCanBeDoubleShot = BooleanOptionItem.Create(19203, "ImpCanBeDoubleShot", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.DoubleShot]);
-        CrewCanBeDoubleShot = BooleanOptionItem.Create(19204, "CrewCanBeDoubleShot", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.DoubleShot]);
-        NeutralCanBeDoubleShot = BooleanOptionItem.Create(19205, "NeutralCanBeDoubleShot", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.DoubleShot]);
+
+        DoubleShot.SetupCustomOption();
 
         Flash.SetupCustomOption();
 
-        SetupAdtRoleOptions(19300, CustomRoles.Lazy, canSetNum: true);
-        TasklessCrewCanBeLazy = BooleanOptionItem.Create(19303, "TasklessCrewCanBeLazy", false, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Lazy]);
-        TaskBasedCrewCanBeLazy = BooleanOptionItem.Create(19304, "TaskBasedCrewCanBeLazy", false, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Lazy]);
+        Lazy.SetupCustomOptions();
         
         SetupAdtRoleOptions(19400, CustomRoles.Loyal, canSetNum: true);
         ImpCanBeLoyal = BooleanOptionItem.Create(19403, "ImpCanBeLoyal", true, TabGroup.Addons, false)

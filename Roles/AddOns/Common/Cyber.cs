@@ -4,7 +4,7 @@ using System.Linq;
 using static TOHE.Options;
 using static TOHE.Translator;
 
-namespace TOHE.Roles.AddOns.Crewmate;
+namespace TOHE.Roles.AddOns.Common;
 
 public class Cyber
 {

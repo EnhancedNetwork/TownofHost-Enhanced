@@ -1232,7 +1232,7 @@ static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Ghoul)
                     || pc.Is(CustomRoles.Needy))
                     return false;
-                if (pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsImpostor() || (pc.GetCustomRole().IsTasklessCrewmate() && !Options.TasklessCrewCanBeLazy.GetBool()) || (pc.GetCustomRole().IsTaskBasedCrewmate() && !Options.TaskBasedCrewCanBeLazy.GetBool()))
+                if (pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsImpostor() || (pc.GetCustomRole().IsTasklessCrewmate() && !Lazy.TasklessCrewCanBeLazy.GetBool()) || (pc.GetCustomRole().IsTaskBasedCrewmate() && !Lazy.TaskBasedCrewCanBeLazy.GetBool()))
                     return false;
                 break;
 
