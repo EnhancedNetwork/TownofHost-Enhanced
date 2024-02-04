@@ -1,4 +1,5 @@
 using Hazel;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -130,7 +131,7 @@ public static class NameColorManager
         if (seer.Is(CustomRoles.Pyromaniac) && Pyromaniac.DousedList.Contains(target.PlayerId)) color = "#BA4A00";
 
         // Cyber
-        if (target.Is(CustomRoles.Cyber) && Options.CyberKnown.GetBool()) color = Main.roleColors[CustomRoles.Cyber];
+        if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool()) color = Main.roleColors[CustomRoles.Cyber];
         //Schrodingers Cat
         if (seer.Is(CustomRoles.SchrodingersCat))
         {
@@ -153,22 +154,7 @@ public static class NameColorManager
         {
             if (target.Data.IsDead && !target.IsAlive())
             {
-                if (target.Is(CustomRoleTypes.Impostor)) color = Main.roleColors[CustomRoles.Impostor];
-                if (target.Is(CustomRoles.Madmate)) color = Main.roleColors[CustomRoles.Impostor];
-                if (target.Is(CustomRoles.Admired)) color = Main.roleColors[CustomRoles.Bait];
-                if (target.Is(CustomRoles.Parasite)) color = Main.roleColors[CustomRoles.Impostor];
-                if (target.Is(CustomRoles.Crewpostor)) color = Main.roleColors[CustomRoles.Impostor];
-                if (target.Is(CustomRoles.Convict)) color = Main.roleColors[CustomRoles.Impostor];
-                if (target.Is(CustomRoles.Refugee)) color = Main.roleColors[CustomRoles.Impostor];
-                if (target.Is(CustomRoles.Rascal)) color = Main.roleColors[CustomRoles.Impostor];
-                if (target.Is(CustomRoleTypes.Crewmate)) color = Main.roleColors[CustomRoles.Bait];
-                if (target.Is(CustomRoleTypes.Neutral)) color = Main.roleColors[CustomRoles.SwordsMan];
-                if (target.Is(CustomRoles.Charmed)) color = Main.roleColors[CustomRoles.SwordsMan];
-                if (target.Is(CustomRoles.Infected)) color = Main.roleColors[CustomRoles.SwordsMan];
-                if (target.Is(CustomRoles.Contagious)) color = Main.roleColors[CustomRoles.SwordsMan];
-                if (target.Is(CustomRoles.Egoist)) color = Main.roleColors[CustomRoles.SwordsMan];
-                if (target.Is(CustomRoles.Recruit)) color = Main.roleColors[CustomRoles.SwordsMan];
-                if (target.Is(CustomRoles.Soulless)) color = Main.roleColors[CustomRoles.SwordsMan];
+                color = Necroview.NameColorOptions(target);
             }
         }
 

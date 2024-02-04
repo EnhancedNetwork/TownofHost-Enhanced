@@ -703,9 +703,6 @@ public static class Options
     // Add-Ons settings 
 
 
-    public static OptionItem ImpCanBeNecroview;
-    public static OptionItem CrewCanBeNecroview;
-    public static OptionItem NeutralCanBeNecroview;
 
     //public static OptionItem NeutralCanBeNimble;
     //public static OptionItem CrewCanBeNimble;
@@ -2370,14 +2367,8 @@ public static class Options
         Loyal.SetupCustomOptions();
 
         Lucky.SetupCustomOptions();
-        
-        SetupAdtRoleOptions(19600, CustomRoles.Necroview, canSetNum: true, tab: TabGroup.Addons);
-        ImpCanBeNecroview = BooleanOptionItem.Create(19603, "ImpCanBeNecroview", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Necroview]);
-        CrewCanBeNecroview = BooleanOptionItem.Create(19604, "CrewCanBeNecroview", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Necroview]);
-        NeutralCanBeNecroview = BooleanOptionItem.Create(19605, "NeutralCanBeNecroview", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Necroview]);
+
+        Necroview.SetupCustomOptions();
         
         SetupAdtRoleOptions(19700, CustomRoles.Nimble, canSetNum: true, tab: TabGroup.Addons);
         /*CrewCanBeNimble = BooleanOptionItem.Create(19704, "CrewCanBeNimble", true, TabGroup.Addons, false)
