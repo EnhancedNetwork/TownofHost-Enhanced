@@ -1385,14 +1385,23 @@ public static class Utils
         var SubRoles = Main.PlayerStates[id].SubRoles;
         if (SubRoles.Count == 0 && intro == false) return "";
         var sb = new StringBuilder();
+
+        if (summary)
+            sb.Append(' ');
+
         foreach (var role in SubRoles.ToArray())
         {
             if (role is CustomRoles.NotAssigned or
                         CustomRoles.LastImpostor) continue;
             if (summary && role is CustomRoles.Madmate or CustomRoles.Charmed or CustomRoles.Recruit or CustomRoles.Admired or CustomRoles.Infected or CustomRoles.Contagious or CustomRoles.Soulless) continue;
 
-            var RoleText = disableColor ? GetRoleName(role) : ColorString(GetRoleColor(role), GetRoleName(role));
-            sb.Append($"{ColorString(Color.white, " + ")}{RoleText}");
+            var RoleColor = GetRoleColor(role);
+            var RoleText = disableColor ? GetRoleName(role) : ColorString(RoleColor, GetRoleName(role));
+            
+            if (summary)
+                sb.Append($"{ColorString(RoleColor, "(")}{RoleText}{ColorString(RoleColor, ")")}");
+            else
+                sb.Append($"{ColorString(Color.white, " + ")}{RoleText}");
         }
 
         if (intro && !SubRoles.Contains(CustomRoles.Lovers) && !SubRoles.Contains(CustomRoles.Ntr) && CustomRoles.Ntr.RoleExist())
@@ -2975,7 +2984,7 @@ public static class Utils
         }
         else { TaskCount = GetProgressText(id); }
 
-        string summary = $"{ColorString(Main.PlayerColors[id], name)} - {GetDisplayRoleName(id, true)}{TaskCount}{GetKillCountText(id)} ({GetVitalText(id, true)})";
+        string summary = $"{ColorString(Main.PlayerColors[id], name)} - {GetDisplayRoleName(id, true)}{GetSubRolesText(id, summary: true)}{TaskCount}{GetKillCountText(id)} ({GetVitalText(id, true)})";
         switch (Options.CurrentGameMode)
         {
             case CustomGameMode.FFA:
