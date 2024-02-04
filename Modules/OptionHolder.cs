@@ -702,9 +702,6 @@ public static class Options
 
     // Add-Ons settings 
 
-    public static OptionItem ImpCanBeLoyal;
-    public static OptionItem CrewCanBeLoyal;
-
     public static OptionItem LuckyProbability;
     public static OptionItem ImpCanBeLucky;
     public static OptionItem CrewCanBeLucky;
@@ -2373,12 +2370,8 @@ public static class Options
         Flash.SetupCustomOption();
 
         Lazy.SetupCustomOptions();
-        
-        SetupAdtRoleOptions(19400, CustomRoles.Loyal, canSetNum: true);
-        ImpCanBeLoyal = BooleanOptionItem.Create(19403, "ImpCanBeLoyal", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Loyal]);
-        CrewCanBeLoyal = BooleanOptionItem.Create(19404, "CrewCanBeLoyal", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Loyal]);
+
+        Loyal.SetupCustomOptions();
         
         SetupAdtRoleOptions(19500, CustomRoles.Lucky, canSetNum: true);
         LuckyProbability = IntegerOptionItem.Create(19503, "LuckyProbability", new(0, 100, 5), 50, TabGroup.Addons, false)
