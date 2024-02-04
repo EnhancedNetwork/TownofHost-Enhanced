@@ -702,9 +702,6 @@ public static class Options
 
     // Add-Ons settings 
 
-    public static OptionItem ImpCanBeWatcher;
-    public static OptionItem CrewCanBeWatcher;
-    public static OptionItem NeutralCanBeWatcher;
     //public static OptionItem EvilWatcherChance;
 
     //public static OptionItem SunglassesVision;
@@ -2375,13 +2372,7 @@ public static class Options
     
         Torch.SetupCustomOptions();
 
-        SetupAdtRoleOptions(20400, CustomRoles.Watcher, canSetNum: true);
-        ImpCanBeWatcher = BooleanOptionItem.Create(20403, "ImpCanBeWatcher", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Watcher]);
-        CrewCanBeWatcher = BooleanOptionItem.Create(20404, "CrewCanBeWatcher", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Watcher]);
-        NeutralCanBeWatcher = BooleanOptionItem.Create(20405, "NeutralCanBeWatcher", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Watcher]);
+        Watcher.SetupCustomOptions();
 
         TextOptionItem.Create(10000016, "RoleType.Harmful", TabGroup.Addons) // HARMFUL
             .SetGameMode(CustomGameMode.Standard)

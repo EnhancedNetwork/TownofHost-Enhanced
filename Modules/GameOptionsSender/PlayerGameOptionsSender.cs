@@ -530,7 +530,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             switch (subRole)
             {
                 case CustomRoles.Watcher:
-                    opt.SetBool(BoolOptionNames.AnonymousVotes, false);
+                    Watcher.RevealVotes(opt);
                     break;
                 case CustomRoles.Flash:
                     Flash.SetSpeed(player.PlayerId, false);
