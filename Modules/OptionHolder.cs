@@ -767,18 +767,6 @@ public static class Options
     public static OptionItem NeutralCanBeWatcher;
     //public static OptionItem EvilWatcherChance;
 
-    public static OptionItem ImpCanBeUnreportable;
-    public static OptionItem CrewCanBeUnreportable;
-    public static OptionItem NeutralCanBeUnreportable;
-
-    public static OptionItem ImpCanBeFragile;
-    public static OptionItem CrewCanBeFragile;
-    public static OptionItem NeutralCanBeFragile;
-    public static OptionItem ImpCanKillFragile;
-    public static OptionItem CrewCanKillFragile;
-    public static OptionItem NeutralCanKillFragile;
-    public static OptionItem FragileKillerLunge;
-
     public static OptionItem ImpCanBeOblivious;
     public static OptionItem CrewCanBeOblivious;
     public static OptionItem NeutralCanBeOblivious;
@@ -988,22 +976,7 @@ public static class Options
       public static OptionItem RogueKnowEachOtherRoles;
       public static OptionItem ControlCooldown;
       public static OptionItem LawyerVision;
-      public static OptionItem BardChance;
-      public static OptionItem BaitCanBeSold;
-      public static OptionItem WatcherCanBeSold;
-      public static OptionItem SeerCanBeSold;
-      public static OptionItem TrapperCanBeSold;
-      public static OptionItem TiebreakerCanBeSold;
-      public static OptionItem KnightedCanBeSold;
-      public static OptionItem NecroviewCanBeSold;
-      public static OptionItem SoullessCanBeSold;
-      public static OptionItem SchizoCanBeSold;
-      public static OptionItem OnboundCanBeSold;
-      public static OptionItem GuesserCanBeSold;
-      public static OptionItem UnreportableCanBeSold;
-      public static OptionItem LuckyCanBeSold;
-      public static OptionItem ObliviousCanBeSold;
-      public static OptionItem BewilderCanBeSold; */
+      public static OptionItem BardChance; */
 
     // Override Tasks
     public static OverrideTasksData TerroristTasks;
@@ -2597,13 +2570,8 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 154, 206, byte.MaxValue));
 
-        SetupAdtRoleOptions(20500, CustomRoles.Unreportable, canSetNum: true);
-        ImpCanBeUnreportable = BooleanOptionItem.Create(20503, "ImpCanBeUnreportable", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Unreportable]);
-        CrewCanBeUnreportable = BooleanOptionItem.Create(20504, "CrewCanBeUnreportable", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Unreportable]);
-        NeutralCanBeUnreportable = BooleanOptionItem.Create(20505, "NeutralCanBeUnreportable", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Unreportable]);
+        Unreportable.SetupCustomOptions();
+
         /*
          * Fool
          */
@@ -2615,21 +2583,7 @@ public static class Options
         NeutralCanBeFool = BooleanOptionItem.Create(25605, "NeutralCanBeFool", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Fool]);
 
-        SetupAdtRoleOptions(20600, CustomRoles.Fragile, canSetNum: true);
-        ImpCanBeFragile = BooleanOptionItem.Create(20603, "ImpCanBeFragile", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
-        CrewCanBeFragile = BooleanOptionItem.Create(20604, "CrewCanBeFragile", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
-        NeutralCanBeFragile = BooleanOptionItem.Create(20605, "NeutralCanBeFragile", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
-        ImpCanKillFragile = BooleanOptionItem.Create(20606, "ImpCanKillFragile", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
-        CrewCanKillFragile = BooleanOptionItem.Create(20607, "CrewCanKillFragile", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
-        NeutralCanKillFragile = BooleanOptionItem.Create(20608, "NeutralCanKillFragile", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
-        FragileKillerLunge = BooleanOptionItem.Create(20609, "FragileKillerLunge", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Fragile]);
+        Fragile.SetupCustomOptions();
 
         Hurried.SetupCustomOption();
 
