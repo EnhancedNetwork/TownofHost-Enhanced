@@ -67,7 +67,6 @@ internal class ChangeRoleSettings
             Main.DetectiveNotify = [];
             Main.ForCrusade = [];
             Main.CyberStarDead = [];
-            Main.CyberDead = [];
             Main.KilledDiseased = [];
             Main.KilledAntidote = [];
             Main.WorkaholicAlive = [];
@@ -354,6 +353,7 @@ internal class ChangeRoleSettings
             Swapper.Init();
             Enigma.Init();
             ChiefOfPolice.Init();
+            Cyber.Init();
             Mini.Init();
             Blackmailer.Init();
             Spy.Init();

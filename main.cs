@@ -143,7 +143,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, long> TimeMasterInProtect = [];
     //public static Dictionary<byte, long> FlashbangInProtect = [];
     public static List<byte> CyberStarDead = [];
-    public static List<byte> CyberDead = [];
     public static List<int> BombedVents = [];
     public static List<byte> WorkaholicAlive = [];
     public static List<byte> TasklessCrewmate = [];

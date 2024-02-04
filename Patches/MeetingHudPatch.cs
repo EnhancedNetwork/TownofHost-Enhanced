@@ -963,11 +963,11 @@ class MeetingHudStartPatch
                 AddMsg(string.Format(GetString("CyberStarDead"), Main.AllPlayerNames[csId]), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.CyberStar), GetString("CyberStarNewsTitle")));
             }
             //网络人死亡消息提示
-            foreach (var csId in Main.CyberDead)
+            foreach (var csId in Cyber.CyberDead)
             {
-                if (!Options.ImpKnowCyberDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
-                if (!Options.NeutralKnowCyberDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
-                if (!Options.CrewKnowCyberDead.GetBool() && pc.GetCustomRole().IsCrewmate()) continue;
+                if (!Cyber.ImpKnowCyberDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
+                if (!Cyber.NeutralKnowCyberDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
+                if (!Cyber.CrewKnowCyberDead.GetBool() && pc.GetCustomRole().IsCrewmate()) continue;
                 AddMsg(string.Format(GetString("CyberDead"), Main.AllPlayerNames[csId]), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), GetString("CyberNewsTitle")));
             }
             //勒索者勒索警告
@@ -1027,7 +1027,7 @@ class MeetingHudStartPatch
         }, 3f, "Skill Notice On Meeting Start");
 
         Main.CyberStarDead.Clear();
-        Main.CyberDead.Clear();
+        Cyber.CyberDead.Clear();
         Main.DetectiveNotify.Clear();
         Sleuth.SleuthNotify.Clear();
         Main.VirusNotify.Clear();
@@ -1385,7 +1385,7 @@ class MeetingHudStartPatch
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.SuperStar), "★"));
 
             //网络人提示
-            if (target.Is(CustomRoles.Cyber) && Options.CyberKnown.GetBool())
+            if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), "★"));
 
             //玩家被勒索提示

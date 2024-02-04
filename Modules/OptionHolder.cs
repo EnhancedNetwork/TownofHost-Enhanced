@@ -702,14 +702,6 @@ public static class Options
 
     // Add-Ons settings 
 
-    public static OptionItem ImpCanBeCyber;
-    public static OptionItem CrewCanBeCyber;
-    public static OptionItem NeutralCanBeCyber;
-    public static OptionItem ImpKnowCyberDead;
-    public static OptionItem CrewKnowCyberDead;
-    public static OptionItem NeutralKnowCyberDead;
-    public static OptionItem CyberKnown;
-
     public static OptionItem ImpCanBeDoubleShot;
     public static OptionItem CrewCanBeDoubleShot;
     public static OptionItem NeutralCanBeDoubleShot;
@@ -2380,22 +2372,8 @@ public static class Options
         Bewilder.SetupCustomOptions();
 
         Burst.SetupCustomOptions();
-        
-        SetupAdtRoleOptions(19100, CustomRoles.Cyber, canSetNum: true);
-        ImpCanBeCyber = BooleanOptionItem.Create(19103, "ImpCanBeCyber", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Cyber]);
-        CrewCanBeCyber = BooleanOptionItem.Create(19104, "CrewCanBeCyber", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Cyber]);
-        NeutralCanBeCyber = BooleanOptionItem.Create(19105, "NeutralCanBeCyber", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Cyber]);
-        ImpKnowCyberDead = BooleanOptionItem.Create(19106, "ImpKnowCyberDead", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Cyber]);
-        CrewKnowCyberDead = BooleanOptionItem.Create(19107, "CrewKnowCyberDead", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Cyber]);
-        NeutralKnowCyberDead = BooleanOptionItem.Create(19108, "NeutralKnowCyberDead", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Cyber]);
-        CyberKnown = BooleanOptionItem.Create(19109, "CyberKnown", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Cyber]);
+
+        Cyber.SetupCustomOptions();
         
         SetupAdtRoleOptions(19200, CustomRoles.DoubleShot, canSetNum: true, tab: TabGroup.Addons);
         ImpCanBeDoubleShot = BooleanOptionItem.Create(19203, "ImpCanBeDoubleShot", true, TabGroup.Addons, false)

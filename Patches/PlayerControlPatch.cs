@@ -3243,7 +3243,7 @@ class FixedUpdateInNormalGamePatch
                 if (target.Is(CustomRoles.SuperStar) && Options.EveryOneKnowSuperStar.GetBool())
                     Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.SuperStar), "★"));
 
-                if (target.Is(CustomRoles.Cyber) && Options.CyberKnown.GetBool())
+                if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                     Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), "★"));
 
                 if (BallLightning.IsEnable && BallLightning.IsGhost(target))
@@ -3637,12 +3637,7 @@ class EnterVentPatch
         }
         if (pc.Is(CustomRoles.Unlucky))
         {
-            var Ue = IRandom.Instance;
-            if (Ue.Next(1, 100) <= Options.UnluckyVentSuicideChance.GetInt())
-            {
-                Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-                pc.RpcMurderPlayerV3(pc);
-            }
+            Unlucky.SuicideRand(pc);
         }
         if (pc.Is(CustomRoles.Grenadier))
         {
