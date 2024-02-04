@@ -795,13 +795,8 @@ class CheckMurderPatch
                     return false;
 
                 case CustomRoles.Unlucky:
-                    var Ue = IRandom.Instance;
-                    if (Ue.Next(1, 100) <= Unlucky.UnluckyKillSuicideChance.GetInt())
-                    {
-                        Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-                        killer.RpcMurderPlayerV3(killer);
-                        return false;
-                    }
+                    Unlucky.SuicideRand(killer);
+                    if (Unlucky.UnluckCheck[killer.PlayerId]) return false;
                     break;
 
                 case CustomRoles.Tired:

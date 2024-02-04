@@ -1225,6 +1225,25 @@ static class ExtendedPlayerControl
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
         Utils.NotifyRoles();
     }
+
+    public static void AddInSwitchAddons(PlayerControl Killed, PlayerControl target, CustomRoles Addon = CustomRoles.NotAssigned, CustomRoles? IsAddon = CustomRoles.NotAssigned)
+    {
+        if (Addon == CustomRoles.NotAssigned)
+        {
+            Addon = IsAddon ?? CustomRoles.NotAssigned;
+        }
+        switch (Addon)
+        {
+            case CustomRoles.Unlucky:
+                Unlucky.UnluckCheck.Remove(Killed.PlayerId);
+                Unlucky.Add(target.PlayerId);
+                break;
+            case CustomRoles.Tired:
+                Tired.playerIdList.Remove(Killed.PlayerId);
+                Tired.Add(target.PlayerId);
+                break;
+        }
+    }
     public static bool RpcCheckAndMurder(this PlayerControl killer, PlayerControl target, bool check = false) => CheckMurderPatch.RpcCheckAndMurder(killer, target, check);
     public static void NoCheckStartMeeting(this PlayerControl reporter, GameData.PlayerInfo target, bool force = false)
     { 

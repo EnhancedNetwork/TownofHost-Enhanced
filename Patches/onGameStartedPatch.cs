@@ -364,6 +364,7 @@ internal class ChangeRoleSettings
             Tired.Init();
             Ghoul.Init();
             Rainbow.Init();
+            Unlucky.Init();
 
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
@@ -1084,6 +1085,9 @@ internal class SelectRolesPatch
                             break;
                         case CustomRoles.Ghoul:
                             Ghoul.Add();
+                            break;
+                        case CustomRoles.Unlucky:
+                            Unlucky.Add(pc.PlayerId);
                             break;
 
                         default:

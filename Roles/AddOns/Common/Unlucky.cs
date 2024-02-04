@@ -16,6 +16,8 @@ namespace TOHE.Roles.AddOns.Common
         public static OptionItem CrewCanBeUnlucky;
         public static OptionItem NeutralCanBeUnlucky;
 
+        public static Dictionary<byte, bool> UnluckCheck;
+
         public static void SetupCustomOptions()
         {
             SetupAdtRoleOptions(Id, CustomRoles.Unlucky, canSetNum: true);
@@ -33,6 +35,16 @@ namespace TOHE.Roles.AddOns.Common
             CrewCanBeUnlucky = BooleanOptionItem.Create(Id + 16, "CrewCanBeUnlucky", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky]);
             NeutralCanBeUnlucky = BooleanOptionItem.Create(Id + 17, "NeutralCanBeUnlucky", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Unlucky]);
         }
+        
+        public static void Init()
+        {
+            UnluckCheck = [];
+        }
+
+        public static void Add(byte PlayerId)
+        {
+            UnluckCheck.Add(PlayerId, false);
+        }
 
         public static void SuicideRand(PlayerControl victim)
         {
@@ -41,6 +53,7 @@ namespace TOHE.Roles.AddOns.Common
             {
                 Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
                 victim.RpcMurderPlayerV3(victim);
+                UnluckCheck[victim.PlayerId] = true;
             }
         }
     }
