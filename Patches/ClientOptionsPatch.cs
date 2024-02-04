@@ -19,7 +19,6 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem EnableCustomSoundEffect;
     private static ClientOptionItem ShowTextOverlay;
     private static ClientOptionItem ModeForSmallScreen;
-    private static ClientOptionItem EnableRoleSummary;
     private static ClientOptionItem SwitchVanilla;
 #if DEBUG
     private static ClientOptionItem VersionCheat;
@@ -100,10 +99,6 @@ public static class OptionsMenuBehaviourStartPatch
         if (ModeForSmallScreen == null || ModeForSmallScreen.ToggleButton == null)
         {
             ModeForSmallScreen = ClientOptionItem.Create("ModeForSmallScreen", Main.ModeForSmallScreen, __instance);
-        }
-        if (EnableRoleSummary == null || EnableRoleSummary.ToggleButton == null)
-        {
-            EnableRoleSummary = ClientOptionItem.Create("EnableRoleSummary", Main.EnableRoleSummary, __instance);
         }
         if (SwitchVanilla == null || SwitchVanilla.ToggleButton == null)
         {

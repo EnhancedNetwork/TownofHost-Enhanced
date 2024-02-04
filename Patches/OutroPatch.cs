@@ -42,14 +42,8 @@ class EndGamePatch
                     Main.AllPlayerNames[id] = Doppelganger.DoppelVictim[id];
                 }
             }
-            if (Main.EnableRoleSummary.Value)
-            {
-                SummaryText[id] = Utils.SummaryTexts(id, disableColor: false);
-            }
-            else
-            {
-                SummaryText[id] = Utils.NewSummaryTexts(id, disableColor: false);
-            }
+
+            SummaryText[id] = Utils.SummaryTexts(id, disableColor: false);
         }
 
         var sb = new StringBuilder(GetString("KillLog") + ":");
@@ -125,27 +119,9 @@ class SetEverythingUpPatch
 
         __instance.WinText.alignment = TextAlignmentOptions.Right;
 
-        //if (Main.EnableRoleSummary.Value)
-        //{        
-        //    __instance.WinText.alignment = TextAlignmentOptions.Right;
-        //}
-        //else
-        //{        
-        //    __instance.WinText.alignment = TextAlignmentOptions.Center;
-        //}
-
         var WinnerTextObject = UnityEngine.Object.Instantiate(__instance.WinText.gameObject);
         WinnerTextObject.transform.localScale = new(0.6f, 0.6f, 0.6f);
         WinnerTextObject.transform.position = new(__instance.WinText.transform.position.x + 2.4f, __instance.WinText.transform.position.y - 0.5f, __instance.WinText.transform.position.z);
-
-        //if (Main.EnableRoleSummary.Value)
-        //{
-        //    WinnerTextObject.transform.position = new(__instance.WinText.transform.position.x + 2.4f, __instance.WinText.transform.position.y - 0.5f, __instance.WinText.transform.position.z);
-        //}
-        //else
-        //{
-        //    WinnerTextObject.transform.position = new(__instance.WinText.transform.position.x, __instance.WinText.transform.position.y - 0.5f, __instance.WinText.transform.position.z);
-        //}
 
         var WinnerText = WinnerTextObject.GetComponent<TextMeshPro>(); //Get components of the same type as WinText
         WinnerText.fontSizeMin = 3f;
