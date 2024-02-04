@@ -1069,7 +1069,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.ScientistTOHE)
                     || pc.Is(CustomRoles.Sunnyboy))
                     return false;
-                if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeAutopsy.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeAutopsy.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeAutopsy.GetBool()))
+                if ((pc.GetCustomRole().IsCrewmate() && !Autopsy.CrewCanBeAutopsy.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Autopsy.NeutralCanBeAutopsy.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Autopsy.ImpCanBeAutopsy.GetBool()))
                     return false;
                 break;
 

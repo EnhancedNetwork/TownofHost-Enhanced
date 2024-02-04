@@ -700,10 +700,7 @@ public static class Options
     public static OptionItem ArsonistMaxPlayersToIgnite;
 
 
-    // Add-Ons settings
-    public static OptionItem ImpCanBeAutopsy;
-    public static OptionItem CrewCanBeAutopsy;
-    public static OptionItem NeutralCanBeAutopsy;
+    // Add-Ons settings 
 
     public static OptionItem ImpCanBeBait;
     public static OptionItem CrewCanBeBait;
@@ -2397,13 +2394,7 @@ public static class Options
             .SetColor(new Color32(255, 154, 206, byte.MaxValue));
 
 
-        SetupAdtRoleOptions(18600, CustomRoles.Autopsy, canSetNum: true);
-        ImpCanBeAutopsy = BooleanOptionItem.Create(18603, "ImpCanBeAutopsy", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Autopsy]);
-        CrewCanBeAutopsy = BooleanOptionItem.Create(18604, "CrewCanBeAutopsy", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Autopsy]);
-        NeutralCanBeAutopsy = BooleanOptionItem.Create(18605, "NeutralCanBeAutopsy", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Autopsy]);
+        Autopsy.SetupCustomOptions();
         
         SetupAdtRoleOptions(18700, CustomRoles.Bait, canSetNum: true);
         ImpCanBeBait = BooleanOptionItem.Create(18703, "ImpCanBeBait", true, TabGroup.Addons, false)
