@@ -280,7 +280,7 @@ class SetEverythingUpPatch
         RoleSummaryObject.transform.position = new Vector3(__instance.Navigation.ExitButton.transform.position.x + 0.1f, Pos.y - 0.1f, -15f);
         RoleSummaryObject.transform.localScale = new Vector3(1f, 1f, 1f);
 
-        StringBuilder sb = new($"{GetString("RoleSummaryText")}\n<b>");
+        StringBuilder sb = new($"{GetString("RoleSummaryText")}<b>");
         List<byte> cloneRoles = new(Main.PlayerStates.Keys);
         foreach (byte id in Main.winnerList.ToArray())
         {
@@ -292,14 +292,14 @@ class SetEverythingUpPatch
         {
             case CustomGameMode.FFA:
                 {
-                    List<(int, byte)> list = [];
+                    List<(int, byte)> listFFA = [];
                     foreach (byte id in cloneRoles.ToArray())
                     {
-                        list.Add((FFAManager.GetRankOfScore(id), id));
+                        listFFA.Add((FFAManager.GetRankOfScore(id), id));
                     }
 
-                    list.Sort();
-                    foreach (var id in list.Where(x => EndGamePatch.SummaryText.ContainsKey(x.Item2)))
+                    listFFA.Sort();
+                    foreach (var id in listFFA.Where(x => EndGamePatch.SummaryText.ContainsKey(x.Item2)))
                         sb.Append($"\n　 ").Append(EndGamePatch.SummaryText[id.Item2]);
                     break;
                 }
