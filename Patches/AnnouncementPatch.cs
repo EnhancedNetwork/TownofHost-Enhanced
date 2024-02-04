@@ -170,7 +170,7 @@ public class ModNewsHistory
                         "\n     - Fixed bug when Vulture body amount not showing correctly for mod clients (By: NikoCat223)" +
                         "\n     - Fixed bug when the host did not choose a spawn location on Airship for a long time and EAC banned players who tried to cause sabotage (By: NikoCat223)" +
                         "\n     - Fixed bug when Nice Mini can be killed by Warlock, Puppeteer, Shroud and can be target for anonymous (By: NikoCat223 and LezaiYa)" +
-                        "\n     - Fixed bug when Mini could not be exiled (By: LezaiYa)" +
+                        "\n     - Fixed the bug that prevented the game from ending when mini was exiled (By: LezaiYa)" +
                         "\n     - Fixed bug where «/gno» and «/rand» gave same result (By: Marg)" +
 
 
