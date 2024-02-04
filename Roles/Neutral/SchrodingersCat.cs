@@ -44,16 +44,17 @@ public static class SchrodingersCat
     {
         if (!IsEnable) return true;
         if (killer == null || target == null) return true;
-        if (!target.Is(CustomRoles.SchrodingersCat)) return true;
-
-        if (!teammate.ContainsKey(target.PlayerId)) teammate[target.PlayerId] = byte.MaxValue;
-
         if (teammate[target.PlayerId] != byte.MaxValue) return true;
 
         teammate[target.PlayerId] = killer.PlayerId;
         SendRPC(target.PlayerId);
+
+        killer.RpcGuardAndKill();
+        target.RpcGuardAndKill();
+
         Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
         Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
+
         killer.SetKillCooldown();
 
         return false;
