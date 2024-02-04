@@ -918,7 +918,11 @@ class CheckMurderPatch
         if (target.Is(CustomRoles.Lucky))
         {
             Lucky.AvoidDeathChance(killer, target);
-            if (Lucky.LuckyAvoid[target.PlayerId]) return false;
+            if (Lucky.LuckyAvoid[target.PlayerId])
+            {
+                Lucky.LuckyAvoid[target.PlayerId] = false;
+                return false;
+            }
         }
 
         // Shield Player
