@@ -772,10 +772,6 @@ public static class Options
     //public static OptionItem CrewCanBeSunglasses;
     //public static OptionItem NeutralCanBeSunglasses;
 
-    public static OptionItem ImpCanBeVoidBallot;
-    public static OptionItem CrewCanBeVoidBallot;
-    public static OptionItem NeutralCanBeVoidBallot;
-
     public static OptionItem ImpCanBeAntidote;
     public static OptionItem CrewCanBeAntidote;
     public static OptionItem NeutralCanBeAntidote;
@@ -2594,13 +2590,7 @@ public static class Options
         
         Tired.SetupCustomOptions();
 
-        SetupAdtRoleOptions(21100, CustomRoles.VoidBallot, canSetNum: true);
-        ImpCanBeVoidBallot = BooleanOptionItem.Create(21103, "ImpCanBeVoidBallot", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.VoidBallot]);
-        CrewCanBeVoidBallot = BooleanOptionItem.Create(21104, "CrewCanBeVoidBallot", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.VoidBallot]);
-        NeutralCanBeVoidBallot = BooleanOptionItem.Create(21105, "NeutralCanBeVoidBallot", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.VoidBallot]);
+        VoidBallot.SetupCustomOptions();
 
         TextOptionItem.Create(10000017, "RoleType.Mixed", TabGroup.Addons) // MIXED
             .SetGameMode(CustomGameMode.Standard)
