@@ -2952,27 +2952,27 @@ public static class Utils
         var name = Main.AllPlayerNames[id].RemoveHtmlTags().Replace("\r\n", string.Empty);
         if (id == PlayerControl.LocalPlayer.PlayerId) name = DataManager.player.Customization.Name;
         else name = GetPlayerById(id)?.Data.PlayerName ?? name;
-        //var taskState = Main.PlayerStates?[id].TaskState;
+        var taskState = Main.PlayerStates?[id].TaskState;
         string TaskCount = GetProgressText(id);
-        //if (taskState.hasTasks)
-        //{
-        //    Color TextColor;
-        //    var TaskCompleteColor = Color.green; // Color after task completion
-        //    var NonCompleteColor = taskState.CompletedTasksCount > 0 ? Color.yellow : Color.white; // Uncountable out of person is white
 
-        //    if (Workhorse.IsThisRole(id))
-        //        NonCompleteColor = Workhorse.RoleColor;
+        if (taskState.hasTasks)
+        {
+            Color TextColor;
+            var TaskCompleteColor = Color.green; // Color after task completion
+            var NonCompleteColor = taskState.CompletedTasksCount > 0 ? Color.yellow : Color.white; // Uncountable out of person is white
 
-        //    var NormalColor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
+            if (Workhorse.IsThisRole(id))
+                NonCompleteColor = Workhorse.RoleColor;
 
-        //    if (Main.PlayerStates.TryGetValue(id, out var ps) && ps.MainRole == CustomRoles.Crewpostor)
-        //        NormalColor = Color.red;
+            var NormalColor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
 
-        //    TextColor = NormalColor;
-        //    string Completed = $"{taskState.CompletedTasksCount}";
-        //    TaskCount = ColorString(TextColor, $" ({Completed}/{taskState.AllTasksCount})");
-        //}
-        //else { TaskCount = GetProgressText(id); }
+            if (Main.PlayerStates.TryGetValue(id, out var ps) && ps.MainRole == CustomRoles.Crewpostor)
+                NormalColor = Color.red;
+
+            TextColor = NormalColor;
+            string Completed = $"{taskState.CompletedTasksCount}";
+            TaskCount = ColorString(TextColor, $" ({Completed}/{taskState.AllTasksCount})");
+        }
 
         string summary = $"{ColorString(Main.PlayerColors[id], name)} - {GetDisplayRoleName(id, true)}{TaskCount}{GetKillCountText(id)} ({GetVitalText(id, true)})";
         switch (Options.CurrentGameMode)
