@@ -702,12 +702,6 @@ public static class Options
 
     // Add-Ons settings 
 
-    public static OptionItem BewilderVision;
-    public static OptionItem ImpCanBeBewilder;
-    public static OptionItem CrewCanBeBewilder;
-    public static OptionItem NeutralCanBeBewilder;
-    public static OptionItem KillerGetBewilderVision;
-
     public static OptionItem ImpCanBeBurst;
     public static OptionItem CrewCanBeBurst;
     public static OptionItem NeutralCanBeBurst;
@@ -2387,20 +2381,9 @@ public static class Options
          * Beartrap
          */
         Trapper.SetupCustomOptions();
-        
-        SetupAdtRoleOptions(18900, CustomRoles.Bewilder, canSetNum: true);
-        BewilderVision = FloatOptionItem.Create(18903, "BewilderVision", new(0f, 5f, 0.05f), 0.6f, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bewilder])
-            .SetValueFormat(OptionFormat.Multiplier);
-        ImpCanBeBewilder = BooleanOptionItem.Create(18904, "ImpCanBeBewilder", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bewilder]);
-        CrewCanBeBewilder = BooleanOptionItem.Create(18905, "CrewCanBeBewilder", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bewilder]);
-        NeutralCanBeBewilder = BooleanOptionItem.Create(18906, "NeutralCanBeBewilder", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bewilder]);
-        KillerGetBewilderVision = BooleanOptionItem.Create(18907, "KillerGetBewilderVision", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bewilder]);
-        
+
+        Bewilder.SetupCustomOptions();
+
         SetupAdtRoleOptions(19000, CustomRoles.Burst, canSetNum: true);
         ImpCanBeBurst = BooleanOptionItem.Create(19003, "ImpCanBeBurst", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Burst]);

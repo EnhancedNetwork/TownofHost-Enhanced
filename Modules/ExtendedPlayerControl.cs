@@ -1242,6 +1242,9 @@ static class ExtendedPlayerControl
                 Tired.playerIdList.Remove(Killed.PlayerId);
                 Tired.Add(target.PlayerId);
                 break;
+            case CustomRoles.Bewilder:
+                Bewilder.Add();
+                break;
         }
     }
     public static bool RpcCheckAndMurder(this PlayerControl killer, PlayerControl target, bool check = false) => CheckMurderPatch.RpcCheckAndMurder(killer, target, check);

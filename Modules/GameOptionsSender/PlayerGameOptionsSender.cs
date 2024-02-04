@@ -490,20 +490,10 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
         }
 
-        //if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Kamikaze) && !x.IsAlive()))
-        //{
-        //Kamikaze.CheckKamiDeath = true;
-        //} else 
-        //{
-        //Kamikaze.CheckKamiDeath = false;
-        //}
-
         // If the Bewilder was killed, his killer will receive his vision
-        if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Bewilder) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId && Options.KillerGetBewilderVision.GetBool() && !x.Is(CustomRoles.Hangman)))
+        if (Bewilder.IsEnable)
         {
-            opt.SetVision(false);
-            opt.SetFloat(FloatOptionNames.CrewLightMod, Options.BewilderVision.GetFloat());
-            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.BewilderVision.GetFloat());
+            Bewilder.ApplyGameOptions(opt, player);
         }
         
         if (Ghoul.IsEnable)
@@ -552,9 +542,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                     Tired.ApplyGameOptions(opt, player);
                     break;
                 case CustomRoles.Bewilder:
-                    opt.SetVision(false);
-                    opt.SetFloat(FloatOptionNames.CrewLightMod, Options.BewilderVision.GetFloat());
-                    opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.BewilderVision.GetFloat());
+                    Bewilder.ApplyVisionOptions(opt);
                     break;
                 case CustomRoles.Reach:
                     opt.SetInt(Int32OptionNames.KillDistance, 2);

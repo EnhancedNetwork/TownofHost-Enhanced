@@ -345,6 +345,7 @@ internal class ChangeRoleSettings
             Pixie.Init();
             Shroud.Init();
             Werewolf.Init();
+            Bewilder.Init();
             Necromancer.Init();
             Chronomancer.Init();
             Seeker.Init();
@@ -1089,6 +1090,9 @@ internal class SelectRolesPatch
                             break;
                         case CustomRoles.Unlucky:
                             Unlucky.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.Bewilder:
+                            Bewilder.Add();
                             break;
 
                         default:
