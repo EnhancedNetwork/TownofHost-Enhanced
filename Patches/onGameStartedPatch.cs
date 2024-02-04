@@ -259,6 +259,7 @@ internal class ChangeRoleSettings
             Greedier.Init();
             Observer.Init();
             Collector.Init();
+            Clumsy.Init();
             Benefactor.Init();
             Taskinator.Init();
             QuickShooter.Init();
@@ -1097,6 +1098,9 @@ internal class SelectRolesPatch
                             break;
                         case CustomRoles.Lucky:
                             Lucky.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.Clumsy:
+                            Clumsy.Add(pc.PlayerId);
                             break;
 
                         default:

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
+using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -804,12 +805,11 @@ class CheckMurderPatch
                     break;
 
                 case CustomRoles.Clumsy:
-                    var miss = IRandom.Instance;
-                    if (miss.Next(0, 100) < Options.ChanceToMiss.GetInt())
-                    {
-                        killer.RpcGuardAndKill(killer);
-                        killer.SetKillCooldown();
-                        return false;
+                    Clumsy.MissChance(killer);
+                    if (Clumsy.HasMissed[killer.PlayerId]) 
+                    { 
+                        Clumsy.HasMissed[killer.PlayerId] = false;
+                        return false; 
                     }
                     break;
 

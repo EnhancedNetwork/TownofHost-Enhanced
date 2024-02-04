@@ -759,8 +759,6 @@ public static class Options
     public static OptionItem CrewCanBeStubborn;
     public static OptionItem NeutralCanBeStubborn;
 
-    public static OptionItem ChanceToMiss;
-
     public static OptionItem MadmateSpawnMode;
     public static OptionItem MadmateCountMode;
     public static OptionItem SheriffCanBeMadmate;
@@ -2547,10 +2545,7 @@ public static class Options
         /*
          * Clumsy
          */
-        SetupAdtRoleOptions(22700, CustomRoles.Clumsy, canSetNum: true, tab: TabGroup.Addons);
-        ChanceToMiss = IntegerOptionItem.Create(22703, "ChanceToMiss", new(0, 100, 5), 50, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Clumsy])
-            .SetValueFormat(OptionFormat.Percent);
+        Clumsy.SetupCustomOption();
 
         /*
          * Last Impostor
