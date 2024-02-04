@@ -71,7 +71,6 @@ internal class ChangeRoleSettings
             Main.KilledDiseased = [];
             Main.KilledAntidote = [];
             Main.WorkaholicAlive = [];
-            Main.BaitAlive = [];
             Main.BoobyTrapBody = [];
             Main.TasklessCrewmate = [];
             Main.KillerOfBoobyTrapBody = [];
@@ -279,6 +278,7 @@ internal class ChangeRoleSettings
             Sleuth.Init();
             Glitch.Init();
             Huntsman.Init();
+            Bait.Init();
             Deputy.Init();
             Investigator.Init();
             Pickpocket.Init();

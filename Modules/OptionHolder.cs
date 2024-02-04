@@ -702,15 +702,6 @@ public static class Options
 
     // Add-Ons settings 
 
-    public static OptionItem ImpCanBeBait;
-    public static OptionItem CrewCanBeBait;
-    public static OptionItem NeutralCanBeBait;
-    public static OptionItem BaitDelayMin;
-    public static OptionItem BaitDelayMax;
-    public static OptionItem BaitDelayNotify;
-    public static OptionItem BaitNotification;
-    public static OptionItem BaitCanBeReportedUnderAllConditions;
-
     public static OptionItem ImpCanBeTrapper;
     public static OptionItem CrewCanBeTrapper;
     public static OptionItem NeutralCanBeTrapper;
@@ -2395,26 +2386,8 @@ public static class Options
 
 
         Autopsy.SetupCustomOptions();
-        
-        SetupAdtRoleOptions(18700, CustomRoles.Bait, canSetNum: true);
-        ImpCanBeBait = BooleanOptionItem.Create(18703, "ImpCanBeBait", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bait]);
-        CrewCanBeBait = BooleanOptionItem.Create(18704, "CrewCanBeBait", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bait]);
-        NeutralCanBeBait = BooleanOptionItem.Create(18705, "NeutralCanBeBait", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bait]);
-        BaitDelayMin = FloatOptionItem.Create(18706, "BaitDelayMin", new(0f, 5f, 1f), 0f, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bait])
-            .SetValueFormat(OptionFormat.Seconds);
-        BaitDelayMax = FloatOptionItem.Create(18707, "BaitDelayMax", new(0f, 10f, 1f), 0f, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bait])
-            .SetValueFormat(OptionFormat.Seconds);
-        BaitDelayNotify = BooleanOptionItem.Create(18708, "BaitDelayNotify", false, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bait]);
-        BaitNotification = BooleanOptionItem.Create(18709, "BaitNotification", false, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bait]);
-        BaitCanBeReportedUnderAllConditions = BooleanOptionItem.Create(18710, "BaitCanBeReportedUnderAllConditions", false, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bait]);
+
+        Bait.SetupCustomOptions();
 
         SetupAdtRoleOptions(18800, CustomRoles.Trapper, canSetNum: true);
         ImpCanBeTrapper = BooleanOptionItem.Create(18803, "ImpCanBeTrapper", true, TabGroup.Addons, false)

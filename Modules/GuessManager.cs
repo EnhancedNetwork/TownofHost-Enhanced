@@ -316,7 +316,7 @@ public static class GuessManager
                     Utils.SendMessage(GetString("GuessPresident"), pc.PlayerId);
                     return true;
                 }
-                if (role == CustomRoles.Bait && target.Is(CustomRoles.Bait) && Options.BaitNotification.GetBool())
+                if (role == CustomRoles.Bait && target.Is(CustomRoles.Bait) && Bait.BaitNotification.GetBool())
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessNotifiedBait"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessNotifiedBait"));

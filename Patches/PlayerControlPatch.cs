@@ -1417,19 +1417,9 @@ class MurderPlayerPatch
 
         if (target.Is(CustomRoles.Bait))
         {
-            if (killer.PlayerId != target.PlayerId || (target.GetRealKiller()?.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Wraith or CustomRoles.KillingMachine) || !killer.Is(CustomRoles.Oblivious) || (killer.Is(CustomRoles.Oblivious) && !Oblivious.ObliviousBaitImmune.GetBool()))
-            {
-                killer.RPCPlayCustomSound("Congrats");
-                target.RPCPlayCustomSound("Congrats");
-                float delay;
-                if (Options.BaitDelayMax.GetFloat() < Options.BaitDelayMin.GetFloat()) delay = 0f;
-                else delay = IRandom.Instance.Next((int)Options.BaitDelayMin.GetFloat(), (int)Options.BaitDelayMax.GetFloat() + 1);
-                delay = Math.Max(delay, 0.15f);
-                if (delay > 0.15f && Options.BaitDelayNotify.GetBool()) killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), string.Format(GetString("KillBaitNotify"), (int)delay)), delay);
-                Logger.Info($"{killer.GetNameWithRole()} 击杀诱饵 => {target.GetNameWithRole()}", "MurderPlayer");
-                _ = new LateTask(() => { if (GameStates.IsInTask && GameStates.IsInGame) killer.CmdReportDeadBody(target.Data); }, delay, "Bait Self Report");
-            }
+            Bait.BaitAfterDeathTasks(killer, target);
         }
+
         if (target.Is(CustomRoles.Burst) && killer.IsAlive() && !killer.Is(CustomRoles.KillingMachine))
         {
             target.SetRealKiller(killer);
@@ -1882,7 +1872,7 @@ class ReportDeadBodyPatch
             //     if (__instance.Is(CustomRoles.KillingMachine)) return false;
 
             // if Bait is killed, check the setting condition
-            if (!(target != null && target.Object.Is(CustomRoles.Bait) && Options.BaitCanBeReportedUnderAllConditions.GetBool()))
+            if (!(target != null && target.Object.Is(CustomRoles.Bait) && Bait.BaitCanBeReportedUnderAllConditions.GetBool()))
             {
                 // Camouflager
                 if (Camouflager.DisableReportWhenCamouflageIsActive.GetBool() && Camouflager.AbilityActivated && !(Utils.IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool())) return false;
@@ -2222,7 +2212,7 @@ class ReportDeadBodyPatch
                 if (__instance.Is(CustomRoles.Unlucky) && (target?.Object == null || !target.Object.Is(CustomRoles.Bait)))
                 {
                     var Ue = IRandom.Instance;
-                    if (Ue.Next(1, 100) <= Options.UnluckyReportSuicideChance.GetInt())
+                    if (Ue.Next(1, 100) <= Unlucky.UnluckyReportSuicideChance.GetInt())
                     {
                         Main.PlayerStates[__instance.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
                         __instance.RpcMurderPlayerV3(__instance);

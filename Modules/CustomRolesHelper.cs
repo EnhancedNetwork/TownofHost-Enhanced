@@ -1081,11 +1081,11 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.NiceMini)
                     || pc.Is(CustomRoles.Randomizer)
                     || pc.Is(CustomRoles.Solsticer)
-                    || (pc.Is(CustomRoles.Onbound) && Options.BaitNotification.GetBool())
-                    || (pc.Is(CustomRoles.Rebound) && Options.BaitNotification.GetBool())
+                    || (pc.Is(CustomRoles.Onbound) && Bait.BaitNotification.GetBool())
+                    || (pc.Is(CustomRoles.Rebound) && Bait.BaitNotification.GetBool())
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
-                if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeBait.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeBait.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeBait.GetBool()))
+                if ((pc.GetCustomRole().IsCrewmate() && !Bait.CrewCanBeBait.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Bait.NeutralCanBeBait.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Bait.ImpCanBeBait.GetBool()))
                     return false;
                 break;
 
@@ -1153,7 +1153,7 @@ static class CustomRolesHelper
             case CustomRoles.Onbound:
                 if (pc.Is(CustomRoles.SuperStar)
                     || (pc.Is(CustomRoles.Doctor) && Options.DoctorVisibleToEveryone.GetBool())
-                    || (pc.Is(CustomRoles.Bait) && Options.BaitNotification.GetBool())
+                    || (pc.Is(CustomRoles.Bait) && Bait.BaitNotification.GetBool())
                     //|| pc.Is(CustomRoles.Glow) 
                     || pc.Is(CustomRoles.LastImpostor)
                     || pc.Is(CustomRoles.NiceMini)
@@ -1169,7 +1169,7 @@ static class CustomRolesHelper
             case CustomRoles.Rebound:
                 if (pc.Is(CustomRoles.SuperStar)
                     || (pc.Is(CustomRoles.Doctor) && Options.DoctorVisibleToEveryone.GetBool())
-                    || (pc.Is(CustomRoles.Bait) && Options.BaitNotification.GetBool())
+                    || (pc.Is(CustomRoles.Bait) && Bait.BaitNotification.GetBool())
                     //|| pc.Is(CustomRoles.Glow) 
                     || pc.Is(CustomRoles.LastImpostor)
                     || pc.Is(CustomRoles.NiceMini)
@@ -1772,7 +1772,7 @@ static class CustomRolesHelper
             ((role is CustomRoles.Marshall) && target.AllTasksCompleted()) ||
             ((role is CustomRoles.Workaholic) && (Options.WorkaholicVisibleToEveryone.GetBool())) ||
             ((role is CustomRoles.Doctor) && (Options.DoctorVisibleToEveryone.GetBool())) ||
-            ((role is CustomRoles.Bait) && (Options.BaitNotification.GetBool()) && Inspector.InspectCheckBaitCountType.GetBool()) ||
+            ((role is CustomRoles.Bait) && (Bait.BaitNotification.GetBool()) && Inspector.InspectCheckBaitCountType.GetBool()) ||
             ((role is CustomRoles.President) && President.CheckPresidentReveal[target.PlayerId] == true)) ||
             (role is CustomRoles.Captain && Captain.OptionCrewCanFindCaptain.GetBool());
     }

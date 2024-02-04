@@ -930,14 +930,14 @@ class MeetingHudStartPatch
             AddMsg(string.Format(GetString("WorkaholicAdviceAlive"), string.Join(separator, workaholicAliveList)), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Workaholic), GetString("WorkaholicAliveTitle")));
         }
         //Bait Notify
-        if (MeetingStates.FirstMeeting && CustomRoles.Bait.RoleExist() && Options.BaitNotification.GetBool())
+        if (MeetingStates.FirstMeeting && CustomRoles.Bait.RoleExist() && Bait.BaitNotification.GetBool())
         {
             foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Bait)).ToArray())
             {
-                Main.BaitAlive.Add(pc.PlayerId);
+                Bait.BaitAlive.Add(pc.PlayerId);
             }
             List<string> baitAliveList = [];
-            foreach (var whId in Main.BaitAlive.ToArray())
+            foreach (var whId in Bait.BaitAlive.ToArray())
             {
                 PlayerControl whpc = Utils.GetPlayerById(whId);
                 if (whpc == null) continue;
