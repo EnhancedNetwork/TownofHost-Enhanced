@@ -141,6 +141,17 @@ public static class DevManager
         DevUserList.Add(new(code: "beamelfin#9478", color: "#6495ED", tag: "Amaster-1111", isUp: false, isDev: false, colorCmd: false, deBug: false, upName: null));
         DevUserList.Add(new(code: "lordcosy#8966", color: "#FFD6EC", tag: "HostTOHE", isUp: false, isDev: false, colorCmd: false, deBug: false, upName: null)); //K
         DevUserList.Add(new(code: "honestsofa#2870", color: "#D381D9", tag: "Discord: SolarFlare#0700", isUp: true, isDev: false, colorCmd: false, deBug: false, upName: "SolarFlare")); //SolarFlare
+
+        //Website translation
+        DevUserList.Add(new(code: "dexterlip#2675", color: "#FF0000", tag: "写作业去", isUp: false, isDev: false, colorCmd: false, deBug: false, upName: null));
+        DevUserList.Add(new(code: "tenselogo#3429", color: "#ffd700", tag: "亻尔女子，我不女子", isUp: false, isDev: false, colorCmd: false, deBug: false, upName: null));
+        DevUserList.Add(new(code: "apttoil#6702", color: "#FFFFFF", tag: "髮国箱人QAQ", isUp: false, isDev: false, colorCmd: false, deBug: false, upName: null));
+        DevUserList.Add(new(code: "merehen#5366", color: "#FF0000", tag: "天下第一好吃", isUp: false, isDev: false, colorCmd: false, deBug: false, upName: null));
+        DevUserList.Add(new(code: "shotrarity#5620", color: "#0000FF", tag: "一片闲披萨", isUp: false, isDev: false, colorCmd: false, deBug: false, upName: null));
+        DevUserList.Add(new(code: "grubmotive#0072", color: "#7fff00", tag: "雨一直下～", isUp: false, isDev: false, colorCmd: false, deBug: false, upName: null));
+        DevUserList.Add(new(code: "civicguide#4142", color: "#4876FF", tag: "狂笑JG将开维普", isUp: false, isDev: false, colorCmd: false, deBug: false, upName: null));
+        DevUserList.Add(new(code: "squishyhod#5187", color: "#D3D3D3", tag: "贡献者/主播哈哈哥", isUp: false, isDev: false, colorCmd: false, deBug: false, upName: null));
+        //DevUserList.Add(new(code: "sheep", color: "sheep", tag: "sheep", isUp: false, isDev: false, colorCmd: false, deBug: false, upName: null));
     }
     public static bool IsDevUser(this string code) => DevUserList.Any(x => x.Code == code);
     public static DevUser GetDevUser(this string code) => code.IsDevUser() ? DevUserList.Find(x => x.Code == code) : DefaultDevUser;
