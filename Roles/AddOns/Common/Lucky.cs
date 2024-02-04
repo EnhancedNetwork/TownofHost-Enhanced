@@ -40,7 +40,7 @@ namespace TOHE.Roles.AddOns.Common
         public static void AvoidDeathChance(PlayerControl killer, PlayerControl target)
         {
             var rd = IRandom.Instance;
-            if (rd.Next(0, 101) <= LuckyProbability.GetInt())
+            if (rd.Next(0, 100) < LuckyProbability.GetInt())
             {
                 killer.RpcGuardAndKill(target);
                 LuckyAvoid[target.PlayerId] = true;
