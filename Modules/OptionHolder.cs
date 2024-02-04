@@ -702,11 +702,6 @@ public static class Options
 
     // Add-Ons settings 
 
-    public static OptionItem ImpCanBeTrapper;
-    public static OptionItem CrewCanBeTrapper;
-    public static OptionItem NeutralCanBeTrapper;
-    public static OptionItem TrapperBlockMoveTime;
-
     public static OptionItem BewilderVision;
     public static OptionItem ImpCanBeBewilder;
     public static OptionItem CrewCanBeBewilder;
@@ -2388,17 +2383,11 @@ public static class Options
         Autopsy.SetupCustomOptions();
 
         Bait.SetupCustomOptions();
-
-        SetupAdtRoleOptions(18800, CustomRoles.Trapper, canSetNum: true);
-        ImpCanBeTrapper = BooleanOptionItem.Create(18803, "ImpCanBeTrapper", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Trapper]);
-        CrewCanBeTrapper = BooleanOptionItem.Create(18804, "CrewCanBeTrapper", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Trapper]);
-        NeutralCanBeTrapper = BooleanOptionItem.Create(18805, "NeutralCanBeTrapper", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Trapper]);
-        TrapperBlockMoveTime = FloatOptionItem.Create(18806, "TrapperBlockMoveTime", new(1f, 180f, 1f), 5f, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Trapper])
-            .SetValueFormat(OptionFormat.Seconds);
+        
+        /*
+         * Beartrap
+         */
+        Trapper.SetupCustomOptions();
         
         SetupAdtRoleOptions(18900, CustomRoles.Bewilder, canSetNum: true);
         BewilderVision = FloatOptionItem.Create(18903, "BewilderVision", new(0f, 5f, 0.05f), 0.6f, TabGroup.Addons, false)
