@@ -1117,8 +1117,8 @@ public class ModNewsHistory
                         "\n     - 测验长 (实验性职业 - By: Furo)" +
                         "\n     - 易感者 (帮助类附加职业 - By: Drakos)" +
                         "\n     - 疲劳者 (帮助类附加职业 - By: Drakos)" +
-                        "\n     - 棘手者 (内鬼附加职业 - By: ryuk)" +
-                        "\n     - 彩虹 (杂项附加职业 - 由 TOH-Y 开发人员编写 - By: NikoCat223 and LezaiYa)" +
+                        "\n     - 棘手者 (内鬼类附加职业 - By: ryuk)" +
+                        "\n     - 彩虹 (杂项类附加职业 - 由 TOH-Y 开发人员编写 - By: NikoCat223 and LezaiYa)" +
 
                     "\n<b>【重新编写/重置/改进职业】(4个职业)</i></b>" +
                         "\n     - 杀戮机器 (重新编写 - By: ryuk)" +
