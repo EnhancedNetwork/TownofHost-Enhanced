@@ -2596,12 +2596,12 @@ public static class Options
         TextOptionItem.Create(10000019, "RoleType.Misc", TabGroup.Addons) // NEUTRAL
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(127, 140, 141, byte.MaxValue));
-        
-        
+
+        Egoist.SetupCustomOption();
 
         SetupLoversRoleOptionsToggle(23600);
-        
-        SetupAdtRoleOptions(23700, CustomRoles.Reach, canSetNum: true);
+
+        Reach.SetupCustomOptions();
 
         Rainbow.SetupCustomOptions();
         
