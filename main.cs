@@ -150,7 +150,6 @@ public class Main : BasePlugin
     public static List<byte> BoobyTrapKiller = [];
     //public static List<byte> KilledDiseased = [];
     public static Dictionary<byte, int> KilledDiseased = [];
-    public static Dictionary<byte, int> KilledAntidote = [];
     //public static List<byte> ForFlashbang = [];
     public static Dictionary<byte, byte> KillerOfBoobyTrapBody = [];
     public static Dictionary<byte, string> DetectiveNotify = [];

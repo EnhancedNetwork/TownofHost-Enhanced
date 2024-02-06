@@ -189,16 +189,7 @@ class CheckMurderPatch
                     break;
 
                 case CustomRoles.Antidote:
-                    if (Main.KilledAntidote.ContainsKey(killer.PlayerId))
-                    {
-                        // Key already exists, update the value
-                        Main.KilledAntidote[killer.PlayerId] += 1;
-                    }
-                    else
-                    {
-                        // Key doesn't exist, add the key-value pair
-                        Main.KilledAntidote.Add(killer.PlayerId, 1);
-                    }
+                    Antidote.Checkmurder(killer);
                     break;
 
                 case CustomRoles.Susceptible:

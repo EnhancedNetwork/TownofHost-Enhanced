@@ -2695,17 +2695,10 @@ public static class Utils
             }
             Main.KilledDiseased.Clear();
         }
-
-        if (Options.AntidoteCDReset.GetBool())
+        
+        if (CustomRoles.Antidote.RoleExist())
         {
-            foreach (var pid in Main.KilledAntidote.Keys.ToArray())
-            {
-                Main.KilledAntidote[pid] = 0;
-                var kapc = GetPlayerById(pid);
-                if (kapc == null) continue;
-                kapc.ResetKillCooldown();
-            }
-            Main.KilledAntidote.Clear();
+            Antidote.AfterMeetingTasks();
         }
 
         AntiBlackout.AfterMeetingTasks();

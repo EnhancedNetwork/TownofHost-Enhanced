@@ -68,7 +68,6 @@ internal class ChangeRoleSettings
             Main.ForCrusade = [];
             Main.CyberStarDead = [];
             Main.KilledDiseased = [];
-            Main.KilledAntidote = [];
             Main.WorkaholicAlive = [];
             Main.BoobyTrapBody = [];
             Main.TasklessCrewmate = [];
@@ -300,6 +299,7 @@ internal class ChangeRoleSettings
             Crusader.Init();
             CursedSoul.Init();
             Admirer.Init();
+            Antidote.Init();
             Imitator.Init();
             Medusa.Init();
             Marshall.Init();
