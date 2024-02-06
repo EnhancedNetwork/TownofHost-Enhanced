@@ -1187,7 +1187,6 @@ internal class ChatCommands
             "萬疫之神" or "瘟疫" => GetString("Pestilence"),
             "故障者" or "缺点者" or "缺点" => GetString("Glitch"),
             "跟班" or "跟班小弟" => GetString("Sidekick"),
-            "巫婆" => GetString("NWitch"),
             "追隨者" or "赌徒" or "下注" => GetString("Totocalcio"),
             "魅魔" => GetString("Succubus"),
             "連環殺手" or "连环杀手" => GetString("SerialKiller"),
@@ -1302,6 +1301,7 @@ internal class ChatCommands
             "順從者" or "影响者" or "順從" or "影响" => GetString("Influenced"),
             "沉默者" or "沉默" => GetString("Silent"),
             "易感者" or "易感" => GetString("Susceptible"),
+            "狡猾" or "棘手者" or "棘手" => ("Tricky"),
             "彩虹" => GetString("Rainbow"),
             "疲勞者" or "疲劳者" or "疲勞" or "疲劳" => GetString("Tired"),
 

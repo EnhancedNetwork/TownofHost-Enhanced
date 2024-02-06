@@ -15,6 +15,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Modules.CustomRoleSelector;
 using static TOHE.Translator;
+
 namespace TOHE;
 
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.CoStartGame))]
@@ -138,6 +139,7 @@ internal class ChangeRoleSettings
             if (GameStates.IsNormalGame)
             {
                 GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor = false;
+                GameOptionsManager.Instance.currentNormalGameOptions.SetBool(BoolOptionNames.ConfirmImpostor, false);
 
                 MeetingTimeManager.Init();
 
@@ -364,7 +366,7 @@ internal class ChangeRoleSettings
             Quizmaster.Init();
             Tired.Init();
             Rainbow.Init();
-            Tricky.Init();
+            //Tricky.Init();
 
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
