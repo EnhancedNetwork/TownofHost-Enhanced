@@ -771,11 +771,6 @@ public static class Options
     public static OptionItem MadSnitchTasks;
     public static OptionItem JudgeCanBeMadmate;
 
-    public static OptionItem CrewCanBeEgoist;
-    public static OptionItem ImpCanBeEgoist;
-    public static OptionItem ImpEgoistVisibalToAllies;
-    public static OptionItem EgoistCountAsConverted;
-
     public static OptionItem LoverSpawnChances;
     public static OptionItem LoverKnowRoles;
     public static OptionItem LoverSuicide;
@@ -2602,15 +2597,7 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(127, 140, 141, byte.MaxValue));
         
-        SetupAdtRoleOptions(23500, CustomRoles.Egoist, canSetNum: true, tab: TabGroup.Addons);
-        CrewCanBeEgoist = BooleanOptionItem.Create(23503, "CrewCanBeEgoist", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Egoist]);
-        ImpCanBeEgoist = BooleanOptionItem.Create(23504, "ImpCanBeEgoist", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Egoist]);
-        ImpEgoistVisibalToAllies = BooleanOptionItem.Create(23505, "ImpEgoistVisibalToAllies", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Egoist]);
-        EgoistCountAsConverted = BooleanOptionItem.Create(23506, "EgoistCountAsConverted", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Egoist]);
+        
 
         SetupLoversRoleOptionsToggle(23600);
         

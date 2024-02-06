@@ -1454,7 +1454,7 @@ static class CustomRolesHelper
                     return false;
                 if (pc.GetCustomRole().IsNeutral())
                     return false;
-                if ((pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeEgoist.GetBool()) || (pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeEgoist.GetBool()))
+                if ((pc.GetCustomRole().IsImpostor() && !Egoist.ImpCanBeEgoist.GetBool()) || (pc.GetCustomRole().IsCrewmate() && !Egoist.CrewCanBeEgoist.GetBool()))
                     return false;
                 break;
 
@@ -1768,7 +1768,7 @@ static class CustomRolesHelper
                 role is CustomRoles.Infected ||
                 role is CustomRoles.Contagious ||
                 role is CustomRoles.Lovers ||
-                (role is CustomRoles.Egoist && Options.EgoistCountAsConverted.GetBool()));
+                (role is CustomRoles.Egoist && Egoist.EgoistCountAsConverted.GetBool()));
     }
     public static bool IsRevealingRole(this CustomRoles role, PlayerControl target)
     {
