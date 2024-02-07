@@ -508,7 +508,7 @@ public class Main : BasePlugin
         Translator.Init();
         BanManager.Init();
         TemplateManager.Init();
-        //SpamManager.Init();
+        SpamManager.Init();
         DevManager.Init();
         Cloud.Init();
 

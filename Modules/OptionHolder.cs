@@ -143,6 +143,10 @@ public static class Options
     public static OptionItem AutoKickStart;
     public static OptionItem AutoKickStartTimes;
     public static OptionItem AutoKickStartAsBan;
+    public static OptionItem AutoKickStopWords;
+    public static OptionItem AutoKickStopWordsAsBan;
+    public static OptionItem AutoKickStopWordsTimes;
+    public static OptionItem AutoWarnStopWords;
 
     public static OptionItem TempBanPlayersWhoKeepQuitting;
     public static OptionItem QuitTimesTillTempBan;
@@ -3049,6 +3053,13 @@ public static class Options
             .SetValueFormat(OptionFormat.Times);
         AutoKickStartAsBan = BooleanOptionItem.Create(60142, "AutoKickStartAsBan", false, TabGroup.SystemSettings, false)
             .SetParent(AutoKickStart);
+        AutoKickStopWords = BooleanOptionItem.Create(60143, "AutoKickStopWords", false, TabGroup.SystemSettings, false);
+        AutoKickStopWordsTimes = IntegerOptionItem.Create(60144, "AutoKickStopWordsTimes", new(0, 99, 1), 3, TabGroup.SystemSettings, false)
+            .SetParent(AutoKickStopWords)
+            .SetValueFormat(OptionFormat.Times);
+        AutoKickStopWordsAsBan = BooleanOptionItem.Create(60145, "AutoKickStopWordsAsBan", false, TabGroup.SystemSettings, false)
+            .SetParent(AutoKickStopWords);
+        AutoWarnStopWords = BooleanOptionItem.Create(60146, "AutoWarnStopWords", false, TabGroup.SystemSettings, false);
         TempBanPlayersWhoKeepQuitting = BooleanOptionItem.Create(60150, "TempBanPlayersWhoKeepQuitting", false, TabGroup.SystemSettings, false);
         QuitTimesTillTempBan = IntegerOptionItem.Create(60151, "QuitTimesTillTempBan", new(1, 15, 1), 4, TabGroup.SystemSettings, false)
             .SetValueFormat(OptionFormat.Times)
