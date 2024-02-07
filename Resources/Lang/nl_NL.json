@@ -1706,6 +1706,7 @@
   "CounterfeiterAbilityLost": "Deceiver looses ability if it deceives player without kill button",
   "PursuerSkillCooldown": "Ability cooldown",
   "PursuerSkillLimitTimes": "Max number of uses",
+  "AddictSuicideTimer": "Time Until Suicide",
   "GrenadierSkillCooldown": "Granaat Cooldown",
   "GrenadierSkillDuration": "Granaat Tijdsduur",
   "GrenadierCauseVision": "Lowered vision",
