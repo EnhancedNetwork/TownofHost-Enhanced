@@ -534,6 +534,11 @@ class CheckMurderPatch
                         killer.RPCPlayCustomSound("Eat");
                         target.RPCPlayCustomSound("Eat");
                     }
+                    else
+                    {
+                        killer.SetKillCooldown();
+                        killer.Notify(GetString("Pelican.TargetCannotBeEaten"));
+                    }
                     return false;
                 case CustomRoles.Hater:
                     if (!Hater.OnCheckMurder(killer, target)) return false;

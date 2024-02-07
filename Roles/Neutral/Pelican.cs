@@ -92,7 +92,7 @@ public static class Pelican
         if (!pc.Is(CustomRoles.Pelican) || GameStates.IsMeeting) return false;
 
         var target = Utils.GetPlayerById(id);
-        return target != null && target.CanBeTeleported() && !Medic.ProtectList.Contains(target.PlayerId) && !target.Is(CustomRoles.GM) && !IsEaten(pc, id) && !IsEaten(id);
+        return target != null && target.CanBeTeleported() && !target.Is(CustomRoles.Pestilence) && !Medic.ProtectList.Contains(target.PlayerId) && !target.Is(CustomRoles.GM) && !IsEaten(pc, id) && !IsEaten(id);
     }
     public static Vector2 GetBlackRoomPSForPelican()
     {
