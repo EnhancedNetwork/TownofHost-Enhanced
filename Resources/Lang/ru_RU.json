@@ -1706,6 +1706,7 @@
   "CounterfeiterAbilityLost": "Обманщик теряет способность, если обманывает игрока без кнопки убийства",
   "PursuerSkillCooldown": "Откат навыка",
   "PursuerSkillLimitTimes": "Количество навыков",
+  "AddictSuicideTimer": "Time Until Suicide",
   "GrenadierSkillCooldown": "Откат навыка",
   "GrenadierSkillDuration": "Продолжительность навыка",
   "GrenadierCauseVision": "Поле зрение после активации светошумовой гранаты",
