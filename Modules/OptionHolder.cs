@@ -709,11 +709,6 @@ public static class Options
     //public static OptionItem CrewCanBeSunglasses;
     //public static OptionItem NeutralCanBeSunglasses;
 
-    public static OptionItem ImpCanBeAware;
-    public static OptionItem CrewCanBeAware;
-    public static OptionItem NeutralCanBeAware;
-    public static OptionItem AwareknowRole;
-
     public static OptionItem ImpCanBeDiseased;
     public static OptionItem CrewCanBeDiseased;
     public static OptionItem NeutralCanBeDiseased;
@@ -2406,18 +2401,10 @@ public static class Options
         Antidote.SetupCustomOptions();
 
         Avanger.SetupCustomOptions();
-        
-        SetupAdtRoleOptions(21600, CustomRoles.Aware, canSetNum: true);
-        ImpCanBeAware = BooleanOptionItem.Create(21603, "ImpCanBeAware", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Aware]);
-        CrewCanBeAware = BooleanOptionItem.Create(21604, "CrewCanBeAware", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Aware]);
-        NeutralCanBeAware = BooleanOptionItem.Create(21605, "NeutralCanBeAware", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Aware]);
-        AwareknowRole = BooleanOptionItem.Create(21606, "AwareKnowRole", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Aware]);
-        
-        SetupAdtRoleOptions(21700, CustomRoles.Bloodlust, canSetNum: true);
+
+        Aware.SetupCustomOptions();
+
+        Bloodlust.SetupCustomOptions();
         
         SetupAdtRoleOptions(21800, CustomRoles.Diseased, canSetNum: true);
         ImpCanBeDiseased = BooleanOptionItem.Create(21803, "ImpCanBeDiseased", true, TabGroup.Addons, false)

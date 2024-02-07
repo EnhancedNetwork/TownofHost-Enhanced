@@ -1271,7 +1271,7 @@ static class CustomRolesHelper
                 break;
 
             case CustomRoles.Aware:
-                if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeAware.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeAware.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeAware.GetBool()))
+                if ((pc.GetCustomRole().IsCrewmate() && !Aware.CrewCanBeAware.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Aware.NeutralCanBeAware.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Aware.ImpCanBeAware.GetBool()))
                     return false;
                 break;
 

@@ -1214,7 +1214,7 @@ internal static class RPC
                 LastImpostor.Add(targetId);
                 break;
             case CustomRoles.Aware:
-                Main.AwareInteracted[targetId] = [];
+                Aware.AwareInteracted[targetId] = [];
                 break;
             case CustomRoles.Crewpostor:
                 Main.CrewpostorTasksDone[targetId] = 0;

@@ -141,15 +141,7 @@ class CheckForEndVotingPatch
                         }
                         if (voteTarget.Is(CustomRoles.Aware))
                         {
-                            switch (pc.GetCustomRole())
-                            {
-                                case CustomRoles.Divinator:
-                                case CustomRoles.Oracle:
-                                    if (!Main.AwareInteracted.ContainsKey(pva.VotedFor)) Main.AwareInteracted[pva.VotedFor] = [];
-                                    if (!Main.AwareInteracted[pva.VotedFor].Contains(Utils.GetRoleName(pc.GetCustomRole())))
-                                        Main.AwareInteracted[pva.VotedFor].Add(Utils.GetRoleName(pc.GetCustomRole()));
-                                    break;
-                            }
+                            Aware.OnVoted(pc, pva);
                         }
 
                         if (voteTarget.Is(CustomRoles.Captain))

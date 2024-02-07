@@ -116,7 +116,6 @@ internal class ChangeRoleSettings
             Main.DovesOfNeaceNumOfUsed = [];
             Main.GodfatherTarget = [];
             Main.BerserkerKillMax = [];
-            Main.AwareInteracted = [];
             Main.CrewpostorTasksDone = [];
             Main.ShamanTarget = byte.MaxValue;
             Main.ShamanTargetChoosen = false;
@@ -265,6 +264,7 @@ internal class ChangeRoleSettings
             Kamikaze.Init();
             Camouflager.Init();
             Divinator.Init();
+            Aware.Init();
             Jailer.Init();
             Oracle.Init();
             Eraser.Init();
@@ -1075,9 +1075,6 @@ internal class SelectRolesPatch
                 {
                     switch (subRole)
                     {
-                        case CustomRoles.Aware:
-                            Main.AwareInteracted[pc.PlayerId] = [];
-                            break;
                         case CustomRoles.Oiiai:
                             Oiiai.Add(pc.PlayerId);
                             break;

@@ -200,20 +200,7 @@ class CheckMurderPatch
                     return Fragile.KillFragile(killer, target);
 
                 case CustomRoles.Aware:
-                    switch (killerRole)
-                    {
-                        case CustomRoles.EvilDiviner:
-                        case CustomRoles.Farseer:
-                            if (!Main.AwareInteracted.ContainsKey(target.PlayerId))
-                            {
-                                Main.AwareInteracted.Add(target.PlayerId, []);
-                            }
-                            if (!Main.AwareInteracted[target.PlayerId].Contains(Utils.GetRoleName(killerRole)))
-                            {
-                                Main.AwareInteracted[target.PlayerId].Add(Utils.GetRoleName(killerRole));
-                            }
-                            break;
-                    }
+                    Aware.OnCheckMurder(killerRole, target);
                     break;
             }
         }
@@ -2379,21 +2366,7 @@ class ReportDeadBodyPatch
         if (Spiritualist.IsEnable) Spiritualist.OnReportDeadBody(target);
         if (Quizmaster.IsEnable) Quizmaster.OnReportDeadBody(target);
 
-        foreach (var pid in Main.AwareInteracted.Keys.ToArray())
-        {
-            var Awarepc = Utils.GetPlayerById(pid);
-            if (Main.AwareInteracted[pid].Count > 0 && Awarepc.IsAlive())
-            {
-                string rolelist = "Someone";
-                _ = new LateTask(() =>
-                {
-                    if (Options.AwareknowRole.GetBool())
-                        rolelist = string.Join(", ", Main.AwareInteracted[pid]);
-                    Utils.SendMessage(string.Format(GetString("AwareInteracted"), rolelist), pid, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Aware), GetString("AwareTitle")));
-                    Main.AwareInteracted[pid] = [];
-                }, 0.5f, "Aware Check Msg");
-            }
-        }
+        if (CustomRoles.Aware.RoleExist()) Aware.OnReportDeadBody();
 
         foreach (var x in Main.RevolutionistStart.Keys.ToArray())
         {

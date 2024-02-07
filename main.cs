@@ -229,7 +229,7 @@ public class Main : BasePlugin
     public static Dictionary<byte, CustomRoles> DevRole = [];
     public static List<byte> GodfatherTarget = [];
     public static Dictionary<byte, int> CrewpostorTasksDone = [];
-    public static Dictionary<byte, List<string>> AwareInteracted = [];
+    
     public static byte ShamanTarget = byte.MaxValue;
     public static bool ShamanTargetChoosen = false;
     
