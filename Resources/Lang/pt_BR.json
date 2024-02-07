@@ -1706,6 +1706,7 @@
   "CounterfeiterAbilityLost": "O Enganador perde a habilidade se ele enganar o jogador sem um botão de matar",
   "PursuerSkillCooldown": "Recarga de Habilidade",
   "PursuerSkillLimitTimes": "Número máximo de usos",
+  "AddictSuicideTimer": "Time Until Suicide",
   "GrenadierSkillCooldown": "Recarga da Granada",
   "GrenadierSkillDuration": "Duração da Granada",
   "GrenadierCauseVision": "Visão Reduzida",
