@@ -86,7 +86,7 @@ public class ModNewsHistory
                         "\n     - «FixedUpdate» in code now work async (By: TommyXL)" +
                         "\n     - Optimize Ping Tracker Update (By: TommyXL)" +
                         "\n     - Improved Code In «CheckMurder» (By: TommyXL)" +
-                        "\n     - Improved Code When Players Complite Task (By: TommyXL)" +
+                        "\n     - Improved Code When Players complete Task (By: TommyXL)" +
                         "\n     - Сode improvements in «HasKillButton» (By: ryuk)" +
                         "\n     - Сode improvements in «DivinatorCheck.Result» for Fortune Teller (By: ryuk)" +
 
@@ -1572,7 +1572,7 @@ public class ModNewsHistory
                         "\n     - «FixedUpdate» in code now work async (By: TommyXL)" +
                         "\n     - Optimize Ping Tracker Update (By: TommyXL)" +
                         "\n     - Improved Code In «CheckMurder» (By: TommyXL)" +
-                        "\n     - Improved Code When Players Complite Task (By: TommyXL)" +
+                        "\n     - Improved Code When Players complete Task (By: TommyXL)" +
                         "\n     - Сode improvements in «HasKillButton» (By: ryuk)" +
                         "\n     - Сode improvements in «DivinatorCheck.Result» for Fortune Teller (By: ryuk)" +
 
@@ -2646,7 +2646,7 @@ public class ModNewsHistory
                         "\n     - «FixedUpdate» in code now work async (By: TommyXL)" +
                         "\n     - Optimize Ping Tracker Update (By: TommyXL)" +
                         "\n     - Improved Code In «CheckMurder» (By: TommyXL)" +
-                        "\n     - Improved Code When Players Complite Task (By: TommyXL)" +
+                        "\n     - Improved Code When Players complete Task (By: TommyXL)" +
                         "\n     - Сode improvements in «HasKillButton» (By: ryuk)" +
                         "\n     - Сode improvements in «DivinatorCheck.Result» for Fortune Teller (By: ryuk)" +
 
@@ -3380,7 +3380,7 @@ public class ModNewsHistory
                         "\n     - «FixedUpdate» in code now work async (By: TommyXL)" +
                         "\n     - Optimize Ping Tracker Update (By: TommyXL)" +
                         "\n     - Improved Code In «CheckMurder» (By: TommyXL)" +
-                        "\n     - Improved Code When Players Complite Task (By: TommyXL)" +
+                        "\n     - Improved Code When Players complete Task (By: TommyXL)" +
                         "\n     - Сode improvements in «HasKillButton» (By: ryuk)" +
                         "\n     - Сode improvements in «DivinatorCheck.Result» for Fortune Teller (By: ryuk)" +
 
@@ -3413,30 +3413,30 @@ public class ModNewsHistory
                         "\n     - Updated several roles' names internally to be consistent and not spaghetti code (By: Moe)" +
                         "\n     - Add-ons with a spawn chance greater than or equal to 90% have higher priority (By: TommyXL)" +
                         "\n     - Added delay teleport after meeting (By: TommyXL)" +
-                        "\n     - Roles using abilities using vents will now spawns on the Dleks (dlekS ehT) map (By: TommyXL)" +
+                        "\n     - Roles using abilities using vents will now spawn on the Dleks (dlekS ehT) map (By: TommyXL)" +
 
                     "\n<b>【Bug Fixes】</b>" +
                         "\n     - Fixed vents on Dleks map for modded players (By: TommyXL)" +
                         "\n     - Provocateur now cannot get Bait (By: TommyXL)" +
                         "\n     - Kamikaze now cannot get Swift (By: TommyXL)" +
                         "\n     - Evil Tracker now cannot get Seer (By: TommyXL)" +
-                        "\n     - Fixed bug when Bard not work (By: TommyXL)" +
+                        "\n     - Fixed bug when Bard did not work (By: TommyXL)" +
                         "\n     - Fixed Tracker error In logs (By: TommyXL)" +
                         "\n     - Fixed Burst error when game end (By: TommyXL)" +
                         "\n     - Fixed other errors In logs (By: TommyXL)" +
                         "\n     - Fixed check game end (By: TommyXL)" +
                         "\n     - Fixed bug when Alchemist & Bloodlust could kill after end meeting (By: TommyXL)" +
-                        "\n     - Possibly fixed bug when sometimes non modded player does not teleported (By: TommyXL)" +
+                        "\n     - Possibly fixed bug when sometimes non-modded player does not teleport (By: TommyXL)" +
                         "\n     - Fixed Save Presets (Coded by dev TOH - By: TommyXL)" +
                         "\n     - Fixed Disconnect At Game End (Coded by dev TOH - By: TommyXL)" +
                         "\n     - Fixed spam LateTask about Mole on exit vent (By: TommyXL)" +
-                        "\n     - Fixed bug where Evil Tracker «Can See Kill Flash» option sometimes not work (By: TommyXL)" +
+                        "\n     - Fixed bug where Evil Tracker «Can See Kill Flash» option sometimes does not work (By: TommyXL)" +
                         "\n     - Fixed bug when some roles can be stuck in vent during comms sabotage (By: TommyXL)" +
                         "\n     - Fixed some strings (By: TommyXL)" +
                         "\n     - Fixed errors in logs when Modded Client left the game (By: TommyXL)" +
                         "\n     - Fixed bug when Merchant checks Add-ons limit (By: TommyXL)" +
                         "\n     - Fixed bug when President skips meeting and someone will be ejected (By: TommyXL)" +
-                        "\n     - Fixed bug when the player's name was not cleared during end the meeting when player left the game (By: TommyXL)" +
+                        "\n     - Fixed bug when the player's name was not cleared during end of the meeting when a player left the game (By: TommyXL)" +
                         "\n     - Fixed bug when Swooper & Chameleon & Wraith & Alchemist teleport in vent after meeting (By: TommyXL)" +
                         "\n     - Fixed Cleanser issues (By: TommyXL)" +
                         "\n     - Fixed bug when Inspector seeing Rascal as Crew and Impostor (By: TommyXL)" +
@@ -3450,16 +3450,16 @@ public class ModNewsHistory
                         "\n     - Some fixes for Romantics (By: TommyXL and ryuk)" +
                         "\n     - Fixed Undertaker for modded clients (By: ryuk)" +
                         "\n     - Fixed bug when Copycat copying taskinator will give benefactor if Copycat can copy crew variant (By: ryuk)" +
-                        "\n     - Fix copycat copying enigma doesnt give clue (By: ryuk)" +
-                        "\n     - Fixed inspector doesnt give madmate as imp team (By: ryuk)" +
-                        "\n     - Fixed telecommunication doesnt work when copycat copies (By: ryuk)" +
+                        "\n     - Fix copycat copying enigma doesn't give clue (By: ryuk)" +
+                        "\n     - Fixed inspector doesn't give madmate as imp team (By: ryuk)" +
+                        "\n     - Fixed telecommunication not working when copycat copies (By: ryuk)" +
                         "\n     - Fixed Bug where Jackal recruits Copycat and Copycat's role resets after meeting (By: ryuk and Moe)" +
                         "\n     - Fixed bug when shield animation banning modded clients (By: ryuk)" +
                         "\n     - Fixed instigator using vanilla kill cooldown (By: ryuk)" +
-                        "\n     - Fixed counillor per meeting limit (By: ryuk)" +
+                        "\n     - Fixed Councillor per meeting limit (By: ryuk)" +
                         "\n     - Exclude Solsticer from Seeker's target (By: NikoCat223)" +
-                        "\n     - Fixed when solsticer can be murdered (By: NikoCat223)" +
-                        "\n     - Fixed bug when sometimes caused game to crash after version check (By: NikoCat223)" +
+                        "\n     - Fixed when Solsticer can be murdered (By: NikoCat223)" +
+                        "\n     - Fixed bug that sometimes caused the game to crash after version check (By: NikoCat223)" +
                         "\n     - Fixed bug when Mini can misguess to death (By: NikoCat223)" +
                         "\n     - Fixed bug when Vulture body amount not showing correctly for mod clients (By: NikoCat223)" +
                         "\n     - Fixed bug when the host did not choose a spawn location on Airship for a long time and EAC banned players who tried to cause sabotage (By: NikoCat223)" +
