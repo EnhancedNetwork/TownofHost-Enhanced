@@ -155,7 +155,7 @@ public class ModNewsHistory
                         "\n     - Fixed bug when the add-on had a 100% chance of spawning but would sometimes not spawn in the game (By: TommyXL)" +
                         "\n     - Some fixes for Romantics (By: TommyXL and ryuk)" +
                         "\n     - Fixed Undertaker for modded clients (By: ryuk)" +
-                        "\n     - Fixed bug when Copycat copying taskinator will give benefactor if Copycat can copy crew varaint (By: ryuk)" +
+                        "\n     - Fixed bug when Copycat copying taskinator will give benefactor if Copycat can copy crew variant (By: ryuk)" +
                         "\n     - Fix copycat copying enigma doesnt give clue (By: ryuk)" +
                         "\n     - Fixed inspector doesnt give madmate as imp team (By: ryuk)" +
                         "\n     - Fixed telecommunication doesnt work when copycat copies (By: ryuk)" +
@@ -1641,7 +1641,7 @@ public class ModNewsHistory
                         "\n     - Fixed bug when the add-on had a 100% chance of spawning but would sometimes not spawn in the game (By: TommyXL)" +
                         "\n     - Some fixes for Romantics (By: TommyXL and ryuk)" +
                         "\n     - Fixed Undertaker for modded clients (By: ryuk)" +
-                        "\n     - Fixed bug when Copycat copying taskinator will give benefactor if Copycat can copy crew varaint (By: ryuk)" +
+                        "\n     - Fixed bug when Copycat copying taskinator will give benefactor if Copycat can copy crew variant (By: ryuk)" +
                         "\n     - Fix copycat copying enigma doesnt give clue (By: ryuk)" +
                         "\n     - Fixed inspector doesnt give madmate as imp team (By: ryuk)" +
                         "\n     - Fixed telecommunication doesnt work when copycat copies (By: ryuk)" +
@@ -2715,7 +2715,7 @@ public class ModNewsHistory
                         "\n     - Fixed bug when the add-on had a 100% chance of spawning but would sometimes not spawn in the game (By: TommyXL)" +
                         "\n     - Some fixes for Romantics (By: TommyXL and ryuk)" +
                         "\n     - Fixed Undertaker for modded clients (By: ryuk)" +
-                        "\n     - Fixed bug when Copycat copying taskinator will give benefactor if Copycat can copy crew varaint (By: ryuk)" +
+                        "\n     - Fixed bug when Copycat copying taskinator will give benefactor if Copycat can copy crew variant (By: ryuk)" +
                         "\n     - Fix copycat copying enigma doesnt give clue (By: ryuk)" +
                         "\n     - Fixed inspector doesnt give madmate as imp team (By: ryuk)" +
                         "\n     - Fixed telecommunication doesnt work when copycat copies (By: ryuk)" +
@@ -3449,7 +3449,7 @@ public class ModNewsHistory
                         "\n     - Fixed bug when the add-on had a 100% chance of spawning but would sometimes not spawn in the game (By: TommyXL)" +
                         "\n     - Some fixes for Romantics (By: TommyXL and ryuk)" +
                         "\n     - Fixed Undertaker for modded clients (By: ryuk)" +
-                        "\n     - Fixed bug when Copycat copying taskinator will give benefactor if Copycat can copy crew varaint (By: ryuk)" +
+                        "\n     - Fixed bug when Copycat copying taskinator will give benefactor if Copycat can copy crew variant (By: ryuk)" +
                         "\n     - Fix copycat copying enigma doesnt give clue (By: ryuk)" +
                         "\n     - Fixed inspector doesnt give madmate as imp team (By: ryuk)" +
                         "\n     - Fixed telecommunication doesnt work when copycat copies (By: ryuk)" +
