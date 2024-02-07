@@ -671,7 +671,7 @@ class CheckForEndVotingPatch
             if (pc == null) return;
             if (pc.Is(CustomRoles.Susceptible))
             {
-                Susceptible.ChangeRandomDeath();
+                Susceptible.CallEnabledAndChange(pc);
                 deathReason = Susceptible.randomReason;
             }
 
@@ -1160,7 +1160,7 @@ class MeetingHudStartPatch
             // Guesser Mode //
             if (Options.GuesserMode.GetBool())
             {
-                if (Options.CrewmatesCanGuess.GetBool() && seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Judge) && !seer.Is(CustomRoles.Lookout) && !seer.Is(CustomRoles.Swapper) && !seer.Is(CustomRoles.ParityCop))
+                if (Options.CrewmatesCanGuess.GetBool() && seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Judge) && !seer.Is(CustomRoles.Lookout) && !seer.Is(CustomRoles.Swapper) && !seer.Is(CustomRoles.Inspector))
                     if (!seer.Data.IsDead && !target.Data.IsDead)
                         pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + pva.NameText.text;
                 if (Options.ImpostorsCanGuess.GetBool() && seer.GetCustomRole().IsImpostor() && !seer.Is(CustomRoles.Councillor))
@@ -1177,7 +1177,7 @@ class MeetingHudStartPatch
             //とりあえずSnitchは会議中にもインポスターを確認することができる仕様にしていますが、変更する可能性があります。
 
             if (seer.KnowDeathReason(target))
-                sb.Append($"({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})");
+                sb.Append($" ({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})");
             /*        if (seer.KnowDeadTeam(target))
                     {
                         if (target.Is(CustomRoleTypes.Crewmate) && !(target.Is(CustomRoles.Madmate) || target.Is(CustomRoles.Egoist) || target.Is(CustomRoles.Charmed) || target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Infected) || target.Is(CustomRoles.Contagious) || target.Is(CustomRoles.Rogue) || target.Is(CustomRoles.Rascal) || target.Is(CustomRoles.Soulless) || !target.Is(CustomRoles.Admired)))
@@ -1240,7 +1240,7 @@ class MeetingHudStartPatch
                 //   case CustomRoles.Jackal:
                 //   case CustomRoles.Sidekick:
                 case CustomRoles.Poisoner:
-                case CustomRoles.NSerialKiller:
+                case CustomRoles.SerialKiller:
                 case CustomRoles.Werewolf:
                 case CustomRoles.Pelican:
                 case CustomRoles.DarkHide:
@@ -1304,9 +1304,9 @@ class MeetingHudStartPatch
                     if (!seer.Data.IsDead && !target.Data.IsDead)
                         pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doomsayer), target.PlayerId.ToString()) + " " + pva.NameText.text;
                     break;
-                case CustomRoles.ParityCop:
+                case CustomRoles.Inspector:
                     if (!seer.Data.IsDead && !target.Data.IsDead)
-                        pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.ParityCop), target.PlayerId.ToString()) + " " + pva.NameText.text;
+                        pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Inspector), target.PlayerId.ToString()) + " " + pva.NameText.text;
                     break;
 
                 case CustomRoles.Councillor:
@@ -1421,7 +1421,7 @@ class MeetingHudStartPatch
             sb.Append(Lawyer.LawyerMark(seer, target));
 
             if (PlagueDoctor.IsEnable)
-                sb.Append(PlagueDoctor.GetMarkOthers(seer, target, isForMeeting: true));
+                sb.Append(PlagueDoctor.GetMarkOthers(seer, target));
 
             //会議画面ではインポスター自身の名前にSnitchマークはつけません。
 
@@ -1523,7 +1523,7 @@ class MeetingHudOnDestroyPatch
             Main.AllPlayerControls.Do(pc => RandomSpawn.CustomNetworkTransformPatch.NumOfTP[pc.PlayerId] = 0);
 
             Main.LastVotedPlayerInfo = null;
-            EAC.ReportTimes = new();
+            EAC.ReportTimes = [];
         }
     }
 }

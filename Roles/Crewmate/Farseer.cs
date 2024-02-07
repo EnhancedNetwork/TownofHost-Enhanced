@@ -38,7 +38,7 @@ namespace TOHE.Roles.Crewmate
             CustomRoles.SabotageMaster,
             CustomRoles.Snitch,
             CustomRoles.Marshall,
-            CustomRoles.ParityCop,
+            CustomRoles.Inspector,
             CustomRoles.Bastion,
             CustomRoles.Dictator,
             CustomRoles.Doctor,

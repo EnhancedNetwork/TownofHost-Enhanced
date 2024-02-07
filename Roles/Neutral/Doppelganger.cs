@@ -12,6 +12,8 @@ public static class Doppelganger
     public static bool IsEnable = false;
 
     private static OptionItem KillCooldown;
+    public static OptionItem CanVent;
+    public static OptionItem HasImpostorVision;
     public static OptionItem MaxSteals;
 
     public static Dictionary<byte, string> DoppelVictim = [];
@@ -25,6 +27,8 @@ public static class Doppelganger
         MaxSteals = IntegerOptionItem.Create(Id + 10, "DoppelMaxSteals", new(1, 14, 1), 9, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Doppelganger]);
         KillCooldown = FloatOptionItem.Create(Id + 11, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Doppelganger])
             .SetValueFormat(OptionFormat.Seconds);
+        CanVent = BooleanOptionItem.Create(Id + 12, "CanVent", true, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Doppelganger]);
+        HasImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", true, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Doppelganger]);
     }
 
     public static void Init()

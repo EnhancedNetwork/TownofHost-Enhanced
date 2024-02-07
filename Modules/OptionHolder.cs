@@ -544,8 +544,8 @@ public static class Options
     public static OptionItem VindicatorAdditionalVote;
     public static OptionItem VindicatorHideVote;
 
-    public static OptionItem EscapeeSSDuration;
-    public static OptionItem EscapeeSSCD;
+    public static OptionItem EscapistSSDuration;
+    public static OptionItem EscapistSSCD;
 
     public static OptionItem MinerSSDuration;
     public static OptionItem MinerSSCD;
@@ -1093,7 +1093,9 @@ public static class Options
         // 27800 lasted id for roles/add-ons (Next use 27900)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
-      
+
+        // You can use: 13800 (Was for NWitch)
+
         // Start Load Settings
         if (IsLoaded) return;
         OptionSaver.Initialize();
@@ -1211,7 +1213,7 @@ public static class Options
         /*
          * Arrogance
          */
-        Sans.SetupCustomOption();
+        Arrogance.SetupCustomOption();
 
         /*
          * Berserker
@@ -1351,9 +1353,9 @@ public static class Options
         /*
          * Killing Machine
          */
-        SetupRoleOptions(23800, TabGroup.ImpostorRoles, CustomRoles.Minimalism);
+        SetupRoleOptions(23800, TabGroup.ImpostorRoles, CustomRoles.KillingMachine);
         MNKillCooldown = FloatOptionItem.Create(23805, "KillCooldown", new(2.5f, 180f, 2.5f), 10f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Minimalism])
+            .SetParent(CustomRoleSpawnChances[CustomRoles.KillingMachine])
             .SetValueFormat(OptionFormat.Seconds);
 
         /*
@@ -1374,7 +1376,7 @@ public static class Options
         /*
          * Mercenary
          */
-        SerialKiller.SetupCustomOption();
+        Mercenary.SetupCustomOption();
 
         /*
          * Ninja
@@ -1481,7 +1483,7 @@ public static class Options
         /*
          * Fireworker
          */
-        FireWorks.SetupCustomOption();
+        Fireworker.SetupCustomOption();
 
         /*
          * Gangster
@@ -1551,12 +1553,12 @@ public static class Options
         /*
          * Escapist
          */
-        SetupRoleOptions(4000, TabGroup.ImpostorRoles, CustomRoles.Escapee);
-        EscapeeSSDuration = FloatOptionItem.Create(4002, "ShapeshiftDuration", new(1f, 180f, 1f), 1, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Escapee])
+        SetupRoleOptions(4000, TabGroup.ImpostorRoles, CustomRoles.Escapist);
+        EscapistSSDuration = FloatOptionItem.Create(4002, "ShapeshiftDuration", new(1f, 180f, 1f), 1, TabGroup.ImpostorRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Escapist])
             .SetValueFormat(OptionFormat.Seconds);
-        EscapeeSSCD = FloatOptionItem.Create(4003, "ShapeshiftCooldown", new(1f, 180f, 1f), 5f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Escapee])
+        EscapistSSCD = FloatOptionItem.Create(4003, "ShapeshiftCooldown", new(1f, 180f, 1f), 5f, TabGroup.ImpostorRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Escapist])
             .SetValueFormat(OptionFormat.Seconds);
 
         /*
@@ -1664,7 +1666,7 @@ public static class Options
         /*
          * Anonymous
          */
-        Hacker.SetupCustomOption();
+        Anonymous.SetupCustomOption();
 
         /*
          * Dazzler
@@ -1950,7 +1952,7 @@ public static class Options
         /*
          * Inspector
          */
-        ParityCop.SetupCustomOption();
+        Inspector.SetupCustomOption();
 
         /*
          * Investigator
@@ -2013,7 +2015,7 @@ public static class Options
         /*
          * Observer
          */
-        SetupRoleOptions(9000, TabGroup.CrewmateRoles, CustomRoles.Observer);
+        Observer.SetupCustomOption();
 
         /*
          * Oracle
@@ -2245,7 +2247,7 @@ public static class Options
 
         Totocalcio.SetupCustomOption();
 
-        FFF.SetupCustomOption();
+        Hater.SetupCustomOption();
 
         Imitator.SetupCustomOption();
 
@@ -2257,7 +2259,9 @@ public static class Options
         OppoImmuneToAttacksWhenTasksDone = BooleanOptionItem.Create(13302, "ImmuneToAttacksWhenTasksDone", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Opportunist]);
         OpportunistTasks = OverrideTasksData.Create(13303, TabGroup.NeutralRoles, CustomRoles.Opportunist);
+        
         Pixie.SetupCustomOption();
+        
         Pursuer.SetupCustomOption();
 
         Romantic.SetupCustomOption();
@@ -2270,8 +2274,6 @@ public static class Options
             .SetValueFormat(OptionFormat.Seconds);
 
         Taskinator.SetupCustomOption();
-
-        NWitch.SetupCustomOption();
 
 
         TextOptionItem.Create(10000012, "RoleType.NeutralEvil", TabGroup.NeutralRoles)
@@ -2297,7 +2299,7 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.Jester]);
         HideJesterVote = BooleanOptionItem.Create(14405, "HideJesterVote", true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Jester]);
-        MeetingsNeededForJesterWin = IntegerOptionItem.Create(14406, "MeetingsNeededForWin", new(0, 10, 1), 2, TabGroup.NeutralRoles, false)
+        MeetingsNeededForJesterWin = IntegerOptionItem.Create(14406, "MeetingsNeededForWin", new(0, 10, 1), 0, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Jester])
             .SetValueFormat(OptionFormat.Times);
         SunnyboyChance = IntegerOptionItem.Create(14407, "SunnyboyChance", new(0, 100, 5), 0, TabGroup.NeutralRoles, false)
@@ -2445,6 +2447,8 @@ public static class Options
 
         PlagueBearer.SetupCustomOption();
 
+        PlagueDoctor.SetupCustomOption();
+
         PotionMaster.SetupCustomOption();
 
         Pyromaniac.SetupCustomOption();
@@ -2452,7 +2456,7 @@ public static class Options
         if (!Quizmaster.InExperimental)
             Quizmaster.SetupCustomOption();
 
-        NSerialKiller.SetupCustomOption(); // Serial Killer
+        SerialKiller.SetupCustomOption(); // Serial Killer
 
         Shroud.SetupCustomOption();
 
@@ -2933,8 +2937,14 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.TicketsStealer]);
 
         SetupAdtRoleOptions(23300, CustomRoles.Swift, canSetNum: true, tab: TabGroup.Addons);
+        
+        /*
+         * Tricky
+         */
+        Tricky.SetupCustomOption();
 
-        //SetupAdtRoleOptions(23400, CustomRoles.Minimalism, canSetNum: true, tab: TabGroup.Addons);
+      //SetupAdtRoleOptions(23400, CustomRoles.KillingMachine, canSetNum: true, tab: TabGroup.Addons);
+
 
 
         TextOptionItem.Create(10000019, "RoleType.Misc", TabGroup.Addons) // NEUTRAL
@@ -3006,9 +3016,7 @@ public static class Options
             Quizmaster.SetupCustomOption();
 
         Spiritcaller.SetupCustomOption();
-
-        PlagueDoctor.SetupCustomOption();
-
+      
         // 副职
         TextOptionItem.Create(10000023, "OtherRoles.Addons", TabGroup.OtherRoles)
             .SetGameMode(CustomGameMode.Standard)
@@ -3699,6 +3707,7 @@ public static class Options
 
         ShowOnlyEnabledRolesInGuesserUI = BooleanOptionItem.Create(60689, "ShowOnlyEnabledRolesInGuesserUI", true, TabGroup.TaskSettings, false)
             .SetHeader(true)
+            .SetGameMode(CustomGameMode.Standard)
             .SetColor(Color.cyan);
 
 

@@ -87,7 +87,7 @@ internal class ChangeRoleSettings
 
             Main.LastEnteredVent = [];
             Main.LastEnteredVentLocation = [];
-            Main.EscapeeLocation = [];
+            Main.EscapistLocation = [];
 
             Main.AfterMeetingDeathPlayers = [];
             Main.ResetCamPlayerList = [];
@@ -140,6 +140,7 @@ internal class ChangeRoleSettings
             if (GameStates.IsNormalGame)
             {
                 GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor = false;
+                GameOptionsManager.Instance.currentNormalGameOptions.SetBool(BoolOptionNames.ConfirmImpostor, false);
 
                 MeetingTimeManager.Init();
 
@@ -216,9 +217,9 @@ internal class ChangeRoleSettings
 
             FallFromLadder.Reset();
             BountyHunter.Init();
-            SerialKiller.Init();
+            Mercenary.Init();
             EvilDiviner.Init();
-            FireWorks.Init();
+            Fireworker.Init();
             Sniper.Init();
             Undertaker.Init();
             TimeThief.Init();
@@ -264,6 +265,7 @@ internal class ChangeRoleSettings
             BallLightning.Init();
             DarkHide.Init();
             Greedier.Init();
+            Observer.Init();
             Collector.Init();
             Benefactor.Init();
             Taskinator.Init();
@@ -275,9 +277,9 @@ internal class ChangeRoleSettings
             Oracle.Init();
             Eraser.Init();
             Assassin.Init();
-            Sans.Init();
+            Arrogance.Init();
             Juggernaut.Init();
-            Hacker.Init();
+            Anonymous.Init();
             Psychic.Init();
             Glitch.Init();
             Huntsman.Init();
@@ -315,7 +317,7 @@ internal class ChangeRoleSettings
             Tracker.Init();
             Merchant.Init();
             Pyromaniac.Init();
-            NSerialKiller.Init();
+            SerialKiller.Init();
             Maverick.Init();
             Jinx.Init();
             DoubleShot.Init();
@@ -327,7 +329,6 @@ internal class ChangeRoleSettings
             Devourer.Init();
             PotionMaster.Init();
             Warden.Init();
-            NWitch.Init();
             Traitor.Init();
             Spiritualist.Init();
             Vulture.Init();
@@ -338,7 +339,7 @@ internal class ChangeRoleSettings
             Chameleon.Init();
             Wildling.Init();
             Morphling.Init();
-            ParityCop.Init(); // *giggle* party cop
+            Inspector.Init(); // *giggle* party cop
             Keeper.Init(); // *giggle* party cop
             Spiritcaller.Init();
             Lurker.Init();
@@ -361,12 +362,13 @@ internal class ChangeRoleSettings
             Blackmailer.Init();
             Spy.Init();
             Oiiai.Init();
-            FFF.Init();
+            Hater.Init();
             Instigator.Init();
             OverKiller.Init();
             Quizmaster.Init();
             Tired.Init();
             Rainbow.Init();
+            //Tricky.Init();
 
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
@@ -384,6 +386,9 @@ internal class ChangeRoleSettings
             MeetingStates.FirstMeeting = true;
             GameStates.AlreadyDied = false;
             EAC.ReportTimes = [];
+
+            SetEverythingUpPatch.LastWinsText = "";
+            SetEverythingUpPatch.LastWinsReason = "";
         }
         catch (Exception ex)
         {
@@ -559,12 +564,9 @@ internal class SelectRolesPatch
                 AssignCustomRole(kv.Value, kv.Key);
             }
 
-            if (CustomRoles.Lovers.IsEnable() && (CustomRoles.FFF.IsEnable() ? -1 : rd.Next(1, 100)) <= Options.LoverSpawnChances.GetInt()) AssignLoversRolesFromList();
-            foreach (var role in AddonRolesList)
-            {
-                if (rd.Next(1, 100) <= (Options.CustomAdtRoleSpawnRate.TryGetValue(role, out var sc) ? sc.GetFloat() : 0))
-                    if (role.IsEnable()) AssignSubRoles(role);
-            }
+            if (CustomRoles.Lovers.IsEnable() && (CustomRoles.Hater.IsEnable() ? -1 : rd.Next(1, 100)) <= Options.LoverSpawnChances.GetInt()) AssignLoversRolesFromList();
+
+            AssignAddonRoles();
 
             //RPCによる同期
             foreach (var pair in Main.PlayerStates)
@@ -589,8 +591,8 @@ internal class SelectRolesPatch
                     case CustomRoles.Reverie:
                         Reverie.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.SerialKiller:
-                        SerialKiller.Add(pc.PlayerId);
+                    case CustomRoles.Mercenary:
+                        Mercenary.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Witch:
                         Witch.Add(pc.PlayerId);
@@ -609,8 +611,8 @@ internal class SelectRolesPatch
                         Main.CursedPlayers.Add(pc.PlayerId, null);
                         Main.isCurseAndKill.Add(pc.PlayerId, false);
                         break;
-                    case CustomRoles.FireWorks:
-                        FireWorks.Add(pc.PlayerId);
+                    case CustomRoles.Fireworker:
+                        Fireworker.Add(pc.PlayerId);
                         break;
                     case CustomRoles.TimeThief:
                         TimeThief.Add(pc.PlayerId);
@@ -818,6 +820,9 @@ internal class SelectRolesPatch
                     case CustomRoles.Benefactor:
                         Benefactor.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.Observer:
+                        Observer.Add(pc.PlayerId);
+                        break;
                     case CustomRoles.CursedWolf:
                         Main.CursedWolfSpellCount[pc.PlayerId] = Options.GuardSpellTimes.GetInt();
                         break;
@@ -831,14 +836,14 @@ internal class SelectRolesPatch
                     case CustomRoles.Assassin:
                         Assassin.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Sans:
-                        Sans.Add(pc.PlayerId);
+                    case CustomRoles.Arrogance:
+                        Arrogance.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Juggernaut:
                         Juggernaut.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Hacker:
-                        Hacker.Add(pc.PlayerId);
+                    case CustomRoles.Anonymous:
+                        Anonymous.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Psychic:
                         Psychic.Add(pc.PlayerId);
@@ -954,8 +959,8 @@ internal class SelectRolesPatch
                     case CustomRoles.Merchant:
                         Merchant.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.NSerialKiller:
-                        NSerialKiller.Add(pc.PlayerId);
+                    case CustomRoles.SerialKiller:
+                        SerialKiller.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Pyromaniac:
                         Pyromaniac.Add(pc.PlayerId);
@@ -968,9 +973,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Traitor:
                         Traitor.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.NWitch:
-                        NWitch.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Shroud:
                         Shroud.Add(pc.PlayerId);
@@ -1005,8 +1007,8 @@ internal class SelectRolesPatch
                     case CustomRoles.PlagueBearer:
                         PlagueBearer.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.ParityCop:
-                        ParityCop.Add(pc.PlayerId);
+                    case CustomRoles.Inspector:
+                        Inspector.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Keeper:
                         Keeper.Add(pc.PlayerId);
@@ -1059,8 +1061,8 @@ internal class SelectRolesPatch
                     case CustomRoles.Crewpostor:
                         Main.CrewpostorTasksDone[pc.PlayerId] = 0;
                         break;
-                    case CustomRoles.FFF:
-                        FFF.Add(pc.PlayerId);
+                    case CustomRoles.Hater:
+                        Hater.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Enigma:
                         Enigma.Add(pc.PlayerId);
@@ -1263,7 +1265,7 @@ internal class SelectRolesPatch
                 || pc.Is(CustomRoles.Ntr) 
                 || pc.Is(CustomRoles.Dictator) 
                 || pc.Is(CustomRoles.God) 
-                || pc.Is(CustomRoles.FFF) 
+                || pc.Is(CustomRoles.Hater) 
                 || pc.Is(CustomRoles.Sunnyboy)
                 || pc.Is(CustomRoles.Bomber)
                 || pc.Is(CustomRoles.Nuker) 
@@ -1292,7 +1294,7 @@ internal class SelectRolesPatch
         }
         RPC.SyncLoversPlayers();
     }
-    private static void AssignSubRoles(CustomRoles role, int RawCount = -1)
+    public static void AssignSubRoles(CustomRoles role, int RawCount = -1)
     {
         var allPlayers = Main.AllAlivePlayerControls.Where(x => CustomRolesHelper.CheckAddonConfilct(role, x)).ToList();
         var count = Math.Clamp(RawCount, 0, allPlayers.Count);
@@ -1300,7 +1302,7 @@ internal class SelectRolesPatch
         if (count <= 0) return;
         for (var i = 0; i < count; i++)
         {
-            var player = allPlayers[IRandom.Instance.Next(0, allPlayers.Count)];
+            var player = allPlayers[IRandom.Instance.Next(allPlayers.Count)];
             Main.PlayerStates[player.PlayerId].SetSubRole(role);
             Logger.Info($"Registered Add-on: {player?.Data?.PlayerName} = {player.GetCustomRole()} + {role}", $"Assign {role}");
         }

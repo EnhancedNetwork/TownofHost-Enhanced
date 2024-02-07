@@ -4,6 +4,7 @@ using Hazel;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.AddOns.Crewmate;
+using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
@@ -159,6 +160,9 @@ public static class Jackal
                 RecruitLimit[killer.PlayerId]--;
                 SendRPC(killer.PlayerId);
                 //if (!AttendantCantRoles.GetBool() && Mini.Age == 18 || !AttendantCantRoles.GetBool() &&  Mini.Age != 18 && !(target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
+                
+                if (CopyCat.playerIdList.Contains(target.PlayerId))
+                    CopyCat.Remove(target.PlayerId);
                 target.RpcSetCustomRole(CustomRoles.Sidekick);
 
                 if (!Main.ResetCamPlayerList.Contains(target.PlayerId))
@@ -170,11 +174,15 @@ public static class Jackal
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));
 
-                killer.ResetKillCooldown();
-                killer.SetKillCooldown();
                 if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
                 target.RpcGuardAndKill(killer);
                 target.RpcGuardAndKill(target);
+
+                killer.ResetKillCooldown();
+                killer.SetKillCooldown();
+
+                target.ResetKillCooldown();
+                target.SetKillCooldown();
 
                 Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Sidekick.ToString(), "Assign " + CustomRoles.Sidekick.ToString());
                 
@@ -199,11 +207,15 @@ public static class Jackal
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));
 
-                killer.ResetKillCooldown();
-                killer.SetKillCooldown();
                 if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
                 target.RpcGuardAndKill(killer);
                 target.RpcGuardAndKill(target);
+
+                killer.ResetKillCooldown();
+                killer.SetKillCooldown();
+
+                target.ResetKillCooldown();
+                target.SetKillCooldown();
 
                 Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Sidekick.ToString(), "Assign " + CustomRoles.Sidekick.ToString());
                 

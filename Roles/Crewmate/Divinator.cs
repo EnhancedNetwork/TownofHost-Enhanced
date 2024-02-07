@@ -188,7 +188,8 @@ public static class Divinator
                 CustomRoles.Arsonist,
                 CustomRoles.Assassin,
                 CustomRoles.BallLightning,
-                CustomRoles.Collector],
+                CustomRoles.Collector,
+                CustomRoles.Stealth],
                 
                 [CustomRoles.Capitalism,
                 CustomRoles.Counterfeiter,
@@ -209,8 +210,8 @@ public static class Divinator
                 CustomRoles.Juggernaut,
                 CustomRoles.Reverie,
                 CustomRoles.Vigilante,
-                CustomRoles.Sans,
-                CustomRoles.Minimalism,
+                CustomRoles.Arrogance,
+                CustomRoles.KillingMachine,
                 CustomRoles.Berserker,
                 CustomRoles.OverKiller],
                 
@@ -226,7 +227,7 @@ public static class Divinator
                 [CustomRoles.Bodyguard,
                 CustomRoles.Bomber,
                 CustomRoles.Agitater,
-                CustomRoles.FireWorks,
+                CustomRoles.Fireworker,
                 CustomRoles.RuthlessRomantic,
                 CustomRoles.VengefulRomantic,
                 CustomRoles.Lookout,
@@ -234,7 +235,7 @@ public static class Divinator
                 
                 [CustomRoles.BountyHunter,
                 CustomRoles.Detective,
-                CustomRoles.FFF,
+                CustomRoles.Hater,
                 CustomRoles.Cleaner,
                 CustomRoles.Medusa,
                 CustomRoles.Psychic],
@@ -256,7 +257,7 @@ public static class Divinator
                 CustomRoles.Keeper],
                 
                 [CustomRoles.Addict,
-                CustomRoles.Escapee,
+                CustomRoles.Escapist,
                 CustomRoles.Miner,
                 CustomRoles.RiftMaker,
                 CustomRoles.Bastion,
@@ -279,9 +280,9 @@ public static class Divinator
                 CustomRoles.Pirate,
                 CustomRoles.Visionary,
                 CustomRoles.Blackmailer,
-                CustomRoles.ParityCop],
+                CustomRoles.Inspector],
                 
-                [CustomRoles.Hacker,
+                [CustomRoles.Anonymous,
                 CustomRoles.Mayor,
                 CustomRoles.Paranoia,
                 CustomRoles.Mastermind,
@@ -295,7 +296,8 @@ public static class Divinator
                 CustomRoles.Monarch,
                 CustomRoles.Revolutionist,
                 CustomRoles.Succubus,
-                CustomRoles.Enigma],
+                CustomRoles.Enigma,
+                CustomRoles.PlagueDoctor],
                 
                 [CustomRoles.Innocent,
                 CustomRoles.Masochist,
@@ -348,7 +350,7 @@ public static class Divinator
                 
                 [CustomRoles.BoobyTrap,
                 CustomRoles.QuickShooter,
-                CustomRoles.NSerialKiller,
+                CustomRoles.SerialKiller,
                 CustomRoles.Sheriff,
                 CustomRoles.Admirer,
                 CustomRoles.Warlock],
@@ -393,11 +395,11 @@ public static class Divinator
                 CustomRoles.Sniper],
                 
                 [CustomRoles.Puppeteer,
-                CustomRoles.NWitch,
                 CustomRoles.Deputy,
                 CustomRoles.Transporter,
                 CustomRoles.Twister,
-                CustomRoles.SerialKiller],
+                CustomRoles.Mercenary,
+                CustomRoles.Penguin],
                 
                 [CustomRoles.Crewpostor,
                 CustomRoles.Taskinator,
@@ -466,16 +468,16 @@ public static class Divinator
                    CustomRoles.Disperser
                    => "Honest",
 
-                   CustomRoles.SerialKiller or
+                   CustomRoles.Mercenary or
                    CustomRoles.BountyHunter or
-                   CustomRoles.Minimalism or
-                   CustomRoles.Sans or
+                   CustomRoles.KillingMachine or
+                   CustomRoles.Arrogance or
                    CustomRoles.Juggernaut or
                    CustomRoles.SpeedBooster or
                    CustomRoles.Sheriff or
                    CustomRoles.Arsonist or
                    CustomRoles.Innocent or
-                   CustomRoles.FFF or
+                   CustomRoles.Hater or
                    CustomRoles.Greedier or
                    CustomRoles.Tracker
                    => "Impulse",
@@ -483,9 +485,9 @@ public static class Divinator
                    CustomRoles.Vampire or
                    CustomRoles.Poisoner or
                    CustomRoles.Assassin or
-                   CustomRoles.Escapee or
+                   CustomRoles.Escapist or
                    CustomRoles.Sniper or
-                   CustomRoles.NSerialKiller or
+                   CustomRoles.SerialKiller or
                    CustomRoles.SwordsMan or
                    CustomRoles.Bodyguard or
                    CustomRoles.Opportunist or
@@ -506,7 +508,7 @@ public static class Divinator
                    => "Blockbuster",
 
                    CustomRoles.Warlock or
-                   CustomRoles.Hacker or
+                   CustomRoles.Anonymous or
                    CustomRoles.Mafia or
                    CustomRoles.Retributionist or
                    CustomRoles.Doctor or
@@ -536,7 +538,7 @@ public static class Divinator
                    CustomRoles.Provocateur
                    => "Incomprehensible",
 
-                   CustomRoles.FireWorks or
+                   CustomRoles.Fireworker or
                    CustomRoles.EvilTracker or
                    CustomRoles.Gangster or
                    CustomRoles.Dictator or

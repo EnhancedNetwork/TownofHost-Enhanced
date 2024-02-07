@@ -23,7 +23,7 @@ enum CustomRPC
     // On version 2023.11.28 the last id in RpcCalls: 61
     VersionCheck = 80,
     RequestRetryVersionCheck = 81,
-    SyncCustomSettings = 82,
+    SyncCustomSettings = 100,
     RestTOHESetting,
     SetDeathReason,
     EndGame,
@@ -31,6 +31,7 @@ enum CustomRPC
     SetCustomRole,
     SetBountyTarget,
     SyncPuppet,
+    SyncHuntsmanTarget,
     SyncPlagueDoctor,
     SyncKami,
     SetKillOrSpell,
@@ -57,7 +58,7 @@ enum CustomRPC
     RemoveExecutionerTarget,
     SetLawyerTarget,
     RemoveLawyerTarget,
-    SendFireWorksState,
+    SendFireworkerState,
     SetCurrentDousingTarget,
     SetEvilTrackerTarget,
     SetRealKiller,
@@ -90,7 +91,7 @@ enum CustomRPC
     SetDivinatorLimit,
     SetDivinatorTempLimit,
     SetBloodhoundLimit,
-    SetParityCopLimit,
+    SetInspectorLimit,
     KeeperRPC,
     SetOracleLimit,
     SetMediumLimit,
@@ -152,6 +153,7 @@ enum CustomRPC
     SetBloodhoundArrow,
     SetBloodhoundkKillerArrow,
     SetVultureArrow,
+    SyncVultureBodyAmount,
     SetSpiritcallerSpiritLimit,
     SetDoomsayerProgress,
     SetTrackerTarget,
@@ -167,7 +169,6 @@ enum CustomRPC
     SyncAdmiredList,
     SetRememberLimit,
     SetImitateLimit,
-    SyncNWitch,
     SyncShroud,
     SyncMiniCrewAge,
     SyncSabotageMasterSkill,
@@ -220,15 +221,15 @@ internal class RPCHandlerPatch
                 break;
         }
         if (__instance.PlayerId != 0
-            && Enum.IsDefined(typeof(CustomRPC), (int)callId)
-            && !TrustedRpc(callId)) //ホストではなく、CustomRPCで、VersionCheckではない
+    && Enum.IsDefined(typeof(CustomRPC), (int)callId)
+    && !TrustedRpc(callId)) //ホストではなく、CustomRPCで、VersionCheckではない
         {
-            Logger.Warn($"{__instance?.Data?.PlayerName}:{callId}({RPC.GetRpcName(callId)}) 已取消，因为它是由主机以外的其他人发送的。", "CustomRPC");
+            Logger.Warn($"{__instance?.Data?.PlayerName}:{callId}({RPC.GetRpcName(callId)}) has been canceled because it was sent by someone other than the host", "CustomRPC");
             if (AmongUsClient.Instance.AmHost)
             {
                 if (!EAC.ReceiveInvalidRpc(__instance, callId)) return false;
                 AmongUsClient.Instance.KickPlayer(__instance.GetClientId(), false);
-                Logger.Warn($"收到来自 {__instance?.Data?.PlayerName} 的不受信用的RPC，因此将其踢出。", "Kick");
+                Logger.Warn($"Received an uncredited RPC from {__instance?.Data?.PlayerName} and kicked it out", "Kick");
                 Logger.SendInGame(string.Format(GetString("Warning.InvalidRpc"), __instance?.Data?.PlayerName));
             }
             return false;
@@ -237,6 +238,9 @@ internal class RPCHandlerPatch
     }
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
+        // Process nothing but CustomRPC
+        if (callId < (byte)CustomRPC.VersionCheck) return;
+
         var rpcType = (CustomRPC)callId;
         switch (rpcType)
         {
@@ -385,6 +389,9 @@ internal class RPCHandlerPatch
             case CustomRPC.SyncPuppet:
                 Puppeteer.ReceiveRPC(reader);
                 break;
+            case CustomRPC.SyncHuntsmanTarget:
+                Huntsman.ReceiveRPC(reader);
+                break;
              case CustomRPC.SyncKami:
                 Kamikaze.ReceiveRPC(reader);
                 break;
@@ -481,8 +488,8 @@ internal class RPCHandlerPatch
             case CustomRPC.RemoveLawyerTarget:
                 Lawyer.ReceiveRPC(reader, SetTarget: false);
                 break;
-            case CustomRPC.SendFireWorksState:
-                FireWorks.ReceiveRPC(reader);
+            case CustomRPC.SendFireworkerState:
+                Fireworker.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetCurrentDousingTarget:
                 byte arsonistId = reader.ReadByte();
@@ -627,7 +634,7 @@ internal class RPCHandlerPatch
                 Medic.ReceiveRPCForProtectList(reader);
                 break;
             case CustomRPC.SetHackerHackLimit:
-                Hacker.ReceiveRPC(reader);
+                Anonymous.ReceiveRPC(reader);
                 break;
             case CustomRPC.SyncPsychicRedList:
                 Psychic.ReceiveRPC(reader);
@@ -650,9 +657,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SyncSolsticerNotify:
                 Solsticer.ReceiveRPC(reader);
-                break;
-            case CustomRPC.SyncNWitch:
-                NWitch.ReceiveRPC(reader);
                 break;
             case CustomRPC.SyncShroud:
                 Shroud.ReceiveRPC(reader);
@@ -755,6 +759,9 @@ internal class RPCHandlerPatch
             case CustomRPC.SetVultureArrow:
                 Vulture.ReceiveRPC(reader);
                 break;
+            case CustomRPC.SyncVultureBodyAmount:
+                Vulture.ReceiveBodyRPC(reader);
+                break;
             case CustomRPC.SetSpiritcallerSpiritLimit:
                 Spiritcaller.ReceiveRPC(reader);
                 break;
@@ -797,8 +804,8 @@ internal class RPCHandlerPatch
             case CustomRPC.SetMediumLimit:
                 Mediumshiper.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetParityCopLimit:
-                ParityCop.ReceiveRPC(reader);
+            case CustomRPC.SetInspectorLimit:
+                Inspector.ReceiveRPC(reader);
                 break;
             case CustomRPC.KeeperRPC:
                 Keeper.ReceiveRPC(reader);
@@ -1069,11 +1076,11 @@ internal static class RPC
             case CustomRoles.BountyHunter:
                 BountyHunter.Add(targetId);
                 break;
-            case CustomRoles.SerialKiller:
-                SerialKiller.Add(targetId);
+            case CustomRoles.Mercenary:
+                Mercenary.Add(targetId);
                 break;
-            case CustomRoles.FireWorks:
-                FireWorks.Add(targetId);
+            case CustomRoles.Fireworker:
+                Fireworker.Add(targetId);
                 break;
             case CustomRoles.TimeThief:
                 TimeThief.Add(targetId);
@@ -1176,6 +1183,9 @@ internal static class RPC
                 break;
             case CustomRoles.QuickShooter:
                 QuickShooter.Add(targetId);
+                break;
+            case CustomRoles.Observer:
+                Observer.Add(targetId);
                 break;
             case CustomRoles.SwordsMan:
                 SwordsMan.Add(targetId);
@@ -1292,8 +1302,8 @@ internal static class RPC
             case CustomRoles.Assassin:
                 Assassin.Add(targetId);
                 break;
-            case CustomRoles.Sans:
-                Sans.Add(targetId);
+            case CustomRoles.Arrogance:
+                Arrogance.Add(targetId);
                 break;
             case CustomRoles.Juggernaut:
                 Juggernaut.Add(targetId);
@@ -1301,8 +1311,8 @@ internal static class RPC
             case CustomRoles.Reverie:
                 Reverie.Add(targetId);
                 break;
-            case CustomRoles.Hacker:
-                Hacker.Add(targetId);
+            case CustomRoles.Anonymous:
+                Anonymous.Add(targetId);
                 break;
             case CustomRoles.Psychic:
                 Psychic.Add(targetId);
@@ -1316,8 +1326,8 @@ internal static class RPC
             case CustomRoles.President:
                 President.Add(targetId);
                 break;
-            case CustomRoles.ParityCop:
-                ParityCop.Add(targetId);
+            case CustomRoles.Inspector:
+                Inspector.Add(targetId);
                 break;
             case CustomRoles.Keeper:
                 Keeper.Add(targetId);
@@ -1424,8 +1434,8 @@ internal static class RPC
             case CustomRoles.Merchant:
                 Merchant.Add(targetId);
                 break;
-            case CustomRoles.NSerialKiller:
-                NSerialKiller.Add(targetId);
+            case CustomRoles.SerialKiller:
+                SerialKiller.Add(targetId);
                 break;
             case CustomRoles.Pyromaniac:
                 Pyromaniac.Add(targetId);
@@ -1441,9 +1451,6 @@ internal static class RPC
                 break;
             case CustomRoles.Kamikaze:
                 Kamikaze.Add(targetId);
-                break;
-            case CustomRoles.NWitch:
-                NWitch.Add(targetId);
                 break;
             case CustomRoles.Shroud:
                 Shroud.Add(targetId);

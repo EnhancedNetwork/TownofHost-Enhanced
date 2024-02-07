@@ -1,13 +1,14 @@
 ﻿using Hazel;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
-public static class Hacker
+public static class Anonymous
 {
     private static readonly int Id = 5300;
     private static List<byte> playerIdList = [];
@@ -21,10 +22,10 @@ public static class Hacker
 
     public static void SetupCustomOption()
     {
-        SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Hacker);
-        KillCooldown = FloatOptionItem.Create(Id + 2, "KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hacker])
+        SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Anonymous);
+        KillCooldown = FloatOptionItem.Create(Id + 2, "KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Anonymous])
             .SetValueFormat(OptionFormat.Seconds);
-        HackLimitOpt = IntegerOptionItem.Create(Id + 4, "HackLimit", new(1, 15, 1), 3, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hacker])
+        HackLimitOpt = IntegerOptionItem.Create(Id + 4, "HackLimit", new(1, 15, 1), 3, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Anonymous])
             .SetValueFormat(OptionFormat.Times);
     }
     public static void Init()
@@ -60,12 +61,12 @@ public static class Hacker
         AURoleOptions.ShapeshifterCooldown = 1f;
         AURoleOptions.ShapeshifterDuration = 1f;
     }
-    public static string GetHackLimit(byte playerId) => Utils.ColorString((HackLimit.TryGetValue(playerId, out var x) && x >= 1) ? Utils.GetRoleColor(CustomRoles.Hacker).ShadeColor(0.25f) : Color.gray, HackLimit.TryGetValue(playerId, out var hackLimit) ? $"({hackLimit})" : "Invalid");
+    public static string GetHackLimit(byte playerId) => Utils.ColorString((HackLimit.TryGetValue(playerId, out var x) && x >= 1) ? Utils.GetRoleColor(CustomRoles.Anonymous).ShadeColor(0.25f) : Color.gray, HackLimit.TryGetValue(playerId, out var hackLimit) ? $"({hackLimit})" : "Invalid");
     public static void GetAbilityButtonText(HudManager __instance, byte playerId)
     {
         if (HackLimit.TryGetValue(playerId, out var x) && x >= 1)
         {
-            __instance.AbilityButton.OverrideText(GetString("HackerShapeshiftText"));
+            __instance.AbilityButton.OverrideText(GetString("AnonymousShapeshiftText"));
             __instance.AbilityButton.SetUsesRemaining(x);
         }
     }
@@ -77,7 +78,7 @@ public static class Hacker
     }
     public static void OnShapeshift(PlayerControl pc, bool shapeshifting, PlayerControl ssTarget)
     {
-        if (!shapeshifting || !HackLimit.TryGetValue(pc.PlayerId, out var x) || x < 1 || ssTarget == null || ssTarget.Is(CustomRoles.Needy) || ssTarget.Is(CustomRoles.Lazy)) return;
+        if (!shapeshifting || !HackLimit.TryGetValue(pc.PlayerId, out var x) || x < 1 || ssTarget == null || ssTarget.Is(CustomRoles.Needy) || ssTarget.Is(CustomRoles.Lazy) || ssTarget.Is(CustomRoles.NiceMini) && Mini.Age < 18) return;
         HackLimit[pc.PlayerId]--;
         SendRPC(pc.PlayerId);
 
@@ -96,8 +97,8 @@ public static class Hacker
             targetId = DeadBodyList[IRandom.Instance.Next(0, DeadBodyList.Count)];
 
         if (targetId == byte.MaxValue)
-            _ = new LateTask(() => ssTarget?.NoCheckStartMeeting(ssTarget?.Data), 0.15f, "Hacker Hacking Report Self");
+            _ = new LateTask(() => ssTarget?.NoCheckStartMeeting(ssTarget?.Data), 0.15f, "Anonymous Hacking Report Self");
         else
-            _ = new LateTask(() => ssTarget?.NoCheckStartMeeting(Utils.GetPlayerById(targetId)?.Data), 0.15f, "Hacker Hacking Report");
+            _ = new LateTask(() => ssTarget?.NoCheckStartMeeting(Utils.GetPlayerById(targetId)?.Data), 0.15f, "Anonymous Hacking Report");
     }
 }

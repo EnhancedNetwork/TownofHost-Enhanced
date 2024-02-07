@@ -40,14 +40,14 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0128.151.04"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "1.5.1 Dev 4";
+    public const string PluginVersion = "2024.0207.151.0010"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "1.5.1 dev 1";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public const bool Canary = false; // INACTIVE - Latest: V1.5.0 Canary 1.1
-    public const bool fullRelease = false; // INACTIVE - Latest: V1.4.0
-    public const bool devRelease = true; // ACTIVE - Latest: V1.5.1 Dev 3
+    public const bool Canary = false; // ACTIVE - Latest: V1.5.1 Canary 2
+    public const bool fullRelease = true; // INACTIVE - Latest: V1.5.0
+    public const bool devRelease = false; // INACTIVE - Latest: V1.5.1 Dev 3
 
     public static bool hasAccess = true;
 
@@ -211,7 +211,7 @@ public class Main : BasePlugin
     public static Dictionary<byte, bool> CheckShapeshift = [];
     public static Dictionary<byte, byte> ShapeshiftTarget = [];
     public static Dictionary<(byte, byte), string> targetArrows = [];
-    public static Dictionary<byte, Vector2> EscapeeLocation = [];
+    public static Dictionary<byte, Vector2> EscapistLocation = [];
     public static Dictionary<byte, Vector2> TimeMasterLocation = [];
     public static bool VisibleTasksCount = false;
     public static string nickName = "";
@@ -551,8 +551,8 @@ public enum CustomRoles
     ShapeshifterTOHE,
 
     //Impostor
-    Sans, //arrogance
-    Hacker, //anonymous
+    Arrogance,
+    Anonymous,
     AntiAdminer,
     Bard,
     Berserker,
@@ -574,11 +574,11 @@ public enum CustomRoles
     Devourer,
     Disperser,
     Eraser,
-    Escapee, //escapist
+    Escapist,
     EvilGuesser,
     EvilMini,
     EvilTracker,
-    FireWorks,
+    Fireworker,
     Gangster,
     Godfather,
     Greedier, //greedy
@@ -586,12 +586,12 @@ public enum CustomRoles
     Inhibitor,
     Instigator,
     Kamikaze,
-    Minimalism, //killing machine
+    KillingMachine,
     BallLightning, //Lightning
     Ludopath,
     Lurker,
     Mastermind,
-    SerialKiller, //mercenary
+    Mercenary, //mercenary
     Miner,
     Morphling,
     Mafia, //nemesis
@@ -661,7 +661,7 @@ public enum CustomRoles
     Guardian,
     GuessMaster,
     Grenadier,
-    ParityCop, //inspector
+    Inspector, //inspector
     Investigator,
     Jailer,
     Judge,
@@ -727,7 +727,7 @@ public enum CustomRoles
     Totocalcio, //follower
     Glitch,
     God,
-    FFF, //hater
+    Hater,
     HexMaster,
     Huntsman,
     Imitator,
@@ -763,7 +763,7 @@ public enum CustomRoles
     RuthlessRomantic,
     SchrodingersCat,
     Seeker,
-    NSerialKiller, //serial killer
+    SerialKiller, //serial killer
     Shaman,
     Shroud,
     Sidekick,
@@ -781,7 +781,6 @@ public enum CustomRoles
     Vulture,
     Werewolf,
     Warden,
-    NWitch, //witch
     Workaholic,
     Wraith,
     Stealth,
@@ -837,6 +836,7 @@ public enum CustomRoles
     Lucky,
     Madmate,
     Mare,
+    Tricky,
     Mimic,
     Mundane,
     Necroview,
@@ -920,11 +920,10 @@ public enum CustomWinner
     Wraith = CustomRoles.Wraith,
     Bandit = CustomRoles.Bandit,
     Pirate = CustomRoles.Pirate,
-    SerialKiller = CustomRoles.NSerialKiller,
+    SerialKiller = CustomRoles.SerialKiller,
     Werewolf = CustomRoles.Werewolf,
     Necromancer = CustomRoles.Necromancer,
     Huntsman = CustomRoles.Huntsman,
-    Witch = CustomRoles.NWitch,
     Juggernaut = CustomRoles.Juggernaut,
     Infectious = CustomRoles.Infectious,
     Virus = CustomRoles.Virus,
@@ -959,10 +958,9 @@ public enum AdditionalWinners
     Opportunist = CustomRoles.Opportunist,
     Executioner = CustomRoles.Executioner,
     Lawyer = CustomRoles.Lawyer,
-    FFF = CustomRoles.FFF,
+    Hater = CustomRoles.Hater,
     Provocateur = CustomRoles.Provocateur,
     Sunnyboy = CustomRoles.Sunnyboy,
-    Witch = CustomRoles.NWitch,
     Totocalcio = CustomRoles.Totocalcio,
     Romantic = CustomRoles.Romantic,
     VengefulRomantic = CustomRoles.VengefulRomantic,

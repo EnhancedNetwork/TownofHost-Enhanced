@@ -112,7 +112,13 @@ public static class Cleanser
         Utils.SendMessage(string.Format(GetString("CleanserRemovedRole"), target.GetRealName()), voter.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cleanser),GetString("CleanserTitle")));
         SendRPC(voter.PlayerId);
     }
-
+    public static void OnReportDeadBody()
+    {
+        foreach (var pid in CleanserTarget.Keys.ToArray())
+        {
+            CleanserTarget[pid] = byte.MaxValue;
+        }
+    }
     public static void AfterMeetingTasks(bool notifyPlayer = false)
     {
         if (notifyPlayer) 

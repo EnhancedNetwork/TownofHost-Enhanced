@@ -288,12 +288,6 @@ class GameEndCheckerForNormal
                         CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
                         CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Taskinator);
                     }
-                    //Witch
-                    if (pc.Is(CustomRoles.NWitch) && pc.IsAlive() && CustomWinnerHolder.WinnerTeam != CustomWinner.Crewmate && CustomWinnerHolder.WinnerTeam != CustomWinner.Lovers)
-                    {
-                        CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
-                        CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Witch);
-                    }
                     if (pc.Is(CustomRoles.Pursuer) && pc.IsAlive() && CustomWinnerHolder.WinnerTeam != CustomWinner.Jester && CustomWinnerHolder.WinnerTeam != CustomWinner.Lovers && CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist && CustomWinnerHolder.WinnerTeam != CustomWinner.Executioner && CustomWinnerHolder.WinnerTeam != CustomWinner.Collector && CustomWinnerHolder.WinnerTeam != CustomWinner.Innocent && CustomWinnerHolder.WinnerTeam != CustomWinner.Youtuber)
                     {
                         CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
@@ -346,17 +340,17 @@ class GameEndCheckerForNormal
                     }
                 }
 
-                //FFF
-                if (FFF.isWon)
+                // Hater
+                if (Hater.isWon)
                 {
-                    CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.FFF);
+                    CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Hater);
                     // You have a player id list, no need for another list; also use a for loop instead of LINQ
-                    //FFF.winnerFFFList.Do(x => CustomWinnerHolder.WinnerIds.Add(x));
-                    
-                    var FFFArray = FFF.playerIdList.ToArray();
-                    foreach (var FFF in FFFArray)
+                    //Hater.winnerHaterList.Do(x => CustomWinnerHolder.WinnerIds.Add(x));
+
+                    var HaterArray = Hater.playerIdList.ToArray();
+                    foreach (var Hater in HaterArray)
                     {
-                        CustomWinnerHolder.WinnerIds.Add(FFF);
+                        CustomWinnerHolder.WinnerIds.Add(Hater);
                     }
                 }
 
@@ -469,6 +463,9 @@ class GameEndCheckerForNormal
     }
     public static void StartEndGame(GameOverReason reason)
     {
+        var winner = CustomWinnerHolder.WinnerTeam;
+        SetEverythingUpPatch.LastWinsReason = winner is CustomWinner.Crewmate or CustomWinner.Impostor ? GetString($"GameOverReason.{reason}") : "";
+
         AmongUsClient.Instance.StartCoroutine(CoEndGame(AmongUsClient.Instance, reason).WrapToIl2Cpp());
     }
     private static IEnumerator CoEndGame(AmongUsClient self, GameOverReason reason)
@@ -505,7 +502,6 @@ class GameEndCheckerForNormal
                     pc.RpcSetRole(RoleTypes.CrewmateGhost);
                 }
             }
-            SetEverythingUpPatch.LastWinsReason = winner is CustomWinner.Crewmate or CustomWinner.Impostor ? GetString($"GameOverReason.{reason}") : "";
         }
 
         // Sync of CustomWinnerHolder info
@@ -573,7 +569,6 @@ class GameEndCheckerForNormal
                 {
                     case CountTypes.OutOfGame:
                     case CountTypes.None:
-                    case CountTypes.NWitch:
                         continue;
                     case CountTypes.Impostor:
                         impCount++;
