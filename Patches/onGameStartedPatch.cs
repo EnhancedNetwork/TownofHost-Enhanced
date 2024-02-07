@@ -67,7 +67,6 @@ internal class ChangeRoleSettings
             Main.DetectiveNotify = [];
             Main.ForCrusade = [];
             Main.CyberStarDead = [];
-            Main.KilledDiseased = [];
             Main.WorkaholicAlive = [];
             Main.BoobyTrapBody = [];
             Main.TasklessCrewmate = [];
@@ -249,6 +248,7 @@ internal class ChangeRoleSettings
             Pelican.Init();
             Counterfeiter.Init();
             Pursuer.Init();
+            Diseased.Init();
             Gangster.Init();
             Medic.Init();
             Gamer.Init();

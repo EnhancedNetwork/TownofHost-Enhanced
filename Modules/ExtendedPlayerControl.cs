@@ -1078,10 +1078,10 @@ static class ExtendedPlayerControl
         if (player.Is(CustomRoles.Overclocked))
             Main.AllPlayerKillCooldown[player.PlayerId] -= Main.AllPlayerKillCooldown[player.PlayerId] * (Overclocked.OverclockedReduction.GetFloat() / 100);
 
-        if (Main.KilledDiseased.ContainsKey(player.PlayerId))
+        //===DISEASED===
+        if (CustomRoles.Diseased.RoleExist())
         {
-            Main.AllPlayerKillCooldown[player.PlayerId] = Main.AllPlayerKillCooldown[player.PlayerId] + Main.KilledDiseased[player.PlayerId] * Options.DiseasedCDOpt.GetFloat();
-            Logger.Info($"kill cd of player set to {Main.AllPlayerKillCooldown[player.PlayerId]}", "Diseased");
+            Diseased.IncreaseKCD(player);
         }
         //===ANTIDOTE===
         if (CustomRoles.Antidote.RoleExist())

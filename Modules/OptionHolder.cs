@@ -709,12 +709,6 @@ public static class Options
     //public static OptionItem CrewCanBeSunglasses;
     //public static OptionItem NeutralCanBeSunglasses;
 
-    public static OptionItem ImpCanBeDiseased;
-    public static OptionItem CrewCanBeDiseased;
-    public static OptionItem NeutralCanBeDiseased;
-    public static OptionItem DiseasedCDOpt;
-    public static OptionItem DiseasedCDReset;
-
     //public static OptionItem ImpCanBeGlow;
     //public static OptionItem CrewCanBeGlow;
     //public static OptionItem NeutralCanBeGlow;
@@ -2405,19 +2399,8 @@ public static class Options
         Aware.SetupCustomOptions();
 
         Bloodlust.SetupCustomOptions();
-        
-        SetupAdtRoleOptions(21800, CustomRoles.Diseased, canSetNum: true);
-        ImpCanBeDiseased = BooleanOptionItem.Create(21803, "ImpCanBeDiseased", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Diseased]);
-        CrewCanBeDiseased = BooleanOptionItem.Create(21804, "CrewCanBeDiseased", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Diseased]);
-        NeutralCanBeDiseased = BooleanOptionItem.Create(21805, "NeutralCanBeDiseased", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Diseased]);
-        DiseasedCDOpt = FloatOptionItem.Create(21806, "DiseasedCDOpt", new(0f, 180f, 1f), 25f, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Diseased])
-            .SetValueFormat(OptionFormat.Seconds);
-        DiseasedCDReset = BooleanOptionItem.Create(21807, "DiseasedCDReset", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Diseased]);
+
+        Diseased.SetupCustomOptions();
 
         Ghoul.SetupCustomOptions();
 

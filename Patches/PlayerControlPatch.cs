@@ -176,16 +176,7 @@ class CheckMurderPatch
             switch (targetSubRole)
             {
                 case CustomRoles.Diseased:
-                    if (Main.KilledDiseased.ContainsKey(killer.PlayerId))
-                    {
-                        // Key already exists, update the value
-                        Main.KilledDiseased[killer.PlayerId] += 1;
-                    }
-                    else
-                    {
-                        // Key doesn't exist, add the key-value pair
-                        Main.KilledDiseased.Add(killer.PlayerId, 1);
-                    }
+                    Diseased.CheckMurder(killer);
                     break;
 
                 case CustomRoles.Antidote:

@@ -2684,16 +2684,9 @@ public static class Utils
     public static void AfterMeetingTasks()
     {
         ChatManager.ClearLastSysMsg();
-        if (Options.DiseasedCDReset.GetBool())
+        if (CustomRoles.Diseased.RoleExist())
         {
-            foreach (var pid in Main.KilledDiseased.Keys.ToArray())
-            {
-                Main.KilledDiseased[pid] = 0;
-                var kdpc = GetPlayerById(pid);
-                if (kdpc == null) continue;
-                kdpc.ResetKillCooldown();
-            }
-            Main.KilledDiseased.Clear();
+            Diseased.AfterMeetingTasks();
         }
         
         if (CustomRoles.Antidote.RoleExist())
