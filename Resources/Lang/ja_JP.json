@@ -1706,6 +1706,7 @@
   "CounterfeiterAbilityLost": "キルボタンのないプレイヤーをだますと、デシーバーの能力が失われます",
   "PursuerSkillCooldown": "能力のクールダウン",
   "PursuerSkillLimitTimes": "使用回数の最大値",
+  "AddictSuicideTimer": "Time Until Suicide",
   "GrenadierSkillCooldown": "グレネードのクールダウン",
   "GrenadierSkillDuration": "グレネードの持続時間",
   "GrenadierCauseVision": "視界が低下",
