@@ -90,7 +90,7 @@ internal class ChatCommands
                     foreach (var kvp in Main.playerVersion.OrderBy(pair => pair.Key).ToArray())
                     {
                         var pc = Utils.GetClientById(kvp.Key)?.Character;
-                        version_text += $"{kvp.Key}/{(pc?.PlayerId != null ? pc.PlayerId.ToString() : "null")}:{pc?.GetRealName() ?? "null"}:{kvp.Value.forkId}/{kvp.Value.version}({kvp.Value.tag})\n";
+                        version_text += $"{kvp.Key}/{(pc?.PlayerId != null ? pc.PlayerId.ToString() : "null")}:{pc?.GetRealName(clientData: true) ?? "null"}:{kvp.Value.forkId}/{kvp.Value.version}({kvp.Value.tag})\n";
                     }
                     if (version_text != "")
                     {
