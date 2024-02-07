@@ -244,7 +244,11 @@ static class ExtendedPlayerControl
                 writer.Write(time);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
             }
-            Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Observer) && target.PlayerId != x.PlayerId).Do(x => x.RpcGuardAndKill(target, 11, true));
+            // Check Observer
+            if (Observer.IsEnable)
+            {
+                Observer.ActivateGuardAnimation(target.PlayerId, target, 11);
+            }
         }
         player.ResetKillCooldown();
     }
