@@ -61,15 +61,15 @@ public class ModNewsHistory
 
                     "\n<b>【New Roles/Addons】(6 roles, 4 Addons)</i></b>" +
                         "\n     - Rift Maker (Support Impostor - By: ryuk)" +
-                        "\n     - Penguin (Hindering Impostor - Codded by dev TOH and Ported from TOHE+ - By: Drakos)" +
-                        "\n     - Stealth (Hindering Impostor - Codded by dev TOH and Ported from TOHE+ - By: Drakos)" +
-                        "\n     - Plague Scientist (Neutral Killer - Codded by dev TOH and Ported from TOHE+ - By: Drakos)" +
-                        "\n     - Schrodinger's Cat (Neutral Benign - Codded by dev TOH - By: ryuk)" +
+                        "\n     - Penguin (Hindering Impostor - Coded by dev TOH and Ported from TOHE+ - By: Drakos)" +
+                        "\n     - Stealth (Hindering Impostor - Coded by dev TOH and Ported from TOHE+ - By: Drakos)" +
+                        "\n     - Plague Scientist (Neutral Killer - Coded by dev TOH and Ported from TOHE+ - By: Drakos)" +
+                        "\n     - Schrodinger's Cat (Neutral Benign - Coded by dev TOH - By: ryuk)" +
                         "\n     - Quizmaster (Experemental role - By: Furo)" +
                         "\n     - Susceptible (Helpful Addon - By: Drakos)" +
                         "\n     - Tired (Helpful Addon - By: Drakos)" +
                         "\n     - Tricky (Impostor Add-on - By: ryuk)" +
-                        "\n     - Rainbow (Miscellaneous Addon - Codded by dev TOH-Y - By: NikoCat223 and LezaiYa)" +
+                        "\n     - Rainbow (Miscellaneous Addon - Coded by dev TOH-Y - By: NikoCat223 and LezaiYa)" +
 
                     "\n<b>【Reworked/Rebased/Improved Roles】(4 roles)</i></b>" +
                         "\n     - Killing Machine (Reworked - By: ryuk)" +
@@ -1547,15 +1547,15 @@ public class ModNewsHistory
 
                     "\n<b>【New Roles/Addons】(6 roles, 4 Addons)</i></b>" +
                         "\n     - Rift Maker (Support Impostor - By: ryuk)" +
-                        "\n     - Penguin (Hindering Impostor - Codded by dev TOH and Ported from TOHE+ - By: Drakos)" +
-                        "\n     - Stealth (Hindering Impostor - Codded by dev TOH and Ported from TOHE+ - By: Drakos)" +
-                        "\n     - Plague Scientist (Neutral Killer - Codded by dev TOH and Ported from TOHE+ - By: Drakos)" +
-                        "\n     - Schrodinger's Cat (Neutral Benign - Codded by dev TOH - By: ryuk)" +
+                        "\n     - Penguin (Hindering Impostor - Coded by dev TOH and Ported from TOHE+ - By: Drakos)" +
+                        "\n     - Stealth (Hindering Impostor - Coded by dev TOH and Ported from TOHE+ - By: Drakos)" +
+                        "\n     - Plague Scientist (Neutral Killer - Coded by dev TOH and Ported from TOHE+ - By: Drakos)" +
+                        "\n     - Schrodinger's Cat (Neutral Benign - Coded by dev TOH - By: ryuk)" +
                         "\n     - Quizmaster (Experemental role - By: Furo)" +
                         "\n     - Susceptible (Helpful Addon - By: Drakos)" +
                         "\n     - Tired (Helpful Addon - By: Drakos)" +
                         "\n     - Tricky (Impostor Add-on - By: ryuk)" +
-                        "\n     - Rainbow (Miscellaneous Addon - Codded by dev TOH-Y - By: NikoCat223 and LezaiYa)" +
+                        "\n     - Rainbow (Miscellaneous Addon - Coded by dev TOH-Y - By: NikoCat223 and LezaiYa)" +
 
                     "\n<b>【Reworked/Rebased/Improved Roles】(4 roles)</i></b>" +
                         "\n     - Killing Machine (Reworked - By: ryuk)" +
@@ -2621,15 +2621,15 @@ public class ModNewsHistory
 
                     "\n<b>【New Roles/Addons】(6 roles, 4 Addons)</i></b>" +
                         "\n     - Rift Maker (Support Impostor - By: ryuk)" +
-                        "\n     - Penguin (Hindering Impostor - Codded by dev TOH and Ported from TOHE+ - By: Drakos)" +
-                        "\n     - Stealth (Hindering Impostor - Codded by dev TOH and Ported from TOHE+ - By: Drakos)" +
+                        "\n     - Penguin (Hindering Impostor - Coded by dev TOH and Ported from TOHE+ - By: Drakos)" +
+                        "\n     - Stealth (Hindering Impostor - Coded by dev TOH and Ported from TOHE+ - By: Drakos)" +
                         "\n     - Plague Scientist (Neutral Killer - Codded by dev TOH and Ported from TOHE+ - By: Drakos)" +
-                        "\n     - Schrodinger's Cat (Neutral Benign - Codded by dev TOH - By: ryuk)" +
+                        "\n     - Schrodinger's Cat (Neutral Benign - Coded by dev TOH - By: ryuk)" +
                         "\n     - Quizmaster (Experemental role - By: Furo)" +
                         "\n     - Susceptible (Helpful Addon - By: Drakos)" +
                         "\n     - Tired (Helpful Addon - By: Drakos)" +
                         "\n     - Tricky (Impostor Add-on - By: ryuk)" +
-                        "\n     - Rainbow (Miscellaneous Addon - Codded by dev TOH-Y - By: NikoCat223 and LezaiYa)" +
+                        "\n     - Rainbow (Miscellaneous Addon - Coded by dev TOH-Y - By: NikoCat223 and LezaiYa)" +
 
                     "\n<b>【Reworked/Rebased/Improved Roles】(4 roles)</i></b>" +
                         "\n     - Killing Machine (Reworked - By: ryuk)" +
@@ -3355,15 +3355,15 @@ public class ModNewsHistory
 
                     "\n<b>【New Roles/Addons】(6 roles, 4 Addons)</i></b>" +
                         "\n     - Rift Maker (Support Impostor - By: ryuk)" +
-                        "\n     - Penguin (Hindering Impostor - Codded by dev TOH and Ported from TOHE+ - By: Drakos)" +
-                        "\n     - Stealth (Hindering Impostor - Codded by dev TOH and Ported from TOHE+ - By: Drakos)" +
-                        "\n     - Plague Scientist (Neutral Killer - Codded by dev TOH and Ported from TOHE+ - By: Drakos)" +
-                        "\n     - Schrodinger's Cat (Neutral Benign - Codded by dev TOH - By: ryuk)" +
+                        "\n     - Penguin (Hindering Impostor - Coded by dev TOH and Ported from TOHE+ - By: Drakos)" +
+                        "\n     - Stealth (Hindering Impostor - Coded by dev TOH and Ported from TOHE+ - By: Drakos)" +
+                        "\n     - Plague Scientist (Neutral Killer - Coded by dev TOH and Ported from TOHE+ - By: Drakos)" +
+                        "\n     - Schrodinger's Cat (Neutral Benign - Coded by dev TOH - By: ryuk)" +
                         "\n     - Quizmaster (Experemental role - By: Furo)" +
                         "\n     - Susceptible (Helpful Addon - By: Drakos)" +
                         "\n     - Tired (Helpful Addon - By: Drakos)" +
                         "\n     - Tricky (Impostor Add-on - By: ryuk)" +
-                        "\n     - Rainbow (Miscellaneous Addon - Codded by dev TOH-Y - By: NikoCat223 and LezaiYa)" +
+                        "\n     - Rainbow (Miscellaneous Addon - Coded by dev TOH-Y - By: NikoCat223 and LezaiYa)" +
 
                     "\n<b>【Reworked/Rebased/Improved Roles】(4 roles)</i></b>" +
                         "\n     - Killing Machine (Reworked - By: ryuk)" +
