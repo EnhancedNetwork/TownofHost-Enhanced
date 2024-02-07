@@ -1285,7 +1285,9 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Jinx)
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.CursedWolf)
-                    || pc.Is(CustomRoles.Masochist))
+                    || pc.Is(CustomRoles.Masochist)
+                    || pc.Is(CustomRoles.PlagueBearer)
+                    || pc.Is(CustomRoles.Pestilence))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeFragile.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeFragile.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeFragile.GetBool()))
                     return false;
