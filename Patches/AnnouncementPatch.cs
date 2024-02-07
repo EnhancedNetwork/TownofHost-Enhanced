@@ -189,7 +189,7 @@ public class ModNewsHistory
 
                     "\n\n★ Welcome to Town of Host: Enhanced v1.5.0 ★",
 
-                    Date = "2024-2-4T03:00:00Z"
+                    Date = "2024-2-7T06:00:00Z"
                 };
                 AllModNews.Add(news);
             }
@@ -715,7 +715,7 @@ public class ModNewsHistory
 
                     "\n\n★ Добро пожаловать в Town of Host: Enhanced v1.5.0 ★",
 
-                    Date = "2024-2-4T03:00:00Z"
+                    Date = "2024-2-7T06:00:00Z"
                 };
                 AllModNews.Add(news);
             }
@@ -1237,7 +1237,7 @@ public class ModNewsHistory
 
                     "\n\n★ 欢迎来到 Town of Host: Enhanced v1.5.0 ★",
 
-                    Date = "2024-2-4T03:00:00Z"
+                    Date = "2024-2-7T06:00:00Z"
                 };
                 AllModNews.Add(news);
             }
@@ -1675,7 +1675,7 @@ public class ModNewsHistory
 
                     "\n\n★ Welcome to Town of Host: Enhanced v1.5.0 ★",
 
-                    Date = "2024-2-4T03:00:00Z"
+                    Date = "2024-2-7T06:00:00Z"
                 };
                 AllModNews.Add(news);
             }
@@ -2095,7 +2095,7 @@ public class ModNewsHistory
 
                     "\n\n★ Town of Host: Enhanced v1.5.0へようこそ ★",
 
-                    Date = "2024-2-4T03:00:00Z"
+                    Date = "2024-2-7T06:00:00Z"
                 };
                 AllModNews.Add(news);
             }
@@ -2316,7 +2316,7 @@ public class ModNewsHistory
 
                     "\n\n★ Bienvenue sur Town of Host: Enhanced v1.5.0 ★",
 
-                    Date = "2024-2-4T03:00:00Z"
+                    Date = "2024-2-7T06:00:00Z"
                 };
                 AllModNews.Add(news);
             }
@@ -2749,7 +2749,7 @@ public class ModNewsHistory
 
                     "\n\n★ Welcome to Town of Host: Enhanced v1.5.0 ★",
 
-                    Date = "2024-2-4T03:00:00Z"
+                    Date = "2024-2-7T06:00:00Z"
                 };
                 AllModNews.Add(news);
             }
@@ -2970,7 +2970,7 @@ public class ModNewsHistory
 
                     "\n\n★ Benvenuto a Town of Host: Enhanced v1.5.0 ★",
 
-                    Date = "2024-2-4T03:00:00Z"
+                    Date = "2024-2-7T06:00:00Z"
                 };
                 AllModNews.Add(news);
             }
@@ -3191,7 +3191,7 @@ public class ModNewsHistory
 
                     "\n\n★ Bem vindo ao Town of Host: Enhanced v1.5.0 ★",
 
-                    Date = "2024-2-4T03:00:00Z"
+                    Date = "2024-2-7T06:00:00Z"
                 };
                 AllModNews.Add(news);
             }
@@ -3483,7 +3483,7 @@ public class ModNewsHistory
 
                     "\n\n★ Welcome to Town of Host: Enhanced v1.5.0 ★",
 
-                    Date = "2024-2-4T03:00:00Z"
+                    Date = "2024-2-7T06:00:00Z"
                 };
                 AllModNews.Add(news);
             }
