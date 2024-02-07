@@ -1971,141 +1971,129 @@ public class ModNewsHistory
                 {
                     Number = 100008,
                     Title = "Town of Host: Enhanced v1.5.0",
-                    SubTitle = "★★ Big update! ★★",
+                    SubTitle = "★★ 大規模アップデート!! ★★",
                     ShortTitle = "TOH: Enhanced v1.5.0",
                     BeforeNumber = 100007,
-                    Text = "<size=150%>Welcome to TOH: Enhanced v1.5.0!</size>\n" +
-                    "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.4.0\r\n" +
+                    Text = "<size=150%>TOH: Enhanced v1.5.0へようこそ！</size>\n" +
+                    "\n<b>【基本】</b>\n - TOH: Enhanced v1.4.0をベースに\r\n" +
 
-                    "\n<b>【New Roles/Addons】(6 roles, 4 Addons)</i></b>" +
-                        "\n     - Rift Maker (Support Impostor - By: ryuk)" +
-                        "\n     - Penguin (Hindering Impostor - Codded by dev TOH and Ported from TOHE+ - By: Drakos)" +
-                        "\n     - Stealth (Hindering Impostor - Codded by dev TOH and Ported from TOHE+ - By: Drakos)" +
-                        "\n     - Plague Scientist (Neutral Killer - Codded by dev TOH and Ported from TOHE+ - By: Drakos)" +
-                        "\n     - Schrodinger's Cat (Neutral Benign - Codded by dev TOH - By: ryuk)" +
-                        "\n     - Quizmaster (Experemental role - By: Furo)" +
-                        "\n     - Susceptible (Helpful Addon - By: Drakos)" +
-                        "\n     - Tired (Helpful Addon - By: Drakos)" +
-                        "\n     - Tricky (Impostor Add-on - By: ryuk)" +
-                        "\n     - Rainbow (Miscellaneous Addon - Codded by dev TOH-Y - By: NikoCat223 and LezaiYa)" +
+                    "\n<b>【ベース】</b>\n - TOH: Enhanced v1.5.0ベース" +
 
-                    "\n<b>【Reworked/Rebased/Improved Roles】(4 roles)</i></b>" +
-                        "\n     - Killing Machine (Reworked - By: ryuk)" +
-                        "\n     - Investigator (Reworked - By: ryuk)" +
-                        "\n     - Swapper (Rebased - By: NikoCat223)" +
-                        "\n     - Copycat (Improved - By: ryuk)" +
+                    "\n<b>【新しい役割/アドオン】（6つの役割、4つのアドオン）</i></b>" +
+                        "\n     -- 裂け目作成者（サポートインポスター - 作者：ryuk)" +
+                        "\n     -- ペンギン（インポスターを妨げる - TOHE+から移植 - 作者：Drakos)" +
+                        "\n     -- ステルス（インポスターを妨げる - TOHE+から移植 - 作者：Drakos)" +
+                        "\n     -- ペストドクター（ニュートラルキラー - TOHE+から移植 - 作者：Drakos)" +
+                        "\n     -- シュレーディンガーの猫（ニュートラルベニグン - 作者：ryuk)" +
+                        "\n     -- クイズ監督者（実験的な役割 - 作者：Furo)" +
+                        "\n     -- 影響を受けやすい（役立つアドオン - 作者：Drakos)" +
+                        "\n     -- 疲れた（役立つアドオン - 作者：Drakos)" +
+                        "\n     -- トリッキー（インポスターアドオン - 作者：ryuk)" +
+                        "\n     -- 虹（その他のアドオン - TOH-Yから移植 - 作者：NikoCat223とLezaiYa)" +
 
-                    "\n<b>【Removed Roles/Addons】(2 role, 1 Addon)</i></b>" +
-                        "\n     - Luckey (Сrew role - By: ryuk)" +
-                        "\n     - Witch (Neutral Killer - By: TommyXL)" +
-                        "\n     - Repairman (Common Addon - By: TommyXL)" +
+                    "\n<b>【再設計/ベースの改良/向上した役割】（4つの役割）</i></b>" +
+                        "\n     -- 殺人マシン（再設計 - 作者：ryuk)" +
+                        "\n     -- 捜査官（再設計 - 作者：ryuk)" +
+                        "\n     -- スワッパー（ベース再設計 - 作者：NikoCat223)" +
+                        "\n     -- コピーキャット（改良 - 作者：ryuk)" +
 
-                    "\n\r<b>【Performance/Code Improvements】</b>" +
-                        "\n     - «FixedUpdate» in code now work async (By: TommyXL)" +
-                        "\n     - Optimize Ping Tracker Update (By: TommyXL)" +
-                        "\n     - Improved Code In «CheckMurder» (By: TommyXL)" +
-                        "\n     - Improved Code When Players Complite Task (By: TommyXL)" +
-                        "\n     - Сode improvements in «HasKillButton» (By: ryuk)" +
-                        "\n     - Сode improvements in «DivinatorCheck.Result» for Fortune Teller (By: ryuk)" +
+                    "\n<b>【削除された役割/アドオン】（2つの役割、1つのアドオン）</i></b>" +
+                        "\n     -- ラッケイ（クルーメンバー役割 - 作者：ryuk)" +
+                        "\n     -- 魔女（ニュートラルキラー - 作者：TommyXL)" +
+                        "\n     -- 修理工（共通アドオン - 作者：TommyXL)" +
 
-                    "\n\r<b>【New Features】</b>" +
-                        "\n     - Support Vanilla Hide & Seek (By: TommyXL)" +
-                        "\n     - Added random skins & colors in camouflage (By: TommyXL)" +
-                        "\n     - Black screen (Anti Blackout) protection system has been improved (By: TommyXL)" +
-                        "\n     - Add-ons assign was recoded (By: TommyXL)" +
+                    "\n\r<b>【パフォーマンス/コードの改善】</b>" +
+                        "\n     -- コード内の「FixedUpdate」が非同期で動作するようになりました（作者：TommyXL)" +
+                        "\n     -- ピンクトラッカーアップデートの最適化（作者：TommyXL)" +
+                        "\n     -- 「CheckMurder」のコードを改善（作者：TommyXL)" +
+                        "\n     -- プレイヤーがタスクを完了したときのコードの改善（作者：TommyXL)" +
+                        "\n     -- 「HasKillButton」のコードの改善（作者：ryuk)" +
+                        "\n     -- 占い師のための「DivinatorCheck.Result」のコードの改善（作者：ryuk)" +
 
-                    "\n<b>【New Settings】</b>" +
-                        "\n     - Show Only Enabled Roles In Guesser UI (By: TommyXL)" +
-                        "\n     - Only allow whitelisted players to join lobbies (By: ryuk)" +
-                        "\n     - Hide «Host♥» text (By: Pietro)" +
-                        "\n     - Players can use the «/rn» command (By: Marg)" +
-                        "\n     - Copycat: «Can copy team changing addon» (By: ryuk)" +
-                        "\n     - Fortune Teller: «Show random active roles in Fortune Teller hints» (By: ryuk)" +
-                        "\n     - Alchemist: «Potion Of Speed» (Ported from TOHE+ - By: Drakos)" +
-                        "\n     - Doppelganger: «Can vent» and «Has imp vision» (By: ryuk)" +
-                        "\n     - Bandit: «Steal cooldown» (different from kill cooldown - By: ryuk)" +
+                    "\n\r<b>【新機能】</b>" +
+                        "\n     -- Vanilla Hide & Seekをサポート（作者：TommyXL)" +
+                        "\n     -- カムフラージュでランダムなスキンと色を追加（作者：TommyXL)" +
+                        "\n     -- ブラックスクリーン（ブラックアウト防止）の保護システムが改善されました（作者：TommyXL)" +
+                        "\n     -- アドオンの割り当てが再コード化されました（作者：TommyXL)" +
 
-                    "\n<b>【Some Changes】</b>" +
-                        "\n     - Display sorted role names for all langs in guesser UI (By: ryuk)" +
-                        "\n     - Preset 5 will be used to sync with host's setting for modded client (By: TommyXL)" +
-                        "\n     - Ported code «Vent.CanUse» from TOH (By: TommyXL)" +
-                        "\n     - Some roles have been removed from Experimental (By: ryuk)" +
-                        "\n     - Make «/rand» inclusive (By: Marg)" +
-                        "\n     - Prevent bans from InnerSloth servers if not modded host (By: Pietro)" +
-                        "\n     - Warn when «/dump» is used (By: Pietro)" +
-                        "\n     - Translate API tags, if translation available (By: Pietro)" +
-                        "\n     - Updated several roles' names internally to be consistent and not spaghetti code (By: Moe)" +
-                        "\n     - Add-ons with a spawn chance greater than or equal to 90% have higher priority (By: TommyXL)" +
-                        "\n     - Added delay teleport after meeting (By: TommyXL)" +
-                        "\n     - Roles using abilities using vents will now spawns on the Dleks (dlekS ehT) map (By: TommyXL)" +
+                    "\n<b>【新しい設定】</b>" +
+                        "\n     -- Guesser UIで有効な役割のみを表示（作者：TommyXL)" +
+                        "\n     -- ホワイトリストに登録されたプレイヤーのみがロビーに参加できるようにする（作者：ryuk、アイデア提供：Sunnyboi)" +
+                        "\n     -- 「Host♥」テキストを非表示にする（作者：Pietro)" +
+                        "\n     -- プレイヤーは「/rn」コマンドを使用できます（作者：Marg)" +
+                        "\n     -- コピーキャット：「チーム変更アドオンをコピーできる」（作者：ryuk)" +
+                        "\n     -- 占い師：「フォーチュンテラーヒントにランダムなアクティブな役割を表示」（作者：ryuk)" +
+                        "\n     -- 錬金術師：「スピードのポーション」（TOHE+から移植 - 作者：Drakos)" +
+                        "\n     -- ドッペルゲンガー：「ベントを使用できる」および「インポスタービジョンを持っている」（作者：ryuk)" +
+                        "\n     -- 盗賊：「スティールクールダウン」（キルクールダウンとは異なる - 作者：ryuk)" +
 
-                    "\n<b>【Bug Fixes】</b>" +
-                        "\n     - Fixed vents on Dleks map for modded players (By: TommyXL)" +
-                        "\n     - Provocateur now cannot get Bait (By: TommyXL)" +
-                        "\n     - Kamikaze now cannot get Swift (By: TommyXL)" +
-                        "\n     - Evil Tracker now cannot get Seer (By: TommyXL)" +
-                        "\n     - Fixed bug when Bard not work (By: TommyXL)" +
-                        "\n     - Fixed Tracker error In logs (By: TommyXL)" +
-                        "\n     - Fixed Burst error when game end (By: TommyXL)" +
-                        "\n     - Fixed other errors In logs (By: TommyXL)" +
-                        "\n     - Fixed check game end (By: TommyXL)" +
-                        "\n     - Fixed bug when Alchemist & Bloodlust could kill after end meeting (By: TommyXL)" +
-                        "\n     - Possibly fixed bug when sometimes non modded player does not teleported (By: TommyXL)" +
-                        "\n     - Fixed Save Presets (Coded by dev TOH - By: TommyXL)" +
-                        "\n     - Fixed Disconnect At Game End (Coded by dev TOH - By: TommyXL)" +
-                        "\n     - Fixed spam LateTask about Mole on exit vent (By: TommyXL)" +
-                        "\n     - Fixed bug where Evil Tracker «Can See Kill Flash» option sometimes not work (By: TommyXL)" +
-                        "\n     - Fixed bug when some roles can be stuck in vent during comms sabotage (By: TommyXL)" +
-                        "\n     - Fixed some strings (By: TommyXL)" +
-                        "\n     - Fixed errors in logs when Modded Client left the game (By: TommyXL)" +
-                        "\n     - Fixed bug when Merchant checks Add-ons limit (By: TommyXL)" +
-                        "\n     - Fixed bug when President skips meeting and someone will be ejected (By: TommyXL)" +
-                        "\n     - Fixed bug when the player's name was not cleared during end the meeting when player left the game (By: TommyXL)" +
-                        "\n     - Fixed bug when Swooper & Chameleon & Wraith & Alchemist teleport in vent after meeting (By: TommyXL)" +
-                        "\n     - Fixed Cleanser issues (By: TommyXL)" +
-                        "\n     - Fixed bug when Inspector seeing Rascal as Crew and Impostor (By: TommyXL)" +
-                        "\n     - Fixed bug when Time Master works incorrectly (By: TommyXL)" +
-                        "\n     - Fixed bug when Disperser teleport players when they were in vent (By: TommyXL)" +
-                        "\n     - Fixed bug when Huntsman not colored names targets at the beginning of the game (for vanilla - By: TommyXL)" +
-                        "\n     - Fixed bug when Pyromaniac not showing the douse on vanilla (for vanilla - By: TommyXL)" +
-                        "\n     - Fixed bug when Impostor ghosts didn't see the sabotage button (By: TommyXL)" +
-                        "\n     - Fixed bug when the reason for the end win was sometimes displayed incorrectly (By: TommyXL)" +
-                        "\n     - Fixed bug when the add-on had a 100% chance of spawning but would sometimes not spawn in the game (By: TommyXL)" +
-                        "\n     - Some fixes for Romantics (By: TommyXL and ryuk)" +
-                        "\n     - Fixed Undertaker for modded clients (By: ryuk)" +
-                        "\n     - Fixed bug when Copycat copying taskinator will give benefactor if Copycat can copy crew varaint (By: ryuk)" +
-                        "\n     - Fix copycat copying enigma doesnt give clue (By: ryuk)" +
-                        "\n     - Fixed inspector doesnt give madmate as imp team (By: ryuk)" +
-                        "\n     - Fixed telecommunication doesnt work when copycat copies (By: ryuk)" +
-                        "\n     - Fixed Bug where Jackal recruits Copycat and Copycat's role resets after meeting (By: ryuk and Moe)" +
-                        "\n     - Fixed bug when shield animation banning modded clients (By: ryuk)" +
-                        "\n     - Fixed instigator using vanilla kill cooldown (By: ryuk)" +
-                        "\n     - Fixed counillor per meeting limit (By: ryuk)" +
-                        "\n     - Exclude Solsticer from Seeker's target (By: NikoCat223)" +
-                        "\n     - Fixed when solsticer can be murdered (By: NikoCat223)" +
-                        "\n     - Fixed bug when sometimes caused game to crash after version check (By: NikoCat223)" +
-                        "\n     - Fixed bug when Mini can misguess to death (By: NikoCat223)" +
-                        "\n     - Fixed bug when Vulture body amount not showing correctly for mod clients (By: NikoCat223)" +
-                        "\n     - Fixed bug when the host did not choose a spawn location on Airship for a long time and EAC banned players who tried to cause sabotage (By: NikoCat223)" +
-                        "\n     - Fixed bug when Nice Mini can be killed by Warlock, Puppeteer, Shroud and can be target for anonymous (By: NikoCat223 and LezaiYa)" +
-                        "\n     - Fixed the bug that prevented the game from ending when mini was exiled (By: LezaiYa)" +
-                        "\n     - Fixed bug where «/gno» and «/rand» gave same result (By: Marg)" +
+                    "\n<b>【一部の変更】</b>" +
+                        "\n     -- ゲッサーUIのすべての言語の役割名をソートして表示（作者：ryuk)" +
+                        "\n     -- プリセット5は、モディファイドクライアントの設定と同期するために使用されます（作者：TommyXL)" +
+                        "\n     -- TOHからコード「Vent.CanUse」を移植（作者：TommyXL)" +
+                        "\n     -- 一部の役割が実験的から削除されました（作者：ryuk)" +
+                        "\n     -- 「/rand」を包括的に作成（作者：Marg)" +
+                        "\n     -- モディファイドホストでない場合、InnerSlothサーバーからのバンを防止（作者：Pietro)" +
+                        "\n     -- 「/dump」が使用されたときに警告を表示（作者：Pietro)" +
+                        "\n     -- 翻訳可能な場合、APIタグを翻訳します（作者：Pietro)" +
+                        "\n     -- いくつかの役割の名前を内部的に更新して、一貫性がありスパゲッティコードでないようにしました（作者：Moe)" +
+                        "\n     -- スポーンのチャンスが90％以上のアドオンは優先度が高くなりました（作者：TommyXL)" +
+                        "\n     -- 会議後にテレポートの遅延を追加（作者：TommyXL)" +
+                        "\n     -- 能力を使用してベントを使用する役割は、Dleks（dlekS ehT）マップでスポーンするようになりました（作者：TommyXL)" +
 
+                    "\n<b>【バグ修正】</b>" +
+                        "\n     -- モディファイドプレイヤーのDleksマップでのベントを修正（作者：TommyXL)" +
+                        "\n     -- ProvocateurはBaitを取得できなくなりました（作者：TommyXL)" +
+                        "\n     -- ロケットミサイルはSwiftを取得できなくなりました（作者：TommyXL)" +
+                        "\n     -- イーヴィル・トラッカーはSeerを取得できなくなりました（作者：TommyXL)" +
+                        "\n     -- バードが機能しないバグを修正（作者：TommyXL)" +
+                        "\n     -- ログのトラッカーエラーを修正（作者：TommyXL)" +
+                        "\n     -- ゲーム終了時のバーストエラーを修正（作者：TommyXL)" +
+                        "\n     -- その他のログエラーを修正（作者：TommyXL)" +
+                        "\n     -- ゲーム終了を確認するバグを修正（作者：TommyXL)" +
+                        "\n     -- アルケミストとブラッドラストが会議終了後にキルできるバグを修正（作者：TommyXL)" +
+                        "\n     -- 時々ノンモディファイドプレイヤーがテレポートされないバグを修正（作者：TommyXL)" +
+                        "\n     -- プリセットの保存を修正（Coded by dev TOH - 作者：TommyXL)" +
+                        "\n     -- ゲーム終了時の切断を修正（Coded by dev TOH - 作者：TommyXL)" +
+                        "\n     -- 会議終了時のモグラが存在しない場合のLateTaskのスパムを修正（作者：TommyXL)" +
+                        "\n     -- イーヴィル・トラッカーが「キルフラッシュを見ることができる」オプションが時々機能しないバグを修正（作者：TommyXL)" +
+                        "\n     -- 一部の役割がコミュニケーションの妨害中にベントに挟まれる場合があるバグを修正（作者：TommyXL)" +
+                        "\n     -- 一部の文字列を修正（作者：TommyXL)" +
+                        "\n     -- モディファイドクライアントがゲームを退出したときのログエラーを修正（作者：TommyXL)" +
+                        "\n     -- コピーキャットがタスキネーターをコピーすると、コピーキャットがクルーバリアントをコピーできる場合にはベネファクターを与えるバグを修正（作者：ryuk)" +
+                        "\n     -- コピーキャットがエニグマをコピーしても手がかりを与えないバグを修正（作者：ryuk)" +
+                        "\n     -- インスペクターがマッドメイトをインポスターチームとして表示しないバグを修正（作者：ryuk)" +
+                        "\n     -- コピーキャットがコピーした場合、テレコミュニケーションが機能しないバグを修正（作者：ryuk)" +
+                        "\n     -- ジャッカルがコピーキャットを勧誘し、会議後にコピーキャットの役割がリセットされるバグを修正（作者：ryukとMoe)" +
+                        "\n     -- シールドアニメーションがモディファイドクライアントを禁止するバグを修正（作者：ryuk)" +
+                        "\n     -- インスティゲーターがバニラのキルクールダウンを使用するバグを修正（作者：ryuk)" +
+                        "\n     -- 評議員の会議ごとの制限を修正（作者：ryuk)" +
+                        "\n     -- SeekerからSolsticerを除外（作者：NikoCat223)" +
+                        "\n     -- Solsticerが殺害される可能性があるバグを修正（作者：NikoCat223)" +
+                        "\n     -- バージョンチェック後にゲームがクラッシュすることがあるバグを修正（作者：NikoCat223)" +
+                        "\n     -- Miniが死亡する可能性があるバグを修正（作者：NikoCat223)" +
+                        "\n     -- Vultureのボディの数がモディファイドクライアントに正しく表示されないバグを修正（作者：NikoCat223)" +
+                        "\n     -- ホストがAirshipのスポーン位置を長時間選択しなかった場合、EACが妨害を引き起こそうとしたプレイヤーをバンするバグを修正（作者：NikoCat223)" +
+                        "\n     -- ナイスミニがウォーロック、パペティア、シュラウドによって殺され、匿名の対象になるバグを修正（作者：NikoCat223とLezaiYa)" +
+                        "\n     -- Miniが追放されたときにゲームが終了しないバグを修正（作者：LezaiYa)" +
+                        "\n     -- 「/gno」と「/rand」が同じ結果を与えるバグを修正（作者：Marg)" +
 
-                    "\n<b>【Translator Credits】</b>" +
-                        "\n     - Brazilian (By: Dx7405)" +
-                        "\n     - Dutch (By: apemv, madmazel_)" +
-                        "\n     - French (By: FuroYT, KevOut, Klaomi, Sansationnelle)" +
-                        "\n     - Italian (By: alot, Baphojack, Mattix606)" +
-                        "\n     - Japanese (By: Sunnyboi)" +
-                        "\n     - Latin American (By: CreepPower)" +
-                        "\n     - Russian (By: TommyXL, Shoulder Devil, chill_ultimated, Nevermore59)" +
-                        "\n     - Simplified Chinese (By: CrewCyan, LezaiYa, NikoCat223)" +
-                        "\n     - Spanish (By: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
-                        "\n     - Traditional Chinese (By: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
-                        "\n<b> Check out all of our translators on our website</b>\r\n" +
+                    "\n<b>【翻訳者クレジット】</b>" +
+                        "\n     -- ブラジル（作者：Dx7405)" +
+                        "\n     -- オランダ（作者：apemv、madmazel_)" +
+                        "\n     -- フランス（作者：FuroYT、KevOut、Klaomi、Sansationnelle)" +
+                        "\n     -- イタリア（作者：alot、Baphojack、Mattix606)" +
+                        "\n     -- 日本（作者：Sunnyboi)" +
+                        "\n     -- ラテンアメリカ（作者：CreepPower)" +
+                        "\n     -- ロシア（作者：TommyXL、Shoulder Devil、chill_ultimated、Nevermore59)" +
+                        "\n     -- 簡体字中国語（作者：CrewCyan、LezaiYa、NikoCat223)" +
+                        "\n     -- スペイン（作者：Dawson、Sunnyboi、thewhiskas27、xxSShadow)" +
+                        "\n     -- 繁体字中国語（作者：FlyFlyTurtle、Hinharrrrr、netherdragontw、Pomelo_)" +
+                    "    \n<b> ウェブサイトですべての翻訳者を確認してください</b>\r\n" +
 
-                    "\n\n★ Welcome to Town of Host: Enhanced v1.5.0 ★",
+                    "\n<b>【上記の開発者および友人によるその他のさまざまな修正】</b>\r\n" +
+
+                    "\n\n★ Town of Host: Enhanced v1.5.0へようこそ ★",
 
                     Date = "2024-2-4T03:00:00Z"
                 };
@@ -2120,7 +2108,7 @@ public class ModNewsHistory
                     ShortTitle = "TOH: Enhanced v1.4.0",
                     BeforeNumber = 100006,
                     Text = "<size=150%>TOH: Enhanced v1.4.0へようこそ！</size>\n" +
-                    
+
                     "\n<b>【基本】</b>\n - TOH: Enhanced v1.3.0をベースに\r\n" +
 
                     "\n<b>【新しい役割/アドオン】(7役割、3アドオン)</i></b>" +
@@ -2208,7 +2196,7 @@ public class ModNewsHistory
                         "\n - Susceptible (Addon utile - Par : Drakos)" +
                         "\n - Fatigué (Addon utile - Par : Drakos)" +
                         "\n - Tricky (Module complémentaire Impostor - Par : ryuk)" +
-                        "\n - Rainbow (Addon divers - Codé par le développeur TOH-Y - Par : NikoCat223 et LezaiYa)" + 
+                        "\n - Rainbow (Addon divers - Codé par le développeur TOH-Y - Par : NikoCat223 et LezaiYa)" +
 
                     "\n<b>【Rôles retravaillés/rebasés/améliorés】(4 rôles)</i></b>" +
                         "\n - Killing Machine (Retravaillé - Par : ryuk)" +
@@ -2274,7 +2262,7 @@ public class ModNewsHistory
                         "\n - Peut-être corrigé un bug lorsque parfois un joueur non modifié ne se téléportait pas (Par : TommyXL)" +
                         "\n - Correction des préréglages de sauvegarde (codé par dev TOH - Par : TommyXL)" +
                         "\n - Correction de la déconnexion à la fin du jeu (codé par le développeur TOH - Par : TommyXL)" +
-                    	"\n - Correction du spam LateTask concernant la taupe lors de la sortie (Par : TommyXL)" +
+                        "\n - Correction du spam LateTask concernant la taupe lors de la sortie (Par : TommyXL)" +
                         "\n - Correction d'un bug où l'option Evil Tracker « Can See Kill Flash » ne fonctionnait parfois pas (Par : TommyXL)" +
                         "\n - Correction d'un bug où certains rôles pouvaient être bloqués dans l'évent lors d'un sabotage des communications (Par : TommyXL)" +
                         "\n - Correction de certaines chaînes (Par : TommyXL)" +
@@ -2295,7 +2283,7 @@ public class ModNewsHistory
                         "\n - Quelques correctifs pour les romantiques (Par : TommyXL et ryuk)" +
                         "\n - Correction d'Undertaker pour les clients modifiés (Par : ryuk)" +
                         "\n - Correction d'un bug lorsque le taskinator de copie de Copycat donnera un bienfaiteur si Copycat peut copier la variante de l'équipage (Par : ryuk)" +
-                    	"\n - Correction de l'énigme de copie de copie qui ne donne pas d'indice (Par : ryuk)" +
+                        "\n - Correction de l'énigme de copie de copie qui ne donne pas d'indice (Par : ryuk)" +
                         "\n - Correction de l'inspecteur qui ne donne pas Madmate comme équipe de diablotins (Par : ryuk)" +
                         "\n - Les télécommunications fixes ne fonctionnent pas lors des copies copiées (Par : ryuk)" +
                         "\n - Correction d'un bug où Jackal recrute Copycat et le rôle de Copycat est réinitialisé après la réunion (Par : ryuk et Moe)" +
@@ -2846,141 +2834,141 @@ public class ModNewsHistory
                 {
                     Number = 100008,
                     Title = "Town of Host: Enhanced v1.5.0",
-                    SubTitle = "★★ Big update! ★★",
+                    SubTitle = "★★ Grande Aggiornamento! ★★",
                     ShortTitle = "TOH: Enhanced v1.5.0",
                     BeforeNumber = 100007,
-                    Text = "<size=150%>Welcome to TOH: Enhanced v1.5.0!</size>\n" +
-                    "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.4.0\r\n" +
+                    Text = "<size=150%>Benvenuto a TOH: Enhanced v1.5.0!</size>\n" +
+                    "\n<b>【Base】</b>\n - Base su TOH: Enhanced v1.4.0\r\n" +
 
-                    "\n<b>【New Roles/Addons】(6 roles, 4 Addons)</i></b>" +
-                        "\n     - Rift Maker (Support Impostor - By: ryuk)" +
-                        "\n     - Penguin (Hindering Impostor - Codded by dev TOH and Ported from TOHE+ - By: Drakos)" +
-                        "\n     - Stealth (Hindering Impostor - Codded by dev TOH and Ported from TOHE+ - By: Drakos)" +
-                        "\n     - Plague Scientist (Neutral Killer - Codded by dev TOH and Ported from TOHE+ - By: Drakos)" +
-                        "\n     - Schrodinger's Cat (Neutral Benign - Codded by dev TOH - By: ryuk)" +
-                        "\n     - Quizmaster (Experemental role - By: Furo)" +
-                        "\n     - Susceptible (Helpful Addon - By: Drakos)" +
-                        "\n     - Tired (Helpful Addon - By: Drakos)" +
-                        "\n     - Tricky (Impostor Add-on - By: ryuk)" +
-                        "\n     - Rainbow (Miscellaneous Addon - Codded by dev TOH-Y - By: NikoCat223 and LezaiYa)" +
+                    "\n<b>【Nuovi Ruoli/Modificatori】(6 Ruoli, 4 Modificatori)</i></b>" +
+                        "\n     - Spaccatore (Impostore Supporto - Da: ryuk)" +
+                        "\n     - Pinguino (Impostore Ostacolante - Codificato dallo sviluppatore TOH e portato da TOHE+ - Da: Drakos)" +
+                        "\n     - Furtivo (Impostore Ostacolante - Codificato dallo sviluppatore TOH e portato da TOHE+ - Da: Drakos)" +
+                        "\n     - Scienziato della Peste (Assassino neutrale - Codificato dallo sviluppatore TOH e portato da TOHE+ - Da: Drakos)" +
+                        "\n     - Il Gatto di Schròdinger (Neutrale Benigno - Codificato da dev TOH - Da: ryuk)" +
+                        "\n     - Maestro dei Quiz (Ruolo Sperimentale - Da: Furo)" +
+                        "\n     - Suscettibile (Modificatore Utile - Da: Drakos)" +
+                        "\n     - Stanco (Modificatore Utile - Da: Drakos)" +
+                        "\n     - Ingannevole (Modificatore Impostore - Da: ryuk)" +
+                        "\n     - Arcobaleno (Modificatore Vario - Codificato da dev TOH-Y - Da: NikoCat223 e LezaiYa)" +
 
-                    "\n<b>【Reworked/Rebased/Improved Roles】(4 roles)</i></b>" +
-                        "\n     - Killing Machine (Reworked - By: ryuk)" +
-                        "\n     - Investigator (Reworked - By: ryuk)" +
-                        "\n     - Swapper (Rebased - By: NikoCat223)" +
-                        "\n     - Copycat (Improved - By: ryuk)" +
+                    "\n<b>【Ruoli Rielaborati/Ribasati/Migliorati】(4 Ruoli)</i></b>" +
+                        "\n     - Macchina Assassina (Rielaborato - Da: ryuk)" +
+                        "\n     - Investigatore (Rielaborato - Da: ryuk)" +
+                        "\n     - Scambiatore (Ribasato - Da: NikoCat223)" +
+                        "\n     - Copiatore (Migliorato - Da: ryuk)" +
 
-                    "\n<b>【Removed Roles/Addons】(2 role, 1 Addon)</i></b>" +
-                        "\n     - Luckey (Сrew role - By: ryuk)" +
-                        "\n     - Witch (Neutral Killer - By: TommyXL)" +
-                        "\n     - Repairman (Common Addon - By: TommyXL)" +
+                    "\n<b>【Ruoli/Modificatori Rimossi】(2 Ruoli, 1 Modificatore)</i></b>" +
+                        "\n     - Fortunello (Ruolo Astronauta - Da: ryuk)" +
+                        "\n     - Strega (Assassino Neutrale - Da: TommyXL)" +
+                        "\n     - Riparatore (Modificatore Comune - Da: TommyXL)" +
 
-                    "\n\r<b>【Performance/Code Improvements】</b>" +
-                        "\n     - «FixedUpdate» in code now work async (By: TommyXL)" +
-                        "\n     - Optimize Ping Tracker Update (By: TommyXL)" +
-                        "\n     - Improved Code In «CheckMurder» (By: TommyXL)" +
-                        "\n     - Improved Code When Players Complite Task (By: TommyXL)" +
-                        "\n     - Сode improvements in «HasKillButton» (By: ryuk)" +
-                        "\n     - Сode improvements in «DivinatorCheck.Result» for Fortune Teller (By: ryuk)" +
+                    "\n\r<b>【Miglioramenti delle Prestazioni/del Codice】</b>" +
+                        "\n     - «FixedUpdate» nel codice ora funziona in modo asincrono (Da: TommyXL)" +
+                        "\n     - Ottimizza l'Aggiornamento del Ping Tracker (Da: TommyXL)" +
+                        "\n     - Codice Migliorato in «CheckMurder» (Da: TommyXL)" +
+                        "\n     - Codice migliorato Quando i Giocatori Completano gli Incarichi (Da: TommyXL)" +
+                        "\n     - Miglioramenti al codice in «HasKillButton» (Da: ryuk)" +
+                        "\n     - Miglioramenti al codice in «DivinatorCheck.Result» per Sensitivo (Da: ryuk)" +
 
-                    "\n\r<b>【New Features】</b>" +
-                        "\n     - Support Vanilla Hide & Seek (By: TommyXL)" +
-                        "\n     - Added random skins & colors in camouflage (By: TommyXL)" +
-                        "\n     - Black screen (Anti Blackout) protection system has been improved (By: TommyXL)" +
-                        "\n     - Add-ons assign was recoded (By: TommyXL)" +
+                    "\n\r<b>【Nuove Funzionalità】</b>" +
+                        "\n     - Supporto Vanilla Hide & Seek (Da: TommyXL)" +
+                        "\n     - Aggiunti skin e colori casuali nel camuffamento (Da: TommyXL)" +
+                        "\n     - Il sistema di protezione dello schermo nero (Anti Blackout) è stato migliorato (Da: TommyXL)" +
+                        "\n     - L'assegnazione dei Modificatori è stata ricodificata (Da: TommyXL)" +
 
-                    "\n<b>【New Settings】</b>" +
-                        "\n     - Show Only Enabled Roles In Guesser UI (By: TommyXL)" +
-                        "\n     - Only allow whitelisted players to join lobbies (By: ryuk)" +
-                        "\n     - Hide «Host♥» text (By: Pietro)" +
-                        "\n     - Players can use the «/rn» command (By: Marg)" +
-                        "\n     - Copycat: «Can copy team changing addon» (By: ryuk)" +
-                        "\n     - Fortune Teller: «Show random active roles in Fortune Teller hints» (By: ryuk)" +
-                        "\n     - Alchemist: «Potion Of Speed» (Ported from TOHE+ - By: Drakos)" +
-                        "\n     - Doppelganger: «Can vent» and «Has imp vision» (By: ryuk)" +
-                        "\n     - Bandit: «Steal cooldown» (different from kill cooldown - By: ryuk)" +
+                    "\n<b>【Nuove Impostazioni】</b>" +
+                        "\n     - Mostra solo i ruoli abilitati nell'interfaccia utente dell'indovino (Da: TommyXL)" +
+                        "\n     - Consenti solo ai giocatori autorizzati di partecipare (Da: ryuk)" +
+                        "\n     - Nascondi il testo «Host♥». (Da: Pietro)" +
+                        "\n     - I giocatori possono usare il comando «/rn». (Da: Marg)" +
+                        "\n     - Copione: «Può copiare il Modificatore che modifica la squadra» (Da: ryuk)" +
+                        "\n     - Sensitivo: «Mostra ruoli attivi casuali nei suggerimenti del sensitivo» (Da: ryuk)" +
+                        "\n     - Alchimista: «Pozione di Velocità» (Portato da TOHE+ - Da: Drakos)" +
+                        "\n     - Doppelganger: «Può usare i condotti» e «Ha la visione da Impostore» (Da: ryuk)" +
+                        "\n     - Bandito: «Ricarica Furto» (Diverso da Ricarica Uccisione - Da: ryuk)" +
 
-                    "\n<b>【Some Changes】</b>" +
-                        "\n     - Display sorted role names for all langs in guesser UI (By: ryuk)" +
-                        "\n     - Preset 5 will be used to sync with host's setting for modded client (By: TommyXL)" +
-                        "\n     - Ported code «Vent.CanUse» from TOH (By: TommyXL)" +
-                        "\n     - Some roles have been removed from Experimental (By: ryuk)" +
-                        "\n     - Make «/rand» inclusive (By: Marg)" +
-                        "\n     - Prevent bans from InnerSloth servers if not modded host (By: Pietro)" +
-                        "\n     - Warn when «/dump» is used (By: Pietro)" +
-                        "\n     - Translate API tags, if translation available (By: Pietro)" +
-                        "\n     - Updated several roles' names internally to be consistent and not spaghetti code (By: Moe)" +
-                        "\n     - Add-ons with a spawn chance greater than or equal to 90% have higher priority (By: TommyXL)" +
-                        "\n     - Added delay teleport after meeting (By: TommyXL)" +
-                        "\n     - Roles using abilities using vents will now spawns on the Dleks (dlekS ehT) map (By: TommyXL)" +
+                    "\n<b>【Alcuni Cambiamenti】</b>" +
+                        "\n     - Visualizza i nomi dei ruoli ordinati per tutte le lingue nell'interfaccia utente dell'indovino (Da: ryuk)" +
+                        "\n     - La preimpostazione 5 verrà utilizzata per la sincronizzazione con l'impostazione dell'host per il client modificato (Da: TommyXL)" +
+                        "\n     - Codice trasferito «Vent.CanUse» da TOH (Da: TommyXL)" +
+                        "\n     - Some roles have been removed from Experimental (Da: ryuk)" +
+                        "\n     - Reso «/rand» inclusivo (Da: Marg)" +
+                        "\n     - Previene i ban dai server InnerSloth se non sono host modificati (Da: Pietro)" +
+                        "\n     - Avviso quando viene utilizzato «/dump». (Da: Pietro)" +
+                        "\n     - Tradurre i tag API, se la traduzione è disponibile (Da: Pietro)" +
+                        "\n     - Aggiornati internamente i nomi di diversi ruoli per essere coerenti (Da: Moe)" +
+                        "\n     - I Modificatori con una probabilità di generazione maggiore o uguale al 90% hanno una priorità più alta (Da: TommyXL)" +
+                        "\n     - Aggiunto ritardo nel teletrasporto dopo la riunione (Da: TommyXL)" +
+                        "\n     - I ruoli che utilizzano abilità che utilizzano i condotti ora verranno generati sulla mappa Dleks (dlekS ehT). (Da: TommyXL)" +
 
-                    "\n<b>【Bug Fixes】</b>" +
-                        "\n     - Fixed vents on Dleks map for modded players (By: TommyXL)" +
-                        "\n     - Provocateur now cannot get Bait (By: TommyXL)" +
-                        "\n     - Kamikaze now cannot get Swift (By: TommyXL)" +
-                        "\n     - Evil Tracker now cannot get Seer (By: TommyXL)" +
-                        "\n     - Fixed bug when Bard not work (By: TommyXL)" +
-                        "\n     - Fixed Tracker error In logs (By: TommyXL)" +
-                        "\n     - Fixed Burst error when game end (By: TommyXL)" +
-                        "\n     - Fixed other errors In logs (By: TommyXL)" +
-                        "\n     - Fixed check game end (By: TommyXL)" +
-                        "\n     - Fixed bug when Alchemist & Bloodlust could kill after end meeting (By: TommyXL)" +
-                        "\n     - Possibly fixed bug when sometimes non modded player does not teleported (By: TommyXL)" +
-                        "\n     - Fixed Save Presets (Coded by dev TOH - By: TommyXL)" +
-                        "\n     - Fixed Disconnect At Game End (Coded by dev TOH - By: TommyXL)" +
-                        "\n     - Fixed spam LateTask about Mole on exit vent (By: TommyXL)" +
-                        "\n     - Fixed bug where Evil Tracker «Can See Kill Flash» option sometimes not work (By: TommyXL)" +
-                        "\n     - Fixed bug when some roles can be stuck in vent during comms sabotage (By: TommyXL)" +
-                        "\n     - Fixed some strings (By: TommyXL)" +
-                        "\n     - Fixed errors in logs when Modded Client left the game (By: TommyXL)" +
-                        "\n     - Fixed bug when Merchant checks Add-ons limit (By: TommyXL)" +
-                        "\n     - Fixed bug when President skips meeting and someone will be ejected (By: TommyXL)" +
-                        "\n     - Fixed bug when the player's name was not cleared during end the meeting when player left the game (By: TommyXL)" +
-                        "\n     - Fixed bug when Swooper & Chameleon & Wraith & Alchemist teleport in vent after meeting (By: TommyXL)" +
-                        "\n     - Fixed Cleanser issues (By: TommyXL)" +
-                        "\n     - Fixed bug when Inspector seeing Rascal as Crew and Impostor (By: TommyXL)" +
-                        "\n     - Fixed bug when Time Master works incorrectly (By: TommyXL)" +
-                        "\n     - Fixed bug when Disperser teleport players when they were in vent (By: TommyXL)" +
-                        "\n     - Fixed bug when Huntsman not colored names targets at the beginning of the game (for vanilla - By: TommyXL)" +
-                        "\n     - Fixed bug when Pyromaniac not showing the douse on vanilla (for vanilla - By: TommyXL)" +
-                        "\n     - Fixed bug when Impostor ghosts didn't see the sabotage button (By: TommyXL)" +
-                        "\n     - Fixed bug when the reason for the end win was sometimes displayed incorrectly (By: TommyXL)" +
-                        "\n     - Fixed bug when the add-on had a 100% chance of spawning but would sometimes not spawn in the game (By: TommyXL)" +
-                        "\n     - Some fixes for Romantics (By: TommyXL and ryuk)" +
-                        "\n     - Fixed Undertaker for modded clients (By: ryuk)" +
-                        "\n     - Fixed bug when Copycat copying taskinator will give benefactor if Copycat can copy crew varaint (By: ryuk)" +
-                        "\n     - Fix copycat copying enigma doesnt give clue (By: ryuk)" +
-                        "\n     - Fixed inspector doesnt give madmate as imp team (By: ryuk)" +
-                        "\n     - Fixed telecommunication doesnt work when copycat copies (By: ryuk)" +
-                        "\n     - Fixed Bug where Jackal recruits Copycat and Copycat's role resets after meeting (By: ryuk and Moe)" +
-                        "\n     - Fixed bug when shield animation banning modded clients (By: ryuk)" +
-                        "\n     - Fixed instigator using vanilla kill cooldown (By: ryuk)" +
-                        "\n     - Fixed counillor per meeting limit (By: ryuk)" +
-                        "\n     - Exclude Solsticer from Seeker's target (By: NikoCat223)" +
-                        "\n     - Fixed when solsticer can be murdered (By: NikoCat223)" +
-                        "\n     - Fixed bug when sometimes caused game to crash after version check (By: NikoCat223)" +
-                        "\n     - Fixed bug when Mini can misguess to death (By: NikoCat223)" +
-                        "\n     - Fixed bug when Vulture body amount not showing correctly for mod clients (By: NikoCat223)" +
-                        "\n     - Fixed bug when the host did not choose a spawn location on Airship for a long time and EAC banned players who tried to cause sabotage (By: NikoCat223)" +
-                        "\n     - Fixed bug when Nice Mini can be killed by Warlock, Puppeteer, Shroud and can be target for anonymous (By: NikoCat223 and LezaiYa)" +
-                        "\n     - Fixed the bug that prevented the game from ending when mini was exiled (By: LezaiYa)" +
-                        "\n     - Fixed bug where «/gno» and «/rand» gave same result (By: Marg)" +
+                    "\n<b>【Correzioni di Bug】</b>" +
+                        "\n     - Sistemati i Condotti sulla mappa Dleks per i giocatori modificati (Da: TommyXL)" +
+                        "\n     - Il Provocatore ora non può ottenere l'esca (Da: TommyXL)" +
+                        "\n     - Kamikaze ora non può ottenere Rapido (Da: TommyXL)" +
+                        "\n     - Tracker Malvagio ora non può ottenere il Veggente (Da: TommyXL)" +
+                        "\n     - Risolto un bug quando Bardo non funzionava (Da: TommyXL)" +
+                        "\n     - Risolto errore del Localizzatore nei registri (Da: TommyXL)" +
+                        "\n     - Risolto l'errore di Esplosivo alla fine del gioco (Da: TommyXL)" +
+                        "\n     - Risolti altri errori nei log (Da: TommyXL)" +
+                        "\n     - Risolto un bug con il controllo della fine del gioco (Da: TommyXL)" +
+                        "\n     - Risolto un bug per il quale Alchimista e Sete di Sangue potevano uccidere dopo l'incontro finale (Da: TommyXL)" +
+                        "\n     - Possibilmente risolto un bug per cui a volte il giocatore senza mod non si teletrasportava (Da: TommyXL)" +
+                        "\n     - Risolto un bug con il salvataggio delle preimpostazioni (Codificato dallo sviluppatore TOH - Da: TommyXL)" +
+                        "\n     - Risolto un bug con la disconnessione alla fine del gioco (Codificato dallo sviluppatore TOH - Da: TommyXL)" +
+                        "\n     - Risolto un bug con lo spam LateTask relativo alla Talpa nel condotto (Da: TommyXL)" +
+                        "\n     - Risolto un bug per il quale l'opzione «Can See Kill Flash» di Evil Tracker a volte non funzionava (Da: TommyXL)" +
+                        "\n     - Risolto un bug per cui alcuni ruoli potevano rimanere bloccati nei condotti durante il sabotaggio delle comunicazioni (Da: TommyXL)" +
+                        "\n     - Risolte alcune stringhe (Da: TommyXL)" +
+                        "\n     - Risolti errori nei log quando il client modificato abbandonava il gioco (Da: TommyXL)" +
+                        "\n     - Risolto un bug quando il Mercante controlla il limite dei Modificatori (Da: TommyXL)" +
+                        "\n     - Risolto un bug quando il Presidente saltava la riunione e qualcuno veniva espulso (Da: TommyXL)" +
+                        "\n     - Risolto un bug per cui il nome del giocatore non veniva cancellato durante la fine della riunione quando il giocatore lasciava il gioco (Da: TommyXL)" +
+                        "\n     - Risolto un bug per cui Invisibile, Camaleonte, Spettro e Alchimista si teletrasportavano nella presa d'aria dopo l'incontro (Da: TommyXL)" +
+                        "\n     - Risolti i bug relativi al Purificatore (Da: TommyXL)" +
+                        "\n     - Risolto un bug per cui l'Ispettore vedeva Mascalzone come Astronauta e Impostore (Da: TommyXL)" +
+                        "\n     - Risolto un bug quando Padrone Temporale funziona in modo errato (Da: TommyXL)" +
+                        "\n     - Risolto un bug per cui il Dispersore teletrasportava i giocatori quando erano in un condotto (Da: TommyXL)" +
+                        "\n     - Risolto un bug per cui Cacciatore non colorava i nomi dei bersagli all'inizio del gioco (per vanilla - Da: TommyXL)" +
+                        "\n     - Risolto un bug per cui Piromane non mostrava l'inzuppamento in vanilla (per vanilla - Da: TommyXL)" +
+                        "\n     - Risolto un bug per cui i fantasmi impostori non vedevano il pulsante di sabotaggio (Da: TommyXL)" +
+                        "\n     - Risolto un bug per cui il motivo della vittoria finale a volte veniva visualizzato in modo errato (Da: TommyXL)" +
+                        "\n     - Risolto un bug per cui il modificatore aveva una probabilità del 100% di generarsi ma a volte non si generava nel gioco (Da: TommyXL)" +
+                        "\n     - Alcune correzioni per i Romantici (Da: TommyXL e ryuk)" +
+                        "\n     - Corretto Becchino per i client modificati (Da: ryuk)" +
+                        "\n     - Risolto un bug per cui Copiatore che copiava Incaricator forniva il benefattore se Copione poteva copiare la variante dell'astronauta (Da: ryuk)" +
+                        "\n     - Risolto un bug con Copiatore copiando Enigma che non fornisce indizi (Da: ryuk)" +
+                        "\n     - Risolto un bug con l'Ispettore che non assegnava Follenauta come squadra imp (Da: ryuk)" +
+                        "\n     - Risolto un bug con Telecomunicatore copiato dal Copiatore non funzionante (Da: ryuk)" +
+                        "\n     - Risolto un bug per cui Sciacallo recluta Copione e il ruolo di Copione si ripristina dopo la riunione (Da: ryuk and Moe)" +
+                        "\n     - Risolto un bug per cui l'animazione dello scudo bannava i client modificati (Da: ryuk)" +
+                        "\n     - Risolto un bug con l'Istigatore che utilizzava la ricarica uccisione vanilla (Da: ryuk)" +
+                        "\n     - Corretto Limite del consigliere per riunione (Da: ryuk)" +
+                        "\n     - Escludi Impiegato dal bersaglio del Cercatore (Da: NikoCat223)" +
+                        "\n     - Risolto un bug con il quale Impiegato poteva essere ucciso (Da: NikoCat223)" +
+                        "\n     - Risolto un bug che a volte causava il crash del gioco dopo il controllo della versione (Da: NikoCat223)" +
+                        "\n     - Risolto un bug per cui Mini poteva sbagliare a indovinare fino alla morte (Da: NikoCat223)" +
+                        "\n     - Risolto bug quando la quantità di corpi dell'Avvoltoio non veniva visualizzata correttamente per i client mod (Da: NikoCat223)" +
+                        "\n     - Risolto un bug per cui l'host non sceglieva una posizione di generazione su Airship per molto tempo e l'EAC bandiva i giocatori che tentavano di causare sabotaggio (Da: NikoCat223)" +
+                        "\n     - Risolto un bug per cui Mini Buono poteva essere ucciso da Stregone, Burratinaio, Sindone e poteva essere bersagliato da Anonimo (Da: NikoCat223 e LezaiYa)" +
+                        "\n     - Risolto un bug che impediva al gioco di terminare quando Mini veniva esiliato (Da: LezaiYa)" +
+                        "\n     - Risolto un bug per cui «/gno» e «/rand» davano lo stesso risultato (Da: Marg)" +
 
 
-                    "\n<b>【Translator Credits】</b>" +
-                        "\n     - Brazilian (By: Dx7405)" +
-                        "\n     - Dutch (By: apemv, madmazel_)" +
-                        "\n     - French (By: FuroYT, KevOut, Klaomi, Sansationnelle)" +
-                        "\n     - Italian (By: alot, Baphojack, Mattix606)" +
-                        "\n     - Japanese (By: Sunnyboi)" +
-                        "\n     - Latin American (By: CreepPower)" +
-                        "\n     - Russian (By: TommyXL, Shoulder Devil, chill_ultimated, Nevermore59)" +
-                        "\n     - Simplified Chinese (By: CrewCyan, LezaiYa, NikoCat223)" +
-                        "\n     - Spanish (By: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
-                        "\n     - Traditional Chinese (By: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
-                        "\n<b> Check out all of our translators on our website</b>\r\n" +
+                    "\n<b>【Crediti dei Traduttori】</b>" +
+                        "\n     - Brazilian (Da: Dx7405)" +
+                        "\n     - Dutch (Da: apemv, madmazel_)" +
+                        "\n     - French (Da: FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                        "\n     - Italian (Da: alot, Baphojack, Mattix606)" +
+                        "\n     - Japanese (Da: Sunnyboi)" +
+                        "\n     - Latin American (Da: CreepPower)" +
+                        "\n     - Russian (Da: TommyXL, Shoulder Devil, chill_ultimated, Nevermore59)" +
+                        "\n     - Simplified Chinese (Da: CrewCyan, LezaiYa, NikoCat223)" +
+                        "\n     - Spanish (Da: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
+                        "\n     - Traditional Chinese (Da: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
+                        "\n<b> Scopri tutti i nostri traduttori sul nostro sito web</b>\r\n" +
 
-                    "\n\n★ Welcome to Town of Host: Enhanced v1.5.0 ★",
+                    "\n\n★ Benvenuto a Town of Host: Enhanced v1.5.0 ★",
 
                     Date = "2024-2-4T03:00:00Z"
                 };
