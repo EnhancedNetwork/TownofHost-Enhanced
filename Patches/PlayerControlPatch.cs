@@ -1409,6 +1409,7 @@ class MurderPlayerPatch
         PlayerControl killer = __instance;
         bool needUpadteNotifyRoles = true;
 
+
         if (PlagueDoctor.IsEnable)
         {
             PlagueDoctor.OnPDdeath(killer, target);
@@ -4177,28 +4178,67 @@ public static class PlayerControlDiePatch
         __instance.RpcRemovePet();
     }
 }
-
-    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetRole))]
-    class PlayerControlSetRolePatch
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetRole))]
+class PlayerControlSetRolePatch
+{
+    public static bool Prefix(PlayerControl __instance, ref RoleTypes roleType)
     {
-        public static bool Prefix(PlayerControl __instance, ref RoleTypes roleType)
-        {
+        if (GameStates.IsHideNSeek) return true;
 
         var target = __instance;
-        var getTargetRole = target.GetCustomRole();
-        bool IsGhost = CustomRolesHelper.IsGhostRole(getTargetRole);
+        var targetName = __instance.GetNameWithRole().RemoveHtmlTags();
+        Logger.Info($" {targetName} => {roleType}", "PlayerControl.RpcSetRole");
+        if (!ShipStatus.Instance.enabled) return true;
+        if (roleType is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost)
+        {
+            var targetIsKiller = target.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(target.PlayerId);
+            var ghostRoles = new Dictionary<PlayerControl, RoleTypes>();
 
-            if (IsGhost) 
+            foreach (var seer in Main.AllPlayerControls)
             {
-                 roleType = RoleTypes.GuardianAngel;
-                 return false;
-            }
-        return true;
-        
-        }
-    }
+                var self = seer.PlayerId == target.PlayerId;
+                var seerIsKiller = seer.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(seer.PlayerId);
 
-    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetRole))]
+                if (target.GetCustomRole().IsGhostRole())
+                {
+                    ghostRoles[seer] = RoleTypes.GuardianAngel;
+                }
+                else if ((self && targetIsKiller) || (!seerIsKiller && target.Is(CustomRoleTypes.Impostor)))
+                {
+                    ghostRoles[seer] = RoleTypes.ImpostorGhost;
+                }
+                else
+                {
+                    ghostRoles[seer] = RoleTypes.CrewmateGhost;
+                }
+            }
+            if (target.GetCustomRole().IsGhostRole())
+            {
+                roleType = RoleTypes.GuardianAngel;
+            }
+            else if (ghostRoles.All(kvp => kvp.Value == RoleTypes.CrewmateGhost))
+            {
+                roleType = RoleTypes.CrewmateGhost;
+            }
+            else if (ghostRoles.All(kvp => kvp.Value == RoleTypes.ImpostorGhost))
+            {
+                roleType = RoleTypes.ImpostorGhost;
+            }
+            else
+            {
+                foreach ((var seer, var role) in ghostRoles)
+                {
+                    Logger.Info($"Desync {targetName} => {role} for {seer.GetNameWithRole().RemoveHtmlTags()}", "PlayerControl.RpcSetRole");
+                    target.RpcSetRoleDesync(role, seer.GetClientId());
+                }
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetRole))]
     class PlayerControlLocalSetRolePatch
     {
         public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] RoleTypes role)
