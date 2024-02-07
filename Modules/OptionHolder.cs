@@ -714,10 +714,6 @@ public static class Options
     //public static OptionItem NeutralCanBeGlow;
     //public static OptionItem GlowVision;
 
-    public static OptionItem ImpCanBeGravestone;
-    public static OptionItem CrewCanBeGravestone;
-    public static OptionItem NeutralCanBeGravestone;
-
     public static OptionItem ImpCanBeGuesser;
     public static OptionItem CrewCanBeGuesser;
     public static OptionItem NeutralCanBeGuesser;
@@ -2413,15 +2409,8 @@ public static class Options
         //NeutralCanBeGlow = BooleanOptionItem.Create(22005, "NeutralCanBeGlow", true, TabGroup.Addons, false)
         //.SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
 
-        SetupAdtRoleOptions(22100, CustomRoles.Gravestone, canSetNum: true);
-        ImpCanBeGravestone = BooleanOptionItem.Create(22103, "ImpCanBeGravestone", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Gravestone]);
-        CrewCanBeGravestone = BooleanOptionItem.Create(22104, "CrewCanBeGravestone", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Gravestone]);
-        NeutralCanBeGravestone = BooleanOptionItem.Create(22105, "NeutralCanBeGravestone", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Gravestone]);
+        Gravestone.SetupCustomOptions();
 
-        
         SetupAdtRoleOptions(22200, CustomRoles.Guesser, canSetNum: true, tab: TabGroup.Addons);
         ImpCanBeGuesser = BooleanOptionItem.Create(22203, "ImpCanBeGuesser", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Guesser]);
