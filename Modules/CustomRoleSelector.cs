@@ -515,7 +515,7 @@ internal class CustomRoleSelector
                 ChosenRole = RateHauntedList[randindx];
 
             }
-            if (ChosenRole != CustomRoles.NotAssigned) 
+            if (ChosenRole.IsGhostRole()) 
             {
                 player.RpcSetRole(RoleTypes.GuardianAngel);
                 player.RpcSetCustomRole(ChosenRole);
@@ -541,7 +541,7 @@ internal class CustomRoleSelector
                 ChosenRole = ImpRateHauntedList[randindx];
 
             }
-            if (ChosenRole != CustomRoles.NotAssigned)
+            if (ChosenRole.IsGhostRole())
             {
                 player.RpcSetRole(RoleTypes.GuardianAngel);
                 player.RpcSetCustomRole(ChosenRole);
