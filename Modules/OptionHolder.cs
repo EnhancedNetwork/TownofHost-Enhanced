@@ -709,10 +709,6 @@ public static class Options
     //public static OptionItem CrewCanBeSunglasses;
     //public static OptionItem NeutralCanBeSunglasses;
 
-    public static OptionItem ImpCanBeAvanger;
-    public static OptionItem CrewCanBeAvanger;
-    public static OptionItem NeutralCanBeAvanger;
-
     public static OptionItem ImpCanBeAware;
     public static OptionItem CrewCanBeAware;
     public static OptionItem NeutralCanBeAware;
@@ -2408,14 +2404,8 @@ public static class Options
             .SetColor(new Color32(255, 154, 206, byte.MaxValue));
 
         Antidote.SetupCustomOptions();
-        
-        SetupAdtRoleOptions(21500, CustomRoles.Avanger, canSetNum: true);
-        ImpCanBeAvanger = BooleanOptionItem.Create(21503, "ImpCanBeAvanger", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Avanger]);
-        CrewCanBeAvanger = BooleanOptionItem.Create(21504, "CrewCanBeAvanger", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Avanger]);
-        NeutralCanBeAvanger = BooleanOptionItem.Create(21505, "NeutralCanBeAvanger", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Avanger]);
+
+        Avanger.SetupCustomOptions();
         
         SetupAdtRoleOptions(21600, CustomRoles.Aware, canSetNum: true);
         ImpCanBeAware = BooleanOptionItem.Create(21603, "ImpCanBeAware", true, TabGroup.Addons, false)
