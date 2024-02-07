@@ -1721,6 +1721,7 @@
   "RevolutionistKillProbability": "Probabilidad de asesinato",
   "RevolutionistVentCountDown": "Tiempo para saltar a un conducto",
   "PelicanKillCooldown": "Tiempo de espera para comer",
+  "Pelican.TargetCannotBeEaten": "Target cannot be eaten",
   "MadSnitchTasks": "Número de tareas del <color=#b8fb4f>Chivato</color>",
   "MedicWhoCanSeeProtect": "Quién ve el escudo",
   "MedicKnowShieldBroken": "Quién ve el intento de asesinato",
