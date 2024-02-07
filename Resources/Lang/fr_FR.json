@@ -1706,6 +1706,7 @@
   "CounterfeiterAbilityLost": "Le trompeur perd sa capacité s'il trompe le joueur sans bouton kill.",
   "PursuerSkillCooldown": "Temps de recharge de la capacité",
   "PursuerSkillLimitTimes": "Nombre maximum d'utilisations",
+  "AddictSuicideTimer": "Time Until Suicide",
   "GrenadierSkillCooldown": "Temps de recharge de la grenade",
   "GrenadierSkillDuration": "Durée de la grenade",
   "GrenadierCauseVision": "Vision réduite",

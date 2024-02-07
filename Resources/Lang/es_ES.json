@@ -1706,6 +1706,7 @@
   "CounterfeiterAbilityLost": "El Traficante pierde su habilidad al vender drogas a un inocente",
   "PursuerSkillCooldown": "Tiempo de espera de la abilidad",
   "PursuerSkillLimitTimes": "Usos máximos",
+  "AddictSuicideTimer": "Time Until Suicide",
   "GrenadierSkillCooldown": "Tiempo de espera de la granada",
   "GrenadierSkillDuration": "Duración de la granada",
   "GrenadierCauseVision": "Visión reducida",

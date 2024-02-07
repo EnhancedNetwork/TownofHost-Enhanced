@@ -1706,6 +1706,7 @@
   "CounterfeiterAbilityLost": "贗品商給予不帶刀玩家贗品時會失去能力",
   "PursuerSkillCooldown": "販賣贗品冷卻",
   "PursuerSkillLimitTimes": "販賣贗品的次數上限",
+  "AddictSuicideTimer": "自殺倒數",
   "GrenadierSkillCooldown": "使用閃光彈的冷卻時間",
   "GrenadierSkillDuration": "閃光彈持續時間",
   "GrenadierCauseVision": "受閃光彈引響後的視野",
