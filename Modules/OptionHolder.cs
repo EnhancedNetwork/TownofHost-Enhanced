@@ -715,9 +715,6 @@ public static class Options
     //public static OptionItem GlowVision;
 
 
-    public static OptionItem ImpCanBeRebound;
-    public static OptionItem CrewCanBeRebound;
-    public static OptionItem NeutralCanBeRebound;
 
     public static OptionItem ImpCanBeDualPersonality;
     public static OptionItem CrewCanBeDualPersonality;
@@ -2409,13 +2406,7 @@ public static class Options
 
         Oiiai.SetupCustomOptions();
 
-        SetupAdtRoleOptions(22300, CustomRoles.Rebound, canSetNum: true, tab: TabGroup.Addons);
-        ImpCanBeRebound = BooleanOptionItem.Create(22303, "ImpCanBeRebound", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Rebound]);
-        CrewCanBeRebound = BooleanOptionItem.Create(22304, "CrewCanBeRebound", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Rebound]);
-        NeutralCanBeRebound = BooleanOptionItem.Create(22305, "NeutralCanBeRebound", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Rebound]);
+        Rebound.SetupCustomOptions();
 
         SetupAdtRoleOptions(22400, CustomRoles.DualPersonality, canSetNum: true);
         ImpCanBeDualPersonality = BooleanOptionItem.Create(22403, "ImpCanBeDualPersonality", true, TabGroup.Addons, false)
