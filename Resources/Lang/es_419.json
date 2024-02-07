@@ -1706,6 +1706,7 @@
   "CounterfeiterAbilityLost": "El Falsificador pierde su habilidad al vender falsificaciones a un jugador inocente",
   "PursuerSkillCooldown": "Tiempo de espera de la habilidad",
   "PursuerSkillLimitTimes": "Usos máximos",
+  "AddictSuicideTimer": "Time Until Suicide",
   "GrenadierSkillCooldown": "Tiempo de espera de la granada",
   "GrenadierSkillDuration": "Duración de la granada",
   "GrenadierCauseVision": "Visión reducida",
