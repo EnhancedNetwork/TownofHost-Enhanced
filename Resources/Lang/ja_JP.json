@@ -1721,6 +1721,7 @@
   "RevolutionistKillProbability": "タグを受けたプレイヤーの犠牲確率",
   "RevolutionistVentCountDown": "ベントまでの時間",
   "PelicanKillCooldown": "食べるのクールダウン",
+  "Pelican.TargetCannotBeEaten": "Target cannot be eaten",
   "MadSnitchTasks": "<color=#b8fb4f>密告者</color> タスク",
   "MedicWhoCanSeeProtect": "誰がシールドを見ることができるか",
   "MedicKnowShieldBroken": "誰がキルの試みを見るか",
