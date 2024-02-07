@@ -714,12 +714,6 @@ public static class Options
     //public static OptionItem NeutralCanBeGlow;
     //public static OptionItem GlowVision;
 
-    public static OptionItem ImpCanBeGuesser;
-    public static OptionItem CrewCanBeGuesser;
-    public static OptionItem NeutralCanBeGuesser;
-    public static OptionItem GCanGuessAdt;
-    public static OptionItem GCanGuessTaskDoneSnitch;
-    public static OptionItem GTryHideMsg;
 
     public static OptionItem ImpCanBeRebound;
     public static OptionItem CrewCanBeRebound;
@@ -2411,20 +2405,7 @@ public static class Options
 
         Gravestone.SetupCustomOptions();
 
-        SetupAdtRoleOptions(22200, CustomRoles.Guesser, canSetNum: true, tab: TabGroup.Addons);
-        ImpCanBeGuesser = BooleanOptionItem.Create(22203, "ImpCanBeGuesser", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Guesser]);
-        CrewCanBeGuesser = BooleanOptionItem.Create(22204, "CrewCanBeGuesser", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Guesser]);
-        NeutralCanBeGuesser = BooleanOptionItem.Create(22205, "NeutralCanBeGuesser", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Guesser]);
-        GCanGuessAdt = BooleanOptionItem.Create(22206, "GCanGuessAdt", false, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Guesser]);
-        GCanGuessTaskDoneSnitch = BooleanOptionItem.Create(22207, "GCanGuessTaskDoneSnitch", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Guesser]);
-        GTryHideMsg = BooleanOptionItem.Create(22208, "GuesserTryHideMsg", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Guesser])
-            .SetColor(Color.green);
+        Guesser.SetupCustomOptions();
 
         Oiiai.SetupCustomOptions();
 
