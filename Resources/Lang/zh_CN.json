@@ -1706,6 +1706,7 @@
   "CounterfeiterAbilityLost": "如果赝品商在没有击杀按钮的情况下给玩家赝品，则无法使用技能",
   "PursuerSkillCooldown": "空包弹冷却时间",
   "PursuerSkillLimitTimes": "空包弹持续时间",
+  "AddictSuicideTimer": "Time Until Suicide",
   "GrenadierSkillCooldown": "使用闪光弹冷却时间",
   "GrenadierSkillDuration": "闪光弹状态持续时间",
   "GrenadierCauseVision": "受闪光弹影响后的视野",
