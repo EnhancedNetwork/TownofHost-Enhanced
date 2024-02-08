@@ -698,18 +698,6 @@ public static class Options
 
     // Add-Ons settings 
 
-    //public static OptionItem EvilWatcherChance;
-
-    //public static OptionItem SunglassesVision;
-    //public static OptionItem ImpCanBeSunglasses;
-    //public static OptionItem CrewCanBeSunglasses;
-    //public static OptionItem NeutralCanBeSunglasses;
-
-    //public static OptionItem ImpCanBeGlow;
-    //public static OptionItem CrewCanBeGlow;
-    //public static OptionItem NeutralCanBeGlow;
-    //public static OptionItem GlowVision;
-
     public static OptionItem MadmateSpawnMode;
     public static OptionItem MadmateCountMode;
     public static OptionItem SheriffCanBeMadmate;
@@ -743,9 +731,6 @@ public static class Options
     public static OptionItem NotifyGodAlive;
     public static OptionItem GodCanGuess;
 
-    public static OptionItem ImpCanBeFool;
-    public static OptionItem CrewCanBeFool;
-    public static OptionItem NeutralCanBeFool;
 
 
     public static VoteMode GetWhenSkipVote() => (VoteMode)WhenSkipVote.GetValue();
@@ -907,6 +892,7 @@ public static class Options
         //#######################################
 
         // You can use: 13800 (Was for NWitch)
+        // You can use: 20906 (sunglasses), 22004 (Glow)
 
 
         // Start Load Settings
@@ -2320,16 +2306,7 @@ public static class Options
 
         Unreportable.SetupCustomOptions();
 
-        /*
-         * Fool
-         */
-        SetupAdtRoleOptions(25600, CustomRoles.Fool, canSetNum: true, tab: TabGroup.Addons);
-        ImpCanBeFool = BooleanOptionItem.Create(25603, "ImpCanBeFool", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Fool]);
-        CrewCanBeFool = BooleanOptionItem.Create(25604, "CrewCanBeFool", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Fool]);
-        NeutralCanBeFool = BooleanOptionItem.Create(25605, "NeutralCanBeFool", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Fool]);
+        Fool.SetupCustomOptions();
 
         Fragile.SetupCustomOptions();
 
@@ -2342,17 +2319,6 @@ public static class Options
         Oblivious.SetupCustomOptions();
 
         Rascal.SetupCustomOptions();
-
-        //SetupAdtRoleOptions(20900, CustomRoles.Sunglasses, canSetNum: true);
-        //SunglassesVision = FloatOptionItem.Create(20903, "SunglassesVision", new(0f, 5f, 0.05f), 0.75f, TabGroup.Addons, false)
-        //    .SetParent(CustomRoleSpawnChances[CustomRoles.Sunglasses])
-        //    .SetValueFormat(OptionFormat.Multiplier);
-        //ImpCanBeSunglasses = BooleanOptionItem.Create(20904, "ImpCanBeSunglasses", true, TabGroup.Addons, false)
-        //    .SetParent(CustomRoleSpawnChances[CustomRoles.Sunglasses]);
-        //CrewCanBeSunglasses = BooleanOptionItem.Create(20905, "CrewCanBeSunglasses", true, TabGroup.Addons, false)
-        //    .SetParent(CustomRoleSpawnChances[CustomRoles.Sunglasses]);
-        //NeutralCanBeSunglasses = BooleanOptionItem.Create(20906, "NeutralCanBeSunglasses", true, TabGroup.Addons, false)
-        //    .SetParent(CustomRoleSpawnChances[CustomRoles.Sunglasses]);
 
         Unlucky.SetupCustomOptions();
         
