@@ -444,10 +444,6 @@ public static class Options
     public static OptionItem HideGuesserCommands;
     public static OptionItem ShowOnlyEnabledRolesInGuesserUI;
 
-    public static OptionItem ImpCanBeOnbound;
-    public static OptionItem CrewCanBeOnbound;
-    public static OptionItem NeutralCanBeOnbound;
-
 
     // ------------ General Role Settings ------------
 
@@ -3232,13 +3228,7 @@ public static class Options
             .SetColor(Color.yellow)
             .SetHeader(true);
 
-        SetupAdtRoleOptions(25800, CustomRoles.Onbound, canSetNum: true, tab: TabGroup.TaskSettings);
-        ImpCanBeOnbound = BooleanOptionItem.Create(25803, "ImpCanBeOnbound", true, TabGroup.TaskSettings, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Onbound]);
-        CrewCanBeOnbound = BooleanOptionItem.Create(25804, "CrewCanBeOnbound", true, TabGroup.TaskSettings, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Onbound]);
-        NeutralCanBeOnbound = BooleanOptionItem.Create(25805, "NeutralCanBeOnbound", true, TabGroup.TaskSettings, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Onbound]);
+        Onbound.SetupCustomOptions();
 
 
 
