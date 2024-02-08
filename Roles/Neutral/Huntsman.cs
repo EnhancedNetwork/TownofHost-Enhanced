@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using Hazel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -89,11 +90,33 @@ public static class Huntsman
         for (int i = 0; i < Targets.Count; i++) { byte playerId = Targets[i]; if (i != 0) output += ", "; output += Utils.GetPlayerById(playerId).GetRealName(); }
         return targetId != 0xff ? GetString("Targets") + $"<b><color=#ff1919>{output}</color></b>" : string.Empty;
     }
+    public static void SendRPC(bool isSetTarget, byte targetId = byte.MaxValue)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncHuntsmanTarget, SendOption.Reliable, -1);
+        writer.Write(isSetTarget);
+        if (isSetTarget)
+        {
+            writer.Write(targetId);
+        }
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void ReceiveRPC(MessageReader reader)
+    {
+        bool isSetTarget = reader.ReadBoolean();
+        if (!isSetTarget)
+        {
+            Targets.Clear();
+            return;
+        }
+        byte targetId = reader.ReadByte();
+        Targets.Add(targetId);
+    }
     public static void ResetTargets(bool isStartedGame = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
         Targets.Clear();
+        SendRPC(isSetTarget: false);
 
         int potentialTargetCount = Main.AllAlivePlayerControls.Length - 1;
         if (potentialTargetCount < 0) potentialTargetCount = 0;
@@ -107,6 +130,8 @@ public static class Huntsman
                 var target = cTargets[rand.Next(0, cTargets.Count)];
                 var targetId = target.PlayerId;
                 Targets.Add(targetId);
+                SendRPC(isSetTarget: true, targetId: targetId);
+
             }
             catch (Exception ex)
             {

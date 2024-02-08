@@ -174,11 +174,15 @@ public static class Jackal
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));
 
-                killer.ResetKillCooldown();
-                killer.SetKillCooldown();
                 if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
                 target.RpcGuardAndKill(killer);
                 target.RpcGuardAndKill(target);
+
+                killer.ResetKillCooldown();
+                killer.SetKillCooldown();
+
+                target.ResetKillCooldown();
+                target.SetKillCooldown();
 
                 Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Sidekick.ToString(), "Assign " + CustomRoles.Sidekick.ToString());
                 
@@ -203,11 +207,15 @@ public static class Jackal
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));
 
-                killer.ResetKillCooldown();
-                killer.SetKillCooldown();
                 if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
                 target.RpcGuardAndKill(killer);
                 target.RpcGuardAndKill(target);
+
+                killer.ResetKillCooldown();
+                killer.SetKillCooldown();
+
+                target.ResetKillCooldown();
+                target.SetKillCooldown();
 
                 Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Sidekick.ToString(), "Assign " + CustomRoles.Sidekick.ToString());
                 
