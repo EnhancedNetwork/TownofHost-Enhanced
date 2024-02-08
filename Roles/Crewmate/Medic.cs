@@ -175,7 +175,8 @@ public static class Medic
         killer.RpcGuardAndKill(target);
         killer.SetKillCooldown(ResetCooldown.GetFloat());
 
-        Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: target, ForceLoop: true);
+        Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
+        Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
 
         switch (KnowShieldBroken.GetInt())
         {
