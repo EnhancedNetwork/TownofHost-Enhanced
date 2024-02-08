@@ -1721,7 +1721,7 @@
   "RevolutionistKillProbability": "被拉攏玩家的犧牲機率",
   "RevolutionistVentCountDown": "達到勝利條件後的跳管道時限",
   "PelicanKillCooldown": "吞人冷卻時間",
-  "Pelican.TargetCannotBeEaten": "Target cannot be eaten",
+  "Pelican.TargetCannotBeEaten": "目標不能被吞下",
   "MadSnitchTasks": "背叛的告密者的任務數量",
   "MedicWhoCanSeeProtect": "誰能看見護盾",
   "MedicKnowShieldBroken": "誰能看見殺戮嘗試",
