@@ -36,40 +36,40 @@ public static class Madmate
     public static void SetupMenuOptions()
     {
 
-        ImpKnowAlliesRole = BooleanOptionItem.Create(Id1 + 10, "ImpKnowAlliesRole", true, TabGroup.ImpostorRoles, false)
+        ImpKnowAlliesRole = BooleanOptionItem.Create(Id1 + 0, "ImpKnowAlliesRole", true, TabGroup.ImpostorRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true);
-        ImpKnowWhosMadmate = BooleanOptionItem.Create(Id1 + 11, "ImpKnowWhosMadmate", true, TabGroup.ImpostorRoles, false)
+        ImpKnowWhosMadmate = BooleanOptionItem.Create(Id1 + 1, "ImpKnowWhosMadmate", true, TabGroup.ImpostorRoles, false)
             .SetGameMode(CustomGameMode.Standard);
-        ImpCanKillMadmate = BooleanOptionItem.Create(Id1 + 12, "ImpCanKillMadmate", true, TabGroup.ImpostorRoles, false)
+        ImpCanKillMadmate = BooleanOptionItem.Create(Id1 + 2, "ImpCanKillMadmate", true, TabGroup.ImpostorRoles, false)
             .SetGameMode(CustomGameMode.Standard);
 
-        MadmateKnowWhosMadmate = BooleanOptionItem.Create(Id1 + 13, "MadmateKnowWhosMadmate", true, TabGroup.ImpostorRoles, false)
+        MadmateKnowWhosMadmate = BooleanOptionItem.Create(Id1 + 3, "MadmateKnowWhosMadmate", true, TabGroup.ImpostorRoles, false)
             .SetHeader(true)
             .SetGameMode(CustomGameMode.Standard);
-        MadmateKnowWhosImp = BooleanOptionItem.Create(Id1 + 14, "MadmateKnowWhosImp", true, TabGroup.ImpostorRoles, false)
+        MadmateKnowWhosImp = BooleanOptionItem.Create(Id1 + 4, "MadmateKnowWhosImp", true, TabGroup.ImpostorRoles, false)
             .SetGameMode(CustomGameMode.Standard);
-        MadmateCanKillImp = BooleanOptionItem.Create(Id1 + 15, "MadmateCanKillImp", true, TabGroup.ImpostorRoles, false)
+        MadmateCanKillImp = BooleanOptionItem.Create(Id1 + 5, "MadmateCanKillImp", true, TabGroup.ImpostorRoles, false)
             .SetGameMode(CustomGameMode.Standard);
-        MadmateHasImpostorVision = BooleanOptionItem.Create(Id1 + 16, "MadmateHasImpostorVision", false, TabGroup.ImpostorRoles, false)
+        MadmateHasImpostorVision = BooleanOptionItem.Create(Id1 + 6, "MadmateHasImpostorVision", false, TabGroup.ImpostorRoles, false)
             .SetGameMode(CustomGameMode.Standard);
     }
 
     public static void SetupCustomMenuOptions()
     {
         SetupAdtRoleOptions(Id2, CustomRoles.Madmate, canSetNum: true, canSetChance: false);
-        MadmateSpawnMode = StringOptionItem.Create(Id2 + 10, "MadmateSpawnMode", madmateSpawnMode, 0, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Madmate]);
-        MadmateCountMode = StringOptionItem.Create(Id2 + 11, "MadmateCountMode", madmateCountMode, 1, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Madmate]);
-        SheriffCanBeMadmate = BooleanOptionItem.Create(Id2 + 12, "SheriffCanBeMadmate", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Madmate]);
-        MayorCanBeMadmate = BooleanOptionItem.Create(Id2 + 13, "MayorCanBeMadmate", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Madmate]);
-        NGuesserCanBeMadmate = BooleanOptionItem.Create(Id2 + 14, "NGuesserCanBeMadmate", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Madmate]);
-        MarshallCanBeMadmate = BooleanOptionItem.Create(Id2 + 15, "MarshallCanBeMadmate", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Madmate]);
-        FarseerCanBeMadmate = BooleanOptionItem.Create(Id2 + 16, "FarseerCanBeMadmate", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Madmate]);
-        RetributionistCanBeMadmate = BooleanOptionItem.Create(Id2 + 17, "RetributionistCanBeMadmate", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Madmate]);
-        SnitchCanBeMadmate = BooleanOptionItem.Create(Id2 + 18, "SnitchCanBeMadmate", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Madmate]);
-        MadSnitchTasks = IntegerOptionItem.Create(Id2 + 19, "MadSnitchTasks", new(1, 30, 1), 3, TabGroup.Addons, false).SetParent(SnitchCanBeMadmate)
+        MadmateSpawnMode = StringOptionItem.Create(Id2 + 3, "MadmateSpawnMode", madmateSpawnMode, 0, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Madmate]);
+        MadmateCountMode = StringOptionItem.Create(Id2 + 4, "MadmateCountMode", madmateCountMode, 1, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Madmate]);
+        SheriffCanBeMadmate = BooleanOptionItem.Create(Id2 + 5, "SheriffCanBeMadmate", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Madmate]);
+        MayorCanBeMadmate = BooleanOptionItem.Create(Id2 + 6, "MayorCanBeMadmate", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Madmate]);
+        NGuesserCanBeMadmate = BooleanOptionItem.Create(Id2 + 7, "NGuesserCanBeMadmate", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Madmate]);
+        MarshallCanBeMadmate = BooleanOptionItem.Create(Id2 + 8, "MarshallCanBeMadmate", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Madmate]);
+        FarseerCanBeMadmate = BooleanOptionItem.Create(Id2 + 9, "FarseerCanBeMadmate", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Madmate]);
+        RetributionistCanBeMadmate = BooleanOptionItem.Create(Id2 + 10, "RetributionistCanBeMadmate", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Madmate]);
+        SnitchCanBeMadmate = BooleanOptionItem.Create(Id2 + 11, "SnitchCanBeMadmate", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Madmate]);
+        MadSnitchTasks = IntegerOptionItem.Create(Id2 + 12, "MadSnitchTasks", new(1, 30, 1), 3, TabGroup.Addons, false).SetParent(SnitchCanBeMadmate)
             .SetValueFormat(OptionFormat.Pieces);
-        JudgeCanBeMadmate = BooleanOptionItem.Create(Id2 + 20, "JudgeCanBeMadmate", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Madmate]);
+        JudgeCanBeMadmate = BooleanOptionItem.Create(Id2 + 13, "JudgeCanBeMadmate", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Madmate]);
     }
 
     public static readonly string[] madmateSpawnMode =

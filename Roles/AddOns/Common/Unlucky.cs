@@ -5,7 +5,7 @@ namespace TOHE.Roles.AddOns.Common
 {
     public static class Unlucky
     {
-        private static readonly int Id = 20200;
+        private static readonly int Id = 21000;
 
         public static OptionItem UnluckyTaskSuicideChance;
         public static OptionItem UnluckyKillSuicideChance;
