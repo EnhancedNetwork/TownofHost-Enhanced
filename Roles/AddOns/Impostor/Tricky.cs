@@ -92,7 +92,7 @@ public static class Tricky
             
             Main.PlayerStates[target.PlayerId].deathReason = ChangeRandomDeath();
             Main.PlayerStates[target.PlayerId].SetDead();
-            Utils.NotifyRoles(target);
+            Utils.NotifyRoles(SpecifySeer: target);
         }, 0.3f, "Tricky random death reason");
     }
 }
