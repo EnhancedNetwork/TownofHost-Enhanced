@@ -714,14 +714,6 @@ public static class Options
     //public static OptionItem NeutralCanBeGlow;
     //public static OptionItem GlowVision;
 
-
-
-    
-
-    public static OptionItem ImpCanBeStubborn;
-    public static OptionItem CrewCanBeStubborn;
-    public static OptionItem NeutralCanBeStubborn;
-
     public static OptionItem MadmateSpawnMode;
     public static OptionItem MadmateCountMode;
     public static OptionItem SheriffCanBeMadmate;
@@ -2407,13 +2399,7 @@ public static class Options
 
         Schizophrenic.SetupCustomOptions();
 
-        SetupAdtRoleOptions(22500, CustomRoles.Stubborn, canSetNum: true);
-        ImpCanBeStubborn = BooleanOptionItem.Create(22503, "ImpCanBeStubborn", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Stubborn]);
-        CrewCanBeStubborn = BooleanOptionItem.Create(22504, "CrewCanBeStubborn", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Stubborn]);
-        NeutralCanBeStubborn = BooleanOptionItem.Create(22505, "NeutralCanBeStubborn", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Stubborn]);
+        Stubborn.SetupCustomOptions();
 
         Susceptible.SetupCustomOptions();
 

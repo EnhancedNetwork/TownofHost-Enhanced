@@ -331,7 +331,7 @@ static class CustomRolesHelper
             //CustomRoles.Glow or
             CustomRoles.TicketsStealer or
             CustomRoles.Tricky or
-            CustomRoles.DualPersonality or
+            CustomRoles.Schizophrenic or
             CustomRoles.Mimic or
             CustomRoles.Reach or
             CustomRoles.Charmed or
@@ -1062,7 +1062,7 @@ static class CustomRolesHelper
         switch (role)
         {
             case CustomRoles.Stubborn:
-                if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeStubborn.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeStubborn.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeStubborn.GetBool()))
+                if ((pc.GetCustomRole().IsCrewmate() && !Stubborn.CrewCanBeStubborn.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Stubborn.NeutralCanBeStubborn.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Stubborn.ImpCanBeStubborn.GetBool()))
                     return false;
                 break;
             case CustomRoles.Autopsy:
