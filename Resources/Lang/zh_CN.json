@@ -1721,7 +1721,7 @@
   "RevolutionistKillProbability": "被拉拢玩家牺牲概率",
   "RevolutionistVentCountDown": "达到胜利条件后跳管道时间限制",
   "PelicanKillCooldown": "吞人冷却时间",
-  "Pelican.TargetCannotBeEaten": "Target cannot be eaten",
+  "Pelican.TargetCannotBeEaten": "目标不能被吃",
   "MadSnitchTasks": "背叛的<color=#b8fb4f>告密者</color>的任务数",
   "MedicWhoCanSeeProtect": "谁都能看见护盾",
   "MedicKnowShieldBroken": "谁都能看到到刀玩家的击杀企图",
