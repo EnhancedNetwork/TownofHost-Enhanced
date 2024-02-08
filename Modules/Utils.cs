@@ -673,7 +673,7 @@ public static class Utils
             pc.Is(CustomRoles.TaskManager) ||
          //   pc.Is(CustomRoles.Cyber) ||
             pc.Is(CustomRoles.Egoist) ||
-            pc.Is(CustomRoles.DualPersonality) ||
+            pc.Is(CustomRoles.Schizophrenic) ||
             pc.Is(CustomRoles.Vigilante) ||
             (pc.Is(CustomRoles.NiceMini) && Mini.Age >= 18) ||
             (pc.Is(CustomRoles.Hurried) && !Hurried.CanBeOnMadMate.GetBool())

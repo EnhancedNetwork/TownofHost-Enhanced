@@ -10,6 +10,7 @@ using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
+using TOHE.Roles.AddOns.Common;
 
 namespace TOHE;
 
@@ -557,36 +558,9 @@ class GameEndCheckerForNormal
             if (CustomRoles.Sunnyboy.RoleExist() && Main.AllAlivePlayerControls.Length > 1) return false;
             var neutralRoleCounts = new Dictionary<CountTypes, int>();
             var apcList = Main.AllAlivePlayerControls.ToArray();
-            int dual = 0, impCount = 0, crewCount = 0;
+            int impCount = 0, crewCount = 0;
 
-            foreach (var pc in apcList)
-            {
-                if (pc == null) continue;
-
-                dual = pc.Is(CustomRoles.DualPersonality) ? 1 : 0;
-                var countType = Main.PlayerStates[pc.PlayerId].countTypes;
-                switch (countType)
-                {
-                    case CountTypes.OutOfGame:
-                    case CountTypes.None:
-                        continue;
-                    case CountTypes.Impostor:
-                        impCount++;
-                        impCount += dual;
-                        break;
-                    case CountTypes.Crew:
-                        crewCount++;
-                        crewCount += dual;
-                        break;
-                    default:
-                        if (neutralRoleCounts.ContainsKey(countType))
-                            neutralRoleCounts[countType]++;
-                        else
-                            neutralRoleCounts[countType] = 1;
-                        neutralRoleCounts[countType] += dual;
-                        break;
-                }
-            }
+            Schizophrenic.CheckEndGameReason(crewCount, impCount, apcList, neutralRoleCounts);
 
             int totalNKAlive = neutralRoleCounts.Sum(kvp => kvp.Value);
 

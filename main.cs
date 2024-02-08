@@ -841,7 +841,7 @@ public enum CustomRoles
     Recruit,
     //Repairman,
     Rogue,
-    DualPersonality, //Schizophrenic
+    Schizophrenic,
     Seer,
     Silent,
     Sleuth,

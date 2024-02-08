@@ -716,10 +716,7 @@ public static class Options
 
 
 
-    public static OptionItem ImpCanBeDualPersonality;
-    public static OptionItem CrewCanBeDualPersonality;
-    public static OptionItem DualVotes;
-    //public static OptionItem HideDualVotes;
+    
 
     public static OptionItem ImpCanBeStubborn;
     public static OptionItem CrewCanBeStubborn;
@@ -2408,15 +2405,7 @@ public static class Options
 
         Rebound.SetupCustomOptions();
 
-        SetupAdtRoleOptions(22400, CustomRoles.DualPersonality, canSetNum: true);
-        ImpCanBeDualPersonality = BooleanOptionItem.Create(22403, "ImpCanBeDualPersonality", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.DualPersonality]);
-        CrewCanBeDualPersonality = BooleanOptionItem.Create(22404, "CrewCanBeDualPersonality", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.DualPersonality]);
-        DualVotes = BooleanOptionItem.Create(22405, "DualVotes", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.DualPersonality]);
-      //HideDualVotes = BooleanOptionItem.Create(22406, "HideDualVotes", true, TabGroup.Addons, false)
-      //    .SetParent(DualVotes);
+        Schizophrenic.SetupCustomOptions();
 
         SetupAdtRoleOptions(22500, CustomRoles.Stubborn, canSetNum: true);
         ImpCanBeStubborn = BooleanOptionItem.Create(22503, "ImpCanBeStubborn", true, TabGroup.Addons, false)
