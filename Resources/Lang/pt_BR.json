@@ -1721,7 +1721,7 @@
   "RevolutionistKillProbability": "Probabilidade de Sacrifício do Jogador Marcado",
   "RevolutionistVentCountDown": "Tempo para usar tubulações",
   "PelicanKillCooldown": "Recarga de Devorar",
-  "Pelican.TargetCannotBeEaten": "Target cannot be eaten",
+  "Pelican.TargetCannotBeEaten": "O alvo não pode ser engolido",
   "MadSnitchTasks": "Tarefas do <color=#b8fb4f>Agente</color>",
   "MedicWhoCanSeeProtect": "Quem pode ver o escudo",
   "MedicKnowShieldBroken": "Quem pode ver tentativa de abate",
