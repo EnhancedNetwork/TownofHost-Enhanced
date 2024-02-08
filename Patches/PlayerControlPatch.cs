@@ -817,7 +817,7 @@ class CheckMurderPatch
             return false;
 
         // Impostors can kill Madmate
-        if (killer.Is(CustomRoleTypes.Impostor) && !Options.ImpCanKillMadmate.GetBool() && target.Is(CustomRoles.Madmate))
+        if (killer.Is(CustomRoleTypes.Impostor) && !Madmate.ImpCanKillMadmate.GetBool() && target.Is(CustomRoles.Madmate))
             return false;
 
         if (!Jackal.JackalCanKillSidekick.GetBool())
@@ -877,7 +877,7 @@ class CheckMurderPatch
         {
             switch (killerSubRole)
             {
-                case CustomRoles.Madmate when target.Is(CustomRoleTypes.Impostor) && !Options.MadmateCanKillImp.GetBool():
+                case CustomRoles.Madmate when target.Is(CustomRoleTypes.Impostor) && !Madmate.MadmateCanKillImp.GetBool():
                 case CustomRoles.Infected when target.Is(CustomRoles.Infected) && !Infectious.TargetKnowOtherTarget.GetBool():
                 case CustomRoles.Infected when target.Is(CustomRoles.Infectious):
                     return false;
@@ -904,7 +904,7 @@ class CheckMurderPatch
         }
 
         // Madmate Spawn Mode Is First Kill
-        if (Options.MadmateSpawnMode.GetInt() == 1 && Main.MadmateNum < CustomRoles.Madmate.GetCount() && Utils.CanBeMadmate(target, true))
+        if (Madmate.MadmateSpawnMode.GetInt() == 1 && Main.MadmateNum < CustomRoles.Madmate.GetCount() && Madmate.CanBeMadmate(target, true))
         {
             Main.MadmateNum++;
             target.RpcSetCustomRole(CustomRoles.Madmate);

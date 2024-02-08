@@ -7,7 +7,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Antidote
 {
-    private static readonly int Id = 18600;
+    private static readonly int Id = 21400;
 
     public static OptionItem ImpCanBeAntidote;
     public static OptionItem CrewCanBeAntidote;
@@ -20,13 +20,13 @@ public static class Antidote
 
     public static void SetupCustomOptions()
     {
-        SetupAdtRoleOptions(21400, CustomRoles.Antidote, canSetNum: true);
-        ImpCanBeAntidote = BooleanOptionItem.Create(21403, "ImpCanBeAntidote", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Antidote]);
-        CrewCanBeAntidote = BooleanOptionItem.Create(21404, "CrewCanBeAntidote", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Antidote]);
-        NeutralCanBeAntidote = BooleanOptionItem.Create(21405, "NeutralCanBeAntidote", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Antidote]);
-        AntidoteCDOpt = FloatOptionItem.Create(21406, "AntidoteCDOpt", new(0f, 180f, 1f), 5f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Antidote])
+        SetupAdtRoleOptions(Id, CustomRoles.Antidote, canSetNum: true);
+        ImpCanBeAntidote = BooleanOptionItem.Create(Id + 10, "ImpCanBeAntidote", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Antidote]);
+        CrewCanBeAntidote = BooleanOptionItem.Create(Id + 11, "CrewCanBeAntidote", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Antidote]);
+        NeutralCanBeAntidote = BooleanOptionItem.Create(Id + 12, "NeutralCanBeAntidote", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Antidote]);
+        AntidoteCDOpt = FloatOptionItem.Create(Id + 13, "AntidoteCDOpt", new(0f, 180f, 1f), 5f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Antidote])
             .SetValueFormat(OptionFormat.Seconds);
-        AntidoteCDReset = BooleanOptionItem.Create(21407, "AntidoteCDReset", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Antidote]);
+        AntidoteCDReset = BooleanOptionItem.Create(Id + 14, "AntidoteCDReset", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Antidote]);
     }
 
     public static void Init()

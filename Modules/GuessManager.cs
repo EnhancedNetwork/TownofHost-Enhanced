@@ -1087,7 +1087,7 @@ public static class GuessManager
                 {
                     //if (!Options.GCanGuessCrew.GetBool() && index == 0) continue;
                     //if (!Options.GCanGuessImp.GetBool() && index == 1) continue;
-                    if (!Options.GCanGuessAdt.GetBool() && index == 3) continue;
+                    if (!Guesser.GCanGuessAdt.GetBool() && index == 3) continue;
                 }
                 else if (Options.GuesserMode.GetBool() &&
                     !(PlayerControl.LocalPlayer.Is(CustomRoles.EvilGuesser) ||

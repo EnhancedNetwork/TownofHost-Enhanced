@@ -549,7 +549,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                     opt.SetInt(Int32OptionNames.KillDistance, 2);
                     break;
                 case CustomRoles.Madmate:
-                    opt.SetVision(Options.MadmateHasImpostorVision.GetBool());
+                    opt.SetVision(Madmate.MadmateHasImpostorVision.GetBool());
                     break;
                 case CustomRoles.Mare:
                     Mare.ApplyGameOptions(player.PlayerId);

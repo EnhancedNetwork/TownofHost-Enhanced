@@ -5,6 +5,7 @@ using System.Linq;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
+using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -69,7 +70,7 @@ public class PlayerState(byte playerId)
         // check for role addon
         if (pc.Is(CustomRoles.Madmate))
         {
-            countTypes = Options.MadmateCountMode.GetInt() switch
+            countTypes = Madmate.MadmateCountMode.GetInt() switch
             {
                 0 => CountTypes.OutOfGame,
                 1 => CountTypes.Impostor,
@@ -158,7 +159,7 @@ public class PlayerState(byte playerId)
                 break;
 
             case CustomRoles.Madmate:
-                countTypes = Options.MadmateCountMode.GetInt() switch
+                countTypes = Madmate.MadmateCountMode.GetInt() switch
                 {
                     0 => CountTypes.OutOfGame,
                     1 => CountTypes.Impostor,

@@ -653,32 +653,7 @@ public static class Utils
         return hasTasks;
     }
 
-    public static bool CanBeMadmate(this PlayerControl pc, bool inGame = false)
-    {
-        return pc != null && (pc.GetCustomRole().IsCrewmate() || (pc.GetCustomRole().IsNeutral() && inGame)) && !pc.Is(CustomRoles.Madmate)
-        && !(
-            (pc.Is(CustomRoles.Sheriff) && !Options.SheriffCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.Mayor) && !Options.MayorCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.NiceGuesser) && !Options.NGuesserCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.Snitch) && !Options.SnitchCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.Judge) && !Options.JudgeCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.Marshall) && !Options.MarshallCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.Farseer) && !Options.FarseerCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.Retributionist) && !Options.RetributionistCanBeMadmate.GetBool()) ||
-            pc.Is(CustomRoles.Needy) ||
-            pc.Is(CustomRoles.Lazy) ||
-            pc.Is(CustomRoles.Loyal) ||
-            pc.Is(CustomRoles.SuperStar) ||
-            pc.Is(CustomRoles.CyberStar) ||
-            pc.Is(CustomRoles.TaskManager) ||
-         //   pc.Is(CustomRoles.Cyber) ||
-            pc.Is(CustomRoles.Egoist) ||
-            pc.Is(CustomRoles.Schizophrenic) ||
-            pc.Is(CustomRoles.Vigilante) ||
-            (pc.Is(CustomRoles.NiceMini) && Mini.Age >= 18) ||
-            (pc.Is(CustomRoles.Hurried) && !Hurried.CanBeOnMadMate.GetBool())
-            );
-    }
+    
     public static string GetProgressText(PlayerControl pc)
     {
         try
