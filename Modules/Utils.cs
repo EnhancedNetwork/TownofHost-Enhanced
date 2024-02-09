@@ -23,8 +23,6 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
-using MS.Internal.Xml.XPath;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -119,21 +117,29 @@ public static class Utils
         {
             playerNetTransform.SnapTo(location, numHost);
         }
-        
-        if (PlayerControl.LocalPlayer.PlayerId != player.PlayerId)
+
+        var sender = CustomRpcSender.Create("TeleportPlayer");
         {
             // Local Teleport For Client
-            MessageWriter localMessageWriter = AmongUsClient.Instance.StartRpcImmediately(playerNetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.None, player.GetClientId());
-            NetHelpers.WriteVector2(location, localMessageWriter);
-            localMessageWriter.Write(numLocalClient);
-            AmongUsClient.Instance.FinishRpcImmediately(localMessageWriter);
-        }
+            if (PlayerControl.LocalPlayer.PlayerId != player.PlayerId)
+            {
+                sender.AutoStartRpc(playerNetTransform.NetId, (byte)RpcCalls.SnapTo, targetClientId: player.GetClientId());
+                {
+                    NetHelpers.WriteVector2(location, sender.stream);
+                    sender.Write(numLocalClient);
+                }
+                sender.EndRpc();
+            }
 
-        // Global Teleport
-        MessageWriter globalMessageWriter = AmongUsClient.Instance.StartRpcImmediately(playerNetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.None);
-        NetHelpers.WriteVector2(location, globalMessageWriter);
-        globalMessageWriter.Write(numGlobal);
-        AmongUsClient.Instance.FinishRpcImmediately(globalMessageWriter);
+            // Global Teleport
+            sender.AutoStartRpc(playerNetTransform.NetId, (byte)RpcCalls.SnapTo);
+            {
+                NetHelpers.WriteVector2(location, sender.stream);
+                sender.Write(numGlobal);
+            }
+            sender.EndRpc();
+        }
+        sender.SendMessage();
     }
     public static void RpcRandomVentTeleport(this PlayerControl player)
     {
