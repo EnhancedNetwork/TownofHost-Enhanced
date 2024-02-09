@@ -1,4 +1,5 @@
 using HarmonyLib;
+using Hazel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,21 @@ class EndGamePatch
     public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ref EndGameResult endGameResult)
     {
         GameStates.InGame = false;
+        foreach (var pvc in CustomRoleSelector.GhostGetPreviousRole.Keys) // Sets role back to original so it shows up in /l results.
+        {
+            // Currently not needed, but later might add exception handler.
+            CustomRoles prevrole = CustomRoleSelector.GhostGetPreviousRole[pvc];
+            Main.PlayerStates[pvc].SetMainRole(prevrole);
+            
+            if (AmongUsClient.Instance.AmHost)
+            {
+                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, Hazel.SendOption.Reliable, -1);
+                writer.Write(pvc);
+                writer.WritePacked((int)prevrole);
+                AmongUsClient.Instance.FinishRpcImmediately(writer);
+            }
+        }
+        CustomRoleSelector.GhostGetPreviousRole = [];
 
         Logger.Info("-----------Game over-----------", "Phase");
         if (!GameStates.IsModHost) return;

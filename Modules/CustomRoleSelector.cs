@@ -68,6 +68,7 @@ internal class CustomRoleSelector
             var role = (CustomRoles)Enum.Parse(typeof(CustomRoles), cr.ToString());
             if (role.IsVanilla() || role.IsAdditionRole()) continue;
             if (role is CustomRoles.GM or CustomRoles.NotAssigned) continue;
+            if (role.IsGhostRole()) continue;
 
             if (GameStates.FungleIsActive) // The Fungle
             {
@@ -127,7 +128,6 @@ internal class CustomRoleSelector
                 else roleRateList.Add(role);
             }
         }
-
         while (MiniOnList.Count == 1)
         {
             var select = MiniOnList[rd.Next(0, MiniOnList.Count)];
@@ -496,6 +496,149 @@ internal class CustomRoleSelector
                 or CustomRoles.Burst
                 or CustomRoles.Circumvent) continue;
         */
+
+        return false;
+    }
+    public static Dictionary<byte, CustomRoles> GhostGetPreviousRole = [];
+    public static void GhostAssignPatch(PlayerControl player)
+    {
+        var getplrRole = player.GetCustomRole();
+        if (GameStates.IsHideNSeek || getplrRole.IsGhostRole() || Main.rejectghost.Contains(player.PlayerId)) return;
+        if (getplrRole == CustomRoles.Retributionist || getplrRole == CustomRoles.Mafia) return;
+        GhostGetPreviousRole.Add(player.PlayerId, getplrRole);
+
+        List<CustomRoles> HauntedList = [];
+        List<CustomRoles> RateHauntedList = [];
+        
+        List<CustomRoles> ImpHauntedList = [];
+        List<CustomRoles> ImpRateHauntedList = [];
+
+        CustomRoles ChosenRole = CustomRoles.NotAssigned;
+
+        bool IsSetRole = false;
+
+        var IsCrewmate = CustomRolesHelper.IsCrewmate(getplrRole); 
+        var IsImpostor = CustomRolesHelper.IsImpostor(getplrRole);
+        var IsNeutral = CustomRolesHelper.IsNeutral(getplrRole);
+
+        foreach (var ghostRole in Options.CustomGhostRoleCounts.Keys) if (ghostRole.GetMode() == 2)
+            {
+                int getcount = Options.CustomGhostRoleCounts[ghostRole].GetInt();
+                if (CustomRolesHelper.IsCrewmate(ghostRole))
+                {
+                    if (HauntedList.Contains(ghostRole) && !GhostAssign(ghostRole))
+                        HauntedList.Remove(ghostRole);
+                    
+                    if (HauntedList.Contains(ghostRole) || !GhostAssign(ghostRole))
+                        continue;
+
+                    getcount--;
+                    HauntedList.Add(ghostRole); continue;
+                }
+                if (CustomRolesHelper.IsImpostor(ghostRole))
+                {
+                    if (ImpHauntedList.Contains(ghostRole) && !GhostAssign(ghostRole))
+                        ImpHauntedList.Remove(ghostRole);
+
+                    if (ImpHauntedList.Contains(ghostRole) || !GhostAssign(ghostRole))
+                        continue;
+                    
+                    getcount--;
+                    ImpHauntedList.Add(ghostRole); 
+                }
+            }
+        foreach (var ghostRole in Options.CustomGhostRoleCounts.Keys) if (ghostRole.GetMode() == 1)
+            {
+                int getcount = Options.CustomGhostRoleCounts[ghostRole].GetInt();
+                if (CustomRolesHelper.IsCrewmate(ghostRole))
+                {
+                    if (RateHauntedList.Contains(ghostRole) && !GhostAssign(ghostRole))
+                        RateHauntedList.Remove(ghostRole);
+
+                    if (RateHauntedList.Contains(ghostRole) || !GhostAssign(ghostRole))
+                        continue;
+                    
+                    getcount--;
+                    RateHauntedList.Add(ghostRole); continue;
+                }
+                if (CustomRolesHelper.IsImpostor(ghostRole))
+                {
+                    if (ImpRateHauntedList.Contains(ghostRole) && !GhostAssign(ghostRole))
+                        ImpRateHauntedList.Remove(ghostRole);
+
+                    if (ImpRateHauntedList.Contains(ghostRole) || !GhostAssign(ghostRole))
+                        continue;
+                    
+                    getcount--;
+                    ImpRateHauntedList.Add(ghostRole); 
+                }
+            }
+
+        
+
+        if (IsCrewmate)
+        {
+            if (HauntedList.Count > 0)
+            {
+                System.Random rnd = new System.Random();
+                int randindx = rnd.Next(HauntedList.Count);
+                ChosenRole = HauntedList[randindx];
+                IsSetRole = true;
+
+            }
+            else if (RateHauntedList.Count > 0 && !IsSetRole)
+            {
+                System.Random rnd = new System.Random();
+                int randindx = rnd.Next(HauntedList.Count);
+                ChosenRole = RateHauntedList[randindx];
+
+            }
+            if (ChosenRole.IsGhostRole()) 
+            {
+                player.RpcSetRole(RoleTypes.GuardianAngel);
+                player.RpcSetCustomRole(ChosenRole);
+            }
+            return;
+        }
+
+
+        if (IsImpostor)
+        {
+            if (ImpHauntedList.Count > 0)
+            {
+                System.Random rnd = new System.Random();
+                int randindx = rnd.Next(ImpHauntedList.Count);
+                ChosenRole = ImpHauntedList[randindx];
+                IsSetRole = true;
+
+            }
+            else if (ImpRateHauntedList.Count > 0 && !IsSetRole)
+            {
+                System.Random rnd = new System.Random();
+                int randindx = rnd.Next(ImpHauntedList.Count);
+                ChosenRole = ImpRateHauntedList[randindx];
+
+            }
+            if (ChosenRole.IsGhostRole())
+            {
+                player.RpcSetRole(RoleTypes.GuardianAngel);
+                player.RpcSetCustomRole(ChosenRole);
+            }
+            return;
+        }
+
+        if (IsNeutral)
+        {
+            return;
+        }
+
+        }
+    public static bool GhostAssign(CustomRoles role)
+    {
+        int getCount = Options.CustomGhostRoleCounts[role].GetInt();
+
+        if (getCount > 0)
+            return true;
 
         return false;
     }

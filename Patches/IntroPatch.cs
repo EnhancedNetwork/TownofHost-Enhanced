@@ -559,8 +559,10 @@ class IntroCutsceneDestroyPatch
 
                 _ = new LateTask(() => Main.AllPlayerControls.Do(pc => pc.RpcSetRoleDesync(RoleTypes.Shapeshifter, -3)), 2f, "Set Impostor For Server");
             }
-            
-            if (PlayerControl.LocalPlayer.Is(CustomRoles.GM))
+            var ghostUP = PlayerControl.LocalPlayer.GetCustomRole();
+            var checkGhostRole = CustomRolesHelper.IsGhostRole(ghostUP);
+
+            if (PlayerControl.LocalPlayer.Is(CustomRoles.GM) || checkGhostRole) // Incase user has /up access
             {
                 PlayerControl.LocalPlayer.RpcExile();
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();

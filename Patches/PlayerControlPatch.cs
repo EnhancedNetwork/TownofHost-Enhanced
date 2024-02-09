@@ -53,30 +53,40 @@ class CheckProtectPatch
     {
         if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek) return false;
         Logger.Info("CheckProtect occurs: " + __instance.GetNameWithRole() + "=>" + target.GetNameWithRole(), "CheckProtect");
+        var angel = __instance;
+        var getAngelRole = angel.GetCustomRole();
 
-        if (__instance.Is(CustomRoles.EvilSpirit))
+        switch (getAngelRole)
         {
-            if (target.Is(CustomRoles.Spiritcaller))
-            {
-                Spiritcaller.ProtectSpiritcaller();
-            }
-            else
-            {
-                Spiritcaller.HauntPlayer(target);
-            }
-
-            __instance.RpcResetAbilityCooldown();
-            return true;
-        }
-
-        if (__instance.Is(CustomRoles.Sheriff))
-        {
-            if (__instance.Data.IsDead)
-            {
-                Logger.Info("Blocked protection", "CheckProtect");
+            case CustomRoles.EvilSpirit:
+                if (target.Is(CustomRoles.Spiritcaller))
+                {
+                    Spiritcaller.ProtectSpiritcaller();
+                }
+                else
+                {
+                    Spiritcaller.HauntPlayer(target);
+                    
+                }
+                angel.RpcResetAbilityCooldown();
                 return false;
-            }
+
+            case CustomRoles.Warden:
+                return Warden.OnCheckProtect(angel, target);
+
+            case CustomRoles.Minion:
+                return Minion.OnCheckProtect(angel, target);
+
+            default:
+                break;
         }
+        
+        if (angel.Is(CustomRoles.Sheriff) && angel.Data.IsDead)
+        {
+                Logger.Info("Blocked protection", "CheckProtect");
+                return false; // What is this for? sheriff dosen't become guardian angel lmao
+        }
+        
         return true;
     }
 }
@@ -1298,6 +1308,15 @@ class CheckMurderPatch
         return true;
     }
 }
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Exiled))]
+class ExilePlayerFix
+{    
+    public static void Postfix(PlayerControl __instance)
+    {
+        CustomRoleSelector.GhostAssignPatch(__instance);
+    }
+}
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
 class MurderPlayerPatch
 {
@@ -1389,6 +1408,7 @@ class MurderPlayerPatch
 
         PlayerControl killer = __instance;
         bool needUpadteNotifyRoles = true;
+
 
         if (PlagueDoctor.IsEnable)
         {
@@ -1560,6 +1580,17 @@ class MurderPlayerPatch
         if (Vulture.IsEnable) Vulture.OnPlayerDead(target);
         if (SoulCollector.IsEnable) SoulCollector.OnPlayerDead(target);
         if (Medic.IsEnable) Medic.IsDead(target);
+
+        //================GHOST ASSIGN PATCH============
+        if (target.Is(CustomRoles.EvilSpirit))
+        {
+            Main.rejectghost.Add(target.PlayerId);
+            target.RpcSetRole(RoleTypes.GuardianAngel);
+        }
+
+        CustomRoleSelector.GhostAssignPatch(target);
+
+        
 
         Utils.AfterPlayerDeathTasks(target);
 
@@ -4168,7 +4199,7 @@ class PlayerControlSetRolePatch
                 var self = seer.PlayerId == target.PlayerId;
                 var seerIsKiller = seer.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(seer.PlayerId);
 
-                if (target.Is(CustomRoles.EvilSpirit))
+                if (target.GetCustomRole().IsGhostRole())
                 {
                     ghostRoles[seer] = RoleTypes.GuardianAngel;
                 }
@@ -4181,7 +4212,7 @@ class PlayerControlSetRolePatch
                     ghostRoles[seer] = RoleTypes.CrewmateGhost;
                 }
             }
-            if (target.Is(CustomRoles.EvilSpirit))
+            if (target.GetCustomRole().IsGhostRole())
             {
                 roleType = RoleTypes.GuardianAngel;
             }
@@ -4208,25 +4239,26 @@ class PlayerControlSetRolePatch
 }
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetRole))]
-class PlayerControlLocalSetRolePatch
-{
-    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] RoleTypes role)
+    class PlayerControlLocalSetRolePatch
     {
-        if (!AmongUsClient.Instance.AmHost && GameStates.IsNormalGame && !GameStates.IsModHost)
+        public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] RoleTypes role)
         {
-            var modRole = role switch
+            if (!AmongUsClient.Instance.AmHost && GameStates.IsNormalGame && !GameStates.IsModHost)
             {
-                RoleTypes.Impostor => CustomRoles.ImpostorTOHE,
-                RoleTypes.Shapeshifter => CustomRoles.ShapeshifterTOHE,
-                RoleTypes.Crewmate => CustomRoles.CrewmateTOHE,
-                RoleTypes.Engineer => CustomRoles.EngineerTOHE,
-                RoleTypes.Scientist => CustomRoles.ScientistTOHE,
-                _ => CustomRoles.NotAssigned,
-            };
-            if (modRole != CustomRoles.NotAssigned)
-            {
-                Main.PlayerStates[__instance.PlayerId].SetMainRole(modRole);
+                var modRole = role switch
+                {
+                    RoleTypes.Impostor => CustomRoles.ImpostorTOHE,
+                    RoleTypes.Shapeshifter => CustomRoles.ShapeshifterTOHE,
+                    RoleTypes.Crewmate => CustomRoles.CrewmateTOHE,
+                    RoleTypes.Engineer => CustomRoles.EngineerTOHE,
+                    RoleTypes.Scientist => CustomRoles.ScientistTOHE,
+                    _ => CustomRoles.NotAssigned,
+                };
+                if (modRole != CustomRoles.NotAssigned)
+                {
+                    Main.PlayerStates[__instance.PlayerId].SetMainRole(modRole);
+                }
             }
         }
     }
-}
+

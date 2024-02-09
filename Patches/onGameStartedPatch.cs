@@ -108,6 +108,7 @@ internal class ChangeRoleSettings
             Main.GrenadierBlinding = [];
             Main.LighterNumOfUsed = [];
             Main.Lighter = [];
+            Main.rejectghost = [];
             Main.AllKillers = [];
             Main.MadGrenadierBlinding = [];
             Main.CursedWolfSpellCount = [];
@@ -327,6 +328,7 @@ internal class ChangeRoleSettings
             Tracefinder.Init();
             Devourer.Init();
             PotionMaster.Init();
+            Warden.Init();
             Traitor.Init();
             Spiritualist.Init();
             Vulture.Init();
@@ -1188,7 +1190,7 @@ internal class SelectRolesPatch
             }
         }
     }
-
+    
     private static void AssignCustomRole(CustomRoles role, PlayerControl player)
     {
         if (player == null) return;

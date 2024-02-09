@@ -37,6 +37,7 @@ public static class NameColorManager
         if (seer.Is(CustomRoles.Crewpostor) && target.Is(CustomRoleTypes.Impostor) && Options.CrewpostorKnowsAllies.GetBool()) color = Main.roleColors[CustomRoles.Impostor];
         if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Madmate) && Options.ImpKnowWhosMadmate.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
         if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Crewpostor) && Options.AlliesKnowCrewpostor.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
+        if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Minion)) color = Main.roleColors[CustomRoles.Madmate];
         if (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate) && Options.MadmateKnowWhosMadmate.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
         if (seer.Is(CustomRoles.Gangster) && target.Is(CustomRoles.Madmate)) color = Main.roleColors[CustomRoles.Madmate];
 
@@ -158,6 +159,7 @@ public static class NameColorManager
                 if (target.Is(CustomRoles.Admired)) color = Main.roleColors[CustomRoles.Bait];
                 if (target.Is(CustomRoles.Parasite)) color = Main.roleColors[CustomRoles.Impostor];
                 if (target.Is(CustomRoles.Crewpostor)) color = Main.roleColors[CustomRoles.Impostor];
+                if (target.Is(CustomRoles.Minion)) color = Main.roleColors[CustomRoles.Impostor];
                 if (target.Is(CustomRoles.Convict)) color = Main.roleColors[CustomRoles.Impostor];
                 if (target.Is(CustomRoles.Refugee)) color = Main.roleColors[CustomRoles.Impostor];
                 if (target.Is(CustomRoles.Rascal)) color = Main.roleColors[CustomRoles.Impostor];
@@ -182,6 +184,7 @@ public static class NameColorManager
                 if (target.Is(CustomRoles.Admired)) color = Main.roleColors[CustomRoles.Bait];
                 if (target.Is(CustomRoles.Parasite)) color = Main.roleColors[CustomRoles.Impostor];
                 if (target.Is(CustomRoles.Crewpostor)) color = Main.roleColors[CustomRoles.Impostor];
+                if (target.Is(CustomRoles.Minion)) color = Main.roleColors[CustomRoles.Impostor];
                 if (target.Is(CustomRoles.Convict)) color = Main.roleColors[CustomRoles.Impostor];
                 if (target.Is(CustomRoles.Refugee)) color = Main.roleColors[CustomRoles.Impostor];
                 if (target.Is(CustomRoles.Rascal)) color = Main.roleColors[CustomRoles.Impostor];

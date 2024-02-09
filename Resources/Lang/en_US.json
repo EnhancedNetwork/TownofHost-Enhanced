@@ -312,6 +312,8 @@
   "Jinx": "Jinx",
   "PotionMaster": "Potion Master",
   "Necromancer": "Necromancer",
+  "Warden": "Warden",
+  "Minion": "Minion",
   "LastImpostor": "Last Impostor",
   "Overclocked": "Overclocked",
   "Lovers": "Lovers",
@@ -739,6 +741,8 @@
   "JinxInfo": "Reflect attacks onto your attackers",
   "PotionMasterInfo": "Use your potions to your advantage",
   "NecromancerInfo": "Kill your killer to defy death",
+  "WardenInfo": "(Ghost) Alert about danger",
+  "MinionInfo": "(Ghost) Blind enemies",
   "LoversInfo": "Stay alive and win together",
   "MadmateInfo": "Help the Impostors",
   "NtrInfo": "Everyone sees you as their Lover",
@@ -1109,6 +1113,8 @@
   "SunnyboyInfoLong": "(Neutrals):\nAs the Sunnyboy, you win if you are dead by the end of the game. When you are alive, the game will not end due to killers gaining majority.\nAdditionally, you have access to portable vitals.",
   "BardInfoLong": "(Impostors):\nWhen a bard is alive, the exile confirmation will display a sentence composed by the bard. Whenever the bard completes a creation, the bard's kill cooldown is permanently halved.",
   "NukerInfoLong": "(Impostors):\nAs the Nuker, you're a stronger Bomber.\n\nShapeshift to nuke everyone.",
+  "WardenInfoLong": "(Crewmates [Ghost]):\nAs the Warden, alert someone of nearby danger, additionally giving them a temporary speed boost.",
+  "MinionInfoLong": "(Impostor [Ghost]):\nAs the Minion, you can temporarily blind non-impostors.",
   "ShowTextOverlay": "Text Overlay",
   "Overlay.GuesserMode": "<size=50%>Guesser Mode</size>",
   "Overlay.NoGameEnd": "<size=50%>No Game End</size>",
@@ -1468,6 +1474,7 @@
   "FPSGame": "FPS: ",
   "Cooldown": "Cooldown",
   "KillCooldown": "Kill Cooldown",
+  "AbilityCooldown": "Ability Cooldown",
   "VentCooldown": "Vent Cooldown",
   "ControlCooldown": "Control Cooldown",
   "PoisonCooldown": "Poison Cooldown",
@@ -2326,10 +2333,12 @@
   "Message.YTPlanNotice": "Note: The [YouTuber Plan] is enabled in this lobby, which means the Host can specify their role in the next game to make it easier to get content. In case the Host abuses this feature, please exit the game or report it.\nCurrent Creator Credentials:",
   "Message.OnlyCanBeUsedByHost": "<color=#ff1919><size=150%><b>ERROR</b></size></color>\n\n<color=#ff1919>This command may only be used by the host.</color>",
   "Message.MaxPlayers": "Maximum players set to ",
+  "Message.GhostRoleInfo": "<size=90%><b>Ghost Role Info</b></size>\nHiya! A little bit about ghost roles...<size=75%>\n\nGhost roles drastically impact the game, so not recommended for smaller lobbies, if you're unfamiliar.\n\n<b>Spawning:</b>\nGhost-roles only spawn after death, the first x people from (team) to die get them.\n\"Always\" role are prioritized, if they are exhausted then \"On\" roles get assigned..</size>\n\n<size=50%><b>PS: If your previous role didn't have tasks(e.g sheriff), your tasks as a ghost-role aren't needed for task-win</b></size>",
+
+  "AntiBlackoutFixTitle": "ANTI BLACKOUT FIX",
 
   "EnableGadientTags": "Enable Gradient Tags <color=#ff0000>(can cause disconnect issues)</color>",
   "Warning.GradientTags": "<color=#ff0000><size=150%>Warning:</size></color>\n\nHost has enabled gradient tags. This feature is not recommended to use because it can cause <b>disconnect issues</b>",
-
   "WarningTitle": "Warning!",
   "Warning.BrokenVentsInDleksSendInGame": "Warning! The vents on this map are broken",
   "Warning.BrokenVentsInDleksMessage": "<b>On the «dlekS ehT» map the vents are broken</b>, they cannot be fixed in host-only mods, this is a vanilla bug, <b>so any roles using vent as an ability will not spawns on this map</b>",
@@ -2338,7 +2347,6 @@
   "Warning.AntiBlackoutProtectionMsg": "<size=110%>Warning:</size>\n\r<b>Black screen protection has been activated,</b> due to the low number of alive <color=#ff1919>Impostors</color>, <color=#8cffff>Crewmates</color> and <color=#7f8c8d>Neutral Killers</color>\n<b>The voting screen will show as a tied vote (only affects the visual, not the results voting)</b>\n<size=70%>Modded players will see voting screen normaly</size>",
   "Warning.ShowAntiBlackExiledPlayer": "<b>Last meeting triggered Black Screen Prevention!\nFollowing is the information of the player exiled in last meeting.</b>\n",
   "DisableAntiBlackoutProtects": "Disable AntiBlackout Protects (Recommended for testing)",
-
 
   "Warning.InvalidRpc": "Kicked <b>{0}</b> because an invalid RPC was received.\nPlease check that no mods other than TOHE installed.",
   "Warning.NoModHost": "TOHE is not installed on the host",
@@ -3469,12 +3477,14 @@
   "RoleType.ImpSupport": "<color=#00ffff>★</color> Impostor <color=#00ffff>Support</color> Roles",
   "RoleType.ImpConcealing": "<color=#6e003a>★</color> Impostor <color=#6e003a>Concealing</color> Roles",
   "RoleType.ImpHindering": "<color=#636363>★</color> Impostor <color=#636363>Hindering</color> Roles",
+  "RoleType.ImpGhost": "<color=#bd8b88>★</color> Impostor <color=#bd8b88>Ghost</color> Roles  /ghostinfo",
   "RoleType.Madmate": "★ Madmate Roles",
   "RoleType.CrewSupport": "<color=#00ffff>★</color> Crewmate <color=#00ffff>Support</color> Roles",
   "RoleType.CrewInvestigative": "<color=#008080>★</color> Crewmate <color=#008080>Investigative</color> Roles",
   "RoleType.CrewPower": "<color=#ffff00>★</color> Crewmate <color=#ffff00>Power</color> Roles",
   "RoleType.CrewKilling": "<color=#ff1919>★</color> Crewmate <color=#ff1919>Killing</color> Roles",
   "RoleType.CrewBasic": "<color=#FF6600>★</color> Crewmate <color=#FF6600>Basic</color> Roles",
+  "RoleType.CrewGhost": "<color=#afc3c9>★</color> Crewmate <color=#afc3c9>Ghost</color> Roles  /ghostinfo",
   "RoleType.NeutralEvil": "<color=#912900>★</color> Neutral <color=#912900>Evil</color> Roles",
   "RoleType.NeutralBenign": "<color=#046300>★</color> Neutral <color=#046300>Benign</color> Roles",
   "RoleType.NeutralChaos": "<color=#D4AF37>★</color> Neutral <color=#D4AF37>Chaos</color> Roles",
@@ -3761,5 +3771,11 @@
   "PlagueDoctorCanInfectSelf": "Can Infect Self",
   "PlagueDoctorCanInfectVent": "Can Infect While In Vent",
 
-  "WinnerRoleText.PlagueDoctor": "Plague Scientist Wins!"
+  "WinnerRoleText.PlagueDoctor": "Plague Scientist Wins!",
+
+  "WardenIncreaseSpeed": "Increase Speed By",
+  "WardenWarn": "DANGER! RUN!",
+
+  "MinionAbilityTime": "Ability Duration"
+
 }

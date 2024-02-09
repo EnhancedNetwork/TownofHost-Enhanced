@@ -243,6 +243,8 @@ public class Main : BasePlugin
     public static Dictionary<byte, CustomRoles> ErasedRoleStorage = [];
     public static Dictionary<string, int> PlayerQuitTimes = [];
 
+    public static List<byte> rejectghost = [];
+
     //public static IEnumerable<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null);
     //public static IEnumerable<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId));
 
@@ -593,6 +595,7 @@ public enum CustomRoles
     Miner,
     Morphling,
     Mafia, //nemesis
+    Minion,
     Assassin, //ninja
     Nuker,
     Parasite,
@@ -631,8 +634,8 @@ public enum CustomRoles
     // Vanilla Remakes
     CrewmateTOHE,
     EngineerTOHE,
-    GuardianAngelTOHE,
     ScientistTOHE,
+    GuardianAngelTOHE,
 
     //Crewmate
     Addict,
@@ -777,6 +780,7 @@ public enum CustomRoles
     Virus,
     Vulture,
     Werewolf,
+    Warden,
     Workaholic,
     Wraith,
     Stealth,
@@ -875,6 +879,7 @@ public enum CustomRoles
     // QuickFix
     
     //You need to put roles in order by their name
+    
 }
 //WinData
 public enum CustomWinner

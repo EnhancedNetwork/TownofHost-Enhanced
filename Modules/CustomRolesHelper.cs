@@ -93,6 +93,8 @@ static class CustomRolesHelper
                 CustomRoles.Detective => CustomRoles.Crewmate,
                 CustomRoles.God => CustomRoles.Crewmate,
                 CustomRoles.GuardianAngelTOHE => CustomRoles.GuardianAngel,
+                CustomRoles.Warden => CustomRoles.GuardianAngel,
+                CustomRoles.Minion => CustomRoles.GuardianAngel,
                 CustomRoles.Zombie => CustomRoles.Impostor,
                 CustomRoles.Mario => CustomRoles.Engineer,
                 CustomRoles.AntiAdminer => CustomRoles.Impostor,
@@ -283,7 +285,16 @@ static class CustomRolesHelper
 
         return vanillaSideHasKillButton;
     }
-    //This is a overall check for vanilla clients to see if they are imp basis
+    //This is a overall check for vanilla clients to see if they are imp basis 
+    public static bool IsGhostRole(this CustomRoles role)
+    {
+        return role is
+            CustomRoles.GuardianAngelTOHE or
+            CustomRoles.EvilSpirit or
+            CustomRoles.Warden or
+            CustomRoles.Minion;
+
+    }
     public static bool IsAdditionRole(this CustomRoles role)
     {
         return role is
@@ -741,7 +752,8 @@ static class CustomRolesHelper
             CustomRoles.EvilMini or
             CustomRoles.Blackmailer or
             CustomRoles.Pitfall or
-            CustomRoles.Instigator;
+            CustomRoles.Instigator or
+            CustomRoles.Minion;
     }
     public static bool IsNeutral(this CustomRoles role)
     {
@@ -1787,6 +1799,14 @@ static class CustomRolesHelper
     public static bool IsNeutralKillerTeam(this CustomRoles role) => role.IsNK() && !role.IsMadmate();
     public static bool IsPassiveNeutralTeam(this CustomRoles role) => role.IsNonNK() && !role.IsMadmate();
     public static bool IsNNK(this CustomRoles role) => role.IsNeutral() && !role.IsNK();
+    public static bool IsSpeedRole(this CustomRoles role)
+    {
+        return role is
+            CustomRoles.Flash or
+            CustomRoles.Alchemist or
+            CustomRoles.Tired;
+
+    }
     public static bool IsVanilla(this CustomRoles role)
     {
         return role is
@@ -1859,6 +1879,7 @@ static class CustomRolesHelper
            CustomRoles.Bandit => CountTypes.Bandit,
            CustomRoles.Poisoner => CountTypes.Poisoner,
            CustomRoles.Pelican => CountTypes.Pelican,
+           CustomRoles.Minion => CountTypes.Impostor,
            CustomRoles.Gamer => CountTypes.Gamer,
            CustomRoles.BloodKnight => CountTypes.BloodKnight,
            CustomRoles.Succubus => CountTypes.Succubus,
