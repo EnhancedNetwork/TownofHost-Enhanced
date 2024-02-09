@@ -14,6 +14,7 @@ using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
+using static Unity.Profiling.ProfilerRecorder;
 
 namespace TOHE;
 
@@ -344,7 +345,7 @@ internal class RPCHandlerPatch
                 }
 
                 var countOptions = listOptions.Count;
-                Logger.Msg($"StartAmount: {startAmount} - LastAmount: {lastAmount} ({startAmount}/{lastAmount}) :--: ListOptionsCount: {countOptions} - AllOptions: {countAllOptions} ({countOptions}/{countAllOptions})", "SyncCustomSettings");
+                Logger.Msg($"StartAmount/LastAmount: {startAmount}/{lastAmount} :--: ListOptionsCount/AllOptions: {countOptions}/{countAllOptions}", "CustomRPC.SyncCustomSettings");
 
                 // Sync Settings
                 foreach (var option in listOptions.ToArray())
@@ -915,7 +916,7 @@ internal static class RPC
         }
 
         var countListOptions = listOptions.Count;
-        Logger.Msg($"StartAmount: {startAmount} - LastAmount: {lastAmount} ({startAmount}/{lastAmount}) :--: ListOptionsCount: {countListOptions} - AllOptions: {amountAllOptions} ({countListOptions}/{amountAllOptions})", "SyncCustomSettings");
+        Logger.Msg($"StartAmount/LastAmount: {startAmount}/{lastAmount} :--: ListOptionsCount/AllOptions: {countListOptions}/{amountAllOptions}", "SyncOptionsBetween");
 
         // Sync Settings
         foreach (var option in listOptions.ToArray())
