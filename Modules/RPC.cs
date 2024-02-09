@@ -646,7 +646,7 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SyncAllPlayerNames:
                 Main.AllPlayerNames = [];
-                int num = reader.ReadInt32();
+                int num = reader.ReadPackedInt32();
                 for (int i = 0; i < num; i++)
                     Main.AllPlayerNames.TryAdd(reader.ReadByte(), reader.ReadString());
                 break;
@@ -947,7 +947,7 @@ internal static class RPC
     {
         if (!AmongUsClient.Instance.AmHost) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncAllPlayerNames, SendOption.Reliable, -1);
-        writer.Write(Main.AllPlayerNames.Count);
+        writer.WritePacked(Main.AllPlayerNames.Count);
         foreach (var name in Main.AllPlayerNames)
         {
             writer.Write(name.Key);
