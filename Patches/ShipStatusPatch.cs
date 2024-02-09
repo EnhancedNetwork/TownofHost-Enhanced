@@ -192,8 +192,6 @@ class StartPatch
         Logger.CurrentMethod();
         Logger.Info("-----------Start of game-----------", "Phase");
 
-        Main.AssignRolesIsStarted = true;
-
         Utils.CountAlivePlayers(true);
 
         if (Options.AllowConsole.GetBool() && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug)
