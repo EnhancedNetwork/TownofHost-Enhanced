@@ -17,7 +17,7 @@ namespace TOHE.Roles.Crewmate
         private static readonly string fontSize = "1.5";
         public static bool IsEnable = false;
 
-        public static Dictionary<int, string> RandomRole = [];
+        public static Dictionary<byte, string> RandomRole = [];
         public static Dictionary<byte, (PlayerControl, float)> FarseerTimer = [];
 
         public static OptionItem FarseerCooldown;
@@ -91,6 +91,11 @@ namespace TOHE.Roles.Crewmate
             if (!AmongUsClient.Instance.AmHost) return;
             if (!Main.ResetCamPlayerList.Contains(playerId))
                 Main.ResetCamPlayerList.Add(playerId);
+        }
+        public static void Remove(byte playerId)
+        {
+            FarseerTimer.Remove(playerId);
+            RandomRole.Remove(playerId);
         }
 
         public static void SetCooldown(byte id) => Main.AllPlayerKillCooldown[id] = FarseerCooldown.GetFloat();
