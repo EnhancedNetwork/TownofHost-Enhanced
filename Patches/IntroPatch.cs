@@ -60,11 +60,11 @@ class CoBeginPatch
 {
     public static void Prefix()
     {
-        Main.AssignRolesIsStarted = false;
-
         var logger = Logger.Handler("Info");
 
         var allPlayerControlsArray = Main.AllPlayerControls.ToArray();
+
+        Main.AssignRolesIsStarted = false;
 
         logger.Info("------------Player Names------------");
         foreach ( var pc in allPlayerControlsArray)
