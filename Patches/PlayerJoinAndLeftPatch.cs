@@ -479,10 +479,13 @@ class CreatePlayerPatch
         }
 
         _ = new LateTask(() => 
-        { 
+        {
             if (client == null || client.Character == null  // client is null
                 || client.ColorId < 0 || Palette.PlayerColors.Length <= client.ColorId) // invalid client color
-                return; 
+            {
+                Logger.Warn("client is null or client have invalid color", "TrySyncAllOptions");
+                return;
+            }
             
             OptionItem.SyncAllOptions(client.Id);
         }, 3f, "Sync All Options For New Player");
