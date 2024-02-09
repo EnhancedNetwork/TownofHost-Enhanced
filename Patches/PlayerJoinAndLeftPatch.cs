@@ -66,6 +66,13 @@ class OnGameJoinedPatch
                 case GameModes.Normal:
                     Logger.Info(" Is Normal Game", "Game Mode");
 
+                    if (Main.NormalOptions.KillCooldown == 0f)
+                        Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
+
+                    AURoleOptions.SetOpt(Main.NormalOptions.Cast<IGameOptions>());
+                    if (AURoleOptions.ShapeshifterCooldown == 0f)
+                        AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
+
                     // if custom game mode is HideNSeekTOHE in normal game, set standart
                     if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
                     {
@@ -92,16 +99,6 @@ class OnGameJoinedPatch
                 default:
                     Logger.Info(" No find", "Game Mode");
                     break;
-            }
-
-            if (GameStates.IsNormalGame)
-            {
-                if (Main.NormalOptions.KillCooldown == 0f)
-                    Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
-
-                AURoleOptions.SetOpt(Main.NormalOptions.Cast<IGameOptions>());
-                if (AURoleOptions.ShapeshifterCooldown == 0f)
-                    AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
             }
         }
 
@@ -481,7 +478,15 @@ class CreatePlayerPatch
             }, 1f, "Name Format");
         }
 
-        _ = new LateTask(() => { if (client.Character == null || client == null) return; OptionItem.SyncAllOptions(client.Id); }, 3f, "Sync All Options For New Player");
+        _ = new LateTask(() => 
+        { 
+            if (client == null || client.Character == null  // client is null
+                || client.ColorId < 0 || Palette.PlayerColors.Length <= client.ColorId) // invalid client color
+                return; 
+            
+            OptionItem.SyncAllOptions(client.Id);
+        }, 3f, "Sync All Options For New Player");
+        
         Main.GuessNumber[client.Character.PlayerId] = [-1, 7];
 
         _ = new LateTask(() =>
