@@ -174,7 +174,8 @@ public static class Doppelganger
         Logger.Info("Changed killer skin", "Doppelganger");
 
         SendRPC(killer.PlayerId);
-        Utils.NotifyRoles(ForceLoop: true);
+        Utils.NotifyRoles(ForceLoop: true, NoCache: true);
+        RPC.SyncAllPlayerNames();
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
         return;
