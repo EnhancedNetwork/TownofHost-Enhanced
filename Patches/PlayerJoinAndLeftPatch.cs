@@ -58,7 +58,6 @@ class OnGameJoinedPatch
             Main.AllPlayerNames = [];
             Main.PlayerQuitTimes = [];
             KickPlayerPatch.AttemptedKickPlayerList = [];
-            Main.AssignRolesIsStarted = false;
 
             switch (GameOptionsManager.Instance.CurrentGameOptions.GameMode)
             {
@@ -167,6 +166,9 @@ public static class OnPlayerJoinedPatch
     public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
     {
         Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Joining room", "Session: OnPlayerJoined");
+
+        Main.AssignRolesIsStarted = false;
+
         _ = new LateTask(() =>
         {
             try
