@@ -24,6 +24,8 @@ internal class ChangeRoleSettings
     public static void Postfix(AmongUsClient __instance)
     {
         Main.OverrideWelcomeMsg = "";
+        Main.AssignRolesIsStarted = true;
+
         try
         {
             // Note: No positions are set at this time.

@@ -132,6 +132,7 @@ public class Main : BasePlugin
     public static List<(string, byte, string)> MessagesToSend = [];
     public static bool isChatCommand = false;
     public static bool MeetingIsStarted = false;
+    public static bool AssignRolesIsStarted = false;
     public static HashSet<PlayerControl> LoversPlayers = [];
     public static bool isLoversDead = true;
     public static Dictionary<byte, float> AllPlayerKillCooldown = [];
