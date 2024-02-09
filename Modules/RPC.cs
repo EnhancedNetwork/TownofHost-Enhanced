@@ -14,7 +14,6 @@ using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
-using static Unity.Profiling.ProfilerRecorder;
 
 namespace TOHE;
 
