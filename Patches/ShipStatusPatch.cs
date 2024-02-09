@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.Crewmate;
-using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
@@ -192,6 +191,8 @@ class StartPatch
     {
         Logger.CurrentMethod();
         Logger.Info("-----------Start of game-----------", "Phase");
+
+        Main.AssignRolesIsStarted = true;
 
         Utils.CountAlivePlayers(true);
 

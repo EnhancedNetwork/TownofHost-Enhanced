@@ -2,10 +2,8 @@ using AmongUs.Data;
 using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
-using Il2CppSystem.Threading.Tasks;
 using InnerNet;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
@@ -168,6 +166,9 @@ public static class OnPlayerJoinedPatch
     public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
     {
         Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Joining room", "Session: OnPlayerJoined");
+
+        Main.AssignRolesIsStarted = false;
+
         _ = new LateTask(() =>
         {
             try
@@ -404,7 +405,14 @@ class OnPlayerLeftPatch
                     break;
             }
 
-            Logger.Info($"{data?.PlayerName} - (ClientID:{data?.Id} / FriendCode:{data?.FriendCode} / HashPuid:{data?.GetHashedPuid()} / Platform:{data?.PlatformData.Platform}) Disconnect (Reason:{reason}，Ping:{AmongUsClient.Instance.Ping})", "Session");
+            Logger.Info($"{data?.PlayerName} - (ClientID:{data?.Id} / FriendCode:{data?.FriendCode} / HashPuid:{data?.GetHashedPuid()} / Platform:{data?.PlatformData.Platform}) Disconnect (Reason:{reason}，Ping:{AmongUsClient.Instance.Ping})", "Session OnPlayerLeftPatch");
+
+            // End the game when a player exits game during assigning roles (AntiBlackOut Protect)
+            if (Main.AssignRolesIsStarted)
+            {
+                Utils.ErrorEnd("The player left the game during assigning roles");
+            }
+
 
             if (data != null)
                 Main.playerVersion.Remove(data.Id);
