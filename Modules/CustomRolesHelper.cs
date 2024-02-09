@@ -510,8 +510,7 @@ static class CustomRolesHelper
             CustomRoles.Spiritcaller or
             CustomRoles.PlagueBearer or
             CustomRoles.Agitater or
-            CustomRoles.RuthlessRomantic or
-            CustomRoles.Pestilence;
+            CustomRoles.RuthlessRomantic;
     }
     public static bool IsNonNK(this CustomRoles role) // ROLE ASSIGNING, NOT NEUTRAL TYPE
     {
@@ -595,7 +594,6 @@ static class CustomRolesHelper
             CustomRoles.Succubus or
             CustomRoles.Phantom or
             CustomRoles.Mario or
-            CustomRoles.SoulCollector or
             CustomRoles.Pirate or
             CustomRoles.Terrorist or
             CustomRoles.Vulture or
@@ -603,6 +601,14 @@ static class CustomRolesHelper
             CustomRoles.Solsticer or
             CustomRoles.Revolutionist or
             CustomRoles.Provocateur;
+    }
+    public static bool IsNA(this CustomRoles role)
+    {
+        return role is
+            CustomRoles.PlagueBearer or
+            CustomRoles.Pestilence or
+            CustomRoles.SoulCollector or
+            CustomRoles.Death;
     }
     public static bool IsSnitchTarget(this CustomRoles role)
     {
@@ -769,6 +775,7 @@ static class CustomRolesHelper
             CustomRoles.Shroud or
             CustomRoles.Wraith or
             CustomRoles.SoulCollector or
+            CustomRoles.Death or
             CustomRoles.Vulture or
             CustomRoles.Taskinator or
             CustomRoles.Convict or
@@ -1882,8 +1889,10 @@ static class CustomRolesHelper
            CustomRoles.Shroud => CountTypes.Shroud,
            CustomRoles.Werewolf => CountTypes.Werewolf,
            CustomRoles.Wraith => CountTypes.Wraith,
-           CustomRoles.Pestilence => CountTypes.Pestilence,
-           CustomRoles.PlagueBearer => CountTypes.PlagueBearer,
+           CustomRoles.Pestilence => CountTypes.Apocalypse,
+           CustomRoles.PlagueBearer => CountTypes.Apocalypse,
+           CustomRoles.SoulCollector => CountTypes.Apocalypse,
+           CustomRoles.Death => CountTypes.Apocalypse,
            CustomRoles.Agitater => CountTypes.Agitater,
            CustomRoles.Parasite => CountTypes.Impostor,
            CustomRoles.NSerialKiller => CountTypes.NSerialKiller,
@@ -1958,7 +1967,7 @@ static class CustomRolesHelper
             CustomRoles.Pickpocket => CustomWinner.Pickpocket,
             CustomRoles.Traitor => CustomWinner.Traitor,
             CustomRoles.Vulture => CustomWinner.Vulture,
-            CustomRoles.Pestilence => CustomWinner.Pestilence,
+            CustomRoles.Pestilence => CustomWinner.Apocalypse,
             CustomRoles.Medusa => CustomWinner.Medusa,
             CustomRoles.Spiritcaller => CustomWinner.Spiritcaller,
             CustomRoles.Glitch => CustomWinner.Glitch,
@@ -1967,7 +1976,8 @@ static class CustomRolesHelper
             CustomRoles.Doomsayer => CustomWinner.Doomsayer,
             CustomRoles.Shroud => CustomWinner.Shroud,
             CustomRoles.Seeker => CustomWinner.Seeker,
-            CustomRoles.SoulCollector => CustomWinner.SoulCollector,
+            CustomRoles.SoulCollector => CustomWinner.Apocalypse,
+            CustomRoles.Death => CustomWinner.Apocalypse,
             CustomRoles.RuthlessRomantic => CustomWinner.RuthlessRomantic,
             CustomRoles.Mini => CustomWinner.NiceMini,
             CustomRoles.Doppelganger => CustomWinner.Doppelganger,
@@ -1993,8 +2003,6 @@ static class CustomRolesHelper
             CountTypes.Shroud => CustomRoles.Shroud,
             CountTypes.Werewolf => CustomRoles.Werewolf,
             CountTypes.Wraith => CustomRoles.Wraith,
-            CountTypes.Pestilence => CustomRoles.Pestilence,
-            CountTypes.PlagueBearer => CustomRoles.PlagueBearer,
             CountTypes.Agitater => CustomRoles.Agitater,
             CountTypes.NSerialKiller => CustomRoles.NSerialKiller,
             CountTypes.Juggernaut => CustomRoles.Juggernaut,
@@ -2062,8 +2070,7 @@ public enum CountTypes
     Traitor,
     Medusa,
     Spiritcaller,
-    Pestilence,
-    PlagueBearer,
+    Apocalypse,
     Glitch,
     Arsonist,
     Huntsman,

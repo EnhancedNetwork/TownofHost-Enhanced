@@ -196,6 +196,7 @@ public static class Divinator
                 CustomRoles.Greedier,
                 CustomRoles.Merchant,
                 CustomRoles.SoulCollector,
+                CustomRoles.Death,
                 CustomRoles.Trickster], 
                 
                 [CustomRoles.Pestilence,

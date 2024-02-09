@@ -717,6 +717,7 @@ public enum CustomRoles
     Collector,
     Succubus, //cultist
     CursedSoul,
+    Death,
     Gamer, //demon
     Doomsayer,
     Doppelganger,
@@ -931,7 +932,6 @@ public enum CustomWinner
     Pickpocket = CustomRoles.Pickpocket,
     Traitor = CustomRoles.Traitor,
     Vulture = CustomRoles.Vulture,
-    Pestilence = CustomRoles.Pestilence,
     Medusa = CustomRoles.Medusa,
     Spiritcaller = CustomRoles.Spiritcaller,
     Glitch = CustomRoles.Glitch,
@@ -946,6 +946,7 @@ public enum CustomWinner
     NiceMini = CustomRoles.Mini,
     Doppelganger = CustomRoles.Doppelganger,
     Solsticer = CustomRoles.Solsticer,
+    Apocalypse = CustomRoles.Pestilence,
 }
 public enum AdditionalWinners
 {

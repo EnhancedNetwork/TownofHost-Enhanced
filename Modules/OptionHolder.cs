@@ -2339,7 +2339,6 @@ public static class Options
         */
         Solsticer.SetupCustomOption();
 
-        SoulCollector.SetupCustomOption();
         
         SetupRoleOptions(15400, TabGroup.NeutralRoles, CustomRoles.Terrorist);
         CanTerroristSuicideWin = BooleanOptionItem.Create(15402, "CanTerroristSuicideWin", false, TabGroup.NeutralRoles, false)
@@ -2424,8 +2423,6 @@ public static class Options
 
         Poisoner.SetupCustomOption();
 
-        PlagueBearer.SetupCustomOption();
-
         PotionMaster.SetupCustomOption();
 
         Pyromaniac.SetupCustomOption();
@@ -2447,6 +2444,14 @@ public static class Options
 
         Wraith.SetupCustomOption();
 
+        TextOptionItem.Create(10000015, "RoleType.NeutralApocalypse", TabGroup.NeutralRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(127, 140, 141, byte.MaxValue));
+
+        PlagueBearer.SetupCustomOption();
+
+        SoulCollector.SetupCustomOption();
+        
         #endregion
 
         #region Add-Ons Settings

@@ -2638,6 +2638,10 @@ class FixedUpdateInNormalGamePatch
                         PlagueBearer.OnFixedUpdate(player);
                         break;
 
+                    case CustomRoles.SoulCollector:
+                        SoulCollector.BecomeDeath(player);
+                        break;
+
                     case CustomRoles.Farseer:
                         Farseer.OnFixedUpdate(player);
                         break;

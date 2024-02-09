@@ -930,6 +930,11 @@ class MeetingHudStartPatch
             string separator = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
             AddMsg(string.Format(GetString("BaitAdviceAlive"), string.Join(separator, baitAliveList)), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), GetString("BaitAliveTitle")));
         }
+        //Death Notify
+        if (CustomRoles.Death.RoleExist())
+        {
+            AddMsg(string.Format(GetString("SoulCollectorTransform")), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), GetString("ApocalypseIsNigh")));
+        }
         string MimicMsg = "";
         foreach (var pc in Main.AllPlayerControls)
         {

@@ -363,6 +363,7 @@ public class PlayerState(byte playerId)
         Targeted,
         Retribution,
         WrongAnswer,
+        Armageddon,
 
         //Please add all new roles with deathreason & new deathreason in Susceptible.CallEnabledAndChange
         etc = -1,
