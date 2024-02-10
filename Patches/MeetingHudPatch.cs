@@ -479,7 +479,7 @@ class CheckForEndVotingPatch
         var player = Utils.GetPlayerById(exiledPlayer.PlayerId);
         var role = GetString(exiledPlayer.GetCustomRole().ToString());
         var crole = exiledPlayer.GetCustomRole();
-        var coloredRole = Utils.GetDisplayRoleAndSubName(exileId, true);
+        var coloredRole = Utils.GetDisplayRoleAndSubName(exileId, exileId, true);
 
         if (Options.ConfirmEgoistOnEject.GetBool() && player.Is(CustomRoles.Egoist))
             coloredRole = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Egoist), coloredRole.RemoveHtmlTags());

@@ -372,9 +372,9 @@ static class ExtendedPlayerControl
     {
         return Main.PlayerStates[player.PlayerId].GetTaskState();
     }
-    public static string GetDisplayRoleAndSubName(this PlayerControl player, bool pure = false)
+    public static string GetDisplayRoleAndSubName(this PlayerControl seer, PlayerControl target, bool pure = false)
     {
-        return Utils.GetDisplayRoleAndSubName(player.PlayerId, pure);
+        return Utils.GetDisplayRoleAndSubName(seer.PlayerId, target.PlayerId, pure);
     }
     public static string GetSubRoleName(this PlayerControl player, bool forUser = false)
     {

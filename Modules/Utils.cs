@@ -367,9 +367,9 @@ public static class Utils
         }
         return;
     }
-    public static string GetDisplayRoleAndSubName(byte playerId, bool pure = false)
+    public static string GetDisplayRoleAndSubName(byte seerId, byte targetId, bool pure = false)
     {
-        var TextData = GetRoleAndSubText(playerId, playerId, pure);
+        var TextData = GetRoleAndSubText(seerId, targetId, pure);
         return ColorString(TextData.Item2, TextData.Item1);
     }
     public static string GetRoleName(CustomRoles role, bool forUser = true)
@@ -409,8 +409,8 @@ public static class Utils
         string RoleText = "Invalid Role";
         Color RoleColor;
 
-        var seerMainRole = Main.PlayerStates[seerId].MainRole;
-        var seerSubRoles = Main.PlayerStates[seerId].SubRoles;
+        //var seerMainRole = Main.PlayerStates[seerId].MainRole;
+        //var seerSubRoles = Main.PlayerStates[seerId].SubRoles;
 
         var targetMainRole = Main.PlayerStates[targetId].MainRole;
         var targetSubRoles = Main.PlayerStates[targetId].SubRoles;
@@ -2248,7 +2248,7 @@ public static class Utils
                 // ====== Combine SelfRoleName, SelfTaskText, SelfName, SelfDeathReason for seer ======
 
                 string SelfTaskText = GetProgressText(seer);
-                string SelfRoleName = $"<size={fontSize}>{seer.GetDisplayRoleAndSubName()}{SelfTaskText}</size>";
+                string SelfRoleName = $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(seer, false)}{SelfTaskText}</size>";
                 string SelfDeathReason = seer.KnowDeathReason(seer) ? $"({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(seer.PlayerId))})" : "";
                 string SelfName = $"{ColorString(seer.GetRoleColor(), SeerRealName)}{SelfDeathReason}{SelfMark}";
 
@@ -2492,7 +2492,7 @@ public static class Utils
                         // ====== Seer know target role ======
 
                         string TargetRoleText = ExtendedPlayerControl.KnowRoleTarget(seer, target)
-                                ? $"<size={fontSize}>{target.GetDisplayRoleAndSubName(seer.PlayerId != target.PlayerId && !seer.Data.IsDead)}{GetProgressText(target)}</size>\r\n" : "";
+                                ? $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(target, false)}{GetProgressText(target)}</size>\r\n" : "";
 
 
                         if (seer.IsAlive() && seer.IsRevealedPlayer(target) && target.Is(CustomRoles.Trickster))
@@ -2941,12 +2941,12 @@ public static class Utils
         var name = Main.AllPlayerNames[id].RemoveHtmlTags().Replace("\r\n", string.Empty);
         if (id == PlayerControl.LocalPlayer.PlayerId) name = DataManager.player.Customization.Name;
         else name = GetPlayerById(id)?.Data.PlayerName ?? name;
-        string summary = $"{ColorString(Main.PlayerColors[id], name)}<pos=14%>{GetProgressText(id)}</pos><pos=24%> {GetKillCountText(id)}</pos><pos={22 + KillsPos}%> {GetVitalText(id, true)}</pos><pos={RolePos + KillsPos}%> {GetDisplayRoleAndSubName(id, true)}{GetSubRolesText(id, summary: true)}</pos>";
+        string summary = $"{ColorString(Main.PlayerColors[id], name)}<pos=14%>{GetProgressText(id)}</pos><pos=24%> {GetKillCountText(id)}</pos><pos={22 + KillsPos}%> {GetVitalText(id, true)}</pos><pos={RolePos + KillsPos}%> {GetDisplayRoleAndSubName(id, id, true)}{GetSubRolesText(id, summary: true)}</pos>";
         if (Options.CurrentGameMode == CustomGameMode.FFA)
         {
             summary = $"{ColorString(Main.PlayerColors[id], name)} {GetKillCountText(id, ffa: true)}";
         }
-        return check && GetDisplayRoleAndSubName(id, true).RemoveHtmlTags().Contains("INVALID:NotAssigned")
+        return check && GetDisplayRoleAndSubName(id, id, true).RemoveHtmlTags().Contains("INVALID:NotAssigned")
             ? "INVALID"
             : disableColor ? summary.RemoveHtmlTags() : summary;
     }
@@ -2957,12 +2957,12 @@ public static class Utils
         var name = Main.AllPlayerNames[id].RemoveHtmlTags().Replace("\r\n", string.Empty);
         if (id == PlayerControl.LocalPlayer.PlayerId) name = DataManager.player.Customization.Name;
         else name = GetPlayerById(id)?.Data.PlayerName ?? name;
-        string summary = $"{ColorString(Main.PlayerColors[id], name)} - {GetDisplayRoleAndSubName(id, true)}{GetSubRolesText(id, summary: true)} ({GetVitalText(id, true)}) {GetKillCountText(id)}";
+        string summary = $"{ColorString(Main.PlayerColors[id], name)} - {GetDisplayRoleAndSubName(id, id, true)}{GetSubRolesText(id, summary: true)} ({GetVitalText(id, true)}) {GetKillCountText(id)}";
         if (Options.CurrentGameMode == CustomGameMode.FFA)
         {
             summary = $"{ColorString(Main.PlayerColors[id], name)} {GetKillCountText(id, ffa: true)}";
         }
-        return check && GetDisplayRoleAndSubName(id, true).RemoveHtmlTags().Contains("INVALID:NotAssigned")
+        return check && GetDisplayRoleAndSubName(id, id, true).RemoveHtmlTags().Contains("INVALID:NotAssigned")
             ? "INVALID"
             : disableColor ? summary.RemoveHtmlTags() : summary;
     }

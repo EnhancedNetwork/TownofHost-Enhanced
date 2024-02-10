@@ -2363,24 +2363,24 @@ class ReportDeadBodyPatch
                 if (player.Is(CustomRoles.Detective) && player.PlayerId != target.PlayerId)
                 {
                     string msg;
-                    msg = string.Format(GetString("DetectiveNoticeVictim"), tpc.GetRealName(), tpc.GetDisplayRoleAndSubName());
+                    msg = string.Format(GetString("DetectiveNoticeVictim"), tpc.GetRealName(), tpc.GetDisplayRoleAndSubName(tpc, false));
                     if (Options.DetectiveCanknowKiller.GetBool())
                     {
                         var realKiller = tpc.GetRealKiller();
                         if (realKiller == null) msg += "；" + GetString("DetectiveNoticeKillerNotFound");
-                        else msg += "；" + string.Format(GetString("DetectiveNoticeKiller"), realKiller.GetDisplayRoleAndSubName());
+                        else msg += "；" + string.Format(GetString("DetectiveNoticeKiller"), realKiller.GetDisplayRoleAndSubName(realKiller, false));
                     }
                     Main.DetectiveNotify.Add(player.PlayerId, msg);
                 }
                 else if (player.Is(CustomRoles.Sleuth) && player.PlayerId != target.PlayerId)
                 {
                     string msg;
-                    msg = string.Format(GetString("SleuthNoticeVictim"), tpc.GetRealName(), tpc.GetDisplayRoleAndSubName());
+                    msg = string.Format(GetString("SleuthNoticeVictim"), tpc.GetRealName(), tpc.GetDisplayRoleAndSubName(tpc, false));
                     if (Options.SleuthCanKnowKillerRole.GetBool())
                     {
                         var realKiller = tpc.GetRealKiller();
                         if (realKiller == null) msg += "；" + GetString("SleuthNoticeKillerNotFound");
-                        else msg += "；" + string.Format(GetString("SleuthNoticeKiller"), realKiller.GetDisplayRoleAndSubName());
+                        else msg += "；" + string.Format(GetString("SleuthNoticeKiller"), realKiller.GetDisplayRoleAndSubName(realKiller, false));
                     }
                     Main.SleuthNotify.Add(player.PlayerId, msg);
                 }
@@ -4008,7 +4008,8 @@ class GameDataCompleteTaskPatch
 
         Logger.Info($"Task Complete: {pc.GetNameWithRole().RemoveHtmlTags()}", "CompleteTask");
         Main.PlayerStates[pc.PlayerId].UpdateTask(pc);
-        Utils.NotifyRoles(SpecifySeer: pc);
+        Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true);
+        Utils.NotifyRoles(SpecifyTarget: pc, ForceLoop: true);
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CompleteTask))]
