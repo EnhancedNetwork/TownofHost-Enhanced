@@ -1767,13 +1767,17 @@ public static class Utils
                 {
                     Logger.Info($"Delay Utils.sendmessage bcz player {sendToData.PlayerName} is with bad color", "SendMessage");
 
-                    // To prevent spam messages from being sent if player color was fortgreen/invalid and fix disconnection host
+                    // To prevent spam messages from being sent, if player color was fortgreen/invalid and fix disconnection host
                     if (trySendMsgAgain)
                     {
                         _ = new LateTask(() =>
                         {
                             SendMessage(text, sendTo, title, logforChatManager, trySendMsgAgain: false);
                         }, 2.5f, "SendMessage_Delay");
+                    }
+                    else
+                    {
+                        Logger.Info($"Player still have fortgreen/invalid color, the message will not be sent", "SendMessage");
                     }
                     return;
                 }
