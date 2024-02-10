@@ -40,12 +40,12 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0209.151.0300"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "1.5.1 Canary 3";
+    public const string PluginVersion = "2024.0210.151.0400"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "1.5.1 Canary 4";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public const bool Canary = true; // ACTIVE - Latest: V1.5.1 Canary 3
+    public const bool Canary = true; // ACTIVE - Latest: V1.5.1 Canary 4
     public const bool fullRelease = false; // INACTIVE - Latest: V1.5.0
     public const bool devRelease = false; // INACTIVE - Latest: V1.5.1 Dev 3
 
