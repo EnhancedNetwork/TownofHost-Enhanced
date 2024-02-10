@@ -77,7 +77,10 @@ public class ModUpdater
         try
         {
             string result;
-            using (HttpClient client = new())
+            using var httpClientHandler = new HttpClientHandler();
+            httpClientHandler.UseProxy = true;
+            
+            using (HttpClient client = new(httpClientHandler))
             {
                 client.DefaultRequestHeaders.Add("User-Agent", "TOHE Updater");
                 using var response = await client.GetAsync(new Uri(url), HttpCompletionOption.ResponseContentRead);
@@ -132,11 +135,12 @@ public class ModUpdater
             Logger.Info("latestVersionl: " + latestVersion, "Github");
             Logger.Info("latestTitle: " + latestTitle, "Github");
 
-            if (downloadUrl == null || downloadUrl == "")
+            if (hasUpdate && (downloadUrl == null || downloadUrl == ""))
             {
                 Logger.Error("Failed to get download address", "CheckRelease");
                 return false;
             }
+
             isChecked = true;
             isBroken = false;
         }
