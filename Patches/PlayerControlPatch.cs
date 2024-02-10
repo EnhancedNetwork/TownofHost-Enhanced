@@ -4199,7 +4199,7 @@ class PlayerControlSetRolePatch
                 var self = seer.PlayerId == target.PlayerId;
                 var seerIsKiller = seer.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(seer.PlayerId);
 
-                if (target.GetCustomRole().IsGhostRole())
+                if (target.GetCustomSubRoles().Any(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
                 {
                     ghostRoles[seer] = RoleTypes.GuardianAngel;
                 }
@@ -4212,7 +4212,7 @@ class PlayerControlSetRolePatch
                     ghostRoles[seer] = RoleTypes.CrewmateGhost;
                 }
             }
-            if (target.GetCustomRole().IsGhostRole())
+            if (target.GetCustomSubRoles().Any(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
             {
                 roleType = RoleTypes.GuardianAngel;
             }
