@@ -1773,7 +1773,7 @@ public static class Utils
                         _ = new LateTask(() =>
                         {
                             SendMessage(text, sendTo, title, logforChatManager, trySendMsgAgain: false);
-                        }, 1.8f, "SendMessage_Delay");
+                        }, 2.5f, "SendMessage_Delay");
                     }
                     return;
                 }
