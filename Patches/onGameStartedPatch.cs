@@ -26,6 +26,8 @@ internal class ChangeRoleSettings
         Main.OverrideWelcomeMsg = "";
         Main.AssignRolesIsStarted = true;
 
+        Logger.Msg("Is Started", "AssignRoles");
+
         try
         {
             // Note: No positions are set at this time.
@@ -1143,6 +1145,8 @@ internal class SelectRolesPatch
             Utils.CountAlivePlayers(true);
             Utils.SyncAllSettings();
             SetColorPatch.IsAntiGlitchDisabled = false;
+
+            Logger.Msg("Ended", "AssignRoles");
         }
         catch (Exception ex)
         {
