@@ -32,6 +32,10 @@ public class ModUpdater
     [HarmonyPriority(2)]
     public static void Start_Prefix(/*MainMenuManager __instance*/)
     {
+        if (isChecked || DebugModeManager.AmDebugger) return;
+        if (!Main.fullRelease) return;
+        //If we are not using it for now, just freaking disable it.
+
         NewVersionCheck();
         DeleteOldFiles();
         InfoPopup = UnityEngine.Object.Instantiate(Twitch.TwitchManager.Instance.TwitchPopup);
