@@ -1749,7 +1749,7 @@ public static class Utils
             }
         }
     }
-    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false)
+    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false, bool trySendMsgAgain = true)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         // set replay to true when you want to send previous sys msg or do not want to add a sys msg in the history
@@ -1763,14 +1763,17 @@ public static class Utils
             if (sendToData != null)
             {
                 if (sendToData.Disconnected) return;
-                //p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId
                 else if (sendToData.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= sendToData.DefaultOutfit.ColorId)
                 {
-                    Logger.Info($"Delay Utils.sendmessage bcz {sendToData.GetPlayerName} is with bad color", "SendMessage");
-                    _ = new LateTask(() =>
+                    Logger.Info($"Delay Utils.sendmessage bcz player {sendToData.PlayerName} is with bad color", "SendMessage");
+
+                    if (trySendMsgAgain)
                     {
-                        SendMessage(text, sendTo, title, logforChatManager);
-                    }, 1.2f, "SendMessage_Delay");
+                        _ = new LateTask(() =>
+                        {
+                            SendMessage(text, sendTo, title, logforChatManager, trySendMsgAgain: false);
+                        }, 2.5f, "SendMessage_Delay");
+                    }
                     return;
                 }
             }
