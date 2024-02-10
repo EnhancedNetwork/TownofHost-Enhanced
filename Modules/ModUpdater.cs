@@ -32,8 +32,7 @@ public class ModUpdater
     [HarmonyPriority(2)]
     public static void Start_Prefix(/*MainMenuManager __instance*/)
     {
-        if (isChecked || DebugModeManager.AmDebugger) return;
-        if (!Main.fullRelease) return;
+        if (isChecked) return;
         //If we are not using it for now, just freaking disable it.
 
         NewVersionCheck();
@@ -104,12 +103,24 @@ public class ModUpdater
                 Logger.Info(assets.ToString(), "ModUpdater");
                 for (int i = 0; i < assets.Count; i++)
                 {
-                    if (assets[i]["name"].ToString() == $"TOH-Enhanced.{latestVersion}.zip")
+                    string assetName = assets[i]["name"].ToString();
+                    // Get version number in file name. eg : TOH-Enhanced.2024.0209.151.0301.zip => 2024.0209.151.0301）
+                    int startIndex = assetName.IndexOf("TOH-Enhanced.") + "TOH-Enhanced.".Length;
+                    int endIndex = assetName.IndexOf(".zip");
+                    string assetVersion = assetName[startIndex..endIndex];
+
+                    // Convert version number from file name version. eg : 2024.0209.151.0301 => 2024.209.151.301, this is how version is stored
+                    if (Version.TryParse(assetVersion.Replace('.', '.'), out Version Fileversion))
                     {
-                        downloadUrl = assets[i]["browser_download_url"].ToString();
-                        break;
+                        if (Fileversion == latestVersion)
+                        {
+                            downloadUrl = assets[i]["browser_download_url"].ToString();
+                            Logger.Info($"Github downloadUrl is set to {downloadUrl}", "CheckRelease");
+                            break;
+                        }
                     }
                 }
+
                 hasUpdate = latestVersion.CompareTo(Main.version) > 0;
                 hasOutdate = latestVersion.CompareTo(Main.version) < 0;
             }
@@ -230,9 +241,9 @@ public class ModUpdater
                     long readLength = 0;
                     int length;
 
-                    while ((length = await stream.ReadAsync(buffer, 0, buffer.Length)) != 0)
+                    while ((length = await stream.ReadAsync(buffer)) != 0)
                     {
-                        await fileStream.WriteAsync(buffer, 0, length);
+                        await fileStream.WriteAsync(buffer.AsMemory(0, length));
 
                         readLength += length;
                         double? progress = Math.Round((double)readLength / total * 100, 2, MidpointRounding.ToZero);
@@ -248,7 +259,7 @@ public class ModUpdater
         catch (Exception ex)
         {
             Logger.Error($"Update failed\n{ex}", "DownloadDLL", false);
-            ShowPopup(GetString("updateManually"), StringNames.Close, true, true);
+            ShowPopup(GetString("updateManually"), StringNames.Close, true, false);
             return false;
         }
         return true;
@@ -257,6 +268,9 @@ public class ModUpdater
     {
         try
         {
+            Logger.Info($"DownLoading Github zip from '${url}'", "DownloadDLLGithub");
+            if (url == null || url == "") throw new Exception($"url is empty, cannot update!");
+
             var savePath = "BepInEx/plugins/TOHE.dll.temp";
 
             // Delete the temporary file if it exists
@@ -266,10 +280,13 @@ public class ModUpdater
             }
 
             HttpResponseMessage response;
-            var downloadCallBack = DownloadCallBack;
 
-            using (HttpClient client = new())
+            using (var httpClientHandler = new HttpClientHandler())
             {
+                // Use System Proxy
+                httpClientHandler.UseProxy = true;
+
+                using HttpClient client = new(httpClientHandler);
                 response = await client.GetAsync(url);
             }
 
@@ -279,24 +296,18 @@ public class ModUpdater
             }
 
             var total = response.Content.Headers.ContentLength ?? 0;
+
             using (var stream = await response.Content.ReadAsStreamAsync())
             using (var archive = new ZipArchive(stream, ZipArchiveMode.Read))
             {
                 // Specify the relative path within the ZIP archive where "TOHE.dll" is located
                 var entryPath = "BepInEx/plugins/TOHE.dll";
-                var entry = archive.GetEntry(entryPath);
-
-                if (entry == null)
-                {
-                    throw new Exception($"'{entryPath}' not found in the ZIP archive");
-                }
+                var entry = archive.GetEntry(entryPath) ?? throw new Exception($"'{entryPath}' not found in the ZIP archive");
 
                 // Extract "TOHE.dll" to the temporary file
-                using (var entryStream = entry.Open())
-                using (var fileStream = new FileStream(savePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true))
-                {
-                    await entryStream.CopyToAsync(fileStream);
-                }
+                using var entryStream = entry.Open();
+                using var fileStream = new FileStream(savePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true);
+                await entryStream.CopyToAsync(fileStream);
             }
 
             var fileName = Assembly.GetExecutingAssembly().Location;
@@ -307,7 +318,7 @@ public class ModUpdater
         catch (Exception ex)
         {
             Logger.Error($"Update failed\n{ex}", "DownloadDLL", false);
-            ShowPopup(GetString("updateManually"), StringNames.Close, true, true);
+            ShowPopup(GetString("updateManually"), StringNames.Close, true, false);
             return false;
         }
         return true;
