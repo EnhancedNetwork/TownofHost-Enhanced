@@ -427,17 +427,6 @@ public static class Utils
 
             if (Options.NameDisplayAddons.GetBool() && !pure && knowRole)
             {
-                //if (Options.AddBracketsToAddons.GetBool())       
-                //{
-                //    foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed()).ToArray())
-                //        RoleText = ColorString(GetRoleColor(subRole), Options.AddBracketsToAddons.GetBool() ? $"({GetString($"Prefix.{subRole}")}) " : $"{GetString($"Prefix.{subRole}")} ") + RoleText;
-                //}
-                //else
-                //{
-                //    foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed()).ToArray())
-                //        RoleText = ColorString(GetRoleColor(subRole), $"{GetString($"Prefix.{subRole}")} ") + RoleText;
-                //}
-
                 var addBracketsToAddons = Options.AddBracketsToAddons.GetBool();
                 foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed()).ToArray())
                     RoleText = ColorString(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"Prefix.{subRole}")}) " : $"{GetString($"Prefix.{subRole}")} ") + RoleText;
