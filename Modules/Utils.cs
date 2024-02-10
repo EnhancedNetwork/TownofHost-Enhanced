@@ -427,9 +427,31 @@ public static class Utils
 
             if (Options.NameDisplayAddons.GetBool() && !pure && knowRole)
             {
+                var seer = GetPlayerById(seerId);
+                if (seer == null) return (RoleText, RoleColor);
+
+                var seerPlatform = seer.GetClient().PlatformData.Platform;
                 var addBracketsToAddons = Options.AddBracketsToAddons.GetBool();
-                foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed()).ToArray())
-                    RoleText = ColorString(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"Prefix.{subRole}")}) " : $"{GetString($"Prefix.{subRole}")} ") + RoleText;
+
+                // if the player is playing on a console platform
+                if (seerPlatform is Platforms.Playstation or Platforms.Xbox or Platforms.Switch)
+                {
+                    // By default, censorship is enabled on consoles
+                    // Need to set add-ons colors without endings "</color>"
+
+                    // colored role
+                    RoleText = ColorString(GetRoleColor(targetMainRole), RoleText);
+
+                    // colored add-ons
+                    foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed()).ToArray())
+                        RoleText = ColorStringWithoutEnding(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"Prefix.{subRole}")}) " : $"{GetString($"Prefix.{subRole}")} ") + RoleText;
+                }
+                // default
+                else
+                {
+                    foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed()).ToArray())
+                        RoleText = ColorString(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"Prefix.{subRole}")}) " : $"{GetString($"Prefix.{subRole}")} ") + RoleText;
+                }
             }
 
             foreach (var subRole in targetSubRoles.ToArray())
@@ -3011,6 +3033,7 @@ public static class Utils
         return null;
     }
     public static string ColorString(Color32 color, string str) => $"<color=#{color.r:x2}{color.g:x2}{color.b:x2}{color.a:x2}>{str}</color>";
+    public static string ColorStringWithoutEnding(Color32 color, string str) => $"<color=#{color.r:x2}{color.g:x2}{color.b:x2}{color.a:x2}>{str}";
     /// <summary>
     /// Darkness:１の比率で黒色と元の色を混ぜる。マイナスだと白色と混ぜる。
     /// </summary>
