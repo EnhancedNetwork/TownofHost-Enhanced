@@ -57,7 +57,7 @@ public static class RetributionistRevengeManager
         {
             string text = GetString("PlayerIdList");
             foreach (var npc in Main.AllAlivePlayerControls)
-                text += "\n" + npc.PlayerId.ToString() + " → (" + npc.GetDisplayRoleName() + ") " + npc.GetRealName();
+                text += "\n" + npc.PlayerId.ToString() + " → (" + npc.GetDisplayRoleAndSubName() + ") " + npc.GetRealName();
             Utils.SendMessage(text, pc.PlayerId);
             return true;
         }

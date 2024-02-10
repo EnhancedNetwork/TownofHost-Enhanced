@@ -479,7 +479,7 @@ class CheckForEndVotingPatch
         var player = Utils.GetPlayerById(exiledPlayer.PlayerId);
         var role = GetString(exiledPlayer.GetCustomRole().ToString());
         var crole = exiledPlayer.GetCustomRole();
-        var coloredRole = Utils.GetDisplayRoleName(exileId, true);
+        var coloredRole = Utils.GetDisplayRoleAndSubName(exileId, true);
 
         if (Options.ConfirmEgoistOnEject.GetBool() && player.Is(CustomRoles.Egoist))
             coloredRole = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Egoist), coloredRole.RemoveHtmlTags());
@@ -1055,7 +1055,7 @@ class MeetingHudStartPatch
         {
             var pc = Utils.GetPlayerById(pva.TargetPlayerId);
             if (pc == null) continue;
-            var RoleTextData = Utils.GetRoleText(PlayerControl.LocalPlayer.PlayerId, pc.PlayerId);
+            var RoleTextData = Utils.GetRoleAndSubText(PlayerControl.LocalPlayer.PlayerId, pc.PlayerId);
             var roleTextMeeting = UnityEngine.Object.Instantiate(pva.NameText);
             roleTextMeeting.transform.SetParent(pva.NameText.transform);
             roleTextMeeting.transform.localPosition = new Vector3(0f, -0.18f, 0f);
