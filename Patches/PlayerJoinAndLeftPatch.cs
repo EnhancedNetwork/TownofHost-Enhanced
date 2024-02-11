@@ -486,37 +486,36 @@ class CreatePlayerPatch
             }, 1f, "Name Format");
         }
 
-        _ = new LateTask(() => 
+        if (client == null || client.Character == null // client is null
+            || client.ColorId < 0 || Palette.PlayerColors.Length <= client.ColorId) // invalid client color
         {
-            if (client == null || client.Character == null  // client is null
-                || client.ColorId < 0 || Palette.PlayerColors.Length <= client.ColorId) // invalid client color
+            Logger.Warn("client is null or client have invalid color", "TrySyncAndSendMessage");
+        }
+        else
+        {
+            _ = new LateTask(() =>
             {
-                Logger.Warn("client is null or client have invalid color", "TrySyncAllOptions");
-                return;
-            }
-            
-            OptionItem.SyncAllOptions(client.Id);
-        }, 3f, "Sync All Options For New Player");
-        
-        Main.GuessNumber[client.Character.PlayerId] = [-1, 7];
+                OptionItem.SyncAllOptions(client.Id);
+            }, 3f, "Sync All Options For New Player");
 
-        _ = new LateTask(() =>
-        {
-            //Logger.Warn($"{client.Character.CurrentOutfit.ColorId},{client.Character.CurrentOutfit.HatId}, {client.Character.CurrentOutfit.SkinId}, {client.Character.CurrentOutfit.VisorId}, {client.Character.CurrentOutfit.PetId}", "SKIN LOGGED");
-
-            if (client.Character == null) return;
-            if (Main.OverrideWelcomeMsg != "") Utils.SendMessage(Main.OverrideWelcomeMsg, client.Character.PlayerId);
-            else TemplateManager.SendTemplate("welcome", client.Character.PlayerId, true);
-        }, 3f, "Welcome Message");
-
-        _ = new LateTask(() =>
-        {
-            if (Options.GradientTagsOpt.GetBool())
+            _ = new LateTask(() =>
             {
                 if (client.Character == null) return;
-                Utils.SendMessage(GetString("Warning.GradientTags"),client.Character.PlayerId);
+                if (Main.OverrideWelcomeMsg != "") Utils.SendMessage(Main.OverrideWelcomeMsg, client.Character.PlayerId);
+                else TemplateManager.SendTemplate("welcome", client.Character.PlayerId, true);
+            }, 3f, "Welcome Message");
+
+            if (Options.GradientTagsOpt.GetBool())
+            {
+                _ = new LateTask(() =>
+                {
+                    if (client.Character == null) return;
+                    Utils.SendMessage(GetString("Warning.GradientTags"), client.Character.PlayerId);
+                }, 3.3f, "GradientWarning");
             }
-        }, 3.3f, "GradientWarning");
+        }
+
+        Main.GuessNumber[client.Character.PlayerId] = [-1, 7];
 
         if (Main.OverrideWelcomeMsg == "" && Main.PlayerStates.Count != 0 && Main.clientIdList.Contains(client.Id))
         {
