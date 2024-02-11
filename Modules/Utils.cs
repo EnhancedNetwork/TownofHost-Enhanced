@@ -1749,43 +1749,18 @@ public static class Utils
             }
         }
     }
-    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false, bool trySendMsgAgain = true)
+    public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
+
         // set replay to true when you want to send previous sys msg or do not want to add a sys msg in the history
         if (!replay && GameStates.IsInGame) ChatManager.AddSystemChatHistory(sendTo, text);
 
         if (title == "") title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
 
-        if (sendTo != byte.MaxValue)
-        {
-            var sendToData = GetPlayerInfoById(sendTo);
-            if (sendToData != null)
-            {
-                if (sendToData.Disconnected) return;
-                else if (sendToData.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= sendToData.DefaultOutfit.ColorId)
-                {
-                    Logger.Info($"Delay Utils.sendmessage bcz player {sendToData.PlayerName} is with bad color", "SendMessage");
-
-                    // To prevent spam messages from being sent, if player color was fortgreen/invalid and fix disconnection host
-                    if (trySendMsgAgain)
-                    {
-                        _ = new LateTask(() =>
-                        {
-                            SendMessage(text, sendTo, title, logforChatManager, trySendMsgAgain: false);
-                        }, 2.5f, "SendMessage_Delay");
-                    }
-                    else
-                    {
-                        Logger.Info($"Player still have fortgreen/invalid color, the message will not be sent", "SendMessage");
-                    }
-                    return;
-                }
-            }
-            else return;
-        }
         if (!logforChatManager)
             ChatManager.AddToHostMessage(text.RemoveHtmlTagsTemplate());
+
         Main.MessagesToSend.Add((text.RemoveHtmlTagsTemplate(), sendTo, title));
     }
     public static bool IsPlayerModerator(string friendCode)
