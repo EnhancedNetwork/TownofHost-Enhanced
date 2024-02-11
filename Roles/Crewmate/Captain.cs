@@ -162,7 +162,7 @@ public static class Captain
     private static CustomRoles? SelectRandomAddon(byte targetId)
     {
         if (!AmongUsClient.Instance.AmHost) return null;
-        var AllSubRoles = Main.PlayerStates[targetId].SubRoles;
+        var AllSubRoles = Main.PlayerStates[targetId].SubRoles.ToList();
         for (int i = AllSubRoles.Count - 1; i >= 0; i--)
         {
             var role = AllSubRoles[i];
@@ -176,7 +176,7 @@ public static class Captain
 
         if (AllSubRoles.Count == 0)
         {
-            Logger.Info("No removable addons found on the target.", "Bandit");
+            Logger.Info("No removable addons found on the target.", "Captain");
             return null;
         }
         var rand = IRandom.Instance;
