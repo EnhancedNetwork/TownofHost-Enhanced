@@ -1446,9 +1446,9 @@ internal class ChatCommands
         Directory.CreateDirectory(vipTagsFiles);
         Directory.CreateDirectory(sponsorTagsFiles);
 
-        Logger.Info($"This player was Blackmailed?", "OnReceiveChat");
         if (Blackmailer.ForBlackmailer.Contains(player.PlayerId) && player.IsAlive() && player.PlayerId != 0)
         {
+            Logger.Info($"This player was Blackmailed.", "OnReceiveChat");
             ChatManager.SendPreviousMessagesToAll();
             ChatManager.cancel = false;
             canceled = true; 
