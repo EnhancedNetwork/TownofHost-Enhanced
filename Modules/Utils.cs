@@ -440,7 +440,7 @@ public static class Utils
                     // Need to set add-ons colors without endings "</color>"
 
                     // colored role
-                    RoleText = ColorString(GetRoleColor(targetMainRole), RoleText);
+                    RoleText = ColorStringWithoutEnding(GetRoleColor(targetMainRole), RoleText);
 
                     // colored add-ons
                     foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed()).ToArray())
