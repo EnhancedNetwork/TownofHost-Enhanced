@@ -170,7 +170,7 @@ public static class Penguin
             stopCount = false;
         }
     }
-    public static void OnFixedUpdate(PlayerControl player)
+    public static void OnFixedUpdate(PlayerControl penguin)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (GameStates.IsMeeting) return;
@@ -180,12 +180,12 @@ public static class Penguin
 
         if (AbductVictim != null)
         {
-            if (!player.IsAlive() || !AbductVictim.IsAlive())
+            if (!penguin.IsAlive() || !AbductVictim.IsAlive())
             {
                 RemoveVictim();
                 return;
             }
-            if (AbductTimer <= 0f && !player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+            if (AbductTimer <= 0f && !penguin.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
             {
                 // Set IsDead to true first (prevents ladder chase)
                 AbductVictim.Data.IsDead = true;
@@ -198,8 +198,8 @@ public static class Penguin
                     {
                         var sId = abductVictim.NetTransform.lastSequenceId;
                         //Host side
-                        abductVictim.NetTransform.SnapTo(player.transform.position, (ushort)(sId + 6));
-                        player.MurderPlayer(abductVictim, ExtendedPlayerControl.ResultFlags);
+                        abductVictim.NetTransform.SnapTo(penguin.transform.position, (ushort)(sId + 6));
+                        penguin.MurderPlayer(abductVictim, ExtendedPlayerControl.ResultFlags);
 
                         var sender = CustomRpcSender.Create("PenguinMurder");
                         {
@@ -208,18 +208,18 @@ public static class Penguin
                             {
                                 sender.AutoStartRpc(abductVictim.NetTransform.NetId, (byte)RpcCalls.SnapTo, abductVictim.GetClientId());
                                 {
-                                    NetHelpers.WriteVector2(player.transform.position, sender.stream);
+                                    NetHelpers.WriteVector2(penguin.transform.position, sender.stream);
                                     sender.Write((ushort)(sId + 48));
                                 }
                                 sender.EndRpc();
                             }    
                             sender.AutoStartRpc(abductVictim.NetTransform.NetId, (byte)RpcCalls.SnapTo);
                             {
-                                NetHelpers.WriteVector2(player.transform.position, sender.stream);
+                                NetHelpers.WriteVector2(penguin.transform.position, sender.stream);
                                 sender.Write((ushort)(sId + 100));
                             }
                             sender.EndRpc();
-                            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.MurderPlayer);
+                            sender.AutoStartRpc(penguin.NetId, (byte)RpcCalls.MurderPlayer);
                             {
                                 sender.WriteNetObject(abductVictim);
                                 sender.Write((int)ExtendedPlayerControl.ResultFlags);
@@ -234,8 +234,8 @@ public static class Penguin
             // SnapToRPC does not work for players on top of the ladder, and only the host behaves differently, so teleporting is not done uniformly.
             else if (!AbductVictim.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
             {
-                var position = player.transform.position;
-                if (player.PlayerId != 0)
+                var position = penguin.transform.position;
+                if (penguin.PlayerId != 0)
                 {
                     AbductVictim.RpcTeleport(position, sendInfoInLogs: false);
                 }
@@ -253,7 +253,7 @@ public static class Penguin
         else if (AbductTimer <= 100f)
         {
             AbductTimer = 255f;
-            player.RpcResetAbilityCooldown();
+            penguin.RpcResetAbilityCooldown();
         }
     }
 }
