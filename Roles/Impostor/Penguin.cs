@@ -82,8 +82,8 @@ public static class Penguin
         //Prevent using of moving platform??
         AbductVictim = target;
         AbductTimer = AbductTimerLimit;
-        Utils.GetPlayerById(playerIdList[0]).MarkDirtySettings();
-        Utils.GetPlayerById(playerIdList[0]).RpcResetAbilityCooldown();
+        Utils.GetPlayerById(playerIdList[0])?.MarkDirtySettings();
+        Utils.GetPlayerById(playerIdList[0])?.RpcResetAbilityCooldown();
         SendRPC();
     }
     private static void RemoveVictim()
@@ -95,8 +95,8 @@ public static class Penguin
         }
         //MyState.CanUseMovingPlatform = true;
         AbductTimer = 255f;
-        Utils.GetPlayerById(playerIdList[0]).MarkDirtySettings();
-        Utils.GetPlayerById(playerIdList[0]).RpcResetAbilityCooldown();
+        Utils.GetPlayerById(playerIdList[0])?.MarkDirtySettings();
+        Utils.GetPlayerById(playerIdList[0])?.RpcResetAbilityCooldown();
         SendRPC();
     }
     public static bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
@@ -107,8 +107,8 @@ public static class Penguin
             if (target != AbductVictim)
             {
                 // During an abduction, only the abductee can be killed.
-                Utils.GetPlayerById(playerIdList[0]).RpcMurderPlayerV3(AbductVictim);
-                Utils.GetPlayerById(playerIdList[0]).ResetKillCooldown();
+                Utils.GetPlayerById(playerIdList[0])?.RpcMurderPlayerV3(AbductVictim);
+                Utils.GetPlayerById(playerIdList[0])?.ResetKillCooldown();
                 doKill = false;
             }
             RemoveVictim();
@@ -139,13 +139,13 @@ public static class Penguin
         // If you meet a meeting with time running out, kill it even if you're on a ladder.
         if (AbductVictim != null && AbductTimer <= 0f)
         {
-            Utils.GetPlayerById(playerIdList[0]).RpcMurderPlayerV3(AbductVictim);
+            Utils.GetPlayerById(playerIdList[0])?.RpcMurderPlayerV3(AbductVictim);
         }
         if (MeetingKill)
         {
             if (!AmongUsClient.Instance.AmHost) return;
             if (AbductVictim == null) return;
-            Utils.GetPlayerById(playerIdList[0]).RpcMurderPlayerV3(AbductVictim);
+            Utils.GetPlayerById(playerIdList[0])?.RpcMurderPlayerV3(AbductVictim);
             RemoveVictim();
         }
     }
@@ -165,8 +165,8 @@ public static class Penguin
         if (!IsEnable) return;
         if (AbductVictim != null)
         {
-            Utils.GetPlayerById(playerIdList[0]).MarkDirtySettings();
-            Utils.GetPlayerById(playerIdList[0]).RpcResetAbilityCooldown();
+            Utils.GetPlayerById(playerIdList[0])?.MarkDirtySettings();
+            Utils.GetPlayerById(playerIdList[0])?.RpcResetAbilityCooldown();
             stopCount = false;
         }
     }
@@ -180,12 +180,12 @@ public static class Penguin
 
         if (AbductVictim != null)
         {
-            if (!Utils.GetPlayerById(playerIdList[0]).IsAlive() || !AbductVictim.IsAlive())
+            if (!player.IsAlive() || !AbductVictim.IsAlive())
             {
                 RemoveVictim();
                 return;
             }
-            if (AbductTimer <= 0f && !Utils.GetPlayerById(playerIdList[0]).MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+            if (AbductTimer <= 0f && !player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
             {
                 // Set IsDead to true first (prevents ladder chase)
                 AbductVictim.Data.IsDead = true;
@@ -198,8 +198,8 @@ public static class Penguin
                     {
                         var sId = abductVictim.NetTransform.lastSequenceId;
                         //Host side
-                        abductVictim.NetTransform.SnapTo(Utils.GetPlayerById(playerIdList[0]).transform.position, (ushort)(sId + 6));
-                        Utils.GetPlayerById(playerIdList[0]).MurderPlayer(abductVictim, ExtendedPlayerControl.ResultFlags);
+                        abductVictim.NetTransform.SnapTo(player.transform.position, (ushort)(sId + 6));
+                        player.MurderPlayer(abductVictim, ExtendedPlayerControl.ResultFlags);
 
                         var sender = CustomRpcSender.Create("PenguinMurder");
                         {
@@ -208,18 +208,18 @@ public static class Penguin
                             {
                                 sender.AutoStartRpc(abductVictim.NetTransform.NetId, (byte)RpcCalls.SnapTo, abductVictim.GetClientId());
                                 {
-                                    NetHelpers.WriteVector2(Utils.GetPlayerById(playerIdList[0]).transform.position, sender.stream);
+                                    NetHelpers.WriteVector2(player.transform.position, sender.stream);
                                     sender.Write((ushort)(sId + 48));
                                 }
                                 sender.EndRpc();
                             }    
                             sender.AutoStartRpc(abductVictim.NetTransform.NetId, (byte)RpcCalls.SnapTo);
                             {
-                                NetHelpers.WriteVector2(Utils.GetPlayerById(playerIdList[0]).transform.position, sender.stream);
+                                NetHelpers.WriteVector2(player.transform.position, sender.stream);
                                 sender.Write((ushort)(sId + 100));
                             }
                             sender.EndRpc();
-                            sender.AutoStartRpc(Utils.GetPlayerById(playerIdList[0]).NetId, (byte)RpcCalls.MurderPlayer);
+                            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.MurderPlayer);
                             {
                                 sender.WriteNetObject(abductVictim);
                                 sender.Write((int)ExtendedPlayerControl.ResultFlags);
@@ -234,8 +234,8 @@ public static class Penguin
             // SnapToRPC does not work for players on top of the ladder, and only the host behaves differently, so teleporting is not done uniformly.
             else if (!AbductVictim.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
             {
-                var position = Utils.GetPlayerById(playerIdList[0]).transform.position;
-                if (Utils.GetPlayerById(playerIdList[0]).PlayerId != 0)
+                var position = player.transform.position;
+                if (player.PlayerId != 0)
                 {
                     AbductVictim.RpcTeleport(position, sendInfoInLogs: false);
                 }
@@ -253,7 +253,7 @@ public static class Penguin
         else if (AbductTimer <= 100f)
         {
             AbductTimer = 255f;
-            Utils.GetPlayerById(playerIdList[0]).RpcResetAbilityCooldown();
+            player.RpcResetAbilityCooldown();
         }
     }
 }
