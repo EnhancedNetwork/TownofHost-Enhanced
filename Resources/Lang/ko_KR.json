@@ -1721,6 +1721,7 @@
   "RevolutionistKillProbability": "Tagged player sacrifice probability",
   "RevolutionistVentCountDown": "Time to Vent",
   "PelicanKillCooldown": "Eat Cooldown",
+  "Pelican.TargetCannotBeEaten": "Target cannot be eaten",
   "MadSnitchTasks": "<color=#b8fb4f>Snitch</color> Tasks",
   "MedicWhoCanSeeProtect": "Who can see shield",
   "MedicKnowShieldBroken": "Who sees kill attempt",

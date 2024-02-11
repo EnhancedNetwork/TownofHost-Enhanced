@@ -1721,6 +1721,7 @@
   "RevolutionistKillProbability": "Probabilité de sacrifice des joueurs marqués",
   "RevolutionistVentCountDown": "Temps d'aération",
   "PelicanKillCooldown": "Temps d'attente pour manger",
+  "Pelican.TargetCannotBeEaten": "Target cannot be eaten",
   "MadSnitchTasks": "<color=#b8fb4f>Snitch</color> Tâches",
   "MedicWhoCanSeeProtect": "Qui peut voir le bouclier",
   "MedicKnowShieldBroken": "Qui voit la tentative de meurtre",
