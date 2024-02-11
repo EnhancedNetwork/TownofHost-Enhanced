@@ -476,7 +476,7 @@ class CreatePlayerPatch
         Main.AllPlayerNames.TryAdd(client.Character.PlayerId, name);
         Logger.Info($"client.PlayerName： {client.PlayerName}", "Name player");
 
-        if (!name.Equals(client.PlayerName))
+        if (client.Character != null && !name.Equals(client.PlayerName))
         {
             _ = new LateTask(() =>
             {
