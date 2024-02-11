@@ -130,12 +130,12 @@ public static class PlagueBearer
     public static bool OnCheckMurderPestilence(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
+        if (target.IsNeutralApocalypse()) return true;
         if (!PestilenceList.Contains(target.PlayerId)) return false;
         if (target.Is(CustomRoles.Guardian) && target.AllTasksCompleted()) return true;
         if (target.Is(CustomRoles.Opportunist) && target.AllTasksCompleted()) return true;
         if (target.Is(CustomRoles.Veteran) && Main.VeteranInProtect.ContainsKey(target.PlayerId)) return true;
         if (target.Is(CustomRoles.TimeMaster) && Main.TimeMasterInProtect.ContainsKey(target.PlayerId)) return true;
-        if (target.IsNeutralApocalypse()) return false;
         if (IsIndirectKill(killer)) return false;
         killer.SetRealKiller(target);
         target.RpcMurderPlayerV3(killer);

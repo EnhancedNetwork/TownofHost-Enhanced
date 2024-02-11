@@ -936,17 +936,18 @@ public enum CustomWinner
     Spiritcaller = CustomRoles.Spiritcaller,
     Glitch = CustomRoles.Glitch,
     Plaguebearer = CustomRoles.PlagueBearer,
+    Pestilence = CustomRoles.Pestilence,
     PlagueDoctor = CustomRoles.PlagueDoctor,
     Masochist = CustomRoles.Masochist,
     Doomsayer = CustomRoles.Doomsayer,
     Shroud = CustomRoles.Shroud,
     Seeker = CustomRoles.Seeker,
     SoulCollector = CustomRoles.SoulCollector,
+    Death = CustomRoles.Death,
     RuthlessRomantic = CustomRoles.RuthlessRomantic,
     NiceMini = CustomRoles.Mini,
     Doppelganger = CustomRoles.Doppelganger,
     Solsticer = CustomRoles.Solsticer,
-    Apocalypse = CustomRoles.Pestilence,
 }
 public enum AdditionalWinners
 {
