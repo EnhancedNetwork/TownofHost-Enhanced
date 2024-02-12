@@ -515,7 +515,7 @@ static class CustomRolesHelper
     public static bool IsNonNK(this CustomRoles role) // ROLE ASSIGNING, NOT NEUTRAL TYPE
     {
         if (role == CustomRoles.Arsonist && !Options.ArsonistCanIgniteAnytime.GetBool()) return true;
-        // else if (role == CustomRoles.Quizmaster && !Quizmaster.CanKillAfterMark.GetBool()) return true; quizmaster is always an nk... because it kills by meeting anyways, like pirate.
+        else if (role == CustomRoles.Quizmaster && !Quizmaster.CanKillAfterMark.GetBool()) return true; 
 
         return role is
             CustomRoles.Amnesiac or
