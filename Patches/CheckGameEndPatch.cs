@@ -90,12 +90,6 @@ class GameEndCheckerForNormal
                             CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
                         }
                         break;
-                    case CustomWinner.Plaguebearer or CustomWinner.Pestilence or CustomWinner.SoulCollector or CustomWinner.Death:
-                        if (pc.IsNeutralApocalypse() && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
-                        {
-                            CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
-                        }
-                        break;
                     case CustomWinner.CursedSoul:
                         if (pc.Is(CustomRoles.Soulless) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         {
@@ -146,6 +140,7 @@ class GameEndCheckerForNormal
                         break;
                 }
             }
+            if (CustomWinnerHolder.WinnerIds.Any(x => Utils.GetPlayerById(x).IsNeutralApocalypse())) Main.AllPlayerControls.Where(x => x.IsNeutralApocalypse()).Do(x => CustomWinnerHolder.WinnerIds.Add(x.PlayerId));
             if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw and not CustomWinner.None and not CustomWinner.Error)
             {
                 foreach (var pc in Main.AllPlayerControls)
