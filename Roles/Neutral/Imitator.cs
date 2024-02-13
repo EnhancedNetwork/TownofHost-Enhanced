@@ -19,7 +19,6 @@ public static class Imitator
     public static readonly string[] ImitatorIncompatibleNeutralMode =
     [
         "Role.Imitator",
-        "Role.Witch",
         "Role.Pursuer",
         "Role.Follower",
         "Role.Maverick",

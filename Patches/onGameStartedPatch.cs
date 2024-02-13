@@ -15,6 +15,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Modules.CustomRoleSelector;
 using static TOHE.Translator;
+
 namespace TOHE;
 
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.CoStartGame))]
@@ -23,6 +24,10 @@ internal class ChangeRoleSettings
     public static void Postfix(AmongUsClient __instance)
     {
         Main.OverrideWelcomeMsg = "";
+        Main.AssignRolesIsStarted = true;
+
+        Logger.Msg("Is Started", "AssignRoles");
+
         try
         {
             // Note: No positions are set at this time.
@@ -138,6 +143,7 @@ internal class ChangeRoleSettings
             if (GameStates.IsNormalGame)
             {
                 GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor = false;
+                GameOptionsManager.Instance.currentNormalGameOptions.SetBool(BoolOptionNames.ConfirmImpostor, false);
 
                 MeetingTimeManager.Init();
 
@@ -364,6 +370,7 @@ internal class ChangeRoleSettings
             Quizmaster.Init();
             Tired.Init();
             Rainbow.Init();
+            //Tricky.Init();
 
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
@@ -1138,6 +1145,8 @@ internal class SelectRolesPatch
             Utils.CountAlivePlayers(true);
             Utils.SyncAllSettings();
             SetColorPatch.IsAntiGlitchDisabled = false;
+
+            Logger.Msg("Ended", "AssignRoles");
         }
         catch (Exception ex)
         {

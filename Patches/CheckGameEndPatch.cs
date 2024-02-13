@@ -254,17 +254,6 @@ class GameEndCheckerForNormal
                     }
                 }
 
-                //quizmaster win i guess
-                /*else if (CustomRoles.Quizmaster.RoleExist())
-                {
-                    if (CustomWinnerHolder.WinnerTeam is CustomWinner.Crewmate)
-                    {
-                        reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Quizmaster);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Quizmaster);
-                    }
-                }*/
-
                 //追加胜利
                 foreach (var pc in Main.AllPlayerControls)
                 {

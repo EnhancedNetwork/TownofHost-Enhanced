@@ -188,7 +188,8 @@ public static class Divinator
                 CustomRoles.Arsonist,
                 CustomRoles.Assassin,
                 CustomRoles.BallLightning,
-                CustomRoles.Collector],
+                CustomRoles.Collector,
+                CustomRoles.Stealth],
                 
                 [CustomRoles.Capitalism,
                 CustomRoles.Counterfeiter,
@@ -295,7 +296,8 @@ public static class Divinator
                 CustomRoles.Monarch,
                 CustomRoles.Revolutionist,
                 CustomRoles.Succubus,
-                CustomRoles.Enigma],
+                CustomRoles.Enigma,
+                CustomRoles.PlagueDoctor],
                 
                 [CustomRoles.Innocent,
                 CustomRoles.Masochist,
@@ -396,7 +398,8 @@ public static class Divinator
                 CustomRoles.Deputy,
                 CustomRoles.Transporter,
                 CustomRoles.Twister,
-                CustomRoles.Mercenary],
+                CustomRoles.Mercenary,
+                CustomRoles.Penguin],
                 
                 [CustomRoles.Crewpostor,
                 CustomRoles.Taskinator,

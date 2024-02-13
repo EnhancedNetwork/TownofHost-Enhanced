@@ -37,7 +37,7 @@ public class Susceptible
         ChangeRandomDeath();
         if (EnabledDeathReasons.GetBool())
         {
-            Logger.Info($"{victim.GetNameWithRole()} had the deathreason {randomReason}", "Susceptible");
+            Logger.Info($"{victim.GetNameWithRole().RemoveHtmlTags()} had the death reason {randomReason}", "Susceptible");
             switch (randomReason)
             {
                 case PlayerState.DeathReason.Eaten:

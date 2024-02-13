@@ -31,6 +31,7 @@ enum CustomRPC
     SetCustomRole,
     SetBountyTarget,
     SyncPuppet,
+    SyncHuntsmanTarget,
     SyncPlagueDoctor,
     SyncKami,
     SetKillOrSpell,
@@ -202,11 +203,11 @@ internal class RPCHandlerPatch
             case RpcCalls.SetName: //SetNameRPC
                 string name = subReader.ReadString();
                 if (subReader.BytesRemaining > 0 && subReader.ReadBoolean()) return false;
-                Logger.Info("RPC名称修改:" + __instance.GetNameWithRole() + " => " + name, "SetName");
+                Logger.Info("RPC Set Name For Player: " + __instance.GetNameWithRole() + " => " + name, "SetName");
                 break;
             case RpcCalls.SetRole: //SetNameRPC
                 var role = (RoleTypes)subReader.ReadUInt16();
-                Logger.Info("RPC设置职业:" + __instance.GetRealName() + " => " + role, "SetRole");
+                Logger.Info("RPC Set Role For Player: " + __instance.GetRealName() + " => " + role, "SetRole");
                 break;
             case RpcCalls.SendChat:
                 var text = subReader.ReadString();
@@ -237,6 +238,9 @@ internal class RPCHandlerPatch
     }
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
+        // Process nothing but CustomRPC
+        if (callId < (byte)CustomRPC.VersionCheck) return;
+
         var rpcType = (CustomRPC)callId;
         switch (rpcType)
         {
@@ -328,8 +332,8 @@ internal class RPCHandlerPatch
                 List<OptionItem> listOptions = [];
                 List<OptionItem> allOptionsList = [.. OptionItem.AllOptions];
 
-                var startAmount = reader.ReadInt32();
-                var lastAmount = reader.ReadInt32();
+                var startAmount = reader.ReadPackedInt32();
+                var lastAmount = reader.ReadPackedInt32();
 
                 var countAllOptions = OptionItem.AllOptions.Count;
 
@@ -340,21 +344,19 @@ internal class RPCHandlerPatch
                 }
 
                 var countOptions = listOptions.Count;
-                Logger.Msg($"StartAmount: {startAmount} - LastAmount: {lastAmount} ({startAmount}/{lastAmount}) :--: ListOptionsCount: {countOptions} - AllOptions: {countAllOptions} ({countOptions}/{countAllOptions})", "SyncCustomSettings");
+                Logger.Msg($"StartAmount/LastAmount: {startAmount}/{lastAmount} :--: ListOptionsCount/AllOptions: {countOptions}/{countAllOptions}", "CustomRPC.SyncCustomSettings");
 
                 // Sync Settings
                 foreach (var option in listOptions.ToArray())
                 {
+                    // Set Value Options
+                    option.SetValue(reader.ReadPackedInt32());
+
                     // Set Preset 5 for modded non-host players
                     if (startAmount == 0 && option.Name == "Preset" && option.CurrentValue != 4)
                     {
-                        option.SetValue(reader.ReadPackedInt32()); // First set current value
                         option.SetValue(4); // 4 => Preset 5
-                        continue;
                     }
-
-                    // Set Value Options
-                    option.SetValue(reader.ReadPackedInt32());
                 }
                 OptionShower.GetText();
                 break;
@@ -384,6 +386,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SyncPuppet:
                 Puppeteer.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SyncHuntsmanTarget:
+                Huntsman.ReceiveRPC(reader);
                 break;
              case CustomRPC.SyncKami:
                 Kamikaze.ReceiveRPC(reader);
@@ -641,7 +646,7 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SyncAllPlayerNames:
                 Main.AllPlayerNames = [];
-                int num = reader.ReadInt32();
+                int num = reader.ReadPackedInt32();
                 for (int i = 0; i < num; i++)
                     Main.AllPlayerNames.TryAdd(reader.ReadByte(), reader.ReadString());
                 break;
@@ -866,9 +871,9 @@ internal static class RPC
         }
 
         var amount = OptionItem.AllOptions.Count;
-        int divideBy = amount / 10;
+        int divideBy = amount / 4;
 
-        for (var i = 0; i <= 10; i++)
+        for (var i = 0; i <= 4; i++)
         {
             SyncOptionsBetween(i * divideBy, (i + 1) * divideBy, amount, targetId);
         }
@@ -897,8 +902,8 @@ internal static class RPC
 
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncCustomSettings, SendOption.Reliable, targetId);
 
-        writer.Write(startAmount);
-        writer.Write(lastAmount);
+        writer.WritePacked(startAmount);
+        writer.WritePacked(lastAmount);
 
         List<OptionItem> listOptions = [];
         List<OptionItem> allOptionsList = [.. OptionItem.AllOptions];
@@ -910,7 +915,7 @@ internal static class RPC
         }
 
         var countListOptions = listOptions.Count;
-        Logger.Msg($"StartAmount: {startAmount} - LastAmount: {lastAmount} ({startAmount}/{lastAmount}) :--: ListOptionsCount: {countListOptions} - AllOptions: {amountAllOptions} ({countListOptions}/{amountAllOptions})", "SyncCustomSettings");
+        Logger.Msg($"StartAmount/LastAmount: {startAmount}/{lastAmount} :--: ListOptionsCount/AllOptions: {countListOptions}/{amountAllOptions}", "SyncOptionsBetween");
 
         // Sync Settings
         foreach (var option in listOptions.ToArray())
@@ -942,7 +947,7 @@ internal static class RPC
     {
         if (!AmongUsClient.Instance.AmHost) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncAllPlayerNames, SendOption.Reliable, -1);
-        writer.Write(Main.AllPlayerNames.Count);
+        writer.WritePacked(Main.AllPlayerNames.Count);
         foreach (var name in Main.AllPlayerNames)
         {
             writer.Write(name.Key);
@@ -998,7 +1003,7 @@ internal static class RPC
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDeathReason, SendOption.Reliable, -1);
         writer.Write(playerId);
-        writer.Write((int)deathReason);
+        writer.WritePacked((int)deathReason);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void GetDeathReason(MessageReader reader)
@@ -1597,7 +1602,7 @@ internal static class RPC
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCPTasksDone, SendOption.Reliable, -1);
             writer.Write(cpID);
-            writer.Write(tasksDone);
+            writer.WritePacked(tasksDone);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
     }
@@ -1642,14 +1647,14 @@ internal static class RPC
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCursedWolfSpellCount, SendOption.Reliable, -1);
         writer.Write(playerId);
-        writer.Write(Main.CursedWolfSpellCount[playerId]);
+        writer.WritePacked(Main.CursedWolfSpellCount[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void SendRPCJinxSpellCount(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetJinxSpellCount, SendOption.Reliable, -1);
         writer.Write(playerId);
-        writer.Write(Main.JinxSpellCount[playerId]);
+        writer.WritePacked(Main.JinxSpellCount[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ResetCurrentDousingTarget(byte arsonistId) => SetCurrentDousingTarget(arsonistId, 255);
