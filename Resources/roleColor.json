@@ -1,4 +1,4 @@
-{ 
+{
   "Crewmate": "#8cffff",
   "Engineer": "#8cffff",
   "Scientist": "#8cffff",
@@ -230,5 +230,6 @@
   "Tired": "#9cdff0",
   "SchrodingersCat": "#404040",
   "PlagueDoctor": "#ff6633",
-  "Rainbow": "#55FFCB"
+  "Rainbow": "#55FFCB",
+  "Apocalypse": "#CCCCCC"
 }
