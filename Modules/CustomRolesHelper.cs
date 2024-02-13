@@ -508,7 +508,6 @@ static class CustomRolesHelper
             CustomRoles.Virus or
             CustomRoles.BloodKnight or
             CustomRoles.Spiritcaller or
-            CustomRoles.PlagueBearer or
             CustomRoles.Agitater or
             CustomRoles.RuthlessRomantic;
     }
@@ -528,6 +527,7 @@ static class CustomRolesHelper
             CustomRoles.Pursuer or
             CustomRoles.Shaman or
             CustomRoles.SoulCollector or
+            CustomRoles.PlagueBearer or
             CustomRoles.NWitch or
             CustomRoles.CursedSoul or
             CustomRoles.Doomsayer or

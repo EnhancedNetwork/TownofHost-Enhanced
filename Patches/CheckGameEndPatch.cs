@@ -140,7 +140,6 @@ class GameEndCheckerForNormal
                         break;
                 }
             }
-            if (CustomWinnerHolder.WinnerIds.Any(x => Utils.GetPlayerById(x).IsNeutralApocalypse())) Main.AllPlayerControls.Where(x => x.IsNeutralApocalypse()).Do(x => CustomWinnerHolder.WinnerIds.Add(x.PlayerId));
             if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw and not CustomWinner.None and not CustomWinner.Error)
             {
                 foreach (var pc in Main.AllPlayerControls)
@@ -384,7 +383,13 @@ class GameEndCheckerForNormal
                         CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Romantic);
                     }
                 }
+                foreach (var pc in Main.AllPlayerControls.Where(x => x.IsNeutralApocalypse() && Main.AllAlivePlayerControls.All(p => p.IsNeutralApocalypse()))) {
+                    if (!CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                        CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
 
+                    if (!CustomWinnerHolder.WinnerRoles.Contains(pc.GetCustomRole()))
+                        CustomWinnerHolder.WinnerRoles.Add(pc.GetCustomRole());
+                }
                 foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.RuthlessRomantic)).ToArray())
                 {
                     if (Romantic.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget) && (
