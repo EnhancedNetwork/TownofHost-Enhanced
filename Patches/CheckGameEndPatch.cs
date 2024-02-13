@@ -84,6 +84,13 @@ class GameEndCheckerForNormal
                             CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
                         }
                         break;
+                    case CustomWinner.Apocalypse:
+                        if ((pc.IsNeutralApocalypse()) && (countType == CountTypes.Apocalypse || pc.Is(CustomRoles.Soulless))
+                            && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                        {
+                            CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                        }
+                        break;
                     case CustomWinner.Succubus:
                         if (pc.Is(CustomRoles.Charmed) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         {
@@ -140,7 +147,6 @@ class GameEndCheckerForNormal
                         break;
                 }
             }
-            if (CustomWinnerHolder.WinnerIds.Any(x => Utils.GetPlayerById(x).IsNeutralApocalypse())) Main.AllPlayerControls.Where(x => x.IsNeutralApocalypse()).Do(x => CustomWinnerHolder.WinnerIds.Add(x.PlayerId));
             if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw and not CustomWinner.None and not CustomWinner.Error)
             {
                 foreach (var pc in Main.AllPlayerControls)
@@ -159,7 +165,7 @@ class GameEndCheckerForNormal
                 foreach (var pc in Main.AllPlayerControls)
                 {
                     if (pc.Is(CustomRoles.Phantom) && pc.GetPlayerTaskState().IsTaskFinished && pc.Data.IsDead
-                        && (((CustomWinnerHolder.WinnerTeam == CustomWinner.Impostor || CustomWinnerHolder.WinnerTeam == CustomWinner.Crewmate || CustomWinnerHolder.WinnerTeam == CustomWinner.Jackal || CustomWinnerHolder.WinnerTeam == CustomWinner.BloodKnight || CustomWinnerHolder.WinnerTeam == CustomWinner.SerialKiller || CustomWinnerHolder.WinnerTeam == CustomWinner.Juggernaut || CustomWinnerHolder.WinnerTeam == CustomWinner.Bandit || CustomWinnerHolder.WinnerTeam == CustomWinner.Doppelganger || CustomWinnerHolder.WinnerTeam == CustomWinner.PotionMaster || CustomWinnerHolder.WinnerTeam == CustomWinner.Poisoner || CustomWinnerHolder.WinnerTeam == CustomWinner.Succubus || CustomWinnerHolder.WinnerTeam == CustomWinner.Infectious || CustomWinnerHolder.WinnerTeam == CustomWinner.Jinx || CustomWinnerHolder.WinnerTeam == CustomWinner.Virus || CustomWinnerHolder.WinnerTeam == CustomWinner.Arsonist || CustomWinnerHolder.WinnerTeam == CustomWinner.Pelican || CustomWinnerHolder.WinnerTeam == CustomWinner.Wraith || CustomWinnerHolder.WinnerTeam == CustomWinner.Agitater || CustomWinnerHolder.WinnerTeam == CustomWinner.Plaguebearer || CustomWinnerHolder.WinnerTeam == CustomWinner.Pestilence || CustomWinnerHolder.WinnerTeam == CustomWinner.SoulCollector || CustomWinnerHolder.WinnerTeam == CustomWinner.Death || CustomWinnerHolder.WinnerTeam == CustomWinner.Bandit || CustomWinnerHolder.WinnerTeam == CustomWinner.Rogue || CustomWinnerHolder.WinnerTeam == CustomWinner.Spiritcaller || CustomWinnerHolder.WinnerTeam == CustomWinner.Quizmaster ) && (Options.PhantomSnatchesWin.GetBool() || CustomWinnerHolder.WinnerTeam == CustomWinner.PlagueDoctor))))  //|| CustomWinnerHolder.WinnerTeam == CustomWinner.Occultist
+                        && (((CustomWinnerHolder.WinnerTeam == CustomWinner.Impostor || CustomWinnerHolder.WinnerTeam == CustomWinner.Crewmate || CustomWinnerHolder.WinnerTeam == CustomWinner.Jackal || CustomWinnerHolder.WinnerTeam == CustomWinner.BloodKnight || CustomWinnerHolder.WinnerTeam == CustomWinner.SerialKiller || CustomWinnerHolder.WinnerTeam == CustomWinner.Juggernaut || CustomWinnerHolder.WinnerTeam == CustomWinner.Bandit || CustomWinnerHolder.WinnerTeam == CustomWinner.Doppelganger || CustomWinnerHolder.WinnerTeam == CustomWinner.PotionMaster || CustomWinnerHolder.WinnerTeam == CustomWinner.Poisoner || CustomWinnerHolder.WinnerTeam == CustomWinner.Succubus || CustomWinnerHolder.WinnerTeam == CustomWinner.Infectious || CustomWinnerHolder.WinnerTeam == CustomWinner.Jinx || CustomWinnerHolder.WinnerTeam == CustomWinner.Virus || CustomWinnerHolder.WinnerTeam == CustomWinner.Arsonist || CustomWinnerHolder.WinnerTeam == CustomWinner.Pelican || CustomWinnerHolder.WinnerTeam == CustomWinner.Wraith || CustomWinnerHolder.WinnerTeam == CustomWinner.Agitater || CustomWinnerHolder.WinnerTeam == CustomWinner.Apocalypse || CustomWinnerHolder.WinnerTeam == CustomWinner.Bandit || CustomWinnerHolder.WinnerTeam == CustomWinner.Rogue || CustomWinnerHolder.WinnerTeam == CustomWinner.Spiritcaller || CustomWinnerHolder.WinnerTeam == CustomWinner.Quizmaster ) && (Options.PhantomSnatchesWin.GetBool() || CustomWinnerHolder.WinnerTeam == CustomWinner.PlagueDoctor))))  //|| CustomWinnerHolder.WinnerTeam == CustomWinner.Occultist
                     {
                         reason = GameOverReason.ImpostorByKill;
                         if (!CustomWinnerHolder.CheckForConvertedWinner(pc.PlayerId))
@@ -172,7 +178,7 @@ class GameEndCheckerForNormal
                 foreach (var pc in Main.AllPlayerControls)
                 {
                     if (pc.Is(CustomRoles.CursedSoul) && !pc.Data.IsDead
-                        && (((CustomWinnerHolder.WinnerTeam == CustomWinner.Impostor || CustomWinnerHolder.WinnerTeam == CustomWinner.Crewmate || CustomWinnerHolder.WinnerTeam == CustomWinner.Jackal || CustomWinnerHolder.WinnerTeam == CustomWinner.BloodKnight || CustomWinnerHolder.WinnerTeam == CustomWinner.SerialKiller || CustomWinnerHolder.WinnerTeam == CustomWinner.Juggernaut || CustomWinnerHolder.WinnerTeam == CustomWinner.Bandit || CustomWinnerHolder.WinnerTeam == CustomWinner.Doppelganger || CustomWinnerHolder.WinnerTeam == CustomWinner.PotionMaster || CustomWinnerHolder.WinnerTeam == CustomWinner.Poisoner || CustomWinnerHolder.WinnerTeam == CustomWinner.Succubus || CustomWinnerHolder.WinnerTeam == CustomWinner.Infectious || CustomWinnerHolder.WinnerTeam == CustomWinner.Jinx || CustomWinnerHolder.WinnerTeam == CustomWinner.Virus || CustomWinnerHolder.WinnerTeam == CustomWinner.Arsonist || CustomWinnerHolder.WinnerTeam == CustomWinner.Pelican || CustomWinnerHolder.WinnerTeam == CustomWinner.Wraith || CustomWinnerHolder.WinnerTeam == CustomWinner.Agitater || CustomWinnerHolder.WinnerTeam == CustomWinner.Plaguebearer || CustomWinnerHolder.WinnerTeam == CustomWinner.Pestilence || CustomWinnerHolder.WinnerTeam == CustomWinner.SoulCollector || CustomWinnerHolder.WinnerTeam == CustomWinner.Death || CustomWinnerHolder.WinnerTeam == CustomWinner.Bandit || CustomWinnerHolder.WinnerTeam == CustomWinner.Rogue || CustomWinnerHolder.WinnerTeam == CustomWinner.Jester || CustomWinnerHolder.WinnerTeam == CustomWinner.Executioner || CustomWinnerHolder.WinnerTeam == CustomWinner.PlagueDoctor)))) // || CustomWinnerHolder.WinnerTeam == CustomWinner.Occultist
+                        && (((CustomWinnerHolder.WinnerTeam == CustomWinner.Impostor || CustomWinnerHolder.WinnerTeam == CustomWinner.Crewmate || CustomWinnerHolder.WinnerTeam == CustomWinner.Jackal || CustomWinnerHolder.WinnerTeam == CustomWinner.BloodKnight || CustomWinnerHolder.WinnerTeam == CustomWinner.SerialKiller || CustomWinnerHolder.WinnerTeam == CustomWinner.Juggernaut || CustomWinnerHolder.WinnerTeam == CustomWinner.Bandit || CustomWinnerHolder.WinnerTeam == CustomWinner.Doppelganger || CustomWinnerHolder.WinnerTeam == CustomWinner.PotionMaster || CustomWinnerHolder.WinnerTeam == CustomWinner.Poisoner || CustomWinnerHolder.WinnerTeam == CustomWinner.Succubus || CustomWinnerHolder.WinnerTeam == CustomWinner.Infectious || CustomWinnerHolder.WinnerTeam == CustomWinner.Jinx || CustomWinnerHolder.WinnerTeam == CustomWinner.Virus || CustomWinnerHolder.WinnerTeam == CustomWinner.Arsonist || CustomWinnerHolder.WinnerTeam == CustomWinner.Pelican || CustomWinnerHolder.WinnerTeam == CustomWinner.Wraith || CustomWinnerHolder.WinnerTeam == CustomWinner.Agitater || CustomWinnerHolder.WinnerTeam == CustomWinner.Apocalypse || CustomWinnerHolder.WinnerTeam == CustomWinner.Bandit || CustomWinnerHolder.WinnerTeam == CustomWinner.Rogue || CustomWinnerHolder.WinnerTeam == CustomWinner.Jester || CustomWinnerHolder.WinnerTeam == CustomWinner.Executioner || CustomWinnerHolder.WinnerTeam == CustomWinner.PlagueDoctor)))) // || CustomWinnerHolder.WinnerTeam == CustomWinner.Occultist
                     {
                         reason = GameOverReason.ImpostorByKill;
                         if (!CustomWinnerHolder.CheckForConvertedWinner(pc.PlayerId))
@@ -639,7 +645,7 @@ class GameEndCheckerForNormal
                         var winnerRole = winners[0].Key.GetNeutralCustomRoleFromCountType();
                         reason = GameOverReason.ImpostorByKill;
                         CustomWinnerHolder.ResetAndSetWinner(winnerRole.GetNeutralCustomWinnerFromRole());
-                        CustomWinnerHolder.WinnerRoles.Add(winnerRole);
+                        if (winnerRole != CustomRoles.Apocalypse) CustomWinnerHolder.WinnerRoles.Add(winnerRole);
                     }
                     else if (winnnerLength == 0)
                     {
