@@ -115,16 +115,24 @@ public static class Captain
         if (!CaptainVoteTargets.ContainsKey(playerId)) CaptainVoteTargets[playerId] = [];
         CaptainVoteTargets[playerId].Add(targetId);
     }
-    private static void SendRPCVoteRemove()
+    private static void SendRPCVoteRemove(byte captainTarget = byte.MaxValue, CustomRoles? SelectedAddon = null)
     {
         MessageWriter writer;
         writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RevertCaptainVoteRemove, SendOption.Reliable, -1);
+        writer.Write(captainTarget);
+        if (captainTarget != byte.MaxValue) writer.Write((int)SelectedAddon);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         return;
     }
     public static void ReceiveRPCVoteRemove(MessageReader reader)
     {
-        CaptainVoteTargets.Clear();
+        byte captainTarget = reader.ReadByte();
+        if (captainTarget != byte.MaxValue) 
+        {
+            int? SelectedAddon = reader.ReadInt32();
+            if (SelectedAddon != null) Main.PlayerStates[captainTarget].SubRoles.Remove((CustomRoles)SelectedAddon);
+        }
+        else CaptainVoteTargets.Clear();
     }
 
     public static void OnTaskComplete(PlayerControl pc)
@@ -183,20 +191,22 @@ public static class Captain
         var addon = AllSubRoles[rand.Next(0, AllSubRoles.Count)];
         return addon;
     }
-    public static void OnExile(byte playerId)
+    public static void OnExile(GameData.PlayerInfo exiled)
     {
-        Logger.Info("Captain on exile executing", "Captain on exile");
+        if (exiled == null) return;
+        if (!exiled.GetCustomRole().Is(CustomRoles.Captain)) return;
+        byte playerId = exiled.PlayerId;
         if (playerId == byte.MaxValue) return;
         if (!CaptainVoteTargets.ContainsKey(playerId)) return;
         for (int i = 0; i < CaptainVoteTargets[playerId].Count; i++)
         {
             var captainTarget = CaptainVoteTargets[playerId][i];
-            if (captainTarget == byte.MaxValue || !Utils.GetPlayerById(captainTarget).IsAlive()) continue;
+            if (captainTarget == byte.MaxValue || !Utils.GetPlayerById(captainTarget).IsAlive()) continue; 
             var SelectedAddOn = SelectRandomAddon(captainTarget);
             if (SelectedAddOn == null) continue;
             Main.PlayerStates[captainTarget].RemoveSubRole((CustomRoles)SelectedAddOn);
             Logger.Info($"Successfully removed {SelectedAddOn} addon from {Utils.GetPlayerById(captainTarget).GetNameWithRole()}", "Captain");
-
+            SendRPCVoteRemove(captainTarget: captainTarget, SelectedAddOn) ;
         }
         CaptainVoteTargets.Clear();
         SendRPCVoteRemove();
