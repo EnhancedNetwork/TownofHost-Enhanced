@@ -153,8 +153,11 @@ class CheckForEndVotingPatch
                         if (voteTarget.Is(CustomRoles.Captain))
                         {
                             if (!Captain.CaptainVoteTargets.ContainsKey(voteTarget.PlayerId)) Captain.CaptainVoteTargets[voteTarget.PlayerId] = [];
-                            Captain.CaptainVoteTargets[voteTarget.PlayerId].Add(pc.PlayerId);
-                            Captain.SendRPCVoteAdd(voteTarget.PlayerId, pc.PlayerId);
+                            if (!Captain.CaptainVoteTargets[voteTarget.PlayerId].Contains(pc.PlayerId))
+                            {
+                                Captain.CaptainVoteTargets[voteTarget.PlayerId].Add(pc.PlayerId);
+                                Captain.SendRPCVoteAdd(voteTarget.PlayerId, pc.PlayerId);
+                            }
                         }
 
                     }
@@ -550,8 +553,8 @@ class CheckForEndVotingPatch
             name = string.Format(GetString("ExiledNiceMini"), realName, coloredRole);
             DecidedWinner = true;
         }
-        if (crole.Is(CustomRoles.Captain))
-            Captain.OnExile(exileId);
+        //if (crole.Is(CustomRoles.Captain))
+        //    Captain.OnExile(exileId); /*Runs multiple times here*/
 
         //小丑胜利
         if (crole.Is(CustomRoles.Jester))
