@@ -2452,7 +2452,6 @@ public static class Utils
                                 if (PlagueBearer.IsPlagued(seer.PlayerId, target.PlayerId))
                                 {
                                     TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.PlagueBearer)}>●</color>");
-                                    PlagueBearer.SendRPC(seer, target);
                                 }
                                 break;
 
