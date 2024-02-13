@@ -254,17 +254,6 @@ class GameEndCheckerForNormal
                     }
                 }
 
-                //quizmaster win i guess
-                /*else if (CustomRoles.Quizmaster.RoleExist())
-                {
-                    if (CustomWinnerHolder.WinnerTeam is CustomWinner.Crewmate)
-                    {
-                        reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Quizmaster);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Quizmaster);
-                    }
-                }*/
-
                 //追加胜利
                 foreach (var pc in Main.AllPlayerControls)
                 {
@@ -274,7 +263,6 @@ class GameEndCheckerForNormal
                         CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
                         CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Opportunist);
                     }
-                    if (pc.Is(CustomRoles.SchrodingersCat)) SchrodingersCat.SchrodingerWinCondition(pc);
                     //pixie
                     if (pc.Is(CustomRoles.Pixie) && !CustomWinnerHolder.CheckForConvertedWinner(pc.PlayerId)) Pixie.PixieWinCondition(pc);
                     //Shaman
@@ -455,6 +443,10 @@ class GameEndCheckerForNormal
                     }
                 }
             }
+
+            /*Keep Schrodinger cat win condition at last*/
+            Main.AllPlayerControls.Where(pc => pc.Is(CustomRoles.SchrodingersCat)).ToList().ForEach(pc => SchrodingersCat.SchrodingerWinCondition(pc));
+
             ShipStatus.Instance.enabled = false;
             StartEndGame(reason);
             predicate = null;
