@@ -651,6 +651,10 @@ public static class Utils
                     //Lovers don't count the task as a win
                     hasTasks &= !ForRecompute;
                     break;
+                case CustomRoles.Mundane:
+                    hasTasks = !ForRecompute;
+                    break;
+
             }
         if (CopyCat.playerIdList.Contains(p.PlayerId)) hasTasks = false;
         if (Main.TasklessCrewmate.Contains(p.PlayerId)) hasTasks = false;
