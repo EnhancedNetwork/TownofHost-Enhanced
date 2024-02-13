@@ -7,10 +7,10 @@ namespace TOHE.Roles.Crewmate;
 public static class SwordsMan
 {
     private static readonly int Id = 10800;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
-    public static List<byte> killed = new();
+    public static List<byte> killed = [];
     public static OptionItem CanVent;
     public static OptionItem KillCooldown;
 
@@ -23,8 +23,8 @@ public static class SwordsMan
     }
     public static void Init()
     {
-        killed = new();
-        playerIdList = new();
+        killed = [];
+        playerIdList = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -35,6 +35,10 @@ public static class SwordsMan
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
+    }
+    public static void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
     }
 
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = IsKilled(id) ? 300f : KillCooldown.GetFloat();

@@ -1,5 +1,6 @@
 using HarmonyLib;
 using InnerNet;
+using System.Collections.Generic;
 using TOHE.Modules;
 using UnityEngine;
 using static TOHE.Translator;
@@ -9,7 +10,7 @@ namespace TOHE;
 [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.MakePublic))]
 internal class MakePublicPatch
 {
-    public static bool Prefix(GameStartManager __instance)
+    public static bool Prefix(/*GameStartManager __instance*/)
     {
         // 定数設定による公開ルームブロック
         if (!Main.AllowPublicRoom)
@@ -35,7 +36,7 @@ internal class MakePublicPatch
 [HarmonyPatch(typeof(MMOnlineManager), nameof(MMOnlineManager.Start))]
 internal class MMOnlineManagerStartPatch
 {
-    public static void Postfix(MMOnlineManager __instance)
+    public static void Postfix(/*MMOnlineManager __instance*/)
     {
         if (!((ModUpdater.hasUpdate && ModUpdater.forceUpdate) || ModUpdater.isBroken || !VersionChecker.IsSupported)) return;
         var obj = GameObject.Find("FindGameButton");
@@ -60,7 +61,7 @@ internal class MMOnlineManagerStartPatch
             {
                 message = GetString("CanNotJoinPublicRoomNoLatest");
             }
-            _ = new LateTask(() => { textObj.text = $"<size=2>{Utils.ColorString(Color.red, message)}</size>"; }, 0.01f, "CanNotJoinPublic");
+            _ = new LateTask(() => { textObj.text = $"<size=2>{Utils.ColorString(Color.red, message)}</size>"; }, 0.01f, "Can Not Join Public");
         }
     }
 }
@@ -93,21 +94,16 @@ internal class RunLoginPatch
     public static void Postfix(ref bool canOnline)
     {
         isAllowedOnline = canOnline;
+
+        if (!EOSManager.Instance.loginFlowFinished) return;
+
         var friendcode = EOSManager.Instance.friendCode;
+        dbConnect.Init();
         if (friendcode == null || friendcode == "")
         {
+            EOSManager.Instance.attemptAuthAgain = true;
             Logger.Info("friendcode not found", "EOSManager");
             canOnline = false;
-        }
-        else if (Main.Canary && !dbConnect.CanAccessCanary(friendcode))
-        {
-            Logger.Warn("Banned because no access to canary", "dbConnect");
-            Main.hasAccess = false;
-        }
-        else if (Main.devRelease && !dbConnect.CanAccessDev(friendcode))
-        {
-            Main.hasAccess = false;
-            Logger.Warn("Banned because no access to dev", "dbConnect");
         }
     }
 }
@@ -124,37 +120,55 @@ internal class BanMenuSetVisiblePatch
         return false;
     }
 }
-[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNet.InnerNetClient.CanBan))]
+[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.CanBan))]
 internal class InnerNetClientCanBanPatch
 {
-    public static bool Prefix(InnerNet.InnerNetClient __instance, ref bool __result)
+    public static bool Prefix(InnerNetClient __instance, ref bool __result)
     {
         __result = __instance.AmHost;
         return false;
     }
 }
-[HarmonyPatch(typeof(InnerNet.InnerNetClient), nameof(InnerNet.InnerNetClient.KickPlayer))]
+[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.KickPlayer))]
 internal class KickPlayerPatch
 {
-    public static void Prefix(InnerNet.InnerNetClient __instance, int clientId, bool ban)
+    public static Dictionary<string, int> AttemptedKickPlayerList = [];
+    public static bool Prefix(InnerNetClient __instance, int clientId, bool ban)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
+        if (!AmongUsClient.Instance.AmHost) return true;
+        if (AmongUsClient.Instance.ClientId == clientId)
+        {
+            Logger.SendInGame(string.Format("Game Attempting to {0} Host, Blocked the attempt.", ban ? "Ban" : "Kick"));
+            Logger.Info("How the fuck host are kicking it self", "KickPlayerPatch");
+            return false;
+        }
+
+        var HashedPuid = AmongUsClient.Instance.GetClient(clientId).GetHashedPuid();
+        if (!AttemptedKickPlayerList.ContainsKey(HashedPuid))
+            AttemptedKickPlayerList.Add(HashedPuid, 0);
+        else if (AttemptedKickPlayerList[HashedPuid] < 10)
+        {
+            Logger.Fatal($"Kick player Request too fast! Canceled.", "KickPlayerPatch");
+            return false;
+        }
         if (ban) BanManager.AddBanPlayer(AmongUsClient.Instance.GetRecentClient(clientId));
+
+        return true;
     }
 }
-[HarmonyPatch(typeof(ResolutionManager), nameof(ResolutionManager.SetResolution))]
-internal class SetResolutionManager
-{
-    public static void Postfix()
-    {
-        //if (MainMenuManagerPatch.qqButton != null)
-        //    MainMenuManagerPatch.qqButton.transform.localPosition = Vector3.Reflect(MainMenuManagerPatch.template.transform.localPosition, Vector3.left);
-        //if (MainMenuManagerPatch.discordButton != null)
-        //    MainMenuManagerPatch.discordButton.transform.localPosition = Vector3.Reflect(MainMenuManagerPatch.template.transform.localPosition, Vector3.left);
-        //if (MainMenuManagerPatch.updateButton != null)
-        //    MainMenuManagerPatch.updateButton.transform.localPosition = MainMenuManagerPatch.template.transform.localPosition + new Vector3(0.25f, 0.75f);
-    }
-}
+//[HarmonyPatch(typeof(ResolutionManager), nameof(ResolutionManager.SetResolution))]
+//class SetResolutionManager
+//{
+//    public static void Postfix()
+//    {
+//        if (MainMenuManagerPatch.qqButton != null)
+//            MainMenuManagerPatch.qqButton.transform.localPosition = Vector3.Reflect(MainMenuManagerPatch.template.transform.localPosition, Vector3.left);
+//        if (MainMenuManagerPatch.discordButton != null)
+//            MainMenuManagerPatch.discordButton.transform.localPosition = Vector3.Reflect(MainMenuManagerPatch.template.transform.localPosition, Vector3.left);
+//        if (MainMenuManagerPatch.updateButton != null)
+//            MainMenuManagerPatch.updateButton.transform.localPosition = MainMenuManagerPatch.template.transform.localPosition + new Vector3(0.25f, 0.75f);
+//    }
+//}
 
 [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.SendAllStreamedObjects))]
 internal class InnerNetObjectSerializePatch

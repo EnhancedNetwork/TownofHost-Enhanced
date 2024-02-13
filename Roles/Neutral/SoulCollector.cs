@@ -8,12 +8,12 @@ namespace TOHE.Roles.Neutral;
 public static class SoulCollector
 {
     private static readonly int Id = 15300;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
-    public static Dictionary<byte, byte> SoulCollectorTarget = new();
-    public static Dictionary<byte, int> SoulCollectorPoints = new();
-    public static Dictionary<byte, bool> DidVote = new();
+    public static Dictionary<byte, byte> SoulCollectorTarget = [];
+    public static Dictionary<byte, int> SoulCollectorPoints = [];
+    public static Dictionary<byte, bool> DidVote = [];
 
     public static OptionItem SoulCollectorPointsOpt;
     public static OptionItem CollectOwnSoulOpt;
@@ -27,10 +27,10 @@ public static class SoulCollector
     }
     public static void Init()
     {
-        playerIdList = new();
-        SoulCollectorTarget = new();
-        SoulCollectorPoints = new();
-        DidVote = new();
+        playerIdList = [];
+        SoulCollectorTarget = [];
+        SoulCollectorPoints = [];
+        DidVote = [];
         IsEnable = false;
     }
 
@@ -116,13 +116,39 @@ public static class SoulCollector
             if (SoulCollectorPoints[playerId] >= SoulCollectorPointsOpt.GetInt())
             {
                 SoulCollectorPoints[playerId] = SoulCollectorPointsOpt.GetInt();
-                if (!CustomWinnerHolder.CheckForConvertedWinner(playerId))
+            }
+        }
+    }
+    public static void BecomeDeath(PlayerControl player)
+    {
+        if (SoulCollectorPoints[player.PlayerId] < SoulCollectorPointsOpt.GetInt()) return;
+
+        player.RpcSetCustomRole(CustomRoles.Death);
+        player.Notify(GetString("SoulCollectorToDeath"));
+        PlayerControl.LocalPlayer.NoCheckStartMeeting(null, force: true);
+        KillIfNotEjected(player);
+
+    }
+    public static void KillIfNotEjected(PlayerControl player)
+    {
+        var deathList = new List<byte>();
+        foreach (var pc in Main.AllAlivePlayerControls)
+        {
+            if (pc.GetCustomRole() is CustomRoles.PlagueBearer or CustomRoles.Pestilence or CustomRoles.Death or CustomRoles.SoulCollector) continue;
+            if (player != null && player.IsAlive())
+            {
+                if (!Main.AfterMeetingDeathPlayers.ContainsKey(pc.PlayerId))
                 {
-                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.SoulCollector);
-                    CustomWinnerHolder.WinnerIds.Add(playerId);
+                    pc.SetRealKiller(player);
+                    deathList.Add(pc.PlayerId);
+                }
+                else
+                {
+                    Main.AfterMeetingDeathPlayers.Remove(pc.PlayerId);
                 }
             }
         }
+        CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Armageddon, [.. deathList]);
     }
 
 }

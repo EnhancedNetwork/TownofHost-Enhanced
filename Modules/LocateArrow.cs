@@ -6,15 +6,11 @@ namespace TOHE;
 
 static class LocateArrow
 {
-    class ArrowInfo
+    class ArrowInfo(byte from, Vector3 to)
     {
-        public byte From;
-        public Vector3 To;
-        public ArrowInfo(byte from, Vector3 to)
-        {
-            From = from;
-            To = to;
-        }
+        public byte From = from;
+        public Vector3 To = to;
+
         public bool Equals(ArrowInfo obj)
         {
             return From == obj.From && To == obj.To;
@@ -25,8 +21,8 @@ static class LocateArrow
         }
     }
 
-    static readonly Dictionary<ArrowInfo, string> LocateArrows = new();
-    static readonly string[] Arrows = {
+    static readonly Dictionary<ArrowInfo, string> LocateArrows = [];
+    static readonly string[] Arrows = [
         "↑",
         "↗",
         "→",
@@ -36,7 +32,7 @@ static class LocateArrow
         "←",
         "↖",
         "・"
-    };
+    ];
 
     public static void Init()
     {
@@ -107,7 +103,7 @@ static class LocateArrow
         var seerIsDead = !seer.IsAlive();
 
         var arrowList = new List<ArrowInfo>(LocateArrows.Keys.Where(a => a.From == seer.PlayerId));
-        if (!arrowList.Any()) return;
+        if (arrowList.Count == 0) return;
 
         var update = false;
         foreach (var arrowInfo in arrowList.ToArray())

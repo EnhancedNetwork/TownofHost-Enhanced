@@ -2,7 +2,6 @@
 {
     using Hazel;
     using System.Collections.Generic;
-    using System.Linq;
     using UnityEngine;
     using static TOHE.Options;
     using static TOHE.Translator;
@@ -10,12 +9,12 @@
     public static class Bloodhound
     {
         private static readonly int Id = 7700;
-        private static List<byte> playerIdList = new();
+        private static List<byte> playerIdList = [];
         public static bool IsEnable = false;
 
-        public static HashSet<byte> UnreportablePlayers = new();
-        public static Dictionary<byte, List<byte>> BloodhoundTargets = new();
-        public static Dictionary<byte, float> UseLimit = new();
+        public static HashSet<byte> UnreportablePlayers = [];
+        public static Dictionary<byte, List<byte>> BloodhoundTargets = [];
+        public static Dictionary<byte, float> UseLimit = [];
 
         public static OptionItem ArrowsPointingToDeadBody;
         public static OptionItem UseLimitOpt;
@@ -38,17 +37,23 @@
         public static void Init()
         {
             IsEnable = false;
-            playerIdList = new();
-            UseLimit = new();
-            UnreportablePlayers = new();
-            BloodhoundTargets = new Dictionary<byte, List<byte>>();
+            playerIdList = [];
+            UseLimit = [];
+            UnreportablePlayers = [];
+            BloodhoundTargets = [];
         }
         public static void Add(byte playerId)
         {
             playerIdList.Add(playerId);
             UseLimit.Add(playerId, UseLimitOpt.GetInt());
-            BloodhoundTargets.Add(playerId, new List<byte>());
+            BloodhoundTargets.Add(playerId, []);
             IsEnable = true;
+        }
+        public static void Remove(byte playerId)
+        {
+            playerIdList.Remove(playerId);
+            UseLimit.Remove(playerId);
+            BloodhoundTargets.Remove(playerId);
         }
 
         private static void SendRPC(byte playerId, bool add, Vector3 loc = new())
@@ -82,9 +87,34 @@
             if (opt != 2)
             {
                 byte tid = reader.ReadByte();
-                if (!BloodhoundTargets.ContainsKey(pid)) BloodhoundTargets[pid] = new();
+                if (!BloodhoundTargets.ContainsKey(pid)) BloodhoundTargets[pid] = [];
                 BloodhoundTargets[pid].Add(tid);
                 if (opt == 1) UnreportablePlayers.Add(tid);
+            }
+        }
+        public static void SendRPCKiller(byte playerId, byte killerId, bool add)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetBloodhoundkKillerArrow, SendOption.Reliable, -1);
+            writer.Write(playerId);
+            writer.Write(killerId);
+            writer.Write(add);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+        }
+        public static void ReceiveRPCKiller(MessageReader reader)
+        {
+            byte playerId = reader.ReadByte();
+            byte killerId = reader.ReadByte();
+            bool add = reader.ReadBoolean();
+            if (add)
+            {
+                BloodhoundTargets[playerId].Add(killerId);
+                TargetArrow.Add(playerId, killerId);
+            }
+            else
+            {
+                BloodhoundTargets[playerId].Remove(killerId);
+                TargetArrow.Remove(playerId, killerId);
             }
         }
 
@@ -103,7 +133,7 @@
 
         public static void Clear()
         {
-            foreach (var apc in playerIdList)
+            foreach (var apc in playerIdList.ToArray())
             {
                 LocateArrow.RemoveAllTarget(apc);
                 SendRPC(apc, false);
@@ -111,9 +141,10 @@
 
             foreach (var bloodhound in BloodhoundTargets)
             {
-                foreach (var target in bloodhound.Value)
+                foreach (var target in bloodhound.Value.ToArray())
                 {
                     TargetArrow.Remove(bloodhound.Key, target);
+                    SendRPCKiller(bloodhound.Key, target, add: false);
                 }
 
                 BloodhoundTargets[bloodhound.Key].Clear();
@@ -147,6 +178,7 @@
             {
                 BloodhoundTargets[pc.PlayerId].Add(killer.PlayerId);
                 TargetArrow.Add(pc.PlayerId, killer.PlayerId);
+                SendRPCKiller(pc.PlayerId, killer.PlayerId, add: true);
 
                 pc.Notify(GetString("BloodhoundTrackRecorded"));
                 UseLimit[pc.PlayerId] -= 1;
@@ -174,7 +206,7 @@
             if (!seer.Is(CustomRoles.Bloodhound)) return "";
             if (target != null && seer.PlayerId != target.PlayerId) return "";
             if (GameStates.IsMeeting) return "";
-            if (BloodhoundTargets.ContainsKey(seer.PlayerId) && BloodhoundTargets[seer.PlayerId].Any())
+            if (BloodhoundTargets.ContainsKey(seer.PlayerId) && BloodhoundTargets[seer.PlayerId].Count > 0)
             {
                 var arrows = "";
                 foreach (var targetId in BloodhoundTargets[seer.PlayerId])

@@ -11,9 +11,11 @@ class ShowFolderPatch
     private static TaskFolder CustomRolesFolder;
     public static void Prefix(TaskAdderGame __instance, [HarmonyArgument(0)] TaskFolder taskFolder)
     {
+        if (GameStates.IsHideNSeek) return;
+
         if (__instance.Root == taskFolder && CustomRolesFolder == null)
         {
-            TaskFolder rolesFolder = Object.Instantiate<TaskFolder>(
+            TaskFolder rolesFolder = Object.Instantiate(
                 __instance.RootFolderPrefab,
                 __instance.transform
             );
@@ -25,6 +27,8 @@ class ShowFolderPatch
     }
     public static void Postfix(TaskAdderGame __instance, [HarmonyArgument(0)] TaskFolder taskFolder)
     {
+        if (GameStates.IsHideNSeek) return;
+
         Logger.Info("Opened " + taskFolder.FolderName, "TaskFolder");
         float xCursor = 0f;
         float yCursor = 0f;
@@ -67,6 +71,8 @@ class TaskAddButtonUpdatePatch
 {
     public static bool Prefix(TaskAddButton __instance)
     {
+        if (GameStates.IsHideNSeek) return true;
+
         try
         {
             if ((int)__instance.Role.Role >= 1000)
@@ -85,6 +91,8 @@ class AddTaskButtonPatch
 {
     public static bool Prefix(TaskAddButton __instance)
     {
+        if (GameStates.IsHideNSeek) return true;
+
         try
         {
             if ((int)__instance.Role.Role >= 1000)

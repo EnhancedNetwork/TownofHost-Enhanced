@@ -15,7 +15,6 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Modules.CustomRoleSelector;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -27,131 +26,144 @@ internal class ChangeRoleSettings
         Main.OverrideWelcomeMsg = "";
         try
         {
-            //注:この時点では役職は設定されていません。
-            Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.GuardianAngel, 0, 0);
-            if (Options.DisableVanillaRoles.GetBool())
+            // Note: No positions are set at this time.
+            if (GameStates.IsNormalGame)
             {
-                Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Scientist, 0, 0);
-                Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Engineer, 0, 0);
-                Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Shapeshifter, 0, 0);
+                Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.GuardianAngel, 0, 0);
+                if (Options.DisableVanillaRoles.GetBool())
+                {
+                    Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Scientist, 0, 0);
+                    Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Engineer, 0, 0);
+                    Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Shapeshifter, 0, 0);
+                }
+            }
+            else if (GameStates.IsHideNSeek)
+            {
+                Main.HideNSeekOptions.NumImpostors = Options.NumImpostorsHnS.GetInt();
+                Main.AliveImpostorCount = Main.HideNSeekOptions.NumImpostors;
             }
 
-            Main.PlayerStates = new();
+            Main.PlayerStates = [];
 
-            Main.AllPlayerKillCooldown = new();
-            Main.AllPlayerSpeed = new();
-            Main.AllPlayerCustomRoles = new Dictionary<byte, CustomRoles>();
-            Main.WarlockTimer = new();
-            Main.AssassinTimer = new();
-            Main.isDoused = new();
-            Main.isDraw = new();
-            Main.isRevealed = new();
-            Main.ArsonistTimer = new();
-            Main.RevolutionistTimer = new();
-            Main.RevolutionistStart = new();
-            Main.RevolutionistLastTime = new();
-            Main.RevolutionistCountdown = new();
-            Main.TimeMasterBackTrack = new();
-            Main.TimeMasterNum = new();
-            Main.CursedPlayers = new();
-            Main.MafiaRevenged = new();
-            Main.RetributionistRevenged = new();
-            Main.isCurseAndKill = new();
+            Main.AllPlayerKillCooldown = [];
+            Main.AllPlayerSpeed = [];
+            Main.AllPlayerCustomRoles = [];
+            Main.WarlockTimer = [];
+            Main.AssassinTimer = [];
+            Main.isDoused = [];
+            Main.isDraw = [];
+            Main.isRevealed = [];
+            Main.ArsonistTimer = [];
+            Main.RevolutionistTimer = [];
+            Main.RevolutionistStart = [];
+            Main.RevolutionistLastTime = [];
+            Main.RevolutionistCountdown = [];
+            Main.TimeMasterBackTrack = [];
+            Main.TimeMasterNum = [];
+            Main.CursedPlayers = [];
+            Main.MafiaRevenged = [];
+            Main.RetributionistRevenged = [];
+            Main.isCurseAndKill = [];
             Main.isCursed = false;
-            Main.DetectiveNotify = new();
-            Main.SleuthNotify = new();
-            Main.ForCrusade = new();
-            Main.KillGhoul = new();
-            Main.CyberStarDead = new();
-            Main.CyberDead = new();
-            Main.KilledDiseased = new();
-            Main.KilledAntidote = new();
-            Main.WorkaholicAlive = new();
-            Main.BaitAlive = new();
-            Main.BoobyTrapBody = new();
-            Main.TasklessCrewmate = new();
-            Main.KillerOfBoobyTrapBody = new();
-            Main.CleanerBodies = new();
-            Main.BurstBodies = new();
-            Main.MedusaBodies = new();
-            Main.InfectedBodies = new();
-            Main.VirusNotify = new();
-            Main.ErasedRoleStorage = new();
+            Main.DetectiveNotify = [];
+            Main.SleuthNotify = [];
+            Main.ForCrusade = [];
+            Main.KillGhoul = [];
+            Main.CyberStarDead = [];
+            Main.CyberDead = [];
+            Main.KilledDiseased = [];
+            Main.KilledAntidote = [];
+            Main.WorkaholicAlive = [];
+            Main.BaitAlive = [];
+            Main.BoobyTrapBody = [];
+            Main.TasklessCrewmate = [];
+            Main.KillerOfBoobyTrapBody = [];
+            Main.CleanerBodies = [];
+            Main.BurstBodies = [];
+            Main.MedusaBodies = [];
+            Main.InfectedBodies = [];
+            Main.VirusNotify = [];
+            Main.ErasedRoleStorage = [];
 
-            Main.LastEnteredVent = new();
-            Main.LastEnteredVentLocation = new();
-            Main.EscapeeLocation = new();
+            Main.LastEnteredVent = [];
+            Main.LastEnteredVentLocation = [];
+            Main.EscapeeLocation = [];
 
-            Main.AfterMeetingDeathPlayers = new();
-            Main.ResetCamPlayerList = new();
-            Main.clientIdList = new();
+            Main.AfterMeetingDeathPlayers = [];
+            Main.ResetCamPlayerList = [];
+            Main.clientIdList = [];
 
-            Main.CapitalismAddTask = new();
-            Main.CapitalismAssignTask = new();
-            Main.CheckShapeshift = new();
-            Main.ShapeshiftTarget = new();
-            Main.SpeedBoostTarget = new();
-            Main.MayorUsedButtonCount = new();
-            Main.ParaUsedButtonCount = new();
-            Main.MarioVentCount = new();
-            Main.VeteranInProtect = new();
-            Main.VeteranNumOfUsed = new();
-            Main.GrenadierNumOfUsed = new();
-            Main.TimeMasterNumOfUsed = new();
-            Main.GrenadierBlinding = new();
-            Main.LighterNumOfUsed = new();
-            Main.Lighter = new();
-            Main.AllKillers = new();
-            Main.MadGrenadierBlinding = new();
-            Main.CursedWolfSpellCount = new();
-            Main.BombedVents = new();
-            Main.JinxSpellCount = new();
-            Main.OverDeadPlayerList = new();
-            Main.Provoked = new();
+            Main.CapitalismAddTask = [];
+            Main.CapitalismAssignTask = [];
+            Main.CheckShapeshift = [];
+            Main.ShapeshiftTarget = [];
+            Main.SpeedBoostTarget = [];
+            Main.MayorUsedButtonCount = [];
+            Main.ParaUsedButtonCount = [];
+            Main.MarioVentCount = [];
+            Main.VeteranInProtect = [];
+            Main.VeteranNumOfUsed = [];
+            Main.GrenadierNumOfUsed = [];
+            Main.TimeMasterNumOfUsed = [];
+            Main.GrenadierBlinding = [];
+            Main.LighterNumOfUsed = [];
+            Main.Lighter = [];
+            Main.AllKillers = [];
+            Main.MadGrenadierBlinding = [];
+            Main.CursedWolfSpellCount = [];
+            Main.BombedVents = [];
+            Main.JinxSpellCount = [];
+            Main.OverDeadPlayerList = [];
+            Main.Provoked = [];
             Main.ShieldPlayer = Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : "";
             Main.FirstDied = "";
             Main.MadmateNum = 0;
             Main.BardCreations = 0;
             Main.MeetingsPassed = 0;
-            Main.DovesOfNeaceNumOfUsed = new();
-            Main.GodfatherTarget = new();
-            Main.BerserkerKillMax = new();
-            Main.AwareInteracted = new();
-            Main.CrewpostorTasksDone = new();
+            Main.DovesOfNeaceNumOfUsed = [];
+            Main.GodfatherTarget = [];
+            Main.BerserkerKillMax = [];
+            Main.AwareInteracted = [];
+            Main.CrewpostorTasksDone = [];
             Main.ShamanTarget = byte.MaxValue;
             Main.ShamanTargetChoosen = false;
             Main.MeetingIsStarted = false;
             ChatManager.ResetHistory();
 
-            ReportDeadBodyPatch.CanReport = new();
+            ReportDeadBodyPatch.CanReport = [];
 
             Options.UsedButtonCount = 0;
 
-            GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor = false;
             Main.RealOptionsData = new OptionBackupData(GameOptionsManager.Instance.CurrentGameOptions);
+
+            if (GameStates.IsNormalGame)
+            {
+                GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor = false;
+
+                MeetingTimeManager.Init();
+
+                Main.DefaultCrewmateVision = Main.RealOptionsData.GetFloat(FloatOptionNames.CrewLightMod);
+                Main.DefaultImpostorVision = Main.RealOptionsData.GetFloat(FloatOptionNames.ImpostorLightMod);
+            }
 
             Main.introDestroyed = false;
 
-            RandomSpawn.CustomNetworkTransformPatch.NumOfTP = new();
+            RandomSpawn.CustomNetworkTransformPatch.NumOfTP = [];
 
-            MeetingTimeManager.Init();
-            Main.DefaultCrewmateVision = Main.RealOptionsData.GetFloat(FloatOptionNames.CrewLightMod);
-            Main.DefaultImpostorVision = Main.RealOptionsData.GetFloat(FloatOptionNames.ImpostorLightMod);
-
-            Main.LastNotifyNames = new();
+            Main.LastNotifyNames = [];
 
             Main.currentDousingTarget = byte.MaxValue;
             Main.currentDrawTarget = byte.MaxValue;
-            Main.PlayerColors = new();
+            Main.PlayerColors = [];
 
             //名前の記録
-            //Main.AllPlayerNames = new();
+            //Main.AllPlayerNames = [];
             RPC.SyncAllPlayerNames();
 
             Camouflage.Init();
 
             var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
-            if (invalidColor.Any())
+            if (invalidColor.Length > 0)
             {
                 var msg = GetString("Error.InvalidColor");
                 Logger.SendInGame(msg);
@@ -168,6 +180,7 @@ internal class ChangeRoleSettings
                     Main.LastNotifyNames[pair] = target.name;
                 }
             }
+
             foreach (var pc in Main.AllPlayerControls)
             {
                 var colorId = pc.Data.DefaultOutfit.ColorId;
@@ -176,9 +189,12 @@ internal class ChangeRoleSettings
                 //Main.AllPlayerNames[pc.PlayerId] = pc?.Data?.PlayerName;
 
                 Main.PlayerColors[pc.PlayerId] = Palette.PlayerColors[colorId];
-                Main.AllPlayerSpeed[pc.PlayerId] = Main.RealOptionsData.GetFloat(FloatOptionNames.PlayerSpeedMod); //移動速度をデフォルトの移動速度に変更
+                
+                if (GameStates.IsNormalGame)
+                    Main.AllPlayerSpeed[pc.PlayerId] = Main.RealOptionsData.GetFloat(FloatOptionNames.PlayerSpeedMod); //移動速度をデフォルトの移動速度に変更
+                
                 ReportDeadBodyPatch.CanReport[pc.PlayerId] = true;
-                ReportDeadBodyPatch.WaitReport[pc.PlayerId] = new();
+                ReportDeadBodyPatch.WaitReport[pc.PlayerId] = [];
                 pc.cosmetics.nameText.text = pc.name;
 
                 RandomSpawn.CustomNetworkTransformPatch.NumOfTP.Add(pc.PlayerId, 0);
@@ -186,12 +202,14 @@ internal class ChangeRoleSettings
                 Camouflage.PlayerSkins[pc.PlayerId] = new GameData.PlayerOutfit().Set(outfit.PlayerName, outfit.ColorId, outfit.HatId, outfit.SkinId, outfit.VisorId, outfit.PetId, outfit.NamePlateId);
                 Main.clientIdList.Add(pc.GetClientId());
             }
+
             Main.VisibleTasksCount = true;
             if (__instance.AmHost)
             {
                 RPC.SyncCustomSettingsRPC();
                 Main.RefixCooldownDelay = 0;
             }
+
             FallFromLadder.Reset();
             BountyHunter.Init();
             SerialKiller.Init();
@@ -213,9 +231,11 @@ internal class ChangeRoleSettings
             Sidekick.Init();
             Bandit.Init();
             Doppelganger.Init();
+            RiftMaker.Init();
             Sheriff.Init();
             CopyCat.Init();
             Captain.Init();
+            GuessMaster.Init();
             Cleanser.Init();
             SwordsMan.Init();
             EvilTracker.Init();
@@ -245,6 +265,7 @@ internal class ChangeRoleSettings
             Benefactor.Init();
             Taskinator.Init();
             QuickShooter.Init();
+            Kamikaze.Init();
             Camouflager.Init();
             Divinator.Init();
             Jailer.Init();
@@ -269,6 +290,7 @@ internal class ChangeRoleSettings
             Swooper.Init();
             Wraith.Init();
             SoulCollector.Init();
+            SchrodingersCat.Init();
             BloodKnight.Init();
             Totocalcio.Init();
             Romantic.Init();
@@ -306,6 +328,9 @@ internal class ChangeRoleSettings
             Spiritualist.Init();
             Vulture.Init();
             Alchemist.Init();
+            Stealth.Init();
+            PlagueDoctor.Init();
+            Penguin.Init();
             Chameleon.Init();
             Wildling.Init();
             Morphling.Init();
@@ -335,7 +360,10 @@ internal class ChangeRoleSettings
             FFF.Init();
             Instigator.Init();
             OverKiller.Init();
-            
+            Quizmaster.Init();
+            Tired.Init();
+            Rainbow.Init();
+
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
 
@@ -351,7 +379,7 @@ internal class ChangeRoleSettings
             MeetingStates.MeetingCalled = false;
             MeetingStates.FirstMeeting = true;
             GameStates.AlreadyDied = false;
-            EAC.ReportTimes = new();
+            EAC.ReportTimes = [];
         }
         catch (Exception ex)
         {
@@ -367,10 +395,24 @@ internal class SelectRolesPatch
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
+        if (GameStates.IsHideNSeek)
+        {
+            if (Main.EnableGM.Value)
+            {
+                PlayerControl.LocalPlayer.RpcSetCustomRole(CustomRoles.GM);
+                PlayerControl.LocalPlayer.RpcSetRole(RoleTypes.Crewmate);
+                PlayerControl.LocalPlayer.Data.IsDead = true;
+                Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
+            }
+
+            EAC.OriginalRoles = [];
+            return;
+        }
+
         try
         {
             //CustomRpcSenderとRpcSetRoleReplacerの初期化
-            Dictionary<byte, CustomRpcSender> senders = new();
+            Dictionary<byte, CustomRpcSender> senders = [];
             foreach (var pc in Main.AllPlayerControls)
             {
                 senders[pc.PlayerId] = new CustomRpcSender($"{pc.name}'s SetRole Sender", SendOption.Reliable, false)
@@ -386,7 +428,7 @@ internal class SelectRolesPatch
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
             }
 
-            EAC.OriginalRoles = new();
+            EAC.OriginalRoles = [];
             SelectCustomRoles();
             SelectAddonRoles();
             CalculateVanillaRoleCount();
@@ -400,7 +442,7 @@ internal class SelectRolesPatch
             int ShapeshifterNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Shapeshifter);
             roleOpt.SetRoleRate(RoleTypes.Shapeshifter, ShapeshifterNum + addShapeshifterNum, addShapeshifterNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Shapeshifter));
 
-            Dictionary<(byte, byte), RoleTypes> rolesMap = new();
+            Dictionary<(byte, byte), RoleTypes> rolesMap = [];
 
             // 注册反职业
             foreach (var kv in RoleResult.Where(x => x.Value.IsDesyncRole()).ToArray())
@@ -424,7 +466,26 @@ internal class SelectRolesPatch
 
         try
         {
-            List<(PlayerControl, RoleTypes)> newList = new();
+            if (GameStates.IsHideNSeek)
+            {
+                GameOptionsSender.AllSenders.Clear();
+                foreach (var pc in Main.AllPlayerControls)
+                {
+                    GameOptionsSender.AllSenders.Add(
+                        new PlayerGameOptionsSender(pc)
+                    );
+                }
+
+                //Utils.CountAlivePlayers(true);
+
+                EAC.LogAllRoles();
+                Utils.SyncAllSettings();
+                SetColorPatch.IsAntiGlitchDisabled = false;
+
+                return;
+            }
+
+            List<(PlayerControl, RoleTypes)> newList = [];
             foreach (var sd in RpcSetRoleReplacer.StoragedData.ToArray())
             {
                 var kp = RoleResult.FirstOrDefault(x => x.Key.PlayerId == sd.Item1.PlayerId);
@@ -565,6 +626,9 @@ internal class SelectRolesPatch
                     case CustomRoles.Undertaker:
                         Undertaker.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.RiftMaker:
+                        RiftMaker.Add(pc.PlayerId);
+                        break;
                /*     case CustomRoles.Mare:
                         Mare.Add(pc.PlayerId);
                         break; */
@@ -623,6 +687,9 @@ internal class SelectRolesPatch
                     case CustomRoles.Poisoner:
                         Poisoner.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.PlagueDoctor:
+                        PlagueDoctor.Add(pc.PlayerId);
+                        break;
                     case CustomRoles.Sheriff:
                         Sheriff.Add(pc.PlayerId);
                         break;
@@ -652,6 +719,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Captain:
                         Captain.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.GuessMaster:
+                        GuessMaster.Add(pc.PlayerId);
                         break;
                     case CustomRoles.TimeMaster:
                         Main.TimeMasterNum[pc.PlayerId] = 0;
@@ -725,6 +795,12 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.DarkHide:
                         DarkHide.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Stealth:
+                        Stealth.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Penguin:
+                        Penguin.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Greedier:
                         Greedier.Add(pc.PlayerId);
@@ -805,6 +881,9 @@ internal class SelectRolesPatch
                     case CustomRoles.SoulCollector:
                         SoulCollector.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.SchrodingersCat:
+                        SchrodingersCat.Add(pc.PlayerId);
+                        break;
                     case CustomRoles.Chameleon:
                         Chameleon.Add(pc.PlayerId);
                         break;
@@ -876,6 +955,9 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Pyromaniac:
                         Pyromaniac.Add(pc.PlayerId);
+                        break;
+                    case CustomRoles.Kamikaze:
+                        Kamikaze.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Werewolf:
                         Werewolf.Add(pc.PlayerId);
@@ -979,20 +1061,28 @@ internal class SelectRolesPatch
                     case CustomRoles.Enigma:
                         Enigma.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.Quizmaster:
+                        Quizmaster.Add(pc.PlayerId);
+                        break;
                 }
                 foreach (var subRole in pc.GetCustomSubRoles().ToArray())
                 {
                     switch (subRole)
                     {
                         case CustomRoles.Aware:
-                            Main.AwareInteracted[pc.PlayerId] = new();
+                            Main.AwareInteracted[pc.PlayerId] = [];
                             break;
-                        // ここに属性のAddを追加
                         case CustomRoles.Repairman:
                             Repairman.Add(pc.PlayerId);
                             break;
                         case CustomRoles.Oiiai:
                             Oiiai.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.Tired:
+                            Tired.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.Rainbow:
+                            Rainbow.Add();
                             break;
 
                         default:
@@ -1005,7 +1095,7 @@ internal class SelectRolesPatch
 
             HudManager.Instance.SetHudActive(true);
       //      HudManager.Instance.Chat.SetVisible(true);
-            List<PlayerControl> AllPlayers = new();
+            List<PlayerControl> AllPlayers = [];
             CustomRpcSender sender = CustomRpcSender.Create("SelectRoles Sender", SendOption.Reliable);
             foreach (var pc in Main.AllPlayerControls)
                 pc.ResetKillCooldown();
@@ -1025,10 +1115,10 @@ internal class SelectRolesPatch
             switch (Options.CurrentGameMode)
             {
                 case CustomGameMode.Standard:
-                    GameEndChecker.SetPredicateToNormal();
+                    GameEndCheckerForNormal.SetPredicateToNormal();
                     break;
                 case CustomGameMode.FFA:
-                    GameEndChecker.SetPredicateToFFA();
+                    GameEndCheckerForNormal.SetPredicateToFFA();
                     break;
             }
 
@@ -1220,7 +1310,7 @@ internal class SelectRolesPatch
     {
         public static bool doReplace = false;
         public static Dictionary<byte, CustomRpcSender> senders;
-        public static List<(PlayerControl, RoleTypes)> StoragedData = new();
+        public static List<(PlayerControl, RoleTypes)> StoragedData = [];
         // List of Senders that do not require additional writing because SetRoleRpc has already been written by another process such as Position Desync
         public static List<CustomRpcSender> OverriddenSenderList;
         public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] RoleTypes roleType)
@@ -1254,8 +1344,8 @@ internal class SelectRolesPatch
         public static void StartReplace(Dictionary<byte, CustomRpcSender> senders)
         {
             RpcSetRoleReplacer.senders = senders;
-            StoragedData = new();
-            OverriddenSenderList = new();
+            StoragedData = [];
+            OverriddenSenderList = [];
             doReplace = true;
         }
     }

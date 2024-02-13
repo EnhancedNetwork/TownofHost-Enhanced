@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+using AmongUs.GameOptions; 
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
@@ -40,30 +40,30 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "1.3.1.2111"; // hotfix version for meeting unable to be called
-    public const string PluginDisplayVersion = "1.3.1 dev 2 hotfix 2";
+    public const string PluginVersion = "2024.1.24.15121";
+    public const string PluginDisplayVersion = "1.5.1 Dev 2.1";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
+
     /******************* Change one of the three variables to true before making a release. *******************/
-    public const bool Canary = false; // Unused variable? ---- not unused anymore :)
+    public const bool Canary = true; 
     public const bool fullRelease = false;
-    public const bool devRelease = true;
+    public const bool devRelease = false;
 
     public static bool hasAccess = true;
 
-    public static readonly bool ShowGitHubButton = true;
-    public static readonly bool ShowKofiButton = true;
     public static readonly bool ShowUpdateButton = true;
+
+    public static readonly bool ShowGitHubButton = true;
     public static readonly string GitHubInviteUrl = "https://github.com/0xDrMoe/TownofHost-Enhanced";
-    public static readonly string kofiInviteUrl = "https://ko-fi.com/TOHEN";
 
     public static readonly bool ShowDiscordButton = true;
     public static readonly string DiscordInviteUrl = "https://discord.gg/tohe";
 
     public static readonly bool ShowWebsiteButton = true;
     public static readonly string WebsiteInviteUrl = "https://tohre.dev";
-
-    public static readonly bool ShowPatreonButton = true;
-    public static readonly string PatreonInviteUrl = "https://www.patreon.com/TOHRE";
+    
+    public static readonly bool ShowKofiButton = true;
+    public static readonly string kofiInviteUrl = "https://ko-fi.com/TOHEN";
 
     public Harmony Harmony { get; } = new Harmony(PluginGuid);
     public static Version version = Version.Parse(PluginVersion);
@@ -74,6 +74,7 @@ public class Main : BasePlugin
     public static bool AlreadyShowMsgBox = false;
     public static string credentialsText;
     public static NormalGameOptionsV07 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
+    public static HideNSeekGameOptionsV07 HideNSeekOptions => GameOptionsManager.Instance.currentHideNSeekGameOptions;
     //Client Options
     public static ConfigEntry<string> HideName { get; private set; }
     public static ConfigEntry<string> HideColor { get; private set; }
@@ -95,8 +96,9 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> VersionCheat { get; private set; }
     public static bool IsHostVersionCheating = false;
     public static ConfigEntry<bool> GodMode { get; private set; }
+    public static ConfigEntry<bool> AutoRehost { get; private set; }
 
-    public static Dictionary<byte, PlayerVersion> playerVersion = new();
+    public static Dictionary<int, PlayerVersion> playerVersion = [];
     //Preset Name Options
     public static ConfigEntry<string> Preset1 { get; private set; }
     public static ConfigEntry<string> Preset2 { get; private set; }
@@ -109,108 +111,108 @@ public class Main : BasePlugin
     public static ConfigEntry<float> LastKillCooldown { get; private set; }
     public static ConfigEntry<float> LastShapeshifterCooldown { get; private set; }
     public static OptionBackupData RealOptionsData;
-    public static Dictionary<byte, PlayerState> PlayerStates = new();
-    public static Dictionary<byte, string> AllPlayerNames = new();
+    public static Dictionary<byte, PlayerState> PlayerStates = [];
+    public static Dictionary<byte, string> AllPlayerNames = [];
     public static Dictionary<byte, CustomRoles> AllPlayerCustomRoles;
     public static Dictionary<(byte, byte), string> LastNotifyNames;
-    public static Dictionary<byte, Color32> PlayerColors = new();
-    public static Dictionary<byte, PlayerState.DeathReason> AfterMeetingDeathPlayers = new();
+    public static Dictionary<byte, Color32> PlayerColors = [];
+    public static Dictionary<byte, PlayerState.DeathReason> AfterMeetingDeathPlayers = [];
     public static Dictionary<CustomRoles, string> roleColors;
     const string LANGUAGE_FOLDER_NAME = "Language";
     public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable() || CustomRoles.Vampiress.IsEnable();
     public static float RefixCooldownDelay = 0f;
     public static GameData.PlayerInfo LastVotedPlayerInfo;
     public static string LastVotedPlayer;
-    public static HashSet<byte> ResetCamPlayerList = new();
-    public static HashSet<byte> winnerList = new();
-    public static HashSet<byte> ForCrusade = new();
-    public static HashSet<byte> KillGhoul = new();
-    public static HashSet<string> winnerNameList = new();
-    public static HashSet<int> clientIdList = new();
-    public static List<(string, byte, string)> MessagesToSend = new();
+    public static HashSet<byte> ResetCamPlayerList = [];
+    public static HashSet<byte> winnerList = [];
+    public static HashSet<byte> ForCrusade = [];
+    public static HashSet<byte> KillGhoul = [];
+    public static HashSet<string> winnerNameList = [];
+    public static HashSet<int> clientIdList = [];
+    public static List<(string, byte, string)> MessagesToSend = [];
     public static bool isChatCommand = false;
     public static bool MeetingIsStarted = false;
-    public static HashSet<PlayerControl> LoversPlayers = new();
+    public static HashSet<PlayerControl> LoversPlayers = [];
     public static bool isLoversDead = true;
-    public static Dictionary<byte, float> AllPlayerKillCooldown = new();
-    public static Dictionary<byte, Vent> LastEnteredVent = new();
-    public static Dictionary<byte, Vector2> LastEnteredVentLocation = new();
-    public static Dictionary<byte, Vector2> TimeMasterBackTrack = new();
-    public static Dictionary<byte, int> MasochistKillMax = new();
-    public static Dictionary<byte, int> BerserkerKillMax = new();
-    public static Dictionary<byte, int> TimeMasterNum = new();
-    public static Dictionary<byte, long> TimeMasterInProtect = new();
-    //public static Dictionary<byte, long> FlashbangInProtect = new();
-    public static List<byte> CyberStarDead = new();
-    public static List<byte> CyberDead = new();
-    public static List<int> BombedVents = new();
-    public static List<byte> WorkaholicAlive = new();
-    public static List<byte> BurstBodies = new();
-    public static List<byte> BaitAlive = new();
-    public static List<byte> TasklessCrewmate = new();
-    public static List<byte> BoobyTrapBody = new();
-    public static List<byte> BoobyTrapKiller = new();
-    //public static List<byte> KilledDiseased = new();
-    public static Dictionary<byte, int> KilledDiseased = new();
-    public static Dictionary<byte, int> KilledAntidote = new();
-    //public static List<byte> ForFlashbang = new();
-    public static Dictionary<byte, byte> KillerOfBoobyTrapBody = new();
-    public static Dictionary<byte, string> DetectiveNotify = new();
-    public static Dictionary<byte, string> SleuthNotify = new();
-    public static Dictionary<byte, string> VirusNotify = new();
-    public static List<byte> OverDeadPlayerList = new();
+    public static Dictionary<byte, float> AllPlayerKillCooldown = [];
+    public static Dictionary<byte, Vent> LastEnteredVent = [];
+    public static Dictionary<byte, Vector2> LastEnteredVentLocation = [];
+    public static Dictionary<byte, Vector2> TimeMasterBackTrack = [];
+    public static Dictionary<byte, int> MasochistKillMax = [];
+    public static Dictionary<byte, int> BerserkerKillMax = [];
+    public static Dictionary<byte, int> TimeMasterNum = [];
+    public static Dictionary<byte, long> TimeMasterInProtect = [];
+    //public static Dictionary<byte, long> FlashbangInProtect = [];
+    public static List<byte> CyberStarDead = [];
+    public static List<byte> CyberDead = [];
+    public static List<int> BombedVents = [];
+    public static List<byte> WorkaholicAlive = [];
+    public static List<byte> BurstBodies = [];
+    public static List<byte> BaitAlive = [];
+    public static List<byte> TasklessCrewmate = [];
+    public static List<byte> BoobyTrapBody = [];
+    public static List<byte> BoobyTrapKiller = [];
+    //public static List<byte> KilledDiseased = [];
+    public static Dictionary<byte, int> KilledDiseased = [];
+    public static Dictionary<byte, int> KilledAntidote = [];
+    //public static List<byte> ForFlashbang = [];
+    public static Dictionary<byte, byte> KillerOfBoobyTrapBody = [];
+    public static Dictionary<byte, string> DetectiveNotify = [];
+    public static Dictionary<byte, string> SleuthNotify = [];
+    public static Dictionary<byte, string> VirusNotify = [];
+    public static List<byte> OverDeadPlayerList = [];
     public static bool DoBlockNameChange = false;
     public static int updateTime;
     public static bool newLobby = false;
-    public static Dictionary<int, int> SayStartTimes = new();
-    public static Dictionary<int, int> SayBanwordsTimes = new();
-    public static Dictionary<byte, float> AllPlayerSpeed = new();
+    public static Dictionary<int, int> SayStartTimes = [];
+    public static Dictionary<int, int> SayBanwordsTimes = [];
+    public static Dictionary<byte, float> AllPlayerSpeed = [];
     public const float MinSpeed = 0.0001f;
-    public static List<byte> CleanerBodies = new();
-    public static List<byte> MedusaBodies = new();
-    public static List<byte> InfectedBodies = new();
-    public static List<byte> BrakarVoteFor = new();
-    public static Dictionary<byte, (byte, float)> BitPlayers = new();
-    public static Dictionary<byte, float> WarlockTimer = new();
-    public static Dictionary<byte, float> AssassinTimer = new();
-    public static Dictionary<byte, PlayerControl> CursedPlayers = new();
-    public static Dictionary<byte, bool> isCurseAndKill = new();
-    public static Dictionary<byte, int> MafiaRevenged = new();
-    public static Dictionary<byte, int> RetributionistRevenged = new();
-    public static Dictionary<byte, int> GuesserGuessed = new();
-    public static Dictionary<byte, int> CapitalismAddTask = new();
-    public static Dictionary<byte, int> CapitalismAssignTask = new();
-    public static Dictionary<(byte, byte), bool> isDoused = new();
-    public static Dictionary<(byte, byte), bool> isDraw = new();
-    public static Dictionary<(byte, byte), bool> isRevealed = new();
-    public static Dictionary<byte, (PlayerControl, float)> ArsonistTimer = new();
-    public static Dictionary<byte, (PlayerControl, float)> RevolutionistTimer = new();
-    public static Dictionary<byte, long> RevolutionistStart = new();
-    public static Dictionary<byte, long> RevolutionistLastTime = new();
-    public static Dictionary<byte, int> RevolutionistCountdown = new();
-    public static Dictionary<byte, byte> SpeedBoostTarget = new();
-    public static Dictionary<byte, int> MayorUsedButtonCount = new();
-    public static Dictionary<byte, int> ParaUsedButtonCount = new();
-    public static Dictionary<byte, int> MarioVentCount = new();
-    public static Dictionary<byte, long> VeteranInProtect = new();
-    public static Dictionary<byte, float> VeteranNumOfUsed = new();
-    public static Dictionary<byte, long> GrenadierBlinding = new();
-    public static Dictionary<byte, long> MadGrenadierBlinding = new();
+    public static List<byte> CleanerBodies = [];
+    public static List<byte> MedusaBodies = [];
+    public static List<byte> InfectedBodies = [];
+    public static List<byte> BrakarVoteFor = [];
+    public static Dictionary<byte, (byte, float)> BitPlayers = [];
+    public static Dictionary<byte, float> WarlockTimer = [];
+    public static Dictionary<byte, float> AssassinTimer = [];
+    public static Dictionary<byte, PlayerControl> CursedPlayers = [];
+    public static Dictionary<byte, bool> isCurseAndKill = [];
+    public static Dictionary<byte, int> MafiaRevenged = [];
+    public static Dictionary<byte, int> RetributionistRevenged = [];
+    public static Dictionary<byte, int> GuesserGuessed = [];
+    public static Dictionary<byte, int> CapitalismAddTask = [];
+    public static Dictionary<byte, int> CapitalismAssignTask = [];
+    public static Dictionary<(byte, byte), bool> isDoused = [];
+    public static Dictionary<(byte, byte), bool> isDraw = [];
+    public static Dictionary<(byte, byte), bool> isRevealed = [];
+    public static Dictionary<byte, (PlayerControl, float)> ArsonistTimer = [];
+    public static Dictionary<byte, (PlayerControl, float)> RevolutionistTimer = [];
+    public static Dictionary<byte, long> RevolutionistStart = [];
+    public static Dictionary<byte, long> RevolutionistLastTime = [];
+    public static Dictionary<byte, int> RevolutionistCountdown = [];
+    public static Dictionary<byte, byte> SpeedBoostTarget = [];
+    public static Dictionary<byte, int> MayorUsedButtonCount = [];
+    public static Dictionary<byte, int> ParaUsedButtonCount = [];
+    public static Dictionary<byte, int> MarioVentCount = [];
+    public static Dictionary<byte, long> VeteranInProtect = [];
+    public static Dictionary<byte, float> VeteranNumOfUsed = [];
+    public static Dictionary<byte, long> GrenadierBlinding = [];
+    public static Dictionary<byte, long> MadGrenadierBlinding = [];
     public static float BastionNumberOfAbilityUses = 0;
-    public static Dictionary<byte, float> GrenadierNumOfUsed = new();
-    public static Dictionary<byte, long> Lighter = new();
-    public static Dictionary<byte, float> LighterNumOfUsed = new();
-    public static Dictionary<byte, long> AllKillers = new();
-    public static Dictionary<byte, float> TimeMasterNumOfUsed = new();
-    public static Dictionary<byte, int> CursedWolfSpellCount = new();
-    public static Dictionary<byte, int> JinxSpellCount = new();
+    public static Dictionary<byte, float> GrenadierNumOfUsed = [];
+    public static Dictionary<byte, long> Lighter = [];
+    public static Dictionary<byte, float> LighterNumOfUsed = [];
+    public static Dictionary<byte, long> AllKillers = [];
+    public static Dictionary<byte, float> TimeMasterNumOfUsed = [];
+    public static Dictionary<byte, int> CursedWolfSpellCount = [];
+    public static Dictionary<byte, int> JinxSpellCount = [];
     public static int AliveImpostorCount;
     public static bool isCursed;
-    public static Dictionary<byte, bool> CheckShapeshift = new();
-    public static Dictionary<byte, byte> ShapeshiftTarget = new();
-    public static Dictionary<(byte, byte), string> targetArrows = new();
-    public static Dictionary<byte, Vector2> EscapeeLocation = new();
-    public static Dictionary<byte, Vector2> TimeMasterLocation = new();
+    public static Dictionary<byte, bool> CheckShapeshift = [];
+    public static Dictionary<byte, byte> ShapeshiftTarget = [];
+    public static Dictionary<(byte, byte), string> targetArrows = [];
+    public static Dictionary<byte, Vector2> EscapeeLocation = [];
+    public static Dictionary<byte, Vector2> TimeMasterLocation = [];
     public static bool VisibleTasksCount = false;
     public static string nickName = "";
     public static bool introDestroyed = false;
@@ -228,19 +230,18 @@ public class Main : BasePlugin
     public static int MadmateNum = 0;
     public static int BardCreations = 0;
     public static int MeetingsPassed = 0;
-    public static Dictionary<byte, byte> Provoked = new();
-    public static Dictionary<byte, float> DovesOfNeaceNumOfUsed = new();
-    public static bool SwapSend;
+    public static Dictionary<byte, byte> Provoked = [];
+    public static Dictionary<byte, float> DovesOfNeaceNumOfUsed = [];
 
-    public static Dictionary<byte, CustomRoles> DevRole = new();
-    public static List<byte> GodfatherTarget = new();
-    public static Dictionary<byte, int> CrewpostorTasksDone = new();
-    public static Dictionary<byte, List<string>> AwareInteracted = new();
+    public static Dictionary<byte, CustomRoles> DevRole = [];
+    public static List<byte> GodfatherTarget = [];
+    public static Dictionary<byte, int> CrewpostorTasksDone = [];
+    public static Dictionary<byte, List<string>> AwareInteracted = [];
     public static byte ShamanTarget = byte.MaxValue;
     public static bool ShamanTargetChoosen = false;
     
-    public static Dictionary<byte, CustomRoles> ErasedRoleStorage = new();
-    public static Dictionary<string, int> PlayerQuitTimes = new();
+    public static Dictionary<byte, CustomRoles> ErasedRoleStorage = [];
+    public static Dictionary<string, int> PlayerQuitTimes = [];
 
     //public static IEnumerable<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null);
     //public static IEnumerable<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId));
@@ -254,15 +255,12 @@ public class Main : BasePlugin
 
     public static Main Instance;
 
-    //一些很新的东东
-
     public static string OverrideWelcomeMsg = "";
     public static int HostClientId;
+    public static Dictionary<byte,List<int>> GuessNumber = [];
 
-    public static Dictionary<byte,List<int>> GuessNumber = new();
-
-    public static List<string> TName_Snacks_CN = new() { "冰激凌", "奶茶", "巧克力", "蛋糕", "甜甜圈", "可乐", "柠檬水", "冰糖葫芦", "果冻", "糖果", "牛奶", "抹茶", "烧仙草", "菠萝包", "布丁", "椰子冻", "曲奇", "红豆土司", "三彩团子", "艾草团子", "泡芙", "可丽饼", "桃酥", "麻薯", "鸡蛋仔", "马卡龙", "雪梅娘", "炒酸奶", "蛋挞", "松饼", "西米露", "奶冻", "奶酥", "可颂", "奶糖" };
-    public static List<string> TName_Snacks_EN = new() { "Ice cream", "Milk tea", "Chocolate", "Cake", "Donut", "Coke", "Lemonade", "Candied haws", "Jelly", "Candy", "Milk", "Matcha", "Burning Grass Jelly", "Pineapple Bun", "Pudding", "Coconut Jelly", "Cookies", "Red Bean Toast", "Three Color Dumplings", "Wormwood Dumplings", "Puffs", "Can be Crepe", "Peach Crisp", "Mochi", "Egg Waffle", "Macaron", "Snow Plum Niang", "Fried Yogurt", "Egg Tart", "Muffin", "Sago Dew", "panna cotta", "soufflé", "croissant", "toffee" };
+    public static List<string> TName_Snacks_CN = ["冰激凌", "奶茶", "巧克力", "蛋糕", "甜甜圈", "可乐", "柠檬水", "冰糖葫芦", "果冻", "糖果", "牛奶", "抹茶", "烧仙草", "菠萝包", "布丁", "椰子冻", "曲奇", "红豆土司", "三彩团子", "艾草团子", "泡芙", "可丽饼", "桃酥", "麻薯", "鸡蛋仔", "马卡龙", "雪梅娘", "炒酸奶", "蛋挞", "松饼", "西米露", "奶冻", "奶酥", "可颂", "奶糖"];
+    public static List<string> TName_Snacks_EN = ["Ice cream", "Milk tea", "Chocolate", "Cake", "Donut", "Coke", "Lemonade", "Candied haws", "Jelly", "Candy", "Milk", "Matcha", "Burning Grass Jelly", "Pineapple Bun", "Pudding", "Coconut Jelly", "Cookies", "Red Bean Toast", "Three Color Dumplings", "Wormwood Dumplings", "Puffs", "Can be Crepe", "Peach Crisp", "Mochi", "Egg Waffle", "Macaron", "Snow Plum Niang", "Fried Yogurt", "Egg Tart", "Muffin", "Sago Dew", "panna cotta", "soufflé", "croissant", "toffee"];
     public static string Get_TName_Snacks => TranslationController.Instance.currentLanguage.languageID is SupportedLangs.SChinese or SupportedLangs.TChinese ?
         TName_Snacks_CN[IRandom.Instance.Next(0, TName_Snacks_CN.Count)] :
         TName_Snacks_EN[IRandom.Instance.Next(0, TName_Snacks_EN.Count)];
@@ -282,7 +280,7 @@ public class Main : BasePlugin
             TOHE.Logger.Info($"Load custom Role Color file：{filename}", "LoadCustomRoleColor");
             using StreamReader sr = new(path, Encoding.GetEncoding("UTF-8"));
             string text;
-            string[] tmp = Array.Empty<string>();
+            string[] tmp = [];
             while ((text = sr.ReadLine()) != null)
             {
                 tmp = text.Split(":");
@@ -316,28 +314,27 @@ public class Main : BasePlugin
     {
         try
         {
-            roleColors = new();
+            roleColors = [];
             var assembly = Assembly.GetExecutingAssembly();
             string resourceName = "TOHE.Resources.roleColor.json";
             using (Stream stream = assembly.GetManifestResourceStream(resourceName))
             {
                 if (stream != null)
                 {
-                    using (StreamReader reader = new StreamReader(stream))
+                    using StreamReader reader = new(stream);
+                    
+                    string jsonData = reader.ReadToEnd();
+                    Dictionary<string, string> jsonDict = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonData);
+                    foreach (var kvp in jsonDict)
                     {
-                        string jsonData = reader.ReadToEnd();
-                        Dictionary<string, string> jsonDict = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonData);
-                        foreach (var kvp in jsonDict)
+                        if (Enum.TryParse(kvp.Key, out CustomRoles role))
                         {
-                            if (Enum.TryParse<CustomRoles>(kvp.Key, out CustomRoles role))
-                            {
-                                roleColors[role] = kvp.Value;
-                            }
-                            else
-                            {
-                                // Handle invalid or unrecognized enum keys
-                                TOHE.Logger.Error($"Invalid enum key: {kvp.Key}", "Reading Role Colors");
-                            }
+                            roleColors[role] = kvp.Value;
+                        }
+                        else
+                        {
+                            // Handle invalid or unrecognized enum keys
+                            TOHE.Logger.Error($"Invalid enum key: {kvp.Key}", "Reading Role Colors");
                         }
                     }
                 }
@@ -383,7 +380,7 @@ public class Main : BasePlugin
             TOHE.Logger.Info("Updating Custom Role Colors", "UpdateRoleColors");
             try
             {
-                List<string> roleList = new();
+                List<string> roleList = [];
                 using (StreamReader reader = new(path, Encoding.GetEncoding("UTF-8")))
                 {
                     string line;
@@ -453,17 +450,18 @@ public class Main : BasePlugin
         VersionCheat = Config.Bind("Client Options", "VersionCheat", false);
         GodMode = Config.Bind("Client Options", "GodMode", false);
         AutoMuteUs = Config.Bind("Client Options", "AutoMuteUs", false); // The AutoMuteUs bot fails to match the host's name.
+        AutoRehost = Config.Bind("Client Options", "AutoRehost", false);
 
         Logger = BepInEx.Logging.Logger.CreateLogSource("TOHE");
         TOHE.Logger.Enable();
-        TOHE.Logger.Disable("NotifyRoles");
+        //TOHE.Logger.Disable("NotifyRoles");
         TOHE.Logger.Disable("SwitchSystem");
         TOHE.Logger.Disable("ModNews");
+        TOHE.Logger.Disable("CustomRpcSender");
         if (!DebugModeManager.AmDebugger)
         {
             TOHE.Logger.Disable("2018k");
             TOHE.Logger.Disable("Github");
-            TOHE.Logger.Disable("CustomRpcSender");
             //TOHE.Logger.Disable("ReceiveRPC");
             TOHE.Logger.Disable("SendRPC");
             TOHE.Logger.Disable("SetRole");
@@ -479,6 +477,7 @@ public class Main : BasePlugin
             //TOHE.Logger.Disable("CheckMurder");
             TOHE.Logger.Disable("PlayerControl.RpcSetRole");
             TOHE.Logger.Disable("SyncCustomSettings");
+            TOHE.Logger.Disable("DoNotifyRoles");
         }
         //TOHE.Logger.isDetail = true;
 
@@ -511,7 +510,6 @@ public class Main : BasePlugin
         TemplateManager.Init();
         //SpamManager.Init();
         DevManager.Init();
-        dbConnect.GetRoleTable();
         Cloud.Init();
 
         IRandom.SetInstance(new NetRandomWrapper());
@@ -538,6 +536,9 @@ public class Main : BasePlugin
 }
 public enum CustomRoles
 {
+    /*******************************************************
+     * Please add all the new roles in alphabetical order *
+     ******************************************************/
     //Default
     Crewmate = 0,
     //Impostor(Vanilla)
@@ -546,77 +547,82 @@ public enum CustomRoles
     // Vanilla Remakes
     ImpostorTOHE,
     ShapeshifterTOHE,
+
     //Impostor
-    BountyHunter,
-    Undertaker,
-    FireWorks,
-    Mafia,
-    Godfather,
-    SerialKiller,
-    ShapeMaster,
-    Wildling,
-    EvilGuesser,
-    Minimalism,
-    Zombie,
-    Sniper,
-    Vampire,
-    Vampiress,
-    Witch,
-    Warlock,
-    Assassin,
-    Vindicator,
-    Hacker,
-    Miner,
-    Escapee,
-    Inhibitor,
-    Puppeteer,
-    Mastermind,
-    TimeThief,
-    EvilTracker,
+    Sans, //arrogance
+    Hacker, //anonymous
     AntiAdminer,
-    Sans,
-    Bomber,
-    Nuker,
-    BoobyTrap,
-    Scavenger,
-    Capitalism,
-    Gangster,
-    Cleaner,
-    BallLightning,
-    Greedier,
-    CursedWolf,
-    ImperiusCurse,
-    QuickShooter,
-    Eraser,
-    OverKiller,
-    Hangman,
     Bard,
-    Trickster,
-    Swooper,
-    Crewpostor,
-    Parasite,
-    Disperser,
+    Berserker,
+    Blackmailer,
+    Bomber,
+    BountyHunter,
+    OverKiller, //butcher
     Camouflager,
-    Saboteur,
+    Capitalism, //capitalist
+    Chronomancer,
+    Cleaner,
+    EvilDiviner, //Consigliere
+    Convict,
     Councillor,
+    Crewpostor,
+    CursedWolf,
     Dazzler,
     Deathpact,
     Devourer,
-    EvilDiviner,
-    Morphling,
-    Twister,
-    Lurker,
-    Convict,
-    Berserker,
-    Visionary,
-    Refugee,
-    Underdog,
-    Ludopath,
-    Chronomancer,
-    Pitfall,
+    Disperser,
+    Eraser,
+    Escapee, //escapist
+    EvilGuesser,
     EvilMini,
-    Blackmailer,
+    EvilTracker,
+    FireWorks,
+    Gangster,
+    Godfather,
+    Greedier, //greedy
+    Hangman,
+    Inhibitor,
     Instigator,
+    Kamikaze,
+    Minimalism, //killing machine
+    BallLightning, //Lightning
+    Ludopath,
+    Lurker,
+    Mastermind,
+    SerialKiller, //mercenary
+    Miner,
+    Morphling,
+    Mafia, //nemesis
+    Assassin, //ninja
+    Nuker,
+    Parasite,
+    Pitfall,
+    Puppeteer,
+    PlagueDoctor,
+    QuickShooter,
+    Refugee,
+    RiftMaker,
+    Saboteur,
+    Scavenger,
+    ShapeMaster,
+    Sniper,
+    Witch, //spellcaster
+    ImperiusCurse, //soulcatcher
+    Swooper,
+    TimeThief,
+    BoobyTrap, //trapster
+    Trickster,
+    Twister,
+    Underdog,
+    Undertaker,
+    Penguin,
+    Vampire,
+    Vampiress,
+    Vindicator,
+    Visionary,
+    Warlock,
+    Wildling,
+    Zombie,
     // Flashbang,
     //Crewmate(Vanilla)
     Engineer,
@@ -627,151 +633,159 @@ public enum CustomRoles
     EngineerTOHE,
     GuardianAngelTOHE,
     ScientistTOHE,
+
     //Crewmate
-    Luckey,
-    President,
-    Needy,
-    SuperStar,
-    CyberStar,
-    Cleanser,
-    Mayor,
-    Captain,
+    Addict,
+    Admirer,
+    Alchemist,
     Bastion,
-    Paranoia,
-    Psychic,
-    SabotageMaster,
-    Sheriff,
-    Vigilante,
-    Snitch,
-    Jailer,
-    Marshall,
-    SpeedBooster,
-    Dictator,
-    Doctor,
-    Detective,
-    SwordsMan,
-    NiceGuesser,
-    Transporter,
-    TimeManager,
-    Veteran,
     Benefactor,
     Bodyguard,
-    Counterfeiter,
-    Witness,
-    Grenadier,
-    Lighter,
-    TaskManager,
-    Medic,
-    Divinator,
-    Glitch,
-    Judge,
-    Mortician,
-    Mediumshiper,
-    Observer,
-    DovesOfNeace,
-    Monarch,
-    CopyCat,
-    Farseer,
-    Bloodhound,
-    Tracker,
-    Merchant,
-    Retributionist,
-    Alchemist,
-    Deputy,
-    Investigator,
-    Guardian,
-    Addict,
-    Mole,
-    Tracefinder,
-    Oracle,
-    Spiritualist,
+    Captain,
+    CyberStar, //celebrity
     Chameleon,
-    ParityCop,
-    Keeper,
-    Admirer,
-    TimeMaster,
+    Cleanser,
+    CopyCat,
+    Bloodhound, //coroner
     Crusader,
-    Reverie,
-    Lookout,
-    Monitor,
-    Swapper,
-    ChiefOfPolice,
-    NiceMini,
-    Spy,
-    Randomizer,
+    Detective,
+    Counterfeiter, //deceiver
+    Deputy,
+    Dictator,
+    Doctor,
     Enigma,
+    Divinator, //FortuneTeller
+    Guardian,
+    GuessMaster,
+    Grenadier,
+    ParityCop, //inspector
+    Investigator,
+    Jailer,
+    Judge,
+    Keeper,
+    SwordsMan, //knight
+    Needy, //Lazy guy
+    Lighter,
+   // Luckey,
+    Lookout,
+    Marshall,
+    Mayor,
+    SabotageMaster, //Mechanic
+    Medic,
+    Mediumshiper, //medium
+    Merchant,
+    Mole,
+    Monarch,
+    Mortician,
+    NiceGuesser,
+    NiceMini,
+    Observer,
+    Oracle,
+    Farseer, //overseer
+    DovesOfNeace, //pacifist
+    Paranoia, //paranoid
+    ChiefOfPolice, //police commisioner
+    President,
+    Psychic,
+    Randomizer,
+    Reverie,
+    Retributionist,
+    Sheriff,
+    Snitch,
+    SpeedBooster,
+    Spiritualist,
+    Spy,
+    SuperStar,
+    Swapper,
+    TaskManager,
+    Monitor, //telecommunications
+    Tracefinder,
+    Tracker,
+    Transporter,
+    TimeManager,
+    TimeMaster,
+    Veteran,
+    Vigilante,
+    Witness,
 
     //Neutral
-    Arsonist,
-    Doppelganger,
-    Pyromaniac,
     Agitater,
+    Amnesiac,
+    Arsonist,
     Bandit,
-    Seeker,
-    SoulCollector,
-    HexMaster,
-    Jester,
-    God,
-    Opportunist,
-    Shaman,
-    Mario,
-    Terrorist,
-    Executioner,
-    Lawyer,
-    Jackal,
-    Poisoner,
-    NWitch,
-    Innocent,
-    Pelican,
-    Revolutionist,
-    NSerialKiller,
-    Juggernaut,
-    Infectious,
-    FFF,
-    Konan,
-    Gamer,
-    DarkHide,
-    Workaholic,
-    Solsticer,
-    Collector,
-    Provocateur,
-    Sunnyboy,
     BloodKnight,
-    Wraith,
-    Totocalcio,
-    Romantic,
-    VengefulRomantic,
-    RuthlessRomantic,
-    Succubus,
-    Virus,
-    Pursuer,
-    Phantom,
-    Jinx,
-    Maverick,
+    Collector,
+    Succubus, //cultist
     CursedSoul,
+    Death,
+    Gamer, //demon
+    Doomsayer,
+    Doppelganger,
+    Executioner,
+    Totocalcio, //follower
+    Glitch,
+    God,
+    FFF, //hater
+    HexMaster,
+    Huntsman,
+    Imitator,
+    Infectious,
+    Innocent,
+    Jackal,
+    Jester,
+    Jinx,
+    Juggernaut,
+    Konan,
+    Lawyer,
+    Masochist,
+    Maverick,
+    Medusa,
+    Necromancer,
+    Opportunist,
+    //Occultist,
+    Pelican,
+    Pestilence,
+    Phantom,
+    Pickpocket,
     Pirate,
     Pixie,
-    PotionMaster,
-    Pickpocket,
-    Traitor,
-    Vulture,
     PlagueBearer,
-    Pestilence,
-    Medusa,
-    Sidekick,
-    Spiritcaller,
-    Amnesiac,
-    Doomsayer,
-    Masochist,
+    PotionMaster,
+    Poisoner,
+    Provocateur,
+    Pursuer,
+    Pyromaniac,
+    Quizmaster,
+    Revolutionist,
+    Romantic,
+    RuthlessRomantic,
+    SchrodingersCat,
+    Seeker,
+    NSerialKiller, //serial killer
+    Shaman,
     Shroud,
-    Werewolf,
-    Necromancer,
-    Huntsman,
+    Sidekick,
+    Solsticer,
+    SoulCollector,
+    Spiritcaller,
+    DarkHide, //stalker
+    Sunnyboy,
     Taskinator,
-    //Occultist,
-    Imitator,
+    Terrorist,
+    Traitor,
+    Mario,//vector
+    VengefulRomantic,
+    Virus,
+    Vulture,
+    Werewolf,
+    NWitch, //witch
+    Workaholic,
+    Wraith,
+    Stealth,
+
    //two-way camp
     Mini,
+
     // Sorcerer,
     // Flux,
 
@@ -783,76 +797,85 @@ public enum CustomRoles
 
     // Sub-role after 500
     NotAssigned = 500,
-    LastImpostor,
-    Lovers,
-    Ntr,
-    Madmate,
-    Watcher,
-    Flash,
-    Torch,
-    Seer,
-    Brakar,
-    Oblivious,
+    Admired,
+    Antidote,
+    Autopsy,
+    Avanger, //avenger
+    Aware,
+    Bait,
     Bewilder,
+    Bloodlust,
+    Burst,
+    Charmed,
+    Circumvent,
+    Cleansed,
+    Clumsy,
+    Contagious,
+    Cyber,
+    Unreportable, //disregarded
+    Diseased,
+    DoubleShot,
+    Egoist,
+    EvilSpirit,
+    Flash,
+    Fool,
+    Fragile,
+    Ghoul,
+    Gravestone,
+    Guesser,
+    Hurried,
+    Infected,
+    Influenced,
+    Knighted,
+    LastImpostor,
+    Lazy,
+    Lovers,
+    Loyal,
+    Lucky,
+    Madmate,
+    Mare,
+    Mimic,
+    Mundane,
+    Necroview,
+    Ntr, //neptune
+    Nimble,
+    Oblivious,
+    Oiiai,
+    Onbound,
+    Overclocked,
+    Rainbow,
+    Rascal,
+    Reach,
+    Rebound,
+    Recruit,
+    Repairman,
+    Rogue,
+    DualPersonality, //Schizophrenic
+    Seer,
+    Silent,
+    Sleuth,
+    Soulless,
+    TicketsStealer, //stealer
+    Stubborn,
+    Susceptible,
+    Swift,
+    Brakar, //tiebreaker
+    Torch,
+    Trapper,
+    Tired,
+    Unlucky,
+    VoidBallot,
+    Watcher,
     //Sunglasses,
     Workhorse,
-    Fool,
-    Avanger,
-    Youtuber,
-    Egoist,
-    TicketsStealer,
-    DualPersonality,
-    Mimic,
-    Guesser,
-    Necroview,
-    Reach,
-    Charmed,
-    Cleansed,
-    Bait,
-    Trapper,
-    Infected,
-    Onbound,
-    Rebound,
-    Knighted,
-    Contagious,
-    Unreportable,
-    Rogue,
-    Lucky,
-    Unlucky,
-    DoubleShot,
+    Youtuber
+
    // Reflective,
-    Rascal,
-    Soulless,
-    Gravestone,
-    Lazy,
-    Autopsy,
-    Loyal,
-    EvilSpirit,
-    Recruit,
-    Admired,
     //Glow,
-    Diseased,
-    Antidote,
-    VoidBallot,
-    Aware,
-    Fragile,
-    Swift,
-    Ghoul,
-    Mare,
-    Burst,
-    Bloodlust,
-    Sleuth,
-    Clumsy,
-    Nimble,
-    Circumvent,
-    Repairman,
-    Cyber,
-    Stubborn,
-    Overclocked,
-    Hurried,
-    Oiiai,
-    Influenced
+
     // QuickFix
+    
+    //You need to put roles in order by their name
 }
 //WinData
 public enum CustomWinner
@@ -888,6 +911,7 @@ public enum CustomWinner
     Poisoner = CustomRoles.Poisoner,
     HexMaster = CustomRoles.HexMaster,
     //Occultist = CustomRoles.Occultist,
+    Quizmaster = CustomRoles.Quizmaster,
     Succubus = CustomRoles.Succubus,
     Wraith = CustomRoles.Wraith,
     Bandit = CustomRoles.Bandit,
@@ -908,16 +932,18 @@ public enum CustomWinner
     Pickpocket = CustomRoles.Pickpocket,
     Traitor = CustomRoles.Traitor,
     Vulture = CustomRoles.Vulture,
-    Pestilence = CustomRoles.Pestilence,
     Medusa = CustomRoles.Medusa,
     Spiritcaller = CustomRoles.Spiritcaller,
     Glitch = CustomRoles.Glitch,
     Plaguebearer = CustomRoles.PlagueBearer,
+    Pestilence = CustomRoles.Pestilence,
+    PlagueDoctor = CustomRoles.PlagueDoctor,
     Masochist = CustomRoles.Masochist,
     Doomsayer = CustomRoles.Doomsayer,
     Shroud = CustomRoles.Shroud,
     Seeker = CustomRoles.Seeker,
     SoulCollector = CustomRoles.SoulCollector,
+    Death = CustomRoles.Death,
     RuthlessRomantic = CustomRoles.RuthlessRomantic,
     NiceMini = CustomRoles.Mini,
     Doppelganger = CustomRoles.Doppelganger,
@@ -946,8 +972,10 @@ public enum AdditionalWinners
     Shaman = CustomRoles.Shaman,
     Taskinator = CustomRoles.Taskinator,
     Pixie = CustomRoles.Pixie,
- //   NiceMini = CustomRoles.NiceMini,
- //   Baker = CustomRoles.Baker,
+    Quizmaster = CustomRoles.Quizmaster,
+    SchrodingersCat = CustomRoles.SchrodingersCat,
+    //   NiceMini = CustomRoles.NiceMini,
+    //   Baker = CustomRoles.Baker,
 }
 public enum SuffixModes
 {

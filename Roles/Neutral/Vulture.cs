@@ -10,13 +10,13 @@ namespace TOHE.Roles.Neutral;
 public static class Vulture
 {
     private static readonly int Id = 15600;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
-    public static List<byte> UnreportablePlayers = new();
-    public static Dictionary<byte, int> BodyReportCount = new();
-    public static Dictionary<byte, int> AbilityLeftInRound = new();
-    public static Dictionary<byte, long> LastReport = new();
+    public static List<byte> UnreportablePlayers = [];
+    public static Dictionary<byte, int> BodyReportCount = [];
+    public static Dictionary<byte, int> AbilityLeftInRound = [];
+    public static Dictionary<byte, long> LastReport = [];
 
     public static OptionItem ArrowsPointingToDeadBody;
     public static OptionItem NumberOfReportsToWin;
@@ -38,11 +38,11 @@ public static class Vulture
     }
     public static void Init()
     {
-        playerIdList = new();
-        UnreportablePlayers = new List<byte>();
-        BodyReportCount = new();
-        AbilityLeftInRound = new();
-        LastReport = new();
+        playerIdList = [];
+        UnreportablePlayers = [];
+        BodyReportCount = [];
+        AbilityLeftInRound = [];
+        LastReport = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -60,7 +60,7 @@ public static class Vulture
                 Utils.GetPlayerById(playerId).Notify(GetString("VultureCooldownUp"));
             }
             return;
-        }, VultureReportCD.GetFloat() + 8f, "Vulture CD");  //for some reason that idk vulture cd completes 8s faster when the game starts, so I added 8f for now 
+        }, VultureReportCD.GetFloat() + 8f, "Vulture Cooldown Up In Start");  //for some reason that idk vulture cd completes 8s faster when the game starts, so I added 8f for now 
     }
 
     public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(HasImpVision.GetBool());
@@ -116,7 +116,7 @@ public static class Vulture
                         Utils.GetPlayerById(apc).Notify(GetString("VultureCooldownUp"));
                     }
                     return;
-                }, Vulture.VultureReportCD.GetFloat(), "Vulture CD");
+                }, VultureReportCD.GetFloat(), "Vulture Cooldown Up After Meeting");
                 SendRPC(apc, false);
             }
         }
@@ -170,9 +170,10 @@ public static class Vulture
 
     public static string GetTargetArrow(PlayerControl seer, PlayerControl target = null)
     {
-        if (!seer.Is(CustomRoles.Vulture)) return "";
-        if (target != null && seer.PlayerId != target.PlayerId) return "";
-        if (GameStates.IsMeeting) return "";
+        if (seer == null) return string.Empty;
+        if (!seer.Is(CustomRoles.Vulture)) return string.Empty;
+        if (target != null && seer.PlayerId != target.PlayerId) return string.Empty;
+        if (GameStates.IsMeeting) return string.Empty;
         return Utils.ColorString(Color.white, LocateArrow.GetArrows(seer));
     }
 }

@@ -9,7 +9,7 @@ namespace TOHE.Roles.Crewmate;
 public static class Deputy
 {
     private static readonly int Id = 7800;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     public static OptionItem HandcuffCooldown;
@@ -31,7 +31,7 @@ public static class Deputy
     }
     public static void Init()
     {
-        playerIdList = new();
+        playerIdList = [];
         HandcuffLimit = new();
         IsEnable = false;
     }
@@ -44,6 +44,10 @@ public static class Deputy
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
+    }
+    public static void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
     }
 
     private static void SendRPC()

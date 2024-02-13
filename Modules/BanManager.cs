@@ -19,8 +19,9 @@ public static class BanManager
     private static readonly string MODERATOR_LIST_PATH = @"./TOHE-DATA/Moderators.txt";
     private static readonly string VIP_LIST_PATH = @"./TOHE-DATA/VIP-List.txt";
     private static readonly string WHITE_LIST_LIST_PATH = @"./TOHE-DATA/WhiteList.txt";
-    private static List<string> EACList = new(); // Don't make it read-only
-    public static List<string> TempBanWhiteList = new(); //To prevent writing to ban list
+    //private static List<string> EACList = []; // Don't make it read-only
+    public static List<string> TempBanWhiteList = []; //To prevent writing to ban list
+    public static List<Dictionary<string, System.Text.Json.JsonElement>> EACDict = [];
     public static void Init()
     {
         try
@@ -55,15 +56,15 @@ public static class BanManager
             }
 
             // Read EAC List
-            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("TOHE.Resources.Config.EACList.txt");
-            stream.Position = 0;
-            using StreamReader sr = new(stream, Encoding.UTF8);
-            string line;
-            while ((line = sr.ReadLine()) != null)
-            {
-                if (line == "" || line.StartsWith("#")) continue;
-                EACList.Add(line);
-            }
+            //var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("TOHE.Resources.Config.EACList.txt");
+            //stream.Position = 0;
+            //using StreamReader sr = new(stream, Encoding.UTF8);
+            //string line;
+            //while ((line = sr.ReadLine()) != null)
+            //{
+            //    if (line == "" || line.StartsWith("#")) continue;
+            //    EACList.Add(line);
+            //}
 
         }
         catch (Exception ex)
@@ -82,15 +83,14 @@ public static class BanManager
     {
         if (player == null) return "";
         string puid = player.ProductUserId;
-        using (SHA256 sha256 = SHA256.Create())
-        {
-            // get sha-256 hash
-            byte[] sha256Bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(puid));
-            string sha256Hash = BitConverter.ToString(sha256Bytes).Replace("-", "").ToLower();
+        using SHA256 sha256 = SHA256.Create();
+        
+        // get sha-256 hash
+        byte[] sha256Bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(puid));
+        string sha256Hash = BitConverter.ToString(sha256Bytes).Replace("-", "").ToLower();
 
-            // pick front 5 and last 4
-            return string.Concat(sha256Hash.AsSpan(0, 5), sha256Hash.AsSpan(sha256Hash.Length - 4));
-        }
+        // pick front 5 and last 4
+        return string.Concat(sha256Hash.AsSpan(0, 5), sha256Hash.AsSpan(sha256Hash.Length - 4));
     }
     public static void AddBanPlayer(InnerNet.ClientData player)
     {
@@ -99,7 +99,9 @@ public static class BanManager
         {
             if (player?.GetHashedPuid() != "" && player?.GetHashedPuid() != null && player?.GetHashedPuid() != "e3b0cb855")
             {
-                File.AppendAllText(BAN_LIST_PATH, $"{player.FriendCode},{player?.GetHashedPuid()},{player.PlayerName.RemoveHtmlTags()}\n");
+                var additionalInfo = "";
+                if (CheckEACList(player?.FriendCode, player?.GetHashedPuid())) additionalInfo = " //added by EAC";
+                File.AppendAllText(BAN_LIST_PATH, $"{player?.FriendCode},{player?.GetHashedPuid()},{player.PlayerName.RemoveHtmlTags()}{additionalInfo}\n");
                 Logger.SendInGame(string.Format(GetString("Message.AddedPlayerToBanList"), player.PlayerName));
             }
             else Logger.Info($"Failed to add player {player?.PlayerName.RemoveHtmlTags()}/{player?.FriendCode}/{player?.GetHashedPuid()} to ban list!", "AddBanPlayer");
@@ -153,14 +155,14 @@ public static class BanManager
         if (CheckBanList(player?.FriendCode, player?.GetHashedPuid()))
         {
             AmongUsClient.Instance.KickPlayer(player.Id, true);
-            Logger.SendInGame(string.Format(GetString("Message.BanedByBanList"), player.PlayerName));
+            Logger.SendInGame(string.Format(GetString("Message.BannedByBanList"), player.PlayerName));
             Logger.Info($"{player.PlayerName}は過去にBAN済みのためBANされました。", "BAN");
             return;
         }
         if (CheckEACList(player?.FriendCode, player?.GetHashedPuid()))
         {
             AmongUsClient.Instance.KickPlayer(player.Id, true);
-            Logger.SendInGame(string.Format(GetString("Message.BanedByEACList"), player.PlayerName));
+            Logger.SendInGame(string.Format(GetString("Message.BannedByEACList"), player.PlayerName));
             Logger.Info($"{player.PlayerName}存在于EAC封禁名单", "BAN");
             return;
         }
@@ -199,10 +201,30 @@ public static class BanManager
     }
     public static bool CheckEACList(string code, string hashedPuid)
     {
-        bool OnlyCheckPuid = false;
-        if (code == "" && hashedPuid == "") OnlyCheckPuid = true;
-        else if (code == "") return false;
-        return (EACList.Any(x => x.Contains(code) && !OnlyCheckPuid) || EACList.Any(x => x.Contains(hashedPuid) && hashedPuid != ""));
+        if (code == "" && hashedPuid == "") return false;
+        foreach (var user in EACDict)
+        {
+            if ((user["friendcode"].ToString().ToLower().Trim() == code.ToLower().Trim())
+                || (user["hashPUID"].ToString().ToLower().Trim() == hashedPuid.ToLower().Trim()))
+            {
+                Logger.Warn($"friendcode : {code}, hashedPUID : {hashedPuid} banned by EAC reason : {user["reason"]}", "CheckEACList");
+                return true; 
+            }
+        }
+
+        return false;
+        //bool OnlyCheckPuid = false;
+        //if (code == "" && hashedPuid == "") OnlyCheckPuid = true;
+        //else if (code == "") return false;
+        //return (EACList.Any(x => x.Contains(code) && !OnlyCheckPuid) || EACList.Any(x => x.Contains(hashedPuid) && hashedPuid != ""));
+    }
+    public static bool CheckAllowList(string friendcode)
+    {
+        if (friendcode == "") return false;
+        var allowListFilePath = @"./TOHE-DATA/WhiteList.txt";
+        if (!File.Exists(allowListFilePath)) File.Create(allowListFilePath).Close();
+        var friendcodes = File.ReadAllLines(allowListFilePath);
+        return friendcodes.Any(x => x == friendcode || x.Contains(friendcode));
     }
 }
 [HarmonyPatch(typeof(BanMenu), nameof(BanMenu.Select))]

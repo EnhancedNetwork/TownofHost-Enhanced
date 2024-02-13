@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using TOHE.Roles.Neutral;
+using TOHE.Roles.AddOns.Common;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -9,16 +9,16 @@ namespace TOHE.Roles.Crewmate
     internal class Merchant
     {
         private static readonly int Id = 8800;
-        private static readonly List<byte> playerIdList = new();
+        private static readonly List<byte> playerIdList = [];
         public static bool IsEnable = false;
 
-        public static Dictionary<byte, int> addonsSold = new();
-        public static Dictionary<byte, List<byte>> bribedKiller = new();
+        public static Dictionary<byte, int> addonsSold = [];
+        public static Dictionary<byte, List<byte>> bribedKiller = [];
 
-        private static List<CustomRoles> addons = new();
+        private static List<CustomRoles> addons = [];
 
-        private static readonly List<CustomRoles> helpfulAddons = new List<CustomRoles>
-        {
+        private static readonly List<CustomRoles> helpfulAddons =
+        [
             CustomRoles.Watcher,
             CustomRoles.Seer,
             CustomRoles.Bait,
@@ -31,20 +31,20 @@ namespace TOHE.Roles.Crewmate
             CustomRoles.Sleuth,
             CustomRoles.Autopsy,
             CustomRoles.Lucky
-        };
+        ];
 
-        private static readonly List<CustomRoles> harmfulAddons = new List<CustomRoles>
-        {
+        private static readonly List<CustomRoles> harmfulAddons =
+        [
             CustomRoles.Oblivious,
             //CustomRoles.Sunglasses,
             CustomRoles.VoidBallot,
             CustomRoles.Fragile,
             CustomRoles.Unreportable, // Disregarded
             CustomRoles.Unlucky
-        };
+        ];
 
-        private static readonly List<CustomRoles> neutralAddons = new List<CustomRoles>
-        {
+        private static readonly List<CustomRoles> neutralAddons =
+        [
             CustomRoles.Guesser,
             CustomRoles.Diseased,
             CustomRoles.Antidote,
@@ -54,7 +54,7 @@ namespace TOHE.Roles.Crewmate
             CustomRoles.Onbound,
             CustomRoles.Stubborn,
             CustomRoles.Rebound,
-        };
+        ];
 
         private static OptionItem OptionMaxSell;
         private static OptionItem OptionMoneyPerSell;
@@ -99,9 +99,9 @@ namespace TOHE.Roles.Crewmate
             playerIdList.Clear();
             IsEnable = false;
 
-            addons = new List<CustomRoles>();
-            addonsSold = new Dictionary<byte, int>();
-            bribedKiller = new Dictionary<byte, List<byte>>();
+            addons = [];
+            addonsSold = [];
+            bribedKiller = [];
 
             if (OptionCanSellHelpful.GetBool())
             {
@@ -127,17 +127,24 @@ namespace TOHE.Roles.Crewmate
         {
             playerIdList.Add(playerId);
             addonsSold.Add(playerId, 0);
-            bribedKiller.Add(playerId, new List<byte>());
+            bribedKiller.Add(playerId, []);
             IsEnable = true;
+        }
+        public static void Remove(byte playerId)
+        {
+            playerIdList.Remove(playerId);
+            addonsSold.Remove(playerId);
+            bribedKiller.Remove(playerId);
         }
 
         public static void OnTaskFinished(PlayerControl player)
         {
-            if (!player.IsAlive() || !player.Is(CustomRoles.Merchant) || (addonsSold[player.PlayerId] >= OptionMaxSell.GetInt()))
+            if (addonsSold[player.PlayerId] >= OptionMaxSell.GetInt())
             {
                 return;
             }
-            if (!addons.Any())
+
+            if (addons.Count == 0)
             {
                 player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSellFail")));
                 Logger.Info("No addons to sell.", "Merchant");
@@ -149,50 +156,49 @@ namespace TOHE.Roles.Crewmate
             
             List<PlayerControl> AllAlivePlayer =
                 Main.AllAlivePlayerControls.Where(x =>
-                    (x.PlayerId != player.PlayerId && !Pelican.IsEaten(x.PlayerId))
+                    x.PlayerId != player.PlayerId
                     &&
                     !x.Is(addon)
-                /*    &&
-                    addon.IsEnable() */
-                    &&
-                    !CustomRolesHelper.CheckAddonConfilct(addon, x)
-                    &&
-                    (Cleanser.CleansedCanGetAddon.GetBool() || (!Cleanser.CleansedCanGetAddon.GetBool() && !x.Is(CustomRoles.Cleansed)))
                     &&
                     (!x.Is(CustomRoles.Stubborn))
                     &&
+                    CustomRolesHelper.CheckAddonConfilct(addon, x, checkLimitAddons: false)
+                    &&
+                    (Cleanser.CleansedCanGetAddon.GetBool() || (!Cleanser.CleansedCanGetAddon.GetBool() && !x.Is(CustomRoles.Cleansed)))
+                    &&
                     (
-                        (OptionCanTargetCrew.GetBool() && CustomRolesHelper.IsCrewmate(x.GetCustomRole())) 
+                        (OptionCanTargetCrew.GetBool() && x.GetCustomRole().IsCrewmate()) 
                         ||
-                        (OptionCanTargetImpostor.GetBool() && CustomRolesHelper.IsImpostor(x.GetCustomRole()))
+                        (OptionCanTargetImpostor.GetBool() && x.GetCustomRole().IsImpostor())
                         ||
-                        (OptionCanTargetNeutral.GetBool() && CustomRolesHelper.IsNeutral(x.GetCustomRole()))
+                        (OptionCanTargetNeutral.GetBool() && x.GetCustomRole().IsNeutral())
                     )
                 ).ToList();
 
-            if (AllAlivePlayer.Any())
+            if (AllAlivePlayer.Count > 0)
             {
                 bool helpfulAddon = helpfulAddons.Contains(addon);
                 bool harmfulAddon = !helpfulAddon;
 
                 if (helpfulAddon && OptionSellOnlyHarmfulToEvil.GetBool())
                 {
-                    AllAlivePlayer = AllAlivePlayer.Where(a => CustomRolesHelper.IsCrewmate(a.GetCustomRole())).ToList();
+                    AllAlivePlayer = AllAlivePlayer.Where(a => a.GetCustomRole().IsCrewmate()).ToList();
                 }
 
                 if (harmfulAddon && OptionSellOnlyHelpfulToCrew.GetBool())
                 {
                     AllAlivePlayer = AllAlivePlayer.Where(a =>
-                        CustomRolesHelper.IsImpostor(a.GetCustomRole())
+                        a.GetCustomRole().IsImpostor()
                         ||
-                        CustomRolesHelper.IsNeutral(a.GetCustomRole())
+                        a.GetCustomRole().IsNeutral()
                         
                     ).ToList();
                 }
 
-                if (!AllAlivePlayer.Any())
+                if (AllAlivePlayer.Count == 0)
                 {
                     player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSellFail")));
+                    Logger.Info("All Alive Player Count = 0", "Merchant");
                     return;
                 }
 
@@ -202,17 +208,15 @@ namespace TOHE.Roles.Crewmate
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSell")));
                 player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonDelivered")));
 
+                if (addon == CustomRoles.Tired)
+                    Tired.playerIdList.Add(target.PlayerId, false);
+                
                 addonsSold[player.PlayerId] += 1;
             }
         }
 
         public static bool OnClientMurder(PlayerControl killer, PlayerControl target)
         {
-            if (!target.Is(CustomRoles.Merchant))
-            {
-                return false;
-            }
-
             if (bribedKiller[target.PlayerId].Contains(killer.PlayerId))
             {
                 NotifyBribery(killer, target);

@@ -8,8 +8,8 @@ namespace TOHE.Roles.Neutral;
 public static class Pyromaniac
 {
     private static readonly int Id = 17800;
-    public static List<byte> playerIdList = new();
-    public static List<byte> DousedList = new();
+    public static List<byte> playerIdList = [];
+    public static List<byte> DousedList = [];
     public static bool IsEnable = false;
 
     private static OptionItem KillCooldown;
@@ -32,8 +32,8 @@ public static class Pyromaniac
     }
     public static void Init()
     {
-        playerIdList = new();
-        DousedList = new();
+        playerIdList = [];
+        DousedList = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -58,7 +58,7 @@ public static class Pyromaniac
 
         if (DousedList.Contains(target.PlayerId))
         {
-            _ = new LateTask(() => { killer.SetKillCooldown(BurnCooldown.GetFloat()); }, 0.1f);
+            _ = new LateTask(() => { killer.SetKillCooldown(BurnCooldown.GetFloat()); }, 0.1f, "Pyromaniac Set Kill Cooldown");
             return true;
         }
         else

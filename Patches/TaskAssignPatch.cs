@@ -18,7 +18,7 @@ class AddTasksFromListPatch
 
         if (!Options.DisableShortTasks.GetBool() && !Options.DisableCommonTasks.GetBool() && !Options.DisableLongTasks.GetBool() && !Options.DisableOtherTasks.GetBool()) return;
         
-        List<NormalPlayerTask> disabledTasks = new();
+        List<NormalPlayerTask> disabledTasks = [];
 
         for (var i = 0; i < unusedTasks.Count; i++)
         {
@@ -110,10 +110,12 @@ class RpcSetTasksPatch
 {
     // Patch to overwrite the task just before the process of allocating the task and sending the RPC is performed
     // Does not interfere with the vanilla task allocation process itself
-    public static void Prefix(GameData __instance,
+    public static void Prefix(/*GameData __instance,*/
     [HarmonyArgument(0)] byte playerId,
     [HarmonyArgument(1)] ref Il2CppStructArray<byte> taskTypeIds)
     {
+        if (GameStates.IsHideNSeek) return;
+
         // null measure
         if (Main.RealOptionsData == null)
         {

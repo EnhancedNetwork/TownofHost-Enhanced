@@ -1,4 +1,4 @@
-{
+{ 
   "Crewmate": "#8cffff",
   "Engineer": "#8cffff",
   "Scientist": "#8cffff",
@@ -9,7 +9,6 @@
   "EngineerTOHE": "#FF6A00",
   "ScientistTOHE": "#8ee98e",
   "GuardianAngelTOHE": "#77e6d1",
-  "Luckey": "#b8d7a3",
   "President": "#00ffac",
   "Needy": "#a4dffe",
   "SabotageMaster": "#3333ff",
@@ -148,6 +147,7 @@
   "Seeker": "#ffaa00",
   "Pixie": "#00FF00",
   "SoulCollector": "#A675A1",
+  "Death": "#ff174f",
   "Imitator": "#B3D94C",
   "Doppelganger": "#f6f4a3",
   "GM": "#ff5b70",
@@ -220,8 +220,15 @@
   "Influenced": "#b0006a",
   "Captain": "#4682B4",
   "Benefactor": "#27ae60",
+  "Silent": "#9da9cf",
+  "Susceptible": "#2DFA04",
   "Keeper": "#9ed9c8",
-
-  "Killer": "#00ffff"
-
+  "Mundane": "#E69B4C",
+  "GuessMaster": "#FFD700",
+  "Killer": "#00ffff",
+  "Quizmaster": "#8666bd",
+  "Tired": "#9cdff0",
+  "SchrodingersCat": "#404040",
+  "PlagueDoctor": "#ff6633",
+  "Rainbow": "#55FFCB"
 }

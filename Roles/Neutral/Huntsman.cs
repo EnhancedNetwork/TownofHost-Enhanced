@@ -10,7 +10,7 @@ namespace TOHE.Roles.Neutral;
 public static class Huntsman
 {
     private static readonly int Id = 16500;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     private static OptionItem KillCooldown;
@@ -22,7 +22,7 @@ public static class Huntsman
     private static OptionItem MinKCD;
     private static OptionItem MaxKCD;
 
-    public static List<byte> Targets = new();
+    public static List<byte> Targets = [];
     public static float KCD = 25;
 
     public static void SetupCustomOption()
@@ -46,8 +46,8 @@ public static class Huntsman
     }
     public static void Init()
     {
-        playerIdList = new();
-        Targets = new();
+        playerIdList = [];
+        Targets = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -55,7 +55,7 @@ public static class Huntsman
         playerIdList.Add(playerId);
         IsEnable = true;
 
-        _ = new LateTask(ResetTargets, 8f);
+        _ = new LateTask(ResetTargets, 8f, "Huntsman Reset Targets");
         KCD = KillCooldown.GetFloat();
 
         if (!AmongUsClient.Instance.AmHost) return;

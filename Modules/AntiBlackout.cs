@@ -42,8 +42,10 @@ public static class AntiBlackout
         || HexMaster.IsEnable || Jinx.IsEnable
         || Medusa.IsEnable || Poisoner.IsEnable
         || PotionMaster.IsEnable || Wraith.IsEnable
-        || Necromancer.IsEnable || Doppelganger.IsEnable
-        || CustomRoles.Sidekick.RoleExist(true) || (CustomRoles.Arsonist.RoleExist(true) && Options.ArsonistCanIgniteAnytime.GetBool());
+        || Necromancer.IsEnable || Doppelganger.IsEnable 
+        || PlagueDoctor.IsEnable || CustomRoles.Sidekick.RoleExist(true)
+        || (CustomRoles.Arsonist.RoleExist(true) && Options.ArsonistCanIgniteAnytime.GetBool()) || CustomRoles.Death.RoleExist(true); 
+        
     ///<summary>
     ///Difference between the number of non-impostors and the number of imposters
     ///</summary>
@@ -83,7 +85,7 @@ public static class AntiBlackout
         }
     }
     public static bool IsCached { get; private set; } = false;
-    private static Dictionary<byte, (bool isDead, bool Disconnected)> isDeadCache = new();
+    private static Dictionary<byte, (bool isDead, bool Disconnected)> isDeadCache = [];
     private readonly static LogHandler logger = Logger.Handler("AntiBlackout");
 
     public static void SetIsDead(bool doSend = true, [CallerMemberName] string callerMethodName = "")
@@ -181,7 +183,7 @@ public static class AntiBlackout
     public static void Reset()
     {
         logger.Info("==Reset==");
-        if (isDeadCache == null) isDeadCache = new();
+        isDeadCache ??= [];
         isDeadCache.Clear();
         IsCached = false;
         ShowExiledInfo = false;

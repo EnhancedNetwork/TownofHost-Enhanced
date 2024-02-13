@@ -20,7 +20,7 @@ public static class HudSpritePatch
     public static void Postfix(HudManager __instance)
     {
         var player = PlayerControl.LocalPlayer;
-        if (player == null || !GameStates.IsModHost) return;
+        if (player == null || GameStates.IsHideNSeek || !GameStates.IsModHost) return;
         if (!SetHudActivePatch.IsActive || !player.IsAlive()) return;
         if (!AmongUsClient.Instance.IsGameStarted || !Main.introDestroyed)
         {
@@ -99,6 +99,9 @@ public static class HudSpritePatch
             case CustomRoles.EvilTracker:
                 newAbilityButton = CustomButton.Get("Track");
                 break;
+            case CustomRoles.Tracker:
+                newAbilityButton = CustomButton.Get("Track");
+                break;
             case CustomRoles.Vampire:
                 newKillButton = CustomButton.Get("Bite");
                 break;
@@ -162,8 +165,20 @@ public static class HudSpritePatch
             case CustomRoles.Jailer:
                 newKillButton = CustomButton.Get("penitentiary");
                 break;
+            //case CustomRoles.Penguin:
+            //    newAbilityButton = CustomButton.Get("Timer");
+            //    break;
             case CustomRoles.Agitater:
                 newKillButton = CustomButton.Get("bombshell");
+                break;
+            case CustomRoles.Vulture:
+                newReportButton = CustomButton.Get("Eat");
+                break;
+            case CustomRoles.Pursuer:
+                newAbilityButton = CustomButton.Get("Pursuer");
+                break;
+            case CustomRoles.Cleaner:
+                newReportButton = CustomButton.Get("Clean");
                 break;
             case CustomRoles.Warlock:
                 if (!shapeshifting)

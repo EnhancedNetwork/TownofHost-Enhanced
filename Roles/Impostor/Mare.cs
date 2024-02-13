@@ -7,7 +7,7 @@ namespace TOHE.Roles.Impostor;
 public static class Mare
 {
     private static readonly int Id = 23000;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
 
     public static OptionItem KillCooldownInLightsOut;
     //private static OptionItem KillCooldownNormally;
@@ -34,13 +34,13 @@ public static class Mare
     }
     public static void Init()
     {
-        playerIdList = new();
+        playerIdList = [];
     }
     public static void Add(byte mare)
     {
         playerIdList.Add(mare);
     }
-    public static bool IsEnable => playerIdList.Any();
+    public static bool IsEnable => playerIdList.Count > 0;
     public static float GetKillCooldown => Utils.IsActive(SystemTypes.Electrical) ? KillCooldownInLightsOut.GetFloat() : DefaultKillCooldown;
     public static void ApplyGameOptions(byte playerId)
     {

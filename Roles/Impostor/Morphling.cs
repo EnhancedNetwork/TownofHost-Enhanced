@@ -6,7 +6,7 @@ namespace TOHE.Roles.Impostor;
 public static class Morphling
 {
     private static readonly int Id = 3500;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     public static OptionItem KillCooldown;
@@ -26,7 +26,7 @@ public static class Morphling
     }
     public static void Init()
     {
-        playerIdList = new();
+        playerIdList = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -36,13 +36,19 @@ public static class Morphling
     }
 
     public static bool CanUseKillButton(byte playerId)
-        => !Main.PlayerStates[playerId].IsDead
-        && Main.CheckShapeshift[playerId];
+    {
+        var player = Utils.GetPlayerById(playerId);
+        if (player == null) return false;
+
+        Main.CheckShapeshift.TryGetValue(playerId, out var IsShapeshift);
+
+        return IsShapeshift && player.IsAlive();
+    }
 
     public static void ApplyGameOptions()
-        {
-            AURoleOptions.ShapeshifterCooldown = ShapeshiftCD.GetFloat();
-            AURoleOptions.ShapeshifterDuration = ShapeshiftDur.GetFloat();
-        }
+    {
+        AURoleOptions.ShapeshifterCooldown = ShapeshiftCD.GetFloat();
+        AURoleOptions.ShapeshifterDuration = ShapeshiftDur.GetFloat();
+    }
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 }

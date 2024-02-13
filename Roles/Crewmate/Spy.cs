@@ -11,10 +11,10 @@ namespace TOHE.Roles.Crewmate
     public static class Spy
     {
         private static readonly int Id = 9700;
-        private static List<byte> playerIdList = new();
+        private static List<byte> playerIdList = [];
         public static bool change = false;
-        public static Dictionary<byte, float> UseLimit = new();
-        public static Dictionary<byte, long> SpyRedNameList = new();
+        public static Dictionary<byte, float> UseLimit = [];
+        public static Dictionary<byte, long> SpyRedNameList = [];
         public static bool IsEnable = false;
         public static OptionItem SpyRedNameDur;
         public static OptionItem UseLimitOpt;
@@ -35,9 +35,9 @@ namespace TOHE.Roles.Crewmate
         }
         public static void Init()
         {
-            playerIdList = new();
-            UseLimit = new();
-            SpyRedNameList = new();
+            playerIdList = [];
+            UseLimit = [];
+            SpyRedNameList = [];
             IsEnable = false;
             change = false;
         }
@@ -46,6 +46,11 @@ namespace TOHE.Roles.Crewmate
             playerIdList.Add(playerId);
             UseLimit.Add(playerId, UseLimitOpt.GetInt());
             IsEnable = true;
+        }
+        public static void Remove(byte playerId)
+        {
+            playerIdList.Remove(playerId);
+            UseLimit.Remove(playerId);
         }
         public static void SendRPC(byte susId)
         {
@@ -102,7 +107,7 @@ namespace TOHE.Roles.Crewmate
                 SendRPC(killer.PlayerId);                
                 if (SpyInteractionBlocked.GetBool()) 
                     killer.SetKillCooldown(time: 10f);
-                NotifyRoles(SpecifySeer: target);
+                NotifyRoles(SpecifySeer: target, ForceLoop: true);
                 return false;
             }
             return true;
@@ -110,7 +115,7 @@ namespace TOHE.Roles.Crewmate
         public static void OnFixedUpdate(PlayerControl pc)
         {
             if (pc == null) return;
-            if (!SpyRedNameList.Any()) return;
+            if (SpyRedNameList.Count == 0) return;
             change = false;
 
             foreach (var x in SpyRedNameList)
@@ -125,7 +130,7 @@ namespace TOHE.Roles.Crewmate
                     }
                 }
             }
-            if (change && GameStates.IsInTask) { NotifyRoles(SpecifySeer: pc); }
+            if (change && GameStates.IsInTask) { NotifyRoles(SpecifySeer: pc, ForceLoop: true); }
         }
         public static string GetProgressText(byte playerId, bool comms)
         {

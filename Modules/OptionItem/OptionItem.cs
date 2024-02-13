@@ -27,9 +27,12 @@ public abstract class OptionItem
     public Color NameColor { get; protected set; }
     public OptionFormat ValueFormat { get; protected set; }
     public CustomGameMode GameMode { get; protected set; }
+    public CustomGameMode HideOptionInFFA { get; protected set; }
+    public CustomGameMode HideOptionInHnS { get; protected set; }
     public bool IsHeader { get; protected set; }
     public bool IsHidden { get; protected set; }
     public bool IsText { get; protected set; }
+    public bool IsVanillaText { get; protected set; }
     public Dictionary<string, string> ReplacementDictionary
     {
         get => _replacementDictionary;
@@ -58,7 +61,7 @@ public abstract class OptionItem
     public event EventHandler<UpdateValueEventArgs> UpdateValueEvent;
 
     // Constructor
-    public OptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue)
+    public OptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue, bool vanillaStr)
     {
         // Info Setting
         Id = id;
@@ -66,17 +69,20 @@ public abstract class OptionItem
         DefaultValue = defaultValue;
         Tab = tab;
         IsSingleValue = isSingleValue;
+        IsVanillaText = vanillaStr;
 
         // Nullable Info Setting
         NameColor = Color.white;
         ValueFormat = OptionFormat.None;
         GameMode = CustomGameMode.All;
+        HideOptionInFFA = CustomGameMode.All;
+        HideOptionInHnS = CustomGameMode.All;
         IsHeader = false;
         IsHidden = false;
         IsText = false;
 
         // Initialize Objects
-        Children = new();
+        Children = [];
 
         // Set default value
         if (Id == PresetId)
@@ -102,7 +108,7 @@ public abstract class OptionItem
         }
         else
         {
-            Logger.Error($"Duplicate ID: {id}", "OptionItem");
+            Logger.Error($"Duplicate ID: {id} Name: {name}", "OptionItem");
         }
     }
 
@@ -119,13 +125,15 @@ public abstract class OptionItem
     public OptionItem SetHeader(bool value) => Do(i => i.IsHeader = value);
     public OptionItem SetHidden(bool value) => Do(i => i.IsHidden = value);
     public OptionItem SetText(bool value) => Do(i => i.IsText = value);
+    public OptionItem HideInFFA(CustomGameMode value = CustomGameMode.FFA) => Do(i => i.HideOptionInFFA = value);
+    public OptionItem HideInHnS(CustomGameMode value = CustomGameMode.HidenSeekTOHE) => Do(i => i.HideOptionInHnS = value);
 
     public OptionItem SetParent(OptionItem parent) => Do(i =>
     {
         foreach (var role in Options.CustomRoleSpawnChances.Where(x => x.Value.Name == parent.Name).ToArray())
         {
             var roleName = Translator.GetString(Enum.GetName(typeof(CustomRoles), role.Key));
-            ReplacementDictionary ??= new();
+            ReplacementDictionary ??= [];
             ReplacementDictionary.TryAdd(roleName, Utils.ColorString(Utils.GetRoleColor(role.Key), roleName));
             break;
         }
@@ -140,7 +148,7 @@ public abstract class OptionItem
     public OptionItem AddReplacement((string key, string value) kvp)
         => Do(i =>
         {
-            ReplacementDictionary ??= new();
+            ReplacementDictionary ??= [];
             ReplacementDictionary.Add(kvp.key, kvp.value);
         });
     public OptionItem RemoveReplacement(string key)
@@ -152,6 +160,10 @@ public abstract class OptionItem
         return disableColor ?
             Translator.GetString(Name, ReplacementDictionary, console) :
             Utils.ColorString(NameColor, Translator.GetString(Name, ReplacementDictionary));
+    }
+    public virtual string GetNameVanilla()
+    {
+        return Translator.GetString(Name, ReplacementDictionary, vanilla: true);
     }
     public virtual bool GetBool() => CurrentValue != 0 && (Parent == null || Parent.GetBool());
     public virtual int GetInt() => CurrentValue;
@@ -165,7 +177,7 @@ public abstract class OptionItem
     // Deprecated IsHidden function
     public virtual bool IsHiddenOn(CustomGameMode mode)
     {
-        return IsHidden || (GameMode != CustomGameMode.All && GameMode != mode);
+        return IsHidden || (HideOptionInFFA != CustomGameMode.All && HideOptionInFFA == mode) || (HideOptionInHnS != CustomGameMode.All && HideOptionInHnS == mode) || (GameMode != CustomGameMode.All && GameMode != mode);
     }
 
     public string ApplyFormat(string value)
@@ -178,12 +190,19 @@ public abstract class OptionItem
     {
         if (OptionBehaviour is not null and StringOption opt)
         {
+            if (IsVanillaText == true)
+            {
+            opt.TitleText.text = GetNameVanilla();
+            }
+            else
+            {
             opt.TitleText.text = GetName();
+            }
             opt.ValueText.text = GetString();
             opt.oldValue = opt.Value = CurrentValue;
         }
     }
-    public void SetValue(int afterValue, bool doSave, bool doSync = true)
+    public virtual void SetValue(int afterValue, bool doSave, bool doSync = true)
     {
         int beforeValue = CurrentValue;
         if (IsSingleValue)
@@ -266,15 +285,10 @@ public abstract class OptionItem
         }
     }
 
-    public class UpdateValueEventArgs : EventArgs
+    public class UpdateValueEventArgs(int beforeValue, int currentValue) : EventArgs
     {
-        public int CurrentValue { get; set; }
-        public int BeforeValue { get; set; }
-        public UpdateValueEventArgs(int beforeValue, int currentValue)
-        {
-            CurrentValue = currentValue;
-            BeforeValue = beforeValue;
-        }
+        public int CurrentValue { get; set; } = currentValue;
+        public int BeforeValue { get; set; } = beforeValue;
     }
 
     public const int NumPresets = 5;

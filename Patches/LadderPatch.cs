@@ -10,7 +10,7 @@ public class FallFromLadder
     private static int Chance => (Options.LadderDeathChance as StringOptionItem).GetChance();
     public static void Reset()
     {
-        TargetLadderData = new();
+        TargetLadderData = [];
     }
     public static void OnClimbLadder(PlayerPhysics player, Ladder source)
     {
@@ -57,7 +57,7 @@ public class FallFromLadder
                     player.MurderPlayer(player, ExtendedPlayerControl.ResultFlags);
                     Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Fall;
                     Main.PlayerStates[player.PlayerId].SetDead();
-                }, 0.05f, "LadderFallTask");
+                }, 0.05f, "Ladder Fall Task");
             }
         }
     }

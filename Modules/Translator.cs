@@ -17,9 +17,9 @@ public static class Translator
     public const string LANGUAGE_FOLDER_NAME = "Language";
     public static void Init()
     {
-        Logger.Info("加载语言文件...", "Translator");
+        Logger.Info("Loading language files...", "Translator");
         LoadLangs();
-        Logger.Info("加载语言文件成功", "Translator");
+        Logger.Info("Language file loaded successfully", "Translator");
     }
     public static void LoadLangs()
     {
@@ -31,7 +31,7 @@ public static class Translator
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();
             string[] jsonFileNames = GetJsonFileNames(assembly, jsonDirectory);
 
-            translateMaps = new Dictionary<string, Dictionary<int, string>>();
+            translateMaps = [];
 
 
             if (jsonFileNames.Length == 0)
@@ -42,31 +42,27 @@ public static class Translator
             foreach (string jsonFileName in jsonFileNames)
             {
                 // Read the JSON file content
-                using (Stream resourceStream = assembly.GetManifestResourceStream(jsonFileName))
+                using Stream resourceStream = assembly.GetManifestResourceStream(jsonFileName);
+                
+                if (resourceStream != null)
                 {
-                    if (resourceStream != null)
+                    using StreamReader reader = new(resourceStream);
+                    
+                    string jsonContent = reader.ReadToEnd();
+                    // Deserialize the JSON into a dictionary
+                    Dictionary<string, string> jsonDictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonContent);
+                    if (jsonDictionary.TryGetValue("LanguageID", out string languageIdObj) && int.TryParse(languageIdObj, out int languageId))
                     {
-                        using (StreamReader reader = new StreamReader(resourceStream))
-                        {
-                            string jsonContent = reader.ReadToEnd();
+                        // Remove the "LanguageID" entry
+                        jsonDictionary.Remove("LanguageID");
 
-                            // Deserialize the JSON into a dictionary
-                            Dictionary<string, string> jsonDictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonContent);
-                            if (jsonDictionary.TryGetValue("LanguageID", out string languageIdObj) && int.TryParse(languageIdObj, out int languageId))
-                            {
-                                // Remove the "LanguageID" entry
-                                jsonDictionary.Remove("LanguageID");
-
-                                // Handle the rest of the data and merge it into the resulting translation map
-                                MergeJsonIntoTranslationMap(translateMaps, languageId, jsonDictionary);
-                            }
-                            else
-                            {
-                                //Logger.Warn(jsonDictionary["HostText"], "Translator");
-                                Logger.Warn($"Invalid JSON format in {jsonFileName}: Missing or invalid 'LanguageID' field.", "Translator");
-                            }
-
-                        }
+                        // Handle the rest of the data and merge it into the resulting translation map
+                        MergeJsonIntoTranslationMap(translateMaps, languageId, jsonDictionary);
+                    }
+                    else
+                    {
+                        //Logger.Warn(jsonDictionary["HostText"], "Translator");
+                        Logger.Warn($"Invalid JSON format in {jsonFileName}: Missing or invalid 'LanguageID' field.", "Translator");
                     }
                 }
             }
@@ -90,7 +86,7 @@ public static class Translator
         {
             if (File.Exists(@$"./{LANGUAGE_FOLDER_NAME}/{lang}.dat"))
             {
-                UpdateCustomTranslation($"{lang}.dat", lang);
+                UpdateCustomTranslation($"{lang}.dat"/*, lang*/);
                 LoadCustomTranslation($"{lang}.dat", lang);
             }
         }
@@ -106,7 +102,7 @@ public static class Translator
                 // If the textString is not already in the translation map, add it
                 if (!translationMaps.ContainsKey(textString))
                 {
-                    translationMaps[textString] = new Dictionary<int, string>();
+                    translationMaps[textString] = [];
                 }
 
                 // Add or update the translation for the current id and textString
@@ -166,12 +162,24 @@ public static class Translator
     //    }
     //}
 
-    public static string GetString(string s, Dictionary<string, string> replacementDic = null, bool console = false)
+    public static string GetString(string s, Dictionary<string, string> replacementDic = null, bool console = false, bool showInvalid = false, bool vanilla = false)
     {
+        if (vanilla)
+        {
+            string nameToFind = s;
+            if (Enum.TryParse<StringNames>(nameToFind, out StringNames text))
+            {
+                return DestroyableSingleton<TranslationController>.Instance.GetString(text);
+            }
+            else
+            {
+                return showInvalid ? $"<INVALID:{nameToFind}> (vanillaStr)" : nameToFind;
+            }
+        }
         var langId = TranslationController.InstanceExists ? TranslationController.Instance.currentLanguage.languageID : SupportedLangs.English;
         if (console) langId = SupportedLangs.English;
         if (Main.ForceOwnLanguage.Value) langId = GetUserTrueLang();
-        string str = GetString(s, langId);
+        string str = GetString(s, langId, showInvalid);
         if (replacementDic != null)
             foreach (var rd in replacementDic)
             {
@@ -180,9 +188,9 @@ public static class Translator
         return str;
     }
 
-    public static string GetString(string str, SupportedLangs langId)
+    public static string GetString(string str, SupportedLangs langId, bool showInvalid = false)
     {
-        var res = $"<INVALID:{str}>";
+        var res = showInvalid ? $"<INVALID:{str}>" : str;
         try
         {
             if (translateMaps.TryGetValue(str, out var dic) && (!dic.TryGetValue((int)langId, out res) || res == "" || (langId is not SupportedLangs.SChinese and not SupportedLangs.TChinese && Regex.IsMatch(res, @"[\u4e00-\u9fa5]") && res == GetString(str, SupportedLangs.SChinese)))) //strに該当する&無効なlangIdかresが空
@@ -193,7 +201,7 @@ public static class Translator
             if (!translateMaps.ContainsKey(str)) //translateMapsにない場合、StringNamesにあれば取得する
             {
                 var stringNames = EnumHelper.GetAllValues<StringNames>().Where(x => x.ToString() == str).ToArray();
-                if (stringNames != null && stringNames.Any())
+                if (stringNames != null && stringNames.Length > 0)
                     res = GetString(stringNames.FirstOrDefault());
             }
         }
@@ -231,7 +239,7 @@ public static class Translator
             return SupportedLangs.English;
         }
     }
-    static void UpdateCustomTranslation(string filename, SupportedLangs lang)
+    static void UpdateCustomTranslation(string filename/*, SupportedLangs lang*/)
     {
         string path = @$"./{LANGUAGE_FOLDER_NAME}/{filename}";
         if (File.Exists(path))
@@ -239,7 +247,7 @@ public static class Translator
             Logger.Info("Updating Custom Translations", "UpdateCustomTranslation");
             try
             {
-                List<string> textStrings = new();
+                List<string> textStrings = [];
                 using (StreamReader reader = new(path, Encoding.GetEncoding("UTF-8")))
                 { 
                     string line;
@@ -262,11 +270,11 @@ public static class Translator
                 {
                     if (!textStrings.Contains(templateString)) sb.Append($"{templateString}:\n");
                 }
-                using (FileStream fileStream = new FileStream(path, FileMode.Append, FileAccess.Write))
-                using (StreamWriter writer = new StreamWriter(fileStream))
-                {
-                    writer.WriteLine(sb.ToString());
-                }
+
+                using FileStream fileStream = new(path, FileMode.Append, FileAccess.Write);
+                using StreamWriter writer = new(fileStream);
+
+                writer.WriteLine(sb.ToString());
 
             }
             catch (Exception e)
@@ -283,7 +291,7 @@ public static class Translator
             Logger.Info($"加载自定义翻译文件：{filename}", "LoadCustomTranslation");
             using StreamReader sr = new(path, Encoding.GetEncoding("UTF-8"));
             string text;
-            string[] tmp = Array.Empty<string>();
+            string[] tmp = [];
             while ((text = sr.ReadLine()) != null)
             {
                 tmp = text.Split(":");

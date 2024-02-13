@@ -12,7 +12,7 @@ namespace TOHE.Roles.Neutral;
 public static class Romantic
 {
     private static readonly int Id = 13500;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     private static readonly int MaxBetTimes = 1;
@@ -30,8 +30,8 @@ public static class Romantic
     public static OptionItem RuthlessKCD;
     public static OptionItem RuthlessCanVent;
 
-    private static Dictionary<byte, int> BetTimes = new();
-    public static Dictionary<byte, byte> BetPlayer = new();
+    private static Dictionary<byte, int> BetTimes = [];
+    public static Dictionary<byte, byte> BetPlayer = [];
 
     public static void SetupCustomOption()
     {
@@ -53,9 +53,9 @@ public static class Romantic
     }
     public static void Init()
     {
-        playerIdList = new();
-        BetTimes = new();
-        BetPlayer = new();
+        playerIdList = [];
+        BetTimes = [];
+        BetPlayer = [];
         isProtect = false;
         isPartnerProtected = false;
         IsEnable = false;
@@ -154,6 +154,7 @@ public static class Romantic
                 killer.RPCPlayCustomSound("Shield");
                 killer.Notify(GetString("RomanticProtectPartner"));
                 tpc.Notify(GetString("RomanticIsProtectingYou"));
+                
                 _ = new LateTask(() =>
                 {
                     if (!GameStates.IsInTask || !tpc.IsAlive()) return;
@@ -161,7 +162,7 @@ public static class Romantic
                     killer.Notify("ProtectingOver");
                     tpc.Notify("ProtectingOver");
                     killer.SetKillCooldown();
-                }, ProtectDuration.GetFloat());
+                }, ProtectDuration.GetFloat(), "Romantic Protecting Is Over");
             }
         }
 
@@ -232,16 +233,16 @@ public static class Romantic
 
 public static class VengefulRomantic
 {
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     public static bool hasKilledKiller = false;
-    public static Dictionary<byte, byte> VengefulTarget = new();
+    public static Dictionary<byte, byte> VengefulTarget = [];
 
     public static void Init()
     {
-        playerIdList = new();
-        VengefulTarget = new();
+        playerIdList = [];
+        VengefulTarget = [];
         hasKilledKiller = false;
         IsEnable = false;
     }
@@ -300,11 +301,11 @@ public static class VengefulRomantic
 
 public static class RuthlessRomantic
 {
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
     public static void Init()
     {
-        playerIdList = new();
+        playerIdList = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)

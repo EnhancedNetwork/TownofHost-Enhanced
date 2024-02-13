@@ -17,7 +17,7 @@ public static class Puppeteer
     private static readonly int Id = 4300;
     public static bool IsEnable = false;
 
-    public static Dictionary<byte, byte> PuppeteerList = new();
+    public static Dictionary<byte, byte> PuppeteerList = [];
     public static OptionItem PuppeteerDoubleKills;
 
     public static void SetupCustomOption()
@@ -28,7 +28,7 @@ public static class Puppeteer
     }
     public static void Init()
     {
-        PuppeteerList = new();
+        PuppeteerList = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -93,7 +93,7 @@ public static class Puppeteer
         else
         {
             var puppeteerPos = puppet.transform.position;
-            Dictionary<byte, float> targetDistance = new();
+            Dictionary<byte, float> targetDistance = [];
             float dis;
 
             foreach (var target in Main.AllAlivePlayerControls)
@@ -105,7 +105,7 @@ public static class Puppeteer
                 }
             }
 
-            if (targetDistance.Any())
+            if (targetDistance.Count > 0)
             {
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 var target = Utils.GetPlayerById(min.Key);

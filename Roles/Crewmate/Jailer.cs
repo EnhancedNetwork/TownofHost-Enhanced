@@ -8,13 +8,13 @@ namespace TOHE.Roles.Crewmate;
 public static class Jailer
 {
     private static readonly int Id = 10600;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
-    public static Dictionary<byte, byte> JailerTarget = new();
-    public static Dictionary<byte, int> JailerExeLimit = new();
-    public static Dictionary<byte, bool> JailerHasExe = new();
-    public static Dictionary<byte, bool> JailerDidVote = new();
+    public static Dictionary<byte, byte> JailerTarget = [];
+    public static Dictionary<byte, int> JailerExeLimit = [];
+    public static Dictionary<byte, bool> JailerHasExe = [];
+    public static Dictionary<byte, bool> JailerDidVote = [];
 
     public static OptionItem JailCooldown;
     public static OptionItem MaxExecution;
@@ -43,11 +43,11 @@ public static class Jailer
 
     public static void Init()
     {
-        playerIdList = new();
-        JailerExeLimit = new();
-        JailerTarget = new();
-        JailerHasExe = new();
-        JailerDidVote = new();
+        playerIdList = [];
+        JailerExeLimit = [];
+        JailerTarget = [];
+        JailerHasExe = [];
+        JailerDidVote = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -62,6 +62,13 @@ public static class Jailer
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
+    }
+    public static void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        JailerExeLimit.Remove(playerId);
+        JailerHasExe.Remove(playerId);
+        JailerDidVote.Remove(playerId);
     }
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Utils.GetPlayerById(id).IsAlive() ? JailCooldown.GetFloat() : 300f;
     public static string GetProgressText(byte playerId) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer).ShadeColor(0.25f), JailerExeLimit.TryGetValue(playerId, out var exeLimit) ? $"({exeLimit})" : "Invalid");
@@ -138,7 +145,7 @@ public static class Jailer
                 _ = new LateTask(() =>
                 {
                     Utils.SendMessage(GetString("JailedNotifyMsg"), targetId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
-                }, 0.3f, "JailerNotifyJailed");
+                }, 0.3f, "Jailer Notify Jailed");
         }
     }
 

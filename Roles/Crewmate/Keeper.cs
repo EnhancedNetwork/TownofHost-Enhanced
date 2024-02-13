@@ -3,18 +3,19 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using static TOHE.Translator;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
 public static class Keeper
 {
     private static readonly int Id = 26500;
-    //public static List<byte> playerIdList = new();
+    //public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
-    public static List<byte> keeperTarget = new();
-    public static Dictionary<byte, int> keeperUses = new();
-    public static Dictionary<byte, bool> DidVote = new();
+    public static List<byte> keeperTarget = [];
+    public static Dictionary<byte, int> keeperUses = [];
+    public static Dictionary<byte, bool> DidVote = [];
 
     public static OptionItem KeeperUsesOpt;
     public static OptionItem HideVote;
@@ -32,10 +33,10 @@ public static class Keeper
     }
     public static void Init()
     {
-        //playerIdList = new();
-        keeperTarget = new();
-        keeperUses = new();
-        DidVote = new();
+        //playerIdList = [];
+        keeperTarget = [];
+        keeperUses = [];
+        DidVote = [];
         IsEnable = false;
     }
 
@@ -118,20 +119,22 @@ public static class Keeper
         }
     }
 
-    public static void OnVote(PlayerControl voter, PlayerControl target)
+    public static bool OnVote(PlayerControl voter, PlayerControl target)
     {
-        if (!IsEnable) return;
-        if (voter == null || target == null) return;
-        if (!voter.Is(CustomRoles.Keeper)) return;
-        if (DidVote[voter.PlayerId]) return;
+        if (!IsEnable) return true;
+        if (voter == null || target == null) return true;
+        if (!voter.Is(CustomRoles.Keeper)) return true;
+        if (DidVote[voter.PlayerId]) return true;
         DidVote[voter.PlayerId] = true;
-        if (keeperTarget.Contains(target.PlayerId)) return;
-        if (keeperUses[voter.PlayerId] >= KeeperUsesOpt.GetInt()) return;
+        if (keeperTarget.Contains(target.PlayerId)) return true;
+        if (keeperUses[voter.PlayerId] >= KeeperUsesOpt.GetInt()) return true;
 
         keeperUses[voter.PlayerId]++;
         keeperTarget.Add(target.PlayerId);
         Logger.Info($"{voter.GetNameWithRole()} chosen as keeper target by {target.GetNameWithRole()}", "Keeper");
         SendRPC(type:0, keeperId: voter.PlayerId, targetId: target.PlayerId); // add keeperUses, KeeperTarget and DidVote
+        Utils.SendMessage(string.Format(GetString("KeeperProtect"), target.GetRealName()), voter.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Keeper), GetString("KeeperTitle")));
+        return false;
     }
 
     public static void AfterMeetingTasks()

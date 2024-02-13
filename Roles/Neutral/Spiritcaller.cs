@@ -30,7 +30,7 @@ namespace TOHE.Roles.Neutral
 
         public static void SetupCustomOption()
         {
-            SetupSingleRoleOptions(Id, TabGroup.OtherRoles, CustomRoles.Spiritcaller, 1, zeroOne: false);
+            SetupSingleRoleOptions(Id, TabGroup.OtherRoles, CustomRoles.Spiritcaller, 1);
             KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 60f, 1f), 30f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller])
                 .SetValueFormat(OptionFormat.Seconds);
             CanVent = BooleanOptionItem.Create(Id + 11, "CanVent", true, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritcaller]);
@@ -153,7 +153,7 @@ namespace TOHE.Roles.Neutral
                     ReportDeadBodyPatch.CanReport[target.PlayerId] = true;
                     target.MarkDirtySettings();
                     RPC.PlaySoundRPC(target.PlayerId, Sounds.TaskComplete);
-                }, SpiritFreezeTime.GetFloat());
+                }, SpiritFreezeTime.GetFloat(), "Spirit UnFreeze");
             }
         }
 

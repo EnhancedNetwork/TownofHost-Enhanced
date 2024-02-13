@@ -29,7 +29,7 @@ public static class RetributionistRevengeManager
         {
             if (playerCount <= Options.MinimumPlayersAliveToRetri.GetInt())
             {
-            if (pc.Data.IsDead)
+                if (!pc.IsAlive())
                 {
                     if (!isUI) Utils.SendMessage(GetString("RetributionistKillTooManyDead"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("RetributionistKillTooManyDead"));
@@ -40,14 +40,14 @@ public static class RetributionistRevengeManager
         }
         if (Options.CanOnlyRetributeWithTasksDone.GetBool())
         {
-            if (!pc.GetPlayerTaskState().IsTaskFinished && pc.Data.IsDead && !CopyCat.playerIdList.Contains(pc.PlayerId) && !Main.TasklessCrewmate.Contains(pc.PlayerId))
+            if (!pc.GetPlayerTaskState().IsTaskFinished && !pc.IsAlive() && !CopyCat.playerIdList.Contains(pc.PlayerId) && !Main.TasklessCrewmate.Contains(pc.PlayerId))
             {
                 if (!isUI) Utils.SendMessage(GetString("RetributionistKillDisable"), pc.PlayerId);
                 else pc.ShowPopUp(GetString("RetributionistKillDisable"));
                 return true;
             }
         }
-        if (!pc.Data.IsDead)
+        if (pc.IsAlive())
         {
             Utils.SendMessage(GetString("RetributionistAliveKill"), pc.PlayerId);
             return true;
@@ -90,7 +90,7 @@ public static class RetributionistRevengeManager
             return true;
         }
 
-        if (target == null || target.Data.IsDead)
+        if (target == null || !target.IsAlive())
         {
             if (!isUI) Utils.SendMessage(GetString("RetributionistKillDead"), pc.PlayerId);
             else pc.ShowPopUp(GetString("RetributionistKillDead"));
@@ -145,7 +145,7 @@ public static class RetributionistRevengeManager
 
             _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("RetributionistKillSucceed"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Retributionist), GetString("RetributionistRevengeTitle")), true); }, 0.6f, "Retributionist Kill");
 
-        }, 0.2f, "Retributionist Kill");
+        }, 0.2f, "Retributionist Start Kill");
         return true;
     }
 
@@ -161,7 +161,7 @@ public static class RetributionistRevengeManager
         RetributionistMsgCheck(pc, $"/ret {PlayerId}", true);
     }
 
-    private static void RetributionistOnClick(byte playerId, MeetingHud __instance)
+    private static void RetributionistOnClick(byte playerId /*, MeetingHud __instance*/)
     {
         Logger.Msg($"Click: ID {playerId}", "Retributionist UI");
         var pc = Utils.GetPlayerById(playerId);
@@ -193,7 +193,7 @@ public static class RetributionistRevengeManager
             renderer.sprite = CustomButton.Get("TargetIcon");
             PassiveButton button = targetBox.GetComponent<PassiveButton>();
             button.OnClick.RemoveAllListeners();
-            button.OnClick.AddListener((Action)(() => RetributionistOnClick(pva.TargetPlayerId, __instance)));
+            button.OnClick.AddListener((Action)(() => RetributionistOnClick(pva.TargetPlayerId/*, __instance*/)));
         }
     }
 }

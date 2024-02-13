@@ -11,10 +11,10 @@ namespace TOHE.Roles.Neutral;
 public static class Pirate
 {
     private static readonly int Id = 15000;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
     public static byte PirateTarget;
-    private static Dictionary<byte, bool> DuelDone = new();
+    private static Dictionary<byte, bool> DuelDone = [];
     private static int pirateChose, targetChose;
     public static int NumWin = 0;
 
@@ -37,9 +37,9 @@ public static class Pirate
 
     public static void Init()
     {
-        playerIdList = new();
+        playerIdList = [];
         PirateTarget = byte.MaxValue;
-        DuelDone = new();
+        DuelDone = [];
         pirateChose = -1;
         targetChose = -1;
         NumWin = 0;
@@ -184,7 +184,7 @@ public static class Pirate
                     if (!isUI) Utils.SendMessage(GetString("DuelAlreadyDone"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("DuelAlreadyDone"));
                     Logger.Msg("Duel attempted more than once", "Pirate");
-                }, 0.2f, "Pirate");
+                }, 0.2f, "Pirate Duel Already Done");
                 return true;
             }
 
@@ -211,7 +211,7 @@ public static class Pirate
                 {
                     if (!isUI) Utils.SendMessage(String.Format(GetString("DuelDone"), rpsOption), pc.PlayerId);
                     else pc.ShowPopUp(String.Format(GetString("DuelDone"), rpsOption));
-                }, 0.2f, "Pirate");
+                }, 0.2f, "Pirate Duel Done");
                 DuelDone[pc.PlayerId] = true;
                 return true;
 
@@ -257,7 +257,7 @@ public static class Pirate
     public static bool CheckCommond(ref string msg, string command)
     {
         var comList = command.Split('|');
-        for (int i = 0; i < comList.Count(); i++)
+        for (int i = 0; i < comList.Length; i++)
         {
             //if (exact)
             //{
@@ -281,7 +281,7 @@ public static class Pirate
         List<CustomRoles> roles = CustomRolesHelper.AllRoles.Where(x => x is not CustomRoles.NotAssigned).ToList();
         var rd = IRandom.Instance;
         string msg;
-        string[] command = new string[] { "duel", "rps" };
+        string[] command = ["duel", "rps"];
         for (int i = 0; i < 20; i++)
         {
             msg = "/";

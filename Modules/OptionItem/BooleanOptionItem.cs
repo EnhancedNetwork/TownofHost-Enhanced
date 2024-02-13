@@ -1,18 +1,13 @@
 namespace TOHE;
 
-public class BooleanOptionItem : OptionItem
+public class BooleanOptionItem(int id, string name, bool defaultValue, TabGroup tab, bool isSingleValue, bool vanilla) : OptionItem(id, name, defaultValue ? 1 : 0, tab, isSingleValue, vanillaStr:vanilla)
 {
     public const string TEXT_true = "ColoredOn";
     public const string TEXT_false = "ColoredOff";
 
-    // Constructor
-    public BooleanOptionItem(int id, string name, bool defaultValue, TabGroup tab, bool isSingleValue)
-    : base(id, name, defaultValue ? 1 : 0, tab, isSingleValue)
+    public static BooleanOptionItem Create(int id, string name, bool defaultValue, TabGroup tab, bool isSingleValue, bool vanillaText = false)
     {
-    }
-    public static BooleanOptionItem Create(int id, string name, bool defaultValue, TabGroup tab, bool isSingleValue)
-    {
-        return new BooleanOptionItem(id, name, defaultValue, tab, isSingleValue);
+        return new BooleanOptionItem(id, name, defaultValue, tab, isSingleValue, vanillaText);
     }
 
     // Getter

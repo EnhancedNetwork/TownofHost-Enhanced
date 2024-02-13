@@ -15,16 +15,16 @@ namespace TOHE;
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnGameEnd))]
 class EndGamePatch
 {
-    public static Dictionary<byte, string> SummaryText = new();
+    public static Dictionary<byte, string> SummaryText = [];
     public static string KillLog = "";
     public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ref EndGameResult endGameResult)
     {
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         GameStates.InGame = false;
 
-        Logger.Info("-----------游戏结束-----------", "Phase");
+        Logger.Info("-----------Game over-----------", "Phase");
         if (!GameStates.IsModHost) return;
-        SummaryText = new();
+        if (GameStates.IsHideNSeek) return;
+        SummaryText = [];
         foreach (var id in Main.PlayerStates.Keys.ToArray())
         {
             if (Doppelganger.IsEnable)
@@ -67,7 +67,9 @@ class EndGamePatch
         KillLog = sb.ToString();
         if (!KillLog.Contains('\n')) KillLog = "";
 
-        Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
+        if (GameStates.IsNormalGame)
+            Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
+        
         //winnerListリセット
         TempData.winners = new Il2CppSystem.Collections.Generic.List<WinningPlayerData>();
         var winner = new List<PlayerControl>();
@@ -80,8 +82,8 @@ class EndGamePatch
             winner.AddRange(Main.AllPlayerControls.Where(p => p.Is(team) && !winner.Contains(p)));
         }
 
-        Main.winnerNameList = new();
-        Main.winnerList = new();
+        Main.winnerNameList = [];
+        Main.winnerList = [];
         foreach (var pc in winner.ToArray())
         {
             if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw && pc.Is(CustomRoles.GM)) continue;
@@ -91,12 +93,12 @@ class EndGamePatch
             Main.winnerNameList.Add(pc.GetRealName());
         }
 
-        BountyHunter.ChangeTimer = new();
-        Main.isDoused = new Dictionary<(byte, byte), bool>();
-        Main.isDraw = new Dictionary<(byte, byte), bool>();
-        Main.isRevealed = new Dictionary<(byte, byte), bool>();
-        Main.PlayerQuitTimes = new();
-        ChatManager.ChatSentBySystem = new();
+        BountyHunter.ChangeTimer = [];
+        Main.isDoused = [];
+        Main.isDraw = [];
+        Main.isRevealed = [];
+        Main.PlayerQuitTimes = [];
+        ChatManager.ChatSentBySystem = [];
 
         Main.VisibleTasksCount = false;
         if (AmongUsClient.Instance.AmHost)
@@ -116,7 +118,8 @@ class SetEverythingUpPatch
 
     public static void Postfix(EndGameManager __instance)
     {
-        if (!Main.playerVersion.ContainsKey(0)) return;
+        if (GameStates.IsHideNSeek) return;
+        if (!Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId)) return;
         //#######################################
         //          ==勝利陣営表示==
         //#######################################
@@ -287,7 +290,7 @@ class SetEverythingUpPatch
         }
         if (Options.CurrentGameMode == CustomGameMode.FFA)
         {
-            List<(int, byte)> list = new();
+            List<(int, byte)> list = [];
             foreach (byte id in cloneRoles.ToArray())
             {
                 list.Add((FFAManager.GetRankOfScore(id), id));

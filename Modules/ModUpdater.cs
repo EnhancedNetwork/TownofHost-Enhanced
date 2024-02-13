@@ -3,15 +3,11 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using System.Globalization;
 using static TOHE.Translator;
 using Newtonsoft.Json.Linq;
 using System.IO.Compression;
-using System.Collections.Generic;
 
 namespace TOHE;
 
@@ -20,7 +16,7 @@ public class ModUpdater
 {
     //private static readonly string URL_2018k = "http://api.tohre.dev";
     private static readonly string URL_Github = "https://api.github.com/repos/0xDrMoe/TownofHost-Enhanced";
-    public static readonly string downloadTest = "https://github.com/Pietrodjaowjao/TOHEN-Contributions/releases/download/v123123123/TOHE.dll";
+    //public static readonly string downloadTest = "https://github.com/Pietrodjaowjao/TOHEN-Contributions/releases/download/v123123123/TOHE.dll";
     public static bool hasUpdate = false;
     public static bool hasOutdate = false;
     public static bool forceUpdate = false;
@@ -34,7 +30,7 @@ public class ModUpdater
 
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPrefix]
     [HarmonyPriority(2)]
-    public static void Start_Prefix(MainMenuManager __instance)
+    public static void Start_Prefix(/*MainMenuManager __instance*/)
     {
         NewVersionCheck();
         DeleteOldFiles();
@@ -43,9 +39,8 @@ public class ModUpdater
         InfoPopup.TextAreaTMP.GetComponent<RectTransform>().sizeDelta = new(2.5f, 2f);
         if (!isChecked)
         {
-            var done = false;
-            done = CheckReleaseFromGithub(Main.BetaBuildURL.Value != "").GetAwaiter().GetResult();
-            Logger.Warn("检查更新结果: " + done, "CheckRelease");
+            bool done = CheckReleaseFromGithub(Main.BetaBuildURL.Value != "").GetAwaiter().GetResult();
+            Logger.Warn("Check for updated results: " + done, "CheckRelease");
             Logger.Info("hasupdate: " + hasUpdate, "CheckRelease");
             Logger.Info("forceupdate: " + forceUpdate, "CheckRelease");
             Logger.Info("downloadUrl: " + downloadUrl, "CheckRelease");
@@ -57,7 +52,7 @@ public class ModUpdater
     public static string Get(string url)
     {
         string result = "";
-        HttpClient req = new HttpClient();
+        HttpClient req = new();
         var res = req.GetAsync(url).Result;
         Stream stream = res.Content.ReadAsStreamAsync().Result;
         try
@@ -74,7 +69,7 @@ public class ModUpdater
     }
     public static async Task<bool> CheckReleaseFromGithub(bool beta = false)
     {
-        Logger.Warn("开始从Github检查更新", "CheckRelease");
+        Logger.Warn("Start checking for updates from Github", "CheckRelease");
         string url = URL_Github + "/releases/latest";
         try
         {
@@ -85,7 +80,7 @@ public class ModUpdater
                 using var response = await client.GetAsync(new Uri(url), HttpCompletionOption.ResponseContentRead);
                 if (!response.IsSuccessStatusCode || response.Content == null)
                 {
-                    Logger.Error($"状态码: {response.StatusCode}", "CheckRelease");
+                    Logger.Error($"Status Code: {response.StatusCode}", "CheckRelease");
                     return false;
                 }
                 result = await response.Content.ReadAsStringAsync();
@@ -124,7 +119,7 @@ public class ModUpdater
 
             if (downloadUrl == null || downloadUrl == "")
             {
-                Logger.Error("获取下载地址失败", "CheckRelease");
+                Logger.Error("Failed to get download address", "CheckRelease");
                 return false;
             }
             isChecked = true;
@@ -133,7 +128,7 @@ public class ModUpdater
         catch (Exception ex)
         {
             isBroken = true;
-            Logger.Error($"发布检查失败\n{ex}", "CheckRelease", false);
+            Logger.Error($"Publishing Check Failure\n{ex}", "CheckRelease", false);
             return false;
         }
         return true;
@@ -143,11 +138,11 @@ public class ModUpdater
         ShowPopup(GetString("updatePleaseWait"), StringNames.Cancel, true, false);
         if (!github)
         {
-        _ = DownloadDLL(url);
+            _ = DownloadDLL(url);
         }
         else
         {
-        _ = DownloadDLLGithub(url);
+            _ = DownloadDLLGithub(url);
         }
         return;
     }
@@ -160,7 +155,7 @@ public class ModUpdater
             {
                 DirectoryInfo di = new("TOH_DATA");
                 di.Delete(true);
-                Logger.Warn("删除旧数据：TOH_DATA", "NewVersionCheck");
+                Logger.Warn("Deleting old data：TOH_DATA", "NewVersionCheck");
             }
         }
         catch (Exception ex)
@@ -172,22 +167,24 @@ public class ModUpdater
     }
     public static void DeleteOldFiles()
     {
+        string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        string searchPattern = "TOHE.dll*";
+        string[] files = Directory.GetFiles(path, searchPattern);
         try
         {
-            foreach (var path in Directory.EnumerateFiles(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "*.*"))
+            foreach (string filePath in files)
             {
-                if (path.EndsWith(Path.GetFileName(Assembly.GetExecutingAssembly().Location))) continue;
-                if (path.EndsWith("TOHE.dll")) continue;
-                if (!path.EndsWith(".dll")) continue;
-                Logger.Info($"{Path.GetFileName(path)} 已删除", "DeleteOldFiles");
-                File.Delete(path);
+                if (Path.GetFileName(filePath).EndsWith(".bak") || Path.GetFileName(filePath).EndsWith(".temp"))
+                {
+                    Logger.Info($"{filePath} will be deleted", "DeleteOldFiles");
+                    File.Delete(filePath);
+                }
             }
         }
         catch (Exception e)
         {
-            Logger.Error($"清除更新残留失败\n{e}", "DeleteOldFiles");
+            Logger.Error($"Failed to clear update residue\n{e}", "DeleteOldFiles");
         }
-        return;
     }
     private static readonly object downloadLock = new();
     public static async Task<bool> DownloadDLL(string url)
@@ -205,7 +202,7 @@ public class ModUpdater
             HttpResponseMessage response;
             var downloadCallBack = DownloadCallBack;
 
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = new())
             {
                 response = await client.GetAsync(url);
             }
@@ -267,7 +264,7 @@ public class ModUpdater
             HttpResponseMessage response;
             var downloadCallBack = DownloadCallBack;
 
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = new())
             {
                 response = await client.GetAsync(url);
             }

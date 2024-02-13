@@ -14,7 +14,7 @@ namespace TOHE.Roles.Crewmate;
 public static class Judge
 {
     private static readonly int Id = 10700;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     public static OptionItem TrialLimitPerMeeting;
@@ -51,8 +51,8 @@ public static class Judge
     }
     public static void Init()
     {
-        playerIdList = new();
-        TrialLimit = new();
+        playerIdList = [];
+        TrialLimit = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -60,6 +60,11 @@ public static class Judge
         playerIdList.Add(playerId);
         TrialLimit.Add(playerId, TrialLimitPerMeeting.GetInt());
         IsEnable = true;
+    }
+    public static void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        TrialLimit.Remove(playerId);
     }
     public static void OnReportDeadBody()
     {
@@ -78,8 +83,8 @@ public static class Judge
 
         int operate = 0; // 1:ID 2:猜测
         msg = msg.ToLower().TrimStart().TrimEnd();
-        if (CheckCommond(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id")) operate = 1;
-        else if (CheckCommond(ref msg, "sp|jj|tl|trial|审判|判|审", false)) operate = 2;
+        if (CheckCommond(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id||編號|玩家編號")) operate = 1;
+        else if (CheckCommond(ref msg, "sp|jj|tl|trial|审判|判|审|審判|審", false)) operate = 2;
         else return false;
 
         if (!pc.IsAlive())
@@ -265,7 +270,7 @@ public static class Judge
         TrialMsg(pc, $"/tl {PlayerId}", true);
     }
 
-    private static void JudgeOnClick(byte playerId, MeetingHud __instance)
+    private static void JudgeOnClick(byte playerId /*, MeetingHud __instance*/)
     {
         Logger.Msg($"Click: ID {playerId}", "Judge UI");
         var pc = Utils.GetPlayerById(playerId);
@@ -297,7 +302,7 @@ public static class Judge
             renderer.sprite = CustomButton.Get("JudgeIcon");
             PassiveButton button = targetBox.GetComponent<PassiveButton>();
             button.OnClick.RemoveAllListeners();
-            button.OnClick.AddListener((Action)(() => JudgeOnClick(pva.TargetPlayerId, __instance)));
+            button.OnClick.AddListener((Action)(() => JudgeOnClick(pva.TargetPlayerId/*, __instance*/)));
         }
     }
 }

@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.Crewmate;
+using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -12,7 +14,7 @@ namespace TOHE;
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.FixedUpdate))]
 class ShipFixedUpdatePatch
 {
-    public static void Postfix(ShipStatus __instance)
+    public static void Postfix(/*ShipStatus __instance*/)
     {
         //Above here, all of us will execute
         if (!AmongUsClient.Instance.AmHost) return;
@@ -36,6 +38,8 @@ public static class MessageReaderUpdateSystemPatch
     public static bool Prefix(ShipStatus __instance, [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
     {
         if (systemType is SystemTypes.Ventilation) return true;
+        if (GameStates.IsHideNSeek) return true;
+
         var amount = MessageReader.Get(reader).ReadByte();
         if (EAC.RpcUpdateSystemCheck(player, systemType, amount))
         {
@@ -48,6 +52,7 @@ public static class MessageReaderUpdateSystemPatch
     public static void Postfix(ShipStatus __instance, [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
     {
         if (systemType is SystemTypes.Ventilation) return;
+        if (GameStates.IsHideNSeek) return;
 
         RepairSystemPatch.Postfix(__instance, systemType, player, MessageReader.Get(reader).ReadByte());
     }
@@ -69,13 +74,17 @@ class RepairSystemPatch
 
         if (!AmongUsClient.Instance.AmHost) return true;
 
+        // ###### Can Be Sabotage Started? ######
         if ((Options.CurrentGameMode == CustomGameMode.FFA) && systemType == SystemTypes.Sabotage) return false;
 
+        if (Options.DisableSabotage.GetBool() && systemType == SystemTypes.Sabotage) return false;
 
-        if (Options.DisableSabotage.GetBool() && systemType == SystemTypes.Sabotage)
-        {
-            return false;
-        }
+
+        // ###### Roles/Add-ons During Sabotages ######
+
+        if (Quizmaster.IsEnable)
+            Quizmaster.OnSabotageCall(systemType);
+
 
         if (player.Is(CustomRoles.Fool) && !Main.MeetingIsStarted && 
             systemType != SystemTypes.Sabotage &&
@@ -90,21 +99,19 @@ class RepairSystemPatch
             return false;
         }
 
+
         // Fast fix critical saboatge
         switch (player.GetCustomRole())
         {
             case CustomRoles.SabotageMaster:
-                SabotageMaster.RepairSystem(__instance, systemType, amount, player.PlayerId);
+                SabotageMaster.UpdateSystem(__instance, systemType, amount, player.PlayerId);
                 break;
-            //case CustomRoles.Repairman:
-            //    Repairman.RepairSystem(__instance, systemType, amount);
-            //    break;
             case CustomRoles.Alchemist when Alchemist.FixNextSabo:
-                Alchemist.RepairSystem(systemType, amount);
+                Alchemist.UpdateSystem(systemType, amount);
                 break;
         }
         if (player.Is(CustomRoles.Repairman))
-            Repairman.RepairSystem(__instance, systemType, amount);
+            Repairman.UpdateSystem(__instance, systemType, amount, player.PlayerId);
 
 
         if (player.Is(CustomRoles.Unlucky) && player.IsAlive()
@@ -141,9 +148,6 @@ class RepairSystemPatch
                         Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()} instant-fix-lights", "SwitchSystem");
                         SabotageMaster.SwitchSystemRepair(SwitchSystem, amount, player.PlayerId);
                         break;
-                    //case CustomRoles.Repairman:
-                    //    Repairman.SwitchSystemRepair(SwitchSystem, amount);
-                    //    break;
                     case CustomRoles.Alchemist when Alchemist.FixNextSabo:
                         Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()} instant-fix-lights", "SwitchSystem");
                         SwitchSystem.ActualSwitches = 0;
@@ -163,7 +167,7 @@ class RepairSystemPatch
         {
             Ids.Add(i);
         }
-        CheckAndOpenDoors(__instance, amount, Ids.ToArray());
+        CheckAndOpenDoors(__instance, amount, [.. Ids]);
     }
     private static void CheckAndOpenDoors(ShipStatus __instance, int amount, params int[] DoorIds)
     {
@@ -177,7 +181,7 @@ class RepairSystemPatch
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.CloseDoorsOfType))]
 class CloseDoorsPatch
 {
-    public static bool Prefix(ShipStatus __instance)
+    public static bool Prefix(/*ShipStatus __instance*/)
     {
         bool allow;
         if (Options.CurrentGameMode == CustomGameMode.FFA || Options.DisableCloseDoor.GetBool()) allow = false;
@@ -215,6 +219,8 @@ class StartMeetingPatch
 {
     public static void Prefix(ShipStatus __instance, PlayerControl reporter, GameData.PlayerInfo target)
     {
+        if (GameStates.IsHideNSeek) return;
+
         MeetingStates.ReportTarget = target;
         MeetingStates.DeadBodies = UnityEngine.Object.FindObjectsOfType<DeadBody>();
     }

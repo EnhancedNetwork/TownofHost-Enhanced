@@ -1,10 +1,9 @@
+using System.Linq;
 using AmongUs.GameOptions;
 using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem.Linq;
 using InnerNet;
-using System;
-using System.Linq;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
@@ -13,27 +12,30 @@ using Mathf = UnityEngine.Mathf;
 
 namespace TOHE.Modules;
 
-public class PlayerGameOptionsSender : GameOptionsSender
+public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
 {
     public static void SetDirty(PlayerControl player) => SetDirty(player.PlayerId);
-    public static void SetDirty(byte playerId) =>
-        AllSenders.OfType<PlayerGameOptionsSender>()
-        .Where(sender => sender.player.PlayerId == playerId)
-        .ToList().ForEach(sender => sender.SetDirty());
-    public static void SetDirtyToAll() =>
-        AllSenders.OfType<PlayerGameOptionsSender>()
-        .ToList().ForEach(sender => sender.SetDirty());
+    public static void SetDirty(byte playerId)
+    {
+        foreach (var sender in AllSenders.OfType<PlayerGameOptionsSender>().Where(sender => sender.player.PlayerId == playerId).ToArray())
+        {
+            sender.SetDirty();
+        }
+    }
+    public static void SetDirtyToAll()
+    {
+        foreach (var sender in AllSenders.OfType<PlayerGameOptionsSender>().ToArray())
+        {
+            sender.SetDirty();
+        }
+    }
 
-    public override IGameOptions BasedGameOptions =>
-            Main.RealOptionsData.Restore(new NormalGameOptionsV07(new UnityLogger().Cast<ILogger>()).Cast<IGameOptions>());
+    public override IGameOptions BasedGameOptions => GameStates.IsNormalGame ?
+            Main.RealOptionsData.Restore(new NormalGameOptionsV07(new UnityLogger().Cast<ILogger>()).Cast<IGameOptions>()) : Main.RealOptionsData.Restore(new HideNSeekGameOptionsV07(new UnityLogger().Cast<ILogger>()).Cast<IGameOptions>());
     public override bool IsDirty { get; protected set; }
 
-    public PlayerControl player;
+    public PlayerControl player = player;
 
-    public PlayerGameOptionsSender(PlayerControl player)
-    {
-        this.player = player;
-    }
     public void SetDirty() => IsDirty = true;
 
     public override void SendGameOptions()
@@ -55,7 +57,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
     {
         for (byte i = 0; i < GameManager.Instance.LogicComponents.Count; i++)
         {
-            if (GameManager.Instance.LogicComponents[(Index)i].TryCast<LogicOptions>(out _))
+            if (GameManager.Instance.LogicComponents[i].TryCast<LogicOptions>(out _))
             {
                 SendOptionsArray(optionArray, i, player.GetClientId());
             }
@@ -71,10 +73,12 @@ public class PlayerGameOptionsSender : GameOptionsSender
     }
     public override IGameOptions BuildGameOptions()
     {
-        if (Main.RealOptionsData == null) Main.RealOptionsData = new OptionBackupData(GameOptionsManager.Instance.CurrentGameOptions);
+        Main.RealOptionsData ??= new OptionBackupData(GameOptionsManager.Instance.CurrentGameOptions);
 
         var opt = BasedGameOptions;
-        AURoleOptions.SetOpt(opt);
+        if (GameStates.IsNormalGame) AURoleOptions.SetOpt(opt);
+        else if (GameStates.IsHideNSeek) return opt;
+
         var state = Main.PlayerStates[player.PlayerId];
         opt.BlackOut(state.IsBlackOut);
 
@@ -130,6 +134,12 @@ public class PlayerGameOptionsSender : GameOptionsSender
             case CustomRoles.Alchemist:
                 AURoleOptions.EngineerCooldown = Alchemist.VentCooldown.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 1;
+                if (Alchemist.VisionPotionActive)
+                {
+                    opt.SetVisionV2();
+                    if (Utils.IsActive(SystemTypes.Electrical)) opt.SetFloat(FloatOptionNames.CrewLightMod, Alchemist.VisionOnLightsOut.GetFloat() * 5);
+                    else opt.SetFloat(FloatOptionNames.CrewLightMod, Alchemist.Vision.GetFloat());
+                }
                 break;
             case CustomRoles.ShapeMaster:
                 AURoleOptions.ShapeshifterCooldown = 1f;
@@ -205,13 +215,13 @@ public class PlayerGameOptionsSender : GameOptionsSender
                     : 300f;
                 AURoleOptions.EngineerInVentMaxTime = 1;
                 break;
-            case CustomRoles.Paranoia:
+         /* case CustomRoles.Paranoia:
                 AURoleOptions.EngineerCooldown =
                     !Main.ParaUsedButtonCount.TryGetValue(player.PlayerId, out var count2) || count2 < Options.ParanoiaNumOfUseButton.GetInt()
                     ? Options.ParanoiaVentCooldown.GetFloat()
                     : 300f;
                 AURoleOptions.EngineerInVentMaxTime = 1;
-                break;
+                break; */
          /* case CustomRoles.Mare:
                 Mare.ApplyGameOptions(player.PlayerId);
                 break; */
@@ -259,6 +269,9 @@ public class PlayerGameOptionsSender : GameOptionsSender
             case CustomRoles.Poisoner:
                 Poisoner.ApplyGameOptions(opt);
                 break;
+            case CustomRoles.PlagueDoctor:
+                PlagueDoctor.ApplyGameOptions(opt);
+                break;
             case CustomRoles.Bandit:
                 Bandit.ApplyGameOptions(opt);
                 break;
@@ -277,10 +290,19 @@ public class PlayerGameOptionsSender : GameOptionsSender
             case CustomRoles.Lighter:
                 AURoleOptions.EngineerInVentMaxTime = 1;
                 AURoleOptions.EngineerCooldown = Options.LighterSkillCooldown.GetFloat();
+                if (Main.Lighter.Count > 0)
+                {
+                    opt.SetVision(false);
+                    if (Utils.IsActive(SystemTypes.Electrical)) opt.SetFloat(FloatOptionNames.CrewLightMod, Options.LighterVisionOnLightsOut.GetFloat() * 5);
+                    else opt.SetFloat(FloatOptionNames.CrewLightMod, Options.LighterVisionNormal.GetFloat());
+                }
                 break;
             case CustomRoles.TimeMaster:
                 AURoleOptions.EngineerCooldown = Options.TimeMasterSkillCooldown.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 1;
+                break;
+            case CustomRoles.Penguin:
+                Penguin.ApplyGameOptions();
                 break;
             case CustomRoles.Bastion:
                 AURoleOptions.EngineerInVentMaxTime = 1;
@@ -450,6 +472,9 @@ public class PlayerGameOptionsSender : GameOptionsSender
             case CustomRoles.Undertaker:
                 Undertaker.ApplyGameOptions();
                 break;
+            case CustomRoles.RiftMaker:
+                RiftMaker.ApplyGameOptions();
+                break;
             case CustomRoles.Spiritcaller:
                 opt.SetVision(Spiritcaller.ImpostorVision.GetBool());
                 break;
@@ -462,67 +487,54 @@ public class PlayerGameOptionsSender : GameOptionsSender
             default:
                 opt.SetVision(false);
                 break;
-
         }
 
-        if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Bewilder) && !x.IsAlive() && (x.GetRealKiller()?.PlayerId == player.PlayerId && Options.KillerGetBewilderVision.GetBool()) && !x.Is(CustomRoles.Hangman)))
+        //if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Kamikaze) && !x.IsAlive()))
+        //{
+        //Kamikaze.CheckKamiDeath = true;
+        //} else 
+        //{
+        //Kamikaze.CheckKamiDeath = false;
+        //}
+
+        // If the Bewilder was killed, his killer will receive his vision
+        if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Bewilder) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId && Options.KillerGetBewilderVision.GetBool() && !x.Is(CustomRoles.Hangman)))
         {
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, Options.BewilderVision.GetFloat());
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.BewilderVision.GetFloat());
         }
+
         if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Ghoul) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId))
         {
             Main.KillGhoul.Add(player.PlayerId);
         }
-        if (
-            (Main.GrenadierBlinding.Any() &&
+
+        // Grenadier or Mad Grenadier enter the vent
+        if ((Main.GrenadierBlinding.Count > 0 &&
             (player.GetCustomRole().IsImpostor() ||
             (player.GetCustomRole().IsNeutral() && Options.GrenadierCanAffectNeutral.GetBool()))
-            ) || (
-            Main.MadGrenadierBlinding.Any() && !player.GetCustomRole().IsImpostorTeam() && !player.Is(CustomRoles.Madmate))
-            )
-        {
-            {
-                opt.SetVision(false);
-                opt.SetFloat(FloatOptionNames.CrewLightMod, Options.GrenadierCauseVision.GetFloat());
-                opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.GrenadierCauseVision.GetFloat());
-            }
-        }
-
-        if (player.GetCustomRole() == CustomRoles.Alchemist && Alchemist.VisionPotionActive)
-        {
-            opt.SetVisionV2();
-            if (Utils.IsActive(SystemTypes.Electrical)) opt.SetFloat(FloatOptionNames.CrewLightMod, Alchemist.VisionOnLightsOut.GetFloat() * 5);
-            else opt.SetFloat(FloatOptionNames.CrewLightMod, Alchemist.Vision.GetFloat());
-        }
-
-        if (Main.Lighter.Any() && player.GetCustomRole() == CustomRoles.Lighter)
+            ) 
+            || (Main.MadGrenadierBlinding.Count > 0 && !player.GetCustomRole().IsImpostorTeam() && !player.Is(CustomRoles.Madmate)))
         {
             opt.SetVision(false);
-            if (Utils.IsActive(SystemTypes.Electrical)) opt.SetFloat(FloatOptionNames.CrewLightMod, Options.LighterVisionOnLightsOut.GetFloat() * 5);
-            else opt.SetFloat(FloatOptionNames.CrewLightMod, Options.LighterVisionNormal.GetFloat());
+            opt.SetFloat(FloatOptionNames.CrewLightMod, Options.GrenadierCauseVision.GetFloat());
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.GrenadierCauseVision.GetFloat());
         }
 
-        if (player.Is(CustomRoles.Mare))
+      /*if ((Main.FlashbangInProtect.Count >= 1 && Main.ForFlashbang.Contains(player.PlayerId) && (!player.GetCustomRole().IsCrewmate())))  
         {
-            Mare.ApplyGameOptions(player.PlayerId);
-        }
+            opt.SetVision(false);
+            opt.SetFloat(FloatOptionNames.CrewLightMod, Options.FlashbangVision.GetFloat());
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.FlashbangVision.GetFloat());
+        }*/
 
-   /*     if ((Main.FlashbangInProtect.Count >= 1 && Main.ForFlashbang.Contains(player.PlayerId) && (!player.GetCustomRole().IsCrewmate())))  
-        {
-                opt.SetVision(false);
-                opt.SetFloat(FloatOptionNames.CrewLightMod, Options.FlashbangVision.GetFloat());
-                opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.FlashbangVision.GetFloat());
-        } */
+        if (Dazzler.IsEnable) Dazzler.SetDazzled(player, opt);
+        if (Deathpact.IsEnable) Deathpact.SetDeathpactVision(player, opt);
+        if (Spiritcaller.IsEnable) Spiritcaller.ReduceVision(opt, player);
+        if (Pitfall.IsEnable) Pitfall.SetPitfallTrapVision(opt, player);
 
-        Dazzler.SetDazzled(player, opt);
-        Deathpact.SetDeathpactVision(player, opt);
-
-        Spiritcaller.ReduceVision(opt, player);
-        Pitfall.SetPitfallTrapVision(opt, player);
-
-        foreach (var subRole in Main.PlayerStates[player.PlayerId].SubRoles.ToArray())
+        foreach (var subRole in player.GetCustomSubRoles().ToArray())
         {
             switch (subRole)
             {
@@ -530,34 +542,55 @@ public class PlayerGameOptionsSender : GameOptionsSender
                     opt.SetBool(BoolOptionNames.AnonymousVotes, false);
                     break;
                 case CustomRoles.Flash:
-                    Flash.SetSpeed(player.PlayerId);
+                    Flash.SetSpeed(player.PlayerId, false);
                     break;
                 case CustomRoles.Torch:
                     if (!Utils.IsActive(SystemTypes.Electrical))
-                    opt.SetVision(true);
+                        opt.SetVision(true);
                     opt.SetFloat(FloatOptionNames.CrewLightMod, Options.TorchVision.GetFloat());
                     opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.TorchVision.GetFloat());
+
                     if (Utils.IsActive(SystemTypes.Electrical) && !Options.TorchAffectedByLights.GetBool())
-                    opt.SetVision(true);
+                        opt.SetVision(true);
                     opt.SetFloat(FloatOptionNames.CrewLightMod, Options.TorchVision.GetFloat() * 5);
                     opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.TorchVision.GetFloat() * 5);
+                    break;
+                case CustomRoles.Tired when Tired.playerIdList.ContainsKey(player.PlayerId):
+                        if (Tired.playerIdList[player.PlayerId])
+                        {
+                            //Logger.Info($"{player.GetNameWithRole()} Succesfully decreased vision", "Tired");
+                            opt.SetVision(false);
+                            opt.SetFloat(FloatOptionNames.CrewLightMod, Tired.SetVision.GetFloat());
+                            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Tired.SetVision.GetFloat());
+                            break;
+                        }
+                        else
+                        {
+                            opt.SetVision(false);
+                            opt.SetFloat(FloatOptionNames.CrewLightMod, Main.DefaultCrewmateVision);
+                            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Main.DefaultImpostorVision);
+                        }
+                    
                     break;
                 case CustomRoles.Bewilder:
                     opt.SetVision(false);
                     opt.SetFloat(FloatOptionNames.CrewLightMod, Options.BewilderVision.GetFloat());
                     opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.BewilderVision.GetFloat());
                     break;
-                //case CustomRoles.Sunglasses:
-                //    opt.SetVision(false);
-                //    opt.SetFloat(FloatOptionNames.CrewLightMod, Options.SunglassesVision.GetFloat());
-                //    opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.SunglassesVision.GetFloat());
-                //    break;
                 case CustomRoles.Reach:
                     opt.SetInt(Int32OptionNames.KillDistance, 2);
                     break;
                 case CustomRoles.Madmate:
                     opt.SetVision(Options.MadmateHasImpostorVision.GetBool());
                     break;
+                case CustomRoles.Mare:
+                    Mare.ApplyGameOptions(player.PlayerId);
+                    break;
+                //case CustomRoles.Sunglasses:
+                    //opt.SetVision(false);
+                    //opt.SetFloat(FloatOptionNames.CrewLightMod, Options.SunglassesVision.GetFloat());
+                    //opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.SunglassesVision.GetFloat());
+                    //break;
             }
         }
 
@@ -574,6 +607,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
         }
 
         state.taskState.hasTasks = Utils.HasTasks(player.Data, false);
+
         if (Options.GhostCanSeeOtherVotes.GetBool() && player.Data.IsDead)
         {
             opt.SetBool(BoolOptionNames.AnonymousVotes, false);
@@ -594,6 +628,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
 
         AURoleOptions.ShapeshifterCooldown = Mathf.Max(1f, AURoleOptions.ShapeshifterCooldown);
         AURoleOptions.ProtectionDurationSeconds = 0f;
+        AURoleOptions.ImpostorsCanSeeProtect = false;
 
         return opt;
     }

@@ -2,6 +2,7 @@ using AmongUs.Data;
 using AmongUs.GameOptions;
 using HarmonyLib;
 using InnerNet;
+using Rewired.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +38,7 @@ public class GameStartManagerPatch
             // Reset lobby countdown timer
             timer = 600f;
 
-            HideName = UnityEngine.Object.Instantiate(__instance.GameRoomNameCode, __instance.GameRoomNameCode.transform);
+            HideName = Object.Instantiate(__instance.GameRoomNameCode, __instance.GameRoomNameCode.transform);
             HideName.text = ColorUtility.TryParseHtmlString(Main.HideColor.Value, out _)
                     ? $"<color={Main.HideColor.Value}>{Main.HideName.Value}</color>"
                     : $"<color={Main.ModColor}>{Main.HideName.Value}</color>";
@@ -71,14 +72,17 @@ public class GameStartManagerPatch
                 __instance.privatePublicText.color = Palette.DisabledClear;
             }
 
-            if (Main.NormalOptions.KillCooldown == 0f)
-                Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
+            if (GameStates.IsNormalGame)
+            {
+                if (Main.NormalOptions.KillCooldown == 0f)
+                    Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
 
-            AURoleOptions.SetOpt(Main.NormalOptions.Cast<IGameOptions>());
-            if (AURoleOptions.ShapeshifterCooldown == 0f)
-                AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
+                AURoleOptions.SetOpt(Main.NormalOptions.Cast<IGameOptions>());
+                if (AURoleOptions.ShapeshifterCooldown == 0f)
+                    AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
 
-            AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
+                AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
+            }
         }
     }
 
@@ -123,7 +127,7 @@ public class GameStartManagerPatch
                         {
                             var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
 
-                            if (invalidColor.Any())
+                            if (invalidColor.Length > 0)
                             {
                                 invalidColor.Do(p => AmongUsClient.Instance.KickPlayer(p.GetClientId(), false));
 
@@ -135,19 +139,25 @@ public class GameStartManagerPatch
 
                             if (Options.RandomMapsMode.GetBool())
                             {
-                                Main.NormalOptions.MapId = GameStartRandomMap.SelectRandomMap();
+                                if (GameStates.IsNormalGame)
+                                    Main.NormalOptions.MapId = GameStartRandomMap.SelectRandomMap();
+
+                                else if (GameStates.IsHideNSeek)
+                                    Main.HideNSeekOptions.MapId = GameStartRandomMap.SelectRandomMap();
                             }
 
-                            if ((MapNames)Main.NormalOptions.MapId == MapNames.Dleks)
-                            {
-                                Logger.SendInGame(GetString("Warning.BrokenVentsInDleksSendInGame"));
-                                Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
-                            }
+                            //if (GameStates.IsNormalGame && Options.IsActiveDleks)
+                            //{
+                            //    Logger.SendInGame(GetString("Warning.BrokenVentsInDleksSendInGame"));
+                            //    Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
+                            //}
+
+                            RPC.RpcVersionCheck();
 
                             GameStartManager.Instance.startState = GameStartManager.StartingStates.Countdown;
                             GameStartManager.Instance.countDownTimer = Options.AutoStartTimer.GetInt();
                             __instance.StartButton.gameObject.SetActive(false);
-                        }, 0.8f, "AutoStart");
+                        }, 0.8f, "Auto Start");
                     }
                 }
             }
@@ -160,14 +170,14 @@ public class GameStartManagerPatch
             if (AmongUsClient.Instance.AmHost)
             {
                 bool canStartGame = true;
-                List<string> mismatchedPlayerNameList = new();
+                List<string> mismatchedPlayerNameList = [];
                 foreach (var client in AmongUsClient.Instance.allClients.ToArray())
                 {
                     if (client.Character == null) continue;
                     var dummyComponent = client.Character.GetComponent<DummyBehaviour>();
                     if (dummyComponent != null && dummyComponent.enabled)
                         continue;
-                    if (!MatchVersions(client.Character.PlayerId, true))
+                    if (!MatchVersions(client.Id, true))
                     {
                         canStartGame = false;
                         mismatchedPlayerNameList.Add(Utils.ColorString(Palette.PlayerColors[client.ColorId], client.Character.Data.PlayerName));
@@ -182,7 +192,7 @@ public class GameStartManagerPatch
             }
             else
             {
-                if (MatchVersions(0, true) || Main.VersionCheat.Value || Main.IsHostVersionCheating)
+                if (MatchVersions(AmongUsClient.Instance.HostId, true) || Main.VersionCheat.Value || Main.IsHostVersionCheating)
                     exitTimer = 0;
                 else
                 {
@@ -221,9 +231,9 @@ public class GameStartManagerPatch
             __instance.PlayerCounter.text = currentText + suffix;
             __instance.PlayerCounter.autoSizeTextContainer = true;
         }
-        private static bool MatchVersions(byte playerId, bool acceptVanilla = false)
+        private static bool MatchVersions(int clientId, bool acceptVanilla = false)
         {
-            if (!Main.playerVersion.TryGetValue(playerId, out var version)) return acceptVanilla;
+            if (!Main.playerVersion.TryGetValue(clientId, out var version)) return acceptVanilla;
             return Main.ForkId == version.forkId
                 && Main.version.CompareTo(version.version) == 0
                 && version.tag == $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})";
@@ -244,7 +254,7 @@ public class GameStartRandomMap
     public static bool Prefix(GameStartManager __instance)
     {
         var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
-        if (invalidColor.Any())
+        if (invalidColor.Length > 0)
         {
             Logger.SendInGame(GetString("Error.InvalidColorPreventStart"));
             var msg = GetString("Error.InvalidColor");
@@ -252,40 +262,52 @@ public class GameStartRandomMap
             Utils.SendMessage(msg);
             return false;
         }
+
+        //if (GameStates.IsNormalGame && Options.IsActiveDleks)
+        //{
+        //    Logger.SendInGame(GetString("Warning.BrokenVentsInDleksSendInGame"));
+        //    Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
+        //}
+
+        IGameOptions opt = GameStates.IsNormalGame 
+            ? Main.NormalOptions.Cast<IGameOptions>()
+            : Main.HideNSeekOptions.Cast<IGameOptions>();
         
-        if ((MapNames)Main.NormalOptions.MapId == MapNames.Dleks)
+        if (GameStates.IsNormalGame)
         {
-            Logger.SendInGame(GetString("Warning.BrokenVentsInDleksSendInGame"));
-            Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
+            Options.DefaultKillCooldown = Main.NormalOptions.KillCooldown;
+            Main.LastKillCooldown.Value = Main.NormalOptions.KillCooldown;
+            Main.NormalOptions.KillCooldown = 0f;
+
+            AURoleOptions.SetOpt(opt);
+            Main.LastShapeshifterCooldown.Value = AURoleOptions.ShapeshifterCooldown;
+            AURoleOptions.ShapeshifterCooldown = 0f;
+            AURoleOptions.ImpostorsCanSeeProtect = false;
         }
 
-        Options.DefaultKillCooldown = Main.NormalOptions.KillCooldown;
-        Main.LastKillCooldown.Value = Main.NormalOptions.KillCooldown;
-        Main.NormalOptions.KillCooldown = 0f;
-
-        var opt = Main.NormalOptions.Cast<IGameOptions>();
-        AURoleOptions.SetOpt(opt);
-        Main.LastShapeshifterCooldown.Value = AURoleOptions.ShapeshifterCooldown;
-        AURoleOptions.ShapeshifterCooldown = 0f;
-
         PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(opt));
+        RPC.RpcVersionCheck();
 
         __instance.ReallyBegin(false);
         return false;
     }
-    public static bool Prefix(GameStartRandomMap __instance)
+    public static bool Prefix()
     {
         bool continueStart = true;
         if (Options.RandomMapsMode.GetBool())
         {
-            Main.NormalOptions.MapId = SelectRandomMap();
+            if (GameStates.IsNormalGame)
+                Main.NormalOptions.MapId = SelectRandomMap();
+
+            else if (GameStates.IsHideNSeek)
+                Main.HideNSeekOptions.MapId = SelectRandomMap();
         }
         return continueStart;
     }
     public static byte SelectRandomMap()
     {
         var rand = IRandom.Instance;
-        List<byte> randomMaps = new();
+        List<byte> randomMaps = [];
         /*
             The Skeld    = 0
             MIRA HQ      = 1
@@ -316,7 +338,7 @@ public class GameStartRandomMap
             if (tempRand <= Options.FungleChance.GetInt()) randomMaps.Add(5);
         }
 
-        if (randomMaps.Any())
+        if (randomMaps.Count > 0)
         {
             var mapsId = randomMaps[0];
 
@@ -346,7 +368,9 @@ class ResetStartStatePatch
     {
         if (GameStates.IsCountDown)
         {
-            Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
+            if (GameStates.IsNormalGame)
+                Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
+            
             PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(GameOptionsManager.Instance.CurrentGameOptions));
         }
     }
@@ -356,7 +380,14 @@ class UnrestrictedNumImpostorsPatch
 {
     public static bool Prefix(ref int __result)
     {
-        __result = Main.NormalOptions.NumImpostors;
+        if (GameStates.IsNormalGame)
+        {
+            __result = Main.NormalOptions.NumImpostors;
+        }
+        else if (GameStates.IsHideNSeek)
+        {
+            __result = Main.HideNSeekOptions.NumImpostors;
+        }
         return false;
     }
 }

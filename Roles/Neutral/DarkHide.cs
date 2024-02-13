@@ -9,7 +9,7 @@ namespace TOHE;
 public static class DarkHide
 {
     public static readonly int Id = 18100;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     public static OptionItem KillCooldown;
@@ -18,8 +18,8 @@ public static class DarkHide
     public static OptionItem CanCountNeutralKiller;
     public static OptionItem SnatchesWin;
 
-    public static Dictionary<byte, float> CurrentKillCooldown = new();
-    public static Dictionary<byte, bool> IsWinKill = new();
+    public static Dictionary<byte, float> CurrentKillCooldown = [];
+    public static Dictionary<byte, bool> IsWinKill = [];
 
     public static void SetupCustomOption()
     {
@@ -34,9 +34,9 @@ public static class DarkHide
     }
     public static void Init()
     {
-        playerIdList = new();
-        CurrentKillCooldown = new();
-        IsWinKill = new();
+        playerIdList = [];
+        CurrentKillCooldown = [];
+        IsWinKill = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -73,7 +73,7 @@ public static class DarkHide
     }
 
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CurrentKillCooldown[id];
-    public static bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead;
+    public static bool CanUseKillButton(PlayerControl player) => player != null && player.IsAlive();
 
     public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(HasImpostorVision.GetBool());
 
@@ -83,7 +83,7 @@ public static class DarkHide
         var succeeded = targetRole.IsImpostor();
         if (CanCountNeutralKiller.GetBool() && !Ktarget.Is(CustomRoles.Arsonist) && !Ktarget.Is(CustomRoles.Revolutionist))
         {
-            succeeded = succeeded || ExtendedPlayerControl.IsNeutralKiller(Ktarget);
+            succeeded = succeeded || Ktarget.IsNeutralKiller();
         }
         if (succeeded && SnatchesWin.GetBool())
             IsWinKill[killer.PlayerId] = true;
@@ -103,5 +103,4 @@ public static class DarkHide
             AmongUsClient.Instance.FinishRpcImmediately(SabotageFixWriter);
         }
     }
-
 }

@@ -8,7 +8,7 @@ namespace TOHE.Roles.Crewmate;
 public static class Tracefinder
 {
     private static readonly int Id = 7300;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     private static OptionItem VitalsDuration;
@@ -34,13 +34,17 @@ public static class Tracefinder
     }
     public static void Init()
     {
-        playerIdList = new();
+        playerIdList = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         IsEnable = true;
+    }
+    public static void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
     }
     private static void SendRPC(byte playerId, bool add, Vector3 loc = new())
     {

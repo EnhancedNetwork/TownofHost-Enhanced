@@ -25,7 +25,7 @@ public static class MafiaRevengeManager
             return true;
         }
 
-        if (!pc.Data.IsDead)
+        if (pc.IsAlive())
         {
             Utils.SendMessage(GetString("MafiaAliveKill"), pc.PlayerId);
             return true;
@@ -69,7 +69,7 @@ public static class MafiaRevengeManager
             return true;
         }
 
-        if (target == null || target.Data.IsDead)
+        if (target == null || !target.IsAlive())
         {
             if (!isUI) Utils.SendMessage(GetString("MafiaKillDead"), pc.PlayerId);
             else pc.ShowPopUp(GetString("MafiaKillDead"));
@@ -124,7 +124,7 @@ public static class MafiaRevengeManager
 
             _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("MafiaKillSucceed"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mafia), GetString("MafiaRevengeTitle")), true); }, 0.6f, "Mafia Kill");
 
-        }, 0.2f, "Mafia Kill");
+        }, 0.2f, "Mafia Start Kill");
         return true;
     }
 
@@ -140,7 +140,7 @@ public static class MafiaRevengeManager
         MafiaMsgCheck(pc, $"/rv {PlayerId}", true);
     }
 
-    private static void MafiaOnClick(byte playerId, MeetingHud __instance)
+    private static void MafiaOnClick(byte playerId /*, MeetingHud __instance*/)
     {
         Logger.Msg($"Click: ID {playerId}", "Mafia UI");
         var pc = Utils.GetPlayerById(playerId);
@@ -172,7 +172,7 @@ public static class MafiaRevengeManager
             renderer.sprite = CustomButton.Get("TargetIcon");
             PassiveButton button = targetBox.GetComponent<PassiveButton>();
             button.OnClick.RemoveAllListeners();
-            button.OnClick.AddListener((Action)(() => MafiaOnClick(pva.TargetPlayerId, __instance)));
+            button.OnClick.AddListener((Action)(() => MafiaOnClick(pva.TargetPlayerId/*, __instance*/)));
         }
     }
 }

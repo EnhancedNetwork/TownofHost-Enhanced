@@ -7,12 +7,12 @@ namespace TOHE.Roles.Neutral;
 public static class Collector
 {
     private static readonly int Id = 14700;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
-    public static Dictionary<byte, byte> CollectorVoteFor = new();
-    public static Dictionary<byte, int> CollectVote = new();
-    public static Dictionary<byte, int> NewVote = new();
+    public static Dictionary<byte, byte> CollectorVoteFor = [];
+    public static Dictionary<byte, int> CollectVote = [];
+    public static Dictionary<byte, int> NewVote = [];
 
     public static OptionItem CollectorCollectAmount;
 
@@ -24,9 +24,9 @@ public static class Collector
     }
     public static void Init()
     {
-        playerIdList = new();
-        CollectorVoteFor = new();
-        CollectVote = new();
+        playerIdList = [];
+        CollectorVoteFor = [];
+        CollectVote = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -57,11 +57,11 @@ public static class Collector
     }
     public static bool CollectorWin(bool check = true)
     {
-        var pc = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Collector) && x.IsAlive() && CollectDone(x)).ToArray();
-        if (pc.Any())
+        var pcArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Collector) && x.IsAlive() && CollectDone(x)).ToArray();
+        if (pcArray.Length > 0)
         {
             bool isWinConverted = false;
-            foreach (var x in pc)
+            foreach (var x in pcArray)
             {
                 if (CustomWinnerHolder.CheckForConvertedWinner(x.PlayerId))
                 {
@@ -74,7 +74,8 @@ public static class Collector
             if (!isWinConverted)
             {
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Collector);
-                foreach (var winner in pc) CustomWinnerHolder.WinnerIds.Add(winner.PlayerId);
+                foreach (var winner in pcArray)
+                    CustomWinnerHolder.WinnerIds.Add(winner.PlayerId);
             }
             return true;
         }

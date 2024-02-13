@@ -9,7 +9,7 @@ namespace TOHE.Roles.Crewmate
     public static class Tracker
     {
         private static readonly int Id = 10000;
-        private static List<byte> playerIdList = new();
+        private static List<byte> playerIdList = [];
         public static bool IsEnable = false;
 
         private static OptionItem TrackLimitOpt;
@@ -20,9 +20,9 @@ namespace TOHE.Roles.Crewmate
 
         public static bool CanSeeLastRoomInMeeting;
 
-        public static Dictionary<byte, float> TrackLimit = new();
-        public static Dictionary<byte, List<byte>> TrackerTarget = new();
-        public static Dictionary<byte, float> TempTrackLimit = new();
+        public static Dictionary<byte, float> TrackLimit = [];
+        public static Dictionary<byte, List<byte>> TrackerTarget = [];
+        public static Dictionary<byte, float> TempTrackLimit = [];
 
         public static void SetupCustomOption()
         {
@@ -40,32 +40,38 @@ namespace TOHE.Roles.Crewmate
         }
         public static void Init()
         {
-            playerIdList = new();
-            TrackLimit = new();
-            TrackerTarget = new();
+            playerIdList = [];
+            TrackLimit = [];
+            TrackerTarget = [];
             CanSeeLastRoomInMeeting = OptionCanSeeLastRoomInMeeting.GetBool();
-            TempTrackLimit = new();
+            TempTrackLimit = [];
             IsEnable = false;
         }
         public static void Add(byte playerId)
         {
             playerIdList.Add(playerId);
             TrackLimit.Add(playerId, TrackLimitOpt.GetInt());
-            TrackerTarget.Add(playerId, new List<byte>());
+            TrackerTarget.Add(playerId, []);
             IsEnable = true;
+        }
+        public static void Remove(byte playerId)
+        {
+            playerIdList.Remove(playerId);
+            TrackLimit.Remove(playerId);
+            TrackerTarget.Remove(playerId);
         }
         public static void SendRPC(int operate, byte trackerId = byte.MaxValue, byte targetId = byte.MaxValue)
         {
+            if (!AmongUsClient.Instance.AmHost) return;
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetTrackerTarget, SendOption.Reliable, -1);
             writer.Write(trackerId);
             writer.Write(operate);
             if (operate == 0) writer.Write(targetId);
-            if (operate == 2) writer.Write(TrackLimit[targetId]);
+            if (operate == 2) writer.Write(TrackLimit[trackerId]);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
         public static void ReceiveRPC(MessageReader reader)
         {
-
             byte trackerId = reader.ReadByte();
             int operate = reader.ReadInt32();
             if (operate == 0)

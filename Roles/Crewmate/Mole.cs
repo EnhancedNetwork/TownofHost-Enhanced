@@ -8,8 +8,8 @@ namespace TOHE.Roles.Crewmate
     public static class Mole
     {
         private static readonly int Id = 26000;
-        //private static List<byte> playerIdList = new();
-        private static bool IsEnable = false;
+        //private static List<byte> playerIdList = [];
+        public static bool IsEnable = false;
 
         public static OptionItem VentCooldown;
 
@@ -21,7 +21,7 @@ namespace TOHE.Roles.Crewmate
         }
         public static void Init()
         {
-            //playerIdList = new();
+            //playerIdList = [];
             IsEnable = false;
         }
         public static void Add(byte playerId)
@@ -32,15 +32,17 @@ namespace TOHE.Roles.Crewmate
 
         public static void OnExitVent(PlayerControl pc, int id)
         {
-            if (!IsEnable) return;
             if (!pc.Is(CustomRoles.Mole)) return;
 
-            var vents = Object.FindObjectsOfType<Vent>().Where(x => x.Id != id).ToArray();
-            var rand = IRandom.Instance;
-            var vent = vents[rand.Next(0, vents.Length)];
+            _ = new LateTask(() =>
+            {
+                var vents = Object.FindObjectsOfType<Vent>().Where(x => x.Id != id).ToArray();
+                var rand = IRandom.Instance;
+                var vent = vents[rand.Next(0, vents.Length)];
 
-            Logger.Info($" {vent.transform.position}", "Mole vent teleport");
-            pc.RpcTeleport(new Vector2(vent.transform.position.x, vent.transform.position.y + 0.3636f));
+                Logger.Info($" {vent.transform.position}", "Mole vent teleport");
+                pc.RpcTeleport(new Vector2(vent.transform.position.x, vent.transform.position.y + 0.3636f));
+            }, 0.1f, "Mole On Exit Vent");
         }
     }
 }

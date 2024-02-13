@@ -7,7 +7,7 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 public static class Credentials
 {
     public static SpriteRenderer ToheLogo { get; private set; }
@@ -15,10 +15,32 @@ public static class Credentials
     [HarmonyPatch(typeof(PingTracker), nameof(PingTracker.Update))]
     class PingTrackerUpdatePatch
     {
+        private static int DelayUpdate = 0;
+        private static string TempPing;
+        private static bool CheckIsModHost = true;
         private static readonly StringBuilder sb = new();
 
-        private static void Postfix(PingTracker __instance)
+        private static bool Prefix(PingTracker __instance)
         {
+            DelayUpdate--;
+
+            if (DelayUpdate > 0 && sb.Length > 0)
+            {
+                __instance.text.alignment = TextAlignmentOptions.TopRight;
+
+                if (CheckIsModHost && GameStates.IsModHost)
+                {
+                    sb.Remove(2, $"\r\n{Utils.ColorString(Color.red, GetString("Warning.NoModHost"))}".Length);
+                    CheckIsModHost = false;
+                }
+
+                __instance.text.text = TempPing;
+
+                return false;
+            }
+
+            DelayUpdate = 500;
+
             __instance.text.alignment = TextAlignmentOptions.TopRight;
 
             sb.Clear();
@@ -31,9 +53,13 @@ public static class Credentials
             else if (ping < 100) pingcolor = "#7bc690";
             else if (ping < 200) pingcolor = "#f3920e";
             else if (ping < 400) pingcolor = "#ff146e";
-            sb.Append($"\r\n").Append($"<color={pingcolor}>Ping: {ping} ms</color>");
+            sb.Append($"\r\n<color={pingcolor}>Ping: {ping} ms</color>");
 
-            if (!GameStates.IsModHost) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("Warning.NoModHost")));
+            if (!GameStates.IsModHost)
+            {
+                CheckIsModHost = true;
+                sb.Append($"\r\n{Utils.ColorString(Color.red, GetString("Warning.NoModHost"))}");
+            }
 
             if (Main.ShowFPS.Value)
             {
@@ -43,24 +69,31 @@ public static class Credentials
                 if (FPSGame < 20f) fpscolor = Color.red;
                 else if (FPSGame < 40f) fpscolor = Color.yellow;
 
-                sb.Append("\r\n").Append(Utils.ColorString(fpscolor, Utils.ColorString(Color.cyan, GetString("FPSGame")) + ((int)FPSGame).ToString()));
+                sb.Append($"\r\n{Utils.ColorString(fpscolor, Utils.ColorString(Color.cyan, GetString("FPSGame")) + ((int)FPSGame).ToString())}");
             }
 
             if (Main.ShowTextOverlay.Value)
             {
-                if (Options.NoGameEnd.GetBool()) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("Overlay.NoGameEnd")));
-                if (Options.AllowConsole.GetBool() && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("Overlay.AllowConsole")));
-                if (DebugModeManager.IsDebugMode) sb.Append("\r\n").Append(Utils.ColorString(Color.green, GetString("Overlay.DebugMode")));
-                if (Options.LowLoadMode.GetBool()) sb.Append("\r\n").Append(Utils.ColorString(Color.green, GetString("Overlay.LowLoadMode")));
-                if (Options.GuesserMode.GetBool()) sb.Append("\r\n").Append(Utils.ColorString(Color.yellow, GetString("Overlay.GuesserMode")));
+                var sbOverlay = new StringBuilder();
+                if (Options.LowLoadMode.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.green, GetString("Overlay.LowLoadMode"))}");
+                if (Options.NoGameEnd.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.red, GetString("Overlay.NoGameEnd"))}");
+                if (Options.GuesserMode.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.yellow, GetString("Overlay.GuesserMode"))}");
+                if (Options.AllowConsole.GetBool() && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug) sbOverlay.Append($"\r\n{Utils.ColorString(Color.red, GetString("Overlay.AllowConsole"))}");
+                if (DebugModeManager.IsDebugMode) sbOverlay.Append($"\r\n{Utils.ColorString(Color.green, GetString("Overlay.DebugMode"))}");
+
+                if (sbOverlay.Length > 0)
+                    sb.Append(sbOverlay);
             }
 
-            var offset_x = 1.2f; //右端からのオフセット
-            if (HudManager.InstanceExists && HudManager._instance.Chat.chatButton.active) offset_x += 0.8f; //チャットボタンがある場合の追加オフセット
-            if (FriendsListManager.InstanceExists && FriendsListManager._instance.FriendsListButton.Button.active) offset_x += 0.8f; //フレンドリストボタンがある場合の追加オフセット
+            var offset_x = 1.2f; //Offset from right edge
+            if (HudManager.InstanceExists && HudManager._instance.Chat.chatButton.active) offset_x += 0.8f; // Additional offsets for chat button if present
+            if (FriendsListManager.InstanceExists && FriendsListManager._instance.FriendsListButton.Button.active) offset_x += 0.8f; // Additional offsets if friend list button is present
             __instance.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(offset_x, 0f, 0f);
 
-            __instance.text.text = sb.ToString();
+            TempPing = sb.ToString();
+            __instance.text.text = TempPing;
+
+            return false;
         }
     }
     [HarmonyPatch(typeof(VersionShower), nameof(VersionShower.Start))]
@@ -73,19 +106,19 @@ public static class Credentials
             var buildtype = "";
 
 #if RELEASE
-            Main.credentialsText += $"\r\n<color=#a54aff>By <color=#ffc0cb>KARPED1EM</color> & </color><color=#f34c50>Moe</color>";
+            Main.credentialsText += $"\r\n<color=#a54aff>By <color=#f34c50>Enhanced Network</color>";
             buildtype = "Release";
 #endif
 
 #if CANARY
             Main.credentialsText += $"\r\n<color=#ffc0cb>Canary:</color><color=#f34c50>{ThisAssembly.Git.Branch}</color>(<color=#ffc0cb>{ThisAssembly.Git.Commit}</color>)";
-            Main.credentialsText += $"\r\n<color=#a54aff>By <color=#ffc0cb>KARPED1EM</color> & </color><color=#f34c50>Moe</color>";
+            Main.credentialsText += $"\r\n<color=#a54aff>By <color=#f34c50>The Enhanced Network</color>";
             buildtype = "Canary";
 #endif
 
 #if DEBUG
             Main.credentialsText += $"\r\n<color=#ffc0cb>Debug:</color><color=#f34c50>{ThisAssembly.Git.Branch}</color>(<color=#ffc0cb>{ThisAssembly.Git.Commit}</color>)";
-            Main.credentialsText += $"\r\n<color=#a54aff>By <color=#ffc0cb>KARPED1EM</color> & </color><color=#f34c50>Moe</color>";
+            Main.credentialsText += $"\r\n<color=#a54aff>By <color=#f34c50>The Enhanced Network</color>";
             buildtype = "Debug";
 #endif
             Logger.Info($"v{Main.PluginVersion}, {buildtype}:{ThisAssembly.Git.Branch}:({ThisAssembly.Git.Commit}), link [{ThisAssembly.Git.RepositoryUrl}], dirty: [{ThisAssembly.Git.IsDirty}]", "TOHE version");

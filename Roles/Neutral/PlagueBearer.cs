@@ -8,12 +8,12 @@ namespace TOHE.Roles.Neutral;
 public static class PlagueBearer
 {
     private static readonly int Id = 17600;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
-    public static Dictionary<byte, List<byte>> PlaguedList = new();
-    public static Dictionary<byte, float> PlagueBearerCD = new();
-    public static Dictionary<byte, int> PestilenceCD = new();
-    public static List<byte> PestilenceList = new();
+    public static Dictionary<byte, List<byte>> PlaguedList = [];
+    public static Dictionary<byte, float> PlagueBearerCD = [];
+    public static Dictionary<byte, int> PestilenceCD = [];
+    public static List<byte> PestilenceList = [];
 
     public static OptionItem PlagueBearerCDOpt;
     public static OptionItem PestilenceCDOpt;
@@ -36,17 +36,17 @@ public static class PlagueBearer
 
     public static void Init()
     {
-        playerIdList = new();
-        PlaguedList = new();
-        PlagueBearerCD = new();
-        PestilenceList = new();
+        playerIdList = [];
+        PlaguedList = [];
+        PlagueBearerCD = [];
+        PestilenceList = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         PlagueBearerCD.Add(playerId, PlagueBearerCDOpt.GetFloat());
-        PlaguedList[playerId] = new();
+        PlaguedList[playerId] = [];
         IsEnable = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
@@ -57,7 +57,7 @@ public static class PlagueBearer
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = PlagueBearerCD[id];
     public static void SetKillCooldownPestilence(byte id) => Main.AllPlayerKillCooldown[id] = PestilenceCDOpt.GetFloat();
 
-    public static bool isPlagued(byte pc, byte target)
+    public static bool IsPlagued(byte pc, byte target)
     {
         return PlaguedList[pc].Contains(target);
     }
@@ -69,7 +69,7 @@ public static class PlagueBearer
         writer.Write(target.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void receiveRPC(MessageReader reader)
+    public static void ReceiveRPC(MessageReader reader)
 
     {
         byte PlagueBearerId = reader.ReadByte();
@@ -85,7 +85,7 @@ public static class PlagueBearer
             if (pc.PlayerId == playerId) continue; //塗れない人は除外 (死んでたり切断済みだったり あとアーソニスト自身も)
 
             all++;
-            if (isPlagued(playerId, pc.PlayerId))
+            if (IsPlagued(playerId, pc.PlayerId))
                 //塗れている場合
                 plagued++;
         }
@@ -102,7 +102,7 @@ public static class PlagueBearer
 
     public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
-        if (isPlagued(killer.PlayerId, target.PlayerId))
+        if (IsPlagued(killer.PlayerId, target.PlayerId))
         {
             killer.Notify(GetString("PlagueBearerAlreadyPlagued"));
             return false;
@@ -130,6 +130,7 @@ public static class PlagueBearer
     public static bool OnCheckMurderPestilence(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
+        if (target.IsNeutralApocalypse()) return true;
         if (!PestilenceList.Contains(target.PlayerId)) return false;
         if (target.Is(CustomRoles.Guardian) && target.AllTasksCompleted()) return true;
         if (target.Is(CustomRoles.Opportunist) && target.AllTasksCompleted()) return true;

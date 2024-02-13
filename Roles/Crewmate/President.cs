@@ -12,9 +12,9 @@ public static class President
     private static readonly int Id = 12300;
     public static bool IsEnable = false;
 
-    public static Dictionary<byte, int> EndLimit;
-    public static Dictionary<byte, int> RevealLimit;
-    public static Dictionary<byte, bool> CheckPresidentReveal = new();
+    public static Dictionary<byte, int> EndLimit = [];
+    public static Dictionary<byte, int> RevealLimit = [];
+    public static Dictionary<byte, bool> CheckPresidentReveal = [];
 
 
     public static OptionItem PresidentAbilityUses;
@@ -38,9 +38,9 @@ public static class President
     }
     public static void Init()
     {
-        CheckPresidentReveal = new();
-        EndLimit = new();
-        RevealLimit = new();
+        CheckPresidentReveal = [];
+        EndLimit = [];
+        RevealLimit = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -49,6 +49,12 @@ public static class President
         EndLimit.Add(playerId, PresidentAbilityUses.GetInt());
         RevealLimit.Add(playerId, 1);
         IsEnable = true;
+    }
+    public static void Remove(byte playerId)
+    {
+        CheckPresidentReveal.Remove(playerId);
+        EndLimit.Remove(playerId);
+        RevealLimit.Remove(playerId);
     }
     public static string GetEndLimit(byte playerId) => Utils.ColorString(EndLimit[playerId] > 0 ? Utils.GetRoleColor(CustomRoles.President) : Color.gray, EndLimit.TryGetValue(playerId, out var endLimit) ? $"({endLimit})" : "Invalid");
 
@@ -86,10 +92,10 @@ public static class President
         if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false;
         if (!pc.Is(CustomRoles.President)) return false;
 
-        int operate = 0;
+        int operate;
         msg = msg.ToLower().TrimStart().TrimEnd();
-        if (CheckCommond(ref msg, "finish")) operate = 1;
-        else if (CheckCommond(ref msg, "reveal")) operate = 2;
+        if (CheckCommond(ref msg, "finish|结束|结束会议|結束|結束會議")) operate = 1;
+        else if (CheckCommond(ref msg, "reveal|展示")) operate = 2;
         else return false;
 
         if (!pc.IsAlive())
@@ -117,6 +123,16 @@ public static class President
             }
 
             EndLimit[pc.PlayerId]--;
+
+            foreach (var pva in MeetingHud.Instance.playerStates)
+            {
+                if (pva == null) continue;
+
+                if (pva.VotedFor < 253)
+                    MeetingHud.Instance.RpcClearVote(pva.TargetPlayerId);
+            }
+            List<MeetingHud.VoterState> statesList = [];
+            MeetingHud.Instance.RpcVotingComplete(statesList.ToArray(), null, true);
             MeetingHud.Instance.RpcClose();
         }
         else if (operate == 2)
@@ -153,7 +169,7 @@ public static class President
     public static bool CheckCommond(ref string msg, string command, bool exact = true)
     {
         var comList = command.Split('|');
-        for (int i = 0; i < comList.Count(); i++)
+        for (int i = 0; i < comList.Length; i++)
         {
             if (exact)
             {

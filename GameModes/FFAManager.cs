@@ -10,16 +10,16 @@ namespace TOHE;
 
 internal static class FFAManager
 {
-    private static Dictionary<byte, long> FFAShieldedList = new();
-    private static Dictionary<byte, long> FFAIncreasedSpeedList = new();
-    private static Dictionary<byte, long> FFADecreasedSpeedList = new();
-    public static Dictionary<byte, long> FFALowerVisionList = new();
-    public static Dictionary<byte, long> FFAEnterVentTime = new();
-    public static Dictionary<byte, float> FFAVentDuration = new();
+    private static Dictionary<byte, long> FFAShieldedList = [];
+    private static Dictionary<byte, long> FFAIncreasedSpeedList = [];
+    private static Dictionary<byte, long> FFADecreasedSpeedList = [];
+    public static Dictionary<byte, long> FFALowerVisionList = [];
+    public static Dictionary<byte, long> FFAEnterVentTime = [];
+    public static Dictionary<byte, float> FFAVentDuration = [];
 
-    private static Dictionary<byte, float> originalSpeed = new();
-    public static Dictionary<byte, int> KBScore = new();
-    public static Dictionary<byte, long> FFALastKill = new();
+    private static Dictionary<byte, float> originalSpeed = [];
+    public static Dictionary<byte, int> KBScore = [];
+    public static Dictionary<byte, long> FFALastKill = [];
     public static int RoundTime;
 
     //Options
@@ -87,18 +87,19 @@ internal static class FFAManager
     {
         if (Options.CurrentGameMode != CustomGameMode.FFA) return;
 
-        FFADecreasedSpeedList = new();
-        FFAIncreasedSpeedList = new();
-        FFALowerVisionList = new();
-        FFAShieldedList = new();
+        FFADecreasedSpeedList = [];
+        FFAIncreasedSpeedList = [];
+        FFALowerVisionList = [];
+        FFAShieldedList = [];
 
-        originalSpeed = new();
-        KBScore = new();
+        originalSpeed = [];
+        KBScore = [];
+
         if (FFA_DisableVentingWhenKCDIsUp.GetBool())
         {
-            FFALastKill = new();
-            FFAVentDuration = new();
-            FFAEnterVentTime = new();
+            FFALastKill = [];
+            FFAVentDuration = [];
+            FFAEnterVentTime = [];
         }
 
         _ = new LateTask( ()=>
@@ -141,7 +142,7 @@ internal static class FFAManager
         if (name != null && name != string.Empty)
             NameNotify.Add(PlayerControl.LocalPlayer.PlayerId, (name, 0));
     }
-    public static Dictionary<byte, (string TEXT, long TIMESTAMP)> NameNotify = new();
+    public static Dictionary<byte, (string TEXT, long TIMESTAMP)> NameNotify = [];
     public static void GetNameNotify(PlayerControl player, ref string name)
     {
         if (Options.CurrentGameMode != CustomGameMode.FFA || player == null) return;
@@ -221,12 +222,12 @@ internal static class FFAManager
             bool mark = false;
             var nowKCD = Main.AllPlayerKillCooldown[killer.PlayerId];
             byte EffectType;
-            if (Main.NormalOptions.MapId != 4) EffectType = (byte)HashRandom.Next(0, 10);
+            if (!GameStates.AirshipIsActive) EffectType = (byte)HashRandom.Next(0, 10);
             else EffectType = (byte)HashRandom.Next(4, 10);
             if (EffectType <= 7) // Buff
             {
                 byte EffectID = (byte)HashRandom.Next(0, 3);
-                if (Main.NormalOptions.MapId == 4) EffectID = 2;
+                if (GameStates.AirshipIsActive) EffectID = 2;
                 switch (EffectID)
                 {
                     case 0:
@@ -264,7 +265,7 @@ internal static class FFAManager
             else if (EffectType == 8) // De-Buff
             {
                 byte EffectID = (byte)HashRandom.Next(0, 3);
-                if (Main.NormalOptions.MapId == 4) EffectID = 1;
+                if (GameStates.AirshipIsActive) EffectID = 1;
                 switch (EffectID)
                 {
                     case 0:
@@ -358,10 +359,10 @@ internal static class FFAManager
     }
 
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
-    class FixedUpdatePatch
+    class FixedUpdateInGameModeFFAPatch
     {
         private static long LastFixedUpdate;
-        public static void Postfix(PlayerControl __instance)
+        public static void Postfix()
         {
             if (!GameStates.IsInTask || Options.CurrentGameMode != CustomGameMode.FFA) return;
 
@@ -389,7 +390,7 @@ internal static class FFAManager
                 {
                     Logger.Info("Swap everyone with someone", "FFA");
 
-                    List<byte> changePositionPlayers = new();
+                    List<byte> changePositionPlayers = [];
 
                     foreach (PlayerControl pc in Main.AllAlivePlayerControls)
                     {
@@ -397,7 +398,7 @@ internal static class FFAManager
 
                         var filtered = Main.AllAlivePlayerControls.Where(a =>
                             pc.IsAlive() && !pc.inVent && a.PlayerId != pc.PlayerId && !changePositionPlayers.Contains(a.PlayerId)).ToArray();
-                        if (!filtered.Any()) break;
+                        if (filtered.Length == 0) break;
 
                         PlayerControl target = filtered[rd.Next(0, filtered.Length)];
 
@@ -419,7 +420,7 @@ internal static class FFAManager
                     changePositionPlayers.Clear();
                 }
 
-                if (Main.NormalOptions.MapId == 4) return;
+                if (GameStates.AirshipIsActive) return;
 
                 foreach (PlayerControl pc in Main.AllAlivePlayerControls)
                 {

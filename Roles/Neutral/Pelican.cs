@@ -12,10 +12,10 @@ namespace TOHE.Roles.Neutral;
 public static class Pelican
 {
     private static readonly int Id = 17300;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
-    private static Dictionary<byte, List<byte>> eatenList = new();
-    private static readonly Dictionary<byte, float> originalSpeed = new();
+    private static Dictionary<byte, List<byte>> eatenList = [];
+    private static readonly Dictionary<byte, float> originalSpeed = [];
     private static int Count = 0;
     public static OptionItem KillCooldown;
     public static OptionItem HasImpostorVision;
@@ -30,8 +30,8 @@ public static class Pelican
     }
     public static void Init()
     {
-        playerIdList = new();
-        eatenList = new();
+        playerIdList = [];
+        eatenList = [];
         IsEnable = false;
         Count = 0;
     }
@@ -73,7 +73,7 @@ public static class Pelican
         {
             int eatenNum = reader.ReadInt32();
             eatenList.Remove(playerId);
-            List<byte> list = new();
+            List<byte> list = [];
             for (int i = 0; i < eatenNum; i++)
                 list.Add(reader.ReadByte());
             eatenList.Add(playerId, list);
@@ -96,7 +96,7 @@ public static class Pelican
     }
     public static Vector2 GetBlackRoomPSForPelican()
     {
-        return Main.NormalOptions.MapId switch
+        return Utils.GetActiveMapId() switch
         {
             0 => new Vector2(-27f, 3.3f), // The Skeld
             1 => new Vector2(-11.4f, 8.2f), // MIRA HQ
@@ -126,7 +126,7 @@ public static class Pelican
             pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("CantEat")));
             return;
         }
-        if (!eatenList.ContainsKey(pc.PlayerId)) eatenList.Add(pc.PlayerId, new());
+        if (!eatenList.ContainsKey(pc.PlayerId)) eatenList.Add(pc.PlayerId, []);
         eatenList[pc.PlayerId].Add(target.PlayerId);
 
         SyncEatenList(pc.PlayerId);
@@ -198,7 +198,7 @@ public static class Pelican
     {
         if (!GameStates.IsInTask)
         {
-            if (eatenList.Any())
+            if (eatenList.Count > 0)
             {
                 eatenList.Clear();
                 SyncEatenList(byte.MaxValue);
@@ -223,7 +223,7 @@ public static class Pelican
                 var dis = Vector2.Distance(pos, target.GetCustomPosition());
                 if (dis < 1f) continue;
 
-                target.RpcTeleport(pos);
+                target.RpcTeleport(pos, sendInfoInLogs: false);
                 //Utils.NotifyRoles(SpecifySeer: target, ForceLoop: false);
             }
         }

@@ -1,8 +1,12 @@
 using AmongUs.GameOptions;
 using HarmonyLib;
 using System;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
+using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
@@ -67,13 +71,38 @@ class CoBeginPatch
             pc.cosmetics.nameText.text = pc.name;
         }
 
-
         logger.Info("------------Roles / Add-ons------------");
-        foreach (var pc in allPlayerControlsArray)
+        if (PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug || GameStates.IsLocalGame)
         {
-            logger.Info($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc?.Data?.PlayerName?.PadRightV2(20)}:{pc.GetAllRoleName().RemoveHtmlTags()}");
+            foreach (var pc in allPlayerControlsArray)
+            {
+                logger.Info($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc?.Data?.PlayerName?.PadRightV2(20)}:{pc.GetAllRoleName().RemoveHtmlTags()}");
+            }
         }
+        else
+        {
+            StringBuilder logStringBuilder = new();
+            logStringBuilder.AppendLine("------------Roles / Add-ons------------");
 
+            foreach (var pc in allPlayerControlsArray)
+            {
+                logStringBuilder.AppendLine($"{(pc.AmOwner ? "[*]" : ""),-3}{pc.PlayerId,-2}:{pc?.Data?.PlayerName?.PadRight(20)}:{pc.GetAllRoleName().RemoveHtmlTags()}");
+            }
+
+            try
+            {
+                byte[] logBytes = Encoding.UTF8.GetBytes(logStringBuilder.ToString());
+                byte[] encryptedBytes = EncryptDES(logBytes, $"TOHE{PlayerControl.LocalPlayer.PlayerId}00000000"[..8]);
+                string encryptedString = Convert.ToBase64String(encryptedBytes);
+                logger.Info(encryptedString);
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"Encryption error: {ex.Message}");
+            }
+        }
+        //https://www.toolhelper.cn/SymmetricEncryption/DES
+        //mode CBC, PKCS7, 64bit, Key = IV= "TOHE" + playerid + 000/00 "to 8 bits
 
         logger.Info("------------Player Platforms------------");
         foreach (var pc in allPlayerControlsArray)
@@ -83,13 +112,13 @@ class CoBeginPatch
                 var text = pc.AmOwner ? "[*]" : "   ";
                 text += $"{pc.PlayerId,-2}:{pc.Data?.PlayerName?.PadRightV2(20)}:{pc.GetClient()?.PlatformData?.Platform.ToString()?.Replace("Standalone", ""),-11}";
 
-                if (Main.playerVersion.TryGetValue(pc.PlayerId, out PlayerVersion pv))
+                if (Main.playerVersion.TryGetValue(pc.GetClientId(), out PlayerVersion pv))
                 {
-                    text += $":Mod({pv.forkId}/{pv.version}:{pv.tag})";
+                    text += $":Mod({pv.forkId}/{pv.version}:{pv.tag}), ClientId :{pc.GetClientId()}";
                 }
                 else
                 {
-                    text += ":Vanilla";
+                    text += ":Vanilla, ClientId :" + pc.GetClientId() ;
                 }
                 logger.Info(text);
             }
@@ -119,20 +148,67 @@ class CoBeginPatch
             }
         }
 
-        logger.Info("-------------Other Information-------------");
-        logger.Info($"Number players: {allPlayerControlsArray.Length}");
-        foreach (var player in allPlayerControlsArray)
+        if (GameStates.IsNormalGame)
         {
-            Main.PlayerStates[player.PlayerId].InitTask(player);
+            logger.Info("-------------Other Information-------------");
+            logger.Info($"Number players: {allPlayerControlsArray.Length}");
+            foreach (var player in allPlayerControlsArray)
+            {
+                Main.PlayerStates[player.PlayerId].InitTask(player);
+            }
+
+            GameData.Instance.RecomputeTaskCounts();
+            TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
         }
 
-        GameData.Instance.RecomputeTaskCounts();
-        TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
-
         GameStates.InGame = true;
+        RPC.RpcVersionCheck();
 
         // Do not move this code, it should be executed at the very end to prevent a visual bug
         Utils.DoNotifyRoles(ForceLoop: true);
+
+        if (GameStates.IsHideNSeek && Options.RandomSpawn.GetBool())
+        {
+            RandomSpawn.SpawnMap map;
+            switch (Utils.GetActiveMapId())
+            {
+                case 0:
+                    map = new RandomSpawn.SkeldSpawnMap();
+                    Main.AllPlayerControls.Do(map.RandomTeleport);
+                    break;
+                case 1:
+                    map = new RandomSpawn.MiraHQSpawnMap();
+                    Main.AllPlayerControls.Do(map.RandomTeleport);
+                    break;
+                case 2:
+                    map = new RandomSpawn.PolusSpawnMap();
+                    Main.AllPlayerControls.Do(map.RandomTeleport);
+                    break;
+                case 3:
+                    map = new RandomSpawn.DleksSpawnMap();
+                    Main.AllPlayerControls.Do(map.RandomTeleport);
+                    break;
+                case 5:
+                    map = new RandomSpawn.FungleSpawnMap();
+                    Main.AllPlayerControls.Do(map.RandomTeleport);
+                    break;
+            }
+        }
+    }
+    public static byte[] EncryptDES(byte[] data, string key)
+    {
+        using SymmetricAlgorithm desAlg = DES.Create();
+        
+        // Incoming key must be 8 bit or will cause error
+        desAlg.Key = Encoding.UTF8.GetBytes(key);
+        desAlg.IV = Encoding.UTF8.GetBytes(key);
+
+        using MemoryStream msEncrypt = new();
+        using (CryptoStream csEncrypt = new(msEncrypt, desAlg.CreateEncryptor(), CryptoStreamMode.Write))
+        {
+            csEncrypt.Write(data, 0, data.Length);
+        }
+        return msEncrypt.ToArray();
     }
 }
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.BeginCrewmate))]
@@ -460,24 +536,29 @@ class BeginImpostorPatch
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.OnDestroy))]
 class IntroCutsceneDestroyPatch
 {
-    public static void Postfix(IntroCutscene __instance)
+    public static void Postfix()
     {
         if (!GameStates.IsInGame) return;
         Main.introDestroyed = true;
         if (AmongUsClient.Instance.AmHost)
         {
-            if (Main.NormalOptions.MapId != 4)
+            if (GameStates.IsNormalGame)
             {
-                Main.AllPlayerControls.Do(pc => pc.RpcResetAbilityCooldown());
-                if (Options.FixFirstKillCooldown.GetBool() && Options.CurrentGameMode != CustomGameMode.FFA)
-                    _ = new LateTask(() =>
+                if (!GameStates.AirshipIsActive)
+                {
+                    Main.AllPlayerControls.Do(pc => pc.RpcResetAbilityCooldown());
+                    if (Options.FixFirstKillCooldown.GetBool() && Options.CurrentGameMode != CustomGameMode.FFA)
                     {
-                        Main.AllPlayerControls.Do(x => x.ResetKillCooldown());
-                        Main.AllPlayerControls.Where(x => (Main.AllPlayerKillCooldown[x.PlayerId] - 2f) > 0f).Do(pc => pc.SetKillCooldown(Options.FixKillCooldownValue.GetFloat() - 2f));
-                    }, 2f, "FixKillCooldownTask");
-            }
+                        _ = new LateTask(() =>
+                        {
+                            Main.AllPlayerControls.Do(x => x.ResetKillCooldown());
+                            Main.AllPlayerControls.Where(x => (Main.AllPlayerKillCooldown[x.PlayerId] - 2f) > 0f).Do(pc => pc.SetKillCooldown(Options.FixKillCooldownValue.GetFloat() - 2f));
+                        }, 2f, "Fix Kill Cooldown Task");
+                    }
+                }
 
-            _ = new LateTask(() => Main.AllPlayerControls.Do(pc => pc.RpcSetRoleDesync(RoleTypes.Shapeshifter, -3)), 2f, "SetImpostorForServer");
+                _ = new LateTask(() => Main.AllPlayerControls.Do(pc => pc.RpcSetRoleDesync(RoleTypes.Shapeshifter, -3)), 2f, "Set Impostor For Server");
+            }
             
             if (PlayerControl.LocalPlayer.Is(CustomRoles.GM))
             {
@@ -485,10 +566,10 @@ class IntroCutsceneDestroyPatch
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
             }
 
-            if (Options.RandomSpawn.GetBool() || Options.CurrentGameMode == CustomGameMode.FFA)
+            if (GameStates.IsNormalGame && (Options.RandomSpawn.GetBool() || Options.CurrentGameMode == CustomGameMode.FFA))
             {
                 RandomSpawn.SpawnMap map;
-                switch (Main.NormalOptions.MapId)
+                switch (Utils.GetActiveMapId())
                 {
                     case 0:
                         map = new RandomSpawn.SkeldSpawnMap();

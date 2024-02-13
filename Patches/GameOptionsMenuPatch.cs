@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using HarmonyLib;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System;
+using TMPro;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -10,17 +11,40 @@ using Object = UnityEngine.Object;
 
 namespace TOHE;
 
+[HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.Start))]
+[HarmonyPriority(Priority.First)]
+class GameSettingMenuStartPatch
+{
+    public static void Postfix(GameSettingMenu __instance)
+    {
+        // Need for Hide&Seek because tabs are disabled by default
+        __instance.Tabs.SetActive(true);
+    }
+}
+[HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.Close))]
+class GameSettingMenuClosePatch
+{
+    public static void Postfix()
+    {
+        // if custom game mode is HideNSeekTOHE in normal game, set standart
+        if (GameStates.IsNormalGame && Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
+        {
+            // Select standart custom game mode
+            Options.GameMode.SetValue(0);
+        }
+    }
+}
 [HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.InitializeOptions))]
-public static class GameSettingMenuPatch
+public static class GameSettingMenuInitializeOptionsPatch
 {
     public static void Prefix(GameSettingMenu __instance)
     {
         // Unlocks map/impostor amount changing in online (for testing on your custom servers)
-        // オンラインモードで部屋を立て直さなくてもマップを変更できるように変更
+        // Changed to be able to change the map in online mode without having to re-establish the room.
         __instance.HideForOnline = new Il2CppReferenceArray<Transform>(0);
     }
 
-    // add dleks to map selection
+    // Add Dleks to map selection
     public static void Postfix([HarmonyArgument(0)] Il2CppReferenceArray<Transform> items)
     {
         items
@@ -32,163 +56,269 @@ public static class GameSettingMenuPatch
             .System_Collections_IList_Insert((int)MapNames.Dleks, new Il2CppSystem.Collections.Generic.KeyValuePair<string, int>(Constants.MapNames[(int)MapNames.Dleks], (int)MapNames.Dleks));
     }
 }
-
 [HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.Start))]
-[HarmonyPriority(Priority.First)]
-public static class GameOptionsMenuPatch
+[HarmonyPriority(799)]
+public static class GameOptionsMenuStartPatch
 {
     public static void Postfix(GameOptionsMenu __instance)
     {
-        foreach (var ob in __instance.Children.ToArray())
+        try
         {
-            switch (ob.Title)
+            var modeForSmallScreen = Main.ModeForSmallScreen.Value;
+
+            StringOption template = Object.FindObjectOfType<StringOption>();
+            GameObject gameSettings = GameObject.Find("Game Settings");
+            GameSettingMenu gameSettingMenu = Object.FindObjectOfType<GameSettingMenu>();
+
+            if (GameStates.IsNormalGame)
             {
-                case StringNames.GameVotingTime:
-                    ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 600);
-                    break;
-                case StringNames.GameShortTasks:
-                case StringNames.GameLongTasks:
-                case StringNames.GameCommonTasks:
-                    ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 99);
-                    break;
-                case StringNames.GameKillCooldown:
-                    ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 180);
-                    break;
-                default:
-                    break;
+                if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
+                {
+                    // Select standart custom game mode for normal game
+                    Options.GameMode.SetValue(0);
+                }
+
+                template = Object.FindObjectOfType<StringOption>();
+                if (template == null) return;
+
+                gameSettings = GameObject.Find("Game Settings");
+                if (gameSettings == null) return;
+
+                gameSettingMenu = Object.FindObjectOfType<GameSettingMenu>();
+                if (gameSettingMenu == null) return;
+
+                GameObject.Find("Tint")?.SetActive(false);
+
+                var children = __instance.Children.ToArray();
+                foreach (var ob in children)
+                {
+                    switch (ob.Title)
+                    {
+                        case StringNames.GameVotingTime:
+                            ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 600);
+                            break;
+                        case StringNames.GameShortTasks:
+                        case StringNames.GameLongTasks:
+                        case StringNames.GameCommonTasks:
+                            ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 99);
+                            break;
+                        case StringNames.GameKillCooldown:
+                            ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 180);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            else if (GameStates.IsHideNSeek)
+            {
+                // Select custom game mode for Hide & Seek
+                Options.GameMode.SetValue(2);
+
+                gameSettingMenu = Object.FindObjectOfType<GameSettingMenu>();
+                if (gameSettingMenu == null) return;
+
+                gameSettingMenu.RegularGameSettings.gameObject.SetActive(true);
+                gameSettingMenu.RolesSettings.gameObject.SetActive(true);
+
+                GameObject.Find("Tint")?.SetActive(false);
+
+                template = Object.FindObjectsOfType<StringOption>().FirstOrDefault();
+                if (template == null) return;
+
+                gameSettings = GameObject.Find("Game Settings");
+                if (gameSettings == null) return;
+
+                gameSettingMenu.RegularGameSettings.gameObject.SetActive(false);
+                gameSettingMenu.RolesSettings.gameObject.SetActive(false);
+
+                var children = __instance.Children.ToArray();
+                foreach (var ob in children)
+                {
+                    switch (ob.Title)
+                    {
+                        case StringNames.EscapeTime:
+                            ob.Cast<NumberOption>().ValidRange = new FloatRange(10, 600);
+                            break;
+                        case StringNames.FinalEscapeTime:
+                            ob.Cast<NumberOption>().ValidRange = new FloatRange(10, 300);
+                            break;
+                        case StringNames.GameShortTasks:
+                        case StringNames.GameLongTasks:
+                        case StringNames.GameCommonTasks:
+                            ob.Cast<NumberOption>().ValidRange = new FloatRange(0, 10);
+                            break;
+                        case StringNames.GameNumImpostors:
+                            ob.Cast<NumberOption>().ValidRange = new FloatRange(1, 3);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            gameSettings.transform.Find("GameGroup").GetComponent<Scroller>().ScrollWheelSpeed = 1.2f;
+
+            var roleTab = GameObject.Find("RoleTab");
+            var gameTab = GameObject.Find("GameTab");
+
+            List<GameObject> menus = [gameSettingMenu.RegularGameSettings, gameSettingMenu.RolesSettings.gameObject];
+            List<SpriteRenderer> highlights = [gameSettingMenu.GameSettingsHightlight, gameSettingMenu.RolesSettingsHightlight];
+            List<GameObject> tabs = [gameTab, roleTab];
+
+            // No add roleTab in Hide & Seek
+            if (GameStates.IsHideNSeek)
+            {
+                menus = [gameSettingMenu.RegularGameSettings];
+                highlights = [gameSettingMenu.GameSettingsHightlight];
+                tabs = [gameTab];
+            }
+
+            foreach (var tab in EnumHelper.GetAllValues<TabGroup>().Where(tab => GameStates.IsNormalGame || (GameStates.IsHideNSeek && (tab is TabGroup.SystemSettings or TabGroup.GameSettings or TabGroup.TaskSettings))).ToArray())
+            {
+                var obj = gameSettings.transform.parent.Find(tab + "Tab");
+                if (obj != null)
+                {
+                    obj.transform.Find("../../GameGroup/Text").GetComponent<TextMeshPro>().SetText(GetString("TabGroup." + tab));
+                    continue;
+                }
+
+                var tohSettings = Object.Instantiate(gameSettings, gameSettings.transform.parent);
+                tohSettings.name = tab + "Tab";
+
+                var tohSettingsTransform = tohSettings.transform;
+
+                if (!modeForSmallScreen)
+                {
+                    tohSettingsTransform.Find("BackPanel").transform.localScale =
+                    tohSettingsTransform.Find("Bottom Gradient").transform.localScale = new Vector3(1.6f, 1f, 1f);
+                    tohSettingsTransform.Find("Bottom Gradient").transform.localPosition += new Vector3(0.2f, 0f, 0f);
+                    tohSettingsTransform.Find("BackPanel").transform.localPosition += new Vector3(0.2f, 0f, 0f);
+                    tohSettingsTransform.Find("Background").transform.localScale = new Vector3(1.8f, 1f, 1f);
+                    tohSettingsTransform.Find("UI_Scrollbar").transform.localPosition += new Vector3(1.4f, 0f, 0f);
+                    tohSettingsTransform.Find("UI_ScrollbarTrack").transform.localPosition += new Vector3(1.4f, 0f, 0f);
+                    tohSettingsTransform.Find("GameGroup/SliderInner").transform.localPosition += new Vector3(-0.3f, 0f, 0f);
+                }
+                else
+                {
+                    tohSettingsTransform.Find("BackPanel").transform.localScale =
+                    tohSettingsTransform.Find("Bottom Gradient").transform.localScale = new Vector3(1.2f, 1f, 1f);
+                    tohSettingsTransform.Find("Background").transform.localScale = new Vector3(1.3f, 1f, 1f);
+                    tohSettingsTransform.Find("UI_Scrollbar").transform.localPosition += new Vector3(0.35f, 0f, 0f);
+                    tohSettingsTransform.Find("UI_ScrollbarTrack").transform.localPosition += new Vector3(0.35f, 0f, 0f);
+                    tohSettingsTransform.Find("GameGroup/SliderInner").transform.localPosition += new Vector3(-0.15f, 0f, 0f);
+                }
+
+                var tohMenu = tohSettingsTransform.Find("GameGroup/SliderInner").GetComponent<GameOptionsMenu>();
+                foreach (var optionBehaviour in tohMenu.GetComponentsInChildren<OptionBehaviour>().ToArray())
+                {
+                    // Discard OptionBehaviour
+                    Object.Destroy(optionBehaviour.gameObject);
+                }
+
+                List<OptionBehaviour> scOptions = [];
+                foreach (var option in OptionItem.AllOptions.Where(opt => opt.Tab == tab).ToArray())
+                {
+                    if (option.OptionBehaviour == null)
+                    {
+                        float yoffset = option.IsText ? 300f : 0f;
+                        float xoffset = option.IsText ? 300f : 0.3f;
+                        var stringOption = Object.Instantiate(template, tohMenu.transform);
+                        scOptions.Add(stringOption);
+                        stringOption.OnValueChanged = new Action<OptionBehaviour>((o) => { });
+                        stringOption.TitleText.text = option.Name;
+                        stringOption.Value = stringOption.oldValue = option.CurrentValue;
+                        stringOption.ValueText.text = option.GetString();
+                        stringOption.name = option.Name;
+
+                        var stringOptionTransform = stringOption.transform;
+                        if (!modeForSmallScreen)
+                        {
+                            stringOptionTransform.Find("Background").localScale = new Vector3(1.6f, 1f, 1f);
+                            stringOptionTransform.Find("Plus_TMP").localPosition += new Vector3(option.IsText ? 300f : 1.4f, yoffset, 0f);
+                            stringOptionTransform.Find("Minus_TMP").localPosition += new Vector3(option.IsText ? 300f : 1.0f, yoffset, 0f);
+                            stringOptionTransform.Find("Value_TMP").localPosition += new Vector3(option.IsText ? 300f : 1.2f, yoffset, 0f);
+                            stringOptionTransform.Find("Value_TMP").GetComponent<RectTransform>().sizeDelta = new Vector2(1.6f, 0.26f);
+                            stringOptionTransform.Find("Title_TMP").localPosition += new Vector3(option.IsText ? 0.25f : 0.1f, option.IsText ? -0.1f : 0f, 0f);
+                            stringOptionTransform.Find("Title_TMP").GetComponent<RectTransform>().sizeDelta = new Vector2(5.5f, 0.37f);
+                        }
+                        else
+                        {
+                            stringOptionTransform.Find("Background").localScale = new Vector3(1.2f, 1f, 1f);
+                            stringOptionTransform.Find("Plus_TMP").localPosition += new Vector3(xoffset, yoffset, 0f);
+                            stringOptionTransform.Find("Minus_TMP").localPosition += new Vector3(xoffset, yoffset, 0f);
+                            stringOptionTransform.Find("Value_TMP").localPosition += new Vector3(xoffset, yoffset, 0f);
+                            stringOptionTransform.Find("Title_TMP").localPosition += new Vector3(option.IsText ? 0.3f : 0.15f, option.IsText ? -0.1f : 0f, 0f);
+                            stringOptionTransform.Find("Title_TMP").GetComponent<RectTransform>().sizeDelta = new Vector2(3.5f, 0.37f);
+                        }
+
+                        option.OptionBehaviour = stringOption;
+                    }
+                    option.OptionBehaviour.gameObject.SetActive(true);
+                }
+                tohMenu.Children = scOptions.ToArray();
+                tohSettings.gameObject.SetActive(false);
+                menus.Add(tohSettings.gameObject);
+
+                var tohTab = Object.Instantiate(roleTab, roleTab.transform.parent);
+                tohTab.transform.Find("Hat Button").Find("Icon").GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite($"TOHE.Resources.Images.TabIcon_{tab}.png", 100f);
+                tabs.Add(tohTab);
+                var tohTabHighlight = tohTab.transform.Find("Hat Button").Find("Tab Background").GetComponent<SpriteRenderer>();
+                highlights.Add(tohTabHighlight);
+            }
+
+            // hide roleTab in Hide & Seek
+            if (GameStates.IsHideNSeek)
+            {
+                roleTab.active = false;
+            }
+
+            var tabsCount = tabs.Count;
+            var menusCount = menus.Count;
+            var tabsCountDividedBy323 = tabsCount / 3.23f;
+
+            for (var i = 0; i < tabsCount; i++)
+            {
+                var tab = tabs[i];
+                var transform = tab.transform;
+
+                var xValue = modeForSmallScreen ? 0.6f * (i - 1) - tabsCountDividedBy323 : 0.65f * (i - 1) - tabsCountDividedBy323;
+                transform.localPosition = new(xValue, transform.localPosition.y, transform.localPosition.z);
+
+                var button = tab.GetComponentInChildren<PassiveButton>();
+                if (button != null)
+                {
+                    var copiedIndex = i;
+                    button.OnClick ??= new UnityEngine.UI.Button.ButtonClickedEvent();
+                    void value()
+                    {
+                        if (GameStates.IsHideNSeek)
+                        {
+                            gameSettingMenu.RegularGameSettings.SetActive(false);
+                            gameSettingMenu.RolesSettings.gameObject.SetActive(false);
+                            gameSettingMenu.HideNSeekSettings.gameObject.SetActive(false);
+                            gameSettingMenu.GameSettingsHightlight.enabled = false;
+                            gameSettingMenu.RolesSettingsHightlight.enabled = false;
+
+                            if (copiedIndex == 0)
+                            {
+                                gameSettingMenu.HideNSeekSettings.gameObject.SetActive(true);
+                                gameSettingMenu.GameSettingsHightlight.enabled = true;
+                            }
+                        }
+                        for (var j = 0; j < menusCount; j++)
+                        {
+                            if (GameStates.IsHideNSeek && j == 0 && copiedIndex == 0) continue;
+                            menus[j].SetActive(j == copiedIndex);
+                            highlights[j].enabled = j == copiedIndex;
+                        }
+                    }
+                    button.OnClick.AddListener((Action)value);
+                }
             }
         }
-        var template = Object.FindObjectsOfType<StringOption>().FirstOrDefault();
-        if (template == null) return;
-
-        var Tint = GameObject.Find("Tint");
-        Tint?.SetActive(false);
-
-        var gameSettings = GameObject.Find("Game Settings");
-        if (gameSettings == null) return;
-        gameSettings.transform.Find("GameGroup").GetComponent<Scroller>().ScrollWheelSpeed = 1.3f;
-
-        var gameSettingMenu = Object.FindObjectsOfType<GameSettingMenu>().FirstOrDefault();
-        if (gameSettingMenu == null) return;
-        List<GameObject> menus = new() { gameSettingMenu.RegularGameSettings, gameSettingMenu.RolesSettings.gameObject };
-        List<SpriteRenderer> highlights = new() { gameSettingMenu.GameSettingsHightlight, gameSettingMenu.RolesSettingsHightlight };
-
-        var roleTab = GameObject.Find("RoleTab");
-        var gameTab = GameObject.Find("GameTab");
-        List<GameObject> tabs = new() { gameTab, roleTab };
-
-        foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
+        catch
         {
-            var obj = gameSettings.transform.parent.Find(tab + "Tab");
-            if (obj != null)
-            {
-                obj.transform.Find("../../GameGroup/Text").GetComponent<TMPro.TextMeshPro>().SetText(GetString("TabGroup." + tab));
-                continue;
-            }
-
-            var tohSettings = Object.Instantiate(gameSettings, gameSettings.transform.parent);
-            tohSettings.name = tab + "Tab";
-
-            if (!Main.ModeForSmallScreen.Value)
-            {
-                tohSettings.transform.Find("BackPanel").transform.localScale =
-                tohSettings.transform.Find("Bottom Gradient").transform.localScale = new Vector3(1.6f, 1f, 1f);
-                tohSettings.transform.Find("Bottom Gradient").transform.localPosition += new Vector3(0.2f, 0f, 0f);
-                tohSettings.transform.Find("BackPanel").transform.localPosition += new Vector3(0.2f, 0f, 0f);
-                tohSettings.transform.Find("Background").transform.localScale = new Vector3(1.8f, 1f, 1f);
-                tohSettings.transform.Find("UI_Scrollbar").transform.localPosition += new Vector3(1.4f, 0f, 0f);
-                tohSettings.transform.Find("UI_ScrollbarTrack").transform.localPosition += new Vector3(1.4f, 0f, 0f);
-                tohSettings.transform.Find("GameGroup/SliderInner").transform.localPosition += new Vector3(-0.3f, 0f, 0f);
-            }
-            else
-            {
-                tohSettings.transform.Find("BackPanel").transform.localScale =
-                tohSettings.transform.Find("Bottom Gradient").transform.localScale = new Vector3(1.2f, 1f, 1f);
-                tohSettings.transform.Find("Background").transform.localScale = new Vector3(1.3f, 1f, 1f);
-                tohSettings.transform.Find("UI_Scrollbar").transform.localPosition += new Vector3(0.35f, 0f, 0f);
-                tohSettings.transform.Find("UI_ScrollbarTrack").transform.localPosition += new Vector3(0.35f, 0f, 0f);
-                tohSettings.transform.Find("GameGroup/SliderInner").transform.localPosition += new Vector3(-0.15f, 0f, 0f);
-            }
-
-            var tohMenu = tohSettings.transform.Find("GameGroup/SliderInner").GetComponent<GameOptionsMenu>();
-
-            //OptionBehaviourを破棄
-            foreach (var optionBehaviour in tohMenu.GetComponentsInChildren<OptionBehaviour>())
-            {
-                Object.Destroy(optionBehaviour.gameObject);
-            }
-
-            var scOptions = new List<OptionBehaviour>();
-            foreach (var option in OptionItem.AllOptions)
-            {
-                if (option.Tab != tab) continue;
-                if (option.OptionBehaviour == null)
-                {
-                    float yoffset = option.IsText ? 300f : 0f;
-                    float xoffset = option.IsText ? 300f : 0.3f;
-                    var stringOption = Object.Instantiate(template, tohMenu.transform);
-                    scOptions.Add(stringOption);
-                    stringOption.OnValueChanged = new Action<OptionBehaviour>((o) => { });
-                    stringOption.TitleText.text = option.Name;
-                    stringOption.Value = stringOption.oldValue = option.CurrentValue;
-                    stringOption.ValueText.text = option.GetString();
-                    stringOption.name = option.Name;
-                    
-                    if (!Main.ModeForSmallScreen.Value)
-                    {
-                        stringOption.transform.Find("Background").localScale = new Vector3(1.6f, 1f, 1f);
-                        stringOption.transform.Find("Plus_TMP").localPosition += new Vector3(option.IsText ? 300f : 1.4f, yoffset, 0f);
-                        stringOption.transform.Find("Minus_TMP").localPosition += new Vector3(option.IsText ? 300f : 1.0f, yoffset, 0f);
-                        stringOption.transform.Find("Value_TMP").localPosition += new Vector3(option.IsText ? 300f : 1.2f, yoffset, 0f);
-                        stringOption.transform.Find("Value_TMP").GetComponent<RectTransform>().sizeDelta = new Vector2(1.6f, 0.26f);
-                        stringOption.transform.Find("Title_TMP").localPosition += new Vector3(option.IsText ? 0.25f : 0.1f, option.IsText ? -0.1f : 0f, 0f);
-                        stringOption.transform.Find("Title_TMP").GetComponent<RectTransform>().sizeDelta = new Vector2(5.5f, 0.37f);
-                    }
-                    else
-                    {
-                        stringOption.transform.Find("Background").localScale = new Vector3(1.2f, 1f, 1f);
-                        stringOption.transform.Find("Plus_TMP").localPosition += new Vector3(xoffset, yoffset, 0f);
-                        stringOption.transform.Find("Minus_TMP").localPosition += new Vector3(xoffset, yoffset, 0f);
-                        stringOption.transform.Find("Value_TMP").localPosition += new Vector3(xoffset, yoffset, 0f);
-                        stringOption.transform.Find("Title_TMP").localPosition += new Vector3(option.IsText ? 0.3f : 0.15f, option.IsText ? -0.1f : 0f, 0f);
-                        stringOption.transform.Find("Title_TMP").GetComponent<RectTransform>().sizeDelta = new Vector2(3.5f, 0.37f);
-                    }
-
-                    option.OptionBehaviour = stringOption;
-                }
-                option.OptionBehaviour.gameObject.SetActive(true);
-            }
-            tohMenu.Children = scOptions.ToArray();
-            tohSettings.gameObject.SetActive(false);
-            menus.Add(tohSettings.gameObject);
-
-            var tohTab = Object.Instantiate(roleTab, roleTab.transform.parent);
-            tohTab.transform.Find("Hat Button").Find("Icon").GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite($"TOHE.Resources.Images.TabIcon_{tab}.png", 100f);
-            tabs.Add(tohTab);
-            var tohTabHighlight = tohTab.transform.Find("Hat Button").Find("Tab Background").GetComponent<SpriteRenderer>();
-            highlights.Add(tohTabHighlight);
-        }
-
-        for (var i = 0; i < tabs.Count; i++)
-        {
-            if (!Main.ModeForSmallScreen.Value)
-                tabs[i].transform.localPosition = new(0.65f * (i - 1) - tabs.Count / 3.23f, tabs[i].transform.localPosition.y, tabs[i].transform.localPosition.z);
-            else
-                tabs[i].transform.localPosition = new(0.6f * (i - 1) - tabs.Count / 3.25f, tabs[i].transform.localPosition.y, tabs[i].transform.localPosition.z);
-
-            var button = tabs[i].GetComponentInChildren<PassiveButton>();
-            if (button == null) continue;
-            var copiedIndex = i;
-            button.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
-            Action value = () =>
-            {
-                for (var j = 0; j < menus.Count; j++)
-                {
-                    menus[j].SetActive(j == copiedIndex);
-                    highlights[j].enabled = j == copiedIndex;
-                }
-            };
-            button.OnClick.AddListener(value);
         }
     }
 }
@@ -201,6 +331,12 @@ public class GameOptionsMenuUpdatePatch
     public static void Postfix(GameOptionsMenu __instance)
     {
         if (__instance.transform.parent.parent.name == "Game Settings") return;
+
+        if (GameStates.IsHideNSeek)
+        {
+            Main.HideNSeekOptions.NumImpostors = Options.NumImpostorsHnS.GetInt();
+        }
+
         foreach (var tab in EnumHelper.GetAllValues<TabGroup>())
         {
             string tabcolor = tab switch
@@ -216,7 +352,7 @@ public class GameOptionsMenuUpdatePatch
                 _ => "#ffffff",
             };
             if (__instance.transform.parent.parent.name != tab + "Tab") continue;
-            __instance.transform.Find("../../GameGroup/Text").GetComponent<TMPro.TextMeshPro>().SetText($"<color={tabcolor}>" + GetString("TabGroup." + tab) + "</color>");
+            __instance.transform.Find("../../GameGroup/Text").GetComponent<TextMeshPro>().SetText($"<color={tabcolor}>" + GetString("TabGroup." + tab) + "</color>");
 
             _timer += Time.deltaTime;
             if (_timer < 0.1f) return;
@@ -225,11 +361,8 @@ public class GameOptionsMenuUpdatePatch
             float numItems = __instance.Children.Length;
             var offset = 2.7f;
 
-            foreach (var option in OptionItem.AllOptions.ToArray())
+            foreach (var option in OptionItem.AllOptions.Where(opt => tab == opt.Tab && opt.OptionBehaviour != null && opt.OptionBehaviour.gameObject != null).ToArray())
             {
-                if (tab != option.Tab) continue;
-                if (option?.OptionBehaviour == null || option.OptionBehaviour.gameObject == null) continue;
-
                 var enabled = true;
                 var parent = option.Parent;
 
@@ -332,7 +465,14 @@ public class StringOptionEnablePatch
         if (option == null) return true;
 
         __instance.OnValueChanged = new Action<OptionBehaviour>((o) => { });
-        __instance.TitleText.text = option.GetName();
+        if (option.IsVanillaText)
+        {
+            __instance.TitleText.text = option.GetNameVanilla();
+        }
+        else
+        {
+            __instance.TitleText.text = option.GetName();
+        }
         __instance.Value = __instance.oldValue = option.CurrentValue;
         __instance.ValueText.text = option.GetString();
 
@@ -348,6 +488,21 @@ public class StringOptionIncreasePatch
         var option = OptionItem.AllOptions.FirstOrDefault(opt => opt.OptionBehaviour == __instance);
         if (option == null) return true;
 
+        if (option.Name == "GameMode")
+        {
+            var gameModeCount = Options.gameModes.Length - 1;
+            switch (GameOptionsManager.Instance.CurrentGameOptions.GameMode)
+            {
+                // To prevent the Host from selecting CustomGameMode.HidenSeekTOHE
+                case GameModes.Normal when option.CurrentValue == gameModeCount - 1:
+                // To prevent the Host from selecting CustomGameMode.Standard/FFA
+                case GameModes.HideNSeek when option.CurrentValue == gameModeCount:
+                    return false;
+                default:
+                    break;
+            }
+        }
+
         option.SetValue(option.CurrentValue + (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) ? 5 : 1));
         return false;
     }
@@ -360,6 +515,20 @@ public class StringOptionDecreasePatch
     {
         var option = OptionItem.AllOptions.FirstOrDefault(opt => opt.OptionBehaviour == __instance);
         if (option == null) return true;
+
+        if (option.Name == "GameMode")
+        {
+            switch (GameOptionsManager.Instance.CurrentGameOptions.GameMode)
+            {
+                // To prevent the Host from selecting CustomGameMode.HidenSeekTOHE
+                case GameModes.Normal when option.CurrentValue == 0:
+                // To prevent the Host from selecting CustomGameMode.Standard/FFA
+                case GameModes.HideNSeek when option.CurrentValue == Options.gameModes.Length - 1:
+                    return false;
+                default:
+                    break;
+            }
+        }
 
         option.SetValue(option.CurrentValue - (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) ? 5 : 1));
         return false;
@@ -379,6 +548,8 @@ public static class RolesSettingsMenuPatch
 {
     public static void Postfix(RolesSettingsMenu __instance)
     {
+        if (GameStates.IsHideNSeek) return;
+
         foreach (var ob in __instance.Children.ToArray())
         {
             switch (ob.Title)

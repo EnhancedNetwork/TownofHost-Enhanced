@@ -21,11 +21,14 @@ namespace TOHE.Roles.AddOns.Common
         public static void ChangeVotingData(Dictionary<byte, int> VotingData)
         { 
             //The incoming votedata does not count influenced votes
-            List<byte> playerIdList = new();
+            List<byte> playerIdList = [];
+
             Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Influenced))
                 .Do(x => playerIdList.Add(x.PlayerId));
-            if (!playerIdList.Any()) return;
+            
+            if (playerIdList.Count == 0) return;
             if (playerIdList.Count >= Main.AllAlivePlayerControls.Length) return;
+
             int max = 0;
             bool tie = false;
             byte exileId = byte.MaxValue;

@@ -13,7 +13,7 @@ public class Mini
         EvilMiniRate = EvilMiniSpawnChances.GetFloat();
         IsEvilMini = Random.Range(1, 100) < EvilMiniRate;
     }
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static int GrowUpTime = new();
     public static int GrowUp = new();
     //public static int EvilKillCDmin = new();
@@ -23,6 +23,7 @@ public class Mini
     public static OptionItem EveryoneCanKnowMini;
     public static OptionItem CountMeetingTime;
     public static bool IsEnable = false;
+    public static bool misguessed = false;
     public static OptionItem EvilMiniSpawnChances;
     public static OptionItem CanBeEvil;
     public static OptionItem UpDateAge;
@@ -47,10 +48,11 @@ public class Mini
     public static void Init()
     {
         GrowUpTime = 0;
-        playerIdList = new();
+        playerIdList = [];
         GrowUp = GrowUpDuration.GetInt() / 18;
         IsEnable = false;
         Age = 0;
+        misguessed = false;
     }
     public static void Add(byte playerId)
     {
@@ -128,7 +130,7 @@ public class Mini
         if (Age == 0) return MinorCD.GetFloat();
         if (Age == 18) return MajorCD.GetFloat();
 
-        return MinorCD.GetFloat() + ((MajorCD.GetFloat() - MinorCD.GetFloat()) / 18) * Age;
+        return MinorCD.GetFloat() + (MajorCD.GetFloat() - MinorCD.GetFloat()) / 18 * Age;
     }
     public static string GetAge(byte playerId) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), Age != 18 ? $"({Age})" : "");
 }

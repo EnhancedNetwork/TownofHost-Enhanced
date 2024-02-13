@@ -8,7 +8,7 @@ namespace TOHE;
 public static class Reverie
 {
     private static readonly int Id = 11100;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     public static OptionItem DefaultKillCooldown;
@@ -41,8 +41,8 @@ public static class Reverie
     }
     public static void Init()
     {
-        playerIdList = new();
-        NowCooldown = new();
+        playerIdList = [];
+        NowCooldown = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -54,6 +54,11 @@ public static class Reverie
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
+    }
+    public static void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        NowCooldown.Remove(playerId);
     }
     public static void OnReportDeadBody()
     {

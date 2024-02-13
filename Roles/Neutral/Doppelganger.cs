@@ -8,15 +8,15 @@ namespace TOHE.Roles.Neutral;
 public static class Doppelganger
 {
     private static readonly int Id = 25000;
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     private static OptionItem KillCooldown;
     public static OptionItem MaxSteals;
 
-    public static Dictionary<byte, string> DoppelVictim = new();
-    public static Dictionary<byte, GameData.PlayerOutfit> DoppelPresentSkin = new();
-    public static Dictionary<byte, int> TotalSteals = new();
+    public static Dictionary<byte, string> DoppelVictim = [];
+    public static Dictionary<byte, GameData.PlayerOutfit> DoppelPresentSkin = [];
+    public static Dictionary<byte, int> TotalSteals = [];
 
 
     public static void SetupCustomOption()
@@ -29,10 +29,10 @@ public static class Doppelganger
 
     public static void Init()
     {
-        playerIdList = new();
-        DoppelVictim = new();
-        TotalSteals = new();
-        DoppelPresentSkin = new();
+        playerIdList = [];
+        DoppelVictim = [];
+        TotalSteals = [];
+        DoppelPresentSkin = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -48,7 +48,7 @@ public static class Doppelganger
             Main.ResetCamPlayerList.Add(playerId);
     }
 
-    private static void SendRPC(byte playerId, bool isTargetList = false)
+    private static void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDoppelgangerStealLimit, SendOption.Reliable, -1);
         writer.Write(playerId);
@@ -81,15 +81,15 @@ public static class Doppelganger
         return instance;
     }
 
-    public static void RpcChangeSkin(PlayerControl pc, GameData.PlayerOutfit newOutfit)
+    public static void RpcChangeSkin(PlayerControl pc, GameData.PlayerOutfit newOutfit, uint level)
     {
         var sender = CustomRpcSender.Create(name: $"Doppelganger.RpcChangeSkin({pc.Data.PlayerName})");
-        //if (pc.PlayerId == PlayerControl.LocalPlayer.PlayerId) Main.nickName = newOutfit.PlayerName;
+
         pc.SetName(newOutfit.PlayerName);
         sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetName)
             .Write(newOutfit.PlayerName)
         .EndRpc();
-        //pc.RpcSetName(newOutfit.PlayerName); 
+
         Main.AllPlayerNames[pc.PlayerId] = newOutfit.PlayerName;
 
         pc.SetColor(newOutfit.ColorId);
@@ -121,6 +121,10 @@ public static class Doppelganger
         sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetNamePlateStr)
             .Write(newOutfit.NamePlateId)
             .EndRpc();
+        pc.SetLevel(level);
+        sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetLevel)
+            .Write(level)
+            .EndRpc();
 
         sender.SendMessage();
         DoppelPresentSkin[pc.PlayerId] = newOutfit;
@@ -151,16 +155,18 @@ public static class Doppelganger
 
         var killerSkin = new GameData.PlayerOutfit()
             .Set(kname, killer.CurrentOutfit.ColorId, killer.CurrentOutfit.HatId, killer.CurrentOutfit.SkinId, killer.CurrentOutfit.VisorId, killer.CurrentOutfit.PetId, killer.CurrentOutfit.NamePlateId);
+        var killerLvl = Utils.GetPlayerInfoById(killer.PlayerId).PlayerLevel;
 
         var targetSkin = new GameData.PlayerOutfit()
             .Set(tname, target.CurrentOutfit.ColorId, target.CurrentOutfit.HatId, target.CurrentOutfit.SkinId, target.CurrentOutfit.VisorId, target.CurrentOutfit.PetId, target.CurrentOutfit.NamePlateId);
+        var targetLvl = Utils.GetPlayerInfoById(target.PlayerId).PlayerLevel;
 
         DoppelVictim[target.PlayerId] = tname;
         
 
-        RpcChangeSkin(target, killerSkin);
+        RpcChangeSkin(target, killerSkin, killerLvl);
         Logger.Info("Changed target skin", "Doppelganger");
-        RpcChangeSkin(killer, targetSkin);
+        RpcChangeSkin(killer, targetSkin, targetLvl);
         Logger.Info("Changed killer skin", "Doppelganger");
 
         SendRPC(killer.PlayerId);

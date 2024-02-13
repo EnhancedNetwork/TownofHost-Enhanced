@@ -12,16 +12,16 @@ namespace TOHE.Roles.Impostor;
 public static class Swooper
 {
     private static readonly int Id = 4700;
-    private static List<byte> playerIdList = new();
+    private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
     private static OptionItem SwooperCooldown;
     private static OptionItem SwooperDuration;
     private static OptionItem SwooperVentNormallyOnCooldown;
 
-    private static Dictionary<byte, long> InvisTime = new();
-    private static Dictionary<byte, long> lastTime = new();
-    private static Dictionary<byte, int> ventedId = new();
+    private static Dictionary<byte, long> InvisTime = [];
+    private static Dictionary<byte, long> lastTime = [];
+    private static Dictionary<byte, int> ventedId = [];
 
     public static void SetupCustomOption()
     {
@@ -34,10 +34,10 @@ public static class Swooper
     }
     public static void Init()
     {
-        playerIdList = new();
-        InvisTime = new();
-        lastTime = new();
-        ventedId = new();
+        playerIdList = [];
+        InvisTime = [];
+        lastTime = [];
+        ventedId = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -55,8 +55,8 @@ public static class Swooper
     }
     public static void ReceiveRPC(MessageReader reader)
     {
-        InvisTime = new();
-        lastTime = new();
+        InvisTime = [];
+        lastTime = [];
         long invis = long.Parse(reader.ReadString());
         long last = long.Parse(reader.ReadString());
         if (invis > 0) InvisTime.Add(PlayerControl.LocalPlayer.PlayerId, invis);
@@ -67,12 +67,29 @@ public static class Swooper
     public static bool IsInvis(byte id) => InvisTime.ContainsKey(id);
 
     private static long lastFixedTime = 0;
+    public static void OnReportDeadBody()
+    {
+        lastTime = [];
+        InvisTime = [];
+
+        foreach (var swooperId in playerIdList.ToArray())
+        {
+            if (!ventedId.ContainsKey(swooperId)) continue;
+            var swooper = Utils.GetPlayerById(swooperId);
+            if (swooper == null) return;
+
+            swooper?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(swooperId, out var id) ? id : Main.LastEnteredVent[swooperId].Id);
+            SendRPC(swooper);
+        }
+
+        ventedId = [];
+    }
     public static void AfterMeetingTasks()
     {
         if (!IsEnable) return;
 
-        lastTime = new();
-        InvisTime = new();
+        lastTime = [];
+        InvisTime = [];
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => playerIdList.Contains(x.PlayerId)).ToArray())
         {
             lastTime.Add(pc.PlayerId, Utils.GetTimeStamp());
@@ -93,8 +110,9 @@ public static class Swooper
         if (lastFixedTime != now)
         {
             lastFixedTime = now;
-            Dictionary<byte, long> newList = new();
-            List<byte> refreshList = new();
+            Dictionary<byte, long> newList = [];
+            List<byte> refreshList = [];
+
             foreach (var it in InvisTime)
             {
                 var pc = Utils.GetPlayerById(it.Key);
@@ -104,6 +122,7 @@ public static class Swooper
                 {
                     lastTime.Add(pc.PlayerId, now);
                     pc?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(pc.PlayerId, out var id) ? id : Main.LastEnteredVent[pc.PlayerId].Id);
+                    ventedId.Remove(pc.PlayerId);
                     NameNotifyManager.Notify(pc, GetString("SwooperInvisStateOut"));
                     SendRPC(pc);
                     continue;
@@ -130,7 +149,7 @@ public static class Swooper
                 ventedId.Remove(pc.PlayerId);
                 ventedId.Add(pc.PlayerId, ventId);
 
-                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, 34, SendOption.Reliable, pc.GetClientId());
+                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.BootFromVent, SendOption.Reliable, pc.GetClientId());
                 writer.WritePacked(ventId);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
 

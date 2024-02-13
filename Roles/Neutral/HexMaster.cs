@@ -7,6 +7,7 @@ using TOHE.Roles.Crewmate;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+
 namespace TOHE.Roles.Neutral;
 
 public static class HexMaster
@@ -18,19 +19,19 @@ public static class HexMaster
         DoubleTrigger,
     };
     public static readonly string[] SwitchTriggerText =
-    {
+    [
         "TriggerKill", "TriggerVent","TriggerDouble"
-    };
+    ];
 
     private static readonly int Id = 16400;
     private static Color RoleColorHex = Utils.GetRoleColor(CustomRoles.HexMaster);
     private static Color RoleColorSpell = Utils.GetRoleColor(CustomRoles.Impostor);
 
-    public static List<byte> playerIdList = new();
+    public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
-    public static Dictionary<byte, bool> HexMode = new();
-    public static Dictionary<byte, List<byte>> HexedPlayer = new();
+    public static Dictionary<byte, bool> HexMode = [];
+    public static Dictionary<byte, List<byte>> HexedPlayer = [];
 
     public static OptionItem ModeSwitchAction;
     public static OptionItem HexesLookLikeSpells;
@@ -45,9 +46,9 @@ public static class HexMaster
     }
     public static void Init()
     {
-        playerIdList = new();
-        HexMode = new();
-        HexedPlayer = new();
+        playerIdList = [];
+        HexMode = [];
+        HexedPlayer = [];
         IsEnable = false;
     }
     public static void Add(byte playerId)
@@ -55,7 +56,7 @@ public static class HexMaster
         playerIdList.Add(playerId);
         IsEnable = true;
         HexMode.Add(playerId, false);
-        HexedPlayer.Add(playerId, new());
+        HexedPlayer.Add(playerId, []);
         NowSwitchTrigger = (SwitchTrigger)ModeSwitchAction.GetValue();
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
@@ -214,7 +215,7 @@ public static class HexMaster
                 Main.AfterMeetingDeathPlayers.Remove(pc.PlayerId);
             }
         }
-        CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Hex, hexedIdList.ToArray());
+        CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Hex, [.. hexedIdList]);
         RemoveHexedPlayer();
     }
     public static string GetHexedMark(byte target, bool isMeeting)

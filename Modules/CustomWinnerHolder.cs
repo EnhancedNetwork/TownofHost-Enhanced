@@ -22,9 +22,9 @@ public static class CustomWinnerHolder
     public static void Reset()
     {
         WinnerTeam = CustomWinner.Default;
-        AdditionalWinnerTeams = new();
-        WinnerRoles = new();
-        WinnerIds = new();
+        AdditionalWinnerTeams = [];
+        WinnerRoles = [];
+        WinnerIds = [];
     }
     public static void ClearWinners()
     {
@@ -52,7 +52,7 @@ public static class CustomWinnerHolder
     }
     public static bool CheckForConvertedWinner(byte playerId)
     {
-        foreach (var role in Utils.GetPlayerById(playerId).GetCustomSubRoles())
+        foreach (var role in Utils.GetPlayerById(playerId).GetCustomSubRoles().ToArray())
         {
             if (!(role == CustomRoles.Madmate || role == CustomRoles.Admired || role.IsConverted())) continue;
             switch (role)
@@ -82,17 +82,17 @@ public static class CustomWinnerHolder
 
     public static MessageWriter WriteTo(MessageWriter writer)
     {
-        writer.Write((int)WinnerTeam);
+        writer.WritePacked((int)WinnerTeam);
 
-        writer.Write(AdditionalWinnerTeams.Count);
+        writer.WritePacked(AdditionalWinnerTeams.Count);
         foreach (var wt in AdditionalWinnerTeams)
-            writer.Write((int)wt);
+            writer.WritePacked((int)wt);
 
-        writer.Write(WinnerRoles.Count);
+        writer.WritePacked(WinnerRoles.Count);
         foreach (var wr in WinnerRoles)
-            writer.Write((int)wr);
+            writer.WritePacked((int)wr);
 
-        writer.Write(WinnerIds.Count);
+        writer.WritePacked(WinnerIds.Count);
         foreach (var id in WinnerIds)
             writer.Write(id);
 
@@ -100,20 +100,20 @@ public static class CustomWinnerHolder
     }
     public static void ReadFrom(MessageReader reader)
     {
-        WinnerTeam = (CustomWinner)reader.ReadInt32();
+        WinnerTeam = (CustomWinner)reader.ReadPackedInt32();
 
-        AdditionalWinnerTeams = new();
-        int AdditionalWinnerTeamsCount = reader.ReadInt32();
+        AdditionalWinnerTeams = [];
+        int AdditionalWinnerTeamsCount = reader.ReadPackedInt32();
         for (int i = 0; i < AdditionalWinnerTeamsCount; i++)
-            AdditionalWinnerTeams.Add((AdditionalWinners)reader.ReadInt32());
+            AdditionalWinnerTeams.Add((AdditionalWinners)reader.ReadPackedInt32());
 
-        WinnerRoles = new();
-        int WinnerRolesCount = reader.ReadInt32();
+        WinnerRoles = [];
+        int WinnerRolesCount = reader.ReadPackedInt32();
         for (int i = 0; i < WinnerRolesCount; i++)
-            WinnerRoles.Add((CustomRoles)reader.ReadInt32());
+            WinnerRoles.Add((CustomRoles)reader.ReadPackedInt32());
 
-        WinnerIds = new();
-        int WinnerIdsCount = reader.ReadInt32();
+        WinnerIds = [];
+        int WinnerIdsCount = reader.ReadPackedInt32();
         for (int i = 0; i < WinnerIdsCount; i++)
             WinnerIds.Add(reader.ReadByte());
     }
