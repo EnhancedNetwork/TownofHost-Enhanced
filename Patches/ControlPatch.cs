@@ -330,14 +330,14 @@ internal class ControllerManagerUpdatePatch
                     if (!pc.AmOwner) pc.MyPhysics.RpcEnterVent(2);
                 }
             }
-            if (Input.GetKeyDown(KeyCode.V) && !GameStates.IsLobby)
+            if (GetKeysDown(KeyCode.LeftShift, KeyCode.V, KeyCode.Return) && !GameStates.IsLobby && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug)
             {
                 Vector2 pos = PlayerControl.LocalPlayer.NetTransform.transform.position;
                 foreach (var pc in PlayerControl.AllPlayerControls)
                 {
                     if (!pc.AmOwner)
                     {
-                        pc.NetTransform.RpcSnapTo(pos);
+                        pc.RpcTeleport(pos);
                         pos.x += 0.5f;
                     }
                 }
