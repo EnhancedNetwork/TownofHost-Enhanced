@@ -117,7 +117,7 @@ public static class Collector
                     CollectVote.TryAdd(pc.PlayerId, 0);
                     CollectVote[pc.PlayerId] = CollectVote[pc.PlayerId] + VoteAmount;
                     SendRPC(pc.PlayerId);
-                    Logger.Info($"{pc.GetNameWithRole(true).RemoveHtmlTags()}, collected {VoteAmount} votes from {Utils.GetPlayerById(data.Key).GetNameWithRole(true).RemoveHtmlTags()}", "Collected votes");
+                    Logger.Info($"{pc.GetNameWithRole().RemoveHtmlTags()}, collected {VoteAmount} votes from {Utils.GetPlayerById(data.Key).GetNameWithRole().RemoveHtmlTags()}", "Collected votes");
                 }
             }
             if (CollectVote.ContainsKey(pc.PlayerId)) Logger.Info($"Total amount of votes collected {CollectVote[pc.PlayerId]}", "Collector total amount");
