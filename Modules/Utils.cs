@@ -652,7 +652,7 @@ public static class Utils
                     hasTasks &= !ForRecompute;
                     break;
                 case CustomRoles.Mundane:
-                    hasTasks = !ForRecompute;
+                    if (!hasTasks) hasTasks = !ForRecompute;
                     break;
 
             }
