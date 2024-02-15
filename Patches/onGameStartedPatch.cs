@@ -1306,7 +1306,11 @@ internal class SelectRolesPatch
         if (count <= 0) return;
         for (var i = 0; i < count; i++)
         {
+            // Select player
             var player = allPlayers[IRandom.Instance.Next(allPlayers.Count)];
+            allPlayers.Remove(player);
+
+            // Set Add-on
             Main.PlayerStates[player.PlayerId].SetSubRole(role);
             Logger.Info($"Registered Add-on: {player?.Data?.PlayerName} = {player.GetCustomRole()} + {role}", $"Assign {role}");
         }
