@@ -2706,6 +2706,7 @@ public static class Utils
         if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: false);
         if (Seeker.IsEnable) Seeker.AfterMeetingTasks(notifyPlayer: false);
 
+        if (Collector.IsEnable) Collector.AfterMeetingTasks();
         if (Blackmailer.IsEnable) Blackmailer.AfterMeetingTasks();
         if (Swooper.IsEnable) Swooper.AfterMeetingTasks();
         if (Chameleon.IsEnable) Chameleon.AfterMeetingTasks();
