@@ -1306,6 +1306,9 @@ internal class SelectRolesPatch
         if (count <= 0) return;
         for (var i = 0; i < count; i++)
         {
+            // if the number of all players is 0
+            if (allPlayers.Count <= 0) return;
+
             // Select player
             var player = allPlayers[IRandom.Instance.Next(allPlayers.Count)];
             allPlayers.Remove(player);
