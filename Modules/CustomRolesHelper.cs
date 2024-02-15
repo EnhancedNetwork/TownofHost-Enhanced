@@ -1056,8 +1056,6 @@ static class CustomRolesHelper
         // Checking for conflicts with roles
         else if (pc.Is(CustomRoles.GM) || role is CustomRoles.Lovers || pc.Is(CustomRoles.Needy)) return false;
 
-        Logger.Info($"pc.Is(role): {pc.Is(role)}", "Check");
-
         if (checkLimitAddons)
             if (pc.HasSubRole() && pc.GetCustomSubRoles().Count >= Options.NoLimitAddonsNumMax.GetInt()) return false;
 
