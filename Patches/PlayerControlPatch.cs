@@ -87,9 +87,16 @@ class CmdCheckMurderPatch
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
     {
         Logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}", "CmdCheckMurder");
-        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || !GameStates.IsModHost) return true;
 
-        __instance.CheckMurder(target);
+        if (AmongUsClient.Instance.AmHost && GameStates.IsModHost)
+            __instance.CheckMurder(target);
+        else
+        {
+            MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.CheckMurder, SendOption.Reliable, -1);
+            messageWriter.WriteNetObject(target);
+            AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+        }
+
         return false;
     }
 }
