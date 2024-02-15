@@ -215,7 +215,7 @@ public static class Credentials
     {
         public static void Prefix(ModManager __instance)
         {
-            __instance.ShowModStamp();
+            __instance.ModStamp.enabled = true;
 
             LateTask.Update(Time.deltaTime);
             CheckMurderPatch.Update();

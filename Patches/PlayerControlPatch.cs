@@ -128,6 +128,7 @@ class CheckMurderPatch
 
         // Is the target in a killable state?
         if (target.Data == null // Check if PlayerData is not null
+            || target.PlayerId == killer.PlayerId // Impossible interaction
             // Check target status
             || target.inVent
             || target.inMovingPlat // Moving Platform on Airhip and Zipline on Fungle
@@ -152,7 +153,8 @@ class CheckMurderPatch
         }
 
         var divice = Options.CurrentGameMode == CustomGameMode.FFA ? 3000f : 2000f;
-        float minTime = Mathf.Max(0.02f, AmongUsClient.Instance.Ping / divice * 6f); //Ping value is milliseconds (ms), so ÷ 2000
+        var localdelay = DoubleTrigger.PlayerIdList.Contains(killer.PlayerId) ? 0.02f : 0.16f;
+        float minTime = Mathf.Max(localdelay, AmongUsClient.Instance.Ping / divice * 6f); //Ping value is milliseconds (ms), so ÷ 2000
         // No value is stored in TimeSinceLastKill || Stored time is greater than or equal to minTime => Allow kill
 
         //↓ If not permitted
