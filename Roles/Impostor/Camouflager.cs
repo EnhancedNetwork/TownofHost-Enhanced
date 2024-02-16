@@ -106,6 +106,8 @@ public static class Camouflager
         {
             Timer.Remove(camouflager.PlayerId);
             ClearCamouflage();
+            camouflager.RpcResetAbilityCooldown();
+            camouflager.SyncSettings();
             return;
         }
         if (!Timer.TryGetValue(camouflager.PlayerId, out var oldTime)) return;
@@ -113,8 +115,10 @@ public static class Camouflager
         var nowTime = Utils.GetTimeStamp();
         if (nowTime - oldTime >= CamouflageDuration)
         {
-            ClearCamouflage();
             Timer.Remove(camouflager.PlayerId);
+            ClearCamouflage();
+            camouflager.RpcResetAbilityCooldown();
+            camouflager.SyncSettings();
         }
     }
 }
