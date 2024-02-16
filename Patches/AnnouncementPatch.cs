@@ -2936,6 +2936,58 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
+                    Number = 100009,
+                    Title = "Town of Host: Enhanced v1.5.1",
+                    SubTitle = "★★ Un'Altro Aggiornamento? Correzioni di Bug, Evviva! ★★",
+                    ShortTitle = "TOH: Enhanced v1.5.1",
+                    BeforeNumber = 100008,
+                    Text = "<size=150%>Benvenuto a TOH: Enhanced v1.5.1!</size>\n" +
+                    "\n<b>【Base】</b>\n - Base su TOH: Enhanced v1.5.0\r\n" +
+
+                    "\n<b>【Correzioni di Bug】</b>" +
+                        "\n     - Tentativo di correzione della condizione di vittoria del Maestro dei Quiz (Da: Drakos)" +
+                        "\n     - Risolto il bug con l'assegnazione del doppio modificatore (Da: TommyXL)" +
+                        "\n     - Il gioco ora dovrebbe terminare se il giocatore esce durante l'assegnazione dei ruoli (Da: TommyXL)" +
+                        "\n     - Untore e Pestilenza non possono più avere Fragile (Da: TommyXL)" +
+                        "\n     - Risolto il KCD dell'Aiutante non impostato correttamente (Da: TommyXL)" +
+                        "\n     - Risolto il bug quando il Pellicano mangia Pestilenza (Da: TommyXL)" +
+                        "\n     - Sistemati i nomi dei giocatori dopo l'utilizzo di /kill (Da: TommyXL)" +
+                        "\n     - Risolto un bug che impediva a Copiatore di copiare il Chiaroveggente (Da: TommyXL)" +
+                        "\n     - Risolti gli aggiornamenti del nome dopo l'uccisione del Doppelganger (Da: TommyXL)" +
+                        "\n     - La skin del Doppelganger non cambia durante il Caos di Funghi (Da: TommyXL)" +
+                        "\n     - Risolti gli errori di Pinguino nei log (Da: TommyXL)" +
+                        "\n     - Tentativo di correzione della disconnessione a causa della perdita affidabile di pacchetti nella lobby (Da: TommyXL)" +
+                        "\n     - Risolti i problemi relativi al furto dei modificatori del Bandito (Da: ryuk)" +
+                        "\n     - Risolto il bug quando Raggio Spaccatura cambiava unità da 's' nelle impostazioni (Da: ryuk)" +
+                        "\n     - Risolti molti problemi con la rimozione dei modificatori da parte del Capitano (Da: ryuk)" +
+                        "\n     - Risolto bug per cui il Gangster non poteva reclutare alcuni ruoli anche quando l'impostazione era su <b>ON</b> (Da: ryuk)" +
+                        "\n     - Risolto un bug per cui un Neutrale con Mondano non poteva completare gli incarichi nei client modificati (Da: ryuk)" +
+                        "\n     - Tentativo di correzione per la condizione di vittoria del Gatto di Schrodinger (Da: ryuk)" +
+                        "\n     - Risolti i progressi per Untore nei client modificati (Da: ryuk)" +
+                        "\n     - Risolto un bug quando il Collezionista poteva raccogliere voti doppi (Da: ryuk)\r\n" +
+
+                    "\n<b>【Crediti ai Traduttori】</b>" +
+                        "\n     - Brasiliano (Da: Dx7405)" +
+                        "\n     - Olandese (Da: apemv, madmazel_)" +
+                        "\n     - Francese (Da: FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                        "\n     - Italiano (Da: alot, Baphojack, Mattix606)" +
+                        "\n     - Giapponese (Da: Sunnyboi)" +
+                        "\n     - Latino Americano (Da: CreepPower)" +
+                        "\n     - Russo (Da: TommyXL, Shoulder Devil, chill_ultimated, Nevermore59)" +
+                        "\n     - Cinese Semplificato (Da: CrewCyan, LezaiYa, NikoCat223)" +
+                        "\n     - Spagnolo (Da: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
+                        "\n     - Cinese Tradizionale (Da: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
+                        "\n<b> Scopri tutti i nostri traduttori sul nostro sito web</b>\r\n" +
+
+                    "\n\n★ Benvenuto a Town of Host: Enhanced v1.5.1 ★",
+
+                    Date = "2024-2-17T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
                     Number = 100008,
                     Title = "Town of Host: Enhanced v1.5.0",
                     SubTitle = "★★ Grande Aggiornamento! ★★",
