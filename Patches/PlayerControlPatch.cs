@@ -1634,8 +1634,11 @@ public static class CheckShapeShiftPatch
         if (!Options.DisableShapeshiftAnimations.GetBool()) return true;
 
         var shapeshifter = __instance;
-        Logger.Info($"{shapeshifter.GetRealName()} => {target.GetRealName()}, shouldAnimate = {shouldAnimate}", "Check ShapeShift");
         var role = shapeshifter.GetCustomRole();
+        Logger.Info($"{shapeshifter.GetRealName()} => {target.GetRealName()}, shouldAnimate = {shouldAnimate}", "Check ShapeShift");
+
+        // Temporarily not check this roles
+        if (role is CustomRoles.Sniper or CustomRoles.Warlock or CustomRoles.Fireworker) return true;
 
         if (role.GetVNRole() != CustomRoles.Shapeshifter)
         {
