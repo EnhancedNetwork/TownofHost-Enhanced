@@ -196,7 +196,9 @@ class CheckMurderPatch
                     break;
 
                 case CustomRoles.Fragile:
-                    return Fragile.KillFragile(killer, target);
+                    if (Fragile.KillFragile(killer, target))
+                        return false;
+                    break;
 
                 case CustomRoles.Aware:
                     Aware.OnCheckMurder(killerRole, target);
@@ -777,7 +779,9 @@ class CheckMurderPatch
             switch (killerSubRole)
             {
                 case CustomRoles.Mare:
-                    return Mare.IsLightsOut;
+                    if (Mare.IsLightsOut)
+                        return false;
+                    break;
 
                 case CustomRoles.Unlucky:
                     Unlucky.SuicideRand(killer);
@@ -798,7 +802,9 @@ class CheckMurderPatch
                     break;
 
                 case CustomRoles.Swift:
-                    return Swift.OnCheckMurder(killer, target);
+                    if (!Swift.OnCheckMurder(killer, target))
+                        return false;
+                    break;
             }
         }
 

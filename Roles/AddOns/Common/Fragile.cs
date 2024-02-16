@@ -46,9 +46,9 @@ public static class Fragile
                 }
                 target.SetRealKiller(killer);
                 killer.ResetKillCooldown();
-                return false;
+                return true;
             }
-        return true;
+        return false;
     }
 }
 
