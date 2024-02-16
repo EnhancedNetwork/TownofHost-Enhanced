@@ -1739,10 +1739,10 @@ public static class CheckShapeShiftPatch
                 shapeshifter.RejectShapeshiftAndReset(false);
                 return false;
 
-            //case CustomRoles.FireWorks:
-            //    FireWorks.ShapeShiftState(player, shapeshifting);
-            //    player.RejectShapeshiftAndReset();
-            //    return false;
+            case CustomRoles.Fireworker:
+                Fireworker.ShapeShiftState(shapeshifter, shapeshifting, shapeshiftIsHidden: true);
+                shapeshifter.RejectShapeshiftAndReset();
+                return false;
 
             case CustomRoles.EvilTracker:
                 EvilTracker.OnShapeshift(shapeshifter, target, shapeshifting);
@@ -1857,6 +1857,7 @@ public static class CheckShapeShiftPatch
             case CustomRoles.Camouflager:
                 if (Camouflager.AbilityActivated)
                 {
+                    Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
                     shapeshifter.RejectShapeshiftAndReset(reset: false);
                     return false;
                 }
