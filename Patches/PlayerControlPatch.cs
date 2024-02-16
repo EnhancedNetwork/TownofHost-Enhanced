@@ -1815,7 +1815,7 @@ public static class CheckShapeShiftPatch
                         }
                     }
                     Utils.NotifyRoles();
-                }, 0.5f, "Bomber Suiscide");
+                }, 0.3f, "Bomber Suiscide");
                 return false;
 
             case CustomRoles.Nuker:
@@ -1847,7 +1847,7 @@ public static class CheckShapeShiftPatch
                         shapeshifter.RpcMurderPlayerV3(shapeshifter);
                     }
                     Utils.NotifyRoles();
-                }, 0.5f, "Nuker");
+                }, 0.3f, "Nuker");
                 return false;
 
             case CustomRoles.QuickShooter:
