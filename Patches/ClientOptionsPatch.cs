@@ -11,6 +11,7 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem ShowFPS;
     private static ClientOptionItem EnableGM;
     private static ClientOptionItem AutoStart;
+    private static ClientOptionItem DarkTheme;
     private static ClientOptionItem ShowTextOverlay;
     private static ClientOptionItem ModeForSmallScreen;
     private static ClientOptionItem HorseMode;
@@ -20,6 +21,7 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem EnableCustomButton;
     private static ClientOptionItem EnableCustomSoundEffect;
     private static ClientOptionItem SwitchVanilla;
+
 #if DEBUG
     private static ClientOptionItem VersionCheat;
     private static ClientOptionItem GodMode;
@@ -68,6 +70,10 @@ public static class OptionsMenuBehaviourStartPatch
                 }
             }
         }
+        if (DarkTheme == null || DarkTheme.ToggleButton == null)
+        {
+            DarkTheme = ClientOptionItem.Create("DarkTheme", Main.DarkTheme, __instance);
+        }
         if (ShowTextOverlay == null || ShowTextOverlay.ToggleButton == null)
         {
             ShowTextOverlay = ClientOptionItem.Create("ShowTextOverlay", Main.ShowTextOverlay, __instance);
@@ -109,6 +115,7 @@ public static class OptionsMenuBehaviourStartPatch
                 Main.Instance.Unload();
             }
         }
+
 #if DEBUG
         if (EOSManager.Instance.friendCode.GetDevUser().DeBug)
         {

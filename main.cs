@@ -84,6 +84,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> ShowFPS { get; private set; }
     public static ConfigEntry<bool> EnableGM { get; private set; }
     public static ConfigEntry<bool> AutoStart { get; private set; }
+    public static ConfigEntry<bool> DarkTheme { get; private set; }
     public static ConfigEntry<bool> ShowTextOverlay { get; private set; }
     public static ConfigEntry<bool> ModeForSmallScreen { get; private set; }
     public static ConfigEntry<bool> HorseMode { get; private set; }
@@ -93,7 +94,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> EnableCustomButton { get; private set; }
     public static ConfigEntry<bool> EnableCustomSoundEffect { get; private set; }
     public static ConfigEntry<bool> SwitchVanilla { get; private set; }
-    
+
     // Debug
     public static ConfigEntry<bool> VersionCheat { get; private set; }
     public static bool IsHostVersionCheating = false;
@@ -441,6 +442,7 @@ public class Main : BasePlugin
         ShowFPS = Config.Bind("Client Options", "ShowFPS", false);
         EnableGM = Config.Bind("Client Options", "EnableGM", false);
         AutoStart = Config.Bind("Client Options", "AutoStart", false);
+        DarkTheme = Config.Bind("Client Options", "DarkTheme", false);
         ShowTextOverlay = Config.Bind("Client Options", "ShowTextOverlay", false);
         ModeForSmallScreen = Config.Bind("Client Options", "ModeForSmallScreen", false);
         HorseMode = Config.Bind("Client Options", "HorseMode", false);
