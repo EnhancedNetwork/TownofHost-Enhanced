@@ -1753,6 +1753,7 @@ public static class CheckShapeShiftPatch
                     var lastVentPosition = Main.LastEnteredVentLocation[shapeshifter.PlayerId];
                     Logger.Info($"Miner - {shapeshifter.GetNameWithRole()}:{lastVentPosition}", "MinerTeleport");
                     shapeshifter.RpcTeleport(lastVentPosition);
+                    shapeshifter.RPCPlayCustomSound("Teleport");
                 }
                 return false;
 
@@ -2011,6 +2012,7 @@ class ShapeshiftPatch
                         var lastVentPosition = Main.LastEnteredVentLocation[shapeshifter.PlayerId];
                         Logger.Info($"Miner - {shapeshifter.GetNameWithRole()}:{lastVentPosition}", "MinerTeleport");
                         shapeshifter.RpcTeleport(lastVentPosition);
+                        shapeshifter.RPCPlayCustomSound("Teleport");
                     }
                     break;
                 case CustomRoles.Bomber:
