@@ -1633,56 +1633,56 @@ public static class CheckShapeShiftPatch
         if (!AmongUsClient.Instance.AmHost || !GameStates.IsModHost) return true;
         if (Options.DisableShapeshiftAnimations.GetBool()) return true;
 
-        var player = __instance;
-        Logger.Info($"{player.GetRealName()} => {target.GetRealName()}, shouldAnimate = {shouldAnimate}", "Check ShapeShift");
-        var role = player.GetCustomRole();
+        var shapeshifter = __instance;
+        Logger.Info($"{shapeshifter.GetRealName()} => {target.GetRealName()}, shouldAnimate = {shouldAnimate}", "Check ShapeShift");
+        var role = shapeshifter.GetCustomRole();
 
         if (role.GetVNRole() != CustomRoles.Shapeshifter)
         {
-            player.RejectShapeshiftAndReset();
-            Logger.Info($"Rejected bcz {player.GetRealName()} is not shapeshifter in mod roles", "Check ShapeShift");
+            shapeshifter.RejectShapeshiftAndReset();
+            Logger.Info($"Rejected bcz {shapeshifter.GetRealName()} is not shapeshifter in mod roles", "Check ShapeShift");
             return false;
         }
 
-        if (!player.IsAlive())
+        if (!shapeshifter.IsAlive())
         {
-            player.RejectShapeshiftAndReset();
-            Logger.Info($"Rejected bcz {player.GetRealName()} isnt alive", "Check ShapeShift");
+            shapeshifter.RejectShapeshiftAndReset();
+            Logger.Info($"Rejected bcz {shapeshifter.GetRealName()} is dead", "Check ShapeShift");
             return false;
         }
 
-        bool shapeshifting = player.PlayerId != target.PlayerId;
+        bool shapeshifting = shapeshifter.PlayerId != target.PlayerId;
 
         switch (role)
         {
             //case CustomRoles.Sniper:
-            //    Sniper.OnShapeshift(player, shapeshifting);
-            //    player.RejectShapeshiftAndReset();
+            //    Sniper.OnShapeshift(shapeshifter, shapeshifting);
+            //    shapeshifter.RejectShapeshiftAndReset();
             //    return false;
 
             case CustomRoles.BountyHunter:
                 Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
-                player.RejectShapeshiftAndReset(false);
+                shapeshifter.RejectShapeshiftAndReset(false);
                 return false;
 
             case CustomRoles.Penguin:
                 Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
-                player.RejectShapeshiftAndReset(false);
+                shapeshifter.RejectShapeshiftAndReset(false);
                 return false;
 
             //case CustomRoles.Warlock:
-            //    if (Main.CursedPlayers[player.PlayerId] != null)
+            //    if (Main.CursedPlayers[shapeshifter.PlayerId] != null)
             //    {
-            //        if (Main.CursedPlayers[player.PlayerId].IsAlive())
+            //        if (Main.CursedPlayers[shapeshifter.PlayerId].IsAlive())
             //        {
-            //            var cp = Main.CursedPlayers[player.PlayerId];
+            //            var cp = Main.CursedPlayers[shapeshifter.PlayerId];
             //            Vector2 cppos = cp.transform.position;
             //            Dictionary<PlayerControl, float> cpdistance = [];
             //            float dis;
             //            foreach (PlayerControl p in Main.AllAlivePlayerControls)
             //            {
             //                if (p.PlayerId == cp.PlayerId) continue;
-            //                if (!Options.WarlockCanKillSelf.GetBool() && p.PlayerId == player.PlayerId) continue;
+            //                if (!Options.WarlockCanKillSelf.GetBool() && p.PlayerId == shapeshifter.PlayerId) continue;
             //                if (!Options.WarlockCanKillAllies.GetBool() && p.GetCustomRole().IsImpostor()) continue;
             //                if (p.Is(CustomRoles.Glitch)) continue;
             //                if (p.Is(CustomRoles.Pestilence)) continue;
@@ -1697,42 +1697,42 @@ public static class CheckShapeShiftPatch
             //                PlayerControl targetw = min.Key;
             //                if (cp.RpcCheckAndMurder(targetw, true))
             //                {
-            //                    targetw.SetRealKiller(player);
+            //                    targetw.SetRealKiller(shapeshifter);
             //                    Logger.Info($"{targetw.GetNameWithRole()}was killed", "Warlock");
             //                    cp.RpcMurderPlayerV3(targetw);//殺す
-            //                    player.SetKillCooldown(forceAnime: true);
-            //                    player.Notify(GetString("WarlockControlKill"));
+            //                    shapeshifter.SetKillCooldown(forceAnime: true);
+            //                    shapeshifter.Notify(GetString("WarlockControlKill"));
             //                }
             //            }
             //            else
             //            {
-            //                player.Notify(GetString("WarlockNoTarget"));
+            //                shapeshifter.Notify(GetString("WarlockNoTarget"));
             //            }
-            //            Main.isCurseAndKill[player.PlayerId] = false;
+            //            Main.isCurseAndKill[shapeshifter.PlayerId] = false;
             //        }
             //        else
             //        {
-            //            player.Notify(GetString("WarlockTargetDead"));
+            //            shapeshifter.Notify(GetString("WarlockTargetDead"));
             //        }
-            //        Main.CursedPlayers[player.PlayerId] = null;
+            //        Main.CursedPlayers[shapeshifter.PlayerId] = null;
             //    }
             //    else
             //    {
-            //        player.Notify(GetString("WarlockNoTargetYet"));
+            //        shapeshifter.Notify(GetString("WarlockNoTargetYet"));
             //    }
-            //    player.RejectShapeshiftAndReset();
+            //    shapeshifter.RejectShapeshiftAndReset();
             //    return false;
             //Need to fix conflicts with other part of code
 
             case CustomRoles.Undertaker:
-                Undertaker.OnShapeshift(player, shapeshifting);
-                player.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
-                player.RejectShapeshiftAndReset();
+                Undertaker.OnShapeshift(shapeshifter, shapeshifting);
+                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+                shapeshifter.RejectShapeshiftAndReset();
                 return false;
 
             case CustomRoles.SerialKiller:
                 Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
-                player.RejectShapeshiftAndReset(false);
+                shapeshifter.RejectShapeshiftAndReset(false);
                 return false;
 
             //case CustomRoles.FireWorks:
@@ -1741,66 +1741,66 @@ public static class CheckShapeShiftPatch
             //    return false;
 
             case CustomRoles.EvilTracker:
-                EvilTracker.OnShapeshift(player, target, shapeshifting);
-                player.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
-                player.RejectShapeshiftAndReset();
+                EvilTracker.OnShapeshift(shapeshifter, target, shapeshifting);
+                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+                shapeshifter.RejectShapeshiftAndReset();
                 return false;
 
-            //case CustomRoles.Miner:
-            //    if (Main.LastEnteredVent.ContainsKey(player.PlayerId))
-            //    {
-            //        var position = Main.LastEnteredVentLocation[player.PlayerId];
-            //        Logger.Msg($"{player.GetNameWithRole()}:{position}", "MinerTeleport");
-            //        player.RpcTeleport(position);
-            //    }
-            //    player.RejectShapeshiftAndReset();
-            //    return false;
+            case CustomRoles.Miner:
+                shapeshifter.RejectShapeshiftAndReset();
+                if (Main.LastEnteredVent.ContainsKey(shapeshifter.PlayerId))
+                {
+                    var lastVentPosition = Main.LastEnteredVentLocation[shapeshifter.PlayerId];
+                    Logger.Info($"Miner - {shapeshifter.GetNameWithRole()}:{lastVentPosition}", "MinerTeleport");
+                    shapeshifter.RpcTeleport(lastVentPosition);
+                }
+                return false;
 
             case CustomRoles.Anonymous:
-                Anonymous.OnShapeshift(player, shapeshifting, target);
-                player.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
-                player.RejectShapeshiftAndReset();
+                Anonymous.OnShapeshift(shapeshifter, shapeshifting, target);
+                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+                shapeshifter.RejectShapeshiftAndReset();
                 return false;
 
             //case CustomRoles.Assassin:
-            //    Assassin.OnShapeshift(player, shapeshifting);
-            //    player.RejectShapeshiftAndReset();
+            //    Assassin.OnShapeshift(shapeshifter, shapeshifting);
+            //    shapeshifter.RejectShapeshiftAndReset();
             //    return false;
             //Role ability require shapeshift
 
             //case CustomRoles.Escapee:
-            //    if (Main.EscapeeLocation.ContainsKey(player.PlayerId))
+            //    if (Main.EscapeeLocation.ContainsKey(shapeshifter.PlayerId))
             //    {
-            //        var position = Main.EscapeeLocation[player.PlayerId];
-            //        Main.EscapeeLocation.Remove(player.PlayerId);
-            //        Logger.Msg($"{player.GetNameWithRole()}:{position}", "EscapeeTeleport");
-            //        player.RpcTeleport(position);
-            //        player.RPCPlayCustomSound("Teleport");
+            //        var position = Main.EscapeeLocation[shapeshifter.PlayerId];
+            //        Main.EscapeeLocation.Remove(shapeshifter.PlayerId);
+            //        Logger.Msg($"{shapeshifter.GetNameWithRole()}:{position}", "EscapeeTeleport");
+            //        shapeshifter.RpcTeleport(position);
+            //        shapeshifter.RPCPlayCustomSound("Teleport");
             //    }
             //    else
             //    {
-            //        Main.EscapeeLocation.Add(player.PlayerId, player.GetCustomPosition());
+            //        Main.EscapeeLocation.Add(shapeshifter.PlayerId, shapeshifter.GetCustomPosition());
             //    }
             //    player.RejectShapeshiftAndReset();
             //    return false;
 
             case CustomRoles.Bomber:
-                player.RejectShapeshiftAndReset();
-                player.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+                shapeshifter.RejectShapeshiftAndReset();
+                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 Logger.Info("The bomb went off", "Bomber");
                 CustomSoundsManager.RPCPlayCustomSoundAll("Boom");
                 foreach (var tg in Main.AllPlayerControls)
                 {
                     if (!tg.IsModClient()) tg.KillFlash();
-                    var pos = player.transform.position;
+                    var pos = shapeshifter.transform.position;
                     var dis = Vector2.Distance(pos, tg.transform.position);
 
                     if (!tg.IsAlive() || Pelican.IsEaten(tg.PlayerId) || Medic.ProtectList.Contains(tg.PlayerId) || (tg.Is(CustomRoleTypes.Impostor) && Options.ImpostorsSurviveBombs.GetBool()) || tg.inVent || tg.Is(CustomRoles.Pestilence) || tg.Is(CustomRoles.Solsticer)) continue;
                     if (dis > Options.BomberRadius.GetFloat()) continue;
-                    if (tg.PlayerId == player.PlayerId) continue;
+                    if (tg.PlayerId == shapeshifter.PlayerId) continue;
 
                     Main.PlayerStates[tg.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
-                    tg.SetRealKiller(player);
+                    tg.SetRealKiller(shapeshifter);
                     tg.RpcMurderPlayerV3(tg);
                     Medic.IsDead(tg);
                 }
@@ -1811,8 +1811,8 @@ public static class CheckShapeShiftPatch
                     {
                         if (totalAlive > 0 && !GameStates.IsEnded)
                         {
-                            Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
-                            player.RpcMurderPlayerV3(player);
+                            Main.PlayerStates[shapeshifter.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
+                            shapeshifter.RpcMurderPlayerV3(shapeshifter);
                         }
                     }
                     Utils.NotifyRoles();
@@ -1820,22 +1820,22 @@ public static class CheckShapeShiftPatch
                 return false;
 
             case CustomRoles.Nuker:
-                player.RejectShapeshiftAndReset();
-                player.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+                shapeshifter.RejectShapeshiftAndReset();
+                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 Logger.Info("The bomb went off", "Nuker");
                 CustomSoundsManager.RPCPlayCustomSoundAll("Boom");
                 foreach (var tg in Main.AllPlayerControls)
                 {
                     if (!tg.IsModClient()) tg.KillFlash();
-                    var pos = player.transform.position;
+                    var pos = shapeshifter.transform.position;
                     var dis = Vector2.Distance(pos, tg.transform.position);
 
                     if (!tg.IsAlive() || Pelican.IsEaten(tg.PlayerId) || Medic.ProtectList.Contains(tg.PlayerId) || tg.inVent || tg.Is(CustomRoles.Pestilence) || tg.Is(CustomRoles.Solsticer)) continue;
                     if (dis > Options.NukeRadius.GetFloat()) continue;
-                    if (tg.PlayerId == player.PlayerId) continue;
+                    if (tg.PlayerId == shapeshifter.PlayerId) continue;
 
                     Main.PlayerStates[tg.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
-                    tg.SetRealKiller(player);
+                    tg.SetRealKiller(shapeshifter);
                     tg.RpcMurderPlayerV3(tg);
                     Medic.IsDead(tg);
                 }
@@ -1844,59 +1844,59 @@ public static class CheckShapeShiftPatch
                     var totalAlive = Main.AllAlivePlayerControls.Length;
                     if (totalAlive > 0 && !GameStates.IsEnded)
                     {
-                        Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
-                        player.RpcMurderPlayerV3(player);
+                        Main.PlayerStates[shapeshifter.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
+                        shapeshifter.RpcMurderPlayerV3(shapeshifter);
                     }
                     Utils.NotifyRoles();
                 }, 0.5f, "Nuker");
                 return false;
 
             case CustomRoles.QuickShooter:
-                QuickShooter.OnShapeshift(player, shapeshifting);
-                player.RejectShapeshiftAndReset();
+                QuickShooter.OnShapeshift(shapeshifter, shapeshifting);
+                shapeshifter.RejectShapeshiftAndReset();
                 return false;
 
             case CustomRoles.Dazzler:
-                Dazzler.OnShapeshift(player, target);
-                player.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
-                player.RejectShapeshiftAndReset();
+                Dazzler.OnShapeshift(shapeshifter, target);
+                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+                shapeshifter.RejectShapeshiftAndReset();
                 return false;
 
             case CustomRoles.Devourer:
-                Devourer.OnShapeshift(player, target);
-                player.RejectShapeshiftAndReset();
+                Devourer.OnShapeshift(shapeshifter, target);
+                shapeshifter.RejectShapeshiftAndReset();
                 return false;
 
             case CustomRoles.Deathpact:
-                Deathpact.OnShapeshift(player, target);
-                player.RejectShapeshiftAndReset();
+                Deathpact.OnShapeshift(shapeshifter, target);
+                shapeshifter.RejectShapeshiftAndReset();
                 return false;
 
             case CustomRoles.Blackmailer:
                 if (!target.IsAlive())
                 {
-                    player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Scavenger), GetString("NotAssassin")));
+                    shapeshifter.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Scavenger), GetString("NotAssassin")));
                     break;
                 }
                 Blackmailer.ForBlackmailer.Add(target.PlayerId);
-                player.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
-                player.RejectShapeshiftAndReset();
+                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+                shapeshifter.RejectShapeshiftAndReset();
                 return false;
 
             case CustomRoles.RiftMaker:
-                RiftMaker.OnShapeshift(player, shapeshifting);
-                player.RejectShapeshiftAndReset();
+                RiftMaker.OnShapeshift(shapeshifter, shapeshifting);
+                shapeshifter.RejectShapeshiftAndReset();
                 return false;
 
             case CustomRoles.Pitfall:
-                Pitfall.OnShapeshift(player);
-                player.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
-                player.RejectShapeshiftAndReset();
+                Pitfall.OnShapeshift(shapeshifter);
+                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+                shapeshifter.RejectShapeshiftAndReset();
                 return false;
 
             case CustomRoles.Disperser:
-                Disperser.DispersePlayers(player, shapeshiftIsHidden: true);
-                player.RejectShapeshiftAndReset();
+                shapeshifter.RejectShapeshiftAndReset();
+                Disperser.DispersePlayers(shapeshifter, shapeshiftIsHidden: true);
                 return false;
         }
 
@@ -2008,11 +2008,9 @@ class ShapeshiftPatch
                 case CustomRoles.Miner:
                     if (shapeshifting && Main.LastEnteredVent.ContainsKey(shapeshifter.PlayerId))
                     {
-                        int ventId = Main.LastEnteredVent[shapeshifter.PlayerId].Id;
-                        var vent = Main.LastEnteredVent[shapeshifter.PlayerId];
-                        var position = Main.LastEnteredVentLocation[shapeshifter.PlayerId];
-                        Logger.Msg($"{shapeshifter.GetNameWithRole()}:{position}", "MinerTeleport");
-                        shapeshifter.RpcTeleport(position);
+                        var lastVentPosition = Main.LastEnteredVentLocation[shapeshifter.PlayerId];
+                        Logger.Info($"Miner - {shapeshifter.GetNameWithRole()}:{lastVentPosition}", "MinerTeleport");
+                        shapeshifter.RpcTeleport(lastVentPosition);
                     }
                     break;
                 case CustomRoles.Bomber:
