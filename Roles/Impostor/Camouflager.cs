@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
@@ -48,6 +49,16 @@ public static class Camouflager
     {
         AURoleOptions.ShapeshifterCooldown = ShapeshiftIsHidden && AbilityActivated ? CamouflageDuration : CamouflageCooldown;
         AURoleOptions.ShapeshifterDuration = CamouflageDuration;
+    }
+    public static void SetAbilityButtonText(HudManager __instance)
+    {
+        if (AbilityActivated)
+            __instance.AbilityButton.OverrideText(GetString("CamouflagerShapeshiftTextAfterDisguise"));
+        else
+            __instance.AbilityButton.OverrideText(GetString("CamouflagerShapeshiftTextBeforeDisguise"));
+
+
+        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
     }
     public static void OnShapeshift(PlayerControl camouflager = null, bool shapeshiftIsHidden = false)
     {
