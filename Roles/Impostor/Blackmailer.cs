@@ -38,8 +38,19 @@ public static class Blackmailer
         AURoleOptions.ShapeshifterCooldown = SkillCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = 1f;
     }
+    public static void OnShapeshift(PlayerControl blackmailer, PlayerControl target)
+    {
+        if (!target.IsAlive())
+        {
+            blackmailer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Scavenger), Translator.GetString("NotAssassin")));
+            return;
+        }
+
+        ForBlackmailer.Add(target.PlayerId);
+        blackmailer.Notify(Translator.GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+    }
     public static void AfterMeetingTasks()
     {
-        Blackmailer.ForBlackmailer.Clear();
+        ForBlackmailer.Clear();
     }
 }

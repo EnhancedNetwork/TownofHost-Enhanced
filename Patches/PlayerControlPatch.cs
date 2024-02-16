@@ -1882,13 +1882,7 @@ public static class CheckShapeShiftPatch
                 return false;
 
             case CustomRoles.Blackmailer:
-                if (!target.IsAlive())
-                {
-                    shapeshifter.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Scavenger), GetString("NotAssassin")));
-                    break;
-                }
-                Blackmailer.ForBlackmailer.Add(target.PlayerId);
-                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+                Blackmailer.OnShapeshift(shapeshifter, target);
                 shapeshifter.RejectShapeshiftAndReset();
                 return false;
 
@@ -2150,14 +2144,7 @@ class ShapeshiftPatch
                     break;
                 case CustomRoles.Blackmailer:
                     if (shapeshifting)
-                    {
-                        if (!target.IsAlive())
-                        {
-                            NameNotifyManager.Notify(__instance, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Scavenger), GetString("NotAssassin")));
-                            break;
-                        }
-                        Blackmailer.ForBlackmailer.Add(target.PlayerId);
-                    }
+                        Blackmailer.OnShapeshift(shapeshifter, target);
                     break;
             }
         }
