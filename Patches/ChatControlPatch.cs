@@ -35,7 +35,7 @@ class ChatControllerUpdatePatch
     {
         if (Main.DarkTheme.Value)
         {
-            __instance.freeChatField.background.color = new Color32(60, 60, 60, byte.MaxValue);
+            __instance.freeChatField.background.color = new Color32(40, 40, 40, byte.MaxValue);
             __instance.freeChatField.textArea.compoText.Color(Color.white);
             __instance.freeChatField.textArea.outputText.color = Color.white;
         }
