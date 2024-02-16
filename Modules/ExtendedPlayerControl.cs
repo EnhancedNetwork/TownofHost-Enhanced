@@ -244,7 +244,11 @@ static class ExtendedPlayerControl
                 writer.Write(time);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
             }
-            Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Observer) && target.PlayerId != x.PlayerId).Do(x => x.RpcGuardAndKill(target, 11, true));
+            // Check Observer
+            if (Observer.IsEnable)
+            {
+                Observer.ActivateGuardAnimation(target.PlayerId, target, 11);
+            }
         }
         player.ResetKillCooldown();
     }
@@ -366,7 +370,7 @@ static class ExtendedPlayerControl
     }
     public static TaskState GetPlayerTaskState(this PlayerControl player)
     {
-        return Main.PlayerStates[player.PlayerId].GetTaskState();
+        return Main.PlayerStates[player.PlayerId].TaskState;
     }
 
     /*public static GameOptionsData DeepCopy(this GameOptionsData opt)
@@ -461,8 +465,9 @@ static class ExtendedPlayerControl
         }, FlashDuration + delay, "Fix Desync Reactor");
     }
 
-    public static string GetRealName(this PlayerControl player, bool isMeeting = false)
+    public static string GetRealName(this PlayerControl player, bool isMeeting = false, bool clientData = false)
     {
+        if (clientData) return player.GetClient().PlayerName;
         return isMeeting ? player?.Data?.PlayerName : player?.name;
     }
     public static bool CanUseKillButton(this PlayerControl pc)
@@ -1441,5 +1446,5 @@ static class ExtendedPlayerControl
     ///<summary>Is the player currently protected</summary>
     public static bool IsProtected(this PlayerControl self) => self.protectedByGuardianId > -1;
 
-    public const MurderResultFlags ResultFlags = MurderResultFlags.Succeeded | MurderResultFlags.DecisionByHost;
+    public const MurderResultFlags ResultFlags = MurderResultFlags.Succeeded; //No need for DecisonByHost
 }

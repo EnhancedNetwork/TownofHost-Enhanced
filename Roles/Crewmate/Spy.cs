@@ -61,7 +61,8 @@ namespace TOHE.Roles.Crewmate
         }
         public static void SendAbilityRPC(byte spyId)
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SpyAbilitySync, SendOption.Reliable, -1);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+            writer.WritePacked((int)CustomRoles.Spy);
             writer.Write(spyId);
             writer.Write(UseLimit[spyId]);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -136,7 +137,7 @@ namespace TOHE.Roles.Crewmate
         {
             var sb = "";
 
-            var taskState = Main.PlayerStates?[playerId].GetTaskState();
+            var taskState = Main.PlayerStates?[playerId].TaskState;
             Color TextColor;
             var TaskCompleteColor = Color.green;
             var NonCompleteColor = Color.yellow;

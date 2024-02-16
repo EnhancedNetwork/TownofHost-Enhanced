@@ -58,7 +58,7 @@ public static class Keeper
         if (playerId == byte.MaxValue) return string.Empty;
         if (!keeperUses.ContainsKey(playerId)) return string.Empty;
         var ProgressText = new StringBuilder();
-        var taskState8 = Main.PlayerStates?[playerId].GetTaskState();
+        var taskState8 = Main.PlayerStates?[playerId].TaskState;
         Color TextColor8;
         var TaskCompleteColor8 = Color.green;
         var NonCompleteColor8 = Color.yellow;
