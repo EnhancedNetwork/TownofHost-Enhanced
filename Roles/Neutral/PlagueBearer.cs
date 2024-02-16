@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TOHE.Roles.Impostor;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TOHE.Roles.Neutral;
 public static class PlagueBearer
@@ -70,7 +71,6 @@ public static class PlagueBearer
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC(MessageReader reader)
-
     {
         byte PlagueBearerId = reader.ReadByte();
         byte PlaguedId = reader.ReadByte();
@@ -108,20 +108,19 @@ public static class PlagueBearer
             return false;
         }
         PlaguedList[killer.PlayerId].Add(target.PlayerId);
-
+        SendRPC(killer, target);
         Utils.NotifyRoles(SpecifySeer: killer);
 
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
 
-        Logger.Msg($"kill cooldown {PlagueBearerCD[killer.PlayerId]}", "PlagueBearer");
+        Logger.Info($"kill cooldown {PlagueBearerCD[killer.PlayerId]}", "PlagueBearer");
         return false;
     }
 
     public static bool IsIndirectKill(PlayerControl killer)
     {
         return Puppeteer.PuppeteerList.ContainsKey(killer.PlayerId) ||
-            NWitch.TaglockedList.ContainsKey(killer.PlayerId) ||
             Shroud.ShroudList.ContainsKey(killer.PlayerId) ||
             Main.CursedPlayers.ContainsValue(killer) ||
             Sniper.snipeTarget.ContainsValue(killer.PlayerId);

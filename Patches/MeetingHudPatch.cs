@@ -43,7 +43,7 @@ class CheckForEndVotingPatch
                 //主动叛变
                 if (pva.DidVote && pc.PlayerId == pva.VotedFor && pva.VotedFor < 253 && !pc.Data.IsDead)
                 {
-                    if (Options.MadmateSpawnMode.GetInt() == 2 && Main.MadmateNum < CustomRoles.Madmate.GetCount() && Utils.CanBeMadmate(pc, true))
+                    if (Options.MadmateSpawnMode.GetInt() == 2 && Main.MadmateNum < CustomRoles.Madmate.GetCount() && pc.CanBeMadmate(inGame: true))
                     {
                         Main.MadmateNum++;
                         pc.RpcSetCustomRole(CustomRoles.Madmate);
@@ -153,8 +153,11 @@ class CheckForEndVotingPatch
                         if (voteTarget.Is(CustomRoles.Captain))
                         {
                             if (!Captain.CaptainVoteTargets.ContainsKey(voteTarget.PlayerId)) Captain.CaptainVoteTargets[voteTarget.PlayerId] = [];
-                            Captain.CaptainVoteTargets[voteTarget.PlayerId].Add(pc.PlayerId);
-                            Captain.SendRPCVoteAdd(voteTarget.PlayerId, pc.PlayerId);
+                            if (!Captain.CaptainVoteTargets[voteTarget.PlayerId].Contains(pc.PlayerId))
+                            {
+                                Captain.CaptainVoteTargets[voteTarget.PlayerId].Add(pc.PlayerId);
+                                Captain.SendRPCVoteAdd(voteTarget.PlayerId, pc.PlayerId);
+                            }
                         }
 
                     }
@@ -550,8 +553,8 @@ class CheckForEndVotingPatch
             name = string.Format(GetString("ExiledNiceMini"), realName, coloredRole);
             DecidedWinner = true;
         }
-        if (crole.Is(CustomRoles.Captain))
-            Captain.OnExile(exileId);
+        //if (crole.Is(CustomRoles.Captain))
+        //    Captain.OnExile(exileId); /*Runs multiple times here*/
 
         //小丑胜利
         if (crole.Is(CustomRoles.Jester))
@@ -671,7 +674,7 @@ class CheckForEndVotingPatch
             if (pc == null) return;
             if (pc.Is(CustomRoles.Susceptible))
             {
-                Susceptible.ChangeRandomDeath();
+                Susceptible.CallEnabledAndChange(pc);
                 deathReason = Susceptible.randomReason;
             }
 
@@ -1177,7 +1180,7 @@ class MeetingHudStartPatch
             //とりあえずSnitchは会議中にもインポスターを確認することができる仕様にしていますが、変更する可能性があります。
 
             if (seer.KnowDeathReason(target))
-                sb.Append($"({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})");
+                sb.Append($" ({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})");
             /*        if (seer.KnowDeadTeam(target))
                     {
                         if (target.Is(CustomRoleTypes.Crewmate) && !(target.Is(CustomRoles.Madmate) || target.Is(CustomRoles.Egoist) || target.Is(CustomRoles.Charmed) || target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Infected) || target.Is(CustomRoles.Contagious) || target.Is(CustomRoles.Rogue) || target.Is(CustomRoles.Rascal) || target.Is(CustomRoles.Soulless) || !target.Is(CustomRoles.Admired)))

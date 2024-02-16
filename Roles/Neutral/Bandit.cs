@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
+using System.Linq;
 using TOHE.Roles.AddOns.Common;
 using UnityEngine;
 using static TOHE.Options;
@@ -11,8 +12,10 @@ public static class Bandit
     private static readonly int Id = 16000;
     private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
+    public static Dictionary<byte, float> killCooldown = [];
 
-    private static OptionItem KillCooldown;
+    public static OptionItem KillCooldownOpt;
+    public static OptionItem StealCooldown;
     public static OptionItem MaxSteals;
     public static OptionItem StealMode;
     public static OptionItem CanStealBetrayalAddon;
@@ -33,7 +36,9 @@ public static class Bandit
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Bandit);
         MaxSteals = IntegerOptionItem.Create(Id + 10, "BanditMaxSteals", new(1, 20, 1), 6, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
-        KillCooldown = FloatOptionItem.Create(Id + 11, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit])
+        KillCooldownOpt = FloatOptionItem.Create(Id + 11, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit])
+            .SetValueFormat(OptionFormat.Seconds);
+        StealCooldown = FloatOptionItem.Create(Id + 17, "StealCooldown", new(0f, 180f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit])
             .SetValueFormat(OptionFormat.Seconds);
         StealMode = StringOptionItem.Create(Id + 12, "BanditStealMode", BanditStealModeOpt, 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
         CanStealBetrayalAddon = BooleanOptionItem.Create(Id + 13, "BanditCanStealBetrayalAddon", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
@@ -47,6 +52,7 @@ public static class Bandit
         playerIdList = [];
         Targets = [];
         TotalSteals = [];
+        killCooldown = [];
         IsEnable = false;
     }
 
@@ -83,13 +89,17 @@ public static class Bandit
             TotalSteals.Add(PlayerId, 0);
     }
 
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+    public static void SetKillCooldown(byte id)
+    {
+        if (!killCooldown.ContainsKey(id)) killCooldown[id] = KillCooldownOpt.GetFloat();
+        Main.AllPlayerKillCooldown[id] = killCooldown[id];
+    }
     public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(false);
 
     private static CustomRoles? SelectRandomAddon(PlayerControl Target)
     {
         if (!AmongUsClient.Instance.AmHost) return null;
-        var AllSubRoles = Main.PlayerStates[Target.PlayerId].SubRoles;
+        var AllSubRoles = Main.PlayerStates[Target.PlayerId].SubRoles.ToList();
         for (int i = AllSubRoles.Count - 1; i >= 0; i--)
         {
             var role = AllSubRoles[i];

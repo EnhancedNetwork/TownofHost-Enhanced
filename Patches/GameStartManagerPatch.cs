@@ -74,6 +74,9 @@ public class GameStartManagerPatch
 
             if (GameStates.IsNormalGame)
             {
+                Main.NormalOptions.ConfirmImpostor = false;
+                Main.NormalOptions.SetBool(BoolOptionNames.ConfirmImpostor, false);
+
                 if (Main.NormalOptions.KillCooldown == 0f)
                     Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
 

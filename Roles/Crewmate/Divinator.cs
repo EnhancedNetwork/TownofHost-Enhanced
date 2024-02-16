@@ -65,24 +65,26 @@ public static class Divinator
 
     public static void SendRPC(byte playerId, bool isTemp = false, bool voted = false)
     {
-        MessageWriter writer;
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Divinator);
+        writer.Write(isTemp);
+
         if (!isTemp)
         {
-            writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDivinatorLimit, SendOption.Reliable, -1);
             writer.Write(playerId);
             writer.Write(CheckLimit[playerId]);
             writer.Write(voted);
         }
         else
         {
-            writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDivinatorTempLimit, SendOption.Reliable, -1);
             writer.Write(playerId);
             writer.Write(TempCheckLimit[playerId]);
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader, bool isTemp = false)
+    public static void ReceiveRPC(MessageReader reader)
     {
+        bool isTemp = reader.ReadBoolean();
         byte playerId = reader.ReadByte();
         float limit = reader.ReadSingle();
         if (!isTemp)
@@ -188,7 +190,8 @@ public static class Divinator
                 CustomRoles.Arsonist,
                 CustomRoles.Assassin,
                 CustomRoles.BallLightning,
-                CustomRoles.Collector],
+                CustomRoles.Collector,
+                CustomRoles.Stealth],
                 
                 [CustomRoles.Capitalism,
                 CustomRoles.Counterfeiter,
@@ -295,7 +298,8 @@ public static class Divinator
                 CustomRoles.Monarch,
                 CustomRoles.Revolutionist,
                 CustomRoles.Succubus,
-                CustomRoles.Enigma],
+                CustomRoles.Enigma,
+                CustomRoles.PlagueDoctor],
                 
                 [CustomRoles.Innocent,
                 CustomRoles.Masochist,
@@ -393,11 +397,11 @@ public static class Divinator
                 CustomRoles.Sniper],
                 
                 [CustomRoles.Puppeteer,
-                CustomRoles.NWitch,
                 CustomRoles.Deputy,
                 CustomRoles.Transporter,
                 CustomRoles.Twister,
-                CustomRoles.Mercenary],
+                CustomRoles.Mercenary,
+                CustomRoles.Penguin],
                 
                 [CustomRoles.Crewpostor,
                 CustomRoles.Taskinator,

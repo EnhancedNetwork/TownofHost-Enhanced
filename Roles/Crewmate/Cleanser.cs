@@ -71,7 +71,8 @@ public static class Cleanser
     }
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCleanserCleanLimit, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Cleanser);
         writer.Write(playerId);
         writer.Write(CleanserUses[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -112,7 +113,13 @@ public static class Cleanser
         Utils.SendMessage(string.Format(GetString("CleanserRemovedRole"), target.GetRealName()), voter.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cleanser),GetString("CleanserTitle")));
         SendRPC(voter.PlayerId);
     }
-
+    public static void OnReportDeadBody()
+    {
+        foreach (var pid in CleanserTarget.Keys.ToArray())
+        {
+            CleanserTarget[pid] = byte.MaxValue;
+        }
+    }
     public static void AfterMeetingTasks(bool notifyPlayer = false)
     {
         if (notifyPlayer) 

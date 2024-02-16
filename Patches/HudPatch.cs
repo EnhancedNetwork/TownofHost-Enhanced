@@ -187,10 +187,6 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("KillButtonText"));
                         break;
-                    case CustomRoles.NWitch:
-                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        __instance.KillButton.OverrideText($"{GetString("WitchControlButtonText")}");
-                        break;
                     case CustomRoles.Shroud:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText($"{GetString("ShroudButtonText")}");
@@ -651,7 +647,6 @@ class SetHudActivePatch
             case CustomRoles.Deputy:
             case CustomRoles.Investigator:
             case CustomRoles.Monarch:
-            case CustomRoles.NWitch:
             case CustomRoles.Shroud:
             case CustomRoles.Innocent:
             case CustomRoles.Reverie:

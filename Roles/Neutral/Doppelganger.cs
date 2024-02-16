@@ -12,6 +12,8 @@ public static class Doppelganger
     public static bool IsEnable = false;
 
     private static OptionItem KillCooldown;
+    public static OptionItem CanVent;
+    public static OptionItem HasImpostorVision;
     public static OptionItem MaxSteals;
 
     public static Dictionary<byte, string> DoppelVictim = [];
@@ -25,6 +27,8 @@ public static class Doppelganger
         MaxSteals = IntegerOptionItem.Create(Id + 10, "DoppelMaxSteals", new(1, 14, 1), 9, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Doppelganger]);
         KillCooldown = FloatOptionItem.Create(Id + 11, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Doppelganger])
             .SetValueFormat(OptionFormat.Seconds);
+        CanVent = BooleanOptionItem.Create(Id + 12, "CanVent", true, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Doppelganger]);
+        HasImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", true, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Doppelganger]);
     }
 
     public static void Init()
@@ -132,7 +136,7 @@ public static class Doppelganger
 
     public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null || !IsEnable || Camouflage.IsCamouflage || Camouflager.AbilityActivated) return;
+        if (killer == null || target == null || !IsEnable || Camouflage.IsCamouflage || Camouflager.AbilityActivated || Utils.IsActive(SystemTypes.MushroomMixupSabotage)) return;
         if (Main.CheckShapeshift.TryGetValue(target.PlayerId, out bool isShapeshifitng) && isShapeshifitng)
         {
             Logger.Info("Target was shapeshifting", "Doppelganger");
@@ -170,7 +174,8 @@ public static class Doppelganger
         Logger.Info("Changed killer skin", "Doppelganger");
 
         SendRPC(killer.PlayerId);
-        Utils.NotifyRoles(ForceLoop: true);
+        Utils.NotifyRoles(ForceLoop: true, NoCache: true);
+        RPC.SyncAllPlayerNames();
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
         return;

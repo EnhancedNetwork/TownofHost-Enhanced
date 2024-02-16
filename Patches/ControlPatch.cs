@@ -228,7 +228,7 @@ internal class ControllerManagerUpdatePatch
             }
 
             // Reset All TOHE Setting To Default
-            if (GameStates.IsLobby && GetKeysDown(KeyCode.Return, KeyCode.Return, KeyCode.Delete))
+            if (GameStates.IsLobby && GetKeysDown(KeyCode.LeftControl, KeyCode.LeftShift, KeyCode.Return, KeyCode.Delete))
             {
                 OptionItem.AllOptions.ToArray().Where(x => x.Id > 0).Do(x => x.SetValueNoRpc(x.DefaultValue));
                 Logger.SendInGame(GetString("RestTOHESetting"));
@@ -241,7 +241,7 @@ internal class ControllerManagerUpdatePatch
             }
 
             //放逐自己
-            if (GetKeysDown(KeyCode.Return, KeyCode.E, KeyCode.LeftShift) && GameStates.IsInGame)
+            if (GetKeysDown(KeyCode.LeftControl, KeyCode.LeftShift, KeyCode.E, KeyCode.Return) && GameStates.IsInGame)
             {
                 PlayerControl.LocalPlayer.Data.IsDead = true;
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].deathReason = PlayerState.DeathReason.etc;
@@ -330,14 +330,14 @@ internal class ControllerManagerUpdatePatch
                     if (!pc.AmOwner) pc.MyPhysics.RpcEnterVent(2);
                 }
             }
-            if (Input.GetKeyDown(KeyCode.V) && !GameStates.IsLobby)
+            if (GetKeysDown(KeyCode.LeftShift, KeyCode.V, KeyCode.Return) && !GameStates.IsLobby && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug)
             {
                 Vector2 pos = PlayerControl.LocalPlayer.NetTransform.transform.position;
                 foreach (var pc in PlayerControl.AllPlayerControls)
                 {
                     if (!pc.AmOwner)
                     {
-                        pc.NetTransform.RpcSnapTo(pos);
+                        pc.RpcTeleport(pos);
                         pos.x += 0.5f;
                     }
                 }

@@ -90,7 +90,7 @@ internal class ChatCommands
                     foreach (var kvp in Main.playerVersion.OrderBy(pair => pair.Key).ToArray())
                     {
                         var pc = Utils.GetClientById(kvp.Key)?.Character;
-                        version_text += $"{kvp.Key}/{(pc?.PlayerId != null ? pc.PlayerId.ToString() : "null")}:{pc?.GetRealName() ?? "null"}:{kvp.Value.forkId}/{kvp.Value.version}({kvp.Value.tag})\n";
+                        version_text += $"{kvp.Key}/{(pc?.PlayerId != null ? pc.PlayerId.ToString() : "null")}:{pc?.GetRealName(clientData: true) ?? "null"}:{kvp.Value.forkId}/{kvp.Value.version}({kvp.Value.tag})\n";
                     }
                     if (version_text != "")
                     {
@@ -380,7 +380,10 @@ internal class ChatCommands
                     {
                         Logger.Info("GetRealKiller()", "/death command");
                         var killer = PlayerControl.LocalPlayer.GetRealKiller();
-                        Utils.SendMessage(text: GetString("DeathCmd.YourName") + "<b>" + PlayerControl.LocalPlayer.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.YourRole") + "<b>" + $"<color={Utils.GetRoleColorCode(PlayerControl.LocalPlayer.GetCustomRole())}>{Utils.GetRoleName(PlayerControl.LocalPlayer.GetCustomRole())}</color>" + "</b>" + "\n\r" + GetString("DeathCmd.DeathReason") + "<b>" + Utils.GetVitalText(PlayerControl.LocalPlayer.PlayerId) + "</b>" + "\n\r" + "</b>" + "\n\r" + GetString("DeathCmd.KillerName") + "<b>" + killer.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.KillerRole") + "<b>" + $"<color={Utils.GetRoleColorCode(killer.GetCustomRole())}>{Utils.GetRoleName(killer.GetCustomRole())}</color>" + "</b>", sendTo: PlayerControl.LocalPlayer.PlayerId);
+                        string killerName = killer == null ? "N/A" : killer.GetRealName();
+                        string killerRole = killer == null ? "N/A" : Utils.GetRoleName(killer.GetCustomRole());
+                        Utils.SendMessage(text: GetString("DeathCmd.YourName") + "<b>" + PlayerControl.LocalPlayer.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.YourRole") + "<b>" + $"<color={Utils.GetRoleColorCode(PlayerControl.LocalPlayer.GetCustomRole())}>{Utils.GetRoleName(PlayerControl.LocalPlayer.GetCustomRole())}</color>" + "</b>" + "\n\r" + GetString("DeathCmd.DeathReason") + "<b>" + Utils.GetVitalText(PlayerControl.LocalPlayer.PlayerId) + "</b>" + "\n\r" + "</b>" + "\n\r" + GetString("DeathCmd.KillerName") + "<b>" + killerName + "</b>" + "\n\r" + GetString("DeathCmd.KillerRole") + "<b>" + $"<color={Utils.GetRoleColorCode(killer.GetCustomRole())}>{killerRole}</color>" + "</b>", sendTo: PlayerControl.LocalPlayer.PlayerId);
+
                         break;
                     }
 
@@ -681,6 +684,12 @@ internal class ChatCommands
                         target.RpcMurderPlayerV3(target);
                         if (target.AmOwner) Utils.SendMessage(GetString("HostKillSelfByCommand"), title: $"<color=#ff0000>{GetString("DefaultSystemMessageTitle")}</color>");
                         else Utils.SendMessage(string.Format(GetString("Message.Executed"), target.Data.PlayerName));
+
+                        _ = new LateTask(() =>
+                        {
+                            Utils.NotifyRoles(ForceLoop: true, NoCache: true);
+
+                        }, 0.2f, "Update NotifyRoles players after /kill");
                     }
                     break;
 
@@ -1166,7 +1175,10 @@ internal class ChatCommands
             "豺狼" or "蓝狼" => GetString("Jackal"),
             "神" or "上帝" => GetString("God"),
             "冤罪師" or "冤罪师" or "冤罪" => GetString("Innocent"),
+            "暗殺者" or "隐形者" =>GetString("Stealth"),
+            "企鵝" or "企鹅" =>GetString("Penguin"),
             "鵜鶘" or "鹈鹕" => GetString("Pelican"),
+            "疫醫" or "瘟疫学家" => GetString("PlagueDoctor"),
             "革命家" or "革命者" => GetString("Revolutionist"),
             "單身狗" => GetString("Hater"),
             "柯南" => GetString("Konan"),
@@ -1181,7 +1193,6 @@ internal class ChatCommands
             "萬疫之神" or "瘟疫" => GetString("Pestilence"),
             "故障者" or "缺点者" or "缺点" => GetString("Glitch"),
             "跟班" or "跟班小弟" => GetString("Sidekick"),
-            "巫婆" => GetString("NWitch"),
             "追隨者" or "赌徒" or "下注" => GetString("Totocalcio"),
             "魅魔" => GetString("Succubus"),
             "連環殺手" or "连环杀手" => GetString("SerialKiller"),
@@ -1193,7 +1204,7 @@ internal class ChatCommands
             "挑戰者" or "决斗者" or "挑战者" => GetString("Pirate"),
             "炸彈王" or "炸弹狂" or "煽动者" => GetString("Agitater"),
             "獨行者" or "独行者" => GetString("Maverick"),
-            "被詛咒的靈魂" or "被诅咒的灵魂" => GetString("CursedSoul"),
+            "被詛咒的靈魂" or "诅咒之人" => GetString("CursedSoul"),
             "竊賊" or "小偷" => GetString("Pickpocket"),
             "背叛者" or "背叛" => GetString("Traitor"),
             "禿鷲" or "秃鹫" => GetString("Vulture"),
@@ -1214,6 +1225,7 @@ internal class ChatCommands
             "精靈" or "小精灵" or "精灵" => GetString("Pixie"),
             "咒魔" or "神秘者" => GetString("Occultist"),
             "靈魂收割者" or "灵魂收集者" or "灵魂收集" or "收集灵魂" => GetString("SoulCollector"),
+            "薛丁格的貓" or "薛定谔的猫" => GetString("SchrodingersCat"),
             "暗戀者" or "浪漫者" => GetString("Romantic"),
             "報復者" or "复仇浪漫者" => GetString("VengefulRomantic"),
             "絕情者" or "无情浪漫者" => GetString("RuthlessRomantic"),
@@ -1290,12 +1302,13 @@ internal class ChatCommands
             "敏捷" => GetString("Nimble"),
             "規避者" or "规避者" or "规避" => GetString("Circumvent"),
             "名人" or "网络员" or "网络" => GetString("Cyber"),
-            "維修員" or "维修员" or "維修員" or "维修" => GetString("Repairman"),
             "焦急者" or "焦急的" or "焦急" => GetString("Hurried"),
             "OIIAI" => GetString("Oiiai"),
             "順從者" or "影响者" or "順從" or "影响" => GetString("Influenced"),
             "沉默者" or "沉默" => GetString("Silent"),
             "易感者" or "易感" => GetString("Susceptible"),
+            "狡猾" or "棘手者" or "棘手" => ("Tricky"),
+            "彩虹" => GetString("Rainbow"),
             "疲勞者" or "疲劳者" or "疲勞" or "疲劳" => GetString("Tired"),
 
             // 随机阵营职业
@@ -1439,9 +1452,9 @@ internal class ChatCommands
         Directory.CreateDirectory(vipTagsFiles);
         Directory.CreateDirectory(sponsorTagsFiles);
 
-        Logger.Info($"This player was Blackmailed?", "OnReceiveChat");
         if (Blackmailer.ForBlackmailer.Contains(player.PlayerId) && player.IsAlive() && player.PlayerId != 0)
         {
+            Logger.Info($"This player (id {player.PlayerId}) was Blackmailed", "OnReceiveChat");
             ChatManager.SendPreviousMessagesToAll();
             ChatManager.cancel = false;
             canceled = true; 
@@ -1667,7 +1680,9 @@ internal class ChatCommands
                 else
                 {
                     var killer = player.GetRealKiller();
-                    Utils.SendMessage(GetString("DeathCmd.YourName") + "<b>" + player.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.YourRole") + "<b>" + $"<color={Utils.GetRoleColorCode(player.GetCustomRole())}>{Utils.GetRoleName(player.GetCustomRole())}</color>" + "</b>" + "\n\r" + GetString("DeathCmd.DeathReason") + "<b>" + Utils.GetVitalText(player.PlayerId) + "</b>" + "\n\r" + "</b>" + "\n\r" + GetString("DeathCmd.KillerName") + "<b>" + killer.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.KillerRole") + "<b>" + $"<color={Utils.GetRoleColorCode(killer.GetCustomRole())}>{Utils.GetRoleName(killer.GetCustomRole())}</color>" + "</b>", player.PlayerId);
+                    string killerName = killer == null ? "N/A" : killer.GetRealName();
+                    string killerRole = killer == null ? "N/A" : Utils.GetRoleName(killer.GetCustomRole());
+                    Utils.SendMessage(GetString("DeathCmd.YourName") + "<b>" + player.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.YourRole") + "<b>" + $"<color={Utils.GetRoleColorCode(player.GetCustomRole())}>{Utils.GetRoleName(player.GetCustomRole())}</color>" + "</b>" + "\n\r" + GetString("DeathCmd.DeathReason") + "<b>" + Utils.GetVitalText(player.PlayerId) + "</b>" + "\n\r" + "</b>" + "\n\r" + GetString("DeathCmd.KillerName") + "<b>" + killerName + "</b>" + "\n\r" + GetString("DeathCmd.KillerRole") + "<b>" + $"<color={Utils.GetRoleColorCode(killer.GetCustomRole())}>{killerRole}</color>" + "</b>", player.PlayerId);
                     break;
                 }
 
@@ -2320,8 +2335,17 @@ class ChatUpdatePatch
     public static bool DoBlockChat = false;
     public static void Postfix(ChatController __instance)
     {
+        if (Main.DarkTheme.Value)
+        {
+            var chatBubble = __instance.chatBubblePool.Prefab.Cast<ChatBubble>();
+            chatBubble.TextArea.overrideColorTags = false;
+            chatBubble.TextArea.color = Color.white;
+            chatBubble.Background.color = Color.black;
+        }
+
         if (!AmongUsClient.Instance.AmHost || Main.MessagesToSend.Count == 0 || (Main.MessagesToSend[0].Item2 == byte.MaxValue && Main.MessageWait.Value > __instance.timeSinceLastMessage)) return;
         if (DoBlockChat) return;
+        
         var player = PlayerControl.LocalPlayer;
         if (GameStates.IsInGame || player.Data.IsDead)
         {
@@ -2330,29 +2354,34 @@ class ChatUpdatePatch
                      ?? player;
         }
         if (player == null) return;
+        
         (string msg, byte sendTo, string title) = Main.MessagesToSend[0];
         Main.MessagesToSend.RemoveAt(0);
+        
         int clientId = sendTo == byte.MaxValue ? -1 : Utils.GetPlayerById(sendTo).GetClientId();
         var name = player.Data.PlayerName;
+        
         if (clientId == -1)
         {
             player.SetName(title);
             DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
             player.SetName(name);
         }
+
         var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
-        writer.StartMessage(clientId);
-        writer.StartRpc(player.NetId, (byte)RpcCalls.SetName)
+        _ = writer.StartMessage(clientId);
+        _ = writer.StartRpc(player.NetId, (byte)RpcCalls.SetName)
             .Write(title)
             .EndRpc();
-        writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)
+        _ = writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)
             .Write(msg)
             .EndRpc();
-        writer.StartRpc(player.NetId, (byte)RpcCalls.SetName)
+        _ = writer.StartRpc(player.NetId, (byte)RpcCalls.SetName)
             .Write(player.Data.PlayerName)
             .EndRpc();
-        writer.EndMessage();
+        _ = writer.EndMessage();
         writer.SendMessage();
+
         __instance.timeSinceLastMessage = 0f;
     }
 }

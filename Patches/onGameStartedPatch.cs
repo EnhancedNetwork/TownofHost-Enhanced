@@ -24,6 +24,10 @@ internal class ChangeRoleSettings
     public static void Postfix(AmongUsClient __instance)
     {
         Main.OverrideWelcomeMsg = "";
+        Main.AssignRolesIsStarted = true;
+
+        Logger.Msg("Is Started", "AssignRoles");
+
         try
         {
             // Note: No positions are set at this time.
@@ -139,6 +143,7 @@ internal class ChangeRoleSettings
             if (GameStates.IsNormalGame)
             {
                 GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor = false;
+                GameOptionsManager.Instance.currentNormalGameOptions.SetBool(BoolOptionNames.ConfirmImpostor, false);
 
                 MeetingTimeManager.Init();
 
@@ -263,6 +268,7 @@ internal class ChangeRoleSettings
             BallLightning.Init();
             DarkHide.Init();
             Greedier.Init();
+            Observer.Init();
             Collector.Init();
             Benefactor.Init();
             Taskinator.Init();
@@ -325,7 +331,6 @@ internal class ChangeRoleSettings
             Tracefinder.Init();
             Devourer.Init();
             PotionMaster.Init();
-            NWitch.Init();
             Traitor.Init();
             Spiritualist.Init();
             Vulture.Init();
@@ -365,6 +370,7 @@ internal class ChangeRoleSettings
             Quizmaster.Init();
             Tired.Init();
             Rainbow.Init();
+            //Tricky.Init();
 
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
@@ -382,6 +388,9 @@ internal class ChangeRoleSettings
             MeetingStates.FirstMeeting = true;
             GameStates.AlreadyDied = false;
             EAC.ReportTimes = [];
+
+            SetEverythingUpPatch.LastWinsText = "";
+            SetEverythingUpPatch.LastWinsReason = "";
         }
         catch (Exception ex)
         {
@@ -558,11 +567,8 @@ internal class SelectRolesPatch
             }
 
             if (CustomRoles.Lovers.IsEnable() && (CustomRoles.Hater.IsEnable() ? -1 : rd.Next(1, 100)) <= Options.LoverSpawnChances.GetInt()) AssignLoversRolesFromList();
-            foreach (var role in AddonRolesList)
-            {
-                if (rd.Next(1, 100) <= (Options.CustomAdtRoleSpawnRate.TryGetValue(role, out var sc) ? sc.GetFloat() : 0))
-                    if (role.IsEnable()) AssignSubRoles(role);
-            }
+
+            AssignAddonRoles();
 
             //RPCによる同期
             foreach (var pair in Main.PlayerStates)
@@ -816,6 +822,9 @@ internal class SelectRolesPatch
                     case CustomRoles.Benefactor:
                         Benefactor.Add(pc.PlayerId);
                         break;
+                    case CustomRoles.Observer:
+                        Observer.Add(pc.PlayerId);
+                        break;
                     case CustomRoles.CursedWolf:
                         Main.CursedWolfSpellCount[pc.PlayerId] = Options.GuardSpellTimes.GetInt();
                         break;
@@ -966,9 +975,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Traitor:
                         Traitor.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.NWitch:
-                        NWitch.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Shroud:
                         Shroud.Add(pc.PlayerId);
@@ -1139,6 +1145,8 @@ internal class SelectRolesPatch
             Utils.CountAlivePlayers(true);
             Utils.SyncAllSettings();
             SetColorPatch.IsAntiGlitchDisabled = false;
+
+            Logger.Msg("Ended", "AssignRoles");
         }
         catch (Exception ex)
         {
@@ -1290,7 +1298,7 @@ internal class SelectRolesPatch
         }
         RPC.SyncLoversPlayers();
     }
-    private static void AssignSubRoles(CustomRoles role, int RawCount = -1)
+    public static void AssignSubRoles(CustomRoles role, int RawCount = -1)
     {
         var allPlayers = Main.AllAlivePlayerControls.Where(x => CustomRolesHelper.CheckAddonConfilct(role, x)).ToList();
         var count = Math.Clamp(RawCount, 0, allPlayers.Count);
@@ -1298,7 +1306,14 @@ internal class SelectRolesPatch
         if (count <= 0) return;
         for (var i = 0; i < count; i++)
         {
-            var player = allPlayers[IRandom.Instance.Next(0, allPlayers.Count)];
+            // if the number of all players is 0
+            if (allPlayers.Count <= 0) return;
+
+            // Select player
+            var player = allPlayers[IRandom.Instance.Next(allPlayers.Count)];
+            allPlayers.Remove(player);
+
+            // Set Add-on
             Main.PlayerStates[player.PlayerId].SetSubRole(role);
             Logger.Info($"Registered Add-on: {player?.Data?.PlayerName} = {player.GetCustomRole()} + {role}", $"Assign {role}");
         }

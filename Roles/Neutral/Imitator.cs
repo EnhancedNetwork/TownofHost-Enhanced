@@ -19,7 +19,6 @@ public static class Imitator
     public static readonly string[] ImitatorIncompatibleNeutralMode =
     [
         "Role.Imitator",
-        "Role.Witch",
         "Role.Pursuer",
         "Role.Follower",
         "Role.Maverick",
@@ -133,26 +132,21 @@ public static class Imitator
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedImitator")));
                     break;
                 case 1:
-                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedWitch")));
-                    killer.RpcSetCustomRole(CustomRoles.NWitch);
-                    NWitch.Add(killer.PlayerId);
-                    break;
-                case 2:
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedPursuer")));
                     killer.RpcSetCustomRole(CustomRoles.Pursuer);
                     Pursuer.Add(killer.PlayerId);
                     break;
-                case 3:
+                case 2:
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedFollower")));
                     killer.RpcSetCustomRole(CustomRoles.Totocalcio);
                     Totocalcio.Add(killer.PlayerId);
                     break;
-                case 4:
+                case 3:
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedMaverick")));
                     killer.RpcSetCustomRole(CustomRoles.Maverick);
                     Maverick.Add(killer.PlayerId);
                     break;
-                case 5:
+                case 4:
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedAmnesiac")));
                     killer.RpcSetCustomRole(CustomRoles.Amnesiac);
                     Amnesiac.Add(killer.PlayerId);

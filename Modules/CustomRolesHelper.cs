@@ -246,7 +246,6 @@ static class CustomRolesHelper
             CustomRoles.Maverick => RoleTypes.Impostor,
             CustomRoles.Parasite => RoleTypes.Impostor,
             CustomRoles.PlagueDoctor => RoleTypes.Impostor,
-            CustomRoles.NWitch => RoleTypes.Impostor,
             CustomRoles.Necromancer => RoleTypes.Impostor,
             CustomRoles.Shroud => RoleTypes.Impostor,
             CustomRoles.Totocalcio => RoleTypes.Impostor,
@@ -331,6 +330,7 @@ static class CustomRolesHelper
             CustomRoles.Recruit or
             //CustomRoles.Glow or
             CustomRoles.TicketsStealer or
+            CustomRoles.Tricky or
             CustomRoles.DualPersonality or
             CustomRoles.Mimic or
             CustomRoles.Reach or
@@ -381,6 +381,7 @@ static class CustomRolesHelper
     {
         return role is CustomRoles.Mare or
             CustomRoles.LastImpostor or
+            CustomRoles.Tricky or
             CustomRoles.Mare or
             CustomRoles.Clumsy or
             CustomRoles.Mimic or
@@ -413,7 +414,6 @@ static class CustomRolesHelper
             CustomRoles.Innocent or
             CustomRoles.Vulture or
             CustomRoles.Taskinator or
-            CustomRoles.NWitch or
             CustomRoles.Pursuer or
             CustomRoles.Revolutionist or
             CustomRoles.Provocateur or
@@ -515,7 +515,7 @@ static class CustomRolesHelper
     public static bool IsNonNK(this CustomRoles role) // ROLE ASSIGNING, NOT NEUTRAL TYPE
     {
         if (role == CustomRoles.Arsonist && !Options.ArsonistCanIgniteAnytime.GetBool()) return true;
-        else if (role == CustomRoles.Quizmaster && !Quizmaster.CanKillAfterMark.GetBool()) return true;
+        else if (role == CustomRoles.Quizmaster && !Quizmaster.CanKillAfterMark.GetBool()) return true; 
 
         return role is
             CustomRoles.Amnesiac or
@@ -528,7 +528,6 @@ static class CustomRolesHelper
             CustomRoles.Pursuer or
             CustomRoles.Shaman or
             CustomRoles.SoulCollector or
-            CustomRoles.NWitch or
             CustomRoles.CursedSoul or
             CustomRoles.Doomsayer or
             CustomRoles.Executioner or
@@ -568,7 +567,6 @@ static class CustomRolesHelper
             CustomRoles.Pursuer or
             CustomRoles.Shaman or
             CustomRoles.Taskinator or
-            CustomRoles.NWitch or
             CustomRoles.God or
             CustomRoles.Romantic or
             CustomRoles.VengefulRomantic or
@@ -764,7 +762,6 @@ static class CustomRolesHelper
             CustomRoles.Imitator or
             CustomRoles.Shaman or
             CustomRoles.Crewpostor or
-            CustomRoles.NWitch or
             CustomRoles.Shroud or
             CustomRoles.Wraith or
             CustomRoles.SoulCollector or
@@ -871,7 +868,6 @@ static class CustomRolesHelper
             CustomRoles.Revolutionist or
             CustomRoles.Maverick or
             CustomRoles.PlagueDoctor or
-            CustomRoles.NWitch or
             CustomRoles.Pyromaniac or
             CustomRoles.Shroud or
             CustomRoles.Succubus or
@@ -917,7 +913,6 @@ static class CustomRolesHelper
             CustomRoles.Mario or
             CustomRoles.HexMaster or
             CustomRoles.Crewpostor or
-            CustomRoles.NWitch or
             CustomRoles.Wraith or
             CustomRoles.Parasite or
             CustomRoles.Terrorist or
@@ -1052,12 +1047,14 @@ static class CustomRolesHelper
         // Only add-ons
         if (!role.IsAdditionRole()) return false;
 
+        // if player already has this addon
+        else if (pc.Is(role)) return false;
+
         // Checking Lovers and Romantics
         else if ((pc.Is(CustomRoles.RuthlessRomantic) || pc.Is(CustomRoles.Romantic) || pc.Is(CustomRoles.VengefulRomantic)) && role is CustomRoles.Lovers) return false;
 
         // Checking for conflicts with roles
         else if (pc.Is(CustomRoles.GM) || role is CustomRoles.Lovers || pc.Is(CustomRoles.Needy)) return false;
-
 
         if (checkLimitAddons)
             if (pc.HasSubRole() && pc.GetCustomSubRoles().Count >= Options.NoLimitAddonsNumMax.GetInt()) return false;
@@ -1290,7 +1287,9 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Jinx)
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.CursedWolf)
-                    || pc.Is(CustomRoles.Masochist))
+                    || pc.Is(CustomRoles.Masochist)
+                    || pc.Is(CustomRoles.PlagueBearer)
+                    || pc.Is(CustomRoles.Pestilence))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeFragile.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeFragile.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeFragile.GetBool()))
                     return false;
@@ -1499,7 +1498,10 @@ static class CustomRolesHelper
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
                 break;
-
+            case CustomRoles.Tricky:
+                if (!pc.GetCustomRole().IsImpostor())
+                    return false;
+                break;
             case CustomRoles.Mare:
                 if (pc.Is(CustomRoles.Underdog)
                     || pc.Is(CustomRoles.Berserker)
@@ -1867,7 +1869,6 @@ static class CustomRolesHelper
            CustomRoles.Necromancer => CountTypes.Necromancer,
            CustomRoles.DarkHide => !DarkHide.SnatchesWin.GetBool() ? CountTypes.DarkHide : CountTypes.Crew,
            CustomRoles.Arsonist => Options.ArsonistCanIgniteAnytime.GetBool() ? CountTypes.Arsonist : CountTypes.Crew,
-           CustomRoles.NWitch => CountTypes.NWitch,
            CustomRoles.Shroud => CountTypes.Shroud,
            CustomRoles.Werewolf => CountTypes.Werewolf,
            CustomRoles.Wraith => CountTypes.Wraith,
@@ -1876,6 +1877,7 @@ static class CustomRolesHelper
            CustomRoles.Agitater => CountTypes.Agitater,
            CustomRoles.Parasite => CountTypes.Impostor,
            CustomRoles.SerialKiller => CountTypes.SerialKiller,
+           CustomRoles.Quizmaster => CountTypes.Quizmaster,
            CustomRoles.Juggernaut => CountTypes.Juggernaut,
            CustomRoles.Jinx => CountTypes.Jinx,
            CustomRoles.Infectious or CustomRoles.Infected => CountTypes.Infectious,
@@ -1932,10 +1934,10 @@ static class CustomRolesHelper
             CustomRoles.Bandit => CustomWinner.Bandit,
             CustomRoles.Pirate => CustomWinner.Pirate,
             CustomRoles.SerialKiller => CustomWinner.SerialKiller,
+            CustomRoles.Quizmaster => CustomWinner.Quizmaster,
             CustomRoles.Werewolf => CustomWinner.Werewolf,
             CustomRoles.Necromancer => CustomWinner.Necromancer,
             CustomRoles.Huntsman => CustomWinner.Huntsman,
-            CustomRoles.NWitch => CustomWinner.Witch,
             CustomRoles.Juggernaut => CustomWinner.Juggernaut,
             CustomRoles.Infectious => CustomWinner.Infectious,
             CustomRoles.Virus => CustomWinner.Virus,
@@ -1978,7 +1980,6 @@ static class CustomRolesHelper
             CountTypes.HexMaster => CustomRoles.HexMaster,
             //CustomRoles.Occultist => CountTypes.Occultist,
             CountTypes.Necromancer => CustomRoles.Necromancer,
-            CountTypes.NWitch => CustomRoles.NWitch,
             CountTypes.Shroud => CustomRoles.Shroud,
             CountTypes.Werewolf => CustomRoles.Werewolf,
             CountTypes.Wraith => CustomRoles.Wraith,
@@ -1986,6 +1987,7 @@ static class CustomRolesHelper
             CountTypes.PlagueBearer => CustomRoles.PlagueBearer,
             CountTypes.Agitater => CustomRoles.Agitater,
             CountTypes.SerialKiller => CustomRoles.SerialKiller,
+            CountTypes.Quizmaster => CustomRoles.Quizmaster,
             CountTypes.Juggernaut => CustomRoles.Juggernaut,
             CountTypes.Jinx => CustomRoles.Jinx,
             CountTypes.Infectious => CustomRoles.Infectious,
@@ -2037,7 +2039,6 @@ public enum CountTypes
     Charmed,
     Succubus,
     HexMaster,
-    NWitch,
     Wraith,
     SerialKiller,
     Juggernaut,
@@ -2052,6 +2053,7 @@ public enum CountTypes
     Medusa,
     Spiritcaller,
     Pestilence,
+    Quizmaster,
     PlagueBearer,
     Glitch,
     Arsonist,
