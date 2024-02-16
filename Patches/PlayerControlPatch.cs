@@ -1763,11 +1763,9 @@ public static class CheckShapeShiftPatch
                 shapeshifter.RejectShapeshiftAndReset();
                 return false;
 
-            //case CustomRoles.Assassin:
-            //    Assassin.OnShapeshift(shapeshifter, shapeshifting);
-            //    shapeshifter.RejectShapeshiftAndReset();
-            //    return false;
-            //Role ability require shapeshift
+            case CustomRoles.Assassin:
+                Assassin.OnShapeshift(shapeshifter, shapeshifting, shapeshiftIsHidden: true);
+                return false;
 
             //case CustomRoles.Escapee:
             //    if (Main.EscapeeLocation.ContainsKey(shapeshifter.PlayerId))
@@ -2114,7 +2112,7 @@ class ShapeshiftPatch
                     break;
                 case CustomRoles.Disperser:
                     if (shapeshifting)
-                        Disperser.DispersePlayers(shapeshifter, shapeshiftIsHidden: false);
+                        Disperser.DispersePlayers(shapeshifter);
                     break;
                 case CustomRoles.Dazzler:
                     if (shapeshifting)
