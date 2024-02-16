@@ -70,7 +70,7 @@ public class ModNewsHistory
                         "\n     - Fixed bug that stopped Copycat from copying Overseer (By: TommyXL)" +
                         "\n     - Fixed name updates after Doppelganger kill (By: TommyXL)" +
                         "\n     - Doppelganger skin does not change during Mushroom Mixup (By: TommyXL)" +
-                        "\n     - Fixed Penguin errogs in logs (By: TommyXL)" +
+                        "\n     - Fixed Penguin errors in logs (By: TommyXL)" +
                         "\n     - Attempted fix on disconnect due to reliable packet loss in lobby (By: TommyXL)" +
                         "\n     - Fixed issues with Bandit stealing addons (By: ryuk)" +
                         "\n     - Fixed bug when Rift Radius changed unit from `s` in settings (By: ryuk)" +
