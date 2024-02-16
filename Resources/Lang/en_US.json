@@ -1290,8 +1290,6 @@
   "HideExileChat": "Hide exile (lava) chat",
   "ExileSpamMsg": "Someone is trying to be a smart ass by lava chatting",
 
-  "RejectShapeshift.AbilityWasUsed": "Ability Was Used",
-
   "EnableYTPlan": "Enable Youtuber Plan",
   "KickLowLevelPlayer": "Kick players whose level is lower than",
   "TempBanLowLevelPlayer": "Temporarily ban low-level players",
@@ -2032,6 +2030,9 @@
   "DeputyInvalidTarget": "Target cannot be handcuffed",
   "DeputyHandcuffText": "Handcuff",
   "DeputyHandcuffCDForTarget": "Kill Cooldown for handcuffed player",
+
+  "RejectShapeshift.AbilityWasUsed": "Ability was used",
+  "EscapisMtarkedPosition": "You marked self position",
 
   "InvestigateCooldown": "Investigate Cooldown",
   "InvestigateMax": "Maximum Investigations",

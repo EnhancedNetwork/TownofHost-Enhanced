@@ -1767,21 +1767,21 @@ public static class CheckShapeShiftPatch
                 Assassin.OnShapeshift(shapeshifter, shapeshifting, shapeshiftIsHidden: true);
                 return false;
 
-            //case CustomRoles.Escapee:
-            //    if (Main.EscapeeLocation.ContainsKey(shapeshifter.PlayerId))
-            //    {
-            //        var position = Main.EscapeeLocation[shapeshifter.PlayerId];
-            //        Main.EscapeeLocation.Remove(shapeshifter.PlayerId);
-            //        Logger.Msg($"{shapeshifter.GetNameWithRole()}:{position}", "EscapeeTeleport");
-            //        shapeshifter.RpcTeleport(position);
-            //        shapeshifter.RPCPlayCustomSound("Teleport");
-            //    }
-            //    else
-            //    {
-            //        Main.EscapeeLocation.Add(shapeshifter.PlayerId, shapeshifter.GetCustomPosition());
-            //    }
-            //    player.RejectShapeshiftAndReset();
-            //    return false;
+            case CustomRoles.Escapist:
+                if (Main.EscapistLocation.TryGetValue(shapeshifter.PlayerId, out var position))
+                {
+                    Main.EscapistLocation.Remove(shapeshifter.PlayerId);
+                    Logger.Info($"{shapeshifter.GetNameWithRole()}:{position}", "Escapist Teleport");
+                    shapeshifter.RpcTeleport(position);
+                    shapeshifter.RPCPlayCustomSound("Teleport");
+                }
+                else
+                {
+                    Main.EscapistLocation.Add(shapeshifter.PlayerId, shapeshifter.GetCustomPosition());
+                    shapeshifter.Notify(GetString("EscapisMtarkedPosition"));
+                }
+                shapeshifter.RejectShapeshiftAndReset();
+                return false;
 
             case CustomRoles.Bomber:
                 shapeshifter.RejectShapeshiftAndReset();
@@ -1990,9 +1990,8 @@ class ShapeshiftPatch
                 case CustomRoles.Escapist:
                     if (shapeshifting)
                     {
-                        if (Main.EscapistLocation.ContainsKey(shapeshifter.PlayerId))
+                        if (Main.EscapistLocation.TryGetValue(shapeshifter.PlayerId, out var position))
                         {
-                            var position = Main.EscapistLocation[shapeshifter.PlayerId];
                             Main.EscapistLocation.Remove(shapeshifter.PlayerId);
                             Logger.Msg($"{shapeshifter.GetNameWithRole()}:{position}", "EscapistTeleport");
                             shapeshifter.RpcTeleport(position);
@@ -2001,6 +2000,7 @@ class ShapeshiftPatch
                         else
                         {
                             Main.EscapistLocation.Add(shapeshifter.PlayerId, shapeshifter.GetCustomPosition());
+                            shapeshifter.Notify(GetString("EscapisMtarkedPosition"));
                         }
                     }
                     break;
