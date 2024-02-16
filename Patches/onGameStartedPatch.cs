@@ -24,6 +24,10 @@ internal class ChangeRoleSettings
     public static void Postfix(AmongUsClient __instance)
     {
         Main.OverrideWelcomeMsg = "";
+        Main.AssignRolesIsStarted = true;
+
+        Logger.Msg("Is Started", "AssignRoles");
+
         try
         {
             // Note: No positions are set at this time.
@@ -1143,6 +1147,8 @@ internal class SelectRolesPatch
             Utils.CountAlivePlayers(true);
             Utils.SyncAllSettings();
             SetColorPatch.IsAntiGlitchDisabled = false;
+
+            Logger.Msg("Ended", "AssignRoles");
         }
         catch (Exception ex)
         {
@@ -1302,7 +1308,14 @@ internal class SelectRolesPatch
         if (count <= 0) return;
         for (var i = 0; i < count; i++)
         {
+            // if the number of all players is 0
+            if (allPlayers.Count <= 0) return;
+
+            // Select player
             var player = allPlayers[IRandom.Instance.Next(allPlayers.Count)];
+            allPlayers.Remove(player);
+
+            // Set Add-on
             Main.PlayerStates[player.PlayerId].SetSubRole(role);
             Logger.Info($"Registered Add-on: {player?.Data?.PlayerName} = {player.GetCustomRole()} + {role}", $"Assign {role}");
         }

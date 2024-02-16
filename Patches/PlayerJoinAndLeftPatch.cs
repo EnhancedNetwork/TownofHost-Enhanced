@@ -2,10 +2,8 @@ using AmongUs.Data;
 using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
-using Il2CppSystem.Threading.Tasks;
 using InnerNet;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
@@ -168,6 +166,9 @@ public static class OnPlayerJoinedPatch
     public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
     {
         Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Joining room", "Session: OnPlayerJoined");
+
+        Main.AssignRolesIsStarted = false;
+
         _ = new LateTask(() =>
         {
             try
@@ -404,7 +405,14 @@ class OnPlayerLeftPatch
                     break;
             }
 
-            Logger.Info($"{data?.PlayerName} - (ClientID:{data?.Id} / FriendCode:{data?.FriendCode} / HashPuid:{data?.GetHashedPuid()} / Platform:{data?.PlatformData.Platform}) Disconnect (Reason:{reason}，Ping:{AmongUsClient.Instance.Ping})", "Session");
+            Logger.Info($"{data?.PlayerName} - (ClientID:{data?.Id} / FriendCode:{data?.FriendCode} / HashPuid:{data?.GetHashedPuid()} / Platform:{data?.PlatformData.Platform}) Disconnect (Reason:{reason}，Ping:{AmongUsClient.Instance.Ping})", "Session OnPlayerLeftPatch");
+
+            // End the game when a player exits game during assigning roles (AntiBlackOut Protect)
+            if (Main.AssignRolesIsStarted)
+            {
+                Utils.ErrorEnd("The player left the game during assigning roles");
+            }
+
 
             if (data != null)
                 Main.playerVersion.Remove(data.Id);
@@ -468,7 +476,7 @@ class CreatePlayerPatch
         Main.AllPlayerNames.TryAdd(client.Character.PlayerId, name);
         Logger.Info($"client.PlayerName： {client.PlayerName}", "Name player");
 
-        if (!name.Equals(client.PlayerName))
+        if (client.Character != null && !name.Equals(client.PlayerName))
         {
             _ = new LateTask(() =>
             {
@@ -478,34 +486,34 @@ class CreatePlayerPatch
             }, 1f, "Name Format");
         }
 
-        _ = new LateTask(() => 
-        { 
-            if (client == null || client.Character == null  // client is null
-                || client.ColorId < 0 || Palette.PlayerColors.Length <= client.ColorId) // invalid client color
-                return; 
-            
-            OptionItem.SyncAllOptions(client.Id);
-        }, 3f, "Sync All Options For New Player");
-        
-        Main.GuessNumber[client.Character.PlayerId] = [-1, 7];
-
-        _ = new LateTask(() =>
+        if (client == null || client.Character == null // client is null
+            || client.ColorId < 0 || Palette.PlayerColors.Length <= client.ColorId) // invalid client color
         {
-            //Logger.Warn($"{client.Character.CurrentOutfit.ColorId},{client.Character.CurrentOutfit.HatId}, {client.Character.CurrentOutfit.SkinId}, {client.Character.CurrentOutfit.VisorId}, {client.Character.CurrentOutfit.PetId}", "SKIN LOGGED");
-
-            if (client.Character == null) return;
-            if (Main.OverrideWelcomeMsg != "") Utils.SendMessage(Main.OverrideWelcomeMsg, client.Character.PlayerId);
-            else TemplateManager.SendTemplate("welcome", client.Character.PlayerId, true);
-        }, 3f, "Welcome Message");
-
-        _ = new LateTask(() =>
+            Logger.Warn("client is null or client have invalid color", "TrySyncAndSendMessage");
+        }
+        else
         {
+            _ = new LateTask(() =>
+            {
+                OptionItem.SyncAllOptions(client.Id);
+            }, 3f, "Sync All Options For New Player");
+
+            _ = new LateTask(() =>
+            {
+                if (Main.OverrideWelcomeMsg != "") Utils.SendMessage(Main.OverrideWelcomeMsg, client.Character.PlayerId);
+                else TemplateManager.SendTemplate("welcome", client.Character.PlayerId, true);
+            }, 3f, "Welcome Message");
+
             if (Options.GradientTagsOpt.GetBool())
             {
-                if (client.Character == null) return;
-                Utils.SendMessage(GetString("Warning.GradientTags"),client.Character.PlayerId);
+                _ = new LateTask(() =>
+                {
+                    Utils.SendMessage(GetString("Warning.GradientTags"), client.Character.PlayerId);
+                }, 3.3f, "GradientWarning");
             }
-        }, 3.3f, "GradientWarning");
+        }
+
+        Main.GuessNumber[client.Character.PlayerId] = [-1, 7];
 
         if (Main.OverrideWelcomeMsg == "" && Main.PlayerStates.Count != 0 && Main.clientIdList.Contains(client.Id))
         {

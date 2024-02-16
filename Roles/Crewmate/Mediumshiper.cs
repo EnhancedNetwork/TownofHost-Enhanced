@@ -48,7 +48,8 @@ public static class Mediumshiper
     }
     public static void SendRPC(byte playerId, byte targetId = 0xff, bool isUsed = false)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMediumLimit, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Mediumshiper);
         writer.Write(playerId);
         writer.Write(ContactLimit[playerId]);
         writer.Write(isUsed);

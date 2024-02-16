@@ -71,7 +71,8 @@
         }
         public static void SendRPCLimit(byte playerId, int operate, byte targetId = 0xff)
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetBloodhoundLimit, SendOption.Reliable, -1);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+            writer.WritePacked((int)CustomRoles.Bloodhound);
             writer.Write(playerId);
             writer.Write(operate);
             writer.Write(UseLimit[playerId]);
