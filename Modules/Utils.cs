@@ -34,7 +34,7 @@ public static class Utils
     {
         if (AmongUsClient.Instance.AmHost)
         {
-            Logger.Fatal($"{text} 错误，触发防黑屏措施", "Anti-black");
+            Logger.Fatal($"{text} error, triggering anti-blackout measures", "Anti-black");
             ChatUpdatePatch.DoBlockChat = true;
             Main.OverrideWelcomeMsg = GetString("AntiBlackOutNotifyInLobby");
             
@@ -117,21 +117,29 @@ public static class Utils
         {
             playerNetTransform.SnapTo(location, numHost);
         }
-        
-        if (PlayerControl.LocalPlayer.PlayerId != player.PlayerId)
+
+        var sender = CustomRpcSender.Create("TeleportPlayer");
         {
             // Local Teleport For Client
-            MessageWriter localMessageWriter = AmongUsClient.Instance.StartRpcImmediately(playerNetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.None, player.GetClientId());
-            NetHelpers.WriteVector2(location, localMessageWriter);
-            localMessageWriter.Write(numLocalClient);
-            AmongUsClient.Instance.FinishRpcImmediately(localMessageWriter);
-        }
+            if (PlayerControl.LocalPlayer.PlayerId != player.PlayerId)
+            {
+                sender.AutoStartRpc(playerNetTransform.NetId, (byte)RpcCalls.SnapTo, targetClientId: player.GetClientId());
+                {
+                    NetHelpers.WriteVector2(location, sender.stream);
+                    sender.Write(numLocalClient);
+                }
+                sender.EndRpc();
+            }
 
-        // Global Teleport
-        MessageWriter globalMessageWriter = AmongUsClient.Instance.StartRpcImmediately(playerNetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.None);
-        NetHelpers.WriteVector2(location, globalMessageWriter);
-        globalMessageWriter.Write(numGlobal);
-        AmongUsClient.Instance.FinishRpcImmediately(globalMessageWriter);
+            // Global Teleport
+            sender.AutoStartRpc(playerNetTransform.NetId, (byte)RpcCalls.SnapTo);
+            {
+                NetHelpers.WriteVector2(location, sender.stream);
+                sender.Write(numGlobal);
+            }
+            sender.EndRpc();
+        }
+        sender.SendMessage();
     }
     public static void RpcRandomVentTeleport(this PlayerControl player)
     {
@@ -643,6 +651,10 @@ public static class Utils
                     //Lovers don't count the task as a win
                     hasTasks &= !ForRecompute;
                     break;
+                case CustomRoles.Mundane:
+                    if (!hasTasks) hasTasks = !ForRecompute;
+                    break;
+
             }
         if (CopyCat.playerIdList.Contains(p.PlayerId)) hasTasks = false;
         if (Main.TasklessCrewmate.Contains(p.PlayerId)) hasTasks = false;
@@ -650,18 +662,18 @@ public static class Utils
         return hasTasks;
     }
 
-    public static bool CanBeMadmate(this PlayerControl pc, bool inGame = false)
+    public static bool CanBeMadmate(this PlayerControl pc, bool inGame = false, bool forGangster = false)
     {
         return pc != null && (pc.GetCustomRole().IsCrewmate() || (pc.GetCustomRole().IsNeutral() && inGame)) && !pc.Is(CustomRoles.Madmate)
         && !(
-            (pc.Is(CustomRoles.Sheriff) && !Options.SheriffCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.Mayor) && !Options.MayorCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.NiceGuesser) && !Options.NGuesserCanBeMadmate.GetBool()) ||
+            (pc.Is(CustomRoles.Sheriff) && (!forGangster ? !Options.SheriffCanBeMadmate.GetBool() : !Gangster.SheriffCanBeMadmate.GetBool())) ||
+            (pc.Is(CustomRoles.Mayor) && (!forGangster ? !Options.MayorCanBeMadmate.GetBool() : !Gangster.MayorCanBeMadmate.GetBool())) ||
+            (pc.Is(CustomRoles.NiceGuesser) && (!forGangster ? !Options.NGuesserCanBeMadmate.GetBool() : !Gangster.NGuesserCanBeMadmate.GetBool())) ||
             (pc.Is(CustomRoles.Snitch) && !Options.SnitchCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.Judge) && !Options.JudgeCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.Marshall) && !Options.MarshallCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.Farseer) && !Options.FarseerCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.Retributionist) && !Options.RetributionistCanBeMadmate.GetBool()) ||
+            (pc.Is(CustomRoles.Judge) && (!forGangster ? !Options.JudgeCanBeMadmate.GetBool() : !Gangster.JudgeCanBeMadmate.GetBool())) ||
+            (pc.Is(CustomRoles.Marshall) && (!forGangster ? !Options.MarshallCanBeMadmate.GetBool() : !Gangster.MarshallCanBeMadmate.GetBool())) ||
+            (pc.Is(CustomRoles.Farseer) && (!forGangster ? !Options.FarseerCanBeMadmate.GetBool() : !Gangster.FarseerCanBeMadmate.GetBool())) ||
+            (pc.Is(CustomRoles.Retributionist) && (!forGangster ? !Options.RetributionistCanBeMadmate.GetBool() : !Gangster.RetributionistCanBeMadmate.GetBool())) ||
             pc.Is(CustomRoles.Needy) ||
             pc.Is(CustomRoles.Lazy) ||
             pc.Is(CustomRoles.Loyal) ||
@@ -1743,32 +1755,15 @@ public static class Utils
     public static void SendMessage(string text, byte sendTo = byte.MaxValue, string title = "", bool logforChatManager = false, bool replay = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
+
         // set replay to true when you want to send previous sys msg or do not want to add a sys msg in the history
         if (!replay && GameStates.IsInGame) ChatManager.AddSystemChatHistory(sendTo, text);
 
         if (title == "") title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
 
-        if (sendTo != byte.MaxValue)
-        {
-            var sendToData = GetPlayerInfoById(sendTo);
-            if (sendToData != null)
-            {
-                if (sendToData.Disconnected) return;
-                //p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId
-                else if (sendToData.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= sendToData.DefaultOutfit.ColorId)
-                {
-                    Logger.Info($"Delay Utils.sendmessage bcz {sendToData.GetPlayerName} is with bad color", "SendMessage");
-                    _ = new LateTask(() =>
-                    {
-                        SendMessage(text, sendTo, title, logforChatManager);
-                    }, 1.2f, "SendMessage_Delay");
-                    return;
-                }
-            }
-            else return;
-        }
         if (!logforChatManager)
             ChatManager.AddToHostMessage(text.RemoveHtmlTagsTemplate());
+
         Main.MessagesToSend.Add((text.RemoveHtmlTagsTemplate(), sendTo, title));
     }
     public static bool IsPlayerModerator(string friendCode)
@@ -2456,7 +2451,6 @@ public static class Utils
                                 if (PlagueBearer.IsPlagued(seer.PlayerId, target.PlayerId))
                                 {
                                     TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.PlagueBearer)}>●</color>");
-                                    PlagueBearer.SendRPC(seer, target);
                                 }
                                 break;
 
@@ -2711,6 +2705,7 @@ public static class Utils
         if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: false);
         if (Seeker.IsEnable) Seeker.AfterMeetingTasks(notifyPlayer: false);
 
+        if (Collector.IsEnable) Collector.AfterMeetingTasks();
         if (Blackmailer.IsEnable) Blackmailer.AfterMeetingTasks();
         if (Swooper.IsEnable) Swooper.AfterMeetingTasks();
         if (Chameleon.IsEnable) Chameleon.AfterMeetingTasks();

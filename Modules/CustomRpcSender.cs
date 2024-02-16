@@ -169,7 +169,7 @@ public class CustomRpcSender
         if (currentState == State.InRootMessage) this.EndMessage();
         if (currentState != State.Ready)
         {
-            string errorMsg = $"RPCを送信しようとしましたが、StateがReadyではありません (in: \"{name}\")";
+            string errorMsg = $"Attempted to send RPC, but State is not Ready  (in: \"{name}\")";
             if (isUnsafe)
                 Logger.Warn(errorMsg, "CustomRpcSender.Warn");
             else

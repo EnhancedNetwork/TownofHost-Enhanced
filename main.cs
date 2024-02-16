@@ -40,14 +40,14 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0203.151.2000"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "1.5.1 Canary 2";
+    public const string PluginVersion = "2024.0216.160.0001"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "1.6.0 dev 1";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public const bool Canary = true; // ACTIVE - Latest: V1.5.1 Canary 2
-    public const bool fullRelease = false; // INACTIVE - Latest: V1.4.0
-    public const bool devRelease = false; // INACTIVE - Latest: V1.5.1 Dev 3
+    public static readonly bool Canary = false; // INACTIVE - Latest: V1.5.1 Canary 5
+    public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.5.1
+    public static readonly bool devRelease = true; // ACTIVE - Latest: V1.6.0 Dev 1
 
     public static bool hasAccess = true;
 
@@ -134,6 +134,7 @@ public class Main : BasePlugin
     public static List<(string, byte, string)> MessagesToSend = [];
     public static bool isChatCommand = false;
     public static bool MeetingIsStarted = false;
+    public static bool AssignRolesIsStarted = false;
     public static HashSet<PlayerControl> LoversPlayers = [];
     public static bool isLoversDead = true;
     public static Dictionary<byte, float> AllPlayerKillCooldown = [];
