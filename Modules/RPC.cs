@@ -714,9 +714,9 @@ internal class RPCHandlerPatch
             case CustomRPC.RpcPassBomb:
                 Agitater.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetCleanserCleanLimit:
-                Cleanser.ReceiveRPC(reader);
-                break;
+            //case CustomRPC.SetCleanserCleanLimit:
+            //    Cleanser.ReceiveRPC(reader);
+            //    break;
             case CustomRPC.PirateSyncData:
                 Pirate.ReceiveRPC(reader);
                 break;
@@ -800,7 +800,7 @@ internal static class RPC
             {
                 return;
             }
-        }
+        }syncrole
 
         if (!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1 || (AmongUsClient.Instance.AmHost == false && PlayerControl.LocalPlayer == null))
         {
