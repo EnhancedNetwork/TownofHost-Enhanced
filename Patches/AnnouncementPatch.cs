@@ -632,7 +632,7 @@ public class ModNewsHistory
                 {
                     Number = 100009,
                     Title = "Town of Host: Enhanced v1.5.1",
-                    SubTitle = "★★ Еще одно обновление? ЭтоИсправления багов, ура! ★★",
+                    SubTitle = "★★ Еще одно обновление? Это исправления багов, ура! ★★",
                     ShortTitle = "TOH: Enhanced v1.5.1",
                     BeforeNumber = 100008,
                     Text = "<size=150%>Добро пожаловать в TOH: Enhanced v1.5.1!</size>\n" +
