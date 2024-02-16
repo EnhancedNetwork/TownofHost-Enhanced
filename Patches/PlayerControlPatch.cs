@@ -1850,6 +1850,11 @@ public static class CheckShapeShiftPatch
                 }, 0.3f, "Nuker");
                 return false;
 
+            case CustomRoles.Camouflager:
+                Camouflager.OnShapeshift(shapeshifter, shapeshiftIsHidden: true);
+                shapeshifter.RejectShapeshiftAndReset();
+                return false;
+
             case CustomRoles.QuickShooter:
                 QuickShooter.OnShapeshift(shapeshifter, shapeshifting);
                 shapeshifter.RejectShapeshiftAndReset();
@@ -3017,6 +3022,10 @@ class FixedUpdateInNormalGamePatch
 
                     case CustomRoles.Poisoner:
                         Poisoner.OnFixedUpdate(player);
+                        break;
+
+                    case CustomRoles.Camouflager when Camouflager.ShapeshiftIsHidden && Camouflager.AbilityActivated:
+                        Camouflager.OnFixedUpdate(player);
                         break;
 
                     case CustomRoles.Mercenary:
