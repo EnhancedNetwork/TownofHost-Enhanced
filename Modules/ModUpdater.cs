@@ -107,20 +107,11 @@ public class ModUpdater
                 for (int i = 0; i < assets.Count; i++)
                 {
                     string assetName = assets[i]["name"].ToString();
-                    // Get version number in file name. eg : TOH-Enhanced.2024.0209.151.0301.zip => 2024.0209.151.0301）
-                    int startIndex = assetName.IndexOf("TOH-Enhanced.") + "TOH-Enhanced.".Length;
-                    int endIndex = assetName.IndexOf(".zip");
-                    string assetVersion = assetName[startIndex..endIndex];
 
-                    // Convert version number from file name version. eg : 2024.0209.151.0301 => 2024.209.151.301, this is how version is stored
-                    if (Version.TryParse(assetVersion.Replace('.', '.'), out Version Fileversion))
+                    if (assetName.ToLower() == "tohe.dll")
                     {
-                        if (Fileversion == latestVersion)
-                        {
-                            downloadUrl = assets[i]["browser_download_url"].ToString();
-                            Logger.Info($"Github downloadUrl is set to {downloadUrl}", "CheckRelease");
-                            break;
-                        }
+                        downloadUrl = assets[i]["browser_download_url"].ToString();
+                        Logger.Info($"Github downloadUrl is set to {downloadUrl}", "CheckRelease");
                     }
                 }
 
@@ -140,6 +131,8 @@ public class ModUpdater
                 Logger.Error("Failed to get download address", "CheckRelease");
                 return false;
             }
+
+            hasUpdate = true;
 
             isChecked = true;
             isBroken = false;
@@ -272,7 +265,7 @@ public class ModUpdater
     {
         try
         {
-            Logger.Info($"DownLoading Github zip from '${url}'", "DownloadDLLGithub");
+            Logger.Info($"DownLoading Github dll from '${url}'", "DownloadDLLGithub");
             if (url == null || url == "") throw new Exception($"url is empty, cannot update!");
 
             var savePath = "BepInEx/plugins/TOHE.dll.temp";
@@ -299,19 +292,9 @@ public class ModUpdater
                 throw new Exception($"File retrieval failed with status code: {response?.StatusCode}");
             }
 
-            var total = response.Content.Headers.ContentLength ?? 0;
-
-            using (var stream = await response.Content.ReadAsStreamAsync())
-            using (var archive = new ZipArchive(stream, ZipArchiveMode.Read))
+            using (var fileStream = new FileStream(savePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true))
             {
-                // Specify the relative path within the ZIP archive where "TOHE.dll" is located
-                var entryPath = "BepInEx/plugins/TOHE.dll";
-                var entry = archive.GetEntry(entryPath) ?? throw new Exception($"'{entryPath}' not found in the ZIP archive");
-
-                // Extract "TOHE.dll" to the temporary file
-                using var entryStream = entry.Open();
-                using var fileStream = new FileStream(savePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true);
-                await entryStream.CopyToAsync(fileStream);
+                await response.Content.CopyToAsync(fileStream);
             }
 
             var fileName = Assembly.GetExecutingAssembly().Location;

@@ -167,19 +167,20 @@ public class dbConnect
                 catch (JsonException jsonEx)
                 {
                     // If deserialization as a list fails, try deserializing as a single JSON object
-                    Logger.Error($"Error deserializing JSON: {jsonEx.Message}", "dbConnect");
+                    Logger.Error($"Error deserializing JSON: {jsonEx.Message}", "GetRoleTable");
                     return;
                 }
             }
             else
             {
-                Logger.Error($"Error in fetching the User List, Success status code is false", "dbConnect");
+                Logger.Error($"Error in fetching the User List, Success status code is false", "GetRoleTable");
+                Logger.Info($"{response}", "GetRoleTable(");
                 return;
             }
         }
         catch (Exception ex)
         {
-            Logger.Error($"error: {ex}", "dbConnect");
+            Logger.Error($"error: {ex}", "GetRoleTable(");
             return;
         }
     }
@@ -244,7 +245,8 @@ public class dbConnect
             }
             else
             {
-                Logger.Error($"Error in fetching the EAC List, Success status code is false", "GetEACList");
+                Logger.Error($"Error in fetching the User List, Success status code is false", "GetEACList");
+                Logger.Info($"{response}", "GetEACList");
                 return;
             }
         }
