@@ -40,14 +40,14 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0210.151.0000"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "1.5.1";
+    public const string PluginVersion = "2024.0216.160.0001"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "1.6.0 dev 1";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public const bool Canary = false; // ACTIVE - Latest: V1.5.1 Canary 4
-    public const bool fullRelease = true; // INACTIVE - Latest: V1.5.1
-    public const bool devRelease = false; // INACTIVE - Latest: V1.5.1 Dev 3
+    public static readonly bool Canary = false; // INACTIVE - Latest: V1.5.1 Canary 5
+    public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.5.1
+    public static readonly bool devRelease = true; // ACTIVE - Latest: V1.6.0 Dev 1
 
     public static bool hasAccess = true;
 
@@ -94,7 +94,6 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> EnableCustomButton { get; private set; }
     public static ConfigEntry<bool> EnableCustomSoundEffect { get; private set; }
     public static ConfigEntry<bool> SwitchVanilla { get; private set; }
-    public static ConfigEntry<bool> EnableRoleSummary { get; private set; }
 
     // Debug
     public static ConfigEntry<bool> VersionCheat { get; private set; }
@@ -453,12 +452,10 @@ public class Main : BasePlugin
         EnableCustomButton = Config.Bind("Client Options", "EnableCustomButton", false);
         EnableCustomSoundEffect = Config.Bind("Client Options", "EnableCustomSoundEffect", true);
         SwitchVanilla = Config.Bind("Client Options", "SwitchVanilla", false);
-        EnableRoleSummary = Config.Bind("Client Options", "EnableRoleSummary", false); // Reverted to false due to it now being a setting to revert the summary change
-        
+
         // Debug
         VersionCheat = Config.Bind("Client Options", "VersionCheat", false);
         GodMode = Config.Bind("Client Options", "GodMode", false);
-        AutoMuteUs = Config.Bind("Client Options", "AutoMuteUs", false); // The AutoMuteUs bot fails to match the host's name.
         AutoRehost = Config.Bind("Client Options", "AutoRehost", false);
 
         Logger = BepInEx.Logging.Logger.CreateLogSource("TOHE");

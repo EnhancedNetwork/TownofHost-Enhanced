@@ -21,7 +21,6 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem EnableCustomButton;
     private static ClientOptionItem EnableCustomSoundEffect;
     private static ClientOptionItem SwitchVanilla;
-    private static ClientOptionItem EnableRoleSummary;
 
 #if DEBUG
     private static ClientOptionItem VersionCheat;
@@ -115,10 +114,6 @@ public static class OptionsMenuBehaviourStartPatch
                 Harmony.UnpatchAll();
                 Main.Instance.Unload();
             }
-        }
-        if (EnableRoleSummary == null || EnableRoleSummary.ToggleButton == null)
-        {
-            EnableRoleSummary = ClientOptionItem.Create("EnableRoleSummary", Main.EnableRoleSummary, __instance);
         }
 
 #if DEBUG
