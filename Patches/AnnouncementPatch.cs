@@ -2021,6 +2021,58 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
+                    Number = 100009,
+                    Title = "Town of Host：Enhanced v1.5.1",
+                    SubTitle = "★★ また更新？バグ修正、やったー！★★",
+                    ShortTitle = "TOH: エンハンスド v1.5.1",
+                    BeforeNumber = 100008,
+                    Text = "<size=150%>TOH: エンハンスド v1.5.1へようこそ！</size>\n" +
+                    "\n<b>【ベース】</b>\n - TOH: エンハンスド v1.5.0に基づいています\r\n" +
+
+                    "\n<b>【バグ修正】</b>" +
+                        "\n     - クイズマスター勝利条件の修正を試みました (By: Drakos)" +
+                        "\n     - アドオンが二重に割り当てられる問題を修正しました (By: TommyXL)" +
+                        "\n     - 役割を割り当て中にプレイヤーが退出した場合、ゲームが終了するように修正しました (By: TommyXL)" +
+                        "\n     - 疫病媒介者&ペスティレンスが壊れやすいを得られなくなりました (By: TommyXL)" +
+                        "\n     - 相棒KCDが正しく設定されないバグを修正しました (By: TommyXL)" +
+                        "\n     - ペリカンがペスティレンスを食べた時のバグを修正しました (By: TommyXL)" +
+                        "\n     - /killを使用した後のプレイヤー名を修正しました (By: TommyXL)" +
+                        "\n     - コピーキャットが監督者をコピーできないバグを修正しました (By: TommyXL)" +
+                        "\n     - ドッペルゲンガーキル後の名前更新を修正しました (By: TommyXL)" +
+                        "\n     - ドッペルゲンガーのスキンがMushroom Mixup中に変更されないように修正しました (By: TommyXL)" +
+                        "\n     - ペンギンのログの誤りを修正しました (By: TommyXL)" +
+                        "\n     - ロビーでの信頼できるパケット損失による切断の修正を試みました (By: TommyXL)" +
+                        "\n     - バンディットがアドオンを盗む際の問題を修正しました (By: ryuk)" +
+                        "\n     - 設定でRift Radiusの単位が`s`に変更された時のバグを修正しました (By: ryuk)" +
+                        "\n     - せんちょうアドオンの削除に関する多くの問題を修正しました (By: ryuk)" +
+                        "\n     - ギャングスターが設定が<b>ON</b>の時でも一部の役割を勧誘できないバグを修正しました (By: ryuk)" +
+                        "\n     - 平凡ニュートラルが改造されたクライアントとしてタスクを実行できないバグを修正しました (By: ryuk)" +
+                        "\n     - シュレーディンガーの猫の勝利条件の修正を試みました (By: ryuk)" +
+                        "\n     - 改造されたクライアントでの疫病媒介者の進行状況を修正しました (By: ryuk)" +
+                        "\n     - コレクターが二重投票を集められるバグを修正しました (By: ryuk)\r\n" +
+
+                    "\n<b>【翻訳者クレジット】</b>" +
+                        "\n     - ブラジル語 (By: Dx7405)" +
+                        "\n     - オランダ語 (By: apemv, madmazel_)" +
+                        "\n     - フランス語 (By: FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                        "\n     - イタリア語 (By: alot, Baphojack, Mattix606)" +
+                        "\n     - 日本語 (By: Sunnyboi)" +
+                        "\n     - ラテンアメリカ (By: CreepPower)" +
+                        "\n     - ロシア語 (By: TommyXL, Shoulder Devil, chill_ultimated, Nevermore59)" +
+                        "\n     - 簡体字中国語 (By: CrewCyan, LezaiYa, NikoCat223)" +
+                        "\n     - スペイン語 (By: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
+                        "\n     - 繁体字中国語 (By: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
+                        "\n<b> 弊社のウェブサイトで全ての翻訳者をチェックしてください</b>\r\n" +
+
+                    "\n\n★ ホストの町：エンハンスド v1.5.1へようこそ ★",
+
+                    Date = "2024-2-17T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
                     Number = 100008,
                     Title = "Town of Host: Enhanced v1.5.0",
                     SubTitle = "★★ 大規模アップデート!! ★★",
