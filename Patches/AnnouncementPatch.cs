@@ -51,6 +51,58 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
+                    Number = 100009,
+                    Title = "Town of Host: Enhanced v1.5.1",
+                    SubTitle = "★★ Another Update? Bug Fixes, yay! ★★",
+                    ShortTitle = "TOH: Enhanced v1.5.1",
+                    BeforeNumber = 100008,
+                    Text = "<size=150%>Welcome to TOH: Enhanced v1.5.1!</size>\n" +
+                    "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.5.0\r\n" +
+
+                    "\n<b>【Bug Fixes】</b>" +
+                        "\n     - Attempted fix for Quizmaster Win Condition (By: Drakos)" +
+                        "\n     - Fixed double addon assignment (By: TommyXL)" +
+                        "\n     - Game should now end if player exits while roles are assigning (By: TommyXL)" +
+                        "\n     - Plaguebearer & Pestilence can no longer get Fragile (By: TommyXL)" +
+                        "\n     - Fixed Sidekick KCD not setting correctly (By: TommyXL)" +
+                        "\n     - Fixed bug when Pelican eats Pestilence (By: TommyXL)" +
+                        "\n     - Fixed player names after /kill was used (By: TommyXL)" +
+                        "\n     - Fixed bug that stopped Copycat from copying Overseer (By: TommyXL)" +
+                        "\n     - Fixed name updates after Doppelganger kill (By: TommyXL)" +
+                        "\n     - Doppelganger skin does not change during Mushroom Mixup (By: TommyXL)" +
+                        "\n     - Fixed Penguin errogs in logs (By: TommyXL)" +
+                        "\n     - Attempted fix on disconnect due to reliable packet loss in lobby (By: TommyXL)" +
+                        "\n     - Fixed issues with Bandit stealing addons (By: ryuk)" +
+                        "\n     - Fixed bug when Rift Radius changed unit from `s` in settings (By: ryuk)" +
+                        "\n     - Fixed many issues with Captain addon removal (By: ryuk)" +
+                        "\n     - Fixed bug when Gangster can not recruit some roles even when setting is <b>ON</b> (By: ryuk)" +
+                        "\n     - Fixed bug when Mundane Neutral couldn't do tasks as modded clients (By: ryuk)" +
+                        "\n     - Attempted fix for Schrodinger's Cat win condition (By: ryuk)" +
+                        "\n     - Fixed progress for Plaguebearer in modded clients (By: ryuk)" +
+                        "\n     - Fixed bug when Collector could collect double votes  (By: ryuk)\r\n" +
+
+                    "\n<b>【Translator Credits】</b>" +
+                        "\n     - Brazilian (By: Dx7405)" +
+                        "\n     - Dutch (By: apemv, madmazel_)" +
+                        "\n     - French (By: FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                        "\n     - Italian (By: alot, Baphojack, Mattix606)" +
+                        "\n     - Japanese (By: Sunnyboi)" +
+                        "\n     - Latin American (By: CreepPower)" +
+                        "\n     - Russian (By: TommyXL, Shoulder Devil, chill_ultimated, Nevermore59)" +
+                        "\n     - Simplified Chinese (By: CrewCyan, LezaiYa, NikoCat223)" +
+                        "\n     - Spanish (By: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
+                        "\n     - Traditional Chinese (By: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
+                        "\n<b> Check out all of our translators on our website</b>\r\n" +
+
+                    "\n\n★ Welcome to Town of Host: Enhanced v1.5.1 ★",
+
+                    Date = "2024-2-17T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
                     Number = 100008,
                     Title = "Town of Host: Enhanced v1.5.0",
                     SubTitle = "★★ Big update! ★★",
