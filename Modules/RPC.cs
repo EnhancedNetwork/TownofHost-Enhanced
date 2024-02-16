@@ -148,6 +148,7 @@ enum CustomRPC
     SyncShroud,
     SyncMiniCrewAge,
     QuizmasterMarkPlayer,
+    PirateSyncData,
     //FFA
     SyncFFAPlayer,
     SyncFFANameNotify,
@@ -712,6 +713,12 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.RpcPassBomb:
                 Agitater.ReceiveRPC(reader);
+                break;
+            //case CustomRPC.SetCleanserCleanLimit:
+            //    Cleanser.ReceiveRPC(reader);
+            //    break;
+            case CustomRPC.PirateSyncData:
+                Pirate.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetSoulCollectorLimit:
                 SoulCollector.ReceiveRPC(reader);

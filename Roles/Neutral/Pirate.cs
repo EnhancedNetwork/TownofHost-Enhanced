@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
 using UnityEngine;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 public static class Pirate
@@ -71,6 +72,29 @@ public static class Pirate
     }
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = DuelCooldown.GetFloat();
 
+    public static void SendRPC(int operate, byte target = byte.MaxValue, int points = -1)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PirateSyncData, SendOption.Reliable, -1);
+        writer.Write(operate);
+        writer.Write(target);
+        if (operate == 1)
+        {
+            writer.Write(points);
+        }
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+
+    public static void ReceiveRPC(MessageReader reader)
+    {
+        int operate = reader.ReadInt32();
+        byte target = reader.ReadByte();
+        PirateTarget = target;
+        if (operate == 1)
+        {
+            int points = reader.ReadInt32();
+            NumWin = points;
+        }
+    }
 
     public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
@@ -82,6 +106,7 @@ public static class Pirate
         }
         Logger.Msg($"{killer.GetNameWithRole()} chose a target {target.GetNameWithRole()}", "Pirate");
         PirateTarget = target.PlayerId;
+        SendRPC(operate: 0, target: target.PlayerId, points: -1);
         DuelDone.Add(PirateTarget, false);
         if (!Options.DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(killer);
         else killer.SetKillCooldown();
@@ -133,6 +158,7 @@ public static class Pirate
         }
         DuelDone.Clear();
         PirateTarget = byte.MaxValue;
+        SendRPC(operate: 1, target: byte.MaxValue, points: NumWin);
         foreach (byte playerId in playerIdList) { DuelDone.Add(playerId, false); }
     }
 
