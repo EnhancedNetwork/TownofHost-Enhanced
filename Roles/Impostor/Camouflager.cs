@@ -106,8 +106,8 @@ public static class Camouflager
         {
             Timer.Remove(camouflager.PlayerId);
             ClearCamouflage();
-            camouflager.RpcResetAbilityCooldown();
             camouflager.SyncSettings();
+            camouflager.RpcResetAbilityCooldown();
             return;
         }
         if (!Timer.TryGetValue(camouflager.PlayerId, out var oldTime)) return;
@@ -117,8 +117,8 @@ public static class Camouflager
         {
             Timer.Remove(camouflager.PlayerId);
             ClearCamouflage();
-            camouflager.RpcResetAbilityCooldown();
             camouflager.SyncSettings();
+            camouflager.RpcResetAbilityCooldown();
         }
     }
 }
