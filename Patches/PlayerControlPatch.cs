@@ -1635,10 +1635,11 @@ public static class CheckShapeShiftPatch
 
         var shapeshifter = __instance;
         var role = shapeshifter.GetCustomRole();
-        Logger.Info($"{shapeshifter.GetRealName()} => {target.GetRealName()}, shouldAnimate = {shouldAnimate}", "Check ShapeShift");
 
         // Temporarily not check this roles
         if (role is CustomRoles.Sniper or CustomRoles.Warlock or CustomRoles.Fireworker) return true;
+
+        Logger.Info($"{shapeshifter.GetRealName()} => {target.GetRealName()}, shouldAnimate = {shouldAnimate}", "Check ShapeShift");
 
         if (role.GetVNRole() != CustomRoles.Shapeshifter)
         {
