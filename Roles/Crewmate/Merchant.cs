@@ -158,8 +158,6 @@ namespace TOHE.Roles.Crewmate
                 Main.AllAlivePlayerControls.Where(x =>
                     x.PlayerId != player.PlayerId
                     &&
-                    !x.Is(addon)
-                    &&
                     (!x.Is(CustomRoles.Stubborn))
                     &&
                     CustomRolesHelper.CheckAddonConfilct(addon, x, checkLimitAddons: false)

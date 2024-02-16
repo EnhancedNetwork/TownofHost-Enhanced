@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
+using System.Linq;
 using TOHE.Roles.AddOns.Common;
 using UnityEngine;
 using static TOHE.Options;
@@ -98,7 +99,7 @@ public static class Bandit
     private static CustomRoles? SelectRandomAddon(PlayerControl Target)
     {
         if (!AmongUsClient.Instance.AmHost) return null;
-        var AllSubRoles = Main.PlayerStates[Target.PlayerId].SubRoles;
+        var AllSubRoles = Main.PlayerStates[Target.PlayerId].SubRoles.ToList();
         for (int i = AllSubRoles.Count - 1; i >= 0; i--)
         {
             var role = AllSubRoles[i];

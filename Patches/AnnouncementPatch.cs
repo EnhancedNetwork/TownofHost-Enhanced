@@ -51,6 +51,58 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
+                    Number = 100009,
+                    Title = "Town of Host: Enhanced v1.5.1",
+                    SubTitle = "★★ Another Update? Bug Fixes, yay! ★★",
+                    ShortTitle = "TOH: Enhanced v1.5.1",
+                    BeforeNumber = 100008,
+                    Text = "<size=150%>Welcome to TOH: Enhanced v1.5.1!</size>\n" +
+                    "\n<b>【Base】</b>\n - Base on TOH: Enhanced v1.5.0\r\n" +
+
+                    "\n<b>【Bug Fixes】</b>" +
+                        "\n     - Attempted fix for Quizmaster Win Condition (By: Drakos)" +
+                        "\n     - Fixed double addon assignment (By: TommyXL)" +
+                        "\n     - Game should now end if player exits while roles are assigning (By: TommyXL)" +
+                        "\n     - Plaguebearer & Pestilence can no longer get Fragile (By: TommyXL)" +
+                        "\n     - Fixed Sidekick KCD not setting correctly (By: TommyXL)" +
+                        "\n     - Fixed bug when Pelican eats Pestilence (By: TommyXL)" +
+                        "\n     - Fixed player names after /kill was used (By: TommyXL)" +
+                        "\n     - Fixed bug that stopped Copycat from copying Overseer (By: TommyXL)" +
+                        "\n     - Fixed name updates after Doppelganger kill (By: TommyXL)" +
+                        "\n     - Doppelganger skin does not change during Mushroom Mixup (By: TommyXL)" +
+                        "\n     - Fixed Penguin errors in logs (By: TommyXL)" +
+                        "\n     - Attempted fix on disconnect due to reliable packet loss in lobby (By: TommyXL)" +
+                        "\n     - Fixed issues with Bandit stealing addons (By: ryuk)" +
+                        "\n     - Fixed bug when Rift Radius changed unit from `s` in settings (By: ryuk)" +
+                        "\n     - Fixed many issues with Captain addon removal (By: ryuk)" +
+                        "\n     - Fixed bug when Gangster can not recruit some roles even when setting is <b>ON</b> (By: ryuk)" +
+                        "\n     - Fixed bug when Mundane Neutral couldn't do tasks as modded clients (By: ryuk)" +
+                        "\n     - Attempted fix for Schrodinger's Cat win condition (By: ryuk)" +
+                        "\n     - Fixed progress for Plaguebearer in modded clients (By: ryuk)" +
+                        "\n     - Fixed bug when Collector could collect double votes  (By: ryuk)\r\n" +
+
+                    "\n<b>【Translator Credits】</b>" +
+                        "\n     - Brazilian (By: Dx7405)" +
+                        "\n     - Dutch (By: apemv, madmazel_)" +
+                        "\n     - French (By: FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                        "\n     - Italian (By: alot, Baphojack, Mattix606)" +
+                        "\n     - Japanese (By: Sunnyboi)" +
+                        "\n     - Latin American (By: CreepPower)" +
+                        "\n     - Russian (By: TommyXL, Shoulder Devil, chill_ultimated, Nevermore59)" +
+                        "\n     - Simplified Chinese (By: CrewCyan, LezaiYa, NikoCat223)" +
+                        "\n     - Spanish (By: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
+                        "\n     - Traditional Chinese (By: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
+                        "\n<b> Check out all of our translators on our website</b>\r\n" +
+
+                    "\n\n★ Welcome to Town of Host: Enhanced v1.5.1 ★",
+
+                    Date = "2024-2-17T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
                     Number = 100008,
                     Title = "Town of Host: Enhanced v1.5.0",
                     SubTitle = "★★ Big update! ★★",
@@ -578,6 +630,58 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
+                    Number = 100009,
+                    Title = "Town of Host: Enhanced v1.5.1",
+                    SubTitle = "★★ Еще одно обновление? Это исправления багов, ура! ★★",
+                    ShortTitle = "TOH: Enhanced v1.5.1",
+                    BeforeNumber = 100008,
+                    Text = "<size=150%>Добро пожаловать в TOH: Enhanced v1.5.1!</size>\n" +
+                    "\n<b>【Основан】</b>\n - Основан на TOH: Enhanced v1.5.0\r\n" +
+
+                    "\n<b>【Исправление Багов】</b>" +
+                        "\n     - Попытка исправить условие победы Мастера Викторины (Автор: Drakos)" +
+                        "\n     - Исправлено двойное назначение атрибута одному и тому-же игроку (Автор: TommyXL)" +
+                        "\n     - Игра теперь должна закончиться, если игрок выходит во время назначения ролей (Автор: TommyXL)" +
+                        "\n     - Носитель Чумы и Чума больше не могут получить Хрупкого (Автор: TommyXL)" +
+                        "\n     - Исправлен откат убийства у Союзника когда он выставлялся некорректно (Автор: TommyXL)" +
+                        "\n     - Исправлен баг когда Пеликан съедал Чуму (Автор: TommyXL)" +
+                        "\n     - Исправлен баг когда имена игроков стирались после использования команды «/kill» (Автор: TommyXL)" +
+                        "\n     - Исправлен баг когда Подражатель не мог копировать Смотритель (Автор: TommyXL)" +
+                        "\n     - Исправлено обновление имён игроков после убийства совершённым Двойником (Автор: TommyXL)" +
+                        "\n     - Скин двойника не меняется во время Грибного переполоха (Автор: TommyXL)" +
+                        "\n     - Исправлены ошибки Пингвин в логах (Автор: TommyXL)" +
+                        "\n     - Попытка исправить отключения из-за надежной потери пакетов в лобби (Автор: TommyXL)" +
+                        "\n     - Исправлены проблемы с Бандитом ворующими атрибуты (Автор: ryuk)" +
+                        "\n     - Исправлена ​​ошибка, когда «Радиус отметок» менял единицу измерения на `с` в настройках (Автор: ryuk)" +
+                        "\n     - Исправлено множество проблем с Капитаном когда он удалял атрибуты игрока (Автор: ryuk)" +
+                        "\n     - Исправлен ​​баг когда Гангстер не мог нанять некоторые роли даже когда настройки были <b>ВКЛ</b> (Автор: ryuk)" +
+                        "\n     - Исправлен баг когда некоторые нейтральные роли с атрибутом Рутинного не могли выполнять задания когда он является игроком с модом (Автор: ryuk)" +
+                        "\n     - Попытка исправить условие победы Пленного Кота (Автор: ryuk)" +
+                        "\n     - Исправлено отображение прогресса Носителя Чумы для модифицированных игроков (Автор: ryuk)" +
+                        "\n     - Исправлена ​​ошибка, когда Коллектор мог собирать двойные голоса (Автор: ryuk)\r\n" +
+
+                    "\n<b>【Переводчики】</b>" +
+                        "\n     - Бразильский (Автор: Dx7405)" +
+                        "\n     - Голландский (Автор: apemv, madmazel_)" +
+                        "\n     - Французский (Автор: FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                        "\n     - Итальянский (Автор: alot, Baphojack, Mattix606)" +
+                        "\n     - Японский (Автор: Sunnyboi)" +
+                        "\n     - Латиноамерика (Автор: CreepPower)" +
+                        "\n     - Русский (Автор: TommyXL, Shoulder Devil (Тэм), chill_ultimated (Тоха), Nevermore59)" +
+                        "\n     - Упрощенный Китайский (Автор: CrewCyan, LezaiYa, NikoCat223)" +
+                        "\n     - Испанский (Автор: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
+                        "\n     - Традиционный Китайский (Автор: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
+                        "\n<b> Ознакомьтесь со всеми нашими переводчиками на нашем сайте</b>\r\n" +
+
+                    "\n\n★ Добро пожаловать в Town of Host: Enhanced v1.5.1 ★",
+
+                    Date = "2024-2-17T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
                     Number = 100008,
                     Title = "Town of Host: Enhanced v1.5.0",
                     SubTitle = "★★ Большое обновление! ★★",
@@ -1096,6 +1200,58 @@ public class ModNewsHistory
         // ====== SChinese ======
         else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.SChinese)
         {
+            {
+                var news = new ModNews
+                {
+                    Number = 100009,
+                    Title = "Town of Host: Enhanced v1.5.1",
+                    SubTitle = "★★ 又更新了？修复了bug，耶！ ★★",
+                    ShortTitle = "TOH: Enhanced v1.5.1",
+                    BeforeNumber = 100008,
+                    Text = "<size=150%>Welcome to TOH: Enhanced v1.5.1!</size>\n" +
+                    "\n<b>【基于官方版本】</b>\n - 基于 TOH: Enhanced v1.5.0\r\n" +
+
+                    "\n<b>【Bug修复】</b>" +
+                        "\n     - 尝试修复了测验长获胜条件 (由 Drakos 修复)" +
+                        "\n     - 修复了附加职业的分配 (由 TommyXL 修复)" +
+                        "\n     - 现在，玩家在分配职业时退出，游戏应该结束 (由 TommyXL 修复)" +
+                        "\n     - 瘟疫使者和瘟疫不会成为脆弱 (由 TommyXL 修复)" +
+                        "\n     - 修复了跟班击杀冷却时间设置不正确的Bug (由 TommyXL 修复)" +
+                        "\n     - 修复了鹈鹕吃瘟疫时的bug(由 TommyXL 修复)" +
+                        "\n     - 修复了被 /kill 后的玩家名字 (由 TommyXL 修复)" +
+                        "\n     - 修复了阻止模仿猫模仿预言家的bug(由 TommyXL 修复)" +
+                        "\n     - 修复了分身者被击杀后的名字改变的Bug (由 TommyXL 修复)" +
+                        "\n     - 在蘑菇混合的时候分身者的皮肤不会发生改变(由 TommyXL 修复)" +
+                        "\n     - 修复了日志中的企鹅的Bug(由 TommyXL 修复)" +
+                        "\n     - 尝试修复了由于大厅中可靠的数据包丢失而导致的断开连接 (由 TommyXL 修复)" +
+                        "\n     - 修复了强盗窃取附加职业的Bug (由 ryuk 修复)" +
+                        "\n     - 修复了裂缝半径在设置中将单位从“秒”更改为单位“时”的bug(由 ryuk 修复)" +
+                        "\n     - 修复了舰长附加删除等许多问题 (由 ryuk 修复)" +
+                        "\n     - 修复了即使设置为<b>开</b>时，歹徒也无法招募某些职业的Bug(由 ryuk 修复)" +
+                        "\n     - 修复平凡者中立在Mod上无法做任务的bug(由 ryuk 修复)" +
+                        "\n     - 尝试修复了薛定谔的猫获胜条件 (由 ryuk 修复)" +
+                        "\n     - 修复了Mod中瘟疫使者进度的Bug (由 ryuk 修复)" +
+                        "\n     - 修复了集票者可以收集双倍票数的Bug(由 ryuk 修复)\r\n" +
+
+                    "\n<b>【翻译名单】</b>" +
+                        "\n     - 巴西语 (Dx7405)" +
+                        "\n     - 荷兰语 (apemv, madmazel_)" +
+                        "\n     - 法语 (FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                        "\n     - 意大利语 (alot, Baphojack, Mattix606)" +
+                        "\n     - 日语 (Sunnyboi)" +
+                        "\n     - 拉丁美洲语 (CreepPower)" +
+                        "\n     - 俄语 (TommyXL, Shoulder Devil, chill_ultimated, Nevermore59)" +
+                        "\n     - 简体中文 (CrewCyan, LezaiYa, NikoCat223)" +
+                        "\n     - 西班牙语 ( Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
+                        "\n     - 繁体中文 (FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
+                        "\n<b> 在我们的网站上查看所有的翻译人员</b>\r\n" +
+
+                    "\n\n★ 欢迎来到Town of Host: Enhanced v1.5.1 ★",
+
+                    Date = "2024-2-17T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
             {
                 var news = new ModNews
                 {
@@ -1969,6 +2125,58 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
+                    Number = 100009,
+                    Title = "Town of Host：Enhanced v1.5.1",
+                    SubTitle = "★★ また更新？バグ修正、やったー！★★",
+                    ShortTitle = "TOH: エンハンスド v1.5.1",
+                    BeforeNumber = 100008,
+                    Text = "<size=150%>TOH: エンハンスド v1.5.1へようこそ！</size>\n" +
+                    "\n<b>【ベース】</b>\n - TOH: エンハンスド v1.5.0に基づいています\r\n" +
+
+                    "\n<b>【バグ修正】</b>" +
+                        "\n     - クイズマスター勝利条件の修正を試みました (By: Drakos)" +
+                        "\n     - アドオンが二重に割り当てられる問題を修正しました (By: TommyXL)" +
+                        "\n     - 役割を割り当て中にプレイヤーが退出した場合、ゲームが終了するように修正しました (By: TommyXL)" +
+                        "\n     - 疫病媒介者&ペスティレンスが壊れやすいを得られなくなりました (By: TommyXL)" +
+                        "\n     - 相棒KCDが正しく設定されないバグを修正しました (By: TommyXL)" +
+                        "\n     - ペリカンがペスティレンスを食べた時のバグを修正しました (By: TommyXL)" +
+                        "\n     - /killを使用した後のプレイヤー名を修正しました (By: TommyXL)" +
+                        "\n     - コピーキャットが監督者をコピーできないバグを修正しました (By: TommyXL)" +
+                        "\n     - ドッペルゲンガーキル後の名前更新を修正しました (By: TommyXL)" +
+                        "\n     - ドッペルゲンガーのスキンがMushroom Mixup中に変更されないように修正しました (By: TommyXL)" +
+                        "\n     - ペンギンのログの誤りを修正しました (By: TommyXL)" +
+                        "\n     - ロビーでの信頼できるパケット損失による切断の修正を試みました (By: TommyXL)" +
+                        "\n     - バンディットがアドオンを盗む際の問題を修正しました (By: ryuk)" +
+                        "\n     - 設定でRift Radiusの単位が`s`に変更された時のバグを修正しました (By: ryuk)" +
+                        "\n     - せんちょうアドオンの削除に関する多くの問題を修正しました (By: ryuk)" +
+                        "\n     - ギャングスターが設定が<b>ON</b>の時でも一部の役割を勧誘できないバグを修正しました (By: ryuk)" +
+                        "\n     - 平凡ニュートラルが改造されたクライアントとしてタスクを実行できないバグを修正しました (By: ryuk)" +
+                        "\n     - シュレーディンガーの猫の勝利条件の修正を試みました (By: ryuk)" +
+                        "\n     - 改造されたクライアントでの疫病媒介者の進行状況を修正しました (By: ryuk)" +
+                        "\n     - コレクターが二重投票を集められるバグを修正しました (By: ryuk)\r\n" +
+
+                    "\n<b>【翻訳者クレジット】</b>" +
+                        "\n     - ブラジル語 (By: Dx7405)" +
+                        "\n     - オランダ語 (By: apemv, madmazel_)" +
+                        "\n     - フランス語 (By: FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                        "\n     - イタリア語 (By: alot, Baphojack, Mattix606)" +
+                        "\n     - 日本語 (By: Sunnyboi)" +
+                        "\n     - ラテンアメリカ (By: CreepPower)" +
+                        "\n     - ロシア語 (By: TommyXL, Shoulder Devil, chill_ultimated, Nevermore59)" +
+                        "\n     - 簡体字中国語 (By: CrewCyan, LezaiYa, NikoCat223)" +
+                        "\n     - スペイン語 (By: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
+                        "\n     - 繁体字中国語 (By: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
+                        "\n<b> 弊社のウェブサイトで全ての翻訳者をチェックしてください</b>\r\n" +
+
+                    "\n\n★ ホストの町：エンハンスド v1.5.1へようこそ ★",
+
+                    Date = "2024-2-17T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
                     Number = 100008,
                     Title = "Town of Host: Enhanced v1.5.0",
                     SubTitle = "★★ 大規模アップデート!! ★★",
@@ -2832,6 +3040,58 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
+                    Number = 100009,
+                    Title = "Town of Host: Enhanced v1.5.1",
+                    SubTitle = "★★ Un'Altro Aggiornamento? Correzioni di Bug, Evviva! ★★",
+                    ShortTitle = "TOH: Enhanced v1.5.1",
+                    BeforeNumber = 100008,
+                    Text = "<size=150%>Benvenuto a TOH: Enhanced v1.5.1!</size>\n" +
+                    "\n<b>【Base】</b>\n - Base su TOH: Enhanced v1.5.0\r\n" +
+
+                    "\n<b>【Correzioni di Bug】</b>" +
+                        "\n     - Tentativo di correzione della condizione di vittoria del Maestro dei Quiz (Da: Drakos)" +
+                        "\n     - Risolto il bug con l'assegnazione del doppio modificatore (Da: TommyXL)" +
+                        "\n     - Il gioco ora dovrebbe terminare se il giocatore esce durante l'assegnazione dei ruoli (Da: TommyXL)" +
+                        "\n     - Untore e Pestilenza non possono più avere Fragile (Da: TommyXL)" +
+                        "\n     - Risolto il KCD dell'Aiutante non impostato correttamente (Da: TommyXL)" +
+                        "\n     - Risolto il bug quando il Pellicano mangia Pestilenza (Da: TommyXL)" +
+                        "\n     - Sistemati i nomi dei giocatori dopo l'utilizzo di /kill (Da: TommyXL)" +
+                        "\n     - Risolto un bug che impediva a Copiatore di copiare il Chiaroveggente (Da: TommyXL)" +
+                        "\n     - Risolti gli aggiornamenti del nome dopo l'uccisione del Doppelganger (Da: TommyXL)" +
+                        "\n     - La skin del Doppelganger non cambia durante il Caos di Funghi (Da: TommyXL)" +
+                        "\n     - Risolti gli errori di Pinguino nei log (Da: TommyXL)" +
+                        "\n     - Tentativo di correzione della disconnessione a causa della perdita affidabile di pacchetti nella lobby (Da: TommyXL)" +
+                        "\n     - Risolti i problemi relativi al furto dei modificatori del Bandito (Da: ryuk)" +
+                        "\n     - Risolto il bug quando Raggio Spaccatura cambiava unità da 's' nelle impostazioni (Da: ryuk)" +
+                        "\n     - Risolti molti problemi con la rimozione dei modificatori da parte del Capitano (Da: ryuk)" +
+                        "\n     - Risolto bug per cui il Gangster non poteva reclutare alcuni ruoli anche quando l'impostazione era su <b>ON</b> (Da: ryuk)" +
+                        "\n     - Risolto un bug per cui un Neutrale con Mondano non poteva completare gli incarichi nei client modificati (Da: ryuk)" +
+                        "\n     - Tentativo di correzione per la condizione di vittoria del Gatto di Schrodinger (Da: ryuk)" +
+                        "\n     - Risolti i progressi per Untore nei client modificati (Da: ryuk)" +
+                        "\n     - Risolto un bug quando il Collezionista poteva raccogliere voti doppi (Da: ryuk)\r\n" +
+
+                    "\n<b>【Crediti ai Traduttori】</b>" +
+                        "\n     - Brasiliano (Da: Dx7405)" +
+                        "\n     - Olandese (Da: apemv, madmazel_)" +
+                        "\n     - Francese (Da: FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                        "\n     - Italiano (Da: alot, Baphojack, Mattix606)" +
+                        "\n     - Giapponese (Da: Sunnyboi)" +
+                        "\n     - Latino Americano (Da: CreepPower)" +
+                        "\n     - Russo (Da: TommyXL, Shoulder Devil, chill_ultimated, Nevermore59)" +
+                        "\n     - Cinese Semplificato (Da: CrewCyan, LezaiYa, NikoCat223)" +
+                        "\n     - Spagnolo (Da: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
+                        "\n     - Cinese Tradizionale (Da: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
+                        "\n<b> Scopri tutti i nostri traduttori sul nostro sito web</b>\r\n" +
+
+                    "\n\n★ Benvenuto a Town of Host: Enhanced v1.5.1 ★",
+
+                    Date = "2024-2-17T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
                     Number = 100008,
                     Title = "Town of Host: Enhanced v1.5.0",
                     SubTitle = "★★ Grande Aggiornamento! ★★",
@@ -3050,6 +3310,58 @@ public class ModNewsHistory
         // ====== Brazilian ======
         else if (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.Brazilian)
         {
+            {
+                var news = new ModNews
+                {
+                    Number = 100009,
+                    Title = "Town of Host: Enhanced v1.5.1",
+                    SubTitle = "★★ Outra Atualização? Correção de Bugs, yay! ★★",
+                    ShortTitle = "TOH: Enhanced v1.5.1",
+                    BeforeNumber = 100008,
+                    Text = "<size=150%>Bem vindo ao TOH: Enhanced v1.5.1!</size>\n" +
+                    "\n<b>【Base】</b>\n - Baseado no TOH: Enhanced v1.5.0\r\n" +
+
+                    "\n<b>【Correção de Bugs】</b>" +
+                        "\n     - Tentativa de correção da condição de vitória do Mestre das Charadas (por: Drakos)" +
+                        "\n     - Corrigida atribuição de Atributos duplo (Por: TommyXL)" +
+                        "\n     - O jogo deve terminar agora se o jogador sair enquanto as funções estão sendo atribuídas (Por: TommyXL)" +
+                        "\n     - Porta-Pragas & Peste não podem mais ter o atributo Frágil (Por: TommyXL)" +
+                        "\n     - Corrigido o tempo para matar do Ajudante que não estava configurado corretamente (Por: TommyXL)" +
+                        "\n     - Corrigido bug quando Glutão come a Peste (Por: TommyXL)" +
+                        "\n     - Corrigidos os nomes dos jogadores após o comando /kill ser usado (Por: TommyXL)" +
+                        "\n     - Corrigido bug que impedia o Copiador de copiar o Profeta (Por: TommyXL)" +
+                        "\n     - Corrigidas atualizações de nome após a morte do Sósia (Por: TommyXL)" +
+                        "\n     - A skin do Sósia não muda durante a confusão de cogumelos (Por: TommyXL)" +
+                        "\n     - Corrigidos erros do Pinguim nos logs (Por: TommyXL)" +
+                        "\n     - Tentativa de correção de desconexão devido à perda confiável de pacotes no lobby (Por: TommyXL)" +
+                        "\n     - Corrigidos problemas com os atributos de roubo do Bandido (Por: ryuk)" +
+                        "\n     - Corrigido bug quando 'Rift Radius' mudava a unidade de `s` nas configurações (Por: ryuk)" +
+                        "\n     - Corrigidos muitos problemas com a remoção do atributo do Capitão (Por: ryuk)" +
+                        "\n     - Corrigido bug quando o Gangster não conseguia recrutar algumas funções mesmo quando a configuração estava <b>ON</b> (Por: ryuk)" +
+                        "\n     - Corrigido bug quando o Mundano Neutro não conseguia realizar tarefas nos clientes modificados (Por: ryuk)" +
+                        "\n     - Tentativa de correção para a condição de vitória do Gato de Schrodinger (Por: ryuk)" +
+                        "\n     - Corrigido o progresso do Porta-Pragas em clientes modificados (Por: ryuk)" +
+                        "\n     - Corrigido bug quando o Coletor conseguia coletar votos duplos (Por: ryuk)\r\n" +
+
+                    "\n<b>【Créditos pelas Traduções】</b>" +
+                        "\n     - Português (Brasil) (por: Dx7405)" +
+                        "\n     - Holandês (por: apemv, madmazel_)" +
+                        "\n     - Francês (por: FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                        "\n     - Italiano (por: alot, Baphojack, Mattix606)" +
+                        "\n     - Japonês (por: Sunnyboi)" +
+                        "\n     - Latino Americano (por: CreepPower)" +
+                        "\n     - Russo (por: TommyXL, Shoulder Devil, chill_ultimated, Nevermore59)" +
+                        "\n     - Chinês Simplificado (por: CrewCyan, LezaiYa, NikoCat223)" +
+                        "\n     - Espanhol (por: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
+                        "\n     - Chinês Tradicional (por: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
+                        "\n<b> Confira todos os nossos tradutores em nosso site</b>\r\n" +
+
+                    "\n\n★ Bem vindo ao Town of Host: Enhanced v1.5.1 ★",
+
+                    Date = "2024-2-17T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
             {
                 var news = new ModNews
                 {

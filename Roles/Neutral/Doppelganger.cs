@@ -136,7 +136,7 @@ public static class Doppelganger
 
     public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null || !IsEnable || Camouflage.IsCamouflage || Camouflager.AbilityActivated) return;
+        if (killer == null || target == null || !IsEnable || Camouflage.IsCamouflage || Camouflager.AbilityActivated || Utils.IsActive(SystemTypes.MushroomMixupSabotage)) return;
         if (Main.CheckShapeshift.TryGetValue(target.PlayerId, out bool isShapeshifitng) && isShapeshifitng)
         {
             Logger.Info("Target was shapeshifting", "Doppelganger");
@@ -174,7 +174,8 @@ public static class Doppelganger
         Logger.Info("Changed killer skin", "Doppelganger");
 
         SendRPC(killer.PlayerId);
-        Utils.NotifyRoles(ForceLoop: true);
+        Utils.NotifyRoles(ForceLoop: true, NoCache: true);
+        RPC.SyncAllPlayerNames();
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
         return;

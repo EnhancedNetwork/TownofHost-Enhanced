@@ -18,7 +18,7 @@ namespace TOHE.Roles.Crewmate
         private static readonly string fontSize = "1.5";
         public static bool IsEnable = false;
 
-        public static Dictionary<int, string> RandomRole = [];
+        public static Dictionary<byte, string> RandomRole = [];
         public static Dictionary<byte, (PlayerControl, float)> FarseerTimer = [];
 
         public static OptionItem FarseerCooldown;
@@ -92,6 +92,11 @@ namespace TOHE.Roles.Crewmate
             if (!AmongUsClient.Instance.AmHost) return;
             if (!Main.ResetCamPlayerList.Contains(playerId))
                 Main.ResetCamPlayerList.Add(playerId);
+        }
+        public static void Remove(byte playerId)
+        {
+            FarseerTimer.Remove(playerId);
+            RandomRole.Remove(playerId);
         }
 
         public static void SetCooldown(byte id) => Main.AllPlayerKillCooldown[id] = FarseerCooldown.GetFloat();
@@ -170,7 +175,7 @@ namespace TOHE.Roles.Crewmate
 
         public static string GetTaskState()
         {
-            var playersWithTasks = Main.PlayerStates.Where(a => a.Value.GetTaskState().hasTasks).ToArray();
+            var playersWithTasks = Main.PlayerStates.Where(a => a.Value.TaskState.hasTasks).ToArray();
             if (playersWithTasks.Length == 0)
             {
                 return "\r\n";
@@ -178,7 +183,7 @@ namespace TOHE.Roles.Crewmate
 
             var rd = IRandom.Instance;
             var randomPlayer = playersWithTasks[rd.Next(0, playersWithTasks.Length)];
-            var taskState = randomPlayer.Value.GetTaskState();
+            var taskState = randomPlayer.Value.TaskState;
 
             Color TextColor;
             var TaskCompleteColor = Color.green;
