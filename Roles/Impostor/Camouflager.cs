@@ -33,6 +33,7 @@ public static class Camouflager
     }
     public static void Init()
     {
+        Timer = [];
         AbilityActivated = false;
         IsEnable = false;
     }
@@ -43,7 +44,6 @@ public static class Camouflager
         ShapeshiftIsHidden = Options.DisableShapeshiftAnimations.GetBool();
         IsEnable = true;
     }
-
     public static void ApplyGameOptions()
     {
         AURoleOptions.ShapeshifterCooldown = ShapeshiftIsHidden && AbilityActivated ? CamouflageDuration : CamouflageCooldown;
@@ -52,7 +52,13 @@ public static class Camouflager
     public static void OnShapeshift(PlayerControl camouflager = null, bool shapeshiftIsHidden = false)
     {
         AbilityActivated = true;
-        var timer = shapeshiftIsHidden ? 0.1f : 1.2f;
+        
+        var timer = 1.2f;
+        if (shapeshiftIsHidden)
+        {
+            timer = 0.1f;
+            camouflager.SyncSettings();
+        }
 
         _ = new LateTask(() =>
         {
@@ -61,7 +67,9 @@ public static class Camouflager
                 Camouflage.CheckCamouflage();
 
                 if (camouflager != null && shapeshiftIsHidden)
+                {
                     Timer.Add(camouflager.PlayerId, Utils.GetTimeStamp());
+                }
             }
         }, timer, "Camouflager Use Shapeshift");
     }
@@ -85,6 +93,7 @@ public static class Camouflager
     {
         if (camouflager == null || !camouflager.IsAlive())
         {
+            Timer.Remove(camouflager.PlayerId);
             ClearCamouflage();
             return;
         }

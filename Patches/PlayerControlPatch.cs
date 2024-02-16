@@ -1851,6 +1851,11 @@ public static class CheckShapeShiftPatch
                 return false;
 
             case CustomRoles.Camouflager:
+                if (Camouflager.AbilityActivated)
+                {
+                    shapeshifter.RejectShapeshiftAndReset(reset: false);
+                    return false;
+                }
                 Camouflager.OnShapeshift(shapeshifter, shapeshiftIsHidden: true);
                 shapeshifter.RejectShapeshiftAndReset();
                 return false;
