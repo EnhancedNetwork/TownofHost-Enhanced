@@ -58,7 +58,8 @@ public static class Penguin
     }
     private static void SendRPC()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PenguinSync, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Penguin);
         writer.Write(AbductVictim?.PlayerId ?? 255);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }

@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
+using InnerNet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -86,9 +87,16 @@ class CmdCheckMurderPatch
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
     {
         Logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}", "CmdCheckMurder");
-        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || !GameStates.IsModHost) return true;
 
-        __instance.CheckMurder(target);
+        if (AmongUsClient.Instance.AmHost && GameStates.IsModHost)
+            __instance.CheckMurder(target);
+        else
+        {
+            MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.CheckMurder, SendOption.Reliable, -1);
+            messageWriter.WriteNetObject(target);
+            AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+        }
+
         return false;
     }
 }
@@ -1317,15 +1325,21 @@ class MurderPlayerPatch
         
         if (isProtectedByClient)
         {
-            Logger.Info("The kill will fail because it is protected", "MurderPlayer Prefix");
+            Logger.Info("The kill will fail because it has DecisonByHost and target is protected", "MurderPlayer Prefix");
         }
         if (isProtectedByHost)
         {
-            Logger.Info("The kill was canceled by the host because it is protected", "MurderPlayer Prefix");
+            if (GameStates.IsModHost)
+                Logger.Info("Host sent FailedProtected due to role skill / reset kill timer", "MurderPlayer Prefix");
+            else
+                Logger.Info("Vanilla server canceled murder due to protection", "MurderPlayer Prefix");
         }
         if (isFailed)
         {
-            Logger.Info("The kill was cancelled by the host", "MurderPlayer Prefix");
+            if (GameStates.IsModHost)
+                Logger.Info("The kill was cancelled by the host", "MurderPlayer Prefix");
+            else
+                Logger.Info("The kill was cancelled by the server", "MurderPlayer Prefix");
         }
 
         if (isSucceeded)
@@ -1342,7 +1356,7 @@ class MurderPlayerPatch
                             target.RpcShapeshift(target, false);
                         }
                     },
-                    1.5f, "Revert Shapeshift After Murder");
+                    1.5f, "Revert Shapeshift Before Murder");
             }
             else
             {
@@ -1358,20 +1372,6 @@ class MurderPlayerPatch
                 Camouflage.ResetSkinAfterDeathPlayers.Add(target.PlayerId);
                 Camouflage.RpcSetSkin(target, ForceRevert: true, RevertToDefault: true);
             }
-        }
-
-        if (AmongUsClient.Instance.AmHost)
-        {
-            if (resultFlags == MurderResultFlags.Succeeded)
-            {
-                __instance.RpcSpecificMurderPlayer(__instance, __instance);
-                EAC.Report(__instance, "No check murder");
-                EAC.WarnHost();
-                EAC.HandleCheat(__instance, "No check murder");
-                return false;
-            }
-            //As long as the check murder is done by host, the murder result flags will always have DecisionByHost
-            //Succeed means the client send a murder player rpc without check murder to host
         }
         return true;
     }
@@ -1595,6 +1595,28 @@ class MurderPlayerPatch
                 Utils.NotifyRoles(ForceLoop: true);
             }
         }
+    }
+}
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcMurderPlayer))]
+class  RpcMurderPlayerPatch
+{
+    public static bool Prefix(PlayerControl __instance, PlayerControl target, bool didSucceed)
+    {
+        if (!AmongUsClient.Instance.AmHost)
+            Logger.Error("Client is calling RpcMurderPlayer, are you Hacking?", "RpcMurderPlayerPatch..Prefix");
+
+        MurderResultFlags murderResultFlags = didSucceed ? MurderResultFlags.Succeeded : MurderResultFlags.FailedError;
+        if (AmongUsClient.Instance.AmClient)
+        {
+            __instance.MurderPlayer(target, murderResultFlags);
+        }
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable, -1);
+        messageWriter.WriteNetObject(target);
+        messageWriter.Write((int)murderResultFlags);
+        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+
+        return false;
+        // There is no need to include DecisionByHost. DecisionByHost will make client check protection locally and cause confusion.
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Shapeshift))]
