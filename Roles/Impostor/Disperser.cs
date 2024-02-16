@@ -23,7 +23,7 @@ public static class Disperser
     public static void ApplyGameOptions()
     {
         AURoleOptions.ShapeshifterCooldown = DisperserShapeshiftCooldown.GetFloat();
-        AURoleOptions.ShapeshifterDuration = DisableShapeshiftAnimations.GetBool() ? 1f : DisperserShapeshiftDuration.GetFloat();
+        AURoleOptions.ShapeshifterDuration = DisperserShapeshiftDuration.GetFloat();
     }
     public static void DispersePlayers(PlayerControl shapeshifter, bool shapeshiftIsHidden = false)
     {

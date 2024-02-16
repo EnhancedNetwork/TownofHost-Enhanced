@@ -1626,7 +1626,7 @@ public static class CheckShapeShiftPatch
     {
         player.RpcRejectShapeshift();
         if (reset) player.RpcResetAbilityCooldown();
-        Logger.Info($"Rejected {player.GetRealName()} Ss & " + (reset ? "Reset cool down" : "Not Reset cool down"), "RejectShapeshiftAndReset");
+        Logger.Info($"Rejected {player.GetRealName()} shapeshift & " + (reset ? "Reset cooldown" : "Not Reset cooldown"), "RejectShapeshiftAndReset");
     }
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool shouldAnimate)
     {
