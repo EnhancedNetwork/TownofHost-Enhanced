@@ -46,7 +46,7 @@ public static class Camouflager
 
     public static void ApplyGameOptions()
     {
-        AURoleOptions.ShapeshifterCooldown = CamouflageCooldown;
+        AURoleOptions.ShapeshifterCooldown = ShapeshiftIsHidden && AbilityActivated ? CamouflageDuration : CamouflageCooldown;
         AURoleOptions.ShapeshifterDuration = CamouflageDuration;
     }
     public static void OnShapeshift(PlayerControl camouflager = null, bool shapeshiftIsHidden = false)
@@ -68,6 +68,7 @@ public static class Camouflager
     public static void OnReportDeadBody()
     {
         ClearCamouflage();
+        Timer = [];
     }
     public static void IsDead()
     {
