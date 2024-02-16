@@ -9,17 +9,16 @@ public static class OptionsMenuBehaviourStartPatch
 {
     private static ClientOptionItem UnlockFPS;
     private static ClientOptionItem ShowFPS;
-    private static ClientOptionItem AutoMuteUs;
-    private static ClientOptionItem HorseMode;
     private static ClientOptionItem EnableGM;
     private static ClientOptionItem AutoStart;
+    private static ClientOptionItem ShowTextOverlay;
+    private static ClientOptionItem ModeForSmallScreen;
+    private static ClientOptionItem HorseMode;
+    private static ClientOptionItem AutoMuteUs;
     private static ClientOptionItem ForceOwnLanguage;
     private static ClientOptionItem ForceOwnLanguageRoleName;
     private static ClientOptionItem EnableCustomButton;
     private static ClientOptionItem EnableCustomSoundEffect;
-    private static ClientOptionItem ShowTextOverlay;
-    private static ClientOptionItem ModeForSmallScreen;
-    private static ClientOptionItem EnableRoleSummary;
     private static ClientOptionItem SwitchVanilla;
 #if DEBUG
     private static ClientOptionItem VersionCheat;
@@ -53,14 +52,6 @@ public static class OptionsMenuBehaviourStartPatch
         {
             ShowFPS = ClientOptionItem.Create("ShowFPS", Main.ShowFPS, __instance);
         }
-        if (AutoMuteUs == null || AutoMuteUs.ToggleButton == null)
-        {
-            AutoMuteUs = ClientOptionItem.Create("AutoMuteUs", Main.AutoMuteUs, __instance);
-        }
-        if (HorseMode == null || HorseMode.ToggleButton == null)
-        {
-            HorseMode = ClientOptionItem.Create("HorseMode", Main.HorseMode, __instance);
-        }
         if (EnableGM == null || EnableGM.ToggleButton == null)
         {
             EnableGM = ClientOptionItem.Create("GM", Main.EnableGM, __instance);
@@ -77,6 +68,22 @@ public static class OptionsMenuBehaviourStartPatch
                 }
             }
         }
+        if (ShowTextOverlay == null || ShowTextOverlay.ToggleButton == null)
+        {
+            ShowTextOverlay = ClientOptionItem.Create("ShowTextOverlay", Main.ShowTextOverlay, __instance);
+        }
+        if (ModeForSmallScreen == null || ModeForSmallScreen.ToggleButton == null)
+        {
+            ModeForSmallScreen = ClientOptionItem.Create("ModeForSmallScreen", Main.ModeForSmallScreen, __instance);
+        }
+        if (HorseMode == null || HorseMode.ToggleButton == null)
+        {
+            HorseMode = ClientOptionItem.Create("HorseMode", Main.HorseMode, __instance);
+        }
+        if (AutoMuteUs == null || AutoMuteUs.ToggleButton == null)
+        {
+            AutoMuteUs = ClientOptionItem.Create("AutoMuteUs", Main.AutoMuteUs, __instance);
+        }
         if (ForceOwnLanguage == null || ForceOwnLanguage.ToggleButton == null)
         {
             ForceOwnLanguage = ClientOptionItem.Create("ForceOwnLanguage", Main.ForceOwnLanguage, __instance);
@@ -92,18 +99,6 @@ public static class OptionsMenuBehaviourStartPatch
         if (EnableCustomSoundEffect == null || EnableCustomSoundEffect.ToggleButton == null)
         {
             EnableCustomSoundEffect = ClientOptionItem.Create("EnableCustomSoundEffect", Main.EnableCustomSoundEffect, __instance);
-        }
-        if (ShowTextOverlay == null || ShowTextOverlay.ToggleButton == null)
-        {
-            ShowTextOverlay = ClientOptionItem.Create("ShowTextOverlay", Main.ShowTextOverlay, __instance);
-        }
-        if (ModeForSmallScreen == null || ModeForSmallScreen.ToggleButton == null)
-        {
-            ModeForSmallScreen = ClientOptionItem.Create("ModeForSmallScreen", Main.ModeForSmallScreen, __instance);
-        }
-        if (EnableRoleSummary == null || EnableRoleSummary.ToggleButton == null)
-        {
-            EnableRoleSummary = ClientOptionItem.Create("EnableRoleSummary", Main.EnableRoleSummary, __instance);
         }
         if (SwitchVanilla == null || SwitchVanilla.ToggleButton == null)
         {

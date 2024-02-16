@@ -736,7 +736,7 @@ public static class Utils
                     ProgressText.Append(President.GetEndLimit(playerId));
                     break;
                 case CustomRoles.Veteran:
-                    var taskState2 = Main.PlayerStates?[playerId].GetTaskState();
+                    var taskState2 = Main.PlayerStates?[playerId].TaskState;
                     Color TextColor2;
                     var TaskCompleteColor2 = Color.green;
                     var NonCompleteColor2 = Color.yellow;
@@ -750,7 +750,7 @@ public static class Utils
                     ProgressText.Append(ColorString(TextColor21, $" <color=#ffffff>-</color> {Math.Round(Main.VeteranNumOfUsed[playerId], 1)}"));
                     break;
                 case CustomRoles.Grenadier:
-                    var taskState3 = Main.PlayerStates?[playerId].GetTaskState();
+                    var taskState3 = Main.PlayerStates?[playerId].TaskState;
                     Color TextColor3;
                     var TaskCompleteColor3 = Color.green;
                     var NonCompleteColor3 = Color.yellow;
@@ -764,7 +764,7 @@ public static class Utils
                     ProgressText.Append(ColorString(TextColor31, $" <color=#ffffff>-</color> {Math.Round(Main.GrenadierNumOfUsed[playerId], 1)}"));
                     break;
                 case CustomRoles.Bastion:
-                    var taskState15 = Main.PlayerStates?[playerId].GetTaskState();
+                    var taskState15 = Main.PlayerStates?[playerId].TaskState;
                     Color TextColor15;
                     var TaskCompleteColor15 = Color.green;
                     var NonCompleteColor15 = Color.yellow;
@@ -778,7 +778,7 @@ public static class Utils
                     ProgressText.Append(ColorString(TextColor151, $" <color=#777777>-</color> {Math.Round(Main.BastionNumberOfAbilityUses, 1)}"));
                     break;
                 case CustomRoles.Divinator:
-                    var taskState4 = Main.PlayerStates?[playerId].GetTaskState();
+                    var taskState4 = Main.PlayerStates?[playerId].TaskState;
                     Color TextColor4;
                     var TaskCompleteColor4 = Color.green;
                     var NonCompleteColor4 = Color.yellow;
@@ -792,7 +792,7 @@ public static class Utils
                     ProgressText.Append(ColorString(TextColor41, $" <color=#ffffff>-</color> {Math.Round(Divinator.CheckLimit[playerId])}"));
                     break;
                 case CustomRoles.DovesOfNeace:
-                    var taskState5 = Main.PlayerStates?[playerId].GetTaskState();
+                    var taskState5 = Main.PlayerStates?[playerId].TaskState;
                     Color TextColor5;
                     var TaskCompleteColor5 = Color.green;
                     var NonCompleteColor5 = Color.yellow;
@@ -806,7 +806,7 @@ public static class Utils
                     ProgressText.Append(ColorString(TextColor51, $" <color=#ffffff>-</color> {Math.Round(Main.DovesOfNeaceNumOfUsed[playerId], 1)}"));
                     break;
                 case CustomRoles.TimeMaster:
-                    var taskState6 = Main.PlayerStates?[playerId].GetTaskState();
+                    var taskState6 = Main.PlayerStates?[playerId].TaskState;
                     Color TextColor6;
                     var TaskCompleteColor6 = Color.green;
                     var NonCompleteColor6 = Color.yellow;
@@ -820,7 +820,7 @@ public static class Utils
                     ProgressText.Append(ColorString(TextColor61, $" <color=#ffffff>-</color> {Math.Round(Main.TimeMasterNumOfUsed[playerId], 1)}"));
                     break;
                 case CustomRoles.Mediumshiper:
-                    var taskState7 = Main.PlayerStates?[playerId].GetTaskState();
+                    var taskState7 = Main.PlayerStates?[playerId].TaskState;
                     Color TextColor7;
                     var TaskCompleteColor7 = Color.green;
                     var NonCompleteColor7 = Color.yellow;
@@ -834,7 +834,7 @@ public static class Utils
                     ProgressText.Append(ColorString(TextColor71, $" <color=#ffffff>-</color> {Math.Round(Mediumshiper.ContactLimit[playerId], 1)}"));
                     break;
                 case CustomRoles.Inspector:
-                    var taskState8 = Main.PlayerStates?[playerId].GetTaskState();
+                    var taskState8 = Main.PlayerStates?[playerId].TaskState;
                     Color TextColor8;
                     var TaskCompleteColor8 = Color.green;
                     var NonCompleteColor8 = Color.yellow;
@@ -848,7 +848,7 @@ public static class Utils
                     ProgressText.Append(ColorString(TextColor81, $" <color=#ffffff>-</color> {Math.Round(Inspector.MaxCheckLimit[playerId], 1)}"));
                     break;
                 case CustomRoles.Oracle:
-                    var taskState9 = Main.PlayerStates?[playerId].GetTaskState();
+                    var taskState9 = Main.PlayerStates?[playerId].TaskState;
                     Color TextColor9;
                     var TaskCompleteColor9 = Color.green;
                     var NonCompleteColor9 = Color.yellow;
@@ -862,7 +862,7 @@ public static class Utils
                     ProgressText.Append(ColorString(TextColor91, $" <color=#ffffff>-</color> {Math.Round(Oracle.CheckLimit[playerId], 1)}"));
                     break;
                 case CustomRoles.SabotageMaster:
-                    var taskState10 = Main.PlayerStates?[playerId].GetTaskState();
+                    var taskState10 = Main.PlayerStates?[playerId].TaskState;
                     Color TextColor10;
                     var TaskCompleteColor10 = Color.green;
                     var NonCompleteColor10 = Color.yellow;
@@ -876,7 +876,7 @@ public static class Utils
                     ProgressText.Append(ColorString(TextColor101, $" <color=#ffffff>-</color> {Math.Round(SabotageMaster.SkillLimit.GetFloat() - SabotageMaster.UsedSkillCount[playerId], 1)}"));
                     break;
                 case CustomRoles.Tracker:
-                    var taskState11 = Main.PlayerStates?[playerId].GetTaskState();
+                    var taskState11 = Main.PlayerStates?[playerId].TaskState;
                     Color TextColor11;
                     var TaskCompleteColor11 = Color.green;
                     var NonCompleteColor11 = Color.yellow;
@@ -890,7 +890,7 @@ public static class Utils
                     ProgressText.Append(ColorString(TextColor111, $" <color=#ffffff>-</color> {Math.Round(Tracker.TrackLimit[playerId], 1)}"));
                     break;
                 case CustomRoles.Bloodhound:
-                    var taskState12 = Main.PlayerStates?[playerId].GetTaskState();
+                    var taskState12 = Main.PlayerStates?[playerId].TaskState;
                     Color TextColor12;
                     var TaskCompleteColor12 = Color.green;
                     var NonCompleteColor12 = Color.yellow;
@@ -910,7 +910,7 @@ public static class Utils
                     ProgressText.Append(PlagueDoctor.GetProgressText());
                     break;
                 case CustomRoles.Chameleon:
-                    var taskState13 = Main.PlayerStates?[playerId].GetTaskState();
+                    var taskState13 = Main.PlayerStates?[playerId].TaskState;
                     Color TextColor13;
                     var TaskCompleteColor13 = Color.green;
                     var NonCompleteColor13 = Color.yellow;
@@ -924,7 +924,7 @@ public static class Utils
                     ProgressText.Append(ColorString(TextColor131, $" <color=#ffffff>-</color> {Math.Round(Chameleon.UseLimit[playerId], 1)}"));
                     break;
                 case CustomRoles.Lighter:
-                    var taskState14 = Main.PlayerStates?[playerId].GetTaskState();
+                    var taskState14 = Main.PlayerStates?[playerId].TaskState;
                     Color TextColor14;
                     var TaskCompleteColor14 = Color.green;
                     var NonCompleteColor14 = Color.yellow;
@@ -938,7 +938,7 @@ public static class Utils
                     ProgressText.Append(ColorString(TextColor141, $" <color=#ffffff>-</color> {Math.Round(Main.LighterNumOfUsed[playerId], 1)}"));
                     break;
                 case CustomRoles.TaskManager:
-                    var taskState1 = Main.PlayerStates?[playerId].GetTaskState();
+                    var taskState1 = Main.PlayerStates?[playerId].TaskState;
                     Color TextColor1;
                     var TaskCompleteColor1 = Color.green;
                     var NonCompleteColor1 = Color.yellow;
@@ -949,20 +949,6 @@ public static class Utils
                     ProgressText.Append(ColorString(TextColor1, $"({Completed1}/{taskState1.AllTasksCount})"));
                     ProgressText.Append($" <color=#777777>-</color> <color=#00ffa5>{totalCompleted1}/{GameData.Instance.TotalTasks}</color>");
                     break;
-                /*    case CustomRoles.Cleanser: // BROKEN
-                        var taskState15 = Main.PlayerStates?[playerId].GetTaskState();
-                        Color TextColor15;
-                        var TaskCompleteColor15 = Color.green;
-                        var NonCompleteColor15 = Color.yellow;
-                        var NormalColor15 = taskState15.IsTaskFinished ? TaskCompleteColor15 : NonCompleteColor15;
-                        TextColor15 = comms ? Color.gray : NormalColor15;
-                        string Completed15 = comms ? "?" : $"{taskState15.CompletedTasksCount}";
-                        Color TextColor151;
-                        if (Main.LighterNumOfUsed[playerId] < 1) TextColor151 = Color.red;
-                        else TextColor151 = Color.white;
-                        ProgressText.Append(ColorString(TextColor15, $"({Completed15}/{taskState15.AllTasksCount}"));
-                        ProgressText.Append(ColorString(TextColor151, $" <color=#ffffff>-</color> {(Cleanser.CleanserUses[playerId], 1)}"));
-                        break; */
                 case CustomRoles.Pirate:
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Pirate).ShadeColor(0.25f), $"({Pirate.NumWin}/{Pirate.SuccessfulDuelsToWin.GetInt()})"));
                     break;
@@ -1135,7 +1121,7 @@ public static class Utils
                     break;
                 default:
                     //タスクテキスト
-                    var taskState = Main.PlayerStates?[playerId].GetTaskState();
+                    var taskState = Main.PlayerStates?[playerId].TaskState;
                     if (taskState.hasTasks)
                     {
                         Color TextColor;
@@ -1346,40 +1332,44 @@ public static class Utils
             SendMessage(GetString("CantUse.lastroles"), PlayerId);
             return;
         }
+
         var sb = new StringBuilder();
 
-        sb.Append(GetString("PlayerInfo")).Append(':');
+        sb.Append($"<#ffffff>{GetString("RoleSummaryText")}</color><size=70%>");
+
         List<byte> cloneRoles = new(Main.PlayerStates.Keys);
-        foreach (var id in Main.winnerList.ToArray())
+        foreach (byte id in Main.winnerList.ToArray())
         {
             if (EndGamePatch.SummaryText[id].Contains("<INVALID:NotAssigned>")) continue;
-            sb.Append($"\n★ ").Append(EndGamePatch.SummaryText[id].RemoveHtmlTags());
+            sb.Append($"\n<#c4aa02>★</color> ").Append(EndGamePatch.SummaryText[id]/*.RemoveHtmlTags()*/);
             cloneRoles.Remove(id);
         }
-        if (Options.CurrentGameMode == CustomGameMode.FFA)
+        switch (Options.CurrentGameMode)
         {
-            List<(int, byte)> list = [];
-            foreach (byte id in cloneRoles.ToArray())
-            {
-                list.Add((FFAManager.GetRankOfScore(id), id));
-            }
-
-            list.Sort();
-
-            foreach ((int, byte) id in list.ToArray())
-            {
-                sb.Append($"\n　 ").Append(EndGamePatch.SummaryText[id.Item2]);
-            }
+            case CustomGameMode.FFA:
+                List<(int, byte)> listFFA = [];
+                foreach (byte id in cloneRoles.ToArray())
+                {
+                    listFFA.Add((FFAManager.GetRankOfScore(id), id));
+                }
+                listFFA.Sort();
+                foreach ((int, byte) id in listFFA.ToArray())
+                {
+                    sb.Append($"\n　 ").Append(EndGamePatch.SummaryText[id.Item2]);
+                }
+                break;
+            default: // Normal game
+                foreach (byte id in cloneRoles.ToArray())
+                {
+                    if (EndGamePatch.SummaryText[id].Contains("<INVALID:NotAssigned>"))
+                        continue;
+                    sb.Append($"\n　 ").Append(EndGamePatch.SummaryText[id]);
+                }
+                break;
         }
-        else 
-        { 
-            foreach (var id in cloneRoles.ToArray())
-            {
-                if (EndGamePatch.SummaryText[id].Contains("<INVALID:NotAssigned>")) continue;
-                sb.Append($"\n　").Append(EndGamePatch.SummaryText[id].RemoveHtmlTags());
-            }
-        }
-        SendMessage(sb.ToString(), PlayerId);
+        sb.Append("</size>");
+
+        SendMessage("\n", PlayerId, sb.ToString());
     }
     public static void ShowKillLog(byte PlayerId = byte.MaxValue)
     {
@@ -1407,14 +1397,23 @@ public static class Utils
         var SubRoles = Main.PlayerStates[id].SubRoles;
         if (SubRoles.Count == 0 && intro == false) return "";
         var sb = new StringBuilder();
+
+        if (summary)
+            sb.Append(' ');
+
         foreach (var role in SubRoles.ToArray())
         {
             if (role is CustomRoles.NotAssigned or
                         CustomRoles.LastImpostor) continue;
             if (summary && role is CustomRoles.Madmate or CustomRoles.Charmed or CustomRoles.Recruit or CustomRoles.Admired or CustomRoles.Infected or CustomRoles.Contagious or CustomRoles.Soulless) continue;
 
-            var RoleText = disableColor ? GetRoleName(role) : ColorString(GetRoleColor(role), GetRoleName(role));
-            sb.Append($"{ColorString(Color.white, " + ")}{RoleText}");
+            var RoleColor = GetRoleColor(role);
+            var RoleText = disableColor ? GetRoleName(role) : ColorString(RoleColor, GetRoleName(role));
+            
+            if (summary)
+                sb.Append($"{ColorString(RoleColor, "(")}{RoleText}{ColorString(RoleColor, ")")}");
+            else
+                sb.Append($"{ColorString(Color.white, " + ")}{RoleText}");
         }
 
         if (intro && !SubRoles.Contains(CustomRoles.Lovers) && !SubRoles.Contains(CustomRoles.Ntr) && CustomRoles.Ntr.RoleExist())
@@ -1718,7 +1717,7 @@ public static class Utils
     {
         if (!AmongUsClient.Instance.AmHost) return;
         var taskState = GetPlayerById(Terrorist.PlayerId).GetPlayerTaskState();
-        if (taskState.IsTaskFinished && (!Main.PlayerStates[Terrorist.PlayerId].IsSuicide() || Options.CanTerroristSuicideWin.GetBool())) //タスクが完了で（自殺じゃない OR 自殺勝ちが許可）されていれば
+        if (taskState.IsTaskFinished && (!Main.PlayerStates[Terrorist.PlayerId].IsSuicide || Options.CanTerroristSuicideWin.GetBool())) //タスクが完了で（自殺じゃない OR 自殺勝ちが許可）されていれば
         {
             foreach (var pc in Main.AllPlayerControls)
             {
@@ -2936,31 +2935,40 @@ public static class Utils
     }
     public static string SummaryTexts(byte id, bool disableColor = true, bool check = false)
     {
-        var RolePos = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? 37 : 34;
-        var KillsPos = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? 14 : 12;
         var name = Main.AllPlayerNames[id].RemoveHtmlTags().Replace("\r\n", string.Empty);
         if (id == PlayerControl.LocalPlayer.PlayerId) name = DataManager.player.Customization.Name;
         else name = GetPlayerById(id)?.Data.PlayerName ?? name;
-        string summary = $"{ColorString(Main.PlayerColors[id], name)}<pos=14%>{GetProgressText(id)}</pos><pos=24%> {GetKillCountText(id)}</pos><pos={22 + KillsPos}%> {GetVitalText(id, true)}</pos><pos={RolePos + KillsPos}%> {GetDisplayRoleName(id, true)}{GetSubRolesText(id, summary: true)}</pos>";
-        if (Options.CurrentGameMode == CustomGameMode.FFA)
+
+        var taskState = Main.PlayerStates?[id].TaskState;
+        string TaskCount;
+
+        if (taskState.hasTasks)
         {
-            summary = $"{ColorString(Main.PlayerColors[id], name)} {GetKillCountText(id, ffa: true)}";
+            Color CurrentСolor;
+            var TaskCompleteColor = Color.green; // Color after task completion
+            var NonCompleteColor = taskState.CompletedTasksCount > 0 ? Color.yellow : Color.white; // Uncountable out of person is white
+
+            if (Workhorse.IsThisRole(id))
+                NonCompleteColor = Workhorse.RoleColor;
+
+            CurrentСolor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
+
+            if (Main.PlayerStates.TryGetValue(id, out var ps) && ps.MainRole.Is(CustomRoles.Crewpostor))
+                CurrentСolor = Color.red;
+
+            if (ps.SubRoles.Contains(CustomRoles.Workhorse))
+                GetRoleColor(ps.MainRole).ShadeColor(0.5f);
+
+            TaskCount = ColorString(CurrentСolor, $" ({taskState.CompletedTasksCount}/{taskState.AllTasksCount})");
         }
-        return check && GetDisplayRoleName(id, true).RemoveHtmlTags().Contains("INVALID:NotAssigned")
-            ? "INVALID"
-            : disableColor ? summary.RemoveHtmlTags() : summary;
-    }
-    public static string NewSummaryTexts(byte id, bool disableColor = true, bool check = false)
-    {
-        //var RolePos = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? 37 : 34;
-        //var KillsPos = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? 14 : 12;
-        var name = Main.AllPlayerNames[id].RemoveHtmlTags().Replace("\r\n", string.Empty);
-        if (id == PlayerControl.LocalPlayer.PlayerId) name = DataManager.player.Customization.Name;
-        else name = GetPlayerById(id)?.Data.PlayerName ?? name;
-        string summary = $"{ColorString(Main.PlayerColors[id], name)} - {GetDisplayRoleName(id, true)}{GetSubRolesText(id, summary: true)} ({GetVitalText(id, true)}) {GetKillCountText(id)}";
-        if (Options.CurrentGameMode == CustomGameMode.FFA)
+        else { TaskCount = GetProgressText(id); }
+
+        string summary = $"{ColorString(Main.PlayerColors[id], name)} - {GetDisplayRoleName(id, true)}{GetSubRolesText(id, summary: true)}{TaskCount}{GetKillCountText(id)} ({GetVitalText(id, true)})";
+        switch (Options.CurrentGameMode)
         {
-            summary = $"{ColorString(Main.PlayerColors[id], name)} {GetKillCountText(id, ffa: true)}";
+            case CustomGameMode.FFA:
+                summary = $"{ColorString(Main.PlayerColors[id], name)} {GetKillCountText(id, ffa: true)}";
+                break;
         }
         return check && GetDisplayRoleName(id, true).RemoveHtmlTags().Contains("INVALID:NotAssigned")
             ? "INVALID"

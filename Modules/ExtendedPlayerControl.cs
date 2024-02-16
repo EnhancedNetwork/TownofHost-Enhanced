@@ -370,7 +370,7 @@ static class ExtendedPlayerControl
     }
     public static TaskState GetPlayerTaskState(this PlayerControl player)
     {
-        return Main.PlayerStates[player.PlayerId].GetTaskState();
+        return Main.PlayerStates[player.PlayerId].TaskState;
     }
 
     /*public static GameOptionsData DeepCopy(this GameOptionsData opt)
