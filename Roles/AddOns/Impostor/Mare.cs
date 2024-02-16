@@ -1,8 +1,7 @@
 using System.Collections.Generic;
-using System.Linq;
 using static TOHE.Options;
 
-namespace TOHE.Roles.Impostor;
+namespace TOHE.Roles.AddOns.Impostor;
 
 public static class Mare
 {
@@ -10,7 +9,6 @@ public static class Mare
     public static List<byte> playerIdList = [];
 
     public static OptionItem KillCooldownInLightsOut;
-    //private static OptionItem KillCooldownNormally;
     private static OptionItem SpeedInLightsOut;
     private static bool idAccelerated = false;
 
@@ -21,16 +19,6 @@ public static class Mare
             .SetValueFormat(OptionFormat.Multiplier);
         KillCooldownInLightsOut = FloatOptionItem.Create(Id + 11, "MareKillCooldownInLightsOut", new(0f, 180f, 2.5f), 7.5f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mare])
             .SetValueFormat(OptionFormat.Seconds);
-        //KillCooldownNormally = FloatOptionItem.Create(Id + 12, "KillCooldownNormally", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mare])
-        //    .SetValueFormat(OptionFormat.Seconds); 
-
-        //SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Mare);
-        //SpeedInLightsOut = FloatOptionItem.Create(Id + 10, "MareAddSpeedInLightsOut", new(0.1f, 0.5f, 0.1f), 0.3f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mare])
-        //    .SetValueFormat(OptionFormat.Multiplier);
-        //KillCooldownInLightsOut = FloatOptionItem.Create(Id + 11, "MareKillCooldownInLightsOut", new(0f, 180f, 2.5f), 7.5f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mare])
-        //    .SetValueFormat(OptionFormat.Seconds);
-        //KillCooldownNormally = FloatOptionItem.Create(Id + 12, "KillCooldownNormally", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mare])
-        //    .SetValueFormat(OptionFormat.Seconds);
     }
     public static void Init()
     {
