@@ -1203,6 +1203,58 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
+                    Number = 100009,
+                    Title = "Town of Host: Enhanced v1.5.1",
+                    SubTitle = "★★ 又更新了？修复了bug，耶！ ★★",
+                    ShortTitle = "TOH: Enhanced v1.5.1",
+                    BeforeNumber = 100008,
+                    Text = "<size=150%>Welcome to TOH: Enhanced v1.5.1!</size>\n" +
+                    "\n<b>【基于官方版本】</b>\n - 基于 TOH: Enhanced v1.5.0\r\n" +
+
+                    "\n<b>【Bug修复】</b>" +
+                        "\n     - 尝试修复了测验长获胜条件 (由 Drakos 修复)" +
+                        "\n     - 修复了附加职业的分配 (由 TommyXL 修复)" +
+                        "\n     - 现在，玩家在分配职业时退出，游戏应该结束 (由 TommyXL 修复)" +
+                        "\n     - 瘟疫使者和瘟疫不会成为脆弱 (由 TommyXL 修复)" +
+                        "\n     - 修复了跟班击杀冷却时间设置不正确的Bug (由 TommyXL 修复)" +
+                        "\n     - 修复了鹈鹕吃瘟疫时的bug(由 TommyXL 修复)" +
+                        "\n     - 修复了被 /kill 后的玩家名字 (由 TommyXL 修复)" +
+                        "\n     - 修复了阻止模仿猫模仿预言家的bug(由 TommyXL 修复)" +
+                        "\n     - 修复了分身者被击杀后的名字改变的Bug (由 TommyXL 修复)" +
+                        "\n     - 在蘑菇混合的时候分身者的皮肤不会发生改变(由 TommyXL 修复)" +
+                        "\n     - 修复了日志中的企鹅的Bug(由 TommyXL 修复)" +
+                        "\n     - 尝试修复了由于大厅中可靠的数据包丢失而导致的断开连接 (由 TommyXL 修复)" +
+                        "\n     - 修复了强盗窃取附加职业的Bug (由 ryuk 修复)" +
+                        "\n     - 修复了裂缝半径在设置中将单位从“秒”更改为单位“时”的bug(由 ryuk 修复)" +
+                        "\n     - 修复了舰长附加删除等许多问题 (由 ryuk 修复)" +
+                        "\n     - 修复了即使设置为<b>开</b>时，歹徒也无法招募某些职业的Bug(由 ryuk 修复)" +
+                        "\n     - 修复平凡者中立在Mod上无法做任务的bug(由 ryuk 修复)" +
+                        "\n     - 尝试修复了薛定谔的猫获胜条件 (由 ryuk 修复)" +
+                        "\n     - 修复了Mod中瘟疫使者进度的Bug (由 ryuk 修复)" +
+                        "\n     - 修复了集票者可以收集双倍票数的Bug(由 ryuk 修复)\r\n" +
+
+                    "\n<b>【翻译名单】</b>" +
+                        "\n     - 巴西语 (Dx7405)" +
+                        "\n     - 荷兰语 (apemv, madmazel_)" +
+                        "\n     - 法语 (FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                        "\n     - 意大利语 (alot, Baphojack, Mattix606)" +
+                        "\n     - 日语 (Sunnyboi)" +
+                        "\n     - 拉丁美洲语 (CreepPower)" +
+                        "\n     - 俄语 (TommyXL, Shoulder Devil, chill_ultimated, Nevermore59)" +
+                        "\n     - 简体中文 (CrewCyan, LezaiYa, NikoCat223)" +
+                        "\n     - 西班牙语 ( Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
+                        "\n     - 繁体中文 (FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
+                        "\n<b> 在我们的网站上查看所有的翻译人员</b>\r\n" +
+
+                    "\n\n★ 欢迎来到Town of Host: Enhanced v1.5.1 ★",
+
+                    Date = "2024-2-17T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
                     Number = 100008,
                     Title = "Town of Host: Enhanced v1.5.0",
                     SubTitle = "★★ 重大更新！ ★★",
