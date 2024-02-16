@@ -34,12 +34,6 @@ class OnGameJoinedPatch
         GameStates.InGame = false;
         ErrorText.Instance.Clear();
 
-        if (HorseModePatch.GetRealConstant() != Constants.GetBroadcastVersion() - 25 && GameStates.IsOnlineGame && !DevManager.IsDevUser(EOSManager.Instance.FriendCode))
-        {
-            AmongUsClient.Instance.ExitGame(DisconnectReasons.Hacking);
-            SceneChanger.ChangeScene("MainMenu");
-        } //Prevent some people doing public lobby things
-
         if (AmongUsClient.Instance.AmHost) // Execute the following only on the host
         {
             EndGameManagerPatch.IsRestarting = false;
