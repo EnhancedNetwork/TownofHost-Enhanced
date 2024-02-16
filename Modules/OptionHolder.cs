@@ -3390,10 +3390,10 @@ public static class Options
 
         DisableShapeshiftAnimations = BooleanOptionItem.Create(60559, "DisableShapeshiftAnimations", true, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
         DisableShieldAnimations = BooleanOptionItem.Create(60560, "DisableShieldAnimations", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
-            .SetHeader(true)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
         DisableKillAnimationOnGuess = BooleanOptionItem.Create(60561, "DisableKillAnimationOnGuess", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
