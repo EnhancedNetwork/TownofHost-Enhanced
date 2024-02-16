@@ -800,7 +800,7 @@ internal static class RPC
             {
                 return;
             }
-        }syncrole
+        }
 
         if (!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1 || (AmongUsClient.Instance.AmHost == false && PlayerControl.LocalPlayer == null))
         {
