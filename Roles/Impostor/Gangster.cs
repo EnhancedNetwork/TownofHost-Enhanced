@@ -99,7 +99,7 @@ public static class Gangster
         if (CanBeGansterRecruit(target))
         {
             if (!killer.Is(CustomRoles.Admired) && !killer.Is(CustomRoles.Recruit) && !killer.Is(CustomRoles.Charmed)
-                && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious) && target.CanBeMadmate(inGame: true))
+                && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious) && target.CanBeMadmate(inGame: true, forGangster: true))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Madmate.ToString(), "Ganster Assign");
                 target.RpcSetCustomRole(CustomRoles.Madmate);
@@ -129,7 +129,7 @@ public static class Gangster
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Charmed), GetString("GangsterSuccessfullyRecruited")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Charmed), GetString("BeRecruitedByGangster")));
             }
-            else if (killer.Is(CustomRoles.Infected) && target.CanBeInfected())
+            else if (killer.Is(CustomRoles.Infected) && target.CanBeBitten())
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Infected.ToString(), "Ganster Assign");
                 target.RpcSetCustomRole(CustomRoles.Infected);

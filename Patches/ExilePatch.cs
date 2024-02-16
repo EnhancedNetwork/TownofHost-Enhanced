@@ -188,7 +188,7 @@ class ExileControllerWrapUpPatch
 
         if (HexMaster.IsEnable)
             HexMaster.RemoveHexedPlayer();
-        
+        if (Captain.IsEnable) Captain.OnExile(exiled);
         foreach (var player in Main.AllPlayerControls)
         {
             //PlayerControl player = allPlayerControls[item];
