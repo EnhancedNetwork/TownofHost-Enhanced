@@ -3058,7 +3058,7 @@
   "MurderHelp": "指令格式：/tl [玩家编号]\n你可以在玩家的名字前看到该玩家的编号\n或者使用/id查看玩家编号列表",
   "MurderNull": "请选择一个活着的玩家进行谋杀",
   "MurderKillTitle": "【 ★ 法院事件 ★ 】",
-  "MurderLimitPerMeeting": "每场比赛的最大谋杀次数",
+  "MurderLimitPerMeeting": "每场游戏会议时最大击杀次数",
   "CouncillorCanMurderMadmate": "可以审判<color=#ff1919>叛徒阵营</color>",
   "CouncillorCanMurderImpostor": "可以审判<color=#ff1919>内鬼阵营</color>",
   "CouncillorTryHideMsg": "尝试混淆邪恶法官指令",
