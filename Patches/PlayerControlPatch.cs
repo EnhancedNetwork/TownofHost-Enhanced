@@ -1897,6 +1897,11 @@ public static class CheckShapeShiftPatch
                 shapeshifter.RejectShapeshiftAndReset();
                 return false;
 
+            case CustomRoles.Twister:
+                Twister.TwistPlayers(shapeshifter, shapeshiftIsHidden: true);
+                shapeshifter.RejectShapeshiftAndReset();
+                return false;
+
             case CustomRoles.Pitfall:
                 Pitfall.OnShapeshift(shapeshifter);
                 shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
