@@ -3105,6 +3105,58 @@ public class ModNewsHistory
             {
                 var news = new ModNews
                 {
+                    Number = 100009,
+                    Title = "Town of Host: Enhanced v1.5.1",
+                    SubTitle = "★★ Outra Atualização? Correção de Bugs, yay! ★★",
+                    ShortTitle = "TOH: Enhanced v1.5.1",
+                    BeforeNumber = 100008,
+                    Text = "<size=150%>Bem vindo ao TOH: Enhanced v1.5.1!</size>\n" +
+                    "\n<b>【Base】</b>\n - Baseado no TOH: Enhanced v1.5.0\r\n" +
+
+                    "\n<b>【Correção de Bugs】</b>" +
+                        "\n     - Tentativa de correção da condição de vitória do Mestre das Charadas (por: Drakos)" +
+                        "\n     - Corrigida atribuição de Atributos duplo (Por: TommyXL)" +
+                        "\n     - O jogo deve terminar agora se o jogador sair enquanto as funções estão sendo atribuídas (Por: TommyXL)" +
+                        "\n     - Porta-Pragas & Peste não podem mais ter o atributo Frágil (Por: TommyXL)" +
+                        "\n     - Corrigido o tempo para matar do Ajudante que não estava configurado corretamente (Por: TommyXL)" +
+                        "\n     - Corrigido bug quando Glutão come a Peste (Por: TommyXL)" +
+                        "\n     - Corrigidos os nomes dos jogadores após o comando /kill ser usado (Por: TommyXL)" +
+                        "\n     - Corrigido bug que impedia o Copiador de copiar o Profeta (Por: TommyXL)" +
+                        "\n     - Corrigidas atualizações de nome após a morte do Sósia (Por: TommyXL)" +
+                        "\n     - A skin do Sósia não muda durante a confusão de cogumelos (Por: TommyXL)" +
+                        "\n     - Corrigidos erros do Pinguim nos logs (Por: TommyXL)" +
+                        "\n     - Tentativa de correção de desconexão devido à perda confiável de pacotes no lobby (Por: TommyXL)" +
+                        "\n     - Corrigidos problemas com os atributos de roubo do Bandido (Por: ryuk)" +
+                        "\n     - Corrigido bug quando 'Rift Radius' mudava a unidade de `s` nas configurações (Por: ryuk)" +
+                        "\n     - Corrigidos muitos problemas com a remoção do atributo do Capitão (Por: ryuk)" +
+                        "\n     - Corrigido bug quando o Gangster não conseguia recrutar algumas funções mesmo quando a configuração estava <b>ON</b> (Por: ryuk)" +
+                        "\n     - Corrigido bug quando o Mundano Neutro não conseguia realizar tarefas nos clientes modificados (Por: ryuk)" +
+                        "\n     - Tentativa de correção para a condição de vitória do Gato de Schrodinger (Por: ryuk)" +
+                        "\n     - Corrigido o progresso do Porta-Pragas em clientes modificados (Por: ryuk)" +
+                        "\n     - Corrigido bug quando o Coletor conseguia coletar votos duplos (Por: ryuk)\r\n" +
+
+                    "\n<b>【Créditos pelas Traduções】</b>" +
+                        "\n     - Português (Brasil) (por: Dx7405)" +
+                        "\n     - Holandês (por: apemv, madmazel_)" +
+                        "\n     - Francês (por: FuroYT, KevOut, Klaomi, Sansationnelle)" +
+                        "\n     - Italiano (por: alot, Baphojack, Mattix606)" +
+                        "\n     - Japonês (por: Sunnyboi)" +
+                        "\n     - Latino Americano (por: CreepPower)" +
+                        "\n     - Russo (por: TommyXL, Shoulder Devil, chill_ultimated, Nevermore59)" +
+                        "\n     - Chinês Simplificado (por: CrewCyan, LezaiYa, NikoCat223)" +
+                        "\n     - Espanhol (por: Dawson, Sunnyboi, thewhiskas27, xxSShadow)" +
+                        "\n     - Chinês Tradicional (por: FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)" +
+                        "\n<b> Confira todos os nossos tradutores em nosso site</b>\r\n" +
+
+                    "\n\n★ Bem vindo ao Town of Host: Enhanced v1.5.1 ★",
+
+                    Date = "2024-2-17T00:00:00Z"
+                };
+                AllModNews.Add(news);
+            }
+            {
+                var news = new ModNews
+                {
                     Number = 100008,
                     Title = "Town of Host: Enhanced v1.5.0",
                     SubTitle = "★★ Grande atualização! ★★",
