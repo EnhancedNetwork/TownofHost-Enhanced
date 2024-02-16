@@ -1876,6 +1876,22 @@ public static class CheckShapeShiftPatch
                 shapeshifter.RejectShapeshiftAndReset();
                 return false;
 
+            case CustomRoles.ImperiusCurse:
+                shapeshifter.RejectShapeshiftAndReset();
+                _ = new LateTask(() =>
+                {
+                    if (shapeshifter.CanBeTeleported() && target.CanBeTeleported())
+                    {
+                        var originPs = target.GetCustomPosition();
+                        target.RpcTeleport(shapeshifter.GetCustomPosition());
+                        shapeshifter.RpcTeleport(originPs);
+
+                        shapeshifter.RPCPlayCustomSound("Teleport");
+                        target.RPCPlayCustomSound("Teleport");
+                    }
+                }, 0.2f, "Soul Catcher (ImperiusCurse) teleport");
+                return false;
+
             case CustomRoles.Deathpact:
                 Deathpact.OnShapeshift(shapeshifter, target);
                 shapeshifter.RejectShapeshiftAndReset();
@@ -1892,8 +1908,8 @@ public static class CheckShapeShiftPatch
                 return false;
 
             case CustomRoles.Twister:
-                Twister.TwistPlayers(shapeshifter, shapeshiftIsHidden: true);
                 shapeshifter.RejectShapeshiftAndReset();
+                Twister.TwistPlayers(shapeshifter, shapeshiftIsHidden: true);
                 return false;
 
             case CustomRoles.Pitfall:
@@ -2098,13 +2114,16 @@ class ShapeshiftPatch
                     {
                         _ = new LateTask(() =>
                         {
-                            if (!(!GameStates.IsInTask || !shapeshifter.CanBeTeleported() || !target.CanBeTeleported()))
+                            if (shapeshifter.CanBeTeleported() && target.CanBeTeleported())
                             {
                                 var originPs = target.GetCustomPosition();
                                 target.RpcTeleport(shapeshifter.GetCustomPosition());
                                 shapeshifter.RpcTeleport(originPs);
+
+                                shapeshifter.RPCPlayCustomSound("Teleport");
+                                target.RPCPlayCustomSound("Teleport");
                             }
-                        }, 1.5f, "ImperiusCurse TP");
+                        }, 1.5f, "Soul Catcher (ImperiusCurse) teleport");
                     }
                     break;
                 case CustomRoles.QuickShooter:
