@@ -2,7 +2,6 @@ using AmongUs.GameOptions;
 using Hazel;
 using Il2CppSystem.Text;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -107,15 +106,14 @@ public static class EvilTracker
         && target.IsAlive() && seer != target
         && (target.Is(CustomRoleTypes.Impostor) || GetTargetId(seer.PlayerId) == target.PlayerId);
 
-    // 各所で呼ばれる処理
     public static void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting)
     {
         if (!CanTarget(shapeshifter.PlayerId) || !shapeshifting) return;
         if (target == null || target.Is(CustomRoleTypes.Impostor)) return;
 
         SetTarget(shapeshifter.PlayerId, target.PlayerId);
-        Logger.Info($"{shapeshifter.GetNameWithRole()}のターゲットを{target.GetNameWithRole()}に設定", "EvilTrackerTarget");
-        shapeshifter.MarkDirtySettings();
+        Logger.Info($"{shapeshifter.GetNameWithRole()} target to {target.GetNameWithRole()}", "EvilTrackerTarget");
+        shapeshifter.SyncSettings();
         Utils.NotifyRoles(SpecifySeer: shapeshifter, SpecifyTarget: target, ForceLoop: true);
     }
     public static void AfterMeetingTasks()
@@ -135,23 +133,19 @@ public static class EvilTracker
             pc?.RpcResetAbilityCooldown();
         }
     }
-    ///<summary>
-    ///引数が両方空：再設定可能に,
-    ///trackerIdのみ：該当IDのターゲット削除,
-    ///trackerIdとtargetId両方あり：該当IDのプレイヤーをターゲットに設定
-    ///</summary>
     public static void SetTarget(byte trackerId = byte.MaxValue, byte targetId = byte.MaxValue)
     {
-        if (trackerId == byte.MaxValue) // ターゲット再設定可能に
+        if (trackerId == byte.MaxValue) // Targets can be re-set
             foreach (var playerId in playerIdList.ToArray())
                 CanSetTarget[playerId] = true;
-        else if (targetId == byte.MaxValue) // ターゲット削除
+        else if (targetId == byte.MaxValue) // Target deletion
             Target[trackerId] = byte.MaxValue;
         else
         {
-            Target[trackerId] = targetId; // ターゲット設定
+            Target[trackerId] = targetId; // Set Target
             if (CurrentTargetMode != TargetMode.Always)
-                CanSetTarget[trackerId] = false; // ターゲット再設定不可に
+                CanSetTarget[trackerId] = false; // Target cannot be re-set
+            
             TargetArrow.Add(trackerId, targetId);
         }
 
@@ -168,7 +162,6 @@ public static class EvilTracker
         SetTarget(trackerId, targetId);
     }
 
-    // 表示系の関数
     public static string GetMarker(byte playerId) => CanTarget(playerId) ? Utils.ColorString(Palette.ImpostorRed.ShadeColor(0.5f), "◁") : "";
     public static string GetTargetMark(PlayerControl seer, PlayerControl target) => GetTargetId(seer.PlayerId) == target.PlayerId ? Utils.ColorString(Palette.ImpostorRed, "◀") : "";
     public static string GetTargetArrow(PlayerControl seer, PlayerControl target)
