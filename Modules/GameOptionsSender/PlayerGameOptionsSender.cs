@@ -5,6 +5,7 @@ using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem.Linq;
 using InnerNet;
 using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
@@ -490,25 +491,15 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
         }
 
-        //if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Kamikaze) && !x.IsAlive()))
-        //{
-        //Kamikaze.CheckKamiDeath = true;
-        //} else 
-        //{
-        //Kamikaze.CheckKamiDeath = false;
-        //}
-
         // If the Bewilder was killed, his killer will receive his vision
-        if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Bewilder) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId && Options.KillerGetBewilderVision.GetBool() && !x.Is(CustomRoles.Hangman)))
+        if (Bewilder.IsEnable)
         {
-            opt.SetVision(false);
-            opt.SetFloat(FloatOptionNames.CrewLightMod, Options.BewilderVision.GetFloat());
-            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.BewilderVision.GetFloat());
+            Bewilder.ApplyGameOptions(opt, player);
         }
-
-        if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Ghoul) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId))
+        
+        if (Ghoul.IsEnable)
         {
-            Main.KillGhoul.Add(player.PlayerId);
+            Ghoul.ApplyGameOptions(player);
         }
 
         // Grenadier or Mad Grenadier enter the vent
@@ -540,49 +531,25 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             switch (subRole)
             {
                 case CustomRoles.Watcher:
-                    opt.SetBool(BoolOptionNames.AnonymousVotes, false);
+                    Watcher.RevealVotes(opt);
                     break;
                 case CustomRoles.Flash:
                     Flash.SetSpeed(player.PlayerId, false);
                     break;
                 case CustomRoles.Torch:
-                    if (!Utils.IsActive(SystemTypes.Electrical))
-                        opt.SetVision(true);
-                    opt.SetFloat(FloatOptionNames.CrewLightMod, Options.TorchVision.GetFloat());
-                    opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.TorchVision.GetFloat());
-
-                    if (Utils.IsActive(SystemTypes.Electrical) && !Options.TorchAffectedByLights.GetBool())
-                        opt.SetVision(true);
-                    opt.SetFloat(FloatOptionNames.CrewLightMod, Options.TorchVision.GetFloat() * 5);
-                    opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.TorchVision.GetFloat() * 5);
+                    Torch.ApplyGameOptions(opt);
                     break;
                 case CustomRoles.Tired when Tired.playerIdList.ContainsKey(player.PlayerId):
-                        if (Tired.playerIdList[player.PlayerId])
-                        {
-                            //Logger.Info($"{player.GetNameWithRole()} Succesfully decreased vision", "Tired");
-                            opt.SetVision(false);
-                            opt.SetFloat(FloatOptionNames.CrewLightMod, Tired.SetVision.GetFloat());
-                            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Tired.SetVision.GetFloat());
-                            break;
-                        }
-                        else
-                        {
-                            opt.SetVision(false);
-                            opt.SetFloat(FloatOptionNames.CrewLightMod, Main.DefaultCrewmateVision);
-                            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Main.DefaultImpostorVision);
-                        }
-                    
+                    Tired.ApplyGameOptions(opt, player);
                     break;
                 case CustomRoles.Bewilder:
-                    opt.SetVision(false);
-                    opt.SetFloat(FloatOptionNames.CrewLightMod, Options.BewilderVision.GetFloat());
-                    opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.BewilderVision.GetFloat());
+                    Bewilder.ApplyVisionOptions(opt);
                     break;
                 case CustomRoles.Reach:
                     opt.SetInt(Int32OptionNames.KillDistance, 2);
                     break;
                 case CustomRoles.Madmate:
-                    opt.SetVision(Options.MadmateHasImpostorVision.GetBool());
+                    opt.SetVision(Madmate.MadmateHasImpostorVision.GetBool());
                     break;
                 case CustomRoles.Mare:
                     Mare.ApplyGameOptions(player.PlayerId);

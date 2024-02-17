@@ -1128,7 +1128,7 @@ internal static class RPC
                 LastImpostor.Add(targetId);
                 break;
             case CustomRoles.Aware:
-                Main.AwareInteracted[targetId] = [];
+                Aware.AwareInteracted[targetId] = [];
                 break;
             case CustomRoles.Crewpostor:
                 Main.CrewpostorTasksDone[targetId] = 0;
@@ -1443,6 +1443,7 @@ internal static class RPC
             case CustomRoles.Rainbow:
                 Rainbow.Add();
                 break;
+
         }
         HudManager.Instance.SetHudActive(true);
     //    HudManager.Instance.Chat.SetVisible(true);

@@ -24,7 +24,7 @@ namespace TOHE.Roles.Crewmate
             CustomRoles.Bait,
             CustomRoles.Cyber,
             CustomRoles.Trapper,
-            CustomRoles.Brakar, // Tiebreaker
+            CustomRoles.Tiebreaker, 
             CustomRoles.Necroview,
             CustomRoles.Bewilder,
             CustomRoles.Burst,
@@ -206,8 +206,7 @@ namespace TOHE.Roles.Crewmate
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSell")));
                 player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonDelivered")));
 
-                if (addon == CustomRoles.Tired)
-                    Tired.playerIdList.Add(target.PlayerId, false);
+                ExtendedPlayerControl.AddInSwitchAddons(target, target, addon);
                 
                 addonsSold[player.PlayerId] += 1;
             }
