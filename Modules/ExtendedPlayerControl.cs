@@ -1365,7 +1365,8 @@ static class ExtendedPlayerControl
                 || subRole.Is(CustomRoles.Admired)
                 || subRole.Is(CustomRoles.Charmed)
                 || subRole.Is(CustomRoles.Infected)
-                || subRole.Is(CustomRoles.Contagious)) 
+                || subRole.Is(CustomRoles.Contagious)
+                || subRole.Is(CustomRoles.Egoist)) 
             && KnowSubRoleTarget(seer, target))
             return true;
 
@@ -1376,8 +1377,13 @@ static class ExtendedPlayerControl
     {
         //if (seer == null) return false;
         //if (target == null) target = seer;
-
-        if (target.Is(CustomRoles.Madmate) && Options.ImpKnowWhosMadmate.GetBool() && seer.Is(CustomRoleTypes.Impostor)) return true;
+        
+        if (seer.Is(CustomRoleTypes.Impostor))
+        {
+            if ((target.Is(CustomRoles.Madmate) && Options.ImpKnowWhosMadmate.GetBool())
+                || (seer.Is(CustomRoles.Egoist) && target.Is(CustomRoles.Egoist) && Options.ImpEgoistVisibalToAllies.GetBool()))
+                return true;
+        }
         else if (Admirer.IsEnable && Admirer.KnowRole(seer, target)) return true;
         else if (Succubus.IsEnable && Succubus.KnowRole(seer, target)) return true;
         else if (Infectious.IsEnable && Infectious.KnowRole(seer, target)) return true;
