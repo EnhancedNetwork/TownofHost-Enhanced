@@ -1428,6 +1428,15 @@ internal static class RPC
             case CustomRoles.Blackmailer:
                 Blackmailer.Add(targetId);
                 break;
+            case CustomRoles.Diseased:
+                Diseased.Add();
+                break;
+            case CustomRoles.Antidote:
+                Antidote.Add();
+                break;
+            case CustomRoles.Burst:
+                Burst.Add();
+                break;
             case CustomRoles.Spy:
                 Spy.Add(targetId);
                 break;
@@ -1442,6 +1451,9 @@ internal static class RPC
                 break;
             case CustomRoles.Rainbow:
                 Rainbow.Add();
+                break;
+            case CustomRoles.Statue:
+                Statue.Add(targetId);
                 break;
 
         }

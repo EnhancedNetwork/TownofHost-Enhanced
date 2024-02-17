@@ -1099,8 +1099,17 @@ internal class SelectRolesPatch
                         case CustomRoles.Ghoul:
                             Ghoul.Add();
                             break;
+                        case CustomRoles.Diseased:
+                            Diseased.Add();
+                            break;
+                        case CustomRoles.Antidote:
+                            Antidote.Add();
+                            break;
                         case CustomRoles.Unlucky:
                             Unlucky.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.Burst:
+                            Burst.Add();
                             break;
                         case CustomRoles.Bewilder:
                             Bewilder.Add();

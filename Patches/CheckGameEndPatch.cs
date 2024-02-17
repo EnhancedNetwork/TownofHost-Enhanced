@@ -550,9 +550,36 @@ class GameEndCheckerForNormal
             if (CustomRoles.Sunnyboy.RoleExist() && Main.AllAlivePlayerControls.Length > 1) return false;
             var neutralRoleCounts = new Dictionary<CountTypes, int>();
             var apcList = Main.AllAlivePlayerControls.ToArray();
-            int impCount = 0, crewCount = 0;
+            int dual = 0, impCount = 0, crewCount = 0;
 
-            Schizophrenic.CheckEndGameReason(crewCount, impCount, apcList, neutralRoleCounts);
+            foreach (var pc in apcList)
+            {
+                if (pc == null) continue;
+
+                dual = Schizophrenic.IsExistGame(pc) ? 1 : 0;
+                var countType = Main.PlayerStates[pc.PlayerId].countTypes;
+                switch (countType)
+                {
+                    case CountTypes.OutOfGame:
+                    case CountTypes.None:
+                        continue;
+                    case CountTypes.Impostor:
+                        impCount++;
+                        impCount += dual;
+                        break;
+                    case CountTypes.Crew:
+                        crewCount++;
+                        crewCount += dual;
+                        break;
+                    default:
+                        if (neutralRoleCounts.ContainsKey(countType))
+                            neutralRoleCounts[countType]++;
+                        else
+                            neutralRoleCounts[countType] = 1;
+                        neutralRoleCounts[countType] += dual;
+                        break;
+                }
+            }
 
             int totalNKAlive = neutralRoleCounts.Sum(kvp => kvp.Value);
 

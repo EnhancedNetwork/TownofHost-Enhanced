@@ -20,36 +20,6 @@ public static class Schizophrenic
         DualVotes = BooleanOptionItem.Create(Id + 12, "DualVotes", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Schizophrenic]);
     }
 
-    public static void CheckEndGameReason(int crewCount, int impCount, PlayerControl[] apcList, Dictionary<CountTypes, int> neutralRoleCounts)
-    {
-        foreach (var pc in apcList)
-        {
-            if (pc == null) continue;
-
-            int dual = pc.Is(CustomRoles.Schizophrenic) ? 1 : 0;
-            var countType = Main.PlayerStates[pc.PlayerId].countTypes;
-            switch (countType)
-            {
-                case CountTypes.OutOfGame:
-                case CountTypes.None:
-                    continue;
-                case CountTypes.Impostor:
-                    impCount++;
-                    impCount += dual;
-                    break;
-                case CountTypes.Crew:
-                    crewCount++;
-                    crewCount += dual;
-                    break;
-                default:
-                    if (neutralRoleCounts.ContainsKey(countType))
-                        neutralRoleCounts[countType]++;
-                    else
-                        neutralRoleCounts[countType] = 1;
-                    neutralRoleCounts[countType] += dual;
-                    break;
-            }
-        }
-    }
+    public static bool IsExistGame(PlayerControl player) => player.Is(CustomRoles.Schizophrenic);
 }
 

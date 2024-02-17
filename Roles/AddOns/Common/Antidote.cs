@@ -1,20 +1,19 @@
 ﻿using static TOHE.Options;
 using System.Collections.Generic;
 using System.Linq;
-using MS.Internal.Xml.XPath;
 
 namespace TOHE.Roles.AddOns.Common;
 
 public static class Antidote
 {
     private static readonly int Id = 21400;
+    public static bool IsEnable = false;
 
     public static OptionItem ImpCanBeAntidote;
     public static OptionItem CrewCanBeAntidote;
     public static OptionItem NeutralCanBeAntidote;
     public static OptionItem AntidoteCDOpt;
     public static OptionItem AntidoteCDReset;
-
 
     public static Dictionary<byte, int> KilledAntidote = [];
 
@@ -32,6 +31,11 @@ public static class Antidote
     public static void Init()
     {
         KilledAntidote = [];
+        IsEnable = false;
+    }
+    public static void Add()
+    {
+        IsEnable = true;
     }
 
     public static void ReduceKCD(PlayerControl player)

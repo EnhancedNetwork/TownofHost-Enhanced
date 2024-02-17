@@ -6,6 +6,7 @@ namespace TOHE.Roles.AddOns.Common;
 public static class Diseased
 {
     private static readonly int Id = 21800;
+    public static bool IsEnable = false;
 
     public static OptionItem ImpCanBeDiseased;
     public static OptionItem CrewCanBeDiseased;
@@ -29,6 +30,11 @@ public static class Diseased
     public static void Init()
     {
         KilledDiseased = [];
+        IsEnable = false;
+    }
+    public static void Add()
+    {
+        IsEnable = true;
     }
 
     public static void IncreaseKCD(PlayerControl player)

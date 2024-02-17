@@ -2649,15 +2649,9 @@ public static class Utils
     public static void AfterMeetingTasks()
     {
         ChatManager.ClearLastSysMsg();
-        if (CustomRoles.Diseased.RoleExist())
-        {
-            Diseased.AfterMeetingTasks();
-        }
-        
-        if (CustomRoles.Antidote.RoleExist())
-        {
-            Antidote.AfterMeetingTasks();
-        }
+
+        if (Diseased.IsEnable) Diseased.AfterMeetingTasks();
+        if (Antidote.IsEnable) Antidote.AfterMeetingTasks();
 
         AntiBlackout.AfterMeetingTasks();
 
@@ -2688,13 +2682,12 @@ public static class Utils
         if (Solsticer.IsEnable) Solsticer.AfterMeetingTasks();
         if (RiftMaker.IsEnable) RiftMaker.AfterMeetingTasks();
         if (Councillor.IsEnable) Councillor.AfterMeetingTasks();
-        if (CustomRoles.Statue.RoleExist()) Statue.AfterMeetingTasks();
+        if (Statue.IsEnable) Statue.AfterMeetingTasks();
+        if (Burst.IsEnable) Burst.AfterMeetingTasks();
 
         Main.ShamanTarget = byte.MaxValue;
         Main.ShamanTargetChoosen = false;
-        Burst.BurstBodies = [];
         OverKiller.MurderTargetLateTask = [];
-
 
         if (Options.AirshipVariableElectrical.GetBool())
             AirshipElectricalDoors.Initialize();
