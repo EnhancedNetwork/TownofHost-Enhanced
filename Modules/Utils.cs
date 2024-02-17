@@ -379,9 +379,9 @@ public static class Utils
         }
         return;
     }
-    public static string GetDisplayRoleName(byte playerId, bool pure = false)
+    public static string GetDisplayRoleAndSubName(byte seerId, byte targetId, bool notShowAddOns = false)
     {
-        var TextData = GetRoleText(playerId, playerId, pure);
+        var TextData = GetRoleAndSubText(seerId, targetId, notShowAddOns);
         return ColorString(TextData.Item2, TextData.Item1);
     }
     public static string GetRoleName(CustomRoles role, bool forUser = true)
@@ -416,89 +416,75 @@ public static class Utils
         if (!Main.roleColors.TryGetValue(role, out var hexColor)) hexColor = "#ffffff";
         return hexColor;
     }
-    public static (string, Color) GetRoleText(byte seerId, byte targetId, bool pure = false)
+    public static (string, Color) GetRoleAndSubText(byte seerId, byte targetId, bool notShowAddOns = false)
     {
         string RoleText = "Invalid Role";
         Color RoleColor;
 
-        var seerMainRole = Main.PlayerStates[seerId].MainRole;
-        var seerSubRoles = Main.PlayerStates[seerId].SubRoles;
+        //var seerMainRole = Main.PlayerStates[seerId].MainRole;
+        //var seerSubRoles = Main.PlayerStates[seerId].SubRoles;
 
         var targetMainRole = Main.PlayerStates[targetId].MainRole;
         var targetSubRoles = Main.PlayerStates[targetId].SubRoles;
 
-        var self = seerId == targetId || Main.PlayerStates[seerId].IsDead;
-
         RoleText = GetRoleName(targetMainRole);
         RoleColor = GetRoleColor(targetMainRole);
 
-        if (LastImpostor.currentId == targetId)
-            RoleText = GetRoleString("Last-") + RoleText;
+        if (targetSubRoles.Count > 0)
+        {
+            var seer = GetPlayerById(seerId);
+            var target = GetPlayerById(targetId);
 
-        if (Options.NameDisplayAddons.GetBool() && !pure && self)
-        {     
-            if (Options.AddBracketsToAddons.GetBool())       
+            if (seer == null || target == null) return (RoleText, RoleColor);
+
+            // if player last imp
+            if (LastImpostor.currentId == targetId)
+                RoleText = GetRoleString("Last-") + RoleText;
+
+            if (Options.NameDisplayAddons.GetBool() && !notShowAddOns)
             {
-                if (Options.ImpEgoistVisibalToAllies.GetBool())
+                var seerPlatform = seer.GetClient().PlatformData.Platform;
+                var addBracketsToAddons = Options.AddBracketsToAddons.GetBool();
+
+                // if the player is playing on a console platform
+                if (seerPlatform is Platforms.Playstation or Platforms.Xbox or Platforms.Switch)
                 {
-                    foreach (var subRole in targetSubRoles.Where(x => x is not CustomRoles.LastImpostor and not CustomRoles.Madmate and not CustomRoles.Charmed and not CustomRoles.Recruit and not CustomRoles.Admired and not CustomRoles.Soulless and not CustomRoles.Lovers and not CustomRoles.Infected and not CustomRoles.Contagious).ToArray())
-                        RoleText = ColorString(GetRoleColor(subRole), GetString("PrefixB." + subRole.ToString())) + RoleText;
+                    // By default, censorship is enabled on consoles
+                    // Need to set add-ons colors without endings "</color>"
+
+                    // colored role
+                    RoleText = ColorStringWithoutEnding(GetRoleColor(targetMainRole), RoleText);
+
+                    // colored add-ons
+                    foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
+                        RoleText = ColorStringWithoutEnding(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"Prefix.{subRole}")}) " : $"{GetString($"Prefix.{subRole}")} ") + RoleText;
                 }
-                if (!Options.ImpEgoistVisibalToAllies.GetBool())
+                // default
+                else
                 {
-                    foreach (var subRole in targetSubRoles.Where(x => x is not CustomRoles.LastImpostor and not CustomRoles.Madmate and not CustomRoles.Charmed and not CustomRoles.Recruit and not CustomRoles.Admired and not CustomRoles.Soulless and not CustomRoles.Lovers and not CustomRoles.Infected and not CustomRoles.Contagious).ToArray())
-                        RoleText = ColorString(GetRoleColor(subRole), GetString("PrefixB." + subRole.ToString())) + RoleText;
+                    foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
+                        RoleText = ColorString(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"Prefix.{subRole}")}) " : $"{GetString($"Prefix.{subRole}")} ") + RoleText;
                 }
             }
-            else if (!Options.AddBracketsToAddons.GetBool())
-            {
-                if (Options.ImpEgoistVisibalToAllies.GetBool())
-                {
-                    foreach (var subRole in targetSubRoles.Where(x => x is not CustomRoles.LastImpostor and not CustomRoles.Madmate and not CustomRoles.Charmed and not CustomRoles.Recruit and not CustomRoles.Admired and not CustomRoles.Soulless and not CustomRoles.Lovers and not CustomRoles.Infected and not CustomRoles.Contagious).ToArray())
-                        RoleText = ColorString(GetRoleColor(subRole), GetString("Prefix." + subRole.ToString())) + RoleText;
-                }
-                if (!Options.ImpEgoistVisibalToAllies.GetBool())
-                {
-                    foreach (var subRole in targetSubRoles.Where(x => x is not CustomRoles.LastImpostor and not CustomRoles.Madmate and not CustomRoles.Charmed and not CustomRoles.Recruit and not CustomRoles.Admired and not CustomRoles.Soulless and not CustomRoles.Lovers and not CustomRoles.Infected and not CustomRoles.Contagious).ToArray())
-                        RoleText = ColorString(GetRoleColor(subRole), GetString("Prefix." + subRole.ToString())) + RoleText;
-                }
-            }
-        }
 
-        if (targetSubRoles.Contains(CustomRoles.Madmate))
-        {
-            RoleColor = GetRoleColor(CustomRoles.Madmate);
-            RoleText = GetRoleString("Mad-") + RoleText;
-        }
-        if (targetSubRoles.Contains(CustomRoles.Recruit))
-        {
-            RoleColor = GetRoleColor(CustomRoles.Recruit);
-            RoleText = GetRoleString("Recruit-") + RoleText;
-        }
-        if (targetSubRoles.Contains(CustomRoles.Charmed))
-        {
-            RoleColor = GetRoleColor(CustomRoles.Charmed);
-            RoleText = GetRoleString("Charmed-") + RoleText;
-        }
-        if (targetSubRoles.Contains(CustomRoles.Soulless))
-        {
-            RoleColor = GetRoleColor(CustomRoles.Soulless);
-            RoleText = GetRoleString("Soulless-") + RoleText;
-        }
-        if (targetSubRoles.Contains(CustomRoles.Infected))
-        {
-            RoleColor = GetRoleColor(CustomRoles.Infected);
-            RoleText = GetRoleString("Infected-") + RoleText;
-        }
-        if (targetSubRoles.Contains(CustomRoles.Contagious))
-        {
-            RoleColor = GetRoleColor(CustomRoles.Contagious);
-            RoleText = GetRoleString("Contagious-") + RoleText;
-        }
-        if (targetSubRoles.Contains(CustomRoles.Admired))
-        {
-            RoleColor = GetRoleColor(CustomRoles.Admired);
-            RoleText = GetRoleString("Admired-") + RoleText;
+            foreach (var subRole in targetSubRoles.ToArray())
+            {
+                if (seer.ShowSubRoleTarget(target, subRole))
+                    switch (subRole)
+                    {
+                        case CustomRoles.Madmate:
+                        case CustomRoles.Recruit:
+                        case CustomRoles.Charmed:
+                        case CustomRoles.Soulless:
+                        case CustomRoles.Infected:
+                        case CustomRoles.Contagious:
+                        case CustomRoles.Admired:
+                            RoleColor = GetRoleColor(subRole);
+                            RoleText = GetRoleString($"{subRole}-") + RoleText;
+                            break;
+
+                    }
+            }
         }
 
         return (RoleText, RoleColor);
@@ -2253,7 +2239,7 @@ public static class Utils
                 // ====== Combine SelfRoleName, SelfTaskText, SelfName, SelfDeathReason for seer ======
 
                 string SelfTaskText = GetProgressText(seer);
-                string SelfRoleName = $"<size={fontSize}>{seer.GetDisplayRoleName()}{SelfTaskText}</size>";
+                string SelfRoleName = $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(seer, false)}{SelfTaskText}</size>";
                 string SelfDeathReason = seer.KnowDeathReason(seer) ? $"({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(seer.PlayerId))})" : "";
                 string SelfName = $"{ColorString(seer.GetRoleColor(), SeerRealName)}{SelfDeathReason}{SelfMark}";
 
@@ -2369,13 +2355,9 @@ public static class Utils
                                 TargetMark.Append(Shroud.GetShroudMark(target.PlayerId, true));
                         }
 
-                        if (Mini.IsEnable && Mini.EveryoneCanKnowMini.GetBool())
+                        if (Mini.IsEnable && Mini.EveryoneCanKnowMini.GetBool() && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
                         {
-                            if (target.Is(CustomRoles.NiceMini))
-                                TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Mini), Mini.Age != 18 && Mini.UpDateAge.GetBool() ? $"({Mini.Age})" : ""));
-
-                            else if (target.Is(CustomRoles.EvilMini))
-                                TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Mini), Mini.Age != 18 && Mini.UpDateAge.GetBool() ? $"({Mini.Age})" : ""));
+                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Mini), Mini.Age != 18 && Mini.UpDateAge.GetBool() ? $"({Mini.Age})" : ""));
                         }
 
                         if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate) && target.GetPlayerTaskState().IsTaskFinished)
@@ -2500,7 +2482,7 @@ public static class Utils
                         // ====== Seer know target role ======
 
                         string TargetRoleText = ExtendedPlayerControl.KnowRoleTarget(seer, target)
-                                ? $"<size={fontSize}>{target.GetDisplayRoleName(seer.PlayerId != target.PlayerId && !seer.Data.IsDead)}{GetProgressText(target)}</size>\r\n" : "";
+                                ? $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(target, false)}{GetProgressText(target)}</size>\r\n" : "";
 
 
                         if (seer.IsAlive() && seer.IsRevealedPlayer(target) && target.Is(CustomRoles.Trickster))
@@ -2644,10 +2626,8 @@ public static class Utils
 
 
                         // ====== Target Death Reason for target (Death Reason visible ​​only to the seer) ======
-                        string TargetDeathReason = "";
-                        if (seer.KnowDeathReason(target))
-                            TargetDeathReason = $" ({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))})";
-
+                        string TargetDeathReason = seer.KnowDeathReason(target) 
+                            ? $" ({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))})" : "";
 
                         // Devourer
                         if (Devourer.IsEnable)
@@ -2662,7 +2642,7 @@ public static class Utils
                             TargetPlayerName = $"<size=0%>{TargetPlayerName}</size>";
 
                         // Target Name
-                        string TargetName = $"{TargetRoleText}{TargetPlayerName} {TargetDeathReason}{TargetMark}";
+                        string TargetName = $"{TargetRoleText}{TargetPlayerName}{TargetDeathReason}{TargetMark}";
                         TargetName += TargetSuffix.ToString() == "" ? "" : ("\r\n" + TargetSuffix.ToString());
 
                         target.RpcSetNamePrivate(TargetName, true, seer, force: NoCache);
@@ -2975,14 +2955,14 @@ public static class Utils
         }
         else { TaskCount = GetProgressText(id); }
 
-        string summary = $"{ColorString(Main.PlayerColors[id], name)} - {GetDisplayRoleName(id, true)}{GetSubRolesText(id, summary: true)}{TaskCount}{GetKillCountText(id)} ({GetVitalText(id, true)})";
+        string summary = $"{ColorString(Main.PlayerColors[id], name)} - {GetDisplayRoleAndSubName(id, id, true)}{GetSubRolesText(id, summary: true)}{TaskCount} {GetKillCountText(id)} ({GetVitalText(id, true)})";
         switch (Options.CurrentGameMode)
         {
             case CustomGameMode.FFA:
                 summary = $"{ColorString(Main.PlayerColors[id], name)} {GetKillCountText(id, ffa: true)}";
                 break;
         }
-        return check && GetDisplayRoleName(id, true).RemoveHtmlTags().Contains("INVALID:NotAssigned")
+        return check && GetDisplayRoleAndSubName(id, id, true).RemoveHtmlTags().Contains("INVALID:NotAssigned")
             ? "INVALID"
             : disableColor ? summary.RemoveHtmlTags() : summary;
     }
@@ -3053,6 +3033,7 @@ public static class Utils
         return null;
     }
     public static string ColorString(Color32 color, string str) => $"<color=#{color.r:x2}{color.g:x2}{color.b:x2}{color.a:x2}>{str}</color>";
+    public static string ColorStringWithoutEnding(Color32 color, string str) => $"<color=#{color.r:x2}{color.g:x2}{color.b:x2}{color.a:x2}>{str}";
     /// <summary>
     /// Darkness:１の比率で黒色と元の色を混ぜる。マイナスだと白色と混ぜる。
     /// </summary>

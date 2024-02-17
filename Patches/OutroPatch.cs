@@ -53,9 +53,9 @@ class EndGamePatch
             if (date == DateTime.MinValue) continue;
             var killerId = kvp.Value.GetRealKiller();
             var targetId = kvp.Key;
-            sb.Append($"\n{date:T} {Main.AllPlayerNames[targetId]}({(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetDisplayRoleName(targetId, true))}{(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetSubRolesText(targetId, summary: true))}) [{Utils.GetVitalText(kvp.Key)}]");
+            sb.Append($"\n{date:T} {Main.AllPlayerNames[targetId]}({(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetDisplayRoleAndSubName(targetId, targetId, true))}{(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetSubRolesText(targetId, summary: true))}) [{Utils.GetVitalText(kvp.Key)}]");
             if (killerId != byte.MaxValue && killerId != targetId)
-                sb.Append($"\n\t⇐ {Main.AllPlayerNames[killerId]}({(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetDisplayRoleName(killerId, true))}{(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetSubRolesText(killerId, summary: true))})");
+                sb.Append($"\n\t⇐ {Main.AllPlayerNames[killerId]}({(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetDisplayRoleAndSubName(killerId, killerId, true))}{(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetSubRolesText(killerId, summary: true))})");
         }
         KillLog = sb.ToString();
         if (!KillLog.Contains('\n')) KillLog = "";
@@ -261,7 +261,7 @@ class SetEverythingUpPatch
         RoleSummaryObject.transform.position = new Vector3(__instance.Navigation.ExitButton.transform.position.x + 0.1f, Pos.y - 0.1f, -15f);
         RoleSummaryObject.transform.localScale = new Vector3(1f, 1f, 1f);
 
-        StringBuilder sb = new($"{GetString("RoleSummaryText")}<b>");
+        StringBuilder sb = new($"{GetString("RoleSummaryText")}\n<b>");
         List<byte> cloneRoles = new(Main.PlayerStates.Keys);
         foreach (byte id in Main.winnerList.ToArray())
         {
