@@ -2927,15 +2927,23 @@ class FixedUpdateInNormalGamePatch
             BufferTime[player.PlayerId] = timerLowLoad;
         }
 
-        if (Sniper.IsEnable)
-            Sniper.OnFixedUpdate(player);
-
         if (!lowLoad)
         {
             Zoom.OnFixedUpdate();
-            NameNotifyManager.OnFixedUpdate(player);
-            TargetArrow.OnFixedUpdate(player);
-            LocateArrow.OnFixedUpdate(player);
+        }
+
+        // Only during the game
+        if (GameStates.IsInGame)
+        {
+            if (Sniper.IsEnable)
+                Sniper.OnFixedUpdate(player);
+
+            if (!lowLoad)
+            {
+                NameNotifyManager.OnFixedUpdate(player);
+                TargetArrow.OnFixedUpdate(player);
+                LocateArrow.OnFixedUpdate(player);
+            }
         }
 
         if (AmongUsClient.Instance.AmHost)
@@ -3000,19 +3008,20 @@ class FixedUpdateInNormalGamePatch
                 }
             }
 
-            if (DoubleTrigger.FirstTriggerTimer.Count > 0)
-                DoubleTrigger.OnFixedUpdate(player);
-
-            var playerRole = player.GetCustomRole();
-
-            if (player.Is(CustomRoles.NiceMini) || player.Is(CustomRoles.EvilMini))
+            //Mini's count down needs to be done outside if intask if we are counting meeting time
+            if (GameStates.IsInGame && player.Is(CustomRoles.NiceMini) || player.Is(CustomRoles.EvilMini))
             {
                 if (!player.Data.IsDead)
                     Mini.OnFixedUpdate(player);
-            } //Mini's count down needs to be done outside if intask if we are counting meeting time
+            }
 
             if (GameStates.IsInTask)
             {
+                var playerRole = player.GetCustomRole();
+
+                if (DoubleTrigger.FirstTriggerTimer.Count > 0)
+                    DoubleTrigger.OnFixedUpdate(player);
+
                 // Agitater
                 if (Agitater.IsEnable && Agitater.CurrentBombedPlayer == player.PlayerId)
                     Agitater.OnFixedUpdate(player);
@@ -3257,47 +3266,24 @@ class FixedUpdateInNormalGamePatch
                     }
                 }
                 #endregion
-            }
 
 
-            if (!lowLoad)
-            {
-                if (Main.AllKillers.TryGetValue(player.PlayerId, out var ktime) && ktime + Options.WitnessTime.GetInt() < Utils.GetTimeStamp())
-                    Main.AllKillers.Remove(player.PlayerId);
-
-                playerRole = player.GetCustomRole();
-
-                
-                if (Kamikaze.IsEnable)
-                    Kamikaze.MurderKamikazedPlayers(player);
-                if (Alchemist.IsEnable)
-                    Alchemist.OnFixedUpdateINV(player);
-
-                switch (playerRole)
+                if (!lowLoad)
                 {
-                    case CustomRoles.Pelican:
-                        Pelican.OnFixedUpdate();
-                        break;
+                    if (Main.AllKillers.TryGetValue(player.PlayerId, out var ktime) && ktime + Options.WitnessTime.GetInt() < Utils.GetTimeStamp())
+                        Main.AllKillers.Remove(player.PlayerId);
 
-                    case CustomRoles.Spy:
-                        Spy.OnFixedUpdate(player);
-                        break;
-                    case CustomRoles.Benefactor:
-                        Benefactor.OnFixedUpdate();
-                        break;
+                    playerRole = player.GetCustomRole();
 
-                    case CustomRoles.Glitch:
-                        Glitch.UpdateHackCooldown(player);
-                        break;
-                    
-                }
+                    if (Kamikaze.IsEnable)
+                        Kamikaze.MurderKamikazedPlayers(player);
 
-                if (GameStates.IsInTask)
-                {
+                    if (Alchemist.IsEnable)
+                        Alchemist.OnFixedUpdateINV(player);
 
                     if (Stealth.IsEnable)
                         Stealth.OnFixedUpdate(player);
-                    
+
                     if (BountyHunter.IsEnable)
                         BountyHunter.OnFixedUpdate(player);
 
@@ -3321,7 +3307,6 @@ class FixedUpdateInNormalGamePatch
 
                     switch (playerRole)
                     {
-
                         case CustomRoles.RiftMaker:
                             RiftMaker.OnFixedUpdate(player);
                             break;
@@ -3351,6 +3336,21 @@ class FixedUpdateInNormalGamePatch
 
                         case CustomRoles.Mastermind:
                             Mastermind.OnFixedUpdate();
+                            break;
+
+                        case CustomRoles.Pelican:
+                            Pelican.OnFixedUpdate();
+                            break;
+
+                        case CustomRoles.Spy:
+                            Spy.OnFixedUpdate(player);
+                            break;
+                        case CustomRoles.Benefactor:
+                            Benefactor.OnFixedUpdate();
+                            break;
+
+                        case CustomRoles.Glitch:
+                            Glitch.UpdateHackCooldown(player);
                             break;
 
                         case CustomRoles.Veteran:
@@ -3463,6 +3463,12 @@ class FixedUpdateInNormalGamePatch
                             Monitor.FixedUpdate();
                     }
                 }
+            }
+
+            if (!lowLoad)
+            {
+                if (!Main.DoBlockNameChange)
+                    Utils.ApplySuffix(__instance);
 
                 if (GameStates.IsInGame && Main.RefixCooldownDelay <= 0)
                     foreach (var pc in Main.AllPlayerControls)
@@ -3472,17 +3478,14 @@ class FixedUpdateInNormalGamePatch
                         if (pc.Is(CustomRoles.Poisoner))
                             Main.AllPlayerKillCooldown[pc.PlayerId] = Poisoner.KillCooldown.GetFloat() * 2;
                     }
-
-                if (!Main.DoBlockNameChange && AmongUsClient.Instance.AmHost)
-                    Utils.ApplySuffix(__instance);
             }
         }
 
         //Local Player only
-        if (__instance.AmOwner)
+        if (player.AmOwner && GameStates.IsInTask)
         {
             //Kill target override processing
-            if (GameStates.IsInTask && !__instance.Is(CustomRoleTypes.Impostor) && __instance.CanUseKillButton() && !__instance.Data.IsDead)
+            if (!player.Is(CustomRoleTypes.Impostor) && player.CanUseKillButton() && !player.Data.IsDead)
             {
                 var players = __instance.GetPlayersInAbilityRangeSorted(false);
                 PlayerControl closest = players.Count <= 0 ? null : players[0];
