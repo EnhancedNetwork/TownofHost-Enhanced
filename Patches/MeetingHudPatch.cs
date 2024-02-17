@@ -968,7 +968,7 @@ class MeetingHudStartPatch
                 if (!Options.NeutralKnowCyberStarDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
                 AddMsg(string.Format(GetString("CyberStarDead"), Main.AllPlayerNames[csId]), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.CyberStar), GetString("CyberStarNewsTitle")));
             }
-            //网络人死亡消息提示
+
             foreach (var csId in Cyber.CyberDead)
             {
                 if (!Cyber.ImpKnowCyberDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
@@ -976,6 +976,7 @@ class MeetingHudStartPatch
                 if (!Cyber.CrewKnowCyberDead.GetBool() && pc.GetCustomRole().IsCrewmate()) continue;
                 AddMsg(string.Format(GetString("CyberDead"), Main.AllPlayerNames[csId]), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), GetString("CyberNewsTitle")));
             }
+
             //勒索者勒索警告
             if (Blackmailer.IsEnable && pc != null && Blackmailer.ForBlackmailer.Contains(pc.PlayerId))
             {
@@ -1033,12 +1034,13 @@ class MeetingHudStartPatch
         }, 3f, "Skill Notice On Meeting Start");
 
         Main.CyberStarDead.Clear();
-        Cyber.CyberDead.Clear();
         Main.DetectiveNotify.Clear();
-        Sleuth.SleuthNotify.Clear();
         Main.VirusNotify.Clear();
-        Enigma.MsgToSend.Clear();
         Mortician.msgToSend.Clear();
+        Enigma.MsgToSend.Clear();
+        
+        Cyber.Clear();
+        Sleuth.Clear();
         Pirate.OnMeetingStart();
     }
     public static void Prefix(/*MeetingHud __instance*/)
