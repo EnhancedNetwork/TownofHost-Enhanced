@@ -556,7 +556,7 @@ class GameEndCheckerForNormal
             {
                 if (pc == null) continue;
 
-                dual = Schizophrenic.IsExistGame(pc) ? 1 : 0;
+                dual = Schizophrenic.IsExistInGame(pc) ? 1 : 0;
                 var countType = Main.PlayerStates[pc.PlayerId].countTypes;
                 switch (countType)
                 {

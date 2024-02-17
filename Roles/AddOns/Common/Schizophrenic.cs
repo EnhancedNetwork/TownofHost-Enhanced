@@ -20,6 +20,6 @@ public static class Schizophrenic
         DualVotes = BooleanOptionItem.Create(Id + 12, "DualVotes", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Schizophrenic]);
     }
 
-    public static bool IsExistGame(PlayerControl player) => player.Is(CustomRoles.Schizophrenic);
+    public static bool IsExistInGame(PlayerControl player) => player.Is(CustomRoles.Schizophrenic);
 }
 
