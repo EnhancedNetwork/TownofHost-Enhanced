@@ -3153,32 +3153,35 @@ class FixedUpdateInNormalGamePatch
                         if (Monitor.IsEnable)
                             Monitor.FixedUpdate();
                     }
-
-                    if (GameStates.IsInGame && Main.RefixCooldownDelay <= 0)
-                        foreach (var pc in Main.AllPlayerControls)
-                        {
-                            if (pc.Is(CustomRoles.Vampire) || pc.Is(CustomRoles.Warlock) || pc.Is(CustomRoles.Assassin) || pc.Is(CustomRoles.Vampiress))
-                                Main.AllPlayerKillCooldown[pc.PlayerId] = Options.DefaultKillCooldown * 2;
-                            if (pc.Is(CustomRoles.Poisoner))
-                                Main.AllPlayerKillCooldown[pc.PlayerId] = Poisoner.KillCooldown.GetFloat() * 2;
-                        }
-                }
-
-                //Local Player only
-                if (player.AmOwner)
-                {
-                    //Kill target override processing
-                    if (!player.Is(CustomRoleTypes.Impostor) && player.CanUseKillButton() && !player.Data.IsDead)
-                    {
-                        var players = __instance.GetPlayersInAbilityRangeSorted(false);
-                        PlayerControl closest = players.Count <= 0 ? null : players[0];
-                        HudManager.Instance.KillButton.SetTarget(closest);
-                    }
                 }
             }
 
-            if (!lowLoad && !Main.DoBlockNameChange)
-                Utils.ApplySuffix(__instance);
+            if (!lowLoad)
+            {
+                if (!Main.DoBlockNameChange)
+                    Utils.ApplySuffix(__instance);
+
+                if (GameStates.IsInGame && Main.RefixCooldownDelay <= 0)
+                    foreach (var pc in Main.AllPlayerControls)
+                    {
+                        if (pc.Is(CustomRoles.Vampire) || pc.Is(CustomRoles.Warlock) || pc.Is(CustomRoles.Assassin) || pc.Is(CustomRoles.Vampiress))
+                            Main.AllPlayerKillCooldown[pc.PlayerId] = Options.DefaultKillCooldown * 2;
+                        if (pc.Is(CustomRoles.Poisoner))
+                            Main.AllPlayerKillCooldown[pc.PlayerId] = Poisoner.KillCooldown.GetFloat() * 2;
+                    }
+            }
+        }
+
+        //Local Player only
+        if (player.AmOwner && GameStates.IsInTask)
+        {
+            //Kill target override processing
+            if (!player.Is(CustomRoleTypes.Impostor) && player.CanUseKillButton() && !player.Data.IsDead)
+            {
+                var players = __instance.GetPlayersInAbilityRangeSorted(false);
+                PlayerControl closest = players.Count <= 0 ? null : players[0];
+                HudManager.Instance.KillButton.SetTarget(closest);
+            }
         }
 
         var RoleTextTransform = __instance.cosmetics.nameText.transform.Find("RoleText");
