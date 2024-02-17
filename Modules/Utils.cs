@@ -93,23 +93,31 @@ public static class Utils
             Logger.Info($" Player Id: {player.PlayerId}", "RpcTeleport");
         }
 
+        var сancelTeleport = false;
+
         if (player.inVent
             || player.MyPhysics.Animations.IsPlayingEnterVentAnimation())
         {
             Logger.Info($"Target: ({player.GetNameWithRole().RemoveHtmlTags()}) in vent", "RpcTeleport");
-            player.MyPhysics.RpcBootFromVent(0);
+            сancelTeleport = true;
         }
 
         if (player.onLadder
             || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
         {
             Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) is in on Ladder", "RpcTeleport");
-            return;
+            сancelTeleport = true;
         }
 
         if (player.inMovingPlat)
         {
             Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) use moving platform (Airship/Fungle)", "RpcTeleport");
+            сancelTeleport = true;
+        }
+
+        if (сancelTeleport)
+        {
+            player.Notify(ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ErrorTeleport")));
             return;
         }
 

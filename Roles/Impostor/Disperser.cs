@@ -32,7 +32,7 @@ public static class Disperser
             if (shapeshifter.PlayerId == pc.PlayerId || !pc.CanBeTeleported())
             {
                 if (!pc.Is(CustomRoles.Disperser) && pc.IsAlive())
-                    pc.Notify(ColorString(GetRoleColor(CustomRoles.Disperser), string.Format(GetString("ErrorTeleport"), pc.GetRealName())));
+                    pc.Notify(ColorString(GetRoleColor(CustomRoles.Disperser), GetString("ErrorTeleport")));
                 
                 continue;
             }
