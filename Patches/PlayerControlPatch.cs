@@ -3815,11 +3815,11 @@ class EnterVentPatch
                 {
                     if (Main.TimeMasterBackTrack.TryGetValue(player.PlayerId, out var position))
                     {
-                        if (player.CanBeTeleported() || player.PlayerId != pc.PlayerId)
+                        if (player.CanBeTeleported() && player.PlayerId != pc.PlayerId)
                         {
                             player.RpcTeleport(position);
                         }
-                        if (pc == player)
+                        else if (pc == player)
                         {
                             player?.MyPhysics?.RpcBootFromVent(Main.LastEnteredVent.TryGetValue(player.PlayerId, out var vent) ? vent.Id : player.PlayerId);
                         }
