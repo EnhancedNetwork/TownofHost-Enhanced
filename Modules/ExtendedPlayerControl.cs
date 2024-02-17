@@ -2,7 +2,6 @@ using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
 using InnerNet;
-using LibCpp2IL.Elf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
