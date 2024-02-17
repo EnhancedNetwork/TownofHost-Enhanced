@@ -17,6 +17,7 @@ public static class SoulCollector
 
     public static OptionItem SoulCollectorPointsOpt;
     public static OptionItem CollectOwnSoulOpt;
+    public static OptionItem CallMeetingIfDeath;
 
     public static void SetupCustomOption()
     {
@@ -24,6 +25,7 @@ public static class SoulCollector
         SoulCollectorPointsOpt = IntegerOptionItem.Create(Id + 10, "SoulCollectorPointsToWin", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.SoulCollector])
             .SetValueFormat(OptionFormat.Times);
         CollectOwnSoulOpt = BooleanOptionItem.Create(Id + 11, "CollectOwnSoulOpt", true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.SoulCollector]);
+        CallMeetingIfDeath = BooleanOptionItem.Create(Id + 12, "CallMeetingIfDeath", true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.SoulCollector]);
     }
     public static void Init()
     {
@@ -125,7 +127,8 @@ public static class SoulCollector
 
         player.RpcSetCustomRole(CustomRoles.Death);
         player.Notify(GetString("SoulCollectorToDeath"));
-        PlayerControl.LocalPlayer.NoCheckStartMeeting(null, force: true);
+        player.RpcGuardAndKill(player);
+        if (CallMeetingIfDeath.GetBool()) PlayerControl.LocalPlayer.NoCheckStartMeeting(null, force: true);
         KillIfNotEjected(player);
 
     }
@@ -134,7 +137,7 @@ public static class SoulCollector
         var deathList = new List<byte>();
         foreach (var pc in Main.AllAlivePlayerControls)
         {
-            if (pc.GetCustomRole() is CustomRoles.PlagueBearer or CustomRoles.Pestilence or CustomRoles.Death or CustomRoles.SoulCollector) continue;
+            if (pc.IsNeutralApocalypse()) continue;
             if (player != null && player.IsAlive())
             {
                 if (!Main.AfterMeetingDeathPlayers.ContainsKey(pc.PlayerId))

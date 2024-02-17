@@ -1421,6 +1421,9 @@ internal static class RPC
             case CustomRoles.PlagueBearer:
                 PlagueBearer.Add(targetId);
                 break;
+            case CustomRoles.Baker:
+                Baker.Add(targetId);   
+                break;
             case CustomRoles.Tracker:
                 Tracker.Add(targetId);
                 break;

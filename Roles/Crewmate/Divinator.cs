@@ -245,7 +245,8 @@ public static class Divinator
                 CustomRoles.Lawyer,
                 CustomRoles.Snitch,
                 CustomRoles.Disperser,
-                CustomRoles.Doctor],
+                CustomRoles.Doctor,
+                CustomRoles.Baker],
                 
                 [CustomRoles.Councillor,
                 CustomRoles.Dictator,

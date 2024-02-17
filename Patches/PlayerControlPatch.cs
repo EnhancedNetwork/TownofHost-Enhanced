@@ -470,6 +470,9 @@ class CheckMurderPatch
                     if (!PlagueBearer.OnCheckMurder(killer, target))
                         return false;
                     break;
+                case CustomRoles.Baker:
+                    Baker.OnCheckMurder(killer, target);
+                    return false;
                 case CustomRoles.Pirate:
                     if (!Pirate.OnCheckMurder(killer, target))
                         return false;
@@ -2637,6 +2640,10 @@ class FixedUpdateInNormalGamePatch
                     case CustomRoles.PlagueBearer:
                         PlagueBearer.OnFixedUpdate(player);
                         break;
+
+                    case CustomRoles.Baker:
+                        Baker.OnFixedUpdate(player);
+                        break; 
 
                     case CustomRoles.SoulCollector:
                         SoulCollector.BecomeDeath(player);

@@ -550,6 +550,7 @@ static class ExtendedPlayerControl
             CustomRoles.Spiritcaller => pc.IsAlive(),
             CustomRoles.PlagueBearer => pc.IsAlive(),
             CustomRoles.Pestilence => pc.IsAlive(),
+            CustomRoles.Baker => pc.IsAlive(),
             CustomRoles.Pirate => pc.IsAlive(),
             CustomRoles.Pixie => pc.IsAlive(),
             CustomRoles.Seeker => pc.IsAlive(),

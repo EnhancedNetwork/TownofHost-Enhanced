@@ -266,6 +266,7 @@ static class CustomRolesHelper
             CustomRoles.Spiritcaller => RoleTypes.Impostor,
             CustomRoles.ChiefOfPolice => RoleTypes.Impostor,
             CustomRoles.Quizmaster => RoleTypes.Impostor,
+            CustomRoles.Baker => RoleTypes.Impostor,
             _ => RoleTypes.GuardianAngel
         };
     }
@@ -528,6 +529,7 @@ static class CustomRolesHelper
             CustomRoles.Shaman or
             CustomRoles.SoulCollector or
             CustomRoles.PlagueBearer or
+            CustomRoles.Baker or
             CustomRoles.NWitch or
             CustomRoles.CursedSoul or
             CustomRoles.Doomsayer or
@@ -608,7 +610,9 @@ static class CustomRolesHelper
             CustomRoles.PlagueBearer or
             CustomRoles.Pestilence or
             CustomRoles.SoulCollector or
-            CustomRoles.Death;
+            CustomRoles.Death or
+            CustomRoles.Baker or
+            CustomRoles.Famine;
     }
     public static bool IsSnitchTarget(this CustomRoles role)
     {
@@ -645,7 +649,6 @@ static class CustomRolesHelper
             CustomRoles.Succubus or
             CustomRoles.BloodKnight or
             CustomRoles.Spiritcaller or
-            CustomRoles.PlagueBearer or
             CustomRoles.Agitater or
             CustomRoles.RuthlessRomantic or
             CustomRoles.Shroud or
@@ -799,6 +802,8 @@ static class CustomRolesHelper
             CustomRoles.Agitater or
             CustomRoles.PlagueBearer or
             CustomRoles.Pestilence or
+            CustomRoles.Baker or
+            CustomRoles.Famine or
             CustomRoles.Pirate or
             CustomRoles.Seeker or
             CustomRoles.Pixie or
@@ -998,6 +1003,7 @@ static class CustomRolesHelper
             CustomRoles.Imitator or
             CustomRoles.Agitater or
             CustomRoles.PlagueBearer or
+            CustomRoles.Baker or
             CustomRoles.Pirate or
             CustomRoles.FFF or
             CustomRoles.Totocalcio or
@@ -1893,6 +1899,8 @@ static class CustomRolesHelper
            CustomRoles.PlagueBearer => CountTypes.Apocalypse,
            CustomRoles.SoulCollector => CountTypes.Apocalypse,
            CustomRoles.Death => CountTypes.Apocalypse,
+           CustomRoles.Baker => CountTypes.Apocalypse,
+           CustomRoles.Famine => CountTypes.Apocalypse,
            CustomRoles.Agitater => CountTypes.Agitater,
            CustomRoles.Parasite => CountTypes.Impostor,
            CustomRoles.NSerialKiller => CountTypes.NSerialKiller,

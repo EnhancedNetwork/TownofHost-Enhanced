@@ -712,6 +712,7 @@ public enum CustomRoles
     Agitater,
     Amnesiac,
     Arsonist,
+    Baker,
     Bandit,
     BloodKnight,
     Collector,
@@ -722,6 +723,7 @@ public enum CustomRoles
     Doomsayer,
     Doppelganger,
     Executioner,
+    Famine,
     Totocalcio, //follower
     Glitch,
     God,

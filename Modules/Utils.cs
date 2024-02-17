@@ -547,6 +547,8 @@ public static class Utils
             case CustomRoles.Jinx:
             case CustomRoles.SoulCollector:
             case CustomRoles.Death:
+            case CustomRoles.Baker:
+            case CustomRoles.Famine:
             case CustomRoles.SchrodingersCat:
             case CustomRoles.Parasite:
             case CustomRoles.Crusader:
@@ -967,6 +969,10 @@ public static class Utils
                 case CustomRoles.PlagueBearer:
                     var plagued = PlagueBearer.PlaguedPlayerCount(playerId);
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.PlagueBearer).ShadeColor(0.25f), $"({plagued.Item1}/{plagued.Item2})"));
+                    break;
+                case CustomRoles.Baker:
+                    var breaded = Baker.BreadedPlayerCount(playerId);
+                    ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Baker).ShadeColor(0.25f), $"{breaded.Item1}/{breaded.Item2})"));
                     break;
                 case CustomRoles.Doomsayer:
                     var doomsayerguess = Doomsayer.GuessedPlayerCount(playerId);

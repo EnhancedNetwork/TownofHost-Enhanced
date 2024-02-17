@@ -139,6 +139,10 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("InfectiousKillButtonText"));
                         break;
+                    case CustomRoles.Baker:
+                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
+                        __instance.KillButton.OverrideText(GetString("BakerKillButtonText"));
+                        break;
                     case CustomRoles.Pirate:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("PirateDuelButtonText"));

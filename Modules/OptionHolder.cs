@@ -2448,10 +2448,12 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(127, 140, 141, byte.MaxValue));
 
+        Baker.SetupCustomOption();
+
         PlagueBearer.SetupCustomOption();
 
         SoulCollector.SetupCustomOption();
-        
+
         #endregion
 
         #region Add-Ons Settings
