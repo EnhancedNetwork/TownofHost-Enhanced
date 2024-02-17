@@ -367,9 +367,9 @@ public static class Utils
         }
         return;
     }
-    public static string GetDisplayRoleAndSubName(byte seerId, byte targetId, bool pure = false)
+    public static string GetDisplayRoleAndSubName(byte seerId, byte targetId, bool notShowAddOns = false)
     {
-        var TextData = GetRoleAndSubText(seerId, targetId, pure);
+        var TextData = GetRoleAndSubText(seerId, targetId, notShowAddOns);
         return ColorString(TextData.Item2, TextData.Item1);
     }
     public static string GetRoleName(CustomRoles role, bool forUser = true)
@@ -404,7 +404,7 @@ public static class Utils
         if (!Main.roleColors.TryGetValue(role, out var hexColor)) hexColor = "#ffffff";
         return hexColor;
     }
-    public static (string, Color) GetRoleAndSubText(byte seerId, byte targetId, bool pure = false)
+    public static (string, Color) GetRoleAndSubText(byte seerId, byte targetId, bool notShowAddOns = false)
     {
         string RoleText = "Invalid Role";
         Color RoleColor;
@@ -420,16 +420,17 @@ public static class Utils
 
         if (targetSubRoles.Count > 0)
         {
-            var knowRole = ExtendedPlayerControl.KnowSubRoleTarget(GetPlayerById(seerId), GetPlayerById(targetId));
+            var seer = GetPlayerById(seerId);
+            if (seer == null) return (RoleText, RoleColor);
+
+            var target = GetPlayerById(targetId);
+            if (target == null) return (RoleText, RoleColor);
 
             if (LastImpostor.currentId == targetId)
                 RoleText = GetRoleString("Last-") + RoleText;
 
-            if (Options.NameDisplayAddons.GetBool() && !pure && knowRole)
+            if (Options.NameDisplayAddons.GetBool() && !notShowAddOns)
             {
-                var seer = GetPlayerById(seerId);
-                if (seer == null) return (RoleText, RoleColor);
-
                 var seerPlatform = seer.GetClient().PlatformData.Platform;
                 var addBracketsToAddons = Options.AddBracketsToAddons.GetBool();
 
@@ -443,20 +444,20 @@ public static class Utils
                     RoleText = ColorStringWithoutEnding(GetRoleColor(targetMainRole), RoleText);
 
                     // colored add-ons
-                    foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed()).ToArray())
+                    foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && ExtendedPlayerControl.ShowSubRoleTarget(seer, target, subRole)).ToArray())
                         RoleText = ColorStringWithoutEnding(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"Prefix.{subRole}")}) " : $"{GetString($"Prefix.{subRole}")} ") + RoleText;
                 }
                 // default
                 else
                 {
-                    foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed()).ToArray())
+                    foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && ExtendedPlayerControl.ShowSubRoleTarget(seer, target, subRole)).ToArray())
                         RoleText = ColorString(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"Prefix.{subRole}")}) " : $"{GetString($"Prefix.{subRole}")} ") + RoleText;
                 }
             }
 
             foreach (var subRole in targetSubRoles.ToArray())
             {
-                if (ExtendedPlayerControl.KnowSubRoleTarget(GetPlayerById(seerId), GetPlayerById(targetId)))
+                if (ExtendedPlayerControl.ShowSubRoleTarget(seer, target, subRole))
                     switch (subRole)
                     {
                         case CustomRoles.Madmate:
