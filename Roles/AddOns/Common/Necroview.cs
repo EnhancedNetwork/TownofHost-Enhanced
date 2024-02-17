@@ -1,7 +1,4 @@
 ﻿using static TOHE.Options;
-using Hazel;
-using static UnityEngine.GraphicsBuffer;
-using Rewired.Utils.Platforms.Windows;
 
 namespace TOHE.Roles.AddOns.Common;
 
@@ -31,18 +28,17 @@ public static class Necroview
                     || SubRole.Is(CustomRoles.Infected)
                     || SubRole.Is(CustomRoles.Contagious)
                     || SubRole.Is(CustomRoles.Egoist)
-                    || SubRole.Is(CustomRoles.Egoist)
                     || SubRole.Is(CustomRoles.Recruit)
                     || SubRole.Is(CustomRoles.Soulless))
                     return Main.roleColors[CustomRoles.SwordsMan]; 
             }
 
-            if (CustomRolesHelper.IsImpostorTeamV2(CustomRole) || CustomRolesHelper.IsMadmate(CustomRole))
+            if (CustomRole.IsImpostorTeamV2() || CustomRole.IsMadmate())
             {
                 return Main.roleColors[CustomRoles.Impostor]; 
             }
 
-            if (CustomRolesHelper.IsCrewmate(CustomRole))
+            if (CustomRole.IsCrewmate())
             {
                 return Main.roleColors[CustomRoles.Bait];
             }
