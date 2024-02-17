@@ -107,6 +107,12 @@ public static class Utils
             return;
         }
 
+        if (player.inMovingPlat)
+        {
+            Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) use moving platform (Airship/Fungle)", "RpcTeleport");
+            return;
+        }
+
         var playerNetTransform = player.NetTransform;
         var numHost = (ushort)(playerNetTransform.lastSequenceId + 148);
         var numLocalClient = (ushort)(playerNetTransform.lastSequenceId + 4);
@@ -141,6 +147,7 @@ public static class Utils
         }
         sender.SendMessage();
 
+        // Return lastSequenceId for host
         if (AmongUsClient.Instance.AmHost)
         {
             playerNetTransform.lastSequenceId -= 126;
