@@ -174,7 +174,7 @@ namespace TOHE.Roles.Crewmate
 
         public static string GetTaskState()
         {
-            var playersWithTasks = Main.PlayerStates.Where(a => a.Value.GetTaskState().hasTasks).ToArray();
+            var playersWithTasks = Main.PlayerStates.Where(a => a.Value.TaskState.hasTasks).ToArray();
             if (playersWithTasks.Length == 0)
             {
                 return "\r\n";
@@ -182,7 +182,7 @@ namespace TOHE.Roles.Crewmate
 
             var rd = IRandom.Instance;
             var randomPlayer = playersWithTasks[rd.Next(0, playersWithTasks.Length)];
-            var taskState = randomPlayer.Value.GetTaskState();
+            var taskState = randomPlayer.Value.TaskState;
 
             Color TextColor;
             var TaskCompleteColor = Color.green;

@@ -1421,19 +1421,11 @@ internal class ChatCommands
             ChatManager.SendMessage(player, text);
         }
 
-        Logger.Info($"player.PlayerId {player.PlayerId} send message: ''{text}''", "OnReceiveChat");
-
         if (text.StartsWith("\n")) text = text[1..];
         //if (!text.StartsWith("/")) return;
         string[] args = text.Split(' ');
         string subArgs = "";
         string subArgs2 = "";
-
-        if (text.Length <= 11) // Check command if Length < or = 11
-        {
-            Logger.Info($"Message now: ''{text}''", "OnReceiveChat");
-            Logger.Info($"Args: ''{args}''", "OnReceiveChat");
-        }
 
         //if (text.Length >= 3) if (text[..2] == "/r" && text[..3] != "/rn") args[0] = "/r";
         //   if (SpamManager.CheckSpam(player, text)) return;
@@ -1452,19 +1444,15 @@ internal class ChatCommands
         Directory.CreateDirectory(vipTagsFiles);
         Directory.CreateDirectory(sponsorTagsFiles);
 
-        Logger.Info($"This player was Blackmailed?", "OnReceiveChat");
         if (Blackmailer.ForBlackmailer.Contains(player.PlayerId) && player.IsAlive() && player.PlayerId != 0)
         {
+            Logger.Info($"This player (id {player.PlayerId}) was Blackmailed", "OnReceiveChat");
             ChatManager.SendPreviousMessagesToAll();
             ChatManager.cancel = false;
             canceled = true; 
             return; 
         }
 
-        if (text.Length <= 11)
-        {
-            Logger.Info($"args[0] has message: ''{args[0]}''", "OnReceiveChat");
-        }
         switch (args[0])
         {
             case "/r":
@@ -2335,8 +2323,17 @@ class ChatUpdatePatch
     public static bool DoBlockChat = false;
     public static void Postfix(ChatController __instance)
     {
+        if (Main.DarkTheme.Value)
+        {
+            var chatBubble = __instance.chatBubblePool.Prefab.Cast<ChatBubble>();
+            chatBubble.TextArea.overrideColorTags = false;
+            chatBubble.TextArea.color = Color.white;
+            chatBubble.Background.color = Color.black;
+        }
+
         if (!AmongUsClient.Instance.AmHost || Main.MessagesToSend.Count == 0 || (Main.MessagesToSend[0].Item2 == byte.MaxValue && Main.MessageWait.Value > __instance.timeSinceLastMessage)) return;
         if (DoBlockChat) return;
+        
         var player = PlayerControl.LocalPlayer;
         if (GameStates.IsInGame || player.Data.IsDead)
         {
@@ -2345,29 +2342,34 @@ class ChatUpdatePatch
                      ?? player;
         }
         if (player == null) return;
+        
         (string msg, byte sendTo, string title) = Main.MessagesToSend[0];
         Main.MessagesToSend.RemoveAt(0);
+        
         int clientId = sendTo == byte.MaxValue ? -1 : Utils.GetPlayerById(sendTo).GetClientId();
         var name = player.Data.PlayerName;
+        
         if (clientId == -1)
         {
             player.SetName(title);
             DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
             player.SetName(name);
         }
+
         var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
-        writer.StartMessage(clientId);
-        writer.StartRpc(player.NetId, (byte)RpcCalls.SetName)
+        _ = writer.StartMessage(clientId);
+        _ = writer.StartRpc(player.NetId, (byte)RpcCalls.SetName)
             .Write(title)
             .EndRpc();
-        writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)
+        _ = writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)
             .Write(msg)
             .EndRpc();
-        writer.StartRpc(player.NetId, (byte)RpcCalls.SetName)
+        _ = writer.StartRpc(player.NetId, (byte)RpcCalls.SetName)
             .Write(player.Data.PlayerName)
             .EndRpc();
-        writer.EndMessage();
+        _ = writer.EndMessage();
         writer.SendMessage();
+
         __instance.timeSinceLastMessage = 0f;
     }
 }
