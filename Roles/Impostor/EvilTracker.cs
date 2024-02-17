@@ -106,14 +106,19 @@ public static class EvilTracker
         && target.IsAlive() && seer != target
         && (target.Is(CustomRoleTypes.Impostor) || GetTargetId(seer.PlayerId) == target.PlayerId);
 
-    public static void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting)
+    public static void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden = false)
     {
         if (!CanTarget(shapeshifter.PlayerId) || !shapeshifting) return;
         if (target == null || target.Is(CustomRoleTypes.Impostor)) return;
 
         SetTarget(shapeshifter.PlayerId, target.PlayerId);
+
+        if (shapeshiftIsHidden)
+            shapeshifter.SyncSettings();
+        else
+            shapeshifter.MarkDirtySettings();
+
         Logger.Info($"{shapeshifter.GetNameWithRole()} target to {target.GetNameWithRole()}", "EvilTrackerTarget");
-        shapeshifter.SyncSettings();
         Utils.NotifyRoles(SpecifySeer: shapeshifter, SpecifyTarget: target, ForceLoop: true);
     }
     public static void AfterMeetingTasks()

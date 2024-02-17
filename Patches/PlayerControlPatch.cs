@@ -1674,6 +1674,11 @@ public static class CheckShapeShiftPatch
                 shapeshifter.RejectShapeshiftAndReset(false);
                 return false;
 
+            case CustomRoles.SerialKiller:
+                Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
+                shapeshifter.RejectShapeshiftAndReset(false);
+                return false;
+
             case CustomRoles.Warlock:
                 if (Main.CursedPlayers[shapeshifter.PlayerId] != null)
                 {
@@ -1726,17 +1731,11 @@ public static class CheckShapeShiftPatch
                 }
                 shapeshifter.RejectShapeshiftAndReset();
                 return false;
-            //Need to fix conflicts with other part of code
 
             case CustomRoles.Undertaker:
                 Undertaker.OnShapeshift(shapeshifter, shapeshifting);
-                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 shapeshifter.RejectShapeshiftAndReset();
-                return false;
-
-            case CustomRoles.SerialKiller:
-                Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
-                shapeshifter.RejectShapeshiftAndReset(false);
+                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 return false;
 
             case CustomRoles.Fireworker:
@@ -1745,9 +1744,9 @@ public static class CheckShapeShiftPatch
                 return false;
 
             case CustomRoles.EvilTracker:
-                EvilTracker.OnShapeshift(shapeshifter, target, shapeshifting);
-                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+                EvilTracker.OnShapeshift(shapeshifter, target, shapeshifting, shapeshiftIsHidden: true);
                 shapeshifter.RejectShapeshiftAndReset();
+                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 return false;
 
             case CustomRoles.Miner:
@@ -1919,8 +1918,8 @@ public static class CheckShapeShiftPatch
 
             case CustomRoles.Pitfall:
                 Pitfall.OnShapeshift(shapeshifter);
-                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 shapeshifter.RejectShapeshiftAndReset();
+                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 return false;
 
             case CustomRoles.Disperser:
