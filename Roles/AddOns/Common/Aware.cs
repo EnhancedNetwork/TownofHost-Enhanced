@@ -1,6 +1,5 @@
 ﻿using static TOHE.Options;
 using System.Collections.Generic;
-using static UnityEngine.GraphicsBuffer;
 using System.Linq;
 using static TOHE.Translator;
 
@@ -29,6 +28,10 @@ public static class Aware
     public static void Init()
     {
         AwareInteracted = [];
+    }
+    public static void Add(byte playerId)
+    {
+        AwareInteracted[playerId] = [];
     }
 
     public static void OnCheckMurder(CustomRoles killerRole, PlayerControl target)
@@ -61,6 +64,7 @@ public static class Aware
                 {
                     if (AwareknowRole.GetBool())
                         rolelist = string.Join(", ", AwareInteracted[pid]);
+
                     Utils.SendMessage(string.Format(GetString("AwareInteracted"), rolelist), pid, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Aware), GetString("AwareTitle")));
                     AwareInteracted[pid] = [];
                 }, 0.5f, "Aware Check Msg");
@@ -80,7 +84,5 @@ public static class Aware
                 break;
         }
     }
-
-
 }
 

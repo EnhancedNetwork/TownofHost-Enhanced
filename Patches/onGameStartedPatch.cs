@@ -1081,6 +1081,9 @@ internal class SelectRolesPatch
                 {
                     switch (subRole)
                     {
+                        case CustomRoles.Aware:
+                            Aware.Add(pc.PlayerId);
+                            break;
                         case CustomRoles.Oiiai:
                             Oiiai.Add(pc.PlayerId);
                             break;

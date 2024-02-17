@@ -129,7 +129,6 @@ public static class Bandit
     {
         if (StealMode.GetValue() == 1)
         {
-          
             ExtendedPlayerControl.AddInSwitchAddons(target, killer, CustomRoles.NotAssigned, SelectedAddOn);
           
             Main.PlayerStates[target.PlayerId].RemoveSubRole((CustomRoles)SelectedAddOn);

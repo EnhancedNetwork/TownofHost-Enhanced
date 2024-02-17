@@ -22,7 +22,7 @@ public static class Necroview
     {
         var CustomRole = target.GetCustomRole();
         
-            foreach(var SubRole in target.GetCustomSubRoles())
+            foreach (var SubRole in target.GetCustomSubRoles())
             {
                 if (SubRole.Is(CustomRoles.Charmed)
                     || SubRole.Is(CustomRoles.Infected)
