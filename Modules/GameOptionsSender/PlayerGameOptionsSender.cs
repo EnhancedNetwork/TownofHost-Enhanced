@@ -491,22 +491,11 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
         }
 
-        // If the Bewilder was killed, his killer will receive his vision
-        if (Bewilder.IsEnable)
-        {
-            Bewilder.ApplyGameOptions(opt, player);
-        }
-        
-        if (Ghoul.IsEnable)
-        {
-            Ghoul.ApplyGameOptions(player);
-        }
-
         // Grenadier or Mad Grenadier enter the vent
         if ((Main.GrenadierBlinding.Count > 0 &&
             (player.GetCustomRole().IsImpostor() ||
             (player.GetCustomRole().IsNeutral() && Options.GrenadierCanAffectNeutral.GetBool()))
-            ) 
+            )
             || (Main.MadGrenadierBlinding.Count > 0 && !player.GetCustomRole().IsImpostorTeam() && !player.Is(CustomRoles.Madmate)))
         {
             opt.SetVision(false);
@@ -514,17 +503,21 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.GrenadierCauseVision.GetFloat());
         }
 
-      /*if ((Main.FlashbangInProtect.Count >= 1 && Main.ForFlashbang.Contains(player.PlayerId) && (!player.GetCustomRole().IsCrewmate())))  
-        {
-            opt.SetVision(false);
-            opt.SetFloat(FloatOptionNames.CrewLightMod, Options.FlashbangVision.GetFloat());
-            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.FlashbangVision.GetFloat());
-        }*/
+        /*if ((Main.FlashbangInProtect.Count >= 1 && Main.ForFlashbang.Contains(player.PlayerId) && (!player.GetCustomRole().IsCrewmate())))  
+          {
+              opt.SetVision(false);
+              opt.SetFloat(FloatOptionNames.CrewLightMod, Options.FlashbangVision.GetFloat());
+              opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.FlashbangVision.GetFloat());
+          }*/
 
         if (Dazzler.IsEnable) Dazzler.SetDazzled(player, opt);
         if (Deathpact.IsEnable) Deathpact.SetDeathpactVision(player, opt);
         if (Spiritcaller.IsEnable) Spiritcaller.ReduceVision(opt, player);
         if (Pitfall.IsEnable) Pitfall.SetPitfallTrapVision(opt, player);
+
+        // Add-ons
+        if (Bewilder.IsEnable) Bewilder.ApplyGameOptions(opt, player);
+        if (Ghoul.IsEnable) Ghoul.ApplyGameOptions(player);
 
         foreach (var subRole in player.GetCustomSubRoles().ToArray())
         {
@@ -546,10 +539,10 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                     Bewilder.ApplyVisionOptions(opt);
                     break;
                 case CustomRoles.Reach:
-                    opt.SetInt(Int32OptionNames.KillDistance, 2);
+                    Reach.ApplyGameOptions(opt);
                     break;
                 case CustomRoles.Madmate:
-                    opt.SetVision(Madmate.MadmateHasImpostorVision.GetBool());
+                    Madmate.ApplyGameOptions(opt);
                     break;
                 case CustomRoles.Mare:
                     Mare.ApplyGameOptions(player.PlayerId);

@@ -1,12 +1,8 @@
-﻿using MS.Internal.Xml.XPath;
-using System.Collections.Generic;
+﻿using AmongUs.GameOptions;
 using TOHE.Roles.AddOns.Crewmate;
-using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
-using TOHE.Roles.Neutral;
 using static TOHE.Options;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.AddOns.Impostor;
 public static class Madmate
@@ -32,10 +28,10 @@ public static class Madmate
     public static OptionItem MadmateKnowWhosMadmate;
     public static OptionItem MadmateKnowWhosImp;
     public static OptionItem MadmateCanKillImp;
-    public static OptionItem MadmateHasImpostorVision;
+    private static OptionItem MadmateHasImpostorVision;
+
     public static void SetupMenuOptions()
     {
-
         ImpKnowAlliesRole = BooleanOptionItem.Create(Id1 + 0, "ImpKnowAlliesRole", true, TabGroup.ImpostorRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true);
@@ -71,6 +67,8 @@ public static class Madmate
             .SetValueFormat(OptionFormat.Pieces);
         JudgeCanBeMadmate = BooleanOptionItem.Create(Id2 + 13, "JudgeCanBeMadmate", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Madmate]);
     }
+
+    public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(MadmateHasImpostorVision.GetBool());
 
     public static readonly string[] madmateSpawnMode =
     [

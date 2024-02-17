@@ -1,8 +1,5 @@
-﻿using Hazel;
-using System.Collections.Generic;
-using System.Linq;
+﻿using AmongUs.GameOptions;
 using static TOHE.Options;
-using static TOHE.Translator;
 
 namespace TOHE.Roles.AddOns.Common;
 
@@ -14,5 +11,10 @@ public class Reach
     public static void SetupCustomOptions()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Reach, canSetNum: true);
+    }
+
+    public static void ApplyGameOptions(IGameOptions opt)
+    {
+        opt.SetInt(Int32OptionNames.KillDistance, 2);
     }
 }
