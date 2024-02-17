@@ -261,7 +261,7 @@ class SetEverythingUpPatch
         RoleSummaryObject.transform.position = new Vector3(__instance.Navigation.ExitButton.transform.position.x + 0.1f, Pos.y - 0.1f, -15f);
         RoleSummaryObject.transform.localScale = new Vector3(1f, 1f, 1f);
 
-        StringBuilder sb = new($"{GetString("RoleSummaryText")}<b>");
+        StringBuilder sb = new($"{GetString("RoleSummaryText")}\n<b>");
         List<byte> cloneRoles = new(Main.PlayerStates.Keys);
         foreach (byte id in Main.winnerList.ToArray())
         {
