@@ -471,7 +471,7 @@ class CheckMurderPatch
                         return false;
                     break;
                 case CustomRoles.Baker:
-                    Baker.OnCheckMurder(killer, target);
+                    if (!Baker.OnCheckMurder(killer, target));
                     return false;
                 case CustomRoles.Pirate:
                     if (!Pirate.OnCheckMurder(killer, target))
