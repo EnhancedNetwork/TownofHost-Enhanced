@@ -374,7 +374,7 @@ class CheckForEndVotingPatch
                 byte target = byte.MaxValue;
                 foreach (var data in VotingData.Where(x => x.Key < 15 && x.Value == max).ToArray())
                 {
-                    if (Tiebreaker.TiebreakerVoteFor.Contains(data.Key))
+                    if (Tiebreaker.VoteFor.Contains(data.Key))
                     {
                         if (target != byte.MaxValue)
                         {
@@ -691,17 +691,19 @@ class CheckForEndVotingPatch
                 FixedUpdateInNormalGamePatch.LoversSuicide(playerId, true);
             }
 
-            RevengeOnExile(playerId, deathReason);
+            RevengeOnExile(playerId/*, deathReason*/);
         }
     }
-    private static void RevengeOnExile(byte playerId, PlayerState.DeathReason deathReason)
+    private static void RevengeOnExile(byte playerId/*, PlayerState.DeathReason deathReason*/)
     {
         var player = Utils.GetPlayerById(playerId);
         if (player == null) return;
         var target = PickRevengeTarget(player);
         if (target == null) return;
+
         TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Revenge, target.PlayerId);
         target.SetRealKiller(player);
+
         Logger.Info($"{player.GetNameWithRole()} revenge:{target.GetNameWithRole()}", "RevengeOnExile");
     }
     private static PlayerControl PickRevengeTarget(PlayerControl exiledplayer)//道連れ先選定
@@ -785,31 +787,35 @@ static class ExtendedMeetingHud
     public static Dictionary<byte, int> CustomCalculateVotes(this MeetingHud __instance, bool CountInfluenced = false)
     {
         Logger.Info("===Start of vote counting processing===", "Vote");
+        
         Dictionary<byte, int> dic = [];
-        Tiebreaker.TiebreakerVoteFor = [];
         Collector.CollectorVoteFor = [];
-        //| 投票された人 | 投票された回数 |
+        Tiebreaker.Clear();
+
+        // |Voted By| Number of Times Voted For
         foreach (var ps in __instance.playerStates.ToArray())
         {
             if (ps == null) continue;
-            if (ps.VotedFor is not 252 and not byte.MaxValue and not 254)//该玩家面板里是否投了该玩家
+
+            // whether this player is voted for in the player panel
+            if (ps.VotedFor is not 252 and not byte.MaxValue and not 254)
             {
-                // 默认票数1票
+                // Default number of votes 1
                 int VoteNum = 1;
 
-                // 投票给有效玩家时才进行的判断
+                // Judgment only when voting for a valid player
                 var target = Utils.GetPlayerById(ps.VotedFor);
                 if (target != null)
                 {
-                    // 僵尸、活死人无法被票
                     if (target.Is(CustomRoles.Zombie)) VoteNum = 0;
+                    
                     //Solsticer can not get voted out
                     if (target.Is(CustomRoles.Solsticer)) VoteNum = 0;
-                    // 记录破平者投票
-                    if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Tiebreaker))
-                        if (!Tiebreaker.TiebreakerVoteFor.Contains(target.PlayerId))
-                            Tiebreaker.TiebreakerVoteFor.Add(target.PlayerId);
-                    // 集票者记录数据
+
+                    // Check Tiebreaker voting
+                    Tiebreaker.CheckVote(target, ps);
+
+                    // Check Collector voting data
                     Collector.CollectorVotes(target, ps);
                 }
 
@@ -817,19 +823,23 @@ static class ExtendedMeetingHud
                 if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Mayor)
                     && ps.TargetPlayerId != ps.VotedFor
                     ) VoteNum += Options.MayorAdditionalVote.GetInt();
+
                 if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Knighted)
                     && ps.TargetPlayerId != ps.VotedFor
                     ) VoteNum += 1;
+
                 if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Vindicator)
                     && ps.TargetPlayerId != ps.VotedFor
                     ) VoteNum += Options.VindicatorAdditionalVote.GetInt();
+
                 if (Schizophrenic.DualVotes.GetBool())
                 {
                     if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Schizophrenic)
                         && ps.TargetPlayerId != ps.VotedFor
                         ) VoteNum += VoteNum;
                 }
-                //窃票者附加票数
+
+                // Additional votes
                 if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.TicketsStealer))
                 {
                     VoteNum += (int)(Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == ps.TargetPlayerId) * Stealer.TicketsPerKill.GetFloat());
@@ -874,7 +884,7 @@ class MeetingHudStartPatch
 
         msgToSend = [];
 
-        void AddMsg(string text, byte sendTo = 255, string title = "")
+        static void AddMsg(string text, byte sendTo = 255, string title = "")
             => msgToSend.Add((text, sendTo, title));
 
         //首次会议技能提示
