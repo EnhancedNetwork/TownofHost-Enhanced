@@ -1268,6 +1268,10 @@ static class ExtendedPlayerControl
                 Clumsy.HasMissed.Remove(Killed.PlayerId);
                 Clumsy.Add(target.PlayerId);
                 break;
+            case CustomRoles.Statue:
+                Statue.tempSpeed.Remove(Killed.PlayerId);
+                Statue.Add(target.PlayerId);
+                break;
         }
     }
     public static bool RpcCheckAndMurder(this PlayerControl killer, PlayerControl target, bool check = false) => CheckMurderPatch.RpcCheckAndMurder(killer, target, check);

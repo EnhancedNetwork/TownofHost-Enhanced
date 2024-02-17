@@ -863,9 +863,9 @@ public static class Options
         // 27700 lasted id for roles/add-ons (Next use 27800)
         // Limit id for  roles/add-ons --- "59999"
         //#######################################
-
-        // You can use: 13800 (Was for NWitch)
+        
         // You can use: 20906 (sunglasses), 22004 (Glow)
+
 
 
         // Start Load Settings
@@ -2270,6 +2270,8 @@ public static class Options
         Fool.SetupCustomOptions();
 
         Fragile.SetupCustomOptions();
+
+        Statue.SetupCustomOptions();
 
         Hurried.SetupCustomOption();
 

@@ -371,6 +371,7 @@ internal class ChangeRoleSettings
             OverKiller.Init();
             Quizmaster.Init();
             Tired.Init();
+            Statue.Init();
             Ghoul.Init();
             Rainbow.Init();
             Unlucky.Init();
@@ -1088,6 +1089,9 @@ internal class SelectRolesPatch
                             break;
                         case CustomRoles.Rainbow:
                             Rainbow.Add();
+                            break;
+                        case CustomRoles.Statue:
+                            Statue.Add(pc.PlayerId);
                             break;
                         case CustomRoles.Ghoul:
                             Ghoul.Add();

@@ -205,7 +205,7 @@ namespace TOHE.Roles.Crewmate
                 target.RpcSetCustomRole(addon);
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSell")));
                 player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonDelivered")));
-
+                
                 ExtendedPlayerControl.AddInSwitchAddons(target, target, addon);
                 
                 addonsSold[player.PlayerId] += 1;

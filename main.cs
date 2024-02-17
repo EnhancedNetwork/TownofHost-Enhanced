@@ -850,6 +850,7 @@ public enum CustomRoles
     Schizophrenic,
     Seer,
     Silent,
+    Statue,
     Sleuth,
     Soulless,
     TicketsStealer, //stealer

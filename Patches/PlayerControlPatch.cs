@@ -2744,7 +2744,9 @@ class FixedUpdateInNormalGamePatch
                         Solsticer.OnFixedUpdate(player);
                         break;
                 }
-
+                if (player.Is(CustomRoles.Statue) && player.IsAlive())
+                    Statue.OnFixedUpdate(player);
+            
                 // Revolutionist
                 #region Revolutionist Timer
                 if (Main.RevolutionistTimer.TryGetValue(player.PlayerId, out var revolutionistTimerData))

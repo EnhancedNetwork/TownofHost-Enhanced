@@ -2688,6 +2688,7 @@ public static class Utils
         if (Solsticer.IsEnable) Solsticer.AfterMeetingTasks();
         if (RiftMaker.IsEnable) RiftMaker.AfterMeetingTasks();
         if (Councillor.IsEnable) Councillor.AfterMeetingTasks();
+        if (CustomRoles.Statue.RoleExist()) Statue.AfterMeetingTasks();
 
         Main.ShamanTarget = byte.MaxValue;
         Main.ShamanTargetChoosen = false;
