@@ -112,7 +112,7 @@ public static class Sniper
     }
     public static void ApplyGameOptions(PlayerControl sniper)
     {
-        AURoleOptions.ShapeshifterCooldown = !ShowShapeshiftAnimations && Options.DisableShapeshiftAnimations.GetBool() && !IsAim[sniper.PlayerId] ? 1f : Options.DefaultShapeshiftCooldown.GetFloat();
+        AURoleOptions.ShapeshifterCooldown = !ShowShapeshiftAnimations && Options.DisableShapeshiftAnimations.GetBool() ? 1f : Options.DefaultShapeshiftCooldown.GetFloat();
         //AURoleOptions.ShapeshifterDuration = 1f;
     }
     public static bool CanUseKillButton(PlayerControl pc)

@@ -1675,7 +1675,7 @@ public static class CheckShapeShiftPatch
                 return false;
 
             case CustomRoles.Sniper:
-                Sniper.OnShapeshift(shapeshifter, shapeshifting, shapeshiftIsHidden: true);
+                Sniper.OnShapeshift(shapeshifter, false, shapeshiftIsHidden: true);
                 shapeshifter.RejectShapeshiftAndReset();
                 return false;
 
