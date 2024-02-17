@@ -168,6 +168,9 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.BountyHunter:
                 BountyHunter.ApplyGameOptions();
                 break;
+            case CustomRoles.Sniper:
+                Sniper.ApplyGameOptions(player);
+                break;
             case CustomRoles.Sheriff:
             case CustomRoles.Jailer:
             case CustomRoles.SwordsMan:

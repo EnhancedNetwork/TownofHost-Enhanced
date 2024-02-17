@@ -69,6 +69,13 @@ public static class Sniper
         PlayerIdList.Add(playerId);
         IsEnable = true;
 
+        maxBulletCount = SniperBulletCount.GetInt();
+        precisionShooting = SniperPrecisionShooting.GetBool();
+        AimAssist = SniperAimAssist.GetBool();
+        AimAssistOneshot = SniperAimAssistOnshot.GetBool();
+        SniperCanUseKillButton = CanKillWithBullets.GetBool();
+        ShowShapeshiftAnimations = AlwaysShowShapeshiftAnimations.GetBool();
+
         snipeBasePosition[playerId] = new();
         LastPosition[playerId] = new();
         snipeTarget[playerId] = 0x7F;
@@ -76,19 +83,12 @@ public static class Sniper
         shotNotify[playerId] = [];
         IsAim[playerId] = false;
         AimTime[playerId] = 0f;
-
-        maxBulletCount = SniperBulletCount.GetInt();
-        precisionShooting = SniperPrecisionShooting.GetBool();
-        AimAssist = SniperAimAssist.GetBool();
-        AimAssistOneshot = SniperAimAssistOnshot.GetBool();
-        SniperCanUseKillButton = CanKillWithBullets.GetBool();
-        ShowShapeshiftAnimations = AlwaysShowShapeshiftAnimations.GetBool();
     }
     public static bool IsThisRole(byte playerId) => PlayerIdList.Contains(playerId);
     public static void SendRPC(byte playerId)
     {
         Logger.Info($"Player{playerId}:SendRPC", "Sniper");
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SniperSync, Hazel.SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SniperSync, SendOption.Reliable, -1);
         writer.Write(playerId);
         var snList = shotNotify[playerId];
         writer.Write(snList.Count);
@@ -98,7 +98,6 @@ public static class Sniper
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-
     public static void ReceiveRPC(MessageReader msg)
     {
         var playerId = msg.ReadByte();
@@ -110,6 +109,11 @@ public static class Sniper
             count--;
         }
         Logger.Info($"Player{playerId}:ReceiveRPC", "Sniper");
+    }
+    public static void ApplyGameOptions(PlayerControl sniper)
+    {
+        AURoleOptions.ShapeshifterCooldown = !ShowShapeshiftAnimations && Options.DisableShapeshiftAnimations.GetBool() && !IsAim[sniper.PlayerId] ? 1f : Options.DefaultShapeshiftCooldown.GetFloat();
+        //AURoleOptions.ShapeshifterDuration = 1f;
     }
     public static bool CanUseKillButton(PlayerControl pc)
     {
@@ -198,6 +202,12 @@ public static class Sniper
         {
             //Aim開始
             meetingReset = false;
+
+            if (shapeshiftIsHidden)
+            {
+                sniper.SyncSettings();
+                sniper.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+            }
 
             //スナイプ地点の登録
             snipeBasePosition[sniperId] = sniper.transform.position;
