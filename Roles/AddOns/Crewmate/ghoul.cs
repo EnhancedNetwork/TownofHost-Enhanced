@@ -1,8 +1,6 @@
-﻿using Hazel;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using static TOHE.Options;
-using static TOHE.Translator;
 
 namespace TOHE.Roles.AddOns.Crewmate;
 
@@ -36,7 +34,7 @@ public class Ghoul
             if (pc != null)
             {
                 if (!pc.Is(CustomRoles.Pestilence))
-                    Ghoul.KillGhoul.Add(player.PlayerId);
+                    KillGhoul.Add(player.PlayerId);
             }
 
         }

@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using TOHE.Roles.Crewmate;
-using TOHE.Roles.Impostor;
-using TOHE.Roles.Neutral;
-using static TOHE.Options;
+﻿using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Impostor;
 public static class Mimic

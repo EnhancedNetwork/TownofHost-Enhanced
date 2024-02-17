@@ -15,7 +15,4 @@ public static class Youtuber
 
         SetupAdtRoleOptions(Id, CustomRoles.Youtuber, canSetNum: true, tab: TabGroup.OtherRoles);
     }
-
-
 }
-

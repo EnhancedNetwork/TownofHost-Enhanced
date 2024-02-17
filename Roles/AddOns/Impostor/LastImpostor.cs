@@ -1,3 +1,4 @@
+
 namespace TOHE.Roles.AddOns.Impostor;
 
 public static class LastImpostor

@@ -1,8 +1,4 @@
-﻿using Hazel;
-using System.Collections.Generic;
-using System.Linq;
-using static TOHE.Options;
-using static TOHE.Translator;
+﻿using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Crewmate;
 

@@ -1,7 +1,7 @@
-﻿using static TOHE.Options;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using static TOHE.Translator;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 

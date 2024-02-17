@@ -18,7 +18,5 @@ public static class Stubborn
         CrewCanBeStubborn = BooleanOptionItem.Create(Id + 11, "CrewCanBeStubborn", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Stubborn]);
         NeutralCanBeStubborn = BooleanOptionItem.Create(Id + 12, "NeutralCanBeStubborn", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Stubborn]);
     }
-
-
 }
 

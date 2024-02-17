@@ -1,8 +1,8 @@
-﻿using static TOHE.Options;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using TOHE.Modules;
 using static TOHE.Translator;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 public static class Bait

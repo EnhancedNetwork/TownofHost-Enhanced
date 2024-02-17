@@ -1437,6 +1437,12 @@ internal static class RPC
             case CustomRoles.Burst:
                 Burst.Add();
                 break;
+            case CustomRoles.Fool:
+                Fool.Add();
+                break;
+            case CustomRoles.Ghoul:
+                Ghoul.Add();
+                break;
             case CustomRoles.Spy:
                 Spy.Add(targetId);
                 break;

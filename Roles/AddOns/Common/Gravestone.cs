@@ -17,7 +17,6 @@ public static class Gravestone
         CrewCanBeGravestone = BooleanOptionItem.Create(Id + 11, "CrewCanBeGravestone", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Gravestone]);
         NeutralCanBeGravestone = BooleanOptionItem.Create(Id + 12, "NeutralCanBeGravestone", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Gravestone]);
     }
-
-
+    public static bool EveryoneKnowRole(PlayerControl player) => player.Is(CustomRoles.Gravestone) && !player.IsAlive();
 }
 

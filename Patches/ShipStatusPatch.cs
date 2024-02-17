@@ -86,15 +86,7 @@ class RepairSystemPatch
             Quizmaster.OnSabotageCall(systemType);
 
 
-        if (player.Is(CustomRoles.Fool) && !Main.MeetingIsStarted && 
-            systemType != SystemTypes.Sabotage &&
-            (systemType is
-                SystemTypes.Reactor or
-                SystemTypes.Laboratory or
-                SystemTypes.HeliSabotage or
-                SystemTypes.LifeSupp or
-                SystemTypes.Comms or
-                SystemTypes.Electrical))
+        if (Fool.IsEnable && Fool.BlockFixSabotage(player, systemType))
         {
             return false;
         }

@@ -1,5 +1,4 @@
-﻿using TOHE.Roles.Crewmate;
-using static TOHE.Options;
+﻿using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Crewmate;
 
@@ -18,4 +17,3 @@ public static class Bloodlust
 
     // Bloodlust uses == Alchemist.OnFixedUpdate(); 
 }
-

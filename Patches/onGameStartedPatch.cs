@@ -311,6 +311,7 @@ internal class ChangeRoleSettings
             Marshall.Init();
             Amnesiac.Init();
             Farseer.Init();
+            Fool.Init();
             Infectious.Init();
             Monarch.Init();
             Virus.Init();
@@ -1119,6 +1120,9 @@ internal class SelectRolesPatch
                             break;
                         case CustomRoles.Clumsy:
                             Clumsy.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.Fool:
+                            Fool.Add();
                             break;
 
                         default:

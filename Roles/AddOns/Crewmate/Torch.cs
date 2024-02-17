@@ -6,8 +6,8 @@ namespace TOHE.Roles.AddOns.Crewmate;
 public class Torch
 {
     private static readonly int Id = 20300;
-    public static OptionItem TorchVision;
-    public static OptionItem TorchAffectedByLights;
+    private static OptionItem TorchVision;
+    private static OptionItem TorchAffectedByLights;
 
     public static void SetupCustomOptions()
     {
@@ -21,12 +21,12 @@ public class Torch
     {
         if (!Utils.IsActive(SystemTypes.Electrical))
             opt.SetVision(true);
-        opt.SetFloat(FloatOptionNames.CrewLightMod, Torch.TorchVision.GetFloat());
-        opt.SetFloat(FloatOptionNames.ImpostorLightMod, Torch.TorchVision.GetFloat());
+        opt.SetFloat(FloatOptionNames.CrewLightMod, TorchVision.GetFloat());
+        opt.SetFloat(FloatOptionNames.ImpostorLightMod, TorchVision.GetFloat());
 
-        if (Utils.IsActive(SystemTypes.Electrical) && !Torch.TorchAffectedByLights.GetBool())
+        if (Utils.IsActive(SystemTypes.Electrical) && !TorchAffectedByLights.GetBool())
             opt.SetVision(true);
-        opt.SetFloat(FloatOptionNames.CrewLightMod, Torch.TorchVision.GetFloat() * 5);
-        opt.SetFloat(FloatOptionNames.ImpostorLightMod, Torch.TorchVision.GetFloat() * 5);
+        opt.SetFloat(FloatOptionNames.CrewLightMod, TorchVision.GetFloat() * 5);
+        opt.SetFloat(FloatOptionNames.ImpostorLightMod, TorchVision.GetFloat() * 5);
     }
 }

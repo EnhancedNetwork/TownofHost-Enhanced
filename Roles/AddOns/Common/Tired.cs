@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using Hazel;
 using System.Collections.Generic;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -12,9 +11,9 @@ public class Tired
     public static OptionItem CanBeOnCrew;
     public static OptionItem CanBeOnImp;
     public static OptionItem CanBeOnNeutral;
-    public static OptionItem SetVision;
-    public static OptionItem SetSpeed;
-    public static OptionItem TiredDuration;
+    private static OptionItem SetVision;
+    private static OptionItem SetSpeed;
+    private static OptionItem TiredDuration;
 
     public static Dictionary<byte, bool> playerIdList; // Target Action player for Vision
 
@@ -35,7 +34,7 @@ public class Tired
 
     public static void Init()
     {
-        playerIdList = new();
+        playerIdList = [];
     }
     
     public static void Add(byte playerId)
@@ -48,8 +47,8 @@ public class Tired
         if (playerIdList[player.PlayerId])
         {
             opt.SetVision(false);
-            opt.SetFloat(FloatOptionNames.CrewLightMod, Tired.SetVision.GetFloat());
-            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Tired.SetVision.GetFloat());
+            opt.SetFloat(FloatOptionNames.CrewLightMod, SetVision.GetFloat());
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, SetVision.GetFloat());
         }
         else
         {

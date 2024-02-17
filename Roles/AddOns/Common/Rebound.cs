@@ -1,9 +1,4 @@
-﻿using System.Linq;
-using static TOHE.Options;
-using UnityEngine;
-using TOHE.Roles.Neutral;
-using TOHE.Roles.Crewmate;
-using TOHE.Roles.Double;
+﻿using static TOHE.Options;
 
 
 namespace TOHE.Roles.AddOns.Common;
@@ -24,4 +19,3 @@ public static class Rebound
         NeutralCanBeRebound = BooleanOptionItem.Create(Id + 12, "NeutralCanBeRebound", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebound]);
     }
 }
-

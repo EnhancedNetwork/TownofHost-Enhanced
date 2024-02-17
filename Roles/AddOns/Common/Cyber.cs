@@ -1,9 +1,5 @@
-﻿using Epic.OnlineServices;
-using Hazel;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using static TOHE.Options;
-using static TOHE.Translator;
 
 namespace TOHE.Roles.AddOns.Common;
 
