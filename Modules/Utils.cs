@@ -109,8 +109,8 @@ public static class Utils
 
         var playerNetTransform = player.NetTransform;
         var numHost = (ushort)(playerNetTransform.lastSequenceId + 148);
-        var numLocalClient = (ushort)(playerNetTransform.lastSequenceId + 4);
-        var numGlobal = (ushort)(playerNetTransform.lastSequenceId + 8);
+        var numLocalClient = (ushort)(playerNetTransform.lastSequenceId + 8);
+        var numGlobal = (ushort)(playerNetTransform.lastSequenceId + 12);
 
         // Host side
         if (AmongUsClient.Instance.AmHost)
@@ -143,7 +143,7 @@ public static class Utils
 
         if (AmongUsClient.Instance.AmHost)
         {
-            playerNetTransform.lastSequenceId -= 126;
+            playerNetTransform.lastSequenceId -= 116;
         }
     }
     public static void RpcRandomVentTeleport(this PlayerControl player)

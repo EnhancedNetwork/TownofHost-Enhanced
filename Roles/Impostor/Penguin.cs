@@ -210,14 +210,14 @@ public static class Penguin
                                 sender.AutoStartRpc(abductVictim.NetTransform.NetId, (byte)RpcCalls.SnapTo, abductVictim.GetClientId());
                                 {
                                     NetHelpers.WriteVector2(penguin.transform.position, sender.stream);
-                                    sender.Write((ushort)(sId + 4));
+                                    sender.Write((ushort)(sId + 8));
                                 }
                                 sender.EndRpc();
                             }    
                             sender.AutoStartRpc(abductVictim.NetTransform.NetId, (byte)RpcCalls.SnapTo);
                             {
                                 NetHelpers.WriteVector2(penguin.transform.position, sender.stream);
-                                sender.Write((ushort)(sId + 8));
+                                sender.Write((ushort)(sId + 12));
                             }
                             sender.EndRpc();
                             sender.AutoStartRpc(penguin.NetId, (byte)RpcCalls.MurderPlayer);
@@ -229,7 +229,7 @@ public static class Penguin
                         }
                         sender.SendMessage();
 
-                        abductVictim.NetTransform.lastSequenceId -= 126;
+                        abductVictim.NetTransform.lastSequenceId -= 116;
 
                     }, 0.3f, "PenguinMurder");
                     RemoveVictim();
