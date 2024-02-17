@@ -17,7 +17,7 @@ public static class LastImpostor
     public static void SetKillCooldown()
     {
         if (currentId == byte.MaxValue) return;
-        if (!Main.AllPlayerKillCooldown.TryGetValue(currentId, out var x)) return;
+        if (!Main.AllPlayerKillCooldown.TryGetValue(currentId, out _)) return;
         Main.AllPlayerKillCooldown[currentId] -= Main.AllPlayerKillCooldown[currentId] * (CooldownReduction.GetFloat() / 100);
     }
     public static bool CanBeLastImpostor(PlayerControl pc)

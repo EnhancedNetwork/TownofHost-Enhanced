@@ -1074,27 +1074,39 @@ static class ExtendedPlayerControl
                 Quizmaster.SetKillCooldown(player.PlayerId);
                 break;
         }
-        if (player.PlayerId == LastImpostor.currentId)
-            LastImpostor.SetKillCooldown();
 
-        if (player.Is(CustomRoles.Mare))
-            Main.AllPlayerKillCooldown[player.PlayerId] = Mare.KillCooldownInLightsOut.GetFloat();
+        var playerSubRoles = player.GetCustomSubRoles().ToArray();
 
-        if (player.Is(CustomRoles.Overclocked))
-            Main.AllPlayerKillCooldown[player.PlayerId] -= Main.AllPlayerKillCooldown[player.PlayerId] * (Overclocked.OverclockedReduction.GetFloat() / 100);
+        if (playerSubRoles.Length > 0)
+            foreach (var subRole in playerSubRoles)
+            {
+                switch (subRole)
+                {
+                    case CustomRoles.LastImpostor when player.PlayerId == LastImpostor.currentId:
+                        LastImpostor.SetKillCooldown();
+                        break;
 
-        //===DISEASED===
-        if (CustomRoles.Diseased.RoleExist())
-        {
-            Diseased.IncreaseKCD(player);
-        }
-        //===ANTIDOTE===
-        if (CustomRoles.Antidote.RoleExist())
-        {
-            Antidote.ReduceKCD(player);
-        }
+                    case CustomRoles.Mare:
+                        Main.AllPlayerKillCooldown[player.PlayerId] = Mare.KillCooldownInLightsOut.GetFloat();
+                        break;
+
+                    case CustomRoles.Overclocked:
+                        Main.AllPlayerKillCooldown[player.PlayerId] -= Main.AllPlayerKillCooldown[player.PlayerId] * (Overclocked.OverclockedReduction.GetFloat() / 100);
+                        break;
+
+                    case CustomRoles.Diseased:
+                        Diseased.IncreaseKCD(player);
+                        break;
+
+                    case CustomRoles.Antidote:
+                        Antidote.ReduceKCD(player);
+                        break;
+                }
+            }
+
         if (!player.HasImpKillButton(considerVanillaShift: false))
             Main.AllPlayerKillCooldown[player.PlayerId] = 300f;
+
         if (Main.AllPlayerKillCooldown[player.PlayerId] == 0)
         {
             if (player.Is(CustomRoles.Chronomancer)) return;
