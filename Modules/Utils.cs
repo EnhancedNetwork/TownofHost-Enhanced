@@ -421,11 +421,11 @@ public static class Utils
         if (targetSubRoles.Count > 0)
         {
             var seer = GetPlayerById(seerId);
-            if (seer == null) return (RoleText, RoleColor);
-
             var target = GetPlayerById(targetId);
-            if (target == null) return (RoleText, RoleColor);
 
+            if (seer == null || target == null) return (RoleText, RoleColor);
+
+            // if player last imp
             if (LastImpostor.currentId == targetId)
                 RoleText = GetRoleString("Last-") + RoleText;
 
@@ -444,20 +444,20 @@ public static class Utils
                     RoleText = ColorStringWithoutEnding(GetRoleColor(targetMainRole), RoleText);
 
                     // colored add-ons
-                    foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && ExtendedPlayerControl.ShowSubRoleTarget(seer, target, subRole)).ToArray())
+                    foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
                         RoleText = ColorStringWithoutEnding(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"Prefix.{subRole}")}) " : $"{GetString($"Prefix.{subRole}")} ") + RoleText;
                 }
                 // default
                 else
                 {
-                    foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && ExtendedPlayerControl.ShowSubRoleTarget(seer, target, subRole)).ToArray())
+                    foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
                         RoleText = ColorString(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"Prefix.{subRole}")}) " : $"{GetString($"Prefix.{subRole}")} ") + RoleText;
                 }
             }
 
             foreach (var subRole in targetSubRoles.ToArray())
             {
-                if (ExtendedPlayerControl.ShowSubRoleTarget(seer, target, subRole))
+                if (seer.ShowSubRoleTarget(target, subRole))
                     switch (subRole)
                     {
                         case CustomRoles.Madmate:

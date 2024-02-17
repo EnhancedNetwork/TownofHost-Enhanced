@@ -1349,7 +1349,7 @@ static class ExtendedPlayerControl
 
         else return false;
     }
-    public static bool ShowSubRoleTarget(PlayerControl seer, PlayerControl target, CustomRoles subRole = CustomRoles.NotAssigned)
+    public static bool ShowSubRoleTarget(this PlayerControl seer, PlayerControl target, CustomRoles subRole = CustomRoles.NotAssigned)
     {
         if (seer == null) return false;
         if (target == null) target = seer;
