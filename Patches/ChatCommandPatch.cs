@@ -1426,19 +1426,11 @@ internal class ChatCommands
             ChatManager.SendMessage(player, text);
         }
 
-        Logger.Info($"player.PlayerId {player.PlayerId} send message: ''{text}''", "OnReceiveChat");
-
         if (text.StartsWith("\n")) text = text[1..];
         //if (!text.StartsWith("/")) return;
         string[] args = text.Split(' ');
         string subArgs = "";
         string subArgs2 = "";
-
-        if (text.Length <= 11) // Check command if Length < or = 11
-        {
-            Logger.Info($"Message now: ''{text}''", "OnReceiveChat");
-            Logger.Info($"Args: ''{args}''", "OnReceiveChat");
-        }
 
         //if (text.Length >= 3) if (text[..2] == "/r" && text[..3] != "/rn") args[0] = "/r";
         //   if (SpamManager.CheckSpam(player, text)) return;
@@ -1466,10 +1458,6 @@ internal class ChatCommands
             return; 
         }
 
-        if (text.Length <= 11)
-        {
-            Logger.Info($"args[0] has message: ''{args[0]}''", "OnReceiveChat");
-        }
         switch (args[0])
         {
             case "/r":
