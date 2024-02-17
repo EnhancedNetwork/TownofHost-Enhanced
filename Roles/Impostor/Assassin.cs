@@ -85,7 +85,7 @@ internal static class Assassin
     }
     public static void OnShapeshift(PlayerControl pc, bool shapeshifting, bool shapeshiftIsHidden = false)
     {
-        if (shapeshiftIsHidden && !MarkedPlayer.ContainsKey(pc.PlayerId))
+        if (shapeshiftIsHidden && (!MarkedPlayer.ContainsKey(pc.PlayerId) || !pc.IsAlive() || Pelican.IsEaten(pc.PlayerId)))
         {
             pc.RejectShapeshiftAndReset(reset: false);
             return;
