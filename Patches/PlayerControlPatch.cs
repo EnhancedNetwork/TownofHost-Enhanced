@@ -1636,8 +1636,8 @@ public static class CheckShapeShiftPatch
         var shapeshifter = __instance;
         var role = shapeshifter.GetCustomRole();
 
-        // Temporarily not check this roles
-        if (role is CustomRoles.Sniper) return true;
+        // Check Sniper settings conditions
+        if (role is CustomRoles.Sniper && Sniper.ShowShapeshiftAnimations) return true;
 
         Logger.Info($"{shapeshifter.GetRealName()} => {target.GetRealName()}, shouldAnimate = {shouldAnimate}", "Check ShapeShift");
 
@@ -1659,11 +1659,6 @@ public static class CheckShapeShiftPatch
 
         switch (role)
         {
-            //case CustomRoles.Sniper:
-            //    Sniper.OnShapeshift(shapeshifter, shapeshifting);
-            //    shapeshifter.RejectShapeshiftAndReset();
-            //    return false;
-
             case CustomRoles.BountyHunter:
                 Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
                 shapeshifter.RejectShapeshiftAndReset(false);
@@ -1679,7 +1674,13 @@ public static class CheckShapeShiftPatch
                 shapeshifter.RejectShapeshiftAndReset(false);
                 return false;
 
+            case CustomRoles.Sniper:
+                Sniper.OnShapeshift(shapeshifter, shapeshifting, shapeshiftIsHidden: true);
+                shapeshifter.RejectShapeshiftAndReset();
+                return false;
+
             case CustomRoles.Warlock:
+                shapeshifter.RejectShapeshiftAndReset();
                 if (Main.CursedPlayers[shapeshifter.PlayerId] != null)
                 {
                     if (Main.CursedPlayers[shapeshifter.PlayerId].IsAlive())
@@ -1729,7 +1730,6 @@ public static class CheckShapeShiftPatch
                 {
                     shapeshifter.Notify(GetString("WarlockNoTargetYet"));
                 }
-                shapeshifter.RejectShapeshiftAndReset();
                 return false;
 
             case CustomRoles.Undertaker:
