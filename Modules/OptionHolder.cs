@@ -464,8 +464,8 @@ public static class Options
 
     // Add-on
     public static OptionItem NameDisplayAddons;
-    public static OptionItem NoLimitAddonsNumMax;
     public static OptionItem AddBracketsToAddons;
+    public static OptionItem NoLimitAddonsNumMax;
 
     // Impostors role settings
     public static OptionItem ShapeshiftCD;
@@ -938,9 +938,9 @@ public static class Options
         NameDisplayAddons = BooleanOptionItem.Create(60019, "NameDisplayAddons", true, TabGroup.Addons, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true);
+        AddBracketsToAddons = BooleanOptionItem.Create(60021, "BracketAddons", true, TabGroup.Addons, false)
+            .SetParent(NameDisplayAddons);
         NoLimitAddonsNumMax = IntegerOptionItem.Create(60020, "NoLimitAddonsNumMax", new(1, 15, 1), 1, TabGroup.Addons, false)
-            .SetGameMode(CustomGameMode.Standard);
-        AddBracketsToAddons = BooleanOptionItem.Create(60021, "BracketAddons", false, TabGroup.Addons, false)
             .SetGameMode(CustomGameMode.Standard);
         #endregion
 

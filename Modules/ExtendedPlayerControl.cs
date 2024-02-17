@@ -372,16 +372,9 @@ static class ExtendedPlayerControl
     {
         return Main.PlayerStates[player.PlayerId].TaskState;
     }
-
-    /*public static GameOptionsData DeepCopy(this GameOptionsData opt)
+    public static string GetDisplayRoleAndSubName(this PlayerControl seer, PlayerControl target, bool notShowAddOns = false)
     {
-        var optByte = opt.ToBytes(5);
-        return GameOptionsData.FromBytes(optByte);
-    }*/
-
-    public static string GetDisplayRoleName(this PlayerControl player, bool pure = false)
-    {
-        return Utils.GetDisplayRoleName(player.PlayerId, pure);
+        return Utils.GetDisplayRoleAndSubName(seer.PlayerId, target.PlayerId, notShowAddOns);
     }
     public static string GetSubRoleName(this PlayerControl player, bool forUser = false)
     {
@@ -1133,6 +1126,19 @@ static class ExtendedPlayerControl
             || target.Is(CustomRoles.Rascal)
             || target.Is(CustomRoles.Soulless);
     }
+    public static bool ShouldBeDisplayed(this CustomRoles subRole)
+    {
+        return subRole is not 
+            CustomRoles.LastImpostor and not
+            CustomRoles.Madmate and not
+            CustomRoles.Charmed and not
+            CustomRoles.Recruit and not
+            CustomRoles.Admired and not
+            CustomRoles.Soulless and not
+            CustomRoles.Lovers and not
+            CustomRoles.Infected and not
+            CustomRoles.Contagious;
+    }
     public static bool IsAmneCrew(this PlayerControl target)
     {
         return //target.Is(CustomRoles.Luckey)
@@ -1332,11 +1338,11 @@ static class ExtendedPlayerControl
 
     public static bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
     {
-        if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || (seer.AmOwner && Main.GodMode.Value)) return true;
-        else if (seer.Is(CustomRoles.God)) return true;
+        if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || seer.Is(CustomRoles.God) || (seer.AmOwner && Main.GodMode.Value)) return true;
+        else if (Options.CurrentGameMode == CustomGameMode.FFA) return true;
         else if (target.Is(CustomRoles.Solsticer) && Solsticer.EveryOneKnowSolsticer.GetBool()) return true;
-        else if (Main.VisibleTasksCount && seer.Data.IsDead && Options.GhostCanSeeOtherRoles.GetBool()) return true;
-        else if (target.Is(CustomRoles.Gravestone) && target.Data.IsDead) return true;
+        else if (Main.VisibleTasksCount && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool()) return true;
+        else if (target.Is(CustomRoles.Gravestone) && !target.IsAlive()) return true;
         else if (Options.SeeEjectedRolesInMeeting.GetBool() && Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote) return true;
         else if (Mimic.MimicCanSeeDeadRoles.GetBool() && Main.VisibleTasksCount && seer.Is(CustomRoles.Mimic) && target.Data.IsDead) return true;
         else if (Options.LoverKnowRoles.GetBool() && (seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers)) || target.Is(CustomRoles.Ntr)) return true;
@@ -1346,7 +1352,7 @@ static class ExtendedPlayerControl
         else if (Options.AlliesKnowCrewpostor.GetBool() && seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Crewpostor)) return true;
         else if (Options.CrewpostorKnowsAllies.GetBool() && seer.Is(CustomRoles.Crewpostor) && target.Is(CustomRoleTypes.Impostor)) return true;
         else if (Options.WorkaholicVisibleToEveryone.GetBool() && target.Is(CustomRoles.Workaholic)) return true;
-        else if (Options.DoctorVisibleToEveryone.GetBool() && target.Is(CustomRoles.Doctor) && !target.IsEvilAddons()) return true;
+        else if (Options.DoctorVisibleToEveryone.GetBool() && target.Is(CustomRoles.Doctor)) return true;
         else if (Options.MayorRevealWhenDoneTasks.GetBool() && target.Is(CustomRoles.Mayor) && target.GetPlayerTaskState().IsTaskFinished) return true;
         else if (target.GetPlayerTaskState().IsTaskFinished && seer.Is(CustomRoleTypes.Crewmate) && target.Is(CustomRoles.Marshall)) return true;
         else if (seer.Is(CustomRoles.Jackal) && (target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit))) return true;
@@ -1365,7 +1371,6 @@ static class ExtendedPlayerControl
         else if (Amnesiac.KnowRole(seer, target)) return true;
         else if (Infectious.KnowRole(seer, target)) return true;
         else if (Virus.KnowRole(seer, target)) return true;
-        else if (Options.CurrentGameMode == CustomGameMode.FFA) return true;
         else if ((target.Is(CustomRoles.President) && seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) && President.CheckPresidentReveal[target.PlayerId] == true) ||
                 (target.Is(CustomRoles.President) && seer.Is(CustomRoles.Madmate) && President.MadmatesSeePresident.GetBool() && President.CheckPresidentReveal[target.PlayerId] == true) ||
                 (target.Is(CustomRoles.President) && seer.GetCustomRole().IsNeutral() && President.NeutralsSeePresident.GetBool() && President.CheckPresidentReveal[target.PlayerId] == true) ||
@@ -1374,6 +1379,61 @@ static class ExtendedPlayerControl
 
         else return false;
     }
+    public static bool ShowSubRoleTarget(this PlayerControl seer, PlayerControl target, CustomRoles subRole = CustomRoles.NotAssigned)
+    {
+        if (seer == null) return false;
+        if (target == null) target = seer;
+
+        if (seer.PlayerId == target.PlayerId) return true;
+        else if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || seer.Is(CustomRoles.God) || (seer.AmOwner && Main.GodMode.Value)) return true;
+        else if (Main.VisibleTasksCount && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool()) return true;
+        
+        else if (
+            (subRole.Is(CustomRoles.Madmate)
+                || subRole.Is(CustomRoles.Sidekick) 
+                || subRole.Is(CustomRoles.Recruit)
+                || subRole.Is(CustomRoles.Admired)
+                || subRole.Is(CustomRoles.Charmed)
+                || subRole.Is(CustomRoles.Infected)
+                || subRole.Is(CustomRoles.Contagious)
+                || subRole.Is(CustomRoles.Egoist)) 
+            && KnowSubRoleTarget(seer, target))
+            return true;
+
+        
+        return false;
+    }
+    public static bool KnowSubRoleTarget(PlayerControl seer, PlayerControl target)
+    {
+        //if (seer == null) return false;
+        //if (target == null) target = seer;
+        
+        if (seer.Is(CustomRoleTypes.Impostor))
+        {
+            // Imp know Madmate
+            if (target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool())
+                return true;
+
+            // Ego-Imp know other Ego-Imp
+            else if (seer.Is(CustomRoles.Egoist) && target.Is(CustomRoles.Egoist) && Egoist.ImpEgoistVisibalToAllies.GetBool())
+                return true;
+        }
+        else if (Admirer.IsEnable && Admirer.KnowRole(seer, target)) return true;
+        else if (Succubus.IsEnable && Succubus.KnowRole(seer, target)) return true;
+        else if (Infectious.IsEnable && Infectious.KnowRole(seer, target)) return true;
+        else if (Virus.IsEnable && Virus.KnowRole(seer, target)) return true;
+        else if (Jackal.IsEnable)
+        {
+            if (seer.Is(CustomRoles.Jackal) || seer.Is(CustomRoles.Recruit))
+                return target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit);
+
+            else if (seer.Is(CustomRoles.Sidekick))
+                return target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick);
+        }
+
+        return false;
+    }
+
     public static bool CanBeTeleported(this PlayerControl player)
     {
         if (player.Data == null // Check if PlayerData is not null
@@ -1464,10 +1524,23 @@ static class ExtendedPlayerControl
     public static bool IsAlive(this PlayerControl target)
     {
         //In lobby all is alive
-        //If target is null, it is not alive
-        //If target is not null and target is dead
-        if (target == null || target.Is(CustomRoles.GM)) return false;
-        return GameStates.IsLobby || (target != null && (!Main.PlayerStates.TryGetValue(target.PlayerId, out var ps) || !ps.IsDead));
+        if (GameStates.IsLobby)
+        {
+            return true;
+        }
+        //if target is null, it is not alive
+        if (target == null)
+        {
+            return false;
+        }
+        //if the target status is alive
+        if (Main.PlayerStates.TryGetValue(target.PlayerId, out var playerState))
+        {
+            return !playerState.IsDead;
+        }
+
+        // else player is dead
+        return false;
     }
     public static bool IsExiled(this PlayerControl target)
     {
