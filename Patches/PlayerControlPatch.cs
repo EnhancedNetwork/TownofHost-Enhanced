@@ -2961,6 +2961,9 @@ class FixedUpdateInNormalGamePatch
 
                 if (!lowLoad)
                 {
+                    if (player.PlayerId != 0)
+                        Logger.Info($"player.inVent: {player.inVent} - player animation: {player.MyPhysics.Animations.IsPlayingEnterVentAnimation()}", "Check Vent");
+
                     if (Main.AllKillers.TryGetValue(player.PlayerId, out var ktime) && ktime + Options.WitnessTime.GetInt() < Utils.GetTimeStamp())
                         Main.AllKillers.Remove(player.PlayerId);
 
@@ -3162,9 +3165,6 @@ class FixedUpdateInNormalGamePatch
                             if (pc.Is(CustomRoles.Poisoner))
                                 Main.AllPlayerKillCooldown[pc.PlayerId] = Poisoner.KillCooldown.GetFloat() * 2;
                         }
-
-                    if (!Main.DoBlockNameChange && AmongUsClient.Instance.AmHost)
-                        Utils.ApplySuffix(__instance);
                 }
 
                 //Local Player only
@@ -3179,6 +3179,10 @@ class FixedUpdateInNormalGamePatch
                     }
                 }
             }
+
+            if (!lowLoad)
+                if (!Main.DoBlockNameChange && AmongUsClient.Instance.AmHost)
+                    Utils.ApplySuffix(__instance);
         }
 
         var RoleTextTransform = __instance.cosmetics.nameText.transform.Find("RoleText");
