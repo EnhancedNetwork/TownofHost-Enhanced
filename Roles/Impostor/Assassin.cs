@@ -85,13 +85,12 @@ internal static class Assassin
     }
     public static void OnShapeshift(PlayerControl pc, bool shapeshifting, bool shapeshiftIsHidden = false)
     {
-        if (!pc.IsAlive() || Pelican.IsEaten(pc.PlayerId) || Medic.ProtectList.Contains(pc.PlayerId)) return;
-
         if (shapeshiftIsHidden && !MarkedPlayer.ContainsKey(pc.PlayerId))
         {
             pc.RejectShapeshiftAndReset(reset: false);
             return;
         }
+        if (!pc.IsAlive() || Pelican.IsEaten(pc.PlayerId)) return;
 
         if (!shapeshifting || shapeshiftIsHidden)
         {
@@ -102,7 +101,7 @@ internal static class Assassin
         if (MarkedPlayer.TryGetValue(pc.PlayerId, out var targetId))
         {
             var timer = shapeshiftIsHidden ? 0.1f : 1.5f;
-            var target = Utils.GetPlayerById(targetId);
+            var marketTarget = Utils.GetPlayerById(targetId);
             
             MarkedPlayer.Remove(pc.PlayerId);
             SendRPC(pc.PlayerId);
@@ -112,11 +111,11 @@ internal static class Assassin
 
             _ = new LateTask(() =>
             {
-                if (!(target == null || !target.IsAlive() || Pelican.IsEaten(target.PlayerId) || target.inVent || !GameStates.IsInTask))
+                if (!(marketTarget == null || !marketTarget.IsAlive() || Pelican.IsEaten(marketTarget.PlayerId) || Medic.ProtectList.Contains(marketTarget.PlayerId) || marketTarget.inVent || !GameStates.IsInTask))
                 {
-                    pc.RpcTeleport(target.GetCustomPosition());
+                    pc.RpcTeleport(marketTarget.GetCustomPosition());
                     pc.ResetKillCooldown();
-                    pc.RpcCheckAndMurder(target);
+                    pc.RpcCheckAndMurder(marketTarget);
                 }
             }, timer, "Assassin Assassinate");
         }
