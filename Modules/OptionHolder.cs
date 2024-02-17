@@ -76,13 +76,31 @@ public static class Options
     public static Dictionary<CustomRoles, IntegerOptionItem> CustomAdtRoleSpawnRate;
     public static readonly string[] rates =
     [
-        "Rate0",  "Rate5",  "Rate10", "Rate20", "Rate30", "Rate40",
-        "Rate50", "Rate60", "Rate70", "Rate80", "Rate90", "Rate100",
+        "Rate0",
+        "Rate5",
+        "Rate10",
+        "Rate15",
+        "Rate20",
+        "Rate25",
+        "Rate30",
+        "Rate35",
+        "Rate40",
+        "Rate45",
+        "Rate50",
+        "Rate55",
+        "Rate60",
+        "Rate65",
+        "Rate70",
+        "Rate75",
+        "Rate80",
+        "Rate85",
+        "Rate90",
+        "Rate95",
+        "Rate100",
     ];
     public static readonly string[] ratesZeroOne =
     [
-        "RoleOff", /*"Rate10", "Rate20", "Rate30", "Rate40", "Rate50",
-        "Rate60", "Rate70", "Rate80", "Rate90", */"RoleRate",
+        "RoleOff", "RoleRate",
     ];
     public static readonly string[] ratesToggle =
     [

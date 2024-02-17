@@ -390,113 +390,12 @@ internal class CustomRoleSelector
         addShapeshifterNum = 0;
         foreach (var role in AllRoles.ToArray())
         {
-            switch (CustomRolesHelper.GetVNRole(role))
+            switch (role.GetVNRole())
             {
                 case CustomRoles.Scientist: addScientistNum++; break;
                 case CustomRoles.Engineer: addEngineerNum++; break;
                 case CustomRoles.Shapeshifter: addShapeshifterNum++; break;
             }
         }
-    }
-
-    public static List<CustomRoles> AddonRolesList = [];
-    public static void SelectAddonRoles()
-    {
-        if (Options.CurrentGameMode == CustomGameMode.FFA) return;
-
-        AddonRolesList = [];
-        foreach (var cr in CustomRolesHelper.AllRoles)
-        {
-            CustomRoles role = (CustomRoles)Enum.Parse(typeof(CustomRoles), cr.ToString());
-            if (!role.IsAdditionRole()) continue;
-
-            if (NotAssignAddOnInGameStarted(role)) continue;
-
-            AddonRolesList.Add(role);
-        }
-    }
-
-    public static void AssignAddonRoles()
-    {
-        if (Options.CurrentGameMode == CustomGameMode.FFA) return;
-
-        var rd = IRandom.Instance;
-        List<CustomRoles> addonsList = [];
-        List<CustomRoles> addonsIsEnableList = [];
-
-        // Sort Add-ons by spawn rate
-        var sortAddOns = Options.CustomAdtRoleSpawnRate.OrderByDescending(role => role.Value.GetFloat());
-        var dictionarSortAddOns = sortAddOns.ToDictionary(x => x.Key, x => x.Value);
-
-        // Add only enabled add-ons
-        foreach (var addonKVP in dictionarSortAddOns.Where(a => a.Key.IsEnable()).ToArray())
-        {
-            if (!NotAssignAddOnInGameStarted(addonKVP.Key))
-            {
-                addonsIsEnableList.Add(addonKVP.Key);
-            }
-        }
-
-        Logger.Info($"Number enabled of add-ons (before priority): {addonsIsEnableList.Count}", "Check Add-ons Count");
-
-        // Add addons which have a percentage greater than 90
-        foreach (var addonKVP in dictionarSortAddOns.Where(a => a.Key.IsEnable() && a.Value.GetFloat() >= 90).ToArray())
-        {
-            var addon = addonKVP.Key;
-
-            if (AddonRolesList.Contains(addon))
-            {
-                addonsList.Add(addon);
-                addonsIsEnableList.Remove(addon);
-            }
-        }
-
-        Logger.Info($"Number enabled of add-ons (after priority): {addonsIsEnableList.Count}", "Check Add-ons Count");
-
-        // Add addons randomly
-        while (addonsIsEnableList.Count > 0)
-        {
-            int randomItem = rd.Next(addonsIsEnableList.Count);
-            var randomAddOn = addonsIsEnableList[randomItem];
-
-            if (!addonsList.Contains(randomAddOn) && AddonRolesList.Contains(randomAddOn))
-            {
-                addonsList.Add(randomAddOn);
-            }
-
-            // Even if an add-on cannot be added, it must be removed from the "addonsIsEnableList"
-            // To prevent the game from freezing
-            addonsIsEnableList.Remove(randomAddOn);
-        }
-
-        Logger.Info($" Is Started", "Assign Add-ons");
-
-        // Assign add-ons
-        foreach (var role in addonsList.ToArray())
-        {
-            if (rd.Next(1, 101) <= (Options.CustomAdtRoleSpawnRate.TryGetValue(role, out var sc) ? sc.GetFloat() : 0))
-            {
-                SelectRolesPatch.AssignSubRoles(role);
-            }
-        }
-    }
-    public static bool NotAssignAddOnInGameStarted(CustomRoles role)
-    {
-        if (role is CustomRoles.Madmate && Options.MadmateSpawnMode.GetInt() != 0) return true;
-        if (role is CustomRoles.Lovers or CustomRoles.LastImpostor or CustomRoles.Workhorse) return true;
-
-        if (GameStates.FungleIsActive) // The Fungle
-        {
-            if (role is CustomRoles.Mare) return true;
-        }
-
-        /*else if (Options.IsActiveDleks) // Dleks
-        {
-            if (role is CustomRoles.Nimble
-                or CustomRoles.Burst
-                or CustomRoles.Circumvent) continue;
-        */
-
-        return false;
     }
 }

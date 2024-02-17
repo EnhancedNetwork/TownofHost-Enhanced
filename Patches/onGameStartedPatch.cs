@@ -13,6 +13,7 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using TOHE.Roles.Core.AssignManager;
 using static TOHE.Modules.CustomRoleSelector;
 using static TOHE.Translator;
 
@@ -441,7 +442,8 @@ internal class SelectRolesPatch
 
             EAC.OriginalRoles = [];
             SelectCustomRoles();
-            SelectAddonRoles();
+            AddonAssign.StartSelect();
+
             CalculateVanillaRoleCount();
 
             //指定原版特殊职业数量
@@ -566,15 +568,16 @@ internal class SelectRolesPatch
                 AssignCustomRole(kv.Value, kv.Key);
             }
 
-            if (CustomRoles.Lovers.IsEnable() && (CustomRoles.Hater.IsEnable() ? -1 : rd.Next(1, 100)) <= Options.LoverSpawnChances.GetInt()) AssignLoversRolesFromList();
+            AddonAssign.InitAndStartAssignLovers();
+            AddonAssign.StartSortAndAssign();
 
-            AssignAddonRoles();
-
-            //RPCによる同期
+            // Sync by RPC
             foreach (var pair in Main.PlayerStates)
             {
+                // Set roles
                 ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
 
+                // Set add-ons
                 foreach (var subRole in pair.Value.SubRoles.ToArray())
                     ExtendedPlayerControl.RpcSetCustomRole(pair.Key, subRole);
             }
@@ -1099,20 +1102,28 @@ internal class SelectRolesPatch
             EndOfSelectRolePatch:
 
             HudManager.Instance.SetHudActive(true);
-      //      HudManager.Instance.Chat.SetVisible(true);
+            //HudManager.Instance.Chat.SetVisible(true);
+            
             List<PlayerControl> AllPlayers = [];
             CustomRpcSender sender = CustomRpcSender.Create("SelectRoles Sender", SendOption.Reliable);
+            
             foreach (var pc in Main.AllPlayerControls)
                 pc.ResetKillCooldown();
 
-            //役職の人数を戻す
+            //Return the number of role type
             var roleOpt = Main.NormalOptions.roleOptions;
+
+            // Role type: Scientist
             int ScientistNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Scientist);
             ScientistNum -= addScientistNum;
             roleOpt.SetRoleRate(RoleTypes.Scientist, ScientistNum, roleOpt.GetChancePerGame(RoleTypes.Scientist));
+
+            // Role type: Engineer
             int EngineerNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Engineer);
             EngineerNum -= addEngineerNum;
             roleOpt.SetRoleRate(RoleTypes.Engineer, EngineerNum, roleOpt.GetChancePerGame(RoleTypes.Engineer));
+
+            // Role type: Shapeshifter
             int ShapeshifterNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Shapeshifter);
             ShapeshifterNum -= addShapeshifterNum;
             roleOpt.SetRoleRate(RoleTypes.Shapeshifter, ShapeshifterNum, roleOpt.GetChancePerGame(RoleTypes.Shapeshifter));
@@ -1245,77 +1256,6 @@ internal class SelectRolesPatch
                     sender.RpcSetRole(player, hostBaseRole);
                 }
             }
-        }
-    }
-
-    private static void AssignLoversRolesFromList()
-    {
-        if (CustomRoles.Lovers.IsEnable())
-        {
-            //Loversを初期化
-            Main.LoversPlayers.Clear();
-            Main.isLoversDead = false;
-            //ランダムに2人選出
-            AssignLoversRoles();
-        }
-    }
-    private static void AssignLoversRoles(int RawCount = -1)
-    {
-        var allPlayers = new List<PlayerControl>();
-        foreach (var pc in Main.AllPlayerControls)
-        {
-            if (pc.Is(CustomRoles.GM) 
-                || (pc.HasSubRole() && pc.GetCustomSubRoles().Count >= Options.NoLimitAddonsNumMax.GetInt()) 
-                || pc.Is(CustomRoles.Ntr) 
-                || pc.Is(CustomRoles.Dictator) 
-                || pc.Is(CustomRoles.God) 
-                || pc.Is(CustomRoles.Hater) 
-                || pc.Is(CustomRoles.Sunnyboy)
-                || pc.Is(CustomRoles.Bomber)
-                || pc.Is(CustomRoles.Nuker) 
-                || pc.Is(CustomRoles.Provocateur)
-                || pc.Is(CustomRoles.RuthlessRomantic)
-                || pc.Is(CustomRoles.Romantic)
-                || pc.Is(CustomRoles.VengefulRomantic)
-                || (pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeInLove.GetBool())
-                || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeInLove.GetBool())
-                || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeInLove.GetBool()))
-                continue;
-            allPlayers.Add(pc);
-        }
-        var role = CustomRoles.Lovers;
-        var rd = IRandom.Instance;
-        var count = Math.Clamp(RawCount, 0, allPlayers.Count);
-        if (RawCount == -1) count = Math.Clamp(role.GetCount(), 0, allPlayers.Count);
-        if (count <= 0) return;
-        for (var i = 0; i < count; i++)
-        {
-            var player = allPlayers[rd.Next(0, allPlayers.Count)];
-            Main.LoversPlayers.Add(player);
-            allPlayers.Remove(player);
-            Main.PlayerStates[player.PlayerId].SetSubRole(role);
-            Logger.Info($"Registered Lovers: {player?.Data?.PlayerName} = {player.GetCustomRole()} + {role}", "Assign Lovers");
-        }
-        RPC.SyncLoversPlayers();
-    }
-    public static void AssignSubRoles(CustomRoles role, int RawCount = -1)
-    {
-        var allPlayers = Main.AllAlivePlayerControls.Where(x => CustomRolesHelper.CheckAddonConfilct(role, x)).ToList();
-        var count = Math.Clamp(RawCount, 0, allPlayers.Count);
-        if (RawCount == -1) count = Math.Clamp(role.GetCount(), 0, allPlayers.Count);
-        if (count <= 0) return;
-        for (var i = 0; i < count; i++)
-        {
-            // if the number of all players is 0
-            if (allPlayers.Count <= 0) return;
-
-            // Select player
-            var player = allPlayers[IRandom.Instance.Next(allPlayers.Count)];
-            allPlayers.Remove(player);
-
-            // Set Add-on
-            Main.PlayerStates[player.PlayerId].SetSubRole(role);
-            Logger.Info($"Registered Add-on: {player?.Data?.PlayerName} = {player.GetCustomRole()} + {role}", $"Assign {role}");
         }
     }
 
