@@ -1,3 +1,4 @@
+using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
 using static TOHE.Options;
@@ -40,6 +41,22 @@ public class Tired
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId, false);
+    }
+
+    public static void ApplyGameOptions(IGameOptions opt, PlayerControl player)
+    {
+        if (playerIdList[player.PlayerId])
+        {
+            opt.SetVision(false);
+            opt.SetFloat(FloatOptionNames.CrewLightMod, Tired.SetVision.GetFloat());
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Tired.SetVision.GetFloat());
+        }
+        else
+        {
+            opt.SetVision(false);
+            opt.SetFloat(FloatOptionNames.CrewLightMod, Main.DefaultCrewmateVision);
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Main.DefaultImpostorVision);
+        }
     }
     
     public static void AfterActionTasks(PlayerControl player)

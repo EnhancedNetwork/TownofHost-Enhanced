@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Impostor;
@@ -20,6 +21,8 @@ public static class Mare
         KillCooldownInLightsOut = FloatOptionItem.Create(Id + 11, "MareKillCooldownInLightsOut", new(0f, 180f, 2.5f), 7.5f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mare])
             .SetValueFormat(OptionFormat.Seconds);
     }
+    
+  
     public static void Init()
     {
         playerIdList = [];
@@ -29,7 +32,9 @@ public static class Mare
         playerIdList.Add(mare);
     }
     public static bool IsEnable => playerIdList.Count > 0;
+    
     public static float GetKillCooldown => Utils.IsActive(SystemTypes.Electrical) ? KillCooldownInLightsOut.GetFloat() : DefaultKillCooldown;
+
     public static void ApplyGameOptions(byte playerId)
     {
         if (Utils.IsActive(SystemTypes.Electrical) && !idAccelerated)
@@ -43,6 +48,7 @@ public static class Mare
             Main.AllPlayerSpeed[playerId] -= SpeedInLightsOut.GetFloat();
         }
     }
+    public static bool IsLightsOut => !Utils.IsActive(SystemTypes.Electrical);
 
     public static bool KnowTargetRoleColor(PlayerControl target, bool isMeeting)
         => !isMeeting && playerIdList.Contains(target.PlayerId) && Utils.IsActive(SystemTypes.Electrical);

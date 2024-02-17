@@ -1246,7 +1246,7 @@ internal class ChatCommands
             "閃電俠" or "闪电侠" or "閃電" or "闪电" => GetString("Flash"),
             "持燈人" or "火炬" or "持燈" => GetString("Torch"),
             "靈媒" or "灵媒" or "靈媒" => GetString("Seer"),
-            "破平者" or "破平" => GetString("Brakar"),
+            "破平者" or "破平" => GetString("Tiebreaker"),
             "膽小鬼" or "胆小鬼" or "膽小" or "胆小" => GetString("Oblivious"),
             "視障" or "迷幻者" or "視障" or "迷幻" => GetString("Bewilder"),
             "墨鏡" or "患者" => GetString("Sunglasses"),
@@ -1256,7 +1256,7 @@ internal class ChatCommands
             "Youtuber" or "UP主" or "YT" => GetString("Youtuber"),
             "利己主義者" or "利己主义者" or "利己主義" or "利己主义" => GetString("Egoist"),
             "竊票者" or "窃票者" or "竊票" or "窃票" => GetString("TicketsStealer"),
-            "雙重人格" or "双重人格" => GetString("DualPersonality"),
+            "雙重人格" or "双重人格" => GetString("Schizophrenic"),
             "保險箱" or "宝箱怪" => GetString("Mimic"),
             "賭怪" or "赌怪" => GetString("Guesser"),
             "死神" => GetString("Necroview"),
@@ -1421,19 +1421,11 @@ internal class ChatCommands
             ChatManager.SendMessage(player, text);
         }
 
-        Logger.Info($"player.PlayerId {player.PlayerId} send message: ''{text}''", "OnReceiveChat");
-
         if (text.StartsWith("\n")) text = text[1..];
         //if (!text.StartsWith("/")) return;
         string[] args = text.Split(' ');
         string subArgs = "";
         string subArgs2 = "";
-
-        if (text.Length <= 11) // Check command if Length < or = 11
-        {
-            Logger.Info($"Message now: ''{text}''", "OnReceiveChat");
-            Logger.Info($"Args: ''{args}''", "OnReceiveChat");
-        }
 
         //if (text.Length >= 3) if (text[..2] == "/r" && text[..3] != "/rn") args[0] = "/r";
         //   if (SpamManager.CheckSpam(player, text)) return;
@@ -1461,10 +1453,6 @@ internal class ChatCommands
             return; 
         }
 
-        if (text.Length <= 11)
-        {
-            Logger.Info($"args[0] has message: ''{args[0]}''", "OnReceiveChat");
-        }
         switch (args[0])
         {
             case "/r":
