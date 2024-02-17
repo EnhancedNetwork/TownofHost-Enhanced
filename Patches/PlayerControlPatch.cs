@@ -3177,9 +3177,8 @@ class FixedUpdateInNormalGamePatch
                 }
             }
 
-            if (!lowLoad)
-                if (!Main.DoBlockNameChange && AmongUsClient.Instance.AmHost)
-                    Utils.ApplySuffix(__instance);
+            if (!lowLoad && !Main.DoBlockNameChange)
+                Utils.ApplySuffix(__instance);
         }
 
         var RoleTextTransform = __instance.cosmetics.nameText.transform.Find("RoleText");
