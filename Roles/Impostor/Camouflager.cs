@@ -10,13 +10,15 @@ public static class Camouflager
 
     private static OptionItem CamouflageCooldownOpt;
     private static OptionItem CamouflageDurationOpt;
-    public static OptionItem CanUseCommsSabotage;
-    public static OptionItem DisableReportWhenCamouflageIsActive;
+    private static OptionItem CanUseCommsSabotagOpt;
+    private static OptionItem DisableReportWhenCamouflageIsActiveOpt;
 
     public static bool AbilityActivated = false;
     public static bool ShapeshiftIsHidden = false;
-    public static float CamouflageCooldown;
-    public static float CamouflageDuration;
+    private static float CamouflageCooldown;
+    private static float CamouflageDuration;
+    public static bool CanUseCommsSabotage;
+    public static bool DisableReportWhenCamouflageIsActive;
 
     private static Dictionary<byte, long> Timer = [];
 
@@ -27,9 +29,10 @@ public static class Camouflager
             .SetValueFormat(OptionFormat.Seconds);
         CamouflageDurationOpt = FloatOptionItem.Create(Id + 4, "CamouflageDuration", new(1f, 180f, 1f), 10f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Camouflager])
             .SetValueFormat(OptionFormat.Seconds);
-        CanUseCommsSabotage = BooleanOptionItem.Create(Id + 6, "CanUseCommsSabotage", false, TabGroup.ImpostorRoles, false)
+        CanUseCommsSabotagOpt = BooleanOptionItem.Create(Id + 6, "CanUseCommsSabotage", false, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Camouflager]);
-        DisableReportWhenCamouflageIsActive = BooleanOptionItem.Create(Id + 8, "DisableReportWhenCamouflageIsActive", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Camouflager]);
+        DisableReportWhenCamouflageIsActiveOpt = BooleanOptionItem.Create(Id + 8, "DisableReportWhenCamouflageIsActive", false, TabGroup.ImpostorRoles, false)
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Camouflager]);
 
     }
     public static void Init()
@@ -42,6 +45,9 @@ public static class Camouflager
     {
         CamouflageCooldown = CamouflageCooldownOpt.GetFloat();
         CamouflageDuration = CamouflageDurationOpt.GetFloat();
+        CanUseCommsSabotage = CanUseCommsSabotagOpt.GetBool();
+        DisableReportWhenCamouflageIsActive = DisableReportWhenCamouflageIsActiveOpt.GetBool();
+        
         ShapeshiftIsHidden = Options.DisableShapeshiftAnimations.GetBool();
         IsEnable = true;
     }
