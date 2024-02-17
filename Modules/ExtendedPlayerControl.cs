@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
 using InnerNet;
+using LibCpp2IL.Elf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -1380,8 +1381,12 @@ static class ExtendedPlayerControl
         
         if (seer.Is(CustomRoleTypes.Impostor))
         {
-            if ((target.Is(CustomRoles.Madmate) && Options.ImpKnowWhosMadmate.GetBool())
-                || (seer.Is(CustomRoles.Egoist) && target.Is(CustomRoles.Egoist) && Options.ImpEgoistVisibalToAllies.GetBool()))
+            // Imp know Madmate
+            if (target.Is(CustomRoles.Madmate) && Options.ImpKnowWhosMadmate.GetBool())
+                return true;
+
+            // Ego-Imp know other Ego-Imp
+            else if (seer.Is(CustomRoles.Egoist) && target.Is(CustomRoles.Egoist) && Options.ImpEgoistVisibalToAllies.GetBool())
                 return true;
         }
         else if (Admirer.IsEnable && Admirer.KnowRole(seer, target)) return true;
