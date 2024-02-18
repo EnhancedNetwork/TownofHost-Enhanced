@@ -586,7 +586,7 @@ static class ExtendedPlayerControl
         if (Main.TasklessCrewmate.Contains(pc.PlayerId)) return true;
         if (Necromancer.Killer && !pc.Is(CustomRoles.Necromancer)) return false;
         if (pc.Is(CustomRoles.Nimble)) return true;
-        if (pc.Is(CustomRoles.Circumvent)) return false;
+        if (Circumvent.CantUseVent(pc)) return false;
 
         return pc.GetCustomRole() switch
         {
@@ -1067,29 +1067,39 @@ static class ExtendedPlayerControl
                 Quizmaster.SetKillCooldown(player.PlayerId);
                 break;
         }
-        if (player.PlayerId == LastImpostor.currentId)
-            LastImpostor.SetKillCooldown();
 
-        if (player.Is(CustomRoles.Mare))
-            Main.AllPlayerKillCooldown[player.PlayerId] = Mare.KillCooldownInLightsOut.GetFloat();
+        var playerSubRoles = player.GetCustomSubRoles().ToArray();
 
-        if (player.Is(CustomRoles.Overclocked))
-            Main.AllPlayerKillCooldown[player.PlayerId] -= Main.AllPlayerKillCooldown[player.PlayerId] * (Options.OverclockedReduction.GetFloat() / 100);
-        
-        if (Main.KilledDiseased.ContainsKey(player.PlayerId))
-        {
-            Main.AllPlayerKillCooldown[player.PlayerId] = Main.AllPlayerKillCooldown[player.PlayerId] + Main.KilledDiseased[player.PlayerId] * Options.DiseasedCDOpt.GetFloat();
-            Logger.Info($"kill cd of player set to {Main.AllPlayerKillCooldown[player.PlayerId]}", "Diseased");
-        }
-        if (Main.KilledAntidote.ContainsKey(player.PlayerId))
-        {
-            var kcd = Main.AllPlayerKillCooldown[player.PlayerId] - Main.KilledAntidote[player.PlayerId] * Options.AntidoteCDOpt.GetFloat();
-            if (kcd < 0) kcd = 0;
-            Main.AllPlayerKillCooldown[player.PlayerId] = kcd;
-            Logger.Info($"kill cd of player set to {Main.AllPlayerKillCooldown[player.PlayerId]}", "Antidote");
-        }
+        if (playerSubRoles.Length > 0)
+            foreach (var subRole in playerSubRoles)
+            {
+                switch (subRole)
+                {
+                    case CustomRoles.LastImpostor when player.PlayerId == LastImpostor.currentId:
+                        LastImpostor.SetKillCooldown();
+                        break;
+
+                    case CustomRoles.Mare:
+                        Main.AllPlayerKillCooldown[player.PlayerId] = Mare.KillCooldownInLightsOut.GetFloat();
+                        break;
+
+                    case CustomRoles.Overclocked:
+                        Main.AllPlayerKillCooldown[player.PlayerId] -= Main.AllPlayerKillCooldown[player.PlayerId] * (Overclocked.OverclockedReduction.GetFloat() / 100);
+                        break;
+
+                    case CustomRoles.Diseased:
+                        Diseased.IncreaseKCD(player);
+                        break;
+
+                    case CustomRoles.Antidote:
+                        Antidote.ReduceKCD(player);
+                        break;
+                }
+            }
+
         if (!player.HasImpKillButton(considerVanillaShift: false))
             Main.AllPlayerKillCooldown[player.PlayerId] = 300f;
+
         if (Main.AllPlayerKillCooldown[player.PlayerId] == 0)
         {
             if (player.Is(CustomRoles.Chronomancer)) return;
@@ -1154,21 +1164,7 @@ static class ExtendedPlayerControl
             || target.Is(CustomRoles.SwordsMan) && SwordsMan.CanVent.GetBool()
             || target.Is(CustomRoles.Nimble);
     }
-    public static void TrapperKilled(this PlayerControl killer, PlayerControl target)
-    {
-        Logger.Info($"{target?.Data?.PlayerName} was Trapper", "Trapper");
-        var tmpSpeed = Main.AllPlayerSpeed[killer.PlayerId];
-        Main.AllPlayerSpeed[killer.PlayerId] = Main.MinSpeed;
-        ReportDeadBodyPatch.CanReport[killer.PlayerId] = false;
-        killer.MarkDirtySettings();
-        _ = new LateTask(() =>
-        {
-            Main.AllPlayerSpeed[killer.PlayerId] = Main.AllPlayerSpeed[killer.PlayerId] - Main.MinSpeed + tmpSpeed;
-            ReportDeadBodyPatch.CanReport[killer.PlayerId] = true;
-            killer.MarkDirtySettings();
-            RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
-        }, Options.TrapperBlockMoveTime.GetFloat(), "Trapper BlockMove");
-    }
+    
     public static bool IsDouseDone(this PlayerControl player)
     {
         if (!player.Is(CustomRoles.Arsonist)) return false;
@@ -1250,6 +1246,40 @@ static class ExtendedPlayerControl
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
         Utils.NotifyRoles();
     }
+
+    public static void AddInSwitchAddons(PlayerControl Killed, PlayerControl target, CustomRoles Addon = CustomRoles.NotAssigned, CustomRoles? IsAddon = CustomRoles.NotAssigned)
+    {
+        if (Addon == CustomRoles.NotAssigned)
+        {
+            Addon = IsAddon ?? CustomRoles.NotAssigned;
+        }
+        switch (Addon)
+        {
+            case CustomRoles.Unlucky:
+                Unlucky.Remove(Killed.PlayerId);
+                Unlucky.Add(target.PlayerId);
+                break;
+            case CustomRoles.Tired:
+                Tired.Remove(Killed.PlayerId);
+                Tired.Add(target.PlayerId);
+                break;
+            case CustomRoles.Bewilder:
+                Bewilder.Add();
+                break;
+            case CustomRoles.Lucky:
+                Lucky.Remove(Killed.PlayerId);
+                Lucky.Add(target.PlayerId);
+                break;
+            case CustomRoles.Clumsy:
+                Clumsy.Remove(Killed.PlayerId);
+                Clumsy.Add(target.PlayerId);
+                break;
+            case CustomRoles.Statue:
+                Statue.Remove(Killed.PlayerId);
+                Statue.Add(target.PlayerId);
+                break;
+        }
+    }
     public static bool RpcCheckAndMurder(this PlayerControl killer, PlayerControl target, bool check = false) => CheckMurderPatch.RpcCheckAndMurder(killer, target, check);
     public static void NoCheckStartMeeting(this PlayerControl reporter, GameData.PlayerInfo target, bool force = false)
     { 
@@ -1312,13 +1342,13 @@ static class ExtendedPlayerControl
         else if (Options.CurrentGameMode == CustomGameMode.FFA) return true;
         else if (target.Is(CustomRoles.Solsticer) && Solsticer.EveryOneKnowSolsticer.GetBool()) return true;
         else if (Main.VisibleTasksCount && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool()) return true;
-        else if (target.Is(CustomRoles.Gravestone) && !target.IsAlive()) return true;
+        else if (Gravestone.EveryoneKnowRole(target)) return true;
+        else if (Mimic.CanSeeDeadRoles(seer, target)) return true;
         else if (Options.SeeEjectedRolesInMeeting.GetBool() && Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote) return true;
-        else if (Options.MimicCanSeeDeadRoles.GetBool() && Main.VisibleTasksCount && seer.Is(CustomRoles.Mimic) && target.Data.IsDead) return true;
         else if (Options.LoverKnowRoles.GetBool() && (seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers)) || target.Is(CustomRoles.Ntr)) return true;
-        else if (Options.ImpKnowAlliesRole.GetBool() && seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoleTypes.Impostor)) return true;
-        else if (Options.MadmateKnowWhosImp.GetBool() && seer.Is(CustomRoles.Madmate) && target.Is(CustomRoleTypes.Impostor)) return true;
-        else if (Options.ImpKnowWhosMadmate.GetBool() && target.Is(CustomRoles.Madmate) && seer.Is(CustomRoleTypes.Impostor)) return true;
+        else if (Madmate.ImpKnowAlliesRole.GetBool() && seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoleTypes.Impostor)) return true;
+        else if (Madmate.MadmateKnowWhosImp.GetBool() && seer.Is(CustomRoles.Madmate) && target.Is(CustomRoleTypes.Impostor)) return true;
+        else if (Madmate.ImpKnowWhosMadmate.GetBool() && target.Is(CustomRoles.Madmate) && seer.Is(CustomRoleTypes.Impostor)) return true;
         else if (Options.AlliesKnowCrewpostor.GetBool() && seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Crewpostor)) return true;
         else if (Options.CrewpostorKnowsAllies.GetBool() && seer.Is(CustomRoles.Crewpostor) && target.Is(CustomRoleTypes.Impostor)) return true;
         else if (Options.WorkaholicVisibleToEveryone.GetBool() && target.Is(CustomRoles.Workaholic)) return true;
@@ -1381,11 +1411,11 @@ static class ExtendedPlayerControl
         if (seer.Is(CustomRoleTypes.Impostor))
         {
             // Imp know Madmate
-            if (target.Is(CustomRoles.Madmate) && Options.ImpKnowWhosMadmate.GetBool())
+            if (target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool())
                 return true;
 
             // Ego-Imp know other Ego-Imp
-            else if (seer.Is(CustomRoles.Egoist) && target.Is(CustomRoles.Egoist) && Options.ImpEgoistVisibalToAllies.GetBool())
+            else if (seer.Is(CustomRoles.Egoist) && target.Is(CustomRoles.Egoist) && Egoist.ImpEgoistVisibalToAllies.GetBool())
                 return true;
         }
         else if (Admirer.IsEnable && Admirer.KnowRole(seer, target)) return true;

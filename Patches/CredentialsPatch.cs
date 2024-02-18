@@ -106,7 +106,7 @@ public static class Credentials
             var buildtype = "";
 
 #if RELEASE
-            Main.credentialsText += $"\r\n<color=#a54aff>By <color=#f34c50>Enhanced Network</color>";
+            Main.credentialsText += $"\r\n<color=#a54aff>By <color=#f34c50>The Enhanced Network</color>";
             buildtype = "Release";
 #endif
 
