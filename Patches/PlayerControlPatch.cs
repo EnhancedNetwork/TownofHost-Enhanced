@@ -4147,26 +4147,25 @@ class PlayerControlSetRolePatch
 }
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetRole))]
-    class PlayerControlLocalSetRolePatch
+class PlayerControlLocalSetRolePatch
+{
+    public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] RoleTypes role)
     {
-        public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] RoleTypes role)
+        if (!AmongUsClient.Instance.AmHost && GameStates.IsNormalGame && !GameStates.IsModHost)
         {
-            if (!AmongUsClient.Instance.AmHost && GameStates.IsNormalGame && !GameStates.IsModHost)
+            var modRole = role switch
             {
-                var modRole = role switch
-                {
-                    RoleTypes.Impostor => CustomRoles.ImpostorTOHE,
-                    RoleTypes.Shapeshifter => CustomRoles.ShapeshifterTOHE,
-                    RoleTypes.Crewmate => CustomRoles.CrewmateTOHE,
-                    RoleTypes.Engineer => CustomRoles.EngineerTOHE,
-                    RoleTypes.Scientist => CustomRoles.ScientistTOHE,
-                    _ => CustomRoles.NotAssigned,
-                };
-                if (modRole != CustomRoles.NotAssigned)
-                {
-                    Main.PlayerStates[__instance.PlayerId].SetMainRole(modRole);
-                }
+                RoleTypes.Impostor => CustomRoles.ImpostorTOHE,
+                RoleTypes.Shapeshifter => CustomRoles.ShapeshifterTOHE,
+                RoleTypes.Crewmate => CustomRoles.CrewmateTOHE,
+                RoleTypes.Engineer => CustomRoles.EngineerTOHE,
+                RoleTypes.Scientist => CustomRoles.ScientistTOHE,
+                _ => CustomRoles.NotAssigned,
+            };
+            if (modRole != CustomRoles.NotAssigned)
+            {
+                Main.PlayerStates[__instance.PlayerId].SetMainRole(modRole);
             }
         }
     }
-
+}
