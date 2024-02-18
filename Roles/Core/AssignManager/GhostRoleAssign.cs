@@ -95,7 +95,7 @@ public class GhostRoleAssign
             else if (RateHauntedList.Count > 0 && !IsSetRole)
             {
                 System.Random rnd = new System.Random();
-                int randindx = rnd.Next(HauntedList.Count);
+                int randindx = rnd.Next(RateHauntedList.Count);
                 ChosenRole = RateHauntedList[randindx];
 
             }
@@ -120,7 +120,7 @@ public class GhostRoleAssign
             else if (ImpRateHauntedList.Count > 0 && !IsSetRole)
             {
                 System.Random rnd = new System.Random();
-                int randindx = rnd.Next(ImpHauntedList.Count);
+                int randindx = rnd.Next(ImpRateHauntedList.Count);
                 ChosenRole = ImpRateHauntedList[randindx];
 
             }
