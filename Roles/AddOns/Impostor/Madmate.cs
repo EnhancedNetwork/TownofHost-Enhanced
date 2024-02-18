@@ -5,9 +5,10 @@ using TOHE.Roles.Impostor;
 using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Impostor;
+
 public static class Madmate
 {
-    private static readonly int Id1 = 60002;
+    private static readonly int Id1 = 60003;
     private static readonly int Id2 = 22900;
 
     public static OptionItem MadmateSpawnMode;
@@ -22,7 +23,6 @@ public static class Madmate
     public static OptionItem MadSnitchTasks;
     public static OptionItem JudgeCanBeMadmate;
 
-    public static OptionItem ImpKnowAlliesRole;
     public static OptionItem ImpKnowWhosMadmate;
     public static OptionItem ImpCanKillMadmate;
     public static OptionItem MadmateKnowWhosMadmate;
@@ -32,22 +32,20 @@ public static class Madmate
 
     public static void SetupMenuOptions()
     {
-        ImpKnowAlliesRole = BooleanOptionItem.Create(Id1 + 0, "ImpKnowAlliesRole", true, TabGroup.ImpostorRoles, false)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetHeader(true);
-        ImpKnowWhosMadmate = BooleanOptionItem.Create(Id1 + 1, "ImpKnowWhosMadmate", true, TabGroup.ImpostorRoles, false)
-            .SetGameMode(CustomGameMode.Standard);
-        ImpCanKillMadmate = BooleanOptionItem.Create(Id1 + 2, "ImpCanKillMadmate", true, TabGroup.ImpostorRoles, false)
-            .SetGameMode(CustomGameMode.Standard);
-
-        MadmateKnowWhosMadmate = BooleanOptionItem.Create(Id1 + 3, "MadmateKnowWhosMadmate", true, TabGroup.ImpostorRoles, false)
+        ImpKnowWhosMadmate = BooleanOptionItem.Create(Id1, "ImpKnowWhosMadmate", true, TabGroup.ImpostorRoles, false)
             .SetHeader(true)
             .SetGameMode(CustomGameMode.Standard);
-        MadmateKnowWhosImp = BooleanOptionItem.Create(Id1 + 4, "MadmateKnowWhosImp", true, TabGroup.ImpostorRoles, false)
+        ImpCanKillMadmate = BooleanOptionItem.Create(Id1 + 1, "ImpCanKillMadmate", true, TabGroup.ImpostorRoles, false)
             .SetGameMode(CustomGameMode.Standard);
-        MadmateCanKillImp = BooleanOptionItem.Create(Id1 + 5, "MadmateCanKillImp", true, TabGroup.ImpostorRoles, false)
+
+        MadmateKnowWhosMadmate = BooleanOptionItem.Create(Id1 + 2, "MadmateKnowWhosMadmate", true, TabGroup.ImpostorRoles, false)
+            .SetHeader(true)
             .SetGameMode(CustomGameMode.Standard);
-        MadmateHasImpostorVision = BooleanOptionItem.Create(Id1 + 6, "MadmateHasImpostorVision", false, TabGroup.ImpostorRoles, false)
+        MadmateKnowWhosImp = BooleanOptionItem.Create(Id1 + 3, "MadmateKnowWhosImp", true, TabGroup.ImpostorRoles, false)
+            .SetGameMode(CustomGameMode.Standard);
+        MadmateCanKillImp = BooleanOptionItem.Create(Id1 + 4, "MadmateCanKillImp", true, TabGroup.ImpostorRoles, false)
+            .SetGameMode(CustomGameMode.Standard);
+        MadmateHasImpostorVision = BooleanOptionItem.Create(Id1 + 7, "MadmateHasImpostorVision", false, TabGroup.ImpostorRoles, false)
             .SetGameMode(CustomGameMode.Standard);
     }
 
