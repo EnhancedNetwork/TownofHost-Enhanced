@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -140,7 +141,7 @@ namespace TOHE.Roles.Crewmate
                 else
                 {
 
-                    float range = NormalGameOptionsV07.KillDistances[Mathf.Clamp(player.Is(CustomRoles.Reach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
+                    float range = NormalGameOptionsV07.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
                     float dis = Vector2.Distance(player.GetCustomPosition(), farTarget.GetCustomPosition());
                     if (dis <= range)
                     {

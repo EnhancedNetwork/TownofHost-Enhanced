@@ -40,7 +40,7 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0216.160.0001"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginVersion = "2024.0218.160.0001"; // YEAR.MMDD.VERSION.CANARYDEV
     public const string PluginDisplayVersion = "1.6.0 dev 1";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
 
@@ -129,7 +129,6 @@ public class Main : BasePlugin
     public static HashSet<byte> ResetCamPlayerList = [];
     public static HashSet<byte> winnerList = [];
     public static HashSet<byte> ForCrusade = [];
-    public static HashSet<byte> KillGhoul = [];
     public static HashSet<string> winnerNameList = [];
     public static HashSet<int> clientIdList = [];
     public static List<(string, byte, string)> MessagesToSend = [];
@@ -148,21 +147,15 @@ public class Main : BasePlugin
     public static Dictionary<byte, long> TimeMasterInProtect = [];
     //public static Dictionary<byte, long> FlashbangInProtect = [];
     public static List<byte> CyberStarDead = [];
-    public static List<byte> CyberDead = [];
     public static List<int> BombedVents = [];
     public static List<byte> WorkaholicAlive = [];
-    public static List<byte> BurstBodies = [];
-    public static List<byte> BaitAlive = [];
     public static List<byte> TasklessCrewmate = [];
     public static List<byte> BoobyTrapBody = [];
     public static List<byte> BoobyTrapKiller = [];
     //public static List<byte> KilledDiseased = [];
-    public static Dictionary<byte, int> KilledDiseased = [];
-    public static Dictionary<byte, int> KilledAntidote = [];
     //public static List<byte> ForFlashbang = [];
     public static Dictionary<byte, byte> KillerOfBoobyTrapBody = [];
     public static Dictionary<byte, string> DetectiveNotify = [];
-    public static Dictionary<byte, string> SleuthNotify = [];
     public static Dictionary<byte, string> VirusNotify = [];
     public static List<byte> OverDeadPlayerList = [];
     public static bool DoBlockNameChange = false;
@@ -175,7 +168,6 @@ public class Main : BasePlugin
     public static List<byte> CleanerBodies = [];
     public static List<byte> MedusaBodies = [];
     public static List<byte> InfectedBodies = [];
-    public static List<byte> BrakarVoteFor = [];
     public static Dictionary<byte, (byte, float)> BitPlayers = [];
     public static Dictionary<byte, float> WarlockTimer = [];
     public static Dictionary<byte, float> AssassinTimer = [];
@@ -240,7 +232,7 @@ public class Main : BasePlugin
     public static Dictionary<byte, CustomRoles> DevRole = [];
     public static List<byte> GodfatherTarget = [];
     public static Dictionary<byte, int> CrewpostorTasksDone = [];
-    public static Dictionary<byte, List<string>> AwareInteracted = [];
+    
     public static byte ShamanTarget = byte.MaxValue;
     public static bool ShamanTargetChoosen = false;
     
@@ -859,16 +851,17 @@ public enum CustomRoles
     Recruit,
     //Repairman,
     Rogue,
-    DualPersonality, //Schizophrenic
+    Schizophrenic,
     Seer,
     Silent,
+    Statue,
     Sleuth,
     Soulless,
     TicketsStealer, //stealer
     Stubborn,
     Susceptible,
     Swift,
-    Brakar, //tiebreaker
+    Tiebreaker,
     Torch,
     Trapper,
     Tired,

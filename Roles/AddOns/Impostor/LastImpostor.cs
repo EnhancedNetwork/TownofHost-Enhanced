@@ -1,10 +1,13 @@
+
 namespace TOHE.Roles.AddOns.Impostor;
 
 public static class LastImpostor
 {
     private static readonly int Id = 22800;
     public static byte currentId = byte.MaxValue;
-    public static OptionItem CooldownReduction;
+
+    private static OptionItem CooldownReduction;
+
     public static void SetupCustomOption()
     {
         Options.SetupSingleRoleOptions(Id, TabGroup.Addons, CustomRoles.LastImpostor, 1);
@@ -17,11 +20,12 @@ public static class LastImpostor
     public static void SetKillCooldown()
     {
         if (currentId == byte.MaxValue) return;
-        if (!Main.AllPlayerKillCooldown.TryGetValue(currentId, out var x)) return;
+        if (!Main.AllPlayerKillCooldown.TryGetValue(currentId, out _)) return;
         Main.AllPlayerKillCooldown[currentId] -= Main.AllPlayerKillCooldown[currentId] * (CooldownReduction.GetFloat() / 100);
     }
-    public static bool CanBeLastImpostor(PlayerControl pc)
+    private static bool CanBeLastImpostor(PlayerControl pc)
         => pc.IsAlive() && !pc.Is(CustomRoles.LastImpostor)&& !pc.Is(CustomRoles.Overclocked) && pc.Is(CustomRoleTypes.Impostor);
+    
     public static void SetSubRole()
     {
         //ラストインポスターがすでにいれば処理不要
