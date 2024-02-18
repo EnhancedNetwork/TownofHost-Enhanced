@@ -717,6 +717,9 @@ public static class Utils
                 case CustomRoles.SoulCollector:
                     ProgressText.Append(SoulCollector.GetProgressText(playerId));
                     break;
+                case CustomRoles.Baker:
+                    ProgressText.Append(Baker.GetProgressText(playerId));
+                    break;
                 case CustomRoles.Pixie:
                     ProgressText.Append(Pixie.GetProgressText(playerId));
                     break;
@@ -969,10 +972,6 @@ public static class Utils
                 case CustomRoles.PlagueBearer:
                     var plagued = PlagueBearer.PlaguedPlayerCount(playerId);
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.PlagueBearer).ShadeColor(0.25f), $"({plagued.Item1}/{plagued.Item2})"));
-                    break;
-                case CustomRoles.Baker:
-                    var breaded = Baker.BreadedPlayerCount(playerId);
-                    ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Baker).ShadeColor(0.25f), $"{breaded.Item1}/{breaded.Item2})"));
                     break;
                 case CustomRoles.Doomsayer:
                     var doomsayerguess = Doomsayer.GuessedPlayerCount(playerId);

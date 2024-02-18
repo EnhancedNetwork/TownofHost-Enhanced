@@ -1,5 +1,6 @@
 ﻿using Hazel;
 using System.Collections.Generic;
+using System.Linq;
 using TOHE.Roles.Impostor;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -27,18 +28,19 @@ public static class Baker
         playerIdList = [];
         BreadList = [];
         IsEnable = false;
+        CanUseAbility = false;
     }
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         BreadList[playerId] = [];
         IsEnable = true;
+        CanUseAbility = true;
     }
 
     public static void SendRPC(PlayerControl player, PlayerControl target)
     {
-        MessageWriter writer;
-        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.setPlaguedPlayer, SendOption.Reliable, -1);//RPCによる同期
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetBreadedPlayer, SendOption.Reliable, -1);
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -49,7 +51,7 @@ public static class Baker
         byte BreadHolderId = reader.ReadByte();
         BreadList[BakerId].Add(BreadHolderId);
     }
-    public static string GetProgressText(byte playerId) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Baker).ShadeColor(0.25f), BreadList.TryGetValue(playerId, out var x) ? $"({x}/{BreadNeededToTransform.GetInt()})" : "Invalid");
+    public static string GetProgressText(byte playerId) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Baker).ShadeColor(0.25f),  $"({BreadedPlayerCount(playerId).Item1}/{BreadedPlayerCount(playerId).Item2})");
     public static bool HasBread(byte pc, byte target)
     {
         return BreadList[pc].Contains(target);  
@@ -76,8 +78,6 @@ public static class Baker
         Utils.NotifyRoles(SpecifySeer: killer);
         killer.Notify(GetString("BakerBreaded"));
 
-        Main.AllPlayerKillCooldown[killer.PlayerId] = 100000;
-
         Logger.Info($"Bread given to "+target.GetRealName(), "Baker");
         CanUseAbility = false;
         return false;
@@ -86,9 +86,19 @@ public static class Baker
     {
         CanUseAbility = true;
     }
+    public static void OnPlayerDead(PlayerControl deadPlayer)
+    {
+        foreach (var playerId in BreadList.Keys.ToArray())
+        {
+            if (deadPlayer.PlayerId == playerId)
+            {
+                BreadList[playerId].Remove(playerId);
+            }
+        }
+    }
     public static (int, int) BreadedPlayerCount(byte playerId)
     {
-        int breaded = 0, all = BreadNeededToTransform.GetValue(); 
+        int breaded = 0, all = BreadNeededToTransform.GetInt(); 
         foreach (var pc in Main.AllAlivePlayerControls)
         {
             if (pc.PlayerId == playerId) continue; 
@@ -112,6 +122,7 @@ public static class Baker
         player.RpcSetCustomRole(CustomRoles.Famine);
         player.Notify(GetString("BakerToFamine"));
         player.RpcGuardAndKill(player);
+        KillIfNotEjected(player);
 
     }
     public static void KillIfNotEjected(PlayerControl player)
@@ -135,7 +146,7 @@ public static class Baker
                 }
             }
         }
-        CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Armageddon, [.. deathList]);
+        CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Starved, [.. deathList]);
     }
 }
 

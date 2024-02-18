@@ -394,8 +394,6 @@ class GameEndCheckerForNormal
                     if (!CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
                         CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
 
-                    if (!CustomWinnerHolder.WinnerRoles.Contains(pc.GetCustomRole()))
-                        CustomWinnerHolder.WinnerRoles.Add(pc.GetCustomRole());
                 }
                 foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.RuthlessRomantic)).ToArray())
                 {

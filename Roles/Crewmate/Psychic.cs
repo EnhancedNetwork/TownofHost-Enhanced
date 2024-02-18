@@ -19,6 +19,7 @@ public static class Psychic
     private static OptionItem NBshowEvil;
     private static OptionItem NEshowEvil;
     private static OptionItem NCshowEvil;
+    private static OptionItem NAshowEvil;
 
     private static List<byte> RedPlayer = [];
 
@@ -32,6 +33,7 @@ public static class Psychic
         NBshowEvil = BooleanOptionItem.Create(Id + 4, "NBareRed", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
         NEshowEvil = BooleanOptionItem.Create(Id + 5, "NEareRed", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
         NCshowEvil = BooleanOptionItem.Create(Id + 7, "NCareRed", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
+        NAshowEvil = BooleanOptionItem.Create(Id + 8, "NAareRed", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
     }
     public static void Init()
     {

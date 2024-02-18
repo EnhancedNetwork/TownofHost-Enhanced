@@ -471,8 +471,9 @@ class CheckMurderPatch
                         return false;
                     break;
                 case CustomRoles.Baker:
-                    Baker.OnCheckMurder(killer, target);
-                    return false;
+                    if (!Baker.OnCheckMurder(killer, target))
+                        return false;
+                    break;
                 case CustomRoles.Pirate:
                     if (!Pirate.OnCheckMurder(killer, target))
                         return false;
@@ -1476,6 +1477,7 @@ class MurderPlayerPatch
         if (Tracefinder.IsEnable) Tracefinder.OnPlayerDead(target);
         if (Vulture.IsEnable) Vulture.OnPlayerDead(target);
         if (SoulCollector.IsEnable) SoulCollector.OnPlayerDead(target);
+        if (Baker.IsEnable) Baker.OnPlayerDead(target);
         if (Medic.IsEnable) Medic.IsDead(target);
 
         Utils.AfterPlayerDeathTasks(target);
@@ -2338,6 +2340,7 @@ class ReportDeadBodyPatch
         if (Huntsman.IsEnable) Huntsman.OnReportDeadBody();
         if (SerialKiller.IsEnable) SerialKiller.OnReportDeadBody();
         if (SoulCollector.IsEnable) SoulCollector.OnReportDeadBody();
+        if (Baker.IsEnable) Baker.OnReportDeadBody();
         if (Puppeteer.IsEnable) Puppeteer.OnReportDeadBody();
         if (Sniper.IsEnable) Sniper.OnReportDeadBody();
         if (Undertaker.IsEnable) Undertaker.OnReportDeadBody();

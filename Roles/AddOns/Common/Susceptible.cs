@@ -338,6 +338,16 @@ public class Susceptible
                         goto default;
                     }
                     break;
+                case PlayerState.DeathReason.Starved:
+                    if (!CustomRoles.Baker.IsEnable())
+                    {
+                        Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
+                    }
+                    else
+                    {
+                        goto default;
+                    }
+                    break;
 
                 default:
                     while (Main.PlayerStates[victim.PlayerId].deathReason != randomReason)

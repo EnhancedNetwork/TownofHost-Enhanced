@@ -172,6 +172,7 @@ enum CustomRPC
     SyncMiniCrewAge,
     SyncSabotageMasterSkill,
     QuizmasterMarkPlayer,
+    SetBreadedPlayer,
     //FFA
     SyncFFAPlayer,
     SyncFFANameNotify,
@@ -429,6 +430,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.setPlaguedPlayer:
                 PlagueBearer.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SetBreadedPlayer:
+                Baker.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetDrawPlayer:
                 byte RevolutionistId = reader.ReadByte();

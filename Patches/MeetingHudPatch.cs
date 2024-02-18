@@ -935,7 +935,7 @@ class MeetingHudStartPatch
         {
             AddMsg(string.Format(GetString("SoulCollectorTransform")), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Death), GetString("ApocalypseIsNigh")));
         }
-        if (CustomRoles.Baker.RoleExist())
+        if (CustomRoles.Famine.RoleExist())
         {
             AddMsg(string.Format(GetString("BakerTransform")), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Famine), GetString("ApocalypseIsNigh")));
         }

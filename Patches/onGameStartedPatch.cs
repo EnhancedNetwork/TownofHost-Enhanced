@@ -339,6 +339,7 @@ internal class ChangeRoleSettings
             Spiritcaller.Init();
             Lurker.Init();
             PlagueBearer.Init();
+            Baker.Init();
             Reverie.Init();
             Doomsayer.Init();
             Pirate.Init();
