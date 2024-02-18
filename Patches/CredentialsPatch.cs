@@ -1,4 +1,5 @@
 using HarmonyLib;
+using System.Linq;
 using System.Text;
 using TMPro;
 using TOHE.Modules;
@@ -219,6 +220,15 @@ public static class Credentials
 
             LateTask.Update(Time.deltaTime);
             CheckMurderPatch.Update();
+
+            if (Utils.GetTimeStamp() > EAC.LastClientInfoCheck + 20)
+            {
+                EAC.LastClientInfoCheck = Utils.GetTimeStamp();
+                
+                if (PlayerControl.LocalPlayer && GameStates.IsOnlineGame)
+                    foreach (var pc in Main.AllPlayerControls.ToArray())
+                        EAC.ClientInfoCheck(pc.GetClient(), false);
+            }
         }
         public static void Postfix(ModManager __instance)
         {

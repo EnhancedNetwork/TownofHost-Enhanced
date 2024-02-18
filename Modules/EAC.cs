@@ -483,4 +483,50 @@ internal class EAC
                 break;
         }
     }
+
+    public static Dictionary<int, (string, string)> CachedClientInfo = [];
+    public static long LastClientInfoCheck = 0;
+    public static void ClientInfoCheck(ClientData client, bool onJoined)
+    {
+        if (onJoined)
+        {
+            CachedClientInfo.TryAdd(client.Id, (client.FriendCode.ToLower(), client.ProductUserId.ToLower()));
+            CachedClientInfo[client.Id] = (client.FriendCode.ToLower(), client.ProductUserId.ToLower());
+            Logger.Info($"First Logged Joining Client {client.Id} | {client.PlayerName} : {client.FriendCode} | {client.GetHashedPuid()}", "EAC");
+        }
+        else
+        {
+            if (!CachedClientInfo.ContainsKey(client.Id))
+            {
+                CachedClientInfo.TryAdd(client.Id, (client.FriendCode.ToLower(), client.ProductUserId.ToLower()));
+                CachedClientInfo[client.Id] = (client.FriendCode.ToLower(), client.ProductUserId.ToLower());
+                Logger.Info($"First but Twice Logged Joining Client {client.Id} | {client.PlayerName} : {client.FriendCode} | {client.GetHashedPuid()}", "EAC");
+            }
+            if (client.Character != null)
+            {
+                if (client.Character.FriendCode.ToLower() != CachedClientInfo[client.Id].Item1 || client.Character.Puid.ToLower() != CachedClientInfo[client.Id].Item2)
+                {
+                    Logger.Warn($"User Info of {client.Id} | {client.Character.Data.PlayerName} changed in game!", "EAC-1");
+                    Logger.Info($"Old {CachedClientInfo[client.Id].Item1} | {CachedClientInfo[client.Id].Item2} & new {client.Character.FriendCode} | {client.Character.Puid}", "EAC-1");
+                    if (AmongUsClient.Instance.AmHost)
+                    {
+                        Report(client.Character, "Suspecious User Info I");
+                        HandleCheat(client.Character, "Suspecious User Info I");
+                    }
+                }
+
+                if (client.Character.Data.FriendCode.ToLower() != CachedClientInfo[client.Id].Item1 || client.Character.Data.Puid.ToLower() != CachedClientInfo[client.Id].Item2)
+                {
+                    Logger.Warn($"User Info of {client.Id} | {client.Character.Data.PlayerName} changed in game!", "EAC-2");
+                    Logger.Info($"Old {CachedClientInfo[client.Id].Item1} | {CachedClientInfo[client.Id].Item2} & new {client.Character.FriendCode} | {client.Character.Puid}", "EAC-2");
+                    if (AmongUsClient.Instance.AmHost)
+                    {
+                        Report(client.Character, "Suspecious User Info II");
+                        HandleCheat(client.Character, "Suspecious User Info II");
+                    }
+                }
+            }
+            
+        }
+    }
 }

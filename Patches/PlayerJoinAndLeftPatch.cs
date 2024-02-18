@@ -160,6 +160,7 @@ public static class OnPlayerJoinedPatch
     public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
     {
         Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Joining room", "Session: OnPlayerJoined");
+        EAC.ClientInfoCheck(client, true);
 
         Main.AssignRolesIsStarted = false;
 
