@@ -70,13 +70,13 @@ public static class Madmate
 
     public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(MadmateHasImpostorVision.GetBool());
 
-    public static readonly string[] madmateSpawnMode =
+    private static readonly string[] madmateSpawnMode =
     [
         "MadmateSpawnMode.Assign",
         "MadmateSpawnMode.FirstKill",
         "MadmateSpawnMode.SelfVote",
     ];
-    public static readonly string[] madmateCountMode =
+    private static readonly string[] madmateCountMode =
     [
         "MadmateCountMode.None",
         "MadmateCountMode.Imp",

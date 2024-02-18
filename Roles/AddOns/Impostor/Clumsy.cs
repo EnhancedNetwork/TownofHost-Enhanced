@@ -35,7 +35,7 @@ public static class Clumsy
     private static void MissChance(PlayerControl killer)
     {
         var miss = IRandom.Instance;
-        if (miss.Next(0, 100) < ChanceToMiss.GetInt())
+        if (miss.Next(0, 101) < ChanceToMiss.GetInt())
         {
             killer.RpcGuardAndKill(killer);
             killer.SetKillCooldown();

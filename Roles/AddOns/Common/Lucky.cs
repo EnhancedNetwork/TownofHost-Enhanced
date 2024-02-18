@@ -37,7 +37,7 @@ public static class Lucky
         LuckyAvoid.Remove(player);
     }
 
-    public static void AvoidDeathChance(PlayerControl killer, PlayerControl target)
+    private static void AvoidDeathChance(PlayerControl killer, PlayerControl target)
     {
         var rd = IRandom.Instance;
         if (rd.Next(0, 101) < LuckyProbability.GetInt())
@@ -45,5 +45,17 @@ public static class Lucky
             killer.RpcGuardAndKill(target);
             LuckyAvoid[target.PlayerId] = true;
         }
+    }
+
+    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    {
+        AvoidDeathChance(killer, target);
+        if (LuckyAvoid[target.PlayerId])
+        {
+            LuckyAvoid[target.PlayerId] = false;
+            return false;
+        }
+
+        return true;
     }
 }
