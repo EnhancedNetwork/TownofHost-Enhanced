@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.AddOns.Crewmate;
+using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -68,7 +70,7 @@ public class PlayerState(byte playerId)
         // check for role addon
         if (pc.Is(CustomRoles.Madmate))
         {
-            countTypes = Options.MadmateCountMode.GetInt() switch
+            countTypes = Madmate.MadmateCountMode.GetInt() switch
             {
                 0 => CountTypes.OutOfGame,
                 1 => CountTypes.Impostor,
@@ -157,7 +159,7 @@ public class PlayerState(byte playerId)
                 break;
 
             case CustomRoles.Madmate:
-                countTypes = Options.MadmateCountMode.GetInt() switch
+                countTypes = Madmate.MadmateCountMode.GetInt() switch
                 {
                     0 => CountTypes.OutOfGame,
                     1 => CountTypes.Impostor,
@@ -310,16 +312,11 @@ public class PlayerState(byte playerId)
             }
         }
     }
-    public bool IsSuicide() { return deathReason == DeathReason.Suicide; }
-    public TaskState GetTaskState() { return taskState; }
-    public void InitTask(PlayerControl player)
-    {
-        taskState.Init(player);
-    }
-    public void UpdateTask(PlayerControl player)
-    {
-        taskState.Update(player);
-    }
+    public bool IsSuicide => deathReason == DeathReason.Suicide;
+    public TaskState TaskState => taskState;
+    public void InitTask(PlayerControl player) => taskState.Init(player);
+    public void UpdateTask(PlayerControl player) => taskState.Update(player);
+
     public enum DeathReason
     {
         Kill,
@@ -646,44 +643,19 @@ public class TaskState
                     switch (subRole)
                     {
                         case CustomRoles.Unlucky when player.IsAlive():
-                            var Ue = IRandom.Instance;
-                            if (Ue.Next(1, 100) <= Options.UnluckyTaskSuicideChance.GetInt())
-                            {
-                                Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-                                player.RpcMurderPlayerV3(player);
-                            }
+                            Unlucky.SuicideRand(player);
                             break;
                         
                         case CustomRoles.Tired when player.IsAlive():
                              Tired.AfterActionTasks(player);
                             break;
 
-                        case CustomRoles.Bloodlust when player.IsAlive() && !Alchemist.BloodlustList.ContainsKey(player.PlayerId):
-                            Alchemist.BloodlustList[player.PlayerId] = player.PlayerId;
-                            player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bloodlust), string.Format(Translator.GetString("BloodlustAdded"))));
+                        case CustomRoles.Bloodlust when player.IsAlive():
+                            Bloodlust.OnTaskComplete(player);
                             break;
 
                         case CustomRoles.Ghoul when (CompletedTasksCount + 1) >= AllTasksCount:
-                            if (player.IsAlive())
-                            {
-                                _ = new LateTask(() =>
-                                {
-                                    Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-                                    player.RpcMurderPlayerV3(player);
-
-                                }, 0.2f, "Ghoul Suicide");
-                            }
-                            else
-                            {
-                                foreach (var pc in Main.AllAlivePlayerControls)
-                                {
-                                    if (!pc.Is(CustomRoles.Pestilence) && player.PlayerId != pc.PlayerId && Main.KillGhoul.Contains(pc.PlayerId))
-                                    {
-                                        Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Kill;
-                                        player.RpcMurderPlayerV3(pc);
-                                    }
-                                }
-                            }
+                            Ghoul.OnTaskComplete(player);
                             break;
                     }
                 }
@@ -735,10 +707,10 @@ public static class GameStates
     public static bool DleksIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Dleks;
     public static bool AirshipIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Airship;
     public static bool FungleIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Fungle;
-    public static bool IsLobby => AmongUsClient.Instance.GameState == AmongUsClient.GameStates.Joined;
+    public static bool IsLobby => AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Joined;
     public static bool IsInGame => InGame;
-    public static bool IsEnded => AmongUsClient.Instance.GameState == AmongUsClient.GameStates.Ended;
-    public static bool IsNotJoined => AmongUsClient.Instance.GameState == AmongUsClient.GameStates.NotJoined;
+    public static bool IsEnded => AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Ended;
+    public static bool IsNotJoined => AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.NotJoined;
     public static bool IsOnlineGame => AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame;
     public static bool IsLocalGame => AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame;
     public static bool IsFreePlay => AmongUsClient.Instance.NetworkMode == NetworkModes.FreePlay;

@@ -54,12 +54,20 @@ public static class Chameleon
     }
     public static void SendRPC(PlayerControl pc, bool isLimit = false)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetChameleonTimer, SendOption.Reliable, pc.GetClientId());
-        writer.Write(pc.PlayerId);
-        writer.Write(isLimit);
-        if (isLimit) writer.Write(UseLimit[pc.PlayerId]);
+        if (isLimit)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+            writer.WritePacked((int)CustomRoles.Chameleon);
+            writer.Write(pc.PlayerId);
+            writer.Write(isLimit);
+            writer.Write(UseLimit[pc.PlayerId]);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
         else 
-        { 
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetChameleonTimer, SendOption.Reliable, pc.GetClientId());
+            writer.Write(pc.PlayerId);
+            writer.Write(isLimit);
             writer.Write((InvisTime.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
             writer.Write((lastTime.TryGetValue(pc.PlayerId, out var y) ? y : -1).ToString());
             AmongUsClient.Instance.FinishRpcImmediately(writer);

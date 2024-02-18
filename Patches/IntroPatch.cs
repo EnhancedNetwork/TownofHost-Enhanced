@@ -6,7 +6,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
@@ -63,6 +62,8 @@ class CoBeginPatch
         var logger = Logger.Handler("Info");
 
         var allPlayerControlsArray = Main.AllPlayerControls.ToArray();
+
+        Main.AssignRolesIsStarted = false;
 
         logger.Info("------------Player Names------------");
         foreach ( var pc in allPlayerControlsArray)

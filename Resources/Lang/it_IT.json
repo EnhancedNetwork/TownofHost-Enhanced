@@ -1721,6 +1721,7 @@
   "RevolutionistKillProbability": "Probabilità di sacrificio del giocatore Marchiato",
   "RevolutionistVentCountDown": "Tempo per usare i Condotti",
   "PelicanKillCooldown": "Ricarica del Mangia",
+  "Pelican.TargetCannotBeEaten": "Il bersaglio non può essere mangiato",
   "MadSnitchTasks": "Incarichi <color=#b8fb4f>Informatore</color>",
   "MedicWhoCanSeeProtect": "Chi può vedere lo scudo",
   "MedicKnowShieldBroken": "Chi può vedere il tentativo di uccisione",

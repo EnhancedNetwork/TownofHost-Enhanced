@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Modules.ChatManager;
+using TOHE.Roles.AddOns.Common;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -288,13 +289,13 @@ public static class Inspector
                     {
                         if (target1.Is(CustomRoles.Aware))
                         {
-                            if (!Main.AwareInteracted.ContainsKey(target1.PlayerId)) Main.AwareInteracted[target1.PlayerId] = [];
-                            if (!Main.AwareInteracted[target1.PlayerId].Contains(Utils.GetRoleName(CustomRoles.Inspector))) Main.AwareInteracted[target1.PlayerId].Add(Utils.GetRoleName(CustomRoles.Inspector));
+                            if (!Aware.AwareInteracted.ContainsKey(target1.PlayerId)) Aware.AwareInteracted[target1.PlayerId] = [];
+                            if (!Aware.AwareInteracted[target1.PlayerId].Contains(Utils.GetRoleName(CustomRoles.Inspector))) Aware.AwareInteracted[target1.PlayerId].Add(Utils.GetRoleName(CustomRoles.Inspector));
                         }
                         if (target2.Is(CustomRoles.Aware))
                         {
-                            if (!Main.AwareInteracted.ContainsKey(target2.PlayerId)) Main.AwareInteracted[target2.PlayerId] = [];
-                            if (!Main.AwareInteracted[target2.PlayerId].Contains(Utils.GetRoleName(CustomRoles.Inspector))) Main.AwareInteracted[target2.PlayerId].Add(Utils.GetRoleName(CustomRoles.Inspector));
+                            if (!Aware.AwareInteracted.ContainsKey(target2.PlayerId)) Aware.AwareInteracted[target2.PlayerId] = [];
+                            if (!Aware.AwareInteracted[target2.PlayerId].Contains(Utils.GetRoleName(CustomRoles.Inspector))) Aware.AwareInteracted[target2.PlayerId].Add(Utils.GetRoleName(CustomRoles.Inspector));
                         }
                     }
                     MaxCheckLimit[pc.PlayerId] -= 1;
