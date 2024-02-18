@@ -488,6 +488,8 @@ internal class EAC
     public static long LastClientInfoCheck = 0;
     public static void ClientInfoCheck(ClientData client, bool onJoined)
     {
+        if (!GameStates.IsOnlineGame) return;
+
         if (onJoined)
         {
             CachedClientInfo.TryAdd(client.Id, (client.FriendCode.ToLower(), client.ProductUserId.ToLower()));
@@ -504,6 +506,8 @@ internal class EAC
             }
             if (client.Character != null)
             {
+                if (client.Character.FriendCode == null || client.Character.Puid == null) return;
+
                 if (client.Character.FriendCode.ToLower() != CachedClientInfo[client.Id].Item1 || client.Character.Puid.ToLower() != CachedClientInfo[client.Id].Item2)
                 {
                     Logger.Warn($"User Info of {client.Id} | {client.Character.Data.PlayerName} changed in game!", "EAC-1");
