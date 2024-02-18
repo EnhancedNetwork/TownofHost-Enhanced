@@ -449,6 +449,8 @@ public static class Options
     // ------------ General Role Settings ------------
 
     // Imp
+    public static OptionItem ImpsCanSeeEachOthersRoles;
+    public static OptionItem ImpsCanSeeEachOthersAddOns;
 
     public static OptionItem RefugeeKillCD;
     //public static OptionItem MadmateCanFixSabotage;
@@ -894,10 +896,16 @@ public static class Options
         //    .SetHidden(true)
         //    .SetHeader(true);
 
+        ImpsCanSeeEachOthersRoles = BooleanOptionItem.Create(60001, "ImpsCanSeeEachOthersRoles", true, TabGroup.ImpostorRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true);
+        ImpsCanSeeEachOthersAddOns = BooleanOptionItem.Create(60002, "ImpsCanSeeEachOthersAddOns", true, TabGroup.ImpostorRoles, false)
+            .SetParent(ImpsCanSeeEachOthersRoles);
+
 
         Madmate.SetupMenuOptions();
-
         
+
         RefugeeKillCD = FloatOptionItem.Create(60009, "RefugeeKillCD", new(0f, 180f, 2.5f), 22.5f, TabGroup.ImpostorRoles, false)
             .SetHeader(true)
             .SetValueFormat(OptionFormat.Seconds)
