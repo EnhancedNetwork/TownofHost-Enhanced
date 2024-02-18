@@ -86,7 +86,7 @@ public static class Utils
         }
     }
 
-    public static void RpcTeleport(this PlayerControl player, Vector2 location, bool sendInfoInLogs = true)
+    public static void RpcTeleport(this PlayerControl player, Vector2 location, bool isRandomSpawn = false, bool sendInfoInLogs = true)
     {
         if (sendInfoInLogs)
         {
@@ -94,38 +94,42 @@ public static class Utils
             Logger.Info($" Player Id: {player.PlayerId}", "RpcTeleport");
         }
 
-        var сancelTeleport = false;
-
-        if (player.inVent
-            || player.MyPhysics.Animations.IsPlayingEnterVentAnimation())
+        // Don't check player status during random spawn
+        if (!isRandomSpawn)
         {
-            Logger.Info($"Target: ({player.GetNameWithRole().RemoveHtmlTags()}) in vent", "RpcTeleport");
-            сancelTeleport = true;
-        }
+            var сancelTeleport = false;
 
-        if (player.onLadder
-            || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
-        {
-            Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) is in on Ladder", "RpcTeleport");
-            сancelTeleport = true;
-        }
+            if (player.inVent
+                || player.MyPhysics.Animations.IsPlayingEnterVentAnimation())
+            {
+                Logger.Info($"Target: ({player.GetNameWithRole().RemoveHtmlTags()}) in vent", "RpcTeleport");
+                сancelTeleport = true;
+            }
 
-        if (player.inMovingPlat)
-        {
-            Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) use moving platform (Airship/Fungle)", "RpcTeleport");
-            сancelTeleport = true;
-        }
+            if (player.onLadder
+                || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+            {
+                Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) is in on Ladder", "RpcTeleport");
+                сancelTeleport = true;
+            }
 
-        if (сancelTeleport)
-        {
-            player.Notify(ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ErrorTeleport")));
-            return;
+            if (player.inMovingPlat)
+            {
+                Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) use moving platform (Airship/Fungle)", "RpcTeleport");
+                сancelTeleport = true;
+            }
+
+            if (сancelTeleport)
+            {
+                player.Notify(ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ErrorTeleport")));
+                return;
+            }
         }
 
         var playerNetTransform = player.NetTransform;
-        var numHost = (ushort)(playerNetTransform.lastSequenceId + 148);
-        var numLocalClient = (ushort)(playerNetTransform.lastSequenceId + 4);
-        var numGlobal = (ushort)(playerNetTransform.lastSequenceId + 8);
+        var numHost = (ushort)(playerNetTransform.lastSequenceId + 6);
+        var numLocalClient = (ushort)(playerNetTransform.lastSequenceId + 48);
+        var numGlobal = (ushort)(playerNetTransform.lastSequenceId + 100);
 
         // Host side
         if (AmongUsClient.Instance.AmHost)
@@ -155,12 +159,6 @@ public static class Utils
             sender.EndRpc();
         }
         sender.SendMessage();
-
-        // Return lastSequenceId for host
-        if (AmongUsClient.Instance.AmHost)
-        {
-            playerNetTransform.lastSequenceId -= 126;
-        }
     }
     public static void RpcRandomVentTeleport(this PlayerControl player)
     {
