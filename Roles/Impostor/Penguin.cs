@@ -228,6 +228,7 @@ public static class Penguin
                             sender.EndRpc();
                         }
                         sender.SendMessage();
+
                     }, 0.3f, "PenguinMurder");
                     RemoveVictim();
                 }

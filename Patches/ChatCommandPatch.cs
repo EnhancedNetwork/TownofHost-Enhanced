@@ -2371,17 +2371,17 @@ class ChatUpdatePatch
         }
 
         var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
-        _ = writer.StartMessage(clientId);
-        _ = writer.StartRpc(player.NetId, (byte)RpcCalls.SetName)
+        writer.StartMessage(clientId);
+        writer.StartRpc(player.NetId, (byte)RpcCalls.SetName)
             .Write(title)
             .EndRpc();
-        _ = writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)
+        writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)
             .Write(msg)
             .EndRpc();
-        _ = writer.StartRpc(player.NetId, (byte)RpcCalls.SetName)
+        writer.StartRpc(player.NetId, (byte)RpcCalls.SetName)
             .Write(player.Data.PlayerName)
             .EndRpc();
-        _ = writer.EndMessage();
+        writer.EndMessage();
         writer.SendMessage();
 
         __instance.timeSinceLastMessage = 0f;
