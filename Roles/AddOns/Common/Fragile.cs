@@ -32,20 +32,21 @@ public static class Fragile
         if ((killerRole.IsImpostorTeamV3() && ImpCanKillFragile.GetBool())
             || (killerRole.IsNeutral() && NeutralCanKillFragile.GetBool())
             || (killerRole.IsCrewmate() && CrewCanKillFragile.GetBool()))
+        {
+            Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Shattered;
+            if (FragileKillerLunge.GetBool())
             {
-                Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Shattered;
-                if (FragileKillerLunge.GetBool())
-                {
-                    killer.RpcMurderPlayerV3(target);
-                }
-                else
-                {
-                    target.RpcMurderPlayerV3(target);
-                }
-                target.SetRealKiller(killer);
-                killer.ResetKillCooldown();
-                return true;
+                killer.RpcMurderPlayerV3(target);
             }
+            else
+            {
+                target.RpcMurderPlayerV3(target);
+            }
+            target.SetRealKiller(killer);
+            killer.ResetKillCooldown();
+            return true;
+        }
+
         return false;
     }
 }

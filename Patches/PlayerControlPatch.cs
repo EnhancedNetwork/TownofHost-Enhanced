@@ -2388,7 +2388,7 @@ class ReportDeadBodyPatch
         if (Spiritualist.IsEnable) Spiritualist.OnReportDeadBody(target);
         if (Quizmaster.IsEnable) Quizmaster.OnReportDeadBody(target);
 
-        if (CustomRoles.Aware.RoleExist()) Aware.OnReportDeadBody();
+        if (Aware.IsEnable) Aware.OnReportDeadBody();
 
         foreach (var x in Main.RevolutionistStart.Keys.ToArray())
         {

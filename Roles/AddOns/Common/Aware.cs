@@ -8,6 +8,7 @@ namespace TOHE.Roles.AddOns.Common;
 public static class Aware
 {
     private static readonly int Id = 21600;
+    public static bool IsEnable = false;
 
     public static OptionItem ImpCanBeAware;
     public static OptionItem CrewCanBeAware;
@@ -28,10 +29,12 @@ public static class Aware
     public static void Init()
     {
         AwareInteracted = [];
+        IsEnable = false;
     }
     public static void Add(byte playerId)
     {
         AwareInteracted[playerId] = [];
+        IsEnable = true;
     }
 
     public static void OnCheckMurder(CustomRoles killerRole, PlayerControl target)
