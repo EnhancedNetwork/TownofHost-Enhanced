@@ -18,6 +18,7 @@ public static class Snitch
     private static OptionItem OptionCanFindNeutralKiller;
     private static OptionItem OptionCanFindMadmate;
     private static OptionItem OptionRemainingTasks;
+    private static OptionItem OptionCanFindNeutralApoc;
 
     private static bool EnableTargetArrow;
     private static bool CanGetColoredArrow;
@@ -39,6 +40,7 @@ public static class Snitch
         OptionCanFindNeutralKiller = BooleanOptionItem.Create(Id + 12, "SnitchCanFindNeutralKiller", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Snitch]);
         OptionCanFindMadmate = BooleanOptionItem.Create(Id + 14, "SnitchCanFindMadmate", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Snitch]);
         OptionRemainingTasks = IntegerOptionItem.Create(Id + 13, "SnitchRemainingTaskFound", new(0, 10, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Snitch]);
+        OptionCanFindNeutralApoc = BooleanOptionItem.Create(Id + 15, "SnitchCanFindNeutralApoc", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Snitch]);
         OverrideTasksData.Create(Id + 20, TabGroup.CrewmateRoles, CustomRoles.Snitch);
     }
     public static void Init()
@@ -83,7 +85,7 @@ public static class Snitch
         var snitchId = pc.PlayerId;
         return IsExposed[snitchId];
     }
-    private static bool IsSnitchTarget(PlayerControl target) => IsEnable && (target.Is(CustomRoleTypes.Impostor) && !target.Is(CustomRoles.Trickster) || (target.IsSnitchTarget() && CanFindNeutralKiller) || (target.Is(CustomRoles.Madmate) && CanFindMadmate) || (target.Is(CustomRoles.Rascal) && CanFindMadmate));
+    private static bool IsSnitchTarget(PlayerControl target) => IsEnable && (target.Is(CustomRoleTypes.Impostor) && !target.Is(CustomRoles.Trickster) || (target.IsSnitchTarget() && CanFindNeutralKiller) || (target.Is(CustomRoles.Madmate) && CanFindMadmate) || (target.Is(CustomRoles.Rascal) && CanFindMadmate) || (target.IsNeutralApocalypse() && OptionCanFindNeutralApoc.GetBool()));
     public static void CheckTask(PlayerControl snitch)
     {
         if (!snitch.IsAlive() || snitch.Is(CustomRoles.Madmate)) return;

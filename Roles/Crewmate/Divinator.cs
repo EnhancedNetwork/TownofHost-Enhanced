@@ -213,6 +213,7 @@ public static class Divinator
                 CustomRoles.Sans,
                 CustomRoles.Minimalism,
                 CustomRoles.Berserker,
+                CustomRoles.War,
                 CustomRoles.OverKiller],
                 
                 [CustomRoles.Bloodhound,

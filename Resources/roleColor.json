@@ -150,7 +150,6 @@
   "Death": "#ff174f",
   "Baker": "#bf9f7a",
   "Famine": "#83461c",
-  "Apocalypse": "#ff174f",
   "Imitator": "#B3D94C",
   "Doppelganger": "#f6f4a3",
   "GM": "#ff5b70",
@@ -234,5 +233,5 @@
   "SchrodingersCat": "#404040",
   "PlagueDoctor": "#ff6633",
   "Rainbow": "#55FFCB",
-  "Apocalypse": "#CCCCCC"
+  "Apocalypse": "#ff174f"
 }

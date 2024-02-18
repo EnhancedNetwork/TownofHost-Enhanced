@@ -738,7 +738,7 @@ class CheckMurderPatch
                 {
                     Main.AllPlayerKillCooldown[killer.PlayerId] = Options.BerserkerOneKillCooldown.GetFloat();
                 }
-
+                if (target.IsNeutralApocalypse()) return true;
                 if (Main.BerserkerKillMax[killer.PlayerId] == Options.BerserkerScavengerLevel.GetInt() && Options.BerserkerTwoCanScavenger.GetBool())
                 {
                     killer.RpcTeleport(target.GetCustomPosition());
@@ -776,6 +776,12 @@ class CheckMurderPatch
                 //{
                 //    Main.AllPlayerSpeed[killer.PlayerId] = Options.BerserkerSpeed.GetFloat();
                 //}
+                if (Main.BerserkerKillMax[killer.PlayerId] >= Options.BerserkerImmortalLevel.GetInt() && Options.BerserkerFourCanNotKill.GetBool()) 
+                {
+                    killer.RpcSetCustomRole(CustomRoles.War);
+                    killer.Notify(GetString("BerserkerToWar"));
+                    killer.RpcGuardAndKill(killer);
+                }
                 break;
         }
 

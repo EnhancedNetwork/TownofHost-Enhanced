@@ -469,6 +469,8 @@ public static class Options
     public static OptionItem NonNeutralKillingRolesMaxPlayer;
     public static OptionItem NeutralKillingRolesMinPlayer;
     public static OptionItem NeutralKillingRolesMaxPlayer;
+    public static OptionItem NeutralApocalypseRolesMinPlayer;
+    public static OptionItem NeutralApocalypseRolesMaxPlayer;
     public static OptionItem NeutralRoleWinTogether;
     public static OptionItem NeutralWinTogether;
 
@@ -1165,6 +1167,14 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Players);
 
+        NeutralApocalypseRolesMinPlayer = IntegerOptionItem.Create(60022, "NeutralApocalypseRolesMinPlayer", new(0, 4, 1), 0, TabGroup.NeutralRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true)
+            .SetValueFormat(OptionFormat.Players);
+        NeutralApocalypseRolesMaxPlayer = IntegerOptionItem.Create(60023, "NeutralApocalypseRolesMaxPlayer", new(0, 4, 1), 0, TabGroup.NeutralRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetValueFormat(OptionFormat.Players);
+
 
         NeutralRoleWinTogether = BooleanOptionItem.Create(60017, "NeutralRoleWinTogether", false, TabGroup.NeutralRoles, false)
             .SetGameMode(CustomGameMode.Standard)
@@ -1210,31 +1220,7 @@ public static class Options
          */
         Sans.SetupCustomOption();
 
-        /*
-         * Berserker
-         */
-        SetupRoleOptions(600, TabGroup.ImpostorRoles, CustomRoles.Berserker);
-        BerserkerKillCooldown = FloatOptionItem.Create(602, "BerserkerKillCooldown", new(25f, 250f, 2.5f), 35f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker])
-            .SetValueFormat(OptionFormat.Seconds);
-        BerserkerMax = IntegerOptionItem.Create(603, "BerserkerMax", new(1, 10, 1), 4, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker])
-            .SetValueFormat(OptionFormat.Level);
-        BerserkerOneCanKillCooldown = BooleanOptionItem.Create(604, "BerserkerOneCanKillCooldown", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
-        BerserkerOneKillCooldown = FloatOptionItem.Create(605, "BerserkerOneKillCooldown", new(10f, 45f, 2.5f), 15f, TabGroup.ImpostorRoles, false).SetParent(BerserkerOneCanKillCooldown)
-            .SetValueFormat(OptionFormat.Seconds);
-        BerserkerKillCooldownLevel = IntegerOptionItem.Create(606, "BerserkerLevelRequirement", new(1, 10, 1), 1, TabGroup.ImpostorRoles, false).SetParent(BerserkerOneCanKillCooldown)
-            .SetValueFormat(OptionFormat.Level);
-        BerserkerTwoCanScavenger = BooleanOptionItem.Create(607, "BerserkerTwoCanScavenger", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
-        BerserkerScavengerLevel = IntegerOptionItem.Create(608, "BerserkerLevelRequirement", new(1, 10, 1), 2, TabGroup.ImpostorRoles, false).SetParent(BerserkerTwoCanScavenger)
-            .SetValueFormat(OptionFormat.Level);
-        BerserkerThreeCanBomber = BooleanOptionItem.Create(609, "BerserkerThreeCanBomber", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
-        BerserkerBomberLevel = IntegerOptionItem.Create(610, "BerserkerLevelRequirement", new(1, 10, 1), 3, TabGroup.ImpostorRoles, false).SetParent(BerserkerThreeCanBomber)
-            .SetValueFormat(OptionFormat.Level);
-        //BerserkerFourCanFlash = BooleanOptionItem.Create(611, "BerserkerFourCanFlash", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
-        //BerserkerSpeed = FloatOptionItem.Create(611, "BerserkerSpeed", new(1.5f, 5f, 0.25f), 2.5f, TabGroup.ImpostorRoles, false).SetParent(BerserkerOneCanKillCooldown)
-        //    .SetValueFormat(OptionFormat.Multiplier);
-        BerserkerFourCanNotKill = BooleanOptionItem.Create(612, "BerserkerFourCanNotKill", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
-        BerserkerImmortalLevel = IntegerOptionItem.Create(613, "BerserkerLevelRequirement", new(1, 10, 1), 4, TabGroup.ImpostorRoles, false).SetParent(BerserkerFourCanNotKill)
-            .SetValueFormat(OptionFormat.Level);
+
 
         /*
          * Bomber
@@ -2449,6 +2435,32 @@ public static class Options
             .SetColor(new Color32(127, 140, 141, byte.MaxValue));
 
         Baker.SetupCustomOption();
+        /*
+ * Berserker
+ */
+        SetupRoleOptions(600, TabGroup.NeutralRoles, CustomRoles.Berserker);
+        BerserkerKillCooldown = FloatOptionItem.Create(602, "BerserkerKillCooldown", new(25f, 250f, 2.5f), 35f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker])
+            .SetValueFormat(OptionFormat.Seconds);
+        BerserkerMax = IntegerOptionItem.Create(603, "BerserkerMax", new(1, 10, 1), 4, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker])
+            .SetValueFormat(OptionFormat.Level);
+        BerserkerOneCanKillCooldown = BooleanOptionItem.Create(604, "BerserkerOneCanKillCooldown", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
+        BerserkerOneKillCooldown = FloatOptionItem.Create(605, "BerserkerOneKillCooldown", new(10f, 45f, 2.5f), 15f, TabGroup.NeutralRoles, false).SetParent(BerserkerOneCanKillCooldown)
+            .SetValueFormat(OptionFormat.Seconds);
+        BerserkerKillCooldownLevel = IntegerOptionItem.Create(606, "BerserkerLevelRequirement", new(1, 10, 1), 1, TabGroup.NeutralRoles, false).SetParent(BerserkerOneCanKillCooldown)
+            .SetValueFormat(OptionFormat.Level);
+        BerserkerTwoCanScavenger = BooleanOptionItem.Create(607, "BerserkerTwoCanScavenger", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
+        BerserkerScavengerLevel = IntegerOptionItem.Create(608, "BerserkerLevelRequirement", new(1, 10, 1), 2, TabGroup.NeutralRoles, false).SetParent(BerserkerTwoCanScavenger)
+            .SetValueFormat(OptionFormat.Level);
+        BerserkerThreeCanBomber = BooleanOptionItem.Create(609, "BerserkerThreeCanBomber", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
+        BerserkerBomberLevel = IntegerOptionItem.Create(610, "BerserkerLevelRequirement", new(1, 10, 1), 3, TabGroup.NeutralRoles, false).SetParent(BerserkerThreeCanBomber)
+            .SetValueFormat(OptionFormat.Level);
+        //BerserkerFourCanFlash = BooleanOptionItem.Create(611, "BerserkerFourCanFlash", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
+        //BerserkerSpeed = FloatOptionItem.Create(611, "BerserkerSpeed", new(1.5f, 5f, 0.25f), 2.5f, TabGroup.NeutralRoles, false).SetParent(BerserkerOneCanKillCooldown)
+        //    .SetValueFormat(OptionFormat.Multiplier);
+        BerserkerFourCanNotKill = BooleanOptionItem.Create(612, "BerserkerFourCanNotKill", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
+        BerserkerImmortalLevel = IntegerOptionItem.Create(613, "BerserkerLevelRequirement", new(1, 10, 1), 4, TabGroup.NeutralRoles, false).SetParent(BerserkerFourCanNotKill)
+            .SetValueFormat(OptionFormat.Level);
+
 
         PlagueBearer.SetupCustomOption();
 

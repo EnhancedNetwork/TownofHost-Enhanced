@@ -267,6 +267,8 @@ static class CustomRolesHelper
             CustomRoles.ChiefOfPolice => RoleTypes.Impostor,
             CustomRoles.Quizmaster => RoleTypes.Impostor,
             CustomRoles.Baker => RoleTypes.Impostor,
+            CustomRoles.Berserker => RoleTypes.Impostor,
+            CustomRoles.War => RoleTypes.Impostor,
             _ => RoleTypes.GuardianAngel
         };
     }
@@ -411,6 +413,8 @@ static class CustomRolesHelper
             CustomRoles.Bandit or
             CustomRoles.Pestilence or
             CustomRoles.PlagueBearer or
+            CustomRoles.Baker or
+            CustomRoles.Famine or
             CustomRoles.Agitater or
             CustomRoles.Innocent or
             CustomRoles.Vulture or
@@ -434,6 +438,7 @@ static class CustomRolesHelper
        //     CustomRoles.PotionMaster or
             CustomRoles.Doomsayer or
             CustomRoles.SoulCollector or
+            CustomRoles.Death or
             CustomRoles.Pirate or
             CustomRoles.Seeker or
             CustomRoles.Pixie or
@@ -469,6 +474,8 @@ static class CustomRolesHelper
             CustomRoles.Traitor or
             CustomRoles.Virus or
             CustomRoles.Spiritcaller or
+            CustomRoles.Berserker or
+            CustomRoles.War or
             CustomRoles.Succubus;
     }
 
@@ -527,9 +534,6 @@ static class CustomRolesHelper
             CustomRoles.Opportunist or
             CustomRoles.Pursuer or
             CustomRoles.Shaman or
-            CustomRoles.SoulCollector or
-            CustomRoles.PlagueBearer or
-            CustomRoles.Baker or
             CustomRoles.NWitch or
             CustomRoles.CursedSoul or
             CustomRoles.Doomsayer or
@@ -612,7 +616,10 @@ static class CustomRolesHelper
             CustomRoles.SoulCollector or
             CustomRoles.Death or
             CustomRoles.Baker or
-            CustomRoles.Famine;
+            CustomRoles.Famine or
+            CustomRoles.Berserker or
+            CustomRoles.War;
+
     }
     public static bool IsSnitchTarget(this CustomRoles role)
     {
@@ -698,7 +705,6 @@ static class CustomRolesHelper
             CustomRoles.Undertaker or
             CustomRoles.RiftMaker or
             CustomRoles.Assassin or
-            CustomRoles.Berserker or
             CustomRoles.Hacker or
             CustomRoles.Visionary or
             CustomRoles.Miner or
@@ -840,6 +846,8 @@ static class CustomRolesHelper
             CustomRoles.Doomsayer or
             CustomRoles.Spiritcaller or
             CustomRoles.SchrodingersCat or
+            CustomRoles.Berserker or
+            CustomRoles.War or
             CustomRoles.Quizmaster;
     }
 /*    public static bool IsCoven(this CustomRoles role)
@@ -893,7 +901,6 @@ static class CustomRolesHelper
             CustomRoles.Necromancer or
             CustomRoles.Pirate or
             CustomRoles.Provocateur or
-            CustomRoles.SoulCollector or
             CustomRoles.Wraith or
             CustomRoles.Juggernaut or
             CustomRoles.Pelican or
@@ -982,6 +989,8 @@ static class CustomRolesHelper
             CustomRoles.Pixie or
             CustomRoles.Seeker or
             CustomRoles.SchrodingersCat or
+            CustomRoles.Berserker or
+            CustomRoles.War or
             CustomRoles.Quizmaster;
     }
     public static bool IsMadmate(this CustomRoles role)
@@ -1524,7 +1533,6 @@ static class CustomRolesHelper
 
             case CustomRoles.Mare:
                 if (pc.Is(CustomRoles.Underdog)
-                    || pc.Is(CustomRoles.Berserker)
                     || pc.Is(CustomRoles.Inhibitor)
                     || pc.Is(CustomRoles.Saboteur)
                     || pc.Is(CustomRoles.Swift)
@@ -1901,6 +1909,8 @@ static class CustomRolesHelper
            CustomRoles.Death => CountTypes.Apocalypse,
            CustomRoles.Baker => CountTypes.Apocalypse,
            CustomRoles.Famine => CountTypes.Apocalypse,
+           CustomRoles.Berserker => CountTypes.Apocalypse,
+           CustomRoles.War => CountTypes.Apocalypse,
            CustomRoles.Agitater => CountTypes.Agitater,
            CustomRoles.Parasite => CountTypes.Impostor,
            CustomRoles.NSerialKiller => CountTypes.NSerialKiller,

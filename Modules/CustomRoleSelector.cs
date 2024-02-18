@@ -22,6 +22,7 @@ internal class CustomRoleSelector
         int optImpNum = Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors);
         int optNonNeutralKillingNum = 0;
         int optNeutralKillingNum = 0;
+        int optNeutralApocalypseNum = 0;
 
         if (Options.NonNeutralKillingRolesMaxPlayer.GetInt() > 0 && Options.NonNeutralKillingRolesMaxPlayer.GetInt() >= Options.NonNeutralKillingRolesMinPlayer.GetInt())
         {
@@ -31,10 +32,15 @@ internal class CustomRoleSelector
         {
             optNeutralKillingNum = rd.Next(Options.NeutralKillingRolesMinPlayer.GetInt(), Options.NeutralKillingRolesMaxPlayer.GetInt() + 1);
         }
+        if (Options.NeutralApocalypseRolesMaxPlayer.GetInt() > 0 && Options.NeutralApocalypseRolesMaxPlayer.GetInt() >= Options.NeutralApocalypseRolesMinPlayer.GetInt())
+        {
+            optNeutralApocalypseNum = rd.Next(Options.NeutralApocalypseRolesMinPlayer.GetInt(), Options.NeutralApocalypseRolesMaxPlayer.GetInt() + 1);
+        }
 
         int readyRoleNum = 0;
         int readyNonNeutralKillingNum = 0;
         int readyNeutralKillingNum = 0;
+        int readyNeutralApocalypseNum = 0;
 
         List<CustomRoles> rolesToAssign = [];
         List<CustomRoles> roleList = [];
@@ -50,6 +56,9 @@ internal class CustomRoleSelector
 
         List<CustomRoles> NeutralKillingOnList = [];
         List<CustomRoles> NeutralKillingRateList = [];
+
+        List<CustomRoles> NeutralApocalypseOnList = [];
+        List<CustomRoles> NeutralApocalypseRateList = [];
 
         List<CustomRoles> roleRateList = [];
 
@@ -111,16 +120,18 @@ internal class CustomRoleSelector
             else if (role.IsMini()) MiniOnList.Add(role);
             else if (role.IsNonNK()) NonNeutralKillingOnList.Add(role);
             else if (role.IsNK()) NeutralKillingOnList.Add(role);
+            else if (role.IsNA()) NeutralApocalypseOnList.Add(role);
             else roleOnList.Add(role);
         }
         // 职业设置为：启用
         foreach (var role in roleList.ToArray()) if (role.GetMode() == 1)
         {
-            if (role.IsImpostor()) ImpRateList.Add(role);
-            else if (role.IsMini()) MiniRateList.Add(role);
-            else if (role.IsNonNK()) NonNeutralKillingRateList.Add(role);
-            else if (role.IsNK()) NeutralKillingRateList.Add(role);
-            else roleRateList.Add(role);
+                if (role.IsImpostor()) ImpRateList.Add(role);
+                else if (role.IsMini()) MiniRateList.Add(role);
+                else if (role.IsNonNK()) NonNeutralKillingRateList.Add(role);
+                else if (role.IsNK()) NeutralKillingRateList.Add(role);
+                else if (role.IsNA()) NeutralApocalypseRateList.Add(role);
+                else roleRateList.Add(role);
         }
 
         while (MiniOnList.Count == 1)
@@ -235,7 +246,32 @@ internal class CustomRoleSelector
                 if (readyNeutralKillingNum >= optNeutralKillingNum) break;
             }
         }
-
+        // Select NeutralApocalypse "Always"
+        while (NeutralApocalypseOnList.Count > 0 && optNeutralApocalypseNum > 0)
+        {
+            var select = NeutralApocalypseOnList[rd.Next(0, NeutralApocalypseOnList.Count)];
+            NeutralApocalypseOnList.Remove(select);
+            rolesToAssign.Add(select);
+            readyRoleNum++;
+            readyNeutralApocalypseNum += select.GetCount();
+            Logger.Info(select.ToString() + " Add to NeutralApocalypse waiting list (priority)", "CustomRoleSelector");
+            if (readyRoleNum >= playerCount) goto EndOfAssign;
+            if (readyNeutralApocalypseNum >= optNeutralApocalypseNum) break;
+        }
+        if (readyRoleNum < playerCount && readyNeutralApocalypseNum < optNeutralApocalypseNum)
+        {
+            while (NeutralApocalypseRateList.Count > 0 && optNeutralApocalypseNum > 0)
+            {
+                var select = NeutralApocalypseRateList[rd.Next(0, NeutralApocalypseRateList.Count)];
+                NeutralApocalypseRateList.Remove(select);
+                rolesToAssign.Add(select);
+                readyRoleNum++;
+                readyNeutralApocalypseNum += select.GetCount();
+                Logger.Info(select.ToString() + " Add to NeutralApocalypse waiting list", "CustomRoleSelector");
+                if (readyRoleNum >= playerCount) goto EndOfAssign;
+                if (readyNeutralApocalypseNum >= optNeutralApocalypseNum) break;
+            }
+        }
         // Select Crewmates "Always"
         while (roleOnList.Count > 0)
         {

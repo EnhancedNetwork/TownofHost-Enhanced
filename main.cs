@@ -553,7 +553,6 @@ public enum CustomRoles
     Hacker, //anonymous
     AntiAdminer,
     Bard,
-    Berserker,
     Blackmailer,
     Bomber,
     BountyHunter,
@@ -714,6 +713,7 @@ public enum CustomRoles
     Arsonist,
     Baker,
     Bandit,
+    Berserker,
     BloodKnight,
     Collector,
     Succubus, //cultist
@@ -779,6 +779,7 @@ public enum CustomRoles
     VengefulRomantic,
     Virus,
     Vulture,
+    War,
     Werewolf,
     NWitch, //witch
     Workaholic,
