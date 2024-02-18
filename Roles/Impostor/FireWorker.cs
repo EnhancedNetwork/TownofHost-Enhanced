@@ -98,7 +98,7 @@ public static class Fireworker
         return canUse;
     }
 
-    public static void ShapeShiftState(PlayerControl pc, bool shapeshifting)
+    public static void ShapeShiftState(PlayerControl pc, bool shapeshifting, bool shapeshiftIsHidden = false)
     {
         Logger.Info($"Fireworker ShapeShift", "Fireworker");
         if (pc == null || pc.Data.IsDead || !shapeshifting || Pelican.IsEaten(pc.PlayerId) || Medic.ProtectList.Contains(pc.PlayerId)) return;
@@ -106,7 +106,11 @@ public static class Fireworker
         {
             case FireworkerState.Initial:
             case FireworkerState.SettingFireworker:
-                Logger.Info("花火を一個設置", "Fireworker");
+                Logger.Info("One firework set up", "Fireworker");
+
+                if (shapeshiftIsHidden)
+                    pc.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+
                 FireworkerPosition[pc.PlayerId].Add(pc.transform.position);
                 nowFireworkerCount[pc.PlayerId]--;
                 state[pc.PlayerId] = nowFireworkerCount[pc.PlayerId] == 0
@@ -114,7 +118,7 @@ public static class Fireworker
                     : FireworkerState.SettingFireworker;
                 break;
             case FireworkerState.ReadyFire:
-                Logger.Info("花火を爆破", "Fireworker");
+                Logger.Info("Blowing up fireworks", "Fireworker");
                 bool suicide = false;
                 foreach (var target in Main.AllAlivePlayerControls)
                 {

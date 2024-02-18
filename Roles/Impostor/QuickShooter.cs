@@ -33,6 +33,11 @@ internal static class QuickShooter
         ShotLimit = [];
         IsEnable = false;
     }
+    public static void ApplyGameOptions()
+    {
+        AURoleOptions.ShapeshifterCooldown = ShapeshiftCooldown.GetFloat();
+        AURoleOptions.ShapeshifterDuration = 1f;
+    }
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);

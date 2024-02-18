@@ -169,6 +169,9 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.BountyHunter:
                 BountyHunter.ApplyGameOptions();
                 break;
+            case CustomRoles.Sniper:
+                Sniper.ApplyGameOptions(player);
+                break;
             case CustomRoles.Sheriff:
             case CustomRoles.Jailer:
             case CustomRoles.SwordsMan:
@@ -414,7 +417,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.ShapeshifterDuration = Options.ShapeImperiusCurseShapeshiftDuration.GetFloat();
                 break;
             case CustomRoles.QuickShooter:
-                AURoleOptions.ShapeshifterCooldown = QuickShooter.ShapeshiftCooldown.GetFloat();
+                QuickShooter.ApplyGameOptions();
                 break;
             case CustomRoles.Camouflager:
                 Camouflager.ApplyGameOptions();

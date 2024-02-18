@@ -1518,6 +1518,321 @@ class  RpcMurderPlayerPatch
         // There is no need to include DecisionByHost. DecisionByHost will make client check protection locally and cause confusion.
     }
 }
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckShapeshift))]
+public static class CheckShapeShiftPatch
+{
+    public static void RejectShapeshiftAndReset(this PlayerControl player, bool reset = true)
+    {
+        player.RpcRejectShapeshift();
+        if (reset) player.RpcResetAbilityCooldown();
+        Logger.Info($"Rejected {player.GetRealName()} shapeshift & " + (reset ? "Reset cooldown" : "Not Reset cooldown"), "RejectShapeshiftAndReset");
+    }
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool shouldAnimate)
+    {
+        if (!AmongUsClient.Instance.AmHost || !GameStates.IsModHost) return true;
+        if (!Options.DisableShapeshiftAnimations.GetBool()) return true;
+
+        var shapeshifter = __instance;
+        var role = shapeshifter.GetCustomRole();
+
+        // Always show
+        if (role is CustomRoles.ShapeshifterTOHE or CustomRoles.ShapeMaster) return true;
+
+        // Check Sniper settings conditions
+        if (role is CustomRoles.Sniper && Sniper.ShowShapeshiftAnimations) return true;
+
+        Logger.Info($"{shapeshifter.GetRealName()} => {target.GetRealName()}, shouldAnimate = {shouldAnimate}", "Check ShapeShift");
+
+        if (role.GetVNRole() != CustomRoles.Shapeshifter)
+        {
+            shapeshifter.RejectShapeshiftAndReset();
+            Logger.Info($"Rejected bcz {shapeshifter.GetRealName()} is not shapeshifter in mod roles", "Check ShapeShift");
+            return false;
+        }
+
+        if (!shapeshifter.IsAlive())
+        {
+            shapeshifter.RejectShapeshiftAndReset();
+            Logger.Info($"Rejected bcz {shapeshifter.GetRealName()} is dead", "Check ShapeShift");
+            return false;
+        }
+
+        bool shapeshifting = shapeshifter.PlayerId != target.PlayerId;
+
+        switch (role)
+        {
+            case CustomRoles.BountyHunter:
+                Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
+                shapeshifter.RejectShapeshiftAndReset(false);
+                return false;
+
+            case CustomRoles.Penguin:
+                Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
+                shapeshifter.RejectShapeshiftAndReset(false);
+                return false;
+
+            case CustomRoles.SerialKiller:
+                Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
+                shapeshifter.RejectShapeshiftAndReset(false);
+                return false;
+
+            case CustomRoles.Sniper:
+                Sniper.OnShapeshift(shapeshifter, false, shapeshiftIsHidden: true);
+                shapeshifter.RejectShapeshiftAndReset();
+                return false;
+
+            case CustomRoles.Warlock:
+                shapeshifter.RejectShapeshiftAndReset();
+                if (Main.CursedPlayers[shapeshifter.PlayerId] != null)
+                {
+                    if (Main.CursedPlayers[shapeshifter.PlayerId].IsAlive())
+                    {
+                        var cp = Main.CursedPlayers[shapeshifter.PlayerId];
+                        Vector2 cppos = cp.transform.position;
+                        Dictionary<PlayerControl, float> cpdistance = [];
+                        float dis;
+                        foreach (PlayerControl p in Main.AllAlivePlayerControls)
+                        {
+                            if (p.PlayerId == cp.PlayerId) continue;
+                            if (!Options.WarlockCanKillSelf.GetBool() && p.PlayerId == shapeshifter.PlayerId) continue;
+                            if (!Options.WarlockCanKillAllies.GetBool() && p.GetCustomRole().IsImpostor()) continue;
+                            if (p.Is(CustomRoles.Glitch)) continue;
+                            if (p.Is(CustomRoles.Pestilence)) continue;
+                            if (Pelican.IsEaten(p.PlayerId) || Medic.ProtectList.Contains(p.PlayerId)) continue;
+                            dis = Vector2.Distance(cppos, p.transform.position);
+                            cpdistance.Add(p, dis);
+                            Logger.Info($"{p?.Data?.PlayerName}の位置{dis}", "Warlock");
+                        }
+                        if (cpdistance.Count >= 1)
+                        {
+                            var min = cpdistance.OrderBy(c => c.Value).FirstOrDefault(); // Retrieve the smallest value
+                            PlayerControl targetw = min.Key;
+                            if (cp.RpcCheckAndMurder(targetw, true))
+                            {
+                                targetw.SetRealKiller(shapeshifter);
+                                Logger.Info($"{targetw.GetNameWithRole()} was killed", "Warlock");
+                                cp.RpcMurderPlayerV3(targetw);//殺す
+                                shapeshifter.SetKillCooldown(forceAnime: true);
+                                shapeshifter.Notify(GetString("WarlockControlKill"));
+                            }
+                        }
+                        else
+                        {
+                            shapeshifter.Notify(GetString("WarlockNoTarget"));
+                        }
+                        Main.isCurseAndKill[shapeshifter.PlayerId] = false;
+                    }
+                    else
+                    {
+                        shapeshifter.Notify(GetString("WarlockTargetDead"));
+                    }
+                    Main.CursedPlayers[shapeshifter.PlayerId] = null;
+                }
+                else
+                {
+                    shapeshifter.Notify(GetString("WarlockNoTargetYet"));
+                }
+                return false;
+
+            case CustomRoles.Undertaker:
+                Undertaker.OnShapeshift(shapeshifter, shapeshifting);
+                shapeshifter.RejectShapeshiftAndReset();
+                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+                return false;
+
+            case CustomRoles.Fireworker:
+                Fireworker.ShapeShiftState(shapeshifter, shapeshifting, shapeshiftIsHidden: true);
+                shapeshifter.RejectShapeshiftAndReset();
+                return false;
+
+            case CustomRoles.EvilTracker:
+                EvilTracker.OnShapeshift(shapeshifter, target, shapeshifting, shapeshiftIsHidden: true);
+                shapeshifter.RejectShapeshiftAndReset();
+                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+                return false;
+
+            case CustomRoles.Miner:
+                shapeshifter.RejectShapeshiftAndReset();
+                if (Main.LastEnteredVent.ContainsKey(shapeshifter.PlayerId))
+                {
+                    var lastVentPosition = Main.LastEnteredVentLocation[shapeshifter.PlayerId];
+                    Logger.Info($"Miner - {shapeshifter.GetNameWithRole()}:{lastVentPosition}", "MinerTeleport");
+                    shapeshifter.RpcTeleport(lastVentPosition);
+                    shapeshifter.RPCPlayCustomSound("Teleport");
+                }
+                return false;
+
+            case CustomRoles.Anonymous:
+                Anonymous.OnShapeshift(shapeshifter, shapeshifting, target);
+                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+                shapeshifter.RejectShapeshiftAndReset();
+                return false;
+
+            case CustomRoles.Assassin:
+                Assassin.OnShapeshift(shapeshifter, shapeshifting, shapeshiftIsHidden: true);
+                return false;
+
+            case CustomRoles.Escapist:
+                if (Main.EscapistLocation.TryGetValue(shapeshifter.PlayerId, out var position))
+                {
+                    Main.EscapistLocation.Remove(shapeshifter.PlayerId);
+                    Logger.Info($"{shapeshifter.GetNameWithRole()}:{position}", "Escapist Teleport");
+                    shapeshifter.RpcTeleport(position);
+                    shapeshifter.RPCPlayCustomSound("Teleport");
+                }
+                else
+                {
+                    Main.EscapistLocation.Add(shapeshifter.PlayerId, shapeshifter.GetCustomPosition());
+                    shapeshifter.Notify(GetString("EscapisMtarkedPosition"));
+                }
+                shapeshifter.RejectShapeshiftAndReset();
+                return false;
+
+            case CustomRoles.Bomber:
+                shapeshifter.RejectShapeshiftAndReset();
+                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+                Logger.Info("The bomb went off", "Bomber");
+                CustomSoundsManager.RPCPlayCustomSoundAll("Boom");
+                foreach (var tg in Main.AllPlayerControls)
+                {
+                    if (!tg.IsModClient()) tg.KillFlash();
+                    var pos = shapeshifter.transform.position;
+                    var dis = Vector2.Distance(pos, tg.transform.position);
+
+                    if (!tg.IsAlive() || Pelican.IsEaten(tg.PlayerId) || Medic.ProtectList.Contains(tg.PlayerId) || (tg.Is(CustomRoleTypes.Impostor) && Options.ImpostorsSurviveBombs.GetBool()) || tg.inVent || tg.Is(CustomRoles.Pestilence) || tg.Is(CustomRoles.Solsticer)) continue;
+                    if (dis > Options.BomberRadius.GetFloat()) continue;
+                    if (tg.PlayerId == shapeshifter.PlayerId) continue;
+
+                    Main.PlayerStates[tg.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
+                    tg.SetRealKiller(shapeshifter);
+                    tg.RpcMurderPlayerV3(tg);
+                    Medic.IsDead(tg);
+                }
+                _ = new LateTask(() =>
+                {
+                    var totalAlive = Main.AllAlivePlayerControls.Length;
+                    if (Options.BomberDiesInExplosion.GetBool())
+                    {
+                        if (totalAlive > 0 && !GameStates.IsEnded)
+                        {
+                            Main.PlayerStates[shapeshifter.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
+                            shapeshifter.RpcMurderPlayerV3(shapeshifter);
+                        }
+                    }
+                    Utils.NotifyRoles();
+                }, 0.3f, "Bomber Suiscide");
+                return false;
+
+            case CustomRoles.Nuker:
+                shapeshifter.RejectShapeshiftAndReset();
+                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+                Logger.Info("The bomb went off", "Nuker");
+                CustomSoundsManager.RPCPlayCustomSoundAll("Boom");
+                foreach (var tg in Main.AllPlayerControls)
+                {
+                    if (!tg.IsModClient()) tg.KillFlash();
+                    var pos = shapeshifter.transform.position;
+                    var dis = Vector2.Distance(pos, tg.transform.position);
+
+                    if (!tg.IsAlive() || Pelican.IsEaten(tg.PlayerId) || Medic.ProtectList.Contains(tg.PlayerId) || tg.inVent || tg.Is(CustomRoles.Pestilence) || tg.Is(CustomRoles.Solsticer)) continue;
+                    if (dis > Options.NukeRadius.GetFloat()) continue;
+                    if (tg.PlayerId == shapeshifter.PlayerId) continue;
+
+                    Main.PlayerStates[tg.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
+                    tg.SetRealKiller(shapeshifter);
+                    tg.RpcMurderPlayerV3(tg);
+                    Medic.IsDead(tg);
+                }
+                _ = new LateTask(() =>
+                {
+                    var totalAlive = Main.AllAlivePlayerControls.Length;
+                    if (totalAlive > 0 && !GameStates.IsEnded)
+                    {
+                        Main.PlayerStates[shapeshifter.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
+                        shapeshifter.RpcMurderPlayerV3(shapeshifter);
+                    }
+                    Utils.NotifyRoles();
+                }, 0.3f, "Nuker");
+                return false;
+
+            case CustomRoles.Camouflager:
+                if (Camouflager.AbilityActivated)
+                {
+                    Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
+                    shapeshifter.RejectShapeshiftAndReset(reset: false);
+                    return false;
+                }
+                Camouflager.OnShapeshift(shapeshifter, shapeshiftIsHidden: true);
+                shapeshifter.RejectShapeshiftAndReset();
+                return false;
+
+            case CustomRoles.QuickShooter:
+                QuickShooter.OnShapeshift(shapeshifter, shapeshifting);
+                shapeshifter.RejectShapeshiftAndReset();
+                return false;
+
+            case CustomRoles.Dazzler:
+                Dazzler.OnShapeshift(shapeshifter, target);
+                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+                shapeshifter.RejectShapeshiftAndReset();
+                return false;
+
+            case CustomRoles.Devourer:
+                Devourer.OnShapeshift(shapeshifter, target);
+                shapeshifter.RejectShapeshiftAndReset();
+                return false;
+
+            case CustomRoles.ImperiusCurse:
+                shapeshifter.RejectShapeshiftAndReset();
+                _ = new LateTask(() =>
+                {
+                    if (shapeshifter.CanBeTeleported() && target.CanBeTeleported())
+                    {
+                        var originPs = target.GetCustomPosition();
+                        target.RpcTeleport(shapeshifter.GetCustomPosition());
+                        shapeshifter.RpcTeleport(originPs);
+
+                        shapeshifter.RPCPlayCustomSound("Teleport");
+                        target.RPCPlayCustomSound("Teleport");
+                    }
+                }, 0.2f, "Soul Catcher (ImperiusCurse) teleport");
+                return false;
+
+            case CustomRoles.Deathpact:
+                Deathpact.OnShapeshift(shapeshifter, target);
+                shapeshifter.RejectShapeshiftAndReset();
+                return false;
+
+            case CustomRoles.Blackmailer:
+                Blackmailer.OnShapeshift(shapeshifter, target);
+                shapeshifter.RejectShapeshiftAndReset();
+                return false;
+
+            case CustomRoles.RiftMaker:
+                RiftMaker.OnShapeshift(shapeshifter, shapeshifting);
+                shapeshifter.RejectShapeshiftAndReset();
+                return false;
+
+            case CustomRoles.Twister:
+                shapeshifter.RejectShapeshiftAndReset();
+                Twister.TwistPlayers(shapeshifter, shapeshiftIsHidden: true);
+                return false;
+
+            case CustomRoles.Pitfall:
+                Pitfall.OnShapeshift(shapeshifter);
+                shapeshifter.RejectShapeshiftAndReset();
+                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+                return false;
+
+            case CustomRoles.Disperser:
+                shapeshifter.RejectShapeshiftAndReset();
+                Disperser.DispersePlayers(shapeshifter, shapeshiftIsHidden: true);
+                return false;
+        }
+
+        return true;
+    }
+}
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Shapeshift))]
 class ShapeshiftPatch
 {
@@ -1606,9 +1921,8 @@ class ShapeshiftPatch
                 case CustomRoles.Escapist:
                     if (shapeshifting)
                     {
-                        if (Main.EscapistLocation.ContainsKey(shapeshifter.PlayerId))
+                        if (Main.EscapistLocation.TryGetValue(shapeshifter.PlayerId, out var position))
                         {
-                            var position = Main.EscapistLocation[shapeshifter.PlayerId];
                             Main.EscapistLocation.Remove(shapeshifter.PlayerId);
                             Logger.Msg($"{shapeshifter.GetNameWithRole()}:{position}", "EscapistTeleport");
                             shapeshifter.RpcTeleport(position);
@@ -1617,17 +1931,17 @@ class ShapeshiftPatch
                         else
                         {
                             Main.EscapistLocation.Add(shapeshifter.PlayerId, shapeshifter.GetCustomPosition());
+                            shapeshifter.Notify(GetString("EscapisMtarkedPosition"));
                         }
                     }
                     break;
                 case CustomRoles.Miner:
-                    if (Main.LastEnteredVent.ContainsKey(shapeshifter.PlayerId))
+                    if (shapeshifting && Main.LastEnteredVent.ContainsKey(shapeshifter.PlayerId))
                     {
-                        int ventId = Main.LastEnteredVent[shapeshifter.PlayerId].Id;
-                        var vent = Main.LastEnteredVent[shapeshifter.PlayerId];
-                        var position = Main.LastEnteredVentLocation[shapeshifter.PlayerId];
-                        Logger.Msg($"{shapeshifter.GetNameWithRole()}:{position}", "MinerTeleport");
-                        shapeshifter.RpcTeleport(position);
+                        var lastVentPosition = Main.LastEnteredVentLocation[shapeshifter.PlayerId];
+                        Logger.Info($"Miner - {shapeshifter.GetNameWithRole()}:{lastVentPosition}", "MinerTeleport");
+                        shapeshifter.RpcTeleport(lastVentPosition);
+                        shapeshifter.RPCPlayCustomSound("Teleport");
                     }
                     break;
                 case CustomRoles.Bomber:
@@ -1701,20 +2015,21 @@ class ShapeshiftPatch
                 case CustomRoles.Assassin:
                     Assassin.OnShapeshift(shapeshifter, shapeshifting);
                     break;
-                case CustomRoles.Penguin:
-                    break;
                 case CustomRoles.ImperiusCurse:
                     if (shapeshifting)
                     {
                         _ = new LateTask(() =>
                         {
-                            if (!(!GameStates.IsInTask || !shapeshifter.CanBeTeleported() || !target.CanBeTeleported()))
+                            if (shapeshifter.CanBeTeleported() && target.CanBeTeleported())
                             {
                                 var originPs = target.GetCustomPosition();
                                 target.RpcTeleport(shapeshifter.GetCustomPosition());
                                 shapeshifter.RpcTeleport(originPs);
+
+                                shapeshifter.RPCPlayCustomSound("Teleport");
+                                target.RPCPlayCustomSound("Teleport");
                             }
-                        }, 1.5f, "ImperiusCurse TP");
+                        }, 1.5f, "Soul Catcher (ImperiusCurse) teleport");
                     }
                     break;
                 case CustomRoles.QuickShooter:
@@ -1754,14 +2069,7 @@ class ShapeshiftPatch
                     break;
                 case CustomRoles.Blackmailer:
                     if (shapeshifting)
-                    {
-                        if (!target.IsAlive())
-                        {
-                            NameNotifyManager.Notify(__instance, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Scavenger), GetString("NotAssassin")));
-                            break;
-                        }
-                        Blackmailer.ForBlackmailer.Add(target.PlayerId);
-                    }
+                        Blackmailer.OnShapeshift(shapeshifter, target);
                     break;
             }
         }
@@ -1831,7 +2139,7 @@ class ReportDeadBodyPatch
             if (!(target != null && target.Object.Is(CustomRoles.Bait) && Bait.BaitCanBeReportedUnderAllConditions.GetBool()))
             {
                 // Camouflager
-                if (Camouflager.DisableReportWhenCamouflageIsActive.GetBool() && Camouflager.AbilityActivated && !(Utils.IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool())) return false;
+                if (Camouflager.DisableReportWhenCamouflageIsActive && Camouflager.AbilityActivated && !(Utils.IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool())) return false;
 
                 // Comms Camouflage
                 if (Options.DisableReportWhenCC.GetBool() && Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive) return false;
@@ -2631,6 +2939,10 @@ class FixedUpdateInNormalGamePatch
 
                     case CustomRoles.Poisoner:
                         Poisoner.OnFixedUpdate(player);
+                        break;
+
+                    case CustomRoles.Camouflager when Camouflager.ShapeshiftIsHidden && Camouflager.AbilityActivated:
+                        Camouflager.OnFixedUpdate(player);
                         break;
 
                     case CustomRoles.Mercenary:
