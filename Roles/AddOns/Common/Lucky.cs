@@ -12,7 +12,7 @@ public static class Lucky
     public static OptionItem CrewCanBeLucky;
     public static OptionItem NeutralCanBeLucky;
 
-    public static Dictionary<byte, bool> LuckyAvoid;
+    private static Dictionary<byte, bool> LuckyAvoid;
 
     public static void SetupCustomOptions()
     {
