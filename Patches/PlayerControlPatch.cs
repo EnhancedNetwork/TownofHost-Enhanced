@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
+using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -1313,7 +1314,7 @@ class ExilePlayerFix
 {    
     public static void Postfix(PlayerControl __instance)
     {
-        CustomRoleSelector.GhostAssignPatch(__instance);
+        GhostRoleAssign.GhostAssignPatch(__instance);
     }
 }
 
@@ -1584,11 +1585,10 @@ class MurderPlayerPatch
         //================GHOST ASSIGN PATCH============
         if (target.Is(CustomRoles.EvilSpirit))
         {
-            Main.rejectghost.Add(target.PlayerId);
             target.RpcSetRole(RoleTypes.GuardianAngel);
         }
 
-        CustomRoleSelector.GhostAssignPatch(target);
+        GhostRoleAssign.GhostAssignPatch(target);
 
         
 
