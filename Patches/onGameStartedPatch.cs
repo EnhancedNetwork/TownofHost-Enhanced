@@ -9,6 +9,7 @@ using TOHE.Modules.ChatManager;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -105,7 +106,6 @@ internal class ChangeRoleSettings
             Main.GrenadierBlinding = [];
             Main.LighterNumOfUsed = [];
             Main.Lighter = [];
-            Main.rejectghost = [];
             Main.AllKillers = [];
             Main.MadGrenadierBlinding = [];
             Main.CursedWolfSpellCount = [];
@@ -160,6 +160,8 @@ internal class ChangeRoleSettings
             //名前の記録
             //Main.AllPlayerNames = [];
             RPC.SyncAllPlayerNames();
+
+            GhostRoleAssign.Init();
 
             Camouflage.Init();
 
@@ -576,6 +578,8 @@ internal class SelectRolesPatch
             if (CustomRoles.Lovers.IsEnable() && (CustomRoles.Hater.IsEnable() ? -1 : rd.Next(1, 100)) <= Options.LoverSpawnChances.GetInt()) AssignLoversRolesFromList();
 
             AssignAddonRoles();
+
+            GhostRoleAssign.Add();
 
             //RPCによる同期
             foreach (var pair in Main.PlayerStates)

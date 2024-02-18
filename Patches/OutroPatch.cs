@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
+using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -22,10 +23,10 @@ class EndGamePatch
     public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ref EndGameResult endGameResult)
     {
         GameStates.InGame = false;
-        foreach (var pvc in CustomRoleSelector.GhostGetPreviousRole.Keys) // Sets role back to original so it shows up in /l results.
+        foreach (var pvc in GhostRoleAssign.GhostGetPreviousRole.Keys) // Sets role back to original so it shows up in /l results.
         {
             // Currently not needed, but later might add exception handler.
-            CustomRoles prevrole = CustomRoleSelector.GhostGetPreviousRole[pvc];
+            CustomRoles prevrole = GhostRoleAssign.GhostGetPreviousRole[pvc];
             Main.PlayerStates[pvc].SetMainRole(prevrole);
 
             if (AmongUsClient.Instance.AmHost)
@@ -36,7 +37,7 @@ class EndGamePatch
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
             }
         }
-        CustomRoleSelector.GhostGetPreviousRole = [];
+        GhostRoleAssign.GhostGetPreviousRole = [];
 
         Logger.Info("-----------Game over-----------", "Phase");
         if (!GameStates.IsModHost) return;

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
+using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
@@ -1259,7 +1260,7 @@ class ExilePlayerFix
 {    
     public static void Postfix(PlayerControl __instance)
     {
-        CustomRoleSelector.GhostAssignPatch(__instance);
+        GhostRoleAssign.GhostAssignPatch(__instance);
     }
 }
 
@@ -1483,11 +1484,10 @@ class MurderPlayerPatch
         //================GHOST ASSIGN PATCH============
         if (target.Is(CustomRoles.EvilSpirit))
         {
-            Main.rejectghost.Add(target.PlayerId);
             target.RpcSetRole(RoleTypes.GuardianAngel);
         }
 
-        CustomRoleSelector.GhostAssignPatch(target);
+        GhostRoleAssign.GhostAssignPatch(target);
 
         
 
@@ -4107,7 +4107,7 @@ class PlayerControlSetRolePatch
                 var self = seer.PlayerId == target.PlayerId;
                 var seerIsKiller = seer.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(seer.PlayerId);
 
-                if (target.GetCustomRole().IsGhostRole())
+                if (target.GetCustomSubRoles().Any(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
                 {
                     ghostRoles[seer] = RoleTypes.GuardianAngel;
                 }
@@ -4120,7 +4120,7 @@ class PlayerControlSetRolePatch
                     ghostRoles[seer] = RoleTypes.CrewmateGhost;
                 }
             }
-            if (target.GetCustomRole().IsGhostRole())
+            if (target.GetCustomSubRoles().Any(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
             {
                 roleType = RoleTypes.GuardianAngel;
             }
