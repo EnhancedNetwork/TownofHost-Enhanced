@@ -162,6 +162,9 @@ public static class CopyCat
                 case CustomRoles.Investigator:
                     Investigator.Remove(pc.PlayerId);
                     break;
+                case CustomRoles.Farseer:
+                    Farseer.Remove(pc.PlayerId);
+                    break;
             }
 
             if (pc.GetCustomRole() != CustomRoles.Sidekick)
@@ -357,9 +360,11 @@ public static class CopyCat
                 case CustomRoles.Monitor:
                     Monitor.Add(pc.PlayerId);
                     break;
-
                 case CustomRoles.Investigator:
                     Investigator.Add(pc.PlayerId);
+                    break;
+                case CustomRoles.Farseer:
+                    Farseer.Add(pc.PlayerId);
                     break;
             }
 

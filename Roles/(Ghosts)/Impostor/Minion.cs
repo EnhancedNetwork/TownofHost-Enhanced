@@ -1,12 +1,11 @@
-﻿
-using static TOHE.Options;
+﻿using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
 public static class Minion
 {
-    private static readonly int Id = 19900;
+    private static readonly int Id = 27900;
 
     public static OptionItem AbilityCooldown;
     public static OptionItem AbilityTime;

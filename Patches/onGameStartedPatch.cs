@@ -25,6 +25,10 @@ internal class ChangeRoleSettings
     public static void Postfix(AmongUsClient __instance)
     {
         Main.OverrideWelcomeMsg = "";
+        Main.AssignRolesIsStarted = true;
+
+        Logger.Msg("Is Started", "AssignRoles");
+
         try
         {
             // Note: No positions are set at this time.
@@ -67,20 +71,13 @@ internal class ChangeRoleSettings
             Main.isCurseAndKill = [];
             Main.isCursed = false;
             Main.DetectiveNotify = [];
-            Main.SleuthNotify = [];
             Main.ForCrusade = [];
-            Main.KillGhoul = [];
             Main.CyberStarDead = [];
-            Main.CyberDead = [];
-            Main.KilledDiseased = [];
-            Main.KilledAntidote = [];
             Main.WorkaholicAlive = [];
-            Main.BaitAlive = [];
             Main.BoobyTrapBody = [];
             Main.TasklessCrewmate = [];
             Main.KillerOfBoobyTrapBody = [];
             Main.CleanerBodies = [];
-            Main.BurstBodies = [];
             Main.MedusaBodies = [];
             Main.InfectedBodies = [];
             Main.VirusNotify = [];
@@ -124,7 +121,6 @@ internal class ChangeRoleSettings
             Main.DovesOfNeaceNumOfUsed = [];
             Main.GodfatherTarget = [];
             Main.BerserkerKillMax = [];
-            Main.AwareInteracted = [];
             Main.CrewpostorTasksDone = [];
             Main.ShamanTarget = byte.MaxValue;
             Main.ShamanTargetChoosen = false;
@@ -261,6 +257,7 @@ internal class ChangeRoleSettings
             Pelican.Init();
             Counterfeiter.Init();
             Pursuer.Init();
+            Diseased.Init();
             Gangster.Init();
             Medic.Init();
             Gamer.Init();
@@ -269,12 +266,14 @@ internal class ChangeRoleSettings
             Greedier.Init();
             Observer.Init();
             Collector.Init();
+            Clumsy.Init();
             Benefactor.Init();
             Taskinator.Init();
             QuickShooter.Init();
             Kamikaze.Init();
             Camouflager.Init();
             Divinator.Init();
+            Aware.Init();
             Jailer.Init();
             Oracle.Init();
             Eraser.Init();
@@ -283,8 +282,10 @@ internal class ChangeRoleSettings
             Juggernaut.Init();
             Anonymous.Init();
             Psychic.Init();
+            Sleuth.Init();
             Glitch.Init();
             Huntsman.Init();
+            Bait.Init();
             Deputy.Init();
             Investigator.Init();
             Pickpocket.Init();
@@ -307,16 +308,19 @@ internal class ChangeRoleSettings
             Crusader.Init();
             CursedSoul.Init();
             Admirer.Init();
+            Antidote.Init();
             Imitator.Init();
             Medusa.Init();
             Marshall.Init();
             Amnesiac.Init();
             Farseer.Init();
+            Fool.Init();
             Infectious.Init();
             Monarch.Init();
             Virus.Init();
             Bloodhound.Init();
             Tracker.Init();
+            Burst.Init();
             Merchant.Init();
             Pyromaniac.Init();
             SerialKiller.Init();
@@ -348,10 +352,12 @@ internal class ChangeRoleSettings
             PlagueBearer.Init();
             Reverie.Init();
             Doomsayer.Init();
+            Lucky.Init();
             Pirate.Init();
             Pixie.Init();
             Shroud.Init();
             Werewolf.Init();
+            Bewilder.Init();
             Necromancer.Init();
             Chronomancer.Init();
             Seeker.Init();
@@ -360,6 +366,7 @@ internal class ChangeRoleSettings
             Swapper.Init();
             Enigma.Init();
             ChiefOfPolice.Init();
+            Cyber.Init();
             Mini.Init();
             Blackmailer.Init();
             Spy.Init();
@@ -369,8 +376,10 @@ internal class ChangeRoleSettings
             OverKiller.Init();
             Quizmaster.Init();
             Tired.Init();
+            Statue.Init();
+            Ghoul.Init();
             Rainbow.Init();
-            //Tricky.Init();
+            Unlucky.Init();
 
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
@@ -1080,7 +1089,7 @@ internal class SelectRolesPatch
                     switch (subRole)
                     {
                         case CustomRoles.Aware:
-                            Main.AwareInteracted[pc.PlayerId] = [];
+                            Aware.Add(pc.PlayerId);
                             break;
                         case CustomRoles.Oiiai:
                             Oiiai.Add(pc.PlayerId);
@@ -1090,6 +1099,36 @@ internal class SelectRolesPatch
                             break;
                         case CustomRoles.Rainbow:
                             Rainbow.Add();
+                            break;
+                        case CustomRoles.Statue:
+                            Statue.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.Ghoul:
+                            Ghoul.Add();
+                            break;
+                        case CustomRoles.Diseased:
+                            Diseased.Add();
+                            break;
+                        case CustomRoles.Antidote:
+                            Antidote.Add();
+                            break;
+                        case CustomRoles.Unlucky:
+                            Unlucky.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.Burst:
+                            Burst.Add();
+                            break;
+                        case CustomRoles.Bewilder:
+                            Bewilder.Add();
+                            break;
+                        case CustomRoles.Lucky:
+                            Lucky.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.Clumsy:
+                            Clumsy.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.Fool:
+                            Fool.Add();
                             break;
 
                         default:
@@ -1147,6 +1186,8 @@ internal class SelectRolesPatch
             Utils.CountAlivePlayers(true);
             Utils.SyncAllSettings();
             SetColorPatch.IsAntiGlitchDisabled = false;
+
+            Logger.Msg("Ended", "AssignRoles");
         }
         catch (Exception ex)
         {
@@ -1306,7 +1347,14 @@ internal class SelectRolesPatch
         if (count <= 0) return;
         for (var i = 0; i < count; i++)
         {
+            // if the number of all players is 0
+            if (allPlayers.Count <= 0) return;
+
+            // Select player
             var player = allPlayers[IRandom.Instance.Next(allPlayers.Count)];
+            allPlayers.Remove(player);
+
+            // Set Add-on
             Main.PlayerStates[player.PlayerId].SetSubRole(role);
             Logger.Info($"Registered Add-on: {player?.Data?.PlayerName} = {player.GetCustomRole()} + {role}", $"Assign {role}");
         }
