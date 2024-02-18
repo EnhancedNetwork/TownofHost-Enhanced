@@ -86,7 +86,7 @@ public static class Utils
         }
     }
 
-    public static void RpcTeleport(this PlayerControl player, Vector2 location, bool sendInfoInLogs = true)
+    public static void RpcTeleport(this PlayerControl player, Vector2 location, bool isRandomSpawn = false, bool sendInfoInLogs = true)
     {
         if (sendInfoInLogs)
         {
@@ -94,18 +94,36 @@ public static class Utils
             Logger.Info($" Player Id: {player.PlayerId}", "RpcTeleport");
         }
 
-        if (player.inVent
-            || player.MyPhysics.Animations.IsPlayingEnterVentAnimation())
+        // Don't check player status during random spawn
+        if (!isRandomSpawn)
         {
-            Logger.Info($"Target: ({player.GetNameWithRole().RemoveHtmlTags()}) in vent", "RpcTeleport");
-            player.MyPhysics.RpcBootFromVent(0);
-        }
+            var сancelTeleport = false;
 
-        if (player.onLadder
-            || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
-        {
-            Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) is in on Ladder", "RpcTeleport");
-            return;
+            if (player.inVent
+                || player.MyPhysics.Animations.IsPlayingEnterVentAnimation())
+            {
+                Logger.Info($"Target: ({player.GetNameWithRole().RemoveHtmlTags()}) in vent", "RpcTeleport");
+                сancelTeleport = true;
+            }
+
+            if (player.onLadder
+                || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+            {
+                Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) is in on Ladder", "RpcTeleport");
+                сancelTeleport = true;
+            }
+
+            if (player.inMovingPlat)
+            {
+                Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) use moving platform (Airship/Fungle)", "RpcTeleport");
+                сancelTeleport = true;
+            }
+
+            if (сancelTeleport)
+            {
+                player.Notify(ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ErrorTeleport")));
+                return;
+            }
         }
 
         var playerNetTransform = player.NetTransform;
