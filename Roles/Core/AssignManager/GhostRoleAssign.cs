@@ -1,16 +1,12 @@
 ﻿using AmongUs.GameOptions;
 using HarmonyLib;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TOHE.Roles.Core.AssignManager;
 
 public class GhostRoleAssign
 {
-    
     public static Dictionary<byte, CustomRoles> GhostGetPreviousRole = [];
     private static Dictionary<CustomRoles, int> getCount;
     public static void GhostAssignPatch(PlayerControl player)
@@ -86,8 +82,6 @@ public class GhostRoleAssign
                 }
             }
 
-
-
         if (IsCrewmate)
         {
             if (HauntedList.Count > 0)
@@ -112,7 +106,6 @@ public class GhostRoleAssign
             }
             return;
         }
-
 
         if (IsImpostor)
         {
@@ -145,7 +138,6 @@ public class GhostRoleAssign
         }
 
     }
-
     public static void Init() 
     {
         getCount = []; // Remove oldcount
