@@ -13,8 +13,8 @@ public static class Oiiai
     public static OptionItem CanBeOnCrew;
     public static OptionItem CanBeOnImp;
     public static OptionItem CanBeOnNeutral;
-    public static OptionItem CanPassOn;
-    public static OptionItem ChangeNeutralRole;
+    private static OptionItem CanPassOn;
+    private static OptionItem ChangeNeutralRole;
 
     public static readonly string[] NChangeRoles =
     [

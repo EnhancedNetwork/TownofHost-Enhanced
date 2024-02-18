@@ -53,6 +53,4 @@ public static class Bewilder
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, BewilderVision.GetFloat());
         }
     }
-
-
 }

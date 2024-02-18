@@ -10,6 +10,7 @@ public static class DoubleShot
     public static OptionItem ImpCanBeDoubleShot;
     public static OptionItem CrewCanBeDoubleShot;
     public static OptionItem NeutralCanBeDoubleShot;
+
     public static void SetupCustomOption()
     {
         SetupAdtRoleOptions(19200, CustomRoles.DoubleShot, canSetNum: true, tab: TabGroup.Addons);

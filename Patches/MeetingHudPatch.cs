@@ -484,7 +484,7 @@ class CheckForEndVotingPatch
         if (Options.ConfirmLoversOnEject.GetBool() && player.Is(CustomRoles.Lovers))
             coloredRole = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), coloredRole.RemoveHtmlTags());
 
-        if (Rascal.RascalAppearAsMadmate.GetBool() && player.Is(CustomRoles.Rascal))
+        if (Rascal.AppearAsMadmate(player))
             coloredRole = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetRoleString("Mad-") + coloredRole.RemoveHtmlTags());
 
         var name = "";

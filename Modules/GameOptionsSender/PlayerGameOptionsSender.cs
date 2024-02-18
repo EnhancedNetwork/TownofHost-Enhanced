@@ -532,7 +532,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 case CustomRoles.Torch:
                     Torch.ApplyGameOptions(opt);
                     break;
-                case CustomRoles.Tired when Tired.playerIdList.ContainsKey(player.PlayerId):
+                case CustomRoles.Tired:
                     Tired.ApplyGameOptions(opt, player);
                     break;
                 case CustomRoles.Bewilder:

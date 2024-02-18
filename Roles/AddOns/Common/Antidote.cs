@@ -12,10 +12,10 @@ public static class Antidote
     public static OptionItem ImpCanBeAntidote;
     public static OptionItem CrewCanBeAntidote;
     public static OptionItem NeutralCanBeAntidote;
-    public static OptionItem AntidoteCDOpt;
-    public static OptionItem AntidoteCDReset;
+    private static OptionItem AntidoteCDOpt;
+    private static OptionItem AntidoteCDReset;
 
-    public static Dictionary<byte, int> KilledAntidote = [];
+    private static Dictionary<byte, int> KilledAntidote = [];
 
     public static void SetupCustomOptions()
     {
@@ -64,7 +64,7 @@ public static class Antidote
         }
     }
 
-    public static void Checkmurder(PlayerControl killer)
+    public static void CheckMurder(PlayerControl killer)
     {
         if (KilledAntidote.ContainsKey(killer.PlayerId))
         {

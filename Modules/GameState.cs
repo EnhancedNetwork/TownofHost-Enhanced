@@ -650,9 +650,8 @@ public class TaskState
                              Tired.AfterActionTasks(player);
                             break;
 
-                        case CustomRoles.Bloodlust when player.IsAlive() && !Alchemist.BloodlustList.ContainsKey(player.PlayerId):
-                            Alchemist.BloodlustList[player.PlayerId] = player.PlayerId;
-                            player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bloodlust), string.Format(Translator.GetString("BloodlustAdded"))));
+                        case CustomRoles.Bloodlust when player.IsAlive():
+                            Bloodlust.OnTaskComplete(player);
                             break;
 
                         case CustomRoles.Ghoul when (CompletedTasksCount + 1) >= AllTasksCount:

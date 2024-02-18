@@ -20,6 +20,4 @@ public static class Oblivious
         ObliviousBaitImmune = BooleanOptionItem.Create(Id + 13, "ObliviousBaitImmune", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Oblivious]);
     }
 
-
 }
-

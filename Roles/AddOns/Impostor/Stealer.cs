@@ -1,6 +1,7 @@
 ﻿using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Impostor;
+
 public static class Stealer
 {
     private static readonly int Id = 23200;

@@ -1256,26 +1256,26 @@ static class ExtendedPlayerControl
         switch (Addon)
         {
             case CustomRoles.Unlucky:
-                Unlucky.UnluckCheck.Remove(Killed.PlayerId);
+                Unlucky.Remove(Killed.PlayerId);
                 Unlucky.Add(target.PlayerId);
                 break;
             case CustomRoles.Tired:
-                Tired.playerIdList.Remove(Killed.PlayerId);
+                Tired.Remove(Killed.PlayerId);
                 Tired.Add(target.PlayerId);
                 break;
             case CustomRoles.Bewilder:
                 Bewilder.Add();
                 break;
             case CustomRoles.Lucky:
-                Lucky.LuckyAvoid.Remove(Killed.PlayerId);
+                Lucky.Remove(Killed.PlayerId);
                 Lucky.Add(target.PlayerId);
                 break;
             case CustomRoles.Clumsy:
-                Clumsy.HasMissed.Remove(Killed.PlayerId);
+                Clumsy.Remove(Killed.PlayerId);
                 Clumsy.Add(target.PlayerId);
                 break;
             case CustomRoles.Statue:
-                Statue.tempSpeed.Remove(Killed.PlayerId);
+                Statue.Remove(Killed.PlayerId);
                 Statue.Add(target.PlayerId);
                 break;
         }
@@ -1343,8 +1343,8 @@ static class ExtendedPlayerControl
         else if (target.Is(CustomRoles.Solsticer) && Solsticer.EveryOneKnowSolsticer.GetBool()) return true;
         else if (Main.VisibleTasksCount && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool()) return true;
         else if (Gravestone.EveryoneKnowRole(target)) return true;
+        else if (Mimic.CanSeeDeadRoles(seer, target)) return true;
         else if (Options.SeeEjectedRolesInMeeting.GetBool() && Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote) return true;
-        else if (Mimic.MimicCanSeeDeadRoles.GetBool() && Main.VisibleTasksCount && seer.Is(CustomRoles.Mimic) && target.Data.IsDead) return true;
         else if (Options.LoverKnowRoles.GetBool() && (seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers)) || target.Is(CustomRoles.Ntr)) return true;
         else if (Madmate.ImpKnowAlliesRole.GetBool() && seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoleTypes.Impostor)) return true;
         else if (Madmate.MadmateKnowWhosImp.GetBool() && seer.Is(CustomRoles.Madmate) && target.Is(CustomRoleTypes.Impostor)) return true;

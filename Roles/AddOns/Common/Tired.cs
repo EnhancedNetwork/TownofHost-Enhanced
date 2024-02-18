@@ -8,14 +8,14 @@ namespace TOHE.Roles.AddOns.Common;
 public class Tired
 {
     private static readonly int Id = 27300;
+    private static Dictionary<byte, bool> playerIdList; // Target Action player for Vision
+
     public static OptionItem CanBeOnCrew;
     public static OptionItem CanBeOnImp;
     public static OptionItem CanBeOnNeutral;
     private static OptionItem SetVision;
     private static OptionItem SetSpeed;
     private static OptionItem TiredDuration;
-
-    public static Dictionary<byte, bool> playerIdList; // Target Action player for Vision
 
 
     public static void SetupCustomOptions()
@@ -36,14 +36,19 @@ public class Tired
     {
         playerIdList = [];
     }
-    
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId, false);
     }
+    public static void Remove(byte player)
+    {
+        playerIdList.Remove(player);
+    }
 
     public static void ApplyGameOptions(IGameOptions opt, PlayerControl player)
     {
+        if (!playerIdList.ContainsKey(player.PlayerId)) return;
+
         if (playerIdList[player.PlayerId])
         {
             opt.SetVision(false);

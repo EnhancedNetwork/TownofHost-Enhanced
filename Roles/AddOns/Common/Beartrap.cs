@@ -6,12 +6,10 @@ public static class Trapper
 {
     private static readonly int Id = 18800;
 
-
     public static OptionItem ImpCanBeTrapper;
     public static OptionItem CrewCanBeTrapper;
     public static OptionItem NeutralCanBeTrapper;
-    public static OptionItem TrapperBlockMoveTime;
-
+    private static OptionItem TrapperBlockMoveTime;
 
     public static void SetupCustomOptions()
     {
@@ -35,7 +33,7 @@ public static class Trapper
             ReportDeadBodyPatch.CanReport[killer.PlayerId] = true;
             killer.MarkDirtySettings();
             RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
-        }, Trapper.TrapperBlockMoveTime.GetFloat(), "Trapper BlockMove");
+        }, TrapperBlockMoveTime.GetFloat(), "Trapper BlockMove");
     }
 
 }

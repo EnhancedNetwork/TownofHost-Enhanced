@@ -17,8 +17,8 @@ public static class Mundane
     }
     public static bool OnGuess(PlayerControl pc)
     {
-        if (pc == null) return true;
-        if (!pc.Is(CustomRoles.Mundane)) return true;
+        if (pc == null || !pc.Is(CustomRoles.Mundane)) return true;
+
         return (pc.GetPlayerTaskState().IsTaskFinished);
     }
 }

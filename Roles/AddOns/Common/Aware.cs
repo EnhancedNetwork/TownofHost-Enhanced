@@ -12,7 +12,7 @@ public static class Aware
     public static OptionItem ImpCanBeAware;
     public static OptionItem CrewCanBeAware;
     public static OptionItem NeutralCanBeAware;
-    public static OptionItem AwareknowRole;
+    private static OptionItem AwareknowRole;
 
     public static Dictionary<byte, List<string>> AwareInteracted = [];
 

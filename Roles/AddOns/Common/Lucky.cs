@@ -7,12 +7,13 @@ public static class Lucky
 {
     private static readonly int Id = 19500;
 
-    public static OptionItem LuckyProbability;
+    private static OptionItem LuckyProbability;
     public static OptionItem ImpCanBeLucky;
     public static OptionItem CrewCanBeLucky;
     public static OptionItem NeutralCanBeLucky;
 
     public static Dictionary<byte, bool> LuckyAvoid;
+
     public static void SetupCustomOptions()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Lucky, canSetNum: true);
@@ -31,12 +32,15 @@ public static class Lucky
     {
         LuckyAvoid.Add(PlayerId, false);
     }
-    
+    public static void Remove(byte player)
+    {
+        LuckyAvoid.Remove(player);
+    }
 
     public static void AvoidDeathChance(PlayerControl killer, PlayerControl target)
     {
         var rd = IRandom.Instance;
-        if (rd.Next(0, 100) < LuckyProbability.GetInt())
+        if (rd.Next(0, 101) < LuckyProbability.GetInt())
         {
             killer.RpcGuardAndKill(target);
             LuckyAvoid[target.PlayerId] = true;

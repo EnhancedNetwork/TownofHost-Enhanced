@@ -5,6 +5,7 @@ using static TOHE.Translator;
 using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
+
 public static class Bait
 {
     private static readonly int Id = 18700;

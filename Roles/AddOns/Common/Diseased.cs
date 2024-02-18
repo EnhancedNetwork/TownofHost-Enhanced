@@ -11,10 +11,10 @@ public static class Diseased
     public static OptionItem ImpCanBeDiseased;
     public static OptionItem CrewCanBeDiseased;
     public static OptionItem NeutralCanBeDiseased;
-    public static OptionItem DiseasedCDOpt;
-    public static OptionItem DiseasedCDReset;
+    private static OptionItem DiseasedCDOpt;
+    private static OptionItem DiseasedCDReset;
 
-    public static Dictionary<byte, int> KilledDiseased;
+    private static Dictionary<byte, int> KilledDiseased;
 
     public static void SetupCustomOptions()
     {

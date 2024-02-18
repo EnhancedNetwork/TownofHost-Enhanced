@@ -2,12 +2,15 @@
 using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Impostor;
+
 public static class Clumsy
 {
     private static readonly int Id = 22700;
 
-    public static OptionItem ChanceToMiss;
-    public static Dictionary<byte, bool> HasMissed;
+    private static OptionItem ChanceToMiss;
+
+    private static Dictionary<byte, bool> HasMissed;
+
     public static void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Clumsy, canSetNum: true, tab: TabGroup.Addons);
@@ -20,12 +23,16 @@ public static class Clumsy
     {
         HasMissed = [];
     }
-
     public static void Add(byte PlayerId)
     {
         HasMissed.Add(PlayerId, false);
     }
-    public static void MissChance(PlayerControl killer)
+    public static void Remove(byte player)
+    {
+        HasMissed.Remove(player);
+    }
+
+    private static void MissChance(PlayerControl killer)
     {
         var miss = IRandom.Instance;
         if (miss.Next(0, 100) < ChanceToMiss.GetInt())
@@ -34,5 +41,17 @@ public static class Clumsy
             killer.SetKillCooldown();
             HasMissed[killer.PlayerId] = true;
         }
+    }
+
+    public static bool OnCheckMurder(PlayerControl killer)
+    {
+        MissChance(killer);
+        if (HasMissed[killer.PlayerId])
+        {
+            HasMissed[killer.PlayerId] = false;
+            return false;
+        }
+
+        return true;
     }
 }

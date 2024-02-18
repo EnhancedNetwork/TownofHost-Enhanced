@@ -40,10 +40,13 @@ public static class Unlucky
     {
         UnluckCheck = [];
     }
-
     public static void Add(byte PlayerId)
     {
         UnluckCheck.Add(PlayerId, false);
+    }
+    public static void Remove(byte player)
+    {
+        UnluckCheck.Remove(player);
     }
 
     public static void SuicideRand(PlayerControl victim)

@@ -11,12 +11,13 @@ public static class Statue
     public static OptionItem CanBeOnCrew;
     public static OptionItem CanBeOnImp;
     public static OptionItem CanBeOnNeutral;
-    public static OptionItem SlowDown;
-    public static OptionItem PeopleAmount;
-   
-    public static List<byte> CountNearplr;
-    public static bool Active;
-    public static Dictionary<byte, float> tempSpeed;
+    private static OptionItem SlowDown;
+    private static OptionItem PeopleAmount;
+
+    private static bool Active;
+    private static HashSet<byte> CountNearplr;
+    private static Dictionary<byte, float> tempSpeed;
+
     public static void SetupCustomOptions()
     {
         Options.SetupAdtRoleOptions(Id, CustomRoles.Statue, canSetNum: true, tab: TabGroup.Addons);
@@ -41,6 +42,11 @@ public static class Statue
     {
         tempSpeed.Add(player, Main.AllPlayerSpeed[player]);
         IsEnable = true;
+    }
+
+    public static void Remove(byte player)
+    {
+        tempSpeed.Remove(player);
     }
 
     public static void AfterMeetingTasks()
@@ -96,9 +102,6 @@ public static class Statue
                 Main.AllPlayerSpeed[victim.PlayerId] = Main.AllPlayerSpeed[victim.PlayerId] - SlowDown.GetFloat() + tmpFloat;
                 victim.MarkDirtySettings();
             }
-
         }
-
-    
     }
 }

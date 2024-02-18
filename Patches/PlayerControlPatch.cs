@@ -188,7 +188,7 @@ class CheckMurderPatch
                     break;
 
                 case CustomRoles.Antidote:
-                    Antidote.Checkmurder(killer);
+                    Antidote.CheckMurder(killer);
                     break;
 
                 case CustomRoles.Susceptible:
@@ -793,12 +793,8 @@ class CheckMurderPatch
                     break;
 
                 case CustomRoles.Clumsy:
-                    Clumsy.MissChance(killer);
-                    if (Clumsy.HasMissed[killer.PlayerId]) 
-                    { 
-                        Clumsy.HasMissed[killer.PlayerId] = false;
-                        return false; 
-                    }
+                    if (!Clumsy.OnCheckMurder(killer))
+                        return false;
                     break;
 
                 case CustomRoles.Swift:

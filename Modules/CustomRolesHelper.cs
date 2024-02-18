@@ -1233,10 +1233,7 @@ static class CustomRolesHelper
                 break;
 
             case CustomRoles.Lazy:
-                if (pc.Is(CustomRoles.Ghoul)
-                    || pc.Is(CustomRoles.Needy))
-                    return false;
-                if (pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsImpostor() || (pc.GetCustomRole().IsTasklessCrewmate() && !Lazy.TasklessCrewCanBeLazy.GetBool()) || (pc.GetCustomRole().IsTaskBasedCrewmate() && !Lazy.TaskBasedCrewCanBeLazy.GetBool()))
+                if (!Lazy.CheckConflicts(pc))
                     return false;
                 break;
 

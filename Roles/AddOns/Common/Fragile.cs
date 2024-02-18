@@ -10,9 +10,9 @@ public static class Fragile
     public static OptionItem CrewCanBeFragile;
     public static OptionItem NeutralCanBeFragile;
     public static OptionItem ImpCanKillFragile;
-    public static OptionItem CrewCanKillFragile;
-    public static OptionItem NeutralCanKillFragile;
-    public static OptionItem FragileKillerLunge;
+    private static OptionItem CrewCanKillFragile;
+    private static OptionItem NeutralCanKillFragile;
+    private static OptionItem FragileKillerLunge;
 
     public static void SetupCustomOptions()
     {
