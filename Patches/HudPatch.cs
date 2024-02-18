@@ -765,7 +765,9 @@ class TaskPanelBehaviourPatch
         var taskText = __instance.taskText.text;
         if (taskText == "None") return;
 
-        // 役職説明表示
+        if (player == null) return;
+
+        // Display Description
         if (!player.GetCustomRole().IsVanilla())
         {
             var RoleWithInfo = $"{player.GetDisplayRoleAndSubName(player, false)}:\r\n";

@@ -1128,7 +1128,7 @@ internal static class RPC
                 LastImpostor.Add(targetId);
                 break;
             case CustomRoles.Aware:
-                Main.AwareInteracted[targetId] = [];
+                Aware.Add(targetId);
                 break;
             case CustomRoles.Crewpostor:
                 Main.CrewpostorTasksDone[targetId] = 0;
@@ -1428,6 +1428,21 @@ internal static class RPC
             case CustomRoles.Blackmailer:
                 Blackmailer.Add(targetId);
                 break;
+            case CustomRoles.Diseased:
+                Diseased.Add();
+                break;
+            case CustomRoles.Antidote:
+                Antidote.Add();
+                break;
+            case CustomRoles.Burst:
+                Burst.Add();
+                break;
+            case CustomRoles.Fool:
+                Fool.Add();
+                break;
+            case CustomRoles.Ghoul:
+                Ghoul.Add();
+                break;
             case CustomRoles.Spy:
                 Spy.Add(targetId);
                 break;
@@ -1443,6 +1458,10 @@ internal static class RPC
             case CustomRoles.Rainbow:
                 Rainbow.Add();
                 break;
+            case CustomRoles.Statue:
+                Statue.Add(targetId);
+                break;
+
         }
         HudManager.Instance.SetHudActive(true);
     //    HudManager.Instance.Chat.SetVisible(true);

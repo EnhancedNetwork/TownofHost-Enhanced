@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.AddOns.Crewmate;
+using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -68,7 +70,7 @@ public class PlayerState(byte playerId)
         // check for role addon
         if (pc.Is(CustomRoles.Madmate))
         {
-            countTypes = Options.MadmateCountMode.GetInt() switch
+            countTypes = Madmate.MadmateCountMode.GetInt() switch
             {
                 0 => CountTypes.OutOfGame,
                 1 => CountTypes.Impostor,
@@ -157,7 +159,7 @@ public class PlayerState(byte playerId)
                 break;
 
             case CustomRoles.Madmate:
-                countTypes = Options.MadmateCountMode.GetInt() switch
+                countTypes = Madmate.MadmateCountMode.GetInt() switch
                 {
                     0 => CountTypes.OutOfGame,
                     1 => CountTypes.Impostor,
@@ -641,44 +643,19 @@ public class TaskState
                     switch (subRole)
                     {
                         case CustomRoles.Unlucky when player.IsAlive():
-                            var Ue = IRandom.Instance;
-                            if (Ue.Next(1, 100) <= Options.UnluckyTaskSuicideChance.GetInt())
-                            {
-                                Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-                                player.RpcMurderPlayerV3(player);
-                            }
+                            Unlucky.SuicideRand(player);
                             break;
                         
                         case CustomRoles.Tired when player.IsAlive():
                              Tired.AfterActionTasks(player);
                             break;
 
-                        case CustomRoles.Bloodlust when player.IsAlive() && !Alchemist.BloodlustList.ContainsKey(player.PlayerId):
-                            Alchemist.BloodlustList[player.PlayerId] = player.PlayerId;
-                            player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bloodlust), string.Format(Translator.GetString("BloodlustAdded"))));
+                        case CustomRoles.Bloodlust when player.IsAlive():
+                            Bloodlust.OnTaskComplete(player);
                             break;
 
                         case CustomRoles.Ghoul when (CompletedTasksCount + 1) >= AllTasksCount:
-                            if (player.IsAlive())
-                            {
-                                _ = new LateTask(() =>
-                                {
-                                    Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Suicide;
-                                    player.RpcMurderPlayerV3(player);
-
-                                }, 0.2f, "Ghoul Suicide");
-                            }
-                            else
-                            {
-                                foreach (var pc in Main.AllAlivePlayerControls)
-                                {
-                                    if (!pc.Is(CustomRoles.Pestilence) && player.PlayerId != pc.PlayerId && Main.KillGhoul.Contains(pc.PlayerId))
-                                    {
-                                        Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Kill;
-                                        player.RpcMurderPlayerV3(pc);
-                                    }
-                                }
-                            }
+                            Ghoul.OnTaskComplete(player);
                             break;
                     }
                 }

@@ -1,4 +1,4 @@
-using Hazel;
+using AmongUs.GameOptions;
 using System.Collections.Generic;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -8,14 +8,14 @@ namespace TOHE.Roles.AddOns.Common;
 public class Tired
 {
     private static readonly int Id = 27300;
+    private static Dictionary<byte, bool> playerIdList; // Target Action player for Vision
+
     public static OptionItem CanBeOnCrew;
     public static OptionItem CanBeOnImp;
     public static OptionItem CanBeOnNeutral;
-    public static OptionItem SetVision;
-    public static OptionItem SetSpeed;
-    public static OptionItem TiredDuration;
-
-    public static Dictionary<byte, bool> playerIdList; // Target Action player for Vision
+    private static OptionItem SetVision;
+    private static OptionItem SetSpeed;
+    private static OptionItem TiredDuration;
 
 
     public static void SetupCustomOptions()
@@ -34,12 +34,33 @@ public class Tired
 
     public static void Init()
     {
-        playerIdList = new();
+        playerIdList = [];
     }
-    
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId, false);
+    }
+    public static void Remove(byte player)
+    {
+        playerIdList.Remove(player);
+    }
+
+    public static void ApplyGameOptions(IGameOptions opt, PlayerControl player)
+    {
+        if (!playerIdList.ContainsKey(player.PlayerId)) return;
+
+        if (playerIdList[player.PlayerId])
+        {
+            opt.SetVision(false);
+            opt.SetFloat(FloatOptionNames.CrewLightMod, SetVision.GetFloat());
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, SetVision.GetFloat());
+        }
+        else
+        {
+            opt.SetVision(false);
+            opt.SetFloat(FloatOptionNames.CrewLightMod, Main.DefaultCrewmateVision);
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Main.DefaultImpostorVision);
+        }
     }
     
     public static void AfterActionTasks(PlayerControl player)
