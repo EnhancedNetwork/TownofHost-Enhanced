@@ -289,8 +289,7 @@ class HudManagerPatch
                         __instance.KillButton.OverrideText(GetString("ProvocateurButtonText"));
                         break;
                     case CustomRoles.Camouflager:
-                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        __instance.AbilityButton.OverrideText(GetString("CamouflagerShapeshiftText"));
+                        Camouflager.SetAbilityButtonText(__instance);
                         break;
                     case CustomRoles.OverKiller:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
@@ -765,7 +764,9 @@ class TaskPanelBehaviourPatch
         var taskText = __instance.taskText.text;
         if (taskText == "None") return;
 
-        // 役職説明表示
+        if (player == null) return;
+
+        // Display Description
         if (!player.GetCustomRole().IsVanilla())
         {
             var RoleWithInfo = $"{player.GetDisplayRoleAndSubName(player, false)}:\r\n";

@@ -23,6 +23,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using TOHE.Roles.AddOns.Common;
 
 namespace TOHE;
 
@@ -311,15 +312,15 @@ public static class Utils
             }
             else if (target.Is(CustomRoles.Cyber))
             {
-                if (!Options.ImpKnowCyberDead.GetBool() && seer.GetCustomRole().IsImpostor()) continue;
-                if (!Options.NeutralKnowCyberDead.GetBool() && seer.GetCustomRole().IsNeutral()) continue;
-                if (!Options.CrewKnowCyberDead.GetBool() && seer.GetCustomRole().IsCrewmate()) continue;
+                if (!Cyber.ImpKnowCyberDead.GetBool() && seer.GetCustomRole().IsImpostor()) continue;
+                if (!Cyber.NeutralKnowCyberDead.GetBool() && seer.GetCustomRole().IsNeutral()) continue;
+                if (!Cyber.CrewKnowCyberDead.GetBool() && seer.GetCustomRole().IsCrewmate()) continue;
                 seer.KillFlash();
                 seer.Notify(ColorString(GetRoleColor(CustomRoles.Cyber), GetString("OnCyberDead"))); 
             } 
         }
         if (target.Is(CustomRoles.CyberStar) && !Main.CyberStarDead.Contains(target.PlayerId)) Main.CyberStarDead.Add(target.PlayerId);
-        if (target.Is(CustomRoles.Cyber) && !Main.CyberDead.Contains(target.PlayerId)) Main.CyberDead.Add(target.PlayerId);
+        if (target.Is(CustomRoles.Cyber) && !Cyber.CyberDead.Contains(target.PlayerId)) Cyber.CyberDead.Add(target.PlayerId);
     }
     public static bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer)
     {
@@ -647,33 +648,7 @@ public static class Utils
 
         return hasTasks;
     }
-
-    public static bool CanBeMadmate(this PlayerControl pc, bool inGame = false, bool forGangster = false)
-    {
-        return pc != null && (pc.GetCustomRole().IsCrewmate() || (pc.GetCustomRole().IsNeutral() && inGame)) && !pc.Is(CustomRoles.Madmate)
-        && !(
-            (pc.Is(CustomRoles.Sheriff) && (!forGangster ? !Options.SheriffCanBeMadmate.GetBool() : !Gangster.SheriffCanBeMadmate.GetBool())) ||
-            (pc.Is(CustomRoles.Mayor) && (!forGangster ? !Options.MayorCanBeMadmate.GetBool() : !Gangster.MayorCanBeMadmate.GetBool())) ||
-            (pc.Is(CustomRoles.NiceGuesser) && (!forGangster ? !Options.NGuesserCanBeMadmate.GetBool() : !Gangster.NGuesserCanBeMadmate.GetBool())) ||
-            (pc.Is(CustomRoles.Snitch) && !Options.SnitchCanBeMadmate.GetBool()) ||
-            (pc.Is(CustomRoles.Judge) && (!forGangster ? !Options.JudgeCanBeMadmate.GetBool() : !Gangster.JudgeCanBeMadmate.GetBool())) ||
-            (pc.Is(CustomRoles.Marshall) && (!forGangster ? !Options.MarshallCanBeMadmate.GetBool() : !Gangster.MarshallCanBeMadmate.GetBool())) ||
-            (pc.Is(CustomRoles.Farseer) && (!forGangster ? !Options.FarseerCanBeMadmate.GetBool() : !Gangster.FarseerCanBeMadmate.GetBool())) ||
-            (pc.Is(CustomRoles.Retributionist) && (!forGangster ? !Options.RetributionistCanBeMadmate.GetBool() : !Gangster.RetributionistCanBeMadmate.GetBool())) ||
-            pc.Is(CustomRoles.Needy) ||
-            pc.Is(CustomRoles.Lazy) ||
-            pc.Is(CustomRoles.Loyal) ||
-            pc.Is(CustomRoles.SuperStar) ||
-            pc.Is(CustomRoles.CyberStar) ||
-            pc.Is(CustomRoles.TaskManager) ||
-         //   pc.Is(CustomRoles.Cyber) ||
-            pc.Is(CustomRoles.Egoist) ||
-            pc.Is(CustomRoles.DualPersonality) ||
-            pc.Is(CustomRoles.Vigilante) ||
-            (pc.Is(CustomRoles.NiceMini) && Mini.Age >= 18) ||
-            (pc.Is(CustomRoles.Hurried) && !Hurried.CanBeOnMadMate.GetBool())
-            );
-    }
+  
     public static string GetProgressText(PlayerControl pc)
     {
         try
@@ -2070,7 +2045,7 @@ public static class Utils
                 if (seer.Is(CustomRoles.SuperStar) && Options.EveryOneKnowSuperStar.GetBool())
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.SuperStar), "★"));
 
-                if (seer.Is(CustomRoles.Cyber) && Options.CyberKnown.GetBool())
+                if (seer.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
 
                 if (Blackmailer.ForBlackmailer.Contains(seer.PlayerId))
@@ -2363,7 +2338,7 @@ public static class Utils
                                 (seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
                                 TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Captain), " ☆"));
 
-                        if (target.Is(CustomRoles.Cyber) && Options.CyberKnown.GetBool())
+                        if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
 
                         if (BallLightning.IsEnable && BallLightning.IsGhost(target))
@@ -2654,29 +2629,9 @@ public static class Utils
     public static void AfterMeetingTasks()
     {
         ChatManager.ClearLastSysMsg();
-        if (Options.DiseasedCDReset.GetBool())
-        {
-            foreach (var pid in Main.KilledDiseased.Keys.ToArray())
-            {
-                Main.KilledDiseased[pid] = 0;
-                var kdpc = GetPlayerById(pid);
-                if (kdpc == null) continue;
-                kdpc.ResetKillCooldown();
-            }
-            Main.KilledDiseased.Clear();
-        }
 
-        if (Options.AntidoteCDReset.GetBool())
-        {
-            foreach (var pid in Main.KilledAntidote.Keys.ToArray())
-            {
-                Main.KilledAntidote[pid] = 0;
-                var kapc = GetPlayerById(pid);
-                if (kapc == null) continue;
-                kapc.ResetKillCooldown();
-            }
-            Main.KilledAntidote.Clear();
-        }
+        if (Diseased.IsEnable) Diseased.AfterMeetingTasks();
+        if (Antidote.IsEnable) Antidote.AfterMeetingTasks();
 
         AntiBlackout.AfterMeetingTasks();
 
@@ -2707,12 +2662,12 @@ public static class Utils
         if (Solsticer.IsEnable) Solsticer.AfterMeetingTasks();
         if (RiftMaker.IsEnable) RiftMaker.AfterMeetingTasks();
         if (Councillor.IsEnable) Councillor.AfterMeetingTasks();
+        if (Statue.IsEnable) Statue.AfterMeetingTasks();
+        if (Burst.IsEnable) Burst.AfterMeetingTasks();
 
         Main.ShamanTarget = byte.MaxValue;
         Main.ShamanTargetChoosen = false;
-        Main.BurstBodies.Clear();
         OverKiller.MurderTargetLateTask = [];
-
 
         if (Options.AirshipVariableElectrical.GetBool())
             AirshipElectricalDoors.Initialize();
@@ -2789,9 +2744,9 @@ public static class Utils
                         //网红死亡消息提示
                         foreach (var pc in Main.AllPlayerControls)
                         {
-                            if (!Options.ImpKnowCyberDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
-                            if (!Options.NeutralKnowCyberDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
-                            if (!Options.CrewKnowCyberDead.GetBool() && pc.GetCustomRole().IsCrewmate()) continue;
+                            if (!Cyber.ImpKnowCyberDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
+                            if (!Cyber.NeutralKnowCyberDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
+                            if (!Cyber.CrewKnowCyberDead.GetBool() && pc.GetCustomRole().IsCrewmate()) continue;
                             SendMessage(string.Format(GetString("CyberDead"), target.GetRealName()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Cyber), GetString("CyberNewsTitle")));
                         }
                     }

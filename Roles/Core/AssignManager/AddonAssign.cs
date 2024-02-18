@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.AddOns.Impostor;
 
 namespace TOHE.Roles.Core.AssignManager;
 
@@ -10,7 +11,7 @@ public static class AddonAssign
 
     private static bool NotAssignAddOnInGameStarted(CustomRoles role)
     {
-        if (role is CustomRoles.Madmate && Options.MadmateSpawnMode.GetInt() != 0) return true;
+        if (role is CustomRoles.Madmate && Madmate.MadmateSpawnMode.GetInt() != 0) return true;
         if (role is CustomRoles.Lovers or CustomRoles.LastImpostor or CustomRoles.Workhorse) return true;
 
         if (GameStates.FungleIsActive) // The Fungle

@@ -29,14 +29,14 @@ public static class Twister
         AURoleOptions.ShapeshifterCooldown = ShapeshiftCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = ShapeshiftDuration.GetFloat();
     }
-    public static void TwistPlayers(PlayerControl shapeshifter)
+    public static void TwistPlayers(PlayerControl shapeshifter, bool shapeshiftIsHidden = false)
     {
         List<byte> changePositionPlayers = [shapeshifter.PlayerId];
 
         var rd = IRandom.Instance;
         foreach (var pc in Main.AllAlivePlayerControls)
         {
-            if (changePositionPlayers.Contains(pc.PlayerId) || !pc.CanBeTeleported())
+            if ((changePositionPlayers.Contains(pc.PlayerId) && !shapeshiftIsHidden) || !pc.CanBeTeleported())
             {
                 continue;
             }
