@@ -1,8 +1,10 @@
 using Hazel;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 public static class SoulCollector
@@ -18,6 +20,7 @@ public static class SoulCollector
     public static OptionItem SoulCollectorPointsOpt;
     public static OptionItem CollectOwnSoulOpt;
     public static OptionItem CallMeetingIfDeath;
+    public static OptionItem GetPassiveSouls;
 
     public static void SetupCustomOption()
     {
@@ -26,6 +29,7 @@ public static class SoulCollector
             .SetValueFormat(OptionFormat.Times);
         CollectOwnSoulOpt = BooleanOptionItem.Create(Id + 11, "CollectOwnSoulOpt", true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.SoulCollector]);
         CallMeetingIfDeath = BooleanOptionItem.Create(Id + 12, "CallMeetingIfDeath", true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.SoulCollector]);
+        GetPassiveSouls = BooleanOptionItem.Create(Id + 13, "GetPassiveSouls", true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.SoulCollector]);
     }
     public static void Init()
     {
@@ -99,6 +103,11 @@ public static class SoulCollector
         { 
             SoulCollectorTarget[playerId] = byte.MaxValue;
             DidVote[playerId] = false;
+            if (GetPassiveSouls.GetBool())
+            {
+                SoulCollectorPoints[playerId]++;
+                Utils.SendMessage(GetString("PassiveSoulGained"), playerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), GetString("SoulCollectorTitle")));
+            }
         }
     }
 
@@ -119,7 +128,9 @@ public static class SoulCollector
             {
                 SoulCollectorPoints[playerId] = SoulCollectorPointsOpt.GetInt();
             }
+
         }
+
     }
     public static void BecomeDeath(PlayerControl player)
     {

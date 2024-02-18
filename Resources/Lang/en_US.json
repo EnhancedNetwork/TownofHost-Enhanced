@@ -2719,6 +2719,8 @@
   "SoulCollectorToDeath": "You have become Death!!!",
   "SoulCollectorTransform": "<align=\"center\"><size=150%>Now <b><color=#ff174f>Soul Collector</b></color> has become <b><color=#ff174f>Death</b></color>, Destroyer of Worlds and Horseman of the Apocalypse!<br><br><size=115%><u>Find them and vote them out before it's <color=#ff174f>too late</color>!</u></size></align>",
   "CallMeetingIfDeath": "Call a meeting immediately after Death transforms",
+  "GetPassiveSouls": "Gain a passive soul every round",
+  "PassiveSoulGained": "You have gained a passive soul from the underworld.",
   "ApocalypseIsNigh": "[ The Apocalypse Is Nigh! ]",
   "BakerToFamine": "You have become Famine!!!",
   "BakerTransform": "<align=\"center\"><size=150%>The <b><color=#ff174f>Baker</b></color> has transformed into <b><color=#ff174f>Famine</b></color>, Horseman of the Apocalypse! A famine has begun!</size></align>",
