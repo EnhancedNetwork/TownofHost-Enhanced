@@ -426,7 +426,7 @@ public static class Utils
     public static (string, Color) GetRoleAndSubText(byte seerId, byte targetId, bool notShowAddOns = false)
     {
         string RoleText = "Invalid Role";
-        Color RoleColor;
+        Color RoleColor = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
 
         //var seerMainRole = Main.PlayerStates[seerId].MainRole;
         //var seerSubRoles = Main.PlayerStates[seerId].SubRoles;
