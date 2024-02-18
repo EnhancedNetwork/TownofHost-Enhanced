@@ -1636,6 +1636,9 @@ public static class CheckShapeShiftPatch
         var shapeshifter = __instance;
         var role = shapeshifter.GetCustomRole();
 
+        // Always show
+        if (role is CustomRoles.ShapeshifterTOHE or CustomRoles.ShapeMaster) return true;
+
         // Check Sniper settings conditions
         if (role is CustomRoles.Sniper && Sniper.ShowShapeshiftAnimations) return true;
 
