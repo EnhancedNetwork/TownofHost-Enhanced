@@ -2,11 +2,19 @@
   "News": [
     {
       "Number": "100002",
-      "Title": "Town Of Host Enhanced v1.6.0",
+      "Title": "Testing Announcements 1",
       "Subtitle": "★★★★Testing new announcement★★★★",
       "Short": "TOHE v1.6.0",
-      "Body": "this is just to test the announcement",
+      "Body": "this is just to test the announcement part 1",
       "Date": "2024-02-19T02:18:00Z"
+    },
+    {
+      "Number": "100003",
+      "Title": "Testing Announcements 2",
+      "Subtitle": "★★★★Testing new announcement★★★★",
+      "Short": "TOHE v1.6.0",
+      "Body": "this is just to test the announcement part 2",
+      "Date": "2024-02-19T04:00:54Z"
     }
   ]
 }
