@@ -61,19 +61,6 @@ class CheckProtectPatch
 
         switch (getAngelRole)
         {
-            case CustomRoles.EvilSpirit:
-                if (target.Is(CustomRoles.Spiritcaller))
-                {
-                    Spiritcaller.ProtectSpiritcaller();
-                }
-                else
-                {
-                    Spiritcaller.HauntPlayer(target);
-                    
-                }
-                angel.RpcResetAbilityCooldown();
-                return false;
-
             case CustomRoles.Warden:
                 return Warden.OnCheckProtect(angel, target);
 
@@ -82,6 +69,20 @@ class CheckProtectPatch
 
             default:
                 break;
+        }
+
+        if (angel.Is(CustomRoles.EvilSpirit))
+        {   
+            if (target.Is(CustomRoles.Spiritcaller))
+            {
+                Spiritcaller.ProtectSpiritcaller();
+            }
+            else
+            {
+                Spiritcaller.HauntPlayer(target);
+            }
+            angel.RpcResetAbilityCooldown();
+            return false;
         }
         
         if (angel.Is(CustomRoles.Sheriff) && angel.Data.IsDead)
