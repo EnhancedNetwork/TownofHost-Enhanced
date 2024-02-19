@@ -296,13 +296,6 @@ static class CustomRolesHelper
             CustomRoles.Minion;
 
     }
-    public static bool IsGhostString(this string roleText)
-    {
-        return roleText is
-            "GuardianAngel" or
-            "Warden" or
-            "Minion";
-    }
     public static bool IsAdditionRole(this CustomRoles role)
     {
         return role is
