@@ -4,6 +4,7 @@ using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem.Linq;
 using InnerNet;
+using TOHE.Roles._Ghosts_.Impostor;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
@@ -245,9 +246,8 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.ShapeshifterCooldown = Options.NukeCooldown.GetFloat();
                 AURoleOptions.ShapeshifterDuration = 2f;
                 break;
-            case CustomRoles.Mafia:
-                AURoleOptions.ShapeshifterCooldown = Options.MafiaShapeshiftCD.GetFloat();
-                AURoleOptions.ShapeshifterDuration = Options.MafiaShapeshiftDur.GetFloat();
+            case CustomRoles.Nemesis:
+                Nemesis.SetKillCooldown();
                 break;
             case CustomRoles.ScientistTOHE:
                 AURoleOptions.ScientistCooldown = Options.ScientistCD.GetFloat();

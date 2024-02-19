@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TOHE.Modules;
+using TOHE.Roles._Ghosts_.Impostor;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
@@ -1253,6 +1254,9 @@ internal static class RPC
             case CustomRoles.Retributionist:
                 Retributionist.Add(targetId);
                 break;
+            case CustomRoles.Nemesis:
+                Nemesis.Add(targetId);
+                break;
             case CustomRoles.Veteran:
                 Main.VeteranNumOfUsed.Add(targetId, Options.VeteranSkillMaxOfUseage.GetInt());
                 break;
@@ -1566,6 +1570,9 @@ internal static class RPC
             //Merge the two rpc into one
             case CustomRoles.Retributionist:
                 Retributionist.ReceiveRPC(reader);
+                break;
+            case CustomRoles.Nemesis:
+                Nemesis.ReceiveRPC(reader);
                 break;
             default:
                 Logger.Error($"Role {role} can not be handled!", "SyncRoleSkillReader");

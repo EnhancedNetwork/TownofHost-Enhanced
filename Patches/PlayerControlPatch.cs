@@ -18,6 +18,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using TOHE.Roles._Ghosts_.Impostor;
 
 namespace TOHE;
 
@@ -70,6 +71,9 @@ class CheckProtectPatch
 
             case CustomRoles.Retributionist:
                 return Retributionist.OnCheckProtect(angel, target);
+
+            case CustomRoles.Nemesis:
+                return Nemesis.OnCheckProtect(angel, target);
 
             default:
                 break;

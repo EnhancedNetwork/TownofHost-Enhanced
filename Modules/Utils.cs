@@ -24,6 +24,7 @@ using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
 using TOHE.Roles.AddOns.Common;
+using TOHE.Roles._Ghosts_.Impostor;
 
 namespace TOHE;
 
@@ -563,6 +564,7 @@ public static class Utils
             case CustomRoles.SchrodingersCat:
             case CustomRoles.Parasite:
             case CustomRoles.Minion:
+            case CustomRoles.Nemesis:
             case CustomRoles.Crusader:
             case CustomRoles.Refugee:
             case CustomRoles.Jester:
@@ -1052,6 +1054,9 @@ public static class Utils
                     break;
                 case CustomRoles.Retributionist:
                     ProgressText.Append(Retributionist.GetRetributeLimit(playerId));
+                    break;
+                case CustomRoles.Nemesis:
+                    ProgressText.Append(Nemesis.GetRevengeLimit(playerId));
                     break;
                 case CustomRoles.Admirer:
                     ProgressText.Append(Admirer.GetAdmireLimit(playerId));
@@ -2503,11 +2508,6 @@ public static class Utils
                                     TargetPlayerName = (ColorString(GetRoleColor(CustomRoles.Lookout), " " + target.PlayerId.ToString()) + " " + TargetPlayerName);
                                 break;
 
-                            case CustomRoles.Mafia:
-                                if (!seer.IsAlive() && target.IsAlive())
-                                    TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Mafia), target.PlayerId.ToString()) + " " + TargetPlayerName;
-                                break;
-
                             case CustomRoles.Swapper:
                                 if (seer.IsAlive() && target.IsAlive())
                                     TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + TargetPlayerName;
@@ -2568,7 +2568,7 @@ public static class Utils
 
 
                                     //Impostors
-                                    if (Options.ImpostorsCanGuess.GetBool() && seer.GetCustomRole().IsImpostor() && !seer.Is(CustomRoles.Councillor) && !seer.Is(CustomRoles.Mafia))
+                                    if (Options.ImpostorsCanGuess.GetBool() && seer.GetCustomRole().IsImpostor() && !seer.Is(CustomRoles.Councillor) && !seer.Is(CustomRoles.Nemesis))
                                         TargetPlayerName = GetTragetId;
 
                                     else if (seer.Is(CustomRoles.EvilGuesser) && !Options.ImpostorsCanGuess.GetBool())
@@ -2930,19 +2930,6 @@ public static class Utils
     }
     public static string RemoveHtmlTagsTemplate(this string str) => Regex.Replace(str, "", "");
     public static string RemoveHtmlTags(this string str) => Regex.Replace(str, "<[^>]*?>", "");
-    public static bool CanMafiaKill()
-    {
-        if (Main.PlayerStates == null) return false;
-        //マフィアを除いた生きているインポスターの人数  Number of Living Impostors excluding mafia
-        int LivingImpostorsNum = 0;
-        foreach (var pc in Main.AllAlivePlayerControls)
-        {
-            var role = pc.GetCustomRole();
-            if (role != CustomRoles.Mafia && role.IsImpostor()) LivingImpostorsNum++;
-        }
-
-        return LivingImpostorsNum <= 0;
-    }
     public static void FlashColor(Color color, float duration = 1f)
     {
         var hud = DestroyableSingleton<HudManager>.Instance;

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TOHE.Modules;
+using TOHE.Roles._Ghosts_.Impostor;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
@@ -527,11 +528,6 @@ public static class Options
     public static OptionItem KillCooldownAfterCleaning;
 
     public static OptionItem GodfatherChangeOpt;
-
-    public static OptionItem MafiaCanKillNum;
-    public static OptionItem LegacyMafia;
-    public static OptionItem MafiaShapeshiftCD;
-    public static OptionItem MafiaShapeshiftDur;
 
     public static OptionItem VindicatorAdditionalVote;
     public static OptionItem VindicatorHideVote;
@@ -1270,22 +1266,6 @@ public static class Options
         Morphling.SetupCustomOption();
 
         /*
-         * Nemesis
-         */
-        SetupRoleOptions(3600, TabGroup.ImpostorRoles, CustomRoles.Mafia);
-        MafiaCanKillNum = IntegerOptionItem.Create(3602, "MafiaCanKillNum", new(0, 15, 1), 1, TabGroup.ImpostorRoles, false)
-        .SetParent(CustomRoleSpawnChances[CustomRoles.Mafia])
-            .SetValueFormat(OptionFormat.Players);
-        LegacyMafia = BooleanOptionItem.Create(3603, "LegacyMafia", false, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Mafia]);
-        MafiaShapeshiftCD = FloatOptionItem.Create(3604, "ShapeshiftCooldown", new(1f, 180f, 1f), 15f, TabGroup.ImpostorRoles, false)
-            .SetParent(LegacyMafia)
-            .SetValueFormat(OptionFormat.Seconds);
-        MafiaShapeshiftDur = FloatOptionItem.Create(3605, "ShapeshiftDuration", new(1f, 180f, 1f), 30f, TabGroup.ImpostorRoles, false)
-            .SetParent(LegacyMafia)
-            .SetValueFormat(OptionFormat.Seconds);
-
-        /*
          * Time Thief
          */
         TimeThief.SetupCustomOption();
@@ -1504,6 +1484,8 @@ public static class Options
             .SetColor(new Color32(255, 25, 25, byte.MaxValue));
 
         Minion.SetupCustomOption();
+
+        Nemesis.SetupCustomOption();
 
         #endregion
 

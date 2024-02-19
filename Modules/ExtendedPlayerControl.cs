@@ -475,7 +475,6 @@ static class ExtendedPlayerControl
             CustomRoles.Killer => pc.IsAlive(),
             //Standard
             CustomRoles.Fireworker => Fireworker.CanUseKillButton(pc),
-            CustomRoles.Mafia => Utils.CanMafiaKill(),
             CustomRoles.Shaman => pc.IsAlive(),
             CustomRoles.Underdog => playerCount <= Options.UnderdogMaximumPlayersNeededToKill.GetInt(),
             CustomRoles.Inhibitor => !Utils.IsActive(SystemTypes.Electrical) && !Utils.IsActive(SystemTypes.Comms) && !Utils.IsActive(SystemTypes.MushroomMixupSabotage) && !Utils.IsActive(SystemTypes.Laboratory) && !Utils.IsActive(SystemTypes.LifeSupp) && !Utils.IsActive(SystemTypes.Reactor) && !Utils.IsActive(SystemTypes.HeliSabotage),
@@ -1350,7 +1349,7 @@ static class ExtendedPlayerControl
         else if (Madmate.MadmateKnowWhosImp.GetBool() && seer.Is(CustomRoles.Madmate) && target.Is(CustomRoleTypes.Impostor)) return true;
         else if (Madmate.ImpKnowWhosMadmate.GetBool() && target.Is(CustomRoles.Madmate) && seer.Is(CustomRoleTypes.Impostor)) return true;
         else if (Options.AlliesKnowCrewpostor.GetBool() && seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Crewpostor)) return true;
-        else if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Minion)) return true;
+        else if (seer.Is(CustomRoleTypes.Impostor) && target.GetCustomRole() is CustomRoles.Minion or CustomRoles.Nemesis) return true;
         else if (Options.CrewpostorKnowsAllies.GetBool() && seer.Is(CustomRoles.Crewpostor) && target.Is(CustomRoleTypes.Impostor)) return true;
         else if (Options.WorkaholicVisibleToEveryone.GetBool() && target.Is(CustomRoles.Workaholic)) return true;
         else if (Options.DoctorVisibleToEveryone.GetBool() && target.Is(CustomRoles.Doctor)) return true;
@@ -1475,13 +1474,6 @@ static class ExtendedPlayerControl
         var text = role.ToString();
 
         var Prefix = "";
-        if (!InfoLong)
-            switch (role)
-            {
-                case CustomRoles.Mafia:
-                    Prefix = Utils.CanMafiaKill() ? "After" : "Before";
-                    break;
-            };
         var Info = (role.IsVanilla() ? "Blurb" : "Info") + (InfoLong ? "Long" : "");
         return GetString($"{Prefix}{text}{Info}");
     }

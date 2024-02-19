@@ -96,11 +96,11 @@ public static class Retributionist
         {
             killer.RpcMurderPlayerV3(target);
             killer.RpcResetAbilityCooldown();
-            killer.SetKillCooldown();
+            Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Retribution;
             KillCount[killer.PlayerId]--;
             SendRPC(killer.PlayerId);
         }
-        else if (KillCount[killer.PlayerId] > RetributionistCanKillNum.GetInt()) killer.Notify(GetString("RetributionistKillMax"));
+        else if (KillCount[killer.PlayerId] >= 0) killer.Notify(GetString("RetributionistKillMax"));
         else if (KillersNoEjects < OnlyKillAfterXKillerNoEject.GetInt()) killer.Notify(GetString("RetributionistKillNoEject"));
         else if (Main.AllAlivePlayerControls.Count() < MinimumPlayersAliveToRetri.GetInt()) killer.Notify(GetString("RetributionistKillTooManyDead"));
         return false;
@@ -110,7 +110,7 @@ public static class Retributionist
     {
         return target != null && KillersNoEjects >= OnlyKillAfterXKillerNoEject.GetInt()
             && Main.AllAlivePlayerControls.Count() >= MinimumPlayersAliveToRetri.GetInt()
-            && KillCount[killer.PlayerId] >= RetributionistCanKillNum.GetInt()
+            && KillCount[killer.PlayerId] > 0
             && !target.Is(CustomRoles.Pestilence); // Double body could happen
     }
     public static bool CanKill(byte id) => KillCount.TryGetValue(id, out var x) && x > 0;

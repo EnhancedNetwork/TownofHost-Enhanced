@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
+using TOHE.Roles._Ghosts_.Impostor;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
@@ -66,7 +67,6 @@ internal class ChangeRoleSettings
             Main.TimeMasterBackTrack = [];
             Main.TimeMasterNum = [];
             Main.CursedPlayers = [];
-            Main.MafiaRevenged = [];
             Main.isCurseAndKill = [];
             Main.isCursed = false;
             Main.DetectiveNotify = [];
@@ -296,6 +296,7 @@ internal class ChangeRoleSettings
             Mediumshiper.Init();
             Swooper.Init();
             Retributionist.Init();
+            Nemesis.Init();
             Wraith.Init();
             SoulCollector.Init();
             SchrodingersCat.Init();

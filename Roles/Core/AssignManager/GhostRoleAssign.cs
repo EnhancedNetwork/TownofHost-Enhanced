@@ -2,6 +2,7 @@
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles._Ghosts_.Impostor;
 using TOHE.Roles.Crewmate;
 
 namespace TOHE.Roles.Core.AssignManager;
@@ -14,7 +15,7 @@ public static class GhostRoleAssign
     {
         var getplrRole = player.GetCustomRole();
         if (GameStates.IsHideNSeek || getplrRole.IsGhostRole() || player.GetCustomSubRoles().Any(x => x.IsGhostRole()) || Options.CustomGhostRoleCounts.Count <= 0) return;
-        if (getplrRole is CustomRoles.Retributionist or CustomRoles.Mafia or CustomRoles.GM) return;
+        if (getplrRole is CustomRoles.GM) return;
         GhostGetPreviousRole.Add(player.PlayerId, getplrRole);
 
         List<CustomRoles> HauntedList = [];
@@ -156,6 +157,9 @@ public static class GhostRoleAssign
         {
             case CustomRoles.Retributionist:
                 Retributionist.Add(target.PlayerId);
+                break;
+            case CustomRoles.Nemesis:
+                Nemesis.Add(target.PlayerId);
                 break;
         }
     }
