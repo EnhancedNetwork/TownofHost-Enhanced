@@ -24,9 +24,9 @@ namespace TOHE.Roles._Ghosts_.Impostor
             SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Nemesis);
             KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(2.5f, 180f, 2.5f), 60f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis])
             .SetValueFormat(OptionFormat.Seconds);
-            MafiaCanKillNum = IntegerOptionItem.Create(Id +11, "NemesisCanKillNum", new(0, 15, 1), 1, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis])
+            MafiaCanKillNum = IntegerOptionItem.Create(Id + 11, "NemesisCanKillNum", new(0, 15, 1), 1, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis])
                 .SetValueFormat(OptionFormat.Players);
-            MinimumPlayersAliveToRevenge = IntegerOptionItem.Create(Id + 12, "MinimumPlayersAliveToRetri", new(0, 15, 1), 4, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis])
+            MinimumPlayersAliveToRevenge = IntegerOptionItem.Create(Id + 12, "MinimumPlayersAliveToRetri", new(0, 15, 1), 4, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis])
             .SetValueFormat(OptionFormat.Players);
         }
         public static void Init()
