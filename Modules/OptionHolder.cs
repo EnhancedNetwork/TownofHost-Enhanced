@@ -485,6 +485,7 @@ public static class Options
 
     public static OptionItem BerserkerKillCooldown;
     public static OptionItem BerserkerMax;
+    public static OptionItem BerserkerHasImpostorVision;
     public static OptionItem BerserkerOneCanKillCooldown;
     public static OptionItem BerserkerKillCooldownLevel;
     public static OptionItem BerserkerOneKillCooldown;
@@ -496,6 +497,7 @@ public static class Options
     //public static OptionItem BerserkerSpeed;
     public static OptionItem BerserkerFourCanNotKill;
     public static OptionItem BerserkerImmortalLevel;
+    public static OptionItem WarKillCooldown;
 
     public static OptionItem BomberRadius;
     public static OptionItem BomberCanKill;
@@ -2443,6 +2445,7 @@ public static class Options
             .SetValueFormat(OptionFormat.Seconds);
         BerserkerMax = IntegerOptionItem.Create(603, "BerserkerMax", new(1, 10, 1), 4, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker])
             .SetValueFormat(OptionFormat.Level);
+        BerserkerHasImpostorVision = BooleanOptionItem.Create(615, "BerserkerHasImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
         BerserkerOneCanKillCooldown = BooleanOptionItem.Create(604, "BerserkerOneCanKillCooldown", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
         BerserkerOneKillCooldown = FloatOptionItem.Create(605, "BerserkerOneKillCooldown", new(10f, 45f, 2.5f), 15f, TabGroup.NeutralRoles, false).SetParent(BerserkerOneCanKillCooldown)
             .SetValueFormat(OptionFormat.Seconds);
@@ -2460,6 +2463,8 @@ public static class Options
         BerserkerFourCanNotKill = BooleanOptionItem.Create(612, "BerserkerFourCanNotKill", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
         BerserkerImmortalLevel = IntegerOptionItem.Create(613, "BerserkerLevelRequirement", new(1, 10, 1), 4, TabGroup.NeutralRoles, false).SetParent(BerserkerFourCanNotKill)
             .SetValueFormat(OptionFormat.Level);
+        WarKillCooldown = FloatOptionItem.Create(614, "WarKillCooldown", new(0f, 150f, 2.5f), 15f, TabGroup.NeutralRoles, false).SetParent(BerserkerFourCanNotKill)
+            .SetValueFormat(OptionFormat.Seconds);
 
 
         PlagueBearer.SetupCustomOption();

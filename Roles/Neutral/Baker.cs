@@ -129,6 +129,7 @@ public static class Baker
     {
         var deathList = new List<byte>();
         var baker = player.PlayerId;
+        if (Main.AfterMeetingDeathPlayers.ContainsKey(baker)) return;
         foreach (var pc in Main.AllAlivePlayerControls)
         {
             var notBaker = pc.PlayerId;
@@ -145,6 +146,7 @@ public static class Baker
                     Main.AfterMeetingDeathPlayers.Remove(pc.PlayerId);
                 }
             }
+            else return;
         }
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Starved, [.. deathList]);
     }

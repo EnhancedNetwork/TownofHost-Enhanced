@@ -190,6 +190,9 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Pestilence:
                 opt.SetVision(PlagueBearer.PestilenceHasImpostorVision.GetBool());
                 break;
+            case CustomRoles.Berserker or CustomRoles.War:
+                opt.SetVision(Options.BerserkerHasImpostorVision.GetBool());
+                break;
             case CustomRoles.Pelican:
                 Pelican.ApplyGameOptions(opt);
                 break;

@@ -551,6 +551,8 @@ static class ExtendedPlayerControl
             CustomRoles.PlagueBearer => pc.IsAlive(),
             CustomRoles.Pestilence => pc.IsAlive(),
             CustomRoles.Baker => pc.IsAlive(),
+            CustomRoles.Berserker => pc.IsAlive(),
+            CustomRoles.War => pc.IsAlive(),
             CustomRoles.Pirate => pc.IsAlive(),
             CustomRoles.Pixie => pc.IsAlive(),
             CustomRoles.Seeker => pc.IsAlive(),
@@ -654,6 +656,7 @@ static class ExtendedPlayerControl
             //   CustomRoles.Chameleon => true,
             CustomRoles.Parasite => true,
             CustomRoles.Refugee => true,
+            CustomRoles.Berserker or CustomRoles.War => true,
             CustomRoles.Spiritcaller => Spiritcaller.CanVent.GetBool(),
             CustomRoles.Quizmaster => Quizmaster.CanUseVentButton(pc),
 
@@ -721,6 +724,8 @@ static class ExtendedPlayerControl
             CustomRoles.PlagueBearer or
             CustomRoles.Necromancer or
             CustomRoles.Pestilence or
+            CustomRoles.Berserker or
+            CustomRoles.War or
             CustomRoles.Werewolf or
     //        CustomRoles.Minion or
             CustomRoles.Spiritcaller or
@@ -807,6 +812,9 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Berserker:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.BerserkerKillCooldown.GetFloat();
+                break;
+            case CustomRoles.War:
+                Main.AllPlayerKillCooldown[player.PlayerId] = Options.WarKillCooldown.GetFloat();
                 break;
             case CustomRoles.Kamikaze:
                 Kamikaze.SetKillCooldown(player.PlayerId);

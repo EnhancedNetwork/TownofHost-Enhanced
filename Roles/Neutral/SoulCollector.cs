@@ -1,7 +1,9 @@
 using Hazel;
+using InnerNet;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Linq;
+using TOHE.Roles.Impostor;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static UnityEngine.GraphicsBuffer;
@@ -135,17 +137,16 @@ public static class SoulCollector
     public static void BecomeDeath(PlayerControl player)
     {
         if (SoulCollectorPoints[player.PlayerId] < SoulCollectorPointsOpt.GetInt()) return;
-
         player.RpcSetCustomRole(CustomRoles.Death);
         player.Notify(GetString("SoulCollectorToDeath"));
         player.RpcGuardAndKill(player);
         if (CallMeetingIfDeath.GetBool()) PlayerControl.LocalPlayer.NoCheckStartMeeting(null, force: true);
-        KillIfNotEjected(player);
-
+        if (GameStates.IsCanMove) KillIfNotEjected(player);
     }
     public static void KillIfNotEjected(PlayerControl player)
     {
         var deathList = new List<byte>();
+        if (Main.AfterMeetingDeathPlayers.ContainsKey(player.PlayerId)) return;
         foreach (var pc in Main.AllAlivePlayerControls)
         {
             if (pc.IsNeutralApocalypse()) continue;
@@ -161,6 +162,7 @@ public static class SoulCollector
                     Main.AfterMeetingDeathPlayers.Remove(pc.PlayerId);
                 }
             }
+            else return;
         }
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Armageddon, [.. deathList]);
     }

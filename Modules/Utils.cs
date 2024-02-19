@@ -549,6 +549,8 @@ public static class Utils
             case CustomRoles.Death:
             case CustomRoles.Baker:
             case CustomRoles.Famine:
+            case CustomRoles.Berserker:
+            case CustomRoles.War:
             case CustomRoles.SchrodingersCat:
             case CustomRoles.Parasite:
             case CustomRoles.Crusader:
@@ -2460,7 +2462,13 @@ public static class Utils
                                     TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.PlagueBearer)}>●</color>");
                                 }
                                 break;
-
+                            case CustomRoles.Baker:
+                            case CustomRoles.Famine:
+                                if (Baker.HasBread(seer.PlayerId, target.PlayerId))
+                                {
+                                    TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Baker)}>●</color>");
+                                }
+                                break;
                             case CustomRoles.Arsonist:
                                 if (seer.IsDousedPlayer(target))
                                     TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Arsonist)}>▲</color>");

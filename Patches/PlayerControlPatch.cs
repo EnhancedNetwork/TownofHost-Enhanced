@@ -3255,7 +3255,13 @@ class FixedUpdateInNormalGamePatch
                         if (PlagueBearer.IsPlagued(seer.PlayerId, target.PlayerId))
                             Mark.Append($"<color={Utils.GetRoleColorCode(seerRole)}>●</color>");
                         break;
-
+                    case CustomRoles.Baker:
+                    case CustomRoles.Famine:
+                        if (Baker.HasBread(seer.PlayerId, target.PlayerId))
+                        {
+                            Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Baker)}>●</color>");
+                        }
+                        break;
                     case CustomRoles.Arsonist:
                         if (seer.IsDousedPlayer(target))
                             Mark.Append($"<color={Utils.GetRoleColorCode(seerRole)}>▲</color>");

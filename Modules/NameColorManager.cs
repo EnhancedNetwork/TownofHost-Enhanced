@@ -231,7 +231,7 @@ public static class NameColorManager
         if (seer.Is(CustomRoles.PlagueDoctor) && target.Is(CustomRoles.PlagueDoctor)) color = Main.roleColors[CustomRoles.PlagueDoctor];
 
         // Apocalypse
-        if (seer.IsNeutralApocalypse() && target.IsNeutralApocalypse()) color = Main.roleColors[CustomRoles.Death];
+        if (seer.IsNeutralApocalypse() && target.IsNeutralApocalypse()) color = Main.roleColors[CustomRoles.Apocalypse];
 
         if (color != "") return true;
         else return seer == target

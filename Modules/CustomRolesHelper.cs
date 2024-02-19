@@ -64,7 +64,6 @@ static class CustomRolesHelper
                 CustomRoles.Dictator => CustomRoles.Crewmate,
                 CustomRoles.Inhibitor => CustomRoles.Impostor,
                 CustomRoles.Saboteur => CustomRoles.Impostor,
-                CustomRoles.Berserker => CustomRoles.Impostor,
                 CustomRoles.Doctor => CustomRoles.Scientist,
                 CustomRoles.ScientistTOHE => CustomRoles.Scientist,
                 CustomRoles.Tracefinder => CustomRoles.Scientist,
@@ -447,6 +446,8 @@ static class CustomRolesHelper
             CustomRoles.VengefulRomantic or
             CustomRoles.Doppelganger or
             CustomRoles.SchrodingersCat or
+            CustomRoles.Berserker or
+            CustomRoles.War or
             //     CustomRoles.Juggernaut or
             //      CustomRoles.Jinx or
             //     CustomRoles.Poisoner or
@@ -474,8 +475,6 @@ static class CustomRolesHelper
             CustomRoles.Traitor or
             CustomRoles.Virus or
             CustomRoles.Spiritcaller or
-            CustomRoles.Berserker or
-            CustomRoles.War or
             CustomRoles.Succubus;
     }
 
