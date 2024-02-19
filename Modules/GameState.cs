@@ -469,7 +469,7 @@ public class TaskState
                         }
                         else
                         {
-                            player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), string.Format(Translator.GetString("ErrorTeleport"), player.GetRealName())));
+                            player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), Translator.GetString("ErrorTeleport")));
                         }
                     }
                     break;

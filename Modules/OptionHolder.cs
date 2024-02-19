@@ -173,6 +173,7 @@ public static class Options
     public static OptionItem EndWhenPlayerBug;
     public static OptionItem HideExileChat;
     public static OptionItem RemovePetsAtDeadPlayers;
+    public static OptionItem DisableShapeshiftAnimations;
 
     public static OptionItem CheatResponses;
     public static OptionItem NewHideMsg;
@@ -449,6 +450,8 @@ public static class Options
     // ------------ General Role Settings ------------
 
     // Imp
+    public static OptionItem ImpsCanSeeEachOthersRoles;
+    public static OptionItem ImpsCanSeeEachOthersAddOns;
 
     public static OptionItem RefugeeKillCD;
     //public static OptionItem MadmateCanFixSabotage;
@@ -894,10 +897,16 @@ public static class Options
         //    .SetHidden(true)
         //    .SetHeader(true);
 
+        ImpsCanSeeEachOthersRoles = BooleanOptionItem.Create(60001, "ImpsCanSeeEachOthersRoles", true, TabGroup.ImpostorRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true);
+        ImpsCanSeeEachOthersAddOns = BooleanOptionItem.Create(60002, "ImpsCanSeeEachOthersAddOns", true, TabGroup.ImpostorRoles, false)
+            .SetParent(ImpsCanSeeEachOthersRoles);
+
 
         Madmate.SetupMenuOptions();
-
         
+
         RefugeeKillCD = FloatOptionItem.Create(60009, "RefugeeKillCD", new(0f, 180f, 2.5f), 22.5f, TabGroup.ImpostorRoles, false)
             .SetHeader(true)
             .SetValueFormat(OptionFormat.Seconds)
@@ -2844,9 +2853,12 @@ public static class Options
             .SetColor(new Color32(255, 153, 153, byte.MaxValue))
             .HideInHnS();
 
-        DisableShieldAnimations = BooleanOptionItem.Create(60560, "DisableShieldAnimations", false, TabGroup.GameSettings, false)
+        DisableShapeshiftAnimations = BooleanOptionItem.Create(60559, "DisableShapeshiftAnimations", true, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true)
+            .SetColor(new Color32(255, 153, 153, byte.MaxValue));
+        DisableShieldAnimations = BooleanOptionItem.Create(60560, "DisableShieldAnimations", false, TabGroup.GameSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
         DisableKillAnimationOnGuess = BooleanOptionItem.Create(60561, "DisableKillAnimationOnGuess", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
