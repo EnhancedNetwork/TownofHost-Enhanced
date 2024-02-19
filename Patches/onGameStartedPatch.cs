@@ -67,7 +67,6 @@ internal class ChangeRoleSettings
             Main.TimeMasterNum = [];
             Main.CursedPlayers = [];
             Main.MafiaRevenged = [];
-            Main.RetributionistRevenged = [];
             Main.isCurseAndKill = [];
             Main.isCursed = false;
             Main.DetectiveNotify = [];
@@ -296,6 +295,7 @@ internal class ChangeRoleSettings
             Mortician.Init();
             Mediumshiper.Init();
             Swooper.Init();
+            Retributionist.Init();
             Wraith.Init();
             SoulCollector.Init();
             SchrodingersCat.Init();

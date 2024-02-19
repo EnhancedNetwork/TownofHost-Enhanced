@@ -495,6 +495,9 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Minion:
                 AURoleOptions.GuardianAngelCooldown = Minion.AbilityCooldown.GetFloat();
                 break;
+            case CustomRoles.Retributionist:
+                Retributionist.SetKillCooldown();
+                break;
             default:
                 opt.SetVision(false);
                 break;

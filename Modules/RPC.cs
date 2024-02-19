@@ -115,7 +115,6 @@ enum CustomRPC
     PresidentReveal,
     MeetingKill,
     MafiaRevenge,
-    RetributionistRevenge,
     SetWraithTimer,
     SetBKTimer,
     SyncTotocalcioTargetAndTimes,
@@ -167,7 +166,7 @@ public enum Sounds
 internal class RPCHandlerPatch
 {
     public static bool TrustedRpc(byte id)
-    => (CustomRPC)id is CustomRPC.VersionCheck or CustomRPC.RequestRetryVersionCheck or CustomRPC.AntiBlackout or CustomRPC.Judge or CustomRPC.MeetingKill or CustomRPC.Guess or CustomRPC.PresidentEnd or CustomRPC.MafiaRevenge or CustomRPC.RetributionistRevenge or CustomRPC.SetSwapperVotes or CustomRPC.DumpLog;
+    => (CustomRPC)id is CustomRPC.VersionCheck or CustomRPC.RequestRetryVersionCheck or CustomRPC.AntiBlackout or CustomRPC.Judge or CustomRPC.MeetingKill or CustomRPC.Guess or CustomRPC.PresidentEnd or CustomRPC.MafiaRevenge or CustomRPC.SetSwapperVotes or CustomRPC.DumpLog;
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
         var rpcType = (RpcCalls)callId;
@@ -630,9 +629,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.MafiaRevenge:
                 MafiaRevengeManager.ReceiveRPC(reader, __instance);
-                break;
-            case CustomRPC.RetributionistRevenge:
-                RetributionistRevengeManager.ReceiveRPC(reader, __instance);
                 break;
             case CustomRPC.SetWraithTimer:
                 Wraith.ReceiveRPC(reader);
@@ -1254,6 +1250,9 @@ internal static class RPC
             case CustomRoles.Mediumshiper:
                 Mediumshiper.Add(targetId);
                 break;
+            case CustomRoles.Retributionist:
+                Retributionist.Add(targetId);
+                break;
             case CustomRoles.Veteran:
                 Main.VeteranNumOfUsed.Add(targetId, Options.VeteranSkillMaxOfUseage.GetInt());
                 break;
@@ -1565,7 +1564,9 @@ internal static class RPC
             //case CustomRoles.Witch:
             //    break;
             //Merge the two rpc into one
-
+            case CustomRoles.Retributionist:
+                Retributionist.ReceiveRPC(reader);
+                break;
             default:
                 Logger.Error($"Role {role} can not be handled!", "SyncRoleSkillReader");
                 break;

@@ -151,7 +151,7 @@ static class CustomRolesHelper
                 CustomRoles.Bloodhound => CustomRoles.Crewmate,
                 CustomRoles.Tracker => CustomRoles.Crewmate,
                 CustomRoles.Merchant => CustomRoles.Crewmate,
-                CustomRoles.Retributionist => CustomRoles.Crewmate,
+                CustomRoles.Retributionist => CustomRoles.GuardianAngel,
                 CustomRoles.Guardian => CustomRoles.Crewmate,
                 CustomRoles.Addict => CustomRoles.Engineer,
                 CustomRoles.Mole => CustomRoles.Engineer,
@@ -293,6 +293,7 @@ static class CustomRolesHelper
             CustomRoles.GuardianAngelTOHE or
             CustomRoles.EvilSpirit or
             CustomRoles.Warden or
+            CustomRoles.Retributionist or
             CustomRoles.Minion;
 
     }
@@ -668,7 +669,6 @@ static class CustomRolesHelper
             CustomRoles.Crusader or
             CustomRoles.NiceGuesser or
             CustomRoles.Counterfeiter or
-            CustomRoles.Retributionist or
             CustomRoles.Sheriff or
             CustomRoles.Vigilante or
             CustomRoles.Jailer;
@@ -1039,7 +1039,6 @@ static class CustomRolesHelper
             CustomRoles.Mayor or
             CustomRoles.Captain or
             CustomRoles.Transporter or
-            CustomRoles.Retributionist or
             CustomRoles.Benefactor or
             CustomRoles.Alchemist;
     }

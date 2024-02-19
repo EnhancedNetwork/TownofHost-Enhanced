@@ -61,18 +61,6 @@ class CheckProtectPatch
 
         switch (getAngelRole)
         {
-            case CustomRoles.EvilSpirit:
-                if (target.Is(CustomRoles.Spiritcaller))
-                {
-                    Spiritcaller.ProtectSpiritcaller();
-                }
-                else
-                {
-                    Spiritcaller.HauntPlayer(target);
-                    
-                }
-                angel.RpcResetAbilityCooldown();
-                return false;
 
             case CustomRoles.Warden:
                 return Warden.OnCheckProtect(angel, target);
@@ -80,8 +68,31 @@ class CheckProtectPatch
             case CustomRoles.Minion:
                 return Minion.OnCheckProtect(angel, target);
 
+            case CustomRoles.Retributionist:
+                return Retributionist.OnCheckProtect(angel, target);
+
             default:
                 break;
+        }
+
+        foreach (var SubRole in angel.GetCustomSubRoles())
+        {
+            switch (SubRole)
+            {
+                case CustomRoles.EvilSpirit:
+                    if (target.Is(CustomRoles.Spiritcaller))
+                    {
+                        Spiritcaller.ProtectSpiritcaller();
+                    }
+                    else
+                    {
+                        Spiritcaller.HauntPlayer(target);
+
+                    }
+                angel.RpcResetAbilityCooldown();
+                return false;
+
+            }
         }
         
         if (angel.Is(CustomRoles.Sheriff) && angel.Data.IsDead)
@@ -2694,6 +2705,7 @@ class ReportDeadBodyPatch
         if (Eraser.IsEnable) Eraser.OnReportDeadBody();
         if (Anonymous.IsEnable) Anonymous.OnReportDeadBody();
         if (Divinator.IsEnable) Divinator.OnReportDeadBody();
+        if (Retributionist.IsEnable) Retributionist.OnReportDeadBody();
         if (Tracefinder.IsEnable) Tracefinder.OnReportDeadBody();
         if (Judge.IsEnable) Judge.OnReportDeadBody();
         if (Greedier.IsEnable) Greedier.OnReportDeadBody();

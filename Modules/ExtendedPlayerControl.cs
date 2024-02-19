@@ -1152,7 +1152,6 @@ static class ExtendedPlayerControl
             || target.Is(CustomRoles.NiceGuesser)
             || target.Is(CustomRoles.Bodyguard)
             || target.Is(CustomRoles.Observer)
-            || target.Is(CustomRoles.Retributionist)
             || target.Is(CustomRoles.Lookout)
             || target.Is(CustomRoles.Bodyguard);
     }

@@ -1050,6 +1050,9 @@ public static class Utils
                 case CustomRoles.CursedSoul:
                     ProgressText.Append(CursedSoul.GetCurseLimit());
                     break;
+                case CustomRoles.Retributionist:
+                    ProgressText.Append(Retributionist.GetRetributeLimit(playerId));
+                    break;
                 case CustomRoles.Admirer:
                     ProgressText.Append(Admirer.GetAdmireLimit(playerId));
                     break;
@@ -2505,12 +2508,6 @@ public static class Utils
                                     TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Mafia), target.PlayerId.ToString()) + " " + TargetPlayerName;
                                 break;
 
-
-                            case CustomRoles.Retributionist:
-                                if (!seer.IsAlive() && target.IsAlive())
-                                    TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Retributionist), target.PlayerId.ToString()) + " " + TargetPlayerName;
-                                break;
-
                             case CustomRoles.Swapper:
                                 if (seer.IsAlive() && target.IsAlive())
                                     TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + TargetPlayerName;
@@ -2674,6 +2671,7 @@ public static class Utils
         if (Penguin.IsEnable) Penguin.AfterMeetingTasks();
         if (Taskinator.IsEnable) Taskinator.AfterMeetingTasks();
         if (Benefactor.IsEnable) Benefactor.AfterMeetingTasks();
+        if (Retributionist.IsEnable) Retributionist.AfterMeetingTasks(); 
         if (PlagueDoctor.IsEnable) PlagueDoctor.AfterMeetingTasks();
         if (Jailer.IsEnable) Jailer.AfterMeetingTasks();
         if (CopyCat.IsEnable) CopyCat.AfterMeetingTasks();  //all crew after meeting task should be before this

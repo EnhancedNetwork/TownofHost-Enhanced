@@ -2,10 +2,11 @@
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.Crewmate;
 
 namespace TOHE.Roles.Core.AssignManager;
 
-public class GhostRoleAssign
+public static class GhostRoleAssign
 {
     public static Dictionary<byte, CustomRoles> GhostGetPreviousRole = [];
     private static Dictionary<CustomRoles, int> getCount;
@@ -103,6 +104,7 @@ public class GhostRoleAssign
             {
                 player.RpcSetRole(RoleTypes.GuardianAngel);
                 player.RpcSetCustomRole(ChosenRole);
+                player.AddPlayerId(ChosenRole);
             }
             return;
         }
@@ -128,6 +130,7 @@ public class GhostRoleAssign
             {
                 player.RpcSetRole(RoleTypes.GuardianAngel);
                 player.RpcSetCustomRole(ChosenRole);
+                player.AddPlayerId(ChosenRole);
             }
             return;
         }
@@ -146,5 +149,14 @@ public class GhostRoleAssign
     {
         Options.CustomGhostRoleCounts.Keys.Do(x 
             => getCount.Add(x, Options.CustomGhostRoleCounts[x].GetInt())); // Add new count Instance (Optionitem gets constantly refreshed)
+    }
+    public static void AddPlayerId(this PlayerControl target, CustomRoles GhostRole)
+    {
+        switch (GhostRole)
+        {
+            case CustomRoles.Retributionist:
+                Retributionist.Add(target.PlayerId);
+                break;
+        }
     }
 }

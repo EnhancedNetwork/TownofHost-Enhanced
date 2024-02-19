@@ -627,10 +627,6 @@ public static class Options
     public static OptionItem GGCanGuessAdt;
     public static OptionItem GGTryHideMsg;
 
-    public static OptionItem RetributionistCanKillNum;
-    public static OptionItem MinimumPlayersAliveToRetri;
-    public static OptionItem CanOnlyRetributeWithTasksDone;
-
     public static OptionItem VeteranSkillCooldown;
     public static OptionItem VeteranSkillDuration;
     public static OptionItem VeteranSkillMaxOfUseage;
@@ -806,7 +802,6 @@ public static class Options
     public static OverrideTasksData GuardianTasks;
     public static OverrideTasksData OpportunistTasks;
     public static OverrideTasksData MayorTasks;
-    public static OverrideTasksData RetributionistTasks;
     public static OverrideTasksData TimeManagerTasks;
 
 
@@ -1915,16 +1910,6 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser])
             .SetColor(Color.green);
         
-        SetupRoleOptions(11000, TabGroup.CrewmateRoles, CustomRoles.Retributionist);
-        RetributionistCanKillNum = IntegerOptionItem.Create(11002, "RetributionistCanKillNum", new(1, 15, 1), 1, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
-            .SetValueFormat(OptionFormat.Players);
-        MinimumPlayersAliveToRetri = IntegerOptionItem.Create(11003, "MinimumPlayersAliveToRetri", new(0, 15, 1), 5, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
-            .SetValueFormat(OptionFormat.Players);
-        CanOnlyRetributeWithTasksDone = BooleanOptionItem.Create(11004, "CanOnlyRetributeWithTasksDone", true, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist]);
-        RetributionistTasks = OverrideTasksData.Create(11005, TabGroup.CrewmateRoles, CustomRoles.Retributionist);
         
         Reverie.SetupCustomOption();
         
@@ -2004,6 +1989,8 @@ public static class Options
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
         Warden.SetupCustomOptions();
+
+        Retributionist.SetupCustomOptions();
 
         #endregion
 
