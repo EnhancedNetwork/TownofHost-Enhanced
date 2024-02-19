@@ -23,7 +23,7 @@ class EndGamePatch
     public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ref EndGameResult endGameResult)
     {
         GameStates.InGame = false;
-        
+      
         Logger.Info("-----------Game over-----------", "Phase");
         if (!GameStates.IsModHost) return;
         if (GameStates.IsHideNSeek) return;
