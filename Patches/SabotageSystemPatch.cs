@@ -1,6 +1,7 @@
 using HarmonyLib;
 using Hazel;
 using System.Linq;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -213,7 +214,7 @@ public class SabotageSystemPatch
                 return true;
             }
 
-            if (player.Is(CustomRoles.Fool))
+            if (Fool.IsEnable && player.Is(CustomRoles.Fool))
             {
                 return false;
             }
@@ -308,45 +309,20 @@ public class SabotageSystemPatch
         {
             var playerRole = player.GetCustomRole();
 
-            if (player.Is(CustomRoles.Minimalism)) return false;
-
             if (systemType is SystemTypes.Comms)
             {
-                if (playerRole.Is(CustomRoles.Camouflager) && !Camouflager.CanUseCommsSabotage.GetBool())
+                if (Camouflager.IsEnable && playerRole.Is(CustomRoles.Camouflager) && !Camouflager.CanUseCommsSabotage)
                     return false;
             }
-
-            if (player.Is(CustomRoleTypes.Impostor) && (player.IsAlive() || !Options.DeadImpCantSabotage.GetBool())) return true;
 
             switch (playerRole)
             {
-                case CustomRoles.Jackal when Jackal.CanUseSabotage.GetBool():
-                    return true;
-
-                case CustomRoles.Sidekick when Jackal.CanUseSabotageSK.GetBool():
-                    return true;
-
-                case CustomRoles.Bandit when Bandit.CanUseSabotage.GetBool():
-                    return true;
-
                 case CustomRoles.Glitch:
                     Glitch.Mimic(player);
                     return false;
-
-                case CustomRoles.Parasite when player.IsAlive():
-                    return true;
-
-                case CustomRoles.PotionMaster when player.IsAlive():
-                    return true;
-
-                case CustomRoles.Refugee when player.IsAlive():
-                    return true;
-
-                case CustomRoles.EvilMini when player.IsAlive():
-                    return true;
             }
 
-            return false;
+            return player.CanUseSabotage();
         }
 
         public static void Postfix(SabotageSystemType __instance, bool __runOriginal)

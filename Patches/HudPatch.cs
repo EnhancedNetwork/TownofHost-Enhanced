@@ -93,16 +93,16 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         Sniper.OverrideShapeText(player.PlayerId);
                         break;
-                    case CustomRoles.FireWorks:
+                    case CustomRoles.Fireworker:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        if (FireWorks.nowFireWorksCount[player.PlayerId] == 0)
-                            __instance.AbilityButton.OverrideText(GetString("FireWorksExplosionButtonText"));
+                        if (Fireworker.nowFireworkerCount[player.PlayerId] == 0)
+                            __instance.AbilityButton.OverrideText(GetString("FireworkerExplosionButtonText"));
                         else
-                            __instance.AbilityButton.OverrideText(GetString("FireWorksInstallAtionButtonText"));
+                            __instance.AbilityButton.OverrideText(GetString("FireworkerInstallAtionButtonText"));
                         break;
-                    case CustomRoles.SerialKiller:
+                    case CustomRoles.Mercenary:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        SerialKiller.GetAbilityButtonText(__instance, player);
+                        Mercenary.GetAbilityButtonText(__instance, player);
                         break;
                     case CustomRoles.Warlock:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
@@ -191,10 +191,6 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("KillButtonText"));
                         break;
-                    case CustomRoles.NWitch:
-                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        __instance.KillButton.OverrideText($"{GetString("WitchControlButtonText")}");
-                        break;
                     case CustomRoles.Shroud:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText($"{GetString("ShroudButtonText")}");
@@ -231,7 +227,7 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         Gangster.SetKillButtonText(player.PlayerId);
                         break;
-                    case CustomRoles.NSerialKiller:
+                    case CustomRoles.SerialKiller:
                     case CustomRoles.Juggernaut:
                     case CustomRoles.Pyromaniac:
                     case CustomRoles.Jackal:
@@ -255,9 +251,9 @@ class HudManagerPatch
                         __instance.KillButton.OverrideText(GetString("KillButtonText"));
                         __instance.SabotageButton.OverrideText(GetString("MimicButtonText"));
                         break;
-                    case CustomRoles.FFF:
+                    case CustomRoles.Hater:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        __instance.KillButton.OverrideText(GetString("FFFButtonText"));
+                        __instance.KillButton.OverrideText(GetString("HaterButtonText"));
                         break;
                     case CustomRoles.Medic:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
@@ -297,8 +293,7 @@ class HudManagerPatch
                         __instance.KillButton.OverrideText(GetString("ProvocateurButtonText"));
                         break;
                     case CustomRoles.Camouflager:
-                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        __instance.AbilityButton.OverrideText(GetString("CamouflagerShapeshiftText"));
+                        Camouflager.SetAbilityButtonText(__instance);
                         break;
                     case CustomRoles.OverKiller:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
@@ -309,9 +304,9 @@ class HudManagerPatch
                         Assassin.SetKillButtonText(player.PlayerId);
                         Assassin.GetAbilityButtonText(__instance, player.PlayerId);
                         break;
-                    case CustomRoles.Hacker:
+                    case CustomRoles.Anonymous:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        Hacker.GetAbilityButtonText(__instance, player.PlayerId);
+                        Anonymous.GetAbilityButtonText(__instance, player.PlayerId);
                         break;
                     case CustomRoles.Cleaner:
                         __instance.ReportButton.OverrideText(GetString("CleanerReportButtonText"));
@@ -508,7 +503,7 @@ class HudManagerPatch
                             CustomRoles.BountyHunter => BountyHunter.GetTargetText(player, true),
                             CustomRoles.Witch => Witch.GetSpellModeText(player, true),
                             CustomRoles.HexMaster => HexMaster.GetHexModeText(player, true),
-                            CustomRoles.FireWorks => FireWorks.GetStateText(player),
+                            CustomRoles.Fireworker => Fireworker.GetStateText(player),
                             CustomRoles.Swooper => Swooper.GetHudText(player),
                             CustomRoles.Wraith => Wraith.GetHudText(player),
                             CustomRoles.Chameleon => Chameleon.GetHudText(player),
@@ -517,7 +512,7 @@ class HudManagerPatch
                             CustomRoles.Glitch => Glitch.GetHudText(player),
                             CustomRoles.BloodKnight => BloodKnight.GetHudText(player),
                             CustomRoles.Wildling => Wildling.GetHudText(player),
-                            CustomRoles.PlagueDoctor => PlagueDoctor.GetLowerTextOthers(player, isForHud: true),
+                            CustomRoles.PlagueDoctor => PlagueDoctor.GetLowerTextOthers(player),
                             CustomRoles.Stealth => Stealth.GetSuffix(player, isHUD: true),
                             _ => string.Empty,
                         };
@@ -655,13 +650,12 @@ class SetHudActivePatch
             case CustomRoles.Deputy:
             case CustomRoles.Investigator:
             case CustomRoles.Monarch:
-            case CustomRoles.NWitch:
             case CustomRoles.Shroud:
             case CustomRoles.Innocent:
             case CustomRoles.Reverie:
             case CustomRoles.Pelican:
             case CustomRoles.Revolutionist:
-            case CustomRoles.FFF:
+            case CustomRoles.Hater:
             case CustomRoles.Medic:
             case CustomRoles.Gamer:
             case CustomRoles.DarkHide:
@@ -673,7 +667,7 @@ class SetHudActivePatch
                 __instance.ImpostorVentButton.ToggleVisible(false);
                 break;
 
-            case CustomRoles.Minimalism:
+            case CustomRoles.KillingMachine:
                 __instance.SabotageButton.ToggleVisible(false);
                 __instance.AbilityButton.ToggleVisible(false);
                 __instance.ReportButton.ToggleVisible(false);
@@ -774,10 +768,12 @@ class TaskPanelBehaviourPatch
         var taskText = __instance.taskText.text;
         if (taskText == "None") return;
 
-        // 役職説明表示
+        if (player == null) return;
+
+        // Display Description
         if (!player.GetCustomRole().IsVanilla())
         {
-            var RoleWithInfo = $"{player.GetDisplayRoleName()}:\r\n";
+            var RoleWithInfo = $"{player.GetDisplayRoleAndSubName(player, false)}:\r\n";
             RoleWithInfo += player.GetRoleInfo();
 
             var AllText = Utils.ColorString(player.GetRoleColor(), RoleWithInfo);

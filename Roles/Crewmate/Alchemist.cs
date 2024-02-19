@@ -151,14 +151,14 @@ namespace TOHE.Roles.Crewmate
                 case 4: // Increased speed.;
                     int SpeedDuration = 10;
                     player.Notify(GetString("AlchemistHasSpeed"));
-                    player.MarkDirtySettings();
-                    var tmpSpeed = Main.AllPlayerSpeed[player.PlayerId];
+                    var tempSpeed = Main.AllPlayerSpeed[player.PlayerId];
                     Main.AllPlayerSpeed[player.PlayerId] = Speed.GetFloat();
+                    player.MarkDirtySettings();
                     _ = new LateTask(() =>
                     {
-                        Main.AllPlayerSpeed[player.PlayerId] = Main.AllPlayerSpeed[player.PlayerId] - Speed.GetFloat() + tmpSpeed;
-                        player.MarkDirtySettings();
+                        Main.AllPlayerSpeed[player.PlayerId] = Main.AllPlayerSpeed[player.PlayerId] - Speed.GetFloat() + tempSpeed;
                         player.Notify(GetString("AlchemistSpeedOut"));
+                        player.MarkDirtySettings();
                     }, SpeedDuration);
                     break;
                 case 5: // Quick fix next sabo

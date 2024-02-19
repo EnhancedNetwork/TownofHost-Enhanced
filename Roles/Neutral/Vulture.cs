@@ -78,7 +78,13 @@ public static class Vulture
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-
+    private static void SendBodyRPC(byte playerId)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncVultureBodyAmount, SendOption.Reliable, -1);
+        writer.Write(playerId);
+        writer.Write(BodyReportCount[playerId]);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
     public static void ReceiveRPC(MessageReader reader)
     {
         byte playerId = reader.ReadByte();
@@ -88,7 +94,18 @@ public static class Vulture
         else
             LocateArrow.RemoveAllTarget(playerId);
     }
+    public static void ReceiveBodyRPC(MessageReader reader)
+    {
+        byte playerId = reader.ReadByte();
+        int body = reader.ReadInt32();
 
+        if (!BodyReportCount.ContainsKey(playerId))
+        {
+            BodyReportCount.Add(playerId , body);
+        }
+        else
+            BodyReportCount[playerId] = body;
+    }
     public static void Clear()
     {
         foreach (var apc in playerIdList)
@@ -97,27 +114,40 @@ public static class Vulture
             SendRPC(apc, false);
         }
     }
-    public static void AfterMeetingTasks()
+    public static void AfterMeetingTasks(bool notifyPlayer = false)
     {
-        if (!IsEnable) return;
-
-        foreach (var apc in playerIdList)
+        if (notifyPlayer) 
         {
-            var player = Utils.GetPlayerById(apc);
-            if (player.IsAlive())
+            foreach (var apc in playerIdList)
             {
-                AbilityLeftInRound[apc] = MaxEaten.GetInt();
-                LastReport[apc] = Utils.GetTimeStamp();
-                _ = new LateTask(() =>
+                var player = Utils.GetPlayerById(apc);
+                if (player.IsAlive())
                 {
-                    if (GameStates.IsInTask)
+                    _ = new LateTask(() =>
                     {
-                        if (!DisableShieldAnimations.GetBool()) Utils.GetPlayerById(apc).RpcGuardAndKill(Utils.GetPlayerById(apc));
-                        Utils.GetPlayerById(apc).Notify(GetString("VultureCooldownUp"));
-                    }
-                    return;
-                }, VultureReportCD.GetFloat(), "Vulture Cooldown Up After Meeting");
-                SendRPC(apc, false);
+                        if (GameStates.IsInTask)
+                        {
+                            if (!DisableShieldAnimations.GetBool()) Utils.GetPlayerById(apc).RpcGuardAndKill(Utils.GetPlayerById(apc));
+                            Utils.GetPlayerById(apc).Notify(GetString("VultureCooldownUp"));
+                        }
+                        return;
+                    }, VultureReportCD.GetFloat(), "Vulture Cooldown Up After Meeting");
+                }
+                SendBodyRPC(player.PlayerId);
+            }
+        }
+        else
+        {
+            foreach (var apc in playerIdList)
+            {
+                var player = Utils.GetPlayerById(apc);
+                if (player.IsAlive())
+                {
+                    AbilityLeftInRound[apc] = MaxEaten.GetInt();
+                    LastReport[apc] = Utils.GetTimeStamp();
+                    SendRPC(apc, false);
+                }
+                SendBodyRPC(player.PlayerId);
             }
         }
     }
@@ -161,7 +191,7 @@ public static class Vulture
                 SendRPC(apc, false);
             }
         }
-
+        SendBodyRPC(pc.PlayerId);
         pc.Notify(GetString("VultureBodyReported"));
         UnreportablePlayers.Remove(target.PlayerId);
         UnreportablePlayers.Add(target.PlayerId);

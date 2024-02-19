@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using Hazel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,7 +56,11 @@ public static class Huntsman
         playerIdList.Add(playerId);
         IsEnable = true;
 
-        _ = new LateTask(ResetTargets, 8f, "Huntsman Reset Targets");
+        _ = new LateTask(() =>
+        {
+            ResetTargets(isStartedGame: true);
+        }, 8f, "Huntsman Reset Targets");
+
         KCD = KillCooldown.GetFloat();
 
         if (!AmongUsClient.Instance.AmHost) return;
@@ -65,7 +70,7 @@ public static class Huntsman
     public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(HasImpostorVision.GetBool());
     public static void OnReportDeadBody()
     {
-        ResetTargets();
+        ResetTargets(isStartedGame: false);
     }
     public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
@@ -85,10 +90,34 @@ public static class Huntsman
         for (int i = 0; i < Targets.Count; i++) { byte playerId = Targets[i]; if (i != 0) output += ", "; output += Utils.GetPlayerById(playerId).GetRealName(); }
         return targetId != 0xff ? GetString("Targets") + $"<b><color=#ff1919>{output}</color></b>" : string.Empty;
     }
-    public static void ResetTargets()
+    public static void SendRPC(bool isSetTarget, byte targetId = byte.MaxValue)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncHuntsmanTarget, SendOption.Reliable, -1);
+        writer.Write(isSetTarget);
+        if (isSetTarget)
+        {
+            writer.Write(targetId);
+        }
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void ReceiveRPC(MessageReader reader)
+    {
+        bool isSetTarget = reader.ReadBoolean();
+        if (!isSetTarget)
+        {
+            Targets.Clear();
+            return;
+        }
+        byte targetId = reader.ReadByte();
+        Targets.Add(targetId);
+    }
+    public static void ResetTargets(bool isStartedGame = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
+
         Targets.Clear();
+        SendRPC(isSetTarget: false);
+
         int potentialTargetCount = Main.AllAlivePlayerControls.Length - 1;
         if (potentialTargetCount < 0) potentialTargetCount = 0;
         int maxLimit = Math.Min(potentialTargetCount, NumOfTargets.GetInt());
@@ -101,6 +130,8 @@ public static class Huntsman
                 var target = cTargets[rand.Next(0, cTargets.Count)];
                 var targetId = target.PlayerId;
                 Targets.Add(targetId);
+                SendRPC(isSetTarget: true, targetId: targetId);
+
             }
             catch (Exception ex)
             {
@@ -108,5 +139,8 @@ public static class Huntsman
                 break;
             }
         }
+
+        if (isStartedGame)
+            Utils.NotifyRoles(ForceLoop: true);
     }
 }

@@ -80,7 +80,7 @@ public static class Kamikaze
         if (!kamikameha.IsAlive())
         {
             KamikazedList.Remove(kamikameha.PlayerId);
-            SendRPC(KamiId: KamikazedList[kamikameha.PlayerId], targetId:kamikameha.PlayerId, checkMurder:false); // to remove playerid
+            SendRPC(KamiId: byte.MaxValue, targetId:kamikameha.PlayerId, checkMurder:false); // to remove playerid
             return;
         }
         var kami = Utils.GetPlayerById(KamikazedList[kamikameha.PlayerId]);
@@ -90,6 +90,7 @@ public static class Kamikaze
             if (kamikameha.IsAlive())
             {
                 Main.PlayerStates[kamikameha.PlayerId].deathReason = PlayerState.DeathReason.Targeted;
+                kamikameha.SetRealKiller(kami);
                 kamikameha.RpcMurderPlayerV3(kamikameha);
                 // Logger.Info($"{alivePlayer.GetNameWithRole()} is the killer of {kamikameha.GetNameWithRole()}", "Kamikaze"); -- Works fine
             }

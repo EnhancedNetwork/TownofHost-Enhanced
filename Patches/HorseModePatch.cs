@@ -12,8 +12,4 @@ public static class HorseModePatch
         __result = Main.HorseMode.Value;
         return false;
     }
-    public static int GetRealConstant()
-    {
-        return Constants.GetVersion(Constants.Year, Constants.Month, Constants.Day, Constants.Revision);
-    }
 }

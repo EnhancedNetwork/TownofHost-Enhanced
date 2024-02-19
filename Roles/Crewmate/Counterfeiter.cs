@@ -51,7 +51,8 @@ public static class Counterfeiter
     }
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCounterfeiterSellLimit, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Counterfeiter);
         writer.Write(playerId);
         writer.Write(SeelLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -84,7 +85,7 @@ public static class Counterfeiter
         if (pc == null || target == null || !pc.Is(CustomRoles.Counterfeiter)) return;
         SeelLimit[pc.PlayerId]--;
         SendRPC(pc.PlayerId);
-        if (target.Is(CustomRoles.Minimalism))
+        if (target.Is(CustomRoles.KillingMachine))
         {
             Logger.Info("target is Killing Machine, ability used count reduced, but target will not die", "Deceiver");
             return;

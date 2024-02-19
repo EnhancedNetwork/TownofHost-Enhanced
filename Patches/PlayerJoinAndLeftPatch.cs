@@ -2,10 +2,8 @@ using AmongUs.Data;
 using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
-using Il2CppSystem.Threading.Tasks;
 using InnerNet;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
@@ -26,7 +24,6 @@ class OnGameJoinedPatch
 
         Main.IsHostVersionCheating = false;
         Main.playerVersion = [];
-        if (!Main.VersionCheat.Value) RPC.RpcVersionCheck();
         SoundManager.Instance.ChangeAmbienceVolume(DataManager.Settings.Audio.AmbienceVolume);
 
         Main.HostClientId = AmongUsClient.Instance.HostId;
@@ -36,12 +33,6 @@ class OnGameJoinedPatch
         ChatUpdatePatch.DoBlockChat = false;
         GameStates.InGame = false;
         ErrorText.Instance.Clear();
-
-        if (HorseModePatch.GetRealConstant() != Constants.GetBroadcastVersion() - 25 && GameStates.IsOnlineGame && !DevManager.IsDevUser(EOSManager.Instance.FriendCode))
-        {
-            AmongUsClient.Instance.ExitGame(DisconnectReasons.Hacking);
-            SceneChanger.ChangeScene("MainMenu");
-        } //Prevent some people doing public lobby things
 
         if (AmongUsClient.Instance.AmHost) // Execute the following only on the host
         {
@@ -66,6 +57,13 @@ class OnGameJoinedPatch
             {
                 case GameModes.Normal:
                     Logger.Info(" Is Normal Game", "Game Mode");
+
+                    if (Main.NormalOptions.KillCooldown == 0f)
+                        Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
+
+                    AURoleOptions.SetOpt(Main.NormalOptions.Cast<IGameOptions>());
+                    if (AURoleOptions.ShapeshifterCooldown == 0f)
+                        AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
 
                     // if custom game mode is HideNSeekTOHE in normal game, set standart
                     if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
@@ -93,16 +91,6 @@ class OnGameJoinedPatch
                 default:
                     Logger.Info(" No find", "Game Mode");
                     break;
-            }
-
-            if (GameStates.IsNormalGame)
-            {
-                if (Main.NormalOptions.KillCooldown == 0f)
-                    Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
-
-                AURoleOptions.SetOpt(Main.NormalOptions.Cast<IGameOptions>());
-                if (AURoleOptions.ShapeshifterCooldown == 0f)
-                    AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
             }
         }
 
@@ -153,12 +141,47 @@ class DisconnectInternalPatch
     }
 }
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerJoined))]
-class OnPlayerJoinedPatch
+public static class OnPlayerJoinedPatch
 {
+    public static bool IsDisconnected(this ClientData client)
+    {
+        var __instance = AmongUsClient.Instance;
+        for (int i = 0; i < __instance.allClients.Count; i++)
+        {
+            ClientData clientData = __instance.allClients[i];
+            if (clientData.Id == client.Id)
+            {
+                return true;
+            }
+        }
+        return false;
+        //When a client disconnects, it is removed from allClients in method amongusclient.removeplayer
+    }
     public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
     {
         Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Joining room", "Session: OnPlayerJoined");
-        RPC.RpcVersionCheck();
+
+        Main.AssignRolesIsStarted = false;
+
+        _ = new LateTask(() =>
+        {
+            try
+            {
+                if (!client.IsDisconnected() && !AmongUsClient.Instance.AmHost)
+                {
+                    RPC.RpcVersionCheck();
+                }
+
+                if (AmongUsClient.Instance.AmHost && !client.IsDisconnected() && client.Character == null)
+                {
+                    Logger.SendInGame(GetString("Error.InvalidColor") + $" {client.Id}/{client.PlayerName}");
+                    AmongUsClient.Instance.KickPlayer(client.Id, false);
+                    Logger.Info($"Kicked client {client.Id}/{client.PlayerName} bcz PlayerControl is not spawned in time.", "OnPlayerJoinedPatchPostfix");
+                }
+            }
+            catch { }
+        }, 2.5f, "OnPlayerJoined Client <=> Client VersionCheck", false);
+
 
         if (AmongUsClient.Instance.AmHost && client.FriendCode == "" && Options.KickPlayerFriendCodeNotExist.GetBool() && !GameStates.IsLocalGame)
         {
@@ -376,7 +399,14 @@ class OnPlayerLeftPatch
                     break;
             }
 
-            Logger.Info($"{data?.PlayerName} - (ClientID:{data?.Id} / FriendCode:{data?.FriendCode} / HashPuid:{data?.GetHashedPuid()} / Platform:{data?.PlatformData.Platform}) Disconnect (Reason:{reason}，Ping:{AmongUsClient.Instance.Ping})", "Session");
+            Logger.Info($"{data?.PlayerName} - (ClientID:{data?.Id} / FriendCode:{data?.FriendCode} / HashPuid:{data?.GetHashedPuid()} / Platform:{data?.PlatformData.Platform}) Disconnect (Reason:{reason}，Ping:{AmongUsClient.Instance.Ping})", "Session OnPlayerLeftPatch");
+
+            // End the game when a player exits game during assigning roles (AntiBlackOut Protect)
+            if (Main.AssignRolesIsStarted)
+            {
+                Utils.ErrorEnd("The player left the game during assigning roles");
+            }
+
 
             if (data != null)
                 Main.playerVersion.Remove(data.Id);
@@ -440,7 +470,7 @@ class CreatePlayerPatch
         Main.AllPlayerNames.TryAdd(client.Character.PlayerId, name);
         Logger.Info($"client.PlayerName： {client.PlayerName}", "Name player");
 
-        if (!name.Equals(client.PlayerName))
+        if (client.Character != null && !name.Equals(client.PlayerName))
         {
             _ = new LateTask(() =>
             {
@@ -450,26 +480,34 @@ class CreatePlayerPatch
             }, 1f, "Name Format");
         }
 
-        _ = new LateTask(() => { if (client.Character == null || client == null) return; OptionItem.SyncAllOptions(client.Id); }, 3f, "Sync All Options For New Player");
-        Main.GuessNumber[client.Character.PlayerId] = [-1, 7];
-
-        _ = new LateTask(() =>
+        if (client == null || client.Character == null // client is null
+            || client.ColorId < 0 || Palette.PlayerColors.Length <= client.ColorId) // invalid client color
         {
-            //Logger.Warn($"{client.Character.CurrentOutfit.ColorId},{client.Character.CurrentOutfit.HatId}, {client.Character.CurrentOutfit.SkinId}, {client.Character.CurrentOutfit.VisorId}, {client.Character.CurrentOutfit.PetId}", "SKIN LOGGED");
-
-            if (client.Character == null) return;
-            if (Main.OverrideWelcomeMsg != "") Utils.SendMessage(Main.OverrideWelcomeMsg, client.Character.PlayerId);
-            else TemplateManager.SendTemplate("welcome", client.Character.PlayerId, true);
-        }, 3f, "Welcome Message");
-
-        _ = new LateTask(() =>
+            Logger.Warn("client is null or client have invalid color", "TrySyncAndSendMessage");
+        }
+        else
         {
+            _ = new LateTask(() =>
+            {
+                OptionItem.SyncAllOptions(client.Id);
+            }, 3f, "Sync All Options For New Player");
+
+            _ = new LateTask(() =>
+            {
+                if (Main.OverrideWelcomeMsg != "") Utils.SendMessage(Main.OverrideWelcomeMsg, client.Character.PlayerId);
+                else TemplateManager.SendTemplate("welcome", client.Character.PlayerId, true);
+            }, 3f, "Welcome Message");
+
             if (Options.GradientTagsOpt.GetBool())
             {
-                if (client.Character == null) return;
-                Utils.SendMessage(GetString("Warning.GradientTags"),client.Character.PlayerId);
+                _ = new LateTask(() =>
+                {
+                    Utils.SendMessage(GetString("Warning.GradientTags"), client.Character.PlayerId);
+                }, 3.3f, "GradientWarning");
             }
-        }, 3.3f, "GradientWarning");
+        }
+
+        Main.GuessNumber[client.Character.PlayerId] = [-1, 7];
 
         if (Main.OverrideWelcomeMsg == "" && Main.PlayerStates.Count != 0 && Main.clientIdList.Contains(client.Id))
         {

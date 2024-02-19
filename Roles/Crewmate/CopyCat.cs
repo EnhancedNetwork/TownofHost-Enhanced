@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -42,12 +43,15 @@ public static class CopyCat
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
+    public static void Remove(byte playerId) //only to be used when copycat's role is going to be changed permanently
+    {
+        playerIdList.Remove(playerId);
+        if (!playerIdList.Any()) IsEnable = false;
+    }
     public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Utils.GetPlayerById(id).IsAlive() ? CurrentKillCooldown : 300f;
 
     public static void AfterMeetingTasks()
     {
-        if (!IsEnable) return;
-
         foreach (var player in playerIdList.ToArray())
         {
             var pc = Utils.GetPlayerById(player);
@@ -65,8 +69,8 @@ public static class CopyCat
                 case CustomRoles.Deputy:
                     Deputy.Remove(player);
                     break;
-                case CustomRoles.ParityCop:
-                    ParityCop.Remove(player);
+                case CustomRoles.Inspector:
+                    Inspector.Remove(player);
                     break;
                 case CustomRoles.Medic:
                     Medic.Remove(player);
@@ -158,8 +162,14 @@ public static class CopyCat
                 case CustomRoles.Investigator:
                     Investigator.Remove(pc.PlayerId);
                     break;
+                case CustomRoles.Farseer:
+                    Farseer.Remove(pc.PlayerId);
+                    break;
             }
-            pc.RpcSetCustomRole(CustomRoles.CopyCat);
+
+            if (pc.GetCustomRole() != CustomRoles.Sidekick)
+                pc.RpcSetCustomRole(CustomRoles.CopyCat);
+
             SetKillCooldown(player);
         }
     }
@@ -178,8 +188,8 @@ public static class CopyCat
             CustomRoles.Alchemist or
             CustomRoles.TimeMaster or
             CustomRoles.Mole;
-            //bcoz of single role
-            // Other
+        //bcoz of single role
+        // Other
     }
 
     public static bool OnCheckMurder(PlayerControl pc, PlayerControl tpc)
@@ -217,7 +227,7 @@ public static class CopyCat
                 case CustomRoles.Councillor:
                     role = CustomRoles.Judge;
                     break;
-                case CustomRoles.Sans:
+                case CustomRoles.Arrogance:
                 case CustomRoles.Juggernaut:
                     role = CustomRoles.Reverie;
                     break;
@@ -259,8 +269,8 @@ public static class CopyCat
                     if (!Main.ResetCamPlayerList.Contains(pc.PlayerId))
                         Main.ResetCamPlayerList.Add(pc.PlayerId);
                     break;
-                case CustomRoles.ParityCop:
-                    ParityCop.Add(pc.PlayerId);
+                case CustomRoles.Inspector:
+                    Inspector.Add(pc.PlayerId);
                     break;
                 case CustomRoles.Medic:
                     Medic.Add(pc.PlayerId);
@@ -350,9 +360,11 @@ public static class CopyCat
                 case CustomRoles.Monitor:
                     Monitor.Add(pc.PlayerId);
                     break;
-
                 case CustomRoles.Investigator:
                     Investigator.Add(pc.PlayerId);
+                    break;
+                case CustomRoles.Farseer:
+                    Farseer.Add(pc.PlayerId);
                     break;
             }
 

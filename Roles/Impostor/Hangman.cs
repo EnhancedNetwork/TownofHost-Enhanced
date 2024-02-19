@@ -1,5 +1,6 @@
 ﻿using TOHE.Roles.Crewmate;
 using static TOHE.Options;
+using TOHE.Roles.AddOns.Impostor;
 
 namespace TOHE.Roles.Impostor;
 
@@ -40,7 +41,7 @@ public static class Hangman
         if (Medic.ProtectList.Contains(target.PlayerId)) return false;
 
         //禁止内鬼刀叛徒
-        if (target.Is(CustomRoles.Madmate) && !ImpCanKillMadmate.GetBool())
+        if (target.Is(CustomRoles.Madmate) && !Madmate.ImpCanKillMadmate.GetBool())
             return false;
 
         if (Main.CheckShapeshift.TryGetValue(killer.PlayerId, out var s) && s)
@@ -52,6 +53,7 @@ public static class Hangman
             Main.PlayerStates[target.PlayerId].SetDead();
             target.SetRealKiller(killer);
             killer.SetKillCooldown();
+            Utils.AfterPlayerDeathTasks(target);
             return false;
         }
         return true;

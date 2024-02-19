@@ -33,6 +33,11 @@ internal static class QuickShooter
         ShotLimit = [];
         IsEnable = false;
     }
+    public static void ApplyGameOptions()
+    {
+        AURoleOptions.ShapeshifterCooldown = ShapeshiftCooldown.GetFloat();
+        AURoleOptions.ShapeshifterDuration = 1f;
+    }
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
@@ -41,7 +46,8 @@ internal static class QuickShooter
     }
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetQuickShooterShotLimit, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.QuickShooter);
         writer.Write(playerId);
         writer.Write(ShotLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

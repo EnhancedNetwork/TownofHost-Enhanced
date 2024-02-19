@@ -10,7 +10,8 @@ public static class Rainbow
     public static OptionItem CrewCanBeRainbow;
     public static OptionItem ImpCanBeRainbow;
     public static OptionItem NeutralCanBeRainbow;
-    public static OptionItem RainbowColorChangeCoolDown;
+    private static OptionItem RainbowColorChangeCoolDown;
+    private static OptionItem ChangeInCamouflage;
 
     public static bool isEnabled = false;
     public static long LastColorChange;
@@ -24,6 +25,8 @@ public static class Rainbow
         NeutralCanBeRainbow = BooleanOptionItem.Create(Id + 12, "NeutralCanBeRainbow", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Rainbow]);
         RainbowColorChangeCoolDown = IntegerOptionItem.Create(Id + 13, "RainbowColorChangeCoolDown", new(1, 100, 1), 3, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Rainbow]);
+        ChangeInCamouflage = BooleanOptionItem.Create(Id + 14, "RainbowInCamouflage", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Rainbow]);
     }
     public static void Init()
@@ -41,6 +44,7 @@ public static class Rainbow
         if (LastColorChange + RainbowColorChangeCoolDown.GetInt() <= Utils.GetTimeStamp())
         {
             LastColorChange = Utils.GetTimeStamp();
+            if (Camouflage.IsCamouflage && !ChangeInCamouflage.GetBool()) return;
             ChangeAllColor();
         }
 

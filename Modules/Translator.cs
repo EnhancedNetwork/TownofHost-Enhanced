@@ -162,12 +162,12 @@ public static class Translator
     //    }
     //}
 
-    public static string GetString(string s, Dictionary<string, string> replacementDic = null, bool console = false, bool showInvalid = false, bool vanilla = false)
+    public static string GetString(string s, Dictionary<string, string> replacementDic = null, bool console = false, bool showInvalid = true, bool vanilla = false)
     {
         if (vanilla)
         {
             string nameToFind = s;
-            if (Enum.TryParse<StringNames>(nameToFind, out StringNames text))
+            if (Enum.TryParse(nameToFind, out StringNames text))
             {
                 return DestroyableSingleton<TranslationController>.Instance.GetString(text);
             }
@@ -188,7 +188,7 @@ public static class Translator
         return str;
     }
 
-    public static string GetString(string str, SupportedLangs langId, bool showInvalid = false)
+    public static string GetString(string str, SupportedLangs langId, bool showInvalid = true)
     {
         var res = showInvalid ? $"<INVALID:{str}>" : str;
         try

@@ -169,7 +169,7 @@ public class CustomRpcSender
         if (currentState == State.InRootMessage) this.EndMessage();
         if (currentState != State.Ready)
         {
-            string errorMsg = $"RPCを送信しようとしましたが、StateがReadyではありません (in: \"{name}\")";
+            string errorMsg = $"Attempted to send RPC, but State is not Ready  (in: \"{name}\")";
             if (isUnsafe)
                 Logger.Warn(errorMsg, "CustomRpcSender.Warn");
             else
@@ -200,6 +200,8 @@ public class CustomRpcSender
     public CustomRpcSender WritePacked(int val) => Write(w => w.WritePacked(val));
     public CustomRpcSender WritePacked(uint val) => Write(w => w.WritePacked(val));
     public CustomRpcSender WriteNetObject(InnerNetObject obj) => Write(w => w.WriteNetObject(obj));
+    public CustomRpcSender WriteMessageType(byte val) => Write(w => w.StartMessage(val));
+    public CustomRpcSender WriteEndMessage() => Write(w => w.EndMessage());
     #endregion
 
     private CustomRpcSender Write(Action<MessageWriter> action)

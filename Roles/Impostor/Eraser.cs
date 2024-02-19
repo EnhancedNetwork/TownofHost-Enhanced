@@ -46,15 +46,22 @@ internal static class Eraser
     }
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetEraseLimit, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Eraser);
         writer.Write(playerId);
+        writer.Write(EraseLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC(MessageReader reader)
     {
         byte playerId = reader.ReadByte();
-
-        EraseLimit[playerId]--;
+        int limit = reader.ReadInt32();
+        if (!EraseLimit.ContainsKey(playerId))
+        {
+            EraseLimit.Add(playerId , limit);
+        }
+        else
+            EraseLimit[playerId] = limit;
     }
     public static string GetProgressText(byte playerId) => Utils.ColorString(EraseLimit[playerId] > 0 ? Utils.GetRoleColor(CustomRoles.Eraser) : Color.gray, EraseLimit.TryGetValue(playerId, out var x) ? $"({x})" : "Invalid");
 
@@ -103,30 +110,40 @@ internal static class Eraser
         PlayerToErase = [];
         didVote = [];
     }
-    public static void AfterMeetingTasks()
+    public static void AfterMeetingTasks(bool notifyPlayer = false)
     {
-        if (!IsEnable) return;
-
-        foreach (var pc in PlayerToErase.ToArray())
+        if (notifyPlayer)
         {
-            var player = Utils.GetPlayerById(pc);
-            if (player == null) continue;
-            if (!Main.ErasedRoleStorage.ContainsKey(player.PlayerId))
+            foreach (var pc in PlayerToErase.ToArray())
             {
-                Main.ErasedRoleStorage.Add(player.PlayerId, player.GetCustomRole());
-                Logger.Info($"Added {player.GetNameWithRole()} to ErasedRoleStorage", "Eraser");
+                var player = Utils.GetPlayerById(pc);
+                if (player == null) continue;
+
+                player.Notify(GetString("LostRoleByEraser"));
             }
-            else
-            {
-                Logger.Info($"Canceled {player.GetNameWithRole()} Eraser bcz already erased.", "Eraser");
-                return;
-            }
-            player.RpcSetCustomRole(CustomRolesHelper.GetErasedRole(player.GetCustomRole().GetRoleTypes(), player.GetCustomRole()));
-            player.Notify(GetString("LostRoleByEraser"));
-            player.ResetKillCooldown();
-            player.SetKillCooldown();
-            Logger.Info($"{player.GetNameWithRole()} Erase by Eraser", "Eraser");
         }
-        Utils.MarkEveryoneDirtySettings();
+        else
+        {
+            foreach (var pc in PlayerToErase.ToArray())
+            {
+                var player = Utils.GetPlayerById(pc);
+                if (player == null) continue;
+                if (!Main.ErasedRoleStorage.ContainsKey(player.PlayerId))
+                {
+                    Main.ErasedRoleStorage.Add(player.PlayerId, player.GetCustomRole());
+                    Logger.Info($"Added {player.GetNameWithRole()} to ErasedRoleStorage", "Eraser");
+                }
+                else
+                {
+                    Logger.Info($"Canceled {player.GetNameWithRole()} Eraser bcz already erased.", "Eraser");
+                    return;
+                }
+                player.RpcSetCustomRole(CustomRolesHelper.GetErasedRole(player.GetCustomRole().GetRoleTypes(), player.GetCustomRole()));
+                player.ResetKillCooldown();
+                player.SetKillCooldown();
+                Logger.Info($"{player.GetNameWithRole()} Erase by Eraser", "Eraser");
+            }
+            Utils.MarkEveryoneDirtySettings();
+        }
     }
 }

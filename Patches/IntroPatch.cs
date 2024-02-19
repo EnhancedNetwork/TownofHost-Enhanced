@@ -6,7 +6,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
@@ -63,6 +62,8 @@ class CoBeginPatch
         var logger = Logger.Handler("Info");
 
         var allPlayerControlsArray = Main.AllPlayerControls.ToArray();
+
+        Main.AssignRolesIsStarted = false;
 
         logger.Info("------------Player Names------------");
         foreach ( var pc in allPlayerControlsArray)
@@ -284,13 +285,13 @@ class BeginCrewmatePatch
             }
             teamToDisplay = lawyerTeam;
         }
-        if (PlayerControl.LocalPlayer.Is(CustomRoles.NSerialKiller))
+        if (PlayerControl.LocalPlayer.Is(CustomRoles.SerialKiller))
         {
             var serialkillerTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             serialkillerTeam.Add(PlayerControl.LocalPlayer);
             foreach (var ar in PlayerControl.AllPlayerControls)
             {
-                if (ar.Is(CustomRoles.NSerialKiller) && ar != PlayerControl.LocalPlayer)
+                if (ar.Is(CustomRoles.SerialKiller) && ar != PlayerControl.LocalPlayer)
                     serialkillerTeam.Add(ar);
             }
             teamToDisplay = serialkillerTeam;
@@ -343,7 +344,7 @@ class BeginCrewmatePatch
                 break;
 
             case CustomRoles.Opportunist:
-            case CustomRoles.FFF:
+            case CustomRoles.Hater:
             case CustomRoles.Revolutionist:
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Crewmate);
                 break;
@@ -373,7 +374,7 @@ class BeginCrewmatePatch
             case CustomRoles.Sheriff:
             case CustomRoles.Veteran:
             case CustomRoles.SwordsMan:
-            case CustomRoles.Minimalism:
+            case CustomRoles.KillingMachine:
             case CustomRoles.Reverie:
             case CustomRoles.NiceGuesser:
             case CustomRoles.Vigilante:
@@ -384,7 +385,7 @@ class BeginCrewmatePatch
             case CustomRoles.Chameleon:
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = PlayerControl.LocalPlayer.MyPhysics.ImpostorDiscoveredSound;
                 break;
-        /*    case CustomRoles.ParityCop:
+        /*    case CustomRoles.Inspector:
             case CustomRoles.Mediumshiper:
             case CustomRoles.Mayor:
             case CustomRoles.Dictator:
@@ -513,7 +514,7 @@ class BeginImpostorPatch
             __instance.overlayHandle.color = Palette.CrewmateBlue;
             return false;
         }
-        else if (role is CustomRoles.Romantic or CustomRoles.Doppelganger or CustomRoles.Pyromaniac or CustomRoles.Huntsman or CustomRoles.RuthlessRomantic or CustomRoles.VengefulRomantic or CustomRoles.NSerialKiller or CustomRoles.Jackal or CustomRoles.Seeker or CustomRoles.Pixie or CustomRoles.Agitater or CustomRoles.CursedSoul or CustomRoles.Pirate or CustomRoles.Amnesiac or CustomRoles.Arsonist or CustomRoles.Sidekick or CustomRoles.Innocent or CustomRoles.Pelican or CustomRoles.Pursuer or CustomRoles.Revolutionist or CustomRoles.FFF or CustomRoles.Gamer or CustomRoles.Glitch or CustomRoles.Juggernaut or CustomRoles.DarkHide or CustomRoles.Provocateur or CustomRoles.BloodKnight or CustomRoles.NSerialKiller or CustomRoles.Werewolf or CustomRoles.Maverick or CustomRoles.NWitch or CustomRoles.Shroud or CustomRoles.Totocalcio or CustomRoles.Succubus or CustomRoles.Pelican or CustomRoles.Infectious or CustomRoles.Virus or CustomRoles.Pickpocket or CustomRoles.Traitor or CustomRoles.PlagueBearer or CustomRoles.Pestilence or CustomRoles.Baker or CustomRoles.Famine or CustomRoles.Berserker or CustomRoles.War or CustomRoles.Spiritcaller or CustomRoles.Necromancer or CustomRoles.Medusa or CustomRoles.HexMaster or CustomRoles.Wraith or CustomRoles.Jinx or CustomRoles.Poisoner or CustomRoles.PotionMaster) //or CustomRoles.Occultist 
+        else if (role is CustomRoles.Romantic or CustomRoles.Doppelganger or CustomRoles.Pyromaniac or CustomRoles.Huntsman or CustomRoles.RuthlessRomantic or CustomRoles.VengefulRomantic or CustomRoles.SerialKiller or CustomRoles.Jackal or CustomRoles.Seeker or CustomRoles.Pixie or CustomRoles.Agitater or CustomRoles.CursedSoul or CustomRoles.Pirate or CustomRoles.Amnesiac or CustomRoles.Arsonist or CustomRoles.Sidekick or CustomRoles.Innocent or CustomRoles.Pelican or CustomRoles.Pursuer or CustomRoles.Revolutionist or CustomRoles.Hater or CustomRoles.Gamer or CustomRoles.Glitch or CustomRoles.Juggernaut or CustomRoles.DarkHide or CustomRoles.Provocateur or CustomRoles.BloodKnight or CustomRoles.SerialKiller or CustomRoles.Werewolf or CustomRoles.Maverick or CustomRoles.Shroud or CustomRoles.Totocalcio or CustomRoles.Succubus or CustomRoles.Pelican or CustomRoles.Infectious or CustomRoles.Virus or CustomRoles.Pickpocket or CustomRoles.Traitor or CustomRoles.PlagueBearer or CustomRoles.Pestilence or CustomRoles.Baker or CustomRoles.Famine or CustomRoles.Berserker or CustomRoles.War or CustomRoles.Spiritcaller or CustomRoles.Necromancer or CustomRoles.Medusa or CustomRoles.HexMaster or CustomRoles.Wraith or CustomRoles.Jinx or CustomRoles.Poisoner or CustomRoles.PotionMaster) //or CustomRoles.Occultist 
         {
             yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             yourTeam.Add(PlayerControl.LocalPlayer);

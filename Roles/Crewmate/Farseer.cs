@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -17,7 +18,7 @@ namespace TOHE.Roles.Crewmate
         private static readonly string fontSize = "1.5";
         public static bool IsEnable = false;
 
-        public static Dictionary<int, string> RandomRole = [];
+        public static Dictionary<byte, string> RandomRole = [];
         public static Dictionary<byte, (PlayerControl, float)> FarseerTimer = [];
 
         public static OptionItem FarseerCooldown;
@@ -38,7 +39,7 @@ namespace TOHE.Roles.Crewmate
             CustomRoles.SabotageMaster,
             CustomRoles.Snitch,
             CustomRoles.Marshall,
-            CustomRoles.ParityCop,
+            CustomRoles.Inspector,
             CustomRoles.Bastion,
             CustomRoles.Dictator,
             CustomRoles.Doctor,
@@ -92,6 +93,11 @@ namespace TOHE.Roles.Crewmate
             if (!Main.ResetCamPlayerList.Contains(playerId))
                 Main.ResetCamPlayerList.Add(playerId);
         }
+        public static void Remove(byte playerId)
+        {
+            FarseerTimer.Remove(playerId);
+            RandomRole.Remove(playerId);
+        }
 
         public static void SetCooldown(byte id) => Main.AllPlayerKillCooldown[id] = FarseerCooldown.GetFloat();
         public static void OnCheckMurder(PlayerControl killer, PlayerControl target, PlayerControl __instance)
@@ -135,7 +141,7 @@ namespace TOHE.Roles.Crewmate
                 else
                 {
 
-                    float range = NormalGameOptionsV07.KillDistances[Mathf.Clamp(player.Is(CustomRoles.Reach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
+                    float range = NormalGameOptionsV07.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
                     float dis = Vector2.Distance(player.GetCustomPosition(), farTarget.GetCustomPosition());
                     if (dis <= range)
                     {
@@ -169,7 +175,7 @@ namespace TOHE.Roles.Crewmate
 
         public static string GetTaskState()
         {
-            var playersWithTasks = Main.PlayerStates.Where(a => a.Value.GetTaskState().hasTasks).ToArray();
+            var playersWithTasks = Main.PlayerStates.Where(a => a.Value.TaskState.hasTasks).ToArray();
             if (playersWithTasks.Length == 0)
             {
                 return "\r\n";
@@ -177,7 +183,7 @@ namespace TOHE.Roles.Crewmate
 
             var rd = IRandom.Instance;
             var randomPlayer = playersWithTasks[rd.Next(0, playersWithTasks.Length)];
-            var taskState = randomPlayer.Value.GetTaskState();
+            var taskState = randomPlayer.Value.TaskState;
 
             Color TextColor;
             var TaskCompleteColor = Color.green;

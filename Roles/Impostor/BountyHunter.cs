@@ -1,6 +1,7 @@
 using Hazel;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
@@ -130,7 +131,7 @@ public static class BountyHunter
     public static byte GetTarget(PlayerControl player)
     {
         if (player == null) return 0xff;
-        if (Targets == null) Targets = [];
+        Targets ??= [];
 
         if (!Targets.TryGetValue(player.PlayerId, out var targetId))
             targetId = ResetTarget(player);
@@ -172,7 +173,7 @@ public static class BountyHunter
             && target.Is(CustomRoles.CursedSoul) || target.Is(CustomRoles.Soulless)) return false;
 
         if (target.GetCustomRole().IsImpostor()
-            || ((target.GetCustomRole().IsMadmate() || target.Is(CustomRoles.Madmate)) && Options.ImpKnowWhosMadmate.GetBool())) return false;
+            || ((target.GetCustomRole().IsMadmate() || target.Is(CustomRoles.Madmate)) && Madmate.ImpKnowWhosMadmate.GetBool())) return false;
 
         return true;
 
@@ -213,8 +214,6 @@ public static class BountyHunter
     public static void SetAbilityButtonText(HudManager __instance) => __instance.AbilityButton.OverrideText(GetString("BountyHunterChangeButtonText"));
     public static void AfterMeetingTasks()
     {
-        if (!IsEnable) return;
-
         foreach (var id in playerIdList.ToArray())
         {
             if (!Main.PlayerStates[id].IsDead)

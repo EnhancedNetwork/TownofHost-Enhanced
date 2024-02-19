@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
+using System.Linq;
 using TOHE.Roles.AddOns.Common;
 using UnityEngine;
 using static TOHE.Options;
@@ -11,8 +12,10 @@ public static class Bandit
     private static readonly int Id = 16000;
     private static List<byte> playerIdList = [];
     public static bool IsEnable = false;
+    public static Dictionary<byte, float> killCooldown = [];
 
-    private static OptionItem KillCooldown;
+    public static OptionItem KillCooldownOpt;
+    public static OptionItem StealCooldown;
     public static OptionItem MaxSteals;
     public static OptionItem StealMode;
     public static OptionItem CanStealBetrayalAddon;
@@ -33,7 +36,9 @@ public static class Bandit
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Bandit);
         MaxSteals = IntegerOptionItem.Create(Id + 10, "BanditMaxSteals", new(1, 20, 1), 6, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
-        KillCooldown = FloatOptionItem.Create(Id + 11, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit])
+        KillCooldownOpt = FloatOptionItem.Create(Id + 11, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit])
+            .SetValueFormat(OptionFormat.Seconds);
+        StealCooldown = FloatOptionItem.Create(Id + 17, "StealCooldown", new(0f, 180f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit])
             .SetValueFormat(OptionFormat.Seconds);
         StealMode = StringOptionItem.Create(Id + 12, "BanditStealMode", BanditStealModeOpt, 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
         CanStealBetrayalAddon = BooleanOptionItem.Create(Id + 13, "BanditCanStealBetrayalAddon", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bandit]);
@@ -47,6 +52,7 @@ public static class Bandit
         playerIdList = [];
         Targets = [];
         TotalSteals = [];
+        killCooldown = [];
         IsEnable = false;
     }
 
@@ -56,6 +62,9 @@ public static class Bandit
         IsEnable = true;
         TotalSteals.Add(playerId, 0);
         Targets[playerId] = [];
+
+        var pc = Utils.GetPlayerById(playerId);
+        pc?.AddDoubleTrigger();
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -80,13 +89,17 @@ public static class Bandit
             TotalSteals.Add(PlayerId, 0);
     }
 
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+    public static void SetKillCooldown(byte id)
+    {
+        if (!killCooldown.ContainsKey(id)) killCooldown[id] = KillCooldownOpt.GetFloat();
+        Main.AllPlayerKillCooldown[id] = killCooldown[id];
+    }
     public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(false);
 
     private static CustomRoles? SelectRandomAddon(PlayerControl Target)
     {
         if (!AmongUsClient.Instance.AmHost) return null;
-        var AllSubRoles = Main.PlayerStates[Target.PlayerId].SubRoles;
+        var AllSubRoles = Main.PlayerStates[Target.PlayerId].SubRoles.ToList();
         for (int i = AllSubRoles.Count - 1; i >= 0; i--)
         {
             var role = AllSubRoles[i];
@@ -112,41 +125,25 @@ public static class Bandit
         return addon;
     }
 
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public static void StealAddon(PlayerControl killer, PlayerControl target, CustomRoles? SelectedAddOn)
     {
-        if (!IsEnable) return true;
-        if (!target.HasSubRole() || target.Is(CustomRoles.Stubborn)) return true;
-        if (TotalSteals[killer.PlayerId] >= MaxSteals.GetInt())
-        {
-            Logger.Info("Max steals reached killing the player", "Bandit");
-            TotalSteals[killer.PlayerId] = MaxSteals.GetInt();
-            return true;
-        }
-        var SelectedAddOn = SelectRandomAddon(target);
-        if (SelectedAddOn == null) return true; // no stealable addons found on the target.
-        
         if (StealMode.GetValue() == 1)
-        {    
-            
-            if (SelectedAddOn == CustomRoles.Tired) {
-            Tired.playerIdList.Add(killer.PlayerId, false);
-            Tired.playerIdList.Remove(target.PlayerId);
-            }    
+        {
+            ExtendedPlayerControl.AddInSwitchAddons(target, killer, CustomRoles.NotAssigned, SelectedAddOn);
+          
             Main.PlayerStates[target.PlayerId].RemoveSubRole((CustomRoles)SelectedAddOn);
-            if (SelectedAddOn == CustomRoles.Aware) Main.AwareInteracted.Remove(target.PlayerId);
+            if (SelectedAddOn == CustomRoles.Aware) Aware.AwareInteracted.Remove(target.PlayerId);
             Logger.Info($"Successfully removed {SelectedAddOn} addon from {target.GetNameWithRole()}", "Bandit");
 
-            if (SelectedAddOn == CustomRoles.Aware && !Main.AwareInteracted.ContainsKey(target.PlayerId)) Main.AwareInteracted[target.PlayerId] = [];
+            if (SelectedAddOn == CustomRoles.Aware && !Aware.AwareInteracted.ContainsKey(target.PlayerId)) Aware.AwareInteracted[target.PlayerId] = [];
             killer.RpcSetCustomRole((CustomRoles)SelectedAddOn);
             Logger.Info($"Successfully Added {SelectedAddOn} addon to {killer.GetNameWithRole()}", "Bandit");
         }
         else
         {
-            
-            if (SelectedAddOn == CustomRoles.Tired) {
-            Tired.playerIdList.Add(killer.PlayerId, false);
-            Tired.playerIdList.Remove(target.PlayerId);
-            }
+          
+            ExtendedPlayerControl.AddInSwitchAddons(target, killer, CustomRoles.NotAssigned, SelectedAddOn);
+          
             Targets[killer.PlayerId][target.PlayerId] = (CustomRoles)SelectedAddOn;
             Logger.Info($"{killer.GetNameWithRole()} will steal {SelectedAddOn} addon from {target.GetNameWithRole()} after meeting starts", "Bandit");
         }
@@ -161,8 +158,29 @@ public static class Bandit
 
         if (!DisableShieldAnimations.GetBool())
             killer.RpcGuardAndKill(target);
-        
-        return false;
+
+        return;
+    }
+
+    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    {
+        if (!IsEnable) return true;
+        bool flag = false;
+        if (!target.HasSubRole() || target.Is(CustomRoles.Stubborn)) flag = true;
+        var SelectedAddOn = SelectRandomAddon(target);
+        if (SelectedAddOn == null || flag) // no stealable addons found on the target.
+        {
+            killer.Notify(Translator.GetString("NoStealableAddons"));
+            return true;
+        }
+        if (TotalSteals[killer.PlayerId] >= MaxSteals.GetInt())
+        {
+            Logger.Info("Max steals reached killing the player", "Bandit");
+            TotalSteals[killer.PlayerId] = MaxSteals.GetInt();
+            return true;
+        }
+
+        return killer.CheckDoubleTrigger(target, () => { StealAddon(killer, target, SelectedAddOn); });
     }
 
     public static void OnReportDeadBody()
@@ -181,10 +199,10 @@ public static class Bandit
                 if (target == null) continue;
                 CustomRoles role = kvp2.Value;
                 Main.PlayerStates[targetId].RemoveSubRole(role);
-                if (role == CustomRoles.Aware) Main.AwareInteracted.Remove(target.PlayerId);
+                if (role == CustomRoles.Aware) Aware.AwareInteracted.Remove(target.PlayerId);
                 Logger.Info($"Successfully removed {role} addon from {target.GetNameWithRole()}", "Bandit");
 
-                if (role == CustomRoles.Aware && !Main.AwareInteracted.ContainsKey(target.PlayerId)) Main.AwareInteracted[target.PlayerId] = [];
+                if (role == CustomRoles.Aware && !Aware.AwareInteracted.ContainsKey(target.PlayerId)) Aware.AwareInteracted[target.PlayerId] = [];
                 banditpc.RpcSetCustomRole(role);
                 Logger.Info($"Successfully Added {role} addon to {banditpc.GetNameWithRole()}", "Bandit");
             }

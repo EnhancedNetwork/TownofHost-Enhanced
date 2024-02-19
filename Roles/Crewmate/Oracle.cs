@@ -59,7 +59,8 @@ public static class Oracle
     }
     public static void SendRPC(byte playerId, bool isTemp = false)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetOracleLimit, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Oracle);
         writer.Write(playerId);
         writer.Write(isTemp);
         if (!isTemp) writer.Write(CheckLimit[playerId]);
@@ -137,10 +138,10 @@ public static class Oracle
                 //      CustomRoles.Zombie or
                 //      CustomRoles.Warlock or
                 //      CustomRoles.Assassin or
-                //      CustomRoles.Hacker or
+                //      CustomRoles.Anonymous or
                 //      CustomRoles.Miner or
-                //      CustomRoles.Escapee or
-                //      CustomRoles.SerialKiller or
+                //      CustomRoles.Escapist or
+                //      CustomRoles.Mercenary or
                 // //     CustomRoles.Mare or
                 //      CustomRoles.Inhibitor or
                 //      CustomRoles.Councillor or
@@ -149,15 +150,15 @@ public static class Oracle
                 //      CustomRoles.TimeThief or
                 ////      CustomRoles.Trickster or // Trickster appears as crew to Oracle
                 //      CustomRoles.Mafia or
-                //      CustomRoles.Minimalism or
-                //      CustomRoles.FireWorks or
+                //      CustomRoles.KillingMachine or
+                //      CustomRoles.Fireworker or
                 //      CustomRoles.Sniper or
                 //      CustomRoles.EvilTracker or
                 //      CustomRoles.EvilGuesser or
                 //      CustomRoles.AntiAdminer or
                 //      CustomRoles.Ludopath or
                 //      CustomRoles.Godfather or
-                //      CustomRoles.Sans or
+                //      CustomRoles.Arrogance or
                 //      CustomRoles.Bomber or
                 //      CustomRoles.Nuker or
                 //      CustomRoles.Scavenger or
@@ -208,7 +209,7 @@ public static class Oracle
                 //      CustomRoles.Masochist or
                 //      CustomRoles.Innocent or
                 //      CustomRoles.Pursuer or
-                //      CustomRoles.NSerialKiller or
+                //      CustomRoles.SerialKiller or
                 //      CustomRoles.Pelican or
                 //      CustomRoles.Revolutionist or
                 //      CustomRoles.FFF or

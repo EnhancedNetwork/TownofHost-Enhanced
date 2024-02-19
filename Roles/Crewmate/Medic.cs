@@ -93,7 +93,8 @@ public static class Medic
     }
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMedicalerProtectLimit, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Medic);
         writer.Write(playerId);
         writer.Write(ProtectLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -169,13 +170,14 @@ public static class Medic
     {
         if (killer == null || target == null) return false;
         if (!ProtectList.Contains(target.PlayerId)) return false;
-        if (killer.Is(CustomRoles.Minimalism)) return false;
+        if (killer.Is(CustomRoles.KillingMachine)) return false;
         SendRPCForProtectList();
 
         killer.RpcGuardAndKill(target);
         killer.SetKillCooldown(ResetCooldown.GetFloat());
 
-        Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: target, ForceLoop: true);
+        Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
+        Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
 
         switch (KnowShieldBroken.GetInt())
         {

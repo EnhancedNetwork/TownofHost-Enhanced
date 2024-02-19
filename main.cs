@@ -40,14 +40,14 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.1.24.15121";
-    public const string PluginDisplayVersion = "1.5.1 Dev 2.1";
+    public const string PluginVersion = "2024.0218.160.0001"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "1.6.0 dev 1";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public const bool Canary = true; 
-    public const bool fullRelease = false;
-    public const bool devRelease = false;
+    public static readonly bool Canary = false; // INACTIVE - Latest: V1.5.1 Canary 5
+    public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.5.1
+    public static readonly bool devRelease = true; // ACTIVE - Latest: V1.6.0 Dev 1
 
     public static bool hasAccess = true;
 
@@ -79,20 +79,23 @@ public class Main : BasePlugin
     public static ConfigEntry<string> HideName { get; private set; }
     public static ConfigEntry<string> HideColor { get; private set; }
     public static ConfigEntry<int> MessageWait { get; private set; }
+
     public static ConfigEntry<bool> UnlockFPS { get; private set; }
     public static ConfigEntry<bool> ShowFPS { get; private set; }
-    public static ConfigEntry<bool> AutoMuteUs { get; private set; }
-    public static ConfigEntry<bool> HorseMode { get; private set; }
     public static ConfigEntry<bool> EnableGM { get; private set; }
     public static ConfigEntry<bool> AutoStart { get; private set; }
+    public static ConfigEntry<bool> DarkTheme { get; private set; }
+    public static ConfigEntry<bool> ShowTextOverlay { get; private set; }
+    public static ConfigEntry<bool> ModeForSmallScreen { get; private set; }
+    public static ConfigEntry<bool> HorseMode { get; private set; }
+    public static ConfigEntry<bool> AutoMuteUs { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguage { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguageRoleName { get; private set; }
     public static ConfigEntry<bool> EnableCustomButton { get; private set; }
     public static ConfigEntry<bool> EnableCustomSoundEffect { get; private set; }
-    public static ConfigEntry<bool> ShowTextOverlay { get; private set; }
-    public static ConfigEntry<bool> ModeForSmallScreen { get; private set; }
-    public static ConfigEntry<bool> EnableRoleSummary { get; private set; }
     public static ConfigEntry<bool> SwitchVanilla { get; private set; }
+
+    // Debug
     public static ConfigEntry<bool> VersionCheat { get; private set; }
     public static bool IsHostVersionCheating = false;
     public static ConfigEntry<bool> GodMode { get; private set; }
@@ -126,12 +129,12 @@ public class Main : BasePlugin
     public static HashSet<byte> ResetCamPlayerList = [];
     public static HashSet<byte> winnerList = [];
     public static HashSet<byte> ForCrusade = [];
-    public static HashSet<byte> KillGhoul = [];
     public static HashSet<string> winnerNameList = [];
     public static HashSet<int> clientIdList = [];
     public static List<(string, byte, string)> MessagesToSend = [];
     public static bool isChatCommand = false;
     public static bool MeetingIsStarted = false;
+    public static bool AssignRolesIsStarted = false;
     public static HashSet<PlayerControl> LoversPlayers = [];
     public static bool isLoversDead = true;
     public static Dictionary<byte, float> AllPlayerKillCooldown = [];
@@ -144,21 +147,15 @@ public class Main : BasePlugin
     public static Dictionary<byte, long> TimeMasterInProtect = [];
     //public static Dictionary<byte, long> FlashbangInProtect = [];
     public static List<byte> CyberStarDead = [];
-    public static List<byte> CyberDead = [];
     public static List<int> BombedVents = [];
     public static List<byte> WorkaholicAlive = [];
-    public static List<byte> BurstBodies = [];
-    public static List<byte> BaitAlive = [];
     public static List<byte> TasklessCrewmate = [];
     public static List<byte> BoobyTrapBody = [];
     public static List<byte> BoobyTrapKiller = [];
     //public static List<byte> KilledDiseased = [];
-    public static Dictionary<byte, int> KilledDiseased = [];
-    public static Dictionary<byte, int> KilledAntidote = [];
     //public static List<byte> ForFlashbang = [];
     public static Dictionary<byte, byte> KillerOfBoobyTrapBody = [];
     public static Dictionary<byte, string> DetectiveNotify = [];
-    public static Dictionary<byte, string> SleuthNotify = [];
     public static Dictionary<byte, string> VirusNotify = [];
     public static List<byte> OverDeadPlayerList = [];
     public static bool DoBlockNameChange = false;
@@ -171,7 +168,6 @@ public class Main : BasePlugin
     public static List<byte> CleanerBodies = [];
     public static List<byte> MedusaBodies = [];
     public static List<byte> InfectedBodies = [];
-    public static List<byte> BrakarVoteFor = [];
     public static Dictionary<byte, (byte, float)> BitPlayers = [];
     public static Dictionary<byte, float> WarlockTimer = [];
     public static Dictionary<byte, float> AssassinTimer = [];
@@ -211,7 +207,7 @@ public class Main : BasePlugin
     public static Dictionary<byte, bool> CheckShapeshift = [];
     public static Dictionary<byte, byte> ShapeshiftTarget = [];
     public static Dictionary<(byte, byte), string> targetArrows = [];
-    public static Dictionary<byte, Vector2> EscapeeLocation = [];
+    public static Dictionary<byte, Vector2> EscapistLocation = [];
     public static Dictionary<byte, Vector2> TimeMasterLocation = [];
     public static bool VisibleTasksCount = false;
     public static string nickName = "";
@@ -236,7 +232,7 @@ public class Main : BasePlugin
     public static Dictionary<byte, CustomRoles> DevRole = [];
     public static List<byte> GodfatherTarget = [];
     public static Dictionary<byte, int> CrewpostorTasksDone = [];
-    public static Dictionary<byte, List<string>> AwareInteracted = [];
+    
     public static byte ShamanTarget = byte.MaxValue;
     public static bool ShamanTargetChoosen = false;
     
@@ -433,23 +429,25 @@ public class Main : BasePlugin
         HideName = Config.Bind("Client Options", "Hide Game Code Name", "TOHE");
         HideColor = Config.Bind("Client Options", "Hide Game Code Color", $"{ModColor}");
         DebugKeyInput = Config.Bind("Authentication", "Debug Key", "");
-        AutoStart = Config.Bind("Client Options", "AutoStart", false);
+
         UnlockFPS = Config.Bind("Client Options", "UnlockFPS", false);
         ShowFPS = Config.Bind("Client Options", "ShowFPS", false);
-        HorseMode = Config.Bind("Client Options", "HorseMode", false);
         EnableGM = Config.Bind("Client Options", "EnableGM", false);
         AutoStart = Config.Bind("Client Options", "AutoStart", false);
+        DarkTheme = Config.Bind("Client Options", "DarkTheme", false);
+        ShowTextOverlay = Config.Bind("Client Options", "ShowTextOverlay", false);
+        ModeForSmallScreen = Config.Bind("Client Options", "ModeForSmallScreen", false);
+        HorseMode = Config.Bind("Client Options", "HorseMode", false);
+        AutoMuteUs = Config.Bind("Client Options", "AutoMuteUs", false); // The AutoMuteUs bot fails to match the host's name.
         ForceOwnLanguage = Config.Bind("Client Options", "ForceOwnLanguage", false);
         ForceOwnLanguageRoleName = Config.Bind("Client Options", "ForceOwnLanguageRoleName", false);
         EnableCustomButton = Config.Bind("Client Options", "EnableCustomButton", false);
         EnableCustomSoundEffect = Config.Bind("Client Options", "EnableCustomSoundEffect", true);
-        ShowTextOverlay = Config.Bind("Client Options", "ShowTextOverlay", false);
-        ModeForSmallScreen = Config.Bind("Client Options", "ModeForSmallScreen", false);
-        EnableRoleSummary = Config.Bind("Client Options", "EnableRoleSummary", false); // Reverted to false due to it now being a setting to revert the summary change
         SwitchVanilla = Config.Bind("Client Options", "SwitchVanilla", false);
+
+        // Debug
         VersionCheat = Config.Bind("Client Options", "VersionCheat", false);
         GodMode = Config.Bind("Client Options", "GodMode", false);
-        AutoMuteUs = Config.Bind("Client Options", "AutoMuteUs", false); // The AutoMuteUs bot fails to match the host's name.
         AutoRehost = Config.Bind("Client Options", "AutoRehost", false);
 
         Logger = BepInEx.Logging.Logger.CreateLogSource("TOHE");
@@ -549,8 +547,8 @@ public enum CustomRoles
     ShapeshifterTOHE,
 
     //Impostor
-    Sans, //arrogance
-    Hacker, //anonymous
+    Arrogance,
+    Anonymous,
     AntiAdminer,
     Bard,
     Blackmailer,
@@ -571,11 +569,11 @@ public enum CustomRoles
     Devourer,
     Disperser,
     Eraser,
-    Escapee, //escapist
+    Escapist,
     EvilGuesser,
     EvilMini,
     EvilTracker,
-    FireWorks,
+    Fireworker,
     Gangster,
     Godfather,
     Greedier, //greedy
@@ -583,12 +581,12 @@ public enum CustomRoles
     Inhibitor,
     Instigator,
     Kamikaze,
-    Minimalism, //killing machine
+    KillingMachine,
     BallLightning, //Lightning
     Ludopath,
     Lurker,
     Mastermind,
-    SerialKiller, //mercenary
+    Mercenary, //mercenary
     Miner,
     Morphling,
     Mafia, //nemesis
@@ -657,7 +655,7 @@ public enum CustomRoles
     Guardian,
     GuessMaster,
     Grenadier,
-    ParityCop, //inspector
+    Inspector, //inspector
     Investigator,
     Jailer,
     Judge,
@@ -727,7 +725,7 @@ public enum CustomRoles
     Totocalcio, //follower
     Glitch,
     God,
-    FFF, //hater
+    Hater,
     HexMaster,
     Huntsman,
     Imitator,
@@ -763,7 +761,7 @@ public enum CustomRoles
     RuthlessRomantic,
     SchrodingersCat,
     Seeker,
-    NSerialKiller, //serial killer
+    SerialKiller, //serial killer
     Shaman,
     Shroud,
     Sidekick,
@@ -781,7 +779,6 @@ public enum CustomRoles
     Vulture,
     War,
     Werewolf,
-    NWitch, //witch
     Workaholic,
     Wraith,
     Stealth,
@@ -838,6 +835,7 @@ public enum CustomRoles
     Lucky,
     Madmate,
     Mare,
+    Tricky,
     Mimic,
     Mundane,
     Necroview,
@@ -852,18 +850,19 @@ public enum CustomRoles
     Reach,
     Rebound,
     Recruit,
-    Repairman,
+    //Repairman,
     Rogue,
-    DualPersonality, //Schizophrenic
+    Schizophrenic,
     Seer,
     Silent,
+    Statue,
     Sleuth,
     Soulless,
     TicketsStealer, //stealer
     Stubborn,
     Susceptible,
     Swift,
-    Brakar, //tiebreaker
+    Tiebreaker,
     Torch,
     Trapper,
     Tired,
@@ -920,11 +919,10 @@ public enum CustomWinner
     Wraith = CustomRoles.Wraith,
     Bandit = CustomRoles.Bandit,
     Pirate = CustomRoles.Pirate,
-    SerialKiller = CustomRoles.NSerialKiller,
+    SerialKiller = CustomRoles.SerialKiller,
     Werewolf = CustomRoles.Werewolf,
     Necromancer = CustomRoles.Necromancer,
     Huntsman = CustomRoles.Huntsman,
-    Witch = CustomRoles.NWitch,
     Juggernaut = CustomRoles.Juggernaut,
     Infectious = CustomRoles.Infectious,
     Virus = CustomRoles.Virus,
@@ -961,10 +959,9 @@ public enum AdditionalWinners
     Opportunist = CustomRoles.Opportunist,
     Executioner = CustomRoles.Executioner,
     Lawyer = CustomRoles.Lawyer,
-    FFF = CustomRoles.FFF,
+    Hater = CustomRoles.Hater,
     Provocateur = CustomRoles.Provocateur,
     Sunnyboy = CustomRoles.Sunnyboy,
-    Witch = CustomRoles.NWitch,
     Totocalcio = CustomRoles.Totocalcio,
     Romantic = CustomRoles.Romantic,
     VengefulRomantic = CustomRoles.VengefulRomantic,

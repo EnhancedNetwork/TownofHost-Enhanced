@@ -11,9 +11,9 @@ public class Susceptible
     public static OptionItem CanBeOnCrew;
     public static OptionItem CanBeOnImp;
     public static OptionItem CanBeOnNeutral;
-    public static OptionItem EnabledDeathReasons;
-    public static PlayerState.DeathReason randomReason;
+    private static OptionItem EnabledDeathReasons;
 
+    public static PlayerState.DeathReason randomReason;
 
     public static void SetupCustomOptions()
     {
@@ -24,7 +24,7 @@ public class Susceptible
         CanBeOnNeutral = BooleanOptionItem.Create(Id + 14, "NeutralCanBeSusceptible", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Susceptible]);
     }
 
-    public static void ChangeRandomDeath()
+    private static void ChangeRandomDeath()
     {
         PlayerState.DeathReason[] deathReasons = EnumHelper.GetAllValues<PlayerState.DeathReason>();
         Random random = new();
@@ -37,7 +37,7 @@ public class Susceptible
         ChangeRandomDeath();
         if (EnabledDeathReasons.GetBool())
         {
-            Logger.Info($"{victim.GetNameWithRole()} had the deathreason {randomReason}", "Susceptible");
+            Logger.Info($"{victim.GetNameWithRole().RemoveHtmlTags()} had the death reason {randomReason}", "Susceptible");
             switch (randomReason)
             {
                 case PlayerState.DeathReason.Eaten:
@@ -131,7 +131,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Bombed:
-                    if (!CustomRoles.Bomber.RoleExist() && !CustomRoles.Burst.RoleExist() && !CustomRoles.BoobyTrap.RoleExist() && !FireWorks.IsEnable)
+                    if (!CustomRoles.Bomber.RoleExist() && !CustomRoles.Burst.RoleExist() && !CustomRoles.BoobyTrap.RoleExist() && !Fireworker.IsEnable)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }
@@ -360,7 +360,5 @@ public class Susceptible
             while (Main.PlayerStates[victim.PlayerId].deathReason != randomReason)
                 Main.PlayerStates[victim.PlayerId].deathReason = randomReason;
         }
-
     }
-
 }

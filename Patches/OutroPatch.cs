@@ -1,4 +1,5 @@
 using HarmonyLib;
+using TMPro;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,33 +25,25 @@ class EndGamePatch
         Logger.Info("-----------Game over-----------", "Phase");
         if (!GameStates.IsModHost) return;
         if (GameStates.IsHideNSeek) return;
+
         SummaryText = [];
         foreach (var id in Main.PlayerStates.Keys.ToArray())
         {
-            if (Doppelganger.IsEnable)
+            if (Doppelganger.IsEnable && Doppelganger.DoppelVictim.ContainsKey(id))
             {
-                if (Doppelganger.DoppelVictim.ContainsKey(id))
+                var dpc = Utils.GetPlayerById(id);
+                if (dpc != null)
                 {
-                    var dpc = Utils.GetPlayerById(id);
-                    if (dpc != null) 
-                    {
-                        //if (id == PlayerControl.LocalPlayer.PlayerId) Main.nickName = Doppelganger.DoppelVictim[id];
-                        //else
-                        //{ 
-                        dpc.RpcSetName(Doppelganger.DoppelVictim[id]);
-                        //}
-                        Main.AllPlayerNames[id] = Doppelganger.DoppelVictim[id];
-                    }
+                    //if (id == PlayerControl.LocalPlayer.PlayerId) Main.nickName = Doppelganger.DoppelVictim[id];
+                    //else
+                    //{ 
+                    dpc.RpcSetName(Doppelganger.DoppelVictim[id]);
+                    //}
+                    Main.AllPlayerNames[id] = Doppelganger.DoppelVictim[id];
                 }
             }
-            if (Main.EnableRoleSummary.Value)
-            {
-                SummaryText[id] = Utils.SummaryTexts(id, disableColor: false);
-            }
-            if (!Main.EnableRoleSummary.Value)
-            {
-                SummaryText[id] = Utils.NewSummaryTexts(id, disableColor: false);
-            }
+
+            SummaryText[id] = Utils.SummaryTexts(id, disableColor: false);
         }
 
         var sb = new StringBuilder(GetString("KillLog") + ":");
@@ -60,9 +53,9 @@ class EndGamePatch
             if (date == DateTime.MinValue) continue;
             var killerId = kvp.Value.GetRealKiller();
             var targetId = kvp.Key;
-            sb.Append($"\n{date:T} {Main.AllPlayerNames[targetId]}({(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetDisplayRoleName(targetId, true))}{(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetSubRolesText(targetId, summary: true))}) [{Utils.GetVitalText(kvp.Key)}]");
+            sb.Append($"\n{date:T} {Main.AllPlayerNames[targetId]}({(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetDisplayRoleAndSubName(targetId, targetId, true))}{(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetSubRolesText(targetId, summary: true))}) [{Utils.GetVitalText(kvp.Key)}]");
             if (killerId != byte.MaxValue && killerId != targetId)
-                sb.Append($"\n\t⇐ {Main.AllPlayerNames[killerId]}({(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetDisplayRoleName(killerId, true))}{(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetSubRolesText(killerId, summary: true))})");
+                sb.Append($"\n\t⇐ {Main.AllPlayerNames[killerId]}({(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetDisplayRoleAndSubName(killerId, killerId, true))}{(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetSubRolesText(killerId, summary: true))})");
         }
         KillLog = sb.ToString();
         if (!KillLog.Contains('\n')) KillLog = "";
@@ -122,28 +115,16 @@ class SetEverythingUpPatch
         if (GameStates.IsHideNSeek) return;
         if (!Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId)) return;
         //#######################################
-        //          ==勝利陣営表示==
+        //      ==Victory faction display==
         //#######################################
-        if (Main.EnableRoleSummary.Value)
-        {        
-        __instance.WinText.alignment = TMPro.TextAlignmentOptions.Right;
-        }
-        if (!Main.EnableRoleSummary.Value)
-        {        
-        __instance.WinText.alignment = TMPro.TextAlignmentOptions.Center;
-        }
+
+        __instance.WinText.alignment = TextAlignmentOptions.Right;
+
         var WinnerTextObject = UnityEngine.Object.Instantiate(__instance.WinText.gameObject);
         WinnerTextObject.transform.localScale = new(0.6f, 0.6f, 0.6f);
+        WinnerTextObject.transform.position = new(__instance.WinText.transform.position.x + 2.4f, __instance.WinText.transform.position.y - 0.5f, __instance.WinText.transform.position.z);
 
-        if (Main.EnableRoleSummary.Value)
-        {
-            WinnerTextObject.transform.position = new(__instance.WinText.transform.position.x + 2.4f, __instance.WinText.transform.position.y - 0.5f, __instance.WinText.transform.position.z);
-        }
-        if (!Main.EnableRoleSummary.Value)
-        {
-            WinnerTextObject.transform.position = new(__instance.WinText.transform.position.x, __instance.WinText.transform.position.y - 0.5f, __instance.WinText.transform.position.z);
-        }
-        var WinnerText = WinnerTextObject.GetComponent<TMPro.TextMeshPro>(); //WinTextと同じ型のコンポーネントを取得
+        var WinnerText = WinnerTextObject.GetComponent<TextMeshPro>(); //Get components of the same type as WinText
         WinnerText.fontSizeMin = 3f;
         WinnerText.text = "";
 
@@ -268,61 +249,60 @@ class SetEverythingUpPatch
 
     EndOfText:
 
-        LastWinsText = WinnerText.text.RemoveHtmlTags();
+        LastWinsText = WinnerText.text/*.RemoveHtmlTags()*/;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        //#######################################
-        //           ==最終結果表示==
-        //#######################################
+        //########################################
+        //     ==The final result indicates==
+        //########################################
 
         var Pos = Camera.main.ViewportToWorldPoint(new Vector3(0f, 1f, Camera.main.nearClipPlane));
         var RoleSummaryObject = UnityEngine.Object.Instantiate(__instance.WinText.gameObject);
         RoleSummaryObject.transform.position = new Vector3(__instance.Navigation.ExitButton.transform.position.x + 0.1f, Pos.y - 0.1f, -15f);
         RoleSummaryObject.transform.localScale = new Vector3(1f, 1f, 1f);
 
-        StringBuilder sb = new($"{GetString("RoleSummaryText")}");
+        StringBuilder sb = new($"{GetString("RoleSummaryText")}\n<b>");
         List<byte> cloneRoles = new(Main.PlayerStates.Keys);
-        foreach (var id in Main.winnerList.ToArray())
+        foreach (byte id in Main.winnerList.ToArray())
         {
             if (EndGamePatch.SummaryText[id].Contains("<INVALID:NotAssigned>")) continue;
-            sb.Append($"\n<color={CustomWinnerColor}>★</color> ").Append(EndGamePatch.SummaryText[id]);
+            sb.Append('\n').Append(EndGamePatch.SummaryText[id]);
             cloneRoles.Remove(id);
         }
-        if (Options.CurrentGameMode == CustomGameMode.FFA)
+        switch (Options.CurrentGameMode)
         {
-            List<(int, byte)> list = [];
-            foreach (byte id in cloneRoles.ToArray())
-            {
-                list.Add((FFAManager.GetRankOfScore(id), id));
-            }
+            case CustomGameMode.FFA:
+                {
+                    List<(int, byte)> listFFA = [];
+                    foreach (byte id in cloneRoles.ToArray())
+                    {
+                        listFFA.Add((FFAManager.GetRankOfScore(id), id));
+                    }
 
-            list.Sort();
-            foreach (var id in list.Where(x => EndGamePatch.SummaryText.ContainsKey(x.Item2)))
-                sb.Append($"\n　 ").Append(EndGamePatch.SummaryText[id.Item2]);
+                    listFFA.Sort();
+                    foreach (var id in listFFA.Where(x => EndGamePatch.SummaryText.ContainsKey(x.Item2)))
+                        sb.Append($"\n　 ").Append(EndGamePatch.SummaryText[id.Item2]);
+                    break;
+                }
+            default: // Normal game
+                {
+                    sb.Append($"</b>\n");
+                    foreach (byte id in cloneRoles.ToArray())
+                    {
+                        if (EndGamePatch.SummaryText[id].Contains("<INVALID:NotAssigned>")) continue;
+                        sb.Append('\n').Append(EndGamePatch.SummaryText[id]);
+                    }
+
+                    break;
+                }
         }
-        else
-        { 
-            foreach (var id in cloneRoles.ToArray())
-            {
-                if (EndGamePatch.SummaryText[id].Contains("<INVALID:NotAssigned>")) continue;
-                sb.Append($"\n　 ").Append(EndGamePatch.SummaryText[id]);
-            }
-        }
-        var RoleSummary = RoleSummaryObject.GetComponent<TMPro.TextMeshPro>();
-        {
-            RoleSummary.alignment = TMPro.TextAlignmentOptions.TopLeft;
-            RoleSummary.color = Color.white;
-            RoleSummary.outlineWidth *= 1.2f;
-            if (Main.EnableRoleSummary.Value)
-            {
-                RoleSummary.fontSizeMin = RoleSummary.fontSizeMax = RoleSummary.fontSize = 1.25f;
-            }
-            if (!Main.EnableRoleSummary.Value)
-            {
-                RoleSummary.fontSizeMin = RoleSummary.fontSizeMax = RoleSummary.fontSize = 1.25f;
-            }
-        }
+        var RoleSummary = RoleSummaryObject.GetComponent<TextMeshPro>();
+        RoleSummary.alignment = TextAlignmentOptions.TopLeft;
+        RoleSummary.color = Color.white;
+        RoleSummary.outlineWidth *= 1.2f;
+        RoleSummary.fontSizeMin = RoleSummary.fontSizeMax = RoleSummary.fontSize = 1.25f;
+
         var RoleSummaryRectTransform = RoleSummary.GetComponent<RectTransform>();
         RoleSummaryRectTransform.anchoredPosition = new Vector2(Pos.x + 3.5f, Pos.y - 0.1f);
         RoleSummary.text = sb.ToString();

@@ -71,7 +71,8 @@ public static class Cleanser
     }
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCleanserCleanLimit, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Cleanser);
         writer.Write(playerId);
         writer.Write(CleanserUses[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -112,31 +113,47 @@ public static class Cleanser
         Utils.SendMessage(string.Format(GetString("CleanserRemovedRole"), target.GetRealName()), voter.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cleanser),GetString("CleanserTitle")));
         SendRPC(voter.PlayerId);
     }
-
-    public static void AfterMeetingTasks()
+    public static void OnReportDeadBody()
     {
-        if (!IsEnable) return;
-
         foreach (var pid in CleanserTarget.Keys.ToArray())
         {
-            DidVote[pid] = false;
-            if (pid == byte.MaxValue) continue;
-            var targetid = CleanserTarget[pid];
-            if (targetid == byte.MaxValue) continue;
-            var targetpc = Utils.GetPlayerById(targetid);
-            if (targetpc == null) continue;
-            //var allAddons = targetpc.GetCustomSubRoles();
-            targetpc.RpcSetCustomRole(CustomRoles.Cleansed);
-            Logger.Info($"Removed all the add ons of {targetpc.GetNameWithRole()}", "Cleanser");
-            //foreach (var role in allAddons)
-            //{
-            //    Main.PlayerStates[targetid].RemoveSubRole(role);
-
-            //}
             CleanserTarget[pid] = byte.MaxValue;
-            targetpc.Notify(GetString("LostAddonByCleanser"));
-
         }
-        Utils.MarkEveryoneDirtySettings();
+    }
+    public static void AfterMeetingTasks(bool notifyPlayer = false)
+    {
+        if (notifyPlayer) 
+        {
+            foreach (var pid in CleanserTarget.Keys.ToArray())
+            {
+                var targetid = CleanserTarget[pid];
+                if (targetid == byte.MaxValue) continue;
+                var targetpc = Utils.GetPlayerById(targetid);
+                if (targetpc == null) continue;
+
+                targetpc.Notify(GetString("LostAddonByCleanser"));
+            }
+        }
+        else
+        {
+            foreach (var pid in CleanserTarget.Keys.ToArray())
+            {
+                DidVote[pid] = false;
+                if (pid == byte.MaxValue) continue;
+                var targetid = CleanserTarget[pid];
+                if (targetid == byte.MaxValue) continue;
+                var targetpc = Utils.GetPlayerById(targetid);
+                if (targetpc == null) continue;
+                //var allAddons = targetpc.GetCustomSubRoles();
+                targetpc.RpcSetCustomRole(CustomRoles.Cleansed);
+                Logger.Info($"Removed all the add ons of {targetpc.GetNameWithRole()}", "Cleanser");
+                //foreach (var role in allAddons)
+                //{
+                //    Main.PlayerStates[targetid].RemoveSubRole(role);
+
+                //}
+            }
+            Utils.MarkEveryoneDirtySettings();
+        }
     }
 }

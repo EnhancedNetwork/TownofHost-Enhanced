@@ -83,28 +83,41 @@ internal static class Assassin
             return false;
         }
     }
-    public static void OnShapeshift(PlayerControl pc, bool shapeshifting)
+    public static void OnShapeshift(PlayerControl pc, bool shapeshifting, bool shapeshiftIsHidden = false)
     {
-        if (!pc.IsAlive() || Pelican.IsEaten(pc.PlayerId) || Medic.ProtectList.Contains(pc.PlayerId)) return;
-        if (!shapeshifting)
+        if (shapeshiftIsHidden && (!MarkedPlayer.ContainsKey(pc.PlayerId) || !pc.IsAlive() || Pelican.IsEaten(pc.PlayerId)))
         {
-            pc.SetKillCooldown();
+            pc.RejectShapeshiftAndReset(reset: false);
             return;
         }
-        if (MarkedPlayer.ContainsKey(pc.PlayerId))
+        if (!pc.IsAlive() || Pelican.IsEaten(pc.PlayerId)) return;
+
+        if (!shapeshifting || shapeshiftIsHidden)
         {
-            var target = Utils.GetPlayerById(MarkedPlayer[pc.PlayerId]);
+            pc.SetKillCooldown();
+            if (!shapeshiftIsHidden) return;
+        }
+
+        if (MarkedPlayer.TryGetValue(pc.PlayerId, out var targetId))
+        {
+            var timer = shapeshiftIsHidden ? 0.1f : 1.5f;
+            var marketTarget = Utils.GetPlayerById(targetId);
+            
             MarkedPlayer.Remove(pc.PlayerId);
             SendRPC(pc.PlayerId);
+
+            if (shapeshiftIsHidden)
+                pc.RejectShapeshiftAndReset();
+
             _ = new LateTask(() =>
             {
-                if (!(target == null || !target.IsAlive() || Pelican.IsEaten(target.PlayerId) || target.inVent || !GameStates.IsInTask))
+                if (!(marketTarget == null || !marketTarget.IsAlive() || Pelican.IsEaten(marketTarget.PlayerId) || Medic.ProtectList.Contains(marketTarget.PlayerId) || marketTarget.inVent || !GameStates.IsInTask))
                 {
-                    pc.RpcTeleport(target.GetCustomPosition());
+                    pc.RpcTeleport(marketTarget.GetCustomPosition());
                     pc.ResetKillCooldown();
-                    pc.RpcCheckAndMurder(target);
+                    pc.RpcCheckAndMurder(marketTarget);
                 }
-            }, 1.5f, "Assassin Assassinate");
+            }, timer, "Assassin Assassinate");
         }
     }
     public static void SetKillButtonText(byte playerId)

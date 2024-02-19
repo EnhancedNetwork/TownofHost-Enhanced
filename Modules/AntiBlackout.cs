@@ -1,9 +1,11 @@
-using AmongUs.GameOptions;
 using Hazel;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using TOHE.Modules;
+using TOHE.Roles.Crewmate;
+using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 
 namespace TOHE;
@@ -11,79 +13,66 @@ namespace TOHE;
 public static class AntiBlackout
 {
     ///<summary>
-    ///Whether to override the expulsion process due to one Impostor and Neutral killers
+    /// Check num alive Impostors & Crewmates & NeutralKillers
     ///</summary>
-    public static bool ImpostorOverrideExiledPlayer => IsRequired && (IsSingleImpostor || Diff_CrewImp == 1);
+
+    public static bool BlackOutIsActive => !Options.DisableAntiBlackoutProtects.GetBool() && CheckBlackOut();
+
     ///<summary>
-    ///Whether to override the expulsion process due to Neutral Killers
+    /// Count alive players and check black out 
     ///</summary>
-    public static bool NeutralOverrideExiledPlayer => Options.TemporaryAntiBlackoutFix.GetBool() && CountNeutralKiller > 1 && !(IsSingleImpostor || Diff_CrewImp == 1);
-    ///<summary>
-    ///Whether there is only one impostors present in the setting
-    ///</summary>
-    public static bool IsSingleImpostor => Main.RealOptionsData != null ? Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors) <= 1 : Main.NormalOptions.NumImpostors <= 1;
-    ///<summary>
-    ///Whether processing within AntiBlackout is required
-    ///</summary>
-    public static bool IsRequired => Options.NoGameEnd.GetBool()
-        // Neutrals
-        || Jackal.IsEnable || BloodKnight.IsEnable
-        || Glitch.IsEnable || Infectious.IsEnable
-        || Juggernaut.IsEnable || Pelican.IsEnable
-        || Pickpocket.IsEnable || NSerialKiller.IsEnable
-        || Shroud.IsEnable || Traitor.IsEnable
-        || Virus.IsEnable || Werewolf.IsEnable
-        || Gamer.IsEnable || Succubus.IsEnable
-        || NWitch.IsEnable || Maverick.IsEnable
-        || RuthlessRomantic.IsEnable || Bandit.IsEnable
-        || Spiritcaller.IsEnable //|| Occultist.IsEnable
-        || Pyromaniac.IsEnable || Huntsman.IsEnable
-        || PlagueBearer.IsEnable || CustomRoles.Pestilence.RoleExist(true)
-        || HexMaster.IsEnable || Jinx.IsEnable
-        || Medusa.IsEnable || Poisoner.IsEnable
-        || PotionMaster.IsEnable || Wraith.IsEnable
-        || Necromancer.IsEnable || Doppelganger.IsEnable 
-        || PlagueDoctor.IsEnable || CustomRoles.Sidekick.RoleExist(true)
-        || (CustomRoles.Arsonist.RoleExist(true) && Options.ArsonistCanIgniteAnytime.GetBool()) || SoulCollector.IsEnable || CustomRoles.Death.RoleExist(true) || Baker.IsEnable || CustomRoles.Famine.RoleExist(true) || CustomRoles.Berserker.RoleExist(true) || CustomRoles.War.RoleExist(true); 
-        
-    ///<summary>
-    ///Difference between the number of non-impostors and the number of imposters
-    ///</summary>
-    public static int Diff_CrewImp
+    public static bool CheckBlackOut()
     {
-        get
+        HashSet<byte> Impostors = [];
+        HashSet<byte> Crewmates = [];
+        HashSet<byte> NeutralKillers = [];
+
+        var lastExiled = ExileControllerWrapUpPatch.AntiBlackout_LastExiled;
+        foreach (var pc in Main.AllAlivePlayerControls)
         {
-            int numCrewmates = 0;
-            int numImpostors = 0;
+            // if player is ejected, do not count him as alive
+            if (lastExiled != null && pc.PlayerId == lastExiled.PlayerId) continue;
 
-            foreach (var pc in Main.AllPlayerControls)
-            {
-                if (pc.Data.Role.IsImpostor) numImpostors++;
-                else numCrewmates++;
-            }
+            if (pc.GetCustomRole().IsImpostor()) Impostors.Add(pc.PlayerId); // Impostors
+            else if (Main.PlayerStates[pc.PlayerId].countTypes == CountTypes.Impostor) Impostors.Add(pc.PlayerId); // Madmates
 
-            Logger.Info($" {numCrewmates}", "AntiBlackout Num Crewmates");
-            Logger.Info($" {numImpostors}", "AntiBlackout Num Impostors");
-            return numCrewmates - numImpostors;
+            else if (pc.GetCustomRole().IsNK() && !(pc.Is(CustomRoles.Arsonist) || pc.Is(CustomRoles.Quizmaster))) NeutralKillers.Add(pc.PlayerId); // Neutral Killers
+            else if (pc.Is(CustomRoles.Arsonist) && Options.ArsonistCanIgniteAnytime.GetBool()) NeutralKillers.Add(pc.PlayerId);
+            else if (pc.Is(CustomRoles.Succubus)) NeutralKillers.Add(pc.PlayerId);
+
+            else Crewmates.Add(pc.PlayerId);
         }
-    }
-    public static int CountNeutralKiller
-    {
-        get
+
+        var numAliveImpostors = Impostors.Count;
+        var numAliveCrewmates = Crewmates.Count;
+        var numAliveNeutralKillers = NeutralKillers.Count;
+
+        Logger.Info($" {numAliveImpostors}", "AntiBlackout Num Alive Impostors");
+        Logger.Info($" {numAliveCrewmates}", "AntiBlackout Num Alive Crewmates");
+        Logger.Info($" {numAliveNeutralKillers}", "AntiBlackout Num Alive Neutral Killers");
+
+        var BlackOutIsActive = false;
+
+        // Don't check if Neutral killers are not present in the game
+        if (numAliveNeutralKillers >= 1)
         {
-            int numNeutrals = 0;
+            // if all Crewmates is dead
+            if (!BlackOutIsActive)
+                BlackOutIsActive = numAliveCrewmates <= 0;
 
-            foreach (var pc in Main.AllPlayerControls)
-            {
-                if ((pc.GetCustomRole().IsNK() && !pc.Is(CustomRoles.Arsonist))) numNeutrals++;
-                else if (pc.Is(CustomRoles.Arsonist) && Options.ArsonistCanIgniteAnytime.GetBool()) numNeutrals++;
-                else if (pc.Is(CustomRoles.Succubus)) numNeutrals++;
-            }
+            // if all Impostors is dead and neutral killers > or = num alive crewmates
+            if (!BlackOutIsActive)
+                BlackOutIsActive = numAliveImpostors <= 0 && (numAliveNeutralKillers >= numAliveCrewmates);
 
-            Logger.Info($" {numNeutrals}", "AntiBlackout Num Neutrals");
-            return numNeutrals;
+            // if num alive Impostors > or = num alive Crewmates/Neutral killers
+            if (!BlackOutIsActive)
+                BlackOutIsActive = numAliveImpostors >= (numAliveNeutralKillers + numAliveCrewmates);
         }
+
+        Logger.Info($" {BlackOutIsActive}", "BlackOut Is Active");
+        return BlackOutIsActive;
     }
+
     public static bool IsCached { get; private set; } = false;
     private static Dictionary<byte, (bool isDead, bool Disconnected)> isDeadCache = [];
     private readonly static LogHandler logger = Logger.Handler("AntiBlackout");
@@ -179,7 +168,74 @@ public static class AntiBlackout
             logger.Info("==/Temp Restore==");
         }
     }
+    public static void AntiBlackRpcVotingComplete(this MeetingHud __instance, MeetingHud.VoterState[] states, GameData.PlayerInfo exiled, bool tie)
+    {
+        if (AmongUsClient.Instance.AmClient)
+        {
+            __instance.VotingComplete(states, exiled, tie);
+        }
 
+        var sender = CustomRpcSender.Create("AntiBlack RpcVotingComplete", SendOption.None);
+        foreach (var pc in Main.AllPlayerControls)
+        {
+            if (pc.AmOwner) continue;
+            if (pc.IsModClient()) //For mod client show real result
+            {
+                sender.AutoStartRpc(__instance.NetId, (byte)RpcCalls.VotingComplete, pc.GetClientId());
+                {
+                    sender.WritePacked(states.Length);
+                    foreach (MeetingHud.VoterState voterState in states)
+                    {
+                        sender.WriteMessageType(voterState.VoterId);
+                        sender.Write(voterState.VotedForId);
+                        sender.WriteEndMessage();
+                    }
+                    sender.Write(exiled != null ? exiled.PlayerId : byte.MaxValue);
+                    sender.Write(tie);
+                    sender.EndRpc();
+                }
+            }
+            else //For vanilla client show a tie
+            {
+                sender.AutoStartRpc(__instance.NetId, (byte)RpcCalls.VotingComplete, pc.GetClientId());
+                {
+                    sender.WritePacked(states.Length);
+                    foreach (MeetingHud.VoterState voterState in states)
+                    {
+                        sender.WriteMessageType(voterState.VoterId);
+                        sender.Write(voterState.VotedForId);
+                        sender.WriteEndMessage();
+                    }
+                    sender.Write(byte.MaxValue);
+                    sender.Write(true);
+                    sender.EndRpc();
+                }
+            }
+        }
+        sender.SendMessage();
+    }
+    public static void AfterMeetingTasks()
+    {
+        var timeNotify = 0f;
+
+        if (BlackOutIsActive && CheckForEndVotingPatch.TempExileMsg != null)
+        {
+            timeNotify = 4f;
+            foreach (var pc in Main.AllPlayerControls.Where(p => p != null && !(p.AmOwner || p.IsModClient())).ToArray())
+            {
+                pc.Notify(CheckForEndVotingPatch.TempExileMsg, time: timeNotify);
+            }
+        }
+
+        _ = new LateTask(() =>
+        {
+            if (Eraser.IsEnable) Eraser.AfterMeetingTasks(notifyPlayer: true);
+            if (Cleanser.IsEnable) Cleanser.AfterMeetingTasks(notifyPlayer: true);
+            if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: true);
+            if (Seeker.IsEnable) Seeker.AfterMeetingTasks(notifyPlayer: true);
+
+        }, timeNotify + 0.2f, "Notify AfterMeetingTasks");
+    }
     public static void Reset()
     {
         logger.Info("==Reset==");

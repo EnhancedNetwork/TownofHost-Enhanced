@@ -2,8 +2,10 @@ using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
@@ -68,13 +70,18 @@ public static class Shroud
     }
     public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
+        if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
+        {
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("CantShroud")));
+            return false;
+        }
+
         ShroudList[target.PlayerId] = killer.PlayerId;
         SendRPC(killer.PlayerId, target.PlayerId, 1);
 
         killer.SetKillCooldown();
 
         Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
-
         return false;
     }
 
