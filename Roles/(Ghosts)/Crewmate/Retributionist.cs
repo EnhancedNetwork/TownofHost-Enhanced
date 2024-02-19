@@ -96,6 +96,7 @@ public static class Retributionist
         {
             killer.RpcMurderPlayerV3(target);
             killer.RpcResetAbilityCooldown();
+            killer.SetKillCooldown();
             KillCount[killer.PlayerId]--;
             SendRPC(killer.PlayerId);
         }

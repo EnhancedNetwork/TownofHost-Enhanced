@@ -25,9 +25,9 @@ class ChanceChangePatch
             var tf = __instance.transform;
             tf.Find("Count Plus_TMP").gameObject.active
                 = tf.Find("Chance Minus_TMP").gameObject.active
-                = tf.Find("Chance Value_TMP").gameObject.active
+               // = tf.Find("Chance Value_TMP").gameObject.active
                 = tf.Find("Chance Plus_TMP").gameObject.active
-                = tf.Find("More Options").gameObject.active
+                //= tf.Find("More Options").gameObject.active
                 = false;
 
             // Add Disable text for Guardian Angel

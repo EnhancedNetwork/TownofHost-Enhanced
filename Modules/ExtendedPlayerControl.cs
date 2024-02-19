@@ -315,7 +315,7 @@ static class ExtendedPlayerControl
             Glitch.MimicCDTimer = 10;
             Glitch.HackCDTimer = 10;
         }
-        else if (PlayerControl.LocalPlayer == target)
+        else if (PlayerControl.LocalPlayer == target && !target.GetCustomRole().IsGhostRole() && !target.GetCustomSubRoles().Any(x => x.IsGhostRole())) // Guardian Angel Cooldown dosen't work this way
         {
             //if target is the host
             PlayerControl.LocalPlayer.Data.Role.SetCooldown();
