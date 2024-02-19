@@ -269,7 +269,7 @@ internal class ChatCommands
                 case "/r":
                     canceled = true;
                     subArgs = text.Remove(0, 2);
-                    SendRolesInfo(subArgs, 255, false);
+                    SendRolesInfo(subArgs, 255, PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug);
                     break;
 
                 case "/up":
@@ -1459,7 +1459,7 @@ internal class ChatCommands
             case "/role":
                 Logger.Info($"Command '/r' was activated", "OnReceiveChat");
                 subArgs = text.Remove(0, 2);
-                SendRolesInfo(subArgs, player.PlayerId, false);
+                SendRolesInfo(subArgs, player.PlayerId, player.FriendCode.GetDevUser().DeBug);
                 break;
 
             case "/m":
