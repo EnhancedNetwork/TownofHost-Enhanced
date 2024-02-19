@@ -317,7 +317,7 @@ public static class Divinator
                 CustomRoles.Sunnyboy,
                 CustomRoles.Instigator],
                 
-                [CustomRoles.Mafia,
+                [CustomRoles.Nemesis,
                 CustomRoles.Retributionist,
                 CustomRoles.Necromancer,
                 CustomRoles.Gangster,
