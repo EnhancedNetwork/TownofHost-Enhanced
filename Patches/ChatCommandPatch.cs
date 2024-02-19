@@ -1390,10 +1390,10 @@ internal class ChatCommands
                     if (rl.GetCount() < 1 || rl.GetMode() == 0) devMark = "";
                     if (isUp)
                     {
-                        if (devMark == "▲") Utils.SendMessage(string.Format(GetString("Message.YTPlanSelected"), roleName), playerId);
+                        if (devMark == "▲" && !roleName.IsGhostString()) Utils.SendMessage(string.Format(GetString("Message.YTPlanSelected"), roleName), playerId);
                         else Utils.SendMessage(string.Format(GetString("Message.YTPlanSelectFailed"), roleName), playerId);
                     }
-                    if (devMark == "▲")
+                    if (devMark == "▲" && !roleName.IsGhostString())
                     {
                         byte pid = playerId == 255 ? (byte)0 : playerId;
                         Main.DevRole.Remove(pid);
