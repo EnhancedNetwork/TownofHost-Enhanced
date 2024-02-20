@@ -22,7 +22,7 @@ namespace TOHE.Roles._Ghosts_.Impostor
         public static void SetupCustomOption()
         {
             SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Nemesis);
-            KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(2.5f, 180f, 2.5f), 60f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis])
+            KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(2.5f, 180f, 2.5f), 40f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis])
             .SetValueFormat(OptionFormat.Seconds);
             MafiaCanKillNum = IntegerOptionItem.Create(Id + 11, "NemesisCanKillNum", new(0, 15, 1), 1, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis])
                 .SetValueFormat(OptionFormat.Players);
@@ -51,7 +51,11 @@ namespace TOHE.Roles._Ghosts_.Impostor
             int Limit = reader.ReadInt32();
             KillCount[PlayerId] = Limit;
         }
-        public static void SetKillCooldown() => AURoleOptions.GuardianAngelCooldown = KillCooldown.GetFloat();
+        public static void SetKillCooldown()
+        {
+            AURoleOptions.GuardianAngelCooldown = KillCooldown.GetFloat();
+            AURoleOptions.ProtectionDurationSeconds = 0f;
+        }
         public static bool OnCheckProtect(PlayerControl killer, PlayerControl target)
         {
             if (!target.Is(CustomRoles.Pestilence) && KillCount[killer.PlayerId] > 0 && Main.AllAlivePlayerControls.Count() >= MinimumPlayersAliveToRevenge.GetInt())

@@ -25,7 +25,7 @@ public static class Retributionist
     public static void SetupCustomOptions()
     {
         SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Retributionist);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 60f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
+        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 40f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
             .SetValueFormat(OptionFormat.Seconds);
         RetributionistCanKillNum = IntegerOptionItem.Create(Id + 11, "RetributionistCanKillNum", new(1, 15, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
             .SetValueFormat(OptionFormat.Players);
@@ -61,7 +61,6 @@ public static class Retributionist
         KillCount[PlayerId] = Limit;
     }
     public static bool IsEnable => Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Retributionist));
-
     public static void OnReportDeadBody()
     {
         KeepCount = 0;
@@ -89,7 +88,11 @@ public static class Retributionist
         }
     }
 
-    public static void SetKillCooldown() => AURoleOptions.GuardianAngelCooldown = KillCooldown.GetFloat();
+    public static void SetKillCooldown()
+    {
+        AURoleOptions.GuardianAngelCooldown = KillCooldown.GetFloat();
+        AURoleOptions.ProtectionDurationSeconds = 0f;
+    }
     public static bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
         if (CheckRetriConflicts(killer, target))
