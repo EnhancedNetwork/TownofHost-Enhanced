@@ -25,7 +25,7 @@ public static class Retributionist
     public static void SetupCustomOptions()
     {
         SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Retributionist);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 40f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
+        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 120f, 2.5f), 40f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
             .SetValueFormat(OptionFormat.Seconds);
         RetributionistCanKillNum = IntegerOptionItem.Create(Id + 11, "RetributionistCanKillNum", new(1, 15, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
             .SetValueFormat(OptionFormat.Players);

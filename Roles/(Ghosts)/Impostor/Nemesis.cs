@@ -22,7 +22,7 @@ namespace TOHE.Roles._Ghosts_.Impostor
         public static void SetupCustomOption()
         {
             SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Nemesis);
-            KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(2.5f, 180f, 2.5f), 40f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis])
+            KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(2.5f, 120f, 2.5f), 40f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis])
             .SetValueFormat(OptionFormat.Seconds);
             MafiaCanKillNum = IntegerOptionItem.Create(Id + 11, "NemesisCanKillNum", new(0, 15, 1), 1, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis])
                 .SetValueFormat(OptionFormat.Players);
