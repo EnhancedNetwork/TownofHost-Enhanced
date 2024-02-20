@@ -15,7 +15,7 @@ public class Warden
     public static void SetupCustomOptions()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Warden);
-        AbilityCooldown = FloatOptionItem.Create(Id + 10, "AbilityCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Warden])
+        AbilityCooldown = FloatOptionItem.Create(Id + 10, "AbilityCooldown", new(0f, 35f, 2.5f), 25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Warden])
             .SetValueFormat(OptionFormat.Seconds);
         IncreaseSpeed = FloatOptionItem.Create(Id + 11, "WardenIncreaseSpeed", new(1f, 3f, 0.5f), 1f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Warden])
             .SetValueFormat(OptionFormat.Times);

@@ -1386,7 +1386,7 @@ internal class ChatCommands
                 if ((isDev || isUp) && GameStates.IsLobby)
                 {
                     devMark = "▲";
-                    if (CustomRolesHelper.IsAdditionRole(rl) || rl is CustomRoles.GM) devMark = "";
+                    if (CustomRolesHelper.IsAdditionRole(rl) || rl is CustomRoles.GM || rl.IsGhostRole()) devMark = "";
                     if (rl.GetCount() < 1 || rl.GetMode() == 0) devMark = "";
                     if (isUp)
                     {
