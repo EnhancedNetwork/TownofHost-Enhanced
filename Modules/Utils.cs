@@ -400,12 +400,7 @@ public static class Utils
         if (Options.HideGameSettings.GetBool() && Main.AllPlayerControls.Length > 1)
             return string.Empty;
 
-        string mode = role.GetMode() switch
-        {
-            0 => GetString("RoleOffNoColor"),
-            1 => GetString("RoleRateNoColor"),
-            _ => GetString("RoleOnNoColor")
-        };
+        string mode = GetString($"Rate{role.GetMode()}").RemoveHtmlTags();
         return parentheses ? $"({mode})" : mode;
     }
     public static string GetDeathReason(PlayerState.DeathReason status)
@@ -1195,7 +1190,7 @@ public static class Utils
         foreach (var role in Options.CustomRoleCounts.Keys.ToArray())
         {
             if (!role.IsEnable()) continue;
-            string mode = role.GetMode() == 1 ? GetString("RoleRateNoColor") : GetString("RoleOnNoColor");
+            string mode = GetString($"Rate{role.GetMode()}");
             sb.Append($"\n【{GetRoleName(role)}:{mode} ×{role.GetCount()}】\n");
             ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref sb);
             var text = sb.ToString();
@@ -1226,7 +1221,7 @@ public static class Utils
         foreach (var role in Options.CustomRoleCounts.Keys.ToArray())
         {
             if (!role.IsEnable()) continue;
-            string mode = role.GetMode() == 1 ? GetString("RoleRateNoColor") : GetString("RoleOnNoColor");
+            string mode = GetString($"Rate{role.GetMode()}");
             sb.Append($"\n【{GetRoleName(role)}:{mode} ×{role.GetCount()}】\n");
             ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref sb);
             var text = sb.ToString();
@@ -1261,10 +1256,10 @@ public static class Utils
 
         foreach (var role in CustomRolesHelper.AllRoles)
         {
-            string mode = role.GetMode() == 1 ? GetString("RoleRateNoColor") : GetString("RoleOnNoColor");
+            string mode = GetString($"Rate{role.GetMode()}");
             if (role.IsEnable())
             {
-                var roleDisplay = $"\n{GetRoleName(role)}:{mode} x{role.GetCount()}";
+                var roleDisplay = $"\n{GetRoleName(role)}: {mode} x{role.GetCount()}";
                 if (role.IsAdditionRole()) addonsb.Add(roleDisplay);
                 else if (role.IsCrewmate()) crewsb.Add(roleDisplay);
                 else if (role.IsImpostor() || role.IsMadmate()) impsb.Add(roleDisplay);

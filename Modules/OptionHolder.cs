@@ -857,18 +857,7 @@ public static class Options
         }
     }
 
-    public static int GetRoleSpawnMode(CustomRoles role)
-    {
-        var mode = CustomRoleSpawnChances.TryGetValue(role, out var sc) ? sc.GetChance() : 0;
-        return mode switch
-        {
-            0 => 0,
-            1 => 1,
-            2 => 2,
-            100 => 1,
-            _ => 1,
-        };
-    }
+    public static int GetRoleSpawnMode(CustomRoles role) => CustomRoleSpawnChances.TryGetValue(role, out var sc) ? sc.GetChance() : 0;
     public static int GetRoleCount(CustomRoles role)
     {
         var mode = GetRoleSpawnMode(role);
@@ -3279,7 +3268,7 @@ public static class Options
 
     public static void SetupRoleOptions(int id, TabGroup tab, CustomRoles role, CustomGameMode customGameMode = CustomGameMode.Standard, bool zeroOne = false)
     {
-        var spawnOption = StringOptionItem.Create(id, role.ToString(), zeroOne ? ratesZeroOne : ratesToggle, 0, tab, false).SetColor(Utils.GetRoleColor(role))
+        var spawnOption = StringOptionItem.Create(id, role.ToString(), zeroOne ? ratesZeroOne : rates, 0, tab, false).SetColor(Utils.GetRoleColor(role))
             .SetHeader(true)
             .SetGameMode(customGameMode) as StringOptionItem;
         var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(1, 15, 1), 1, tab, false)
@@ -3354,32 +3343,10 @@ public static class Options
         CustomRoleSpawnChances.Add(role, spawnOption);
         CustomRoleCounts.Add(role, countOption);
     }
-    public static void SetupSyndicateRoleOptions(int id, CustomRoles role, CustomGameMode customGameMode = CustomGameMode.Standard, bool canSetNum = false, TabGroup tab = TabGroup.Addons, bool canSetChance = true)
-    {
-        var spawnOption = StringOptionItem.Create(id, role.ToString(), ratesZeroOne, 0, tab, false).SetColor(Utils.GetRoleColor(role))
-            .SetHeader(true)
-            .SetGameMode(customGameMode) as StringOptionItem;
-
-        var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(1, canSetNum ? 5 : 1, 1), 3, tab, false)
-        .SetParent(spawnOption)
-            .SetValueFormat(OptionFormat.Players)
-            .SetHidden(!canSetNum)
-            .SetGameMode(customGameMode);
-
-        var spawnRateOption = IntegerOptionItem.Create(id + 2, "AdditionRolesSpawnRate", new(0, 100, 5), canSetChance ? 80 : 100, tab, false)
-        .SetParent(spawnOption)
-            .SetValueFormat(OptionFormat.Percent)
-            .SetHidden(!canSetChance)
-            .SetGameMode(customGameMode) as IntegerOptionItem;
-
-        CustomAdtRoleSpawnRate.Add(role, spawnRateOption);
-        CustomRoleSpawnChances.Add(role, spawnOption);
-        CustomRoleCounts.Add(role, countOption);
-    }
 
     public static void SetupSingleRoleOptions(int id, TabGroup tab, CustomRoles role, int count, CustomGameMode customGameMode = CustomGameMode.Standard, bool zeroOne = false)
     {
-        var spawnOption = StringOptionItem.Create(id, role.ToString(), zeroOne ? ratesZeroOne : ratesToggle, 0, tab, false).SetColor(Utils.GetRoleColor(role))
+        var spawnOption = StringOptionItem.Create(id, role.ToString(), zeroOne ? ratesZeroOne : rates, 0, tab, false).SetColor(Utils.GetRoleColor(role))
             .SetHeader(true)
             .SetGameMode(customGameMode) as StringOptionItem;
         // 初期値,最大値,最小値が同じで、stepが0のどうやっても変えることができない個数オプション
