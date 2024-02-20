@@ -428,73 +428,77 @@ public static class Utils
         string RoleText = "Invalid Role";
         Color RoleColor = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
 
-        //var seerMainRole = Main.PlayerStates[seerId].MainRole;
-        //var seerSubRoles = Main.PlayerStates[seerId].SubRoles;
-
         var targetMainRole = Main.PlayerStates[targetId].MainRole;
         var targetSubRoles = Main.PlayerStates[targetId].SubRoles;
 
         RoleText = GetRoleName(targetMainRole);
         RoleColor = GetRoleColor(targetMainRole);
 
-        if (targetSubRoles.Count > 0)
+        try
         {
-            var seer = GetPlayerById(seerId);
-            var target = GetPlayerById(targetId);
-
-            if (seer == null || target == null) return (RoleText, RoleColor);
-
-            // if player last imp
-            if (LastImpostor.currentId == targetId)
-                RoleText = GetRoleString("Last-") + RoleText;
-
-            if (Options.NameDisplayAddons.GetBool() && !notShowAddOns)
+            if (targetSubRoles.Count > 0)
             {
-                var seerPlatform = seer.GetClient().PlatformData.Platform;
-                var addBracketsToAddons = Options.AddBracketsToAddons.GetBool();
+                var seer = GetPlayerById(seerId);
+                var target = GetPlayerById(targetId);
 
-                // if the player is playing on a console platform
-                if (seerPlatform is Platforms.Playstation or Platforms.Xbox or Platforms.Switch)
+                if (seer == null || target == null) return (RoleText, RoleColor);
+
+                // if player last imp
+                if (LastImpostor.currentId == targetId)
+                    RoleText = GetRoleString("Last-") + RoleText;
+
+                if (Options.NameDisplayAddons.GetBool() && !notShowAddOns)
                 {
-                    // By default, censorship is enabled on consoles
-                    // Need to set add-ons colors without endings "</color>"
+                    var seerPlatform = seer.GetClient()?.PlatformData.Platform;
+                    var addBracketsToAddons = Options.AddBracketsToAddons.GetBool();
 
-                    // colored role
-                    RoleText = ColorStringWithoutEnding(GetRoleColor(targetMainRole), RoleText);
-
-                    // colored add-ons
-                    foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
-                        RoleText = ColorStringWithoutEnding(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"Prefix.{subRole}")}) " : $"{GetString($"Prefix.{subRole}")} ") + RoleText;
-                }
-                // default
-                else
-                {
-                    foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
-                        RoleText = ColorString(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"Prefix.{subRole}")}) " : $"{GetString($"Prefix.{subRole}")} ") + RoleText;
-                }
-            }
-
-            foreach (var subRole in targetSubRoles.ToArray())
-            {
-                if (seer.ShowSubRoleTarget(target, subRole))
-                    switch (subRole)
+                    // if the player is playing on a console platform
+                    if (seerPlatform is Platforms.Playstation or Platforms.Xbox or Platforms.Switch)
                     {
-                        case CustomRoles.Madmate:
-                        case CustomRoles.Recruit:
-                        case CustomRoles.Charmed:
-                        case CustomRoles.Soulless:
-                        case CustomRoles.Infected:
-                        case CustomRoles.Contagious:
-                        case CustomRoles.Admired:
-                            RoleColor = GetRoleColor(subRole);
-                            RoleText = GetRoleString($"{subRole}-") + RoleText;
-                            break;
+                        // By default, censorship is enabled on consoles
+                        // Need to set add-ons colors without endings "</color>"
 
+                        // colored role
+                        RoleText = ColorStringWithoutEnding(GetRoleColor(targetMainRole), RoleText);
+
+                        // colored add-ons
+                        foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
+                            RoleText = ColorStringWithoutEnding(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"Prefix.{subRole}")}) " : $"{GetString($"Prefix.{subRole}")} ") + RoleText;
                     }
-            }
-        }
+                    // default
+                    else
+                    {
+                        foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
+                            RoleText = ColorString(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"Prefix.{subRole}")}) " : $"{GetString($"Prefix.{subRole}")} ") + RoleText;
+                    }
+                }
 
-        return (RoleText, RoleColor);
+                foreach (var subRole in targetSubRoles.ToArray())
+                {
+                    if (seer.ShowSubRoleTarget(target, subRole))
+                        switch (subRole)
+                        {
+                            case CustomRoles.Madmate:
+                            case CustomRoles.Recruit:
+                            case CustomRoles.Charmed:
+                            case CustomRoles.Soulless:
+                            case CustomRoles.Infected:
+                            case CustomRoles.Contagious:
+                            case CustomRoles.Admired:
+                                RoleColor = GetRoleColor(subRole);
+                                RoleText = GetRoleString($"{subRole}-") + RoleText;
+                                break;
+
+                        }
+                }
+            }
+
+            return (RoleText, RoleColor);
+        }
+        catch
+        {
+            return (RoleText, RoleColor);
+        }
     }
     public static string GetKillCountText(byte playerId, bool ffa = false)
     {
