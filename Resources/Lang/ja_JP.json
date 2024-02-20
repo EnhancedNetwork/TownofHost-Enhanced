@@ -1885,6 +1885,7 @@
   "TagColorInvalidHexCode": "無効なHEXコードが指定されました。タグの色を変更するには '/tagcolor [hexcode]' を使用してください。例：- /tagcolor ff00ff",
   "midCommandDisabled": "Midコマンドは現在無効です。",
   "midCommandNoAccess": "Mid コマンドに対する権限がありません",
+  "DisableVoteBan": "Disable VoteKick System",
   "WarnCommandDisabled": "Warnコマンドは現在無効です。",
   "WarnCommandNoAccess": "Warn コマンドに対する権限がありません",
   "WarnCommandInvalidID": "無効なプレイヤーIDが指定されました。プレイヤーに警告を出すには '/warn [playerID] [reason]' を使用してください。例：- /warn 5 ラヴァのチャット",
