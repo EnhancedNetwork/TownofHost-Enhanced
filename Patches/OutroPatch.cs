@@ -10,6 +10,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using TOHE.Roles.Core.AssignManager;
 
 namespace TOHE;
 
@@ -26,7 +27,9 @@ class EndGamePatch
         if (!GameStates.IsModHost) return;
         if (GameStates.IsHideNSeek) return;
 
+        RoleAssign.SetRoles = [];
         SummaryText = [];
+
         foreach (var id in Main.PlayerStates.Keys.ToArray())
         {
             if (Doppelganger.IsEnable && Doppelganger.DoppelVictim.ContainsKey(id))

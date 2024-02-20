@@ -14,7 +14,6 @@ using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core.AssignManager;
-using static TOHE.Modules.CustomRoleSelector;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -446,24 +445,24 @@ internal class SelectRolesPatch
             }
 
             EAC.OriginalRoles = [];
-            SelectCustomRoles();
+            RoleAssign.SelectCustomRoles();
             AddonAssign.StartSelect();
 
-            CalculateVanillaRoleCount();
+            RoleAssign.CalculateVanillaRoleCount();
 
             //指定原版特殊职业数量
             var roleOpt = Main.NormalOptions.roleOptions;
             int ScientistNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Scientist);
-            roleOpt.SetRoleRate(RoleTypes.Scientist, ScientistNum + addScientistNum, addScientistNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Scientist));
+            roleOpt.SetRoleRate(RoleTypes.Scientist, ScientistNum + RoleAssign.addScientistNum, RoleAssign.addScientistNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Scientist));
             int EngineerNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Engineer);
-            roleOpt.SetRoleRate(RoleTypes.Engineer, EngineerNum + addEngineerNum, addEngineerNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Engineer));
+            roleOpt.SetRoleRate(RoleTypes.Engineer, EngineerNum + RoleAssign.addEngineerNum, RoleAssign.addEngineerNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Engineer));
             int ShapeshifterNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Shapeshifter);
-            roleOpt.SetRoleRate(RoleTypes.Shapeshifter, ShapeshifterNum + addShapeshifterNum, addShapeshifterNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Shapeshifter));
+            roleOpt.SetRoleRate(RoleTypes.Shapeshifter, ShapeshifterNum + RoleAssign.addShapeshifterNum, RoleAssign.addShapeshifterNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Shapeshifter));
 
             Dictionary<(byte, byte), RoleTypes> rolesMap = [];
 
             // 注册反职业
-            foreach (var kv in RoleResult.Where(x => x.Value.IsDesyncRole()).ToArray())
+            foreach (var kv in RoleAssign.RoleResult.Where(x => x.Value.IsDesyncRole()).ToArray())
                 AssignDesyncRole(kv.Value, kv.Key, senders, rolesMap, BaseRole: kv.Value.GetDYRole());
 
 
@@ -506,7 +505,7 @@ internal class SelectRolesPatch
             List<(PlayerControl, RoleTypes)> newList = [];
             foreach (var sd in RpcSetRoleReplacer.StoragedData.ToArray())
             {
-                var kp = RoleResult.FirstOrDefault(x => x.Key.PlayerId == sd.Item1.PlayerId);
+                var kp = RoleAssign.RoleResult.FirstOrDefault(x => x.Key.PlayerId == sd.Item1.PlayerId);
                 newList.Add((sd.Item1, kp.Value.GetRoleTypes()));
                 if (sd.Item2 == kp.Value.GetRoleTypes())
                     Logger.Warn($"Registered original Role => {sd.Item1.GetRealName()}: {sd.Item2}", "Override Role Select");
@@ -567,7 +566,7 @@ internal class SelectRolesPatch
 
             var rd = IRandom.Instance;
 
-            foreach (var kv in RoleResult)
+            foreach (var kv in RoleAssign.RoleResult)
             {
                 if (kv.Value.IsDesyncRole()) continue;
                 AssignCustomRole(kv.Value, kv.Key);
@@ -1150,17 +1149,17 @@ internal class SelectRolesPatch
 
             // Role type: Scientist
             int ScientistNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Scientist);
-            ScientistNum -= addScientistNum;
+            ScientistNum -= RoleAssign.addScientistNum;
             roleOpt.SetRoleRate(RoleTypes.Scientist, ScientistNum, roleOpt.GetChancePerGame(RoleTypes.Scientist));
 
             // Role type: Engineer
             int EngineerNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Engineer);
-            EngineerNum -= addEngineerNum;
+            EngineerNum -= RoleAssign.addEngineerNum;
             roleOpt.SetRoleRate(RoleTypes.Engineer, EngineerNum, roleOpt.GetChancePerGame(RoleTypes.Engineer));
 
             // Role type: Shapeshifter
             int ShapeshifterNum = Options.DisableVanillaRoles.GetBool() ? 0 : roleOpt.GetNumPerGame(RoleTypes.Shapeshifter);
-            ShapeshifterNum -= addShapeshifterNum;
+            ShapeshifterNum -= RoleAssign.addShapeshifterNum;
             roleOpt.SetRoleRate(RoleTypes.Shapeshifter, ShapeshifterNum, roleOpt.GetChancePerGame(RoleTypes.Shapeshifter));
 
             switch (Options.CurrentGameMode)
@@ -1191,6 +1190,20 @@ internal class SelectRolesPatch
             Utils.CountAlivePlayers(true);
             Utils.SyncAllSettings();
             SetColorPatch.IsAntiGlitchDisabled = false;
+
+            _ = new LateTask(() =>
+            {
+                RoleAssign.SetRoles = [];
+            }, 7f, "Reset SetRoles", shoudLog: false);
+
+            // fix GM spaw in Airship
+            if (GameStates.AirshipIsActive && Main.EnableGM.Value)
+            {
+                _ = new LateTask(() => 
+                {
+                    PlayerControl.LocalPlayer.RpcTeleport(new(15.5f, 0.0f));
+                }, 15f, "GM Auto-TP Failsafe"); // TP to Main Hall
+            }
 
             Logger.Msg("Ended", "AssignRoles");
         }

@@ -229,7 +229,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, byte> Provoked = [];
     public static Dictionary<byte, float> DovesOfNeaceNumOfUsed = [];
 
-    public static Dictionary<byte, CustomRoles> DevRole = [];
     public static List<byte> GodfatherTarget = [];
     public static Dictionary<byte, int> CrewpostorTasksDone = [];
     
