@@ -1564,11 +1564,11 @@ internal static class RPC
             //case CustomRoles.Witch:
             //    break;
             //Merge the two rpc into one
-            case CustomRoles.Retributionist:
+             case CustomRoles.Retributionist:
                 Retributionist.ReceiveRPC(reader);
                 break;
-            case CustomRoles.Nemesis:
-                Nemesis.ReceiveRPC(reader);
+             case CustomRoles.Nemesis:
+                 Nemesis.ReceiveRPC(reader);
                 break;
             default:
                 Logger.Error($"Role {role} can not be handled!", "SyncRoleSkillReader");
