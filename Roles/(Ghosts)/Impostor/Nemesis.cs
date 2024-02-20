@@ -40,7 +40,7 @@ namespace TOHE.Roles._Ghosts_.Impostor
         private static void SendRPC(byte playerId)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-            writer.WritePacked((int)CustomRoles.Retributionist);
+            writer.WritePacked((int)CustomRoles.Nemesis);
             writer.Write(playerId);
             writer.Write(KillCount[playerId]);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -54,7 +54,7 @@ namespace TOHE.Roles._Ghosts_.Impostor
         public static void SetKillCooldown() => AURoleOptions.GuardianAngelCooldown = KillCooldown.GetFloat();
         public static bool OnCheckProtect(PlayerControl killer, PlayerControl target)
         {
-            if (!target.Is(CustomRoles.Pestilence) && KillCount[killer.PlayerId] > 0 && Main.AllAlivePlayerControls.Count() > MinimumPlayersAliveToRevenge.GetInt())
+            if (!target.Is(CustomRoles.Pestilence) && KillCount[killer.PlayerId] > 0 && Main.AllAlivePlayerControls.Count() >= MinimumPlayersAliveToRevenge.GetInt())
             {
                 killer.RpcMurderPlayerV3(target);
                 killer.RpcResetAbilityCooldown();

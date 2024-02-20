@@ -100,8 +100,8 @@ public static class Retributionist
             KillCount[killer.PlayerId]--;
             SendRPC(killer.PlayerId);
         }
-        else if (KillCount[killer.PlayerId] >= 0) killer.Notify(GetString("RetributionistKillMax"));
-        else if (KillersNoEjects < OnlyKillAfterXKillerNoEject.GetInt()) killer.Notify(GetString("RetributionistKillNoEject"));
+        else if (KillCount[killer.PlayerId] <= 0) killer.Notify(GetString("RetributionistKillMax"));
+        else if (KillersNoEjects < OnlyKillAfterXKillerNoEject.GetInt()) killer.Notify(GetString("RetributionistKillNoEject").Replace("{0}", OnlyKillAfterXKillerNoEject.GetInt().ToString()));
         else if (Main.AllAlivePlayerControls.Count() < MinimumPlayersAliveToRetri.GetInt()) killer.Notify(GetString("RetributionistKillTooManyDead"));
         return false;
     }
