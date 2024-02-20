@@ -24,7 +24,11 @@ public class Warden
     {
         IsAffected = [];
     }
-    public static void SetAbilityCooldown() => AURoleOptions.GuardianAngelCooldown = AbilityCooldown.GetFloat();
+    public static void SetAbilityCooldown()
+    {
+        AURoleOptions.GuardianAngelCooldown = AbilityCooldown.GetFloat();
+        AURoleOptions.ProtectionDurationSeconds = 0f;
+    }
     public static bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
         var getTargetRole = target.GetCustomRole();
