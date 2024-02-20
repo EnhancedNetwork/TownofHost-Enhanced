@@ -23,28 +23,36 @@ class EndGamePatch
     public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ref EndGameResult endGameResult)
     {
         GameStates.InGame = false;
-      
+        try
+        {
+            foreach (var pvc in GhostRoleAssign.GhostGetPreviousRole.Keys) // Sets role back to original so it shows up in /l results.
+            {
+                var plr = Utils.GetPlayerById(pvc);
+                if (plr == null || !plr.GetCustomRole().IsGhostRole()) continue;
+
+                CustomRoles prevrole = GhostRoleAssign.GhostGetPreviousRole[pvc];
+                Main.PlayerStates[pvc].SetMainRole(prevrole);
+
+                if (AmongUsClient.Instance.AmHost)
+                {
+                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, Hazel.SendOption.Reliable, -1);
+                    writer.Write(pvc);
+                    writer.WritePacked((int)prevrole);
+                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            Logger.Warn($"{e} at EndGamePatch", "GhostGetPreviousRole");
+        }
+
         Logger.Info("-----------Game over-----------", "Phase");
         if (!GameStates.IsModHost) return;
         if (GameStates.IsHideNSeek) return;
 
         SummaryText = [];
 
-        foreach (var pvc in GhostRoleAssign.GhostGetPreviousRole.Keys) // Sets role back to original so it shows up in /l results.
-        {
-            var plr = Utils.GetPlayerById(pvc);
-            if (plr == null || !plr.GetCustomRole().IsGhostRole()) continue;
-
-            CustomRoles prevrole = GhostRoleAssign.GhostGetPreviousRole[pvc];
-            Main.PlayerStates[pvc].SetMainRole(prevrole);
-
-            // Instance is always host, because otherwise endgamepatch returns.
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, Hazel.SendOption.Reliable, -1);
-            writer.Write(pvc);
-            writer.WritePacked((int)prevrole);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-            
-        }
         GhostRoleAssign.GhostGetPreviousRole = [];
 
         foreach (var id in Main.PlayerStates.Keys.ToArray())

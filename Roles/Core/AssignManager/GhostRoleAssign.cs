@@ -100,6 +100,7 @@ public class GhostRoleAssign
                 getCount[ChosenRole]--; // Only deduct if role has been set.
                 player.RpcSetRole(RoleTypes.GuardianAngel);
                 player.RpcSetCustomRole(ChosenRole);
+                player.RpcResetAbilityCooldown();
             }
             return;
         }
@@ -126,6 +127,7 @@ public class GhostRoleAssign
                 getCount[ChosenRole]--;
                 player.RpcSetRole(RoleTypes.GuardianAngel);
                 player.RpcSetCustomRole(ChosenRole);
+                player.RpcResetAbilityCooldown();
             }
             return;
         }
