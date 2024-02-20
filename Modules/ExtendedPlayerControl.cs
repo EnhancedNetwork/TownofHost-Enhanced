@@ -315,9 +315,9 @@ static class ExtendedPlayerControl
             Glitch.MimicCDTimer = 10;
             Glitch.HackCDTimer = 10;
         }
-        else if (PlayerControl.LocalPlayer == target)
+        else if (PlayerControl.LocalPlayer == target && !target.GetCustomRole().IsGhostRole() && !(target.GetCustomSubRoles().Count > 0 && target.GetCustomSubRoles().Any(x => x.IsGhostRole())))
         {
-            //if target is the host
+            //if target is the host, except for guardian angel, that breaks it.
             PlayerControl.LocalPlayer.Data.Role.SetCooldown();
         }
         else
