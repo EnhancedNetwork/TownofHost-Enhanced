@@ -79,26 +79,20 @@ class CheckProtectPatch
                 break;
         }
 
-        foreach (var SubRole in angel.GetCustomSubRoles())
+        if (angel.Is(CustomRoles.EvilSpirit))
         {
-            switch (SubRole)
+            if (target.Is(CustomRoles.Spiritcaller))
             {
-                case CustomRoles.EvilSpirit:
-                    if (target.Is(CustomRoles.Spiritcaller))
-                    {
-                        Spiritcaller.ProtectSpiritcaller();
-                    }
-                    else
-                    {
-                        Spiritcaller.HauntPlayer(target);
-
-                    }
-                angel.RpcResetAbilityCooldown();
-                return false;
-
+                Spiritcaller.ProtectSpiritcaller();
             }
+            else
+            {
+                Spiritcaller.HauntPlayer(target);
+            }
+            angel.RpcResetAbilityCooldown();
+            return false;
         }
-        
+
         if (angel.Is(CustomRoles.Sheriff) && angel.Data.IsDead)
         {
                 Logger.Info("Blocked protection", "CheckProtect");

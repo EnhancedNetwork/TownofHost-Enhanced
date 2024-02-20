@@ -16,12 +16,11 @@ public static class GhostRoleAssign
         if (GameStates.IsHideNSeek || player == null || player.Data.Disconnected) return;
 
         var getplrRole = player.GetCustomRole();
-        if (getplrRole is CustomRoles.Retributionist or CustomRoles.Mafia or CustomRoles.GM) return;
+        if (getplrRole is CustomRoles.GM) return;
 
         if (getplrRole.IsGhostRole() || (player.GetCustomSubRoles().Count > 0 && player.GetCustomSubRoles().Any(x => x.IsGhostRole())) || Options.CustomGhostRoleCounts.Count <= 0) return;
         
         GhostGetPreviousRole.Add(player.PlayerId, getplrRole);
-        Logger.Warn("I WAS RUN", "GhostAssignPatch");
 
         List<CustomRoles> HauntedList = [];
         List<CustomRoles> RateHauntedList = [];
