@@ -47,7 +47,7 @@ public class Main : BasePlugin
     /******************* Change one of the three variables to true before making a release. *******************/
     public static readonly bool Canary = false; // INACTIVE - Latest: V1.5.1 Canary 5
     public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.5.1
-    public static readonly bool devRelease = true; // ACTIVE - Latest: V1.6.0 Dev 1
+    public static readonly bool devRelease = true; // ACTIVE - Latest: V1.6.0 Dev 2
 
     public static bool hasAccess = true;
 
