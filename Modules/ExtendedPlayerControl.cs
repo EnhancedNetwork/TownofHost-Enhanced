@@ -322,7 +322,9 @@ static class ExtendedPlayerControl
         }
         else
         {
-            // target is other than the host
+            // target is other than the host (except ghosts)
+            try { if (PlayerControl.LocalPlayer == target) target.MarkDirtySettings(); } 
+            catch(Exception e) { Logger.Warn($"{e}", "hostability"); } // If host == Ghost
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(target.NetId, (byte)RpcCalls.ProtectPlayer, SendOption.None, target.GetClientId());
             writer.WriteNetObject(target);
             writer.Write(0);

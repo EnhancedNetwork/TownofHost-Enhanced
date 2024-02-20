@@ -107,6 +107,7 @@ public static class GhostRoleAssign
                 getCount[ChosenRole]--; // Only deduct count after it's been assigned.
                 player.RpcSetRole(RoleTypes.GuardianAngel);
                 player.RpcSetCustomRole(ChosenRole);
+                player.RpcResetAbilityCooldown();
                 player.AddPlayerId(ChosenRole);
             }
             return;
@@ -134,6 +135,7 @@ public static class GhostRoleAssign
                 getCount[ChosenRole]--; 
                 player.RpcSetRole(RoleTypes.GuardianAngel);
                 player.RpcSetCustomRole(ChosenRole);
+                player.RpcResetAbilityCooldown();
                 player.AddPlayerId(ChosenRole);
             }
             return;
