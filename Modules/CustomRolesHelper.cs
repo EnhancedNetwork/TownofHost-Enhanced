@@ -1783,6 +1783,18 @@ static class CustomRolesHelper
                 role is CustomRoles.Lovers ||
                 (role is CustomRoles.Egoist && Egoist.EgoistCountAsConverted.GetBool()));
     }
+    public static bool IsEvilAddons(this CustomRoles role)
+    {
+        return role is CustomRoles.Madmate
+            or CustomRoles.Egoist
+            or CustomRoles.Charmed
+            or CustomRoles.Recruit
+            or CustomRoles.Infected
+            or CustomRoles.Contagious
+            or CustomRoles.Rogue
+            or CustomRoles.Rascal
+            or CustomRoles.Soulless;
+    }
     public static bool IsRevealingRole(this CustomRoles role, PlayerControl target)
     {
         return (((role is CustomRoles.Mayor) && (Options.MayorRevealWhenDoneTasks.GetBool()) && target.AllTasksCompleted()) ||

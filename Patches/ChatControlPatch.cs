@@ -39,6 +39,10 @@ class ChatControllerUpdatePatch
             __instance.freeChatField.textArea.compoText.Color(Color.white);
             __instance.freeChatField.textArea.outputText.color = Color.white;
         }
+        else
+        {
+            __instance.freeChatField.textArea.outputText.color = Color.black;
+        }
 
         if (!__instance.freeChatField.textArea.hasFocus) return;
         if (!GameStates.IsModHost) return;

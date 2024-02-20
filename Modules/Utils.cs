@@ -86,7 +86,7 @@ public static class Utils
         }
     }
 
-    public static void RpcTeleport(this PlayerControl player, Vector2 location, bool sendInfoInLogs = true)
+    public static void RpcTeleport(this PlayerControl player, Vector2 location, bool isRandomSpawn = false, bool sendInfoInLogs = true)
     {
         if (sendInfoInLogs)
         {
@@ -94,18 +94,36 @@ public static class Utils
             Logger.Info($" Player Id: {player.PlayerId}", "RpcTeleport");
         }
 
-        if (player.inVent
-            || player.MyPhysics.Animations.IsPlayingEnterVentAnimation())
+        // Don't check player status during random spawn
+        if (!isRandomSpawn)
         {
-            Logger.Info($"Target: ({player.GetNameWithRole().RemoveHtmlTags()}) in vent", "RpcTeleport");
-            player.MyPhysics.RpcBootFromVent(0);
-        }
+            var сancelTeleport = false;
 
-        if (player.onLadder
-            || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
-        {
-            Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) is in on Ladder", "RpcTeleport");
-            return;
+            if (player.inVent
+                || player.MyPhysics.Animations.IsPlayingEnterVentAnimation())
+            {
+                Logger.Info($"Target: ({player.GetNameWithRole().RemoveHtmlTags()}) in vent", "RpcTeleport");
+                сancelTeleport = true;
+            }
+
+            if (player.onLadder
+                || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+            {
+                Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) is in on Ladder", "RpcTeleport");
+                сancelTeleport = true;
+            }
+
+            if (player.inMovingPlat)
+            {
+                Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) use moving platform (Airship/Fungle)", "RpcTeleport");
+                сancelTeleport = true;
+            }
+
+            if (сancelTeleport)
+            {
+                player.Notify(ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ErrorTeleport")));
+                return;
+            }
         }
 
         var playerNetTransform = player.NetTransform;
@@ -408,10 +426,7 @@ public static class Utils
     public static (string, Color) GetRoleAndSubText(byte seerId, byte targetId, bool notShowAddOns = false)
     {
         string RoleText = "Invalid Role";
-        Color RoleColor;
-
-        //var seerMainRole = Main.PlayerStates[seerId].MainRole;
-        //var seerSubRoles = Main.PlayerStates[seerId].SubRoles;
+        Color RoleColor = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
 
         var targetMainRole = Main.PlayerStates[targetId].MainRole;
         var targetSubRoles = Main.PlayerStates[targetId].SubRoles;
@@ -419,64 +434,71 @@ public static class Utils
         RoleText = GetRoleName(targetMainRole);
         RoleColor = GetRoleColor(targetMainRole);
 
-        if (targetSubRoles.Count > 0)
+        try
         {
-            var seer = GetPlayerById(seerId);
-            var target = GetPlayerById(targetId);
-
-            if (seer == null || target == null) return (RoleText, RoleColor);
-
-            // if player last imp
-            if (LastImpostor.currentId == targetId)
-                RoleText = GetRoleString("Last-") + RoleText;
-
-            if (Options.NameDisplayAddons.GetBool() && !notShowAddOns)
+            if (targetSubRoles.Count > 0)
             {
-                var seerPlatform = seer.GetClient().PlatformData.Platform;
-                var addBracketsToAddons = Options.AddBracketsToAddons.GetBool();
+                var seer = GetPlayerById(seerId);
+                var target = GetPlayerById(targetId);
 
-                // if the player is playing on a console platform
-                if (seerPlatform is Platforms.Playstation or Platforms.Xbox or Platforms.Switch)
+                if (seer == null || target == null) return (RoleText, RoleColor);
+
+                // if player last imp
+                if (LastImpostor.currentId == targetId)
+                    RoleText = GetRoleString("Last-") + RoleText;
+
+                if (Options.NameDisplayAddons.GetBool() && !notShowAddOns)
                 {
-                    // By default, censorship is enabled on consoles
-                    // Need to set add-ons colors without endings "</color>"
+                    var seerPlatform = seer.GetClient()?.PlatformData.Platform;
+                    var addBracketsToAddons = Options.AddBracketsToAddons.GetBool();
 
-                    // colored role
-                    RoleText = ColorStringWithoutEnding(GetRoleColor(targetMainRole), RoleText);
-
-                    // colored add-ons
-                    foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
-                        RoleText = ColorStringWithoutEnding(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"Prefix.{subRole}")}) " : $"{GetString($"Prefix.{subRole}")} ") + RoleText;
-                }
-                // default
-                else
-                {
-                    foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
-                        RoleText = ColorString(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"Prefix.{subRole}")}) " : $"{GetString($"Prefix.{subRole}")} ") + RoleText;
-                }
-            }
-
-            foreach (var subRole in targetSubRoles.ToArray())
-            {
-                if (seer.ShowSubRoleTarget(target, subRole))
-                    switch (subRole)
+                    // if the player is playing on a console platform
+                    if (seerPlatform is Platforms.Playstation or Platforms.Xbox or Platforms.Switch)
                     {
-                        case CustomRoles.Madmate:
-                        case CustomRoles.Recruit:
-                        case CustomRoles.Charmed:
-                        case CustomRoles.Soulless:
-                        case CustomRoles.Infected:
-                        case CustomRoles.Contagious:
-                        case CustomRoles.Admired:
-                            RoleColor = GetRoleColor(subRole);
-                            RoleText = GetRoleString($"{subRole}-") + RoleText;
-                            break;
+                        // By default, censorship is enabled on consoles
+                        // Need to set add-ons colors without endings "</color>"
 
+                        // colored role
+                        RoleText = ColorStringWithoutEnding(GetRoleColor(targetMainRole), RoleText);
+
+                        // colored add-ons
+                        foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
+                            RoleText = ColorStringWithoutEnding(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"Prefix.{subRole}")}) " : $"{GetString($"Prefix.{subRole}")} ") + RoleText;
                     }
-            }
-        }
+                    // default
+                    else
+                    {
+                        foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
+                            RoleText = ColorString(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"Prefix.{subRole}")}) " : $"{GetString($"Prefix.{subRole}")} ") + RoleText;
+                    }
+                }
 
-        return (RoleText, RoleColor);
+                foreach (var subRole in targetSubRoles.ToArray())
+                {
+                    if (seer.ShowSubRoleTarget(target, subRole))
+                        switch (subRole)
+                        {
+                            case CustomRoles.Madmate:
+                            case CustomRoles.Recruit:
+                            case CustomRoles.Charmed:
+                            case CustomRoles.Soulless:
+                            case CustomRoles.Infected:
+                            case CustomRoles.Contagious:
+                            case CustomRoles.Admired:
+                                RoleColor = GetRoleColor(subRole);
+                                RoleText = GetRoleString($"{subRole}-") + RoleText;
+                                break;
+
+                        }
+                }
+            }
+
+            return (RoleText, RoleColor);
+        }
+        catch
+        {
+            return (RoleText, RoleColor);
+        }
     }
     public static string GetKillCountText(byte playerId, bool ffa = false)
     {
