@@ -44,7 +44,6 @@ public class GhostRoleAssign
                     if (HauntedList.Contains(ghostRole) || getCount[ghostRole] <= 0)
                         continue;
 
-                    getCount[ghostRole]--;
                     HauntedList.Add(ghostRole); continue;
                 }
                 if (ghostRole.IsImpostor())
@@ -55,7 +54,6 @@ public class GhostRoleAssign
                     if (ImpHauntedList.Contains(ghostRole) || getCount[ghostRole] <= 0)
                         continue;
 
-                    getCount[ghostRole]--;
                     ImpHauntedList.Add(ghostRole);
                 }
             }
@@ -69,7 +67,6 @@ public class GhostRoleAssign
                     if (RateHauntedList.Contains(ghostRole) || getCount[ghostRole] <= 0)
                         continue;
 
-                    getCount[ghostRole]--;
                     RateHauntedList.Add(ghostRole); continue;
                 }
                 if (ghostRole.IsImpostor())
@@ -80,7 +77,6 @@ public class GhostRoleAssign
                     if (ImpRateHauntedList.Contains(ghostRole) || getCount[ghostRole] <= 0)
                         continue;
 
-                    getCount[ghostRole]--;
                     ImpRateHauntedList.Add(ghostRole);
                 }
             }
@@ -104,6 +100,7 @@ public class GhostRoleAssign
             }
             if (ChosenRole.IsGhostRole())
             {
+                getCount[ChosenRole]--; // Only deduct if role has been set.
                 player.RpcSetRole(RoleTypes.GuardianAngel);
                 player.RpcSetCustomRole(ChosenRole);
             }
@@ -129,6 +126,7 @@ public class GhostRoleAssign
             }
             if (ChosenRole.IsGhostRole())
             {
+                getCount[ChosenRole]--;
                 player.RpcSetRole(RoleTypes.GuardianAngel);
                 player.RpcSetCustomRole(ChosenRole);
             }
