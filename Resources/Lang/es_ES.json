@@ -1885,6 +1885,7 @@
   "TagColorInvalidHexCode": "Código hex especificado no válido. Por favor, use /tagcolor [codigohex] para cambiar el color de tu nombre.\nPor Ejemplo, /tagcolor ff00ff",
   "midCommandDisabled": "El comando mid está desactivado",
   "midCommandNoAccess": "No tienes acceso al comando mid",
+  "DisableVoteBan": "Disable VoteKick System",
   "WarnCommandDisabled": "El commando warn está desactivado",
   "WarnCommandNoAccess": "No tienes permiso al comando warn",
   "WarnCommandInvalidID": "ID de jugador especificado no válido.\nPor favor, use /warn [IDjugador] [razón] para advertir a un jugador.\nPor ejemplo, /warn 5 hablar durante la cinemática de exilio",
