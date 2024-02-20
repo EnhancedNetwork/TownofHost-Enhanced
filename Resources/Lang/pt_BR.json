@@ -1885,6 +1885,7 @@
   "TagColorInvalidHexCode": "Código hexadecimal especificado inválido.\nPor favor, use '/tagcolor [hexcode] [hexcode]' para alterar a cor da sua tag.\nExemplo: - /tagcolor 33ccff ff99cc",
   "midCommandDisabled": "O comando mid está atualmente desativado.",
   "midCommandNoAccess": "Você não tem acesso ao comando mid.",
+  "DisableVoteBan": "Disable VoteKick System",
   "WarnCommandDisabled": "O comando de alertar está atualmente desativado.",
   "WarnCommandNoAccess": "Você não tem acesso ao comando de alertar.",
   "WarnCommandInvalidID": "ID de Jogador Inválido.\nPor favor, use '/warn [ID jogador] [motivo]' para alertar um jogador. \nExemplo: - /warn 5 super cringe",
