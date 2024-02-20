@@ -1487,10 +1487,10 @@ class MurderPlayerPatch
         {
             target.RpcSetRole(RoleTypes.GuardianAngel);
         }
-
-        GhostRoleAssign.GhostAssignPatch(target);
-
-        
+        else
+        {
+            GhostRoleAssign.GhostAssignPatch(target);
+        }
 
         Utils.AfterPlayerDeathTasks(target);
 

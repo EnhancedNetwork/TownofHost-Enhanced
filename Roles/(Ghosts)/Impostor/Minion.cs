@@ -1,5 +1,4 @@
 ﻿using static TOHE.Options;
-using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
@@ -21,16 +20,17 @@ public static class Minion
 
     public static bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
-        var ImpPVC = CustomRolesHelper.IsImpostor(target.GetCustomRole());
+        var ImpPVC = target.GetCustomRole().IsImpostor();
         if (!ImpPVC)
         {
             Main.PlayerStates[target.PlayerId].IsBlackOut = true;
             target.MarkDirtySettings();
+            
             _ = new LateTask(() =>
             {
                 Main.PlayerStates[target.PlayerId].IsBlackOut = false;
                 target.MarkDirtySettings();
-            }, AbilityTime.GetFloat());
+            }, AbilityTime.GetFloat(), "Minion: return vision");
             killer.RpcResetAbilityCooldown();
         }
         return false;

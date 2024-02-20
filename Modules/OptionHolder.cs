@@ -3392,7 +3392,7 @@ public static class Options
             .SetGameMode(customGameMode) as StringOptionItem;
 
         var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(count, count, count), count, tab, false)
-        .SetParent(spawnOption)
+            .SetParent(spawnOption)
             .SetHidden(true)
             .SetGameMode(customGameMode);
 

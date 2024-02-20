@@ -40,7 +40,7 @@ public class Warden
             Main.AllPlayerSpeed[target.PlayerId] = Main.AllPlayerSpeed[target.PlayerId] - Main.AllPlayerSpeed[target.PlayerId] + tmpSpeed;
             target.MarkDirtySettings();
             if (IsAffected.Contains(target.PlayerId)) IsAffected.Remove(target.PlayerId);
-        }, 2f);
+        }, 2f, "Warden: Set Speed to default");
 
     Notifiers:
         target.Notify(Utils.ColorString(new Color32(179, 0, 0, byte.MaxValue), GetString("WardenWarn")));
