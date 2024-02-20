@@ -15,7 +15,7 @@ public class Warden
     public static void SetupCustomOptions()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Warden);
-        AbilityCooldown = FloatOptionItem.Create(Id + 10, "AbilityCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Warden])
+        AbilityCooldown = FloatOptionItem.Create(Id + 10, "AbilityCooldown", new(0f, 120f, 2.5f), 25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Warden])
             .SetValueFormat(OptionFormat.Seconds);
         IncreaseSpeed = FloatOptionItem.Create(Id + 11, "WardenIncreaseSpeed", new(1f, 3f, 0.5f), 1f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Warden])
             .SetValueFormat(OptionFormat.Times);
@@ -23,6 +23,11 @@ public class Warden
     public static void Init()
     {
         IsAffected = [];
+    }
+    public static void SetAbilityCooldown()
+    {
+        AURoleOptions.GuardianAngelCooldown = AbilityCooldown.GetFloat();
+        AURoleOptions.ProtectionDurationSeconds = 0f;
     }
     public static bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
@@ -40,7 +45,7 @@ public class Warden
             Main.AllPlayerSpeed[target.PlayerId] = Main.AllPlayerSpeed[target.PlayerId] - Main.AllPlayerSpeed[target.PlayerId] + tmpSpeed;
             target.MarkDirtySettings();
             if (IsAffected.Contains(target.PlayerId)) IsAffected.Remove(target.PlayerId);
-        }, 2f);
+        }, 2f, "Warden: Set Speed to default");
 
     Notifiers:
         target.Notify(Utils.ColorString(new Color32(179, 0, 0, byte.MaxValue), GetString("WardenWarn")));

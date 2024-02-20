@@ -101,21 +101,23 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 opt.SetFloat(FloatOptionNames.ImpostorLightMod, 1.25f);
             }
         }
-        switch (role.GetCustomRoleTypes())
+        if (!role.IsGhostRole() || (player.GetCustomSubRoles().Count() > 0 && player.GetCustomSubRoles().Any(x => x is CustomRoles.EvilSpirit))) 
         {
-            case CustomRoleTypes.Impostor:
-                AURoleOptions.ShapeshifterCooldown = Options.DefaultShapeshiftCooldown.GetFloat();
-                AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
-                opt.SetVision(true);
-                break;
-            case CustomRoleTypes.Neutral:
-                AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
-                break;
-            case CustomRoleTypes.Crewmate:
-                AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
-                break;
+            switch (role.GetCustomRoleTypes())
+            {
+                case CustomRoleTypes.Impostor:
+                    AURoleOptions.ShapeshifterCooldown = Options.DefaultShapeshiftCooldown.GetFloat();
+                    AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
+                    opt.SetVision(true);
+                    break;
+                case CustomRoleTypes.Neutral:
+                    AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
+                    break;
+                case CustomRoleTypes.Crewmate:
+                    AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
+                    break;
+            }
         }
-
         switch (role)
         {
             case CustomRoles.Terrorist:
@@ -490,10 +492,10 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 Blackmailer.ApplyGameOptions();
                 break;
             case CustomRoles.Warden:
-                AURoleOptions.GuardianAngelCooldown = Warden.AbilityCooldown.GetFloat();
+                Warden.SetAbilityCooldown();
                 break;
             case CustomRoles.Minion:
-                AURoleOptions.GuardianAngelCooldown = Minion.AbilityCooldown.GetFloat();
+                Minion.SetAbilityCooldown();
                 break;
             case CustomRoles.Retributionist:
                 Retributionist.SetKillCooldown();

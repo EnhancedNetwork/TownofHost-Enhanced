@@ -315,16 +315,16 @@ static class ExtendedPlayerControl
             Glitch.MimicCDTimer = 10;
             Glitch.HackCDTimer = 10;
         }
-        else if (PlayerControl.LocalPlayer == target && !target.GetCustomRole().IsGhostRole() && !target.GetCustomSubRoles().Any(x => x.IsGhostRole())) // Guardian Angel Cooldown dosen't work this way
+        else if (PlayerControl.LocalPlayer == target && !target.GetCustomRole().IsGhostRole() && !(target.GetCustomSubRoles().Count > 0 && target.GetCustomSubRoles().Any(x => x.IsGhostRole())))
         {
-            //if target is the host
+            //if target is the host, except for guardian angel, that breaks it.
             PlayerControl.LocalPlayer.Data.Role.SetCooldown();
         }
         else
         {
-            // target is other than the host (except ghosts)
-            try { if (PlayerControl.LocalPlayer == target) target.MarkDirtySettings(); } 
-            catch(Exception e) { Logger.Warn($"{e}", "hostability"); } // If host == Ghost
+            // target is other than the host (not ghosts)
+            try { if (PlayerControl.LocalPlayer == target) target.MarkDirtySettings(); }
+            catch (Exception e) { Logger.Warn($"{e}", "hostability"); } // If host == Ghost
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(target.NetId, (byte)RpcCalls.ProtectPlayer, SendOption.None, target.GetClientId());
             writer.WriteNetObject(target);
             writer.Write(0);

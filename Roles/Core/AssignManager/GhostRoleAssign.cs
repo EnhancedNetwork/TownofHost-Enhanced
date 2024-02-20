@@ -10,12 +10,16 @@ namespace TOHE.Roles.Core.AssignManager;
 public static class GhostRoleAssign
 {
     public static Dictionary<byte, CustomRoles> GhostGetPreviousRole = [];
-    private static Dictionary<CustomRoles, int> getCount;
+    private static Dictionary<CustomRoles, int> getCount = [];
     public static void GhostAssignPatch(PlayerControl player)
     {
+        if (GameStates.IsHideNSeek || player == null || player.Data.Disconnected) return;
+
         var getplrRole = player.GetCustomRole();
-        if (GameStates.IsHideNSeek || getplrRole.IsGhostRole() || player.GetCustomSubRoles().Any(x => x.IsGhostRole()) || Options.CustomGhostRoleCounts.Count <= 0) return;
-        if (getplrRole is CustomRoles.GM) return;
+        if (getplrRole is CustomRoles.Retributionist or CustomRoles.Mafia or CustomRoles.GM) return;
+
+        if (getplrRole.IsGhostRole() || (player.GetCustomSubRoles().Count > 0 && player.GetCustomSubRoles().Any(x => x.IsGhostRole())) || Options.CustomGhostRoleCounts.Count <= 0) return;
+        
         GhostGetPreviousRole.Add(player.PlayerId, getplrRole);
         Logger.Warn("I WAS RUN", "GhostAssignPatch");
 
@@ -29,13 +33,13 @@ public static class GhostRoleAssign
 
         bool IsSetRole = false;
 
-        var IsCrewmate = CustomRolesHelper.IsCrewmate(getplrRole);
-        var IsImpostor = CustomRolesHelper.IsImpostor(getplrRole);
-        var IsNeutral = CustomRolesHelper.IsNeutral(getplrRole);
+        var IsCrewmate = getplrRole.IsCrewmate();
+        var IsImpostor = getplrRole.IsImpostor();
+        var IsNeutral = getplrRole.IsNeutral();
 
         foreach (var ghostRole in Options.CustomGhostRoleCounts.Keys) if (ghostRole.GetMode() == 2)
             {
-                if (CustomRolesHelper.IsCrewmate(ghostRole))
+                if (ghostRole.IsCrewmate())
                 {
                     if (HauntedList.Contains(ghostRole) && getCount[ghostRole] <= 0)
                         HauntedList.Remove(ghostRole);
@@ -43,10 +47,9 @@ public static class GhostRoleAssign
                     if (HauntedList.Contains(ghostRole) || getCount[ghostRole] <= 0)
                         continue;
 
-                    
                     HauntedList.Add(ghostRole); continue;
                 }
-                if (CustomRolesHelper.IsImpostor(ghostRole))
+                if (ghostRole.IsImpostor())
                 {
                     if (ImpHauntedList.Contains(ghostRole) && getCount[ghostRole] <= 0)
                         ImpHauntedList.Remove(ghostRole);
@@ -54,25 +57,22 @@ public static class GhostRoleAssign
                     if (ImpHauntedList.Contains(ghostRole) || getCount[ghostRole] <= 0)
                         continue;
 
-                    
                     ImpHauntedList.Add(ghostRole);
                 }
             }
         foreach (var ghostRole in Options.CustomGhostRoleCounts.Keys) if (ghostRole.GetMode() == 1)
             {
-                if (CustomRolesHelper.IsCrewmate(ghostRole))
+                if (ghostRole.IsCrewmate())
                 {
-
                     if (RateHauntedList.Contains(ghostRole) && getCount[ghostRole] <= 0)
                         RateHauntedList.Remove(ghostRole);
 
                     if (RateHauntedList.Contains(ghostRole) || getCount[ghostRole] <= 0)
                         continue;
 
-                    
                     RateHauntedList.Add(ghostRole); continue;
                 }
-                if (CustomRolesHelper.IsImpostor(ghostRole))
+                if (ghostRole.IsImpostor())
                 {
                     if (ImpRateHauntedList.Contains(ghostRole) && getCount[ghostRole] <= 0)
                         ImpRateHauntedList.Remove(ghostRole);
@@ -80,7 +80,6 @@ public static class GhostRoleAssign
                     if (ImpRateHauntedList.Contains(ghostRole) || getCount[ghostRole] <= 0)
                         continue;
 
-                    
                     ImpRateHauntedList.Add(ghostRole);
                 }
             }
@@ -89,7 +88,7 @@ public static class GhostRoleAssign
         {
             if (HauntedList.Count > 0)
             {
-                System.Random rnd = new System.Random();
+                var rnd = IRandom.Instance;
                 int randindx = rnd.Next(HauntedList.Count);
                 ChosenRole = HauntedList[randindx];
                 IsSetRole = true;
@@ -97,18 +96,17 @@ public static class GhostRoleAssign
             }
             else if (RateHauntedList.Count > 0 && !IsSetRole)
             {
-                System.Random rnd = new System.Random();
+                var rnd = IRandom.Instance;
                 int randindx = rnd.Next(RateHauntedList.Count);
                 ChosenRole = RateHauntedList[randindx];
 
             }
             if (ChosenRole.IsGhostRole())
             {
-                getCount[ChosenRole]--; // Only deduct count after it's been assigned.
+                getCount[ChosenRole]--; // Only deduct if role has been set.
                 player.RpcSetRole(RoleTypes.GuardianAngel);
                 player.RpcSetCustomRole(ChosenRole);
                 player.RpcResetAbilityCooldown();
-                player.AddPlayerId(ChosenRole);
             }
             return;
         }
@@ -117,7 +115,7 @@ public static class GhostRoleAssign
         {
             if (ImpHauntedList.Count > 0)
             {
-                System.Random rnd = new System.Random();
+                var rnd = IRandom.Instance;
                 int randindx = rnd.Next(ImpHauntedList.Count);
                 ChosenRole = ImpHauntedList[randindx];
                 IsSetRole = true;
@@ -125,18 +123,17 @@ public static class GhostRoleAssign
             }
             else if (ImpRateHauntedList.Count > 0 && !IsSetRole)
             {
-                System.Random rnd = new System.Random();
+                var rnd = IRandom.Instance;
                 int randindx = rnd.Next(ImpRateHauntedList.Count);
                 ChosenRole = ImpRateHauntedList[randindx];
 
             }
             if (ChosenRole.IsGhostRole())
             {
-                getCount[ChosenRole]--; 
+                getCount[ChosenRole]--;
                 player.RpcSetRole(RoleTypes.GuardianAngel);
                 player.RpcSetCustomRole(ChosenRole);
                 player.RpcResetAbilityCooldown();
-                player.AddPlayerId(ChosenRole);
             }
             return;
         }
@@ -153,8 +150,8 @@ public static class GhostRoleAssign
     }
     public static void Add()
     {
-        Options.CustomGhostRoleCounts.Keys.Do(x 
-            => getCount.Add(x, Options.CustomGhostRoleCounts[x].GetInt())); // Add new count Instance (Optionitem gets constantly refreshed)
+        Options.CustomGhostRoleCounts.Keys.Do(ghostRole
+            => getCount.Add(ghostRole, ghostRole.GetCount())); // Add new count Instance (Optionitem gets constantly refreshed)
     }
     public static void AddPlayerId(this PlayerControl target, CustomRoles GhostRole)
     {
