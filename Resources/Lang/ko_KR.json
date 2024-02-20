@@ -1885,6 +1885,7 @@
   "TagColorInvalidHexCode": "Invalid hexcode specified.\nPlease use '/tagcolor [hexcode]' to change color of your tag.\nExample :- /tagcolor ff00ff",
   "midCommandDisabled": "The mid command is currently disabled.",
   "midCommandNoAccess": "You do not have access to the mid command.",
+  "DisableVoteBan": "Disable VoteKick System",
   "WarnCommandDisabled": "The warn command is currently disabled.",
   "WarnCommandNoAccess": "You do not have access to the warn command.",
   "WarnCommandInvalidID": "Invalid player ID specified.\nPlease use '/warn [playerID] [reason]' to warn a player. \nExample :- /warn 5 lava chatting",
