@@ -23,6 +23,10 @@ class EndGamePatch
     public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ref EndGameResult endGameResult)
     {
         GameStates.InGame = false;
+
+        // if game is H&S or Host no have mod
+        if (!GameStates.IsModHost || GameStates.IsHideNSeek) return;
+        
         try
         {
             foreach (var pvc in GhostRoleAssign.GhostGetPreviousRole.Keys) // Sets role back to original so it shows up in /l results.
@@ -48,8 +52,6 @@ class EndGamePatch
         }
 
         Logger.Info("-----------Game over-----------", "Phase");
-        if (!GameStates.IsModHost) return;
-        if (GameStates.IsHideNSeek) return;
 
         SummaryText = [];
 
