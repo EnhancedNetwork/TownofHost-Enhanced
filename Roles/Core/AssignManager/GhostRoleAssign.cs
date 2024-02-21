@@ -18,7 +18,7 @@ public static class GhostRoleAssign
         var getplrRole = player.GetCustomRole();
         if (getplrRole is CustomRoles.GM) return;
 
-        if (getplrRole.IsGhostRole() || (player.GetCustomSubRoles().Count > 0 && player.GetCustomSubRoles().Any(x => x.IsGhostRole())) || Options.CustomGhostRoleCounts.Count <= 0) return;
+        if (getplrRole.IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole()) || Options.CustomGhostRoleCounts.Count <= 0) return;
         
         GhostGetPreviousRole.Add(player.PlayerId, getplrRole);
 
@@ -105,6 +105,7 @@ public static class GhostRoleAssign
                 getCount[ChosenRole]--; // Only deduct if role has been set.
                 player.RpcSetRole(RoleTypes.GuardianAngel);
                 player.RpcSetCustomRole(ChosenRole);
+                player.AddPlayerId(ChosenRole);
                 player.RpcResetAbilityCooldown();
             }
             return;
@@ -132,6 +133,7 @@ public static class GhostRoleAssign
                 getCount[ChosenRole]--;
                 player.RpcSetRole(RoleTypes.GuardianAngel);
                 player.RpcSetCustomRole(ChosenRole);
+                player.AddPlayerId(ChosenRole);
                 player.RpcResetAbilityCooldown();
             }
             return;
@@ -161,6 +163,9 @@ public static class GhostRoleAssign
                 break;
              case CustomRoles.Nemesis:
                 Nemesis.Add(target.PlayerId);
+                break;
+            case CustomRoles.Warden:
+                Warden.Add(target.PlayerId);
                 break;
         }
     }

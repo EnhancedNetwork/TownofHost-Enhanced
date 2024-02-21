@@ -201,7 +201,7 @@ class CheckMurderPatch
         }
         if (killer.GetCustomRole() is CustomRoles.Nemesis or CustomRoles.Retributionist)
         {
-            return false;
+            return false; 
         }
         foreach (var targetSubRole in target.GetCustomSubRoles().ToArray())
         {
@@ -4433,7 +4433,7 @@ class PlayerControlSetRolePatch
                 var self = seer.PlayerId == target.PlayerId;
                 var seerIsKiller = seer.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(seer.PlayerId);
 
-                if (target.GetCustomSubRoles().Any(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
+                if (target.IsAnySubRole(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
                 {
                     ghostRoles[seer] = RoleTypes.GuardianAngel;
                 }
@@ -4446,7 +4446,7 @@ class PlayerControlSetRolePatch
                     ghostRoles[seer] = RoleTypes.CrewmateGhost;
                 }
             }
-            if (target.GetCustomSubRoles().Any(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
+            if (target.IsAnySubRole(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
             {
                 roleType = RoleTypes.GuardianAngel;
             }

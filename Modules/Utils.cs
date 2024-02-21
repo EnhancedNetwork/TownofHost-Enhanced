@@ -1062,6 +1062,9 @@ public static class Utils
                 case CustomRoles.Nemesis:
                     ProgressText.Append(Nemesis.GetRevengeLimit(playerId));
                     break;
+                case CustomRoles.Warden:
+                    ProgressText.Append(Warden.GetNotifyLimit(playerId));
+                    break;
                 case CustomRoles.Admirer:
                     ProgressText.Append(Admirer.GetAdmireLimit(playerId));
                     break;

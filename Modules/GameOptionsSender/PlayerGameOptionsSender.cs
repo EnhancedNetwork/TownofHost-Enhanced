@@ -101,7 +101,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 opt.SetFloat(FloatOptionNames.ImpostorLightMod, 1.25f);
             }
         }
-        if (!role.IsGhostRole() || (player.GetCustomSubRoles().Count() > 0 && player.GetCustomSubRoles().Any(x => x is CustomRoles.EvilSpirit))) 
+        if (!role.IsGhostRole() || player.IsAnySubRole(x => x is CustomRoles.EvilSpirit)) 
         {
             switch (role.GetCustomRoleTypes())
             {

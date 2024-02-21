@@ -1253,6 +1253,9 @@ internal static class RPC
             case CustomRoles.Nemesis:
                 Nemesis.Add(targetId);
                 break;
+            case CustomRoles.Warden:
+                Warden.Add(targetId);
+                break;
             case CustomRoles.Veteran:
                 Main.VeteranNumOfUsed.Add(targetId, Options.VeteranSkillMaxOfUseage.GetInt());
                 break;
@@ -1569,6 +1572,9 @@ internal static class RPC
                 break;
              case CustomRoles.Nemesis:
                  Nemesis.ReceiveRPC(reader);
+                break;
+            case CustomRoles.Warden:
+                Warden.ReceiveRPC(reader);
                 break;
             default:
                 Logger.Error($"Role {role} can not be handled!", "SyncRoleSkillReader");

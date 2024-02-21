@@ -33,11 +33,6 @@ public static class Necroview
                 return Main.roleColors[CustomRoles.SwordsMan];
         }
 
-        if (customRole.Is(CustomRoles.Minion))
-        {
-            return Main.roleColors[CustomRoles.Impostor];
-        }
-
         if (customRole.IsImpostorTeamV2() || customRole.IsMadmate())
         {
             return Main.roleColors[CustomRoles.Impostor];

@@ -1,5 +1,7 @@
 using AmongUs.GameOptions;
 using System.Linq;
+using System;
+using System.Collections.Generic;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Crewmate;
@@ -404,7 +406,6 @@ static class CustomRolesHelper
             CustomRoles.Circumvent or
             CustomRoles.Swift;
     }
-
     public static bool IsAmneMaverick(this CustomRoles role) // ROLE ASSIGNING, NOT NEUTRAL TYPE
     {
         return role is
@@ -1828,7 +1829,6 @@ static class CustomRolesHelper
             CustomRoles.Flash or
             CustomRoles.Alchemist or
             CustomRoles.Tired;
-
     }
     public static bool IsVanilla(this CustomRoles role)
     {
