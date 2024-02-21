@@ -1417,7 +1417,7 @@
   "ControlCooldown": "Control Cooldown",
   "PoisonCooldown": "Poison Cooldown",
   "PoisonerKillDelay": "Poison Kill Delay",
-  "WardenNotifyLimit": "Max number of warnings",
+  "WardenNotifyLimit": "Max number of alerts",
   "CanVent": "Can Vent",
   "CanKill": "Can Kill",
   "CanGuess": "Can Guess in Guesser Mode or as Guesser",
