@@ -18,7 +18,6 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
-using TOHE.Roles._Ghosts_.Impostor;
 
 namespace TOHE;
 

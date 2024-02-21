@@ -24,7 +24,6 @@ using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
 using TOHE.Roles.AddOns.Common;
-using TOHE.Roles._Ghosts_.Impostor;
 
 namespace TOHE;
 

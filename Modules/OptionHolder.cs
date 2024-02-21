@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TOHE.Modules;
-using TOHE.Roles._Ghosts_.Impostor;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;

@@ -4,7 +4,6 @@ using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem.Linq;
 using InnerNet;
-using TOHE.Roles._Ghosts_.Impostor;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;

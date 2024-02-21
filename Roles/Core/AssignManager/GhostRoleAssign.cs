@@ -2,7 +2,6 @@
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
-using TOHE.Roles._Ghosts_.Impostor;
 using TOHE.Roles.Crewmate;
 
 namespace TOHE.Roles.Core.AssignManager;

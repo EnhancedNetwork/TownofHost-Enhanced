@@ -7,7 +7,7 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
-namespace TOHE.Roles._Ghosts_.Impostor
+namespace TOHE.Roles.Impostor
 {
     public static class Nemesis
     {
