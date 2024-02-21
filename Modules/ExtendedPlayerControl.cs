@@ -1517,20 +1517,8 @@ static class ExtendedPlayerControl
     public static bool Is(this PlayerControl target, RoleTypes type) { return target.GetCustomRole().GetRoleTypes() == type; }
     public static bool Is(this PlayerControl target, CountTypes type) { return target.GetCountTypes() == type; }
     public static bool Is(this CustomRoles trueRole, CustomRoles checkRole) { return trueRole == checkRole; }
-    public static bool IsAnySubRole(this PlayerControl target, Func<CustomRoles, bool> predicate) => IfCountAboveZero(target, predicate);
+    public static bool IsAnySubRole(this PlayerControl target, Func<CustomRoles, bool> predicate) => target.GetCustomSubRoles().Count > 0 ? target.GetCustomSubRoles().Any(predicate) : false;
 
-    private static bool IfCountAboveZero(PlayerControl target, Func<CustomRoles, bool> predicate)
-    {
-        // So that it checks subrolescount beforehand it even attempts Any function.
-        if (target.GetCustomSubRoles().Count > 0)
-        {
-            if (target.GetCustomSubRoles().Any(predicate))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
     public static bool IsAlive(this PlayerControl target)
     {
         //In lobby all is alive
