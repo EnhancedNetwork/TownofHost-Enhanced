@@ -671,6 +671,7 @@ static class CustomRolesHelper
             CustomRoles.Crusader or
             CustomRoles.NiceGuesser or
             CustomRoles.Counterfeiter or
+            CustomRoles.Retributionist or
             CustomRoles.Sheriff or
             CustomRoles.Vigilante or
             CustomRoles.Jailer;
