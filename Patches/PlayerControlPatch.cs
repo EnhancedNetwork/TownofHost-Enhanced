@@ -198,10 +198,7 @@ class CheckMurderPatch
             killer.ResetKillCooldown();
             return false;
         }
-        if (killer.GetCustomRole() is CustomRoles.Nemesis or CustomRoles.Retributionist)
-        {
-            return false; 
-        }
+
         foreach (var targetSubRole in target.GetCustomSubRoles().ToArray())
         {
             switch (targetSubRole)
