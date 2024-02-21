@@ -7,6 +7,7 @@ using TOHE.Roles.AddOns.Common;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate;
 public static class Inspector
@@ -270,12 +271,12 @@ public static class Inspector
                             if (target1.Is(CustomRoles.Admired)) roleT1 = "Crewmate";
                             else if (target1.GetCustomRole().IsImpostorTeamV2() || target1.IsAnySubRole(role => role.IsImpostorTeamV2())) roleT1 = "Impostor";
                             else if (target1.GetCustomRole().IsNeutralTeamV2() || target1.IsAnySubRole(role => role.IsNeutralTeamV2())) roleT1 = "Neutral";
-                            else if (target1.GetCustomRole().IsCrewmateTeamV2() && (target1.IsAnySubRole(role => role.IsCrewmateTeamV2()) || (target1.GetCustomSubRoles().Count == 0))) roleT1 = "Crewmate";
+                            else if (target1.GetCustomRole().IsCrewmateTeamV2() && (target1.GetCustomSubRoles().Any(role => role.IsCrewmateTeamV2()) || (target1.GetCustomSubRoles().Count == 0))) roleT1 = "Crewmate";
 
                             if (target2.Is(CustomRoles.Admired)) roleT2 = "Crewmate";
                             else if (target2.GetCustomRole().IsImpostorTeamV2() || target2.IsAnySubRole(role => role.IsImpostorTeamV2())) roleT2 = "Impostor";
                             else if (target2.GetCustomRole().IsNeutralTeamV2() || target2.IsAnySubRole(role => role.IsNeutralTeamV2())) roleT2 = "Neutral";
-                            else if ((target2.GetCustomRole().IsCrewmateTeamV2() && (target2.IsAnySubRole(role => role.IsCrewmateTeamV2()) || target2.GetCustomSubRoles().Count == 0))) roleT2 = "Crewmate";
+                            else if ((target2.GetCustomRole().IsCrewmateTeamV2() && (target2.GetCustomSubRoles().Any(role => role.IsCrewmateTeamV2()) || target2.GetCustomSubRoles().Count == 0))) roleT2 = "Crewmate";
 
                             _ = new LateTask(() =>
                             {
