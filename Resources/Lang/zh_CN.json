@@ -1885,6 +1885,7 @@
   "TagColorInvalidHexCode": "指定的颜色代码无效\n请使用 “/tagcolor [颜色代码] 改变标签的颜色”\n例子：- /modcolor ff00ff",
   "midCommandDisabled": "mid指令已禁用",
   "midCommandNoAccess": "你无法使用mid指令\n因为你没有权限",
+  "DisableVoteBan": "禁用踢票系统",
   "WarnCommandDisabled": "警告指令已禁用",
   "WarnCommandNoAccess": "你无法使用警告指令\n因为你没有权限",
   "WarnCommandInvalidID": "指定的玩家ID无效\n请使用 “/warn [玩家编号] [理由] 警告该玩家”\n例子：- /warn 5 在驱逐时对话",
