@@ -82,10 +82,6 @@ public static class Retributionist
         {
             KillersNoEjects++;
         }
-        else
-        {
-            KillersNoEjects = 0;
-        }
     }
 
     public static void SetKillCooldown()
