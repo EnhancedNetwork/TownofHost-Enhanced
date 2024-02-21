@@ -191,7 +191,7 @@ public static class RoleAssign
             Logger.Warn($"Pre-Set Role Assigned: {pc.GetRealName()} => {item.Value}", "RoleAssign");
         }
 
-        RoleAssignInfo[] Imps;
+        RoleAssignInfo[] Imps = [];
         RoleAssignInfo[] NNKs = [];
         RoleAssignInfo[] NKs = [];
         RoleAssignInfo[] Crews = [];
@@ -210,7 +210,7 @@ public static class RoleAssign
                         AlwaysImpRoles.Add(item.Role);
                     }
                 }
-                else if (item.SpawnChance <= rd.Next(1, 99))
+                else /*if (item.SpawnChance <= rd.Next(1, 99))*/
                 {
                     for (int j = 0; j < item.SpawnChance / 5; j++)
                     {
@@ -261,7 +261,7 @@ public static class RoleAssign
                     var selectesItem = rd.Next(0, ChanceImpRoles.Count);
                     var selected = ChanceImpRoles[selectesItem];
                     var info = ImpRoleCounts.FirstOrDefault(x => x.Role == selected);
-                    for (int i = 0; i < info.SpawnChance / 5; i++) ChanceImpRoles.Remove(selected);
+                    ChanceImpRoles.Remove(selected);
 
                     FinalRolesList.Add(selected);
                     info.AssignedCount++;
@@ -294,7 +294,7 @@ public static class RoleAssign
                             AlwaysNNKRoles.Add(item.Role);
                         }
                     }
-                    else if (item.SpawnChance <= rd.Next(1, 99))
+                    else /*if (item.SpawnChance <= rd.Next(1, 99))*/
                     {
                         for (int j = 0; j < item.SpawnChance / 5; j++)
                         {
@@ -339,7 +339,7 @@ public static class RoleAssign
                         var selectesItem = rd.Next(0, ChanceNNKRoles.Count);
                         var selected = ChanceNNKRoles[selectesItem];
                         var info = NNKRoleCounts.FirstOrDefault(x => x.Role == selected);
-                        for (int i = 0; i < info.SpawnChance / 5; i++) ChanceNNKRoles.Remove(selected);
+                        ChanceNNKRoles.Remove(selected);
 
                         FinalRolesList.Add(selected);
                         info.AssignedCount++;
@@ -370,7 +370,7 @@ public static class RoleAssign
                             AlwaysNKRoles.Add(item.Role);
                         }
                     }
-                    else if (item.SpawnChance <= rd.Next(1, 99))
+                    else /*if (item.SpawnChance <= rd.Next(1, 99))*/
                     {
                         for (int j = 0; j < item.SpawnChance / 5; j++)
                         {
@@ -415,7 +415,7 @@ public static class RoleAssign
                         var selectesItem = rd.Next(0, ChanceNKRoles.Count);
                         var selected = ChanceNKRoles[selectesItem];
                         var info = NKRoleCounts.FirstOrDefault(x => x.Role == selected);
-                        for (int i = 0; i < info.SpawnChance / 5; i++) ChanceNKRoles.Remove(selected);
+                        ChanceNKRoles.Remove(selected);
 
                         FinalRolesList.Add(selected);
                         info.AssignedCount++;
@@ -447,7 +447,7 @@ public static class RoleAssign
                         AlwaysCrewRoles.Add(item.Role);
                     }
                 }
-                else if (item.SpawnChance <= rd.Next(1, 99))
+                else /*if (item.SpawnChance <= rd.Next(1, 99))*/
                 {
                     for (int j = 0; j < item.SpawnChance / 5; j++)
                     {
@@ -490,7 +490,7 @@ public static class RoleAssign
                     var selectesItem = rd.Next(0, ChanceCrewRoles.Count);
                     var selected = ChanceCrewRoles[selectesItem];
                     var info = CrewRoleCounts.FirstOrDefault(x => x.Role == selected);
-                    for (int i = 0; i < info.SpawnChance / 5; i++) ChanceCrewRoles.Remove(selected);
+                    ChanceCrewRoles.Remove(selected);
 
                     FinalRolesList.Add(selected);
                     info.AssignedCount++;
