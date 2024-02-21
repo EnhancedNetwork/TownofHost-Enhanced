@@ -1191,13 +1191,8 @@ internal class SelectRolesPatch
             Utils.SyncAllSettings();
             SetColorPatch.IsAntiGlitchDisabled = false;
 
-            _ = new LateTask(() =>
-            {
-                RoleAssign.SetRoles = [];
-            }, 7f, "Reset SetRoles", shoudLog: false);
-
-            // fix GM spaw in Airship
-            if (GameStates.AirshipIsActive && Main.EnableGM.Value)
+            // fix GM spawn in Airship
+            if (Main.EnableGM.Value && GameStates.AirshipIsActive)
             {
                 _ = new LateTask(() => 
                 {

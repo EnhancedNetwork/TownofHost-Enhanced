@@ -108,7 +108,7 @@ public static class RoleAssign
 
         if (Roles[RoleAssignType.Impostor].Count == 0 && !SetRoles.Values.Any(x => x.IsImpostor()))
         {
-            Roles[RoleAssignType.Impostor].Add(new(CustomRoles.ImpostorTOHE, 100, 1));
+            Roles[RoleAssignType.Impostor].Add(new(CustomRoles.ImpostorTOHE, 100, optImpNum));
             Logger.Warn("Adding Vanilla Impostor", "CustomRoleSelector");
         }
 
@@ -116,7 +116,7 @@ public static class RoleAssign
         Logger.Msg("=====================================================", "AllActiveRoles");
         Logger.Info(string.Join(", ", Roles[RoleAssignType.Impostor].Select(x => $"{x.Role}: {x.SpawnChance}% - {x.MaxCount}")), "ImpRoles");
         Logger.Info(string.Join(", ", Roles[RoleAssignType.NeutralKilling].Select(x => $"{x.Role}: {x.SpawnChance}% - {x.MaxCount}")), "NKRoles");
-        Logger.Info(string.Join(", ", Roles[RoleAssignType.NonKillingNeutral].Select(x => $"{x.Role}: {x.SpawnChance}% - {x.MaxCount}")), "NNKRoles");
+        Logger.Info(string.Join(", ", Roles[RoleAssignType.NonKillingNeutral].Select(x => $"{x.Role}: {x.SpawnChance}% - {x.MaxCount}")), "NonNKRoles");
         Logger.Info(string.Join(", ", Roles[RoleAssignType.Crewmate].Select(x => $"{x.Role}: {x.SpawnChance}% - {x.MaxCount}")), "CrewRoles");
         Logger.Msg("=====================================================", "AllActiveRoles");
 
@@ -221,12 +221,6 @@ public static class RoleAssign
                     }
                 }
             }
-
-            //if (ChanceImpRoles.Count <= 0)
-            //    while (ChanceImpRoles < optImpNum)
-            //    {
-            //        ChanceImpRoles.Add(CustomRoles.ImpostorTOHE);
-            //    }
 
             RoleAssignInfo[] ImpRoleCounts = AlwaysImpRoles.Distinct().Select(GetAssignInfo).ToArray().AddRangeToArray(ChanceImpRoles.Distinct().Select(GetAssignInfo).ToArray());
             Imps = ImpRoleCounts;
@@ -531,7 +525,7 @@ public static class RoleAssign
             CustomRoles assignedRole = FinalRolesList[roleId];
 
             RoleResult[AllPlayers[0]] = assignedRole;
-            Logger.Info($"Role assigned：{AllPlayers[0].GetRealName()} => {assignedRole}", "CustomRoleSelector");
+            Logger.Info($"Role assigned：{AllPlayers[0].GetRealName()} => {assignedRole}", "RoleAssign");
 
             AllPlayers.RemoveAt(0);
             FinalRolesList.RemoveAt(roleId);
