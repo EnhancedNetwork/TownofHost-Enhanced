@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -101,16 +102,17 @@ public static class Retributionist
         }
         else if (KillCount[killer.PlayerId] <= 0) killer.Notify(GetString("RetributionistKillMax"));
         else if (KillersNoEjects < OnlyKillAfterXKillerNoEject.GetInt()) killer.Notify(GetString("RetributionistKillNoEject").Replace("{0}", OnlyKillAfterXKillerNoEject.GetInt().ToString()));
-        else if (Main.AllAlivePlayerControls.Count() < MinimumPlayersAliveToRetri.GetInt()) killer.Notify(GetString("RetributionistKillTooManyDead"));
+        else if (Main.AllAlivePlayerControls.Length < MinimumPlayersAliveToRetri.GetInt()) killer.Notify(GetString("RetributionistKillTooManyDead"));
         return false;
     }
 
     private static bool CheckRetriConflicts(PlayerControl killer, PlayerControl target)
     {
         return target != null && KillersNoEjects >= OnlyKillAfterXKillerNoEject.GetInt()
-            && Main.AllAlivePlayerControls.Count() >= MinimumPlayersAliveToRetri.GetInt()
+            && Main.AllAlivePlayerControls.Length >= MinimumPlayersAliveToRetri.GetInt()
             && KillCount[killer.PlayerId] > 0
-            && !target.Is(CustomRoles.Pestilence); // Double body could happen
+            && !target.Is(CustomRoles.Pestilence)
+            && (target.Is(CustomRoles.NiceMini) ? Mini.Age > 18 : true);
     }
     public static bool CanKill(byte id) => KillCount.TryGetValue(id, out var x) && x > 0;
     public static string GetRetributeLimit(byte playerId) => Utils.ColorString(CanKill(playerId) ? Utils.GetRoleColor(CustomRoles.Retributionist).ShadeColor(0.25f) : Color.gray, KillCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");

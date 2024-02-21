@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -58,7 +59,10 @@ namespace TOHE.Roles.Impostor
         }
         public static bool OnCheckProtect(PlayerControl killer, PlayerControl target)
         {
-            if (!target.Is(CustomRoles.Pestilence) && KillCount[killer.PlayerId] > 0 && Main.AllAlivePlayerControls.Count() >= MinimumPlayersAliveToRevenge.GetInt())
+            if (!target.Is(CustomRoles.Pestilence) 
+                && KillCount[killer.PlayerId] > 0 
+                && Main.AllAlivePlayerControls.Length >= MinimumPlayersAliveToRevenge.GetInt()
+                && (target.Is(CustomRoles.NiceMini) ? Mini.Age > 18 : true))
             {
                 Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
                 killer.RpcMurderPlayerV3(target);
