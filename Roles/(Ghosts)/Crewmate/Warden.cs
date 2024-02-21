@@ -83,8 +83,8 @@ public class Warden
         return false;
     }
 
-    public static bool CanKill(byte id) => AbilityCount.TryGetValue(id, out var x) && x > 0;
-    public static string GetNotifyLimit(byte playerId) => Utils.ColorString(CanKill(playerId) ? Utils.GetRoleColor(CustomRoles.Warden).ShadeColor(0.25f) : Color.gray, AbilityCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");
+    public static bool CanGuard(byte id) => AbilityCount.TryGetValue(id, out var x) && x > 0;
+    public static string GetNotifyLimit(byte playerId) => Utils.ColorString(CanGuard(playerId) ? Utils.GetRoleColor(CustomRoles.Warden).ShadeColor(0.25f) : Color.gray, AbilityCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");
 
 
 }
