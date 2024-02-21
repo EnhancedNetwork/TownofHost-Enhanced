@@ -97,9 +97,9 @@ public static class Retributionist
     {
         if (CheckRetriConflicts(killer, target))
         {
+            Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Retribution;
             killer.RpcMurderPlayerV3(target);
             killer.RpcResetAbilityCooldown();
-            Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Retribution;
             KillCount[killer.PlayerId]--;
             SendRPC(killer.PlayerId);
         }

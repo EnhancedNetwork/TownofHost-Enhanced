@@ -60,9 +60,9 @@ namespace TOHE.Roles.Impostor
         {
             if (!target.Is(CustomRoles.Pestilence) && KillCount[killer.PlayerId] > 0 && Main.AllAlivePlayerControls.Count() >= MinimumPlayersAliveToRevenge.GetInt())
             {
+                Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
                 killer.RpcMurderPlayerV3(target);
                 killer.RpcResetAbilityCooldown();
-                Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
                 KillCount[killer.PlayerId]--;
                 SendRPC(killer.PlayerId);
             }
