@@ -72,7 +72,7 @@ public class ModNews
         return result;
     }
     public static List<ModNews> AllModNews = [];
-    public const string ModNewsURL = "https://raw.githubusercontent.com/ryuk201198/TownofHost-Enhanced-devbuild/improve-announcement-patch/modNews.json";
+    public static string ModNewsURL = "https://raw.githubusercontent.com/0xDrMoe/TownofHost-Enhanced/main/Resources/Announcements/modNews-";
     static bool downloaded = false;
     public ModNews(int Number, string Title, string SubTitle, string ShortTitle, string Text, string Date)
     {
@@ -95,6 +95,23 @@ public class ModNews
                 yield break;
             }
             downloaded = true;
+            ModNewsURL += TranslationController.Instance.currentLanguage.languageID switch
+            {
+                SupportedLangs.German => "de_DE.json",
+                SupportedLangs.Latam => "es_419.json",
+                SupportedLangs.Spanish => "es_ES.json",
+                SupportedLangs.Filipino => "fil_PH.json",
+                SupportedLangs.French => "fr_FR.json",
+                SupportedLangs.Italian => "it_IT.json",
+                SupportedLangs.Japanese => "ja_JP.json",
+                SupportedLangs.Korean => "ko_KR.json",
+                SupportedLangs.Dutch => "nl_NL.json",
+                SupportedLangs.Brazilian => "pt_BR.json",
+                SupportedLangs.Russian => "ru_RU.json",
+                SupportedLangs.SChinese => "zh_CN.json",
+                SupportedLangs.TChinese => "zh_TW.json",
+                _ => "en_US.json", //English and any other unsupported language
+            };
             var request = UnityWebRequest.Get(ModNewsURL);
             yield return request.SendWebRequest();
             if (request.isNetworkError || request.isHttpError)
@@ -117,7 +134,6 @@ public class ModNews
                 var dateString = newsElement.GetProperty("Date").GetString();
                 // Create ModNews object
                 ModNews _ = new(number, title, subTitle, shortTitle, body, dateString);
-
             }
         }
         __result = Effects.Sequence(FetchBlacklist().WrapToIl2Cpp(), __result);
