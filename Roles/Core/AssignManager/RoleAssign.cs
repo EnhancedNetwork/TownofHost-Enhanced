@@ -45,7 +45,7 @@ public static class RoleAssign
         }
     }
 
-    public static void SelectCustomRoles()
+    public static void StartSelect()
     {
         switch (Options.CurrentGameMode)
         {

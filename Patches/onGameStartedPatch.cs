@@ -448,7 +448,7 @@ internal class SelectRolesPatch
             }
 
             EAC.OriginalRoles = [];
-            RoleAssign.SelectCustomRoles();
+            RoleAssign.StartSelect();
             AddonAssign.StartSelect();
 
             RoleAssign.CalculateVanillaRoleCount();
