@@ -1517,7 +1517,7 @@ static class ExtendedPlayerControl
     public static bool Is(this PlayerControl target, RoleTypes type) { return target.GetCustomRole().GetRoleTypes() == type; }
     public static bool Is(this PlayerControl target, CountTypes type) { return target.GetCountTypes() == type; }
     public static bool Is(this CustomRoles trueRole, CustomRoles checkRole) { return trueRole == checkRole; }
-    public static bool IsAnySubRole(this PlayerControl target, Func<CustomRoles, bool> predicate) => target.GetCustomSubRoles().Count > 0 ? target.GetCustomSubRoles().Any(predicate) : false;
+    public static bool IsAnySubRole(this PlayerControl target, Func<CustomRoles, bool> predicate) => target.GetCustomSubRoles().Count > 0 && target.GetCustomSubRoles().Any(predicate);
 
     public static bool IsAlive(this PlayerControl target)
     {
@@ -1531,14 +1531,9 @@ static class ExtendedPlayerControl
         {
             return false;
         }
-        //if the target status is alive
-        if (Main.PlayerStates.TryGetValue(target.PlayerId, out var playerState))
-        {
-            return !playerState.IsDead;
-        }
 
-        // else player is dead
-        return false;
+        //if the target status is alive
+        return !Main.PlayerStates.TryGetValue(target.PlayerId, out var playerState) || !playerState.IsDead;
     }
     public static bool IsExiled(this PlayerControl target)
     {
