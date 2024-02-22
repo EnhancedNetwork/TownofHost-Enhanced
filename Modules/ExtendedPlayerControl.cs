@@ -36,7 +36,7 @@ static class ExtendedPlayerControl
         }
         if (AmongUsClient.Instance.AmHost)
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, Hazel.SendOption.Reliable, -1);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, SendOption.Reliable, -1);
             writer.Write(player.PlayerId);
             writer.WritePacked((int)role);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -46,7 +46,7 @@ static class ExtendedPlayerControl
     {
         if (AmongUsClient.Instance.AmHost)
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, Hazel.SendOption.Reliable, -1);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, SendOption.Reliable, -1);
             writer.Write(PlayerId);
             writer.WritePacked((int)role);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
