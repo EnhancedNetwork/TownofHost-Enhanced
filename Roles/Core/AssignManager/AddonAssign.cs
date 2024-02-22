@@ -11,12 +11,15 @@ public static class AddonAssign
 
     private static bool NotAssignAddOnInGameStarted(CustomRoles role)
     {
-        if (role is CustomRoles.Madmate && Madmate.MadmateSpawnMode.GetInt() != 0) return true;
-        if (role is CustomRoles.Lovers or CustomRoles.LastImpostor or CustomRoles.Workhorse) return true;
-
-        if (GameStates.FungleIsActive) // The Fungle
+        switch (role)
         {
-            if (role is CustomRoles.Mare) return true;
+            case CustomRoles.Lovers:
+            case CustomRoles.Workhorse:
+            case CustomRoles.LastImpostor:
+                return true;
+            case CustomRoles.Madmate when Madmate.MadmateSpawnMode.GetInt() != 0:
+            case CustomRoles.Mare when GameStates.FungleIsActive:
+                return true;
         }
 
         /*else if (Options.IsActiveDleks) // Dleks

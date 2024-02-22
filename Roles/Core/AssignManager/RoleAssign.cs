@@ -559,10 +559,10 @@ public static class RoleAssign
             FinalRolesList.RemoveAt(roleId);
         }
 
-        //if (AllPlayers.Count > 0)
-        //    Logger.Error("Role assignment error: There are players who have not been assigned a role", "CustomRoleSelector");
-        //if (FinalRolesList.Count > 0)
-        //    Logger.Error("Team assignment error: There is an unassigned team", "CustomRoleSelector");
+        if (AllPlayers.Count > 0)
+            Logger.Warn("Role assignment error: There are players who have not been assigned a role", "CustomRoleSelector");
+        if (FinalRolesList.Count > 0)
+            Logger.Warn("Team assignment error: There is an unassigned team", "CustomRoleSelector");
         return;
 
         RoleAssignInfo GetAssignInfo(CustomRoles role) => Roles.Values.FirstOrDefault(x => x.Any(y => y.Role == role))?.FirstOrDefault(x => x.Role == role);

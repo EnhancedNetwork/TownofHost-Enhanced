@@ -14,7 +14,6 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using TOHE.Roles.Core.AssignManager;
 using static TOHE.Translator;
 
 namespace TOHE;
