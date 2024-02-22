@@ -589,6 +589,8 @@ internal class SelectRolesPatch
                 foreach (var subRole in pair.Value.SubRoles.ToArray())
                     ExtendedPlayerControl.RpcSetCustomRole(pair.Key, subRole);
             }
+            
+            GhostRoleAssign.Add();
 
             foreach (var pc in Main.AllPlayerControls)
             {

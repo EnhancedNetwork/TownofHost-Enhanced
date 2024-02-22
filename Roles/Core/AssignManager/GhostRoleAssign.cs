@@ -11,6 +11,10 @@ public static class GhostRoleAssign
 {
     public static Dictionary<byte, CustomRoles> GhostGetPreviousRole = [];
     private static Dictionary<CustomRoles, int> getCount = [];
+
+    private static readonly IRandom Rnd = IRandom.Instance;
+    private static bool GetChance(this CustomRoles role) => role.GetMode() == 100 || Rnd.Next(1, 100) <= role.GetMode();
+
     public static void GhostAssignPatch(PlayerControl player)
     {
         if (GameStates.IsHideNSeek || player == null || player.Data.Disconnected) return;
@@ -23,65 +27,38 @@ public static class GhostRoleAssign
         GhostGetPreviousRole.Add(player.PlayerId, getplrRole);
 
         List<CustomRoles> HauntedList = [];
-        List<CustomRoles> RateHauntedList = [];
-
         List<CustomRoles> ImpHauntedList = [];
-        List<CustomRoles> ImpRateHauntedList = [];
 
         CustomRoles ChosenRole = CustomRoles.NotAssigned;
-
-        bool IsSetRole = false;
 
         var IsCrewmate = getplrRole.IsCrewmate();
         var IsImpostor = getplrRole.IsImpostor();
         var IsNeutral = getplrRole.IsNeutral();
 
-        foreach (var ghostRole in Options.CustomGhostRoleCounts.Keys) if (ghostRole.GetMode() == 2)
+        foreach (var ghostRole in Options.CustomGhostRoleCounts.Keys.Where(x => x.GetMode() > 0))
+        { 
+            // For each time a player dies, a ghostrole will have another shot at getting in.
+            if (ghostRole.IsCrewmate())
             {
-                if (ghostRole.IsCrewmate())
-                {
-                    if (HauntedList.Contains(ghostRole) && getCount[ghostRole] <= 0)
+                if (HauntedList.Contains(ghostRole) && getCount[ghostRole] <= 0)
                         HauntedList.Remove(ghostRole);
 
-                    if (HauntedList.Contains(ghostRole) || getCount[ghostRole] <= 0)
+                if (HauntedList.Contains(ghostRole) || getCount[ghostRole] <= 0)
                         continue;
-
-                    HauntedList.Add(ghostRole); continue;
-                }
-                if (ghostRole.IsImpostor())
-                {
-                    if (ImpHauntedList.Contains(ghostRole) && getCount[ghostRole] <= 0)
+                    
+                if (ghostRole.GetChance()) { HauntedList.Add(ghostRole); continue;}
+            }
+            if (ghostRole.IsImpostor())
+            {
+                if (ImpHauntedList.Contains(ghostRole) && getCount[ghostRole] <= 0)
                         ImpHauntedList.Remove(ghostRole);
 
-                    if (ImpHauntedList.Contains(ghostRole) || getCount[ghostRole] <= 0)
+                if (ImpHauntedList.Contains(ghostRole) || getCount[ghostRole] <= 0)
                         continue;
 
-                    ImpHauntedList.Add(ghostRole);
-                }
+                if (ghostRole.GetChance()) { ImpHauntedList.Add(ghostRole); }
             }
-        foreach (var ghostRole in Options.CustomGhostRoleCounts.Keys) if (ghostRole.GetMode() == 1)
-            {
-                if (ghostRole.IsCrewmate())
-                {
-                    if (RateHauntedList.Contains(ghostRole) && getCount[ghostRole] <= 0)
-                        RateHauntedList.Remove(ghostRole);
-
-                    if (RateHauntedList.Contains(ghostRole) || getCount[ghostRole] <= 0)
-                        continue;
-
-                    RateHauntedList.Add(ghostRole); continue;
-                }
-                if (ghostRole.IsImpostor())
-                {
-                    if (ImpRateHauntedList.Contains(ghostRole) && getCount[ghostRole] <= 0)
-                        ImpRateHauntedList.Remove(ghostRole);
-
-                    if (ImpRateHauntedList.Contains(ghostRole) || getCount[ghostRole] <= 0)
-                        continue;
-
-                    ImpRateHauntedList.Add(ghostRole);
-                }
-            }
+        }
 
         if (IsCrewmate)
         {
@@ -90,14 +67,6 @@ public static class GhostRoleAssign
                 var rnd = IRandom.Instance;
                 int randindx = rnd.Next(HauntedList.Count);
                 ChosenRole = HauntedList[randindx];
-                IsSetRole = true;
-
-            }
-            else if (RateHauntedList.Count > 0 && !IsSetRole)
-            {
-                var rnd = IRandom.Instance;
-                int randindx = rnd.Next(RateHauntedList.Count);
-                ChosenRole = RateHauntedList[randindx];
 
             }
             if (ChosenRole.IsGhostRole())
@@ -118,14 +87,6 @@ public static class GhostRoleAssign
                 var rnd = IRandom.Instance;
                 int randindx = rnd.Next(ImpHauntedList.Count);
                 ChosenRole = ImpHauntedList[randindx];
-                IsSetRole = true;
-
-            }
-            else if (ImpRateHauntedList.Count > 0 && !IsSetRole)
-            {
-                var rnd = IRandom.Instance;
-                int randindx = rnd.Next(ImpRateHauntedList.Count);
-                ChosenRole = ImpRateHauntedList[randindx];
 
             }
             if (ChosenRole.IsGhostRole())
