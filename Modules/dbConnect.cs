@@ -7,6 +7,8 @@ using System.Reflection;
 using static TOHE.Translator;
 using System.Threading.Tasks;
 using System.Linq;
+using AmongUs.Data;
+using Epic.OnlineServices;
 
 namespace TOHE;
 
@@ -58,14 +60,30 @@ public class dbConnect
             }
         }
 
-        if (!InitOnce)
+        if (!ErrorExists())
         {
-            Logger.Info("Finished first init flow.", "dbConnect.init");
-            InitOnce = true;
+            if (!InitOnce)
+            {
+                Logger.Info("Finished first init flow.", "dbConnect.init");
+                InitOnce = true;
+            }
+            else
+            {
+                Logger.Info("Finished Sync flow.", "dbConnect.init");
+            }
         }
         else
         {
-            Logger.Info("Finished Sync flow.", "dbConnect.init");
+            if (!InitOnce)
+            {
+                Logger.Error("first init flow failed by Logic!", "dbConnect.init");
+                InitOnce = false;
+                goto firstFailure;
+            }
+            else
+            {
+                Logger.Error("Sync flow failed by Logic!", "dbConnect.init");
+            }
         }
 
         if (EOSManager.Instance.friendCode != null && EOSManager.Instance.friendCode != "")
@@ -84,8 +102,9 @@ public class dbConnect
         if (AmongUsClient.Instance.mode != InnerNet.MatchMakerModes.None)
             AmongUsClient.Instance.ExitGame(DisconnectReasons.ExitGame);
 
+        DataManager.Player.Account.LoginStatus = EOSManager.AccountLoginStatus.Offline;
+        DataManager.Player.Save();
         DestroyableSingleton<DisconnectPopup>.Instance.ShowCustom(GetString("dbConnect.InitFailure"));
-        DestroyableSingleton<EOSManager>.Instance.loginFlowFinished = false;
     }
     private static string GetToken()
     {
@@ -115,7 +134,7 @@ public class dbConnect
             }
             if (stream == null || apiToken == "")
             {
-                Logger.Warn("Embedded resource not found.", "apiToken");
+                Logger.Warn("Embedded resource not found.", "apiToken.error");
             }
         }
         return apiToken;
@@ -126,7 +145,7 @@ public class dbConnect
         string apiToken = GetToken();
         if (apiToken == "")
         {
-            Logger.Warn("Embedded resource not found.", "apiToken");
+            Logger.Warn("Embedded resource not found.", "GetRoleTable.error");
             return;
         }
         using (var httpClient = new HttpClient())
@@ -162,27 +181,32 @@ public class dbConnect
                                     }
                                     tempUserType[user["friendcode"].ToString()] = user["type"].ToString(); // Store the data in the temporary dictionary
                                 }
-                                userType = tempUserType; // Replace userType with the temporary dictionary
+                                if (tempUserType.Count > 1)
+                                    userType = tempUserType; // Replace userType with the temporary dictionary
+                                else if (!InitOnce)
+                                {
+                                    Logger.Error($"Incoming RoleTable is null, cannot init!", "GetRoleTable.error");
+                                }
                                 return;
                             }
                             catch (JsonException jsonEx)
                             {
                                 // If deserialization as a list fails, try deserializing as a single JSON object
-                                Logger.Error($"Error deserializing JSON: {jsonEx.Message}", "dbConnect");
+                                Logger.Error($"Error deserializing JSON: {jsonEx.Message}", "GetRoleTable.error");
                                 return;
                             }
                         }
                     }
                     else
                     {
-                        Logger.Error($"Error in fetching the User List, Success status code is false", "dbConnect");
+                        Logger.Error($"Error in fetching the User List, Success status code is false", "GetRoleTable.error");
                         return;
                     }
                 }
             }
             catch (Exception ex)
             {
-                Logger.Error($"error: {ex}", "dbConnect");
+                Logger.Error($"error: {ex}", "GetRoleTable.error");
                 return;
             }
         }
@@ -211,12 +235,22 @@ public class dbConnect
         if (!userType.ContainsKey(friendcode)) return false;
         return userType[friendcode] == "s_bo";
     }
+
+    public static bool ErrorExists()
+    {
+        // Simple Logic and Works
+        bool apiTokenError = GetToken() is "" or null;
+        bool RoleTableError = userType.Count < 1;
+        bool EacListError = BanManager.EACDict.Count < 1;
+
+        return apiTokenError || RoleTableError || EacListError;
+    }
     private static void GetEACList()
     {
         string apiToken = GetToken();
         if (apiToken == "")
         {
-            Logger.Warn("Embedded resource not found.", "apiToken");
+            Logger.Warn("Embedded resource not found.", "GetEACList.error");
             return;
         }
         using (var httpClient = new HttpClient())
@@ -241,21 +275,21 @@ public class dbConnect
                             catch (JsonException jsonEx)
                             {
                                 // If deserialization as a list fails, try deserializing as a single JSON object
-                                Logger.Error($"Error deserializing JSON: {jsonEx.Message}", "GetEACList");
+                                Logger.Error($"Error deserializing JSON: {jsonEx.Message}", "GetEACList.error");
                                 return;
                             }
                         }
                     }
                     else
                     {
-                        Logger.Error($"Error in fetching the EAC List, Success status code is false", "GetEACList");
+                        Logger.Error($"Error in fetching the EAC List, Success status code is false", "GetEACList.error");
                         return;
                     }
                 }
             }
             catch (Exception ex)
             {
-                Logger.Error($"error: {ex}", "GetEACList");
+                Logger.Error($"error: {ex}", "GetEACList.error");
                 return;
             }
         }
