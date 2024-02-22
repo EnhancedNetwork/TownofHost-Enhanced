@@ -15,7 +15,7 @@
     
     <ItemGroup>
         <EmbeddedResource Include=".\Resources\**" />
-		<EmbeddedResource Include="token.env" />
+        <EmbeddedResource Include="token.env" />
     </ItemGroup>
     
     <ItemGroup>
