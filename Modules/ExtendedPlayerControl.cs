@@ -1537,11 +1537,10 @@ static class ExtendedPlayerControl
         //if the target status is alive
         if (Main.PlayerStates.TryGetValue(target.PlayerId, out var playerState))
         {
-            return !playerState.IsDead;
+            return true;
         }
 
-        // else player is dead
-        return false;
+        return !playerState.IsDead;
     }
     public static bool IsExiled(this PlayerControl target)
     {
