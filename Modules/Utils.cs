@@ -97,29 +97,29 @@ public static class Utils
         // Don't check player status during random spawn
         if (!isRandomSpawn)
         {
-            var сancelTeleport = false;
+            var cancelTeleport = false;
 
             if (player.inVent
                 || player.MyPhysics.Animations.IsPlayingEnterVentAnimation())
             {
                 Logger.Info($"Target: ({player.GetNameWithRole().RemoveHtmlTags()}) in vent", "RpcTeleport");
-                сancelTeleport = true;
+                cancelTeleport = true;
             }
 
-            if (player.onLadder
+            else if (player.onLadder
                 || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
             {
                 Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) is in on Ladder", "RpcTeleport");
-                сancelTeleport = true;
+                cancelTeleport = true;
             }
 
-            if (player.inMovingPlat)
+            else if (player.inMovingPlat)
             {
                 Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) use moving platform (Airship/Fungle)", "RpcTeleport");
-                сancelTeleport = true;
+                cancelTeleport = true;
             }
 
-            if (сancelTeleport)
+            if (cancelTeleport)
             {
                 player.Notify(ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ErrorTeleport")));
                 return;
