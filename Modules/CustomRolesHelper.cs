@@ -1,6 +1,5 @@
 using AmongUs.GameOptions;
 using System.Linq;
-using Il2CppSystem.Linq;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Crewmate;
@@ -10,7 +9,7 @@ using TOHE.Roles.AddOns.Impostor;
 
 namespace TOHE;
 
-internal static class CustomRolesHelper
+public static class CustomRolesHelper
 {
     public static readonly CustomRoles[] AllRoles = EnumHelper.GetAllValues<CustomRoles>();
     public static readonly CustomRoleTypes[] AllRoleTypes = EnumHelper.GetAllValues<CustomRoleTypes>();
