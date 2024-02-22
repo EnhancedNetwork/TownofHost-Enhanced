@@ -61,18 +61,25 @@ class CheckProtectPatch
 
         switch (getAngelRole)
         {
+
             case CustomRoles.Warden:
                 return Warden.OnCheckProtect(angel, target);
 
             case CustomRoles.Minion:
                 return Minion.OnCheckProtect(angel, target);
 
+            case CustomRoles.Retributionist:
+                return Retributionist.OnCheckProtect(angel, target);
+
+            case CustomRoles.Nemesis:
+                return Nemesis.OnCheckProtect(angel, target);
+
             default:
                 break;
         }
 
         if (angel.Is(CustomRoles.EvilSpirit))
-        {   
+        {
             if (target.Is(CustomRoles.Spiritcaller))
             {
                 Spiritcaller.ProtectSpiritcaller();
@@ -84,7 +91,7 @@ class CheckProtectPatch
             angel.RpcResetAbilityCooldown();
             return false;
         }
-        
+
         if (angel.Is(CustomRoles.Sheriff) && angel.Data.IsDead)
         {
                 Logger.Info("Blocked protection", "CheckProtect");
@@ -191,6 +198,7 @@ class CheckMurderPatch
             killer.ResetKillCooldown();
             return false;
         }
+
         foreach (var targetSubRole in target.GetCustomSubRoles().ToArray())
         {
             switch (targetSubRole)
@@ -2695,6 +2703,7 @@ class ReportDeadBodyPatch
         if (Eraser.IsEnable) Eraser.OnReportDeadBody();
         if (Anonymous.IsEnable) Anonymous.OnReportDeadBody();
         if (Divinator.IsEnable) Divinator.OnReportDeadBody();
+        if (Retributionist.IsEnable) Retributionist.OnReportDeadBody();
         if (Tracefinder.IsEnable) Tracefinder.OnReportDeadBody();
         if (Judge.IsEnable) Judge.OnReportDeadBody();
         if (Greedier.IsEnable) Greedier.OnReportDeadBody();
@@ -4420,7 +4429,7 @@ class PlayerControlSetRolePatch
                 var self = seer.PlayerId == target.PlayerId;
                 var seerIsKiller = seer.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(seer.PlayerId);
 
-                if (target.GetCustomSubRoles().Any(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
+                if (target.IsAnySubRole(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
                 {
                     ghostRoles[seer] = RoleTypes.GuardianAngel;
                 }
@@ -4433,7 +4442,7 @@ class PlayerControlSetRolePatch
                     ghostRoles[seer] = RoleTypes.CrewmateGhost;
                 }
             }
-            if (target.GetCustomSubRoles().Any(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
+            if (target.IsAnySubRole(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
             {
                 roleType = RoleTypes.GuardianAngel;
             }

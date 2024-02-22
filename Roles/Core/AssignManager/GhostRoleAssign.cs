@@ -2,10 +2,12 @@
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.Crewmate;
+using TOHE.Roles.Impostor;
 
 namespace TOHE.Roles.Core.AssignManager;
 
-public class GhostRoleAssign
+public static class GhostRoleAssign
 {
     public static Dictionary<byte, CustomRoles> GhostGetPreviousRole = [];
     private static Dictionary<CustomRoles, int> getCount = [];
@@ -14,9 +16,9 @@ public class GhostRoleAssign
         if (GameStates.IsHideNSeek || player == null || player.Data.Disconnected) return;
 
         var getplrRole = player.GetCustomRole();
-        if (getplrRole is CustomRoles.Retributionist or CustomRoles.Mafia or CustomRoles.GM) return;
+        if (getplrRole is CustomRoles.GM) return;
 
-        if (getplrRole.IsGhostRole() || (player.GetCustomSubRoles().Count > 0 && player.GetCustomSubRoles().Any(x => x.IsGhostRole())) || Options.CustomGhostRoleCounts.Count <= 0) return;
+        if (getplrRole.IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole()) || Options.CustomGhostRoleCounts.Count <= 0) return;
         
         GhostGetPreviousRole.Add(player.PlayerId, getplrRole);
 
@@ -103,6 +105,7 @@ public class GhostRoleAssign
                 getCount[ChosenRole]--; // Only deduct if role has been set.
                 player.RpcSetRole(RoleTypes.GuardianAngel);
                 player.RpcSetCustomRole(ChosenRole);
+                player.AddPlayerId(ChosenRole);
                 player.RpcResetAbilityCooldown();
             }
             return;
@@ -130,6 +133,7 @@ public class GhostRoleAssign
                 getCount[ChosenRole]--;
                 player.RpcSetRole(RoleTypes.GuardianAngel);
                 player.RpcSetCustomRole(ChosenRole);
+                player.AddPlayerId(ChosenRole);
                 player.RpcResetAbilityCooldown();
             }
             return;
@@ -149,5 +153,20 @@ public class GhostRoleAssign
     {
         Options.CustomGhostRoleCounts.Keys.Do(ghostRole
             => getCount.Add(ghostRole, ghostRole.GetCount())); // Add new count Instance (Optionitem gets constantly refreshed)
+    }
+    public static void AddPlayerId(this PlayerControl target, CustomRoles GhostRole)
+    {
+        switch (GhostRole)
+        {
+            case CustomRoles.Retributionist:
+                Retributionist.Add(target.PlayerId);
+                break;
+             case CustomRoles.Nemesis:
+                Nemesis.Add(target.PlayerId);
+                break;
+            case CustomRoles.Warden:
+                Warden.Add(target.PlayerId);
+                break;
+        }
     }
 }

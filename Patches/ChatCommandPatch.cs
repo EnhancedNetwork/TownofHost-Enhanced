@@ -59,8 +59,6 @@ internal class ChatCommands
         if (Pirate.DuelCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Councillor.MurderMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Mediumshiper.MsMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
-        if (MafiaRevengeManager.MafiaMsgCheck(PlayerControl.LocalPlayer, text)) goto Canceled;
-        if (RetributionistRevengeManager.RetributionistMsgCheck(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Swapper.SwapMsg(PlayerControl.LocalPlayer, text)) goto Canceled; 
         Directory.CreateDirectory(modTagsFiles);
         Directory.CreateDirectory(vipTagsFiles);
@@ -1036,7 +1034,7 @@ internal class ChatCommands
             "殺人機器" or "杀戮机器" or "杀戮" or "机器" or "杀戮兵器" => GetString("KillingMachine"),
             "通緝犯" or "逃逸者" or "逃逸" => GetString("Escapist"),
             "女巫" => GetString("Witch"),
-            "黑手黨" or "黑手党" or "黑手" => GetString("Mafia"),
+            "黑手黨" or "黑手党" or "黑手" => GetString("Nemesis"),
             "傀儡師" or "傀儡师" or "傀儡" => GetString("Puppeteer"),
             "主謀" or "策划者" => GetString("Mastermind"),
             "時間竊賊" or "蚀时者" or "蚀时" or "偷时" => GetString("TimeThief"),
@@ -1442,8 +1440,6 @@ internal class ChatCommands
         if (Councillor.MurderMsg(player, text)) { canceled = true; Logger.Info($"Is Councillor command", "OnReceiveChat"); return; }
         if (Swapper.SwapMsg(player, text)) { canceled = true; Logger.Info($"Is Swapper command", "OnReceiveChat"); return; }
         if (Mediumshiper.MsMsg(player, text)) { Logger.Info($"Is Medium command", "OnReceiveChat"); return; }
-        if (MafiaRevengeManager.MafiaMsgCheck(player, text)) { Logger.Info($"Is Mafia Revenge command", "OnReceiveChat"); return; }
-        if (RetributionistRevengeManager.RetributionistMsgCheck(player, text)) { Logger.Info($"Is Retributionist Revenge command", "OnReceiveChat"); return; }
 
         Directory.CreateDirectory(modTagsFiles);
         Directory.CreateDirectory(vipTagsFiles);

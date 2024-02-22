@@ -100,7 +100,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 opt.SetFloat(FloatOptionNames.ImpostorLightMod, 1.25f);
             }
         }
-        if (!role.IsGhostRole() || (player.GetCustomSubRoles().Count() > 0 && player.GetCustomSubRoles().Any(x => x is CustomRoles.EvilSpirit))) 
+        if (!role.IsGhostRole() || player.IsAnySubRole(x => x is CustomRoles.EvilSpirit)) 
         {
             switch (role.GetCustomRoleTypes())
             {
@@ -247,9 +247,8 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.ShapeshifterCooldown = Options.NukeCooldown.GetFloat();
                 AURoleOptions.ShapeshifterDuration = 2f;
                 break;
-            case CustomRoles.Mafia:
-                AURoleOptions.ShapeshifterCooldown = Options.MafiaShapeshiftCD.GetFloat();
-                AURoleOptions.ShapeshifterDuration = Options.MafiaShapeshiftDur.GetFloat();
+            case CustomRoles.Nemesis:
+                Nemesis.SetKillCooldown();
                 break;
             case CustomRoles.ScientistTOHE:
                 AURoleOptions.ScientistCooldown = Options.ScientistCD.GetFloat();
@@ -496,6 +495,9 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
             case CustomRoles.Minion:
                 Minion.SetAbilityCooldown();
+                break;
+            case CustomRoles.Retributionist:
+                Retributionist.SetKillCooldown();
                 break;
             default:
                 opt.SetVision(false);

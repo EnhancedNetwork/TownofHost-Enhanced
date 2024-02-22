@@ -39,7 +39,7 @@ public static class NameColorManager
         if (seer.Is(CustomRoles.Crewpostor) && target.Is(CustomRoleTypes.Impostor) && Options.CrewpostorKnowsAllies.GetBool()) color = Main.roleColors[CustomRoles.Impostor];
         if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
         if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Crewpostor) && Options.AlliesKnowCrewpostor.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
-        if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Minion)) color = Main.roleColors[CustomRoles.Madmate];
+        if (seer.Is(CustomRoleTypes.Impostor) && (target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor())) color = Main.roleColors[CustomRoles.Madmate];
         if (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate) && Madmate.MadmateKnowWhosMadmate.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
         if (seer.Is(CustomRoles.Gangster) && target.Is(CustomRoles.Madmate)) color = Main.roleColors[CustomRoles.Madmate];
 
