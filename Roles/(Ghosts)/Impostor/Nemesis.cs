@@ -71,7 +71,6 @@ namespace TOHE.Roles.Impostor
                 SendRPC(killer.PlayerId);
             }
             else if (Main.AllAlivePlayerControls.Count() < MinimumPlayersAliveToRevenge.GetInt()) killer.Notify(GetString("NemesisTooManyDied"));
-            CustomRoles.Necromancer.IsEnable();
             return false;
         }
         public static bool CanKill(byte id) => KillCount.TryGetValue(id, out var x) && x > 0;
