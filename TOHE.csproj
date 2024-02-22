@@ -15,15 +15,12 @@
     
     <ItemGroup>
         <EmbeddedResource Include=".\Resources\**" />
+		<EmbeddedResource Include="token.env" />
     </ItemGroup>
     
-    <!--<ItemGroup>
+    <ItemGroup>
       <None Remove="Resources\Announcements\modNews-en_US.json" />
-    </ItemGroup>-->
-	<ItemGroup>
-		<!--<EmbeddedResource Include="Resources\Announcements\modNews-en_US.json" />-->
-		<EmbeddedResource Include="token.env" />
-	</ItemGroup>
+    </ItemGroup>
 	    
     <ItemGroup>
         <PackageReference Include="AmongUs.GameLibs.Steam" Version="2023.11.28" PrivateAssets="all" />
