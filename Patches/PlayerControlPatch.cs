@@ -1489,7 +1489,11 @@ class MurderPlayerPatch
         if (Lawyer.Target.ContainsValue(target.PlayerId))
             Lawyer.ChangeRoleByTarget(target);
 
-        if (Anonymous.IsEnable) Anonymous.AddDeadBody(target);
+        foreach (var state in Main.PlayerStates.Values.Where(p => p.Role.IsEnable))
+        {
+            state.Role.OnPlayerDead(killer, target);
+        }
+
         if (Mortician.IsEnable) Mortician.OnPlayerDead(target);
         if (Bloodhound.IsEnable) Bloodhound.OnPlayerDead(target);
         if (Tracefinder.IsEnable) Tracefinder.OnPlayerDead(target);
@@ -1597,6 +1601,13 @@ public static class CheckShapeShiftPatch
             return false;
         }
 
+        if (Pelican.IsEaten(shapeshifter.PlayerId))
+        {
+            shapeshifter.RejectShapeshiftAndReset();
+            Logger.Info($"Rejected bcz {shapeshifter.GetRealName()} is eaten by Pelican", "Check ShapeShift");
+            return false;
+        }
+
         if (!shapeshifter.IsAlive())
         {
             shapeshifter.RejectShapeshiftAndReset();
@@ -1606,8 +1617,16 @@ public static class CheckShapeShiftPatch
 
         bool shapeshifting = shapeshifter.PlayerId != target.PlayerId;
 
+        var shapeshiftIsHidden = true;
+        if (Main.PlayerStates.TryGetValue(shapeshifter.PlayerId, out var playerState))
+        {
+            shapeshifter.RejectShapeshiftAndReset();
+            playerState.Role.OnShapeshift(shapeshifter, target, false, shapeshiftIsHidden);
+        }
+
         switch (role)
         {
+
             case CustomRoles.BountyHunter:
                 Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
                 shapeshifter.RejectShapeshiftAndReset(false);
@@ -1624,7 +1643,7 @@ public static class CheckShapeShiftPatch
                 return false;
 
             case CustomRoles.Sniper:
-                Sniper.OnShapeshift(shapeshifter, false, shapeshiftIsHidden: true);
+                Sniper.OnShapeshift(shapeshifter, false, shapeshiftIsHidden: shapeshiftIsHidden);
                 shapeshifter.RejectShapeshiftAndReset();
                 return false;
 
@@ -1688,12 +1707,12 @@ public static class CheckShapeShiftPatch
                 return false;
 
             case CustomRoles.Fireworker:
-                Fireworker.ShapeShiftState(shapeshifter, shapeshifting, shapeshiftIsHidden: true);
+                Fireworker.ShapeShiftState(shapeshifter, shapeshifting, shapeshiftIsHidden: shapeshiftIsHidden);
                 shapeshifter.RejectShapeshiftAndReset();
                 return false;
 
             case CustomRoles.EvilTracker:
-                EvilTracker.OnShapeshift(shapeshifter, target, shapeshifting, shapeshiftIsHidden: true);
+                EvilTracker.OnShapeshift(shapeshifter, target, shapeshifting, shapeshiftIsHidden: shapeshiftIsHidden);
                 shapeshifter.RejectShapeshiftAndReset();
                 shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 return false;
@@ -1709,14 +1728,8 @@ public static class CheckShapeShiftPatch
                 }
                 return false;
 
-            case CustomRoles.Anonymous:
-                Anonymous.OnShapeshift(shapeshifter, shapeshifting, target);
-                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
-                shapeshifter.RejectShapeshiftAndReset();
-                return false;
-
             case CustomRoles.Assassin:
-                Assassin.OnShapeshift(shapeshifter, shapeshifting, shapeshiftIsHidden: true);
+                Assassin.OnShapeshift(shapeshifter, shapeshifting, shapeshiftIsHidden: shapeshiftIsHidden);
                 return false;
 
             case CustomRoles.Escapist:
@@ -1809,7 +1822,7 @@ public static class CheckShapeShiftPatch
                     shapeshifter.RejectShapeshiftAndReset(reset: false);
                     return false;
                 }
-                Camouflager.OnShapeshift(shapeshifter, shapeshiftIsHidden: true);
+                Camouflager.OnShapeshift(shapeshifter, shapeshiftIsHidden: shapeshiftIsHidden);
                 shapeshifter.RejectShapeshiftAndReset();
                 return false;
 
@@ -1862,7 +1875,7 @@ public static class CheckShapeShiftPatch
 
             case CustomRoles.Twister:
                 shapeshifter.RejectShapeshiftAndReset();
-                Twister.TwistPlayers(shapeshifter, shapeshiftIsHidden: true);
+                Twister.TwistPlayers(shapeshifter, shapeshiftIsHidden: shapeshiftIsHidden);
                 return false;
 
             case CustomRoles.Pitfall:
@@ -1873,7 +1886,7 @@ public static class CheckShapeShiftPatch
 
             case CustomRoles.Disperser:
                 shapeshifter.RejectShapeshiftAndReset();
-                Disperser.DispersePlayers(shapeshifter, shapeshiftIsHidden: true);
+                Disperser.DispersePlayers(shapeshifter, shapeshiftIsHidden: shapeshiftIsHidden);
                 return false;
         }
 
@@ -1905,6 +1918,9 @@ class ShapeshiftPatch
 
         if (!Pelican.IsEaten(shapeshifter.PlayerId))
         {
+            var shapeshiftIsHidden = false;
+            Main.PlayerStates[shapeshifter.PlayerId].Role.OnShapeshift(shapeshifter, target, shapeshifting, shapeshiftIsHidden);
+
             switch (shapeshifter.GetCustomRole())
             {
                 case CustomRoles.EvilTracker:
@@ -2087,9 +2103,6 @@ class ShapeshiftPatch
                         Camouflager.OnShapeshift();
                     if (!shapeshifting)
                         Camouflager.OnReportDeadBody();
-                    break;
-                case CustomRoles.Anonymous:
-                    Anonymous.OnShapeshift(shapeshifter, shapeshifting, target);
                     break;
                 case CustomRoles.Disperser:
                     if (shapeshifting)
@@ -2683,6 +2696,11 @@ class ReportDeadBodyPatch
             Main.BombedVents.Clear();
         }
 
+        foreach (var state in Main.PlayerStates.Values.Where(p => p.Role.IsEnable))
+        {
+            state.Role.OnReportDeadBody(player, target?.Object);
+        }
+
         if (Camouflager.IsEnable) Camouflager.OnReportDeadBody();
         if (Reverie.IsEnable) Reverie.OnReportDeadBody();
         if (Psychic.IsEnable) Psychic.OnReportDeadBody();
@@ -2708,7 +2726,6 @@ class ReportDeadBodyPatch
         if (Counterfeiter.IsEnable) Counterfeiter.OnReportDeadBody();
         if (QuickShooter.IsEnable) QuickShooter.OnReportDeadBody();
         if (Eraser.IsEnable) Eraser.OnReportDeadBody();
-        if (Anonymous.IsEnable) Anonymous.OnReportDeadBody();
         if (Divinator.IsEnable) Divinator.OnReportDeadBody();
         if (Retributionist.IsEnable) Retributionist.OnReportDeadBody();
         if (Tracefinder.IsEnable) Tracefinder.OnReportDeadBody();
@@ -3213,6 +3230,9 @@ class FixedUpdateInNormalGamePatch
 
                     playerRole = player.GetCustomRole();
 
+                    if (Main.PlayerStates.TryGetValue(player.PlayerId, out var playerStates))
+                        playerStates.Role.OnFixedUpdateLowLoad(player);
+
                     if (Kamikaze.IsEnable)
                         Kamikaze.MurderKamikazedPlayers(player);
 
@@ -3393,9 +3413,6 @@ class FixedUpdateInNormalGamePatch
                     if (player.AmOwner)
                     {
                         DisableDevice.FixedUpdate();
-
-                        if (AntiAdminer.IsEnable)
-                            AntiAdminer.FixedUpdate();
 
                         if (Monitor.IsEnable)
                             Monitor.FixedUpdate();
@@ -3720,7 +3737,7 @@ class FixedUpdateInNormalGamePatch
                 {
                     if (seer.Is(CustomRoles.AntiAdminer))
                     {
-                        AntiAdminer.FixedUpdate();
+                        Main.PlayerStates[player.PlayerId].Role.OnFixedUpdateLowLoad(player);
                         if (target.AmOwner)
                             Suffix.Append(AntiAdminer.GetSuffix());
                     }

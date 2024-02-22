@@ -210,6 +210,11 @@ internal class ChangeRoleSettings
                 Main.RefixCooldownDelay = 0;
             }
 
+            foreach (var state in Main.PlayerStates.Values)
+            {
+                state.Role.Init();
+            }
+
             FallFromLadder.Reset();
             BountyHunter.Init();
             Mercenary.Init();
@@ -243,7 +248,6 @@ internal class ChangeRoleSettings
             Vampire.Init();
             Vampiress.Init();
             Poisoner.Init();
-            AntiAdminer.Init();
             Monitor.Init();
             TimeManager.Init();
             LastImpostor.Init();
@@ -275,9 +279,7 @@ internal class ChangeRoleSettings
             Oracle.Init();
             Eraser.Init();
             Assassin.Init();
-            Arrogance.Init();
             Juggernaut.Init();
-            Anonymous.Init();
             Psychic.Init();
             Sleuth.Init();
             Glitch.Init();
@@ -595,6 +597,9 @@ internal class SelectRolesPatch
             foreach (var pc in Main.AllPlayerControls)
             {
                 if (pc.Data.Role.Role == RoleTypes.Shapeshifter) Main.CheckShapeshift.Add(pc.PlayerId, false);
+
+                Main.PlayerStates[pc.PlayerId]?.Role.Add(pc.PlayerId);
+
                 switch (pc.GetCustomRole())
                 {
                     case CustomRoles.BountyHunter:
@@ -766,9 +771,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Solsticer:
                         Solsticer.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.AntiAdminer:
-                        AntiAdminer.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Monitor:
                         Monitor.Add(pc.PlayerId);
                         break;
@@ -851,14 +853,8 @@ internal class SelectRolesPatch
                     case CustomRoles.Assassin:
                         Assassin.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Arrogance:
-                        Arrogance.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Juggernaut:
                         Juggernaut.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Anonymous:
-                        Anonymous.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Psychic:
                         Psychic.Add(pc.PlayerId);

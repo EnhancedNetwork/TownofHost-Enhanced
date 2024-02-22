@@ -471,6 +471,9 @@ static class ExtendedPlayerControl
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
         if (Mastermind.ManipulatedPlayers.ContainsKey(pc.PlayerId)) return true;
 
+        if (Main.PlayerStates.TryGetValue(pc.PlayerId, out var state))
+            return state.Role.CanUseKillButton(pc);
+
         return pc.GetCustomRole() switch
         {
             //FFA
@@ -967,17 +970,11 @@ static class ExtendedPlayerControl
             case CustomRoles.Vampiress:
                 Vampiress.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.Arrogance:
-                Arrogance.SetKillCooldown(player.PlayerId);
-                break;
             case CustomRoles.Juggernaut:
                 Juggernaut.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Reverie:
                 Reverie.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Anonymous:
-                Anonymous.SetKillCooldown(player.PlayerId);
                 break;
             //FFA
             case CustomRoles.Killer:

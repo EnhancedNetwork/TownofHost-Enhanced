@@ -117,6 +117,10 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                     break;
             }
         }
+
+        if (Main.PlayerStates.TryGetValue(player.PlayerId, out var playerState))
+            playerState.Role.ApplyGameOptions(opt, player.PlayerId);
+
         switch (role)
         {
             case CustomRoles.Terrorist:
@@ -425,9 +429,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
             case CustomRoles.Assassin:
                 Assassin.ApplyGameOptions();
-                break;
-            case CustomRoles.Anonymous:
-                Anonymous.ApplyGameOptions();
                 break;
             case CustomRoles.Hangman:
                 Hangman.ApplyGameOptions();
