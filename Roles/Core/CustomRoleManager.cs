@@ -6,8 +6,11 @@ public static class CustomRoleManager
 {
     public static RoleBase GetRoleClass(this CustomRoles role) => role switch
     {
+        // ==== Vanilla ====
         CustomRoles.Crewmate => new VanillaRole(),
         CustomRoles.Impostor => new VanillaRole(),
+
+        // ==== Impostors ====
         CustomRoles.Shapeshifter => new VanillaRole(),
         CustomRoles.ImpostorTOHE => new VanillaRole(),
         CustomRoles.ShapeshifterTOHE => new VanillaRole(),
@@ -15,6 +18,7 @@ public static class CustomRoleManager
         CustomRoles.Anonymous => new Anonymous(),
         CustomRoles.AntiAdminer => new AntiAdminer(),
         //CustomRoles.Bard => new Bard(),
+        //CustomRoles.Berserker  => new Berserker(),
         //CustomRoles.Blackmailer => new Blackmailer(),
         //CustomRoles.Bomber => new Bomber(),
         //CustomRoles.BountyHunter => new BountyHunter(),
@@ -89,6 +93,8 @@ public static class CustomRoleManager
         //CustomRoles.Witch => new Witch(),
         //CustomRoles.YinYanger => new YinYanger(),
         //CustomRoles.Zombie => new Zombie(),
+
+        // ==== Crewmates ====
         //CustomRoles.Engineer => new Engineer(),
         //CustomRoles.GuardianAngel => new GuardianAngel(),
         //CustomRoles.Scientist => new Scientist(),
@@ -192,6 +198,8 @@ public static class CustomRoleManager
         //CustomRoles.SwordsMan => new SwordsMan(),
         //CustomRoles.Witness => new Witness(),
         //CustomRoles.Agitater => new Agitater(),
+
+        // ==== Neutrals ====
         //CustomRoles.Amnesiac => new Amnesiac(),
         //CustomRoles.Arsonist => new Arsonist(),
         //CustomRoles.Bandit => new Bandit(),
