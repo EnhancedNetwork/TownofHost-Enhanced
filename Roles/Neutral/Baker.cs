@@ -9,7 +9,7 @@ using static UnityEngine.ParticleSystem.PlaybackState;
 namespace TOHE.Roles.Neutral;
 public static class Baker
 {
-    private static readonly int Id = 27800;
+    private static readonly int Id = 28000;
     public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
     public static Dictionary<byte, List<byte>> BreadList = [];
