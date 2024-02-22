@@ -8,11 +8,11 @@ using static TOHE.Modules.ShuffleListExtension;
 
 namespace TOHE.Roles.Core.AssignManager;
 
-public static class RoleAssign
+public class RoleAssign
 {
     public static Dictionary<byte, CustomRoles> SetRoles = [];
     public static Dictionary<PlayerControl, CustomRoles> RoleResult;
-    public static IReadOnlyList<CustomRoles> AllRoles => [.. RoleResult.Values];
+    public static CustomRoles[] AllRoles => [.. RoleResult.Values];
 
     enum RoleAssignType
     {
@@ -553,16 +553,16 @@ public static class RoleAssign
             CustomRoles assignedRole = FinalRolesList[roleId];
 
             RoleResult[AllPlayers[0]] = assignedRole;
-            Logger.Info($"Role assigned：{AllPlayers[0].GetRealName()} => {assignedRole}", "RoleAssign");
+            Logger.Info($"Player：{AllPlayers[0].GetRealName()} => {assignedRole}", "RoleAssign");
 
             AllPlayers.RemoveAt(0);
             FinalRolesList.RemoveAt(roleId);
         }
 
         if (AllPlayers.Count > 0)
-            Logger.Warn("Role assignment error: There are players who have not been assigned a role", "CustomRoleSelector");
+            Logger.Warn("Role assignment error: There are players who have not been assigned a role", "RoleAssign");
         if (FinalRolesList.Count > 0)
-            Logger.Warn("Team assignment error: There is an unassigned team", "CustomRoleSelector");
+            Logger.Warn("Team assignment error: There is an unassigned team", "RoleAssign");
         return;
 
         RoleAssignInfo GetAssignInfo(CustomRoles role) => Roles.Values.FirstOrDefault(x => x.Any(y => y.Role == role))?.FirstOrDefault(x => x.Role == role);
