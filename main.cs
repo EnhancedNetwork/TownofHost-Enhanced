@@ -173,8 +173,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, float> AssassinTimer = [];
     public static Dictionary<byte, PlayerControl> CursedPlayers = [];
     public static Dictionary<byte, bool> isCurseAndKill = [];
-    public static Dictionary<byte, int> MafiaRevenged = [];
-    public static Dictionary<byte, int> RetributionistRevenged = [];
     public static Dictionary<byte, int> GuesserGuessed = [];
     public static Dictionary<byte, int> CapitalismAddTask = [];
     public static Dictionary<byte, int> CapitalismAssignTask = [];
@@ -238,6 +236,8 @@ public class Main : BasePlugin
     
     public static Dictionary<byte, CustomRoles> ErasedRoleStorage = [];
     public static Dictionary<string, int> PlayerQuitTimes = [];
+
+    
 
     //public static IEnumerable<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null);
     //public static IEnumerable<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId));
@@ -590,7 +590,8 @@ public enum CustomRoles
     Mercenary, //mercenary
     Miner,
     Morphling,
-    Mafia, //nemesis
+    Nemesis,
+    Minion,
     Assassin, //ninja
     Nuker,
     Parasite,
@@ -629,8 +630,8 @@ public enum CustomRoles
     // Vanilla Remakes
     CrewmateTOHE,
     EngineerTOHE,
-    GuardianAngelTOHE,
     ScientistTOHE,
+    GuardianAngelTOHE,
 
     //Crewmate
     Addict,
@@ -775,6 +776,7 @@ public enum CustomRoles
     Virus,
     Vulture,
     Werewolf,
+    Warden,
     Workaholic,
     Wraith,
     Stealth,
@@ -874,6 +876,7 @@ public enum CustomRoles
     // QuickFix
     
     //You need to put roles in order by their name
+    
 }
 //WinData
 public enum CustomWinner

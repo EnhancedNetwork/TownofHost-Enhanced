@@ -9,6 +9,7 @@ using TOHE.Modules.ChatManager;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -65,8 +66,6 @@ internal class ChangeRoleSettings
             Main.TimeMasterBackTrack = [];
             Main.TimeMasterNum = [];
             Main.CursedPlayers = [];
-            Main.MafiaRevenged = [];
-            Main.RetributionistRevenged = [];
             Main.isCurseAndKill = [];
             Main.isCursed = false;
             Main.DetectiveNotify = [];
@@ -159,6 +158,8 @@ internal class ChangeRoleSettings
             //名前の記録
             //Main.AllPlayerNames = [];
             RPC.SyncAllPlayerNames();
+
+            GhostRoleAssign.Init();
 
             Camouflage.Init();
 
@@ -293,6 +294,8 @@ internal class ChangeRoleSettings
             Mortician.Init();
             Mediumshiper.Init();
             Swooper.Init();
+            Retributionist.Init();
+            Nemesis.Init();
             Wraith.Init();
             SoulCollector.Init();
             SchrodingersCat.Init();
@@ -331,6 +334,7 @@ internal class ChangeRoleSettings
             Tracefinder.Init();
             Devourer.Init();
             PotionMaster.Init();
+            Warden.Init();
             Traitor.Init();
             Spiritualist.Init();
             Vulture.Init();
@@ -568,12 +572,15 @@ internal class SelectRolesPatch
             foreach (var kv in RoleResult)
             {
                 if (kv.Value.IsDesyncRole()) continue;
+                if (RoleResult[kv.Key].IsGhostRole()) Logger.Warn("Warning! Someone has unintentionally been assigned ghost role, debug or up?", "RoleGhost");
                 AssignCustomRole(kv.Value, kv.Key);
             }
 
             if (CustomRoles.Lovers.IsEnable() && (CustomRoles.Hater.IsEnable() ? -1 : rd.Next(1, 100)) <= Options.LoverSpawnChances.GetInt()) AssignLoversRolesFromList();
 
             AssignAddonRoles();
+
+            GhostRoleAssign.Add();
 
             //RPCによる同期
             foreach (var pair in Main.PlayerStates)
@@ -1229,7 +1236,7 @@ internal class SelectRolesPatch
             }
         }
     }
-
+    
     private static void AssignCustomRole(CustomRoles role, PlayerControl player)
     {
         if (player == null) return;

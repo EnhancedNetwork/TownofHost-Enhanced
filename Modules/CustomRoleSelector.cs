@@ -69,6 +69,7 @@ internal class CustomRoleSelector
             var role = (CustomRoles)Enum.Parse(typeof(CustomRoles), cr.ToString());
             if (role.IsVanilla() || role.IsAdditionRole()) continue;
             if (role is CustomRoles.GM or CustomRoles.NotAssigned) continue;
+            if (role.IsGhostRole()) continue;
 
             if (GameStates.FungleIsActive) // The Fungle
             {
@@ -128,7 +129,6 @@ internal class CustomRoleSelector
                 else roleRateList.Add(role);
             }
         }
-
         while (MiniOnList.Count == 1)
         {
             var select = MiniOnList[rd.Next(0, MiniOnList.Count)];
