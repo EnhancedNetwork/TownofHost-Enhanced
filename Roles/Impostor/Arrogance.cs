@@ -6,7 +6,7 @@ namespace TOHE.Roles.Impostor;
 
 internal class Arrogance : RoleBase
 {
-    private static readonly int Id = 500;
+    private const int Id = 500;
     public static List<byte> playerIdList = [];
     public static bool On;
     public override bool IsEnable => On;
