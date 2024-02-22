@@ -36,7 +36,7 @@ public static class Hangman
     {
     //    if (target.Is(CustomRoles.Bait)) return true;
         if (target.Is(CustomRoles.Pestilence)) return true;
-        if (target.Is(CustomRoles.Veteran) && Main.VeteranInProtect.ContainsKey(target.PlayerId)) return true;
+        //if (target.Is(CustomRoles.Veteran) && Main.VeteranInProtect.ContainsKey(target.PlayerId)) return true;
         if (Medic.ProtectList.Contains(target.PlayerId)) return false;
 
         //禁止内鬼刀叛徒
