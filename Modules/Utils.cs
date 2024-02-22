@@ -97,29 +97,29 @@ public static class Utils
         // Don't check player status during random spawn
         if (!isRandomSpawn)
         {
-            var сancelTeleport = false;
+            var cancelTeleport = false;
 
             if (player.inVent
                 || player.MyPhysics.Animations.IsPlayingEnterVentAnimation())
             {
                 Logger.Info($"Target: ({player.GetNameWithRole().RemoveHtmlTags()}) in vent", "RpcTeleport");
-                сancelTeleport = true;
+                cancelTeleport = true;
             }
 
-            if (player.onLadder
+            else if (player.onLadder
                 || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
             {
                 Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) is in on Ladder", "RpcTeleport");
-                сancelTeleport = true;
+                cancelTeleport = true;
             }
 
-            if (player.inMovingPlat)
+            else if (player.inMovingPlat)
             {
                 Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) use moving platform (Airship/Fungle)", "RpcTeleport");
-                сancelTeleport = true;
+                cancelTeleport = true;
             }
 
-            if (сancelTeleport)
+            if (cancelTeleport)
             {
                 player.Notify(ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ErrorTeleport")));
                 return;
@@ -310,6 +310,7 @@ public static class Utils
         }
         return;
     }
+    
     public static void TargetDies(PlayerControl killer, PlayerControl target)
     {
         if (!target.Data.IsDead || GameStates.IsMeeting) return;
@@ -400,12 +401,7 @@ public static class Utils
         if (Options.HideGameSettings.GetBool() && Main.AllPlayerControls.Length > 1)
             return string.Empty;
 
-        string mode = role.GetMode() switch
-        {
-            0 => GetString("RoleOffNoColor"),
-            1 => GetString("RoleRateNoColor"),
-            _ => GetString("RoleOnNoColor")
-        };
+        string mode = GetString($"Rate{role.GetMode()}").RemoveHtmlTags();
         return parentheses ? $"({mode})" : mode;
     }
     public static string GetDeathReason(PlayerState.DeathReason status)
@@ -428,73 +424,77 @@ public static class Utils
         string RoleText = "Invalid Role";
         Color RoleColor = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
 
-        //var seerMainRole = Main.PlayerStates[seerId].MainRole;
-        //var seerSubRoles = Main.PlayerStates[seerId].SubRoles;
-
         var targetMainRole = Main.PlayerStates[targetId].MainRole;
         var targetSubRoles = Main.PlayerStates[targetId].SubRoles;
 
         RoleText = GetRoleName(targetMainRole);
         RoleColor = GetRoleColor(targetMainRole);
 
-        if (targetSubRoles.Count > 0)
+        try
         {
-            var seer = GetPlayerById(seerId);
-            var target = GetPlayerById(targetId);
-
-            if (seer == null || target == null) return (RoleText, RoleColor);
-
-            // if player last imp
-            if (LastImpostor.currentId == targetId)
-                RoleText = GetRoleString("Last-") + RoleText;
-
-            if (Options.NameDisplayAddons.GetBool() && !notShowAddOns)
+            if (targetSubRoles.Count > 0)
             {
-                var seerPlatform = seer.GetClient().PlatformData.Platform;
-                var addBracketsToAddons = Options.AddBracketsToAddons.GetBool();
+                var seer = GetPlayerById(seerId);
+                var target = GetPlayerById(targetId);
 
-                // if the player is playing on a console platform
-                if (seerPlatform is Platforms.Playstation or Platforms.Xbox or Platforms.Switch)
+                if (seer == null || target == null) return (RoleText, RoleColor);
+
+                // if player last imp
+                if (LastImpostor.currentId == targetId)
+                    RoleText = GetRoleString("Last-") + RoleText;
+
+                if (Options.NameDisplayAddons.GetBool() && !notShowAddOns)
                 {
-                    // By default, censorship is enabled on consoles
-                    // Need to set add-ons colors without endings "</color>"
+                    var seerPlatform = seer.GetClient()?.PlatformData.Platform;
+                    var addBracketsToAddons = Options.AddBracketsToAddons.GetBool();
 
-                    // colored role
-                    RoleText = ColorStringWithoutEnding(GetRoleColor(targetMainRole), RoleText);
-
-                    // colored add-ons
-                    foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
-                        RoleText = ColorStringWithoutEnding(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"Prefix.{subRole}")}) " : $"{GetString($"Prefix.{subRole}")} ") + RoleText;
-                }
-                // default
-                else
-                {
-                    foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
-                        RoleText = ColorString(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"Prefix.{subRole}")}) " : $"{GetString($"Prefix.{subRole}")} ") + RoleText;
-                }
-            }
-
-            foreach (var subRole in targetSubRoles.ToArray())
-            {
-                if (seer.ShowSubRoleTarget(target, subRole))
-                    switch (subRole)
+                    // if the player is playing on a console platform
+                    if (seerPlatform is Platforms.Playstation or Platforms.Xbox or Platforms.Switch)
                     {
-                        case CustomRoles.Madmate:
-                        case CustomRoles.Recruit:
-                        case CustomRoles.Charmed:
-                        case CustomRoles.Soulless:
-                        case CustomRoles.Infected:
-                        case CustomRoles.Contagious:
-                        case CustomRoles.Admired:
-                            RoleColor = GetRoleColor(subRole);
-                            RoleText = GetRoleString($"{subRole}-") + RoleText;
-                            break;
+                        // By default, censorship is enabled on consoles
+                        // Need to set add-ons colors without endings "</color>"
 
+                        // colored role
+                        RoleText = ColorStringWithoutEnding(GetRoleColor(targetMainRole), RoleText);
+
+                        // colored add-ons
+                        foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
+                            RoleText = ColorStringWithoutEnding(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"Prefix.{subRole}")}) " : $"{GetString($"Prefix.{subRole}")} ") + RoleText;
                     }
-            }
-        }
+                    // default
+                    else
+                    {
+                        foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
+                            RoleText = ColorString(GetRoleColor(subRole), addBracketsToAddons ? $"({GetString($"Prefix.{subRole}")}) " : $"{GetString($"Prefix.{subRole}")} ") + RoleText;
+                    }
+                }
 
-        return (RoleText, RoleColor);
+                foreach (var subRole in targetSubRoles.ToArray())
+                {
+                    if (seer.ShowSubRoleTarget(target, subRole))
+                        switch (subRole)
+                        {
+                            case CustomRoles.Madmate:
+                            case CustomRoles.Recruit:
+                            case CustomRoles.Charmed:
+                            case CustomRoles.Soulless:
+                            case CustomRoles.Infected:
+                            case CustomRoles.Contagious:
+                            case CustomRoles.Admired:
+                                RoleColor = GetRoleColor(subRole);
+                                RoleText = GetRoleString($"{subRole}-") + RoleText;
+                                break;
+
+                        }
+                }
+            }
+
+            return (RoleText, RoleColor);
+        }
+        catch
+        {
+            return (RoleText, RoleColor);
+        }
     }
     public static string GetKillCountText(byte playerId, bool ffa = false)
     {
@@ -561,6 +561,8 @@ public static class Utils
             case CustomRoles.SoulCollector:
             case CustomRoles.SchrodingersCat:
             case CustomRoles.Parasite:
+            case CustomRoles.Minion:
+            case CustomRoles.Nemesis:
             case CustomRoles.Crusader:
             case CustomRoles.Refugee:
             case CustomRoles.Jester:
@@ -1048,6 +1050,15 @@ public static class Utils
                 case CustomRoles.CursedSoul:
                     ProgressText.Append(CursedSoul.GetCurseLimit());
                     break;
+                case CustomRoles.Retributionist:
+                    ProgressText.Append(Retributionist.GetRetributeLimit(playerId));
+                    break;
+                case CustomRoles.Nemesis:
+                    ProgressText.Append(Nemesis.GetRevengeLimit(playerId));
+                    break;
+                case CustomRoles.Warden:
+                    ProgressText.Append(Warden.GetNotifyLimit(playerId));
+                    break;
                 case CustomRoles.Admirer:
                     ProgressText.Append(Admirer.GetAdmireLimit(playerId));
                     break;
@@ -1191,7 +1202,7 @@ public static class Utils
         foreach (var role in Options.CustomRoleCounts.Keys.ToArray())
         {
             if (!role.IsEnable()) continue;
-            string mode = role.GetMode() == 1 ? GetString("RoleRateNoColor") : GetString("RoleOnNoColor");
+            string mode = GetString($"Rate{role.GetMode()}");
             sb.Append($"\n【{GetRoleName(role)}:{mode} ×{role.GetCount()}】\n");
             ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref sb);
             var text = sb.ToString();
@@ -1222,7 +1233,7 @@ public static class Utils
         foreach (var role in Options.CustomRoleCounts.Keys.ToArray())
         {
             if (!role.IsEnable()) continue;
-            string mode = role.GetMode() == 1 ? GetString("RoleRateNoColor") : GetString("RoleOnNoColor");
+            string mode = GetString($"Rate{role.GetMode()}");
             sb.Append($"\n【{GetRoleName(role)}:{mode} ×{role.GetCount()}】\n");
             ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref sb);
             var text = sb.ToString();
@@ -1257,10 +1268,10 @@ public static class Utils
 
         foreach (var role in CustomRolesHelper.AllRoles)
         {
-            string mode = role.GetMode() == 1 ? GetString("RoleRateNoColor") : GetString("RoleOnNoColor");
+            string mode = GetString($"Rate{role.GetMode()}");
             if (role.IsEnable())
             {
-                var roleDisplay = $"\n{GetRoleName(role)}:{mode} x{role.GetCount()}";
+                var roleDisplay = $"\n{GetRoleName(role)}: {mode} x{role.GetCount()}";
                 if (role.IsAdditionRole()) addonsb.Add(roleDisplay);
                 else if (role.IsCrewmate()) crewsb.Add(roleDisplay);
                 else if (role.IsImpostor() || role.IsMadmate()) impsb.Add(roleDisplay);
@@ -2498,17 +2509,6 @@ public static class Utils
                                     TargetPlayerName = (ColorString(GetRoleColor(CustomRoles.Lookout), " " + target.PlayerId.ToString()) + " " + TargetPlayerName);
                                 break;
 
-                            case CustomRoles.Mafia:
-                                if (!seer.IsAlive() && target.IsAlive())
-                                    TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Mafia), target.PlayerId.ToString()) + " " + TargetPlayerName;
-                                break;
-
-
-                            case CustomRoles.Retributionist:
-                                if (!seer.IsAlive() && target.IsAlive())
-                                    TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Retributionist), target.PlayerId.ToString()) + " " + TargetPlayerName;
-                                break;
-
                             case CustomRoles.Swapper:
                                 if (seer.IsAlive() && target.IsAlive())
                                     TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + TargetPlayerName;
@@ -2569,7 +2569,7 @@ public static class Utils
 
 
                                     //Impostors
-                                    if (Options.ImpostorsCanGuess.GetBool() && seer.GetCustomRole().IsImpostor() && !seer.Is(CustomRoles.Councillor) && !seer.Is(CustomRoles.Mafia))
+                                    if (Options.ImpostorsCanGuess.GetBool() && seer.GetCustomRole().IsImpostor() && !seer.Is(CustomRoles.Councillor) && !seer.Is(CustomRoles.Nemesis))
                                         TargetPlayerName = GetTragetId;
 
                                     else if (seer.Is(CustomRoles.EvilGuesser) && !Options.ImpostorsCanGuess.GetBool())
@@ -2672,6 +2672,7 @@ public static class Utils
         if (Penguin.IsEnable) Penguin.AfterMeetingTasks();
         if (Taskinator.IsEnable) Taskinator.AfterMeetingTasks();
         if (Benefactor.IsEnable) Benefactor.AfterMeetingTasks();
+        if (Retributionist.IsEnable) Retributionist.AfterMeetingTasks(); 
         if (PlagueDoctor.IsEnable) PlagueDoctor.AfterMeetingTasks();
         if (Jailer.IsEnable) Jailer.AfterMeetingTasks();
         if (CopyCat.IsEnable) CopyCat.AfterMeetingTasks();  //all crew after meeting task should be before this
@@ -2702,6 +2703,7 @@ public static class Utils
     }
     public static void AfterPlayerDeathTasks(PlayerControl target, bool onMeeting = false)
     {
+
         switch (target.GetCustomRole())
         {
             case CustomRoles.Terrorist:
@@ -2929,19 +2931,6 @@ public static class Utils
     }
     public static string RemoveHtmlTagsTemplate(this string str) => Regex.Replace(str, "", "");
     public static string RemoveHtmlTags(this string str) => Regex.Replace(str, "<[^>]*?>", "");
-    public static bool CanMafiaKill()
-    {
-        if (Main.PlayerStates == null) return false;
-        //マフィアを除いた生きているインポスターの人数  Number of Living Impostors excluding mafia
-        int LivingImpostorsNum = 0;
-        foreach (var pc in Main.AllAlivePlayerControls)
-        {
-            var role = pc.GetCustomRole();
-            if (role != CustomRoles.Mafia && role.IsImpostor()) LivingImpostorsNum++;
-        }
-
-        return LivingImpostorsNum <= 0;
-    }
     public static void FlashColor(Color color, float duration = 1f)
     {
         var hud = DestroyableSingleton<HudManager>.Instance;

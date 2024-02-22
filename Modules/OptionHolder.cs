@@ -72,22 +72,38 @@ public static class Options
     public static Dictionary<CustomRoles, int> roleCounts;
     public static Dictionary<CustomRoles, float> roleSpawnChances;
     public static Dictionary<CustomRoles, OptionItem> CustomRoleCounts;
+    public static Dictionary<CustomRoles, OptionItem> CustomGhostRoleCounts;
     public static Dictionary<CustomRoles, StringOptionItem> CustomRoleSpawnChances;
     public static Dictionary<CustomRoles, IntegerOptionItem> CustomAdtRoleSpawnRate;
-    public static readonly string[] rates =
-    [
-        "Rate0",  "Rate5",  "Rate10", "Rate20", "Rate30", "Rate40",
-        "Rate50", "Rate60", "Rate70", "Rate80", "Rate90", "Rate100",
-    ];
-    public static readonly string[] ratesZeroOne =
-    [
-        "RoleOff", /*"Rate10", "Rate20", "Rate30", "Rate40", "Rate50",
-        "Rate60", "Rate70", "Rate80", "Rate90", */"RoleRate",
-    ];
-    public static readonly string[] ratesToggle =
-    [
-        "RoleOff", "RoleRate", "RoleOn"
-    ];
+    public enum SpawnChance
+    {
+        Chance0,
+        Chance5,
+        Chance10,
+        Chance15,
+        Chance20,
+        Chance25,
+        Chance30,
+        Chance35,
+        Chance40,
+        Chance45,
+        Chance50,
+        Chance55,
+        Chance60,
+        Chance65,
+        Chance70,
+        Chance75,
+        Chance80,
+        Chance85,
+        Chance90,
+        Chance95,
+        Chance100,
+    }
+    private enum RatesZeroOne
+    {
+        RoleOff,
+        RoleRate,
+    }
     public static readonly string[] CheatResponsesName =
     [
         "Ban", "Kick", "NoticeMe","NoticeEveryone", "TempBan", "OnlyCancel"
@@ -201,7 +217,7 @@ public static class Options
     public static OptionItem RoleAssigningAlgorithm;
     public static OptionItem KPDCamouflageMode;
     public static OptionItem EnableUpMode;
-
+    public static OptionItem DisableVoteBan;
 
     // ------------ Game Settings Tab ------------
 
@@ -527,11 +543,6 @@ public static class Options
 
     public static OptionItem GodfatherChangeOpt;
 
-    public static OptionItem MafiaCanKillNum;
-    public static OptionItem LegacyMafia;
-    public static OptionItem MafiaShapeshiftCD;
-    public static OptionItem MafiaShapeshiftDur;
-
     public static OptionItem VindicatorAdditionalVote;
     public static OptionItem VindicatorHideVote;
 
@@ -625,10 +636,6 @@ public static class Options
     public static OptionItem GGCanGuessCrew;
     public static OptionItem GGCanGuessAdt;
     public static OptionItem GGTryHideMsg;
-
-    public static OptionItem RetributionistCanKillNum;
-    public static OptionItem MinimumPlayersAliveToRetri;
-    public static OptionItem CanOnlyRetributeWithTasksDone;
 
     public static OptionItem VeteranSkillCooldown;
     public static OptionItem VeteranSkillDuration;
@@ -805,7 +812,6 @@ public static class Options
     public static OverrideTasksData GuardianTasks;
     public static OverrideTasksData OpportunistTasks;
     public static OverrideTasksData MayorTasks;
-    public static OverrideTasksData RetributionistTasks;
     public static OverrideTasksData TimeManagerTasks;
 
 
@@ -839,18 +845,7 @@ public static class Options
         }
     }
 
-    public static int GetRoleSpawnMode(CustomRoles role)
-    {
-        var mode = CustomRoleSpawnChances.TryGetValue(role, out var sc) ? sc.GetChance() : 0;
-        return mode switch
-        {
-            0 => 0,
-            1 => 1,
-            2 => 2,
-            100 => 1,
-            _ => 1,
-        };
-    }
+    public static int GetRoleSpawnMode(CustomRoles role) => CustomRoleSpawnChances.TryGetValue(role, out var sc) ? sc.GetChance() : 0;
     public static int GetRoleCount(CustomRoles role)
     {
         var mode = GetRoleSpawnMode(role);
@@ -863,12 +858,11 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 27700 lasted id for roles/add-ons (Next use 27800)
-        // Limit id for  roles/add-ons --- "59999"
+        // 27900 lasted id for roles/add-ons (Next use 28000)
+        // Limit id for roles/add-ons --- "59999"
         //#######################################
-        
-        // You can use: 20906 (sunglasses), 22004 (Glow)
 
+        // You can use: 20906 (sunglasses), 22004 (Glow)
 
 
         // Start Load Settings
@@ -887,6 +881,7 @@ public static class Options
 
         #region Roles/Add-ons Settings
         CustomRoleCounts = [];
+        CustomGhostRoleCounts = [];
         CustomRoleSpawnChances = [];
         CustomAdtRoleSpawnRate = [];
 
@@ -1274,22 +1269,6 @@ public static class Options
         Morphling.SetupCustomOption();
 
         /*
-         * Nemesis
-         */
-        SetupRoleOptions(3600, TabGroup.ImpostorRoles, CustomRoles.Mafia);
-        MafiaCanKillNum = IntegerOptionItem.Create(3602, "MafiaCanKillNum", new(0, 15, 1), 1, TabGroup.ImpostorRoles, false)
-        .SetParent(CustomRoleSpawnChances[CustomRoles.Mafia])
-            .SetValueFormat(OptionFormat.Players);
-        LegacyMafia = BooleanOptionItem.Create(3603, "LegacyMafia", false, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Mafia]);
-        MafiaShapeshiftCD = FloatOptionItem.Create(3604, "ShapeshiftCooldown", new(1f, 180f, 1f), 15f, TabGroup.ImpostorRoles, false)
-            .SetParent(LegacyMafia)
-            .SetValueFormat(OptionFormat.Seconds);
-        MafiaShapeshiftDur = FloatOptionItem.Create(3605, "ShapeshiftDuration", new(1f, 180f, 1f), 30f, TabGroup.ImpostorRoles, false)
-            .SetParent(LegacyMafia)
-            .SetValueFormat(OptionFormat.Seconds);
-
-        /*
          * Time Thief
          */
         TimeThief.SetupCustomOption();
@@ -1495,10 +1474,21 @@ public static class Options
         /*
          * Parasite
          */
-        SetupSingleRoleOptions(5900, TabGroup.ImpostorRoles, CustomRoles.Parasite, 1, zeroOne: false);
+        SetupSingleRoleOptions(5900, TabGroup.ImpostorRoles, CustomRoles.Parasite, zeroOne: false);
         ParasiteCD = FloatOptionItem.Create(5902, "KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Parasite])
             .SetValueFormat(OptionFormat.Seconds);
+
+        /*
+         * Impostor Ghost Roles
+        */
+        TextOptionItem.Create(10000111, "RoleType.ImpGhost", TabGroup.ImpostorRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(255, 25, 25, byte.MaxValue));
+
+        Minion.SetupCustomOption();
+
+        Nemesis.SetupCustomOption();
 
         #endregion
 
@@ -1905,16 +1895,6 @@ public static class Options
             .SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser])
             .SetColor(Color.green);
         
-        SetupRoleOptions(11000, TabGroup.CrewmateRoles, CustomRoles.Retributionist);
-        RetributionistCanKillNum = IntegerOptionItem.Create(11002, "RetributionistCanKillNum", new(1, 15, 1), 1, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
-            .SetValueFormat(OptionFormat.Players);
-        MinimumPlayersAliveToRetri = IntegerOptionItem.Create(11003, "MinimumPlayersAliveToRetri", new(0, 15, 1), 5, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
-            .SetValueFormat(OptionFormat.Players);
-        CanOnlyRetributeWithTasksDone = BooleanOptionItem.Create(11004, "CanOnlyRetributeWithTasksDone", true, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist]);
-        RetributionistTasks = OverrideTasksData.Create(11005, TabGroup.CrewmateRoles, CustomRoles.Retributionist);
         
         Reverie.SetupCustomOption();
         
@@ -1984,6 +1964,18 @@ public static class Options
         Monitor.SetupCustomOption();
 
         //ChiefOfPolice.SetupCustomOption();
+
+
+        /*
+         * Crewmate Ghost Roles
+        */
+        TextOptionItem.Create(10000101, "RoleType.CrewGhost", TabGroup.CrewmateRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(140, 255, 255, byte.MaxValue));
+
+        Warden.SetupCustomOptions();
+
+        Retributionist.SetupCustomOptions();
 
         #endregion
 
@@ -2540,6 +2532,7 @@ public static class Options
 
         CheatResponses = StringOptionItem.Create(60250, "CheatResponses", CheatResponsesName, 0, TabGroup.SystemSettings, false)
             .SetHeader(true);
+        DisableVoteBan = BooleanOptionItem.Create(60260, "DisableVoteBan", false, TabGroup.SystemSettings, true);
 
         AutoDisplayKillLog = BooleanOptionItem.Create(60270, "AutoDisplayKillLog", true, TabGroup.SystemSettings, false)
             .SetHeader(true)
@@ -3212,7 +3205,7 @@ public static class Options
         LadderDeath = BooleanOptionItem.Create(60760, "LadderDeath", false, TabGroup.GameSettings, false)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue))
             .HideInFFA();
-        LadderDeathChance = StringOptionItem.Create(60761, "LadderDeathChance", rates[1..], 0, TabGroup.GameSettings, false)
+        LadderDeathChance = StringOptionItem.Create(60761, "LadderDeathChance", EnumHelper.GetAllNames<SpawnChance>()[1..], 0, TabGroup.GameSettings, false)
             .SetParent(LadderDeath);
 
         // 修正首刀时间
@@ -3260,13 +3253,19 @@ public static class Options
 
     public static void SetupRoleOptions(int id, TabGroup tab, CustomRoles role, CustomGameMode customGameMode = CustomGameMode.Standard, bool zeroOne = false)
     {
-        var spawnOption = StringOptionItem.Create(id, role.ToString(), zeroOne ? ratesZeroOne : ratesToggle, 0, tab, false).SetColor(Utils.GetRoleColor(role))
+        var spawnOption = StringOptionItem.Create(id, role.ToString(), zeroOne ? EnumHelper.GetAllNames<RatesZeroOne>() : EnumHelper.GetAllNames<SpawnChance>(), 0, tab, false).SetColor(Utils.GetRoleColor(role))
             .SetHeader(true)
             .SetGameMode(customGameMode) as StringOptionItem;
+        
         var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(1, 15, 1), 1, tab, false)
         .SetParent(spawnOption)
             .SetValueFormat(OptionFormat.Players)
             .SetGameMode(customGameMode);
+
+        if (role.IsGhostRole())
+        {
+            CustomGhostRoleCounts.Add(role, countOption);
+        }
 
         CustomRoleSpawnChances.Add(role, spawnOption);
         CustomRoleCounts.Add(role, countOption);
@@ -3274,7 +3273,7 @@ public static class Options
     private static void SetupLoversRoleOptionsToggle(int id, CustomGameMode customGameMode = CustomGameMode.Standard)
     {
         var role = CustomRoles.Lovers;
-        var spawnOption = StringOptionItem.Create(id, role.ToString(), ratesZeroOne, 0, TabGroup.Addons, false).SetColor(Utils.GetRoleColor(role))
+        var spawnOption = StringOptionItem.Create(id, role.ToString(), EnumHelper.GetAllNames<RatesZeroOne>(), 0, TabGroup.Addons, false).SetColor(Utils.GetRoleColor(role))
             .SetHeader(true)
             .SetGameMode(customGameMode) as StringOptionItem;
 
@@ -3315,7 +3314,7 @@ public static class Options
 
     public static void SetupAdtRoleOptions(int id, CustomRoles role, CustomGameMode customGameMode = CustomGameMode.Standard, bool canSetNum = false, TabGroup tab = TabGroup.Addons, bool canSetChance = true)
     {
-        var spawnOption = StringOptionItem.Create(id, role.ToString(), ratesZeroOne, 0, tab, false).SetColor(Utils.GetRoleColor(role))
+        var spawnOption = StringOptionItem.Create(id, role.ToString(), EnumHelper.GetAllNames<RatesZeroOne>(), 0, tab, false).SetColor(Utils.GetRoleColor(role))
             .SetHeader(true)
             .SetGameMode(customGameMode) as StringOptionItem;
 
@@ -3335,39 +3334,22 @@ public static class Options
         CustomRoleSpawnChances.Add(role, spawnOption);
         CustomRoleCounts.Add(role, countOption);
     }
-    public static void SetupSyndicateRoleOptions(int id, CustomRoles role, CustomGameMode customGameMode = CustomGameMode.Standard, bool canSetNum = false, TabGroup tab = TabGroup.Addons, bool canSetChance = true)
+
+    public static void SetupSingleRoleOptions(int id, TabGroup tab, CustomRoles role, int count = 1, CustomGameMode customGameMode = CustomGameMode.Standard, bool zeroOne = false)
     {
-        var spawnOption = StringOptionItem.Create(id, role.ToString(), ratesZeroOne, 0, tab, false).SetColor(Utils.GetRoleColor(role))
+        var spawnOption = StringOptionItem.Create(id, role.ToString(), zeroOne ? EnumHelper.GetAllNames<RatesZeroOne>() : EnumHelper.GetAllNames<SpawnChance>(), 0, tab, false).SetColor(Utils.GetRoleColor(role))
             .SetHeader(true)
             .SetGameMode(customGameMode) as StringOptionItem;
 
-        var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(1, canSetNum ? 5 : 1, 1), 3, tab, false)
-        .SetParent(spawnOption)
-            .SetValueFormat(OptionFormat.Players)
-            .SetHidden(!canSetNum)
-            .SetGameMode(customGameMode);
-
-        var spawnRateOption = IntegerOptionItem.Create(id + 2, "AdditionRolesSpawnRate", new(0, 100, 5), canSetChance ? 80 : 100, tab, false)
-        .SetParent(spawnOption)
-            .SetValueFormat(OptionFormat.Percent)
-            .SetHidden(!canSetChance)
-            .SetGameMode(customGameMode) as IntegerOptionItem;
-
-        CustomAdtRoleSpawnRate.Add(role, spawnRateOption);
-        CustomRoleSpawnChances.Add(role, spawnOption);
-        CustomRoleCounts.Add(role, countOption);
-    }
-
-    public static void SetupSingleRoleOptions(int id, TabGroup tab, CustomRoles role, int count, CustomGameMode customGameMode = CustomGameMode.Standard, bool zeroOne = false)
-    {
-        var spawnOption = StringOptionItem.Create(id, role.ToString(), zeroOne ? ratesZeroOne : ratesToggle, 0, tab, false).SetColor(Utils.GetRoleColor(role))
-            .SetHeader(true)
-            .SetGameMode(customGameMode) as StringOptionItem;
-        // 初期値,最大値,最小値が同じで、stepが0のどうやっても変えることができない個数オプション
         var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(count, count, count), count, tab, false)
-        .SetParent(spawnOption)
+            .SetParent(spawnOption)
             .SetHidden(true)
             .SetGameMode(customGameMode);
+
+        if (role.IsGhostRole())
+        {
+            CustomGhostRoleCounts.Add(role, countOption);
+        }
 
         CustomRoleSpawnChances.Add(role, spawnOption);
         CustomRoleCounts.Add(role, countOption);

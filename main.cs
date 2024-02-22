@@ -40,14 +40,14 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0218.160.0001"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "1.6.0 dev 1";
+    public const string PluginVersion = "2024.0222.160.0003"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "1.6.0 dev 3";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
 
     /******************* Change one of the three variables to true before making a release. *******************/
     public static readonly bool Canary = false; // INACTIVE - Latest: V1.5.1 Canary 5
     public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.5.1
-    public static readonly bool devRelease = true; // ACTIVE - Latest: V1.6.0 Dev 1
+    public static readonly bool devRelease = true; // ACTIVE - Latest: V1.6.0 Dev 3
 
     public static bool hasAccess = true;
 
@@ -173,8 +173,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, float> AssassinTimer = [];
     public static Dictionary<byte, PlayerControl> CursedPlayers = [];
     public static Dictionary<byte, bool> isCurseAndKill = [];
-    public static Dictionary<byte, int> MafiaRevenged = [];
-    public static Dictionary<byte, int> RetributionistRevenged = [];
     public static Dictionary<byte, int> GuesserGuessed = [];
     public static Dictionary<byte, int> CapitalismAddTask = [];
     public static Dictionary<byte, int> CapitalismAssignTask = [];
@@ -229,7 +227,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, byte> Provoked = [];
     public static Dictionary<byte, float> DovesOfNeaceNumOfUsed = [];
 
-    public static Dictionary<byte, CustomRoles> DevRole = [];
     public static List<byte> GodfatherTarget = [];
     public static Dictionary<byte, int> CrewpostorTasksDone = [];
     
@@ -238,6 +235,8 @@ public class Main : BasePlugin
     
     public static Dictionary<byte, CustomRoles> ErasedRoleStorage = [];
     public static Dictionary<string, int> PlayerQuitTimes = [];
+
+    
 
     //public static IEnumerable<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null);
     //public static IEnumerable<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId));
@@ -590,7 +589,8 @@ public enum CustomRoles
     Mercenary, //mercenary
     Miner,
     Morphling,
-    Mafia, //nemesis
+    Nemesis,
+    Minion,
     Assassin, //ninja
     Nuker,
     Parasite,
@@ -629,8 +629,8 @@ public enum CustomRoles
     // Vanilla Remakes
     CrewmateTOHE,
     EngineerTOHE,
-    GuardianAngelTOHE,
     ScientistTOHE,
+    GuardianAngelTOHE,
 
     //Crewmate
     Addict,
@@ -775,6 +775,7 @@ public enum CustomRoles
     Virus,
     Vulture,
     Werewolf,
+    Warden,
     Workaholic,
     Wraith,
     Stealth,
@@ -874,6 +875,7 @@ public enum CustomRoles
     // QuickFix
     
     //You need to put roles in order by their name
+    
 }
 //WinData
 public enum CustomWinner
