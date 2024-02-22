@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TOHE.Roles.Impostor;
+﻿using TOHE.Roles.Impostor;
 
 namespace TOHE.Roles.Core;
 
@@ -19,7 +14,6 @@ public static class CustomRoleManager
         CustomRoles.Arrogance => new Arrogance(),
         CustomRoles.Anonymous => new Anonymous(),
         CustomRoles.AntiAdminer => new AntiAdminer(),
-        //CustomRoles.Arrogance => new Arrogance(),
         //CustomRoles.Bard => new Bard(),
         //CustomRoles.Blackmailer => new Blackmailer(),
         //CustomRoles.Bomber => new Bomber(),
