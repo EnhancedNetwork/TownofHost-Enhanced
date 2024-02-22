@@ -1,5 +1,7 @@
 using AmongUs.GameOptions;
 using System.Linq;
+using System;
+using System.Collections.Generic;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Crewmate;
@@ -38,7 +40,7 @@ static class CustomRolesHelper
                 CustomRoles.President => CustomRoles.Crewmate,
                 CustomRoles.Marshall => CustomRoles.Crewmate,
                 CustomRoles.SabotageMaster => CustomRoles.Engineer,
-                CustomRoles.Mafia => Options.LegacyMafia.GetBool() ? CustomRoles.Shapeshifter : CustomRoles.Impostor,
+                CustomRoles.Nemesis => CustomRoles.GuardianAngel,
                 CustomRoles.Terrorist => CustomRoles.Engineer,
                 CustomRoles.Executioner => CustomRoles.Crewmate,
                 CustomRoles.Lawyer => CustomRoles.Crewmate,
@@ -94,6 +96,8 @@ static class CustomRolesHelper
                 CustomRoles.Detective => CustomRoles.Crewmate,
                 CustomRoles.God => CustomRoles.Crewmate,
                 CustomRoles.GuardianAngelTOHE => CustomRoles.GuardianAngel,
+                CustomRoles.Warden => CustomRoles.GuardianAngel,
+                CustomRoles.Minion => CustomRoles.GuardianAngel,
                 CustomRoles.Zombie => CustomRoles.Impostor,
                 CustomRoles.Mario => CustomRoles.Engineer,
                 CustomRoles.AntiAdminer => CustomRoles.Impostor,
@@ -149,7 +153,7 @@ static class CustomRolesHelper
                 CustomRoles.Bloodhound => CustomRoles.Crewmate,
                 CustomRoles.Tracker => CustomRoles.Crewmate,
                 CustomRoles.Merchant => CustomRoles.Crewmate,
-                CustomRoles.Retributionist => CustomRoles.Crewmate,
+                CustomRoles.Retributionist => CustomRoles.GuardianAngel,
                 CustomRoles.Guardian => CustomRoles.Crewmate,
                 CustomRoles.Addict => CustomRoles.Engineer,
                 CustomRoles.Mole => CustomRoles.Engineer,
@@ -284,7 +288,18 @@ static class CustomRolesHelper
 
         return vanillaSideHasKillButton;
     }
-    //This is a overall check for vanilla clients to see if they are imp basis
+    //This is a overall check for vanilla clients to see if they are imp basis 
+    public static bool IsGhostRole(this CustomRoles role)
+    {
+        return role is
+            CustomRoles.GuardianAngelTOHE or
+            CustomRoles.EvilSpirit or
+            CustomRoles.Warden or
+            CustomRoles.Retributionist or
+            CustomRoles.Nemesis or
+            CustomRoles.Minion;
+
+    }
     public static bool IsAdditionRole(this CustomRoles role)
     {
         return role is
@@ -391,7 +406,6 @@ static class CustomRolesHelper
             CustomRoles.Circumvent or
             CustomRoles.Swift;
     }
-
     public static bool IsAmneMaverick(this CustomRoles role) // ROLE ASSIGNING, NOT NEUTRAL TYPE
     {
         return role is
@@ -701,7 +715,7 @@ static class CustomRolesHelper
             CustomRoles.Puppeteer or
             CustomRoles.TimeThief or
             CustomRoles.Trickster or
-            CustomRoles.Mafia or
+            CustomRoles.Nemesis or
             CustomRoles.Mastermind or
             CustomRoles.Chronomancer or
             CustomRoles.Stealth or
@@ -743,7 +757,8 @@ static class CustomRolesHelper
             CustomRoles.EvilMini or
             CustomRoles.Blackmailer or
             CustomRoles.Pitfall or
-            CustomRoles.Instigator;
+            CustomRoles.Instigator or
+            CustomRoles.Minion;
     }
     public static bool IsNeutral(this CustomRoles role)
     {
@@ -1027,7 +1042,6 @@ static class CustomRolesHelper
             CustomRoles.Mayor or
             CustomRoles.Captain or
             CustomRoles.Transporter or
-            CustomRoles.Retributionist or
             CustomRoles.Benefactor or
             CustomRoles.Alchemist;
     }
@@ -1114,7 +1128,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Judge)
                     || pc.Is(CustomRoles.CopyCat)
                     || pc.Is(CustomRoles.Doomsayer)
-                    || pc.Is(CustomRoles.Mafia)
+                    || pc.Is(CustomRoles.Nemesis)
                     || pc.Is(CustomRoles.Councillor)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
@@ -1462,7 +1476,7 @@ static class CustomRolesHelper
                 break;
 
             case CustomRoles.Mimic:
-                if (pc.Is(CustomRoles.Mafia))
+                if (pc.Is(CustomRoles.Nemesis))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -1507,7 +1521,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Inhibitor)
                     || pc.Is(CustomRoles.Saboteur)
                     || pc.Is(CustomRoles.Swift)
-                    || pc.Is(CustomRoles.Mafia)
+                    || pc.Is(CustomRoles.Nemesis)
                     || pc.Is(CustomRoles.Sniper)
                     || pc.Is(CustomRoles.Fireworker)
                     || pc.Is(CustomRoles.Ludopath)
@@ -1541,7 +1555,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Mastermind)
                     || pc.Is(CustomRoles.Warlock)
                     || pc.Is(CustomRoles.Witch)
-                    || pc.Is(CustomRoles.Mafia)
+                    || pc.Is(CustomRoles.Nemesis)
                     || pc.Is(CustomRoles.Mare)
                     || pc.Is(CustomRoles.Clumsy)
                     || pc.Is(CustomRoles.Wildling)
@@ -1810,6 +1824,13 @@ static class CustomRolesHelper
     public static bool IsNeutralKillerTeam(this CustomRoles role) => role.IsNK() && !role.IsMadmate();
     public static bool IsPassiveNeutralTeam(this CustomRoles role) => role.IsNonNK() && !role.IsMadmate();
     public static bool IsNNK(this CustomRoles role) => role.IsNeutral() && !role.IsNK();
+    public static bool IsSpeedRole(this CustomRoles role)
+    {
+        return role is
+            CustomRoles.Flash or
+            CustomRoles.Alchemist or
+            CustomRoles.Tired;
+    }
     public static bool IsVanilla(this CustomRoles role)
     {
         return role is
@@ -1882,6 +1903,8 @@ static class CustomRolesHelper
            CustomRoles.Bandit => CountTypes.Bandit,
            CustomRoles.Poisoner => CountTypes.Poisoner,
            CustomRoles.Pelican => CountTypes.Pelican,
+           CustomRoles.Minion => CountTypes.Impostor,
+           CustomRoles.Nemesis => CountTypes.Impostor,
            CustomRoles.Gamer => CountTypes.Gamer,
            CustomRoles.BloodKnight => CountTypes.BloodKnight,
            CustomRoles.Succubus => CountTypes.Succubus,
@@ -1917,6 +1940,7 @@ static class CustomRolesHelper
            CustomRoles.Spiritcaller => CountTypes.Spiritcaller,
            CustomRoles.RuthlessRomantic => CountTypes.RuthlessRomantic,
            CustomRoles.SchrodingersCat => CountTypes.None,
+           CustomRoles.Solsticer => CountTypes.None,
            _ => role.IsImpostorTeam() ? CountTypes.Impostor : CountTypes.Crew,
 
            // CustomRoles.Phantom => CountTypes.OutOfGame,
