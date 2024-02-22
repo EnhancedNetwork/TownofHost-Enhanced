@@ -2766,6 +2766,7 @@
   "PenguinMeetingKill": "Kill the target if a meeting starts during dragging",
   "PenguinKillButtonText": "Drag",
   "PenguinTimerText": "Drag Timer",
+  "PenguinTargetOnCheckMurder": "You are grabbed, Try escape that first!",
   "WitnessTime": "Max Time after killing where killer appears red",
   "WitnessButtonText": "Examine",
   "WitnessFoundInnocent": "<color=#00ff00>✓</color>",
