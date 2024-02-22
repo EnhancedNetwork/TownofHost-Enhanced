@@ -1415,6 +1415,12 @@ class MurderPlayerPatch
         if (Main.FirstDied == "")
             Main.FirstDied = target.GetClient().GetHashedPuid();
 
+        if (Main.PlayerStates.TryGetValue(target.PlayerId, out var targetState))
+            targetState.Role?.OnPlayerDead(killer, target);
+
+        if (Main.PlayerStates.TryGetValue(killer.PlayerId, out var killerState))
+            killerState.Role?.OnMurder(killer, target);
+
         if (target.Is(CustomRoles.Bait))
         {
             Bait.BaitAfterDeathTasks(killer, target);
@@ -1488,11 +1494,6 @@ class MurderPlayerPatch
 
         if (Lawyer.Target.ContainsValue(target.PlayerId))
             Lawyer.ChangeRoleByTarget(target);
-
-        foreach (var state in Main.PlayerStates.Values.Where(p => p.Role.IsEnable))
-        {
-            state.Role.OnPlayerDead(killer, target);
-        }
 
         if (Mortician.IsEnable) Mortician.OnPlayerDead(target);
         if (Bloodhound.IsEnable) Bloodhound.OnPlayerDead(target);
