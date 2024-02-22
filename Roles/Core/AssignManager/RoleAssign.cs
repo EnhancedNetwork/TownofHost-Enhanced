@@ -210,12 +210,15 @@ public static class RoleAssign
                         AlwaysImpRoles.Add(item.Role);
                     }
                 }
-                else /*if (item.SpawnChance <= rd.Next(1, 99))*/
+                else
                 {
+                    // Make "Spawn Chance ÷ 5 = x" (Example: 65 ÷ 5 = 13)
                     for (int j = 0; j < item.SpawnChance / 5; j++)
                     {
+                        // Add 'MaxCount' (1) times
                         for (int k = 0; k < item.MaxCount; k++)
                         {
+                            // Add Imp roles 'x' times (13)
                             ChanceImpRoles.Add(item.Role);
                         }
                     }
@@ -255,7 +258,10 @@ public static class RoleAssign
                     var selectesItem = rd.Next(0, ChanceImpRoles.Count);
                     var selected = ChanceImpRoles[selectesItem];
                     var info = ImpRoleCounts.FirstOrDefault(x => x.Role == selected);
-                    ChanceImpRoles.Remove(selected);
+
+                    // Remove 'x' times
+                    for (int j = 0; j < info.SpawnChance / 5; j++)
+                        ChanceImpRoles.Remove(selected);
 
                     FinalRolesList.Add(selected);
                     info.AssignedCount++;
@@ -264,7 +270,9 @@ public static class RoleAssign
 
                     Imps = ImpRoleCounts;
 
-                    if (info.AssignedCount >= info.MaxCount) while (ChanceImpRoles.Contains(selected)) ChanceImpRoles.Remove(selected);
+                    if (info.AssignedCount >= info.MaxCount)
+                        while (ChanceImpRoles.Contains(selected))
+                            ChanceImpRoles.Remove(selected);
 
                     if (readyRoleNum >= playerCount) goto EndOfAssign;
                     if (readyImpNum >= optImpNum) break;
@@ -276,8 +284,8 @@ public static class RoleAssign
         {
             // Neutral Non-Killing Roles
             {
-                List<CustomRoles> AlwaysNNKRoles = [];
-                List<CustomRoles> ChanceNNKRoles = [];
+                List<CustomRoles> AlwaysNonNKRoles = [];
+                List<CustomRoles> ChanceNonNKRoles = [];
                 for (int i = 0; i < Roles[RoleAssignType.NonKillingNeutral].Count; i++)
                 {
                     RoleAssignInfo item = Roles[RoleAssignType.NonKillingNeutral][i];
@@ -285,32 +293,35 @@ public static class RoleAssign
                     {
                         for (int j = 0; j < item.MaxCount; j++)
                         {
-                            AlwaysNNKRoles.Add(item.Role);
+                            AlwaysNonNKRoles.Add(item.Role);
                         }
                     }
-                    else /*if (item.SpawnChance <= rd.Next(1, 99))*/
+                    else
                     {
+                        // Make "Spawn Chance ÷ 5 = x" (Example: 65 ÷ 5 = 13)
                         for (int j = 0; j < item.SpawnChance / 5; j++)
                         {
+                            // Add 'MaxCount' (1) times
                             for (int k = 0; k < item.MaxCount; k++)
                             {
-                                ChanceNNKRoles.Add(item.Role);
+                                // Add Non-NK roles 'x' times (13)
+                                ChanceNonNKRoles.Add(item.Role);
                             }
                         }
                     }
                 }
 
-                RoleAssignInfo[] NNKRoleCounts = AlwaysNNKRoles.Distinct().Select(GetAssignInfo).ToArray().AddRangeToArray(ChanceNNKRoles.Distinct().Select(GetAssignInfo).ToArray());
-                NNKs = NNKRoleCounts;
+                RoleAssignInfo[] NonNKRoleCounts = AlwaysNonNKRoles.Distinct().Select(GetAssignInfo).ToArray().AddRangeToArray(ChanceNonNKRoles.Distinct().Select(GetAssignInfo).ToArray());
+                NNKs = NonNKRoleCounts;
 
                 // Assign roles set to 100%
                 if (readyNonNeutralKillingNum < optNonNeutralKillingNum)
                 {
-                    while (AlwaysNNKRoles.Count > 0 && optNonNeutralKillingNum > 0)
+                    while (AlwaysNonNKRoles.Count > 0 && optNonNeutralKillingNum > 0)
                     {
-                        var selected = AlwaysNNKRoles[rd.Next(0, AlwaysNNKRoles.Count)];
-                        var info = NNKRoleCounts.FirstOrDefault(x => x.Role == selected);
-                        AlwaysNNKRoles.Remove(selected);
+                        var selected = AlwaysNonNKRoles[rd.Next(0, AlwaysNonNKRoles.Count)];
+                        var info = NonNKRoleCounts.FirstOrDefault(x => x.Role == selected);
+                        AlwaysNonNKRoles.Remove(selected);
                         if (info.AssignedCount >= info.MaxCount) continue;
 
                         FinalRolesList.Add(selected);
@@ -318,7 +329,7 @@ public static class RoleAssign
                         readyRoleNum++;
                         readyNonNeutralKillingNum++;
 
-                        NNKs = NNKRoleCounts;
+                        NNKs = NonNKRoleCounts;
 
                         if (readyRoleNum >= playerCount) goto EndOfAssign;
                         if (readyNonNeutralKillingNum >= optNonNeutralKillingNum) break;
@@ -328,21 +339,26 @@ public static class RoleAssign
                 // Assign other roles when needed
                 if (readyRoleNum < playerCount && readyNonNeutralKillingNum < optNonNeutralKillingNum)
                 {
-                    while (ChanceNNKRoles.Count > 0 && optNonNeutralKillingNum > 0)
+                    while (ChanceNonNKRoles.Count > 0 && optNonNeutralKillingNum > 0)
                     {
-                        var selectesItem = rd.Next(0, ChanceNNKRoles.Count);
-                        var selected = ChanceNNKRoles[selectesItem];
-                        var info = NNKRoleCounts.FirstOrDefault(x => x.Role == selected);
-                        ChanceNNKRoles.Remove(selected);
+                        var selectesItem = rd.Next(0, ChanceNonNKRoles.Count);
+                        var selected = ChanceNonNKRoles[selectesItem];
+                        var info = NonNKRoleCounts.FirstOrDefault(x => x.Role == selected);
+                        
+                        // Remove 'x' times
+                        for (int j = 0; j < info.SpawnChance / 5; j++)
+                            ChanceNonNKRoles.Remove(selected);
 
                         FinalRolesList.Add(selected);
                         info.AssignedCount++;
                         readyRoleNum++;
                         readyNonNeutralKillingNum++;
 
-                        NNKs = NNKRoleCounts;
+                        NNKs = NonNKRoleCounts;
 
-                        if (info.AssignedCount >= info.MaxCount) while (ChanceNNKRoles.Contains(selected)) ChanceNNKRoles.Remove(selected);
+                        if (info.AssignedCount >= info.MaxCount)
+                            while (ChanceNonNKRoles.Contains(selected))
+                                ChanceNonNKRoles.Remove(selected);
 
                         if (readyRoleNum >= playerCount) goto EndOfAssign;
                         if (readyNonNeutralKillingNum >= optNonNeutralKillingNum) break;
@@ -364,12 +380,15 @@ public static class RoleAssign
                             AlwaysNKRoles.Add(item.Role);
                         }
                     }
-                    else /*if (item.SpawnChance <= rd.Next(1, 99))*/
+                    else
                     {
+                        // Make "Spawn Chance ÷ 5 = x" (Example: 65 ÷ 5 = 13)
                         for (int j = 0; j < item.SpawnChance / 5; j++)
                         {
+                            // Add 'MaxCount' (1) times
                             for (int k = 0; k < item.MaxCount; k++)
                             {
+                                // Add NK roles 'x' times (13)
                                 ChanceNKRoles.Add(item.Role);
                             }
                         }
@@ -409,7 +428,10 @@ public static class RoleAssign
                         var selectesItem = rd.Next(0, ChanceNKRoles.Count);
                         var selected = ChanceNKRoles[selectesItem];
                         var info = NKRoleCounts.FirstOrDefault(x => x.Role == selected);
-                        ChanceNKRoles.Remove(selected);
+
+                        // Remove 'x' times
+                        for (int j = 0; j < info.SpawnChance / 5; j++)
+                            ChanceNKRoles.Remove(selected);
 
                         FinalRolesList.Add(selected);
                         info.AssignedCount++;
@@ -441,12 +463,15 @@ public static class RoleAssign
                         AlwaysCrewRoles.Add(item.Role);
                     }
                 }
-                else /*if (item.SpawnChance <= rd.Next(1, 99))*/
+                else
                 {
+                    // Make "Spawn Chance ÷ 5 = x" (Example: 65 ÷ 5 = 13)
                     for (int j = 0; j < item.SpawnChance / 5; j++)
                     {
+                        // Add 'MaxCount' (1) times
                         for (int k = 0; k < item.MaxCount; k++)
                         {
+                            // Add Crewmate roles 'x' times (13)
                             ChanceCrewRoles.Add(item.Role);
                         }
                     }
@@ -484,7 +509,10 @@ public static class RoleAssign
                     var selectesItem = rd.Next(0, ChanceCrewRoles.Count);
                     var selected = ChanceCrewRoles[selectesItem];
                     var info = CrewRoleCounts.FirstOrDefault(x => x.Role == selected);
-                    ChanceCrewRoles.Remove(selected);
+
+                    // Remove 'x' times
+                    for (int j = 0; j < info.SpawnChance / 5; j++)
+                        ChanceCrewRoles.Remove(selected);
 
                     FinalRolesList.Add(selected);
                     info.AssignedCount++;
