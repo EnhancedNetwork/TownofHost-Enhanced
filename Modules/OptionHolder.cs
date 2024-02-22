@@ -75,30 +75,30 @@ public static class Options
     public static Dictionary<CustomRoles, OptionItem> CustomGhostRoleCounts;
     public static Dictionary<CustomRoles, StringOptionItem> CustomRoleSpawnChances;
     public static Dictionary<CustomRoles, IntegerOptionItem> CustomAdtRoleSpawnRate;
-    public static readonly string[] rates =
-    [
-        "Rate0",
-        "Rate5",
-        "Rate10",
-        "Rate15",
-        "Rate20",
-        "Rate25",
-        "Rate30",
-        "Rate35",
-        "Rate40",
-        "Rate45",
-        "Rate50",
-        "Rate55",
-        "Rate60",
-        "Rate65",
-        "Rate70",
-        "Rate75",
-        "Rate80",
-        "Rate85",
-        "Rate90",
-        "Rate95",
-        "Rate100",
-    ];
+    public enum Rates : byte
+    {
+        Rate0,
+        Rate5,
+        Rate10,
+        Rate15,
+        Rate20,
+        Rate25,
+        Rate30,
+        Rate35,
+        Rate40,
+        Rate45,
+        Rate50,
+        Rate55,
+        Rate60,
+        Rate65,
+        Rate70,
+        Rate75,
+        Rate80,
+        Rate85,
+        Rate90,
+        Rate95,
+        Rate100,
+    }
     public static readonly string[] ratesZeroOne =
     [
         "RoleOff", "RoleRate",
@@ -3208,7 +3208,7 @@ public static class Options
         LadderDeath = BooleanOptionItem.Create(60760, "LadderDeath", false, TabGroup.GameSettings, false)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue))
             .HideInFFA();
-        LadderDeathChance = StringOptionItem.Create(60761, "LadderDeathChance", rates[1..], 0, TabGroup.GameSettings, false)
+        LadderDeathChance = StringOptionItem.Create(60761, "LadderDeathChance", EnumHelper.GetAllNames<Rates>()[1..], 0, TabGroup.GameSettings, false)
             .SetParent(LadderDeath);
 
         // 修正首刀时间
@@ -3256,7 +3256,7 @@ public static class Options
 
     public static void SetupRoleOptions(int id, TabGroup tab, CustomRoles role, CustomGameMode customGameMode = CustomGameMode.Standard, bool zeroOne = false)
     {
-        var spawnOption = StringOptionItem.Create(id, role.ToString(), zeroOne ? ratesZeroOne : rates, 0, tab, false).SetColor(Utils.GetRoleColor(role))
+        var spawnOption = StringOptionItem.Create(id, role.ToString(), zeroOne ? ratesZeroOne : EnumHelper.GetAllNames<Rates>(), 0, tab, false).SetColor(Utils.GetRoleColor(role))
             .SetHeader(true)
             .SetGameMode(customGameMode) as StringOptionItem;
         
@@ -3340,7 +3340,7 @@ public static class Options
 
     public static void SetupSingleRoleOptions(int id, TabGroup tab, CustomRoles role, int count = 1, CustomGameMode customGameMode = CustomGameMode.Standard, bool zeroOne = false)
     {
-        var spawnOption = StringOptionItem.Create(id, role.ToString(), zeroOne ? ratesZeroOne : rates, 0, tab, false).SetColor(Utils.GetRoleColor(role))
+        var spawnOption = StringOptionItem.Create(id, role.ToString(), zeroOne ? ratesZeroOne : EnumHelper.GetAllNames<Rates>(), 0, tab, false).SetColor(Utils.GetRoleColor(role))
             .SetHeader(true)
             .SetGameMode(customGameMode) as StringOptionItem;
 
