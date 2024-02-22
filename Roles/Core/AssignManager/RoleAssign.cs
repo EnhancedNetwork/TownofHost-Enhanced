@@ -86,7 +86,7 @@ public class RoleAssign
         foreach (var role in EnumHelper.GetAllValues<CustomRoles>())
         {
             int chance = role.GetMode();
-            if (role.IsVanilla() || chance == 0 || role.IsAdditionRole()) continue;
+            if (role.IsVanilla() || chance == 0 || role.IsAdditionRole() || role.IsGhostRole()) continue;
             switch (role)
             {
                 case CustomRoles.DarkHide when GameStates.FungleIsActive:
