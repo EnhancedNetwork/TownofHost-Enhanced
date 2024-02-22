@@ -119,7 +119,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
         }
 
         if (Main.PlayerStates.TryGetValue(player.PlayerId, out var playerState))
-            playerState.Role.ApplyGameOptions(opt, player.PlayerId);
+            playerState.Role?.ApplyGameOptions(opt, player.PlayerId);
 
         switch (role)
         {

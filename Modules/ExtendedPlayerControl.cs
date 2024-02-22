@@ -471,8 +471,8 @@ static class ExtendedPlayerControl
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
         if (Mastermind.ManipulatedPlayers.ContainsKey(pc.PlayerId)) return true;
 
-        if (Main.PlayerStates.TryGetValue(pc.PlayerId, out var state))
-            return state.Role.CanUseKillButton(pc);
+        if (Main.PlayerStates.TryGetValue(pc.PlayerId, out var playerState))
+            return playerState.Role.CanUseKillButton(pc);
 
         return pc.GetCustomRole() switch
         {
@@ -747,7 +747,7 @@ static class ExtendedPlayerControl
         Main.AllPlayerKillCooldown[player.PlayerId] = GameStates.IsNormalGame ? Options.DefaultKillCooldown : 1f; //キルクールをデフォルトキルクールに変更
 
         if (Main.PlayerStates.TryGetValue(player.PlayerId, out var state))
-            state.Role.SetKillCooldown(player.PlayerId);
+            state.Role?.SetKillCooldown(player.PlayerId);
 
         switch (player.GetCustomRole())
         {

@@ -2697,9 +2697,9 @@ class ReportDeadBodyPatch
             Main.BombedVents.Clear();
         }
 
-        foreach (var state in Main.PlayerStates.Values.Where(p => p.Role.IsEnable))
+        foreach (var playerStates in Main.PlayerStates.Values.Where(p => p.Role.IsEnable))
         {
-            state.Role.OnReportDeadBody(player, target?.Object);
+            playerStates.Role?.OnReportDeadBody(player, target?.Object);
         }
 
         if (Camouflager.IsEnable) Camouflager.OnReportDeadBody();
