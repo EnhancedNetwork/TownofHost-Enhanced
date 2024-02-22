@@ -2724,6 +2724,7 @@
   "PenguinMeetingKill": "如果会议在拖动时召开，则击杀目标",
   "PenguinKillButtonText": "拖拽",
   "PenguinTimerText": "拖拽时间",
+  "PenguinTargetOnCheckMurder": "You are grabbed, Try escape that first!",
   "WitnessTime": "击杀后的玩家出现红名的最长时间",
   "WitnessButtonText": "目击",
   "WitnessFoundInnocent": "<color=#00ff00>✓</color>",
