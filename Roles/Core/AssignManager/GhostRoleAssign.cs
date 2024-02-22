@@ -46,7 +46,7 @@ public static class GhostRoleAssign
                 if (HauntedList.Contains(ghostRole) || getCount[ghostRole] <= 0)
                         continue;
                     
-                if (ghostRole.GetChance()) { HauntedList.Add(ghostRole); continue;}
+                if (ghostRole.GetChance()) HauntedList.Add(ghostRole); 
             }
             if (ghostRole.IsImpostor())
             {
@@ -56,7 +56,7 @@ public static class GhostRoleAssign
                 if (ImpHauntedList.Contains(ghostRole) || getCount[ghostRole] <= 0)
                         continue;
 
-                if (ghostRole.GetChance()) { ImpHauntedList.Add(ghostRole); }
+                if (ghostRole.GetChance()) ImpHauntedList.Add(ghostRole); 
             }
         }
 
