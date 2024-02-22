@@ -82,6 +82,10 @@
 >
 > - Provided roles: Pyromaniac, Necromancer, Head Hunter (Huntsman), Alchemist, and others
 > - Game Mode: FFA
+> - Improved Role Summary
+> - Dark Theme
+> - Improved Role Spawns
+> - Some ideas to improve performance
 ### :star: [TOHEX](https://github.com/TOHEX-Official/TownOfHostEdited-Xi)
 >
 > - Provided role: Swapper, Berserker, Randomizer and Blackmailer
