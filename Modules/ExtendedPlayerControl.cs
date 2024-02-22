@@ -745,6 +745,10 @@ static class ExtendedPlayerControl
     public static void ResetKillCooldown(this PlayerControl player)
     {
         Main.AllPlayerKillCooldown[player.PlayerId] = GameStates.IsNormalGame ? Options.DefaultKillCooldown : 1f; //キルクールをデフォルトキルクールに変更
+
+        if (Main.PlayerStates.TryGetValue(player.PlayerId, out var state))
+            state.Role.SetKillCooldown(player.PlayerId);
+
         switch (player.GetCustomRole())
         {
             case CustomRoles.Mercenary:
