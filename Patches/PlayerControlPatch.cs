@@ -191,6 +191,13 @@ class CheckMurderPatch
         }
         TimeSinceLastKill[killer.PlayerId] = 0f;
 
+        // Penguin's victim unable to kill
+        if (Penguin.AbductVictim != null && killer.PlayerId == Penguin.AbductVictim.PlayerId)
+        {
+            killer.Notify(GetString("PenguinTargetOnCheckMurder"));
+            killer.SetKillCooldown(5);
+            return false;
+        }
         // added here because it bypasses every shield and just kills the player and antidote, diseased etc.. wont take effect
         if (killer.Is(CustomRoles.KillingMachine))
         {

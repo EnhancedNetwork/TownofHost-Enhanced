@@ -84,7 +84,8 @@
 > - Game Mode: FFA
 ### :star: [TOHEX](https://github.com/TOHEX-Official/TownOfHostEdited-Xi)
 >
-> - Provided role: Swapper
+> - Provided role: Swapper, Berserker, Randomizer and Blackmailer
+> - Improve chat spam system (ChatManager.cs)
 ### :star: [Stellar Roles](https://github.com/Mr-Fluuff/StellarRolesAU)
 >
 > - Provided role: Inspector (Inspector)
