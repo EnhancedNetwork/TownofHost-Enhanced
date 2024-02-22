@@ -16,7 +16,12 @@
     <ItemGroup>
         <EmbeddedResource Include=".\Resources\**" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <None Remove="Resources\Announcements\modNews-en_US.json" />
+    </ItemGroup>
 	<ItemGroup>
+		<EmbeddedResource Include="Resources\Announcements\modNews-en_US.json" />
 		<EmbeddedResource Include="token.env" />
 	</ItemGroup>
 	    
