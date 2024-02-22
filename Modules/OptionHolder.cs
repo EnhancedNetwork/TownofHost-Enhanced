@@ -99,7 +99,7 @@ public static class Options
         Rate95,
         Rate100,
     }
-    public enum RatesZeroOne
+    private enum RatesZeroOne
     {
         RoleOff,
         RoleRate,
