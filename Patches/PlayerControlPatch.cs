@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
+using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
@@ -55,8 +56,29 @@ class CheckProtectPatch
     {
         if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek) return false;
         Logger.Info("CheckProtect occurs: " + __instance.GetNameWithRole() + "=>" + target.GetNameWithRole(), "CheckProtect");
+        var angel = __instance;
+        var getAngelRole = angel.GetCustomRole();
 
-        if (__instance.Is(CustomRoles.EvilSpirit))
+        switch (getAngelRole)
+        {
+
+            case CustomRoles.Warden:
+                return Warden.OnCheckProtect(angel, target);
+
+            case CustomRoles.Minion:
+                return Minion.OnCheckProtect(angel, target);
+
+            case CustomRoles.Retributionist:
+                return Retributionist.OnCheckProtect(angel, target);
+
+            case CustomRoles.Nemesis:
+                return Nemesis.OnCheckProtect(angel, target);
+
+            default:
+                break;
+        }
+
+        if (angel.Is(CustomRoles.EvilSpirit))
         {
             if (target.Is(CustomRoles.Spiritcaller))
             {
@@ -66,19 +88,16 @@ class CheckProtectPatch
             {
                 Spiritcaller.HauntPlayer(target);
             }
-
-            __instance.RpcResetAbilityCooldown();
-            return true;
+            angel.RpcResetAbilityCooldown();
+            return false;
         }
 
-        if (__instance.Is(CustomRoles.Sheriff))
+        if (angel.Is(CustomRoles.Sheriff) && angel.Data.IsDead)
         {
-            if (__instance.Data.IsDead)
-            {
                 Logger.Info("Blocked protection", "CheckProtect");
-                return false;
-            }
+                return false; // What is this for? sheriff dosen't become guardian angel lmao
         }
+        
         return true;
     }
 }
@@ -172,6 +191,13 @@ class CheckMurderPatch
         }
         TimeSinceLastKill[killer.PlayerId] = 0f;
 
+        // Penguin's victim unable to kill
+        if (Penguin.AbductVictim != null && killer.PlayerId == Penguin.AbductVictim.PlayerId)
+        {
+            killer.Notify(GetString("PenguinTargetOnCheckMurder"));
+            killer.SetKillCooldown(5);
+            return false;
+        }
         // added here because it bypasses every shield and just kills the player and antidote, diseased etc.. wont take effect
         if (killer.Is(CustomRoles.KillingMachine))
         {
@@ -179,6 +205,7 @@ class CheckMurderPatch
             killer.ResetKillCooldown();
             return false;
         }
+
         foreach (var targetSubRole in target.GetCustomSubRoles().ToArray())
         {
             switch (targetSubRole)
@@ -1244,6 +1271,15 @@ class CheckMurderPatch
         return true;
     }
 }
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Exiled))]
+class ExilePlayerFix
+{    
+    public static void Postfix(PlayerControl __instance)
+    {
+        GhostRoleAssign.GhostAssignPatch(__instance);
+    }
+}
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
 class MurderPlayerPatch
 {
@@ -1327,6 +1363,7 @@ class MurderPlayerPatch
 
         PlayerControl killer = __instance;
         bool needUpadteNotifyRoles = true;
+
 
         if (PlagueDoctor.IsEnable)
         {
@@ -1459,6 +1496,16 @@ class MurderPlayerPatch
         if (Vulture.IsEnable) Vulture.OnPlayerDead(target);
         if (SoulCollector.IsEnable) SoulCollector.OnPlayerDead(target);
         if (Medic.IsEnable) Medic.IsDead(target);
+
+        //================GHOST ASSIGN PATCH============
+        if (target.Is(CustomRoles.EvilSpirit))
+        {
+            target.RpcSetRole(RoleTypes.GuardianAngel);
+        }
+        else
+        {
+            GhostRoleAssign.GhostAssignPatch(target);
+        }
 
         Utils.AfterPlayerDeathTasks(target);
 
@@ -2663,6 +2710,7 @@ class ReportDeadBodyPatch
         if (Eraser.IsEnable) Eraser.OnReportDeadBody();
         if (Anonymous.IsEnable) Anonymous.OnReportDeadBody();
         if (Divinator.IsEnable) Divinator.OnReportDeadBody();
+        if (Retributionist.IsEnable) Retributionist.OnReportDeadBody();
         if (Tracefinder.IsEnable) Tracefinder.OnReportDeadBody();
         if (Judge.IsEnable) Judge.OnReportDeadBody();
         if (Greedier.IsEnable) Greedier.OnReportDeadBody();
@@ -4388,7 +4436,7 @@ class PlayerControlSetRolePatch
                 var self = seer.PlayerId == target.PlayerId;
                 var seerIsKiller = seer.Is(CustomRoleTypes.Impostor) || Main.ResetCamPlayerList.Contains(seer.PlayerId);
 
-                if (target.Is(CustomRoles.EvilSpirit))
+                if (target.IsAnySubRole(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
                 {
                     ghostRoles[seer] = RoleTypes.GuardianAngel;
                 }
@@ -4401,7 +4449,7 @@ class PlayerControlSetRolePatch
                     ghostRoles[seer] = RoleTypes.CrewmateGhost;
                 }
             }
-            if (target.Is(CustomRoles.EvilSpirit))
+            if (target.IsAnySubRole(x => x.IsGhostRole()) || target.GetCustomRole().IsGhostRole())
             {
                 roleType = RoleTypes.GuardianAngel;
             }

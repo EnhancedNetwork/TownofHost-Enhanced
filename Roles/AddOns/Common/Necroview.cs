@@ -20,29 +20,29 @@ public static class Necroview
 
     public static string NameColorOptions(PlayerControl target)
     {
-        var CustomRole = target.GetCustomRole();
-        
-            foreach (var SubRole in target.GetCustomSubRoles())
-            {
-                if (SubRole.Is(CustomRoles.Charmed)
-                    || SubRole.Is(CustomRoles.Infected)
-                    || SubRole.Is(CustomRoles.Contagious)
-                    || SubRole.Is(CustomRoles.Egoist)
-                    || SubRole.Is(CustomRoles.Recruit)
-                    || SubRole.Is(CustomRoles.Soulless))
-                    return Main.roleColors[CustomRoles.SwordsMan]; 
-            }
+        var customRole = target.GetCustomRole();
 
-            if (CustomRole.IsImpostorTeamV2() || CustomRole.IsMadmate())
-            {
-                return Main.roleColors[CustomRoles.Impostor]; 
-            }
+        foreach (var SubRole in target.GetCustomSubRoles())
+        {
+            if (SubRole.Is(CustomRoles.Charmed)
+                || SubRole.Is(CustomRoles.Infected)
+                || SubRole.Is(CustomRoles.Contagious)
+                || SubRole.Is(CustomRoles.Egoist)
+                || SubRole.Is(CustomRoles.Recruit)
+                || SubRole.Is(CustomRoles.Soulless))
+                return Main.roleColors[CustomRoles.SwordsMan];
+        }
 
-            if (CustomRole.IsCrewmate())
-            {
-                return Main.roleColors[CustomRoles.Bait];
-            }
-        
+        if (customRole.IsImpostorTeamV2() || customRole.IsMadmate())
+        {
+            return Main.roleColors[CustomRoles.Impostor];
+        }
+
+        if (customRole.IsCrewmate())
+        {
+            return Main.roleColors[CustomRoles.Bait];
+        }
+
         return Main.roleColors[CustomRoles.SwordsMan]; 
     }
 }
