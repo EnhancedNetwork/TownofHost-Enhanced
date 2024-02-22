@@ -38,6 +38,7 @@ public static class GhostRoleAssign
         foreach (var ghostRole in Options.CustomGhostRoleCounts.Keys.Where(x => x.GetMode() > 0))
         { 
             // For each time a player dies, a ghostrole will have another shot at getting in.
+            // Imagine 3 groups: "I want first!" 100-75% // "I want mid-game" 75-45% // "Final Savior" 45%-0%. 
             if (ghostRole.IsCrewmate())
             {
                 if (HauntedList.Contains(ghostRole) && getCount[ghostRole] <= 0)
