@@ -8,7 +8,7 @@ namespace TOHE.Roles.Impostor;
 
 internal class Butcher : RoleBase
 {
-    private static readonly int Id = 24300;
+    private const int Id = 24300;
     public static bool On;
     public override bool IsEnable => On;
 

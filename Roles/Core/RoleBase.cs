@@ -31,7 +31,7 @@ public abstract class RoleBase
     /// <summary>
     /// A generic method to set if a impostor/SS base may use kill button.
     /// </summary>
-    public virtual bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
+    public virtual bool CanUseKillButton(PlayerControl pc) => pc.Is(CustomRoleTypes.Impostor) && pc.IsAlive();
 
     /// <summary>
     /// A generic method to set if a impostor/SS base may vent.
@@ -114,6 +114,9 @@ public abstract class RoleBase
     /// A generic method to activate actions right when a meeting starts.
     /// </summary>
     public virtual void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    { }
+  
+    public virtual void NotifyAfterMeeting()
     { }
 
     /// <summary>

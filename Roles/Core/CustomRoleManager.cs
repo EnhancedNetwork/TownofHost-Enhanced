@@ -1,4 +1,5 @@
 ﻿using TOHE.Roles.Impostor;
+using TOHE.Roles.Neutral;
 
 namespace TOHE.Roles.Core;
 
@@ -200,6 +201,7 @@ public static class CustomRoleManager
         //CustomRoles.Agitater => new Agitater(),
 
         // ==== Neutrals ====
+        CustomRoles.Seeker => new Seeker(),
         //CustomRoles.Amnesiac => new Amnesiac(),
         //CustomRoles.Arsonist => new Arsonist(),
         //CustomRoles.Bandit => new Bandit(),

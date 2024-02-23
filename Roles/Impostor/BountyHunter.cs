@@ -11,7 +11,7 @@ namespace TOHE.Roles.Impostor;
 
 internal class BountyHunter : RoleBase
 {
-    private static readonly int Id = 800;
+    private const int Id = 800;
     private static List<byte> playerIdList = [];
     public static bool On;
     public override bool IsEnable => On;

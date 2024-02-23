@@ -983,7 +983,7 @@ internal static class RPC
             Main.PlayerStates[targetId].SetSubRole(role);
         }
 
-        Main.PlayerStates[targetId]?.Role.Add(targetId);
+        Main.PlayerStates[targetId]?.Role?.Add(targetId);
 
         switch (role)
         {
@@ -1393,9 +1393,7 @@ internal static class RPC
             case CustomRoles.Pixie:
                 Pixie.Add(targetId);
                 break;
-            case CustomRoles.Seeker:
-                Seeker.Add(targetId);
-                break;
+
             case CustomRoles.Pitfall:
                 Pitfall.Add(targetId);
                 break;

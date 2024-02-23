@@ -6,7 +6,7 @@ namespace TOHE.Roles.Impostor;
 
 internal class Camouflager : RoleBase
 {
-    private static readonly int Id = 2900;
+    private const int Id = 2900;
     public static bool On;
     public override bool IsEnable => On;
 

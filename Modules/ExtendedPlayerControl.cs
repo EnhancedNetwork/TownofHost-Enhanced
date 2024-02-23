@@ -471,7 +471,7 @@ static class ExtendedPlayerControl
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
         if (Mastermind.ManipulatedPlayers.ContainsKey(pc.PlayerId)) return true;
 
-        if (Main.PlayerStates.TryGetValue(pc.PlayerId, out var playerState))
+        if (Main.PlayerStates.TryGetValue(pc.PlayerId, out var playerState) && playerState != null && playerState.Role != null)
             return playerState.Role.CanUseKillButton(pc);
 
         return pc.GetCustomRole() switch
@@ -555,7 +555,6 @@ static class ExtendedPlayerControl
             CustomRoles.Pestilence => pc.IsAlive(),
             CustomRoles.Pirate => pc.IsAlive(),
             CustomRoles.Pixie => pc.IsAlive(),
-            CustomRoles.Seeker => pc.IsAlive(),
             CustomRoles.Agitater => pc.IsAlive(),
             CustomRoles.ChiefOfPolice => ChiefOfPolice.CanUseKillButton(pc.PlayerId),
             CustomRoles.EvilMini => pc.IsAlive(),
@@ -1044,9 +1043,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Crusader:
                 Crusader.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Seeker:
-                Seeker.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.ChiefOfPolice:
                 ChiefOfPolice.SetKillCooldown(player.PlayerId);
