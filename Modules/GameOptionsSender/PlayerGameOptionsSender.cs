@@ -413,8 +413,8 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.QuickShooter:
                 QuickShooter.ApplyGameOptions();
                 break;
-            case CustomRoles.Assassin:
-                Assassin.ApplyGameOptions();
+            case CustomRoles.Ninja:
+                Ninja.ApplyGameOptions();
                 break;
             case CustomRoles.Hangman:
                 Hangman.ApplyGameOptions();

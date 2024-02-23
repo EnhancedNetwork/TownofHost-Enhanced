@@ -53,7 +53,6 @@ internal class ChangeRoleSettings
             Main.AllPlayerSpeed = [];
             Main.AllPlayerCustomRoles = [];
             Main.WarlockTimer = [];
-            Main.AssassinTimer = [];
             Main.isDoused = [];
             Main.isDraw = [];
             Main.isRevealed = [];
@@ -268,7 +267,7 @@ internal class ChangeRoleSettings
             Jailer.Init();
             Oracle.Init();
             Eraser.Init();
-            Assassin.Init();
+            Ninja.Init();
             Juggernaut.Init();
             Psychic.Init();
             Sleuth.Init();
@@ -827,8 +826,8 @@ internal class SelectRolesPatch
                     case CustomRoles.Eraser:
                         Eraser.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Assassin:
-                        Assassin.Add(pc.PlayerId);
+                    case CustomRoles.Ninja:
+                        Ninja.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Juggernaut:
                         Juggernaut.Add(pc.PlayerId);

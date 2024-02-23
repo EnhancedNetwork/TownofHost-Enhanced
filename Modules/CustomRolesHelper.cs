@@ -84,7 +84,7 @@ public static class CustomRolesHelper
                 CustomRoles.SuperStar => CustomRoles.Crewmate,
                 CustomRoles.Anonymous => CustomRoles.Shapeshifter,
                 CustomRoles.Visionary => CustomRoles.Impostor,
-                CustomRoles.Assassin => CustomRoles.Shapeshifter,
+                CustomRoles.Ninja => CustomRoles.Shapeshifter,
             //    CustomRoles.Luckey => CustomRoles.Crewmate,
                 CustomRoles.CyberStar => CustomRoles.Crewmate,
                 CustomRoles.TaskManager => CustomRoles.Crewmate,
@@ -698,7 +698,7 @@ public static class CustomRolesHelper
             CustomRoles.Warlock or
             CustomRoles.Undertaker or
             CustomRoles.RiftMaker or
-            CustomRoles.Assassin or
+            CustomRoles.Ninja or
             CustomRoles.Berserker or
             CustomRoles.Anonymous or
             CustomRoles.Visionary or

@@ -385,8 +385,8 @@ class CheckMurderPatch
                     }
                     if (Main.isCurseAndKill[killer.PlayerId]) killer.RpcGuardAndKill(target);
                     return false;
-                case CustomRoles.Assassin:
-                    if (!Assassin.OnCheckMurder(killer, target)) return false;
+                case CustomRoles.Ninja:
+                    if (!Ninja.OnCheckMurder(killer, target)) return false;
                     break;
                 case CustomRoles.Witch:
                     if (!Witch.OnCheckMurder(killer, target)) return false;
@@ -1639,8 +1639,8 @@ public static class CheckShapeShiftPatch
                 }
                 return false;
 
-            case CustomRoles.Assassin:
-                Assassin.OnShapeshift(shapeshifter, shapeshifting, shapeshiftIsHidden: shapeshiftIsHidden);
+            case CustomRoles.Ninja:
+                Ninja.OnShapeshift(shapeshifter, shapeshifting, shapeshiftIsHidden: shapeshiftIsHidden);
                 return false;
 
             case CustomRoles.Escapist:
@@ -1835,8 +1835,8 @@ class ShapeshiftPatch
                         shapeshifter.RPCPlayCustomSound("Teleport");
                     }
                     break;
-                case CustomRoles.Assassin:
-                    Assassin.OnShapeshift(shapeshifter, shapeshifting);
+                case CustomRoles.Ninja:
+                    Ninja.OnShapeshift(shapeshifter, shapeshifting);
                     break;
                 case CustomRoles.ImperiusCurse:
                     if (shapeshifting)
@@ -3153,7 +3153,7 @@ class FixedUpdateInNormalGamePatch
                 if (GameStates.IsInGame && Main.RefixCooldownDelay <= 0)
                     foreach (var pc in Main.AllPlayerControls)
                     {
-                        if (pc.Is(CustomRoles.Vampire) || pc.Is(CustomRoles.Warlock) || pc.Is(CustomRoles.Assassin) || pc.Is(CustomRoles.Vampiress))
+                        if (pc.Is(CustomRoles.Vampire) || pc.Is(CustomRoles.Warlock) || pc.Is(CustomRoles.Ninja) || pc.Is(CustomRoles.Vampiress))
                             Main.AllPlayerKillCooldown[pc.PlayerId] = Options.DefaultKillCooldown * 2;
                         if (pc.Is(CustomRoles.Poisoner))
                             Main.AllPlayerKillCooldown[pc.PlayerId] = Poisoner.KillCooldown.GetFloat() * 2;

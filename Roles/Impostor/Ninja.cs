@@ -8,7 +8,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
-internal static class Assassin
+internal static class Ninja
 {
     private const int Id = 2100;
     public static List<byte> playerIdList = [];
@@ -19,14 +19,15 @@ internal static class Assassin
     private static OptionItem CanKillAfterAssassinate;
 
     public static Dictionary<byte, byte> MarkedPlayer = [];
+
     public static void SetupCustomOption()
     {
-        SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Assassin);
-        MarkCooldown = FloatOptionItem.Create(Id + 10, "AssassinMarkCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Assassin])
+        SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Ninja);
+        MarkCooldown = FloatOptionItem.Create(Id + 10, "NinjaMarkCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ninja])
             .SetValueFormat(OptionFormat.Seconds);
-        AssassinateCooldown = FloatOptionItem.Create(Id + 11, "AssassinAssassinateCooldown", new(0f, 180f, 2.5f), 10f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Assassin])
+        AssassinateCooldown = FloatOptionItem.Create(Id + 11, "NinjaAssassinateCooldown", new(0f, 180f, 2.5f), 10f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ninja])
             .SetValueFormat(OptionFormat.Seconds);
-        CanKillAfterAssassinate = BooleanOptionItem.Create(Id + 12, "AssassinCanKillAfterAssassinate", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Assassin]);
+        CanKillAfterAssassinate = BooleanOptionItem.Create(Id + 12, "NinjaCanKillAfterAssassinate", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ninja]);
     }
     public static void Init()
     {
@@ -117,19 +118,17 @@ internal static class Assassin
                     pc.ResetKillCooldown();
                     pc.RpcCheckAndMurder(marketTarget);
                 }
-            }, timer, "Assassin Assassinate");
+            }, timer, "Ninja Assassinate");
         }
     }
-    public static void SetKillButtonText(byte playerId)
+    public static void SetAbilityButtonText(HudManager hud, byte playerid)
     {
-        if (!playerId.Shapeshifting())
-            HudManager.Instance.KillButton.OverrideText(GetString("AssassinMarkButtonText"));
+        if (!playerid.Shapeshifting())
+            hud.KillButton.OverrideText(GetString("NinjaMarkButtonText"));
         else
-            HudManager.Instance.KillButton.OverrideText(GetString("KillButtonText"));
-    }
-    public static void GetAbilityButtonText(HudManager __instance, byte playerId)
-    {
-        if (MarkedPlayer.ContainsKey(playerId) && !playerId.Shapeshifting())
-            __instance.AbilityButton.OverrideText(GetString("AssassinShapeshiftText"));
+            hud.KillButton.OverrideText(GetString("KillButtonText"));
+
+        if (MarkedPlayer.ContainsKey(playerid) && !playerid.Shapeshifting())
+            hud.AbilityButton.OverrideText(GetString("NinjaShapeshiftText"));
     }
 }

@@ -1071,7 +1071,7 @@ public static class Options
         /*
          * Ninja
          */
-        Assassin.SetupCustomOption();
+        Ninja.SetupCustomOption();
 
         /*
          * Quick Shooter

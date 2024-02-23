@@ -1028,7 +1028,7 @@ internal class ChatCommands
             "吸血鬼" or "吸血" => GetString("Vampire"),
             "吸血鬼之王" or "吸血鬼女王"  => GetString("Vampiress"),
             "術士" or "术士" => GetString("Warlock"),
-            "刺客" or "忍者" => GetString("Assassin"),
+            "刺客" or "忍者" => GetString("Ninja"),
             "僵屍" or "僵尸" or"殭屍" or "丧尸" => GetString("Zombie"),
             "駭客" or "骇客" or "黑客" => GetString("Anonymous"),
             "礦工" or "矿工" => GetString("Miner"),

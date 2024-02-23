@@ -531,7 +531,7 @@ static class ExtendedPlayerControl
             CustomRoles.Gamer => pc.IsAlive(),
             CustomRoles.DarkHide => DarkHide.CanUseKillButton(pc),
             CustomRoles.Provocateur => pc.IsAlive(),
-            CustomRoles.Assassin => Assassin.CanUseKillButton(pc),
+            CustomRoles.Ninja => Ninja.CanUseKillButton(pc),
             CustomRoles.BloodKnight => pc.IsAlive(),
             CustomRoles.Crewpostor => false,
             CustomRoles.Totocalcio => Totocalcio.CanUseKillButton(pc),
@@ -952,8 +952,8 @@ static class ExtendedPlayerControl
             case CustomRoles.Provocateur:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.ProvKillCD.GetFloat();
                 break;
-            case CustomRoles.Assassin:
-                Assassin.SetKillCooldown(player.PlayerId);
+            case CustomRoles.Ninja:
+                Ninja.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Vampiress:
                 Vampiress.SetKillCooldown(player.PlayerId);

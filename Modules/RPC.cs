@@ -572,7 +572,7 @@ internal class RPCHandlerPatch
                 GuessManager.RpcClientGuess(Utils.GetPlayerById(reader.ReadByte()));
                 break;
             case CustomRPC.SetMarkedPlayer:
-                Assassin.ReceiveRPC(reader);
+                Ninja.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetMedicalerProtectList:
                 Medic.ReceiveRPCForProtectList(reader);
@@ -1192,8 +1192,8 @@ internal static class RPC
             case CustomRoles.Eraser:
                 Eraser.Add(targetId);
                 break;
-            case CustomRoles.Assassin:
-                Assassin.Add(targetId);
+            case CustomRoles.Ninja:
+                Ninja.Add(targetId);
                 break;
             case CustomRoles.Juggernaut:
                 Juggernaut.Add(targetId);

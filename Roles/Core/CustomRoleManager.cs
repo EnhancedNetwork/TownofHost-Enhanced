@@ -63,7 +63,7 @@ public static class CustomRoleManager
         //CustomRoles.Mafia => new Mafia(),
         //CustomRoles.Miner => new Miner(),
         //CustomRoles.Morphling => new Morphling(),
-        //CustomRoles.Assassin => new Assassin(),
+        //CustomRoles.Ninja => new Ninja(),
         //CustomRoles.Parasite => new Parasite(),
         //CustomRoles.Penguin => new Penguin(),
         //CustomRoles.Pitfall => new Pitfall(),

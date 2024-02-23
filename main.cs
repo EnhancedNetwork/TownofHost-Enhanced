@@ -169,7 +169,6 @@ public class Main : BasePlugin
     public static List<byte> InfectedBodies = [];
     public static Dictionary<byte, (byte, float)> BitPlayers = [];
     public static Dictionary<byte, float> WarlockTimer = [];
-    public static Dictionary<byte, float> AssassinTimer = [];
     public static Dictionary<byte, PlayerControl> CursedPlayers = [];
     public static Dictionary<byte, bool> isCurseAndKill = [];
     public static Dictionary<byte, int> GuesserGuessed = [];
@@ -582,12 +581,12 @@ public enum CustomRoles
     Ludopath,
     Lurker,
     Mastermind,
-    Mercenary, //mercenary
+    Mercenary,
     Miner,
     Morphling,
     Nemesis,
     Minion,
-    Assassin, //ninja
+    Ninja,
     Nuker,
     Parasite,
     Penguin,
