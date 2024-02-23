@@ -238,11 +238,11 @@ class CheckMurderPatch
             Logger.Info($"Real Killer = {killer.GetNameWithRole().RemoveHtmlTags()}", "CheckMurder");
         }
 
-        if (Main.PlayerStates.TryGetValue(target.PlayerId, out var targetState))
+        if (Main.PlayerStates.TryGetValue(target.PlayerId, out var targetState) && targetState.Role != null)
             if (!targetState.Role.OnCheckMurderOnTarget(killer, target))
                 return false;
 
-        if (killer.PlayerId != target.PlayerId && Main.PlayerStates.TryGetValue(killer.PlayerId, out var killerState))
+        if (killer.PlayerId != target.PlayerId && Main.PlayerStates.TryGetValue(killer.PlayerId, out var killerState) && killerState.Role != null)
             if (!killerState.Role.OnCheckMurderAsKiller(killer, target))
                 return false;
 
