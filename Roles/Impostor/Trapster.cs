@@ -4,7 +4,7 @@ namespace TOHE.Roles.Impostor;
 
 internal class Trapster : RoleBase
 {
-    private const int Id = -1;
+    private const int Id = 2600;
     public static bool On;
     public override bool IsEnable => On;
 
@@ -18,15 +18,15 @@ internal class Trapster : RoleBase
 
     public static void SetupCustomOption()
     {
-        Options.SetupRoleOptions(2600, TabGroup.ImpostorRoles, CustomRoles.Trapster);
-        TrapsterKillCooldown = FloatOptionItem.Create(2602, "KillCooldown", new(2.5f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false)
+        Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Trapster);
+        TrapsterKillCooldown = FloatOptionItem.Create(Id + 2, "KillCooldown", new(2.5f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Trapster])
             .SetValueFormat(OptionFormat.Seconds);
-        TrapConsecutiveBodies = BooleanOptionItem.Create(2603, "TrapConsecutiveBodies", true, TabGroup.ImpostorRoles, false)
+        TrapConsecutiveBodies = BooleanOptionItem.Create(Id + 3, "TrapConsecutiveBodies", true, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Trapster]);
-        TrapTrapsterBody = BooleanOptionItem.Create(2604, "TrapTrapsterBody", true, TabGroup.ImpostorRoles, false)
+        TrapTrapsterBody = BooleanOptionItem.Create(Id + 4, "TrapTrapsterBody", true, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Trapster]);
-        TrapConsecutiveTrapsterBodies = BooleanOptionItem.Create(2605, "TrapConsecutiveBodies", true, TabGroup.ImpostorRoles, false)
+        TrapConsecutiveTrapsterBodies = BooleanOptionItem.Create(Id + 5, "TrapConsecutiveBodies", true, TabGroup.ImpostorRoles, false)
             .SetParent(TrapTrapsterBody);
     }
 
