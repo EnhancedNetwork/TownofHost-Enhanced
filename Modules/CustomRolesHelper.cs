@@ -1,7 +1,5 @@
 using AmongUs.GameOptions;
 using System.Linq;
-using System;
-using System.Collections.Generic;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Crewmate;
@@ -11,7 +9,7 @@ using TOHE.Roles.AddOns.Impostor;
 
 namespace TOHE;
 
-static class CustomRolesHelper
+public static class CustomRolesHelper
 {
     public static readonly CustomRoles[] AllRoles = EnumHelper.GetAllValues<CustomRoles>();
     public static readonly CustomRoleTypes[] AllRoleTypes = EnumHelper.GetAllValues<CustomRoleTypes>();
@@ -120,7 +118,7 @@ static class CustomRolesHelper
                 CustomRoles.Konan => CustomRoles.Crewmate,
                 CustomRoles.Divinator => CustomRoles.Crewmate,
                 CustomRoles.Oracle => CustomRoles.Crewmate,
-                CustomRoles.BallLightning => CustomRoles.Impostor,
+                CustomRoles.Lightning => CustomRoles.Impostor,
                 CustomRoles.Greedier => CustomRoles.Impostor,
                 CustomRoles.Ludopath => CustomRoles.Impostor,
                 CustomRoles.Godfather => CustomRoles.Impostor,
@@ -738,7 +736,7 @@ static class CustomRolesHelper
             CustomRoles.Capitalism or
             CustomRoles.Gangster or
             CustomRoles.Cleaner or
-            CustomRoles.BallLightning or
+            CustomRoles.Lightning or
             CustomRoles.Greedier or
             CustomRoles.Ludopath or
             CustomRoles.Godfather or
@@ -1944,6 +1942,7 @@ static class CustomRolesHelper
            CustomRoles.Spiritcaller => CountTypes.Spiritcaller,
            CustomRoles.RuthlessRomantic => CountTypes.RuthlessRomantic,
            CustomRoles.SchrodingersCat => CountTypes.None,
+           CustomRoles.Solsticer => CountTypes.None,
            _ => role.IsImpostorTeam() ? CountTypes.Impostor : CountTypes.Crew,
 
            // CustomRoles.Phantom => CountTypes.OutOfGame,

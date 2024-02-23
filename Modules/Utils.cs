@@ -97,29 +97,29 @@ public static class Utils
         // Don't check player status during random spawn
         if (!isRandomSpawn)
         {
-            var сancelTeleport = false;
+            var cancelTeleport = false;
 
             if (player.inVent
                 || player.MyPhysics.Animations.IsPlayingEnterVentAnimation())
             {
                 Logger.Info($"Target: ({player.GetNameWithRole().RemoveHtmlTags()}) in vent", "RpcTeleport");
-                сancelTeleport = true;
+                cancelTeleport = true;
             }
 
-            if (player.onLadder
+            else if (player.onLadder
                 || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
             {
                 Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) is in on Ladder", "RpcTeleport");
-                сancelTeleport = true;
+                cancelTeleport = true;
             }
 
-            if (player.inMovingPlat)
+            else if (player.inMovingPlat)
             {
                 Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) use moving platform (Airship/Fungle)", "RpcTeleport");
-                сancelTeleport = true;
+                cancelTeleport = true;
             }
 
-            if (сancelTeleport)
+            if (cancelTeleport)
             {
                 player.Notify(ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ErrorTeleport")));
                 return;
@@ -401,12 +401,7 @@ public static class Utils
         if (Options.HideGameSettings.GetBool() && Main.AllPlayerControls.Length > 1)
             return string.Empty;
 
-        string mode = role.GetMode() switch
-        {
-            0 => GetString("RoleOffNoColor"),
-            1 => GetString("RoleRateNoColor"),
-            _ => GetString("RoleOnNoColor")
-        };
+        string mode = GetString($"Rate{role.GetMode()}").RemoveHtmlTags();
         return parentheses ? $"({mode})" : mode;
     }
     public static string GetDeathReason(PlayerState.DeathReason status)
@@ -1207,7 +1202,7 @@ public static class Utils
         foreach (var role in Options.CustomRoleCounts.Keys.ToArray())
         {
             if (!role.IsEnable()) continue;
-            string mode = role.GetMode() == 1 ? GetString("RoleRateNoColor") : GetString("RoleOnNoColor");
+            string mode = GetString($"Rate{role.GetMode()}");
             sb.Append($"\n【{GetRoleName(role)}:{mode} ×{role.GetCount()}】\n");
             ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref sb);
             var text = sb.ToString();
@@ -1238,7 +1233,7 @@ public static class Utils
         foreach (var role in Options.CustomRoleCounts.Keys.ToArray())
         {
             if (!role.IsEnable()) continue;
-            string mode = role.GetMode() == 1 ? GetString("RoleRateNoColor") : GetString("RoleOnNoColor");
+            string mode = GetString($"Rate{role.GetMode()}");
             sb.Append($"\n【{GetRoleName(role)}:{mode} ×{role.GetCount()}】\n");
             ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref sb);
             var text = sb.ToString();
@@ -1273,10 +1268,10 @@ public static class Utils
 
         foreach (var role in CustomRolesHelper.AllRoles)
         {
-            string mode = role.GetMode() == 1 ? GetString("RoleRateNoColor") : GetString("RoleOnNoColor");
+            string mode = GetString($"Rate{role.GetMode()}");
             if (role.IsEnable())
             {
-                var roleDisplay = $"\n{GetRoleName(role)}:{mode} x{role.GetCount()}";
+                var roleDisplay = $"\n{GetRoleName(role)}: {mode} x{role.GetCount()}";
                 if (role.IsAdditionRole()) addonsb.Add(roleDisplay);
                 else if (role.IsCrewmate()) crewsb.Add(roleDisplay);
                 else if (role.IsImpostor() || role.IsMadmate()) impsb.Add(roleDisplay);
@@ -2082,11 +2077,11 @@ public static class Utils
                 if (seer.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
 
-                if (Blackmailer.ForBlackmailer.Contains(seer.PlayerId))
+                if (Blackmailer.CheckBlackmaile(seer))
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Blackmailer), "╳"));
 
-                if (BallLightning.IsEnable && BallLightning.IsGhost(seer))
-                    SelfMark.Append(ColorString(GetRoleColor(CustomRoles.BallLightning), "■"));
+                if (Lightning.IsEnable && Lightning.IsGhost(seer))
+                    SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Lightning), "■"));
 
                 if (Medic.IsEnable && (Medic.InProtect(seer.PlayerId) || Medic.TempMarkProtected == seer.PlayerId) && (Medic.WhoCanSeeProtect.GetInt() is 0 or 2))
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Medic), "✚"));
@@ -2375,8 +2370,8 @@ public static class Utils
                         if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
 
-                        if (BallLightning.IsEnable && BallLightning.IsGhost(target))
-                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.BallLightning), "■"));
+                        if (Lightning.IsEnable && Lightning.IsGhost(target))
+                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Lightning), "■"));
 
                         if (Snitch.IsEnable)
                             TargetMark.Append(Snitch.GetWarningMark(seer, target));
@@ -2674,14 +2669,17 @@ public static class Utils
         if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: false);
         if (Seeker.IsEnable) Seeker.AfterMeetingTasks(notifyPlayer: false);
 
+        foreach (var playerState in Main.PlayerStates.Values.Where(pc => pc.Role.IsEnable))
+        {
+            playerState.Role?.AfterMeetingTasks();
+        }
+
         if (Collector.IsEnable) Collector.AfterMeetingTasks();
-        if (Blackmailer.IsEnable) Blackmailer.AfterMeetingTasks();
         if (Swooper.IsEnable) Swooper.AfterMeetingTasks();
         if (Chameleon.IsEnable) Chameleon.AfterMeetingTasks();
         if (Wraith.IsEnable) Wraith.AfterMeetingTasks();
         if (Glitch.IsEnable) Glitch.AfterMeetingTasks();
         if (Keeper.IsEnable) Keeper.AfterMeetingTasks();
-        if (BountyHunter.IsEnable) BountyHunter.AfterMeetingTasks();
         if (EvilTracker.IsEnable) EvilTracker.AfterMeetingTasks();
         if (Mercenary.IsEnable) Mercenary.AfterMeetingTasks();
         if (Spiritualist.IsEnable) Spiritualist.AfterMeetingTasks();
@@ -2789,6 +2787,8 @@ public static class Utils
                     break;
             }
         }
+
+        Medic.IsDead(target);
 
         if (Executioner.Target.ContainsValue(target.PlayerId))
             Executioner.ChangeRoleByTarget(target);

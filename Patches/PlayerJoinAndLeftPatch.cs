@@ -11,6 +11,7 @@ using TOHE.Patches;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
+using TOHE.Roles.Core.AssignManager;
 
 namespace TOHE;
 
@@ -47,7 +48,7 @@ class OnGameJoinedPatch
             GameStartManagerPatch.GameStartManagerUpdatePatch.exitTimer = -1;
             Main.DoBlockNameChange = false;
             Main.newLobby = true;
-            Main.DevRole = [];
+            RoleAssign.SetRoles = [];
             EAC.DeNum = new();
             Main.AllPlayerNames = [];
             Main.PlayerQuitTimes = [];

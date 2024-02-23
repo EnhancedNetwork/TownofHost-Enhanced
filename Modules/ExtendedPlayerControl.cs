@@ -36,7 +36,7 @@ static class ExtendedPlayerControl
         }
         if (AmongUsClient.Instance.AmHost)
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, Hazel.SendOption.Reliable, -1);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, SendOption.Reliable, -1);
             writer.Write(player.PlayerId);
             writer.WritePacked((int)role);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -46,7 +46,7 @@ static class ExtendedPlayerControl
     {
         if (AmongUsClient.Instance.AmHost)
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, Hazel.SendOption.Reliable, -1);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, SendOption.Reliable, -1);
             writer.Write(PlayerId);
             writer.WritePacked((int)role);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -471,6 +471,9 @@ static class ExtendedPlayerControl
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
         if (Mastermind.ManipulatedPlayers.ContainsKey(pc.PlayerId)) return true;
 
+        if (Main.PlayerStates.TryGetValue(pc.PlayerId, out var playerState))
+            return playerState.Role.CanUseKillButton(pc);
+
         return pc.GetCustomRole() switch
         {
             //FFA
@@ -520,8 +523,6 @@ static class ExtendedPlayerControl
             CustomRoles.Witness => pc.IsAlive(),
             CustomRoles.Shroud => pc.IsAlive(),
             CustomRoles.Wraith => pc.IsAlive(),
-            CustomRoles.Bomber => Options.BomberCanKill.GetBool() && pc.IsAlive(),
-            CustomRoles.Nuker => Options.BomberCanKill.GetBool() && pc.IsAlive(),
             CustomRoles.Innocent => pc.IsAlive(),
             CustomRoles.Counterfeiter => Counterfeiter.CanUseKillButton(pc.PlayerId),
             CustomRoles.Pursuer => Pursuer.CanUseKillButton(pc.PlayerId),
@@ -743,6 +744,10 @@ static class ExtendedPlayerControl
     public static void ResetKillCooldown(this PlayerControl player)
     {
         Main.AllPlayerKillCooldown[player.PlayerId] = GameStates.IsNormalGame ? Options.DefaultKillCooldown : 1f; //キルクールをデフォルトキルクールに変更
+
+        if (Main.PlayerStates.TryGetValue(player.PlayerId, out var state))
+            state.Role?.SetKillCooldown(player.PlayerId);
+
         switch (player.GetCustomRole())
         {
             case CustomRoles.Mercenary:
@@ -762,9 +767,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.PlagueDoctor:
                 PlagueDoctor.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Berserker:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Options.BerserkerKillCooldown.GetFloat();
                 break;
             case CustomRoles.Kamikaze:
                 Kamikaze.SetKillCooldown(player.PlayerId);
@@ -906,13 +908,6 @@ static class ExtendedPlayerControl
             case CustomRoles.Scavenger:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.ScavengerKillCooldown.GetFloat();
                 break;
-            case CustomRoles.Bomber:
-            case CustomRoles.Nuker:
-                if (Options.BomberCanKill.GetBool())
-                Main.AllPlayerKillCooldown[player.PlayerId] = Options.BomberKillCD.GetFloat();
-                else
-                Main.AllPlayerKillCooldown[player.PlayerId] = 300f;
-                break;
             case CustomRoles.Witness:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.WitnessCD.GetFloat();
                 break;
@@ -947,8 +942,8 @@ static class ExtendedPlayerControl
             case CustomRoles.Gamer:
                 Gamer.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.BallLightning:
-                BallLightning.SetKillCooldown(player.PlayerId);
+            case CustomRoles.Lightning:
+                Lightning.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.DarkHide:
                 DarkHide.SetKillCooldown(player.PlayerId);
@@ -968,17 +963,11 @@ static class ExtendedPlayerControl
             case CustomRoles.Vampiress:
                 Vampiress.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.Arrogance:
-                Arrogance.SetKillCooldown(player.PlayerId);
-                break;
             case CustomRoles.Juggernaut:
                 Juggernaut.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Reverie:
                 Reverie.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Anonymous:
-                Anonymous.SetKillCooldown(player.PlayerId);
                 break;
             //FFA
             case CustomRoles.Killer:
@@ -1526,7 +1515,7 @@ static class ExtendedPlayerControl
     public static bool Is(this PlayerControl target, RoleTypes type) { return target.GetCustomRole().GetRoleTypes() == type; }
     public static bool Is(this PlayerControl target, CountTypes type) { return target.GetCountTypes() == type; }
     public static bool Is(this CustomRoles trueRole, CustomRoles checkRole) { return trueRole == checkRole; }
-    public static bool IsAnySubRole(this PlayerControl target, Func<CustomRoles, bool> predicate) => target.GetCustomSubRoles().Count > 0 ? target.GetCustomSubRoles().Any(predicate) : false;
+    public static bool IsAnySubRole(this PlayerControl target, Func<CustomRoles, bool> predicate) => target.GetCustomSubRoles().Count > 0 && target.GetCustomSubRoles().Any(predicate);
 
     public static bool IsAlive(this PlayerControl target)
     {
@@ -1540,14 +1529,9 @@ static class ExtendedPlayerControl
         {
             return false;
         }
-        //if the target status is alive
-        if (Main.PlayerStates.TryGetValue(target.PlayerId, out var playerState))
-        {
-            return !playerState.IsDead;
-        }
 
-        // else player is dead
-        return false;
+        //if the target status is alive
+        return !Main.PlayerStates.TryGetValue(target.PlayerId, out var playerState) || !playerState.IsDead;
     }
     public static bool IsExiled(this PlayerControl target)
     {

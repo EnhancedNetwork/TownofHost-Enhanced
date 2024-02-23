@@ -86,6 +86,10 @@ class HudManagerPatch
             }
             if (player.IsAlive())
             {
+                __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
+
+                Main.PlayerStates[player.PlayerId]?.Role.SetButtonTexts(__instance, player.PlayerId);
+
                 //MOD入り用のボタン下テキスト変更
                 switch (player.GetCustomRole())
                 {
@@ -191,10 +195,6 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText($"{GetString("ShroudButtonText")}");
                        break;
-                    case CustomRoles.BountyHunter:
-                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        BountyHunter.SetAbilityButtonText(__instance);
-                        break;
                     case CustomRoles.EvilTracker:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         EvilTracker.GetAbilityButtonText(__instance, player.PlayerId);
@@ -259,9 +259,9 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("GamerButtonText"));
                         break;
-                    case CustomRoles.BallLightning:
+                    case CustomRoles.Lightning:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        __instance.KillButton.OverrideText(GetString("BallLightningButtonText"));
+                        __instance.KillButton.OverrideText(GetString("LightningButtonText"));
                         break;
                     case CustomRoles.Bomber:
                     case CustomRoles.Nuker:
@@ -299,10 +299,6 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         Assassin.SetKillButtonText(player.PlayerId);
                         Assassin.GetAbilityButtonText(__instance, player.PlayerId);
-                        break;
-                    case CustomRoles.Anonymous:
-                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        Anonymous.GetAbilityButtonText(__instance, player.PlayerId);
                         break;
                     case CustomRoles.Cleaner:
                         __instance.ReportButton.OverrideText(GetString("CleanerReportButtonText"));

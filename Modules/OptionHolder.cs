@@ -75,20 +75,35 @@ public static class Options
     public static Dictionary<CustomRoles, OptionItem> CustomGhostRoleCounts;
     public static Dictionary<CustomRoles, StringOptionItem> CustomRoleSpawnChances;
     public static Dictionary<CustomRoles, IntegerOptionItem> CustomAdtRoleSpawnRate;
-    public static readonly string[] rates =
-    [
-        "Rate0",  "Rate5",  "Rate10", "Rate20", "Rate30", "Rate40",
-        "Rate50", "Rate60", "Rate70", "Rate80", "Rate90", "Rate100",
-    ];
-    public static readonly string[] ratesZeroOne =
-    [
-        "RoleOff", /*"Rate10", "Rate20", "Rate30", "Rate40", "Rate50",
-        "Rate60", "Rate70", "Rate80", "Rate90", */"RoleRate",
-    ];
-    public static readonly string[] ratesToggle =
-    [
-        "RoleOff", "RoleRate", "RoleOn"
-    ];
+    public enum SpawnChance
+    {
+        Chance0,
+        Chance5,
+        Chance10,
+        Chance15,
+        Chance20,
+        Chance25,
+        Chance30,
+        Chance35,
+        Chance40,
+        Chance45,
+        Chance50,
+        Chance55,
+        Chance60,
+        Chance65,
+        Chance70,
+        Chance75,
+        Chance80,
+        Chance85,
+        Chance90,
+        Chance95,
+        Chance100,
+    }
+    private enum RatesZeroOne
+    {
+        RoleOff,
+        RoleRate,
+    }
     public static readonly string[] CheatResponsesName =
     [
         "Ban", "Kick", "NoticeMe","NoticeEveryone", "TempBan", "OnlyCancel"
@@ -475,30 +490,6 @@ public static class Options
     public static OptionItem ShapeshiftCD;
     public static OptionItem ShapeshiftDur;
 
-    public static OptionItem BerserkerKillCooldown;
-    public static OptionItem BerserkerMax;
-    public static OptionItem BerserkerOneCanKillCooldown;
-    public static OptionItem BerserkerKillCooldownLevel;
-    public static OptionItem BerserkerOneKillCooldown;
-    public static OptionItem BerserkerTwoCanScavenger;
-    public static OptionItem BerserkerScavengerLevel;
-    public static OptionItem BerserkerThreeCanBomber;
-    public static OptionItem BerserkerBomberLevel;
-    //public static OptionItem BerserkerFourCanFlash;
-    //public static OptionItem BerserkerSpeed;
-    public static OptionItem BerserkerFourCanNotKill;
-    public static OptionItem BerserkerImmortalLevel;
-
-    public static OptionItem BomberRadius;
-    public static OptionItem BomberCanKill;
-    public static OptionItem BomberKillCD;
-    public static OptionItem BombCooldown;
-    public static OptionItem ImpostorsSurviveBombs;
-    public static OptionItem BomberDiesInExplosion;
-    public static OptionItem NukerChance;
-    public static OptionItem NukeRadius;
-    public static OptionItem NukeCooldown;
-
     public static OptionItem GuardSpellTimes;
     public static OptionItem killAttacker;
 
@@ -830,18 +821,7 @@ public static class Options
         }
     }
 
-    public static int GetRoleSpawnMode(CustomRoles role)
-    {
-        var mode = CustomRoleSpawnChances.TryGetValue(role, out var sc) ? sc.GetChance() : 0;
-        return mode switch
-        {
-            0 => 0,
-            1 => 1,
-            2 => 2,
-            100 => 1,
-            _ => 1,
-        };
-    }
+    public static int GetRoleSpawnMode(CustomRoles role) => CustomRoleSpawnChances.TryGetValue(role, out var sc) ? sc.GetChance() : 0;
     public static int GetRoleCount(CustomRoles role)
     {
         var mode = GetRoleSpawnMode(role);
@@ -975,57 +955,12 @@ public static class Options
         /*
          * Berserker
          */
-        SetupRoleOptions(600, TabGroup.ImpostorRoles, CustomRoles.Berserker);
-        BerserkerKillCooldown = FloatOptionItem.Create(602, "BerserkerKillCooldown", new(25f, 250f, 2.5f), 35f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker])
-            .SetValueFormat(OptionFormat.Seconds);
-        BerserkerMax = IntegerOptionItem.Create(603, "BerserkerMax", new(1, 10, 1), 4, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker])
-            .SetValueFormat(OptionFormat.Level);
-        BerserkerOneCanKillCooldown = BooleanOptionItem.Create(604, "BerserkerOneCanKillCooldown", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
-        BerserkerOneKillCooldown = FloatOptionItem.Create(605, "BerserkerOneKillCooldown", new(10f, 45f, 2.5f), 15f, TabGroup.ImpostorRoles, false).SetParent(BerserkerOneCanKillCooldown)
-            .SetValueFormat(OptionFormat.Seconds);
-        BerserkerKillCooldownLevel = IntegerOptionItem.Create(606, "BerserkerLevelRequirement", new(1, 10, 1), 1, TabGroup.ImpostorRoles, false).SetParent(BerserkerOneCanKillCooldown)
-            .SetValueFormat(OptionFormat.Level);
-        BerserkerTwoCanScavenger = BooleanOptionItem.Create(607, "BerserkerTwoCanScavenger", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
-        BerserkerScavengerLevel = IntegerOptionItem.Create(608, "BerserkerLevelRequirement", new(1, 10, 1), 2, TabGroup.ImpostorRoles, false).SetParent(BerserkerTwoCanScavenger)
-            .SetValueFormat(OptionFormat.Level);
-        BerserkerThreeCanBomber = BooleanOptionItem.Create(609, "BerserkerThreeCanBomber", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
-        BerserkerBomberLevel = IntegerOptionItem.Create(610, "BerserkerLevelRequirement", new(1, 10, 1), 3, TabGroup.ImpostorRoles, false).SetParent(BerserkerThreeCanBomber)
-            .SetValueFormat(OptionFormat.Level);
-        //BerserkerFourCanFlash = BooleanOptionItem.Create(611, "BerserkerFourCanFlash", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
-        //BerserkerSpeed = FloatOptionItem.Create(611, "BerserkerSpeed", new(1.5f, 5f, 0.25f), 2.5f, TabGroup.ImpostorRoles, false).SetParent(BerserkerOneCanKillCooldown)
-        //    .SetValueFormat(OptionFormat.Multiplier);
-        BerserkerFourCanNotKill = BooleanOptionItem.Create(612, "BerserkerFourCanNotKill", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
-        BerserkerImmortalLevel = IntegerOptionItem.Create(613, "BerserkerLevelRequirement", new(1, 10, 1), 4, TabGroup.ImpostorRoles, false).SetParent(BerserkerFourCanNotKill)
-            .SetValueFormat(OptionFormat.Level);
+        Berserker.SetupCustomOption();
 
         /*
          * Bomber
          */
-        SetupRoleOptions(700, TabGroup.ImpostorRoles, CustomRoles.Bomber);
-        BomberRadius = FloatOptionItem.Create(702, "BomberRadius", new(0.5f, 5f, 0.5f), 2f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bomber])
-            .SetValueFormat(OptionFormat.Multiplier);
-        BomberCanKill = BooleanOptionItem.Create(703, "CanKill", false, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bomber]);
-        BomberKillCD = FloatOptionItem.Create(704, "KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false)
-            .SetParent(BomberCanKill)
-            .SetValueFormat(OptionFormat.Seconds);
-        BombCooldown = FloatOptionItem.Create(705, "BombCooldown", new(5f, 180f, 2.5f), 60f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bomber])
-            .SetValueFormat(OptionFormat.Seconds);
-        ImpostorsSurviveBombs = BooleanOptionItem.Create(706, "ImpostorsSurviveBombs", true, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bomber]);
-        BomberDiesInExplosion = BooleanOptionItem.Create(707, "BomberDiesInExplosion", true, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bomber]);
-        NukerChance = IntegerOptionItem.Create(708, "NukerChance", new(0, 100, 5), 0, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bomber])
-            .SetValueFormat(OptionFormat.Percent);
-        NukeCooldown = FloatOptionItem.Create(709, "NukeCooldown", new(5f, 180f, 2.5f), 60f, TabGroup.ImpostorRoles, false)
-            .SetParent(NukerChance)
-            .SetValueFormat(OptionFormat.Seconds);
-        NukeRadius = FloatOptionItem.Create(710, "NukeRadius", new(1f, 100f, 1f), 25f, TabGroup.ImpostorRoles, false)
-            .SetParent(NukerChance)
-            .SetValueFormat(OptionFormat.Multiplier);
+        Bomber.SetupCustomOption();
 
         /*
          * Bounty Hunter
@@ -1309,7 +1244,7 @@ public static class Options
         /*
          * Lightning
          */
-        BallLightning.SetupCustomOption();
+        Lightning.SetupCustomOption();
 
         /*
          * Mastermind
@@ -3206,7 +3141,7 @@ public static class Options
         LadderDeath = BooleanOptionItem.Create(60760, "LadderDeath", false, TabGroup.GameSettings, false)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue))
             .HideInFFA();
-        LadderDeathChance = StringOptionItem.Create(60761, "LadderDeathChance", rates[1..], 0, TabGroup.GameSettings, false)
+        LadderDeathChance = StringOptionItem.Create(60761, "LadderDeathChance", EnumHelper.GetAllNames<SpawnChance>()[1..], 0, TabGroup.GameSettings, false)
             .SetParent(LadderDeath);
 
         // 修正首刀时间
@@ -3254,7 +3189,7 @@ public static class Options
 
     public static void SetupRoleOptions(int id, TabGroup tab, CustomRoles role, CustomGameMode customGameMode = CustomGameMode.Standard, bool zeroOne = false)
     {
-        var spawnOption = StringOptionItem.Create(id, role.ToString(), zeroOne ? ratesZeroOne : ratesToggle, 0, tab, false).SetColor(Utils.GetRoleColor(role))
+        var spawnOption = StringOptionItem.Create(id, role.ToString(), zeroOne ? EnumHelper.GetAllNames<RatesZeroOne>() : EnumHelper.GetAllNames<SpawnChance>(), 0, tab, false).SetColor(Utils.GetRoleColor(role))
             .SetHeader(true)
             .SetGameMode(customGameMode) as StringOptionItem;
         
@@ -3274,7 +3209,7 @@ public static class Options
     private static void SetupLoversRoleOptionsToggle(int id, CustomGameMode customGameMode = CustomGameMode.Standard)
     {
         var role = CustomRoles.Lovers;
-        var spawnOption = StringOptionItem.Create(id, role.ToString(), ratesZeroOne, 0, TabGroup.Addons, false).SetColor(Utils.GetRoleColor(role))
+        var spawnOption = StringOptionItem.Create(id, role.ToString(), EnumHelper.GetAllNames<RatesZeroOne>(), 0, TabGroup.Addons, false).SetColor(Utils.GetRoleColor(role))
             .SetHeader(true)
             .SetGameMode(customGameMode) as StringOptionItem;
 
@@ -3315,7 +3250,7 @@ public static class Options
 
     public static void SetupAdtRoleOptions(int id, CustomRoles role, CustomGameMode customGameMode = CustomGameMode.Standard, bool canSetNum = false, TabGroup tab = TabGroup.Addons, bool canSetChance = true)
     {
-        var spawnOption = StringOptionItem.Create(id, role.ToString(), ratesZeroOne, 0, tab, false).SetColor(Utils.GetRoleColor(role))
+        var spawnOption = StringOptionItem.Create(id, role.ToString(), EnumHelper.GetAllNames<RatesZeroOne>(), 0, tab, false).SetColor(Utils.GetRoleColor(role))
             .SetHeader(true)
             .SetGameMode(customGameMode) as StringOptionItem;
 
@@ -3335,32 +3270,10 @@ public static class Options
         CustomRoleSpawnChances.Add(role, spawnOption);
         CustomRoleCounts.Add(role, countOption);
     }
-    public static void SetupSyndicateRoleOptions(int id, CustomRoles role, CustomGameMode customGameMode = CustomGameMode.Standard, bool canSetNum = false, TabGroup tab = TabGroup.Addons, bool canSetChance = true)
-    {
-        var spawnOption = StringOptionItem.Create(id, role.ToString(), ratesZeroOne, 0, tab, false).SetColor(Utils.GetRoleColor(role))
-            .SetHeader(true)
-            .SetGameMode(customGameMode) as StringOptionItem;
-
-        var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(1, canSetNum ? 5 : 1, 1), 3, tab, false)
-        .SetParent(spawnOption)
-            .SetValueFormat(OptionFormat.Players)
-            .SetHidden(!canSetNum)
-            .SetGameMode(customGameMode);
-
-        var spawnRateOption = IntegerOptionItem.Create(id + 2, "AdditionRolesSpawnRate", new(0, 100, 5), canSetChance ? 80 : 100, tab, false)
-        .SetParent(spawnOption)
-            .SetValueFormat(OptionFormat.Percent)
-            .SetHidden(!canSetChance)
-            .SetGameMode(customGameMode) as IntegerOptionItem;
-
-        CustomAdtRoleSpawnRate.Add(role, spawnRateOption);
-        CustomRoleSpawnChances.Add(role, spawnOption);
-        CustomRoleCounts.Add(role, countOption);
-    }
 
     public static void SetupSingleRoleOptions(int id, TabGroup tab, CustomRoles role, int count = 1, CustomGameMode customGameMode = CustomGameMode.Standard, bool zeroOne = false)
     {
-        var spawnOption = StringOptionItem.Create(id, role.ToString(), zeroOne ? ratesZeroOne : ratesToggle, 0, tab, false).SetColor(Utils.GetRoleColor(role))
+        var spawnOption = StringOptionItem.Create(id, role.ToString(), zeroOne ? EnumHelper.GetAllNames<RatesZeroOne>() : EnumHelper.GetAllNames<SpawnChance>(), 0, tab, false).SetColor(Utils.GetRoleColor(role))
             .SetHeader(true)
             .SetGameMode(customGameMode) as StringOptionItem;
 

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Modules;
+using TOHE.Roles.Core;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
@@ -15,6 +16,7 @@ namespace TOHE;
 public class PlayerState(byte playerId)
 {
     readonly byte PlayerId = playerId;
+    public RoleBase Role;
     public CustomRoles MainRole = CustomRoles.NotAssigned;
     public List<CustomRoles> SubRoles = [];
     public CountTypes countTypes = CountTypes.OutOfGame;
@@ -48,6 +50,8 @@ public class PlayerState(byte playerId)
     {
         MainRole = role;
         countTypes = role.GetCountTypes();
+        Role = role.GetRoleClass();
+
         var pc = Utils.GetPlayerById(PlayerId);
 
         if (role == CustomRoles.Opportunist)

@@ -189,7 +189,7 @@ public static class Divinator
                 CustomRoles.Farseer,
                 CustomRoles.Arsonist,
                 CustomRoles.Assassin,
-                CustomRoles.BallLightning,
+                CustomRoles.Lightning,
                 CustomRoles.Collector,
                 CustomRoles.Stealth],
                 

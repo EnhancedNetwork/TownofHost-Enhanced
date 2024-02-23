@@ -117,6 +117,10 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                     break;
             }
         }
+
+        if (Main.PlayerStates.TryGetValue(player.PlayerId, out var playerState))
+            playerState.Role?.ApplyGameOptions(opt, player.PlayerId);
+
         switch (role)
         {
             case CustomRoles.Terrorist:
@@ -167,9 +171,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
             case CustomRoles.Tracefinder:
                 Tracefinder.ApplyGameOptions();
-                break;
-            case CustomRoles.BountyHunter:
-                BountyHunter.ApplyGameOptions();
                 break;
             case CustomRoles.Sniper:
                 Sniper.ApplyGameOptions(player);
@@ -238,14 +239,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.ShapeshifterTOHE:
                 AURoleOptions.ShapeshifterCooldown = Options.ShapeshiftCD.GetFloat();
                 AURoleOptions.ShapeshifterDuration = Options.ShapeshiftDur.GetFloat();
-                break;
-            case CustomRoles.Bomber:
-                AURoleOptions.ShapeshifterCooldown = Options.BombCooldown.GetFloat();
-                AURoleOptions.ShapeshifterDuration = 2f;
-                break;
-            case CustomRoles.Nuker:
-                AURoleOptions.ShapeshifterCooldown = Options.NukeCooldown.GetFloat();
-                AURoleOptions.ShapeshifterDuration = 2f;
                 break;
             case CustomRoles.Mafia:
                 AURoleOptions.ShapeshifterCooldown = Nemesis.MafiaShapeshiftCD.GetFloat();
@@ -430,9 +423,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Assassin:
                 Assassin.ApplyGameOptions();
                 break;
-            case CustomRoles.Anonymous:
-                Anonymous.ApplyGameOptions();
-                break;
             case CustomRoles.Hangman:
                 Hangman.ApplyGameOptions();
                 break;
@@ -490,9 +480,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
             case CustomRoles.Pitfall:
                 Pitfall.ApplyGameOptions();
-                break;
-            case CustomRoles.Blackmailer:
-                Blackmailer.ApplyGameOptions();
                 break;
             case CustomRoles.Warden:
                 Warden.SetAbilityCooldown();

@@ -15,11 +15,9 @@
     
     <ItemGroup>
         <EmbeddedResource Include=".\Resources\**" />
+        <EmbeddedResource Include="token.env" />
     </ItemGroup>
-	<ItemGroup>
-		<EmbeddedResource Include="token.env" />
-	</ItemGroup>
-	    
+    
     <ItemGroup>
         <PackageReference Include="AmongUs.GameLibs.Steam" Version="2023.11.28" PrivateAssets="all" />
 		<PackageReference Include="BepInEx.IL2CPP.MSBuild" Version="2.1.0-rc.1">

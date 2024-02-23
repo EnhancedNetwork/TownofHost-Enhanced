@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
+using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -45,7 +46,7 @@ internal class ChatCommands
         var cancelVal = "";
         Main.isChatCommand = true;
         Logger.Info(text, "SendChat");
-        if ((Options.NewHideMsg.GetBool() || Blackmailer.IsEnable) && AmongUsClient.Instance.AmHost) // Blackmailer.ForBlackmailer.Contains(PlayerControl.LocalPlayer.PlayerId)) && PlayerControl.LocalPlayer.IsAlive())
+        if ((Options.NewHideMsg.GetBool() || Blackmailer.On) && AmongUsClient.Instance.AmHost) // Blackmailer.ForBlackmailer.Contains(PlayerControl.LocalPlayer.PlayerId)) && PlayerControl.LocalPlayer.IsAlive())
         {
             ChatManager.SendMessage(PlayerControl.LocalPlayer, text);
         }
@@ -66,7 +67,7 @@ internal class ChatCommands
         Directory.CreateDirectory(vipTagsFiles);
         Directory.CreateDirectory(sponsorTagsFiles);
 
-        if (Blackmailer.ForBlackmailer.Contains(PlayerControl.LocalPlayer.PlayerId) && PlayerControl.LocalPlayer.IsAlive())
+        if (Blackmailer.CheckBlackmaile(PlayerControl.LocalPlayer) && PlayerControl.LocalPlayer.IsAlive())
         {
             ChatManager.SendPreviousMessagesToAll();
             ChatManager.cancel = false;
@@ -1053,7 +1054,7 @@ internal class ChatCommands
             "資本主義者" or "资本家" or "资本主义" or "资本" => GetString("Capitalism"),
             "歹徒" => GetString("Gangster"),
             "清潔工" or "清理工" or "清洁工" => GetString("Cleaner"),
-            "球狀閃電" or "球状闪电" => GetString("BallLightning"),
+            "球狀閃電" or "球状闪电" => GetString("Lightning"),
             "貪婪者" or "贪婪者" or "贪婪" => GetString("Greedier"),
             "被詛咒的狼" or "呪狼" => GetString("CursedWolf"),
             "換魂師" or "夺魂者" or "夺魂" => GetString("ImperiusCurse"),
@@ -1396,8 +1397,8 @@ internal class ChatCommands
                     if (devMark == "▲")
                     {
                         byte pid = playerId == 255 ? (byte)0 : playerId;
-                        Main.DevRole.Remove(pid);
-                        Main.DevRole.Add(pid, rl);
+                        RoleAssign.SetRoles.Remove(pid);
+                        RoleAssign.SetRoles.Add(pid, rl);
                     }
                     if (isUp) return;
                 }
@@ -1421,7 +1422,7 @@ internal class ChatCommands
     {
         canceled = false;
         if (!AmongUsClient.Instance.AmHost) return;
-        if ((Options.NewHideMsg.GetBool() || Blackmailer.IsEnable) && player.PlayerId != 0) // Blackmailer.ForBlackmailer.Contains(player.PlayerId)) && PlayerControl.LocalPlayer.IsAlive() && player.PlayerId != 0)
+        if ((Options.NewHideMsg.GetBool() || Blackmailer.On) && player.PlayerId != 0) // Blackmailer.ForBlackmailer.Contains(player.PlayerId)) && PlayerControl.LocalPlayer.IsAlive() && player.PlayerId != 0)
         {
             ChatManager.SendMessage(player, text);
         }
@@ -1449,7 +1450,7 @@ internal class ChatCommands
         Directory.CreateDirectory(vipTagsFiles);
         Directory.CreateDirectory(sponsorTagsFiles);
 
-        if (Blackmailer.ForBlackmailer.Contains(player.PlayerId) && player.IsAlive() && player.PlayerId != 0)
+        if (Blackmailer.CheckBlackmaile(player) && player.IsAlive() && player.PlayerId != 0)
         {
             Logger.Info($"This player (id {player.PlayerId}) was Blackmailed", "OnReceiveChat");
             ChatManager.SendPreviousMessagesToAll();
