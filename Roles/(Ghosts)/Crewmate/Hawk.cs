@@ -113,7 +113,7 @@ public static class Hawk
             && (target.Is(CustomRoles.NiceMini) ? Mini.Age > 18 : true);
     }
     public static bool CanKill(byte id) => KillCount.TryGetValue(id, out var x) && x > 0;
-    public static string GetRetributeLimit(byte playerId) => Utils.ColorString(CanKill(playerId) ? Utils.GetRoleColor(CustomRoles.Hawk).ShadeColor(0.25f) : Color.gray, KillCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");
+    public static string GetSnatchLimit(byte playerId) => Utils.ColorString(CanKill(playerId) ? Utils.GetRoleColor(CustomRoles.Hawk).ShadeColor(0.25f) : Color.gray, KillCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");
 
 }
 

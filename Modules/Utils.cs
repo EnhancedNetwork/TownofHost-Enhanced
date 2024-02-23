@@ -1056,7 +1056,7 @@ public static class Utils
                     ProgressText.Append(CursedSoul.GetCurseLimit());
                     break;
                 case CustomRoles.Hawk:
-                    ProgressText.Append(Hawk.GetRetributeLimit(playerId));
+                    ProgressText.Append(Hawk.GetSnatchLimit(playerId));
                     break;
                 case CustomRoles.Bloodmoon:
                     ProgressText.Append(Bloodmoon.GetRevengeLimit(playerId));
