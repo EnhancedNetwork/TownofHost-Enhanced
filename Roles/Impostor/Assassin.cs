@@ -10,7 +10,7 @@ namespace TOHE.Roles.Impostor;
 
 internal static class Assassin
 {
-    private static readonly int Id = 2100;
+    private const int Id = 2100;
     public static List<byte> playerIdList = [];
     public static bool IsEnable = false;
 
