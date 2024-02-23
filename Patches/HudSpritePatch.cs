@@ -144,7 +144,7 @@ public static class HudSpritePatch
             case CustomRoles.BountyHunter:
                 newKillButton = CustomButton.Get("Handoff");
                 break;
-            case CustomRoles.ImperiusCurse:
+            case CustomRoles.SoulCatcher:
                 newKillButton = CustomButton.Get("Teleport");
                 break;
             case CustomRoles.Swooper:

@@ -9,7 +9,6 @@ internal class Bard: RoleBase
     {
         On = false;
     }
-
     public override void Add(byte playerId)
     {
         On = true;

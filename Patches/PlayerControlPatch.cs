@@ -1675,22 +1675,6 @@ public static class CheckShapeShiftPatch
                 shapeshifter.RejectShapeshiftAndReset();
                 return false;
 
-            case CustomRoles.ImperiusCurse:
-                shapeshifter.RejectShapeshiftAndReset();
-                _ = new LateTask(() =>
-                {
-                    if (shapeshifter.CanBeTeleported() && target.CanBeTeleported())
-                    {
-                        var originPs = target.GetCustomPosition();
-                        target.RpcTeleport(shapeshifter.GetCustomPosition());
-                        shapeshifter.RpcTeleport(originPs);
-
-                        shapeshifter.RPCPlayCustomSound("Teleport");
-                        target.RPCPlayCustomSound("Teleport");
-                    }
-                }, 0.2f, "Soul Catcher (ImperiusCurse) teleport");
-                return false;
-
             case CustomRoles.Deathpact:
                 Deathpact.OnShapeshift(shapeshifter, target);
                 shapeshifter.RejectShapeshiftAndReset();
@@ -1837,23 +1821,6 @@ class ShapeshiftPatch
                     break;
                 case CustomRoles.Ninja:
                     Ninja.OnShapeshift(shapeshifter, shapeshifting);
-                    break;
-                case CustomRoles.ImperiusCurse:
-                    if (shapeshifting)
-                    {
-                        _ = new LateTask(() =>
-                        {
-                            if (shapeshifter.CanBeTeleported() && target.CanBeTeleported())
-                            {
-                                var originPs = target.GetCustomPosition();
-                                target.RpcTeleport(shapeshifter.GetCustomPosition());
-                                shapeshifter.RpcTeleport(originPs);
-
-                                shapeshifter.RPCPlayCustomSound("Teleport");
-                                target.RPCPlayCustomSound("Teleport");
-                            }
-                        }, 1.5f, "Soul Catcher (ImperiusCurse) teleport");
-                    }
                     break;
                 case CustomRoles.QuickShooter:
                     QuickShooter.OnShapeshift(shapeshifter, shapeshifting);

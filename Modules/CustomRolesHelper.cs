@@ -125,7 +125,7 @@ public static class CustomRolesHelper
                 CustomRoles.CursedWolf => CustomRoles.Impostor,
                 CustomRoles.Collector => CustomRoles.Crewmate,
                 CustomRoles.Taskinator => CustomRoles.Engineer,
-                CustomRoles.ImperiusCurse => CustomRoles.Shapeshifter,
+                CustomRoles.SoulCatcher => CustomRoles.Shapeshifter,
                 CustomRoles.QuickShooter => CustomRoles.Shapeshifter,
                 CustomRoles.Eraser => CustomRoles.Impostor,
                 CustomRoles.Butcher => CustomRoles.Impostor,
@@ -736,7 +736,7 @@ public static class CustomRolesHelper
             CustomRoles.Ludopath or
             CustomRoles.Godfather or
             CustomRoles.CursedWolf or
-            CustomRoles.ImperiusCurse or
+            CustomRoles.SoulCatcher or
             CustomRoles.QuickShooter or
             CustomRoles.Eraser or
             CustomRoles.Butcher or

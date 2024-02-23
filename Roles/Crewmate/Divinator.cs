@@ -345,7 +345,7 @@ public static class Divinator
                 [CustomRoles.Poisoner,
                 CustomRoles.Vampire,
                 CustomRoles.DovesOfNeace,
-                CustomRoles.ImperiusCurse,
+                CustomRoles.SoulCatcher,
                 CustomRoles.Huntsman,
                 CustomRoles.Traitor],
                 

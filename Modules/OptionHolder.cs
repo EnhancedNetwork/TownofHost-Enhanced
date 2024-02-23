@@ -532,9 +532,6 @@ public static class Options
 
     public static OptionItem ShapeMasterShapeshiftDuration;
 
-    public static OptionItem ShapeImperiusCurseShapeshiftDuration;
-    public static OptionItem ImperiusCurseShapeshiftCooldown;
-
     public static OptionItem WarlockCanKillAllies;
     public static OptionItem WarlockCanKillSelf;
     public static OptionItem WarlockShiftDuration;
@@ -1285,13 +1282,7 @@ public static class Options
         /*
          * Soul Catcher
          */
-        SetupRoleOptions(4600, TabGroup.ImpostorRoles, CustomRoles.ImperiusCurse);
-        ShapeImperiusCurseShapeshiftDuration = FloatOptionItem.Create(4602, "ShapeshiftDuration", new(2.5f, 180f, 2.5f), 300, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.ImperiusCurse])
-            .SetValueFormat(OptionFormat.Seconds);
-        ImperiusCurseShapeshiftCooldown = FloatOptionItem.Create(4603, "ShapeshiftCooldown", new(1f, 180f, 1f), 15f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.ImperiusCurse])
-            .SetValueFormat(OptionFormat.Seconds);
+        SoulCatcher.SetupCustomOption();
 
         /*
          * Swooper

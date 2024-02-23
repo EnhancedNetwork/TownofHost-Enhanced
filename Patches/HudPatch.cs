@@ -271,10 +271,6 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.AbilityButton.OverrideText(GetString("TwisterButtonText"));
                         break;
-                    case CustomRoles.ImperiusCurse:
-                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        __instance.AbilityButton.OverrideText(GetString("ImperiusCurseButtonText"));
-                        break;
                     case CustomRoles.QuickShooter:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.AbilityButton.OverrideText(GetString("QuickShooterShapeshiftText"));

@@ -405,11 +405,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Solsticer:
                 Solsticer.ApplyGameOptions();
                 break;
-            case CustomRoles.ImperiusCurse:
-                AURoleOptions.ShapeshifterCooldown = Options.ImperiusCurseShapeshiftCooldown.GetFloat();
-                AURoleOptions.ShapeshifterLeaveSkin = false;
-                AURoleOptions.ShapeshifterDuration = Options.ShapeImperiusCurseShapeshiftDuration.GetFloat();
-                break;
             case CustomRoles.QuickShooter:
                 QuickShooter.ApplyGameOptions();
                 break;

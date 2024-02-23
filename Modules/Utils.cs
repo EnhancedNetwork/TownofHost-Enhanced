@@ -588,7 +588,7 @@ public static class Utils
             case CustomRoles.PotionMaster:
             case CustomRoles.DarkHide:
             case CustomRoles.Collector:
-            case CustomRoles.ImperiusCurse:
+            case CustomRoles.SoulCatcher:
             case CustomRoles.Provocateur:
             case CustomRoles.Medic:
             case CustomRoles.BloodKnight:

@@ -600,7 +600,7 @@ public enum CustomRoles
     ShapeMaster,
     Sniper,
     Witch,
-    ImperiusCurse, //soulcatcher
+    SoulCatcher,
     Swooper,
     Stealth,
     TimeThief,

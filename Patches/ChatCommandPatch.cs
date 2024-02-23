@@ -1054,7 +1054,7 @@ internal class ChatCommands
             "球狀閃電" or "球状闪电" => GetString("Lightning"),
             "貪婪者" or "贪婪者" or "贪婪" => GetString("Greedy"),
             "被詛咒的狼" or "呪狼" => GetString("CursedWolf"),
-            "換魂師" or "夺魂者" or "夺魂" => GetString("ImperiusCurse"),
+            "換魂師" or "夺魂者" or "夺魂" => GetString("SoulCatcher"),
             "快槍手" or "快枪手" or "快枪" => GetString("QuickShooter"),
             "隱蔽者" or "隐蔽者" or "小黑人" => GetString("Camouflager"),
             "抹除者" or "抹除" => GetString("Eraser"),
