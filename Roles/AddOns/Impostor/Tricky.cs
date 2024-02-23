@@ -48,7 +48,7 @@ public static class Tricky
             PlayerState.DeathReason.Torched => (CustomRoles.Arsonist.IsEnable()),
             PlayerState.DeathReason.Sniped => (CustomRoles.Sniper.IsEnable()),
             PlayerState.DeathReason.Revenge => (CustomRoles.Avanger.IsEnable() || CustomRoles.Retributionist.IsEnable() 
-                                || CustomRoles.Nemesis.IsEnable() || CustomRoles.Randomizer.IsEnable()),
+                                || CustomRoles.Mafia.IsEnable() || CustomRoles.Randomizer.IsEnable()),
             PlayerState.DeathReason.Gambled => (CustomRoles.EvilGuesser.IsEnable() || CustomRoles.NiceGuesser.IsEnable() 
                                 || GuesserMode.GetBool()),
             PlayerState.DeathReason.Quantization => (CustomRoles.BallLightning.IsEnable()),

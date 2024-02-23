@@ -21,12 +21,12 @@ public static class Nemesis
 
     public static void SetupCustomOptions()
     {
-        SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Nemesis);
+        SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Mafia);
         MafiaCanKillNum = IntegerOptionItem.Create(Id + 10, "MafiaCanKillNum", new(0, 15, 1), 1, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis])
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Mafia])
                 .SetValueFormat(OptionFormat.Players);
         LegacyMafia = BooleanOptionItem.Create(Id + 11, "LegacyMafia", false, TabGroup.ImpostorRoles, false)
-                .SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis]);
+                .SetParent(CustomRoleSpawnChances[CustomRoles.Mafia]);
         MafiaShapeshiftCD = FloatOptionItem.Create(Id + 12, "ShapeshiftCooldown", new(1f, 180f, 1f), 15f, TabGroup.ImpostorRoles, false)
                 .SetParent(LegacyMafia)
                 .SetValueFormat(OptionFormat.Seconds);
@@ -38,7 +38,7 @@ public static class Nemesis
     {
         if (!AmongUsClient.Instance.AmHost) return false;
         if (!GameStates.IsInGame || pc == null) return false;
-        if (!pc.Is(CustomRoles.Nemesis)) return false;
+        if (!pc.Is(CustomRoles.Mafia)) return false;
         msg = msg.Trim().ToLower();
         if (msg.Length < 3 || msg[..3] != "/rv") return false;
         if (MafiaCanKillNum.GetInt() < 1)
@@ -141,7 +141,7 @@ public static class Nemesis
                 target.RpcMurderPlayerV3(target);
                 Main.PlayerStates[target.PlayerId].SetDead();
             }
-            _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("MafiaKillSucceed"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Nemesis), GetString("MafiaRevengeTitle")), true); }, 0.6f, "Mafia Kill");
+            _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("MafiaKillSucceed"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mafia), GetString("MafiaRevengeTitle")), true); }, 0.6f, "Mafia Kill");
         }, 0.2f, "Mafia Start Kill");
         return true;
     }
@@ -172,7 +172,7 @@ public static class Nemesis
     {
         public static void Postfix(MeetingHud __instance)
         {
-            if (PlayerControl.LocalPlayer.Is(CustomRoles.Nemesis) && !PlayerControl.LocalPlayer.IsAlive())
+            if (PlayerControl.LocalPlayer.Is(CustomRoles.Mafia) && !PlayerControl.LocalPlayer.IsAlive())
                 CreateJudgeButton(__instance);
         }
     }

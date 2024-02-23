@@ -593,7 +593,7 @@ public enum CustomRoles
     Mercenary, //mercenary
     Miner,
     Morphling,
-    Nemesis,
+    Mafia, //Nemesis
     Minion,
     Assassin, //ninja
     Nuker,
