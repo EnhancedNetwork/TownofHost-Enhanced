@@ -972,7 +972,7 @@ class MeetingHudStartPatch
             }
 
             //勒索者勒索警告
-            if (Blackmailer.IsEnable && pc != null && Blackmailer.ForBlackmailer.Contains(pc.PlayerId))
+            if (Blackmailer.CheckBlackmaile(pc))
             {
                 var playername = pc.GetRealName();
                 if (Doppelganger.DoppelVictim.ContainsKey(pc.PlayerId)) playername = Doppelganger.DoppelVictim[pc.PlayerId];
@@ -1383,7 +1383,7 @@ class MeetingHudStartPatch
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), "★"));
 
             //玩家被勒索提示
-            if (Blackmailer.ForBlackmailer.Contains(target.PlayerId))
+            if (Blackmailer.CheckBlackmaile(target))
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Blackmailer), "╳"));
 
             //迷你船员提示

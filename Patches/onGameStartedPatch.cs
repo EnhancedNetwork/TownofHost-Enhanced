@@ -117,7 +117,6 @@ internal class ChangeRoleSettings
             Main.MeetingsPassed = 0;
             Main.DovesOfNeaceNumOfUsed = [];
             Main.GodfatherTarget = [];
-            Main.BerserkerKillMax = [];
             Main.CrewpostorTasksDone = [];
             Main.ShamanTarget = byte.MaxValue;
             Main.ShamanTargetChoosen = false;
@@ -210,6 +209,11 @@ internal class ChangeRoleSettings
                 Main.RefixCooldownDelay = 0;
             }
 
+            foreach (var state in Main.PlayerStates.Values)
+            {
+                state.Role.Init();
+            }
+
             FallFromLadder.Reset();
             BountyHunter.Init();
             Mercenary.Init();
@@ -243,7 +247,6 @@ internal class ChangeRoleSettings
             Vampire.Init();
             Vampiress.Init();
             Poisoner.Init();
-            AntiAdminer.Init();
             Monitor.Init();
             TimeManager.Init();
             LastImpostor.Init();
@@ -275,9 +278,7 @@ internal class ChangeRoleSettings
             Oracle.Init();
             Eraser.Init();
             Assassin.Init();
-            Arrogance.Init();
             Juggernaut.Init();
-            Anonymous.Init();
             Psychic.Init();
             Sleuth.Init();
             Glitch.Init();
@@ -327,7 +328,6 @@ internal class ChangeRoleSettings
             Jinx.Init();
             DoubleShot.Init();
             Dazzler.Init();
-            Addict.Init();
             Mole.Init();
             Deathpact.Init();
             Tracefinder.Init();
@@ -367,7 +367,6 @@ internal class ChangeRoleSettings
             ChiefOfPolice.Init();
             Cyber.Init();
             Mini.Init();
-            Blackmailer.Init();
             Spy.Init();
             Oiiai.Init();
             Hater.Init();
@@ -595,13 +594,13 @@ internal class SelectRolesPatch
             foreach (var pc in Main.AllPlayerControls)
             {
                 if (pc.Data.Role.Role == RoleTypes.Shapeshifter) Main.CheckShapeshift.Add(pc.PlayerId, false);
+
+                Main.PlayerStates[pc.PlayerId]?.Role.Add(pc.PlayerId);
+
                 switch (pc.GetCustomRole())
                 {
                     case CustomRoles.BountyHunter:
                         BountyHunter.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Berserker:
-                        Main.BerserkerKillMax[pc.PlayerId] = 0;
                         break;
                     case CustomRoles.Reverie:
                         Reverie.Add(pc.PlayerId);
@@ -766,9 +765,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Solsticer:
                         Solsticer.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.AntiAdminer:
-                        AntiAdminer.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Monitor:
                         Monitor.Add(pc.PlayerId);
                         break;
@@ -851,14 +847,8 @@ internal class SelectRolesPatch
                     case CustomRoles.Assassin:
                         Assassin.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Arrogance:
-                        Arrogance.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Juggernaut:
                         Juggernaut.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Anonymous:
-                        Anonymous.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Psychic:
                         Psychic.Add(pc.PlayerId);
@@ -998,9 +988,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Dazzler:
                         Dazzler.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Addict:
-                        Addict.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Mole:
                         Mole.Add(pc.PlayerId);
                         break;
@@ -1057,9 +1044,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.ChiefOfPolice:
                         ChiefOfPolice.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Blackmailer:
-                        Blackmailer.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Spy:
                         Spy.Add(pc.PlayerId);

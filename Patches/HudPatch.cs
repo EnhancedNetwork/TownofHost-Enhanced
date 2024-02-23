@@ -86,6 +86,8 @@ class HudManagerPatch
             }
             if (player.IsAlive())
             {
+                Main.PlayerStates[player.PlayerId]?.Role.SetButtonTexts(__instance, player.PlayerId);
+
                 //MOD入り用のボタン下テキスト変更
                 switch (player.GetCustomRole())
                 {
@@ -299,10 +301,6 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         Assassin.SetKillButtonText(player.PlayerId);
                         Assassin.GetAbilityButtonText(__instance, player.PlayerId);
-                        break;
-                    case CustomRoles.Anonymous:
-                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        Anonymous.GetAbilityButtonText(__instance, player.PlayerId);
                         break;
                     case CustomRoles.Cleaner:
                         __instance.ReportButton.OverrideText(GetString("CleanerReportButtonText"));

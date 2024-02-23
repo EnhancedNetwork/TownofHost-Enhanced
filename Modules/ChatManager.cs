@@ -105,7 +105,7 @@ namespace TOHE.Modules.ChatManager
             else if (CheckCommond(ref msg, "shoot|guess|bet|st|gs|bt|猜|赌|賭|sp|jj|tl|trial|审判|判|审|審判|審|compare|cmp|比较|比較|duel|sw|swap|st|换票|换|換票|換|finish|结束|结束会议|結束|結束會議|reveal|展示", false)) operate = 2;
             else if (ChatSentBySystem.Contains(getTextHash(msg))) operate = 5;
             
-            if ((operate == 1 || Blackmailer.ForBlackmailer.Contains(player.PlayerId)) && player.IsAlive())
+            if ((operate == 1 || Blackmailer.CheckBlackmaile(player)) && player.IsAlive())
             {
                 Logger.Info($"包含特殊信息，不记录", "ChatManager");
                 message = msg;

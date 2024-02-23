@@ -471,6 +471,9 @@ static class ExtendedPlayerControl
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
         if (Mastermind.ManipulatedPlayers.ContainsKey(pc.PlayerId)) return true;
 
+        if (Main.PlayerStates.TryGetValue(pc.PlayerId, out var playerState))
+            return playerState.Role.CanUseKillButton(pc);
+
         return pc.GetCustomRole() switch
         {
             //FFA
@@ -742,6 +745,10 @@ static class ExtendedPlayerControl
     public static void ResetKillCooldown(this PlayerControl player)
     {
         Main.AllPlayerKillCooldown[player.PlayerId] = GameStates.IsNormalGame ? Options.DefaultKillCooldown : 1f; //キルクールをデフォルトキルクールに変更
+
+        if (Main.PlayerStates.TryGetValue(player.PlayerId, out var state))
+            state.Role?.SetKillCooldown(player.PlayerId);
+
         switch (player.GetCustomRole())
         {
             case CustomRoles.Mercenary:
@@ -761,9 +768,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.PlagueDoctor:
                 PlagueDoctor.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Berserker:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Options.BerserkerKillCooldown.GetFloat();
                 break;
             case CustomRoles.Kamikaze:
                 Kamikaze.SetKillCooldown(player.PlayerId);
@@ -967,17 +971,11 @@ static class ExtendedPlayerControl
             case CustomRoles.Vampiress:
                 Vampiress.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.Arrogance:
-                Arrogance.SetKillCooldown(player.PlayerId);
-                break;
             case CustomRoles.Juggernaut:
                 Juggernaut.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Reverie:
                 Reverie.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Anonymous:
-                Anonymous.SetKillCooldown(player.PlayerId);
                 break;
             //FFA
             case CustomRoles.Killer:

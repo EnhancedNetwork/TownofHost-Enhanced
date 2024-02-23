@@ -142,7 +142,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, Vector2> LastEnteredVentLocation = [];
     public static Dictionary<byte, Vector2> TimeMasterBackTrack = [];
     public static Dictionary<byte, int> MasochistKillMax = [];
-    public static Dictionary<byte, int> BerserkerKillMax = [];
     public static Dictionary<byte, int> TimeMasterNum = [];
     public static Dictionary<byte, long> TimeMasterInProtect = [];
     //public static Dictionary<byte, long> FlashbangInProtect = [];

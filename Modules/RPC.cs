@@ -973,6 +973,9 @@ internal static class RPC
         {
             Main.PlayerStates[targetId].SetSubRole(role);
         }
+
+        Main.PlayerStates[targetId]?.Role.Add(targetId);
+
         switch (role)
         {
             case CustomRoles.BountyHunter:
@@ -1110,9 +1113,6 @@ internal static class RPC
             case CustomRoles.Marshall:
                 Marshall.Add(targetId);
                 break;
-            case CustomRoles.AntiAdminer:
-                AntiAdminer.Add(targetId);
-                break;
             case CustomRoles.Monitor:
                 Monitor.Add(targetId);
                 break;
@@ -1204,17 +1204,11 @@ internal static class RPC
             case CustomRoles.Assassin:
                 Assassin.Add(targetId);
                 break;
-            case CustomRoles.Arrogance:
-                Arrogance.Add(targetId);
-                break;
             case CustomRoles.Juggernaut:
                 Juggernaut.Add(targetId);
                 break;
             case CustomRoles.Reverie:
                 Reverie.Add(targetId);
-                break;
-            case CustomRoles.Anonymous:
-                Anonymous.Add(targetId);
                 break;
             case CustomRoles.Psychic:
                 Psychic.Add(targetId);
@@ -1372,9 +1366,6 @@ internal static class RPC
             case CustomRoles.Dazzler:
                 Dazzler.Add(targetId);
                 break;
-            case CustomRoles.Addict:
-                Addict.Add(targetId);
-                break;
             case CustomRoles.Mole:
                 Mole.Add(targetId);
                 break;
@@ -1425,9 +1416,6 @@ internal static class RPC
                 break;
             case CustomRoles.EvilMini:
                 Mini.Add(targetId);
-                break;
-            case CustomRoles.Blackmailer:
-                Blackmailer.Add(targetId);
                 break;
             case CustomRoles.Diseased:
                 Diseased.Add();

@@ -1,6 +1,6 @@
-﻿using Hazel;
+﻿using AmongUs.GameOptions;
+using Hazel;
 using System.Collections.Generic;
-using System.Linq;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
@@ -8,11 +8,13 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
-public static class Anonymous
+internal class Anonymous : RoleBase
 {
-    private static readonly int Id = 5300;
+    private const int Id = 5300;
     private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    
+    public static bool On;
+    public override bool IsEnable => On;
 
     private static OptionItem HackLimitOpt;
     private static OptionItem KillCooldown;
@@ -28,18 +30,18 @@ public static class Anonymous
         HackLimitOpt = IntegerOptionItem.Create(Id + 4, "HackLimit", new(1, 15, 1), 3, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Anonymous])
             .SetValueFormat(OptionFormat.Times);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         HackLimit = [];
         DeadBodyList = [];
-        IsEnable = false;
+        On = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         HackLimit.TryAdd(playerId, HackLimitOpt.GetInt());
-        IsEnable = true;
+        On = true;
     }
     private static void SendRPC(byte playerId)
     {
@@ -56,28 +58,30 @@ public static class Anonymous
         HackLimit.TryAdd(PlayerId, HackLimitOpt.GetInt());
         HackLimit[PlayerId] = Limit;
     }
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    public static void ApplyGameOptions()
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = 1f;
         AURoleOptions.ShapeshifterDuration = 1f;
     }
     public static string GetHackLimit(byte playerId) => Utils.ColorString((HackLimit.TryGetValue(playerId, out var x) && x >= 1) ? Utils.GetRoleColor(CustomRoles.Anonymous).ShadeColor(0.25f) : Color.gray, HackLimit.TryGetValue(playerId, out var hackLimit) ? $"({hackLimit})" : "Invalid");
-    public static void GetAbilityButtonText(HudManager __instance, byte playerId)
+    public override void SetButtonTexts(HudManager __instance, byte playerId)
     {
+        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
+
         if (HackLimit.TryGetValue(playerId, out var x) && x >= 1)
         {
             __instance.AbilityButton.OverrideText(GetString("AnonymousShapeshiftText"));
             __instance.AbilityButton.SetUsesRemaining(x);
         }
     }
-    public static void OnReportDeadBody() => DeadBodyList = [];
-    public static void AddDeadBody(PlayerControl target)
+    public override void OnReportDeadBody(PlayerControl player, PlayerControl target) => DeadBodyList = [];
+    public override void OnMurder(PlayerControl killer, PlayerControl target)
     {
         if (target != null && !DeadBodyList.Contains(target.PlayerId))
             DeadBodyList.Add(target.PlayerId);
     }
-    public static void OnShapeshift(PlayerControl pc, bool shapeshifting, PlayerControl ssTarget)
+    public override void OnShapeshift(PlayerControl pc, PlayerControl ssTarget, bool shapeshifting, bool shapeshiftIsHidden)
     {
         if (!shapeshifting || !HackLimit.TryGetValue(pc.PlayerId, out var x) || x < 1 || ssTarget == null || ssTarget.Is(CustomRoles.Needy) || ssTarget.Is(CustomRoles.Lazy) || ssTarget.Is(CustomRoles.NiceMini) && Mini.Age < 18) return;
         HackLimit[pc.PlayerId]--;

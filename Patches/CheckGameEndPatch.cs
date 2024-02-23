@@ -464,7 +464,11 @@ class GameEndCheckerForNormal
     private static IEnumerator CoEndGame(AmongUsClient self, GameOverReason reason)
     {
         if (Quizmaster.IsEnable) Quizmaster.ResetMarkedPlayer();
-        if (Blackmailer.IsEnable) Blackmailer.ForBlackmailer.Clear();
+
+        foreach (var playerState in Main.PlayerStates.Values.Where(pc => pc.Role.IsEnable))
+        {
+            playerState.Role?.OnCoEndGame();
+        }
 
         // Set ghost role
         List<byte> ReviveRequiredPlayerIds = [];
