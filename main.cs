@@ -556,7 +556,6 @@ public enum CustomRoles
     Bloodmoon,
     Butcher,
     Camouflager,
-    Capitalist, //capitalist
     Chronomancer,
     Cleaner,
     EvilDiviner, //Consigliere

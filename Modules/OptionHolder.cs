@@ -693,8 +693,6 @@ public static class Options
     public static OptionItem ZombieKillCooldown;
     public static OptionItem ZombieSpeedReduce;
 
-    //public static OptionItem CapitalismSkillCooldown;
-
     //public static OptionItem SpeedBoosterUpSpeed;
     //public static OptionItem SpeedBoosterTimes;
 
@@ -2332,12 +2330,6 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(247, 70, 49, byte.MaxValue));
 
-        
-        /*SetupRoleOptions(24000, TabGroup.OtherRoles, CustomRoles.Capitalism);
-        CapitalismSkillCooldown = FloatOptionItem.Create(24003, "CapitalismSkillCooldown", new(2.5f, 180f, 2.5f), 20f, TabGroup.OtherRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Capitalism])
-            .SetValueFormat(OptionFormat.Seconds);*/
-        
         Disperser.SetupCustomOption();        
 
         // 船员

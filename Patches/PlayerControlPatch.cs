@@ -4022,9 +4022,6 @@ class PlayerControlCompleteTaskPatch
         if (Workhorse.OnAddTask(player))
             return false;
 
-        if (Capitalist.OnAddTask(player))
-            return false;
-
         return true;
     }
     public static void Postfix(PlayerControl __instance, object[] __args)

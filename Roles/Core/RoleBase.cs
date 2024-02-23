@@ -57,9 +57,9 @@ public abstract class RoleBase
     /// </summary>
     public virtual void OnFixedUpdate(PlayerControl pc)
     { }
-    
+  
     /// <summary>
-    /// A generic method to check conditions during gameplay, which aren't prioritized.
+    /// Fixed Update for others players
     /// </summary>
     public virtual void OnFixedUpdateLowLoad(PlayerControl pc)
     { }

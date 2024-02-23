@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Crewmate;
@@ -300,7 +301,7 @@ public static class CustomRoleManager
         Main.PlayerStates[player.PlayerId]?.Role?.OnFixedUpdate(player);
 
         //Execute other viewpoint processing if any
-        foreach (var onFixedUpdate in OnFixedUpdateOthers)
+        foreach (var onFixedUpdate in OnFixedUpdateOthers.ToArray())
         {
             onFixedUpdate(player);
         }
@@ -311,7 +312,7 @@ public static class CustomRoleManager
         Main.PlayerStates[player.PlayerId]?.Role?.OnFixedUpdateLowLoad(player);
 
         //Execute other viewpoint processing if any
-        foreach (var onFixedUpdateLowLoad in OnFixedUpdateLowLoadOthers)
+        foreach (var onFixedUpdateLowLoad in OnFixedUpdateLowLoadOthers.ToArray())
         {
             onFixedUpdateLowLoad(player);
         }
