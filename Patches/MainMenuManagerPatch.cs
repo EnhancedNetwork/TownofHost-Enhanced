@@ -81,7 +81,15 @@ public static class MainMenuManagerPatch
         GameObject splashArt = new("SplashArt");
         splashArt.transform.position = new Vector3(0, 0f, 600f); //= new Vector3(0, 0.40f, 600f);
         var spriteRenderer = splashArt.AddComponent<SpriteRenderer>();
-        spriteRenderer.sprite = Utils.LoadSprite("TOHE.Resources.Background.TOHE-Background-1.4.0.png", 150f);
+        string folder = "TOHE.Resources.Background.";
+        IRandom rand = IRandom.Instance;
+        if (rand.Next(0, 100) < 30) folder += "ArtComp";
+        else folder += "ArtWinner";
+        var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+        string[] fileNames = assembly.GetManifestResourceNames().Where(resourceName => resourceName.StartsWith(folder) && resourceName.EndsWith(".png")).ToArray();
+        int choice = rand.Next(0, fileNames.Length);
+
+        spriteRenderer.sprite = Utils.LoadSprite(fileNames[choice], 150f);
 
 
         //__instance.playLocalButton.inactiveSprites.GetComponent<SpriteRenderer>().color = new Color(0.1647f, 0f, 0.7765f);

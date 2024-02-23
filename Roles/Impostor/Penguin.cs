@@ -15,7 +15,7 @@ public static class Penguin
     private static OptionItem OptionAbductTimerLimit;
     private static OptionItem OptionMeetingKill;
 
-    private static PlayerControl AbductVictim;
+    public static PlayerControl AbductVictim;
     private static float AbductTimer;
     private static float AbductTimerLimit;
     private static bool stopCount;
@@ -87,7 +87,7 @@ public static class Penguin
         Utils.GetPlayerById(playerIdList[0])?.RpcResetAbilityCooldown();
         SendRPC();
     }
-    private static void RemoveVictim()
+    public static void RemoveVictim()
     {
         if (AbductVictim != null)
         {
