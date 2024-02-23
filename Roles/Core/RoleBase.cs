@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using static UnityEngine.GraphicsBuffer;
 //using System.Text;
 
 namespace TOHE;
@@ -86,5 +87,8 @@ public abstract class RoleBase
     public virtual void SetButtonTexts(HudManager hud, byte id) => hud.KillButton?.OverrideText(Translator.GetString("KillButtonText"));
 
     public virtual void OnCoEndGame()
+    { }
+
+    public virtual void OnCheckProtect(PlayerControl angel, PlayerControl target)
     { }
 }
