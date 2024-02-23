@@ -24,7 +24,7 @@ public static class CustomRoleManager
         CustomRoles.Nuker => new Bomber(),
         CustomRoles.BountyHunter => new BountyHunter(),
         CustomRoles.Butcher => new Butcher(),
-        //CustomRoles.Camouflager => new Camouflager(),
+        CustomRoles.Camouflager => new Camouflager(),
         //CustomRoles.Capitalism => new Capitalism(),
         //CustomRoles.Cantankerous => new Cantankerous(),
         //CustomRoles.Chronomancer => new Chronomancer(),

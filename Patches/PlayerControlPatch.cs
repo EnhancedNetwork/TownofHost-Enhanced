@@ -1452,12 +1452,6 @@ class MurderPlayerPatch
         target.SetRealKiller(killer, true);
         Utils.CountAlivePlayers(true);
 
-        if (Camouflager.AbilityActivated && target.Is(CustomRoles.Camouflager))
-        {
-            Camouflager.IsDead();
-            needUpadteNotifyRoles = false;
-        }
-
         Utils.TargetDies(__instance, target);
 
         if (Options.LowLoadMode.GetBool())
@@ -1683,17 +1677,6 @@ public static class CheckShapeShiftPatch
                 shapeshifter.RejectShapeshiftAndReset();
                 return false;
 
-            case CustomRoles.Camouflager:
-                if (Camouflager.AbilityActivated)
-                {
-                    Logger.Info("Rejected bcz the ss button is used to display skill timer", "Check ShapeShift");
-                    shapeshifter.RejectShapeshiftAndReset(reset: false);
-                    return false;
-                }
-                Camouflager.OnShapeshift(shapeshifter, shapeshiftIsHidden: shapeshiftIsHidden);
-                shapeshifter.RejectShapeshiftAndReset();
-                return false;
-
             case CustomRoles.QuickShooter:
                 QuickShooter.OnShapeshift(shapeshifter, shapeshifting);
                 shapeshifter.RejectShapeshiftAndReset();
@@ -1893,12 +1876,6 @@ class ShapeshiftPatch
                 case CustomRoles.QuickShooter:
                     QuickShooter.OnShapeshift(shapeshifter, shapeshifting);
                     break;
-                case CustomRoles.Camouflager:
-                    if (shapeshifting)
-                        Camouflager.OnShapeshift();
-                    if (!shapeshifting)
-                        Camouflager.OnReportDeadBody();
-                    break;
                 case CustomRoles.Disperser:
                     if (shapeshifting)
                         Disperser.DispersePlayers(shapeshifter);
@@ -1990,7 +1967,7 @@ class ReportDeadBodyPatch
             if (!(target != null && target.Object.Is(CustomRoles.Bait) && Bait.BaitCanBeReportedUnderAllConditions.GetBool()))
             {
                 // Camouflager
-                if (Camouflager.DisableReportWhenCamouflageIsActive && Camouflager.AbilityActivated && !(Utils.IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool())) return false;
+                if (Camouflager.CantPressOnReportButton()) return false;
 
                 // Comms Camouflage
                 if (Options.DisableReportWhenCC.GetBool() && Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive) return false;
@@ -2491,7 +2468,6 @@ class ReportDeadBodyPatch
             playerStates.Role?.OnReportDeadBody(player, target?.Object);
         }
 
-        if (Camouflager.IsEnable) Camouflager.OnReportDeadBody();
         if (Reverie.IsEnable) Reverie.OnReportDeadBody();
         if (Psychic.IsEnable) Psychic.OnReportDeadBody();
         if (Huntsman.IsEnable) Huntsman.OnReportDeadBody();
@@ -2789,10 +2765,6 @@ class FixedUpdateInNormalGamePatch
 
                     case CustomRoles.Poisoner:
                         Poisoner.OnFixedUpdate(player);
-                        break;
-
-                    case CustomRoles.Camouflager when Camouflager.ShapeshiftIsHidden && Camouflager.AbilityActivated:
-                        Camouflager.OnFixedUpdate(player);
                         break;
 
                     case CustomRoles.Mercenary:

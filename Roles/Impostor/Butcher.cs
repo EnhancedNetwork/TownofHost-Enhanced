@@ -12,7 +12,7 @@ internal class Butcher : RoleBase
     public static bool On;
     public override bool IsEnable => On;
 
-    public static Dictionary<byte, (int, int, Vector2)> MurderTargetLateTask = [];
+    private static Dictionary<byte, (int, int, Vector2)> MurderTargetLateTask = [];
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Butcher);

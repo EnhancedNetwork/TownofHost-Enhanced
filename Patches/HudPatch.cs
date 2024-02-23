@@ -288,9 +288,6 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("ProvocateurButtonText"));
                         break;
-                    case CustomRoles.Camouflager:
-                        Camouflager.SetAbilityButtonText(__instance);
-                        break;
                     case CustomRoles.Assassin:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         Assassin.SetKillButtonText(player.PlayerId);

@@ -1035,9 +1035,6 @@ internal static class RPC
             //case CustomRoles.Occultist:
             //    Occultist.Add(targetId);
             //    break;
-            case CustomRoles.Camouflager:
-                Camouflager.Add();
-                break;
             case CustomRoles.Jackal:
                 Jackal.Add(targetId);
                 break;
