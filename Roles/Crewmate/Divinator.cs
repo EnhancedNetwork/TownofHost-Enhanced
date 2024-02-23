@@ -357,7 +357,7 @@ public static class Divinator
                 CustomRoles.Warlock],
                 
                 [CustomRoles.Divinator,
-                CustomRoles.EvilDiviner,
+                CustomRoles.Consigliere,
                 CustomRoles.PotionMaster,
                 //CustomRoles.Occultist, <-- Also removed from divinator LANG 
                 CustomRoles.Kamikaze,

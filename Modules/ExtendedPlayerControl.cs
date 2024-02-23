@@ -775,8 +775,8 @@ static class ExtendedPlayerControl
             /* case CustomRoles.Mare:
                  Mare.SetKillCooldown(player.PlayerId);
                  break; */
-            case CustomRoles.EvilDiviner:
-                EvilDiviner.SetKillCooldown(player.PlayerId);
+            case CustomRoles.Consigliere:
+                Consigliere.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Morphling:
                 Morphling.SetKillCooldown(player.PlayerId);
@@ -1346,7 +1346,7 @@ static class ExtendedPlayerControl
         else if (Totocalcio.KnowRole(seer, target)) return true;
         else if (Romantic.KnowRole(seer, target)) return true;
         else if (Lawyer.KnowRole(seer, target)) return true;
-        else if (EvilDiviner.IsShowTargetRole(seer, target)) return true;
+        else if (Consigliere.IsShowTargetRole(seer, target)) return true;
         else if (PotionMaster.IsShowTargetRole(seer, target)) return true;
         else if (Executioner.KnowRole(seer, target)) return true;
         else if (Succubus.KnowRole(seer, target)) return true;

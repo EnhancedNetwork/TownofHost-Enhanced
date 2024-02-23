@@ -1073,7 +1073,7 @@ internal class ChatCommands
             "眩暈者" or "眩晕者" or "眩晕" => GetString("Dazzler"),
             "簽約人" or "死亡契约" or "死亡" or "锲约" => GetString("Deathpact"),
             "吞噬者" or "吞噬" => GetString("Devourer"),
-            "軍師" or "军师" => GetString("EvilDiviner"),
+            "軍師" or "军师" => GetString("Consigliere"),
             "化型者" or "化形者" => GetString("Morphling"),
             "躁動者" or "龙卷风" => GetString("Twister"),
             "策畫者" or "潜伏者" or "潜伏" => GetString("Lurker"),

@@ -1077,8 +1077,8 @@ public static class Utils
                 case CustomRoles.Virus:
                     ProgressText.Append(Virus.GetInfectLimit());
                     break;
-                case CustomRoles.EvilDiviner:
-                    ProgressText.Append(EvilDiviner.GetDivinationCount(playerId));
+                case CustomRoles.Consigliere:
+                    ProgressText.Append(Consigliere.GetDivinationCount(playerId));
                     break;
                 case CustomRoles.PotionMaster:
                     ProgressText.Append(PotionMaster.GetRitualCount(playerId));

@@ -41,7 +41,7 @@ public static class Aware
     {
         switch (killerRole)
         {
-            case CustomRoles.EvilDiviner:
+            case CustomRoles.Consigliere:
             case CustomRoles.Farseer:
                 if (!AwareInteracted.ContainsKey(target.PlayerId))
                 {

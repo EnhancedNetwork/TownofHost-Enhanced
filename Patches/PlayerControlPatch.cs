@@ -695,8 +695,8 @@ class CheckMurderPatch
                 }, 0.1f, "Werewolf Maul Bug Fix");
                 break;
 
-            case CustomRoles.EvilDiviner:
-                if (!EvilDiviner.OnCheckMurder(killer, target))
+            case CustomRoles.Consigliere:
+                if (!Consigliere.OnCheckMurder(killer, target))
                     return false;
                 break;
 

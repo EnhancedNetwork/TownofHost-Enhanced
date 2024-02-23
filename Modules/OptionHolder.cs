@@ -1168,7 +1168,7 @@ public static class Options
         /* 
          * Consigliere
          */
-        EvilDiviner.SetupCustomOption();
+        Consigliere.SetupCustomOption();
 
         /*
          * Fireworker

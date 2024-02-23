@@ -209,7 +209,7 @@ internal class ChangeRoleSettings
 
             FallFromLadder.Reset();
             Mercenary.Init();
-            EvilDiviner.Init();
+            Consigliere.Init();
             Fireworker.Init();
             Sniper.Init();
             Undertaker.Init();
@@ -775,8 +775,8 @@ internal class SelectRolesPatch
                     case CustomRoles.Medic:
                         Medic.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.EvilDiviner:
-                        EvilDiviner.Add(pc.PlayerId);
+                    case CustomRoles.Consigliere:
+                        Consigliere.Add(pc.PlayerId);
                         break;
                     case CustomRoles.PotionMaster:
                         PotionMaster.Add(pc.PlayerId);

@@ -94,7 +94,7 @@ enum CustomRPC
     SetPursuerSellLimit,
     SetGhostPlayer,
     SetDarkHiderKillCount,
-    SetEvilDiviner,
+    SetConsigliere,
     SetGreedierOE,
     SetCursedWolfSpellCount,
     SetJinxSpellCount,
@@ -654,7 +654,7 @@ internal class RPCHandlerPatch
                 CursedSoul.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetEvilDiviner:
-                EvilDiviner.ReceiveRPC(reader);
+                Consigliere.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetPotionMaster:
                 PotionMaster.ReceiveRPC(reader);
@@ -1140,8 +1140,8 @@ internal static class RPC
             case CustomRoles.Gangster:
                 Gangster.Add(targetId);
                 break;
-            case CustomRoles.EvilDiviner:
-                EvilDiviner.Add(targetId);
+            case CustomRoles.Consigliere:
+                Consigliere.Add(targetId);
                 break;
             case CustomRoles.PotionMaster:
                 PotionMaster.Add(targetId);

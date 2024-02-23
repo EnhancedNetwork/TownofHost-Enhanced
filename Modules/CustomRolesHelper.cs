@@ -54,7 +54,7 @@ public static class CustomRolesHelper
                 CustomRoles.Stealth => CustomRoles.Impostor,
                 CustomRoles.Penguin => CustomRoles.Shapeshifter,
                 CustomRoles.ImpostorTOHE => CustomRoles.Impostor,
-                CustomRoles.EvilDiviner => CustomRoles.Impostor,
+                CustomRoles.Consigliere => CustomRoles.Impostor,
                 CustomRoles.Wildling => CustomRoles.Shapeshifter,
                 CustomRoles.Morphling => CustomRoles.Shapeshifter,
                 CustomRoles.Warlock => CustomRoles.Shapeshifter,
@@ -685,7 +685,7 @@ public static class CustomRolesHelper
             CustomRoles.Shapeshifter or
             CustomRoles.ShapeshifterTOHE or
             CustomRoles.ImpostorTOHE or
-            CustomRoles.EvilDiviner or
+            CustomRoles.Consigliere or
             CustomRoles.Wildling or
             CustomRoles.Morphling or
             CustomRoles.BountyHunter or
@@ -1553,7 +1553,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Mare)
                     || pc.Is(CustomRoles.Clumsy)
                     || pc.Is(CustomRoles.Wildling)
-                    || pc.Is(CustomRoles.EvilDiviner)
+                    || pc.Is(CustomRoles.Consigliere)
                     || pc.Is(CustomRoles.Butcher)
                     || pc.Is(CustomRoles.KillingMachine))
                     return false;

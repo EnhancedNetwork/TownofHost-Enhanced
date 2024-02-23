@@ -543,9 +543,9 @@ public enum CustomRoles
     ShapeshifterTOHE,
 
     //Impostor
-    Arrogance,
     Anonymous,
     AntiAdminer,
+    Arrogance,
     Bard,
     Berserker,
     Blackmailer,
@@ -555,7 +555,7 @@ public enum CustomRoles
     Camouflager,
     Chronomancer,
     Cleaner,
-    EvilDiviner, //Consigliere
+    Consigliere,
     Convict,
     Councillor,
     Crewpostor,
@@ -572,7 +572,7 @@ public enum CustomRoles
     Fireworker,
     Gangster,
     Godfather,
-    Greedier, //greedy
+    Greedier, //Greedy
     Hangman,
     Inhibitor,
     Instigator,
@@ -590,9 +590,9 @@ public enum CustomRoles
     Assassin, //ninja
     Nuker,
     Parasite,
+    Penguin,
     Pitfall,
     Puppeteer,
-    PlagueDoctor,
     QuickShooter,
     Refugee,
     RiftMaker,
@@ -600,16 +600,16 @@ public enum CustomRoles
     Scavenger,
     ShapeMaster,
     Sniper,
-    Witch, //spellcaster
+    Witch,
     ImperiusCurse, //soulcatcher
     Swooper,
+    Stealth,
     TimeThief,
     BoobyTrap, //trapster
     Trickster,
     Twister,
     Underdog,
     Undertaker,
-    Penguin,
     Vampire,
     Vampiress,
     Vindicator,
@@ -743,6 +743,7 @@ public enum CustomRoles
     Pirate,
     Pixie,
     PlagueBearer,
+    PlagueDoctor,
     PotionMaster,
     Poisoner,
     Provocateur,
@@ -774,7 +775,6 @@ public enum CustomRoles
     Warden,
     Workaholic,
     Wraith,
-    Stealth,
 
    //two-way camp
     Mini,
