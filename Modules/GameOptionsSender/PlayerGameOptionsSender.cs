@@ -417,9 +417,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.QuickShooter:
                 QuickShooter.ApplyGameOptions();
                 break;
-            case CustomRoles.Camouflager:
-                Camouflager.ApplyGameOptions();
-                break;
             case CustomRoles.Assassin:
                 Assassin.ApplyGameOptions();
                 break;

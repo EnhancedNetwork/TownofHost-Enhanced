@@ -272,7 +272,6 @@ internal class ChangeRoleSettings
             Taskinator.Init();
             QuickShooter.Init();
             Kamikaze.Init();
-            Camouflager.Init();
             Divinator.Init();
             Aware.Init();
             Jailer.Init();
@@ -627,9 +626,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.TimeThief:
                         TimeThief.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Camouflager:
-                        Camouflager.Add();
                         break;
                     case CustomRoles.Puppeteer:
                         Puppeteer.Add(pc.PlayerId);
