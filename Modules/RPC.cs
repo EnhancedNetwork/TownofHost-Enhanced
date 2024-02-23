@@ -114,6 +114,8 @@ enum CustomRPC
     PresidentEnd,
     PresidentReveal,
     MeetingKill,
+    MafiaRevenge,
+    RetributionistRevenge,
     SetWraithTimer,
     SetBKTimer,
     SyncTotocalcioTargetAndTimes,
@@ -165,7 +167,7 @@ public enum Sounds
 internal class RPCHandlerPatch
 {
     public static bool TrustedRpc(byte id)
-    => (CustomRPC)id is CustomRPC.VersionCheck or CustomRPC.RequestRetryVersionCheck or CustomRPC.AntiBlackout or CustomRPC.Judge or CustomRPC.MeetingKill or CustomRPC.Guess or CustomRPC.PresidentEnd or CustomRPC.SetSwapperVotes or CustomRPC.DumpLog;
+    => (CustomRPC)id is CustomRPC.VersionCheck or CustomRPC.RequestRetryVersionCheck or CustomRPC.AntiBlackout or CustomRPC.Judge or CustomRPC.MeetingKill or CustomRPC.MafiaRevenge or CustomRPC.RetributionistRevenge or CustomRPC.Guess or CustomRPC.PresidentEnd or CustomRPC.SetSwapperVotes or CustomRPC.DumpLog;
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
         var rpcType = (RpcCalls)callId;
@@ -625,6 +627,12 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.Guess:
                 GuessManager.ReceiveRPC(reader, __instance);
+                break;
+            case CustomRPC.MafiaRevenge:
+                Nemesis.ReceiveRPC(reader, __instance);
+                break;
+            case CustomRPC.RetributionistRevenge:
+                Retributionist.ReceiveRPC(reader, __instance);
                 break;
             case CustomRPC.SetWraithTimer:
                 Wraith.ReceiveRPC(reader);

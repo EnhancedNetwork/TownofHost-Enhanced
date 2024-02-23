@@ -1265,6 +1265,10 @@ public static class Options
         Morphling.SetupCustomOption();
 
         /*
+         * 
+         */
+        Nemesis.SetuCustomOptions();
+        /*
          * Time Thief
          */
         TimeThief.SetupCustomOption();
@@ -1890,7 +1894,8 @@ public static class Options
         GGTryHideMsg = BooleanOptionItem.Create(10905, "GuesserTryHideMsg", true, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser])
             .SetColor(Color.green);
-        
+
+        Retributionist.SetupCustomOptions();
         
         Reverie.SetupCustomOption();
         

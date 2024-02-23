@@ -173,6 +173,8 @@ public class Main : BasePlugin
     public static Dictionary<byte, float> AssassinTimer = [];
     public static Dictionary<byte, PlayerControl> CursedPlayers = [];
     public static Dictionary<byte, bool> isCurseAndKill = [];
+    public static Dictionary<byte, int> MafiaRevenged = [];
+    public static Dictionary<byte, int> RetributionistRevenged = [];
     public static Dictionary<byte, int> GuesserGuessed = [];
     public static Dictionary<byte, int> CapitalismAddTask = [];
     public static Dictionary<byte, int> CapitalismAssignTask = [];

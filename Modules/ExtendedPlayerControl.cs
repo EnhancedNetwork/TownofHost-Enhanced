@@ -477,6 +477,7 @@ static class ExtendedPlayerControl
             CustomRoles.Killer => pc.IsAlive(),
             //Standard
             CustomRoles.Fireworker => Fireworker.CanUseKillButton(pc),
+            CustomRoles.Nemesis => Utils.CanNemesisKill(),
             CustomRoles.Shaman => pc.IsAlive(),
             CustomRoles.Underdog => playerCount <= Options.UnderdogMaximumPlayersNeededToKill.GetInt(),
             CustomRoles.Inhibitor => !Utils.IsActive(SystemTypes.Electrical) && !Utils.IsActive(SystemTypes.Comms) && !Utils.IsActive(SystemTypes.MushroomMixupSabotage) && !Utils.IsActive(SystemTypes.Laboratory) && !Utils.IsActive(SystemTypes.LifeSupp) && !Utils.IsActive(SystemTypes.Reactor) && !Utils.IsActive(SystemTypes.HeliSabotage),
@@ -1153,6 +1154,7 @@ static class ExtendedPlayerControl
             || target.Is(CustomRoles.NiceGuesser)
             || target.Is(CustomRoles.Bodyguard)
             || target.Is(CustomRoles.Observer)
+            || target.Is(CustomRoles.Retributionist)
             || target.Is(CustomRoles.Lookout)
             || target.Is(CustomRoles.Bodyguard);
     }
@@ -1476,6 +1478,13 @@ static class ExtendedPlayerControl
         var text = role.ToString();
 
         var Prefix = "";
+        if (!InfoLong)
+            switch (role)
+            {
+                case CustomRoles.Nemesis:
+                    Prefix = Utils.CanNemesisKill() ? "After" : "Before";
+                    break;
+            };
         var Info = (role.IsVanilla() ? "Blurb" : "Info") + (InfoLong ? "Long" : "");
         return GetString($"{Prefix}{text}{Info}");
     }

@@ -40,6 +40,7 @@ static class CustomRolesHelper
                 CustomRoles.President => CustomRoles.Crewmate,
                 CustomRoles.Marshall => CustomRoles.Crewmate,
                 CustomRoles.SabotageMaster => CustomRoles.Engineer,
+                CustomRoles.Mafia => Options.LegacyMafia.GetBool() ? CustomRoles.Shapeshifter : CustomRoles.Impostor,
                 CustomRoles.Bloodmoon => CustomRoles.GuardianAngel,
                 CustomRoles.Terrorist => CustomRoles.Engineer,
                 CustomRoles.Executioner => CustomRoles.Crewmate,
@@ -153,6 +154,7 @@ static class CustomRolesHelper
                 CustomRoles.Bloodhound => CustomRoles.Crewmate,
                 CustomRoles.Tracker => CustomRoles.Crewmate,
                 CustomRoles.Merchant => CustomRoles.Crewmate,
+                CustomRoles.Retributionist => CustomRoles.Crewmate,
                 CustomRoles.Hawk => CustomRoles.GuardianAngel,
                 CustomRoles.Guardian => CustomRoles.Crewmate,
                 CustomRoles.Addict => CustomRoles.Engineer,
@@ -1043,6 +1045,7 @@ static class CustomRolesHelper
             CustomRoles.Mayor or
             CustomRoles.Captain or
             CustomRoles.Transporter or
+            CustomRoles.Retributionist or
             CustomRoles.Benefactor or
             CustomRoles.Alchemist;
     }
