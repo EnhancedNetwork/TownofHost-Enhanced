@@ -173,8 +173,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, PlayerControl> CursedPlayers = [];
     public static Dictionary<byte, bool> isCurseAndKill = [];
     public static Dictionary<byte, int> GuesserGuessed = [];
-    public static Dictionary<byte, int> CapitalismAddTask = [];
-    public static Dictionary<byte, int> CapitalismAssignTask = [];
     public static Dictionary<(byte, byte), bool> isDoused = [];
     public static Dictionary<(byte, byte), bool> isDraw = [];
     public static Dictionary<(byte, byte), bool> isRevealed = [];
@@ -555,7 +553,7 @@ public enum CustomRoles
     BountyHunter,
     Butcher,
     Camouflager,
-    Capitalism, //capitalist
+    Capitalist, //capitalist
     Chronomancer,
     Cleaner,
     EvilDiviner, //Consigliere

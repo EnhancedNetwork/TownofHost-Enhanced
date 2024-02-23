@@ -1,4 +1,6 @@
-﻿using TOHE.Roles.Impostor;
+﻿using System;
+using System.Collections.Generic;
+using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 
 namespace TOHE.Roles.Core;
@@ -26,7 +28,7 @@ public static class CustomRoleManager
         CustomRoles.BountyHunter => new BountyHunter(),
         CustomRoles.Butcher => new Butcher(),
         CustomRoles.Camouflager => new Camouflager(),
-        //CustomRoles.Capitalism => new Capitalism(),
+        //CustomRoles.Capitalist => new Capitalist(),
         //CustomRoles.Cantankerous => new Cantankerous(),
         //CustomRoles.Chronomancer => new Chronomancer(),
         //CustomRoles.EvilDiviner => new EvilDiviner(),
@@ -281,4 +283,32 @@ public static class CustomRoleManager
         //CustomRoles.Convict => new Convict(),
         _ => new VanillaRole(),
     };
+
+    /// <summary>
+    /// Function always called in a task turn
+    /// For interfering with other roles
+    /// Registered with OnFixedUpdateOthers+= at initialization
+    /// </summary>
+    public static HashSet<Action<PlayerControl>> OnFixedUpdateOthers = [];
+    public static void OnFixedUpdate(PlayerControl player)
+    {
+        Main.PlayerStates[player.PlayerId]?.Role?.OnFixedUpdate(player);
+
+        //Execute other viewpoint processing if any
+        foreach (var onFixedUpdate in OnFixedUpdateOthers)
+        {
+            onFixedUpdate(player);
+        }
+    }
+    public static HashSet<Action<PlayerControl>> OnFixedUpdateLowLoadOthers = [];
+    public static void OnFixedUpdateLowLoad(PlayerControl player)
+    {
+        Main.PlayerStates[player.PlayerId]?.Role?.OnFixedUpdateLowLoad(player);
+
+        //Execute other viewpoint processing if any
+        foreach (var onFixedUpdateLowLoad in OnFixedUpdateLowLoadOthers)
+        {
+            onFixedUpdateLowLoad(player);
+        }
+    }
 }

@@ -108,7 +108,7 @@ public static class CustomRolesHelper
                 CustomRoles.Scavenger => CustomRoles.Impostor,
                 CustomRoles.Transporter => CustomRoles.Crewmate,
                 CustomRoles.Veteran => CustomRoles.Engineer,
-                CustomRoles.Capitalism => CustomRoles.Impostor,
+                CustomRoles.Capitalist => CustomRoles.Impostor,
                 CustomRoles.Bodyguard => CustomRoles.Crewmate,
                 CustomRoles.Grenadier => CustomRoles.Engineer,
                 CustomRoles.Lighter => CustomRoles.Engineer,
@@ -730,7 +730,7 @@ public static class CustomRolesHelper
             CustomRoles.Kamikaze or
             CustomRoles.Scavenger or
             CustomRoles.BoobyTrap or
-            CustomRoles.Capitalism or
+            CustomRoles.Capitalist or
             CustomRoles.Gangster or
             CustomRoles.Cleaner or
             CustomRoles.Lightning or
@@ -1503,7 +1503,7 @@ public static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Vindicator)
                     || pc.Is(CustomRoles.Bomber)
                     || pc.Is(CustomRoles.Nuker)
-                    || pc.Is(CustomRoles.Capitalism)
+                    || pc.Is(CustomRoles.Capitalist)
                     || pc.Is(CustomRoles.VoidBallot))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
@@ -1531,7 +1531,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Bomber)
                     || pc.Is(CustomRoles.Nuker)
                     || pc.Is(CustomRoles.BoobyTrap)
-                    || pc.Is(CustomRoles.Capitalism)
+                    || pc.Is(CustomRoles.Capitalist)
                     || pc.Is(CustomRoles.Onbound)
                     || pc.Is(CustomRoles.Rebound)
                     || pc.Is(CustomRoles.Tired))
@@ -1558,7 +1558,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Clumsy)
                     || pc.Is(CustomRoles.Wildling)
                     || pc.Is(CustomRoles.EvilDiviner)
-                    || pc.Is(CustomRoles.Capitalism)
+                    || pc.Is(CustomRoles.Capitalist)
                     || pc.Is(CustomRoles.Butcher)
                     || pc.Is(CustomRoles.KillingMachine))
                     return false;
@@ -1591,7 +1591,7 @@ public static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Swift)
                     || pc.Is(CustomRoles.Bomber)
                     || pc.Is(CustomRoles.Nuker)
-                    || pc.Is(CustomRoles.Capitalism)
+                    || pc.Is(CustomRoles.Capitalist)
                     || pc.Is(CustomRoles.KillingMachine))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())

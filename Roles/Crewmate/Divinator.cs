@@ -193,7 +193,7 @@ public static class Divinator
                 CustomRoles.Collector,
                 CustomRoles.Stealth],
                 
-                [CustomRoles.Capitalism,
+                [CustomRoles.Capitalist,
                 CustomRoles.Counterfeiter,
                 CustomRoles.Witness,
                 CustomRoles.Greedier,

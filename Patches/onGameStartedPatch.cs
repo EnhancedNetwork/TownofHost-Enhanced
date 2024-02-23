@@ -88,8 +88,6 @@ internal class ChangeRoleSettings
             Main.ResetCamPlayerList = [];
             Main.clientIdList = [];
 
-            Main.CapitalismAddTask = [];
-            Main.CapitalismAssignTask = [];
             Main.CheckShapeshift = [];
             Main.ShapeshiftTarget = [];
             Main.SpeedBoostTarget = [];

@@ -60,7 +60,7 @@ public static class Workhorse
         return Utils.HasTasks(pc.Data) //タスクがある
             && !OverrideTasksData.AllData.ContainsKey(pc.GetCustomRole()); //タスク上書きオプションが無い
     }
-    public static bool OnCompleteTask(PlayerControl pc)
+    public static bool OnAddTask(PlayerControl pc)
     {
         if (!CustomRoles.Workhorse.IsEnable() || playerIdList.Count >= CustomRoles.Workhorse.GetCount()) return false;
         if (pc.Is(CustomRoles.Snitch) && !OptionSnitchCanBeWorkhorse.GetBool()) return false;

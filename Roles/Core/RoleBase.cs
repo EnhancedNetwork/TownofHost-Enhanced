@@ -1,4 +1,6 @@
 ﻿using AmongUs.GameOptions;
+using MS.Internal.Xml.XPath;
+using static UnityEngine.GraphicsBuffer;
 //using System.Text;
 
 namespace TOHE;
@@ -26,6 +28,9 @@ public abstract class RoleBase
     public virtual void ApplyGameOptions(IGameOptions opt, byte playerId)
     { }
 
+    /// <summary>
+    /// Fixed Update for local role
+    /// </summary>
     public virtual void OnFixedUpdate(PlayerControl pc)
     { }
     public virtual void OnFixedUpdateLowLoad(PlayerControl pc)
