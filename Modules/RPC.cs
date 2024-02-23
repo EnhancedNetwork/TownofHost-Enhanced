@@ -1095,9 +1095,6 @@ internal static class RPC
             case CustomRoles.Snitch:
                 Snitch.Add(targetId);
                 break;
-            case CustomRoles.Chronomancer:
-                Chronomancer.Add(targetId);
-                break;
             case CustomRoles.Medusa:
                 Medusa.Add(targetId);
                 break;

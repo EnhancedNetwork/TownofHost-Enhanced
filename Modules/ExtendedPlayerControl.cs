@@ -743,8 +743,8 @@ static class ExtendedPlayerControl
     {
         Main.AllPlayerKillCooldown[player.PlayerId] = GameStates.IsNormalGame ? Options.DefaultKillCooldown : 1f; //キルクールをデフォルトキルクールに変更
 
-        if (Main.PlayerStates.TryGetValue(player.PlayerId, out var state))
-            state.Role?.SetKillCooldown(player.PlayerId);
+        if (Main.PlayerStates.TryGetValue(player.PlayerId, out var playerState))
+            playerState?.Role?.SetKillCooldown(player.PlayerId);
 
         switch (player.GetCustomRole())
         {
@@ -865,9 +865,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Huntsman:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Huntsman.KCD;
-                break;
-            case CustomRoles.Chronomancer:
-                Chronomancer.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Stealth:
                 Stealth.SetKillCooldown(player.PlayerId);

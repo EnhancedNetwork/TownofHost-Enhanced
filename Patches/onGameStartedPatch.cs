@@ -349,7 +349,6 @@ internal class ChangeRoleSettings
             Werewolf.Init();
             Bewilder.Init();
             Necromancer.Init();
-            Chronomancer.Init();
             Pitfall.Init();
             Agitater.Init();
             Swapper.Init();
@@ -1014,10 +1013,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Pixie:
                         Pixie.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Chronomancer:
-                        Chronomancer.Add(pc.PlayerId);
-                        break;
-
                     case CustomRoles.Pitfall:
                         Pitfall.Add(pc.PlayerId);
                         break;

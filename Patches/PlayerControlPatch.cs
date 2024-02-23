@@ -2722,9 +2722,6 @@ class FixedUpdateInNormalGamePatch
                 if (DoubleTrigger.FirstTriggerTimer.Count > 0)
                     DoubleTrigger.OnFixedUpdate(player);
 
-                //if (Main.PlayerStates.TryGetValue(player.PlayerId, out var playerState_1))
-                //    playerState_1.Role?.OnFixedUpdate(player);
-
                 // Agitater
                 if (Agitater.IsEnable && Agitater.CurrentBombedPlayer == player.PlayerId)
                     Agitater.OnFixedUpdate(player);
@@ -2963,9 +2960,6 @@ class FixedUpdateInNormalGamePatch
                     playerRole = player.GetCustomRole();
 
                     CustomRoleManager.OnFixedUpdateLowLoad(player);
-
-                    //if (Main.PlayerStates.TryGetValue(player.PlayerId, out var playerState_2))
-                    //    playerState_2.Role.OnFixedUpdateLowLoad(player);
 
                     if (Kamikaze.IsEnable)
                         Kamikaze.MurderKamikazedPlayers(player);

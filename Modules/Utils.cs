@@ -2679,7 +2679,6 @@ public static class Utils
         if (Jailer.IsEnable) Jailer.AfterMeetingTasks();
         if (CopyCat.IsEnable) CopyCat.AfterMeetingTasks();  //all crew after meeting task should be before this
         if (Pirate.IsEnable) Pirate.AfterMeetingTask();
-        if (Chronomancer.IsEnable) Chronomancer.AfterMeetingTask();
         if (Solsticer.IsEnable) Solsticer.AfterMeetingTasks();
         if (RiftMaker.IsEnable) RiftMaker.AfterMeetingTasks();
         if (Councillor.IsEnable) Councillor.AfterMeetingTasks();
