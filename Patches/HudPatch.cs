@@ -203,10 +203,6 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("InnocentButtonText"));
                         break;
-                    case CustomRoles.Capitalism:
-                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        __instance.KillButton.OverrideText(GetString("CapitalismButtonText"));
-                        break;
                     case CustomRoles.Pelican:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("PelicanButtonText"));

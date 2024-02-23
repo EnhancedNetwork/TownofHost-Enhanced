@@ -212,7 +212,7 @@ internal class BountyHunter : RoleBase
         SendRPC(player.PlayerId, targetId);
         return targetId;
     }
-    public override void SetAbilityButtonText(HudManager __instance, byte id) => __instance.AbilityButton.OverrideText(GetString("BountyHunterChangeButtonText"));
+    public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.AbilityButton.OverrideText(GetString("BountyHunterChangeButtonText"));
     public override void AfterMeetingTasks()
     {
         foreach (var id in playerIdList.ToArray())
