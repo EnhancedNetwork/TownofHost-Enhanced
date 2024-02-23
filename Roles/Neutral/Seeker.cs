@@ -191,29 +191,28 @@ internal class Seeker : RoleBase
     }
     public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
 
-    public static void AfterMeetingTasks(bool notifyPlayer = false)
-    {
-        if (notifyPlayer)
-        {
-            foreach (var id in playerIdList.ToArray())
-            {
-                if (!Main.PlayerStates[id].IsDead)
-                {
-                    var targetId = GetTarget(Utils.GetPlayerById(id));
-                    Utils.GetPlayerById(id).Notify(string.Format(GetString("SeekerNotify"), Utils.GetPlayerById(targetId).GetRealName()));
-                    Utils.GetPlayerById(targetId).Notify(GetString("SeekerTargetNotify"));
+    public static string GetProgressText(byte playerId) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Seeker).ShadeColor(0.25f), $"({TotalPoints[playerId]}/{Seeker.PointsToWin.GetInt()})");
 
-                }
+    public override void AfterMeetingTasks()
+    {
+        foreach (var id in playerIdList.ToArray())
+        {
+            if (!Main.PlayerStates[id].IsDead)
+            {
+                FreezeSeeker(Utils.GetPlayerById(id));
             }
         }
-        else
+    }
+    public override void NotifyAfterMeeting()
+    {
+        foreach (var id in playerIdList.ToArray())
         {
-            foreach (var id in playerIdList.ToArray())
+            if (!Main.PlayerStates[id].IsDead)
             {
-                if (!Main.PlayerStates[id].IsDead)
-                {
-                    FreezeSeeker(Utils.GetPlayerById(id));
-                }
+                var targetId = GetTarget(Utils.GetPlayerById(id));
+                Utils.GetPlayerById(id).Notify(string.Format(GetString("SeekerNotify"), Utils.GetPlayerById(targetId).GetRealName()));
+                Utils.GetPlayerById(targetId).Notify(GetString("SeekerTargetNotify"));
+
             }
         }
     }

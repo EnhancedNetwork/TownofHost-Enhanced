@@ -951,7 +951,7 @@ public static class Utils
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Doomsayer).ShadeColor(0.25f), $"({doomsayerguess.Item1}/{doomsayerguess.Item2})"));
                     break;
                 case CustomRoles.Seeker:
-                    ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Seeker).ShadeColor(0.25f), $"({Seeker.TotalPoints[playerId]}/{Seeker.PointsToWin.GetInt()})"));
+                    ProgressText.Append(Seeker.GetProgressText(playerId));
                     break;
                 case CustomRoles.SchrodingersCat:
                     ProgressText.Append(SchrodingersCat.GetProgressText(playerId));
@@ -2656,7 +2656,6 @@ public static class Utils
         if (Eraser.IsEnable) Eraser.AfterMeetingTasks(notifyPlayer: false);
         if (Cleanser.IsEnable) Cleanser.AfterMeetingTasks(notifyPlayer: false);
         if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: false);
-        if (Seeker.IsEnable) Seeker.AfterMeetingTasks(notifyPlayer: false);
 
         foreach (var playerState in Main.PlayerStates.Values.Where(pc => pc.Role.IsEnable).ToArray())
         {
