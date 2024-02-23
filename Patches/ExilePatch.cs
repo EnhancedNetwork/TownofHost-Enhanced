@@ -188,10 +188,14 @@ class ExileControllerWrapUpPatch
 
         if (HexMaster.IsEnable)
             HexMaster.RemoveHexedPlayer();
-        if (Captain.IsEnable) Captain.OnExile(exiled);
+
+        if (Captain.IsEnable)
+            Captain.OnExile(exiled);
+        
         foreach (var player in Main.AllPlayerControls)
         {
-            //PlayerControl player = allPlayerControls[item];
+            Main.PlayerStates[player.PlayerId]?.Role?.OnPlayerExiled(player, exiled);
+
             CustomRoles playerRole = player.GetCustomRole(); // Only roles (no add-ons)
 
             switch (playerRole)
@@ -203,10 +207,6 @@ class ExileControllerWrapUpPatch
                 case CustomRoles.Warlock:
                     Main.CursedPlayers[player.PlayerId] = null;
                     Main.isCurseAndKill[player.PlayerId] = false;
-                    break;
-
-                case CustomRoles.Bard:
-                    Bard.OnExileWrapUp(player, exiled);
                     break;
 
                 case CustomRoles.Quizmaster:

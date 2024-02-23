@@ -44,34 +44,36 @@ public abstract class RoleBase
     public virtual void OnExitVent(PlayerControl pc, Vent vent)
     { }
 
-    public virtual bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public virtual bool OnCheckMurderOnTarget(PlayerControl killer, PlayerControl target)
     {
         return target != null && killer != null;
     }
 
-    public virtual bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
+    public virtual bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         return target != null && killer != null;
     }
 
     public virtual void OnMurder(PlayerControl killer, PlayerControl target)
-    {
-    }
+    { }
 
     public virtual void OnPlayerDead(PlayerControl killer, PlayerControl target)
-    {
-    }
+    { }
 
     public virtual void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
     { }
 
     public virtual void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
-    {
-    }
+    { }
 
     public virtual void AfterMeetingTasks()
-    {
-    }
+    { }
+
+    public virtual void CheckExileTarget(PlayerControl player, bool DecidedWinner)
+    { }
+
+    public virtual void OnPlayerExiled(PlayerControl Bard, GameData.PlayerInfo exiled)
+    { }
 
     //public virtual string GetProgressText(byte playerId, bool comms)
     //{

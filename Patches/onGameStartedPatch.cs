@@ -117,7 +117,6 @@ internal class ChangeRoleSettings
             Main.MeetingsPassed = 0;
             Main.DovesOfNeaceNumOfUsed = [];
             Main.GodfatherTarget = [];
-            Main.BerserkerKillMax = [];
             Main.CrewpostorTasksDone = [];
             Main.ShamanTarget = byte.MaxValue;
             Main.ShamanTargetChoosen = false;
@@ -604,9 +603,6 @@ internal class SelectRolesPatch
                 {
                     case CustomRoles.BountyHunter:
                         BountyHunter.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Berserker:
-                        Main.BerserkerKillMax[pc.PlayerId] = 0;
                         break;
                     case CustomRoles.Reverie:
                         Reverie.Add(pc.PlayerId);

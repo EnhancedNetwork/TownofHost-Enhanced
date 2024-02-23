@@ -44,10 +44,12 @@ internal class Arrogance : RoleBase
         On = true;
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = NowCooldown[id];
-    public static void OnCheckMurder(PlayerControl killer)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         NowCooldown[killer.PlayerId] = Math.Clamp(NowCooldown[killer.PlayerId] - ReduceKillCooldown.GetFloat(), MinKillCooldown.GetFloat(), DefaultKillCooldown.GetFloat());
         killer.ResetKillCooldown();
         killer.SyncSettings();
+
+        return true;
     }
 }

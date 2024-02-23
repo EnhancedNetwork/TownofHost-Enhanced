@@ -191,6 +191,13 @@ class CheckMurderPatch
         }
         TimeSinceLastKill[killer.PlayerId] = 0f;
 
+        //FFA
+        if (Options.CurrentGameMode == CustomGameMode.FFA)
+        {
+            FFAManager.OnPlayerAttack(killer, target);
+            return true;
+        }
+
         // Penguin's victim unable to kill
         if (Penguin.AbductVictim != null && killer.PlayerId == Penguin.AbductVictim.PlayerId)
         {
@@ -198,6 +205,7 @@ class CheckMurderPatch
             killer.SetKillCooldown(5);
             return false;
         }
+
         // added here because it bypasses every shield and just kills the player and antidote, diseased etc.. wont take effect
         if (killer.Is(CustomRoles.KillingMachine))
         {
@@ -205,6 +213,38 @@ class CheckMurderPatch
             killer.ResetKillCooldown();
             return false;
         }
+
+        if (killerRole.Is(CustomRoles.Chronomancer))
+            Chronomancer.OnCheckMurder(killer);
+
+        killer.ResetKillCooldown();
+
+        // killable decision
+        if (killer.PlayerId != target.PlayerId && !killer.CanUseKillButton())
+        {
+            Logger.Info(killer.GetNameWithRole().RemoveHtmlTags() + " The hitter is not allowed to use the kill button and the kill is canceled", "CheckMurder");
+            return false;
+        }
+
+        // Replacement process when the actual killer and the KILLER are different
+        if (Sniper.IsEnable)
+        {
+            Sniper.TryGetSniper(target.PlayerId, ref killer);
+        }
+
+        if (killer != __instance)
+        {
+            Logger.Info($"Real Killer = {killer.GetNameWithRole().RemoveHtmlTags()}", "CheckMurder");
+        }
+
+        if (Main.PlayerStates.TryGetValue(target.PlayerId, out var targetState))
+            if (!targetState.Role.OnCheckMurderOnTarget(killer, target))
+                return false;
+
+        if (killer.PlayerId != target.PlayerId && Main.PlayerStates.TryGetValue(killer.PlayerId, out var killerState))
+            if (!killerState.Role.OnCheckMurderAsKiller(killer, target))
+                return false;
+
 
         foreach (var targetSubRole in target.GetCustomSubRoles().ToArray())
         {
@@ -251,39 +291,9 @@ class CheckMurderPatch
                 break;
         }
 
-        if (killerRole.Is(CustomRoles.Chronomancer))
-            Chronomancer.OnCheckMurder(killer);
-
-
-        killer.ResetKillCooldown();
-
-        // killable decision
-        if (killer.PlayerId != target.PlayerId && !killer.CanUseKillButton())
-        {
-            Logger.Info(killer.GetNameWithRole().RemoveHtmlTags() + " The hitter is not allowed to use the kill button and the kill is canceled", "CheckMurder");
-            return false;
-        }
-        //FFA
-        if (Options.CurrentGameMode == CustomGameMode.FFA)
-        {
-            FFAManager.OnPlayerAttack(killer, target);
-            return true;
-        }
-
         if (Mastermind.ManipulatedPlayers.ContainsKey(killer.PlayerId))
         {
             return Mastermind.ForceKillForManipulatedPlayer(killer, target);
-        }
-
-        // Replacement process when the actual killer and the KILLER are different
-        if (Sniper.IsEnable)
-        {
-            Sniper.TryGetSniper(target.PlayerId, ref killer);
-        }
-
-        if (killer != __instance)
-        {
-            Logger.Info($"Real Killer = {killer.GetNameWithRole().RemoveHtmlTags()}", "CheckMurder");
         }
 
         killerRole = killer.GetCustomRole();
@@ -447,9 +457,6 @@ class CheckMurderPatch
                     break;
                 case CustomRoles.QuickShooter:
                     QuickShooter.QuickShooterKill(killer);
-                    break;
-                case CustomRoles.Arrogance:
-                    Arrogance.OnCheckMurder(killer);
                     break;
                 case CustomRoles.Juggernaut:
                     Juggernaut.OnCheckMurder(killer);
@@ -741,64 +748,6 @@ class CheckMurderPatch
                     target.SetRealKiller(killer);
                     return false;
                 }
-
-            case CustomRoles.Berserker:
-                if (Main.BerserkerKillMax[killer.PlayerId] < Options.BerserkerMax.GetInt())
-                {
-                    Main.BerserkerKillMax[killer.PlayerId]++;
-                    killer.Notify(string.Format(GetString("BerserkerLevelChanged"), Main.BerserkerKillMax[killer.PlayerId]));
-                    Logger.Info($"Increased the lvl to {Main.BerserkerKillMax[killer.PlayerId]}", "CULTIVATOR");
-                }
-                else
-                {
-                    killer.Notify(GetString("BerserkerMaxReached"));
-                    Logger.Info($"Max level reached lvl =  {Main.BerserkerKillMax[killer.PlayerId]}", "CULTIVATOR");
-
-                }
-
-                if (Main.BerserkerKillMax[killer.PlayerId] >= Options.BerserkerKillCooldownLevel.GetInt() && Options.BerserkerOneCanKillCooldown.GetBool())
-                {
-                    Main.AllPlayerKillCooldown[killer.PlayerId] = Options.BerserkerOneKillCooldown.GetFloat();
-                }
-
-                if (Main.BerserkerKillMax[killer.PlayerId] == Options.BerserkerScavengerLevel.GetInt() && Options.BerserkerTwoCanScavenger.GetBool())
-                {
-                    killer.RpcTeleport(target.GetCustomPosition());
-                    RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
-                    target.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
-                    target.SetRealKiller(killer);
-                    Main.PlayerStates[target.PlayerId].SetDead();
-                    target.RpcMurderPlayerV3(target);
-                    killer.SetKillCooldownV2();
-                    target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Berserker), GetString("KilledByBerserker")));
-                    return false;
-                }
-
-                if (Main.BerserkerKillMax[killer.PlayerId] >= Options.BerserkerBomberLevel.GetInt() && Options.BerserkerThreeCanBomber.GetBool())
-                {
-                    Logger.Info("炸弹爆炸了", "Boom");
-                    CustomSoundsManager.RPCPlayCustomSoundAll("Boom");
-                    foreach (var player in Main.AllAlivePlayerControls)
-                    {
-                        if (!player.IsModClient())
-                            player.KillFlash();
-
-                        if (player == killer) continue;
-                        if (player == target) continue;
-
-                        if (Vector2.Distance(killer.transform.position, player.transform.position) <= Options.BomberRadius.GetFloat())
-                        {
-                            Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
-                            player.SetRealKiller(killer);
-                            player.RpcMurderPlayerV3(player);
-                        }
-                    }
-                }
-                //if (Main.BerserkerKillMax[killer.PlayerId] == 4 && Options.BerserkerFourCanFlash.GetBool())
-                //{
-                //    Main.AllPlayerSpeed[killer.PlayerId] = Options.BerserkerSpeed.GetFloat();
-                //}
-                break;
         }
 
         foreach (var killerSubRole in killer.GetCustomSubRoles().ToArray())
@@ -1072,15 +1021,6 @@ class CheckMurderPatch
                     }
                 }
                 return false;
-            case CustomRoles.Berserker:
-                if (Main.BerserkerKillMax[target.PlayerId] >= Options.BerserkerImmortalLevel.GetInt() && Options.BerserkerFourCanNotKill.GetBool())
-                {
-                    killer.RpcTeleport(target.GetCustomPosition());
-                    RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
-                    killer.SetKillCooldown(target: target, forceAnime: true);
-                    return false;
-                }
-                break;
             //President kill
             case CustomRoles.President:
                 if (President.CheckPresidentReveal[target.PlayerId] == true)
