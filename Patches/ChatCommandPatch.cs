@@ -1052,7 +1052,7 @@ internal class ChatCommands
             "資本主義者" or "资本家" or "资本主义" or "资本" => GetString("Capitalism"),
             "歹徒" => GetString("Gangster"),
             "清潔工" or "清理工" or "清洁工" => GetString("Cleaner"),
-            "球狀閃電" or "球状闪电" => GetString("BallLightning"),
+            "球狀閃電" or "球状闪电" => GetString("Lightning"),
             "貪婪者" or "贪婪者" or "贪婪" => GetString("Greedier"),
             "被詛咒的狼" or "呪狼" => GetString("CursedWolf"),
             "換魂師" or "夺魂者" or "夺魂" => GetString("ImperiusCurse"),

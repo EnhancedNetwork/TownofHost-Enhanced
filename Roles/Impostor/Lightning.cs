@@ -130,7 +130,7 @@ public static class Lightning
                 gs.SetRealKiller(RealKiller[gs.PlayerId]);
                 gs.RpcMurderPlayerV3(gs);
 
-                Logger.Info($"{gs.GetNameWithRole()} 作为量子幽灵因碰撞而死", "BallLightning");
+                Logger.Info($"{gs.GetNameWithRole()} 作为量子幽灵因碰撞而死", "Lightning");
                 break;
             }
         }
@@ -149,7 +149,7 @@ public static class Lightning
             if (gs == null) continue;
             CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Quantization, gs.PlayerId);
             gs.SetRealKiller(RealKiller[gs.PlayerId]);
-            Logger.Info($"{gs.GetNameWithRole()} 作为量子幽灵参与会议，将在会议后死亡", "BallLightning");
+            Logger.Info($"{gs.GetNameWithRole()} 作为量子幽灵参与会议，将在会议后死亡", "Lightning");
         }
         GhostPlayer = [];
         SendRPC(byte.MaxValue);

@@ -53,7 +53,7 @@ public static class CustomRoleManager
         //CustomRoles.Kamikaze => new Kamikaze(),
         //CustomRoles.Kidnapper => new Kidnapper(),
         //CustomRoles.Minimalism => new Minimalism(),
-        //CustomRoles.BallLightning => new BallLightning(),
+        //CustomRoles.Lightning => new Lightning(),
         //CustomRoles.Librarian => new Librarian(),
         //CustomRoles.Lurker => new Lurker(),
         //CustomRoles.Mafioso => new Mafioso(),

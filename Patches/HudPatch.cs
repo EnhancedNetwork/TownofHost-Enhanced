@@ -261,7 +261,7 @@ class HudManagerPatch
                         break;
                     case CustomRoles.Lightning:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        __instance.KillButton.OverrideText(GetString("BallLightningButtonText"));
+                        __instance.KillButton.OverrideText(GetString("LightningButtonText"));
                         break;
                     case CustomRoles.Bomber:
                     case CustomRoles.Nuker:
