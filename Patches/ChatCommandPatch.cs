@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
+using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -1396,8 +1397,8 @@ internal class ChatCommands
                     if (devMark == "▲")
                     {
                         byte pid = playerId == 255 ? (byte)0 : playerId;
-                        Main.DevRole.Remove(pid);
-                        Main.DevRole.Add(pid, rl);
+                        RoleAssign.SetRoles.Remove(pid);
+                        RoleAssign.SetRoles.Add(pid, rl);
                     }
                     if (isUp) return;
                 }
