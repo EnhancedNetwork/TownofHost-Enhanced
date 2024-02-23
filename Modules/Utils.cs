@@ -2080,8 +2080,8 @@ public static class Utils
                 if (Blackmailer.CheckBlackmaile(seer))
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Blackmailer), "╳"));
 
-                if (BallLightning.IsEnable && BallLightning.IsGhost(seer))
-                    SelfMark.Append(ColorString(GetRoleColor(CustomRoles.BallLightning), "■"));
+                if (Lightning.IsEnable && Lightning.IsGhost(seer))
+                    SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Lightning), "■"));
 
                 if (Medic.IsEnable && (Medic.InProtect(seer.PlayerId) || Medic.TempMarkProtected == seer.PlayerId) && (Medic.WhoCanSeeProtect.GetInt() is 0 or 2))
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Medic), "✚"));
@@ -2370,8 +2370,8 @@ public static class Utils
                         if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
 
-                        if (BallLightning.IsEnable && BallLightning.IsGhost(target))
-                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.BallLightning), "■"));
+                        if (Lightning.IsEnable && Lightning.IsGhost(target))
+                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Lightning), "■"));
 
                         if (Snitch.IsEnable)
                             TargetMark.Append(Snitch.GetWarningMark(seer, target));
@@ -2658,7 +2658,7 @@ public static class Utils
         if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: false);
         if (Seeker.IsEnable) Seeker.AfterMeetingTasks(notifyPlayer: false);
 
-        foreach (var playerState in Main.PlayerStates.Values.Where(pc => pc.Role.IsEnable))
+        foreach (var playerState in Main.PlayerStates.Values.Where(pc => pc.Role.IsEnable).ToArray())
         {
             playerState.Role?.AfterMeetingTasks();
         }
@@ -2669,7 +2669,6 @@ public static class Utils
         if (Wraith.IsEnable) Wraith.AfterMeetingTasks();
         if (Glitch.IsEnable) Glitch.AfterMeetingTasks();
         if (Keeper.IsEnable) Keeper.AfterMeetingTasks();
-        if (BountyHunter.IsEnable) BountyHunter.AfterMeetingTasks();
         if (EvilTracker.IsEnable) EvilTracker.AfterMeetingTasks();
         if (Mercenary.IsEnable) Mercenary.AfterMeetingTasks();
         if (Spiritualist.IsEnable) Spiritualist.AfterMeetingTasks();
@@ -2690,7 +2689,6 @@ public static class Utils
 
         Main.ShamanTarget = byte.MaxValue;
         Main.ShamanTargetChoosen = false;
-        OverKiller.MurderTargetLateTask = [];
 
         if (Options.AirshipVariableElectrical.GetBool())
             AirshipElectricalDoors.Initialize();
@@ -2777,6 +2775,8 @@ public static class Utils
                     break;
             }
         }
+
+        Medic.IsDead(target);
 
         if (Executioner.Target.ContainsValue(target.PlayerId))
             Executioner.ChangeRoleByTarget(target);

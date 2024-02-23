@@ -51,11 +51,11 @@ public static class Tricky
                                 || CustomRoles.Nemesis.IsEnable() || CustomRoles.Randomizer.IsEnable()),
             PlayerState.DeathReason.Gambled => (CustomRoles.EvilGuesser.IsEnable() || CustomRoles.NiceGuesser.IsEnable() 
                                 || GuesserMode.GetBool()),
-            PlayerState.DeathReason.Quantization => (CustomRoles.BallLightning.IsEnable()),
+            PlayerState.DeathReason.Quantization => (CustomRoles.Lightning.IsEnable()),
             //PlayerState.DeathReason.Overtired => (CustomRoles.Workaholic.IsEnable()),
             PlayerState.DeathReason.Ashamed => (CustomRoles.Workaholic.IsEnable()),
             PlayerState.DeathReason.PissedOff => (CustomRoles.Pestilence.IsEnable() || CustomRoles.Provocateur.IsEnable()),
-            PlayerState.DeathReason.Dismembered => (CustomRoles.OverKiller.IsEnable()),
+            PlayerState.DeathReason.Dismembered => (CustomRoles.Butcher.IsEnable()),
             PlayerState.DeathReason.LossOfHead => (CustomRoles.Hangman.IsEnable()),
             PlayerState.DeathReason.Trialed => (CustomRoles.Judge.IsEnable() || CustomRoles.Councillor.IsEnable()),
             PlayerState.DeathReason.Infected => (CustomRoles.Infectious.IsEnable()),

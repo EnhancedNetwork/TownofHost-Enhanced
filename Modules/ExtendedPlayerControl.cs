@@ -522,8 +522,6 @@ static class ExtendedPlayerControl
             CustomRoles.Witness => pc.IsAlive(),
             CustomRoles.Shroud => pc.IsAlive(),
             CustomRoles.Wraith => pc.IsAlive(),
-            CustomRoles.Bomber => Options.BomberCanKill.GetBool() && pc.IsAlive(),
-            CustomRoles.Nuker => Options.BomberCanKill.GetBool() && pc.IsAlive(),
             CustomRoles.Innocent => pc.IsAlive(),
             CustomRoles.Counterfeiter => Counterfeiter.CanUseKillButton(pc.PlayerId),
             CustomRoles.Pursuer => Pursuer.CanUseKillButton(pc.PlayerId),
@@ -908,13 +906,6 @@ static class ExtendedPlayerControl
             case CustomRoles.Scavenger:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.ScavengerKillCooldown.GetFloat();
                 break;
-            case CustomRoles.Bomber:
-            case CustomRoles.Nuker:
-                if (Options.BomberCanKill.GetBool())
-                Main.AllPlayerKillCooldown[player.PlayerId] = Options.BomberKillCD.GetFloat();
-                else
-                Main.AllPlayerKillCooldown[player.PlayerId] = 300f;
-                break;
             case CustomRoles.Witness:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.WitnessCD.GetFloat();
                 break;
@@ -949,8 +940,8 @@ static class ExtendedPlayerControl
             case CustomRoles.Gamer:
                 Gamer.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.BallLightning:
-                BallLightning.SetKillCooldown(player.PlayerId);
+            case CustomRoles.Lightning:
+                Lightning.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.DarkHide:
                 DarkHide.SetKillCooldown(player.PlayerId);

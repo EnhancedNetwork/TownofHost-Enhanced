@@ -1395,8 +1395,8 @@ class MeetingHudStartPatch
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), Mini.Age != 18 && Mini.UpDateAge.GetBool() ? $"({Mini.Age})" : ""));
 
             //球状闪电提示
-            if (BallLightning.IsGhost(target))
-                sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.BallLightning), "■"));
+            if (Lightning.IsGhost(target))
+                sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lightning), "■"));
 
             //医生护盾提示
             if (seer.PlayerId == target.PlayerId && (Medic.InProtect(seer.PlayerId) || Medic.TempMarkProtected == seer.PlayerId) && (Medic.WhoCanSeeProtect.GetInt() is 0 or 2))

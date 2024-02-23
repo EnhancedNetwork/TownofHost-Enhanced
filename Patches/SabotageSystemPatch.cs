@@ -311,7 +311,7 @@ public class SabotageSystemPatch
 
             if (systemType is SystemTypes.Comms)
             {
-                if (Camouflager.IsEnable && playerRole.Is(CustomRoles.Camouflager) && !Camouflager.CanUseCommsSabotage)
+                if (Camouflager.CantPressCommsSabotageButton(player))
                     return false;
             }
 

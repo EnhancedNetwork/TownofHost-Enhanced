@@ -86,7 +86,9 @@ class HudManagerPatch
             }
             if (player.IsAlive())
             {
-                Main.PlayerStates[player.PlayerId]?.Role.SetButtonTexts(__instance, player.PlayerId);
+                __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
+
+                Main.PlayerStates[player.PlayerId]?.Role.SetAbilityButtonText(__instance, player.PlayerId);
 
                 //MOD入り用のボタン下テキスト変更
                 switch (player.GetCustomRole())
@@ -193,10 +195,6 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText($"{GetString("ShroudButtonText")}");
                        break;
-                    case CustomRoles.BountyHunter:
-                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        BountyHunter.SetAbilityButtonText(__instance);
-                        break;
                     case CustomRoles.EvilTracker:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         EvilTracker.GetAbilityButtonText(__instance, player.PlayerId);
@@ -261,9 +259,9 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("GamerButtonText"));
                         break;
-                    case CustomRoles.BallLightning:
+                    case CustomRoles.Lightning:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        __instance.KillButton.OverrideText(GetString("BallLightningButtonText"));
+                        __instance.KillButton.OverrideText(GetString("LightningButtonText"));
                         break;
                     case CustomRoles.Bomber:
                     case CustomRoles.Nuker:
@@ -289,13 +287,6 @@ class HudManagerPatch
                     case CustomRoles.Provocateur:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("ProvocateurButtonText"));
-                        break;
-                    case CustomRoles.Camouflager:
-                        Camouflager.SetAbilityButtonText(__instance);
-                        break;
-                    case CustomRoles.OverKiller:
-                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        __instance.KillButton.OverrideText(GetString("OverKillerButtonText"));
                         break;
                     case CustomRoles.Assassin:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));

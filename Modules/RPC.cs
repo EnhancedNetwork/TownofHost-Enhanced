@@ -531,7 +531,7 @@ internal class RPCHandlerPatch
                 CustomSoundsManager.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetGhostPlayer:
-                BallLightning.ReceiveRPC(reader);
+                Lightning.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetDarkHiderKillCount:
                 DarkHide.ReceiveRPC(reader);
@@ -978,9 +978,6 @@ internal static class RPC
 
         switch (role)
         {
-            case CustomRoles.BountyHunter:
-                BountyHunter.Add(targetId);
-                break;
             case CustomRoles.Mercenary:
                 Mercenary.Add(targetId);
                 break;
@@ -1038,9 +1035,6 @@ internal static class RPC
             //case CustomRoles.Occultist:
             //    Occultist.Add(targetId);
             //    break;
-            case CustomRoles.Camouflager:
-                Camouflager.Add();
-                break;
             case CustomRoles.Jackal:
                 Jackal.Add(targetId);
                 break;
@@ -1167,8 +1161,8 @@ internal static class RPC
             case CustomRoles.Gamer:
                 Gamer.Add(targetId);
                 break;
-            case CustomRoles.BallLightning:
-                BallLightning.Add(targetId);
+            case CustomRoles.Lightning:
+                Lightning.Add(targetId);
                 break;
             case CustomRoles.DarkHide:
                 DarkHide.Add(targetId);

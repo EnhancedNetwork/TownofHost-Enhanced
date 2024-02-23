@@ -553,7 +553,7 @@ public enum CustomRoles
     Blackmailer,
     Bomber,
     BountyHunter,
-    OverKiller, //butcher
+    Butcher,
     Camouflager,
     Capitalism, //capitalist
     Chronomancer,
@@ -581,7 +581,7 @@ public enum CustomRoles
     Instigator,
     Kamikaze,
     KillingMachine,
-    BallLightning, //Lightning
+    Lightning,
     Ludopath,
     Lurker,
     Mastermind,

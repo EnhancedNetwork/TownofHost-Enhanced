@@ -490,16 +490,6 @@ public static class Options
     public static OptionItem ShapeshiftCD;
     public static OptionItem ShapeshiftDur;
 
-    public static OptionItem BomberRadius;
-    public static OptionItem BomberCanKill;
-    public static OptionItem BomberKillCD;
-    public static OptionItem BombCooldown;
-    public static OptionItem ImpostorsSurviveBombs;
-    public static OptionItem BomberDiesInExplosion;
-    public static OptionItem NukerChance;
-    public static OptionItem NukeRadius;
-    public static OptionItem NukeCooldown;
-
     public static OptionItem GuardSpellTimes;
     public static OptionItem killAttacker;
 
@@ -970,31 +960,7 @@ public static class Options
         /*
          * Bomber
          */
-        SetupRoleOptions(700, TabGroup.ImpostorRoles, CustomRoles.Bomber);
-        BomberRadius = FloatOptionItem.Create(702, "BomberRadius", new(0.5f, 5f, 0.5f), 2f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bomber])
-            .SetValueFormat(OptionFormat.Multiplier);
-        BomberCanKill = BooleanOptionItem.Create(703, "CanKill", false, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bomber]);
-        BomberKillCD = FloatOptionItem.Create(704, "KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false)
-            .SetParent(BomberCanKill)
-            .SetValueFormat(OptionFormat.Seconds);
-        BombCooldown = FloatOptionItem.Create(705, "BombCooldown", new(5f, 180f, 2.5f), 60f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bomber])
-            .SetValueFormat(OptionFormat.Seconds);
-        ImpostorsSurviveBombs = BooleanOptionItem.Create(706, "ImpostorsSurviveBombs", true, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bomber]);
-        BomberDiesInExplosion = BooleanOptionItem.Create(707, "BomberDiesInExplosion", true, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bomber]);
-        NukerChance = IntegerOptionItem.Create(708, "NukerChance", new(0, 100, 5), 0, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bomber])
-            .SetValueFormat(OptionFormat.Percent);
-        NukeCooldown = FloatOptionItem.Create(709, "NukeCooldown", new(5f, 180f, 2.5f), 60f, TabGroup.ImpostorRoles, false)
-            .SetParent(NukerChance)
-            .SetValueFormat(OptionFormat.Seconds);
-        NukeRadius = FloatOptionItem.Create(710, "NukeRadius", new(1f, 100f, 1f), 25f, TabGroup.ImpostorRoles, false)
-            .SetParent(NukerChance)
-            .SetValueFormat(OptionFormat.Multiplier);
+        Bomber.SetupCustomOption();
 
         /*
          * Bounty Hunter
@@ -1004,7 +970,7 @@ public static class Options
         /*
          * Butcher
          */
-        OverKiller.SetupCustomOption();
+        Butcher.SetupCustomOption();
 
         /*
          * Chronomancer
@@ -1274,7 +1240,7 @@ public static class Options
         /*
          * Lightning
          */
-        BallLightning.SetupCustomOption();
+        Lightning.SetupCustomOption();
 
         /*
          * Mastermind

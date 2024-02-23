@@ -172,9 +172,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Tracefinder:
                 Tracefinder.ApplyGameOptions();
                 break;
-            case CustomRoles.BountyHunter:
-                BountyHunter.ApplyGameOptions();
-                break;
             case CustomRoles.Sniper:
                 Sniper.ApplyGameOptions(player);
                 break;
@@ -242,14 +239,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.ShapeshifterTOHE:
                 AURoleOptions.ShapeshifterCooldown = Options.ShapeshiftCD.GetFloat();
                 AURoleOptions.ShapeshifterDuration = Options.ShapeshiftDur.GetFloat();
-                break;
-            case CustomRoles.Bomber:
-                AURoleOptions.ShapeshifterCooldown = Options.BombCooldown.GetFloat();
-                AURoleOptions.ShapeshifterDuration = 2f;
-                break;
-            case CustomRoles.Nuker:
-                AURoleOptions.ShapeshifterCooldown = Options.NukeCooldown.GetFloat();
-                AURoleOptions.ShapeshifterDuration = 2f;
                 break;
             case CustomRoles.Nemesis:
                 Nemesis.SetKillCooldown();
@@ -423,9 +412,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
             case CustomRoles.QuickShooter:
                 QuickShooter.ApplyGameOptions();
-                break;
-            case CustomRoles.Camouflager:
-                Camouflager.ApplyGameOptions();
                 break;
             case CustomRoles.Assassin:
                 Assassin.ApplyGameOptions();

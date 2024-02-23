@@ -215,7 +215,6 @@ internal class ChangeRoleSettings
             }
 
             FallFromLadder.Reset();
-            BountyHunter.Init();
             Mercenary.Init();
             EvilDiviner.Init();
             Fireworker.Init();
@@ -261,7 +260,7 @@ internal class ChangeRoleSettings
             Gangster.Init();
             Medic.Init();
             Gamer.Init();
-            BallLightning.Init();
+            Lightning.Init();
             DarkHide.Init();
             Greedier.Init();
             Observer.Init();
@@ -271,7 +270,6 @@ internal class ChangeRoleSettings
             Taskinator.Init();
             QuickShooter.Init();
             Kamikaze.Init();
-            Camouflager.Init();
             Divinator.Init();
             Aware.Init();
             Jailer.Init();
@@ -370,7 +368,6 @@ internal class ChangeRoleSettings
             Oiiai.Init();
             Hater.Init();
             Instigator.Init();
-            OverKiller.Init();
             Quizmaster.Init();
             Tired.Init();
             Statue.Init();
@@ -598,9 +595,6 @@ internal class SelectRolesPatch
 
                 switch (pc.GetCustomRole())
                 {
-                    case CustomRoles.BountyHunter:
-                        BountyHunter.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Reverie:
                         Reverie.Add(pc.PlayerId);
                         break;
@@ -629,9 +623,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.TimeThief:
                         TimeThief.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Camouflager:
-                        Camouflager.Add();
                         break;
                     case CustomRoles.Puppeteer:
                         Puppeteer.Add(pc.PlayerId);
@@ -806,8 +797,8 @@ internal class SelectRolesPatch
                     case CustomRoles.Gamer:
                         Gamer.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.BallLightning:
-                        BallLightning.Add(pc.PlayerId);
+                    case CustomRoles.Lightning:
+                        Lightning.Add(pc.PlayerId);
                         break;
                     case CustomRoles.DarkHide:
                         DarkHide.Add(pc.PlayerId);

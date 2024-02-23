@@ -189,7 +189,7 @@ public static class Divinator
                 CustomRoles.Farseer,
                 CustomRoles.Arsonist,
                 CustomRoles.Assassin,
-                CustomRoles.BallLightning,
+                CustomRoles.Lightning,
                 CustomRoles.Collector,
                 CustomRoles.Stealth],
                 
@@ -215,7 +215,7 @@ public static class Divinator
                 CustomRoles.Arrogance,
                 CustomRoles.KillingMachine,
                 CustomRoles.Berserker,
-                CustomRoles.OverKiller],
+                CustomRoles.Butcher],
                 
                 [CustomRoles.Bloodhound,
                 CustomRoles.EvilTracker,

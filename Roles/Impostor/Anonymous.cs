@@ -65,7 +65,7 @@ internal class Anonymous : RoleBase
         AURoleOptions.ShapeshifterDuration = 1f;
     }
     public static string GetHackLimit(byte playerId) => Utils.ColorString((HackLimit.TryGetValue(playerId, out var x) && x >= 1) ? Utils.GetRoleColor(CustomRoles.Anonymous).ShadeColor(0.25f) : Color.gray, HackLimit.TryGetValue(playerId, out var hackLimit) ? $"({hackLimit})" : "Invalid");
-    public override void SetButtonTexts(HudManager __instance, byte playerId)
+    public override void SetAbilityButtonText(HudManager __instance, byte playerId)
     {
         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
 
@@ -75,7 +75,7 @@ internal class Anonymous : RoleBase
             __instance.AbilityButton.SetUsesRemaining(x);
         }
     }
-    public override void OnReportDeadBody(PlayerControl player, PlayerControl target) => DeadBodyList = [];
+    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target) => DeadBodyList = [];
     public override void OnMurder(PlayerControl killer, PlayerControl target)
     {
         if (target != null && !DeadBodyList.Contains(target.PlayerId))

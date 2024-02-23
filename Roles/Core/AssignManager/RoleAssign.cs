@@ -536,7 +536,7 @@ public class RoleAssign
 
         if (rd.Next(0, 100) < Options.SunnyboyChance.GetInt() && FinalRolesList.Remove(CustomRoles.Jester)) FinalRolesList.Add(CustomRoles.Sunnyboy);
         if (Bard.CheckSpawn() && FinalRolesList.Remove(CustomRoles.Arrogance)) FinalRolesList.Add(CustomRoles.Bard);
-        if (rd.Next(0, 100) < Options.NukerChance.GetInt() && FinalRolesList.Remove(CustomRoles.Bomber)) FinalRolesList.Add(CustomRoles.Nuker);
+        if (Bomber.CheckSpawnNuker() && FinalRolesList.Remove(CustomRoles.Bomber)) FinalRolesList.Add(CustomRoles.Nuker);
 
         if (Romantic.IsEnable)
         {
