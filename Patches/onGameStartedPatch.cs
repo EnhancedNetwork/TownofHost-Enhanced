@@ -357,7 +357,6 @@ internal class ChangeRoleSettings
             Bewilder.Init();
             Necromancer.Init();
             Chronomancer.Init();
-            Seeker.Init();
             Pitfall.Init();
             Agitater.Init();
             Swapper.Init();
@@ -1024,9 +1023,7 @@ internal class SelectRolesPatch
                     case CustomRoles.Chronomancer:
                         Chronomancer.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Seeker:
-                        Seeker.Add(pc.PlayerId);
-                        break;
+
                     case CustomRoles.Pitfall:
                         Pitfall.Add(pc.PlayerId);
                         break;

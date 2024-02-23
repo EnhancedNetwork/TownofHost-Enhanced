@@ -554,7 +554,6 @@ static class ExtendedPlayerControl
             CustomRoles.Pestilence => pc.IsAlive(),
             CustomRoles.Pirate => pc.IsAlive(),
             CustomRoles.Pixie => pc.IsAlive(),
-            CustomRoles.Seeker => pc.IsAlive(),
             CustomRoles.Agitater => pc.IsAlive(),
             CustomRoles.ChiefOfPolice => ChiefOfPolice.CanUseKillButton(pc.PlayerId),
             CustomRoles.EvilMini => pc.IsAlive(),
@@ -1043,9 +1042,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Crusader:
                 Crusader.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Seeker:
-                Seeker.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.ChiefOfPolice:
                 ChiefOfPolice.SetKillCooldown(player.PlayerId);

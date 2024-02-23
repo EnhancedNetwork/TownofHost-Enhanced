@@ -476,9 +476,7 @@ class CheckMurderPatch
                 case CustomRoles.Crusader:
                     Crusader.OnCheckMurder(killer, target);
                     return false;
-                case CustomRoles.Seeker:
-                    Seeker.OnCheckMurder(killer, target);
-                    return false;
+
                 case CustomRoles.PlagueBearer:
                     if (!PlagueBearer.OnCheckMurder(killer, target))
                         return false;
@@ -2503,7 +2501,6 @@ class ReportDeadBodyPatch
         if (PlagueDoctor.IsEnable) PlagueDoctor.OnReportDeadBody();
         if (Doomsayer.IsEnable) Doomsayer.OnReportDeadBody();
         if (Lightning.IsEnable) Lightning.OnReportDeadBody();
-        if (Seeker.IsEnable) Seeker.OnReportDeadBody();
         if (Jailer.IsEnable) Jailer.OnReportDeadBody();
         if (Romantic.IsEnable) Romantic.OnReportDeadBody();
         if (Captain.IsEnable) Captain.OnReportDeadBody();
@@ -2769,10 +2766,6 @@ class FixedUpdateInNormalGamePatch
 
                     case CustomRoles.Mercenary:
                         Mercenary.OnFixedUpdate(player);
-                        break;
-
-                    case CustomRoles.Seeker:
-                        Seeker.OnFixedUpdate(player);
                         break;
 
                     case CustomRoles.PlagueBearer:
