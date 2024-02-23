@@ -241,7 +241,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Dismembered:
-                    if (!CustomRoles.OverKiller.RoleExist())
+                    if (!CustomRoles.Butcher.RoleExist())
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }

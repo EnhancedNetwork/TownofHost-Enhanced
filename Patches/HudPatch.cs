@@ -88,7 +88,7 @@ class HudManagerPatch
             {
                 __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
 
-                Main.PlayerStates[player.PlayerId]?.Role.SetButtonTexts(__instance, player.PlayerId);
+                Main.PlayerStates[player.PlayerId]?.Role.SetAbilityButtonText(__instance, player.PlayerId);
 
                 //MOD入り用のボタン下テキスト変更
                 switch (player.GetCustomRole())
@@ -290,10 +290,6 @@ class HudManagerPatch
                         break;
                     case CustomRoles.Camouflager:
                         Camouflager.SetAbilityButtonText(__instance);
-                        break;
-                    case CustomRoles.OverKiller:
-                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        __instance.KillButton.OverrideText(GetString("OverKillerButtonText"));
                         break;
                     case CustomRoles.Assassin:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));

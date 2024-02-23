@@ -970,7 +970,7 @@ public static class Options
         /*
          * Butcher
          */
-        OverKiller.SetupCustomOption();
+        Butcher.SetupCustomOption();
 
         /*
          * Chronomancer

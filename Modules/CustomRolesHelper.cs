@@ -130,7 +130,7 @@ public static class CustomRolesHelper
                 CustomRoles.ImperiusCurse => CustomRoles.Shapeshifter,
                 CustomRoles.QuickShooter => CustomRoles.Shapeshifter,
                 CustomRoles.Eraser => CustomRoles.Impostor,
-                CustomRoles.OverKiller => CustomRoles.Impostor,
+                CustomRoles.Butcher => CustomRoles.Impostor,
                 CustomRoles.Hangman => CustomRoles.Shapeshifter,
                 CustomRoles.Sunnyboy => CustomRoles.Scientist,
                 CustomRoles.Phantom => Options.PhantomCanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
@@ -744,7 +744,7 @@ public static class CustomRolesHelper
             CustomRoles.ImperiusCurse or
             CustomRoles.QuickShooter or
             CustomRoles.Eraser or
-            CustomRoles.OverKiller or
+            CustomRoles.Butcher or
             CustomRoles.Hangman or
             CustomRoles.Bard or
             CustomRoles.Swooper or
@@ -1563,7 +1563,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Wildling)
                     || pc.Is(CustomRoles.EvilDiviner)
                     || pc.Is(CustomRoles.Capitalism)
-                    || pc.Is(CustomRoles.OverKiller)
+                    || pc.Is(CustomRoles.Butcher)
                     || pc.Is(CustomRoles.KillingMachine))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())

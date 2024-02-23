@@ -8,7 +8,6 @@ public abstract class RoleBase
     // This is a base class for all roles. It contains some common methods and properties that are used by all roles.
     public abstract void Init();
     public abstract void Add(byte playerId);
-
     // if role exists in game
     public abstract bool IsEnable { get; }
 
@@ -17,7 +16,7 @@ public abstract class RoleBase
 
     public virtual bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
 
-    public virtual bool CanUseImpostorVentButton(PlayerControl pc) => pc.IsAlive() && pc.GetCustomRole().GetRoleTypes() is not RoleTypes.Crewmate and not RoleTypes.Engineer;
+    public virtual bool CanUseImpostorVentButton(PlayerControl pc) => pc.IsAlive() && pc.GetCustomRole().GetRoleTypes() is RoleTypes.Impostor or RoleTypes.Shapeshifter;
 
     public virtual bool CanUseSabotage(PlayerControl pc) =>  pc.Is(CustomRoleTypes.Impostor);
 
@@ -83,7 +82,7 @@ public abstract class RoleBase
     //    return sb.ToString();
     //}
 
-    public virtual void SetButtonTexts(HudManager hud, byte id) => hud.KillButton?.OverrideText(Translator.GetString("KillButtonText"));
+    public virtual void SetAbilityButtonText(HudManager hud, byte id) => hud.KillButton?.OverrideText(Translator.GetString("KillButtonText"));
 
     public virtual void OnCoEndGame()
     { }

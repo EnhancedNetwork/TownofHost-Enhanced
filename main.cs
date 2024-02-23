@@ -556,7 +556,7 @@ public enum CustomRoles
     Bomber,
     BountyHunter,
     Bloodmoon,
-    OverKiller, //butcher
+    Butcher,
     Camouflager,
     Capitalism, //capitalist
     Chronomancer,
