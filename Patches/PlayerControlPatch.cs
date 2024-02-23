@@ -18,7 +18,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
-using MS.Internal.Xml.XPath;
+using TOHE.Roles.Core;
 
 namespace TOHE;
 
@@ -425,24 +425,6 @@ class CheckMurderPatch
                 case CustomRoles.Shroud:
                     if (!Shroud.OnCheckMurder(killer, target)) return false;
                     break;
-                case CustomRoles.Capitalism:
-                    if (!Main.CapitalismAddTask.ContainsKey(target.PlayerId))
-                        Main.CapitalismAddTask.Add(target.PlayerId, 0);
-
-                    Main.CapitalismAddTask[target.PlayerId]++;
-
-                    if (!Main.CapitalismAssignTask.ContainsKey(target.PlayerId))
-                        Main.CapitalismAssignTask.Add(target.PlayerId, 0);
-
-                    Main.CapitalismAssignTask[target.PlayerId]++;
-
-                    Logger.Info($"资本主义 {killer.GetRealName()} 又开始祸害人了：{target.GetRealName()}", "Capitalism Add Task");
-
-                    if (!Options.DisableShieldAnimations.GetBool()) 
-                        killer.RpcGuardAndKill(killer);
-
-                    killer.SetKillCooldown();
-                    return false;
                 case CustomRoles.Gangster:
                     if (Gangster.OnCheckMurder(killer, target))
                         return false;
@@ -2738,11 +2720,13 @@ class FixedUpdateInNormalGamePatch
             {
                 var playerRole = player.GetCustomRole();
 
+                CustomRoleManager.OnFixedUpdate(player);
+
                 if (DoubleTrigger.FirstTriggerTimer.Count > 0)
                     DoubleTrigger.OnFixedUpdate(player);
 
-                if (Main.PlayerStates.TryGetValue(player.PlayerId, out var playerState_1))
-                    playerState_1.Role?.OnFixedUpdate(player);
+                //if (Main.PlayerStates.TryGetValue(player.PlayerId, out var playerState_1))
+                //    playerState_1.Role?.OnFixedUpdate(player);
 
                 // Agitater
                 if (Agitater.IsEnable && Agitater.CurrentBombedPlayer == player.PlayerId)
@@ -2981,8 +2965,10 @@ class FixedUpdateInNormalGamePatch
 
                     playerRole = player.GetCustomRole();
 
-                    if (Main.PlayerStates.TryGetValue(player.PlayerId, out var playerState_2))
-                        playerState_2.Role.OnFixedUpdateLowLoad(player);
+                    CustomRoleManager.OnFixedUpdateLowLoad(player);
+
+                    //if (Main.PlayerStates.TryGetValue(player.PlayerId, out var playerState_2))
+                    //    playerState_2.Role.OnFixedUpdateLowLoad(player);
 
                     if (Kamikaze.IsEnable)
                         Kamikaze.MurderKamikazedPlayers(player);
@@ -4052,21 +4038,8 @@ class PlayerControlCompleteTaskPatch
 
         var player = __instance;
 
-        if (Workhorse.OnCompleteTask(player)) //タスク勝利をキャンセル
+        if (Workhorse.OnAddTask(player))
             return false;
-
-        //来自资本主义的任务
-        if (Main.CapitalismAddTask.TryGetValue(player.PlayerId, out var task))
-        {
-            var taskState = player.GetPlayerTaskState();
-            taskState.AllTasksCount += task;
-            Main.CapitalismAddTask.Remove(player.PlayerId);
-            taskState.CompletedTasksCount++;
-            GameData.Instance.RpcSetTasks(player.PlayerId, Array.Empty<byte>()); //タスクを再配布
-            player.SyncSettings();
-            Utils.NotifyRoles(SpecifySeer: player);
-            return false;
-        }
 
         return true;
     }

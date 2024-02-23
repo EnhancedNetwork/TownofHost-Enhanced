@@ -1,6 +1,6 @@
-﻿using AmongUs.GameOptions;
-using Hazel;
+using AmongUs.GameOptions;
 using MS.Internal.Xml.XPath;
+using static UnityEngine.GraphicsBuffer;
 //using System.Text;
 
 namespace TOHE;
@@ -51,15 +51,15 @@ public abstract class RoleBase
     /// </summary>
     public virtual void ApplyGameOptions(IGameOptions opt, byte playerId)
     { }
-    
+
     /// <summary>
-    /// A generic method to check conditions during gameplay, 30 times each second.
+    /// Fixed Update for local role
     /// </summary>
     public virtual void OnFixedUpdate(PlayerControl pc)
     { }
-    
+  
     /// <summary>
-    /// A generic method to check conditions during gameplay, which aren't prioritized.
+    /// Fixed Update for others players
     /// </summary>
     public virtual void OnFixedUpdateLowLoad(PlayerControl pc)
     { }

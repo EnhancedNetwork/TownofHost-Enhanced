@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 
@@ -25,12 +26,14 @@ internal class Butcher : RoleBase
     public override void Add(byte playerId)
     {
         On = true;
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
+        }
     }
 
-    public override void SetAbilityButtonText(HudManager __instance, byte id)
-    {
-        __instance.KillButton.OverrideText(Translator.GetString("ButcherButtonText"));
-    }
+    public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.KillButton.OverrideText(Translator.GetString("ButcherButtonText"));
     public static void OnMurderPlayer(PlayerControl killer, PlayerControl target)
     {
         if (killer.PlayerId == target.PlayerId || target == null) return;
@@ -79,7 +82,7 @@ internal class Butcher : RoleBase
     public override void AfterMeetingTasks() => MurderTargetLateTask = [];
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target) => MurderTargetLateTask.Clear();
 
-    public override void OnFixedUpdate(PlayerControl target)
+    public static void OnFixedUpdateOthers(PlayerControl target)
     {
         if (!MurderTargetLateTask.ContainsKey(target.PlayerId)) return;
         if (target == null || !target.Data.IsDead) return;

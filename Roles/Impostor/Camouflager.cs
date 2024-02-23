@@ -58,15 +58,12 @@ internal class Camouflager : RoleBase
         AURoleOptions.ShapeshifterCooldown = ShapeshiftIsHidden && AbilityActivated ? CamouflageDuration : CamouflageCooldown;
         AURoleOptions.ShapeshifterDuration = CamouflageDuration;
     }
-    public override void SetAbilityButtonText(HudManager __instance, byte id)
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         if (AbilityActivated)
-            __instance.AbilityButton.OverrideText(GetString("CamouflagerShapeshiftTextAfterDisguise"));
+            hud.AbilityButton.OverrideText(GetString("CamouflagerShapeshiftTextAfterDisguise"));
         else
-            __instance.AbilityButton.OverrideText(GetString("CamouflagerShapeshiftTextBeforeDisguise"));
-
-
-        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
+            hud.AbilityButton.OverrideText(GetString("CamouflagerShapeshiftTextBeforeDisguise"));
     }
     public override void OnShapeshift(PlayerControl camouflager, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
     {
