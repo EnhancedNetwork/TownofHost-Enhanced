@@ -1034,7 +1034,7 @@ internal class ChatCommands
             "殺人機器" or "杀戮机器" or "杀戮" or "机器" or "杀戮兵器" => GetString("KillingMachine"),
             "通緝犯" or "逃逸者" or "逃逸" => GetString("Escapist"),
             "女巫" => GetString("Witch"),
-            "黑手黨" or "黑手党" or "黑手" => GetString("Nemesis"),
+            "黑手黨" or "黑手党" or "黑手" => GetString("Mafia"),
             "傀儡師" or "傀儡师" or "傀儡" => GetString("Puppeteer"),
             "主謀" or "策划者" => GetString("Mastermind"),
             "時間竊賊" or "蚀时者" or "蚀时" or "偷时" => GetString("TimeThief"),

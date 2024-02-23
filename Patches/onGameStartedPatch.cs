@@ -294,8 +294,8 @@ internal class ChangeRoleSettings
             Mortician.Init();
             Mediumshiper.Init();
             Swooper.Init();
-            Retributionist.Init();
-            Nemesis.Init();
+            Hawk.Init();
+            Bloodmoon.Init();
             Wraith.Init();
             SoulCollector.Init();
             SchrodingersCat.Init();

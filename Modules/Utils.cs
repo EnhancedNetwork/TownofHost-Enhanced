@@ -567,7 +567,7 @@ public static class Utils
             case CustomRoles.SchrodingersCat:
             case CustomRoles.Parasite:
             case CustomRoles.Minion:
-            case CustomRoles.Nemesis:
+            case CustomRoles.Bloodmoon:
             case CustomRoles.Crusader:
             case CustomRoles.Refugee:
             case CustomRoles.Jester:
@@ -1055,11 +1055,11 @@ public static class Utils
                 case CustomRoles.CursedSoul:
                     ProgressText.Append(CursedSoul.GetCurseLimit());
                     break;
-                case CustomRoles.Retributionist:
-                    ProgressText.Append(Retributionist.GetRetributeLimit(playerId));
+                case CustomRoles.Hawk:
+                    ProgressText.Append(Hawk.GetRetributeLimit(playerId));
                     break;
-                case CustomRoles.Nemesis:
-                    ProgressText.Append(Nemesis.GetRevengeLimit(playerId));
+                case CustomRoles.Bloodmoon:
+                    ProgressText.Append(Bloodmoon.GetRevengeLimit(playerId));
                     break;
                 case CustomRoles.Warden:
                     ProgressText.Append(Warden.GetNotifyLimit(playerId));
@@ -2677,7 +2677,7 @@ public static class Utils
         if (Penguin.IsEnable) Penguin.AfterMeetingTasks();
         if (Taskinator.IsEnable) Taskinator.AfterMeetingTasks();
         if (Benefactor.IsEnable) Benefactor.AfterMeetingTasks();
-        if (Retributionist.IsEnable) Retributionist.AfterMeetingTasks(); 
+        if (Hawk.IsEnable) Hawk.AfterMeetingTasks(); 
         if (PlagueDoctor.IsEnable) PlagueDoctor.AfterMeetingTasks();
         if (Jailer.IsEnable) Jailer.AfterMeetingTasks();
         if (CopyCat.IsEnable) CopyCat.AfterMeetingTasks();  //all crew after meeting task should be before this

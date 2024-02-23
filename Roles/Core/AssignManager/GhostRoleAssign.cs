@@ -158,11 +158,11 @@ public static class GhostRoleAssign
     {
         switch (GhostRole)
         {
-            case CustomRoles.Retributionist:
-                Retributionist.Add(target.PlayerId);
+            case CustomRoles.Hawk:
+                Hawk.Add(target.PlayerId);
                 break;
-             case CustomRoles.Nemesis:
-                Nemesis.Add(target.PlayerId);
+             case CustomRoles.Bloodmoon:
+                Bloodmoon.Add(target.PlayerId);
                 break;
             case CustomRoles.Warden:
                 Warden.Add(target.PlayerId);

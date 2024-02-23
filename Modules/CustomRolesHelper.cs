@@ -40,7 +40,7 @@ static class CustomRolesHelper
                 CustomRoles.President => CustomRoles.Crewmate,
                 CustomRoles.Marshall => CustomRoles.Crewmate,
                 CustomRoles.SabotageMaster => CustomRoles.Engineer,
-                CustomRoles.Nemesis => CustomRoles.GuardianAngel,
+                CustomRoles.Bloodmoon => CustomRoles.GuardianAngel,
                 CustomRoles.Terrorist => CustomRoles.Engineer,
                 CustomRoles.Executioner => CustomRoles.Crewmate,
                 CustomRoles.Lawyer => CustomRoles.Crewmate,
@@ -153,7 +153,7 @@ static class CustomRolesHelper
                 CustomRoles.Bloodhound => CustomRoles.Crewmate,
                 CustomRoles.Tracker => CustomRoles.Crewmate,
                 CustomRoles.Merchant => CustomRoles.Crewmate,
-                CustomRoles.Retributionist => CustomRoles.GuardianAngel,
+                CustomRoles.Hawk => CustomRoles.GuardianAngel,
                 CustomRoles.Guardian => CustomRoles.Crewmate,
                 CustomRoles.Addict => CustomRoles.Engineer,
                 CustomRoles.Mole => CustomRoles.Engineer,
@@ -295,8 +295,8 @@ static class CustomRolesHelper
             CustomRoles.GuardianAngelTOHE or
             CustomRoles.EvilSpirit or
             CustomRoles.Warden or
-            CustomRoles.Retributionist or
-            CustomRoles.Nemesis or
+            CustomRoles.Hawk or
+            CustomRoles.Bloodmoon or
             CustomRoles.Minion;
 
     }
@@ -703,6 +703,7 @@ static class CustomRolesHelper
             CustomRoles.RiftMaker or
             CustomRoles.Assassin or
             CustomRoles.Berserker or
+            CustomRoles.Bloodmoon or
             CustomRoles.Anonymous or
             CustomRoles.Visionary or
             CustomRoles.Miner or
@@ -1904,7 +1905,7 @@ static class CustomRolesHelper
            CustomRoles.Poisoner => CountTypes.Poisoner,
            CustomRoles.Pelican => CountTypes.Pelican,
            CustomRoles.Minion => CountTypes.Impostor,
-           CustomRoles.Nemesis => CountTypes.Impostor,
+           CustomRoles.Bloodmoon => CountTypes.Impostor,
            CustomRoles.Gamer => CountTypes.Gamer,
            CustomRoles.BloodKnight => CountTypes.BloodKnight,
            CustomRoles.Succubus => CountTypes.Succubus,

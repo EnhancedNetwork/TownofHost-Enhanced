@@ -555,6 +555,7 @@ public enum CustomRoles
     Blackmailer,
     Bomber,
     BountyHunter,
+    Bloodmoon,
     OverKiller, //butcher
     Camouflager,
     Capitalism, //capitalist
@@ -657,6 +658,7 @@ public enum CustomRoles
     Guardian,
     GuessMaster,
     Grenadier,
+    Hawk,
     Inspector, //inspector
     Investigator,
     Jailer,

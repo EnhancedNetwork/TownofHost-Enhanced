@@ -9,15 +9,14 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
-public static class Retributionist
+public static class Hawk
 {
 
-    private static readonly int Id = 11000;
+    private static readonly int Id = 28000;
     public static OptionItem KillCooldown;
-    public static OptionItem RetributionistCanKillNum;
-    public static OptionItem MinimumPlayersAliveToRetri;
+    public static OptionItem HawkCanKillNum;
+    public static OptionItem MinimumPlayersAliveToKill;
     public static OptionItem OnlyKillAfterXKillerNoEject;
-    public static OverrideTasksData RetributionistTasks;
     
     public static Dictionary<byte, int> KillCount;
     public static int KillersNoEjects;
@@ -25,14 +24,14 @@ public static class Retributionist
     public static int GetCount;
     public static void SetupCustomOptions()
     {
-        SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Retributionist);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 120f, 2.5f), 40f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
+        SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Hawk);
+        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 120f, 2.5f), 40f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hawk])
             .SetValueFormat(OptionFormat.Seconds);
-        RetributionistCanKillNum = IntegerOptionItem.Create(Id + 11, "RetributionistCanKillNum", new(1, 15, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
+        HawkCanKillNum = IntegerOptionItem.Create(Id + 11, "HawkCanKillNum", new(1, 15, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
             .SetValueFormat(OptionFormat.Players);
-        MinimumPlayersAliveToRetri = IntegerOptionItem.Create(Id + 12, "MinimumPlayersAliveToRetri", new(0, 15, 1), 4, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
+        MinimumPlayersAliveToKill = IntegerOptionItem.Create(Id + 12, "MinimumPlayersAliveToKill", new(0, 15, 1), 4, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hawk])
             .SetValueFormat(OptionFormat.Players);
-        OnlyKillAfterXKillerNoEject = IntegerOptionItem.Create(Id + 13, "MinimumNoKillerEjectsToRetri", new(0, 10, 1), 0, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
+        OnlyKillAfterXKillerNoEject = IntegerOptionItem.Create(Id + 13, "MinimumNoKillerEjectsToKill", new(0, 10, 1), 0, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Hawk])
             .SetValueFormat(OptionFormat.Players);
     }
 
@@ -45,12 +44,12 @@ public static class Retributionist
     }
     public static void Add(byte PlayerId)
     {
-        KillCount.Add(PlayerId, RetributionistCanKillNum.GetInt());
+        KillCount.Add(PlayerId, HawkCanKillNum.GetInt());
     }
     private static void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Retributionist);
+        writer.WritePacked((int)CustomRoles.Hawk);
         writer.Write(playerId);
         writer.Write(KillCount[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -61,7 +60,7 @@ public static class Retributionist
         int Limit = reader.ReadInt32();
         KillCount[PlayerId] = Limit;
     }
-    public static bool IsEnable => Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Retributionist));
+    public static bool IsEnable => Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Hawk));
     public static void OnReportDeadBody()
     {
         KeepCount = 0;
@@ -102,20 +101,20 @@ public static class Retributionist
         }
         else if (KillCount[killer.PlayerId] <= 0) killer.Notify(GetString("RetributionistKillMax"));
         else if (KillersNoEjects < OnlyKillAfterXKillerNoEject.GetInt()) killer.Notify(GetString("RetributionistKillNoEject").Replace("{0}", OnlyKillAfterXKillerNoEject.GetInt().ToString()));
-        else if (Main.AllAlivePlayerControls.Length < MinimumPlayersAliveToRetri.GetInt()) killer.Notify(GetString("RetributionistKillTooManyDead"));
+        else if (Main.AllAlivePlayerControls.Length < MinimumPlayersAliveToKill.GetInt()) killer.Notify(GetString("RetributionistKillTooManyDead"));
         return false;
     }
 
     private static bool CheckRetriConflicts(PlayerControl killer, PlayerControl target)
     {
         return target != null && KillersNoEjects >= OnlyKillAfterXKillerNoEject.GetInt()
-            && Main.AllAlivePlayerControls.Length >= MinimumPlayersAliveToRetri.GetInt()
+            && Main.AllAlivePlayerControls.Length >= MinimumPlayersAliveToKill.GetInt()
             && KillCount[killer.PlayerId] > 0
             && !target.Is(CustomRoles.Pestilence)
             && (target.Is(CustomRoles.NiceMini) ? Mini.Age > 18 : true);
     }
     public static bool CanKill(byte id) => KillCount.TryGetValue(id, out var x) && x > 0;
-    public static string GetRetributeLimit(byte playerId) => Utils.ColorString(CanKill(playerId) ? Utils.GetRoleColor(CustomRoles.Retributionist).ShadeColor(0.25f) : Color.gray, KillCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");
+    public static string GetRetributeLimit(byte playerId) => Utils.ColorString(CanKill(playerId) ? Utils.GetRoleColor(CustomRoles.Hawk).ShadeColor(0.25f) : Color.gray, KillCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");
 
 }
 

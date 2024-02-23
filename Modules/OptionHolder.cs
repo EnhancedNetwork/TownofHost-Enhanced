@@ -854,7 +854,7 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 27900 lasted id for roles/add-ons (Next use 28000)
+        // 28100 lasted id for roles/add-ons (Next use 28200)
         // Limit id for roles/add-ons --- "59999"
         //#######################################
 
@@ -1484,7 +1484,7 @@ public static class Options
 
         Minion.SetupCustomOption();
 
-        Nemesis.SetupCustomOption();
+        Bloodmoon.SetupCustomOption();
 
         #endregion
 
@@ -1971,7 +1971,7 @@ public static class Options
 
         Warden.SetupCustomOptions();
 
-        Retributionist.SetupCustomOptions();
+        Hawk.SetupCustomOptions();
 
         #endregion
 

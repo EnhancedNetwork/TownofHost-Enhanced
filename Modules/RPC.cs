@@ -1246,11 +1246,11 @@ internal static class RPC
             case CustomRoles.Mediumshiper:
                 Mediumshiper.Add(targetId);
                 break;
-            case CustomRoles.Retributionist:
-                Retributionist.Add(targetId);
+            case CustomRoles.Hawk:
+                Hawk.Add(targetId);
                 break;
-            case CustomRoles.Nemesis:
-                Nemesis.Add(targetId);
+            case CustomRoles.Bloodmoon:
+                Bloodmoon.Add(targetId);
                 break;
             case CustomRoles.Warden:
                 Warden.Add(targetId);
@@ -1566,11 +1566,11 @@ internal static class RPC
             //case CustomRoles.Witch:
             //    break;
             //Merge the two rpc into one
-             case CustomRoles.Retributionist:
-                Retributionist.ReceiveRPC(reader);
+             case CustomRoles.Hawk:
+                Hawk.ReceiveRPC(reader);
                 break;
-             case CustomRoles.Nemesis:
-                 Nemesis.ReceiveRPC(reader);
+             case CustomRoles.Bloodmoon:
+                 Bloodmoon.ReceiveRPC(reader);
                 break;
             case CustomRoles.Warden:
                 Warden.ReceiveRPC(reader);

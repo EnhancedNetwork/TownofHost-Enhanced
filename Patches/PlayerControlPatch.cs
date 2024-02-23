@@ -68,11 +68,11 @@ class CheckProtectPatch
             case CustomRoles.Minion:
                 return Minion.OnCheckProtect(angel, target);
 
-            case CustomRoles.Retributionist:
-                return Retributionist.OnCheckProtect(angel, target);
+            case CustomRoles.Hawk:
+                return Hawk.OnCheckProtect(angel, target);
 
-            case CustomRoles.Nemesis:
-                return Nemesis.OnCheckProtect(angel, target);
+            case CustomRoles.Bloodmoon:
+                return Bloodmoon.OnCheckProtect(angel, target);
 
             default:
                 break;
@@ -2703,7 +2703,7 @@ class ReportDeadBodyPatch
         if (Eraser.IsEnable) Eraser.OnReportDeadBody();
         if (Anonymous.IsEnable) Anonymous.OnReportDeadBody();
         if (Divinator.IsEnable) Divinator.OnReportDeadBody();
-        if (Retributionist.IsEnable) Retributionist.OnReportDeadBody();
+        if (Hawk.IsEnable) Hawk.OnReportDeadBody();
         if (Tracefinder.IsEnable) Tracefinder.OnReportDeadBody();
         if (Judge.IsEnable) Judge.OnReportDeadBody();
         if (Greedier.IsEnable) Greedier.OnReportDeadBody();
