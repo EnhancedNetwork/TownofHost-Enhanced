@@ -149,11 +149,6 @@ public class Main : BasePlugin
     public static List<int> BombedVents = [];
     public static List<byte> WorkaholicAlive = [];
     public static List<byte> TasklessCrewmate = [];
-    public static List<byte> BoobyTrapBody = [];
-    public static List<byte> BoobyTrapKiller = [];
-    //public static List<byte> KilledDiseased = [];
-    //public static List<byte> ForFlashbang = [];
-    public static Dictionary<byte, byte> KillerOfBoobyTrapBody = [];
     public static Dictionary<byte, string> DetectiveNotify = [];
     public static Dictionary<byte, string> VirusNotify = [];
     public static List<byte> OverDeadPlayerList = [];
@@ -604,7 +599,7 @@ public enum CustomRoles
     Swooper,
     Stealth,
     TimeThief,
-    BoobyTrap, //trapster
+    Trapster,
     Trickster,
     Twister,
     Underdog,

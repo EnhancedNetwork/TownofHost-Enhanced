@@ -661,10 +661,6 @@ class CheckMurderPatch
                 Spiritcaller.OnCheckMurder(target);
                 break;
 
-            case CustomRoles.BoobyTrap:
-                Main.BoobyTrapBody.Add(target.PlayerId);
-                break;
-
             case CustomRoles.Ludopath:
                 var ran = IRandom.Instance;
                 int KillCD = ran.Next(1, Options.LudopathRandomKillCD.GetInt());
@@ -2261,54 +2257,9 @@ class ReportDeadBodyPatch
                     }
                 }
 
-                if (target.Object.Is(CustomRoles.BoobyTrap) && Options.TrapTrapsterBody.GetBool() && !__instance.Is(CustomRoles.Pestilence))
-                {
-                    var killerID = target.PlayerId;
-                    Main.PlayerStates[__instance.PlayerId].deathReason = PlayerState.DeathReason.Trap;
-                    __instance.SetRealKiller(Utils.GetPlayerById(killerID));
-
-                    __instance.RpcMurderPlayerV3(__instance);
-                    RPC.PlaySoundRPC(killerID, Sounds.KillSound);
-                    if (Options.TrapConsecutiveTrapsterBodies.GetBool())
-                    {
-                        Main.BoobyTrapBody.Add(__instance.PlayerId);
-                    }
-                    return false;
-                }
-
-
-
-                // 报告了诡雷尸体
-                if (Main.BoobyTrapBody.Contains(target.PlayerId) && __instance.IsAlive() && !__instance.Is(CustomRoles.Pestilence))
-                {
-                    /*    if (!Options.TrapOnlyWorksOnTheBodyBoobyTrap.GetBool())
-                        {
-                            var killerID = Main.KillerOfBoobyTrapBody[target.PlayerId];
-                            Main.PlayerStates[__instance.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
-                            __instance.SetRealKiller(Utils.GetPlayerById(killerID));
-
-                            __instance.RpcMurderPlayerV3(__instance);
-                            RPC.PlaySoundRPC(killerID, Sounds.KillSound);
-
-                            if (!Main.BoobyTrapBody.Contains(__instance.PlayerId)) Main.BoobyTrapBody.Add(__instance.PlayerId);
-                            if (!Main.KillerOfBoobyTrapBody.ContainsKey(__instance.PlayerId)) Main.KillerOfBoobyTrapBody.Add(__instance.PlayerId, killerID);
-                            return false;
-                        }
-                        else */
-                    {
-                        var killerID2 = target.PlayerId;
-                        Main.PlayerStates[__instance.PlayerId].deathReason = PlayerState.DeathReason.Trap;
-                        __instance.SetRealKiller(Utils.GetPlayerById(killerID2));
-
-                        __instance.RpcMurderPlayerV3(__instance);
-                        RPC.PlaySoundRPC(killerID2, Sounds.KillSound);
-                        if (Options.TrapConsecutiveBodies.GetBool())
-                        {
-                            Main.BoobyTrapBody.Add(__instance.PlayerId);
-                        }
+                if (Main.PlayerStates.TryGetValue(__instance.PlayerId, out var playerState))
+                    if (playerState.Role != null && !playerState.Role.OnCheckReportDeadBody(__instance, target.Object))
                         return false;
-                    }
-                }
 
                 if (target.Object.Is(CustomRoles.Unreportable)) return false;
             }

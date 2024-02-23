@@ -70,9 +70,7 @@ internal class ChangeRoleSettings
             Main.ForCrusade = [];
             Main.CyberStarDead = [];
             Main.WorkaholicAlive = [];
-            Main.BoobyTrapBody = [];
             Main.TasklessCrewmate = [];
-            Main.KillerOfBoobyTrapBody = [];
             Main.CleanerBodies = [];
             Main.MedusaBodies = [];
             Main.InfectedBodies = [];

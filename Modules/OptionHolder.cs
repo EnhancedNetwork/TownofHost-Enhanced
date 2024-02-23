@@ -505,12 +505,6 @@ public static class Options
 
     public static OptionItem SaboteurCD;
 
-    public static OptionItem BTKillCooldown;
-    public static OptionItem TrapConsecutiveBodies;
-    public static OptionItem TrapTrapsterBody;
-    public static OptionItem TrapConsecutiveTrapsterBodies;
-    //public static OptionItem TrapOnlyWorksOnTheBodyBoobyTrap;
-
     public static OptionItem UnderdogMaximumPlayersNeededToKill;
     public static OptionItem UnderdogKillCooldown;
 
@@ -1096,16 +1090,7 @@ public static class Options
         /*
          * Trapster
          */
-        SetupRoleOptions(2600, TabGroup.ImpostorRoles, CustomRoles.BoobyTrap);
-        BTKillCooldown = FloatOptionItem.Create(2602, "KillCooldown", new(2.5f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.BoobyTrap])
-            .SetValueFormat(OptionFormat.Seconds);
-        TrapConsecutiveBodies = BooleanOptionItem.Create(2603, "TrapConsecutiveBodies", true, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.BoobyTrap]);
-        TrapTrapsterBody = BooleanOptionItem.Create(2604, "TrapTrapsterBody", true, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.BoobyTrap]);
-        TrapConsecutiveTrapsterBodies = BooleanOptionItem.Create(2605, "TrapConsecutiveBodies", true, TabGroup.ImpostorRoles, false)
-            .SetParent(TrapTrapsterBody);
+        Trapster.SetupCustomOption();
 
         /*
          * Underdog

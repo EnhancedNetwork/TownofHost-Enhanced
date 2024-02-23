@@ -80,7 +80,7 @@ public static class CustomRoleManager
         //CustomRoles.Swooper => new Swooper(),
         //CustomRoles.Stealth => new Stealth(),
         //CustomRoles.TimeThief => new TimeThief(),
-        //CustomRoles.BoobyTrap => new BoobyTrap(),
+        CustomRoles.Trapster => new Trapster(),
         //CustomRoles.Trickster => new Trickster(),
         //CustomRoles.Twister => new Twister(),
         //CustomRoles.Underdog => new Underdog(),

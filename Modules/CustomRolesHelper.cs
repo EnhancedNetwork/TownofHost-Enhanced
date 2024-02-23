@@ -104,7 +104,7 @@ public static class CustomRolesHelper
                 CustomRoles.Nuker => CustomRoles.Shapeshifter,
                 CustomRoles.Kamikaze => CustomRoles.Impostor,
              //   CustomRoles.Flashbang => CustomRoles.Shapeshifter,
-                CustomRoles.BoobyTrap => CustomRoles.Impostor,
+                CustomRoles.Trapster => CustomRoles.Impostor,
                 CustomRoles.Scavenger => CustomRoles.Impostor,
                 CustomRoles.Transporter => CustomRoles.Crewmate,
                 CustomRoles.Veteran => CustomRoles.Engineer,
@@ -728,7 +728,7 @@ public static class CustomRolesHelper
             CustomRoles.Nuker or
             CustomRoles.Kamikaze or
             CustomRoles.Scavenger or
-            CustomRoles.BoobyTrap or
+            CustomRoles.Trapster or
             CustomRoles.Gangster or
             CustomRoles.Cleaner or
             CustomRoles.Lightning or
@@ -1527,7 +1527,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.LastImpostor)
                     || pc.Is(CustomRoles.Bomber)
                     || pc.Is(CustomRoles.Nuker)
-                    || pc.Is(CustomRoles.BoobyTrap)
+                    || pc.Is(CustomRoles.Trapster)
                     || pc.Is(CustomRoles.Onbound)
                     || pc.Is(CustomRoles.Rebound)
                     || pc.Is(CustomRoles.Tired))
@@ -1539,7 +1539,7 @@ public static class CustomRolesHelper
             case CustomRoles.Swift:
                 if (pc.Is(CustomRoles.Bomber)
                     || pc.Is(CustomRoles.Nuker)
-                    || pc.Is(CustomRoles.BoobyTrap)
+                    || pc.Is(CustomRoles.Trapster)
                     || pc.Is(CustomRoles.Kamikaze)
                     || pc.Is(CustomRoles.Swooper)
                     || pc.Is(CustomRoles.Vampire)

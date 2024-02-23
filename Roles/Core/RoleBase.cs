@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using MS.Internal.Xml.XPath;
 //using System.Text;
 
 namespace TOHE;
@@ -67,6 +68,8 @@ public abstract class RoleBase
 
     public virtual void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
     { }
+
+    public virtual bool OnCheckReportDeadBody(PlayerControl reporter, PlayerControl target) => reporter.IsAlive();
 
     public virtual void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     { }

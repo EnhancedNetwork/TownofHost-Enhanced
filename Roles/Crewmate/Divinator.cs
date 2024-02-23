@@ -349,7 +349,7 @@ public static class Divinator
                 CustomRoles.Huntsman,
                 CustomRoles.Traitor],
                 
-                [CustomRoles.BoobyTrap,
+                [CustomRoles.Trapster,
                 CustomRoles.QuickShooter,
                 CustomRoles.SerialKiller,
                 CustomRoles.Sheriff,
