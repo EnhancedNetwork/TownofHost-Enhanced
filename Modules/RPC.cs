@@ -974,7 +974,7 @@ internal static class RPC
             Main.PlayerStates[targetId].SetSubRole(role);
         }
 
-        Main.PlayerStates[targetId]?.Role.Add(targetId);
+        Main.PlayerStates[targetId]?.Role?.Add(targetId);
 
         switch (role)
         {

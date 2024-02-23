@@ -1551,6 +1551,7 @@ public static class CheckShapeShiftPatch
         {
             shapeshifter.RejectShapeshiftAndReset();
             playerState.Role?.OnShapeshift(shapeshifter, target, false, shapeshiftIsHidden);
+            return false;
         }
 
         switch (role)

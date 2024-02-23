@@ -53,7 +53,7 @@ internal class Addict : RoleBase
 
     public static bool IsImmortal(PlayerControl player) => player.Is(CustomRoles.Addict) && ImmortalTimer[player.PlayerId] <= ImmortalTimeAfterVent.GetFloat();
 
-    public override bool OnCheckMurderOnTarget(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         return !IsImmortal(target);
     }

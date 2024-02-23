@@ -209,11 +209,6 @@ internal class ChangeRoleSettings
                 Main.RefixCooldownDelay = 0;
             }
 
-            foreach (var state in Main.PlayerStates.Values)
-            {
-                state.Role.Init();
-            }
-
             FallFromLadder.Reset();
             Mercenary.Init();
             EvilDiviner.Init();
@@ -592,7 +587,8 @@ internal class SelectRolesPatch
             {
                 if (pc.Data.Role.Role == RoleTypes.Shapeshifter) Main.CheckShapeshift.Add(pc.PlayerId, false);
 
-                Main.PlayerStates[pc.PlayerId]?.Role.Add(pc.PlayerId);
+                Main.PlayerStates[pc.PlayerId]?.Role?.Init();
+                Main.PlayerStates[pc.PlayerId]?.Role?.Add(pc.PlayerId);
 
                 switch (pc.GetCustomRole())
                 {

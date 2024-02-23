@@ -66,7 +66,7 @@ internal class Bomber : RoleBase
     public static bool CheckSpawnNuker()
     {
         var Rand = IRandom.Instance;
-        return NukerChance.GetInt() <= Rand.Next(1, 101);
+        return Rand.Next(0, 101) < NukerChance.GetInt();
     }
     public override bool CanUseKillButton(PlayerControl pc) => BomberCanKill.GetBool() && pc.IsAlive();
     public override void SetKillCooldown(byte id)
