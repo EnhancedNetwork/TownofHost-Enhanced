@@ -29,12 +29,12 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// Fixed Update for local role
+    /// A local method to check conditions during gameplay, 30 times each second
     /// </summary>
     public virtual void OnFixedUpdate(PlayerControl pc)
     { }
     /// <summary>
-    /// Fixed Update for others players
+    /// A local method to check conditions during gameplay, which aren't prioritized
     /// </summary>
     public virtual void OnFixedUpdateLowLoad(PlayerControl pc)
     { }
