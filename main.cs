@@ -553,7 +553,6 @@ public enum CustomRoles
     BountyHunter,
     Butcher,
     Camouflager,
-    Capitalist, //capitalist
     Chronomancer,
     Cleaner,
     EvilDiviner, //Consigliere

@@ -177,9 +177,6 @@ class RpcSetTasksPatch
             hasCommonTasks = false;
         }
 
-        // Capitalism is going to wreak havoc on people
-        Capitalist.OnTaskAssign(pc, ref NumShortTasks);
-
         if (taskTypeIds.Count == 0) hasCommonTasks = false; //Common to 0 when redistributing tasks
         if (!hasCommonTasks && NumLongTasks == 0 && NumShortTasks == 0) NumShortTasks = 1; //Task 0 Measures
         if (hasCommonTasks && NumLongTasks == Main.NormalOptions.NumLongTasks && NumShortTasks == Main.NormalOptions.NumShortTasks) return; //If there are no changes
