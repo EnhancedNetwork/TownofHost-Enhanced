@@ -31,7 +31,7 @@ public class StringOptionItem(int id, string name, int defaultValue, TabGroup ta
         if (Selections.Length == 3) return CurrentValue;
 
         //For 0% to 100% or 5% to 100%
-        var offset = EnumHelper.GetAllNames<Options.Rates>().Length - Selections.Length;
+        var offset = EnumHelper.GetAllNames<Options.SpawnChance>().Length - Selections.Length;
         var index = CurrentValue + offset;
         var rate = index * 5;
         return rate;
