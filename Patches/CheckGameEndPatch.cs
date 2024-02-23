@@ -465,7 +465,7 @@ class GameEndCheckerForNormal
     {
         if (Quizmaster.IsEnable) Quizmaster.ResetMarkedPlayer();
 
-        foreach (var playerState in Main.PlayerStates.Values.Where(pc => pc.Role.IsEnable))
+        foreach (var playerState in Main.PlayerStates.Values.Where(pc => pc.Role.IsEnable).ToArray())
         {
             playerState.Role?.OnCoEndGame();
         }

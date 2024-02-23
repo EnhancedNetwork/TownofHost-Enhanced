@@ -370,7 +370,6 @@ internal class ChangeRoleSettings
             Oiiai.Init();
             Hater.Init();
             Instigator.Init();
-            OverKiller.Init();
             Quizmaster.Init();
             Tired.Init();
             Statue.Init();

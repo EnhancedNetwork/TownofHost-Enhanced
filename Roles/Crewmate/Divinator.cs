@@ -215,7 +215,7 @@ public static class Divinator
                 CustomRoles.Arrogance,
                 CustomRoles.KillingMachine,
                 CustomRoles.Berserker,
-                CustomRoles.OverKiller],
+                CustomRoles.Butcher],
                 
                 [CustomRoles.Bloodhound,
                 CustomRoles.EvilTracker,

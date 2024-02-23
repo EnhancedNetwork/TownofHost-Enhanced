@@ -2658,7 +2658,7 @@ public static class Utils
         if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: false);
         if (Seeker.IsEnable) Seeker.AfterMeetingTasks(notifyPlayer: false);
 
-        foreach (var playerState in Main.PlayerStates.Values.Where(pc => pc.Role.IsEnable))
+        foreach (var playerState in Main.PlayerStates.Values.Where(pc => pc.Role.IsEnable).ToArray())
         {
             playerState.Role?.AfterMeetingTasks();
         }
@@ -2689,7 +2689,6 @@ public static class Utils
 
         Main.ShamanTarget = byte.MaxValue;
         Main.ShamanTargetChoosen = false;
-        OverKiller.MurderTargetLateTask = [];
 
         if (Options.AirshipVariableElectrical.GetBool())
             AirshipElectricalDoors.Initialize();

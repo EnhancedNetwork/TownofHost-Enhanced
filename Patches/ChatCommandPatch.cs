@@ -1059,7 +1059,7 @@ internal class ChatCommands
             "快槍手" or "快枪手" or "快枪" => GetString("QuickShooter"),
             "隱蔽者" or "隐蔽者" or "小黑人" => GetString("Camouflager"),
             "抹除者" or "抹除" => GetString("Eraser"),
-            "肢解者" or "肢解" => GetString("OverKiller"),
+            "肢解者" or "肢解" => GetString("Butcher"),
             "劊子手" or "刽子手" => GetString("Hangman"),
             "隱身人" or "隐匿者" or "隐匿" or "隐身" => GetString("Swooper"),
             "船鬼" => GetString("Crewpostor"),

@@ -1393,8 +1393,8 @@ class MurderPlayerPatch
             case CustomRoles.Wildling:
                 Wildling.OnMurderPlayer(killer, target);
                 break;
-            case CustomRoles.OverKiller:
-                OverKiller.OnMurderPlayer(killer, target);
+            case CustomRoles.Butcher:
+                Butcher.OnMurderPlayer(killer, target);
                 break;
         }
 
@@ -2479,7 +2479,6 @@ class ReportDeadBodyPatch
         Main.Lighter.Clear();
         Main.AllKillers.Clear();
         Main.GodfatherTarget.Clear();
-        OverKiller.MurderTargetLateTask.Clear();
         Solsticer.patched = false;
 
         if (Options.BombsClearAfterMeeting.GetBool())
@@ -2487,7 +2486,7 @@ class ReportDeadBodyPatch
             Main.BombedVents.Clear();
         }
 
-        foreach (var playerStates in Main.PlayerStates.Values.Where(p => p.Role.IsEnable))
+        foreach (var playerStates in Main.PlayerStates.Values.Where(p => p.Role.IsEnable).ToArray())
         {
             playerStates.Role?.OnReportDeadBody(player, target?.Object);
         }
@@ -2773,12 +2772,6 @@ class FixedUpdateInNormalGamePatch
 
                 if (PlagueDoctor.IsEnable)
                     PlagueDoctor.OnCheckPlayerPosition(player);
-
-                //OverKiller LateKill
-                if (OverKiller.MurderTargetLateTask.ContainsKey(player.PlayerId))
-                {
-                    OverKiller.OnFixedUpdate(player);
-                }
 
                 switch (playerRole)
                 {

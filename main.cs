@@ -553,7 +553,7 @@ public enum CustomRoles
     Blackmailer,
     Bomber,
     BountyHunter,
-    OverKiller, //butcher
+    Butcher,
     Camouflager,
     Capitalism, //capitalist
     Chronomancer,
