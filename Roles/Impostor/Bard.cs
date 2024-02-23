@@ -18,7 +18,7 @@ internal class Bard: RoleBase
     public static bool CheckSpawn()
     {
         var Rand = IRandom.Instance;
-        return Rand.Next(0, 101) < Arrogance.BardChance.GetInt();
+        return Rand.Next(0, 100) < Arrogance.BardChance.GetInt();
     }
 
     public override void OnPlayerExiled(PlayerControl Bard, GameData.PlayerInfo exiled)
