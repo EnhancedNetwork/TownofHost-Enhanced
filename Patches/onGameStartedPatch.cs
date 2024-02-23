@@ -215,7 +215,6 @@ internal class ChangeRoleSettings
             }
 
             FallFromLadder.Reset();
-            BountyHunter.Init();
             Mercenary.Init();
             EvilDiviner.Init();
             Fireworker.Init();
@@ -599,9 +598,6 @@ internal class SelectRolesPatch
 
                 switch (pc.GetCustomRole())
                 {
-                    case CustomRoles.BountyHunter:
-                        BountyHunter.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Reverie:
                         Reverie.Add(pc.PlayerId);
                         break;

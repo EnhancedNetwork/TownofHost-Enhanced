@@ -172,9 +172,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Tracefinder:
                 Tracefinder.ApplyGameOptions();
                 break;
-            case CustomRoles.BountyHunter:
-                BountyHunter.ApplyGameOptions();
-                break;
             case CustomRoles.Sniper:
                 Sniper.ApplyGameOptions(player);
                 break;

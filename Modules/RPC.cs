@@ -978,9 +978,6 @@ internal static class RPC
 
         switch (role)
         {
-            case CustomRoles.BountyHunter:
-                BountyHunter.Add(targetId);
-                break;
             case CustomRoles.Mercenary:
                 Mercenary.Add(targetId);
                 break;

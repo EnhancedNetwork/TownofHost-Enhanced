@@ -86,6 +86,8 @@ class HudManagerPatch
             }
             if (player.IsAlive())
             {
+                __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
+
                 Main.PlayerStates[player.PlayerId]?.Role.SetButtonTexts(__instance, player.PlayerId);
 
                 //MOD入り用のボタン下テキスト変更
@@ -193,10 +195,6 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText($"{GetString("ShroudButtonText")}");
                        break;
-                    case CustomRoles.BountyHunter:
-                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        BountyHunter.SetAbilityButtonText(__instance);
-                        break;
                     case CustomRoles.EvilTracker:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         EvilTracker.GetAbilityButtonText(__instance, player.PlayerId);

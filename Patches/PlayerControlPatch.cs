@@ -335,9 +335,6 @@ class CheckMurderPatch
             switch (killerRole)
             {
                 //==========On Check Murder==========//
-                case CustomRoles.BountyHunter:
-                    BountyHunter.OnCheckMurder(killer, target);
-                    break;
                 case CustomRoles.Mercenary:
                     Mercenary.OnCheckMurder(killer);
                     break;
@@ -2498,7 +2495,6 @@ class ReportDeadBodyPatch
         if (Camouflager.IsEnable) Camouflager.OnReportDeadBody();
         if (Reverie.IsEnable) Reverie.OnReportDeadBody();
         if (Psychic.IsEnable) Psychic.OnReportDeadBody();
-        if (BountyHunter.IsEnable) BountyHunter.OnReportDeadBody();
         if (Huntsman.IsEnable) Huntsman.OnReportDeadBody();
         if (Mercenary.IsEnable) Mercenary.OnReportDeadBody();
         if (SoulCollector.IsEnable) SoulCollector.OnReportDeadBody();
@@ -2768,6 +2764,9 @@ class FixedUpdateInNormalGamePatch
                 if (DoubleTrigger.FirstTriggerTimer.Count > 0)
                     DoubleTrigger.OnFixedUpdate(player);
 
+                if (Main.PlayerStates.TryGetValue(player.PlayerId, out var playerState_1))
+                    playerState_1.Role?.OnFixedUpdate(player);
+
                 // Agitater
                 if (Agitater.IsEnable && Agitater.CurrentBombedPlayer == player.PlayerId)
                     Agitater.OnFixedUpdate(player);
@@ -3019,8 +3018,8 @@ class FixedUpdateInNormalGamePatch
 
                     playerRole = player.GetCustomRole();
 
-                    if (Main.PlayerStates.TryGetValue(player.PlayerId, out var playerStates))
-                        playerStates.Role.OnFixedUpdateLowLoad(player);
+                    if (Main.PlayerStates.TryGetValue(player.PlayerId, out var playerState_2))
+                        playerState_2.Role.OnFixedUpdateLowLoad(player);
 
                     if (Kamikaze.IsEnable)
                         Kamikaze.MurderKamikazedPlayers(player);
@@ -3030,9 +3029,6 @@ class FixedUpdateInNormalGamePatch
 
                     if (Stealth.IsEnable)
                         Stealth.OnFixedUpdate(player);
-
-                    if (BountyHunter.IsEnable)
-                        BountyHunter.OnFixedUpdate(player);
 
                     if (Puppeteer.IsEnable)
                         Puppeteer.OnFixedUpdate(player);
@@ -3482,7 +3478,7 @@ class FixedUpdateInNormalGamePatch
                 if (Snitch.IsEnable)
                     Suffix.Append(Snitch.GetSnitchArrow(seer, target));
 
-                if (BountyHunter.IsEnable)
+                if (BountyHunter.On)
                     Suffix.Append(BountyHunter.GetTargetArrow(seer, target));
 
                 if (Mortician.IsEnable)

@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using Hazel;
 using static UnityEngine.GraphicsBuffer;
 //using System.Text;
 
