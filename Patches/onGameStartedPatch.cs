@@ -260,7 +260,7 @@ internal class ChangeRoleSettings
             Gangster.Init();
             Medic.Init();
             Gamer.Init();
-            BallLightning.Init();
+            Lightning.Init();
             DarkHide.Init();
             Greedier.Init();
             Observer.Init();
@@ -803,8 +803,8 @@ internal class SelectRolesPatch
                     case CustomRoles.Gamer:
                         Gamer.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.BallLightning:
-                        BallLightning.Add(pc.PlayerId);
+                    case CustomRoles.Lightning:
+                        Lightning.Add(pc.PlayerId);
                         break;
                     case CustomRoles.DarkHide:
                         DarkHide.Add(pc.PlayerId);

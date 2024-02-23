@@ -1240,7 +1240,7 @@ public static class Options
         /*
          * Lightning
          */
-        BallLightning.SetupCustomOption();
+        Lightning.SetupCustomOption();
 
         /*
          * Mastermind

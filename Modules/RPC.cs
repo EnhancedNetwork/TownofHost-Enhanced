@@ -531,7 +531,7 @@ internal class RPCHandlerPatch
                 CustomSoundsManager.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetGhostPlayer:
-                BallLightning.ReceiveRPC(reader);
+                Lightning.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetDarkHiderKillCount:
                 DarkHide.ReceiveRPC(reader);
@@ -1164,8 +1164,8 @@ internal static class RPC
             case CustomRoles.Gamer:
                 Gamer.Add(targetId);
                 break;
-            case CustomRoles.BallLightning:
-                BallLightning.Add(targetId);
+            case CustomRoles.Lightning:
+                Lightning.Add(targetId);
                 break;
             case CustomRoles.DarkHide:
                 DarkHide.Add(targetId);

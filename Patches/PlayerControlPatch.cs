@@ -442,8 +442,8 @@ class CheckMurderPatch
                     if (Gangster.OnCheckMurder(killer, target))
                         return false;
                     break;
-                case CustomRoles.BallLightning:
-                    if (BallLightning.CheckBallLightningMurder(killer, target))
+                case CustomRoles.Lightning:
+                    if (Lightning.OnCheckMurderAsKiller(killer, target))
                         return false;
                     break;
                 case CustomRoles.Greedier:
@@ -1376,9 +1376,9 @@ class MurderPlayerPatch
 
         switch (target.GetCustomRole())
         {
-            case CustomRoles.BallLightning:
+            case CustomRoles.Lightning:
                 if (killer != target)
-                    BallLightning.MurderPlayer(killer, target);
+                    Lightning.MurderPlayer(killer, target);
                 break;
         }
         switch (killer.GetCustomRole())
@@ -2527,7 +2527,7 @@ class ReportDeadBodyPatch
         if (Inspector.IsEnable) Inspector.OnReportDeadBody();
         if (PlagueDoctor.IsEnable) PlagueDoctor.OnReportDeadBody();
         if (Doomsayer.IsEnable) Doomsayer.OnReportDeadBody();
-        if (BallLightning.IsEnable) BallLightning.OnReportDeadBody();
+        if (Lightning.IsEnable) Lightning.OnReportDeadBody();
         if (Seeker.IsEnable) Seeker.OnReportDeadBody();
         if (Jailer.IsEnable) Jailer.OnReportDeadBody();
         if (Romantic.IsEnable) Romantic.OnReportDeadBody();
@@ -3065,8 +3065,8 @@ class FixedUpdateInNormalGamePatch
                             Chameleon.OnFixedUpdate(player);
                             break;
 
-                        case CustomRoles.BallLightning:
-                            BallLightning.OnFixedUpdate();
+                        case CustomRoles.Lightning:
+                            Lightning.OnFixedUpdate();
                             break;
 
                         case CustomRoles.BloodKnight:
@@ -3381,8 +3381,8 @@ class FixedUpdateInNormalGamePatch
                 if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                     Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), "★"));
 
-                if (BallLightning.IsEnable && BallLightning.IsGhost(target))
-                    Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.BallLightning), "■"));
+                if (Lightning.IsEnable && Lightning.IsGhost(target))
+                    Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lightning), "■"));
 
 
                 seerRole = seer.GetCustomRole();

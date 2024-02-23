@@ -941,8 +941,8 @@ static class ExtendedPlayerControl
             case CustomRoles.Gamer:
                 Gamer.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.BallLightning:
-                BallLightning.SetKillCooldown(player.PlayerId);
+            case CustomRoles.Lightning:
+                Lightning.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.DarkHide:
                 DarkHide.SetKillCooldown(player.PlayerId);

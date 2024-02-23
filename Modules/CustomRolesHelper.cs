@@ -117,7 +117,7 @@ public static class CustomRolesHelper
                 CustomRoles.Konan => CustomRoles.Crewmate,
                 CustomRoles.Divinator => CustomRoles.Crewmate,
                 CustomRoles.Oracle => CustomRoles.Crewmate,
-                CustomRoles.BallLightning => CustomRoles.Impostor,
+                CustomRoles.Lightning => CustomRoles.Impostor,
                 CustomRoles.Greedier => CustomRoles.Impostor,
                 CustomRoles.Ludopath => CustomRoles.Impostor,
                 CustomRoles.Godfather => CustomRoles.Impostor,
@@ -733,7 +733,7 @@ public static class CustomRolesHelper
             CustomRoles.Capitalism or
             CustomRoles.Gangster or
             CustomRoles.Cleaner or
-            CustomRoles.BallLightning or
+            CustomRoles.Lightning or
             CustomRoles.Greedier or
             CustomRoles.Ludopath or
             CustomRoles.Godfather or

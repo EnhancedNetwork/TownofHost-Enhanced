@@ -2080,8 +2080,8 @@ public static class Utils
                 if (Blackmailer.CheckBlackmaile(seer))
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Blackmailer), "╳"));
 
-                if (BallLightning.IsEnable && BallLightning.IsGhost(seer))
-                    SelfMark.Append(ColorString(GetRoleColor(CustomRoles.BallLightning), "■"));
+                if (Lightning.IsEnable && Lightning.IsGhost(seer))
+                    SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Lightning), "■"));
 
                 if (Medic.IsEnable && (Medic.InProtect(seer.PlayerId) || Medic.TempMarkProtected == seer.PlayerId) && (Medic.WhoCanSeeProtect.GetInt() is 0 or 2))
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Medic), "✚"));
@@ -2370,8 +2370,8 @@ public static class Utils
                         if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
 
-                        if (BallLightning.IsEnable && BallLightning.IsGhost(target))
-                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.BallLightning), "■"));
+                        if (Lightning.IsEnable && Lightning.IsGhost(target))
+                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Lightning), "■"));
 
                         if (Snitch.IsEnable)
                             TargetMark.Append(Snitch.GetWarningMark(seer, target));

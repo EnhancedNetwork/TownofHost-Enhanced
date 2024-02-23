@@ -8,7 +8,7 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
-public static class BallLightning
+public static class Lightning
 {
     private static readonly int Id = 24100;
     public static List<byte> playerIdList = [];
@@ -22,12 +22,12 @@ public static class BallLightning
     private static Dictionary<byte, PlayerControl> RealKiller = [];
     public static void SetupCustomOption()
     {
-        SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.BallLightning);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "BallLightningKillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.BallLightning])
+        SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Lightning);
+        KillCooldown = FloatOptionItem.Create(Id + 10, "LightningKillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lightning])
             .SetValueFormat(OptionFormat.Seconds);
-        ConvertTime = FloatOptionItem.Create(Id + 12, "BallLightningConvertTime", new(0f, 180f, 2.5f), 10f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.BallLightning])
+        ConvertTime = FloatOptionItem.Create(Id + 12, "LightningConvertTime", new(0f, 180f, 2.5f), 10f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lightning])
             .SetValueFormat(OptionFormat.Seconds);
-        KillerConvertGhost = BooleanOptionItem.Create(Id + 14, "BallLightningKillerConvertGhost", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.BallLightning]);
+        KillerConvertGhost = BooleanOptionItem.Create(Id + 14, "LightningKillerConvertGhost", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lightning]);
     }
     public static void Init()
     {
@@ -72,9 +72,9 @@ public static class BallLightning
     public static bool IsGhost(PlayerControl player) => GhostPlayer.Contains(player.PlayerId);
     public static bool IsGhost(byte id) => GhostPlayer.Contains(id);
     public static bool CheckMurder(PlayerControl target) => IsGhost(target);
-    public static bool CheckBallLightningMurder(PlayerControl killer, PlayerControl target)
+    public static bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null || !killer.Is(CustomRoles.BallLightning)) return false;
+        if (killer == null || target == null || !killer.Is(CustomRoles.Lightning)) return false;
         if (IsGhost(target)) return false;
         killer.SetKillCooldown();
         killer.RPCPlayCustomSound("Shield");
@@ -95,13 +95,13 @@ public static class BallLightning
                     killer.RpcGuardAndKill(killer);
 
                 Utils.NotifyRoles();
-                Logger.Info($"{target.GetNameWithRole()} 转化为量子幽灵", "BallLightning");
+                Logger.Info($"{target.GetNameWithRole()} 转化为量子幽灵", "Lightning");
             }
-        }, ConvertTime.GetFloat(), "BallLightning Convert Player To Ghost");
+        }, ConvertTime.GetFloat(), "Lightning Convert Player To Ghost");
     }
     public static void MurderPlayer(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null || !target.Is(CustomRoles.BallLightning)) return;
+        if (killer == null || target == null || !target.Is(CustomRoles.Lightning)) return;
         if (!KillerConvertGhost.GetBool() || IsGhost(killer)) return;
         RealKiller.TryAdd(killer.PlayerId, target);
         StartConvertCountDown(target, killer);
@@ -117,7 +117,7 @@ public static class BallLightning
                 deList.Add(gs.PlayerId);
                 continue;
             }
-            var allAlivePlayerControls = Main.AllAlivePlayerControls.Where(x => x.PlayerId != gs.PlayerId && x.IsAlive() && !x.Is(CustomRoles.BallLightning) && !IsGhost(x) && !Pelican.IsEaten(x.PlayerId)).ToArray();
+            var allAlivePlayerControls = Main.AllAlivePlayerControls.Where(x => x.PlayerId != gs.PlayerId && x.IsAlive() && !x.Is(CustomRoles.Lightning) && !IsGhost(x) && !Pelican.IsEaten(x.PlayerId)).ToArray();
             foreach (var pc in allAlivePlayerControls)
             {
                 var pos = gs.transform.position;

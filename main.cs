@@ -581,7 +581,7 @@ public enum CustomRoles
     Instigator,
     Kamikaze,
     KillingMachine,
-    BallLightning, //Lightning
+    Lightning,
     Ludopath,
     Lurker,
     Mastermind,
