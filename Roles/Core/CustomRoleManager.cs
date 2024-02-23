@@ -1,5 +1,6 @@
 ﻿using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using TOHE.Roles.Crewmate;
 
 namespace TOHE.Roles.Core;
 
@@ -94,6 +95,8 @@ public static class CustomRoleManager
         //CustomRoles.Witch => new Witch(),
         //CustomRoles.YinYanger => new YinYanger(),
         //CustomRoles.Zombie => new Zombie(),
+        CustomRoles.Bloodmoon => new Bloodmoon(),
+        CustomRoles.Minion => new Minion(),
 
         // ==== Crewmates ====
         CustomRoles.Engineer => new VanillaRole(),
@@ -199,6 +202,8 @@ public static class CustomRoleManager
         //CustomRoles.SwordsMan => new SwordsMan(),
         //CustomRoles.Witness => new Witness(),
         //CustomRoles.Agitater => new Agitater(),
+        CustomRoles.Warden => new Warden(),
+        CustomRoles.Hawk => new Hawk(),
 
         // ==== Neutrals ====
         CustomRoles.Seeker => new Seeker(),

@@ -23,6 +23,8 @@ public static class GhostRoleAssign
         if (getplrRole is CustomRoles.GM) return;
 
         if (getplrRole.IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole()) || Options.CustomGhostRoleCounts.Count <= 0) return;
+
+        Logger.Info("I HAVE BEEN RUN", "GHOSTASSIGN");
         
         GhostGetPreviousRole.Add(player.PlayerId, getplrRole);
 
