@@ -11,16 +11,14 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor
 {
-    internal class Bloodmoon : RoleBase
+    public static class Bloodmoon 
     {
-        private const int Id = 28100;
+        private static readonly int Id = 28100;
 
         public static OptionItem MinimumPlayersAliveToKill;
         public static OptionItem KillCooldown;
         public static OptionItem CanKillNum;
         public static Dictionary<byte, int> KillCount;
-        public static bool On;
-        public override bool IsEnable => On;
 
         public static void SetupCustomOption()
         {
@@ -32,14 +30,12 @@ namespace TOHE.Roles.Impostor
             MinimumPlayersAliveToKill = IntegerOptionItem.Create(Id + 12, "MinimumPlayersAliveToKill", new(0, 15, 1), 4, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bloodmoon])
             .SetValueFormat(OptionFormat.Players);
         }
-        public override void Init()
+        public static void Init()
         {
             KillCount = [];
-            On = false;
         }
-        public override void Add(byte PlayerId)
+        public static void Add(byte PlayerId)
         {
-            On = true;
             KillCount.Add(PlayerId, CanKillNum.GetInt());
         }
         public static void SendRPC(byte playerId)
@@ -50,18 +46,18 @@ namespace TOHE.Roles.Impostor
             writer.Write(KillCount[playerId]);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
-        public override void OReceiveRPC(MessageReader reader)
+        public static void OReceiveRPC(MessageReader reader)
         {
             byte PlayerId = reader.ReadByte();
             int Limit = reader.ReadInt32();
             KillCount[PlayerId] = Limit;
         }
-        public override void ApplyGameOptions(IGameOptions opt, byte PlayerId)
+        public static void ApplyGameOptions()
         {
             AURoleOptions.GuardianAngelCooldown = KillCooldown.GetFloat();
             AURoleOptions.ProtectionDurationSeconds = 0f;
         }
-        public override bool OnCheckProtect(PlayerControl killer, PlayerControl target)
+        public static bool OnCheckProtect(PlayerControl killer, PlayerControl target)
         {
             if (!target.Is(CustomRoles.Pestilence) 
                 && KillCount[killer.PlayerId] > 0 

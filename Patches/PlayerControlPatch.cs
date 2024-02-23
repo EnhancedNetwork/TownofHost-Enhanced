@@ -60,9 +60,28 @@ class CheckProtectPatch
         var angel = __instance;
         var getAngelRole = angel.GetCustomRole();
 
-        if (angel.PlayerId != target.PlayerId && Main.PlayerStates.TryGetValue(angel.PlayerId, out var angelState))
-            if (!angelState.Role.OnCheckProtect(angel, target))
-                return false;
+        // if (angel.PlayerId != target.PlayerId && Main.PlayerStates.TryGetValue(angel.PlayerId, out var angelState))
+        //    if (!angelState.Role.OnCheckProtect(angel, target))
+        // return false;
+
+        switch (getAngelRole)
+        {
+
+            case CustomRoles.Warden:
+                return Warden.OnCheckProtect(angel, target);
+
+            case CustomRoles.Minion:
+                return Minion.OnCheckProtect(angel, target);
+
+            case CustomRoles.Hawk:
+                return Hawk.OnCheckProtect(angel, target);
+
+            case CustomRoles.Bloodmoon:
+                return Bloodmoon.OnCheckProtect(angel, target);
+
+            default:
+                break;
+        }
 
         if (angel.Is(CustomRoles.EvilSpirit))
         {

@@ -1409,6 +1409,15 @@ internal static class RPC
             case CustomRoles.EvilMini:
                 Mini.Add(targetId);
                 break;
+            case CustomRoles.Bloodmoon:
+                Bloodmoon.Add(targetId);
+                break;
+            case CustomRoles.Hawk:
+                Hawk.Add(targetId);
+                break;
+            case CustomRoles.Warden:
+                Warden.Add(targetId);
+                break;
             case CustomRoles.Diseased:
                 Diseased.Add();
                 break;
@@ -1553,6 +1562,15 @@ internal static class RPC
             //case CustomRoles.Witch:
             //    break;
             //Merge the two rpc into one
+            case CustomRoles.Bloodmoon:
+                Bloodmoon.OReceiveRPC(reader);
+                break;
+            case CustomRoles.Hawk:
+                Hawk.OReceiveRPC(reader);
+                break;
+            case CustomRoles.Warden:
+                Warden.OReceiveRPC(reader);
+                break;
             default:
                 Logger.Error($"Role {role} can not be handled!", "SyncRoleSkillReader");
                 break;

@@ -10,10 +10,9 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
-internal class Hawk : RoleBase
+public static class Hawk 
 {
-
-    private const int Id = 28000;
+    private static readonly int Id = 28000;
 
     public static OptionItem KillCooldown;
     public static OptionItem HawkCanKillNum;
@@ -24,8 +23,6 @@ internal class Hawk : RoleBase
     public static int KillersNoEjects;
     public static int KeepCount;
     public static int GetCount;
-    public static bool On;
-    public override bool IsEnable => On;
     public static void SetupCustomOptions()
     {
         SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Hawk);
@@ -39,17 +36,15 @@ internal class Hawk : RoleBase
             .SetValueFormat(OptionFormat.Players);
     }
 
-    public override void Init()
+    public static void Init()
     {
-        On = false;
         KillCount = [];
         KillersNoEjects = 0;
         KeepCount = 0;
         GetCount = 0;
     }
-    public override void Add(byte PlayerId)
+    public static void Add(byte PlayerId)
     {
-        On = true;
         KillCount.Add(PlayerId, HawkCanKillNum.GetInt());
     }
     private static void SendRPC(byte playerId)
@@ -60,13 +55,13 @@ internal class Hawk : RoleBase
         writer.Write(KillCount[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public override void OReceiveRPC(MessageReader reader)
+    public static void OReceiveRPC(MessageReader reader)
     {
         byte PlayerId = reader.ReadByte();
         int Limit = reader.ReadInt32();
         KillCount[PlayerId] = Limit;
     }
-    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    public static void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
         KeepCount = 0;
         foreach (var KVC in Main.AllAlivePlayerControls.Where(x => x.GetCustomRole().IsImpostor() || x.GetCustomRole().IsNK()))
@@ -75,7 +70,7 @@ internal class Hawk : RoleBase
         }
     }
 
-    public override void AfterMeetingTasks()
+    public static void AfterMeetingTasks()
     {
         GetCount = 0;
         foreach (var KVC in Main.AllAlivePlayerControls.Where(x => x.GetCustomRole().IsImpostor() || x.GetCustomRole().IsNK()))
@@ -89,12 +84,12 @@ internal class Hawk : RoleBase
         }
     }
 
-    public override void ApplyGameOptions(IGameOptions opt, byte PlayerId)
+    public static void ApplyGameOptions()
     {
         AURoleOptions.GuardianAngelCooldown = KillCooldown.GetFloat();
         AURoleOptions.ProtectionDurationSeconds = 0f;
     }
-    public override bool OnCheckProtect(PlayerControl killer, PlayerControl target)
+    public static bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
         if (CheckRetriConflicts(killer, target))
         {

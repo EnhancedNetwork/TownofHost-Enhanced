@@ -205,6 +205,18 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
         //    case CustomRoles.Minion:
                 opt.SetVision(true);
                 break;
+            case CustomRoles.Hawk:
+                Hawk.ApplyGameOptions();
+                break;
+            case CustomRoles.Bloodmoon:
+                Bloodmoon.ApplyGameOptions();
+                break;
+            case CustomRoles.Warden:
+                Warden.ApplyGameOptions();
+                break;
+            case CustomRoles.Minion:
+                Minion.ApplyGameOptions();
+                break;
             case CustomRoles.Virus:
                 opt.SetVision(Virus.ImpostorVision.GetBool());
                 break;

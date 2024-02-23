@@ -3,14 +3,13 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
-internal class Minion : RoleBase
+public static class Minion 
 {
-    private const int Id = 27900;
+    private static readonly int Id = 27900;
 
     public static OptionItem AbilityCooldown;
     public static OptionItem AbilityTime;
     public static bool On;
-    public override bool IsEnable => On;
 
     public static void SetupCustomOption()
     {
@@ -20,20 +19,20 @@ internal class Minion : RoleBase
         AbilityTime = FloatOptionItem.Create(Id + 11, "MinionAbilityTime", new(1f, 10f, 1f), 5f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Minion])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public override void Init()
+    public static void Init()
     {
         On = false;
     }
-    public override void Add(byte playerId)
+    public static void Add(byte playerId)
     {
         On = true;
     }
-    public override void ApplyGameOptions(IGameOptions opt, byte PlayerId)
+    public static void ApplyGameOptions()
     {
         AURoleOptions.GuardianAngelCooldown = AbilityCooldown.GetFloat();
         AURoleOptions.ProtectionDurationSeconds = 0f;
     }
-    public override bool OnCheckProtect(PlayerControl angel, PlayerControl target)
+    public static bool OnCheckProtect(PlayerControl angel, PlayerControl target)
     {
         var ImpPVC = target.GetCustomRole().IsImpostor();
         if (!ImpPVC)
