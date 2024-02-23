@@ -956,7 +956,7 @@ class MeetingHudStartPatch
         foreach (var pc in Main.AllPlayerControls)
         {
             //黑手党死后技能提示
-            if (pc.Is(CustomRoles.Nemesis) && !pc.IsAlive())
+            if (pc.Is(CustomRoles.Mafia) && !pc.IsAlive())
                 AddMsg(GetString("MafiaDeadMsg"), pc.PlayerId);
             //惩罚者死后技能提示
             if (pc.Is(CustomRoles.Retributionist) && !pc.IsAlive())
@@ -1284,9 +1284,9 @@ class MeetingHudStartPatch
                     if (target.IsRedForPsy(seer) && !seer.Data.IsDead)
                         pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), pva.NameText.text);
                     break;
-                case CustomRoles.Nemesis:
+                case CustomRoles.Mafia:
                     if (seer.Data.IsDead && !target.Data.IsDead)
-                        pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Nemesis), target.PlayerId.ToString()) + " " + pva.NameText.text;
+                        pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mafia), target.PlayerId.ToString()) + " " + pva.NameText.text;
                     break;
                 case CustomRoles.Retributionist:
                     if (seer.Data.IsDead && !target.Data.IsDead)
@@ -1494,7 +1494,7 @@ class MeetingHudUpdatePatch
                 ClearShootButton(__instance, true);
             
             //若黑手党死亡则创建技能按钮
-            if (myRole is CustomRoles.Nemesis && !PlayerControl.LocalPlayer.IsAlive() && GameObject.Find("ShootButton") == null)
+            if (myRole is CustomRoles.Mafia && !PlayerControl.LocalPlayer.IsAlive() && GameObject.Find("ShootButton") == null)
                 Nemesis.CreateJudgeButton(__instance);
             if (myRole is CustomRoles.Retributionist && !PlayerControl.LocalPlayer.IsAlive() && GameObject.Find("ShootButton") == null)
                 Retributionist.CreateJudgeButton(__instance);

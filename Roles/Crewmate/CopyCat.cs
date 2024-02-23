@@ -208,7 +208,7 @@ public static class CopyCat
                 case CustomRoles.Eraser:
                     role = CustomRoles.Cleanser;
                     break;
-                case CustomRoles.Nemesis:
+                case CustomRoles.Mafia:
                     role = CustomRoles.Retributionist;
                     break;
                 case CustomRoles.Visionary:
