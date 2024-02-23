@@ -5,7 +5,7 @@ namespace TOHE.Roles.Impostor;
 
 internal class Blackmailer : RoleBase
 {
-    private static readonly int Id = 24600;
+    private const int Id = 24600;
     private static List<byte> playerIdList = [];
     public static bool On;
     public override bool IsEnable => On;

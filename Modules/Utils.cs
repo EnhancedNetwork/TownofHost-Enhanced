@@ -2778,6 +2778,8 @@ public static class Utils
             }
         }
 
+        Medic.IsDead(target);
+
         if (Executioner.Target.ContainsValue(target.PlayerId))
             Executioner.ChangeRoleByTarget(target);
 

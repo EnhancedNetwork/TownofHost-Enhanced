@@ -243,14 +243,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.ShapeshifterCooldown = Options.ShapeshiftCD.GetFloat();
                 AURoleOptions.ShapeshifterDuration = Options.ShapeshiftDur.GetFloat();
                 break;
-            case CustomRoles.Bomber:
-                AURoleOptions.ShapeshifterCooldown = Options.BombCooldown.GetFloat();
-                AURoleOptions.ShapeshifterDuration = 2f;
-                break;
-            case CustomRoles.Nuker:
-                AURoleOptions.ShapeshifterCooldown = Options.NukeCooldown.GetFloat();
-                AURoleOptions.ShapeshifterDuration = 2f;
-                break;
             case CustomRoles.Nemesis:
                 Nemesis.SetKillCooldown();
                 break;
