@@ -65,6 +65,9 @@ public abstract class RoleBase
     public virtual void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     { }
 
+    public virtual void NotifyAfterMeeting()
+    { }
+
     public virtual void AfterMeetingTasks()
     { }
 
