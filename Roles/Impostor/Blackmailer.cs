@@ -41,7 +41,7 @@ internal class Blackmailer : RoleBase
     }
     public override void OnShapeshift(PlayerControl blackmailer, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
     {
-        if (shapeshifting && !shapeshiftIsHidden) return;
+        if (!shapeshifting && !shapeshiftIsHidden) return;
 
         if (!target.IsAlive())
         {
