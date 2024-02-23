@@ -33,6 +33,9 @@ public abstract class RoleBase
     /// </summary>
     public virtual void OnFixedUpdate(PlayerControl pc)
     { }
+    /// <summary>
+    /// Fixed Update for others players
+    /// </summary>
     public virtual void OnFixedUpdateLowLoad(PlayerControl pc)
     { }
 

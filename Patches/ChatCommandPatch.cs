@@ -1049,7 +1049,6 @@ internal class ChatCommands
             "自爆兵" or "自爆" => GetString("Bomber"),
             "清道夫" or "清道" => GetString("Scavenger"),
             "陷阱師" or "诡雷" => GetString("BoobyTrap"),
-            "資本主義者" or "资本家" or "资本主义" or "资本" => GetString("Capitalism"),
             "歹徒" => GetString("Gangster"),
             "清潔工" or "清理工" or "清洁工" => GetString("Cleaner"),
             "球狀閃電" or "球状闪电" => GetString("Lightning"),
