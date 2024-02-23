@@ -2,6 +2,7 @@
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Modules.ShuffleListExtension;
@@ -94,6 +95,8 @@ public class RoleAssign
                 case CustomRoles.RuthlessRomantic:
                 case CustomRoles.GM:
                 case CustomRoles.NotAssigned:
+                case CustomRoles.NiceMini:
+                case CustomRoles.EvilMini:
                     continue;
             }
 
@@ -537,6 +540,20 @@ public class RoleAssign
         if (rd.Next(0, 100) < Options.SunnyboyChance.GetInt() && FinalRolesList.Remove(CustomRoles.Jester)) FinalRolesList.Add(CustomRoles.Sunnyboy);
         if (rd.Next(0, 100) < Arrogance.BardChance.GetInt() && FinalRolesList.Remove(CustomRoles.Arrogance)) FinalRolesList.Add(CustomRoles.Bard);
         if (rd.Next(0, 100) < Options.NukerChance.GetInt() && FinalRolesList.Remove(CustomRoles.Bomber)) FinalRolesList.Add(CustomRoles.Nuker);
+
+        if (FinalRolesList.Contains(CustomRoles.Mini))
+        {
+            FinalRolesList.Remove(CustomRoles.Mini);
+
+            if (Mini.CanBeEvil.GetBool() && (rd.Next(0, 100) < Mini.EvilMiniSpawnChances.GetInt()))
+            {
+                FinalRolesList.Add(CustomRoles.EvilMini);
+            }
+            else
+            {
+                FinalRolesList.Add(CustomRoles.NiceMini);
+            }
+        }
 
         if (Romantic.IsEnable)
         {
