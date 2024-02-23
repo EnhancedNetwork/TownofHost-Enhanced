@@ -1,6 +1,5 @@
 using AmongUs.GameOptions;
 using System.Collections.Generic;
-using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
@@ -15,11 +14,11 @@ internal class Blackmailer : RoleBase
     //private static OptionItem BlackmailerMax;
 
     private static List<byte> ForBlackmailer = [];
-    private static Dictionary<byte, int> BlackmailerMaxUp = [];
+    //private static Dictionary<byte, int> BlackmailerMaxUp = [];
 
     public static void SetupCustomOption()
     {
-        SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Blackmailer);
+        Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Blackmailer);
         SkillCooldown = FloatOptionItem.Create(Id + 42, "BlackmailerSkillCooldown", new(2.5f, 900f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Blackmailer])
            .SetValueFormat(OptionFormat.Seconds);
         //BlackmailerMax = FloatOptionItem.Create(Id + 43, "BlackmailerMax", new(2.5f, 900f, 2.5f), 20f, TabGroup.OtherRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Blackmailer])
@@ -27,14 +26,12 @@ internal class Blackmailer : RoleBase
     }
     public override void Init()
     {
-        playerIdList = [];
-        BlackmailerMaxUp = [];
+        //BlackmailerMaxUp = [];
         ForBlackmailer = [];
         On = false;
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         On = true;
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
