@@ -84,4 +84,7 @@ public abstract class RoleBase
     //}
 
     public virtual void SetButtonTexts(HudManager hud, byte id) => hud.KillButton?.OverrideText(Translator.GetString("KillButtonText"));
+
+    public virtual void OnCoEndGame()
+    { }
 }

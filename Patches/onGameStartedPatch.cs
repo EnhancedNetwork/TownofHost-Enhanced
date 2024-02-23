@@ -368,7 +368,6 @@ internal class ChangeRoleSettings
             ChiefOfPolice.Init();
             Cyber.Init();
             Mini.Init();
-            Blackmailer.Init();
             Spy.Init();
             Oiiai.Init();
             Hater.Init();
@@ -1049,9 +1048,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.ChiefOfPolice:
                         ChiefOfPolice.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Blackmailer:
-                        Blackmailer.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Spy:
                         Spy.Add(pc.PlayerId);

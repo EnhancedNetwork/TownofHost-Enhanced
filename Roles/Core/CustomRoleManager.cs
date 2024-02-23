@@ -19,7 +19,7 @@ public static class CustomRoleManager
         CustomRoles.AntiAdminer => new AntiAdminer(),
         CustomRoles.Bard => new Bard(),
         CustomRoles.Berserker  => new Berserker(),
-        //CustomRoles.Blackmailer => new Blackmailer(),
+        CustomRoles.Blackmailer => new Blackmailer(),
         //CustomRoles.Bomber => new Bomber(),
         //CustomRoles.BountyHunter => new BountyHunter(),
         //CustomRoles.OverKiller => new OverKiller(),

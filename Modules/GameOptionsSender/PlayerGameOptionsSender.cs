@@ -488,9 +488,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Pitfall:
                 Pitfall.ApplyGameOptions();
                 break;
-            case CustomRoles.Blackmailer:
-                Blackmailer.ApplyGameOptions();
-                break;
             case CustomRoles.Warden:
                 Warden.SetAbilityCooldown();
                 break;

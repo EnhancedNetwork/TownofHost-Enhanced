@@ -2077,7 +2077,7 @@ public static class Utils
                 if (seer.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
 
-                if (Blackmailer.ForBlackmailer.Contains(seer.PlayerId))
+                if (Blackmailer.CheckBlackmaile(seer))
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Blackmailer), "╳"));
 
                 if (BallLightning.IsEnable && BallLightning.IsGhost(seer))
@@ -2658,8 +2658,12 @@ public static class Utils
         if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: false);
         if (Seeker.IsEnable) Seeker.AfterMeetingTasks(notifyPlayer: false);
 
+        foreach (var playerState in Main.PlayerStates.Values.Where(pc => pc.Role.IsEnable))
+        {
+            playerState.Role?.AfterMeetingTasks();
+        }
+
         if (Collector.IsEnable) Collector.AfterMeetingTasks();
-        if (Blackmailer.IsEnable) Blackmailer.AfterMeetingTasks();
         if (Swooper.IsEnable) Swooper.AfterMeetingTasks();
         if (Chameleon.IsEnable) Chameleon.AfterMeetingTasks();
         if (Wraith.IsEnable) Wraith.AfterMeetingTasks();

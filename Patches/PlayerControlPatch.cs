@@ -1562,7 +1562,7 @@ public static class CheckShapeShiftPatch
         if (Main.PlayerStates.TryGetValue(shapeshifter.PlayerId, out var playerState))
         {
             shapeshifter.RejectShapeshiftAndReset();
-            playerState.Role.OnShapeshift(shapeshifter, target, false, shapeshiftIsHidden);
+            playerState.Role?.OnShapeshift(shapeshifter, target, false, shapeshiftIsHidden);
         }
 
         switch (role)
@@ -1804,11 +1804,6 @@ public static class CheckShapeShiftPatch
                 shapeshifter.RejectShapeshiftAndReset();
                 return false;
 
-            case CustomRoles.Blackmailer:
-                Blackmailer.OnShapeshift(shapeshifter, target);
-                shapeshifter.RejectShapeshiftAndReset();
-                return false;
-
             case CustomRoles.RiftMaker:
                 RiftMaker.OnShapeshift(shapeshifter, shapeshifting);
                 shapeshifter.RejectShapeshiftAndReset();
@@ -1860,7 +1855,7 @@ class ShapeshiftPatch
         if (!Pelican.IsEaten(shapeshifter.PlayerId))
         {
             var shapeshiftIsHidden = false;
-            Main.PlayerStates[shapeshifter.PlayerId].Role.OnShapeshift(shapeshifter, target, shapeshifting, shapeshiftIsHidden);
+            Main.PlayerStates[shapeshifter.PlayerId].Role?.OnShapeshift(shapeshifter, target, shapeshifting, shapeshiftIsHidden);
 
             switch (shapeshifter.GetCustomRole())
             {
@@ -2067,10 +2062,6 @@ class ShapeshiftPatch
                 case CustomRoles.Pitfall:
                     if (shapeshifting)
                         Pitfall.OnShapeshift(shapeshifter);
-                    break;
-                case CustomRoles.Blackmailer:
-                    if (shapeshifting)
-                        Blackmailer.OnShapeshift(shapeshifter, target);
                     break;
             }
         }

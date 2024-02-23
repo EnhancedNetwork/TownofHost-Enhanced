@@ -1420,9 +1420,6 @@ internal static class RPC
             case CustomRoles.EvilMini:
                 Mini.Add(targetId);
                 break;
-            case CustomRoles.Blackmailer:
-                Blackmailer.Add(targetId);
-                break;
             case CustomRoles.Diseased:
                 Diseased.Add();
                 break;
