@@ -1,4 +1,5 @@
-﻿using Hazel;
+﻿using AmongUs.GameOptions;
+using Hazel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,11 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
-public static class Hawk
+internal class Hawk : RoleBase
 {
 
-    private static readonly int Id = 28000;
+    private const int Id = 28000;
+
     public static OptionItem KillCooldown;
     public static OptionItem HawkCanKillNum;
     public static OptionItem MinimumPlayersAliveToKill;
@@ -22,6 +24,8 @@ public static class Hawk
     public static int KillersNoEjects;
     public static int KeepCount;
     public static int GetCount;
+    public static bool On;
+    public override bool IsEnable => On;
     public static void SetupCustomOptions()
     {
         SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Hawk);
@@ -35,15 +39,17 @@ public static class Hawk
             .SetValueFormat(OptionFormat.Players);
     }
 
-    public static void Init()
+    public override void Init()
     {
+        On = false;
         KillCount = [];
         KillersNoEjects = 0;
         KeepCount = 0;
         GetCount = 0;
     }
-    public static void Add(byte PlayerId)
+    public override void Add(byte PlayerId)
     {
+        On = true;
         KillCount.Add(PlayerId, HawkCanKillNum.GetInt());
     }
     private static void SendRPC(byte playerId)
@@ -54,14 +60,13 @@ public static class Hawk
         writer.Write(KillCount[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader)
+    public override void OReceiveRPC(MessageReader reader)
     {
         byte PlayerId = reader.ReadByte();
         int Limit = reader.ReadInt32();
         KillCount[PlayerId] = Limit;
     }
-    public static bool IsEnable => Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Hawk));
-    public static void OnReportDeadBody()
+    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
         KeepCount = 0;
         foreach (var KVC in Main.AllAlivePlayerControls.Where(x => x.GetCustomRole().IsImpostor() || x.GetCustomRole().IsNK()))
@@ -70,7 +75,7 @@ public static class Hawk
         }
     }
 
-    public static void AfterMeetingTasks()
+    public override void AfterMeetingTasks()
     {
         GetCount = 0;
         foreach (var KVC in Main.AllAlivePlayerControls.Where(x => x.GetCustomRole().IsImpostor() || x.GetCustomRole().IsNK()))
@@ -84,12 +89,12 @@ public static class Hawk
         }
     }
 
-    public static void SetKillCooldown()
+    public override void ApplyGameOptions(IGameOptions opt, byte PlayerId)
     {
         AURoleOptions.GuardianAngelCooldown = KillCooldown.GetFloat();
         AURoleOptions.ProtectionDurationSeconds = 0f;
     }
-    public static bool OnCheckProtect(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
         if (CheckRetriConflicts(killer, target))
         {
@@ -110,7 +115,7 @@ public static class Hawk
             && Main.AllAlivePlayerControls.Length >= MinimumPlayersAliveToKill.GetInt()
             && KillCount[killer.PlayerId] > 0
             && !target.Is(CustomRoles.Pestilence)
-            && (target.Is(CustomRoles.NiceMini) ? Mini.Age > 18 : true);
+            && (!target.Is(CustomRoles.NiceMini) || Mini.Age > 18);
     }
     public static bool CanKill(byte id) => KillCount.TryGetValue(id, out var x) && x > 0;
     public static string GetSnatchLimit(byte playerId) => Utils.ColorString(CanKill(playerId) ? Utils.GetRoleColor(CustomRoles.Hawk).ShadeColor(0.25f) : Color.gray, KillCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");

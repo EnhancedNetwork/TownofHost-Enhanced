@@ -18,6 +18,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using MS.Internal.Xml.XPath;
 
 namespace TOHE;
 
@@ -59,24 +60,9 @@ class CheckProtectPatch
         var angel = __instance;
         var getAngelRole = angel.GetCustomRole();
 
-        switch (getAngelRole)
-        {
-
-            case CustomRoles.Warden:
-                return Warden.OnCheckProtect(angel, target);
-
-            case CustomRoles.Minion:
-                return Minion.OnCheckProtect(angel, target);
-
-            case CustomRoles.Hawk:
-                return Hawk.OnCheckProtect(angel, target);
-
-            case CustomRoles.Bloodmoon:
-                return Bloodmoon.OnCheckProtect(angel, target);
-
-            default:
-                break;
-        }
+        if (angel.PlayerId != target.PlayerId && Main.PlayerStates.TryGetValue(angel.PlayerId, out var angelState))
+            if (!angelState.Role.OnCheckProtect(angel, target))
+                return false;
 
         if (angel.Is(CustomRoles.EvilSpirit))
         {
@@ -2492,7 +2478,6 @@ class ReportDeadBodyPatch
         if (QuickShooter.IsEnable) QuickShooter.OnReportDeadBody();
         if (Eraser.IsEnable) Eraser.OnReportDeadBody();
         if (Divinator.IsEnable) Divinator.OnReportDeadBody();
-        if (Hawk.IsEnable) Hawk.OnReportDeadBody();
         if (Tracefinder.IsEnable) Tracefinder.OnReportDeadBody();
         if (Judge.IsEnable) Judge.OnReportDeadBody();
         if (Greedier.IsEnable) Greedier.OnReportDeadBody();

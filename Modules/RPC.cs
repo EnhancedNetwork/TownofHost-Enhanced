@@ -14,6 +14,7 @@ using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -1242,15 +1243,6 @@ internal static class RPC
             case CustomRoles.Mediumshiper:
                 Mediumshiper.Add(targetId);
                 break;
-            case CustomRoles.Hawk:
-                Hawk.Add(targetId);
-                break;
-            case CustomRoles.Bloodmoon:
-                Bloodmoon.Add(targetId);
-                break;
-            case CustomRoles.Warden:
-                Warden.Add(targetId);
-                break;
             case CustomRoles.Veteran:
                 Main.VeteranNumOfUsed.Add(targetId, Options.VeteranSkillMaxOfUseage.GetInt());
                 break;
@@ -1462,6 +1454,13 @@ internal static class RPC
     {
         CustomRoles role = (CustomRoles)reader.ReadPackedInt32();
         Logger.Info($"Received Sync Role Skill RPC for role {role}", "SyncRoleSkillReader");
+        foreach (var Player in Main.AllPlayerControls.Where(plr => plr.GetCustomRole() == role && PlayerControl.LocalPlayer.PlayerId == plr.PlayerId))
+        {
+            if (Player != null && Main.PlayerStates.TryGetValue(Player.PlayerId, out var playerState))
+            {
+                playerState.Role.OReceiveRPC(reader);
+            }
+        }
 
         switch (role)
         {
@@ -1556,15 +1555,6 @@ internal static class RPC
             //case CustomRoles.Witch:
             //    break;
             //Merge the two rpc into one
-             case CustomRoles.Hawk:
-                Hawk.ReceiveRPC(reader);
-                break;
-             case CustomRoles.Bloodmoon:
-                 Bloodmoon.ReceiveRPC(reader);
-                break;
-            case CustomRoles.Warden:
-                Warden.ReceiveRPC(reader);
-                break;
             default:
                 Logger.Error($"Role {role} can not be handled!", "SyncRoleSkillReader");
                 break;

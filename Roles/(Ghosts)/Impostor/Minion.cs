@@ -1,13 +1,16 @@
-﻿using static TOHE.Options;
+﻿using AmongUs.GameOptions;
+using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
-public static class Minion
+internal class Minion : RoleBase
 {
-    private static readonly int Id = 27900;
+    private const int Id = 27900;
 
     public static OptionItem AbilityCooldown;
     public static OptionItem AbilityTime;
+    public static bool On;
+    public override bool IsEnable => On;
 
     public static void SetupCustomOption()
     {
@@ -17,12 +20,20 @@ public static class Minion
         AbilityTime = FloatOptionItem.Create(Id + 11, "MinionAbilityTime", new(1f, 10f, 1f), 5f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Minion])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public static void SetAbilityCooldown()
+    public override void Init()
+    {
+        On = false;
+    }
+    public override void Add(byte playerId)
+    {
+        On = true;
+    }
+    public override void ApplyGameOptions(IGameOptions opt, byte PlayerId)
     {
         AURoleOptions.GuardianAngelCooldown = AbilityCooldown.GetFloat();
         AURoleOptions.ProtectionDurationSeconds = 0f;
     }
-    public static bool OnCheckProtect(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckProtect(PlayerControl angel, PlayerControl target)
     {
         var ImpPVC = target.GetCustomRole().IsImpostor();
         if (!ImpPVC)
@@ -35,7 +46,7 @@ public static class Minion
                 Main.PlayerStates[target.PlayerId].IsBlackOut = false;
                 target.MarkDirtySettings();
             }, AbilityTime.GetFloat(), "Minion: return vision");
-            killer.RpcResetAbilityCooldown();
+            angel.RpcResetAbilityCooldown();
         }
         return false;
     }

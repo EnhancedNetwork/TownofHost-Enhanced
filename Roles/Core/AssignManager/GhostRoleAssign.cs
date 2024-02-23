@@ -117,17 +117,20 @@ public static class GhostRoleAssign
             => getCount.Add(ghostRole, ghostRole.GetCount())); // Add new count Instance (Optionitem gets constantly refreshed)
     }
     public static void AddPlayerId(this PlayerControl target, CustomRoles GhostRole)
-    {
+    { // idk but for some reason setcustomrole rpc fails. Well I only tested for host, but yeah..
         switch (GhostRole)
         {
             case CustomRoles.Hawk:
-                Hawk.Add(target.PlayerId);
+                Hawk.On = true;
+                Hawk.KillCount.Add(target.PlayerId, Hawk.HawkCanKillNum.GetInt());
                 break;
              case CustomRoles.Bloodmoon:
-                Bloodmoon.Add(target.PlayerId);
+                Bloodmoon.On = true;
+                Bloodmoon.KillCount.Add(target.PlayerId, Bloodmoon.CanKillNum.GetInt());
                 break;
             case CustomRoles.Warden:
-                Warden.Add(target.PlayerId);
+                Warden.On = true;
+                Warden.AbilityCount.Add(target.PlayerId, Warden.WardenCanAlertNum.GetInt());
                 break;
         }
     }

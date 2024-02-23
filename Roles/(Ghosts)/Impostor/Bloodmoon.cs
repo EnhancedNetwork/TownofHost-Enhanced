@@ -1,4 +1,5 @@
-﻿using Hazel;
+﻿using AmongUs.GameOptions;
+using Hazel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,15 +11,16 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor
 {
-    public static class Bloodmoon
+    internal class Bloodmoon : RoleBase
     {
-        private static readonly int Id = 28100;
-
+        private const int Id = 28100;
 
         public static OptionItem MinimumPlayersAliveToKill;
         public static OptionItem KillCooldown;
         public static OptionItem CanKillNum;
         public static Dictionary<byte, int> KillCount;
+        public static bool On;
+        public override bool IsEnable => On;
 
         public static void SetupCustomOption()
         {
@@ -30,15 +32,17 @@ namespace TOHE.Roles.Impostor
             MinimumPlayersAliveToKill = IntegerOptionItem.Create(Id + 12, "MinimumPlayersAliveToKill", new(0, 15, 1), 4, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bloodmoon])
             .SetValueFormat(OptionFormat.Players);
         }
-        public static void Init()
+        public override void Init()
         {
             KillCount = [];
+            On = false;
         }
-        public static void Add(byte PlayerId)
+        public override void Add(byte PlayerId)
         {
+            On = true;
             KillCount.Add(PlayerId, CanKillNum.GetInt());
         }
-        private static void SendRPC(byte playerId)
+        public static void SendRPC(byte playerId)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
             writer.WritePacked((int)CustomRoles.Bloodmoon);
@@ -46,30 +50,30 @@ namespace TOHE.Roles.Impostor
             writer.Write(KillCount[playerId]);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
-        public static void ReceiveRPC(MessageReader reader)
+        public override void OReceiveRPC(MessageReader reader)
         {
             byte PlayerId = reader.ReadByte();
             int Limit = reader.ReadInt32();
             KillCount[PlayerId] = Limit;
         }
-        public static void SetKillCooldown()
+        public override void ApplyGameOptions(IGameOptions opt, byte PlayerId)
         {
             AURoleOptions.GuardianAngelCooldown = KillCooldown.GetFloat();
             AURoleOptions.ProtectionDurationSeconds = 0f;
         }
-        public static bool OnCheckProtect(PlayerControl killer, PlayerControl target)
+        public override bool OnCheckProtect(PlayerControl killer, PlayerControl target)
         {
             if (!target.Is(CustomRoles.Pestilence) 
                 && KillCount[killer.PlayerId] > 0 
                 && Main.AllAlivePlayerControls.Length >= MinimumPlayersAliveToKill.GetInt()
-                && (target.Is(CustomRoles.NiceMini) ? Mini.Age > 18 : true))
+                && (!target.Is(CustomRoles.NiceMini) || Mini.Age > 18))
             {
                 killer.RpcMurderPlayerV3(target);
                 killer.RpcResetAbilityCooldown();
                 KillCount[killer.PlayerId]--;
                 SendRPC(killer.PlayerId);
             }
-            else if (Main.AllAlivePlayerControls.Count() < MinimumPlayersAliveToKill.GetInt()) killer.Notify(GetString("HawkTooManyDied"));
+            else if (Main.AllAlivePlayerControls.Length < MinimumPlayersAliveToKill.GetInt()) killer.Notify(GetString("HawkTooManyDied"));
             return false;
         }
         public static bool CanKill(byte id) => KillCount.TryGetValue(id, out var x) && x > 0;

@@ -21,6 +21,7 @@ public static class Madmate
     public static OptionItem SnitchCanBeMadmate;
     public static OptionItem MadSnitchTasks;
     public static OptionItem JudgeCanBeMadmate;
+    public static OptionItem RetributionistCanBeMadmate;
 
     public static OptionItem ImpKnowWhosMadmate;
     public static OptionItem ImpCanKillMadmate;

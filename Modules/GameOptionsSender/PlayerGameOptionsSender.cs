@@ -244,9 +244,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.ShapeshifterCooldown = Nemesis.MafiaShapeshiftCD.GetFloat();
                 AURoleOptions.ShapeshifterDuration = Nemesis.MafiaShapeshiftDur.GetFloat();
                 break;
-            case CustomRoles.Bloodmoon:
-                Bloodmoon.SetKillCooldown();
-                break;
             case CustomRoles.ScientistTOHE:
                 AURoleOptions.ScientistCooldown = Options.ScientistCD.GetFloat();
                 AURoleOptions.ScientistBatteryCharge = Options.ScientistDur.GetFloat();
@@ -477,15 +474,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
             case CustomRoles.Pitfall:
                 Pitfall.ApplyGameOptions();
-                break;
-            case CustomRoles.Warden:
-                Warden.SetAbilityCooldown();
-                break;
-            case CustomRoles.Minion:
-                Minion.SetAbilityCooldown();
-                break;
-            case CustomRoles.Hawk:
-                Hawk.SetKillCooldown();
                 break;
             default:
                 opt.SetVision(false);
