@@ -202,7 +202,7 @@ public static class Options
     public static OptionItem RoleAssigningAlgorithm;
     public static OptionItem KPDCamouflageMode;
     public static OptionItem EnableUpMode;
-
+    public static OptionItem DisableVoteBan;
 
     // ------------ Game Settings Tab ------------
 
@@ -528,11 +528,6 @@ public static class Options
 
     public static OptionItem GodfatherChangeOpt;
 
-    public static OptionItem MafiaCanKillNum;
-    public static OptionItem LegacyMafia;
-    public static OptionItem MafiaShapeshiftCD;
-    public static OptionItem MafiaShapeshiftDur;
-
     public static OptionItem VindicatorAdditionalVote;
     public static OptionItem VindicatorHideVote;
 
@@ -626,10 +621,6 @@ public static class Options
     public static OptionItem GGCanGuessCrew;
     public static OptionItem GGCanGuessAdt;
     public static OptionItem GGTryHideMsg;
-
-    public static OptionItem RetributionistCanKillNum;
-    public static OptionItem MinimumPlayersAliveToRetri;
-    public static OptionItem CanOnlyRetributeWithTasksDone;
 
     public static OptionItem VeteranSkillCooldown;
     public static OptionItem VeteranSkillDuration;
@@ -806,7 +797,6 @@ public static class Options
     public static OverrideTasksData GuardianTasks;
     public static OverrideTasksData OpportunistTasks;
     public static OverrideTasksData MayorTasks;
-    public static OverrideTasksData RetributionistTasks;
     public static OverrideTasksData TimeManagerTasks;
 
 
@@ -864,7 +854,7 @@ public static class Options
     public static void Load()
     {
         //#######################################
-        // 27900 lasted id for roles/add-ons (Next use 28000)
+        // 28100 lasted id for roles/add-ons (Next use 28200)
         // Limit id for roles/add-ons --- "59999"
         //#######################################
 
@@ -1277,19 +1267,7 @@ public static class Options
         /*
          * Nemesis
          */
-        SetupRoleOptions(3600, TabGroup.ImpostorRoles, CustomRoles.Mafia);
-        MafiaCanKillNum = IntegerOptionItem.Create(3602, "MafiaCanKillNum", new(0, 15, 1), 1, TabGroup.ImpostorRoles, false)
-        .SetParent(CustomRoleSpawnChances[CustomRoles.Mafia])
-            .SetValueFormat(OptionFormat.Players);
-        LegacyMafia = BooleanOptionItem.Create(3603, "LegacyMafia", false, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Mafia]);
-        MafiaShapeshiftCD = FloatOptionItem.Create(3604, "ShapeshiftCooldown", new(1f, 180f, 1f), 15f, TabGroup.ImpostorRoles, false)
-            .SetParent(LegacyMafia)
-            .SetValueFormat(OptionFormat.Seconds);
-        MafiaShapeshiftDur = FloatOptionItem.Create(3605, "ShapeshiftDuration", new(1f, 180f, 1f), 30f, TabGroup.ImpostorRoles, false)
-            .SetParent(LegacyMafia)
-            .SetValueFormat(OptionFormat.Seconds);
-
+        Nemesis.SetupCustomOptions();
         /*
          * Time Thief
          */
@@ -1509,6 +1487,8 @@ public static class Options
             .SetColor(new Color32(255, 25, 25, byte.MaxValue));
 
         Minion.SetupCustomOption();
+
+        Bloodmoon.SetupCustomOption();
 
         #endregion
 
@@ -1914,17 +1894,8 @@ public static class Options
         GGTryHideMsg = BooleanOptionItem.Create(10905, "GuesserTryHideMsg", true, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser])
             .SetColor(Color.green);
-        
-        SetupRoleOptions(11000, TabGroup.CrewmateRoles, CustomRoles.Retributionist);
-        RetributionistCanKillNum = IntegerOptionItem.Create(11002, "RetributionistCanKillNum", new(1, 15, 1), 1, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
-            .SetValueFormat(OptionFormat.Players);
-        MinimumPlayersAliveToRetri = IntegerOptionItem.Create(11003, "MinimumPlayersAliveToRetri", new(0, 15, 1), 5, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
-            .SetValueFormat(OptionFormat.Players);
-        CanOnlyRetributeWithTasksDone = BooleanOptionItem.Create(11004, "CanOnlyRetributeWithTasksDone", true, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist]);
-        RetributionistTasks = OverrideTasksData.Create(11005, TabGroup.CrewmateRoles, CustomRoles.Retributionist);
+
+        Retributionist.SetupCustomOptions();
         
         Reverie.SetupCustomOption();
         
@@ -2004,6 +1975,8 @@ public static class Options
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
         Warden.SetupCustomOptions();
+
+        Hawk.SetupCustomOptions();
 
         #endregion
 
@@ -2560,6 +2533,7 @@ public static class Options
 
         CheatResponses = StringOptionItem.Create(60250, "CheatResponses", CheatResponsesName, 0, TabGroup.SystemSettings, false)
             .SetHeader(true);
+        DisableVoteBan = BooleanOptionItem.Create(60260, "DisableVoteBan", false, TabGroup.SystemSettings, true);
 
         AutoDisplayKillLog = BooleanOptionItem.Create(60270, "AutoDisplayKillLog", true, TabGroup.SystemSettings, false)
             .SetHeader(true)
@@ -3391,7 +3365,7 @@ public static class Options
             .SetGameMode(customGameMode) as StringOptionItem;
 
         var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(count, count, count), count, tab, false)
-        .SetParent(spawnOption)
+            .SetParent(spawnOption)
             .SetHidden(true)
             .SetGameMode(customGameMode);
 

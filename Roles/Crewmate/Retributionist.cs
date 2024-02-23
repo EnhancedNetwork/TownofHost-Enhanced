@@ -6,12 +6,32 @@ using TOHE.Modules;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using UnityEngine;
+using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE;
 
-public static class RetributionistRevengeManager
+public static class Retributionist
 {
+    public static readonly int Id = 11000;
+    public static OptionItem RetributionistCanKillNum;
+    public static OptionItem MinimumPlayersAliveToRetri;
+    public static OptionItem CanOnlyRetributeWithTasksDone;
+
+    public static OverrideTasksData RetributionistTasks;
+    public static void SetupCustomOptions()
+    {
+        SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Retributionist);
+        RetributionistCanKillNum = IntegerOptionItem.Create(Id + 10, "RetributionistCanKillNum", new(1, 15, 1), 1, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
+            .SetValueFormat(OptionFormat.Players);
+        MinimumPlayersAliveToRetri = IntegerOptionItem.Create(Id + 11, "MinimumPlayersAliveToRetri", new(0, 15, 1), 5, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
+            .SetValueFormat(OptionFormat.Players);
+        CanOnlyRetributeWithTasksDone = BooleanOptionItem.Create(Id + 12, "CanOnlyRetributeWithTasksDone", true, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist]);
+        RetributionistTasks = OverrideTasksData.Create(Id + 13, TabGroup.CrewmateRoles, CustomRoles.Retributionist);
+    }
     public static bool RetributionistMsgCheck(PlayerControl pc, string msg, bool isUI = false)
     {
         if (!AmongUsClient.Instance.AmHost) return false;
@@ -19,7 +39,7 @@ public static class RetributionistRevengeManager
         if (!pc.Is(CustomRoles.Retributionist)) return false;
         msg = msg.Trim().ToLower();
         if (msg.Length < 4 || msg[..4] != "/ret") return false;
-        if (Options.RetributionistCanKillNum.GetInt() < 1)
+        if (RetributionistCanKillNum.GetInt() < 1)
         {
             if (!isUI) Utils.SendMessage(GetString("RetributionistKillDisable"), pc.PlayerId);
             else pc.ShowPopUp(GetString("RetributionistKillDisable"));
@@ -27,7 +47,7 @@ public static class RetributionistRevengeManager
         }
         int playerCount = Main.AllAlivePlayerControls.Length;
         {
-            if (playerCount <= Options.MinimumPlayersAliveToRetri.GetInt())
+            if (playerCount <= MinimumPlayersAliveToRetri.GetInt())
             {
                 if (!pc.IsAlive())
                 {
@@ -36,9 +56,9 @@ public static class RetributionistRevengeManager
                     return true;
                 }
             }
-         
+
         }
-        if (Options.CanOnlyRetributeWithTasksDone.GetBool())
+        if (CanOnlyRetributeWithTasksDone.GetBool())
         {
             if (!pc.GetPlayerTaskState().IsTaskFinished && !pc.IsAlive() && !CopyCat.playerIdList.Contains(pc.PlayerId) && !Main.TasklessCrewmate.Contains(pc.PlayerId))
             {
@@ -64,7 +84,7 @@ public static class RetributionistRevengeManager
 
         if (Main.RetributionistRevenged.ContainsKey(pc.PlayerId))
         {
-            if (Main.RetributionistRevenged[pc.PlayerId] >= Options.RetributionistCanKillNum.GetInt())
+            if (Main.RetributionistRevenged[pc.PlayerId] >= RetributionistCanKillNum.GetInt())
             {
                 if (!isUI) Utils.SendMessage(GetString("RetributionistKillMax"), pc.PlayerId);
                 else pc.ShowPopUp(GetString("RetributionistKillMax"));
@@ -102,7 +122,7 @@ public static class RetributionistRevengeManager
             else pc.ShowPopUp(GetString("PestilenceImmune"));
             return true;
         }
-        else if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18 )
+        else if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
         {
             if (!isUI) Utils.SendMessage(GetString("GuessMini"), pc.PlayerId);
             else pc.ShowPopUp(GetString("GuessMini"));
@@ -127,14 +147,11 @@ public static class RetributionistRevengeManager
         {
             Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
             target.SetRealKiller(pc);
-
             if (GameStates.IsMeeting)
             {
                 GuessManager.RpcGuesserMurderPlayer(target);
-
                 //死者检查
                 Utils.AfterPlayerDeathTasks(target, true);
-
                 Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
             }
             else
@@ -142,9 +159,7 @@ public static class RetributionistRevengeManager
                 target.RpcMurderPlayerV3(target);
                 Main.PlayerStates[target.PlayerId].SetDead();
             }
-
             _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("RetributionistKillSucceed"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Retributionist), GetString("RetributionistRevengeTitle")), true); }, 0.6f, "Retributionist Kill");
-
         }, 0.2f, "Retributionist Start Kill");
         return true;
     }

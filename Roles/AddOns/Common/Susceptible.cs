@@ -175,7 +175,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Revenge:
-                    if (!CustomRoles.Avanger.RoleExist() && !CustomRoles.Retributionist.RoleExist() && !CustomRoles.Mafia.RoleExist())
+                    if (!CustomRoles.Avanger.RoleExist() && !CustomRoles.Retributionist.RoleExist() && !CustomRoles.Nemesis.RoleExist())
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }

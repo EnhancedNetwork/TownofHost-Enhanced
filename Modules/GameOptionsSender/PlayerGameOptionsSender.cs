@@ -100,21 +100,23 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 opt.SetFloat(FloatOptionNames.ImpostorLightMod, 1.25f);
             }
         }
-        switch (role.GetCustomRoleTypes())
+        if (!role.IsGhostRole() || player.IsAnySubRole(x => x is CustomRoles.EvilSpirit)) 
         {
-            case CustomRoleTypes.Impostor:
-                AURoleOptions.ShapeshifterCooldown = Options.DefaultShapeshiftCooldown.GetFloat();
-                AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
-                opt.SetVision(true);
-                break;
-            case CustomRoleTypes.Neutral:
-                AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
-                break;
-            case CustomRoleTypes.Crewmate:
-                AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
-                break;
+            switch (role.GetCustomRoleTypes())
+            {
+                case CustomRoleTypes.Impostor:
+                    AURoleOptions.ShapeshifterCooldown = Options.DefaultShapeshiftCooldown.GetFloat();
+                    AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
+                    opt.SetVision(true);
+                    break;
+                case CustomRoleTypes.Neutral:
+                    AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
+                    break;
+                case CustomRoleTypes.Crewmate:
+                    AURoleOptions.GuardianAngelCooldown = Spiritcaller.SpiritAbilityCooldown.GetFloat();
+                    break;
+            }
         }
-
         switch (role)
         {
             case CustomRoles.Terrorist:
@@ -245,9 +247,11 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.ShapeshifterCooldown = Options.NukeCooldown.GetFloat();
                 AURoleOptions.ShapeshifterDuration = 2f;
                 break;
-            case CustomRoles.Mafia:
-                AURoleOptions.ShapeshifterCooldown = Options.MafiaShapeshiftCD.GetFloat();
-                AURoleOptions.ShapeshifterDuration = Options.MafiaShapeshiftDur.GetFloat();
+            case CustomRoles.Nemesis:
+                AURoleOptions.ShapeshifterCooldown = Nemesis.NemesisShapeshiftCD.GetFloat();
+                AURoleOptions.ShapeshifterDuration = Nemesis.NemesisShapeshiftDur.GetFloat();
+            case CustomRoles.Bloodmoon:
+                Bloodmoon.SetKillCooldown();
                 break;
             case CustomRoles.ScientistTOHE:
                 AURoleOptions.ScientistCooldown = Options.ScientistCD.GetFloat();
@@ -490,10 +494,13 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 Blackmailer.ApplyGameOptions();
                 break;
             case CustomRoles.Warden:
-                AURoleOptions.GuardianAngelCooldown = Warden.AbilityCooldown.GetFloat();
+                Warden.SetAbilityCooldown();
                 break;
             case CustomRoles.Minion:
-                AURoleOptions.GuardianAngelCooldown = Minion.AbilityCooldown.GetFloat();
+                Minion.SetAbilityCooldown();
+                break;
+            case CustomRoles.Hawk:
+                Hawk.SetKillCooldown();
                 break;
             default:
                 opt.SetVision(false);

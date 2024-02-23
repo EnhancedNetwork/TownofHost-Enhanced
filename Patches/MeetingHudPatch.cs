@@ -514,13 +514,13 @@ class CheckForEndVotingPatch
                 name = string.Format(GetString("PlayerExiled"), realName);
                 break;
             case 1:
-                if (player.GetCustomRole().IsImpostor() || player.Is(CustomRoles.Parasite) || player.Is(CustomRoles.Crewpostor) || player.Is(CustomRoles.Refugee) || player.Is(CustomRoles.Convict) || player.Is(CustomRoles.Minion))
+                if (player.GetCustomRole().IsImpostor() || player.Is(CustomRoles.Parasite) || player.Is(CustomRoles.Crewpostor) || player.Is(CustomRoles.Refugee) || player.Is(CustomRoles.Convict)) 
                     name = string.Format(GetString("BelongTo"), realName, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), GetString("TeamImpostor")));
 
                 else if (player.GetCustomRole().IsCrewmate())
                     name = string.Format(GetString("IsGood"), realName);
 
-                else if (player.GetCustomRole().IsNeutral() && !player.Is(CustomRoles.Parasite) && !player.Is(CustomRoles.Refugee) && !player.Is(CustomRoles.Crewpostor) && !player.Is(CustomRoles.Convict) && !player.Is(CustomRoles.Minion))
+                else if (player.GetCustomRole().IsNeutral() && !player.Is(CustomRoles.Parasite) && !player.Is(CustomRoles.Refugee) && !player.Is(CustomRoles.Crewpostor) && !player.Is(CustomRoles.Convict)) 
                     name = string.Format(GetString("BelongTo"), realName, Utils.ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral")));
 
                 break;
@@ -956,7 +956,7 @@ class MeetingHudStartPatch
         foreach (var pc in Main.AllPlayerControls)
         {
             //黑手党死后技能提示
-            if (pc.Is(CustomRoles.Mafia) && !pc.IsAlive())
+            if (pc.Is(CustomRoles.Nemesis) && !pc.IsAlive())
                 AddMsg(GetString("MafiaDeadMsg"), pc.PlayerId);
             //惩罚者死后技能提示
             if (pc.Is(CustomRoles.Retributionist) && !pc.IsAlive())
@@ -1284,9 +1284,9 @@ class MeetingHudStartPatch
                     if (target.IsRedForPsy(seer) && !seer.Data.IsDead)
                         pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), pva.NameText.text);
                     break;
-                case CustomRoles.Mafia:
+                case CustomRoles.Nemesis:
                     if (seer.Data.IsDead && !target.Data.IsDead)
-                        pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mafia), target.PlayerId.ToString()) + " " + pva.NameText.text;
+                        pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Nemesis), target.PlayerId.ToString()) + " " + pva.NameText.text;
                     break;
                 case CustomRoles.Retributionist:
                     if (seer.Data.IsDead && !target.Data.IsDead)
@@ -1492,12 +1492,12 @@ class MeetingHudUpdatePatch
             //若玩家死亡则销毁技能按钮
             if (myRole is CustomRoles.NiceGuesser or CustomRoles.EvilGuesser or CustomRoles.Doomsayer or CustomRoles.Judge or CustomRoles.Councillor or CustomRoles.Guesser or CustomRoles.Swapper && !PlayerControl.LocalPlayer.IsAlive())
                 ClearShootButton(__instance, true);
-
+            
             //若黑手党死亡则创建技能按钮
-            if (myRole is CustomRoles.Mafia && !PlayerControl.LocalPlayer.IsAlive() && GameObject.Find("ShootButton") == null)
-                MafiaRevengeManager.CreateJudgeButton(__instance);
+            if (myRole is CustomRoles.Nemesis && !PlayerControl.LocalPlayer.IsAlive() && GameObject.Find("ShootButton") == null)
+                Nemesis.CreateJudgeButton(__instance);
             if (myRole is CustomRoles.Retributionist && !PlayerControl.LocalPlayer.IsAlive() && GameObject.Find("ShootButton") == null)
-                RetributionistRevengeManager.CreateJudgeButton(__instance);
+                Retributionist.CreateJudgeButton(__instance);
 
             //销毁死亡玩家身上的技能按钮
             ClearShootButton(__instance);

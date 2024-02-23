@@ -315,14 +315,16 @@ static class ExtendedPlayerControl
             Glitch.MimicCDTimer = 10;
             Glitch.HackCDTimer = 10;
         }
-        else if (PlayerControl.LocalPlayer == target)
+        else if (PlayerControl.LocalPlayer == target && !target.GetCustomRole().IsGhostRole() && !target.IsAnySubRole(x => x.IsGhostRole()))
         {
-            //if target is the host
+            //if target is the host, except for guardian angel, that breaks it.
             PlayerControl.LocalPlayer.Data.Role.SetCooldown();
         }
         else
         {
-            // target is other than the host
+            // target is other than the host (not ghosts)
+            try { if (PlayerControl.LocalPlayer == target) target.MarkDirtySettings(); }
+            catch (Exception e) { Logger.Warn($"{e}", "hostability"); } // If host == Ghost
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(target.NetId, (byte)RpcCalls.ProtectPlayer, SendOption.None, target.GetClientId());
             writer.WriteNetObject(target);
             writer.Write(0);
@@ -475,7 +477,7 @@ static class ExtendedPlayerControl
             CustomRoles.Killer => pc.IsAlive(),
             //Standard
             CustomRoles.Fireworker => Fireworker.CanUseKillButton(pc),
-            CustomRoles.Mafia => Utils.CanMafiaKill(),
+            CustomRoles.Nemesis => Utils.CanNemesisKill(),
             CustomRoles.Shaman => pc.IsAlive(),
             CustomRoles.Underdog => playerCount <= Options.UnderdogMaximumPlayersNeededToKill.GetInt(),
             CustomRoles.Inhibitor => !Utils.IsActive(SystemTypes.Electrical) && !Utils.IsActive(SystemTypes.Comms) && !Utils.IsActive(SystemTypes.MushroomMixupSabotage) && !Utils.IsActive(SystemTypes.Laboratory) && !Utils.IsActive(SystemTypes.LifeSupp) && !Utils.IsActive(SystemTypes.Reactor) && !Utils.IsActive(SystemTypes.HeliSabotage),
@@ -1351,7 +1353,7 @@ static class ExtendedPlayerControl
         else if (Madmate.MadmateKnowWhosImp.GetBool() && seer.Is(CustomRoles.Madmate) && target.Is(CustomRoleTypes.Impostor)) return true;
         else if (Madmate.ImpKnowWhosMadmate.GetBool() && target.Is(CustomRoles.Madmate) && seer.Is(CustomRoleTypes.Impostor)) return true;
         else if (Options.AlliesKnowCrewpostor.GetBool() && seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Crewpostor)) return true;
-        else if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Minion)) return true;
+        else if (seer.Is(CustomRoleTypes.Impostor) && (target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor())) return true;
         else if (Options.CrewpostorKnowsAllies.GetBool() && seer.Is(CustomRoles.Crewpostor) && target.Is(CustomRoleTypes.Impostor)) return true;
         else if (Options.WorkaholicVisibleToEveryone.GetBool() && target.Is(CustomRoles.Workaholic)) return true;
         else if (Options.DoctorVisibleToEveryone.GetBool() && target.Is(CustomRoles.Doctor)) return true;
@@ -1479,8 +1481,8 @@ static class ExtendedPlayerControl
         if (!InfoLong)
             switch (role)
             {
-                case CustomRoles.Mafia:
-                    Prefix = Utils.CanMafiaKill() ? "After" : "Before";
+                case CustomRoles.Nemesis:
+                    Prefix = Utils.CanNemesisKill() ? "After" : "Before";
                     break;
             };
         var Info = (role.IsVanilla() ? "Blurb" : "Info") + (InfoLong ? "Long" : "");
@@ -1524,6 +1526,8 @@ static class ExtendedPlayerControl
     public static bool Is(this PlayerControl target, RoleTypes type) { return target.GetCustomRole().GetRoleTypes() == type; }
     public static bool Is(this PlayerControl target, CountTypes type) { return target.GetCountTypes() == type; }
     public static bool Is(this CustomRoles trueRole, CustomRoles checkRole) { return trueRole == checkRole; }
+    public static bool IsAnySubRole(this PlayerControl target, Func<CustomRoles, bool> predicate) => target.GetCustomSubRoles().Count > 0 ? target.GetCustomSubRoles().Any(predicate) : false;
+
     public static bool IsAlive(this PlayerControl target)
     {
         //In lobby all is alive
