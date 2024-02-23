@@ -310,9 +310,6 @@ class CheckMurderPatch
         if (Pursuer.IsEnable && Pursuer.OnClientMurder(killer))
             return false;
 
-        if (Addict.IsEnable && Addict.IsImmortal(target))
-            return false;
-
         if (Glitch.IsEnable && Glitch.hackedIdList.ContainsKey(killer.PlayerId))
         {
             killer.Notify(string.Format(GetString("HackedByGlitch"), GetString("GlitchKill")));
@@ -2664,7 +2661,6 @@ class ReportDeadBodyPatch
         if (Judge.IsEnable) Judge.OnReportDeadBody();
         if (Greedier.IsEnable) Greedier.OnReportDeadBody();
         if (Tracker.IsEnable) Tracker.OnReportDeadBody();
-        if (Addict.IsEnable) Addict.OnReportDeadBody();
         if (Oracle.IsEnable) Oracle.OnReportDeadBody();
         if (Deathpact.IsEnable) Deathpact.OnReportDeadBody();
         if (Inspector.IsEnable) Inspector.OnReportDeadBody();
@@ -2956,10 +2952,6 @@ class FixedUpdateInNormalGamePatch
 
                     case CustomRoles.Farseer:
                         Farseer.OnFixedUpdate(player);
-                        break;
-
-                    case CustomRoles.Addict:
-                        Addict.OnFixedUpdate(player);
                         break;
 
                     case CustomRoles.Deathpact:
@@ -3888,7 +3880,6 @@ class EnterVentPatch
 
         Swooper.OnEnterVent(pc, __instance);
         Wraith.OnEnterVent(pc, __instance);
-        Addict.OnEnterVent(pc, __instance);
         Alchemist.OnEnterVent(pc, __instance.Id);
         Chameleon.OnEnterVent(pc, __instance);
         Lurker.OnEnterVent(pc);

@@ -1366,9 +1366,6 @@ internal static class RPC
             case CustomRoles.Dazzler:
                 Dazzler.Add(targetId);
                 break;
-            case CustomRoles.Addict:
-                Addict.Add(targetId);
-                break;
             case CustomRoles.Mole:
                 Mole.Add(targetId);
                 break;
