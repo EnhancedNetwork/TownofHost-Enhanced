@@ -1020,7 +1020,7 @@ public static class Options
         /*
          * Greedy
          */
-        Greedier.SetupCustomOption();
+        Greedy.SetupCustomOption();
 
         /*
          * Hangman

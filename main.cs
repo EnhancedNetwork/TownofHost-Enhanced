@@ -572,7 +572,7 @@ public enum CustomRoles
     Fireworker,
     Gangster,
     Godfather,
-    Greedier, //Greedy
+    Greedy,
     Hangman,
     Inhibitor,
     Instigator,

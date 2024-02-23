@@ -5,7 +5,7 @@ using System.Linq;
 namespace TOHE;
 
 // 来源：https://github.com/Yumenopai/TownOfHost_Y
-public static class Greedier
+public static class Greedy
 {
     private static readonly int Id = 1500;
     public static List<byte> playerIdList = [];
@@ -18,10 +18,10 @@ public static class Greedier
 
     public static void SetupCustomOption()
     {
-        Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Greedier);
-        OddKillCooldown = FloatOptionItem.Create(Id + 10, "OddKillCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Greedier])
+        Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Greedy);
+        OddKillCooldown = FloatOptionItem.Create(Id + 10, "GreedyOddKillCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Greedy])
             .SetValueFormat(OptionFormat.Seconds);
-        EvenKillCooldown = FloatOptionItem.Create(Id + 11, "EvenKillCooldown", new(0f, 180f, 2.5f), 5f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Greedier])
+        EvenKillCooldown = FloatOptionItem.Create(Id + 11, "GreedyEvenKillCooldown", new(0f, 180f, 2.5f), 5f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Greedy])
             .SetValueFormat(OptionFormat.Seconds);
     }
     public static void Init()
@@ -39,7 +39,7 @@ public static class Greedier
 
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetGreedierOE, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetGreedy, SendOption.Reliable, -1);
         writer.Write(playerId);
         writer.Write(IsOdd[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

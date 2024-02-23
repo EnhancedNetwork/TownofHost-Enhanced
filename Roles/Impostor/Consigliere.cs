@@ -24,7 +24,7 @@ public static class Consigliere
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Consigliere);
         KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Consigliere])
             .SetValueFormat(OptionFormat.Seconds);
-        DivinationMaxCount = IntegerOptionItem.Create(Id + 11, "DivinationMaxCount", new(1, 15, 1), 5, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Consigliere])
+        DivinationMaxCount = IntegerOptionItem.Create(Id + 11, "ConsigliereDivinationMaxCount", new(1, 15, 1), 5, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Consigliere])
             .SetValueFormat(OptionFormat.Times);
     }
     public static void Init()

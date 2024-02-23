@@ -95,7 +95,7 @@ enum CustomRPC
     SetGhostPlayer,
     SetDarkHiderKillCount,
     SetConsigliere,
-    SetGreedierOE,
+    SetGreedy,
     SetCursedWolfSpellCount,
     SetJinxSpellCount,
     SetCollectorVotes,
@@ -536,8 +536,8 @@ internal class RPCHandlerPatch
             case CustomRPC.SetDarkHiderKillCount:
                 DarkHide.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetGreedierOE:
-                Greedier.ReceiveRPC(reader);
+            case CustomRPC.SetGreedy:
+                Greedy.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetCursedWolfSpellCount:
                 byte CursedWolfId = reader.ReadByte();
@@ -653,7 +653,7 @@ internal class RPCHandlerPatch
             case CustomRPC.SetCursedSoulCurseLimit:
                 CursedSoul.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetEvilDiviner:
+            case CustomRPC.SetConsigliere:
                 Consigliere.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetPotionMaster:
@@ -1170,8 +1170,8 @@ internal static class RPC
             case CustomRoles.Penguin:
                 Penguin.Add(targetId);
                 break;
-            case CustomRoles.Greedier:
-                Greedier.Add(targetId);
+            case CustomRoles.Greedy:
+                Greedy.Add(targetId);
                 break;
             case CustomRoles.Collector:
                 Collector.Add(targetId);

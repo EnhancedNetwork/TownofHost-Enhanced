@@ -195,7 +195,7 @@ public static class Divinator
                 
                 [CustomRoles.Counterfeiter,
                 CustomRoles.Witness,
-                CustomRoles.Greedier,
+                CustomRoles.Greedy,
                 CustomRoles.Merchant,
                 CustomRoles.SoulCollector,
                 CustomRoles.Trickster], 
