@@ -1399,9 +1399,7 @@ internal static class RPC
             case CustomRoles.Pixie:
                 Pixie.Add(targetId);
                 break;
-            case CustomRoles.Seeker:
-                Seeker.Add(targetId);
-                break;
+
             case CustomRoles.Pitfall:
                 Pitfall.Add(targetId);
                 break;
