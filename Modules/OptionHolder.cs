@@ -1267,7 +1267,7 @@ public static class Options
         /*
          * 
          */
-        Nemesis.SetuCustomOptions();
+        Nemesis.SetupCustomOptions();
         /*
          * Time Thief
          */

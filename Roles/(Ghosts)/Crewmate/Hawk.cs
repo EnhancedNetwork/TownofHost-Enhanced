@@ -93,15 +93,14 @@ public static class Hawk
     {
         if (CheckRetriConflicts(killer, target))
         {
-            Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Retribution;
             killer.RpcMurderPlayerV3(target);
             killer.RpcResetAbilityCooldown();
             KillCount[killer.PlayerId]--;
             SendRPC(killer.PlayerId);
         }
-        else if (KillCount[killer.PlayerId] <= 0) killer.Notify(GetString("RetributionistKillMax"));
-        else if (KillersNoEjects < OnlyKillAfterXKillerNoEject.GetInt()) killer.Notify(GetString("RetributionistKillNoEject").Replace("{0}", OnlyKillAfterXKillerNoEject.GetInt().ToString()));
-        else if (Main.AllAlivePlayerControls.Length < MinimumPlayersAliveToKill.GetInt()) killer.Notify(GetString("RetributionistKillTooManyDead"));
+        else if (KillCount[killer.PlayerId] <= 0) killer.Notify(GetString("HawkKillMax"));
+        else if (KillersNoEjects < OnlyKillAfterXKillerNoEject.GetInt()) killer.Notify(GetString("HawkKillNoEject").Replace("{0}", OnlyKillAfterXKillerNoEject.GetInt().ToString()));
+        else if (Main.AllAlivePlayerControls.Length < MinimumPlayersAliveToKill.GetInt()) killer.Notify(GetString("HawkKillTooManyDead"));
         return false;
     }
 

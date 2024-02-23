@@ -19,7 +19,7 @@ public static class Nemesis
     public static OptionItem MafiaShapeshiftCD;
     public static OptionItem MafiaShapeshiftDur;
 
-    public static void SetuCustomOptions()
+    public static void SetupCustomOptions()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Nemesis);
         MafiaCanKillNum = IntegerOptionItem.Create(Id + 10, "MafiaCanKillNum", new(0, 15, 1), 1, TabGroup.ImpostorRoles, false)

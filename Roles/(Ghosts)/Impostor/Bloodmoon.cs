@@ -64,13 +64,12 @@ namespace TOHE.Roles.Impostor
                 && Main.AllAlivePlayerControls.Length >= MinimumPlayersAliveToKill.GetInt()
                 && (target.Is(CustomRoles.NiceMini) ? Mini.Age > 18 : true))
             {
-                Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
                 killer.RpcMurderPlayerV3(target);
                 killer.RpcResetAbilityCooldown();
                 KillCount[killer.PlayerId]--;
                 SendRPC(killer.PlayerId);
             }
-            else if (Main.AllAlivePlayerControls.Count() < MinimumPlayersAliveToKill.GetInt()) killer.Notify(GetString("NemesisTooManyDied"));
+            else if (Main.AllAlivePlayerControls.Count() < MinimumPlayersAliveToKill.GetInt()) killer.Notify(GetString("HawkTooManyDied"));
             return false;
         }
         public static bool CanKill(byte id) => KillCount.TryGetValue(id, out var x) && x > 0;
