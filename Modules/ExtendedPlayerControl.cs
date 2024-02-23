@@ -471,12 +471,8 @@ static class ExtendedPlayerControl
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
         if (Mastermind.ManipulatedPlayers.ContainsKey(pc.PlayerId)) return true;
 
-        try
-        {
-            if (Main.PlayerStates.TryGetValue(pc.PlayerId, out var playerState) && playerState.Role != null && playerState.Role.CanUseKillButton(pc))
-                return true;
-        }
-        catch { return false; }
+        if (Main.PlayerStates.TryGetValue(pc.PlayerId, out var playerState) && playerState != null && playerState.Role != null)
+            return playerState.Role.CanUseKillButton(pc);
 
         return pc.GetCustomRole() switch
         {

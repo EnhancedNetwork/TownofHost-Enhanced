@@ -14,7 +14,7 @@ public abstract class RoleBase
     // Some virtual methods that trigger actions, like venting, petting, CheckMurder, etc. These are not abstract because they have a default implementation. These should also have the same name as the methods in the derived classes.
     public virtual void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Options.DefaultKillCooldown;
 
-    public virtual bool CanUseKillButton(PlayerControl pc) => pc != null && pc.IsAlive();
+    public virtual bool CanUseKillButton(PlayerControl pc) => false;
 
     public virtual bool CanUseImpostorVentButton(PlayerControl pc) => pc.IsAlive() && pc.GetCustomRole().GetRoleTypes() is RoleTypes.Impostor or RoleTypes.Shapeshifter;
 
