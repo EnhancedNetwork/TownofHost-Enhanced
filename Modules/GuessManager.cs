@@ -1196,7 +1196,8 @@ public static class GuessManager
 
             if (Options.ShowOnlyEnabledRolesInGuesserUI.GetBool())
             {
-                List<CustomRoles> listOfRoles = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() || role.RoleExist(countDead: true)).ToList();
+                
+                List<CustomRoles> listOfRoles = CustomRolesHelper.AllRoles.Where(role => !role.IsGhostRole() && (role.IsEnable() || role.RoleExist(countDead: true))).ToList();
 
 
                 if (CustomRoles.Jackal.IsEnable())
