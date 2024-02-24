@@ -10,6 +10,7 @@ using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using UnityEngine;
+using TOHE.Roles.Impostor;
 
 namespace TOHE;
 
@@ -430,6 +431,8 @@ public class TaskState
             var playerRole = player.GetCustomRole();
             var playerSubRoles = player.GetCustomSubRoles();
 
+            Main.PlayerStates[player.PlayerId]?.Role?.OnTaskComplete(player, CompletedTasksCount, AllTasksCount);
+
             switch (playerRole)
             {
                 //case CustomRoles.SpeedBooster when player.IsAlive():
@@ -584,56 +587,6 @@ public class TaskState
                     {
                         CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Workaholic); //Workaholic win
                         CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
-                    }
-                    break;
-
-                case CustomRoles.Crewpostor:
-                    if (Main.CrewpostorTasksDone.ContainsKey(player.PlayerId))
-                        Main.CrewpostorTasksDone[player.PlayerId]++;
-                    else
-                        Main.CrewpostorTasksDone[player.PlayerId] = 0;
-
-                    RPC.CrewpostorTasksSendRPC(player.PlayerId, Main.CrewpostorTasksDone[player.PlayerId]);
-                    List<PlayerControl> list = Main.AllAlivePlayerControls.Where(x => x.PlayerId != player.PlayerId && (Options.CrewpostorCanKillAllies.GetBool() || !x.GetCustomRole().IsImpostorTeam())).ToList();
-
-                    if (list.Count <= 0)
-                    {
-                        Logger.Info($"No target to kill", "Crewpostor");
-                    }
-                    else if (Main.CrewpostorTasksDone[player.PlayerId] % Options.CrewpostorKillAfterTask.GetInt() != 0 && Main.CrewpostorTasksDone[player.PlayerId] != 0)
-                    {
-                        Logger.Info($"Crewpostor task done but kill skipped, tasks completed {Main.CrewpostorTasksDone[player.PlayerId]}, but it kills after {Options.CrewpostorKillAfterTask.GetInt()} tasks", "Crewpostor");
-                    }
-                    else
-                    {
-                        list = [.. list.OrderBy(x => Vector2.Distance(player.transform.position, x.transform.position))];
-                        var target = list[0];
-
-                        if (!target.Is(CustomRoles.Pestilence))
-                        {
-                            if (!Options.CrewpostorLungeKill.GetBool())
-                            {
-                                target.SetRealKiller(player);
-                                target.RpcCheckAndMurder(target);
-                                player.RpcGuardAndKill();
-                                Logger.Info("No lunge mode kill", "Crewpostor");
-                            }
-                            else
-                            {
-                                target.SetRealKiller(player);
-                                player.RpcMurderPlayerV3(target);
-                                player.RpcGuardAndKill();
-                                Logger.Info("lunge mode kill", "Crewpostor");
-                            }
-                            Logger.Info($"Crewpostor completed task to kill：{player.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}", "Crewpostor");
-                        }
-                        else
-                        {
-                            player.SetRealKiller(target);
-                            target.RpcMurderPlayerV3(player);
-                            player.RpcGuardAndKill();
-                            Logger.Info($"Crewpostor tried to kill pestilence (reflected back)：{target.GetNameWithRole().RemoveHtmlTags()} => {player.GetNameWithRole().RemoveHtmlTags()}", "Pestilence Reflect");
-                        }
                     }
                     break;
             }
