@@ -11,13 +11,13 @@ namespace TOHE.Roles.Crewmate
     internal class Guardian : RoleBase
     {
         public const int Id = 11700;
+        public static bool On = false;
+        public override bool IsEnable => On;
+        public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+
 
         public static OverrideTasksData GuardianTasks;
-        public static bool On = false;
 
-        public override bool IsEnable => On;
-
-        public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
         public static void SetupCustomOptions()
         {
             SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Guardian);
