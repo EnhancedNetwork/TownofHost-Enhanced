@@ -41,7 +41,9 @@ internal class Chronomancer : RoleBase
         On = true;
     }
 
-    public override void SetKillCooldown(byte id)
+    public override void SetKillCooldown(byte id) => OnSetKillCooldown(id);
+
+    private static void OnSetKillCooldown(byte id)
     {
         long now = Utils.GetTimeStamp();
 
@@ -71,7 +73,7 @@ internal class Chronomancer : RoleBase
                 firstKill[playerId] =  -1;
                 lastCooldownStart[playerId] = now;
                 ChargedTime[playerId] = 0;
-                Main.PlayerStates[playerId]?.Role?.SetKillCooldown(playerId);
+                OnSetKillCooldown(playerId);
             }
            
         }
@@ -85,6 +87,6 @@ internal class Chronomancer : RoleBase
             firstKill[killer.PlayerId] = now;
             ChargedTime[killer.PlayerId] = (firstKill[killer.PlayerId] - lastCooldownStart[killer.PlayerId]) - KillCooldown.GetFloat();
         }
-        Main.PlayerStates[killer.PlayerId]?.Role?.SetKillCooldown(killer.PlayerId);
+        OnSetKillCooldown(killer.PlayerId);
     }
 }

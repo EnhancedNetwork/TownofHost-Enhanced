@@ -71,7 +71,6 @@ internal class ChangeRoleSettings
             Main.CyberStarDead = [];
             Main.WorkaholicAlive = [];
             Main.TasklessCrewmate = [];
-            Main.CleanerBodies = [];
             Main.MedusaBodies = [];
             Main.InfectedBodies = [];
             Main.VirusNotify = [];
@@ -112,7 +111,6 @@ internal class ChangeRoleSettings
             Main.MeetingsPassed = 0;
             Main.DovesOfNeaceNumOfUsed = [];
             Main.GodfatherTarget = [];
-            Main.CrewpostorTasksDone = [];
             Main.ShamanTarget = byte.MaxValue;
             Main.ShamanTargetChoosen = false;
             Main.MeetingIsStarted = false;
@@ -1022,9 +1020,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.EvilMini:
                         Mini.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Crewpostor:
-                        Main.CrewpostorTasksDone[pc.PlayerId] = 0;
                         break;
                     case CustomRoles.Hater:
                         Hater.Add(pc.PlayerId);

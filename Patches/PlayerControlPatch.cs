@@ -1926,10 +1926,14 @@ class ReportDeadBodyPatch
                 if (Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Gambled) return false;
                 // 清道夫的尸体无法被报告 scavenger
                 if (killerRole == CustomRoles.Scavenger) return false;
-                // 被清理的尸体无法报告 cleaner
-                if (Main.CleanerBodies.Contains(target.PlayerId)) return false;
+
+                // Cleaner cleansed body
+                if (Cleaner.BodyIsCleansed(target.PlayerId)) return false;
+
                 //Medusa bodies can not be reported
                 if (Main.MedusaBodies.Contains(target.PlayerId)) return false;
+
+                
 
                 if (__instance.Is(CustomRoles.Vulture))
                 {
@@ -1957,18 +1961,6 @@ class ReportDeadBodyPatch
                         Logger.Info($"{__instance.GetRealName()} ate {target.PlayerName} corpse", "Vulture");
                         return false;
                     }
-                }
-
-                // 清洁工来扫大街咯
-                if (__instance.Is(CustomRoles.Cleaner))
-                {
-                    Main.CleanerBodies.Remove(target.PlayerId);
-                    Main.CleanerBodies.Add(target.PlayerId);
-                    __instance.Notify(GetString("CleanerCleanBody"));
-                    //      __instance.ResetKillCooldown();
-                    __instance.SetKillCooldownV3(Options.KillCooldownAfterCleaning.GetFloat(), forceAnime: true);
-                    Logger.Info($"{__instance.GetRealName()} 清理了 {target.PlayerName} 的尸体", "Cleaner");
-                    return false;
                 }
 
                 if (__instance.Is(CustomRoles.Medusa))
@@ -2232,7 +2224,7 @@ class ReportDeadBodyPatch
                 }
 
                 if (Main.PlayerStates.TryGetValue(__instance.PlayerId, out var playerState))
-                    if (playerState.Role != null && !playerState.Role.OnCheckReportDeadBody(__instance, target.Object))
+                    if (playerState.Role != null && !playerState.Role.OnPressReportButton(__instance, target.Object))
                         return false;
 
                 if (target.Object.Is(CustomRoles.Unreportable)) return false;

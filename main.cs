@@ -159,7 +159,6 @@ public class Main : BasePlugin
     public static Dictionary<int, int> SayBanwordsTimes = [];
     public static Dictionary<byte, float> AllPlayerSpeed = [];
     public const float MinSpeed = 0.0001f;
-    public static List<byte> CleanerBodies = [];
     public static List<byte> MedusaBodies = [];
     public static List<byte> InfectedBodies = [];
     public static Dictionary<byte, (byte, float)> BitPlayers = [];
@@ -219,7 +218,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, float> DovesOfNeaceNumOfUsed = [];
 
     public static List<byte> GodfatherTarget = [];
-    public static Dictionary<byte, int> CrewpostorTasksDone = [];
     
     public static byte ShamanTarget = byte.MaxValue;
     public static bool ShamanTargetChoosen = false;

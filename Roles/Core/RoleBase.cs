@@ -68,6 +68,7 @@ public abstract class RoleBase
     { }
 
     public virtual bool OnCheckReportDeadBody(PlayerControl reporter, PlayerControl target) => reporter.IsAlive();
+    public virtual bool OnPressReportButton(PlayerControl reporter, PlayerControl target) => reporter.IsAlive();
 
     public virtual void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     { }
