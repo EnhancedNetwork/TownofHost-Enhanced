@@ -1893,11 +1893,25 @@ class ShapeshiftPatch
 {
     public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
     {
-        if (Options.DisableShapeshiftAnimations.GetBool()) return;
-
-        Logger.Info($"{__instance?.GetNameWithRole().RemoveHtmlTags()} => {target?.GetNameWithRole().RemoveHtmlTags()}", "Shapeshift");
-
         var shapeshifter = __instance;
+
+        if (Options.DisableShapeshiftAnimations.GetBool())
+        {
+            var role = shapeshifter.GetCustomRole();
+
+            Logger.Info($"shapeshifter {__instance?.GetNameWithRole().RemoveHtmlTags()} => {target?.GetNameWithRole().RemoveHtmlTags()}", "ShapeshiftPatch.DisableShapeshiftAnimations");
+
+            // Check shapeshift
+            if (!(
+                (role is CustomRoles.ShapeshifterTOHE or CustomRoles.ShapeMaster)
+                ||
+                (role is CustomRoles.Sniper && Sniper.ShowShapeshiftAnimations)
+                ))
+                return;
+        }
+
+        Logger.Info($"{__instance?.GetNameWithRole().RemoveHtmlTags()} => {target?.GetNameWithRole().RemoveHtmlTags()}", "ShapeshiftPatch");
+
         var shapeshifting = shapeshifter.PlayerId != target.PlayerId;
 
         if (Main.CheckShapeshift.TryGetValue(shapeshifter.PlayerId, out var last) && last == shapeshifting)
