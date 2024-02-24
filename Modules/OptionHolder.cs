@@ -508,9 +508,6 @@ public static class Options
     public static OptionItem UnderdogMaximumPlayersNeededToKill;
     public static OptionItem UnderdogKillCooldown;
 
-    public static OptionItem CleanerKillCooldown;
-    public static OptionItem KillCooldownAfterCleaning;
-
     public static OptionItem GodfatherChangeOpt;
 
     public static OptionItem VindicatorAdditionalVote;
@@ -531,12 +528,6 @@ public static class Options
     public static OptionItem WarlockShiftDuration;
 
     // Madmate
-    public static OptionItem CrewpostorCanKillAllies;
-    public static OptionItem CrewpostorKnowsAllies;
-    public static OptionItem AlliesKnowCrewpostor;
-    public static OptionItem CrewpostorLungeKill;
-    public static OptionItem CrewpostorKillAfterTask;
-
     public static OptionItem ParasiteCD;
 
 
@@ -1139,13 +1130,7 @@ public static class Options
         /*
          * Cleaner
          */
-        SetupRoleOptions(3000, TabGroup.ImpostorRoles, CustomRoles.Cleaner);
-        CleanerKillCooldown = FloatOptionItem.Create(3002, "KillCooldown", new(5f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Cleaner])
-            .SetValueFormat(OptionFormat.Seconds);
-        KillCooldownAfterCleaning = FloatOptionItem.Create(3003, "KillCooldownAfterCleaning", new(5f, 180f, 2.5f), 60f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Cleaner])
-            .SetValueFormat(OptionFormat.Seconds);
+        Cleaner.SetupCustomOption();
 
         /* 
          * Consigliere
@@ -1363,18 +1348,7 @@ public static class Options
         /*
          * Crewpostor
          */
-        SetupRoleOptions(5800, TabGroup.ImpostorRoles, CustomRoles.Crewpostor);
-        CrewpostorCanKillAllies = BooleanOptionItem.Create(5802, "CanKillAllies", true, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Crewpostor]);
-        CrewpostorKnowsAllies = BooleanOptionItem.Create(5803, "CrewpostorKnowsAllies", true, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Crewpostor]);
-        AlliesKnowCrewpostor = BooleanOptionItem.Create(5804, "AlliesKnowCrewpostor", true, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Crewpostor]);
-        CrewpostorLungeKill = BooleanOptionItem.Create(5805, "CrewpostorLungeKill", true, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Crewpostor]);
-        CrewpostorKillAfterTask = IntegerOptionItem.Create(5806, "CrewpostorKillAfterTask", new(1, 50, 1), 1, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Crewpostor]);
-        CrewpostorTasks = OverrideTasksData.Create(5807, TabGroup.ImpostorRoles, CustomRoles.Crewpostor);
+        Crewpostor.SetupCustomOption();
 
         /*
          * Parasite

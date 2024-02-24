@@ -533,7 +533,6 @@ static class ExtendedPlayerControl
             CustomRoles.Provocateur => pc.IsAlive(),
             CustomRoles.Ninja => Ninja.CanUseKillButton(pc),
             CustomRoles.BloodKnight => pc.IsAlive(),
-            CustomRoles.Crewpostor => false,
             CustomRoles.Totocalcio => Totocalcio.CanUseKillButton(pc),
             CustomRoles.Romantic => pc.IsAlive(),
             CustomRoles.RuthlessRomantic => pc.IsAlive(),
@@ -913,10 +912,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Medusa:
                 Medusa.SetKillCooldown(player.PlayerId);
-                break;
-
-            case CustomRoles.Cleaner:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Options.CleanerKillCooldown.GetFloat();
                 break;
             case CustomRoles.Ludopath:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.LudopathRandomKillCD.GetFloat();
@@ -1313,9 +1308,8 @@ static class ExtendedPlayerControl
         else if (Options.ImpsCanSeeEachOthersRoles.GetBool() && seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoleTypes.Impostor)) return true;
         else if (Madmate.MadmateKnowWhosImp.GetBool() && seer.Is(CustomRoles.Madmate) && target.Is(CustomRoleTypes.Impostor)) return true;
         else if (Madmate.ImpKnowWhosMadmate.GetBool() && target.Is(CustomRoles.Madmate) && seer.Is(CustomRoleTypes.Impostor)) return true;
-        else if (Options.AlliesKnowCrewpostor.GetBool() && seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Crewpostor)) return true;
+        else if (Crewpostor.KnowRole(seer, target)) return true;
         else if (seer.Is(CustomRoleTypes.Impostor) && (target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor())) return true;
-        else if (Options.CrewpostorKnowsAllies.GetBool() && seer.Is(CustomRoles.Crewpostor) && target.Is(CustomRoleTypes.Impostor)) return true;
         else if (Options.WorkaholicVisibleToEveryone.GetBool() && target.Is(CustomRoles.Workaholic)) return true;
         else if (Options.DoctorVisibleToEveryone.GetBool() && target.Is(CustomRoles.Doctor)) return true;
         else if (Options.MayorRevealWhenDoneTasks.GetBool() && target.Is(CustomRoles.Mayor) && target.GetPlayerTaskState().IsTaskFinished) return true;
