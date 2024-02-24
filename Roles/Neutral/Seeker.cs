@@ -10,6 +10,7 @@ internal class Seeker : RoleBase
     private static List<byte> playerIdList = [];
     public static bool On;
     public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     public static OptionItem PointsToWin;
     private static OptionItem TagCooldownOpt;

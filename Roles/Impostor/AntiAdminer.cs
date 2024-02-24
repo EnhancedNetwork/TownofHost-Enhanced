@@ -17,6 +17,7 @@ internal class AntiAdminer : RoleBase
 
     public static bool On;
     public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     private static OptionItem CanCheckCamera;
     public static bool IsAdminWatch;

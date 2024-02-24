@@ -25,6 +25,8 @@ internal class Councillor : RoleBase
     
     private static Dictionary<byte, int> MurderLimit = [];
 
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+
     public static void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Councillor);

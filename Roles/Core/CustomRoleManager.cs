@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using TOHE.Roles.Crewmate;
 
 namespace TOHE.Roles.Core;
 
@@ -148,7 +149,7 @@ public static class CustomRoleManager
         //CustomRoles.Glitch => new Glitch(),
         //CustomRoles.Grenadier => new Grenadier(),
         //CustomRoles.GuessManager => new GuessManager(),
-        //CustomRoles.Guardian => new Guardian(),
+        CustomRoles.Guardian => new Guardian(),
         //CustomRoles.Ignitor => new Ignitor(),
         //CustomRoles.Insight => new Insight(),
         //CustomRoles.ParityCop => new ParityCop(),

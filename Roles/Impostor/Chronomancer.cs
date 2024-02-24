@@ -9,6 +9,7 @@ internal class Chronomancer : RoleBase
     private static List<byte> playerIdList = [];
     public static bool On;
     public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     private static Dictionary<byte, long> firstKill = [];
     private static Dictionary<byte, long> lastCooldownStart = [];

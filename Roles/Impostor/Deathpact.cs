@@ -16,6 +16,7 @@ internal class Deathpact : RoleBase
     private const int Id = 1200;
     public static bool On;
     public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
 
     private static OptionItem KillCooldown;
     private static OptionItem ShapeshiftCooldown;

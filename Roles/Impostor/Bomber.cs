@@ -12,6 +12,7 @@ internal class Bomber : RoleBase
 
     public static bool On;
     public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
 
     public static OptionItem BomberRadius;
     public static OptionItem BomberCanKill;
