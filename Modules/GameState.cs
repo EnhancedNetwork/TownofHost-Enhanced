@@ -433,6 +433,8 @@ public class TaskState
 
             Main.PlayerStates[player.PlayerId]?.Role?.OnTaskComplete(player, CompletedTasksCount, AllTasksCount);
 
+            Main.PlayerStates[player.PlayerId]?.Role?.OnTaskComplete(player);
+
             switch (playerRole)
             {
                 //case CustomRoles.SpeedBooster when player.IsAlive():
@@ -495,10 +497,6 @@ public class TaskState
 
                 case CustomRoles.Bastion when player.IsAlive():
                     Main.BastionNumberOfAbilityUses += Options.BastionAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    break;
-
-                case CustomRoles.Captain when player.IsAlive():
-                    Captain.OnTaskComplete(player);
                     break;
 
                 case CustomRoles.Divinator when player.IsAlive():

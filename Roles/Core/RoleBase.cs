@@ -41,6 +41,9 @@ public abstract class RoleBase
     public virtual void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
     { }
 
+    public virtual void OnTaskComplete(PlayerControl pc)
+    { }
+
     public virtual void OnCoEnterVent(PlayerPhysics physics, Vent vent)
     { }
 
@@ -74,6 +77,8 @@ public abstract class RoleBase
 
     public virtual void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     { }
+    public virtual void OnReportDeadBody()
+    { }
 
     public virtual void NotifyAfterMeeting()
     { }
@@ -85,6 +90,9 @@ public abstract class RoleBase
     { }
 
     public virtual void OnPlayerExiled(PlayerControl Bard, GameData.PlayerInfo exiled)
+    { }
+
+    public virtual void OnPlayerExiled(GameData.PlayerInfo exiled)
     { }
 
     //public virtual string GetProgressText(byte playerId, bool comms)

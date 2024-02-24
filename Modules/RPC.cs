@@ -1054,9 +1054,6 @@ internal static class RPC
             case CustomRoles.CopyCat:
                 CopyCat.Add(targetId);
                 break;
-            case CustomRoles.Captain:
-                Captain.Add(targetId);
-                break;
             case CustomRoles.GuessMaster:
                 GuessMaster.Add(targetId);
                 break;

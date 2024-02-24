@@ -7,11 +7,14 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
-public static class Captain
+internal class Captain : RoleBase
 {
-    private static readonly int Id = 26300;
+    private const int Id = 26300;
     //private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    public static bool On = false;
+    public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+
 
     private static Dictionary<byte, float> OriginalSpeed = [];
     public static Dictionary<byte, List<byte>> CaptainVoteTargets = [];
@@ -46,18 +49,18 @@ public static class Captain
         OverrideTasksData.Create(Id + 21, TabGroup.CrewmateRoles, CustomRoles.Captain);
     }
 
-    public static void Init()
+    public override void Init()
     {
         //playerIdList = [];
-        IsEnable = false;
+        On = false;
         OriginalSpeed = [];
         CaptainVoteTargets = [];
     }
 
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         //playerIdList.Add(playerId);
-        IsEnable = true;
+        On = true;
     }
     private static void SendRPCSetSpeed(byte targetId)
     {
@@ -135,11 +138,11 @@ public static class Captain
         else CaptainVoteTargets.Clear();
     }
 
-    public static void OnTaskComplete(PlayerControl pc)
+    public override void OnTaskComplete(PlayerControl pc, int CompletedTasksCount, int AllTasksCount)
     {
-        if (pc == null) return;
-        if (pc.GetPlayerTaskState().CompletedTasksCount >= OptionTaskRequiredToReveal.GetInt()) Utils.NotifyRoles(SpecifyTarget: pc, ForceLoop: true);
-        if (pc.GetPlayerTaskState().CompletedTasksCount < OptionTaskRequiredToSlow.GetInt()) return;
+        if (pc == null || !pc.IsAlive()) return;
+        if (CompletedTasksCount >= OptionTaskRequiredToReveal.GetInt()) Utils.NotifyRoles(SpecifyTarget: pc, ForceLoop: true);
+        if (CompletedTasksCount < OptionTaskRequiredToSlow.GetInt()) return;
         var allTargets = Main.AllAlivePlayerControls.Where(x => (x != null) && (!OriginalSpeed.ContainsKey(x.PlayerId)) &&
                                                            (x.GetCustomRole().IsImpostorTeamV3() ||
                                                            (CaptainCanTargetNB.GetBool() && x.GetCustomRole().IsNB()) ||
@@ -191,7 +194,7 @@ public static class Captain
         var addon = AllSubRoles[rand.Next(0, AllSubRoles.Count)];
         return addon;
     }
-    public static void OnExile(GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(GameData.PlayerInfo exiled)
     {
         if (exiled == null) return;
         if (!exiled.GetCustomRole().Is(CustomRoles.Captain)) return;
@@ -211,7 +214,7 @@ public static class Captain
         CaptainVoteTargets.Clear();
         SendRPCVoteRemove();
     }
-    public static void OnReportDeadBody()
+    public override void OnReportDeadBody()
     {
         foreach (byte target in OriginalSpeed.Keys.ToArray())
         {

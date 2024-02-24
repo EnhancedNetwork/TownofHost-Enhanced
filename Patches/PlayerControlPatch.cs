@@ -2316,6 +2316,7 @@ class ReportDeadBodyPatch
         foreach (var playerStates in Main.PlayerStates.Values.Where(p => p.Role.IsEnable).ToArray())
         {
             playerStates.Role?.OnReportDeadBody(player, target?.Object);
+            playerStates.Role?.OnReportDeadBody();
         }
 
         if (Reverie.IsEnable) Reverie.OnReportDeadBody();
@@ -2354,7 +2355,6 @@ class ReportDeadBodyPatch
         if (Lightning.IsEnable) Lightning.OnReportDeadBody();
         if (Jailer.IsEnable) Jailer.OnReportDeadBody();
         if (Romantic.IsEnable) Romantic.OnReportDeadBody();
-        if (Captain.IsEnable) Captain.OnReportDeadBody();
         if (Investigator.IsEnable) Investigator.OnReportDeadBody();
         if (Swooper.IsEnable) Swooper.OnReportDeadBody();
         if (Chameleon.IsEnable) Chameleon.OnReportDeadBody();
