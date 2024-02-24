@@ -691,11 +691,6 @@ class CheckMurderPatch
                 }, 0.1f, "Werewolf Maul Bug Fix");
                 break;
 
-            case CustomRoles.Consigliere:
-                if (!Consigliere.OnCheckMurder(killer, target))
-                    return false;
-                break;
-
             case CustomRoles.PotionMaster:
                 if (!PotionMaster.OnCheckMurder(killer, target))
                     return false;
@@ -1660,22 +1655,6 @@ public static class CheckShapeShiftPatch
                 shapeshifter.RejectShapeshiftAndReset();
                 return false;
 
-            case CustomRoles.Dazzler:
-                Dazzler.OnShapeshift(shapeshifter, target);
-                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
-                shapeshifter.RejectShapeshiftAndReset();
-                return false;
-
-            case CustomRoles.Devourer:
-                Devourer.OnShapeshift(shapeshifter, target);
-                shapeshifter.RejectShapeshiftAndReset();
-                return false;
-
-            case CustomRoles.Deathpact:
-                Deathpact.OnShapeshift(shapeshifter, target);
-                shapeshifter.RejectShapeshiftAndReset();
-                return false;
-
             case CustomRoles.RiftMaker:
                 RiftMaker.OnShapeshift(shapeshifter, shapeshifting);
                 shapeshifter.RejectShapeshiftAndReset();
@@ -1825,18 +1804,6 @@ class ShapeshiftPatch
                     if (shapeshifting)
                         Disperser.DispersePlayers(shapeshifter);
                     break;
-                case CustomRoles.Dazzler:
-                    if (shapeshifting)
-                        Dazzler.OnShapeshift(shapeshifter, target);
-                    break;
-                case CustomRoles.Deathpact:
-                    if (shapeshifting)
-                        Deathpact.OnShapeshift(shapeshifter, target);
-                    break;
-                case CustomRoles.Devourer:
-                    if (shapeshifting)
-                        Devourer.OnShapeshift(shapeshifter, target);
-                    break;
                 case CustomRoles.Twister:
                     Twister.TwistPlayers(shapeshifter);
                     break;
@@ -1918,7 +1885,7 @@ class ReportDeadBodyPatch
                 if (Options.DisableReportWhenCC.GetBool() && Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive) return false;
             }
 
-            if (Deathpact.IsEnable && !Deathpact.PlayersInDeathpactCanCallMeeting.GetBool() && Deathpact.IsInActiveDeathpact(__instance)) return false;
+            if (Deathpact.CanCallMeeting(__instance)) return false;
 
             if (target == null) //拍灯事件
             {
@@ -2398,7 +2365,6 @@ class ReportDeadBodyPatch
         if (Greedy.IsEnable) Greedy.OnReportDeadBody();
         if (Tracker.IsEnable) Tracker.OnReportDeadBody();
         if (Oracle.IsEnable) Oracle.OnReportDeadBody();
-        if (Deathpact.IsEnable) Deathpact.OnReportDeadBody();
         if (Inspector.IsEnable) Inspector.OnReportDeadBody();
         if (PlagueDoctor.IsEnable) PlagueDoctor.OnReportDeadBody();
         if (Doomsayer.IsEnable) Doomsayer.OnReportDeadBody();
@@ -2675,10 +2641,6 @@ class FixedUpdateInNormalGamePatch
 
                     case CustomRoles.Farseer:
                         Farseer.OnFixedUpdate(player);
-                        break;
-
-                    case CustomRoles.Deathpact:
-                        Deathpact.OnFixedUpdate(player);
                         break;
 
                     case CustomRoles.Warlock:
@@ -3358,7 +3320,7 @@ class FixedUpdateInNormalGamePatch
                     Suffix.Append(Bloodhound.GetTargetArrow(seer, target));
 
 
-                if (Deathpact.IsEnable)
+                if (Deathpact.On)
                 {
                     Suffix.Append(Deathpact.GetDeathpactPlayerArrow(seer, target));
                     Suffix.Append(Deathpact.GetDeathpactMark(seer, target));
@@ -3406,9 +3368,9 @@ class FixedUpdateInNormalGamePatch
                     Mark = isBlocked ? "(true)" : "(false)";}*/
 
                 // Devourer
-                if (Devourer.IsEnable)
+                if (Devourer.On)
                 {
-                    bool targetDevoured = Devourer.HideNameOfConsumedPlayer.GetBool() && Devourer.PlayerSkinsCosumed.Any(a => a.Value.Contains(target.PlayerId));
+                    bool targetDevoured = Devourer.HideNameOfTheDevoured(target.PlayerId);
                     if (targetDevoured)
                         RealName = GetString("DevouredName");
                 }

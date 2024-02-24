@@ -2105,7 +2105,7 @@ public static class Utils
 
                 SelfSuffix.Clear();
 
-                if (Deathpact.IsEnable)
+                if (Deathpact.On)
                     SelfSuffix.Append(Deathpact.GetDeathpactPlayerArrow(seer));
 
 
@@ -2264,17 +2264,16 @@ public static class Utils
                 if (Pelican.IsEnable && Pelican.IsEaten(seer.PlayerId))
                     SelfName = $"{ColorString(GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"))}";
 
-                if (Deathpact.IsEnable && Deathpact.IsInActiveDeathpact(seer))
+                if (Deathpact.On && Deathpact.IsInActiveDeathpact(seer))
                     SelfName = Deathpact.GetDeathpactString(seer);
 
                 if (NameNotifyManager.GetNameNotify(seer, out var name))
                     SelfName = name;
 
                 // Devourer
-                if (Devourer.IsEnable)
+                if (Devourer.On)
                 {
-                    bool playerDevoured = Devourer.HideNameOfConsumedPlayer.GetBool() && Devourer.PlayerSkinsCosumed.Any(a => a.Value.Contains(seer.PlayerId));
-                    
+                    bool playerDevoured = Devourer.HideNameOfTheDevoured(seer.PlayerId);
                     if (playerDevoured && !CamouflageIsForMeeting)
                         SelfName = GetString("DevouredName");
                 }
@@ -2396,7 +2395,7 @@ public static class Utils
                         if (Lawyer.IsEnable)
                             TargetMark.Append(Lawyer.LawyerMark(seer, target));
 
-                        if (Deathpact.IsEnable)
+                        if (Deathpact.On)
                             TargetMark.Append(Deathpact.GetDeathpactMark(seer, target));
 
 
@@ -2611,9 +2610,9 @@ public static class Utils
                             ? $" ({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))})" : "";
 
                         // Devourer
-                        if (Devourer.IsEnable)
+                        if (Devourer.On)
                         {
-                            bool targetDevoured = Devourer.HideNameOfConsumedPlayer.GetBool() && Devourer.PlayerSkinsCosumed.Any(a => a.Value.Contains(target.PlayerId));
+                            bool targetDevoured = Devourer.HideNameOfTheDevoured(target.PlayerId);
                             if (targetDevoured && !CamouflageIsForMeeting)
                                 TargetPlayerName = GetString("DevouredName");
                         }
@@ -2681,7 +2680,6 @@ public static class Utils
         if (Pirate.IsEnable) Pirate.AfterMeetingTask();
         if (Solsticer.IsEnable) Solsticer.AfterMeetingTasks();
         if (RiftMaker.IsEnable) RiftMaker.AfterMeetingTasks();
-        if (Councillor.IsEnable) Councillor.AfterMeetingTasks();
         if (Statue.IsEnable) Statue.AfterMeetingTasks();
         if (Burst.IsEnable) Burst.AfterMeetingTasks();
 

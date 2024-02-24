@@ -775,9 +775,6 @@ static class ExtendedPlayerControl
             /* case CustomRoles.Mare:
                  Mare.SetKillCooldown(player.PlayerId);
                  break; */
-            case CustomRoles.Consigliere:
-                Consigliere.SetKillCooldown(player.PlayerId);
-                break;
             case CustomRoles.Morphling:
                 Morphling.SetKillCooldown(player.PlayerId);
                 break;
@@ -834,10 +831,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Pestilence:
                 PlagueBearer.SetKillCooldownPestilence(player.PlayerId);
-                break;
-
-            case CustomRoles.Councillor:
-                Councillor.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Parasite:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.ParasiteCD.GetFloat();
@@ -1018,15 +1011,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Farseer:
                 Farseer.SetCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Dazzler:
-                Dazzler.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Deathpact:
-                Deathpact.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Devourer:
-                Devourer.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Spiritcaller:
                 Spiritcaller.SetKillCooldown(player.PlayerId);

@@ -6,18 +6,17 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
-public static class Consigliere
+internal class Consigliere : RoleBase
 {
-    private static readonly int Id = 3100;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    private const int Id = 3100;
+    public static bool On;
+    public override bool IsEnable => On;
 
     private static OptionItem KillCooldown;
     private static OptionItem DivinationMaxCount;
 
-    public static Dictionary<byte, int> DivinationCount = [];
-    public static Dictionary<byte, List<byte>> DivinationTarget = [];
-
+    private static Dictionary<byte, int> DivinationCount = [];
+    private static Dictionary<byte, List<byte>> DivinationTarget = [];
 
     public static void SetupCustomOption()
     {
@@ -27,19 +26,17 @@ public static class Consigliere
         DivinationMaxCount = IntegerOptionItem.Create(Id + 11, "ConsigliereDivinationMaxCount", new(1, 15, 1), 5, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Consigliere])
             .SetValueFormat(OptionFormat.Times);
     }
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
         DivinationCount = [];
         DivinationTarget = [];
-        IsEnable = false;
+        On = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         DivinationCount.TryAdd(playerId, DivinationMaxCount.GetInt());
         DivinationTarget.TryAdd(playerId, []);
-        IsEnable = true;
+        On = true;
 
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
@@ -69,11 +66,8 @@ public static class Consigliere
         }
     }
 
-    public static void SetKillCooldown(byte id)
-    {
-        Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    }
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (DivinationCount[killer.PlayerId] > 0)
         {
@@ -82,7 +76,7 @@ public static class Consigliere
         else return true;  
     }
 
-    public static bool IsDivination(byte seer, byte target)
+    private static bool IsDivination(byte seer, byte target)
     {
         if (DivinationTarget[seer].Contains(target))
         {
@@ -90,7 +84,7 @@ public static class Consigliere
         }
         return false;
     }
-    public static void SetDivination(PlayerControl killer, PlayerControl target)
+    private static void SetDivination(PlayerControl killer, PlayerControl target)
     {
         if (!IsDivination(killer.PlayerId, target.PlayerId))
         {

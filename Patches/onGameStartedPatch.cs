@@ -206,7 +206,6 @@ internal class ChangeRoleSettings
 
             FallFromLadder.Reset();
             Mercenary.Init();
-            Consigliere.Init();
             Fireworker.Init();
             Sniper.Init();
             Undertaker.Init();
@@ -278,7 +277,6 @@ internal class ChangeRoleSettings
             Hangman.Init();
             Judge.Init();
             President.Init();
-            Councillor.Init();
             Mortician.Init();
             Mediumshiper.Init();
             Swooper.Init();
@@ -315,11 +313,8 @@ internal class ChangeRoleSettings
             Maverick.Init();
             Jinx.Init();
             DoubleShot.Init();
-            Dazzler.Init();
             Mole.Init();
-            Deathpact.Init();
             Tracefinder.Init();
-            Devourer.Init();
             PotionMaster.Init();
             Warden.Init();
             Traitor.Init();
@@ -466,7 +461,15 @@ internal class SelectRolesPatch
 
     public static void Postfix()
     {
-        if (!AmongUsClient.Instance.AmHost) return;
+        // for Modded clients
+        if (!AmongUsClient.Instance.AmHost)
+        {
+            foreach (var playerState in Main.PlayerStates.Values.ToArray())
+            {
+                playerState?.Role?.Init();
+            }
+            return;
+        }
 
         try
         {
@@ -576,11 +579,15 @@ internal class SelectRolesPatch
             
             GhostRoleAssign.Add();
 
+            foreach (var playerState in Main.PlayerStates.Values.ToArray())
+            {
+                playerState?.Role?.Init();
+            }
+
             foreach (var pc in Main.AllPlayerControls)
             {
                 if (pc.Data.Role.Role == RoleTypes.Shapeshifter) Main.CheckShapeshift.Add(pc.PlayerId, false);
 
-                Main.PlayerStates[pc.PlayerId]?.Role?.Init();
                 Main.PlayerStates[pc.PlayerId]?.Role?.Add(pc.PlayerId);
 
                 switch (pc.GetCustomRole())
@@ -772,9 +779,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Medic:
                         Medic.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Consigliere:
-                        Consigliere.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.PotionMaster:
                         PotionMaster.Add(pc.PlayerId);
                         break;
@@ -841,9 +845,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.President:
                         President.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Councillor:
-                        Councillor.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Mortician:
                         Mortician.Add(pc.PlayerId);
@@ -965,20 +966,11 @@ internal class SelectRolesPatch
                     case CustomRoles.Maverick:
                         Maverick.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Dazzler:
-                        Dazzler.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Mole:
                         Mole.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Deathpact:
-                        Deathpact.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Morphling:
                         Morphling.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Devourer:
-                        Devourer.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Spiritualist:
                         Spiritualist.Add(pc.PlayerId);

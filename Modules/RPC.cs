@@ -1140,9 +1140,6 @@ internal static class RPC
             case CustomRoles.Gangster:
                 Gangster.Add(targetId);
                 break;
-            case CustomRoles.Consigliere:
-                Consigliere.Add(targetId);
-                break;
             case CustomRoles.PotionMaster:
                 PotionMaster.Add(targetId);
                 break;
@@ -1218,9 +1215,6 @@ internal static class RPC
                 break;
             case CustomRoles.Keeper:
                 Keeper.Add(targetId);
-                break;
-            case CustomRoles.Councillor:
-                Councillor.Add(targetId);
                 break;
             case CustomRoles.Mortician:
                 Mortician.Add(targetId);
@@ -1354,23 +1348,14 @@ internal static class RPC
             case CustomRoles.Maverick:
                 Maverick.Add(targetId);
                 break;
-            case CustomRoles.Dazzler:
-                Dazzler.Add(targetId);
-                break;
             case CustomRoles.Mole:
                 Mole.Add(targetId);
-                break;
-            case CustomRoles.Deathpact:
-                Deathpact.Add(targetId);
                 break;
             case CustomRoles.Wildling:
                 Wildling.Add(targetId);
                 break;
             case CustomRoles.Morphling:
                 Morphling.Add(targetId);
-                break;
-            case CustomRoles.Devourer:
-                Devourer.Add(targetId);
                 break;
             case CustomRoles.Spiritualist:
                 Spiritualist.Add(targetId);

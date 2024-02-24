@@ -263,7 +263,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Trialed:
-                    if (!Judge.IsEnable && !Councillor.IsEnable)
+                    if (!Judge.IsEnable && !Councillor.On)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }

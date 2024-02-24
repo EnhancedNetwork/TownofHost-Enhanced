@@ -433,12 +433,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 opt.SetFloat(FloatOptionNames.CrewLightMod, Farseer.Vision.GetFloat());
                 opt.SetFloat(FloatOptionNames.ImpostorLightMod, Farseer.Vision.GetFloat());
                 break;
-            case CustomRoles.Dazzler:
-                Dazzler.ApplyGameOptions();
-                break;
-            case CustomRoles.Devourer:
-                Devourer.ApplyGameOptions();
-                break;
             case CustomRoles.Addict:
                 AURoleOptions.EngineerCooldown = Addict.VentCooldown.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 1;
@@ -450,9 +444,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Mario:
                 AURoleOptions.EngineerCooldown = Options.MarioVentCD.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 1;
-                break;
-            case CustomRoles.Deathpact:
-                Deathpact.ApplyGameOptions();
                 break;
             case CustomRoles.Twister:
                 Twister.ApplyGameOptions();
@@ -502,8 +493,8 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
               opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.FlashbangVision.GetFloat());
           }*/
 
-        if (Dazzler.IsEnable) Dazzler.SetDazzled(player, opt);
-        if (Deathpact.IsEnable) Deathpact.SetDeathpactVision(player, opt);
+        if (Dazzler.On) Dazzler.SetDazzled(player, opt);
+        if (Deathpact.On) Deathpact.SetDeathpactVision(player, opt);
         if (Spiritcaller.IsEnable) Spiritcaller.ReduceVision(opt, player);
         if (Pitfall.IsEnable) Pitfall.SetPitfallTrapVision(opt, player);
 
