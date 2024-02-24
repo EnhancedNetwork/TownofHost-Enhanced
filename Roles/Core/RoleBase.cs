@@ -99,4 +99,9 @@ public abstract class RoleBase
 
     public virtual void OnCheckProtect(PlayerControl angel, PlayerControl target)
     { }
+
+    public virtual bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser) 
+    {
+        return target == null;
+    }
 }

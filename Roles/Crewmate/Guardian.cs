@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static TOHE.Options;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate
 {
@@ -15,7 +16,6 @@ namespace TOHE.Roles.Crewmate
         public static bool On = false;
 
         public override bool IsEnable => On;
-
         public static void SetupCustomOptions()
         {
             SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Guardian);
@@ -30,6 +30,18 @@ namespace TOHE.Roles.Crewmate
         public override void Add(byte playerId)
         {
             On = true;
+        }
+
+        public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser)
+        {
+
+            if (target.Is(CustomRoles.Guardian) && target.GetPlayerTaskState().IsTaskFinished)
+            {
+                if (!isUI) Utils.SendMessage(GetString("GuessGuardianTask"), guesser.PlayerId);
+                else guesser.ShowPopUp(GetString("GuessGuardianTask"));
+                return true;
+            }
+            return false;
         }
     }
 }

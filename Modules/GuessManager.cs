@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Hazel;
+using MS.Internal.Xml.XPath;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -185,6 +186,11 @@ public static class GuessManager
             {
                 GuessMaster.OnGuess(role);
                 bool guesserSuicide = false;
+                
+                if (Main.PlayerStates.TryGetValue(target.PlayerId, out var targetState) && targetState.Role != null)
+                    if (targetState.Role.OnRoleGuess(isUI, target, pc))
+                        return true;
+
                 if (CopyCat.playerIdList.Contains(pc.PlayerId))
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
@@ -417,12 +423,7 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("GuessMarshallTask"));
                     return true;
                 }
-                if (role == CustomRoles.Guardian && target.Is(CustomRoles.Guardian) && target.GetPlayerTaskState().IsTaskFinished)
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessGuardianTask"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessGuardianTask"));
-                    return true;
-                }
+
                 if (pc.Is(CustomRoles.Doomsayer))
                 {
                     if (Doomsayer.CantGuess)
