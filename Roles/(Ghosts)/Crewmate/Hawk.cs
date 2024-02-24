@@ -44,7 +44,7 @@ public static class Hawk
     }
     public static void Add(byte PlayerId)
     {
-        KillCount.Add(PlayerId, HawkCanKillNum.GetInt());
+        KillCount.TryAdd(PlayerId, HawkCanKillNum.GetInt());
     }
     private static void SendRPC(byte playerId)
     {

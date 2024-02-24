@@ -36,7 +36,7 @@ namespace TOHE.Roles.Impostor
         }
         public static void Add(byte PlayerId)
         {
-            KillCount.Add(PlayerId, CanKillNum.GetInt());
+            KillCount.TryAdd(PlayerId, CanKillNum.GetInt());
         }
         private static void SendRPC(byte playerId)
         {

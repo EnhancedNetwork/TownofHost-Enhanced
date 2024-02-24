@@ -32,7 +32,7 @@ public class Warden
     }
     public static void Add(byte PlayerId)
     {
-        AbilityCount.Add(PlayerId, WardenCanAlertNum.GetInt());
+        AbilityCount.TryAdd(PlayerId, WardenCanAlertNum.GetInt());
     }
     private static void SendRPC(byte playerId)
     {

@@ -20,7 +20,7 @@ public static class GhostRoleAssign
         if (GameStates.IsHideNSeek || player == null || player.Data.Disconnected) return;
 
         var getplrRole = player.GetCustomRole();
-        if (getplrRole is CustomRoles.GM) return;
+        if (getplrRole is CustomRoles.GM or CustomRoles.Mafia or CustomRoles.Retributionist) return;
 
         if (getplrRole.IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole()) || Options.CustomGhostRoleCounts.Count <= 0) return;
         
