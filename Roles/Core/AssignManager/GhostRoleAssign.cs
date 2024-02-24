@@ -24,7 +24,7 @@ public static class GhostRoleAssign
 
         if (getplrRole.IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole()) || Options.CustomGhostRoleCounts.Count <= 0) return;
         
-        GhostGetPreviousRole.Add(player.PlayerId, getplrRole);
+        GhostGetPreviousRole.TryAdd(player.PlayerId, getplrRole);
 
         List<CustomRoles> HauntedList = [];
         List<CustomRoles> ImpHauntedList = [];
@@ -110,11 +110,12 @@ public static class GhostRoleAssign
     public static void Init() 
     {
         getCount = []; // Remove oldcount
+        GhostGetPreviousRole = [];
     }
     public static void Add()
     {
         Options.CustomGhostRoleCounts.Keys.Do(ghostRole
-            => getCount.Add(ghostRole, ghostRole.GetCount())); // Add new count Instance (Optionitem gets constantly refreshed)
+            => getCount.TryAdd(ghostRole, ghostRole.GetCount())); // Add new count Instance (Optionitem gets constantly refreshed)
     }
     public static void AddPlayerId(this PlayerControl target, CustomRoles GhostRole)
     {

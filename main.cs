@@ -40,7 +40,7 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0223.160.0004"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginVersion = "2024.0224.160.0004"; // YEAR.MMDD.VERSION.CANARYDEV
     public const string PluginDisplayVersion = "1.6.0 dev 4";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
 

@@ -206,6 +206,8 @@ public class RoleAssign
             for (int i = 0; i < Roles[RoleAssignType.Impostor].Count; i++)
             {
                 RoleAssignInfo item = Roles[RoleAssignType.Impostor][i];
+                if (RoleResult.ContainsValue(item.Role)) continue;
+
                 if (item.SpawnChance == 100)
                 {
                     for (int j = 0; j < item.MaxCount; j++)
@@ -292,6 +294,8 @@ public class RoleAssign
                 for (int i = 0; i < Roles[RoleAssignType.NonKillingNeutral].Count; i++)
                 {
                     RoleAssignInfo item = Roles[RoleAssignType.NonKillingNeutral][i];
+                    if (RoleResult.ContainsValue(item.Role)) continue;
+
                     if (item.SpawnChance == 100)
                     {
                         for (int j = 0; j < item.MaxCount; j++)
@@ -376,6 +380,8 @@ public class RoleAssign
                 for (int i = 0; i < Roles[RoleAssignType.NeutralKilling].Count; i++)
                 {
                     RoleAssignInfo item = Roles[RoleAssignType.NeutralKilling][i];
+                    if (RoleResult.ContainsValue(item.Role)) continue;
+
                     if (item.SpawnChance == 100)
                     {
                         for (int j = 0; j < item.MaxCount; j++)
@@ -459,6 +465,8 @@ public class RoleAssign
             for (int i = 0; i < Roles[RoleAssignType.Crewmate].Count; i++)
             {
                 RoleAssignInfo item = Roles[RoleAssignType.Crewmate][i];
+                if (RoleResult.ContainsValue(item.Role)) continue;
+
                 if (item.SpawnChance == 100)
                 {
                     for (int j = 0; j < item.MaxCount; j++)
