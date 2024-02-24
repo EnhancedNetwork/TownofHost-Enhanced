@@ -11,6 +11,7 @@ internal class Consigliere : RoleBase
     private const int Id = 3100;
     public static bool On;
     public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     private static OptionItem KillCooldown;
     private static OptionItem DivinationMaxCount;

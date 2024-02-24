@@ -10,6 +10,7 @@ internal class Berserker : RoleBase
 
     public static bool On;
     public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     private static OptionItem BerserkerKillCooldown;
     private static OptionItem BerserkerMax;

@@ -6,6 +6,7 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Core;
 
 namespace TOHE;
 
@@ -16,9 +17,15 @@ public static class CustomRolesHelper
 
     public static CustomRoles GetVNRole(this CustomRoles role) // RoleBase: Impostor, Shapeshifter, Crewmate, Engineer, Scientist
     {
-        return role.IsVanilla()
-            ? role
-            : role switch
+
+        if (role.IsVanilla())
+            return role;
+        /*else if (role.GetRoleClass().ThisRoleBase > (CustomRoles)500)
+        {
+            return role.GetRoleClass().ThisRoleBase;
+        }*/ // Will not work untill all roles are done
+            
+            return role switch
             {
                 CustomRoles.Sniper => CustomRoles.Shapeshifter,
                 CustomRoles.Jester => Options.JesterCanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
@@ -133,7 +140,7 @@ public static class CustomRolesHelper
                 CustomRoles.Sunnyboy => CustomRoles.Scientist,
                 CustomRoles.Phantom => Options.PhantomCanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
                 CustomRoles.Judge => CustomRoles.Crewmate,
-                CustomRoles.Councillor => CustomRoles.Impostor,
+                CustomRoles.Councillor => CustomRoles.Impostor, 
                 CustomRoles.Mortician => CustomRoles.Crewmate,
                 CustomRoles.Mediumshiper => CustomRoles.Crewmate,
                 CustomRoles.Bard => CustomRoles.Impostor,
@@ -151,7 +158,7 @@ public static class CustomRolesHelper
                 CustomRoles.Tracker => CustomRoles.Crewmate,
                 CustomRoles.Merchant => CustomRoles.Crewmate,
                 CustomRoles.Retributionist => CustomRoles.GuardianAngel,
-                CustomRoles.Guardian => CustomRoles.Crewmate,
+                CustomRoles.Guardian => CustomRoles.Crewmate, // ADDED to ThisRoleBase
                 CustomRoles.Addict => CustomRoles.Engineer,
                 CustomRoles.Mole => CustomRoles.Engineer,
                 CustomRoles.Chameleon => CustomRoles.Engineer,

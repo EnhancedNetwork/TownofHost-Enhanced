@@ -4,6 +4,7 @@ internal class Bard: RoleBase
 {
     public static bool On;
     public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     public override void Init()
     {

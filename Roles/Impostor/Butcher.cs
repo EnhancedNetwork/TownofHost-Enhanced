@@ -12,6 +12,7 @@ internal class Butcher : RoleBase
     private const int Id = 24300;
     public static bool On;
     public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     private static Dictionary<byte, (int, int, Vector2)> MurderTargetLateTask = [];
     public static void SetupCustomOption()

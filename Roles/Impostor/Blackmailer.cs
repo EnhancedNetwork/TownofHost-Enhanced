@@ -9,6 +9,7 @@ internal class Blackmailer : RoleBase
     private static List<byte> playerIdList = [];
     public static bool On;
     public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
 
     private static OptionItem SkillCooldown;
     //private static OptionItem BlackmailerMax;

@@ -10,6 +10,7 @@ public abstract class RoleBase
     // if role exists in game
     public abstract bool IsEnable { get; }
 
+    public abstract CustomRoles ThisRoleBase { get; }
     // Some virtual methods that trigger actions, like venting, petting, CheckMurder, etc. These are not abstract because they have a default implementation. These should also have the same name as the methods in the derived classes.
     public virtual void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Options.DefaultKillCooldown;
 

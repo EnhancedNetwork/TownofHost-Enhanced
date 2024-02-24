@@ -16,6 +16,8 @@ namespace TOHE.Roles.Crewmate
         public static bool On = false;
 
         public override bool IsEnable => On;
+
+        public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
         public static void SetupCustomOptions()
         {
             SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Guardian);

@@ -8,6 +8,7 @@ internal class SoulCatcher : RoleBase
     private const int Id = 4600;
     public static bool On;
     public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
 
     private static OptionItem ShapeSoulCatcherShapeshiftDuration;
     private static OptionItem SoulCatcherShapeshiftCooldown;

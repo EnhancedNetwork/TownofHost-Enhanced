@@ -11,6 +11,7 @@ internal class Crewpostor : RoleBase
     private const int Id = 5800;
     public static bool On;
     public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
 
     private static OptionItem CanKillAllies;
     private static OptionItem KnowsAllies;

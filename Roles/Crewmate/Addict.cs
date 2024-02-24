@@ -11,6 +11,7 @@ internal class Addict : RoleBase
 
     public static bool On;
     public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
 
     public static OptionItem VentCooldown;
     public static OptionItem TimeLimit;
@@ -21,6 +22,7 @@ internal class Addict : RoleBase
     private static Dictionary<byte, float> ImmortalTimer = [];
 
     private static float DefaultSpeed = new();
+
 
     public static void SetupCustomOption()
     {
