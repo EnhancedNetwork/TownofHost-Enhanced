@@ -247,9 +247,9 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.ShapeshifterCooldown = Options.NukeCooldown.GetFloat();
                 AURoleOptions.ShapeshifterDuration = 2f;
                 break;
-            case CustomRoles.Mafia:
-                AURoleOptions.ShapeshifterCooldown = Nemesis.MafiaShapeshiftCD.GetFloat();
-                AURoleOptions.ShapeshifterDuration = Nemesis.MafiaShapeshiftDur.GetFloat();
+            case CustomRoles.Nemesis:
+                AURoleOptions.ShapeshifterCooldown = Nemesis.NemesisShapeshiftCD.GetFloat();
+                AURoleOptions.ShapeshifterDuration = Nemesis.NemesisShapeshiftDur.GetFloat();
                 break;
             case CustomRoles.Bloodmoon:
                 Bloodmoon.SetKillCooldown();

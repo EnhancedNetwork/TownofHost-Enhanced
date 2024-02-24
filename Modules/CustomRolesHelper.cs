@@ -40,7 +40,7 @@ static class CustomRolesHelper
                 CustomRoles.President => CustomRoles.Crewmate,
                 CustomRoles.Marshall => CustomRoles.Crewmate,
                 CustomRoles.SabotageMaster => CustomRoles.Engineer,
-                CustomRoles.Mafia => Nemesis.LegacyMafia.GetBool() ? CustomRoles.Shapeshifter : CustomRoles.Impostor,
+                CustomRoles.Nemesis => Nemesis.LegacyNemesis.GetBool() ? CustomRoles.Shapeshifter : CustomRoles.Impostor,
                 CustomRoles.Bloodmoon => CustomRoles.GuardianAngel,
                 CustomRoles.Terrorist => CustomRoles.Engineer,
                 CustomRoles.Executioner => CustomRoles.Crewmate,
@@ -718,7 +718,7 @@ static class CustomRolesHelper
             CustomRoles.Puppeteer or
             CustomRoles.TimeThief or
             CustomRoles.Trickster or
-            CustomRoles.Mafia or
+            CustomRoles.Nemesis or
             CustomRoles.Mastermind or
             CustomRoles.Chronomancer or
             CustomRoles.Stealth or
@@ -1132,7 +1132,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Judge)
                     || pc.Is(CustomRoles.CopyCat)
                     || pc.Is(CustomRoles.Doomsayer)
-                    || pc.Is(CustomRoles.Mafia)
+                    || pc.Is(CustomRoles.Nemesis)
                     || pc.Is(CustomRoles.Councillor)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
@@ -1480,7 +1480,7 @@ static class CustomRolesHelper
                 break;
 
             case CustomRoles.Mimic:
-                if (pc.Is(CustomRoles.Mafia))
+                if (pc.Is(CustomRoles.Nemesis))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -1525,7 +1525,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Inhibitor)
                     || pc.Is(CustomRoles.Saboteur)
                     || pc.Is(CustomRoles.Swift)
-                    || pc.Is(CustomRoles.Mafia)
+                    || pc.Is(CustomRoles.Nemesis)
                     || pc.Is(CustomRoles.Sniper)
                     || pc.Is(CustomRoles.Fireworker)
                     || pc.Is(CustomRoles.Ludopath)
@@ -1559,7 +1559,7 @@ static class CustomRolesHelper
                     || pc.Is(CustomRoles.Mastermind)
                     || pc.Is(CustomRoles.Warlock)
                     || pc.Is(CustomRoles.Witch)
-                    || pc.Is(CustomRoles.Mafia)
+                    || pc.Is(CustomRoles.Nemesis)
                     || pc.Is(CustomRoles.Mare)
                     || pc.Is(CustomRoles.Clumsy)
                     || pc.Is(CustomRoles.Wildling)

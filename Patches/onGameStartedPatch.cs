@@ -65,7 +65,7 @@ internal class ChangeRoleSettings
             Main.TimeMasterBackTrack = [];
             Main.TimeMasterNum = [];
             Main.CursedPlayers = [];
-            Main.MafiaRevenged = [];
+            Main.NemesisRevenged = [];
             Main.RetributionistRevenged = [];
             Main.isCurseAndKill = [];
             Main.isCursed = false;
