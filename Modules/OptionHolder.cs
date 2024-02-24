@@ -774,7 +774,6 @@ public static class Options
     public static OverrideTasksData WorkaholicTasks;
     public static OverrideTasksData CrewpostorTasks;
     public static OverrideTasksData PhantomTasks;
-    public static OverrideTasksData GuardianTasks;
     public static OverrideTasksData OpportunistTasks;
     public static OverrideTasksData MayorTasks;
     public static OverrideTasksData TimeManagerTasks;
@@ -1836,8 +1835,7 @@ public static class Options
 
         SetupRoleOptions(11600, TabGroup.CrewmateRoles, CustomRoles.Dictator);
 
-        SetupRoleOptions(11700, TabGroup.CrewmateRoles, CustomRoles.Guardian);
-        GuardianTasks = OverrideTasksData.Create(11702, TabGroup.CrewmateRoles, CustomRoles.Guardian);
+        Guardian.SetupCustomOptions();
 
         SetupRoleOptions(11800, TabGroup.CrewmateRoles, CustomRoles.Lookout);
 
