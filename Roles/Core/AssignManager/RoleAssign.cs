@@ -206,22 +206,37 @@ public class RoleAssign
             for (int i = 0; i < Roles[RoleAssignType.Impostor].Count; i++)
             {
                 RoleAssignInfo item = Roles[RoleAssignType.Impostor][i];
-                if (RoleResult.ContainsValue(item.Role)) continue;
 
                 if (item.SpawnChance == 100)
                 {
                     for (int j = 0; j < item.MaxCount; j++)
                     {
+                        // Don't add if Host has assigned this role by using '/up'
+                        if (SetRoles.ContainsValue(item.Role))
+                        {
+                            var playerId = SetRoles.FirstOrDefault(x => x.Value == item.Role).Key;
+                            SetRoles.Remove(playerId);
+                            continue;
+                        }
+
                         AlwaysImpRoles.Add(item.Role);
                     }
                 }
                 else
                 {
-                    // Make "Spawn Chance ÷ 5 = x" (Example: 65 ÷ 5 = 13)
-                    for (int j = 0; j < item.SpawnChance / 5; j++)
+                    // Add 'MaxCount' (1) times
+                    for (int k = 0; k < item.MaxCount; k++)
                     {
-                        // Add 'MaxCount' (1) times
-                        for (int k = 0; k < item.MaxCount; k++)
+                        // Don't add if Host has assigned this role by using '/up'
+                        if (SetRoles.ContainsValue(item.Role))
+                        {
+                            var playerId = SetRoles.FirstOrDefault(x => x.Value == item.Role).Key;
+                            SetRoles.Remove(playerId);
+                            continue;
+                        }
+
+                        // Make "Spawn Chance ÷ 5 = x" (Example: 65 ÷ 5 = 13)
+                        for (int j = 0; j < item.SpawnChance / 5; j++)
                         {
                             // Add Imp roles 'x' times (13)
                             ChanceImpRoles.Add(item.Role);
@@ -294,22 +309,37 @@ public class RoleAssign
                 for (int i = 0; i < Roles[RoleAssignType.NonKillingNeutral].Count; i++)
                 {
                     RoleAssignInfo item = Roles[RoleAssignType.NonKillingNeutral][i];
-                    if (RoleResult.ContainsValue(item.Role)) continue;
 
                     if (item.SpawnChance == 100)
                     {
                         for (int j = 0; j < item.MaxCount; j++)
                         {
+                            // Don't add if Host has assigned this role by using '/up'
+                            if (SetRoles.ContainsValue(item.Role))
+                            {
+                                var playerId = SetRoles.FirstOrDefault(x => x.Value == item.Role).Key;
+                                SetRoles.Remove(playerId);
+                                continue;
+                            }
+
                             AlwaysNonNKRoles.Add(item.Role);
                         }
                     }
                     else
                     {
-                        // Make "Spawn Chance ÷ 5 = x" (Example: 65 ÷ 5 = 13)
-                        for (int j = 0; j < item.SpawnChance / 5; j++)
+                        // Add 'MaxCount' (1) times
+                        for (int k = 0; k < item.MaxCount; k++)
                         {
-                            // Add 'MaxCount' (1) times
-                            for (int k = 0; k < item.MaxCount; k++)
+                            // Don't add if Host has assigned this role by using '/up'
+                            if (SetRoles.ContainsValue(item.Role))
+                            {
+                                var playerId = SetRoles.FirstOrDefault(x => x.Value == item.Role).Key;
+                                SetRoles.Remove(playerId);
+                                continue;
+                            }
+
+                            // Make "Spawn Chance ÷ 5 = x" (Example: 65 ÷ 5 = 13)
+                            for (int j = 0; j < item.SpawnChance / 5; j++)
                             {
                                 // Add Non-NK roles 'x' times (13)
                                 ChanceNonNKRoles.Add(item.Role);
@@ -380,22 +410,37 @@ public class RoleAssign
                 for (int i = 0; i < Roles[RoleAssignType.NeutralKilling].Count; i++)
                 {
                     RoleAssignInfo item = Roles[RoleAssignType.NeutralKilling][i];
-                    if (RoleResult.ContainsValue(item.Role)) continue;
 
                     if (item.SpawnChance == 100)
                     {
                         for (int j = 0; j < item.MaxCount; j++)
                         {
+                            // Don't add if Host has assigned this role by using '/up'
+                            if (SetRoles.ContainsValue(item.Role))
+                            {
+                                var playerId = SetRoles.FirstOrDefault(x => x.Value == item.Role).Key;
+                                SetRoles.Remove(playerId);
+                                continue;
+                            }
+
                             AlwaysNKRoles.Add(item.Role);
                         }
                     }
                     else
                     {
-                        // Make "Spawn Chance ÷ 5 = x" (Example: 65 ÷ 5 = 13)
-                        for (int j = 0; j < item.SpawnChance / 5; j++)
+                        // Add 'MaxCount' (1) times
+                        for (int k = 0; k < item.MaxCount; k++)
                         {
-                            // Add 'MaxCount' (1) times
-                            for (int k = 0; k < item.MaxCount; k++)
+                            // Don't add if Host has assigned this role by using '/up'
+                            if (SetRoles.ContainsValue(item.Role))
+                            {
+                                var playerId = SetRoles.FirstOrDefault(x => x.Value == item.Role).Key;
+                                SetRoles.Remove(playerId);
+                                continue;
+                            }
+
+                            // Make "Spawn Chance ÷ 5 = x" (Example: 65 ÷ 5 = 13)
+                            for (int j = 0; j < item.SpawnChance / 5; j++)
                             {
                                 // Add NK roles 'x' times (13)
                                 ChanceNKRoles.Add(item.Role);
@@ -465,24 +510,39 @@ public class RoleAssign
             for (int i = 0; i < Roles[RoleAssignType.Crewmate].Count; i++)
             {
                 RoleAssignInfo item = Roles[RoleAssignType.Crewmate][i];
-                if (RoleResult.ContainsValue(item.Role)) continue;
 
                 if (item.SpawnChance == 100)
                 {
                     for (int j = 0; j < item.MaxCount; j++)
                     {
+                        // Don't add if Host has assigned this role by using '/up'
+                        if (SetRoles.ContainsValue(item.Role))
+                        {
+                            var playerId = SetRoles.FirstOrDefault(x => x.Value == item.Role).Key;
+                            SetRoles.Remove(playerId);
+                            continue;
+                        }
+
                         AlwaysCrewRoles.Add(item.Role);
                     }
                 }
                 else
                 {
-                    // Make "Spawn Chance ÷ 5 = x" (Example: 65 ÷ 5 = 13)
-                    for (int j = 0; j < item.SpawnChance / 5; j++)
+                    // Add 'MaxCount' (1) times
+                    for (int k = 0; k < item.MaxCount; k++)
                     {
-                        // Add 'MaxCount' (1) times
-                        for (int k = 0; k < item.MaxCount; k++)
+                        // Don't add if Host has assigned this role by using '/up'
+                        if (SetRoles.ContainsValue(item.Role))
                         {
-                            // Add Crewmate roles 'x' times (13)
+                            var playerId = SetRoles.FirstOrDefault(x => x.Value == item.Role).Key;
+                            SetRoles.Remove(playerId);
+                            continue;
+                        }
+
+                        // Make "Spawn Chance ÷ 5 = x" (Example: 65 ÷ 5 = 13)
+                        for (int j = 0; j < item.SpawnChance / 5; j++)
+                        {
+                            // Add Crew roles 'x' times (13)
                             ChanceCrewRoles.Add(item.Role);
                         }
                     }
