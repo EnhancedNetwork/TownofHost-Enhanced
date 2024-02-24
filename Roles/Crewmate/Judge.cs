@@ -9,7 +9,7 @@ using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Translator;
 
-namespace TOHE.Roles.Crewmate; // test
+namespace TOHE.Roles.Crewmate; 
 
 public static class Judge
 {
