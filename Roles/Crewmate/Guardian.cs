@@ -16,19 +16,20 @@ namespace TOHE.Roles.Crewmate
 
         public override bool IsEnable => On;
 
-        public override void Init()
-        {
-            On = false;
-        }
-        public override void Add(byte playerId)
-        {
-            On = true;
-        }
         public static void SetupCustomOptions()
         {
             SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Guardian);
             GuardianTasks = OverrideTasksData.Create(Id + 10, TabGroup.CrewmateRoles, CustomRoles.Guardian);
         }
 
+        public override void Init()
+        {
+            On = false;
+        }
+
+        public override void Add(byte playerId)
+        {
+            On = true;
+        }
     }
 }
