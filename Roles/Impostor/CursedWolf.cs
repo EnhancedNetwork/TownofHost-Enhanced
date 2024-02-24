@@ -15,6 +15,8 @@ internal class CursedWolf : RoleBase
 
     private static Dictionary<byte, int> SpellCount = [];
 
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.CursedWolf);
