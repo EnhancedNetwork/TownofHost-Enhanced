@@ -163,7 +163,7 @@ public static class Fireworker
     public static string GetStateText(PlayerControl pc)
     {
         string retText = "";
-        if (pc == null || pc.Data.IsDead) return retText;
+        if (pc == null || !pc.IsAlive()) return retText;
         if (!state.ContainsKey(pc.PlayerId)) return retText;
 
         if (state[pc.PlayerId] == FireworkerState.WaitTime && Main.AliveImpostorCount <= 1)
