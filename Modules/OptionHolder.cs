@@ -490,9 +490,6 @@ public static class Options
     public static OptionItem ShapeshiftCD;
     public static OptionItem ShapeshiftDur;
 
-    public static OptionItem GuardSpellTimes;
-    public static OptionItem killAttacker;
-
     public static OptionItem EGCanGuessTime;
     public static OptionItem EGCanGuessImp;
     public static OptionItem EGCanGuessAdt;
@@ -763,7 +760,6 @@ public static class Options
     public static OverrideTasksData TerroristTasks;
     public static OverrideTasksData TransporterTasks;
     public static OverrideTasksData WorkaholicTasks;
-    public static OverrideTasksData CrewpostorTasks;
     public static OverrideTasksData PhantomTasks;
     public static OverrideTasksData GuardianTasks;
     public static OverrideTasksData OpportunistTasks;
@@ -965,11 +961,7 @@ public static class Options
         /*
          * Cursed Wolf (From: TOH_Y)
          */
-        SetupRoleOptions(1100, TabGroup.ImpostorRoles, CustomRoles.CursedWolf);
-        GuardSpellTimes = IntegerOptionItem.Create(1102, "GuardSpellTimes", new(1, 15, 1), 3, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.CursedWolf])
-            .SetValueFormat(OptionFormat.Times);
-        killAttacker = BooleanOptionItem.Create(1103, "killAttacker", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.CursedWolf]);
+        CursedWolf.SetupCustomOption();
 
 
         /*

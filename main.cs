@@ -188,7 +188,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, float> LighterNumOfUsed = [];
     public static Dictionary<byte, long> AllKillers = [];
     public static Dictionary<byte, float> TimeMasterNumOfUsed = [];
-    public static Dictionary<byte, int> CursedWolfSpellCount = [];
     public static Dictionary<byte, int> JinxSpellCount = [];
     public static int AliveImpostorCount;
     public static bool isCursed;

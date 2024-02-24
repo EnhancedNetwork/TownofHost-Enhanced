@@ -1,8 +1,8 @@
-﻿using System.Linq;
+﻿using Hazel;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using static TOHE.Options;
-using Hazel;
 
 namespace TOHE.Roles.Impostor;
 
@@ -17,6 +17,7 @@ internal class Crewpostor : RoleBase
     private static OptionItem AlliesKnowCrewpostor;
     private static OptionItem LungeKill;
     private static OptionItem KillAfterTask;
+    private static OverrideTasksData CrewpostorTasks;
 
     private static Dictionary<byte, int> TasksDone = [];
 

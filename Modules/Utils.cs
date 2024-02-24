@@ -1004,8 +1004,7 @@ public static class Utils
                     ProgressText.Append(Medic.GetSkillLimit(playerId));
                     break;
                 case CustomRoles.CursedWolf:
-                    int SpellCount = Main.CursedWolfSpellCount[playerId];
-                    ProgressText.Append(ColorString(GetRoleColor(CustomRoles.CursedWolf), $"({SpellCount})"));
+                    ProgressText.Append(CursedWolf.GetProgressText(playerId));
                     break;
                 case CustomRoles.Jinx:
                     int JinxSpellCount = Main.JinxSpellCount[playerId];

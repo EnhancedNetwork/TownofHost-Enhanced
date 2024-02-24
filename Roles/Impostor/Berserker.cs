@@ -65,7 +65,7 @@ internal class Berserker : RoleBase
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = BerserkerKillCooldown.GetFloat();
 
-    public override bool OnCheckMurderOnTarget(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (BerserkerKillMax[target.PlayerId] >= BerserkerImmortalLevel.GetInt() && BerserkerFourCanNotKill.GetBool())
         {

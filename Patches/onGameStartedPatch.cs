@@ -99,7 +99,6 @@ internal class ChangeRoleSettings
             Main.Lighter = [];
             Main.AllKillers = [];
             Main.MadGrenadierBlinding = [];
-            Main.CursedWolfSpellCount = [];
             Main.BombedVents = [];
             Main.JinxSpellCount = [];
             Main.OverDeadPlayerList = [];
@@ -815,9 +814,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Observer:
                         Observer.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.CursedWolf:
-                        Main.CursedWolfSpellCount[pc.PlayerId] = Options.GuardSpellTimes.GetInt();
                         break;
                     case CustomRoles.Jinx:
                         Main.JinxSpellCount[pc.PlayerId] = Jinx.JinxSpellTimes.GetInt();

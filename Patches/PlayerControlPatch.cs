@@ -239,7 +239,7 @@ class CheckMurderPatch
         }
 
         if (Main.PlayerStates.TryGetValue(target.PlayerId, out var targetState) && targetState.Role != null)
-            if (!targetState.Role.OnCheckMurderOnTarget(killer, target))
+            if (!targetState.Role.OnCheckMurderAsTarget(killer, target))
                 return false;
 
         if (killer.PlayerId != target.PlayerId && Main.PlayerStates.TryGetValue(killer.PlayerId, out var killerState) && killerState.Role != null)
@@ -901,22 +901,6 @@ class CheckMurderPatch
             //        return false;
             //    }
             //    break;
-            case CustomRoles.CursedWolf:
-                if (Main.CursedWolfSpellCount[target.PlayerId] <= 0) break;
-                if (killer.Is(CustomRoles.Pestilence)) break;
-                if (killer == target) break;
-                killer.RpcGuardAndKill(target);
-                target.RpcGuardAndKill(target);
-                Main.CursedWolfSpellCount[target.PlayerId] -= 1;
-                RPC.SendRPCCursedWolfSpellCount(target.PlayerId);
-                if (Options.killAttacker.GetBool())
-                {
-                    killer.SetRealKiller(target);
-                    Logger.Info($"{target.GetNameWithRole()} : {Main.CursedWolfSpellCount[target.PlayerId]}回目", "CursedWolf");
-                    Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Curse;
-                    killer.RpcMurderPlayerV3(killer);
-                }
-                return false;
             case CustomRoles.Jinx:
                 if (Main.JinxSpellCount[target.PlayerId] <= 0) break;
                 if (killer.Is(CustomRoles.Pestilence)) break;

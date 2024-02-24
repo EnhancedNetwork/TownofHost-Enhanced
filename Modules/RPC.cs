@@ -540,12 +540,7 @@ internal class RPCHandlerPatch
                 Greedy.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetCursedWolfSpellCount:
-                byte CursedWolfId = reader.ReadByte();
-                int GuardNum = reader.ReadInt32();
-                if (Main.CursedWolfSpellCount.ContainsKey(CursedWolfId))
-                    Main.CursedWolfSpellCount[CursedWolfId] = GuardNum;
-                else
-                    Main.CursedWolfSpellCount.Add(CursedWolfId, Options.GuardSpellTimes.GetInt());
+                CursedWolf.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetJinxSpellCount:
                 byte JinxId = reader.ReadByte();
@@ -1176,9 +1171,6 @@ internal static class RPC
             case CustomRoles.Benefactor:
                 Benefactor.Add(targetId);
                 break;
-            case CustomRoles.CursedWolf:
-                Main.CursedWolfSpellCount[targetId] = Options.GuardSpellTimes.GetInt();
-                break;
             case CustomRoles.Jinx:
                 Main.JinxSpellCount[targetId] = Jinx.JinxSpellTimes.GetInt();
                 Jinx.Add(targetId);
@@ -1620,13 +1612,6 @@ internal static class RPC
             writer.Write(targetId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
-    }
-    public static void SendRPCCursedWolfSpellCount(byte playerId)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCursedWolfSpellCount, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.WritePacked(Main.CursedWolfSpellCount[playerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void SendRPCJinxSpellCount(byte playerId)
     {

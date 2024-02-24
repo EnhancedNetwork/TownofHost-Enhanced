@@ -48,7 +48,7 @@ public abstract class RoleBase
     public virtual void OnExitVent(PlayerControl pc, Vent vent)
     { }
 
-    public virtual bool OnCheckMurderOnTarget(PlayerControl killer, PlayerControl target)
+    public virtual bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         return target != null && killer != null;
     }
