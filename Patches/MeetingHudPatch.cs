@@ -12,6 +12,8 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
+using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TOHE;
 
@@ -92,6 +94,8 @@ class CheckForEndVotingPatch
 
                 if (pva.DidVote && pva.VotedFor < 253 && !pc.Data.IsDead)
                 {
+                    
+
                     var voteTarget = Utils.GetPlayerById(pva.VotedFor);
                     if (voteTarget == null)
                     {
@@ -139,21 +143,13 @@ class CheckForEndVotingPatch
                                 Jailer.OnVote(pc, voteTarget);
                                 break;
                         }
+                        Main.PlayerStates[voteTarget.PlayerId]?.Role?.OnVote(pc, voteTarget); // Role is voted
+                        Main.PlayerStates[pc.PlayerId]?.Role?.OnVote(pc, voteTarget); // Role has voted
+
                         if (voteTarget.Is(CustomRoles.Aware))
                         {
                             Aware.OnVoted(pc, pva);
                         }
-
-                        if (voteTarget.Is(CustomRoles.Captain))
-                        {
-                            if (!Captain.CaptainVoteTargets.ContainsKey(voteTarget.PlayerId)) Captain.CaptainVoteTargets[voteTarget.PlayerId] = [];
-                            if (!Captain.CaptainVoteTargets[voteTarget.PlayerId].Contains(pc.PlayerId))
-                            {
-                                Captain.CaptainVoteTargets[voteTarget.PlayerId].Add(pc.PlayerId);
-                                Captain.SendRPCVoteAdd(voteTarget.PlayerId, pc.PlayerId);
-                            }
-                        }
-
                     }
                 }
             }
@@ -1210,6 +1206,8 @@ class MeetingHudStartPatch
 
                     } */
             //インポスター表示
+            Main.PlayerStates[target.PlayerId]?.Role?.NotifyRoleMark(seer, target, sb);
+
             switch (seer.GetCustomRole().GetCustomRoleTypes())
             {
                 case CustomRoleTypes.Impostor:
@@ -1223,11 +1221,6 @@ class MeetingHudStartPatch
                     sb.Append(Marshall.GetWarningMark(seer, target));
                     break;
             }
-            if (Captain.IsEnable)
-                if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) &&
-                    (target.GetPlayerTaskState().CompletedTasksCount >= Captain.OptionTaskRequiredToReveal.GetInt()) &&
-                    (seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
-                    sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Captain), " ☆"));
             switch (seer.GetCustomRole())
             {
                 case CustomRoles.Arsonist:

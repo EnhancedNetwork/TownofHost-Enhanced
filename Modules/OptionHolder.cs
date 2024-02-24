@@ -1799,7 +1799,7 @@ public static class Options
 
         CopyCat.SetupCustomOption();
 
-        SetupRoleOptions(11600, TabGroup.CrewmateRoles, CustomRoles.Dictator);
+        Dictator.SetupCustomOptions();
 
         Guardian.SetupCustomOptions();
 

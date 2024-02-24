@@ -3134,6 +3134,8 @@ class FixedUpdateInNormalGamePatch
                     }
                 }
                 
+                Main.PlayerStates[target.PlayerId]?.Role?.NotifyRoleMark(seer, target, Mark);
+
                 if (PlagueDoctor.IsEnable) 
                     Mark.Append(PlagueDoctor.GetMarkOthers(seer, target));
                 
@@ -3161,13 +3163,6 @@ class FixedUpdateInNormalGamePatch
 
                 if (Romantic.IsEnable)
                     Mark.Append(Romantic.TargetMark(seer, target));
-
-                if (Captain.IsEnable)
-                    if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) &&
-                        (target.GetPlayerTaskState().CompletedTasksCount >= Captain.OptionTaskRequiredToReveal.GetInt()) &&
-                        (seerRole.IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
-                        Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Captain), " ☆"));
-
 
                 if (Lawyer.IsEnable)
                     Mark.Append(Lawyer.LawyerMark(seer, target));

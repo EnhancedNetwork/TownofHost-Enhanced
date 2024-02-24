@@ -2327,6 +2327,8 @@ public static class Utils
 
                         TargetMark.Clear();
 
+                        Main.PlayerStates[target.PlayerId]?.Role?.NotifyRoleMark(seer, target, TargetMark);
+
                         if (isForMeeting)
                         {
                             if (Witch.IsEnable)
@@ -2358,12 +2360,6 @@ public static class Utils
 
                         if (target.Is(CustomRoles.SuperStar) && Options.EveryOneKnowSuperStar.GetBool())
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.SuperStar), "★"));
-
-                        if (Captain.IsEnable)
-                            if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) &&
-                                (target.GetPlayerTaskState().CompletedTasksCount >= Captain.OptionTaskRequiredToReveal.GetInt()) &&
-                                (seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
-                                TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Captain), " ☆"));
 
                         if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));

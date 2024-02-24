@@ -1,4 +1,6 @@
 ﻿using AmongUs.GameOptions;
+using Il2CppSystem.Text;
+using System.Collections.Generic;
 
 namespace TOHE;
 
@@ -115,4 +117,11 @@ public abstract class RoleBase
     {
         return target == null;
     }
+
+    public virtual void NotifyRoleMark(PlayerControl seer, PlayerControl target, System.Text.StringBuilder Mark)
+    { }
+
+    public virtual void OnVote(PlayerControl pc, PlayerControl voteTarget)
+    { }
+
 }

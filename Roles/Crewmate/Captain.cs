@@ -1,9 +1,10 @@
 ﻿using Hazel;
 using System.Collections.Generic;
 using System.Linq;
-
 using static TOHE.Options;
 using static TOHE.Translator;
+using Il2CppSystem.Text;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -138,11 +139,11 @@ internal class Captain : RoleBase
         else CaptainVoteTargets.Clear();
     }
 
-    public override void OnTaskComplete(PlayerControl pc, int CompletedTasksCount, int AllTasksCount)
+    public override void OnTaskComplete(PlayerControl pc)
     {
         if (pc == null || !pc.IsAlive()) return;
-        if (CompletedTasksCount >= OptionTaskRequiredToReveal.GetInt()) Utils.NotifyRoles(SpecifyTarget: pc, ForceLoop: true);
-        if (CompletedTasksCount < OptionTaskRequiredToSlow.GetInt()) return;
+        if (pc.GetPlayerTaskState().CompletedTasksCount >= OptionTaskRequiredToReveal.GetInt()) Utils.NotifyRoles(SpecifyTarget: pc, ForceLoop: true);
+        if (pc.GetPlayerTaskState().CompletedTasksCount < OptionTaskRequiredToSlow.GetInt()) return;
         var allTargets = Main.AllAlivePlayerControls.Where(x => (x != null) && (!OriginalSpeed.ContainsKey(x.PlayerId)) &&
                                                            (x.GetCustomRole().IsImpostorTeamV3() ||
                                                            (CaptainCanTargetNB.GetBool() && x.GetCustomRole().IsNB()) ||
@@ -226,6 +227,25 @@ internal class Captain : RoleBase
 
         OriginalSpeed.Clear();
         SendRPCRevertAllSpeed();
+    }
+    public override void NotifyRoleMark(PlayerControl seer, PlayerControl target, System.Text.StringBuilder Mark)
+    {
+        if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && OptionCrewCanFindCaptain.GetBool()) &&
+                                (target.GetPlayerTaskState().CompletedTasksCount >= OptionTaskRequiredToReveal.GetInt()) &&
+                                (seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && OptionMadmateCanFindCaptain.GetBool())))
+            Mark.Append(ColorString(GetRoleColor(CustomRoles.Captain), " ☆"));
+    }
+    public override void OnVote(PlayerControl pc, PlayerControl voteTarget)
+    {
+        if (voteTarget.Is(CustomRoles.Captain))
+        {
+            if (!CaptainVoteTargets.ContainsKey(voteTarget.PlayerId)) CaptainVoteTargets[voteTarget.PlayerId] = [];
+            if (!CaptainVoteTargets[voteTarget.PlayerId].Contains(pc.PlayerId))
+            {
+                CaptainVoteTargets[voteTarget.PlayerId].Add(pc.PlayerId);
+                SendRPCVoteAdd(voteTarget.PlayerId, pc.PlayerId);
+            }
+        }
     }
 }
 

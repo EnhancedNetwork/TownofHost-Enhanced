@@ -20,7 +20,7 @@ public static class CustomRolesHelper
 
         if (role.IsVanilla())
             return role;
-        /*else if (role.GetRoleClass().ThisRoleBase > (CustomRoles)500)
+        /*else if (role.GetRoleClass().ThisRoleBase < (CustomRoles)500)
         {
             return role.GetRoleClass().ThisRoleBase;
         }*/ // Will not work untill all roles are done
