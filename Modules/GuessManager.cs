@@ -1237,7 +1237,7 @@ public static class GuessManager
             }
             else
             {
-                arrayOfRoles = [.. CustomRolesHelper.AllRoles];
+                arrayOfRoles = [.. CustomRolesHelper.AllRoles.Where(role => !role.IsGhostRole())];
             }
 
             var roleMap = arrayOfRoles.ToDictionary(role => role, role => Utils.GetRoleName(role));
