@@ -1551,7 +1551,7 @@ class MurderPlayerPatch
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcMurderPlayer))]
-class  RpcMurderPlayerPatch
+class RpcMurderPlayerPatch
 {
     public static bool Prefix(PlayerControl __instance, PlayerControl target, bool didSucceed)
     {
@@ -1584,6 +1584,7 @@ public static class CheckShapeShiftPatch
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool shouldAnimate)
     {
         if (!AmongUsClient.Instance.AmHost || !GameStates.IsModHost) return true;
+        if (__instance.PlayerId == target.PlayerId) return true;
         if (!Options.DisableShapeshiftAnimations.GetBool()) return true;
 
         var shapeshifter = __instance;
