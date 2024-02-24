@@ -1272,11 +1272,18 @@ class CheckMurderPatch
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Exiled))]
-class ExilePlayerFix
+class ExilePlayerPatch
 {    
     public static void Postfix(PlayerControl __instance)
     {
-        GhostRoleAssign.GhostAssignPatch(__instance);
+        try
+        {
+            GhostRoleAssign.GhostAssignPatch(__instance);
+        }
+        catch (Exception error)
+        {
+            Logger.Error($"Error after Ghost assign: {error}", "ExilePlayerPatch.GhostAssign");
+        }
     }
 }
 
