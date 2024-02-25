@@ -2519,9 +2519,9 @@ public static class Utils
 
                         }
                         if (seer.PlayerId != target.PlayerId && Main.PlayerStates.TryGetValue(seer.PlayerId, out var seerState) && seerState.Role != null)
-                            if (seerState.Role.NotifyRoleMark(seer, target, TargetPlayerName) != string.Empty)
-                                TargetPlayerName = seerState.Role.NotifyRoleMark(seer, target, TargetPlayerName);
-                            else if (seerState.Role.NotifyRoleMark(seer, target, string.Empty, isForMeeting) != string.Empty)
+                            if (seerState.Role.NotifyPlayerName(seer, target, TargetPlayerName) != string.Empty)
+                                TargetPlayerName = seerState.Role.NotifyPlayerName(seer, target, TargetPlayerName);
+                            else if (seerState.Role.NotifyPlayerName(seer, target, string.Empty, isForMeeting) != string.Empty)
                             {
 
                             }

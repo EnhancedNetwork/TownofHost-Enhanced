@@ -184,7 +184,7 @@ public abstract class RoleBase
     /// <summary>
     /// Set PlayerName text for the role
     /// </summary>
-    public virtual string NotifyRoleMark(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false) => string.Empty;
+    public virtual string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false) => string.Empty;
    
     /// <summary>
     /// A method to determine conditions on voter/targetvote
