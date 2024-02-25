@@ -27,7 +27,6 @@ using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 
 namespace TOHE;
-
 public static class Utils
 {
     private static readonly DateTime timeStampStartTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -2334,11 +2333,15 @@ public static class Utils
                     {
                         seerRole = seer.GetCustomRole();
 
+                        // ====== Target player name ======
+
+                        string TargetPlayerName = target.GetRealName(isForMeeting);
+
                         // ====== Add TargetMark for target ======
 
                         TargetMark.Clear();
 
-                        Main.PlayerStates[target.PlayerId]?.Role?.NotifyRoleMark(seer, target, TargetMark
+                        Main.PlayerStates[target.PlayerId]?.Role?.NotifyRoleMark(seer, target, TargetMark);
                         TargetMark.Append(seerRoleClass?.GetMark(seer, target, isForMeeting));
                         TargetMark.Append(CustomRoleManager.GetMarkOthers(seer, target, isForMeeting));
 
@@ -2491,11 +2494,6 @@ public static class Utils
                         }
 
 
-                        // ====== Target player name ======
-
-                        string TargetPlayerName = target.GetRealName(isForMeeting);
-
-
                         // ========= During Game And Meeting =========
                         switch (seerRole)
                         {
@@ -2522,9 +2520,9 @@ public static class Utils
 
                         }
                         if (seer.PlayerId != target.PlayerId && Main.PlayerStates.TryGetValue(seer.PlayerId, out var seerState) && seerState.Role != null)
-                            if (seerState.Role.NotifyRoleMark(seer, target, TargetPlayerName) != "")
+                            if (seerState.Role.NotifyRoleMark(seer, target, TargetPlayerName) != string.Empty)
                                 TargetPlayerName = seerState.Role.NotifyRoleMark(seer, target, TargetPlayerName);
-                            else if (seerState.Role.NotifyRoleMark(seer, target, "", isForMeeting) != "")
+                            else if (seerState.Role.NotifyRoleMark(seer, target, string.Empty, isForMeeting) != string.Empty)
                             {
 
                             }

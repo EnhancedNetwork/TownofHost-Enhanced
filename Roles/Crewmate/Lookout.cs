@@ -29,10 +29,10 @@ namespace TOHE.Roles.Crewmate
             On = true;
         }
 
-        public override string NotifyRoleMark(PlayerControl seer, PlayerControl target, string TargetPlayerName, bool IsForMeeting = false)
+        public override string NotifyRoleMark(PlayerControl seer, PlayerControl seen = null, string TargetPlayerName = "", bool isForMeeting = false)
         {
-            if (!seer.IsAlive() || !target.IsAlive()) return string.Empty;
-            return ColorString(GetRoleColor(CustomRoles.Lookout), " " + target.PlayerId.ToString()) + " " + TargetPlayerName;
+            if (!seer.IsAlive() || !seen.IsAlive()) return string.Empty;
+            return ColorString(GetRoleColor(CustomRoles.Lookout), " " + seen.PlayerId.ToString()) + " " + TargetPlayerName;
         }
 
 

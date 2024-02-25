@@ -151,7 +151,13 @@ public abstract class RoleBase
     /// </summary>
     public virtual void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     { }
-  
+
+    /// <summary>
+    /// When the meeting start by report dead body
+    /// </summary>
+    public virtual void OnReportDeadBody()
+    { }
+
     /// <summary>
     /// When player trying guess a role
     /// </summary>
@@ -168,6 +174,13 @@ public abstract class RoleBase
     /// </summary>
     public virtual void OnPlayerExiled(PlayerControl Bard, GameData.PlayerInfo exiled)
     { }
+
+    /// <summary>
+    /// When player was exiled
+    /// </summary>
+    public virtual void OnPlayerExiled(GameData.PlayerInfo exiled)
+    { }
+
 
     /// <summary>
     /// Notify a specific role about something after the meeting was ended.
