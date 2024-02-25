@@ -198,46 +198,6 @@ internal class CopyCat : RoleBase
         //bcoz of single role
         // Other
     }
-    private static bool Whitelist(CustomRoles role)
-    {   ////////////           /*add the settings for new role*/            ////////////
-        /* anything that is assigned in onGameStartedPatch.cs comes here */
-        return role is CustomRoles.Cleanser or
-            CustomRoles.Jailer or
-            CustomRoles.Deputy or
-            CustomRoles.Witness or
-            CustomRoles.Inspector or
-            CustomRoles.Medic or
-            CustomRoles.Mediumshiper or
-            CustomRoles.Merchant or
-            CustomRoles.Oracle or
-            CustomRoles.Paranoia or
-            CustomRoles.Snitch or
-            CustomRoles.Counterfeiter or
-            CustomRoles.SwordsMan or
-            CustomRoles.Sheriff or
-            CustomRoles.Crusader or
-            CustomRoles.Judge or
-            CustomRoles.Divinator or
-            CustomRoles.Reverie or
-            CustomRoles.President or
-            CustomRoles.Spy or
-            CustomRoles.SabotageMaster or
-            CustomRoles.Admirer or
-            CustomRoles.Benefactor or
-            CustomRoles.Keeper or
-            CustomRoles.Swapper or
-            CustomRoles.GuessMaster or
-            CustomRoles.Enigma or
-            CustomRoles.Mortician or
-            CustomRoles.Bloodhound or
-            CustomRoles.Tracefinder or
-            CustomRoles.Spiritualist or
-            CustomRoles.Tracker or
-            CustomRoles.Monitor or
-            CustomRoles.Investigator or
-            CustomRoles.Farseer;
-    }
-
     public override bool OnCheckMurderAsKiller(PlayerControl pc, PlayerControl tpc)
     {
         CustomRoles role = tpc.GetCustomRole();
@@ -295,7 +255,7 @@ internal class CopyCat : RoleBase
         if (role.IsCrewmate())
         {
 
-            if (Whitelist(role)) 
+            if (role != CustomRoles.CopyCat)
             {
                 pc.RpcSetCustomRole(role);
                 Main.PlayerStates[pc.PlayerId].Role.Add(pc.PlayerId);
@@ -309,10 +269,10 @@ internal class CopyCat : RoleBase
                 if (tpc.Is(CustomRoles.Contagious)) pc.RpcSetCustomRole(CustomRoles.Contagious);
                 if (tpc.Is(CustomRoles.Soulless)) pc.RpcSetCustomRole(CustomRoles.Soulless);
             }
-
             pc.RpcGuardAndKill(pc);
             pc.Notify(string.Format(GetString("CopyCatRoleChange"), Utils.GetRoleName(role)));
             return false;
+            
         }
         pc.Notify(GetString("CopyCatCanNotCopy"));
         pc.ResetKillCooldown();
