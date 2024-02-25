@@ -3169,9 +3169,6 @@ class FixedUpdateInNormalGamePatch
                     if (target.AmOwner || target.Is(CustomRoles.Solsticer))
                         Mark.Append(Solsticer.GetWarningArrow(seer, target));
 
-                if (Marshall.IsEnable)
-                    Mark.Append(Marshall.GetWarningMark(seer, target));
-
                 if (Executioner.IsEnable)
                     Mark.Append(Executioner.TargetMark(seer, target));
 

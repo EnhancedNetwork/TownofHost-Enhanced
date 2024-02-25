@@ -294,7 +294,6 @@ internal class ChangeRoleSettings
             Antidote.Init();
             Imitator.Init();
             Medusa.Init();
-            Marshall.Init();
             Amnesiac.Init();
             Farseer.Init();
             Fool.Init();
@@ -697,9 +696,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Sheriff:
                         Sheriff.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Marshall:
-                        Marshall.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Glitch:
                         Glitch.Add(pc.PlayerId);

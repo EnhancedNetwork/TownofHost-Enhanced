@@ -139,7 +139,7 @@ internal class Captain : RoleBase
         else CaptainVoteTargets.Clear();
     }
 
-    public override void OnTaskComplete(PlayerControl pc)
+    public override void OnTaskComplete(PlayerControl pc, int y, int z)
     {
         if (pc == null || !pc.IsAlive()) return;
         if (pc.GetPlayerTaskState().CompletedTasksCount >= OptionTaskRequiredToReveal.GetInt()) Utils.NotifyRoles(SpecifyTarget: pc, ForceLoop: true);

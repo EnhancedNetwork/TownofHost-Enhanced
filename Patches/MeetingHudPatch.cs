@@ -1215,11 +1215,6 @@ class MeetingHudStartPatch
                         sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), "★")); //変更対象にSnitchマークをつける
                     sb.Append(Snitch.GetWarningMark(seer, target));
                     break;
-                case CustomRoleTypes.Crewmate:
-                    if (target.Is(CustomRoles.Marshall) && target.GetPlayerTaskState().IsTaskFinished)
-                        sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Marshall), "★")); //変更対象にSnitchマークをつける
-                    sb.Append(Marshall.GetWarningMark(seer, target));
-                    break;
             }
             switch (seer.GetCustomRole())
             {
