@@ -433,8 +433,6 @@ public class TaskState
 
             Main.PlayerStates[player.PlayerId]?.Role?.OnTaskComplete(player, CompletedTasksCount, AllTasksCount);
 
-            Main.PlayerStates[player.PlayerId]?.Role?.OnTaskComplete(player);
-
             switch (playerRole)
             {
                 //case CustomRoles.SpeedBooster when player.IsAlive():

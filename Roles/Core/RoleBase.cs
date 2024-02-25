@@ -80,12 +80,6 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// A method to determine actions once role completes a task
-    /// </summary>
-    public virtual void OnTaskComplete(PlayerControl pc)
-    { }
-
-    /// <summary>
     /// A method for activating actions where the role starts playing an animation when entering a vent
     /// </summary>
     public virtual void OnEnterVent(PlayerControl pc, Vent vent)
