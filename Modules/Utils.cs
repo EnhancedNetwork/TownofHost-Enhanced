@@ -2338,7 +2338,6 @@ public static class Utils
 
                         TargetMark.Clear();
 
-                        Main.PlayerStates[target.PlayerId]?.Role?.NotifyRoleMark(seer, target, TargetMark);
                         TargetMark.Append(seerRoleClass?.GetMark(seer, target, isForMeeting));
                         TargetMark.Append(CustomRoleManager.GetMarkOthers(seer, target, isForMeeting));
 

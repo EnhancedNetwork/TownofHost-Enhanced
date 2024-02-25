@@ -6,6 +6,7 @@ using System.Text;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -1145,6 +1146,7 @@ class MeetingHudStartPatch
         {
             if (pva == null) continue;
             PlayerControl seer = PlayerControl.LocalPlayer;
+            var seerRoleClass = seer.GetCustomRole().GetRoleClass();
             PlayerControl target = Utils.GetPlayerById(pva.TargetPlayerId);
             if (target == null) continue;
 
@@ -1206,7 +1208,7 @@ class MeetingHudStartPatch
 
                     } */
             //インポスター表示
-            Main.PlayerStates[target.PlayerId]?.Role?.NotifyRoleMark(seer, target, sb);
+            sb.Append(seerRoleClass?.GetMark(seer, target));
 
             switch (seer.GetCustomRole().GetCustomRoleTypes())
             {

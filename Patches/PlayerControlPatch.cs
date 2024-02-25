@@ -3098,6 +3098,7 @@ class FixedUpdateInNormalGamePatch
 
 
                 var seer = PlayerControl.LocalPlayer;
+                var seerRoleClass = seer.GetCustomRole().GetRoleClass();
                 var target = __instance;
 
                 string RealName = target.GetRealName();
@@ -3153,8 +3154,8 @@ class FixedUpdateInNormalGamePatch
                             Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Marshall), "★"));
                     }
                 }
-                
-                Main.PlayerStates[target.PlayerId]?.Role?.NotifyRoleMark(seer, target, Mark);
+
+                Mark.Append(seerRoleClass?.GetMark(seer, target));
 
                 if (PlagueDoctor.IsEnable) 
                     Mark.Append(PlagueDoctor.GetMarkOthers(seer, target));

@@ -195,7 +195,7 @@ internal class Captain : RoleBase
         var addon = AllSubRoles[rand.Next(0, AllSubRoles.Count)];
         return addon;
     }
-    public override void OnPlayerExiled(GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(PlayerControl x, GameData.PlayerInfo exiled)
     {
         if (exiled == null) return;
         if (!exiled.GetCustomRole().Is(CustomRoles.Captain)) return;
@@ -215,7 +215,7 @@ internal class Captain : RoleBase
         CaptainVoteTargets.Clear();
         SendRPCVoteRemove();
     }
-    public override void OnReportDeadBody()
+    public override void OnReportDeadBody(PlayerControl y, PlayerControl x)
     {
         foreach (byte target in OriginalSpeed.Keys.ToArray())
         {
@@ -228,12 +228,13 @@ internal class Captain : RoleBase
         OriginalSpeed.Clear();
         SendRPCRevertAllSpeed();
     }
-    public override void NotifyRoleMark(PlayerControl seer, PlayerControl target, System.Text.StringBuilder Mark)
+    public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
         if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && OptionCrewCanFindCaptain.GetBool()) &&
                                 (target.GetPlayerTaskState().CompletedTasksCount >= OptionTaskRequiredToReveal.GetInt()) &&
                                 (seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && OptionMadmateCanFindCaptain.GetBool())))
-            Mark.Append(ColorString(GetRoleColor(CustomRoles.Captain), " ☆"));
+            return ColorString(GetRoleColor(CustomRoles.Captain), " ☆");
+        return string.Empty;
     }
     public override void OnVote(PlayerControl pc, PlayerControl voteTarget)
     {

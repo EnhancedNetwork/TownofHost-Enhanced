@@ -76,7 +76,7 @@ public abstract class RoleBase
     /// <summary>
     /// OnTaskComplete overload with taskcount included
     /// </summary>
-    public virtual void OnTaskComplete(PlayerControl pc, int completedTaskCount = 0, int totalTaskCount = 0)
+    public virtual void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
     { }
 
     /// <summary>
@@ -153,12 +153,6 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// When the meeting start by report dead body
-    /// </summary>
-    public virtual void OnReportDeadBody()
-    { }
-
-    /// <summary>
     /// When player trying guess a role
     /// </summary>
     public virtual bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser) => target == null;
@@ -174,13 +168,6 @@ public abstract class RoleBase
     /// </summary>
     public virtual void OnPlayerExiled(PlayerControl Bard, GameData.PlayerInfo exiled)
     { }
-
-    /// <summary>
-    /// When player was exiled
-    /// </summary>
-    public virtual void OnPlayerExiled(GameData.PlayerInfo exiled)
-    { }
-
 
     /// <summary>
     /// Notify a specific role about something after the meeting was ended.
@@ -201,17 +188,10 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// A method to determine a playermark for himself or others
-    /// </summary>
-    public virtual void NotifyRoleMark(PlayerControl seer, PlayerControl target, System.Text.StringBuilder Mark)
-    { }
-
-    /// <summary>
-    /// NotifyRoleMark overload for roles that change the PlayerName or Text
+    /// Set PlayerName text for the role
     /// </summary>
     public virtual string NotifyRoleMark(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false) => string.Empty;
    
-
     /// <summary>
     /// A method to determine conditions on voter/targetvote
     /// </summary>
