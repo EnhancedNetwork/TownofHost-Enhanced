@@ -192,7 +192,6 @@ class ExileControllerWrapUpPatch
         foreach (var player in Main.AllPlayerControls)
         {
             Main.PlayerStates[player.PlayerId]?.Role?.OnPlayerExiled(player, exiled);
-            Main.PlayerStates[player.PlayerId]?.Role?.OnPlayerExiled(exiled);
 
             CustomRoles playerRole = player.GetCustomRole(); // Only roles (no add-ons)
 
