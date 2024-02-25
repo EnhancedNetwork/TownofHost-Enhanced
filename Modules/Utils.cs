@@ -24,6 +24,7 @@ using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
 using TOHE.Roles.AddOns.Common;
+using MS.Internal.Xml.XPath;
 
 namespace TOHE;
 
@@ -2498,11 +2499,6 @@ public static class Utils
                                     TargetRoleText = $"<size={fontSize}>{Tracker.GetArrowAndLastRoom(seer, target)}</size>\r\n";
                                 break;
 
-                            case CustomRoles.Lookout:
-                                if (seer.IsAlive() && target.IsAlive())
-                                    TargetPlayerName = (ColorString(GetRoleColor(CustomRoles.Lookout), " " + target.PlayerId.ToString()) + " " + TargetPlayerName);
-                                break;
-
                             case CustomRoles.Swapper:
                                 if (seer.IsAlive() && target.IsAlive())
                                     TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + TargetPlayerName;
@@ -2513,7 +2509,13 @@ public static class Utils
                                 break;
 
                         }
+                        if (seer.PlayerId != target.PlayerId && Main.PlayerStates.TryGetValue(seer.PlayerId, out var seerState) && seerState.Role != null)
+                            if (seerState.Role.NotifyRoleMark(seer, target, TargetPlayerName) != "")
+                                TargetPlayerName = seerState.Role.NotifyRoleMark(seer, target, TargetPlayerName);
+                            else if (seerState.Role.NotifyRoleMark(seer, target, "", isForMeeting) != "")
+                            {
 
+                            }
                         // ========= Only During Meeting =========
                         if (isForMeeting)
                         {

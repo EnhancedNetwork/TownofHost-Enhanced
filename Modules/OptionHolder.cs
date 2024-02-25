@@ -1803,7 +1803,6 @@ public static class Options
 
         Guardian.SetupCustomOptions();
 
-        SetupRoleOptions(11800, TabGroup.CrewmateRoles, CustomRoles.Lookout);
 
         Marshall.SetupCustomOption();
 
