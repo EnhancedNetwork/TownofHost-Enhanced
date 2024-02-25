@@ -296,7 +296,6 @@ internal class ChangeRoleSettings
             Farseer.Init();
             Fool.Init();
             Infectious.Init();
-            Monarch.Init();
             Virus.Init();
             Bloodhound.Init();
             Tracker.Init();
@@ -900,9 +899,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Infectious:
                         Infectious.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Monarch:
-                        Monarch.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Deputy:
                         Deputy.Add(pc.PlayerId);

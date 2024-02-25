@@ -1145,7 +1145,7 @@ class MeetingHudStartPatch
         {
             if (pva == null) continue;
             PlayerControl seer = PlayerControl.LocalPlayer;
-            var seerRoleClass = seer.GetCustomRole().GetRoleClass();
+            var seerRoleClass = Main.PlayerStates[seer.PlayerId].Role;
             PlayerControl target = Utils.GetPlayerById(pva.TargetPlayerId);
             if (target == null) continue;
 

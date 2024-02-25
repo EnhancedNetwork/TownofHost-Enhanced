@@ -698,6 +698,7 @@ public static class Utils
             if (!Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId)) return ""; //ホストがMODを入れていなければ未記入を返す
             var ProgressText = new StringBuilder();
             var role = Main.PlayerStates[playerId].MainRole;
+            ProgressText.Append(Main.PlayerStates[playerId]?.Role?.GetProgressText());
             switch (role)
             {
                 case CustomRoles.Arsonist:
@@ -1064,9 +1065,6 @@ public static class Utils
                     break;
                 case CustomRoles.Infectious:
                     ProgressText.Append(Infectious.GetBiteLimit());
-                    break;
-                case CustomRoles.Monarch:
-                    ProgressText.Append(Monarch.GetKnightLimit());
                     break;
                 case CustomRoles.Deputy:
                     ProgressText.Append(Deputy.GetHandcuffLimit());

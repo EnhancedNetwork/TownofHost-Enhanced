@@ -62,7 +62,7 @@ internal class CopyCat : RoleBase
             if (pc == null) continue;
             var role = pc.GetCustomRole();
             ////////////           /*remove the settings for current role*/             /////////////////////
-            if (role != CustomRoles.CopyCat) role.GetRoleClass().Remove(pc.PlayerId);
+            
             
             switch (role)
             {
@@ -169,11 +169,15 @@ internal class CopyCat : RoleBase
                     Farseer.Remove(pc.PlayerId);
                     break;
             }
-
             if (pc.GetCustomRole() != CustomRoles.Sidekick)
+            {
+                if (Whitelist(role))
+                {
+                    Main.PlayerStates[pc.PlayerId].Role.Remove(pc.PlayerId);
+                }
                 pc.RpcSetCustomRole(CustomRoles.CopyCat);
-
-            Main.PlayerStates[player].Role.SetKillCooldown(player);
+            }
+            pc.ResetKillCooldown();
         }
     }
 
@@ -290,9 +294,12 @@ internal class CopyCat : RoleBase
         }
         if (role.IsCrewmate())
         {
-            if (Whitelist(role)) role.GetRoleClass().Add(pc.PlayerId);
 
-            pc.RpcSetCustomRole(role);
+            if (Whitelist(role)) 
+            {
+                pc.RpcSetCustomRole(role);
+                Main.PlayerStates[pc.PlayerId].Role.Add(pc.PlayerId);
+            }
             if (CopyTeamChangingAddon.GetBool())
             {
                 if (tpc.Is(CustomRoles.Madmate) || tpc.Is(CustomRoles.Rascal)) pc.RpcSetCustomRole(CustomRoles.Madmate);

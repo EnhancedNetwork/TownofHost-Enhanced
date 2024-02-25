@@ -53,6 +53,7 @@ public class PlayerState(byte playerId)
         countTypes = role.GetCountTypes();
         Role = role.GetRoleClass();
 
+
         var pc = Utils.GetPlayerById(PlayerId);
 
         if (role == CustomRoles.Opportunist)

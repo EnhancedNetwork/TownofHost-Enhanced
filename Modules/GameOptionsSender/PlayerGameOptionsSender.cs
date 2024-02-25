@@ -184,7 +184,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Medic:
             case CustomRoles.Crusader:
             case CustomRoles.Provocateur:
-            case CustomRoles.Monarch:
             case CustomRoles.Deputy:
             case CustomRoles.Investigator:
             case CustomRoles.Counterfeiter:

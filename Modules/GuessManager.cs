@@ -247,12 +247,6 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("GuessShielded"));
                     return true;
                 }
-                if (role == CustomRoles.Monarch && target.Is(CustomRoles.Monarch) && CustomRoles.Knighted.RoleExist())
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessMonarch"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessMonarch"));
-                    return true;
-                }
                 if (role == CustomRoles.Knighted && pc.Is(CustomRoles.Monarch))
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessKnighted"), pc.PlayerId);

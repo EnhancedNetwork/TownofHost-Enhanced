@@ -10,6 +10,7 @@ using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static UnityEngine.RemoteConfigSettingsHelper;
 
 namespace TOHE.Roles.Neutral;
 
@@ -163,7 +164,7 @@ public static class Jackal
                 //if (!AttendantCantRoles.GetBool() && Mini.Age == 18 || !AttendantCantRoles.GetBool() &&  Mini.Age != 18 && !(target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
                 
                 if (CopyCat.playerIdList.Contains(target.PlayerId))
-                    CustomRoles.CopyCat.GetRoleClass().Remove(target.PlayerId);
+                    Main.PlayerStates[target.PlayerId].Role.Remove(target.PlayerId);
                 target.RpcSetCustomRole(CustomRoles.Sidekick);
 
                 if (!Main.ResetCamPlayerList.Contains(target.PlayerId))

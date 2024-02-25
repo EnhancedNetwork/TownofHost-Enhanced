@@ -214,6 +214,11 @@ public abstract class RoleBase
     public virtual string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;
     public virtual bool KnowRoletarget(PlayerControl seer, PlayerControl target) => false;
     public virtual bool KnowTargetRoleColor(PlayerControl seer, PlayerControl target) => false;
+    public virtual string ThisKnowTargetsColor(PlayerControl seer, PlayerControl target) => string.Empty;
 
+    /// <summary>
+    /// Gets & Appends the role's skill limit
+    /// </summary>
+    public virtual string GetProgressText() => string.Empty;
     public virtual int CalcVote(PlayerVoteArea PVA) => 0;
 }

@@ -19,6 +19,7 @@ using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
 using TOHE.Roles.Core;
+using static UnityEngine.RemoteConfigSettingsHelper;
 
 namespace TOHE;
 
@@ -555,9 +556,6 @@ class CheckMurderPatch
                     return false;
                 case CustomRoles.Infectious:
                     Infectious.OnCheckMurder(killer, target);
-                    return false;
-                case CustomRoles.Monarch:
-                    Monarch.OnCheckMurder(killer, target);
                     return false;
                 case CustomRoles.Deputy:
                     Deputy.OnCheckMurder(killer, target);
@@ -2035,8 +2033,8 @@ class ReportDeadBodyPatch
                         }
                         else if (tar.Is(CustomRoles.CopyCat))
                         {
-                            CustomRoles.CopyCat.GetRoleClass().Add(__instance.PlayerId);
                             __instance.RpcSetCustomRole(CustomRoles.CopyCat);
+                            Main.PlayerStates[tar.PlayerId].Role.Add(tar.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         }
@@ -2093,8 +2091,8 @@ class ReportDeadBodyPatch
                         }
                         else if (tar.Is(CustomRoles.Monarch))
                         {
-                            Monarch.Add(__instance.PlayerId);
                             __instance.RpcSetCustomRole(CustomRoles.Monarch);
+                            Main.PlayerStates[tar.PlayerId].Role.Add(tar.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         }
@@ -3090,7 +3088,7 @@ class FixedUpdateInNormalGamePatch
 
 
                 var seer = PlayerControl.LocalPlayer;
-                var seerRoleClass = seer.GetCustomRole().GetRoleClass();
+                var seerRoleClass = Main.PlayerStates[seer.PlayerId].Role;
                 var target = __instance;
 
                 string RealName = target.GetRealName();

@@ -543,7 +543,6 @@ static class ExtendedPlayerControl
             CustomRoles.Imitator => Imitator.CanUseKillButton(pc),
             //CustomRoles.Warlock => !Main.isCurseAndKill.TryGetValue(pc.PlayerId, out bool wcs) || !wcs,
             CustomRoles.Infectious => Infectious.CanUseKillButton(pc),
-            CustomRoles.Monarch => Monarch.CanUseKillButton(pc),
             CustomRoles.Deputy => Deputy.CanUseKillButton(pc),
             CustomRoles.Investigator => Investigator.CanUseKillButton(pc),
             CustomRoles.Virus => pc.IsAlive(),
@@ -983,9 +982,6 @@ static class ExtendedPlayerControl
                 break; */
             case CustomRoles.Infectious:
                 Infectious.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Monarch:
-                Monarch.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Pirate:
                 Pirate.SetKillCooldown(player.PlayerId);

@@ -1277,9 +1277,6 @@ internal static class RPC
             case CustomRoles.Infectious:
                 Infectious.Add(targetId);
                 break;
-            case CustomRoles.Monarch:
-                Monarch.Add(targetId);
-                break;
             case CustomRoles.Deputy:
                 Deputy.Add(targetId);
                 break;
