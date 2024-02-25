@@ -311,7 +311,7 @@ public static class CustomRoleManager
     public static HashSet<Action<PlayerControl>> OnFixedUpdateLowLoadOthers = [];
     public static void OnFixedUpdateLowLoad(PlayerControl player)
     {
-        Main.PlayerStates[player.PlayerId]?.Role?.OnFixedUpdateLowLoad(player);
+        player.GetCustomRole().GetRoleClass()?.OnFixedUpdateLowLoad(player);
 
         if (OnFixedUpdateLowLoadOthers.Count <= 0) return;
         //Execute other viewpoint processing if any

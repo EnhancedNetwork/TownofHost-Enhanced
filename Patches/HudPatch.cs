@@ -453,31 +453,26 @@ class HudManagerPatch
                         break;
                 }
 
-                //バウンティハンターのターゲットテキスト
+                // Set lower info text for modded players
                 if (LowerInfoText == null)
                 {
-                    TempLowerInfoText = new GameObject("CountdownText");
-                    TempLowerInfoText.transform.position = new Vector3(0f, -2f, 1f);
-                    LowerInfoText = TempLowerInfoText.AddComponent<TextMeshPro>();
-                    //LowerInfoText.text = string.Format(GetString("CountdownText"));
-                    LowerInfoText.alignment = TextAlignmentOptions.Center;
-                    //LowerInfoText = Object.Instantiate(__instance.KillButton.buttonLabelText);
+                    LowerInfoText = UnityEngine.Object.Instantiate(__instance.KillButton.buttonLabelText);
                     LowerInfoText.transform.parent = __instance.transform;
                     LowerInfoText.transform.localPosition = new Vector3(0, -2f, 0);
+                    LowerInfoText.alignment = TextAlignmentOptions.Center;
                     LowerInfoText.overflowMode = TextOverflowModes.Overflow;
                     LowerInfoText.enableWordWrapping = false;
-                    LowerInfoText.color = Color.white;
-                    LowerInfoText.outlineColor = Color.black;
-                    LowerInfoText.outlineWidth = 20000000f;
-                    LowerInfoText.fontSize = 2f;
+                    LowerInfoText.color = Palette.EnabledColor;
+                    LowerInfoText.fontSizeMin = 2.0f;
+                    LowerInfoText.fontSizeMax = 2.0f;
                 }
                 switch (Options.CurrentGameMode)
                 {
                     case CustomGameMode.Standard:
                         var roleClass = player.GetCustomRole().GetRoleClass();
-                        LowerInfoText.text = roleClass?.GetLowerText(player, isForMeeting: GameStates.IsMeeting, isForHud: true) ?? "";
+                        //LowerInfoText.text = roleClass?.GetLowerText(player, isForMeeting: GameStates.IsMeeting, isForHud: true) ?? "";
 
-                        if (LowerInfoText.text != "" || LowerInfoText.text != string.Empty)
+                        //if (LowerInfoText.text != "" || LowerInfoText.text != string.Empty)
                             LowerInfoText.text = player.GetCustomRole() switch
                             {
                                 CustomRoles.BountyHunter => BountyHunter.GetTargetText(player, true),
@@ -493,7 +488,7 @@ class HudManagerPatch
                                 CustomRoles.BloodKnight => BloodKnight.GetHudText(player),
                                 CustomRoles.Wildling => Wildling.GetHudText(player),
                                 CustomRoles.PlagueDoctor => PlagueDoctor.GetLowerTextOthers(player),
-                                _ => string.Empty,
+                                _ => roleClass?.GetLowerText(player, isForMeeting: GameStates.IsMeeting, isForHud: true) ?? "",
                             };
                         break;
                 }

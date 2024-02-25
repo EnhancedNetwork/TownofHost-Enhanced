@@ -3345,7 +3345,7 @@ class FixedUpdateInNormalGamePatch
                 {
                     if (seer.Is(CustomRoles.AntiAdminer))
                     {
-                        Main.PlayerStates[player.PlayerId].Role.OnFixedUpdateLowLoad(player);
+                        //seer.GetCustomRole().GetRoleClass().OnFixedUpdateLowLoad(player);
                         if (target.AmOwner)
                             Suffix.Append(AntiAdminer.GetSuffix());
                     }
