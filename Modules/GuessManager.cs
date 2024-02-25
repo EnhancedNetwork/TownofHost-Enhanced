@@ -191,13 +191,6 @@ public static class GuessManager
                     if (targetState.Role.OnRoleGuess(isUI, target, pc))
                         return true;
 
-                if (CopyCat.playerIdList.Contains(pc.PlayerId))
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessDisabled"));
-                    return true;
-                }
-
                 if (!Mundane.OnGuess(pc))
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessedAsMundane"), pc.PlayerId);

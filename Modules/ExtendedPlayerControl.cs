@@ -490,7 +490,6 @@ static class ExtendedPlayerControl
             CustomRoles.Vigilante => pc.IsAlive(),
             CustomRoles.Jailer => pc.IsAlive(),
             CustomRoles.Crusader => Crusader.CanUseKillButton(pc.PlayerId),
-            CustomRoles.CopyCat => pc.IsAlive(),
             CustomRoles.Pelican => pc.IsAlive(),
             CustomRoles.Mastermind => pc.IsAlive(),
             CustomRoles.Arsonist => Options.ArsonistCanIgniteAnytime.GetBool() ? Utils.GetDousedPlayerCount(pc.PlayerId).Item1 < Options.ArsonistMaxPlayersToIgnite.GetInt() : !pc.IsDouseDone(),
@@ -583,11 +582,12 @@ static class ExtendedPlayerControl
     {
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel) return false;
         if (GameStates.IsHideNSeek) return true;
-        if (CopyCat.playerIdList.Contains(pc.PlayerId)) return true;
         if (Main.TasklessCrewmate.Contains(pc.PlayerId)) return true;
         if (Necromancer.Killer && !pc.Is(CustomRoles.Necromancer)) return false;
         if (pc.Is(CustomRoles.Nimble)) return true;
         if (Circumvent.CantUseVent(pc)) return false;
+        if (Main.PlayerStates.TryGetValue(pc.PlayerId, out var PlayerState) && PlayerState != null)
+            return PlayerState.Role.CanUseImpostorVentButton(pc); 
 
         return pc.GetCustomRole() switch
         {
@@ -876,9 +876,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Sheriff:
                 Sheriff.SetKillCooldown(player.PlayerId); //シェリフはシェリフのキルクールに。
-                break;
-            case CustomRoles.CopyCat:
-                CopyCat.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.KillingMachine:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.MNKillCooldown.GetFloat();

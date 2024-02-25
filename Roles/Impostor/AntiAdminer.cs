@@ -44,6 +44,10 @@ internal class AntiAdminer : RoleBase
         playerIdList.Add(playerId);
         On = true;
     }
+    public override void Remove(byte playerId)
+    {
+        playerIdList = [];
+    }
 
     private static int Count = 0;
     public override void OnFixedUpdateLowLoad(PlayerControl player)

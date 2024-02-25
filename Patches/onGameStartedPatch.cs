@@ -221,7 +221,6 @@ internal class ChangeRoleSettings
             Doppelganger.Init();
             RiftMaker.Init();
             Sheriff.Init();
-            CopyCat.Init();
             GuessMaster.Init();
             Cleanser.Init();
             SwordsMan.Init();
@@ -701,9 +700,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Huntsman:
                         Huntsman.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.CopyCat:
-                        CopyCat.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Cleanser:
                         Cleanser.Add(pc.PlayerId);

@@ -601,10 +601,6 @@ class CheckMurderPatch
                     if (!Jailer.OnCheckMurder(killer, target))
                         return false;
                     break;
-                case CustomRoles.CopyCat:
-                    if (!CopyCat.OnCheckMurder(killer, target))
-                        return false;
-                    break;
 
                 case CustomRoles.SwordsMan:
                     if (!SwordsMan.OnCheckMurder(killer))
@@ -2039,7 +2035,7 @@ class ReportDeadBodyPatch
                         }
                         else if (tar.Is(CustomRoles.CopyCat))
                         {
-                            CopyCat.Add(__instance.PlayerId);
+                            CustomRoles.CopyCat.GetRoleClass().Add(__instance.PlayerId);
                             __instance.RpcSetCustomRole(CustomRoles.CopyCat);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));

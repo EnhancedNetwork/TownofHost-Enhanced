@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TOHE.Roles.Crewmate;
 using UnityEngine;
 
 namespace TOHE;
@@ -18,7 +19,8 @@ public abstract class RoleBase
     /// <summary>
     /// If roles has to be removed from player
     /// </summary>
-    public abstract void Remove(byte playerId);
+    public virtual void Remove(byte playerId)
+    { }
     /// <summary>
     /// Make a bool and apply IsEnable => {Bool};
     /// </summary>
@@ -175,7 +177,9 @@ public abstract class RoleBase
     /// A generic method to activate actions after a meeting has ended.
     /// </summary>
     public virtual void AfterMeetingTasks()
-    { }
+    {
+
+    }
 
     /// <summary>
     /// When the game starts to ending

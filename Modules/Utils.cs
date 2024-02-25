@@ -2686,13 +2686,15 @@ public static class Utils
         if (Retributionist.IsEnable) Retributionist.AfterMeetingTasks(); 
         if (PlagueDoctor.IsEnable) PlagueDoctor.AfterMeetingTasks();
         if (Jailer.IsEnable) Jailer.AfterMeetingTasks();
-        if (CopyCat.IsEnable) CopyCat.AfterMeetingTasks();  //all crew after meeting task should be before this
         if (Pirate.IsEnable) Pirate.AfterMeetingTask();
         if (Solsticer.IsEnable) Solsticer.AfterMeetingTasks();
         if (RiftMaker.IsEnable) RiftMaker.AfterMeetingTasks();
         if (Statue.IsEnable) Statue.AfterMeetingTasks();
         if (Burst.IsEnable) Burst.AfterMeetingTasks();
+        if (CopyCat.On) CopyCat.UnAfterMeetingTasks(); // All crew hast to be before this
+        
 
+        
         Main.ShamanTarget = byte.MaxValue;
         Main.ShamanTargetChoosen = false;
 
