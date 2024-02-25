@@ -272,15 +272,6 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("GuessMasochistBlocked"));
                     return true;
                 }
-                if (Options.MayorRevealWhenDoneTasks.GetBool())
-                {
-                    if (target.Is(CustomRoles.Mayor) && target.GetPlayerTaskState().IsTaskFinished)
-                    {
-                        if (!isUI) Utils.SendMessage(GetString("GuessMayor"), pc.PlayerId);
-                        else pc.ShowPopUp(GetString("GuessMayor"));
-                        return true;
-                    }
-                }
                 if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessMini"), pc.PlayerId);

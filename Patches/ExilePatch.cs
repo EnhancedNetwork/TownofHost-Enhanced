@@ -197,9 +197,6 @@ class ExileControllerWrapUpPatch
 
             switch (playerRole)
             {
-                case CustomRoles.Mayor when Options.MayorHasPortableButton.GetBool():
-                    player.RpcResetAbilityCooldown();
-                    break;
 
                 case CustomRoles.Warlock:
                     Main.CursedPlayers[player.PlayerId] = null;

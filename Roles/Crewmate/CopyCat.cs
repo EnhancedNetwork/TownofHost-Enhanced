@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -58,6 +59,8 @@ public static class CopyCat
             if (pc == null) continue;
             var role = pc.GetCustomRole();
             ////////////           /*remove the settings for current role*/             /////////////////////
+            role.GetRoleClass().Remove(pc.PlayerId);
+            
             switch (role)
             {
                 case CustomRoles.Cleanser:
@@ -104,9 +107,6 @@ public static class CopyCat
                     break;
                 case CustomRoles.Judge:
                     Judge.Remove(player);
-                    break;
-                case CustomRoles.Mayor:
-                    Main.MayorUsedButtonCount.Remove(player);
                     break;
                 case CustomRoles.Divinator:
                     Divinator.Remove(pc.PlayerId);
@@ -250,6 +250,8 @@ public static class CopyCat
         {
             ////////////           /*add the settings for new role*/            ////////////
             /* anything that is assigned in onGameStartedPatch.cs comes here */
+            role.GetRoleClass().Add(pc.PlayerId);
+
             switch (role)
             {
                 case CustomRoles.Cleanser:
@@ -302,9 +304,6 @@ public static class CopyCat
                     break;
                 case CustomRoles.Judge:
                     Judge.Add(pc.PlayerId);
-                    break;
-                case CustomRoles.Mayor:
-                    Main.MayorUsedButtonCount[pc.PlayerId] = 0;
                     break;
                 case CustomRoles.Divinator:
                     Divinator.Add(pc.PlayerId);

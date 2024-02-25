@@ -283,9 +283,9 @@ class CheckForEndVotingPatch
                     }
                 }
 
-                if (CheckRole(ps.TargetPlayerId, CustomRoles.Mayor) && !Options.MayorHideVote.GetBool()) //Mayorの投票数
+                if (CheckRole(ps.TargetPlayerId, CustomRoles.Mayor) && !Mayor.MayorHideVote.GetBool()) //Mayorの投票数
                 {
-                    for (var i2 = 0; i2 < Options.MayorAdditionalVote.GetFloat(); i2++)
+                    for (var i2 = 0; i2 < Mayor.MayorAdditionalVote.GetFloat(); i2++)
                     {
                         statesList.Add(new MeetingHud.VoterState()
                         {
@@ -815,11 +815,12 @@ static class ExtendedMeetingHud
                 }
 
                 //市长附加票数
-                if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Mayor)
-                    && ps.TargetPlayerId != ps.VotedFor
-                    ) VoteNum += Options.MayorAdditionalVote.GetInt();
+                var pc = Utils.GetPlayerById(ps.TargetPlayerId);
+                if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, pc.GetCustomRole())
+                    && ps.TargetPlayerId != ps.VotedFor && ps != null)
+                        VoteNum += Main.PlayerStates[ps.TargetPlayerId].Role.CalcVote(ps); // returns + 0 or given role value (+/-)
 
-                if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Knighted)
+                if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Knighted) // not doing addons lol, so this stays
                     && ps.TargetPlayerId != ps.VotedFor
                     ) VoteNum += 1;
 

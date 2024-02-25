@@ -88,7 +88,6 @@ internal class ChangeRoleSettings
             Main.CheckShapeshift = [];
             Main.ShapeshiftTarget = [];
             Main.SpeedBoostTarget = [];
-            Main.MayorUsedButtonCount = [];
             Main.ParaUsedButtonCount = [];
             Main.MarioVentCount = [];
             Main.VeteranInProtect = [];
@@ -714,9 +713,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.QuickShooter:
                         QuickShooter.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Mayor:
-                        Main.MayorUsedButtonCount[pc.PlayerId] = 0;
                         break;
                     case CustomRoles.GuessMaster:
                         GuessMaster.Add(pc.PlayerId);

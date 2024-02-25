@@ -175,7 +175,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, long> RevolutionistLastTime = [];
     public static Dictionary<byte, int> RevolutionistCountdown = [];
     public static Dictionary<byte, byte> SpeedBoostTarget = [];
-    public static Dictionary<byte, int> MayorUsedButtonCount = [];
     public static Dictionary<byte, int> ParaUsedButtonCount = [];
     public static Dictionary<byte, int> MarioVentCount = [];
     public static Dictionary<byte, long> VeteranInProtect = [];

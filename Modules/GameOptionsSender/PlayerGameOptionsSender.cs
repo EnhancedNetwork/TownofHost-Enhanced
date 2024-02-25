@@ -216,13 +216,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.ScientistCooldown = 0f;
                 AURoleOptions.ScientistBatteryCharge = Options.DoctorTaskCompletedBatteryCharge.GetFloat();
                 break;
-            case CustomRoles.Mayor:
-                AURoleOptions.EngineerCooldown =
-                    !Main.MayorUsedButtonCount.TryGetValue(player.PlayerId, out var count) || count < Options.MayorNumOfUseButton.GetInt()
-                    ? opt.GetInt(Int32OptionNames.EmergencyCooldown)
-                    : 300f;
-                AURoleOptions.EngineerInVentMaxTime = 1;
-                break;
          /* case CustomRoles.Paranoia:
                 AURoleOptions.EngineerCooldown =
                     !Main.ParaUsedButtonCount.TryGetValue(player.PlayerId, out var count2) || count2 < Options.ParanoiaNumOfUseButton.GetInt()

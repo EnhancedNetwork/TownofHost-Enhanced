@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using UnityEngine;
 
 namespace TOHE;
 
@@ -14,6 +15,10 @@ public abstract class RoleBase
     /// </summary>
     public abstract void Add(byte playerId);
 
+    /// <summary>
+    /// If roles has to be removed from player
+    /// </summary>
+    public abstract void Remove(byte playerId);
     /// <summary>
     /// Make a bool and apply IsEnable => {Bool};
     /// </summary>
@@ -194,10 +199,17 @@ public abstract class RoleBase
     /// </summary>
     public virtual void SetAbilityButtonText(HudManager hud, byte id) => hud.KillButton?.OverrideText(Translator.GetString("KillButtonText"));
 
+    /// <summary>
+    /// Set button sprite, return "Kill" or "Vent" or "Ability" or "Report" respectively.
+    /// </summary>
+    public virtual (string, Sprite, string, Sprite) SetAbilityButtonSprite() => (string.Empty, CustomButton.Get("Happy"), string.Empty, CustomButton.Get("Happy"));
+
     public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
     public virtual string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;
     public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
     public virtual string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;
     public virtual bool KnowRoletarget(PlayerControl seer, PlayerControl target) => false;
     public virtual bool KnowTargetRoleColor(PlayerControl seer, PlayerControl target) => false;
+
+    public virtual int CalcVote(PlayerVoteArea PVA) => 0;
 }

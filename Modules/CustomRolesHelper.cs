@@ -30,7 +30,7 @@ public static class CustomRolesHelper
                 CustomRoles.Sniper => CustomRoles.Shapeshifter,
                 CustomRoles.Jester => Options.JesterCanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
                 CustomRoles.Monitor => Monitor.CanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
-                CustomRoles.Mayor => Options.MayorHasPortableButton.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
+                CustomRoles.Mayor => Mayor.MayorHasPortableButton.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
                 CustomRoles.Captain => CustomRoles.Crewmate,
                 CustomRoles.Vulture => Vulture.CanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
                 CustomRoles.Opportunist => CustomRoles.Crewmate,
@@ -1810,7 +1810,7 @@ public static class CustomRolesHelper
     }
     public static bool IsRevealingRole(this CustomRoles role, PlayerControl target)
     {
-        return (((role is CustomRoles.Mayor) && (Options.MayorRevealWhenDoneTasks.GetBool()) && target.AllTasksCompleted()) ||
+        return (((role is CustomRoles.Mayor) && (Mayor.MayorRevealWhenDoneTasks.GetBool()) && target.AllTasksCompleted()) ||
              ((role is CustomRoles.SuperStar) && (Options.EveryOneKnowSuperStar.GetBool())) ||
             ((role is CustomRoles.Marshall) && target.AllTasksCompleted()) ||
             ((role is CustomRoles.Workaholic) && (Options.WorkaholicVisibleToEveryone.GetBool())) ||

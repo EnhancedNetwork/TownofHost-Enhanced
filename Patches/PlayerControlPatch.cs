@@ -2276,10 +2276,7 @@ class ReportDeadBodyPatch
             if (Quizmaster.IsEnable)
                 Quizmaster.OnButtonPress(player);
 
-            if (player.Is(CustomRoles.Mayor))
-            {
-                Main.MayorUsedButtonCount[player.PlayerId] += 1;
-            }
+            
         }
         else
         {
@@ -3492,18 +3489,12 @@ class EnterVentPatch
     {
         if (GameStates.IsHideNSeek) return;
 
+        Main.PlayerStates[pc.PlayerId]?.Role?.OnEnterVent(pc, __instance);
+
         Witch.OnEnterVent(pc);
         HexMaster.OnEnterVent(pc);
         //Occultist.OnEnterVent(pc);
 
-        if (pc.Is(CustomRoles.Mayor) && Options.MayorHasPortableButton.GetBool() && !CopyCat.playerIdList.Contains(pc.PlayerId))
-        {
-            if (Main.MayorUsedButtonCount.TryGetValue(pc.PlayerId, out var count) && count < Options.MayorNumOfUseButton.GetInt())
-            {
-                pc?.MyPhysics?.RpcBootFromVent(__instance.Id);
-                pc?.NoCheckStartMeeting(pc?.Data);
-            }
-        }
      /* if (pc.Is(CustomRoles.Wraith)) // THIS WAS FOR WEREWOLF TESTING PURPOSES, PLEASE IGNORE
         {
             pc?.MyPhysics?.RpcBootFromVent(__instance.Id);            
@@ -3526,7 +3517,7 @@ class EnterVentPatch
             }
         } */
 
-        else if (pc.Is(CustomRoles.Mario))
+        if (pc.Is(CustomRoles.Mario))
         {
             Main.MarioVentCount.TryAdd(pc.PlayerId, 0);
             Main.MarioVentCount[pc.PlayerId]++;
@@ -3831,7 +3822,7 @@ class CoEnterVentPatch
         if (
             (__instance.myPlayer.Data.Role.Role != RoleTypes.Engineer
                 && !__instance.myPlayer.CanUseImpostorVentButton())
-            || (__instance.myPlayer.Is(CustomRoles.Mayor) && Main.MayorUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count) && count >= Options.MayorNumOfUseButton.GetInt())
+            || (__instance.myPlayer.Is(CustomRoles.Mayor) && Mayor.MayorUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count) && count >= Mayor.MayorNumOfUseButton.GetInt())
           //|| (__instance.myPlayer.Is(CustomRoles.Paranoia) && Main.ParaUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count2) && count2 >= Options.ParanoiaNumOfUseButton.GetInt())
             || (__instance.myPlayer.Is(CustomRoles.Veteran) && Main.VeteranNumOfUsed.TryGetValue(__instance.myPlayer.PlayerId, out var count3) && count3 < 1)
             || (__instance.myPlayer.Is(CustomRoles.DovesOfNeace) && Main.DovesOfNeaceNumOfUsed.TryGetValue(__instance.myPlayer.PlayerId, out var count4) && count4 < 1)

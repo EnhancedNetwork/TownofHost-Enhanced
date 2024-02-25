@@ -236,7 +236,6 @@ public static class NameColorManager
             || (target.Is(CustomRoles.Workaholic) && Options.WorkaholicVisibleToEveryone.GetBool())
             || (target.Is(CustomRoles.Doctor) && Options.DoctorVisibleToEveryone.GetBool())
             || (target.Is(CustomRoles.Gravestone) && Main.PlayerStates[target.Data.PlayerId].IsDead)
-            || (target.Is(CustomRoles.Mayor) && Options.MayorRevealWhenDoneTasks.GetBool() && target.GetPlayerTaskState().IsTaskFinished)
             || Consigliere.IsShowTargetRole(seer, target)
             || PotionMaster.IsShowTargetRole(seer, target)
          //   || Mare.KnowTargetRoleColor(target, isMeeting)
