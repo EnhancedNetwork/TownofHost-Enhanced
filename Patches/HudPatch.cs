@@ -463,8 +463,8 @@ class HudManagerPatch
                     LowerInfoText.overflowMode = TextOverflowModes.Overflow;
                     LowerInfoText.enableWordWrapping = false;
                     LowerInfoText.color = Palette.EnabledColor;
-                    LowerInfoText.fontSizeMin = 2.0f;
-                    LowerInfoText.fontSizeMax = 2.0f;
+                    LowerInfoText.fontSizeMin = 2.8f;
+                    LowerInfoText.fontSizeMax = 2.8f;
                 }
                 switch (Options.CurrentGameMode)
                 {
