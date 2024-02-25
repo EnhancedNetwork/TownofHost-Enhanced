@@ -9,6 +9,7 @@ using TOHE.Modules.ChatManager;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
@@ -362,6 +363,7 @@ internal class ChangeRoleSettings
             //FFA
             FFAManager.Init();
 
+            CustomRoleManager.Initialize();
             CustomWinnerHolder.Reset();
             AntiBlackout.Reset();
             NameNotifyManager.Reset();
