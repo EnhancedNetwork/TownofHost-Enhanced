@@ -95,8 +95,6 @@ class CheckForEndVotingPatch
 
                 if (pva.DidVote && pva.VotedFor < 253 && !pc.Data.IsDead)
                 {
-                    
-
                     var voteTarget = Utils.GetPlayerById(pva.VotedFor);
                     if (voteTarget == null)
                     {

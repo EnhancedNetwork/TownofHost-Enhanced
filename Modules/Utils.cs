@@ -27,6 +27,7 @@ using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 
 namespace TOHE;
+
 public static class Utils
 {
     private static readonly DateTime timeStampStartTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -2332,7 +2333,6 @@ public static class Utils
                     else
                     {
                         seerRole = seer.GetCustomRole();
-
 
                         // ====== Add TargetMark for target ======
 
