@@ -140,7 +140,7 @@ internal class Stealth : RoleBase
         RpcDarken(null);
         Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(playerIdList[0]), SpecifyTarget: Utils.GetPlayerById(playerIdList[0]));
     }
-    public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
         seen ??= seer;
         var Player = Utils.GetPlayerById(playerIdList[0]);
