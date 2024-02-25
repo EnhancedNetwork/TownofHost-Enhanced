@@ -1268,7 +1268,7 @@ public static class Utils
 
         foreach (var role in CustomRolesHelper.AllRoles)
         {
-            string mode = GetString($"Rate{role.GetMode()}");
+            string mode = GetString($"Chance{role.GetMode()}");
             if (role.IsEnable())
             {
                 var roleDisplay = $"\n{GetRoleName(role)}: {mode} x{role.GetCount()}";
