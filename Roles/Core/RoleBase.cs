@@ -7,40 +7,59 @@ namespace TOHE;
 
 public abstract class RoleBase
 {
-    // This is a base class for all roles. It contains some common methods and properties that are used by all roles.
+    /// <summary>
+    /// Variable resets when the game starts.
+    /// </summary>
     public abstract void Init();
-    public abstract void Add(byte playerId);
-    // if role exists in game
-    public abstract bool IsEnable { get; }
-    public abstract CustomRoles ThisRoleBase { get; }
-    // Used to Determine the CustomRole's BASE
-    
-    // Some virtual methods that trigger actions, like venting, petting, CheckMurder, etc. These are not abstract because they have a default implementation. These should also have the same name as the methods in the derived classes.
-    public virtual void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Options.DefaultKillCooldown;
 
     /// <summary>
-    /// A local method to determine if (base)imp/SS can use kill button
+    /// When role is applied in the game, beginning or during the game.
+    /// </summary>
+    public abstract void Add(byte playerId);
+
+    /// <summary>
+    /// Make a bool and apply IsEnable => {Bool};
+    /// </summary>
+    public abstract bool IsEnable { get; }
+
+    /// <summary>
+    /// Used to Determine the CustomRole's BASE
+    /// </summary>
+    public abstract CustomRoles ThisRoleBase { get; }
+
+    /// <summary>
+    /// A generic method to set if a impostor/SS base may use kill button.
     /// </summary>
     public virtual bool CanUseKillButton(PlayerControl pc) => pc.Is(CustomRoleTypes.Impostor) && pc.IsAlive();
 
     /// <summary>
-    /// A local method to determine if (base)imp/SS can use vent button
+    /// A generic method to set if a impostor/SS base may vent.
     /// </summary>
     public virtual bool CanUseImpostorVentButton(PlayerControl pc) => pc.IsAlive() && pc.GetCustomRole().GetRoleTypes() is RoleTypes.Impostor or RoleTypes.Shapeshifter;
 
     /// <summary>
-    /// A Local method to determine if (base)imp/SS can sabotage
+    /// A generic method to set if the role can use sabotage.
     /// </summary>
     public virtual bool CanUseSabotage(PlayerControl pc) =>  pc.Is(CustomRoleTypes.Impostor);
+
+    /// <summary>
+    /// When the player presses the sabotage button
+    /// </summary>
+    public virtual bool OnSabotage(PlayerControl pc) => pc != null;
 
     //public virtual void SetupCustomOption()
     //{ }
 
     /// <summary>
-    /// A method to set Role's game options during gameplay
+    /// A generic method to send a CustomRole's Gameoptions.
     /// </summary>
     public virtual void ApplyGameOptions(IGameOptions opt, byte playerId)
     { }
+
+    /// <summary>
+    /// Set a specific kill cooldown
+    /// </summary>
+    public virtual void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Options.DefaultKillCooldown;
 
     /// <summary>
     /// A local method to check conditions during gameplay, 30 times each second
@@ -66,108 +85,107 @@ public abstract class RoleBase
     public virtual void OnTaskComplete(PlayerControl pc)
     { }
 
-    public virtual void OnCoEnterVent(PlayerPhysics physics, Vent vent)
-    { }
-
+    /// <summary>
+    /// A method for activating actions where the role starts playing an animation when entering a vent
+    /// </summary>
     public virtual void OnEnterVent(PlayerControl pc, Vent vent)
     { }
 
+    /// <summary>
+    /// A method for activating actions when role is already in vent
+    /// </summary>
+    public virtual void OnCoEnterVent(PlayerPhysics physics, Vent vent)
+    { }
+
+    /// <summary>
+    /// A generic method to activate actions once (CustomRole)player exists vent.
+    /// </summary>
     public virtual void OnExitVent(PlayerControl pc, Vent vent)
     { }
-
-    /// <summary>
-    /// A method to run actions on kill button usage
-    /// </summary>
-    public virtual bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
-    {
-        return target != null && killer != null;
-    }
-
-    /// <summary>
-    /// A method to set conditions when attempted kill
-    /// </summary>
-    public virtual bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
-    {
-        return target != null && killer != null;
-    }
-
-    public virtual void OnMurder(PlayerControl killer, PlayerControl target)
-    { }
-
-    /// <summary>
-    /// A method to run actions when playerrole is confirmed dead
-    /// </summary>
-    public virtual void OnPlayerDead(PlayerControl killer, PlayerControl target)
-    { }
-
-    /// <summary>
-    /// A method to set conditions when playerole shapeshifts
-    /// </summary>
-    public virtual void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
-    { }
-
-    public virtual bool OnCheckReportDeadBody(PlayerControl reporter, PlayerControl target) => reporter.IsAlive();
-    public virtual bool OnPressReportButton(PlayerControl reporter, PlayerControl target) => reporter.IsAlive();
-
-    /// <summary>
-    /// OnReportDeadBody Overload with reporter and target
-    /// </summary>
-    public virtual void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
-    { }
-
-    /// <summary>
-    /// A method to determine actions once meeting is called
-    /// </summary>
-    public virtual void OnReportDeadBody()
-    { }
-
-    public virtual void NotifyAfterMeeting()
-    { }
-
-    /// <summary>
-    /// A method to determine actions which happen post-meeting
-    /// </summary>
-    public virtual void AfterMeetingTasks()
-    { }
-
-    public virtual void CheckExileTarget(PlayerControl player, bool DecidedWinner)
-    { }
-
-    public virtual void OnPlayerExiled(PlayerControl Bard, GameData.PlayerInfo exiled)
-    { }
-
-    /// <summary>
-    /// A method to run actions once playerole is confirmed ejected(exiled)
-    /// </summary>
-    public virtual void OnPlayerExiled(GameData.PlayerInfo exiled)
-    { }
-
-    //public virtual string GetProgressText(byte playerId, bool comms)
-    //{
-    //    var sb = new StringBuilder();
-    //    sb.Append(Utils.GetTaskCount(playerId, comms));
-    //    sb.Append(Utils.GetAbilityUseLimitDisplay(playerId));
-    //    return sb.ToString();
-    //}
-
-    public virtual void SetAbilityButtonText(HudManager hud, byte id) => hud.KillButton?.OverrideText(Translator.GetString("KillButtonText"));
-
-    public virtual void OnCoEndGame()
-    { }
-
-    /// <summary>
-    /// A method to determine actions once Guardian angel tries protecting
+    
+  /// A generic method to check a Guardian Angel protecting someone.
     /// </summary>
     public virtual void OnCheckProtect(PlayerControl angel, PlayerControl target)
     { }
 
     /// <summary>
-    /// A method to determine conditions when attempt to guess role
+    /// When role the target requires a kill check
     /// </summary>
-    public virtual bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser) 
-    {
-        return target == null;
-    }
+    public virtual bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target) => target != null && killer != null;
+
+    /// <summary>
+    ///  When role the killer requires a kill check
+    /// </summary>
+    public virtual bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target) => target != null && killer != null;
+
+    /// <summary>
+    /// When the killer murder his target
+    /// </summary>
+    public virtual void OnMurder(PlayerControl killer, PlayerControl target)
+    { }
+
+    /// <summary>
+    /// When the target role died
+    /// </summary>
+    public virtual void OnPlayerDead(PlayerControl killer, PlayerControl target)
+    { }
+
+    /// <summary>
+    /// A generic method to do tasks for when a (CustomRole)player is shapeshifting.
+    /// </summary>
+    public virtual void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
+    { }
+
+    /// <summary>
+    /// Checking that a dead body can be reported
+    /// </summary>
+    public virtual bool CheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer) => reporter.IsAlive();
+
+    /// <summary>
+    /// When reporter press report button
+    /// </summary>
+    public virtual bool OnPressReportButton(PlayerControl reporter, PlayerControl target) => reporter.IsAlive();
+
+    /// <summary>
+    /// When the meeting start by report dead body
+    /// </summary>
+    public virtual void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+    { }
+  
+    /// <summary>
+    /// When player trying guess a role
+    /// </summary>
+    public virtual bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser) => target == null;
+
+    /// <summary>
+    /// Check exile role
+    /// </summary>
+    public virtual void CheckExileTarget(PlayerControl player, bool DecidedWinner)
+    { }
+
+    /// <summary>
+    /// When player was exiled
+    /// </summary>
+    public virtual void OnPlayerExiled(PlayerControl Bard, GameData.PlayerInfo exiled)
+    { }
+
+    /// <summary>
+    /// Notify a specific role about something after the meeting was ended.
+    /// </summary>
+    public virtual void NotifyAfterMeeting()
+    { }
+
+    /// <summary>
+    /// A generic method to activate actions after a meeting has ended.
+    /// </summary>
+    public virtual void AfterMeetingTasks()
+    { }
+
+    /// <summary>
+    /// When the game starts to ending
+    /// </summary>
+    public virtual void OnCoEndGame()
+    { }
 
     /// <summary>
     /// A method to determine a playermark for himself or others
@@ -187,5 +205,13 @@ public abstract class RoleBase
     public virtual void OnVote(PlayerControl pc, PlayerControl voteTarget)
     { }
 
+    /// <summary>
+    /// Set text for Kill/Shapeshift/Report/Vent/Protect button
+    /// </summary>
+    public virtual void SetAbilityButtonText(HudManager hud, byte id) => hud.KillButton?.OverrideText(Translator.GetString("KillButtonText"));
 
+    public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
+    public virtual string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;
+    public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
+    public virtual string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;
 }

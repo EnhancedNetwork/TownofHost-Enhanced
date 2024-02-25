@@ -1440,7 +1440,7 @@ class MurderPlayerPatch
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcMurderPlayer))]
-class  RpcMurderPlayerPatch
+class RpcMurderPlayerPatch
 {
     public static bool Prefix(PlayerControl __instance, PlayerControl target, bool didSucceed)
     {
@@ -1473,13 +1473,14 @@ public static class CheckShapeShiftPatch
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool shouldAnimate)
     {
         if (!AmongUsClient.Instance.AmHost || !GameStates.IsModHost) return true;
+        if (__instance.PlayerId == target.PlayerId) return true;
         if (!Options.DisableShapeshiftAnimations.GetBool()) return true;
 
         var shapeshifter = __instance;
         var role = shapeshifter.GetCustomRole();
 
         // Always show
-        if (role is CustomRoles.ShapeshifterTOHE or CustomRoles.ShapeMaster) return true;
+        if (role is CustomRoles.ShapeshifterTOHE or CustomRoles.Shapeshifter or CustomRoles.ShapeMaster) return true;
 
         // Check Sniper settings conditions
         if (role is CustomRoles.Sniper && Sniper.ShowShapeshiftAnimations) return true;
@@ -1676,9 +1677,25 @@ class ShapeshiftPatch
 {
     public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
     {
-        Logger.Info($"{__instance?.GetNameWithRole().RemoveHtmlTags()} => {target?.GetNameWithRole().RemoveHtmlTags()}", "Shapeshift");
-
         var shapeshifter = __instance;
+
+        if (Options.DisableShapeshiftAnimations.GetBool())
+        {
+            var role = shapeshifter.GetCustomRole();
+
+            Logger.Info($"shapeshifter {__instance?.GetRealName()}:role: {role} => {target?.GetNameWithRole().RemoveHtmlTags()}", "ShapeshiftPatch.DisableShapeshiftAnimations");
+
+            // Check shapeshift
+            if (!(
+                (role is CustomRoles.ShapeshifterTOHE or CustomRoles.Shapeshifter or CustomRoles.ShapeMaster)
+                ||
+                (role is CustomRoles.Sniper && Sniper.ShowShapeshiftAnimations)
+                ))
+                return;
+        }
+
+        Logger.Info($"{__instance?.GetNameWithRole().RemoveHtmlTags()} => {target?.GetNameWithRole().RemoveHtmlTags()}", "ShapeshiftPatch");
+
         var shapeshifting = shapeshifter.PlayerId != target.PlayerId;
 
         if (Main.CheckShapeshift.TryGetValue(shapeshifter.PlayerId, out var last) && last == shapeshifting)
@@ -1902,6 +1919,10 @@ class ReportDeadBodyPatch
 
                     return false;
                 }
+
+                if (!Main.PlayerStates.TryGetValue(__instance.PlayerId, out var playerState))
+                    if (playerState != null && playerState.Role != null && playerState.Role.CheckReportDeadBody(__instance, target, killer))
+                        return false;
 
                 //Add all the patch bodies here!!!
                 //Vulture ate body can not be reported
@@ -2207,9 +2228,8 @@ class ReportDeadBodyPatch
                     }
                 }
 
-                if (Main.PlayerStates.TryGetValue(__instance.PlayerId, out var playerState))
-                    if (playerState.Role != null && !playerState.Role.OnPressReportButton(__instance, target.Object))
-                        return false;
+                if (playerState != null && playerState.Role != null && !playerState.Role.OnPressReportButton(__instance, target.Object))
+                    return false;
 
                 if (target.Object.Is(CustomRoles.Unreportable)) return false;
             }

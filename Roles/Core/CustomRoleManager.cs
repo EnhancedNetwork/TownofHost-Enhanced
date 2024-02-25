@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Crewmate;
@@ -301,6 +302,7 @@ public static class CustomRoleManager
     {
         Main.PlayerStates[player.PlayerId]?.Role?.OnFixedUpdate(player);
 
+        if (OnFixedUpdateOthers.Count <= 0) return;
         //Execute other viewpoint processing if any
         foreach (var onFixedUpdate in OnFixedUpdateOthers.ToArray())
         {
@@ -312,10 +314,59 @@ public static class CustomRoleManager
     {
         Main.PlayerStates[player.PlayerId]?.Role?.OnFixedUpdateLowLoad(player);
 
+        if (OnFixedUpdateLowLoadOthers.Count <= 0) return;
         //Execute other viewpoint processing if any
         foreach (var onFixedUpdateLowLoad in OnFixedUpdateLowLoadOthers.ToArray())
         {
             onFixedUpdateLowLoad(player);
         }
+    }
+
+    public static HashSet<Func<PlayerControl, PlayerControl, bool, string>> MarkOthers = [];
+    public static HashSet<Func<PlayerControl, PlayerControl, bool, bool, string>> LowerOthers = [];
+    public static HashSet<Func<PlayerControl, PlayerControl, bool, string>> SuffixOthers = [];
+
+    public static string GetMarkOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    {
+        if (MarkOthers.Count <= 0) return string.Empty;
+
+        var sb = new StringBuilder(100);
+        foreach (var marker in MarkOthers)
+        {
+            sb.Append(marker(seer, seen, isForMeeting));
+        }
+        return sb.ToString();
+    }
+
+    public static string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+    {
+        if (LowerOthers.Count <= 0) return string.Empty;
+
+        var sb = new StringBuilder(100);
+        foreach (var lower in LowerOthers)
+        {
+            sb.Append(lower(seer, seen, isForMeeting, isForHud));
+        }
+        return sb.ToString();
+    }
+
+    public static string GetSuffixOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    {
+        if (SuffixOthers.Count <= 0) return string.Empty;
+
+        var sb = new StringBuilder(100);
+        foreach (var suffix in SuffixOthers)
+        {
+            sb.Append(suffix(seer, seen, isForMeeting));
+        }
+        return sb.ToString();
+    }
+
+    public static void Initialize()
+    {
+        MarkOthers.Clear();
+        LowerOthers.Clear();
+        SuffixOthers.Clear();
+        OnFixedUpdateOthers.Clear();
     }
 }

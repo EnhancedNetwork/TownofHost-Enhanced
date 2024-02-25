@@ -24,7 +24,7 @@ using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
 using TOHE.Roles.AddOns.Common;
-using MS.Internal.Xml.XPath;
+using TOHE.Roles.Core;
 
 namespace TOHE;
 
@@ -1268,7 +1268,7 @@ public static class Utils
 
         foreach (var role in CustomRolesHelper.AllRoles)
         {
-            string mode = GetString($"Rate{role.GetMode()}");
+            string mode = GetString($"Chance{role.GetMode()}");
             if (role.IsEnable())
             {
                 var roleDisplay = $"\n{GetRoleName(role)}: {mode} x{role.GetCount()}";
@@ -2051,10 +2051,11 @@ public static class Utils
             // Size of player roles
             string fontSize = "1.5";
             if (isForMeeting && (seer.GetClient().PlatformData.Platform == Platforms.Playstation || seer.GetClient().PlatformData.Platform == Platforms.Switch)) fontSize = "70%";
-            
+
             //logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":START");
 
             var seerRole = seer.GetCustomRole();
+            var seerRoleClass = seerRole.GetRoleClass();
 
             // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
             if (!CamouflageIsForMeeting && MushroomMixupIsActive && seer.IsAlive() && !seer.Is(CustomRoleTypes.Impostor) && Main.ResetCamPlayerList.Contains(seer.PlayerId))
@@ -2067,6 +2068,8 @@ public static class Utils
                 SelfMark.Clear();
 
                 // ====== Add SelfMark for seer ======
+                SelfMark.Append(seerRoleClass?.GetMark(seer, isForMeeting: isForMeeting));
+                SelfMark.Append(CustomRoleManager.GetMarkOthers(seer, isForMeeting: isForMeeting));
 
                 if (seer.Is(CustomRoles.Lovers) /* || CustomRoles.Ntr.RoleExist() */)
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Lovers), "♥"));
@@ -2104,6 +2107,13 @@ public static class Utils
                 // ====== Add SelfSuffix for seer ======
 
                 SelfSuffix.Clear();
+
+                SelfSuffix.Append(seerRoleClass?.GetLowerText(seer, isForMeeting: isForMeeting));
+                SelfSuffix.Append(CustomRoleManager.GetLowerTextOthers(seer, isForMeeting: isForMeeting));
+
+                SelfSuffix.Append(seerRoleClass?.GetSuffix(seer, isForMeeting: isForMeeting));
+                SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, isForMeeting: isForMeeting));
+
 
                 if (Deathpact.On)
                     SelfSuffix.Append(Deathpact.GetDeathpactPlayerArrow(seer));
@@ -2328,7 +2338,9 @@ public static class Utils
 
                         TargetMark.Clear();
 
-                        Main.PlayerStates[target.PlayerId]?.Role?.NotifyRoleMark(seer, target, TargetMark);
+                        Main.PlayerStates[target.PlayerId]?.Role?.NotifyRoleMark(seer, target, TargetMark
+                        TargetMark.Append(seerRoleClass?.GetMark(seer, target, isForMeeting));
+                        TargetMark.Append(CustomRoleManager.GetMarkOthers(seer, target, isForMeeting));
 
                         if (isForMeeting)
                         {
@@ -2598,9 +2610,16 @@ public static class Utils
                         // ====== Add TargetSuffix for target (TargetSuffix visible ​​only to the seer) ======
                         TargetSuffix.Clear();
 
-
+                        TargetSuffix.Append(CustomRoleManager.GetLowerTextOthers(seer, target, isForMeeting: isForMeeting));
                         TargetSuffix.Append(Stealth.GetSuffix(seer, target));
 
+                        TargetSuffix.Append(seerRoleClass?.GetSuffix(seer, target, isForMeeting: isForMeeting));
+                        TargetSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, target, isForMeeting: isForMeeting));
+
+                        if (TargetSuffix.Length > 0)
+                        {
+                            TargetSuffix.Insert(0, "\r\n");
+                        }
 
                         // ====== Target Death Reason for target (Death Reason visible ​​only to the seer) ======
                         string TargetDeathReason = seer.KnowDeathReason(target) 
@@ -2619,8 +2638,8 @@ public static class Utils
                             TargetPlayerName = $"<size=0%>{TargetPlayerName}</size>";
 
                         // Target Name
-                        string TargetName = $"{TargetRoleText}{TargetPlayerName}{TargetDeathReason}{TargetMark}";
-                        TargetName += TargetSuffix.ToString() == "" ? "" : ("\r\n" + TargetSuffix.ToString());
+                        string TargetName = $"{TargetRoleText}{TargetPlayerName}{TargetDeathReason}{TargetMark}{TargetSuffix}";
+                        //TargetName += TargetSuffix.ToString() == "" ? "" : ("\r\n" + TargetSuffix.ToString());
 
                         target.RpcSetNamePrivate(TargetName, true, seer, force: NoCache);
                     }
