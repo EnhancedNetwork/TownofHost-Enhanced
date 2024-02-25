@@ -91,7 +91,6 @@ internal class Stealth : RoleBase
         // when you're darkening someone
         if (darkenedPlayers == null) return;
 
-        Logger.Info($"{darkenTimer}", "LowLoadCheck");
         // reduce timer
         darkenTimer -= Time.fixedDeltaTime;
         // When the timer reaches 0, return everyone's vision and reset the timer and darkening player.
