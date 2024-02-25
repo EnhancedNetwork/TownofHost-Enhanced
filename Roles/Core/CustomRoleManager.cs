@@ -113,6 +113,7 @@ public static class CustomRoleManager
         CustomRoles.GuardianAngelTOHE => new VanillaRole(),
         CustomRoles.ScientistTOHE => new VanillaRole(),
         CustomRoles.Addict => new Addict(),
+        CustomRoles.Admirer => new Admirer(),
         //CustomRoles.Aid => new Aid(),
         //CustomRoles.Alchemist => new Alchemist(),
         //CustomRoles.Altruist => new Altruist(),

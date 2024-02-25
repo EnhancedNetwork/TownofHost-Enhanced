@@ -1268,9 +1268,6 @@ internal static class RPC
             case CustomRoles.CursedSoul:
                 CursedSoul.Add(targetId);
                 break;
-            case CustomRoles.Admirer:
-                Admirer.Add(targetId);
-                break;
             case CustomRoles.Amnesiac:
                 Amnesiac.Add(targetId);
                 break;

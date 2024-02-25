@@ -15,6 +15,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using TOHE.Roles.Core;
 
 namespace TOHE;
 
@@ -539,7 +540,6 @@ static class ExtendedPlayerControl
             CustomRoles.VengefulRomantic => VengefulRomantic.CanUseKillButton(pc),
             CustomRoles.Succubus => Succubus.CanUseKillButton(pc),
             CustomRoles.CursedSoul => CursedSoul.CanUseKillButton(pc),
-            CustomRoles.Admirer => Admirer.CanUseKillButton(pc),
             CustomRoles.Imitator => Imitator.CanUseKillButton(pc),
             //CustomRoles.Warlock => !Main.isCurseAndKill.TryGetValue(pc.PlayerId, out bool wcs) || !wcs,
             CustomRoles.Infectious => Infectious.CanUseKillButton(pc),
@@ -974,9 +974,6 @@ static class ExtendedPlayerControl
             case CustomRoles.CursedSoul:
                 CursedSoul.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.Admirer:
-                Admirer.SetKillCooldown(player.PlayerId);
-                break;
         /*    case CustomRoles.Imitator:
                 Imitator.SetKillCooldown(player.PlayerId);
                 break; */
@@ -1375,7 +1372,7 @@ static class ExtendedPlayerControl
             else if (seer.Is(CustomRoles.Egoist) && target.Is(CustomRoles.Egoist) && Egoist.ImpEgoistVisibalToAllies.GetBool())
                 return true;
         }
-        else if (Admirer.IsEnable && Admirer.KnowRole(seer, target)) return true;
+        else if (CustomRoles.Admirer.GetRoleClass().IsEnable && Admirer.KnowRole(seer, target)) return true;
         else if (Succubus.IsEnable && Succubus.KnowRole(seer, target)) return true;
         else if (Infectious.IsEnable && Infectious.KnowRole(seer, target)) return true;
         else if (Virus.IsEnable && Virus.KnowRole(seer, target)) return true;

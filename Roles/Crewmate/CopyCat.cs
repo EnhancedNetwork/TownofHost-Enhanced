@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using static TOHE.Options;
 using static TOHE.Translator;
+using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -322,7 +323,7 @@ public static class CopyCat
                     SabotageMaster.Add(pc.PlayerId);
                     break;
                 case CustomRoles.Admirer:
-                    Admirer.Add(pc.PlayerId);
+                    CustomRoles.Admirer.GetRoleClass()?.Add(pc.PlayerId);
                     break;
                 case CustomRoles.Benefactor:
                     Benefactor.Add(pc.PlayerId);

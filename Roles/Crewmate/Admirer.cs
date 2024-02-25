@@ -10,11 +10,13 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
-public static class Admirer
+internal class Admirer : RoleBase
 {
-    private static readonly int Id = 24800;
+    private const int Id = 24800;
     private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    public static bool On;
+    public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     public static OptionItem AdmireCooldown;
     public static OptionItem KnowTargetRole;
@@ -31,19 +33,19 @@ public static class Admirer
         SkillLimit = IntegerOptionItem.Create(Id + 12, "AdmirerSkillLimit", new(0, 100, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Admirer])
             .SetValueFormat(OptionFormat.Times);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         AdmirerLimit = [];
         AdmiredList = [];
-        IsEnable = false;
+        On = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         AdmirerLimit.Add(playerId, SkillLimit.GetInt());
         AdmiredList.Add(playerId, []);
-        IsEnable = true;
+        On = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -92,22 +94,22 @@ public static class Admirer
             else AdmiredList[playerId].Add(targetId);
         }
     }
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AdmirerLimit[id] >= 1 ? AdmireCooldown.GetFloat() : 300f;
-    public static bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && (AdmirerLimit.TryGetValue(player.PlayerId, out var x) ? x : 1) >= 1;
-    public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AdmirerLimit[id] >= 1 ? AdmireCooldown.GetFloat() : 300f;
+    public override bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && (AdmirerLimit.TryGetValue(player.PlayerId, out var x) ? x : 1) >= 1;
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (AdmirerLimit[killer.PlayerId] < 1) return;
+        if (AdmirerLimit[killer.PlayerId] < 1) return false;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Succubus), GetString("CantRecruit")));
-            return;
+            return false;
         }
         if (!AdmirerLimit.ContainsKey(killer.PlayerId))
             Add(killer.PlayerId);
         if (!AdmiredList.ContainsKey(killer.PlayerId))
             AdmiredList.Add(killer.PlayerId, []);
 
-        if (AdmirerLimit[killer.PlayerId] < 1) return;
+        if (AdmirerLimit[killer.PlayerId] < 1) return false;
         if (CanBeAdmired(target, killer))
         {
             if (KnowTargetRole.GetBool())
@@ -172,15 +174,15 @@ public static class Admirer
             target.SetKillCooldown(forceAnime: true);
             Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Admirer.ToString(), "Assign " + CustomRoles.Admirer.ToString());
             Logger.Info($"{killer.GetNameWithRole()} : 剩余{AdmirerLimit[killer.PlayerId]}次仰慕机会", "Admirer");
-            return;
+            return false;
         }
     AdmirerFailed:
         SendRPC(killer.PlayerId); //Sync skill
         killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmirerInvalidTarget")));
         Logger.Info($"{killer.GetNameWithRole()} : 剩余{AdmirerLimit[killer.PlayerId]}次仰慕机会", "Admirer");
-        return;
+        return false;
     }
-    public static bool KnowRole(PlayerControl player, PlayerControl target)
+    public bool KnowRole(PlayerControl player, PlayerControl target)
     {
         if (!KnowTargetRole.GetBool()) return false;
         if (AdmiredList.ContainsKey(player.PlayerId))
