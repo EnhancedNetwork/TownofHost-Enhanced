@@ -51,6 +51,9 @@ public abstract class RoleBase
     public virtual void OnExitVent(PlayerControl pc, Vent vent)
     { }
 
+    public virtual void OnCheckProtect(PlayerControl angel, PlayerControl target)
+    { }
+
     public virtual bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         return target != null && killer != null;
@@ -70,7 +73,7 @@ public abstract class RoleBase
     public virtual void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
     { }
 
-    public virtual bool OnCheckReportDeadBody(PlayerControl reporter, PlayerControl target) => reporter.IsAlive();
+    public virtual bool CheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer) => reporter.IsAlive();
     public virtual bool OnPressReportButton(PlayerControl reporter, PlayerControl target) => reporter.IsAlive();
 
     public virtual void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
@@ -88,18 +91,15 @@ public abstract class RoleBase
     public virtual void OnPlayerExiled(PlayerControl Bard, GameData.PlayerInfo exiled)
     { }
 
-    public virtual void SetAbilityButtonText(HudManager hud, byte id) => hud.KillButton?.OverrideText(Translator.GetString("KillButtonText"));
-
     public virtual void OnCoEndGame()
-    { }
-
-    public virtual void OnCheckProtect(PlayerControl angel, PlayerControl target)
     { }
 
     public virtual bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser) 
     {
         return target == null;
     }
+
+    public virtual void SetAbilityButtonText(HudManager hud, byte id) => hud.KillButton?.OverrideText(Translator.GetString("KillButtonText"));
 
     public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
     public virtual string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;

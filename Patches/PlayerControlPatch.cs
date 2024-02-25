@@ -1920,6 +1920,10 @@ class ReportDeadBodyPatch
                     return false;
                 }
 
+                if (!Main.PlayerStates.TryGetValue(__instance.PlayerId, out var playerState))
+                    if (playerState != null && playerState.Role != null && playerState.Role.CheckReportDeadBody(__instance, target, killer))
+                        return false;
+
                 //Add all the patch bodies here!!!
                 //Vulture ate body can not be reported
                 if (Vulture.UnreportablePlayers.Contains(target.PlayerId)) return false;
@@ -2224,9 +2228,8 @@ class ReportDeadBodyPatch
                     }
                 }
 
-                if (Main.PlayerStates.TryGetValue(__instance.PlayerId, out var playerState))
-                    if (playerState.Role != null && !playerState.Role.OnPressReportButton(__instance, target.Object))
-                        return false;
+                if (playerState != null && playerState.Role != null && !playerState.Role.OnPressReportButton(__instance, target.Object))
+                    return false;
 
                 if (target.Object.Is(CustomRoles.Unreportable)) return false;
             }
