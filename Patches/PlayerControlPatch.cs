@@ -403,9 +403,6 @@ class CheckMurderPatch
                 case CustomRoles.Huntsman:
                     Huntsman.OnCheckMurder(killer, target);
                     break;
-                case CustomRoles.Stealth:
-                    Stealth.OnCheckMurder(killer, target);
-                    break;
                 //case CustomRoles.Occultist:
                 //    if (!Occultist.OnCheckMurder(killer, target)) return false;
                 //    break;
@@ -2352,7 +2349,6 @@ class ReportDeadBodyPatch
         if (Vampiress.IsEnable) Vampiress.OnStartMeeting();
         if (Bloodhound.IsEnable) Bloodhound.Clear();
         if (Vulture.IsEnable) Vulture.Clear();
-        if (Stealth.IsEnable) Stealth.OnReportDeadBody();
         if (Penguin.IsEnable) Penguin.OnReportDeadBody(); 
         if (Pelican.IsEnable) Pelican.OnReportDeadBody();
         if (Bandit.IsEnable) Bandit.OnReportDeadBody();
@@ -2850,9 +2846,6 @@ class FixedUpdateInNormalGamePatch
                     if (Alchemist.IsEnable)
                         Alchemist.OnFixedUpdateINV(player);
 
-                    if (Stealth.IsEnable)
-                        Stealth.OnFixedUpdate(player);
-
                     if (Puppeteer.IsEnable)
                         Puppeteer.OnFixedUpdate(player);
 
@@ -3136,6 +3129,16 @@ class FixedUpdateInNormalGamePatch
 
                 RealName = RealName.ApplyNameColorData(seer, target, false);
                 var seerRole = seer.GetCustomRole();
+                var seerRoleClass = seerRole.GetRoleClass();
+
+
+                Mark.Append(seerRoleClass?.GetMark(seer, target, false));
+                Mark.Append(CustomRoleManager.GetMarkOthers(seer, target, false));
+
+                Suffix.Append(CustomRoleManager.GetLowerTextOthers(seer, target));
+
+                Suffix.Append(seerRoleClass?.GetSuffix(seer, target));
+                Suffix.Append(CustomRoleManager.GetSuffixOthers(seer, target));
 
                 if (target.GetPlayerTaskState().IsTaskFinished)
                 {
@@ -3306,9 +3309,6 @@ class FixedUpdateInNormalGamePatch
 
                 if (Mortician.IsEnable)
                     Suffix.Append(Mortician.GetTargetArrow(seer, target));
-
-                if (Stealth.IsEnable) 
-                    Suffix.Append(Stealth.GetSuffix(seer, target));
 
                 if (EvilTracker.IsEnable)
                     Suffix.Append(EvilTracker.GetTargetArrow(seer, target));

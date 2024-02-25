@@ -2615,7 +2615,6 @@ public static class Utils
                         TargetSuffix.Clear();
 
                         TargetSuffix.Append(CustomRoleManager.GetLowerTextOthers(seer, target, isForMeeting: isForMeeting));
-                        TargetSuffix.Append(Stealth.GetSuffix(seer, target));
 
                         TargetSuffix.Append(seerRoleClass?.GetSuffix(seer, target, isForMeeting: isForMeeting));
                         TargetSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, target, isForMeeting: isForMeeting));

@@ -1153,9 +1153,6 @@ internal static class RPC
             case CustomRoles.DarkHide:
                 DarkHide.Add(targetId);
                 break;
-            case CustomRoles.Stealth:
-                Stealth.Add(targetId);
-                break;
             case CustomRoles.Penguin:
                 Penguin.Add(targetId);
                 break;
