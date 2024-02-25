@@ -182,7 +182,7 @@ internal class Admirer : RoleBase
         Logger.Info($"{killer.GetNameWithRole()} : 剩余{AdmirerLimit[killer.PlayerId]}次仰慕机会", "Admirer");
         return false;
     }
-    public bool KnowRole(PlayerControl player, PlayerControl target)
+    public static bool KnowRole(PlayerControl player, PlayerControl target)
     {
         if (!KnowTargetRole.GetBool()) return false;
         if (AdmiredList.ContainsKey(player.PlayerId))
