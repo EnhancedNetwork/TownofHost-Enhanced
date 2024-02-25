@@ -1,7 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using Il2CppSystem.Runtime.Remoting.Messaging;
-using Il2CppSystem.Text;
-using System.Collections.Generic;
 
 namespace TOHE;
 
@@ -96,8 +93,8 @@ public abstract class RoleBase
     /// </summary>
     public virtual void OnExitVent(PlayerControl pc, Vent vent)
     { }
-    
-  /// A generic method to check a Guardian Angel protecting someone.
+    /// <summary>
+    /// A generic method to check a Guardian Angel protecting someone.
     /// </summary>
     public virtual void OnCheckProtect(PlayerControl angel, PlayerControl target)
     { }
