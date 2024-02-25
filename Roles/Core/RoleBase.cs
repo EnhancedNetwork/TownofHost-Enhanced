@@ -71,7 +71,7 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// OnTaskComplete overload with taskcount included
+    /// Player completes a task
     /// </summary>
     public virtual void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
     { }
