@@ -171,7 +171,7 @@ internal class CopyCat : RoleBase
             }
             if (pc.GetCustomRole() != CustomRoles.Sidekick)
             {
-                if (Whitelist(role))
+                if (pc.GetCustomRole() != CustomRoles.CopyCat)
                 {
                     Main.PlayerStates[pc.PlayerId].Role.Remove(pc.PlayerId);
                 }
