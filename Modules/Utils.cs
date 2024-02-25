@@ -2367,9 +2367,6 @@ public static class Utils
                         if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate) && target.GetPlayerTaskState().IsTaskFinished)
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Impostor), "★"));
 
-                        if (seer.Is(CustomRoleTypes.Crewmate) && target.Is(CustomRoles.Marshall) && target.GetPlayerTaskState().IsTaskFinished)
-                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Marshall), "★"));
-
                         if (target.Is(CustomRoles.SuperStar) && Options.EveryOneKnowSuperStar.GetBool())
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.SuperStar), "★"));
 

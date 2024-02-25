@@ -406,21 +406,10 @@ public static class GuessManager
                     Utils.SendMessage(GetString("GuessGM"), pc.PlayerId);
                     return true;
                 }
-                /*   if (role == CustomRoles.Marshall || target.Is(CustomRoles.Marshall))
-                   {
-                       Utils.SendMessage(GetString("GuessMarshall"), pc.PlayerId);
-                       return true;
-                   } */
                 if (target.Is(CustomRoles.Snitch) && target.GetPlayerTaskState().IsTaskFinished)
                 {
                     if (!isUI) Utils.SendMessage(GetString("EGGuessSnitchTaskDone"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("EGGuessSnitchTaskDone"));
-                    return true;
-                }
-                if (target.Is(CustomRoles.Marshall) && target.GetPlayerTaskState().IsTaskFinished)
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessMarshallTask"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessMarshallTask"));
                     return true;
                 }
 

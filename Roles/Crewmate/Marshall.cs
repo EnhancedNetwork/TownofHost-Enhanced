@@ -1,9 +1,6 @@
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-
 using static TOHE.Options;
-using static UnityEngine.GraphicsBuffer;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -40,4 +37,12 @@ internal class Marshall : RoleBase
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
         => IsMarshallTarget(seer) && GetExpose(target) ? Utils.ColorString(RoleColor, "★") : string.Empty;
 
+    public override bool KnowRoletarget(PlayerControl seer, PlayerControl target) => target.GetPlayerTaskState().IsTaskFinished && seer.Is(CustomRoleTypes.Crewmate) && target.Is(CustomRoles.Marshall);
+    public override bool KnowTargetRoleColor(PlayerControl seer, PlayerControl target) => (seer.Is(CustomRoleTypes.Crewmate) && target.Is(CustomRoles.Marshall) && target.GetPlayerTaskState().IsTaskFinished);
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc)
+    {
+        if (!isUI) Utils.SendMessage(GetString("GuessMarshallTask"), pc.PlayerId);
+        else pc.ShowPopUp(GetString("GuessMarshallTask"));
+        return true;
+    }
 }

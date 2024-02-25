@@ -3146,12 +3146,6 @@ class FixedUpdateInNormalGamePatch
                         if (target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate))
                             Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), "★"));
                     }
-
-                    if (seerRole.IsCrewmate() && !seer.Is(CustomRoles.Madmate))
-                    {
-                        if (target.Is(CustomRoles.Marshall))
-                            Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Marshall), "★"));
-                    }
                 }
 
                 Mark.Append(seerRoleClass?.GetMark(seer, target));

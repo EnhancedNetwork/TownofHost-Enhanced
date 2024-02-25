@@ -1,6 +1,7 @@
 using Hazel;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -223,6 +224,7 @@ public static class NameColorManager
             || (Options.CurrentGameMode == CustomGameMode.FFA)
             || (Main.VisibleTasksCount && Main.PlayerStates[seer.Data.PlayerId].IsDead && seer.Data.IsDead && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool())
             || seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM)
+            || Main.PlayerStates[target.PlayerId].Role.KnowTargetRoleColor(seer, target)
             || seer.Is(CustomRoles.God)
             || Mimic.CanSeeDeadRoles(seer, target)
             || (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoleTypes.Impostor))
@@ -235,7 +237,6 @@ public static class NameColorManager
             || (target.Is(CustomRoles.Doctor) && Options.DoctorVisibleToEveryone.GetBool())
             || (target.Is(CustomRoles.Gravestone) && Main.PlayerStates[target.Data.PlayerId].IsDead)
             || (target.Is(CustomRoles.Mayor) && Options.MayorRevealWhenDoneTasks.GetBool() && target.GetPlayerTaskState().IsTaskFinished)
-            || (seer.Is(CustomRoleTypes.Crewmate) && target.Is(CustomRoles.Marshall) && target.GetPlayerTaskState().IsTaskFinished)
             || Consigliere.IsShowTargetRole(seer, target)
             || PotionMaster.IsShowTargetRole(seer, target)
          //   || Mare.KnowTargetRoleColor(target, isMeeting)

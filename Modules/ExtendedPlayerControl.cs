@@ -9,6 +9,7 @@ using System.Text;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -1298,6 +1299,7 @@ static class ExtendedPlayerControl
     public static bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
     {
         if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || seer.Is(CustomRoles.God) || (seer.AmOwner && Main.GodMode.Value)) return true;
+        else if (Main.PlayerStates[target.PlayerId].Role.KnowRoletarget(seer, target)) return true;
         else if (Options.CurrentGameMode == CustomGameMode.FFA) return true;
         else if (target.Is(CustomRoles.Solsticer) && Solsticer.EveryOneKnowSolsticer.GetBool()) return true;
         else if (Main.VisibleTasksCount && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool()) return true;
@@ -1313,7 +1315,6 @@ static class ExtendedPlayerControl
         else if (Options.WorkaholicVisibleToEveryone.GetBool() && target.Is(CustomRoles.Workaholic)) return true;
         else if (Options.DoctorVisibleToEveryone.GetBool() && target.Is(CustomRoles.Doctor)) return true;
         else if (Options.MayorRevealWhenDoneTasks.GetBool() && target.Is(CustomRoles.Mayor) && target.GetPlayerTaskState().IsTaskFinished) return true;
-        else if (target.GetPlayerTaskState().IsTaskFinished && seer.Is(CustomRoleTypes.Crewmate) && target.Is(CustomRoles.Marshall)) return true;
         else if (seer.Is(CustomRoles.Jackal) && (target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit))) return true;
         else if (seer.Is(CustomRoles.Sidekick) && (target.Is(CustomRoles.Jackal) || target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick))) return true;
         else if (seer.Is(CustomRoles.Recruit) && (target.Is(CustomRoles.Jackal) || target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit))) return true;
