@@ -53,6 +53,7 @@ internal class Trapster : RoleBase
     public override bool CheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
     {
         var target  = deadBody?.Object;
+        
         // if trapster dead
         if (target.Is(CustomRoles.Trapster) && TrapTrapsterBody.GetBool() && !reporter.Is(CustomRoles.Pestilence))
         {
