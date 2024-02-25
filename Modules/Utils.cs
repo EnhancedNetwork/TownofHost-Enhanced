@@ -2333,9 +2333,6 @@ public static class Utils
                     {
                         seerRole = seer.GetCustomRole();
 
-                        // ====== Target player name ======
-
-                        string TargetPlayerName = target.GetRealName(isForMeeting);
 
                         // ====== Add TargetMark for target ======
 
@@ -2493,6 +2490,9 @@ public static class Utils
                             TargetRoleText += Farseer.GetTaskState();
                         }
 
+                        // ====== Target player name ======
+
+                        string TargetPlayerName = target.GetRealName(isForMeeting);
 
                         // ========= During Game And Meeting =========
                         switch (seerRole)

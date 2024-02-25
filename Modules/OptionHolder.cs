@@ -1803,6 +1803,7 @@ public static class Options
 
         Guardian.SetupCustomOptions();
 
+        Lookout.SetupCustomOptions();
 
         Marshall.SetupCustomOption();
 
