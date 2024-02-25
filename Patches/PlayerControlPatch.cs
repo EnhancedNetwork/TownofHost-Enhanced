@@ -2336,7 +2336,6 @@ class ReportDeadBodyPatch
         foreach (var playerStates in Main.PlayerStates.Values.Where(p => p.Role.IsEnable).ToArray())
         {
             playerStates.Role?.OnReportDeadBody(player, target?.Object);
-            playerStates.Role?.OnReportDeadBody();
         }
 
         if (Reverie.IsEnable) Reverie.OnReportDeadBody();
