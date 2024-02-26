@@ -131,7 +131,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Crewpostor:
             case CustomRoles.Taskinator:
           //  case CustomRoles.Jester:
-            case CustomRoles.Monitor:
                 AURoleOptions.EngineerCooldown = 0f;
                 AURoleOptions.EngineerInVentMaxTime = 0f;
                 break;

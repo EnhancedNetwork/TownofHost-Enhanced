@@ -1087,9 +1087,6 @@ internal static class RPC
             case CustomRoles.Necromancer:
                 Necromancer.Add(targetId);
                 break;
-            case CustomRoles.Monitor:
-                Monitor.Add(targetId);
-                break;
             case CustomRoles.LastImpostor:
                 LastImpostor.Add(targetId);
                 break;

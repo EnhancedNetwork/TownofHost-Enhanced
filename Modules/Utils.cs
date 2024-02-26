@@ -2108,7 +2108,7 @@ public static class Utils
                 SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, isForMeeting: isForMeeting));
 
 
-                if (Deathpact.On)
+                if (CustomRoles.Deathpact.IsClassEnable())
                     SelfSuffix.Append(Deathpact.GetDeathpactPlayerArrow(seer));
 
 
@@ -2155,10 +2155,6 @@ public static class Utils
 
                         case CustomRoles.Spiritualist:
                             SelfSuffix.Append(Spiritualist.GetSpiritualistArrow(seer));
-                            break;
-
-                        case CustomRoles.Monitor:
-                            SelfSuffix.Append(Monitor.GetSuffix());
                             break;
 
                         case CustomRoles.Vulture:
@@ -2267,14 +2263,14 @@ public static class Utils
                 if (Pelican.IsEnable && Pelican.IsEaten(seer.PlayerId))
                     SelfName = $"{ColorString(GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"))}";
 
-                if (Deathpact.On && Deathpact.IsInActiveDeathpact(seer))
+                if (CustomRoles.Deathpact.IsClassEnable() && Deathpact.IsInActiveDeathpact(seer))
                     SelfName = Deathpact.GetDeathpactString(seer);
 
                 if (NameNotifyManager.GetNameNotify(seer, out var name))
                     SelfName = name;
 
                 // Devourer
-                if (Devourer.On)
+                if (CustomRoles.Devourer.IsClassEnable())
                 {
                     bool playerDevoured = Devourer.HideNameOfTheDevoured(seer.PlayerId);
                     if (playerDevoured && !CamouflageIsForMeeting)
@@ -2392,7 +2388,7 @@ public static class Utils
                         if (Lawyer.IsEnable)
                             TargetMark.Append(Lawyer.LawyerMark(seer, target));
 
-                        if (Deathpact.On)
+                        if (CustomRoles.Deathpact.IsClassEnable())
                             TargetMark.Append(Deathpact.GetDeathpactMark(seer, target));
 
 
@@ -2607,7 +2603,7 @@ public static class Utils
                             ? $" ({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))})" : "";
 
                         // Devourer
-                        if (Devourer.On)
+                        if (CustomRoles.Devourer.IsClassEnable())
                         {
                             bool targetDevoured = Devourer.HideNameOfTheDevoured(target.PlayerId);
                             if (targetDevoured && !CamouflageIsForMeeting)

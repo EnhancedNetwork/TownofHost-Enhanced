@@ -2092,8 +2092,8 @@ class ReportDeadBodyPatch
                         }
                         else if (tar.Is(CustomRoles.Monitor))
                         {
-                            Monitor.Add(__instance.PlayerId);
                             __instance.RpcSetCustomRole(CustomRoles.Monitor);
+                            Main.PlayerStates[tar.PlayerId].Role.Add(tar.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                             Main.TasklessCrewmate.Add(__instance.PlayerId);
@@ -2998,7 +2998,7 @@ class FixedUpdateInNormalGamePatch
                     {
                         DisableDevice.FixedUpdate();
 
-                        if (Monitor.IsEnable)
+                        if (CustomRoles.Monitor.IsClassEnable())
                             Monitor.FixedUpdate();
                     }
                 }
@@ -3316,8 +3316,6 @@ class FixedUpdateInNormalGamePatch
                     if (seer.Is(CustomRoles.Monitor))
                     {
                         Monitor.FixedUpdate();
-                        if (target.AmOwner)
-                            Suffix.Append(Monitor.GetSuffix());
                     }
                     if (player.Is(CustomRoles.TimeMaster))
                     {

@@ -230,7 +230,6 @@ internal class ChangeRoleSettings
             Vampire.Init();
             Vampiress.Init();
             Poisoner.Init();
-            Monitor.Init();
             TimeManager.Init();
             LastImpostor.Init();
             TargetArrow.Init();
@@ -728,9 +727,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Solsticer:
                         Solsticer.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Monitor:
-                        Monitor.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Mario:
                         Main.MarioVentCount[pc.PlayerId] = 0;
