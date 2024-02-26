@@ -1805,7 +1805,7 @@ public static class Options
 
         Monarch.SetupCustomOption();
         
-        Farseer.SetupCustomOption();
+        Overseer.SetupCustomOption();
         
         President.SetupCustomOption();
         

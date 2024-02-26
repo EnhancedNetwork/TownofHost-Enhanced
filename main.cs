@@ -665,7 +665,7 @@ public enum CustomRoles
     NiceMini,
     Observer,
     Oracle,
-    Farseer, //overseer
+    Overseer, //overseer
     DovesOfNeace, //pacifist
     Paranoia, //paranoid
     ChiefOfPolice, //police commisioner

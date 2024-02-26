@@ -6,7 +6,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate
 {
-    internal class Mayor : RoleBase
+    internal partial class Mayor : RoleBase
     {
         public const int Id = 12000;
         public static bool On = false;
@@ -103,14 +103,13 @@ namespace TOHE.Roles.Crewmate
         }
         public override bool KnowRoletarget(PlayerControl seer, PlayerControl target) => MayorRevealWhenDoneTasks.GetBool() && target.Is(CustomRoles.Mayor) && target.GetPlayerTaskState().IsTaskFinished;
         public override bool KnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoletarget(seer, target);
-
         public override void SetAbilityButtonText(HudManager hud, byte id)
         {
             hud.ReportButton.OverrideText(GetString("ReportButtonText"));
             hud.AbilityButton.buttonLabelText.text = GetString("MayorVentButtonText");
         }
-        public override (string, Sprite, string, Sprite) SetAbilityButtonSprite() => ("Ability", CustomButton.Get("Collective"), "", CustomButton.Get("Happy"));
-        
+        public override Sprite AbilityButtonSprite => CustomButton.Get("Collective");
+
 
     }
 }

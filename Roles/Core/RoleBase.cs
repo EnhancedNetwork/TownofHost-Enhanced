@@ -44,7 +44,7 @@ public abstract class RoleBase
     /// <summary>
     /// A generic method to set if the role can use sabotage.
     /// </summary>
-    public virtual bool CanUseSabotage(PlayerControl pc) =>  pc.Is(CustomRoleTypes.Impostor);
+    public virtual bool CanUseSabotage(PlayerControl pc) => pc.Is(CustomRoleTypes.Impostor);
 
     /// <summary>
     /// When the player presses the sabotage button
@@ -191,7 +191,7 @@ public abstract class RoleBase
     /// Set PlayerName text for the role
     /// </summary>
     public virtual string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false) => string.Empty;
-   
+
     /// <summary>
     /// A method to determine conditions on voter/targetvote
     /// </summary>
@@ -202,12 +202,10 @@ public abstract class RoleBase
     /// Set text for Kill/Shapeshift/Report/Vent/Protect button
     /// </summary>
     public virtual void SetAbilityButtonText(HudManager hud, byte id) => hud.KillButton?.OverrideText(Translator.GetString("KillButtonText"));
-
-    /// <summary>
-    /// Set button sprite, return "Kill" or "Vent" or "Ability" or "Report" respectively.
-    /// </summary>
-    public virtual (string, Sprite, string, Sprite) SetAbilityButtonSprite() => (string.Empty, CustomButton.Get("Happy"), string.Empty, CustomButton.Get("Happy"));
-
+    public virtual Sprite KillButtonSprite { get; }
+    public virtual Sprite VentButtonSprite { get; }
+    public virtual Sprite AbilityButtonSprite { get; }
+    public virtual Sprite ReportButtonSprite { get; }
     public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
     public virtual string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;
     public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;

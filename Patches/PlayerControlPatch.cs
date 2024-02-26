@@ -2046,9 +2046,9 @@ class ReportDeadBodyPatch
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         }
-                        else if (tar.Is(CustomRoles.Farseer))
+                        else if (tar.Is(CustomRoles.Overseer))
                         {
-                            __instance.RpcSetCustomRole(CustomRoles.Farseer);
+                            __instance.RpcSetCustomRole(CustomRoles.Overseer);
                             Main.PlayerStates[tar.PlayerId].Role.Add(tar.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
@@ -3060,7 +3060,7 @@ class FixedUpdateInNormalGamePatch
                 else RoleText.enabled = false;
                 if (!PlayerControl.LocalPlayer.Data.IsDead && PlayerControl.LocalPlayer.IsRevealedPlayer(__instance) && __instance.Is(CustomRoles.Trickster))
                 {
-                    RoleText.text = Farseer.RandomRole[PlayerControl.LocalPlayer.PlayerId]; // random role for revealed trickster
+                    RoleText.text = Overseer.RandomRole[PlayerControl.LocalPlayer.PlayerId]; // random role for revealed trickster
                     RoleText.text += TaskState.GetTaskState(); // random task count for revealed trickster
                 }
 

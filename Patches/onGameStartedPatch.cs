@@ -650,12 +650,12 @@ internal class SelectRolesPatch
                         foreach (var ar in Main.AllPlayerControls)
                             Main.isDraw.Add((pc.PlayerId, ar.PlayerId), false);
                         break;
-                    case CustomRoles.Farseer:
+                    case CustomRoles.Overseer:
                         foreach (var ar in Main.AllPlayerControls)
                         { 
                             Main.isRevealed.Add((pc.PlayerId, ar.PlayerId), false);
                         }
-                        Farseer.RandomRole.Add(pc.PlayerId, Farseer.GetRandomCrewRoleString());
+                        Overseer.RandomRole.Add(pc.PlayerId, Overseer.GetRandomCrewRoleString());
                         break;
                     case CustomRoles.Executioner:
                         Executioner.Add(pc.PlayerId);

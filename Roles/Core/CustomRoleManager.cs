@@ -145,7 +145,7 @@ public static class CustomRoleManager
         //CustomRoles.Enigma => new Enigma(),
         //CustomRoles.Escort => new Escort(),
         //CustomRoles.Express => new Express(),
-        //CustomRoles.Farseer => new Farseer(),
+        //CustomRoles.Overseer => new Overseer(),
         //CustomRoles.Divinator => new Divinator(),
         //CustomRoles.Gaulois => new Gaulois(),
         //CustomRoles.Glitch => new Glitch(),

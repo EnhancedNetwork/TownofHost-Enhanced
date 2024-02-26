@@ -622,7 +622,7 @@ class SetHudActivePatch
             case CustomRoles.Gamer:
             case CustomRoles.DarkHide:
             case CustomRoles.Provocateur:
-            case CustomRoles.Farseer:
+            case CustomRoles.Overseer:
             case CustomRoles.Crusader:
                 __instance.SabotageButton.ToggleVisible(false);
                 __instance.AbilityButton.ToggleVisible(false);

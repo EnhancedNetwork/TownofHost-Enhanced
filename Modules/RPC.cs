@@ -415,10 +415,10 @@ internal class RPCHandlerPatch
                 Main.isDraw[(RevolutionistId, DrawId)] = drawed;
                 break;
             case CustomRPC.SetRevealedPlayer:
-                byte FarseerId = reader.ReadByte();
+                byte OverseerId = reader.ReadByte();
                 byte RevealId = reader.ReadByte();
                 bool revealed = reader.ReadBoolean();
-                Main.isRevealed[(FarseerId, RevealId)] = revealed;
+                Main.isRevealed[(OverseerId, RevealId)] = revealed;
                 break;
             case CustomRPC.SetNameColorData:
                 NameColorManager.ReceiveRPC(reader);

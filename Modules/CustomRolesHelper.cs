@@ -264,7 +264,7 @@ public static class CustomRolesHelper
             CustomRoles.Succubus => RoleTypes.Impostor,
             CustomRoles.Infectious => RoleTypes.Impostor,
             CustomRoles.Virus => RoleTypes.Impostor,
-            CustomRoles.Farseer => RoleTypes.Impostor,
+            CustomRoles.Overseer => RoleTypes.Impostor,
             CustomRoles.PotionMaster => RoleTypes.Impostor,
             CustomRoles.Pickpocket => RoleTypes.Impostor,
             CustomRoles.Traitor => RoleTypes.Impostor,
@@ -907,7 +907,7 @@ public static class CustomRolesHelper
             CustomRoles.Witness or
             CustomRoles.Totocalcio or
             CustomRoles.Imitator or
-            CustomRoles.Farseer or
+            CustomRoles.Overseer or
             CustomRoles.Hater or
             CustomRoles.SwordsMan or
             CustomRoles.CursedSoul or
@@ -1025,7 +1025,7 @@ public static class CustomRolesHelper
             CustomRoles.Counterfeiter or
             CustomRoles.Witness or
             CustomRoles.Monarch or
-            CustomRoles.Farseer or
+            CustomRoles.Overseer or
             CustomRoles.Investigator or
             CustomRoles.SwordsMan or
             CustomRoles.Admirer or
@@ -1737,7 +1737,7 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Tired:
-                if (pc.Is(CustomRoles.Farseer)
+                if (pc.Is(CustomRoles.Overseer)
                   || pc.Is(CustomRoles.Alchemist)
                   || pc.Is(CustomRoles.Torch)
                   || pc.Is(CustomRoles.Bewilder)

@@ -606,7 +606,7 @@ public static class Utils
             case CustomRoles.Deputy:
             case CustomRoles.Investigator:
             case CustomRoles.Virus:
-            case CustomRoles.Farseer:
+            case CustomRoles.Overseer:
             case CustomRoles.Counterfeiter:
             case CustomRoles.Witness:
             case CustomRoles.Pursuer:
@@ -2473,7 +2473,7 @@ public static class Utils
 
                         if (seer.IsAlive() && seer.IsRevealedPlayer(target) && target.Is(CustomRoles.Trickster))
                         {
-                            TargetRoleText = Farseer.RandomRole[seer.PlayerId]; // Random trickster role
+                            TargetRoleText = Overseer.RandomRole[seer.PlayerId]; // Random trickster role
                             TargetRoleText += TaskState.GetTaskState(); // Random task count for revealed trickster
                         }
 

@@ -12,7 +12,7 @@ using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate
 {
-    internal class Farseer : RoleBase
+    internal class Overseer : RoleBase
     {
         private static readonly int Id = 12200;
 
@@ -21,10 +21,10 @@ namespace TOHE.Roles.Crewmate
         public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
         public static Dictionary<byte, string> RandomRole = [];
-        public static Dictionary<byte, (PlayerControl, float)> FarseerTimer = [];
+        public static Dictionary<byte, (PlayerControl, float)> OverseerTimer = [];
 
-        public static OptionItem FarseerCooldown;
-        public static OptionItem FarseerRevealTime;
+        public static OptionItem OverseerCooldown;
+        public static OptionItem OverseerRevealTime;
         public static OptionItem Vision;
 
         private static readonly List<CustomRoles> randomRolesForTrickster =
@@ -73,17 +73,17 @@ namespace TOHE.Roles.Crewmate
 
         public static void SetupCustomOption()
         {
-            SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Farseer);
-            FarseerCooldown = FloatOptionItem.Create(Id + 10, "FarseerRevealCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Farseer])
+            SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Overseer);
+            OverseerCooldown = FloatOptionItem.Create(Id + 10, "OverseerRevealCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Overseer])
                 .SetValueFormat(OptionFormat.Seconds);
-            FarseerRevealTime = FloatOptionItem.Create(Id + 11, "FarseerRevealTime", new(0f, 60f, 1f), 10f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Farseer])
+            OverseerRevealTime = FloatOptionItem.Create(Id + 11, "OverseerRevealTime", new(0f, 60f, 1f), 10f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Overseer])
                 .SetValueFormat(OptionFormat.Seconds);
-            Vision = FloatOptionItem.Create(Id + 12, "FarseerVision", new(0f, 5f, 0.05f), 0.25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Farseer])
+            Vision = FloatOptionItem.Create(Id + 12, "OverseerVision", new(0f, 5f, 0.05f), 0.25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Overseer])
                 .SetValueFormat(OptionFormat.Multiplier);
         }
         public override void Init()
         {
-            FarseerTimer = [];
+            OverseerTimer = [];
             RandomRole = [];
             On = false;
         }
@@ -97,7 +97,7 @@ namespace TOHE.Roles.Crewmate
         }
         public override void Remove(byte playerId)
         {
-            FarseerTimer.Remove(playerId);
+            OverseerTimer.Remove(playerId);
             RandomRole.Remove(playerId);
         }
         public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -106,13 +106,13 @@ namespace TOHE.Roles.Crewmate
             opt.SetFloat(FloatOptionNames.CrewLightMod, Vision.GetFloat());
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, Vision.GetFloat());
         }
-        public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = FarseerCooldown.GetFloat();
+        public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = OverseerCooldown.GetFloat();
         public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
         {
-            killer.SetKillCooldown(FarseerRevealTime.GetFloat());
-            if (!Main.isRevealed[(killer.PlayerId, target.PlayerId)] && !FarseerTimer.ContainsKey(killer.PlayerId))
+            killer.SetKillCooldown(OverseerRevealTime.GetFloat());
+            if (!Main.isRevealed[(killer.PlayerId, target.PlayerId)] && !OverseerTimer.ContainsKey(killer.PlayerId))
             {
-                FarseerTimer.TryAdd(killer.PlayerId, (target, 0f));
+                OverseerTimer.TryAdd(killer.PlayerId, (target, 0f));
                 NotifyRoles(SpecifySeer: killer);
                 RPC.SetCurrentRevealTarget(killer.PlayerId, target.PlayerId);
             }
@@ -120,27 +120,27 @@ namespace TOHE.Roles.Crewmate
         }
         public override void OnFixedUpdate(PlayerControl player)
         {
-            if (!FarseerTimer.ContainsKey(player.PlayerId)) return;
+            if (!OverseerTimer.ContainsKey(player.PlayerId)) return;
 
             var playerId = player.PlayerId;
             if (!player.IsAlive() || Pelican.IsEaten(playerId))
             {
-                FarseerTimer.Remove(playerId);
+                OverseerTimer.Remove(playerId);
                 NotifyRoles(SpecifySeer: player);
                 RPC.ResetCurrentRevealTarget(playerId);
             }
             else
             {
-                var (farTarget, farTime) = FarseerTimer[playerId];
+                var (farTarget, farTime) = OverseerTimer[playerId];
                 
                 if (!farTarget.IsAlive())
                 {
-                    FarseerTimer.Remove(playerId);
+                    OverseerTimer.Remove(playerId);
                 }
-                else if (farTime >= FarseerRevealTime.GetFloat())
+                else if (farTime >= OverseerRevealTime.GetFloat())
                 {
                     player.SetKillCooldown();
-                    FarseerTimer.Remove(playerId);
+                    OverseerTimer.Remove(playerId);
                     Main.isRevealed[(playerId, farTarget.PlayerId)] = true;
                     player.RpcSetRevealtPlayer(farTarget, true);
                     NotifyRoles(SpecifySeer: player);
@@ -153,11 +153,11 @@ namespace TOHE.Roles.Crewmate
                     float dis = Vector2.Distance(player.GetCustomPosition(), farTarget.GetCustomPosition());
                     if (dis <= range)
                     {
-                        FarseerTimer[playerId] = (farTarget, farTime + Time.fixedDeltaTime);
+                        OverseerTimer[playerId] = (farTarget, farTime + Time.fixedDeltaTime);
                     }
                     else
                     {
-                        FarseerTimer.Remove(playerId);
+                        OverseerTimer.Remove(playerId);
                         NotifyRoles(SpecifySeer: player, SpecifyTarget: farTarget, ForceLoop: true);
                         RPC.ResetCurrentRevealTarget(playerId);
 
@@ -179,20 +179,17 @@ namespace TOHE.Roles.Crewmate
 
         public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
         {
-            if (seer.Is(CustomRoles.Farseer))
-            if (FarseerTimer.TryGetValue(seer.PlayerId, out var fa_kvp) && fa_kvp.Item1 == seen)
-                return $"<color={GetRoleColorCode(CustomRoles.Farseer)}>○</color>";
+            if (seer.Is(CustomRoles.Overseer))
+            if (OverseerTimer.TryGetValue(seer.PlayerId, out var fa_kvp) && fa_kvp.Item1 == seen)
+                return $"<color={GetRoleColorCode(CustomRoles.Overseer)}>○</color>";
 
             return string.Empty;
         }
         public override void SetAbilityButtonText(HudManager hud, byte id)
         {
             hud.ReportButton.OverrideText(GetString("ReportButtonText"));
-            hud.KillButton.OverrideText(GetString("FarseerKillButtonText"));
+            hud.KillButton.OverrideText(GetString("OverseerKillButtonText"));
         }
-        public override (string, Sprite, string, Sprite) SetAbilityButtonSprite()
-        {
-            return ("Kill", CustomButton.Get("prophecies"), string.Empty, CustomButton.Get("Happy"));
-        }
+        public override Sprite KillButtonSprite => CustomButton.Get("prophecies");
     }
 }

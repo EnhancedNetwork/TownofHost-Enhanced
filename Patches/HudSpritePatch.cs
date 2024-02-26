@@ -44,38 +44,14 @@ public static class HudSpritePatch
         Sprite newReportButton = Report;
 
         if (!Main.EnableCustomButton.Value) goto EndOfSelectImg;
-        var thisSprite = Main.PlayerStates[player.PlayerId].Role.SetAbilityButtonSprite();
-        switch (thisSprite.Item1) // First button change
-        {
-            case "Kill":
-                newKillButton = thisSprite.Item2;
-                break;
-            case "Vent":
-                newVentButton = thisSprite.Item2;
-                break;
-            case "Ability":
-                newAbilityButton = thisSprite.Item2;
-                break;
-            case "Report":
-                newReportButton = thisSprite.Item2;
-                break;
-        }
-        switch (thisSprite.Item3) // if there is a secondary button change
-        {
-            case "Kill":
-                newKillButton = thisSprite.Item4;
-                break;
-            case "Vent":
-                newVentButton = thisSprite.Item4;
-                break;
-            case "Ability":
-                newAbilityButton = thisSprite.Item4;
-                break;
-            case "Report":
-                newReportButton = thisSprite.Item4;
-                break;
-        }
-
+        if (Main.PlayerStates.TryGetValue(player.PlayerId, out var PlayerState) && PlayerState?.Role?.KillButtonSprite != null)
+            newKillButton = PlayerState.Role.KillButtonSprite;
+        if(PlayerState?.Role?.VentButtonSprite != null)
+            newVentButton = PlayerState.Role.VentButtonSprite;
+        if(PlayerState?.Role?.AbilityButtonSprite != null)
+            newAbilityButton = PlayerState.Role.AbilityButtonSprite;
+        if (PlayerState?.Role?.ReportButtonSprite != null)
+            newReportButton = PlayerState.Role.ReportButtonSprite;
         switch (player.GetCustomRole())
         {
             case CustomRoles.Ninja:
