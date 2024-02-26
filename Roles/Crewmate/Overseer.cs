@@ -64,7 +64,7 @@ namespace TOHE.Roles.Crewmate
             CustomRoles.Mediumshiper,
             CustomRoles.Observer,
             CustomRoles.DovesOfNeace,
-            CustomRoles.Bloodhound,
+            CustomRoles.Coroner,
             CustomRoles.Retributionist,
             CustomRoles.Guardian,
             CustomRoles.Spiritualist,

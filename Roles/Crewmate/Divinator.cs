@@ -216,7 +216,7 @@ public static class Divinator
                 CustomRoles.Berserker,
                 CustomRoles.Butcher],
                 
-                [CustomRoles.Bloodhound,
+                [CustomRoles.Coroner,
                 CustomRoles.EvilTracker,
                 CustomRoles.Mortician,
                 CustomRoles.Tracefinder,
@@ -548,7 +548,7 @@ public static class Divinator
                    CustomRoles.Sunnyboy or
                    CustomRoles.Bard or
                    CustomRoles.Totocalcio or
-                   CustomRoles.Bloodhound
+                   CustomRoles.Coroner
                    => "Enthusiasm",
 
                    CustomRoles.BoobyTrap or

@@ -567,11 +567,6 @@ public class TaskState
                     Tracker.SendRPC(2, player.PlayerId);
                     break;
 
-                case CustomRoles.Bloodhound when player.IsAlive():
-                    Bloodhound.UseLimit[player.PlayerId] += Bloodhound.BloodhoundAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    Bloodhound.SendRPCLimit(player.PlayerId, operate: 2);
-                    break;
-
                 case CustomRoles.Spy when player.IsAlive():
                     Spy.UseLimit[player.PlayerId] += Spy.SpyAbilityUseGainWithEachTaskCompleted.GetFloat();
                     Spy.SendAbilityRPC(player.PlayerId);

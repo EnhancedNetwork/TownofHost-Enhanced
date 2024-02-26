@@ -154,7 +154,7 @@ public static class CustomRolesHelper
                 CustomRoles.Dazzler => CustomRoles.Shapeshifter,
                 CustomRoles.Devourer => CustomRoles.Shapeshifter,
                 CustomRoles.Deathpact => CustomRoles.Shapeshifter,
-                CustomRoles.Bloodhound => CustomRoles.Crewmate,
+                CustomRoles.Coroner => CustomRoles.Crewmate,
                 CustomRoles.Tracker => CustomRoles.Crewmate,
                 CustomRoles.Merchant => CustomRoles.Crewmate,
                 CustomRoles.Retributionist => CustomRoles.GuardianAngel,
@@ -1355,7 +1355,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Cleaner)
                     || pc.Is(CustomRoles.Medusa)
                     || pc.Is(CustomRoles.Vulture)
-                    || pc.Is(CustomRoles.Bloodhound))
+                    || pc.Is(CustomRoles.Coroner))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Sleuth.CrewCanBeSleuth.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Sleuth.NeutralCanBeSleuth.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Sleuth.ImpCanBeSleuth.GetBool()))
                     return false;
@@ -1435,7 +1435,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Sleuth)
                     || pc.Is(CustomRoles.Cleaner)
                     || pc.Is(CustomRoles.Amnesiac)
-                    || pc.Is(CustomRoles.Bloodhound)
+                    || pc.Is(CustomRoles.Coroner)
                     || pc.Is(CustomRoles.Medusa)
                     || pc.Is(CustomRoles.Mortician)
                     || pc.Is(CustomRoles.Mediumshiper)

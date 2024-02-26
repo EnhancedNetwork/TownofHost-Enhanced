@@ -128,7 +128,7 @@ public static class CustomRoleManager
         //CustomRoles.Cleanser => new Cleanser(),
         CustomRoles.Captain => new Captain(),
         CustomRoles.CopyCat => new CopyCat(),
-        //CustomRoles.Bloodhound => new Bloodhound(),
+        CustomRoles.Coroner => new Coroner(),
         //CustomRoles.Crusader => new Crusader(),
         //CustomRoles.Demolitionist => new Demolitionist(),
         //CustomRoles.Deputy => new Deputy(),

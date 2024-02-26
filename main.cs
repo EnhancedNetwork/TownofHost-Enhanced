@@ -630,7 +630,7 @@ public enum CustomRoles
     Chameleon,
     Cleanser,
     CopyCat,
-    Bloodhound, //coroner
+    Coroner, 
     Crusader,
     Detective,
     Counterfeiter, //deceiver

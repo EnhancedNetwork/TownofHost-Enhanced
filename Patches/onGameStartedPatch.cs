@@ -293,7 +293,6 @@ internal class ChangeRoleSettings
             Fool.Init();
             Infectious.Init();
             Virus.Init();
-            Bloodhound.Init();
             Tracker.Init();
             Burst.Init();
             Merchant.Init();
@@ -888,9 +887,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Wildling:
                         Wildling.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Bloodhound:
-                        Bloodhound.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Tracker:
                         Tracker.Add(pc.PlayerId);

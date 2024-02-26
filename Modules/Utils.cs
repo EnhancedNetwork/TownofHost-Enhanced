@@ -871,20 +871,6 @@ public static class Utils
                     ProgressText.Append(ColorString(TextColor11, $"({Completed11}/{taskState11.AllTasksCount})"));
                     ProgressText.Append(ColorString(TextColor111, $" <color=#ffffff>-</color> {Math.Round(Tracker.TrackLimit[playerId], 1)}"));
                     break;
-                case CustomRoles.Bloodhound:
-                    var taskState12 = Main.PlayerStates?[playerId].TaskState;
-                    Color TextColor12;
-                    var TaskCompleteColor12 = Color.green;
-                    var NonCompleteColor12 = Color.yellow;
-                    var NormalColor12 = taskState12.IsTaskFinished ? TaskCompleteColor12 : NonCompleteColor12;
-                    TextColor12 = comms ? Color.gray : NormalColor12;
-                    string Completed12 = comms ? "?" : $"{taskState12.CompletedTasksCount}";
-                    Color TextColor121;
-                    if (Bloodhound.UseLimit[playerId] < 1) TextColor121 = Color.red;
-                    else TextColor121 = Color.white;
-                    ProgressText.Append(ColorString(TextColor12, $"({Completed12}/{taskState12.AllTasksCount})"));
-                    ProgressText.Append(ColorString(TextColor121, $" <color=#ffffff>-</color> {Math.Round(Bloodhound.UseLimit[playerId], 1)}"));
-                    break;
                 case CustomRoles.Alchemist:
                     ProgressText.Append(Alchemist.GetProgressText(playerId));
                     break;
@@ -938,9 +924,6 @@ public static class Utils
                     var doomsayerguess = Doomsayer.GuessedPlayerCount(playerId);
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Doomsayer).ShadeColor(0.25f), $"({doomsayerguess.Item1}/{doomsayerguess.Item2})"));
                     break;
-                case CustomRoles.Seeker:
-                    ProgressText.Append(Seeker.GetProgressText(playerId));
-                    break;
                 case CustomRoles.SchrodingersCat:
                     ProgressText.Append(SchrodingersCat.GetProgressText(playerId));
                     break;
@@ -990,9 +973,6 @@ public static class Utils
                     break;
                 case CustomRoles.Medic:
                     ProgressText.Append(Medic.GetSkillLimit(playerId));
-                    break;
-                case CustomRoles.CursedWolf:
-                    ProgressText.Append(CursedWolf.GetProgressText(playerId));
                     break;
                 case CustomRoles.Jinx:
                     int JinxSpellCount = Main.JinxSpellCount[playerId];
@@ -2124,10 +2104,6 @@ public static class Utils
 
                         case CustomRoles.Mortician:
                             SelfSuffix.Append(Mortician.GetTargetArrow(seer));
-                            break;
-
-                        case CustomRoles.Bloodhound:
-                            SelfSuffix.Append(Bloodhound.GetTargetArrow(seer));
                             break;
 
                         case CustomRoles.Tracefinder:

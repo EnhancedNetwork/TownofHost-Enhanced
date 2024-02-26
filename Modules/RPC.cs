@@ -127,8 +127,8 @@ enum CustomRPC
     SetJackalRecruitLimit,
     SetBanditStealLimit,
     SetDoppelgangerStealLimit,
-    SetBloodhoundArrow,
-    SetBloodhoundkKillerArrow,
+    SetCoronerArrow,
+    SetCoronerkKillerArrow,
     SetVultureArrow,
     SyncVultureBodyAmount,
     SetSpiritcallerSpiritLimit,
@@ -671,11 +671,11 @@ internal class RPCHandlerPatch
                     Logger.Info($"Player {target.GetNameWithRole()} used /dump", "RPC_DumpLogger");
                 }
                 break;
-            case CustomRPC.SetBloodhoundArrow:
-                Bloodhound.ReceiveRPC(reader);
+            case CustomRPC.SetCoronerArrow:
+                Coroner.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetBloodhoundkKillerArrow:
-                Bloodhound.ReceiveRPCKiller(reader);
+            case CustomRPC.SetCoronerkKillerArrow:
+                Coroner.ReceiveRPCKiller(reader);
                 break;
             case CustomRPC.SetVultureArrow:
                 Vulture.ReceiveRPC(reader);
@@ -1268,9 +1268,6 @@ internal static class RPC
             case CustomRoles.Virus:
                 Virus.Add(targetId);
                 break;
-            case CustomRoles.Bloodhound:
-                Bloodhound.Add(targetId); 
-                break;
             case CustomRoles.Vulture:
                 Vulture.Add(targetId); 
                 break;
@@ -1397,8 +1394,8 @@ internal static class RPC
             case CustomRoles.Admirer:
                 Admirer.ReceiveRPC(reader, false);
                 break;
-            case CustomRoles.Bloodhound:
-                Bloodhound.ReceiveRPCLimit(reader);
+            case CustomRoles.Coroner:
+                Coroner.ReceiveRPCLimit(reader);
                 break;
             case CustomRoles.Chameleon:
                 Chameleon.ReceiveRPC(reader);

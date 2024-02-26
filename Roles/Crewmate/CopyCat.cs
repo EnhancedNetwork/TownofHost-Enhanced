@@ -137,9 +137,6 @@ internal class CopyCat : RoleBase
                 case CustomRoles.Mortician:
                     Mortician.Remove(pc.PlayerId);
                     break;
-                case CustomRoles.Bloodhound:
-                    Bloodhound.Remove(pc.PlayerId);
-                    break;
                 case CustomRoles.Tracefinder:
                     Tracefinder.Remove(pc.PlayerId);
                     break;

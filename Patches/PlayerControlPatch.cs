@@ -1382,7 +1382,6 @@ class MurderPlayerPatch
             Lawyer.ChangeRoleByTarget(target);
 
         if (Mortician.IsEnable) Mortician.OnPlayerDead(target);
-        if (Bloodhound.IsEnable) Bloodhound.OnPlayerDead(target);
         if (Tracefinder.IsEnable) Tracefinder.OnPlayerDead(target);
         if (Vulture.IsEnable) Vulture.OnPlayerDead(target);
         if (SoulCollector.IsEnable) SoulCollector.OnPlayerDead(target);
@@ -1893,21 +1892,8 @@ class ReportDeadBodyPatch
             {
                 if (UnreportablePlayers.Contains(target.PlayerId)) return false;
 
-                if (Bloodhound.UnreportablePlayers.Contains(target.PlayerId)) return false;
+                if (Coroner.UnreportablePlayers.Contains(target.PlayerId)) return false;
 
-                if (__instance.Is(CustomRoles.Bloodhound))
-                {
-                    if (killer != null)
-                    {
-                        Bloodhound.OnReportDeadBody(__instance, target, killer);
-                    }
-                    else
-                    {
-                        __instance.Notify(GetString("BloodhoundNoTrack"));
-                    }
-
-                    return false;
-                }
 
                 if (!Main.PlayerStates.TryGetValue(__instance.PlayerId, out var playerState))
                     if (playerState != null && playerState.Role != null && playerState.Role.CheckReportDeadBody(__instance, target, killer))
@@ -2336,7 +2322,6 @@ class ReportDeadBodyPatch
         if (Vampire.IsEnable) Vampire.OnStartMeeting();
         if (Poisoner.IsEnable) Poisoner.OnStartMeeting();
         if (Vampiress.IsEnable) Vampiress.OnStartMeeting();
-        if (Bloodhound.IsEnable) Bloodhound.Clear();
         if (Vulture.IsEnable) Vulture.Clear();
         if (Penguin.IsEnable) Penguin.OnReportDeadBody(); 
         if (Pelican.IsEnable) Pelican.OnReportDeadBody();
@@ -3275,9 +3260,6 @@ class FixedUpdateInNormalGamePatch
 
                 if (Tracker.IsEnable)
                     Suffix.Append(Tracker.GetTrackerArrow(seer, target));
-
-                if (Bloodhound.IsEnable)
-                    Suffix.Append(Bloodhound.GetTargetArrow(seer, target));
 
 
                 if (Deathpact.On)

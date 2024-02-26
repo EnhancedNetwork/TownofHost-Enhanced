@@ -217,7 +217,7 @@ public abstract class RoleBase
     /// Gets & Appends the role's skill limit
     /// </summary>
     public virtual string GetProgressText(byte PlayerId) => string.Empty;
-    public virtual void AppendProgressText(byte playerId, bool comms, StringBuilder sb)
+    public virtual void AppendProgressText(byte playerId, bool comms, StringBuilder ProgressText)
     { }
     public virtual int CalcVote(PlayerVoteArea PVA) => 0;
 }

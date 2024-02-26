@@ -1516,7 +1516,7 @@ public static class Options
         /*
          * Coroner
          */
-        Bloodhound.SetupCustomOption();
+        Coroner.SetupCustomOption();
 
         /*
          * Deputy
