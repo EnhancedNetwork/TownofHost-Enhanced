@@ -1168,7 +1168,6 @@ class MeetingHudStartPatch
             PlayerControl target = Utils.GetPlayerById(pva.TargetPlayerId);
             if (target == null) continue;
 
-            var seerRoleClass = seer.GetCustomRole().GetRoleClass();
 
             var sb = new StringBuilder();
 
@@ -1200,7 +1199,6 @@ class MeetingHudStartPatch
             sb.Append(CustomRoleManager.GetMarkOthers(seer, target, true));
 
             //インポスター表示
-            sb.Append(seerRoleClass?.GetMark(seer, target));
 
             switch (seer.GetCustomRole().GetCustomRoleTypes())
             {
