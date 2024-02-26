@@ -323,7 +323,7 @@ public static class CopyCat
                     SabotageMaster.Add(pc.PlayerId);
                     break;
                 case CustomRoles.Admirer:
-                    CustomRoles.Admirer.GetRoleClass()?.Add(pc.PlayerId);
+                    Admirer.Add(pc.PlayerId);
                     break;
                 case CustomRoles.Benefactor:
                     Benefactor.Add(pc.PlayerId);

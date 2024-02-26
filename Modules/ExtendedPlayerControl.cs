@@ -1372,7 +1372,7 @@ static class ExtendedPlayerControl
             else if (seer.Is(CustomRoles.Egoist) && target.Is(CustomRoles.Egoist) && Egoist.ImpEgoistVisibalToAllies.GetBool())
                 return true;
         }
-        else if (CustomRoles.Admirer.GetRoleClass().IsEnable && Admirer.KnowRole(seer, target)) return true;
+        else if (Admirer.IsEnable && Admirer.KnowRole(seer, target)) return true;
         else if (Succubus.IsEnable && Succubus.KnowRole(seer, target)) return true;
         else if (Infectious.IsEnable && Infectious.KnowRole(seer, target)) return true;
         else if (Virus.IsEnable && Virus.KnowRole(seer, target)) return true;
