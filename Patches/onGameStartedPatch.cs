@@ -312,7 +312,6 @@ internal class ChangeRoleSettings
             Alchemist.Init();
             PlagueDoctor.Init();
             Penguin.Init();
-            Chameleon.Init();
             Wildling.Init();
             Morphling.Init();
             Inspector.Init(); // *giggle* party cop
@@ -838,9 +837,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.SchrodingersCat:
                         SchrodingersCat.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Chameleon:
-                        Chameleon.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Alchemist:
                         Alchemist.Add(pc.PlayerId);

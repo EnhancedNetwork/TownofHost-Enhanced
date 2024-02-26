@@ -700,6 +700,7 @@ public static class Utils
             var ProgressText = new StringBuilder();
             var role = Main.PlayerStates[playerId].MainRole;
             ProgressText.Append(Main.PlayerStates[playerId]?.Role?.GetProgressText(playerId));
+            Main.PlayerStates[playerId]?.Role?.AppendProgressText(playerId, comms, ProgressText);
             switch (role)
             {
                 case CustomRoles.Arsonist:
@@ -891,19 +892,7 @@ public static class Utils
                     ProgressText.Append(PlagueDoctor.GetProgressText());
                     break;
                 case CustomRoles.Chameleon:
-                    var taskState13 = Main.PlayerStates?[playerId].TaskState;
-                    Color TextColor13;
-                    var TaskCompleteColor13 = Color.green;
-                    var NonCompleteColor13 = Color.yellow;
-                    var NormalColor13 = taskState13.IsTaskFinished ? TaskCompleteColor13 : NonCompleteColor13;
-                    TextColor13 = comms ? Color.gray : NormalColor13;
-                    string Completed13 = comms ? "?" : $"{taskState13.CompletedTasksCount}";
-                    Color TextColor131;
-                    if (Chameleon.UseLimit[playerId] < 1) TextColor131 = Color.red;
-                    else TextColor131 = Color.white;
-                    ProgressText.Append(ColorString(TextColor13, $"({Completed13}/{taskState13.AllTasksCount})"));
-                    ProgressText.Append(ColorString(TextColor131, $" <color=#ffffff>-</color> {Math.Round(Chameleon.UseLimit[playerId], 1)}"));
-                    break;
+                    
                 case CustomRoles.Lighter:
                     var taskState14 = Main.PlayerStates?[playerId].TaskState;
                     Color TextColor14;
@@ -2653,7 +2642,6 @@ public static class Utils
 
         if (Collector.IsEnable) Collector.AfterMeetingTasks();
         if (Swooper.IsEnable) Swooper.AfterMeetingTasks();
-        if (Chameleon.IsEnable) Chameleon.AfterMeetingTasks();
         if (Wraith.IsEnable) Wraith.AfterMeetingTasks();
         if (Glitch.IsEnable) Glitch.AfterMeetingTasks();
         if (Keeper.IsEnable) Keeper.AfterMeetingTasks();

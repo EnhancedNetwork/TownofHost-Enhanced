@@ -1220,9 +1220,6 @@ internal static class RPC
             case CustomRoles.Wraith:
                 Wraith.Add(targetId);
                 break;
-            case CustomRoles.Chameleon:
-                Chameleon.Add(targetId);
-                break;
             case CustomRoles.BloodKnight:
                 BloodKnight.Add(targetId);
                 break;

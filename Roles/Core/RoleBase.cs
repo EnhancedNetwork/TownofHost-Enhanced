@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using System.Text;
 using TOHE.Roles.Crewmate;
 using UnityEngine;
 
@@ -92,7 +93,7 @@ public abstract class RoleBase
     /// <summary>
     /// A method for activating actions when role is already in vent
     /// </summary>
-    public virtual void OnCoEnterVent(PlayerPhysics physics, Vent vent)
+    public virtual void OnCoEnterVent(PlayerPhysics physics, int ventId)
     { }
 
     /// <summary>
@@ -216,5 +217,7 @@ public abstract class RoleBase
     /// Gets & Appends the role's skill limit
     /// </summary>
     public virtual string GetProgressText(byte PlayerId) => string.Empty;
+    public virtual void AppendProgressText(byte playerId, bool comms, StringBuilder sb)
+    { }
     public virtual int CalcVote(PlayerVoteArea PVA) => 0;
 }

@@ -52,7 +52,7 @@ public class PlayerState(byte playerId)
     {
         MainRole = role;
         countTypes = role.GetCountTypes();
-        Role = role.GetRoleClass();
+        Role = role.CreateRoleClass();
 
 
         var pc = Utils.GetPlayerById(PlayerId);
@@ -570,11 +570,6 @@ public class TaskState
                 case CustomRoles.Bloodhound when player.IsAlive():
                     Bloodhound.UseLimit[player.PlayerId] += Bloodhound.BloodhoundAbilityUseGainWithEachTaskCompleted.GetFloat();
                     Bloodhound.SendRPCLimit(player.PlayerId, operate: 2);
-                    break;
-
-                case CustomRoles.Chameleon when player.IsAlive():
-                    Chameleon.UseLimit[player.PlayerId] += Chameleon.ChameleonAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    Chameleon.SendRPC(player, isLimit: true);
                     break;
 
                 case CustomRoles.Spy when player.IsAlive():

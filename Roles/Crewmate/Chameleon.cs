@@ -1,18 +1,24 @@
+using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
 using System.Collections.Generic;
+using System;
 using System.Linq;
 using System.Text;
+using UnityEngine;
+using static TOHE.Utils;
 using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
-public static class Chameleon
+internal class Chameleon : RoleBase
 {
     private static readonly int Id = 7600;
     private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    public static bool On = false;
+    public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
 
     public static OptionItem ChameleonCooldown;
     private static OptionItem ChameleonDuration;
@@ -37,20 +43,20 @@ public static class Chameleon
         .SetParent(CustomRoleSpawnChances[CustomRoles.Chameleon])
         .SetValueFormat(OptionFormat.Times);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         InvisTime = [];
         lastTime = [];
         ventedId = [];
         UseLimit = [];
-        IsEnable = false;
+        On = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         UseLimit.Add(playerId, UseLimitOpt.GetInt());
-        IsEnable = true;
+        On = true;
     }
     public static void SendRPC(PlayerControl pc, bool isLimit = false)
     {
@@ -92,12 +98,17 @@ public static class Chameleon
             if (last > 0) lastTime.Add(pid, last);
         }
     }
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    {
+        AURoleOptions.EngineerCooldown = ChameleonCooldown.GetFloat() + 1f;
+        AURoleOptions.EngineerInVentMaxTime = 1f;
+    }
     public static bool CanGoInvis(byte id)
         => GameStates.IsInTask && !InvisTime.ContainsKey(id) && !lastTime.ContainsKey(id);
     public static bool IsInvis(byte id) => InvisTime.ContainsKey(id);
 
     private static long lastFixedTime = 0;
-    public static void OnReportDeadBody()
+    public override void OnReportDeadBody(PlayerControl y, PlayerControl x)
     {
         lastTime = [];
         InvisTime = [];
@@ -114,7 +125,7 @@ public static class Chameleon
 
         ventedId = [];
     }
-    public static void AfterMeetingTasks()
+    public override void AfterMeetingTasks()
     {
         lastTime = [];
         InvisTime = [];
@@ -124,7 +135,13 @@ public static class Chameleon
             SendRPC(pc);
         }
     }
-    public static void OnFixedUpdate(PlayerControl player)
+    public override void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
+    {
+        if (!pc.IsAlive()) return;
+        UseLimit[pc.PlayerId] += ChameleonAbilityUseGainWithEachTaskCompleted.GetFloat();
+        SendRPC(pc, isLimit: true);
+    }
+    public override void OnFixedUpdate(PlayerControl player)
     {
         var now = Utils.GetTimeStamp();
 
@@ -166,7 +183,7 @@ public static class Chameleon
             refreshList.Do(x => SendRPC(Utils.GetPlayerById(x)));
         }
     }
-    public static void OnCoEnterVent(PlayerPhysics __instance, int ventId)
+    public override void OnCoEnterVent(PlayerPhysics __instance, int ventId)
     {
         var pc = __instance.myPlayer;
         if (!AmongUsClient.Instance.AmHost || IsInvis(pc.PlayerId)) return;
@@ -202,9 +219,9 @@ public static class Chameleon
             }
         }, 0.5f, "Chameleon Vent");
     }
-    public static void OnEnterVent(PlayerControl pc, Vent vent)
+    public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
-        if (!IsEnable) return;
+        if (!CustomRoles.Chameleon.IsClassEnable()) return;
         if (!pc.Is(CustomRoles.Chameleon) || !IsInvis(pc.PlayerId)) return;
 
         InvisTime.Remove(pc.PlayerId);
@@ -235,12 +252,27 @@ public static class Chameleon
         return str.ToString();
     }
 
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (!IsInvis(killer.PlayerId)) return true;
         killer.SetKillCooldown();
         target.RpcCheckAndMurder(target);
         target.SetRealKiller(killer);
         return false;
+    }
+    public override void AppendProgressText(byte playerId, bool comms, StringBuilder ProgressText)
+    {
+        var taskState13 = Main.PlayerStates?[playerId].TaskState;
+        Color TextColor13;
+        var TaskCompleteColor13 = Color.green;
+        var NonCompleteColor13 = Color.yellow;
+        var NormalColor13 = taskState13.IsTaskFinished ? TaskCompleteColor13 : NonCompleteColor13;
+        TextColor13 = comms ? Color.gray : NormalColor13;
+        string Completed13 = comms ? "?" : $"{taskState13.CompletedTasksCount}";
+        Color TextColor131;
+        if (UseLimit[playerId] < 1) TextColor131 = Color.red;
+        else TextColor131 = Color.white;
+        ProgressText.Append(ColorString(TextColor13, $"({Completed13}/{taskState13.AllTasksCount})"));
+        ProgressText.Append(ColorString(TextColor131, $" <color=#ffffff>-</color> {Math.Round(UseLimit[playerId], 1)}"));
     }
 }

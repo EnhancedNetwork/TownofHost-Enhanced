@@ -2361,7 +2361,6 @@ class ReportDeadBodyPatch
         if (Romantic.IsEnable) Romantic.OnReportDeadBody();
         if (Investigator.IsEnable) Investigator.OnReportDeadBody();
         if (Swooper.IsEnable) Swooper.OnReportDeadBody();
-        if (Chameleon.IsEnable) Chameleon.OnReportDeadBody();
         if (Wraith.IsEnable) Wraith.OnReportDeadBody();
 
         // Alchemist & Bloodlust
@@ -2859,10 +2858,6 @@ class FixedUpdateInNormalGamePatch
 
                         case CustomRoles.Wraith:
                             Wraith.OnFixedUpdate(player);
-                            break;
-
-                        case CustomRoles.Chameleon:
-                            Chameleon.OnFixedUpdate(player);
                             break;
 
                         case CustomRoles.Lightning:
@@ -3519,7 +3514,6 @@ class EnterVentPatch
         Swooper.OnEnterVent(pc, __instance);
         Wraith.OnEnterVent(pc, __instance);
         Alchemist.OnEnterVent(pc, __instance.Id);
-        Chameleon.OnEnterVent(pc, __instance);
         Lurker.OnEnterVent(pc);
 
         if (pc.GetCustomRole() == CustomRoles.Bastion)
@@ -3696,6 +3690,7 @@ class CoEnterVentPatch
             }
 
         }
+        Main.PlayerStates[__instance.myPlayer.PlayerId].Role.OnCoEnterVent(__instance, id);
 
         if (RiftMaker.IsEnable) RiftMaker.OnVent(__instance.myPlayer, id);
 
@@ -3823,9 +3818,6 @@ class CoEnterVentPatch
 
         if (__instance.myPlayer.Is(CustomRoles.Wraith))
             Wraith.OnCoEnterVent(__instance, id);
-
-        if (__instance.myPlayer.Is(CustomRoles.Chameleon))
-            Chameleon.OnCoEnterVent(__instance, id);
         
         if (__instance.myPlayer.Is(CustomRoles.Alchemist) && Alchemist.PotionID == 8)
             Alchemist.OnCoEnterVent(__instance, id);

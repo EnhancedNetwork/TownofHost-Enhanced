@@ -10,7 +10,7 @@ namespace TOHE.Roles.Core;
 
 public static class CustomRoleManager
 {
-    public static RoleBase GetRoleClass(this CustomRoles role) => role switch
+    public static RoleBase CreateRoleClass(this CustomRoles role) => role switch
     {
         // ==== Vanilla ====
         CustomRoles.Crewmate => new VanillaRole(),
@@ -312,7 +312,7 @@ public static class CustomRoleManager
     public static HashSet<Action<PlayerControl>> OnFixedUpdateLowLoadOthers = [];
     public static void OnFixedUpdateLowLoad(PlayerControl player)
     {
-        player.GetCustomRole().GetRoleClass()?.OnFixedUpdateLowLoad(player);
+        Main.PlayerStates[player.PlayerId]?.Role?.OnFixedUpdateLowLoad(player);
 
         if (OnFixedUpdateLowLoadOthers.Count <= 0) return;
         //Execute other viewpoint processing if any
