@@ -1016,9 +1016,6 @@ public static class Utils
                 case CustomRoles.Taskinator:
                     ProgressText.Append(Taskinator.GetProgressText(playerId));
                     break;
-                case CustomRoles.Benefactor:
-                    ProgressText.Append(Benefactor.GetProgressText(playerId));
-                    break;
                 case CustomRoles.Eraser:
                     ProgressText.Append(Eraser.GetProgressText(playerId));
                     break;
@@ -2665,7 +2662,6 @@ public static class Utils
         if (Spiritualist.IsEnable) Spiritualist.AfterMeetingTasks();
         if (Penguin.IsEnable) Penguin.AfterMeetingTasks();
         if (Taskinator.IsEnable) Taskinator.AfterMeetingTasks();
-        if (Benefactor.IsEnable) Benefactor.AfterMeetingTasks();
         if (Retributionist.IsEnable) Retributionist.AfterMeetingTasks(); 
         if (PlagueDoctor.IsEnable) PlagueDoctor.AfterMeetingTasks();
         if (Jailer.IsEnable) Jailer.AfterMeetingTasks();

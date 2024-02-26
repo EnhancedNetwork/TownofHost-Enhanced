@@ -1150,9 +1150,6 @@ internal static class RPC
             case CustomRoles.Taskinator:
                 Taskinator.Add(targetId);
                 break;
-            case CustomRoles.Benefactor:
-                Benefactor.Add(targetId);
-                break;
             case CustomRoles.Jinx:
                 Main.JinxSpellCount[targetId] = Jinx.JinxSpellTimes.GetInt();
                 Jinx.Add(targetId);

@@ -758,7 +758,8 @@ class CheckMurderPatch
         if (Jackal.ResetKillCooldownWhenSbGetKilled.GetBool() && !killerRole.Is(CustomRoles.Sidekick) && !killerRole.Is(CustomRoles.Jackal) && !target.Is(CustomRoles.Sidekick) && !target.Is(CustomRoles.Jackal) && !GameStates.IsMeeting)
             Jackal.AfterPlayerDiedTask(killer);
 
-        if (Benefactor.IsEnable && !Benefactor.OnCheckMurder(killer, target))
+        if (CustomRoles.Benefactor.IsClassEnable() 
+            && !Main.PlayerStates.Any(x => x.Value.MainRole == CustomRoles.Benefactor && x.Value.Role.OnCheckMurderAsTarget(killer, target)))
             return false;
 
         // Romantic partner is protected
@@ -2886,9 +2887,6 @@ class FixedUpdateInNormalGamePatch
 
                         case CustomRoles.Spy:
                             Spy.OnFixedUpdate(player);
-                            break;
-                        case CustomRoles.Benefactor:
-                            Benefactor.OnFixedUpdate();
                             break;
 
                         case CustomRoles.Glitch:

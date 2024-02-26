@@ -125,9 +125,6 @@ internal class CopyCat : RoleBase
                 case CustomRoles.Admirer:
                     Admirer.Remove(pc.PlayerId);
                     break;
-                case CustomRoles.Benefactor:
-                    Benefactor.Remove(pc.PlayerId);
-                    break;
                 case CustomRoles.Keeper:
                     Keeper.Remove(pc.PlayerId);
                     break;
@@ -151,9 +148,6 @@ internal class CopyCat : RoleBase
                     break;
                 case CustomRoles.Tracker:
                     Tracker.Remove(pc.PlayerId);
-                    break;
-                case CustomRoles.Monitor:
-                    Monitor.Remove(pc.PlayerId);
                     break;
                 case CustomRoles.Investigator:
                     Investigator.Remove(pc.PlayerId);

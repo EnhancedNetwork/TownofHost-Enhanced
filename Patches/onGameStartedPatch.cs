@@ -249,7 +249,6 @@ internal class ChangeRoleSettings
             Observer.Init();
             Collector.Init();
             Clumsy.Init();
-            Benefactor.Init();
             Taskinator.Init();
             QuickShooter.Init();
             Kamikaze.Init();
@@ -781,9 +780,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Taskinator:
                         Taskinator.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Benefactor:
-                        Benefactor.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Observer:
                         Observer.Add(pc.PlayerId);
