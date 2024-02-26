@@ -7,6 +7,7 @@ using TMPro;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -444,45 +445,43 @@ class HudManagerPatch
                         break;
                 }
 
-                //バウンティハンターのターゲットテキスト
+                // Set lower info text for modded players
                 if (LowerInfoText == null)
                 {
-                    TempLowerInfoText = new GameObject("CountdownText");
-                    TempLowerInfoText.transform.position = new Vector3(0f, -2f, 1f);
-                    LowerInfoText = TempLowerInfoText.AddComponent<TextMeshPro>();
-                    //LowerInfoText.text = string.Format(GetString("CountdownText"));
-                    LowerInfoText.alignment = TextAlignmentOptions.Center;
-                    //LowerInfoText = Object.Instantiate(__instance.KillButton.buttonLabelText);
+                    LowerInfoText = UnityEngine.Object.Instantiate(__instance.KillButton.buttonLabelText);
                     LowerInfoText.transform.parent = __instance.transform;
                     LowerInfoText.transform.localPosition = new Vector3(0, -2f, 0);
+                    LowerInfoText.alignment = TextAlignmentOptions.Center;
                     LowerInfoText.overflowMode = TextOverflowModes.Overflow;
                     LowerInfoText.enableWordWrapping = false;
-                    LowerInfoText.color = Color.white;
-                    LowerInfoText.outlineColor = Color.black;
-                    LowerInfoText.outlineWidth = 20000000f;
-                    LowerInfoText.fontSize = 2f;
+                    LowerInfoText.color = Palette.EnabledColor;
+                    LowerInfoText.fontSizeMin = 2.8f;
+                    LowerInfoText.fontSizeMax = 2.8f;
                 }
                 switch (Options.CurrentGameMode)
                 {
                     case CustomGameMode.Standard:
-                        LowerInfoText.text = player.GetCustomRole() switch
-                        {
-                            CustomRoles.BountyHunter => BountyHunter.GetTargetText(player, true),
-                            CustomRoles.Witch => Witch.GetSpellModeText(player, true),
-                            CustomRoles.HexMaster => HexMaster.GetHexModeText(player, true),
-                            CustomRoles.Fireworker => Fireworker.GetStateText(player),
-                            CustomRoles.Swooper => Swooper.GetHudText(player),
-                            CustomRoles.Wraith => Wraith.GetHudText(player),
-                            CustomRoles.Chameleon => Chameleon.GetHudText(player),
-                            CustomRoles.Alchemist => Alchemist.GetHudText(player),
-                            CustomRoles.Huntsman => Huntsman.GetHudText(player),
-                            CustomRoles.Glitch => Glitch.GetHudText(player),
-                            CustomRoles.BloodKnight => BloodKnight.GetHudText(player),
-                            CustomRoles.Wildling => Wildling.GetHudText(player),
-                            CustomRoles.PlagueDoctor => PlagueDoctor.GetLowerTextOthers(player),
-                            CustomRoles.Stealth => Stealth.GetSuffix(player, isHUD: true),
-                            _ => string.Empty,
-                        };
+                        var roleClass = player.GetCustomRole().GetRoleClass();
+                        //LowerInfoText.text = roleClass?.GetLowerText(player, isForMeeting: GameStates.IsMeeting, isForHud: true) ?? "";
+
+                        //if (LowerInfoText.text != "" || LowerInfoText.text != string.Empty)
+                            LowerInfoText.text = player.GetCustomRole() switch
+                            {
+                                CustomRoles.BountyHunter => BountyHunter.GetTargetText(player, true),
+                                CustomRoles.Witch => Witch.GetSpellModeText(player, true),
+                                CustomRoles.HexMaster => HexMaster.GetHexModeText(player, true),
+                                CustomRoles.Fireworker => Fireworker.GetStateText(player),
+                                CustomRoles.Swooper => Swooper.GetHudText(player),
+                                CustomRoles.Wraith => Wraith.GetHudText(player),
+                                CustomRoles.Chameleon => Chameleon.GetHudText(player),
+                                CustomRoles.Alchemist => Alchemist.GetHudText(player),
+                                CustomRoles.Huntsman => Huntsman.GetHudText(player),
+                                CustomRoles.Glitch => Glitch.GetHudText(player),
+                                CustomRoles.BloodKnight => BloodKnight.GetHudText(player),
+                                CustomRoles.Wildling => Wildling.GetHudText(player),
+                                CustomRoles.PlagueDoctor => PlagueDoctor.GetLowerTextOthers(player),
+                                _ => roleClass?.GetLowerText(player, isForMeeting: GameStates.IsMeeting, isForHud: true) ?? "",
+                            };
                         break;
                 }
                 

@@ -858,9 +858,6 @@ static class ExtendedPlayerControl
             case CustomRoles.Huntsman:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Huntsman.KCD;
                 break;
-            case CustomRoles.Stealth:
-                Stealth.SetKillCooldown(player.PlayerId);
-                break;
             case CustomRoles.Shroud:
                 Shroud.SetKillCooldown(player.PlayerId);
                 break;

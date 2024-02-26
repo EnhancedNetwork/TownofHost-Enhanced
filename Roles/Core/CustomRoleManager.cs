@@ -81,7 +81,7 @@ public static class CustomRoleManager
         //CustomRoles.Witch => new Witch(),
         CustomRoles.SoulCatcher => new SoulCatcher(),
         //CustomRoles.Swooper => new Swooper(),
-        //CustomRoles.Stealth => new Stealth(),
+        CustomRoles.Stealth => new Stealth(),
         //CustomRoles.TimeThief => new TimeThief(),
         CustomRoles.Trapster => new Trapster(),
         //CustomRoles.Trickster => new Trickster(),
@@ -312,7 +312,7 @@ public static class CustomRoleManager
     public static HashSet<Action<PlayerControl>> OnFixedUpdateLowLoadOthers = [];
     public static void OnFixedUpdateLowLoad(PlayerControl player)
     {
-        Main.PlayerStates[player.PlayerId]?.Role?.OnFixedUpdateLowLoad(player);
+        player.GetCustomRole().GetRoleClass()?.OnFixedUpdateLowLoad(player);
 
         if (OnFixedUpdateLowLoadOthers.Count <= 0) return;
         //Execute other viewpoint processing if any
