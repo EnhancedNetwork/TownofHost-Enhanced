@@ -295,10 +295,6 @@ class HudManagerPatch
                         __instance.KillButton.OverrideText(GetString("KillButtonText"));
                         __instance.ImpostorVentButton.OverrideText(GetString(Wraith.IsInvis(PlayerControl.LocalPlayer.PlayerId) ? "WraithRevertVentButtonText" : "WraithVentButtonText"));
                         break;
-                    case CustomRoles.Chameleon:
-                        __instance.AbilityButton.OverrideText(GetString(Chameleon.IsInvis(PlayerControl.LocalPlayer.PlayerId) ? "ChameleonRevertDisguise" : "ChameleonDisguise"));
-                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        break;
                     case CustomRoles.Alchemist:
                         __instance.AbilityButton.OverrideText(GetString("AlchemistVentButtonText"));
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
@@ -469,7 +465,6 @@ class HudManagerPatch
                                 CustomRoles.Fireworker => Fireworker.GetStateText(player),
                                 CustomRoles.Swooper => Swooper.GetHudText(player),
                                 CustomRoles.Wraith => Wraith.GetHudText(player),
-                                CustomRoles.Chameleon => Chameleon.GetHudText(player),
                                 CustomRoles.Alchemist => Alchemist.GetHudText(player),
                                 CustomRoles.Huntsman => Huntsman.GetHudText(player),
                                 CustomRoles.Glitch => Glitch.GetHudText(player),

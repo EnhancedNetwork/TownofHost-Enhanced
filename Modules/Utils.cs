@@ -891,7 +891,6 @@ public static class Utils
                 case CustomRoles.PlagueDoctor:
                     ProgressText.Append(PlagueDoctor.GetProgressText());
                     break;
-                case CustomRoles.Chameleon:
                     
                 case CustomRoles.Lighter:
                     var taskState14 = Main.PlayerStates?[playerId].TaskState;

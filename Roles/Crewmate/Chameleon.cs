@@ -231,7 +231,7 @@ internal class Chameleon : RoleBase
         pc?.MyPhysics?.RpcBootFromVent(vent.Id);
         NameNotifyManager.Notify(pc, GetString("ChameleonInvisStateOut"));
     }
-    public static string GetHudText(PlayerControl pc)
+    public override string GetLowerText(PlayerControl pc, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
         if (pc == null || !GameStates.IsInTask || !PlayerControl.LocalPlayer.IsAlive()) return "";
         var str = new StringBuilder();
@@ -259,6 +259,11 @@ internal class Chameleon : RoleBase
         target.RpcCheckAndMurder(target);
         target.SetRealKiller(killer);
         return false;
+    }
+    public override void SetAbilityButtonText(HudManager hud, byte id)
+    {
+        hud.AbilityButton.OverrideText(GetString(IsInvis(PlayerControl.LocalPlayer.PlayerId) ? "ChameleonRevertDisguise" : "ChameleonDisguise"));
+        hud.ReportButton.OverrideText(GetString("ReportButtonText"));
     }
     public override void AppendProgressText(byte playerId, bool comms, StringBuilder ProgressText)
     {
