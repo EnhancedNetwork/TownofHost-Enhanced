@@ -177,9 +177,7 @@ public abstract class RoleBase
     /// A generic method to activate actions after a meeting has ended.
     /// </summary>
     public virtual void AfterMeetingTasks()
-    {
-
-    }
+    { }
 
     /// <summary>
     /// When the game starts to ending
