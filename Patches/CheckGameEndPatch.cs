@@ -10,6 +10,7 @@ using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
+using TOHE.Roles.AddOns.Common;
 
 namespace TOHE;
 
@@ -254,17 +255,6 @@ class GameEndCheckerForNormal
                     }
                 }
 
-                //quizmaster win i guess
-                /*else if (CustomRoles.Quizmaster.RoleExist())
-                {
-                    if (CustomWinnerHolder.WinnerTeam is CustomWinner.Crewmate)
-                    {
-                        reason = GameOverReason.ImpostorByKill;
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Quizmaster);
-                        CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Quizmaster);
-                    }
-                }*/
-
                 //追加胜利
                 foreach (var pc in Main.AllPlayerControls)
                 {
@@ -274,7 +264,6 @@ class GameEndCheckerForNormal
                         CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
                         CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Opportunist);
                     }
-                    if (pc.Is(CustomRoles.SchrodingersCat)) SchrodingersCat.SchrodingerWinCondition(pc);
                     //pixie
                     if (pc.Is(CustomRoles.Pixie) && !CustomWinnerHolder.CheckForConvertedWinner(pc.PlayerId)) Pixie.PixieWinCondition(pc);
                     //Shaman
@@ -455,6 +444,10 @@ class GameEndCheckerForNormal
                     }
                 }
             }
+
+            /*Keep Schrodinger cat win condition at last*/
+            Main.AllPlayerControls.Where(pc => pc.Is(CustomRoles.SchrodingersCat)).ToList().ForEach(pc => SchrodingersCat.SchrodingerWinCondition(pc));
+
             ShipStatus.Instance.enabled = false;
             StartEndGame(reason);
             predicate = null;
@@ -556,14 +549,14 @@ class GameEndCheckerForNormal
 
             if (CustomRoles.Sunnyboy.RoleExist() && Main.AllAlivePlayerControls.Length > 1) return false;
             var neutralRoleCounts = new Dictionary<CountTypes, int>();
-            var apcList = Main.AllAlivePlayerControls.ToArray();
+            var allAlivePlayerList = Main.AllAlivePlayerControls.ToArray();
             int dual = 0, impCount = 0, crewCount = 0;
 
-            foreach (var pc in apcList)
+            foreach (var pc in allAlivePlayerList)
             {
                 if (pc == null) continue;
 
-                dual = pc.Is(CustomRoles.DualPersonality) ? 1 : 0;
+                dual = Schizophrenic.IsExistInGame(pc) ? 1 : 0;
                 var countType = Main.PlayerStates[pc.PlayerId].countTypes;
                 switch (countType)
                 {

@@ -19,7 +19,9 @@ public static class Sniper
     private static OptionItem SniperPrecisionShooting;
     private static OptionItem SniperAimAssist;
     private static OptionItem SniperAimAssistOnshot;
-    public static OptionItem CanKillWithBullets;
+    private static OptionItem CanKillWithBullets;
+    private static OptionItem AlwaysShowShapeshiftAnimations;
+
     public static Dictionary<byte, byte> snipeTarget = [];
     private static Dictionary<byte, Vector3> snipeBasePosition = [];
     private static Dictionary<byte, Vector3> LastPosition = [];
@@ -27,11 +29,14 @@ public static class Sniper
     private static Dictionary<byte, List<byte>> shotNotify = [];
     private static Dictionary<byte, bool> IsAim = [];
     private static Dictionary<byte, float> AimTime = [];
+
     private static bool meetingReset;
     private static int maxBulletCount;
     private static bool precisionShooting;
     private static bool AimAssist;
     private static bool AimAssistOneshot;
+    private static bool SniperCanUseKillButton;
+    public static bool ShowShapeshiftAnimations;
     public static void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Sniper);
@@ -41,6 +46,7 @@ public static class Sniper
         SniperAimAssist = BooleanOptionItem.Create(Id + 12, "SniperAimAssist", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sniper]);
         SniperAimAssistOnshot = BooleanOptionItem.Create(Id + 13, "SniperAimAssistOneshot", false, TabGroup.ImpostorRoles, false).SetParent(SniperAimAssist);
         CanKillWithBullets = BooleanOptionItem.Create(Id + 14, "SniperCanKill", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sniper]);
+        AlwaysShowShapeshiftAnimations = BooleanOptionItem.Create(Id + 15, "SniperAlwaysShowShapeshiftAnimations", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sniper]);
     }
     public static void Init()
     {
@@ -57,22 +63,24 @@ public static class Sniper
         AimTime = [];
         meetingReset = false;
         IsEnable = false;
-
-        maxBulletCount = SniperBulletCount.GetInt();
-        precisionShooting = SniperPrecisionShooting.GetBool();
-        AimAssist = SniperAimAssist.GetBool();
-        AimAssistOneshot = SniperAimAssistOnshot.GetBool();
     }
     public static void Add(byte playerId)
     {
         PlayerIdList.Add(playerId);
         IsEnable = true;
 
+        maxBulletCount = SniperBulletCount.GetInt();
+        precisionShooting = SniperPrecisionShooting.GetBool();
+        AimAssist = SniperAimAssist.GetBool();
+        AimAssistOneshot = SniperAimAssistOnshot.GetBool();
+        SniperCanUseKillButton = CanKillWithBullets.GetBool();
+        ShowShapeshiftAnimations = AlwaysShowShapeshiftAnimations.GetBool();
+
         snipeBasePosition[playerId] = new();
         LastPosition[playerId] = new();
         snipeTarget[playerId] = 0x7F;
         bulletCount[playerId] = maxBulletCount;
-        shotNotify[playerId] = new();
+        shotNotify[playerId] = [];
         IsAim[playerId] = false;
         AimTime[playerId] = 0f;
     }
@@ -80,7 +88,7 @@ public static class Sniper
     public static void SendRPC(byte playerId)
     {
         Logger.Info($"Player{playerId}:SendRPC", "Sniper");
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SniperSync, Hazel.SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SniperSync, SendOption.Reliable, -1);
         writer.Write(playerId);
         var snList = shotNotify[playerId];
         writer.Write(snList.Count);
@@ -90,7 +98,6 @@ public static class Sniper
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-
     public static void ReceiveRPC(MessageReader msg)
     {
         var playerId = msg.ReadByte();
@@ -102,6 +109,11 @@ public static class Sniper
             count--;
         }
         Logger.Info($"Player{playerId}:ReceiveRPC", "Sniper");
+    }
+    public static void ApplyGameOptions(PlayerControl sniper)
+    {
+        AURoleOptions.ShapeshifterCooldown = !ShowShapeshiftAnimations && Options.DisableShapeshiftAnimations.GetBool() ? 1f : Options.DefaultShapeshiftCooldown.GetFloat();
+        //AURoleOptions.ShapeshifterDuration = 1f;
     }
     public static bool CanUseKillButton(PlayerControl pc)
     {
@@ -116,7 +128,7 @@ public static class Sniper
         {
             canUse = true;
         }
-        if (CanKillWithBullets.GetBool())
+        if (SniperCanUseKillButton)
         {
             canUse = true;
         }
@@ -176,7 +188,7 @@ public static class Sniper
         return targets;
 
     }
-    public static void OnShapeshift(PlayerControl pc, bool shapeshifting)
+    public static void OnShapeshift(PlayerControl pc, bool shapeshifting, bool shapeshiftIsHidden = false)
     {
         if (!IsThisRole(pc.PlayerId) || !pc.IsAlive()) return;
 
@@ -185,11 +197,17 @@ public static class Sniper
 
         if (bulletCount[sniperId] <= 0) return;
 
-        //スナイパーで弾が残ってたら
-        if (shapeshifting)
+        // first shapeshift
+        if (shapeshifting || (shapeshiftIsHidden && IsAim.TryGetValue(sniperId, out var aim) && !aim))
         {
             //Aim開始
             meetingReset = false;
+
+            if (shapeshiftIsHidden)
+            {
+                sniper.SyncSettings();
+                sniper.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+            }
 
             //スナイプ地点の登録
             snipeBasePosition[sniperId] = sniper.transform.position;
@@ -248,14 +266,14 @@ public static class Sniper
             SendRPC(sniperId);
 
             _ = new LateTask(() =>
+            {
+                snList.Clear();
+                foreach (var otherPc in targets.Keys)
                 {
-                    snList.Clear();
-                    foreach (var otherPc in targets.Keys)
-                    {
-                        Utils.NotifyRoles(SpecifySeer: otherPc);
-                    }
-                    SendRPC(sniperId);
-                },
+                    Utils.NotifyRoles(SpecifySeer: otherPc);
+                }
+                SendRPC(sniperId);
+            },
                 0.5f, "Sniper shot Notify");
         }
     }

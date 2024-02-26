@@ -11,9 +11,9 @@ public class Susceptible
     public static OptionItem CanBeOnCrew;
     public static OptionItem CanBeOnImp;
     public static OptionItem CanBeOnNeutral;
-    public static OptionItem EnabledDeathReasons;
-    public static PlayerState.DeathReason randomReason;
+    private static OptionItem EnabledDeathReasons;
 
+    public static PlayerState.DeathReason randomReason;
 
     public static void SetupCustomOptions()
     {
@@ -24,7 +24,7 @@ public class Susceptible
         CanBeOnNeutral = BooleanOptionItem.Create(Id + 14, "NeutralCanBeSusceptible", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Susceptible]);
     }
 
-    public static void ChangeRandomDeath()
+    private static void ChangeRandomDeath()
     {
         PlayerState.DeathReason[] deathReasons = EnumHelper.GetAllValues<PlayerState.DeathReason>();
         Random random = new();
@@ -175,7 +175,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Revenge:
-                    if (!CustomRoles.Avanger.RoleExist() && !CustomRoles.Retributionist.RoleExist() && !CustomRoles.Mafia.RoleExist())
+                    if (!CustomRoles.Avanger.RoleExist() && !CustomRoles.Retributionist.RoleExist() && !CustomRoles.Nemesis.RoleExist())
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }
@@ -339,7 +339,5 @@ public class Susceptible
             while (Main.PlayerStates[victim.PlayerId].deathReason != randomReason)
                 Main.PlayerStates[victim.PlayerId].deathReason = randomReason;
         }
-
     }
-
 }

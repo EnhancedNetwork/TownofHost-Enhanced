@@ -56,13 +56,16 @@ public static class AntiBlackout
         if (numAliveNeutralKillers >= 1)
         {
             // if all Crewmates is dead
-            BlackOutIsActive = numAliveCrewmates <= 0;
+            if (!BlackOutIsActive)
+                BlackOutIsActive = numAliveCrewmates <= 0;
 
             // if all Impostors is dead and neutral killers > or = num alive crewmates
-            BlackOutIsActive = numAliveImpostors <= 0 && (numAliveNeutralKillers >= numAliveCrewmates);
+            if (!BlackOutIsActive)
+                BlackOutIsActive = numAliveImpostors <= 0 && (numAliveNeutralKillers >= numAliveCrewmates);
 
             // if num alive Impostors > or = num alive Crewmates/Neutral killers
-            BlackOutIsActive = numAliveImpostors >= (numAliveNeutralKillers + numAliveCrewmates);
+            if (!BlackOutIsActive)
+                BlackOutIsActive = numAliveImpostors >= (numAliveNeutralKillers + numAliveCrewmates);
         }
 
         Logger.Info($" {BlackOutIsActive}", "BlackOut Is Active");
@@ -214,7 +217,7 @@ public static class AntiBlackout
     {
         var timeNotify = 0f;
 
-        if (BlackOutIsActive && CheckForEndVotingPatch.TempExileMsg != null)
+        if (CheckForEndVotingPatch.TempExileMsg != null && BlackOutIsActive)
         {
             timeNotify = 4f;
             foreach (var pc in Main.AllPlayerControls.Where(p => p != null && !(p.AmOwner || p.IsModClient())).ToArray())
@@ -223,14 +226,21 @@ public static class AntiBlackout
             }
         }
 
-        _ = new LateTask(() =>
+        try
         {
-            if (Eraser.IsEnable) Eraser.AfterMeetingTasks(notifyPlayer: true);
-            if (Cleanser.IsEnable) Cleanser.AfterMeetingTasks(notifyPlayer: true);
-            if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: true);
-            if (Seeker.IsEnable) Seeker.AfterMeetingTasks(notifyPlayer: true);
+            _ = new LateTask(() =>
+            {
+                if (Eraser.IsEnable) Eraser.AfterMeetingTasks(notifyPlayer: true);
+                if (Cleanser.IsEnable) Cleanser.AfterMeetingTasks(notifyPlayer: true);
+                if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: true);
+                if (Seeker.IsEnable) Seeker.AfterMeetingTasks(notifyPlayer: true);
 
-        }, timeNotify + 0.2f, "Notify AfterMeetingTasks");
+            }, timeNotify + 0.2f, "Notify AfterMeetingTasks");
+        }
+        catch (Exception error)
+        {
+            Logger.Error($"{error}", "AntiBlackout.AfterMeetingTasks");
+        }
     }
     public static void Reset()
     {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Crewmate;
+using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Double;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -23,7 +24,6 @@ public static class Gangster
     public static OptionItem JudgeCanBeMadmate;
     public static OptionItem MarshallCanBeMadmate;
     public static OptionItem FarseerCanBeMadmate;
-    public static OptionItem RetributionistCanBeMadmate;
 
     public static Dictionary<byte, int> RecruitLimit = [];
 
@@ -41,8 +41,6 @@ public static class Gangster
         JudgeCanBeMadmate = BooleanOptionItem.Create(Id + 17, "GanJudgeCanBeMadmate", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Gangster]);
         MarshallCanBeMadmate = BooleanOptionItem.Create(Id + 18, "GanMarshallCanBeMadmate", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Gangster]);
         FarseerCanBeMadmate = BooleanOptionItem.Create(Id + 19, "GanFarseerCanBeMadmate", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Gangster]);
-        RetributionistCanBeMadmate = BooleanOptionItem.Create(Id + 20, "GanRetributionistCanBeMadmate", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Gangster]);
-
     }
     public static void Init()
     {
@@ -58,7 +56,8 @@ public static class Gangster
     }
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetGangsterRecruitLimit, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WritePacked((int)CustomRoles.Gangster);
         writer.Write(playerId);
         writer.Write(RecruitLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -99,7 +98,7 @@ public static class Gangster
         if (CanBeGansterRecruit(target))
         {
             if (!killer.Is(CustomRoles.Admired) && !killer.Is(CustomRoles.Recruit) && !killer.Is(CustomRoles.Charmed)
-                && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious) && target.CanBeMadmate(inGame: true))
+                && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious) && target.CanBeMadmate(inGame: true, forGangster: true))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Madmate.ToString(), "Ganster Assign");
                 target.RpcSetCustomRole(CustomRoles.Madmate);
@@ -129,7 +128,7 @@ public static class Gangster
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Charmed), GetString("GangsterSuccessfullyRecruited")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Charmed), GetString("BeRecruitedByGangster")));
             }
-            else if (killer.Is(CustomRoles.Infected) && target.CanBeInfected())
+            else if (killer.Is(CustomRoles.Infected) && target.CanBeBitten())
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Infected.ToString(), "Ganster Assign");
                 target.RpcSetCustomRole(CustomRoles.Infected);
