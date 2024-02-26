@@ -2100,8 +2100,8 @@ class ReportDeadBodyPatch
                         }
                         else if (tar.Is(CustomRoles.Swapper))
                         {
-                            Swapper.Add(__instance.PlayerId);
                             __instance.RpcSetCustomRole(CustomRoles.Swapper);
+                            Main.PlayerStates[tar.PlayerId].Role.Add(tar.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                             Main.TasklessCrewmate.Add(__instance.PlayerId);

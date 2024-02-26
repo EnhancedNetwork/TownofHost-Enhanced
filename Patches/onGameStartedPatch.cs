@@ -333,7 +333,6 @@ internal class ChangeRoleSettings
             Necromancer.Init();
             Pitfall.Init();
             Agitater.Init();
-            Swapper.Init();
             Enigma.Init();
             ChiefOfPolice.Init();
             Cyber.Init();
@@ -970,9 +969,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Pitfall:
                         Pitfall.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Swapper:
-                        Swapper.Add(pc.PlayerId);
                         break;
                     case CustomRoles.ChiefOfPolice:
                         ChiefOfPolice.Add(pc.PlayerId);

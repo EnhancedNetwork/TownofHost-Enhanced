@@ -131,9 +131,6 @@ internal class CopyCat : RoleBase
                 case CustomRoles.Keeper:
                     Keeper.Remove(pc.PlayerId);
                     break;
-                case CustomRoles.Swapper:
-                    Swapper.Remove(pc.PlayerId);
-                    break;
                 case CustomRoles.GuessMaster:
                     GuessMaster.Remove(pc.PlayerId);
                     break;

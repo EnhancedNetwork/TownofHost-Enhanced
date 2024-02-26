@@ -1092,9 +1092,6 @@ public static class Utils
                 case CustomRoles.Spiritcaller:
                     ProgressText.Append(Spiritcaller.GetSpiritLimit());
                     break;
-                case CustomRoles.Swapper:
-                    ProgressText.Append(Swapper.GetSwappermax(playerId));
-                    break;
                 case CustomRoles.ChiefOfPolice:
                     ProgressText.Append(ChiefOfPolice.GetSkillLimit(playerId));
                     break;
