@@ -2690,7 +2690,7 @@ public static class Utils
         if (RiftMaker.IsEnable) RiftMaker.AfterMeetingTasks();
         if (Statue.IsEnable) Statue.AfterMeetingTasks();
         if (Burst.IsEnable) Burst.AfterMeetingTasks();
-        if (CopyCat.On) CopyCat.UnAfterMeetingTasks(); // All crew hast to be before this
+        if (CustomRoles.CopyCat.IsClassEnable()) CopyCat.UnAfterMeetingTasks(); // All crew hast to be before this
         
 
         
