@@ -2376,9 +2376,6 @@ class ReportDeadBodyPatch
         if (Chameleon.IsEnable) Chameleon.OnReportDeadBody();
         if (Wraith.IsEnable) Wraith.OnReportDeadBody();
 
-        // Alchemist & Bloodlust
-        Alchemist.OnReportDeadBody();
-
         if (Mortician.IsEnable) Mortician.OnReportDeadBody(player, target);
         if (Enigma.IsEnable) Enigma.OnReportDeadBody(player, target);
         if (Mediumshiper.IsEnable) Mediumshiper.OnReportDeadBody(target);
@@ -2843,9 +2840,6 @@ class FixedUpdateInNormalGamePatch
                     if (Kamikaze.IsEnable)
                         Kamikaze.MurderKamikazedPlayers(player);
 
-                    if (Alchemist.IsEnable)
-                        Alchemist.OnFixedUpdateINV(player);
-
                     if (Puppeteer.IsEnable)
                         Puppeteer.OnFixedUpdate(player);
 
@@ -2862,7 +2856,7 @@ class FixedUpdateInNormalGamePatch
                         Rainbow.OnFixedUpdate();
 
                     if (Alchemist.BloodlustList.ContainsKey(player.PlayerId))
-                        Alchemist.OnFixedUpdate(player);
+                        Alchemist.OnFixedUpdateForBloodlustTarget(player);
 
                     switch (playerRole)
                     {
@@ -3564,7 +3558,6 @@ class EnterVentPatch
 
         Swooper.OnEnterVent(pc, __instance);
         Wraith.OnEnterVent(pc, __instance);
-        Alchemist.OnEnterVent(pc, __instance.Id);
         Chameleon.OnEnterVent(pc, __instance);
         Lurker.OnEnterVent(pc);
 
@@ -3872,9 +3865,6 @@ class CoEnterVentPatch
 
         if (__instance.myPlayer.Is(CustomRoles.Chameleon))
             Chameleon.OnCoEnterVent(__instance, id);
-        
-        if (__instance.myPlayer.Is(CustomRoles.Alchemist) && Alchemist.PotionID == 8)
-            Alchemist.OnCoEnterVent(__instance, id);
 
         if (__instance.myPlayer.Is(CustomRoles.DovesOfNeace)) __instance.myPlayer.Notify(GetString("DovesOfNeaceMaxUsage"));
         if (__instance.myPlayer.Is(CustomRoles.Veteran)) __instance.myPlayer.Notify(GetString("VeteranMaxUsage"));

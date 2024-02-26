@@ -482,7 +482,6 @@ class HudManagerPatch
                                 CustomRoles.Swooper => Swooper.GetHudText(player),
                                 CustomRoles.Wraith => Wraith.GetHudText(player),
                                 CustomRoles.Chameleon => Chameleon.GetHudText(player),
-                                CustomRoles.Alchemist => Alchemist.GetHudText(player),
                                 CustomRoles.Huntsman => Huntsman.GetHudText(player),
                                 CustomRoles.Glitch => Glitch.GetHudText(player),
                                 CustomRoles.BloodKnight => BloodKnight.GetHudText(player),

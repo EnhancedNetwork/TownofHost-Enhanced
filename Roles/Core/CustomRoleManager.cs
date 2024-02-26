@@ -114,7 +114,7 @@ public static class CustomRoleManager
         CustomRoles.ScientistTOHE => new VanillaRole(),
         CustomRoles.Addict => new Addict(),
         //CustomRoles.Aid => new Aid(),
-        //CustomRoles.Alchemist => new Alchemist(),
+        CustomRoles.Alchemist => new Alchemist(),
         //CustomRoles.Altruist => new Altruist(),
         //CustomRoles.Analyzer => new Analyzer(),
         //CustomRoles.Autocrat => new Autocrat(),

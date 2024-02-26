@@ -489,10 +489,6 @@ public class TaskState
                     Main.GrenadierNumOfUsed[player.PlayerId] += Options.GrenadierAbilityUseGainWithEachTaskCompleted.GetFloat();
                     break;
 
-                case CustomRoles.Alchemist when player.IsAlive():
-                    Alchemist.OnTaskComplete(player);
-                    break;
-
                 case CustomRoles.Bastion when player.IsAlive():
                     Main.BastionNumberOfAbilityUses += Options.BastionAbilityUseGainWithEachTaskCompleted.GetFloat();
                     break;
