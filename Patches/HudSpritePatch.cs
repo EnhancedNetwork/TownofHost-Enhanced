@@ -187,9 +187,6 @@ public static class HudSpritePatch
             case CustomRoles.Escapist:
                 newAbilityButton = CustomButton.Get("abscond");
                 break;
-            case CustomRoles.Farseer:
-                newKillButton = CustomButton.Get("prophecies");
-                break;
             case CustomRoles.Jailer:
                 newKillButton = CustomButton.Get("penitentiary");
                 break;

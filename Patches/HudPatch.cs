@@ -180,10 +180,6 @@ class HudManagerPatch
                         __instance.AbilityButton?.OverrideText(Penguin.GetAbilityButtonText());
                         __instance.AbilityButton?.ToggleVisible(Penguin.CanUseAbilityButton());
                         break;
-                    case CustomRoles.Farseer:
-                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        __instance.KillButton.OverrideText(GetString("FarseerKillButtonText"));
-                        break;
                     case CustomRoles.Puppeteer:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("KillButtonText"));

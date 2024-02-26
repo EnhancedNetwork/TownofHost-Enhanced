@@ -1018,9 +1018,6 @@ internal static class RPC
             case CustomRoles.Executioner:
                 Executioner.Add(targetId);
                 break;
-            case CustomRoles.Farseer:
-                Farseer.Add(targetId);
-                break;
             case CustomRoles.Lawyer:
                 Lawyer.Add(targetId);
                 break;

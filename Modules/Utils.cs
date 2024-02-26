@@ -2458,11 +2458,6 @@ public static class Utils
                                     TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Revolutionist)}>○</color>");
                                 break;
 
-                            case CustomRoles.Farseer:
-                                if (Farseer.FarseerTimer.TryGetValue(seer.PlayerId, out var fa_kvp) && fa_kvp.Item1 == target)
-                                    TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Farseer)}>○</color>");
-                                break;
-
                             case CustomRoles.Puppeteer:
                                 TargetMark.Append(Puppeteer.TargetMark(seer, target));
                                 break;
@@ -2481,8 +2476,8 @@ public static class Utils
 
                         if (seer.IsAlive() && seer.IsRevealedPlayer(target) && target.Is(CustomRoles.Trickster))
                         {
-                            TargetRoleText = Farseer.RandomRole[seer.PlayerId];
-                            TargetRoleText += Farseer.GetTaskState();
+                            TargetRoleText = Farseer.RandomRole[seer.PlayerId]; // Random trickster role
+                            TargetRoleText += TaskState.GetTaskState(); // Random task count for revealed trickster
                         }
 
                         // ====== Target player name ======

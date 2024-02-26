@@ -51,7 +51,6 @@ internal class CopyCat : RoleBase
         playerIdList.Remove(playerId);
         if (!playerIdList.Any()) On = false;
     }
-    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
     public override bool CanUseImpostorVentButton(PlayerControl pc) => playerIdList.Contains(pc.PlayerId);
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Utils.GetPlayerById(id).IsAlive() ? CurrentKillCooldown : 300f;
     public static void UnAfterMeetingTasks()
@@ -164,9 +163,6 @@ internal class CopyCat : RoleBase
                     break;
                 case CustomRoles.Investigator:
                     Investigator.Remove(pc.PlayerId);
-                    break;
-                case CustomRoles.Farseer:
-                    Farseer.Remove(pc.PlayerId);
                     break;
             }
             if (pc.GetCustomRole() != CustomRoles.Sidekick)

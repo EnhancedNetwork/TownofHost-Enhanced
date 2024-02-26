@@ -293,7 +293,6 @@ internal class ChangeRoleSettings
             Imitator.Init();
             Medusa.Init();
             Amnesiac.Init();
-            Farseer.Init();
             Fool.Init();
             Infectious.Init();
             Virus.Init();
@@ -658,7 +657,6 @@ internal class SelectRolesPatch
                             Main.isRevealed.Add((pc.PlayerId, ar.PlayerId), false);
                         }
                         Farseer.RandomRole.Add(pc.PlayerId, Farseer.GetRandomCrewRoleString());
-                        Farseer.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Executioner:
                         Executioner.Add(pc.PlayerId);

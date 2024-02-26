@@ -488,9 +488,6 @@ class CheckMurderPatch
                         RPC.SetCurrentDrawTarget(killer.PlayerId, target.PlayerId);
                     }
                     return false;
-                case CustomRoles.Farseer:
-                    Farseer.OnCheckMurder(killer, target, __instance);
-                    return false;
                 case CustomRoles.Innocent:
                     target.RpcMurderPlayerV3(killer);
                     return false;
@@ -2051,8 +2048,8 @@ class ReportDeadBodyPatch
                         }
                         else if (tar.Is(CustomRoles.Farseer))
                         {
-                            Farseer.Add(__instance.PlayerId);
                             __instance.RpcSetCustomRole(CustomRoles.Farseer);
+                            Main.PlayerStates[tar.PlayerId].Role.Add(tar.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         }
@@ -2628,10 +2625,6 @@ class FixedUpdateInNormalGamePatch
                         PlagueBearer.OnFixedUpdate(player);
                         break;
 
-                    case CustomRoles.Farseer:
-                        Farseer.OnFixedUpdate(player);
-                        break;
-
                     case CustomRoles.Warlock:
                         if (Main.WarlockTimer.TryGetValue(player.PlayerId, out var warlockTimer))
                         {
@@ -3067,8 +3060,8 @@ class FixedUpdateInNormalGamePatch
                 else RoleText.enabled = false;
                 if (!PlayerControl.LocalPlayer.Data.IsDead && PlayerControl.LocalPlayer.IsRevealedPlayer(__instance) && __instance.Is(CustomRoles.Trickster))
                 {
-                    RoleText.text = Farseer.RandomRole[PlayerControl.LocalPlayer.PlayerId];
-                    RoleText.text += Farseer.GetTaskState();
+                    RoleText.text = Farseer.RandomRole[PlayerControl.LocalPlayer.PlayerId]; // random role for revealed trickster
+                    RoleText.text += TaskState.GetTaskState(); // random task count for revealed trickster
                 }
 
                 if (!AmongUsClient.Instance.IsGameStarted && AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay)
@@ -3120,7 +3113,6 @@ class FixedUpdateInNormalGamePatch
 
                 RealName = RealName.ApplyNameColorData(seer, target, false);
                 var seerRole = seer.GetCustomRole();
-                var seerRoleClass = seerRole.GetRoleClass();
 
 
                 Mark.Append(seerRoleClass?.GetMark(seer, target, false));
@@ -3214,11 +3206,6 @@ class FixedUpdateInNormalGamePatch
                             Mark.Append($"<color={Utils.GetRoleColorCode(seerRole)}>●</color>");
 
                         else if (Main.currentDrawTarget != byte.MaxValue && Main.currentDrawTarget == target.PlayerId)
-                            Mark.Append($"<color={Utils.GetRoleColorCode(seerRole)}>○</color>");
-                        break;
-
-                    case CustomRoles.Farseer:
-                        if (Main.currentDrawTarget != byte.MaxValue && Main.currentDrawTarget == target.PlayerId)
                             Mark.Append($"<color={Utils.GetRoleColorCode(seerRole)}>○</color>");
                         break;
 

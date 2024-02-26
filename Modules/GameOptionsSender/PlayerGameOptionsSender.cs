@@ -420,11 +420,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Disperser:
                 Disperser.ApplyGameOptions();
                 break;
-            case CustomRoles.Farseer:
-                opt.SetVision(false);
-                opt.SetFloat(FloatOptionNames.CrewLightMod, Farseer.Vision.GetFloat());
-                opt.SetFloat(FloatOptionNames.ImpostorLightMod, Farseer.Vision.GetFloat());
-                break;
             case CustomRoles.Addict:
                 AURoleOptions.EngineerCooldown = Addict.VentCooldown.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 1;

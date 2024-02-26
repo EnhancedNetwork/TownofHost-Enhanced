@@ -1071,8 +1071,8 @@ class MeetingHudStartPatch
 
             if (!PlayerControl.LocalPlayer.Data.IsDead && PlayerControl.LocalPlayer.IsRevealedPlayer(pc) && pc.Is(CustomRoles.Trickster))
             {
-                roleTextMeeting.text = Farseer.RandomRole[PlayerControl.LocalPlayer.PlayerId];
-                roleTextMeeting.text += Farseer.GetTaskState();
+                roleTextMeeting.text = Farseer.RandomRole[PlayerControl.LocalPlayer.PlayerId]; // random role for revealed trickster
+                roleTextMeeting.text += TaskState.GetTaskState(); // Random task count for revealed trickster
                 enable = false;
             }
 

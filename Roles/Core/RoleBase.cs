@@ -17,7 +17,7 @@ public abstract class RoleBase
     public abstract void Add(byte playerId);
 
     /// <summary>
-    /// If roles has to be removed from player
+    /// If role has to be removed from player
     /// </summary>
     public virtual void Remove(byte playerId)
     { }

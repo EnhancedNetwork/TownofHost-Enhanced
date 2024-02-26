@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.AddOns.Common;
@@ -8,15 +8,17 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate
 {
-    public static class Farseer
+    internal class Farseer : RoleBase
     {
         private static readonly int Id = 12200;
 
-        private static readonly string fontSize = "1.5";
-        public static bool IsEnable = false;
+        public static bool On = false;
+        public override bool IsEnable => false;
+        public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
         public static Dictionary<byte, string> RandomRole = [];
         public static Dictionary<byte, (PlayerControl, float)> FarseerTimer = [];
@@ -79,38 +81,44 @@ namespace TOHE.Roles.Crewmate
             Vision = FloatOptionItem.Create(Id + 12, "FarseerVision", new(0f, 5f, 0.05f), 0.25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Farseer])
                 .SetValueFormat(OptionFormat.Multiplier);
         }
-        public static void Init()
+        public override void Init()
         {
             FarseerTimer = [];
             RandomRole = [];
-            IsEnable = false;
+            On = false;
         }
-        public static void Add(byte playerId)
+        public override void Add(byte playerId)
         {
-            IsEnable = true;
+            On = true;
 
             if (!AmongUsClient.Instance.AmHost) return;
             if (!Main.ResetCamPlayerList.Contains(playerId))
                 Main.ResetCamPlayerList.Add(playerId);
         }
-        public static void Remove(byte playerId)
+        public override void Remove(byte playerId)
         {
             FarseerTimer.Remove(playerId);
             RandomRole.Remove(playerId);
         }
-
-        public static void SetCooldown(byte id) => Main.AllPlayerKillCooldown[id] = FarseerCooldown.GetFloat();
-        public static void OnCheckMurder(PlayerControl killer, PlayerControl target, PlayerControl __instance)
+        public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+        {
+            opt.SetVision(false);
+            opt.SetFloat(FloatOptionNames.CrewLightMod, Vision.GetFloat());
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Vision.GetFloat());
+        }
+        public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = FarseerCooldown.GetFloat();
+        public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
         {
             killer.SetKillCooldown(FarseerRevealTime.GetFloat());
             if (!Main.isRevealed[(killer.PlayerId, target.PlayerId)] && !FarseerTimer.ContainsKey(killer.PlayerId))
             {
                 FarseerTimer.TryAdd(killer.PlayerId, (target, 0f));
-                NotifyRoles(SpecifySeer: __instance);
+                NotifyRoles(SpecifySeer: killer);
                 RPC.SetCurrentRevealTarget(killer.PlayerId, target.PlayerId);
             }
+            return false;
         }
-        public static void OnFixedUpdate(PlayerControl player)
+        public override void OnFixedUpdate(PlayerControl player)
         {
             if (!FarseerTimer.ContainsKey(player.PlayerId)) return;
 
@@ -153,16 +161,12 @@ namespace TOHE.Roles.Crewmate
                         NotifyRoles(SpecifySeer: player, SpecifyTarget: farTarget, ForceLoop: true);
                         RPC.ResetCurrentRevealTarget(playerId);
 
-                        Logger.Info($"Canceled: {player.GetNameWithRole()}", "Farseer");
+                        Logger.Info($"Canceled: {player.GetNameWithRole()}", "Overseer");
                     }
                 }
             }
         }
-        public static void OnReportDeadBody()
-        {
-            FarseerTimer.Clear();
-        }
-        public static string GetRandomCrewRoleString()
+        public static string GetRandomCrewRoleString() // Random role for trickster
         {
             var rd = IRandom.Instance;
             var randomRole = randomRolesForTrickster[rd.Next(0, randomRolesForTrickster.Count)];
@@ -170,30 +174,25 @@ namespace TOHE.Roles.Crewmate
             //string roleName = GetRoleName(randomRole);
             string RoleText = ColorString(GetRoleColor(randomRole), GetString(randomRole.ToString()));
 
-            return $"<size={fontSize}>{RoleText}</size>";
+            return $"<size={1.5}>{RoleText}</size>";
         }
 
-        public static string GetTaskState()
+        public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
         {
-            var playersWithTasks = Main.PlayerStates.Where(a => a.Value.TaskState.hasTasks).ToArray();
-            if (playersWithTasks.Length == 0)
-            {
-                return "\r\n";
-            }
+            if (seer.Is(CustomRoles.Farseer))
+            if (FarseerTimer.TryGetValue(seer.PlayerId, out var fa_kvp) && fa_kvp.Item1 == seen)
+                return $"<color={GetRoleColorCode(CustomRoles.Farseer)}>○</color>";
 
-            var rd = IRandom.Instance;
-            var randomPlayer = playersWithTasks[rd.Next(0, playersWithTasks.Length)];
-            var taskState = randomPlayer.Value.TaskState;
-
-            Color TextColor;
-            var TaskCompleteColor = Color.green;
-            var NonCompleteColor = Color.yellow;
-            var NormalColor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
-
-            TextColor = Camouflager.AbilityActivated ? Color.gray : NormalColor;
-            string Completed = Camouflager.AbilityActivated ? "?" : $"{taskState.CompletedTasksCount}";
-
-            return $" <size={fontSize}>" + ColorString(TextColor, $"({Completed}/{taskState.AllTasksCount})") + "</size>\r\n";
+            return string.Empty;
+        }
+        public override void SetAbilityButtonText(HudManager hud, byte id)
+        {
+            hud.ReportButton.OverrideText(GetString("ReportButtonText"));
+            hud.KillButton.OverrideText(GetString("FarseerKillButtonText"));
+        }
+        public override (string, Sprite, string, Sprite) SetAbilityButtonSprite()
+        {
+            return ("Kill", CustomButton.Get("prophecies"), string.Empty, CustomButton.Get("Happy"));
         }
     }
 }
