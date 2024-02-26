@@ -1181,9 +1181,6 @@ internal static class RPC
             case CustomRoles.Judge:
                 Judge.Add(targetId);
                 break;
-            case CustomRoles.President:
-                President.Add(targetId);
-                break;
             case CustomRoles.Inspector:
                 Inspector.Add(targetId);
                 break;

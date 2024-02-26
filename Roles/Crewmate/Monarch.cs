@@ -110,7 +110,7 @@ internal class Monarch : RoleBase
         }
         return false;
     }
-    public override string GetProgressText() => Utils.ColorString(KnightLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Monarch).ShadeColor(0.25f) : Color.gray, $"({KnightLimit})");
+    public override string GetProgressText(byte plr) => Utils.ColorString(KnightLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Monarch).ShadeColor(0.25f) : Color.gray, $"({KnightLimit})");
     public static bool CanBeKnighted(PlayerControl pc)
     {
         return pc != null && !pc.GetCustomRole().IsNotKnightable() && 

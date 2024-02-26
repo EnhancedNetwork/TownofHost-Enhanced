@@ -271,7 +271,6 @@ internal class ChangeRoleSettings
             Pickpocket.Init();
             Hangman.Init();
             Judge.Init();
-            President.Init();
             Mortician.Init();
             Mediumshiper.Init();
             Swooper.Init();
@@ -815,9 +814,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Judge:
                         Judge.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.President:
-                        President.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Mortician:
                         Mortician.Add(pc.PlayerId);

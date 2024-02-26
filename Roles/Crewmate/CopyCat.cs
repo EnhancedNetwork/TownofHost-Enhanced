@@ -116,9 +116,6 @@ internal class CopyCat : RoleBase
                 case CustomRoles.Reverie:
                     Reverie.Remove(pc.PlayerId);
                     break;
-                case CustomRoles.President:
-                    President.Remove(pc.PlayerId);
-                    break;
                 case CustomRoles.Spy:
                     Spy.Remove(pc.PlayerId);
                     break;

@@ -241,8 +241,13 @@ class CheckMurderPatch
 
         if (Main.PlayerStates.TryGetValue(target.PlayerId, out var targetState) && targetState.Role != null)
             if (!targetState.Role.OnCheckMurderAsTarget(killer, target))
+            {
                 return false;
-
+            }
+            else
+            {
+                targetState.Role.OnCheckMurderAsTarget(killer, target); // if simply an action happens on target attacked
+            }
         if (killer.PlayerId != target.PlayerId && Main.PlayerStates.TryGetValue(killer.PlayerId, out var killerState) && killerState.Role != null)
             if (!killerState.Role.OnCheckMurderAsKiller(killer, target))
                 return false;
@@ -959,11 +964,6 @@ class CheckMurderPatch
                     }
                 }
                 return false;
-            //President kill
-            case CustomRoles.President:
-                if (President.CheckPresidentReveal[target.PlayerId] == true)
-                    killer.SetKillCooldown(0.9f);
-                break;
             //return true;
             case CustomRoles.SuperStar:
                 if (Main.AllAlivePlayerControls.Any(x =>
