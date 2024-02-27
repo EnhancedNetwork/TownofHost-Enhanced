@@ -132,8 +132,6 @@ public class ModUpdater
                 return false;
             }
 
-            hasUpdate = true;
-
             isChecked = true;
             isBroken = false;
         }
