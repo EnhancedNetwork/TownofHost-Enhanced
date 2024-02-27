@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using System;
 using System.IO;
 using System.Net.Http;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using static TOHE.Translator;
 using Newtonsoft.Json.Linq;
-using System.IO.Compression;
+using System.Globalization;
 
 namespace TOHE;
 
@@ -18,11 +18,11 @@ public class ModUpdater
     private static readonly string URL_Github = "https://api.github.com/repos/0xDrMoe/TownofHost-Enhanced";
     //public static readonly string downloadTest = "https://github.com/Pietrodjaowjao/TOHEN-Contributions/releases/download/v123123123/TOHE.dll";
     public static bool hasUpdate = false;
-    public static bool hasOutdate = false;
+    //public static bool isNewer = false;
     public static bool forceUpdate = false;
     public static bool isBroken = false;
     public static bool isChecked = false;
-    public static Version latestVersion = null;
+    public static DateTime? latestVersion = null;
     public static string latestTitle = null;
     public static string downloadUrl = null;
     public static string notice = null;
@@ -42,7 +42,7 @@ public class ModUpdater
         InfoPopup.TextAreaTMP.GetComponent<RectTransform>().sizeDelta = new(2.5f, 2f);
         if (!isChecked)
         {
-            bool done = CheckReleaseFromGithub(Main.BetaBuildURL.Value != "").GetAwaiter().GetResult();
+            bool done = CheckReleaseFromGithub(Main.BetaBuildURL.Value != "");
             Logger.Warn("Check for updated results: " + done, "CheckRelease");
             Logger.Info("hasupdate: " + hasUpdate, "CheckRelease");
             Logger.Info("forceupdate: " + forceUpdate, "CheckRelease");
@@ -57,7 +57,7 @@ public class ModUpdater
         string result = "";
         HttpClient req = new();
         var res = req.GetAsync(url).Result;
-        Stream stream = res.Content.ReadAsStreamAsync().Result;
+        Stream stream = res.Content.ReadAsStream();
         try
         {
             //获取内容
@@ -70,7 +70,7 @@ public class ModUpdater
         }
         return result;
     }
-    public static async Task<bool> CheckReleaseFromGithub(bool beta = false)
+    public static bool CheckReleaseFromGithub(bool beta = false)
     {
         Logger.Warn("Start checking for updates from Github", "CheckRelease");
         string url = URL_Github + "/releases/latest";
@@ -83,13 +83,15 @@ public class ModUpdater
             using (HttpClient client = new(httpClientHandler))
             {
                 client.DefaultRequestHeaders.Add("User-Agent", "TOHE Updater");
-                using var response = await client.GetAsync(new Uri(url), HttpCompletionOption.ResponseContentRead);
+                var response = client.GetAsync(new Uri(url), HttpCompletionOption.ResponseContentRead).Result;
+
                 if (!response.IsSuccessStatusCode || response.Content == null)
                 {
                     Logger.Error($"Status Code: {response.StatusCode}", "CheckRelease");
                     return false;
                 }
-                result = await response.Content.ReadAsStringAsync();
+
+                result = response.Content.ReadAsStringAsync().Result;
             }
             JObject data = JObject.Parse(result);
             if (beta)
@@ -100,10 +102,11 @@ public class ModUpdater
             }
             else
             {
-                latestVersion = new(data["tag_name"]?.ToString().TrimStart('v'));
-                latestTitle = $"Ver. {latestVersion}";
+                string publishedAt = data["published_at"]?.ToString();
+                DateTime? latestVersion = DateTime.TryParse(publishedAt, out DateTime parsedDate) ? parsedDate : (DateTime?)null;
+                latestTitle = $"Day: {latestVersion?.Day} Month: {latestVersion?.Month} Year: {latestVersion?.Year}";
+
                 JArray assets = data["assets"].Cast<JArray>();
-                Logger.Info(assets.ToString(), "ModUpdater");
                 for (int i = 0; i < assets.Count; i++)
                 {
                     string assetName = assets[i]["name"].ToString();
@@ -115,12 +118,14 @@ public class ModUpdater
                     }
                 }
 
-                hasUpdate = latestVersion.CompareTo(Main.version) > 0;
-                hasOutdate = latestVersion.CompareTo(Main.version) < 0;
+                DateTime pluginTimestamp = DateTime.ParseExact(Main.PluginVersion.Substring(5, 4), "MMdd", CultureInfo.InvariantCulture);
+                int year = int.Parse(Main.PluginVersion.Substring(0, 4));
+                pluginTimestamp = pluginTimestamp.AddYears(year - pluginTimestamp.Year);
+                Logger.Info($"Day: {pluginTimestamp.Day} Month: {pluginTimestamp.Month} Year: {pluginTimestamp.Year}", "PluginVersion");
+                hasUpdate = latestVersion?.Date > pluginTimestamp.Date;
             }
 
             Logger.Info("hasupdate: " + hasUpdate, "Github");
-            Logger.Info("hasoutdate: " + hasOutdate, "Github");
             Logger.Info("forceupdate: " + forceUpdate, "Github");
             Logger.Info("downloadUrl: " + downloadUrl, "Github");
             Logger.Info("latestVersionl: " + latestVersion, "Github");
