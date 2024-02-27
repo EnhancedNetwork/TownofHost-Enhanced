@@ -950,9 +950,6 @@ public static class Utils
                     var doomsayerguess = Doomsayer.GuessedPlayerCount(playerId);
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Doomsayer).ShadeColor(0.25f), $"({doomsayerguess.Item1}/{doomsayerguess.Item2})"));
                     break;
-                case CustomRoles.Seeker:
-                    ProgressText.Append(Seeker.GetProgressText(playerId));
-                    break;
                 case CustomRoles.SchrodingersCat:
                     ProgressText.Append(SchrodingersCat.GetProgressText(playerId));
                     break;
@@ -1002,9 +999,6 @@ public static class Utils
                     break;
                 case CustomRoles.Medic:
                     ProgressText.Append(Medic.GetSkillLimit(playerId));
-                    break;
-                case CustomRoles.CursedWolf:
-                    ProgressText.Append(CursedWolf.GetProgressText(playerId));
                     break;
                 case CustomRoles.Jinx:
                     int JinxSpellCount = Main.JinxSpellCount[playerId];
@@ -1057,9 +1051,6 @@ public static class Utils
                     break;
                 case CustomRoles.Warden:
                     ProgressText.Append(Warden.GetNotifyLimit(playerId));
-                    break;
-                case CustomRoles.Admirer:
-                    ProgressText.Append(Admirer.GetAdmireLimit(playerId));
                     break;
                 case CustomRoles.Infectious:
                     ProgressText.Append(Infectious.GetBiteLimit());

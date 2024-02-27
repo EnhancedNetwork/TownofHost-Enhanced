@@ -198,7 +198,7 @@ internal class Admirer : RoleBase
         else return false;
     }
     public override string GetProgressText(byte playerId) => Utils.ColorString(AdmirerLimit[playerId] >= 1 ? Utils.GetRoleColor(CustomRoles.Admirer).ShadeColor(0.25f) : Color.gray, $"({AdmirerLimit[playerId]})");
-    public static bool CanBeAdmired(this PlayerControl pc, PlayerControl admirer)
+    public static bool CanBeAdmired(PlayerControl pc, PlayerControl admirer)
     {
         if (AdmiredList.ContainsKey(admirer.PlayerId))
         {
