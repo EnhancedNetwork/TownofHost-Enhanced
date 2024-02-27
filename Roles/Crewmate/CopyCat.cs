@@ -3,7 +3,6 @@ using System.Linq;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
-using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -123,9 +122,6 @@ internal class CopyCat : RoleBase
                 case CustomRoles.SabotageMaster:
                     SabotageMaster.Remove(pc.PlayerId);
                     break;
-                case CustomRoles.Admirer:
-                    Admirer.Remove(pc.PlayerId);
-                    break;
                 case CustomRoles.Benefactor:
                     Benefactor.Remove(pc.PlayerId);
                     break;
@@ -152,9 +148,6 @@ internal class CopyCat : RoleBase
                     break;
                 case CustomRoles.Tracker:
                     Tracker.Remove(pc.PlayerId);
-                    break;
-                case CustomRoles.Monitor:
-                    Monitor.Remove(pc.PlayerId);
                     break;
                 case CustomRoles.Investigator:
                     Investigator.Remove(pc.PlayerId);

@@ -76,5 +76,5 @@ internal class CursedWolf : RoleBase
         return false;
     }
 
-    public static string GetProgressText(byte playerId) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedWolf), $"({SpellCount[playerId]})");
+    public override string GetProgressText(byte playerId) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedWolf), $"({SpellCount[playerId]})");
 }

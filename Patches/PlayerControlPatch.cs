@@ -2009,8 +2009,8 @@ class ReportDeadBodyPatch
                         }
                         else if (tar.Is(CustomRoles.Admirer))
                         {
-                            CustomRoles.Admirer.GetRoleClass()?.Add(__instance.PlayerId);
                             __instance.RpcSetCustomRole(CustomRoles.Admirer);
+                            Main.PlayerStates[__instance.PlayerId].Role.Add(__instance.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         }

@@ -51,7 +51,7 @@ internal class Admirer : RoleBase
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public static void Remove(byte playerId)
+    public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
         AdmirerLimit.Remove(playerId);
@@ -197,7 +197,7 @@ internal class Admirer : RoleBase
         }
         else return false;
     }
-    public static string GetAdmireLimit(byte playerId) => Utils.ColorString(AdmirerLimit[playerId] >= 1 ? Utils.GetRoleColor(CustomRoles.Admirer).ShadeColor(0.25f) : Color.gray, $"({AdmirerLimit[playerId]})");
+    public override string GetProgressText(byte playerId) => Utils.ColorString(AdmirerLimit[playerId] >= 1 ? Utils.GetRoleColor(CustomRoles.Admirer).ShadeColor(0.25f) : Color.gray, $"({AdmirerLimit[playerId]})");
     public static bool CanBeAdmired(this PlayerControl pc, PlayerControl admirer)
     {
         if (AdmiredList.ContainsKey(admirer.PlayerId))
