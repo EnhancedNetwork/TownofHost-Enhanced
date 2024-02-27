@@ -36,9 +36,8 @@ public static class NameColorManager
         // Impostor & Madmate
         if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoleTypes.Impostor)) color = (seer.Is(CustomRoles.Egoist) && target.Is(CustomRoles.Egoist) && Egoist.ImpEgoistVisibalToAllies.GetBool() && seer != target) ? Main.roleColors[CustomRoles.Egoist] : Main.roleColors[CustomRoles.Impostor];
         if (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoleTypes.Impostor) && Madmate.MadmateKnowWhosImp.GetBool()) color = Main.roleColors[CustomRoles.Impostor];
-        if (seer.Is(CustomRoles.Crewpostor) && target.Is(CustomRoleTypes.Impostor) && Options.CrewpostorKnowsAllies.GetBool()) color = Main.roleColors[CustomRoles.Impostor];
+        if (Crewpostor.KnowRole(seer, target)) color = Main.roleColors[CustomRoles.Impostor];
         if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
-        if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Crewpostor) && Options.AlliesKnowCrewpostor.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
         if (seer.Is(CustomRoleTypes.Impostor) && (target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor())) color = Main.roleColors[CustomRoles.Madmate];
         if (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate) && Madmate.MadmateKnowWhosMadmate.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
         if (seer.Is(CustomRoles.Gangster) && target.Is(CustomRoles.Madmate)) color = Main.roleColors[CustomRoles.Madmate];
@@ -237,7 +236,7 @@ public static class NameColorManager
             || (target.Is(CustomRoles.Gravestone) && Main.PlayerStates[target.Data.PlayerId].IsDead)
             || (target.Is(CustomRoles.Mayor) && Options.MayorRevealWhenDoneTasks.GetBool() && target.GetPlayerTaskState().IsTaskFinished)
             || (seer.Is(CustomRoleTypes.Crewmate) && target.Is(CustomRoles.Marshall) && target.GetPlayerTaskState().IsTaskFinished)
-            || EvilDiviner.IsShowTargetRole(seer, target)
+            || Consigliere.IsShowTargetRole(seer, target)
             || PotionMaster.IsShowTargetRole(seer, target)
          //   || Mare.KnowTargetRoleColor(target, isMeeting)
             || (target.Is(CustomRoles.NiceMini) && Mini.EveryoneCanKnowMini.GetBool())

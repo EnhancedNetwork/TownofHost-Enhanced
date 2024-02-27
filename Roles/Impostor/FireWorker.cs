@@ -50,6 +50,7 @@ public static class Fireworker
         FireworkerPosition = [];
         state = [];
         FireworkerBombKill = [];
+
         fireworkerCount = FireworkerCount.GetInt();
         fireworkerRadius = FireworkerRadius.GetFloat();
     }
@@ -58,7 +59,7 @@ public static class Fireworker
     {
         nowFireworkerCount[playerId] = fireworkerCount;
         FireworkerPosition[playerId] = [];
-        state[playerId] = FireworkerState.Initial;
+        state.TryAdd(playerId, FireworkerState.Initial);
         FireworkerBombKill[playerId] = 0;
         IsEnable = true;
     }
@@ -83,8 +84,8 @@ public static class Fireworker
 
     public static bool CanUseKillButton(PlayerControl pc)
     {
-        //            Logger.Info($"Fireworker CanUseKillButton", "Fireworker");
-        if (pc.Data.IsDead) return false;
+        if (!state.ContainsKey(pc.PlayerId) || !pc.IsAlive()) return false;
+
         var canUse = false;
         if ((state[pc.PlayerId] & FireworkerState.CanUseKill) != 0)
         {
@@ -94,7 +95,6 @@ public static class Fireworker
         {
             canUse = true;
         }
-        //            Logger.Info($"CanUseKillButton:{canUse}", "Fireworker");
         return canUse;
     }
 
@@ -163,7 +163,8 @@ public static class Fireworker
     public static string GetStateText(PlayerControl pc)
     {
         string retText = "";
-        if (pc == null || pc.Data.IsDead) return retText;
+        if (pc == null || !pc.IsAlive()) return retText;
+        if (!state.ContainsKey(pc.PlayerId)) return retText;
 
         if (state[pc.PlayerId] == FireworkerState.WaitTime && Main.AliveImpostorCount <= 1)
         {

@@ -40,14 +40,14 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0223.160.0004"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "1.6.0 dev 4";
+    public const string PluginVersion = "2024.0225.160.0005"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "1.6.0 dev 5";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
 
     /******************* Change one of the three variables to true before making a release. *******************/
     public static readonly bool Canary = false; // INACTIVE - Latest: V1.5.1 Canary 5
     public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.5.1
-    public static readonly bool devRelease = true; // ACTIVE - Latest: V1.6.0 Dev 4
+    public static readonly bool devRelease = true; // ACTIVE - Latest: V1.6.0 Dev 5
 
     public static bool hasAccess = true;
 
@@ -142,7 +142,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, Vector2> LastEnteredVentLocation = [];
     public static Dictionary<byte, Vector2> TimeMasterBackTrack = [];
     public static Dictionary<byte, int> MasochistKillMax = [];
-    public static Dictionary<byte, int> BerserkerKillMax = [];
     public static Dictionary<byte, int> TimeMasterNum = [];
     public static Dictionary<byte, long> TimeMasterInProtect = [];
     //public static Dictionary<byte, long> FlashbangInProtect = [];
@@ -150,11 +149,6 @@ public class Main : BasePlugin
     public static List<int> BombedVents = [];
     public static List<byte> WorkaholicAlive = [];
     public static List<byte> TasklessCrewmate = [];
-    public static List<byte> BoobyTrapBody = [];
-    public static List<byte> BoobyTrapKiller = [];
-    //public static List<byte> KilledDiseased = [];
-    //public static List<byte> ForFlashbang = [];
-    public static Dictionary<byte, byte> KillerOfBoobyTrapBody = [];
     public static Dictionary<byte, string> DetectiveNotify = [];
     public static Dictionary<byte, string> VirusNotify = [];
     public static List<byte> OverDeadPlayerList = [];
@@ -165,19 +159,15 @@ public class Main : BasePlugin
     public static Dictionary<int, int> SayBanwordsTimes = [];
     public static Dictionary<byte, float> AllPlayerSpeed = [];
     public const float MinSpeed = 0.0001f;
-    public static List<byte> CleanerBodies = [];
     public static List<byte> MedusaBodies = [];
     public static List<byte> InfectedBodies = [];
     public static Dictionary<byte, (byte, float)> BitPlayers = [];
     public static Dictionary<byte, float> WarlockTimer = [];
-    public static Dictionary<byte, float> AssassinTimer = [];
     public static Dictionary<byte, PlayerControl> CursedPlayers = [];
     public static Dictionary<byte, bool> isCurseAndKill = [];
     public static Dictionary<byte, int> NemesisRevenged = [];
     public static Dictionary<byte, int> RetributionistRevenged = [];
     public static Dictionary<byte, int> GuesserGuessed = [];
-    public static Dictionary<byte, int> CapitalismAddTask = [];
-    public static Dictionary<byte, int> CapitalismAssignTask = [];
     public static Dictionary<(byte, byte), bool> isDoused = [];
     public static Dictionary<(byte, byte), bool> isDraw = [];
     public static Dictionary<(byte, byte), bool> isRevealed = [];
@@ -200,7 +190,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, float> LighterNumOfUsed = [];
     public static Dictionary<byte, long> AllKillers = [];
     public static Dictionary<byte, float> TimeMasterNumOfUsed = [];
-    public static Dictionary<byte, int> CursedWolfSpellCount = [];
     public static Dictionary<byte, int> JinxSpellCount = [];
     public static int AliveImpostorCount;
     public static bool isCursed;
@@ -230,7 +219,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, float> DovesOfNeaceNumOfUsed = [];
 
     public static List<byte> GodfatherTarget = [];
-    public static Dictionary<byte, int> CrewpostorTasksDone = [];
     
     public static byte ShamanTarget = byte.MaxValue;
     public static bool ShamanTargetChoosen = false;
@@ -548,21 +536,20 @@ public enum CustomRoles
     ShapeshifterTOHE,
 
     //Impostor
-    Arrogance,
     Anonymous,
     AntiAdminer,
+    Arrogance,
     Bard,
     Berserker,
     Blackmailer,
     Bomber,
     BountyHunter,
     Bloodmoon,
-    OverKiller, //butcher
+    Butcher,
     Camouflager,
-    Capitalism, //capitalist
     Chronomancer,
     Cleaner,
-    EvilDiviner, //Consigliere
+    Consigliere,
     Convict,
     Councillor,
     Crewpostor,
@@ -579,27 +566,27 @@ public enum CustomRoles
     Fireworker,
     Gangster,
     Godfather,
-    Greedier, //greedy
+    Greedy,
     Hangman,
     Inhibitor,
     Instigator,
     Kamikaze,
     KillingMachine,
-    BallLightning, //Lightning
+    Lightning,
     Ludopath,
     Lurker,
     Mastermind,
-    Mercenary, //mercenary
+    Mercenary,
     Miner,
     Morphling,
     Nemesis, 
     Minion,
-    Assassin, //ninja
+    Ninja,
     Nuker,
     Parasite,
+    Penguin,
     Pitfall,
     Puppeteer,
-    PlagueDoctor,
     QuickShooter,
     Refugee,
     RiftMaker,
@@ -607,16 +594,16 @@ public enum CustomRoles
     Scavenger,
     ShapeMaster,
     Sniper,
-    Witch, //spellcaster
-    ImperiusCurse, //soulcatcher
+    Witch,
+    SoulCatcher,
     Swooper,
+    Stealth,
     TimeThief,
-    BoobyTrap, //trapster
+    Trapster,
     Trickster,
     Twister,
     Underdog,
     Undertaker,
-    Penguin,
     Vampire,
     Vampiress,
     Vindicator,
@@ -751,6 +738,7 @@ public enum CustomRoles
     Pirate,
     Pixie,
     PlagueBearer,
+    PlagueDoctor,
     PotionMaster,
     Poisoner,
     Provocateur,
@@ -782,7 +770,6 @@ public enum CustomRoles
     Warden,
     Workaholic,
     Wraith,
-    Stealth,
 
    //two-way camp
     Mini,

@@ -46,7 +46,7 @@ internal class ChatCommands
         var cancelVal = "";
         Main.isChatCommand = true;
         Logger.Info(text, "SendChat");
-        if ((Options.NewHideMsg.GetBool() || Blackmailer.IsEnable) && AmongUsClient.Instance.AmHost) // Blackmailer.ForBlackmailer.Contains(PlayerControl.LocalPlayer.PlayerId)) && PlayerControl.LocalPlayer.IsAlive())
+        if ((Options.NewHideMsg.GetBool() || Blackmailer.On) && AmongUsClient.Instance.AmHost) // Blackmailer.ForBlackmailer.Contains(PlayerControl.LocalPlayer.PlayerId)) && PlayerControl.LocalPlayer.IsAlive())
         {
             ChatManager.SendMessage(PlayerControl.LocalPlayer, text);
         }
@@ -67,7 +67,7 @@ internal class ChatCommands
         Directory.CreateDirectory(vipTagsFiles);
         Directory.CreateDirectory(sponsorTagsFiles);
 
-        if (Blackmailer.ForBlackmailer.Contains(PlayerControl.LocalPlayer.PlayerId) && PlayerControl.LocalPlayer.IsAlive())
+        if (Blackmailer.CheckBlackmaile(PlayerControl.LocalPlayer) && PlayerControl.LocalPlayer.IsAlive())
         {
             ChatManager.SendPreviousMessagesToAll();
             ChatManager.cancel = false;
@@ -1030,7 +1030,7 @@ internal class ChatCommands
             "吸血鬼" or "吸血" => GetString("Vampire"),
             "吸血鬼之王" or "吸血鬼女王"  => GetString("Vampiress"),
             "術士" or "术士" => GetString("Warlock"),
-            "刺客" or "忍者" => GetString("Assassin"),
+            "刺客" or "忍者" => GetString("Ninja"),
             "僵屍" or "僵尸" or"殭屍" or "丧尸" => GetString("Zombie"),
             "駭客" or "骇客" or "黑客" => GetString("Anonymous"),
             "礦工" or "矿工" => GetString("Miner"),
@@ -1050,18 +1050,17 @@ internal class ChatCommands
             "狂妄殺手" or "狂妄杀手" => GetString("Arrogance"),
             "自爆兵" or "自爆" => GetString("Bomber"),
             "清道夫" or "清道" => GetString("Scavenger"),
-            "陷阱師" or "诡雷" => GetString("BoobyTrap"),
-            "資本主義者" or "资本家" or "资本主义" or "资本" => GetString("Capitalism"),
+            "陷阱師" or "诡雷" => GetString("Trapster"),
             "歹徒" => GetString("Gangster"),
             "清潔工" or "清理工" or "清洁工" => GetString("Cleaner"),
-            "球狀閃電" or "球状闪电" => GetString("BallLightning"),
-            "貪婪者" or "贪婪者" or "贪婪" => GetString("Greedier"),
+            "球狀閃電" or "球状闪电" => GetString("Lightning"),
+            "貪婪者" or "贪婪者" or "贪婪" => GetString("Greedy"),
             "被詛咒的狼" or "呪狼" => GetString("CursedWolf"),
-            "換魂師" or "夺魂者" or "夺魂" => GetString("ImperiusCurse"),
+            "換魂師" or "夺魂者" or "夺魂" => GetString("SoulCatcher"),
             "快槍手" or "快枪手" or "快枪" => GetString("QuickShooter"),
             "隱蔽者" or "隐蔽者" or "小黑人" => GetString("Camouflager"),
             "抹除者" or "抹除" => GetString("Eraser"),
-            "肢解者" or "肢解" => GetString("OverKiller"),
+            "肢解者" or "肢解" => GetString("Butcher"),
             "劊子手" or "刽子手" => GetString("Hangman"),
             "隱身人" or "隐匿者" or "隐匿" or "隐身" => GetString("Swooper"),
             "船鬼" => GetString("Crewpostor"),
@@ -1076,7 +1075,7 @@ internal class ChatCommands
             "眩暈者" or "眩晕者" or "眩晕" => GetString("Dazzler"),
             "簽約人" or "死亡契约" or "死亡" or "锲约" => GetString("Deathpact"),
             "吞噬者" or "吞噬" => GetString("Devourer"),
-            "軍師" or "军师" => GetString("EvilDiviner"),
+            "軍師" or "军师" => GetString("Consigliere"),
             "化型者" or "化形者" => GetString("Morphling"),
             "躁動者" or "龙卷风" => GetString("Twister"),
             "策畫者" or "潜伏者" or "潜伏" => GetString("Lurker"),
@@ -1422,7 +1421,7 @@ internal class ChatCommands
     {
         canceled = false;
         if (!AmongUsClient.Instance.AmHost) return;
-        if ((Options.NewHideMsg.GetBool() || Blackmailer.IsEnable) && player.PlayerId != 0) // Blackmailer.ForBlackmailer.Contains(player.PlayerId)) && PlayerControl.LocalPlayer.IsAlive() && player.PlayerId != 0)
+        if ((Options.NewHideMsg.GetBool() || Blackmailer.On) && player.PlayerId != 0) // Blackmailer.ForBlackmailer.Contains(player.PlayerId)) && PlayerControl.LocalPlayer.IsAlive() && player.PlayerId != 0)
         {
             ChatManager.SendMessage(player, text);
         }
@@ -1450,7 +1449,7 @@ internal class ChatCommands
         Directory.CreateDirectory(vipTagsFiles);
         Directory.CreateDirectory(sponsorTagsFiles);
 
-        if (Blackmailer.ForBlackmailer.Contains(player.PlayerId) && player.IsAlive() && player.PlayerId != 0)
+        if (Blackmailer.CheckBlackmaile(player) && player.IsAlive() && player.PlayerId != 0)
         {
             Logger.Info($"This player (id {player.PlayerId}) was Blackmailed", "OnReceiveChat");
             ChatManager.SendPreviousMessagesToAll();

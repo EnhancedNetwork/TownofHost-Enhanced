@@ -41,7 +41,7 @@ public static class Tricky
             PlayerState.DeathReason.Bite => (CustomRoles.Vampire.IsEnable()),
             PlayerState.DeathReason.Poison => (CustomRoles.Poisoner.IsEnable()),
             PlayerState.DeathReason.Bombed => (CustomRoles.Bomber.IsEnable() || CustomRoles.Burst.IsEnable() 
-                                || CustomRoles.BoobyTrap.IsEnable() || CustomRoles.Fireworker.IsEnable() || CustomRoles.Bastion.IsEnable()),
+                                || CustomRoles.Trapster.IsEnable() || CustomRoles.Fireworker.IsEnable() || CustomRoles.Bastion.IsEnable()),
             PlayerState.DeathReason.Misfire => (CustomRoles.ChiefOfPolice.IsEnable() || CustomRoles.Counterfeiter.IsEnable() 
                                 || CustomRoles.Reverie.IsEnable() || CustomRoles.Sheriff.IsEnable() || CustomRoles.Fireworker.IsEnable() 
                                 || CustomRoles.Hater.IsEnable() || CustomRoles.Pursuer.IsEnable() || CustomRoles.Romantic.IsEnable()),
@@ -51,11 +51,11 @@ public static class Tricky
                                 || CustomRoles.Nemesis.IsEnable() || CustomRoles.Randomizer.IsEnable()),
             PlayerState.DeathReason.Gambled => (CustomRoles.EvilGuesser.IsEnable() || CustomRoles.NiceGuesser.IsEnable() 
                                 || GuesserMode.GetBool()),
-            PlayerState.DeathReason.Quantization => (CustomRoles.BallLightning.IsEnable()),
+            PlayerState.DeathReason.Quantization => (CustomRoles.Lightning.IsEnable()),
             //PlayerState.DeathReason.Overtired => (CustomRoles.Workaholic.IsEnable()),
             PlayerState.DeathReason.Ashamed => (CustomRoles.Workaholic.IsEnable()),
             PlayerState.DeathReason.PissedOff => (CustomRoles.Pestilence.IsEnable() || CustomRoles.Provocateur.IsEnable()),
-            PlayerState.DeathReason.Dismembered => (CustomRoles.OverKiller.IsEnable()),
+            PlayerState.DeathReason.Dismembered => (CustomRoles.Butcher.IsEnable()),
             PlayerState.DeathReason.LossOfHead => (CustomRoles.Hangman.IsEnable()),
             PlayerState.DeathReason.Trialed => (CustomRoles.Judge.IsEnable() || CustomRoles.Councillor.IsEnable()),
             PlayerState.DeathReason.Infected => (CustomRoles.Infectious.IsEnable()),
@@ -73,7 +73,7 @@ public static class Tricky
             PlayerState.DeathReason.Sacrifice => (CustomRoles.Bodyguard.IsEnable() || CustomRoles.Revolutionist.IsEnable() 
                                 || CustomRoles.Hater.IsEnable()),
             PlayerState.DeathReason.Drained => CustomRoles.Puppeteer.IsEnable(),
-            PlayerState.DeathReason.Trap => CustomRoles.BoobyTrap.IsEnable(),
+            PlayerState.DeathReason.Trap => CustomRoles.Trapster.IsEnable(),
             PlayerState.DeathReason.Targeted => CustomRoles.Kamikaze.IsEnable(),
             PlayerState.DeathReason.Retribution => CustomRoles.Instigator.IsEnable(),
             PlayerState.DeathReason.WrongAnswer => CustomRoles.Quizmaster.IsEnable(),

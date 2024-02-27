@@ -6,40 +6,38 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
-public static class EvilDiviner
+internal class Consigliere : RoleBase
 {
-    private static readonly int Id = 3100;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    private const int Id = 3100;
+    public static bool On;
+    public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     private static OptionItem KillCooldown;
     private static OptionItem DivinationMaxCount;
 
-    public static Dictionary<byte, int> DivinationCount = [];
-    public static Dictionary<byte, List<byte>> DivinationTarget = [];
-
+    private static Dictionary<byte, int> DivinationCount = [];
+    private static Dictionary<byte, List<byte>> DivinationTarget = [];
 
     public static void SetupCustomOption()
     {
-        SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.EvilDiviner);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.EvilDiviner])
+        SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Consigliere);
+        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Consigliere])
             .SetValueFormat(OptionFormat.Seconds);
-        DivinationMaxCount = IntegerOptionItem.Create(Id + 11, "DivinationMaxCount", new(1, 15, 1), 5, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.EvilDiviner])
+        DivinationMaxCount = IntegerOptionItem.Create(Id + 11, "ConsigliereDivinationMaxCount", new(1, 15, 1), 5, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Consigliere])
             .SetValueFormat(OptionFormat.Times);
     }
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
         DivinationCount = [];
         DivinationTarget = [];
-        IsEnable = false;
+        On = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         DivinationCount.TryAdd(playerId, DivinationMaxCount.GetInt());
         DivinationTarget.TryAdd(playerId, []);
-        IsEnable = true;
+        On = true;
 
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
@@ -47,7 +45,7 @@ public static class EvilDiviner
 
     private static void SendRPC(byte playerId, byte targetId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetEvilDiviner, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetConsigliere, SendOption.Reliable, -1);
         writer.Write(playerId);
         writer.Write(DivinationCount[playerId]);
         writer.Write(targetId);
@@ -69,11 +67,8 @@ public static class EvilDiviner
         }
     }
 
-    public static void SetKillCooldown(byte id)
-    {
-        Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    }
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (DivinationCount[killer.PlayerId] > 0)
         {
@@ -82,7 +77,7 @@ public static class EvilDiviner
         else return true;  
     }
 
-    public static bool IsDivination(byte seer, byte target)
+    private static bool IsDivination(byte seer, byte target)
     {
         if (DivinationTarget[seer].Contains(target))
         {
@@ -90,13 +85,13 @@ public static class EvilDiviner
         }
         return false;
     }
-    public static void SetDivination(PlayerControl killer, PlayerControl target)
+    private static void SetDivination(PlayerControl killer, PlayerControl target)
     {
         if (!IsDivination(killer.PlayerId, target.PlayerId))
         {
             DivinationCount[killer.PlayerId]--;
             DivinationTarget[killer.PlayerId].Add(target.PlayerId);
-            Logger.Info($"{killer.GetNameWithRole()}：占った 占い先→{target.GetNameWithRole()} || 残り{DivinationCount[killer.PlayerId]}回", "EvilDiviner");
+            Logger.Info($"{killer.GetNameWithRole()}：占った 占い先→{target.GetNameWithRole()} || 残り{DivinationCount[killer.PlayerId]}回", "Consigliere");
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
 
             SendRPC(killer.PlayerId, target.PlayerId);
@@ -115,5 +110,5 @@ public static class EvilDiviner
         });
         return IsWatch;
     }
-    public static string GetDivinationCount(byte playerId) => Utils.ColorString(DivinationCount[playerId] > 0 ? Utils.GetRoleColor(CustomRoles.EvilDiviner).ShadeColor(0.25f) : Color.gray, DivinationCount.TryGetValue(playerId, out var shotLimit) ? $"({shotLimit})" : "Invalid");
+    public static string GetDivinationCount(byte playerId) => Utils.ColorString(DivinationCount[playerId] > 0 ? Utils.GetRoleColor(CustomRoles.Consigliere).ShadeColor(0.25f) : Color.gray, DivinationCount.TryGetValue(playerId, out var shotLimit) ? $"({shotLimit})" : "Invalid");
 }

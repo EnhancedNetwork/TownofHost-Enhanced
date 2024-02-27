@@ -6,6 +6,7 @@ using System.Text;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -978,7 +979,7 @@ class MeetingHudStartPatch
             }
 
             //勒索者勒索警告
-            if (Blackmailer.IsEnable && pc != null && Blackmailer.ForBlackmailer.Contains(pc.PlayerId))
+            if (Blackmailer.CheckBlackmaile(pc))
             {
                 var playername = pc.GetRealName();
                 if (Doppelganger.DoppelVictim.ContainsKey(pc.PlayerId)) playername = Doppelganger.DoppelVictim[pc.PlayerId];
@@ -1076,21 +1077,40 @@ class MeetingHudStartPatch
             roleTextMeeting.enableWordWrapping = false;
             roleTextMeeting.enabled = pc.AmOwner || ExtendedPlayerControl.KnowRoleTarget(PlayerControl.LocalPlayer, pc);
 
+            var myRole = PlayerControl.LocalPlayer.GetCustomRole().GetRoleClass();
+            var enable = true;
+
             if (!PlayerControl.LocalPlayer.Data.IsDead && PlayerControl.LocalPlayer.IsRevealedPlayer(pc) && pc.Is(CustomRoles.Trickster))
             {
                 roleTextMeeting.text = Farseer.RandomRole[PlayerControl.LocalPlayer.PlayerId];
                 roleTextMeeting.text += Farseer.GetTaskState();
+                enable = false;
             }
 
             if (EvilTracker.IsTrackTarget(PlayerControl.LocalPlayer, pc) && EvilTracker.CanSeeLastRoomInMeeting)
             {
                 roleTextMeeting.text = EvilTracker.GetArrowAndLastRoom(PlayerControl.LocalPlayer, pc);
                 roleTextMeeting.enabled = true;
+                continue;
             }
             if (Tracker.IsTrackTarget(PlayerControl.LocalPlayer, pc) && Tracker.CanSeeLastRoomInMeeting)
             {
                 roleTextMeeting.text = Tracker.GetArrowAndLastRoom(PlayerControl.LocalPlayer, pc);
                 roleTextMeeting.enabled = true;
+                continue;
+            }
+
+            var suffixBuilder = new StringBuilder(32);
+            if (myRole != null)
+            {
+                suffixBuilder.Append(myRole.GetSuffix(PlayerControl.LocalPlayer, pc, isForMeeting: true));
+            }
+            suffixBuilder.Append(CustomRoleManager.GetSuffixOthers(PlayerControl.LocalPlayer, pc, isForMeeting: true));
+            
+            if (suffixBuilder.Length > 0)
+            {
+                roleTextMeeting.text = suffixBuilder.ToString();
+                roleTextMeeting.enabled = enable;
             }
         }
 
@@ -1158,11 +1178,10 @@ class MeetingHudStartPatch
             PlayerControl target = Utils.GetPlayerById(pva.TargetPlayerId);
             if (target == null) continue;
 
+            var seerRoleClass = seer.GetCustomRole().GetRoleClass();
+
             var sb = new StringBuilder();
 
-            //会議画面での名前変更
-            //自分自身の名前の色を変更
-            //NameColorManager準拠の処理
             pva.NameText.text = pva.NameText.text.ApplyNameColorData(seer, target, true);
 
 
@@ -1183,38 +1202,13 @@ class MeetingHudStartPatch
                         pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + pva.NameText.text;
 
             }
-            //とりあえずSnitchは会議中にもインポスターを確認することができる仕様にしていますが、変更する可能性があります。
 
             if (seer.KnowDeathReason(target))
                 sb.Append($" ({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})");
-            /*        if (seer.KnowDeadTeam(target))
-                    {
-                        if (target.Is(CustomRoleTypes.Crewmate) && !(target.Is(CustomRoles.Madmate) || target.Is(CustomRoles.Egoist) || target.Is(CustomRoles.Charmed) || target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Infected) || target.Is(CustomRoles.Contagious) || target.Is(CustomRoles.Rogue) || target.Is(CustomRoles.Rascal) || target.Is(CustomRoles.Soulless) || !target.Is(CustomRoles.Admired)))
-                            sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), "★"));
 
-                        if (target.Is(CustomRoleTypes.Impostor) || target.Is(CustomRoles.Madmate) || target.Is(CustomRoles.Rascal) || target.Is(CustomRoles.Parasite) || target.Is(CustomRoles.Refugee) || target.Is(CustomRoles.Crewpostor) || target.Is(CustomRoles.Convict) || !target.Is(CustomRoles.Admired))
-                            sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), "★"));
+            sb.Append(seerRoleClass?.GetMark(seer, target, true));
+            sb.Append(CustomRoleManager.GetMarkOthers(seer, target, true));
 
-                        if (target.Is(CustomRoleTypes.Neutral) || target.Is(CustomRoles.Rogue) || target.Is(CustomRoles.Contagious) || target.Is(CustomRoles.Charmed) || target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Infected) || target.Is(CustomRoles.Egoist) || target.Is(CustomRoles.Soulless) || !target.Is(CustomRoles.Admired) || !target.Is(CustomRoles.Parasite) || !target.Is(CustomRoles.Refugee) || !target.Is(CustomRoles.Crewpostor) || !target.Is(CustomRoles.Convict))
-                            sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Executioner), "★"));
-
-
-
-                    }
-                    if (seer.KnowLivingTeam(target))
-                    {
-                        if (target.Is(CustomRoleTypes.Crewmate) && !(target.Is(CustomRoles.Madmate) || target.Is(CustomRoles.Egoist) || target.Is(CustomRoles.Charmed) || target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Infected) || target.Is(CustomRoles.Contagious) || target.Is(CustomRoles.Rogue) || target.Is(CustomRoles.Rascal) || target.Is(CustomRoles.Admired)))
-                            sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), "★"));
-
-                        if (target.Is(CustomRoleTypes.Impostor) || target.Is(CustomRoles.Madmate) || target.Is(CustomRoles.Rascal) || target.Is(CustomRoles.Parasite) || target.Is(CustomRoles.Refugee) || target.Is(CustomRoles.Crewpostor) || target.Is(CustomRoles.Convict) || !target.Is(CustomRoles.Admired))
-                            sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), "★"));
-
-                        if (target.Is(CustomRoleTypes.Neutral) || target.Is(CustomRoles.Rogue) || target.Is(CustomRoles.Contagious) || target.Is(CustomRoles.Charmed) || target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Infected) || target.Is(CustomRoles.Egoist) || target.Is(CustomRoles.Soulless) || !target.Is(CustomRoles.Admired) || !target.Is(CustomRoles.Parasite) || !target.Is(CustomRoles.Refugee) || !target.Is(CustomRoles.Crewpostor) || !target.Is(CustomRoles.Convict))
-                            sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Executioner), "★"));
-
-
-
-                    } */
             //インポスター表示
             switch (seer.GetCustomRole().GetCustomRoleTypes())
             {
@@ -1397,7 +1391,7 @@ class MeetingHudStartPatch
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), "★"));
 
             //玩家被勒索提示
-            if (Blackmailer.ForBlackmailer.Contains(target.PlayerId))
+            if (Blackmailer.CheckBlackmaile(target))
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Blackmailer), "╳"));
 
             //迷你船员提示
@@ -1409,8 +1403,8 @@ class MeetingHudStartPatch
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), Mini.Age != 18 && Mini.UpDateAge.GetBool() ? $"({Mini.Age})" : ""));
 
             //球状闪电提示
-            if (BallLightning.IsGhost(target))
-                sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.BallLightning), "■"));
+            if (Lightning.IsGhost(target))
+                sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lightning), "■"));
 
             //医生护盾提示
             if (seer.PlayerId == target.PlayerId && (Medic.InProtect(seer.PlayerId) || Medic.TempMarkProtected == seer.PlayerId) && (Medic.WhoCanSeeProtect.GetInt() is 0 or 2))

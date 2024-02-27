@@ -1,23 +1,40 @@
 ﻿using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
-public static class OverKiller
+internal class Butcher : RoleBase
 {
-    private static readonly int Id = 24300;
-    public static Dictionary<byte, (int, int, Vector2)> MurderTargetLateTask = [];
+    private const int Id = 24300;
+    public static bool On;
+    public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+
+    private static Dictionary<byte, (int, int, Vector2)> MurderTargetLateTask = [];
     public static void SetupCustomOption()
     {
-        SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.OverKiller);
+        SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Butcher);
     }
-    public static void Init()
+    public override void Init()
     {
         MurderTargetLateTask = [];
+        On = false;
     }
+    public override void Add(byte playerId)
+    {
+        On = true;
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
+        }
+    }
+
+    public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.KillButton.OverrideText(Translator.GetString("ButcherButtonText"));
     public static void OnMurderPlayer(PlayerControl killer, PlayerControl target)
     {
         if (killer.PlayerId == target.PlayerId || target == null) return;
@@ -54,17 +71,21 @@ public static class OverKiller
                 Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId && !x.AmOwner)
                 .Do(x => target.RpcSpecificMurderPlayer(target, x));
             }
-        }, 0.2f, "OverKillerShowBodies"); //25 exactly takes over the whole screen
+        }, 0.2f, "Butcher Show Bodies"); //25 exactly takes over the whole screen
 
         _ = new LateTask(() =>
         {
             if (!MurderTargetLateTask.ContainsKey(target.PlayerId))
                 MurderTargetLateTask.Add(target.PlayerId, (0, 0, target.GetCustomPosition()));
-        }, 0.6f, "OverKillerLateKill");
+        }, 0.6f, "Butcher Late Kill");
     }
 
-    public static void OnFixedUpdate(PlayerControl target)
+    public override void AfterMeetingTasks() => MurderTargetLateTask = [];
+    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target) => MurderTargetLateTask.Clear();
+
+    public static void OnFixedUpdateOthers(PlayerControl target)
     {
+        if (!MurderTargetLateTask.ContainsKey(target.PlayerId)) return;
         if (target == null || !target.Data.IsDead) return;
         var ops = MurderTargetLateTask[target.PlayerId].Item3;
 
@@ -84,4 +105,5 @@ public static class OverKiller
         else
             MurderTargetLateTask[target.PlayerId] = (MurderTargetLateTask[target.PlayerId].Item1 + 1, MurderTargetLateTask[target.PlayerId].Item2, ops);
     }
+
 }

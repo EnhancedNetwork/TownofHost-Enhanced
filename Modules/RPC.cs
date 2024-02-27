@@ -74,7 +74,7 @@ enum CustomRPC
 
     //Roles
     SetDrawPlayer,
-    SetCPTasksDone,
+    SetCrewpostorTasksDone,
     SetCurrentDrawTarget,
     SetGamerHealth,
     RpcPassBomb,
@@ -94,8 +94,8 @@ enum CustomRPC
     SetPursuerSellLimit,
     SetGhostPlayer,
     SetDarkHiderKillCount,
-    SetEvilDiviner,
-    SetGreedierOE,
+    SetConsigliere,
+    SetGreedy,
     SetCursedWolfSpellCount,
     SetJinxSpellCount,
     SetCollectorVotes,
@@ -511,8 +511,8 @@ internal class RPCHandlerPatch
             case CustomRPC.SetJackalRecruitLimit:
                 Jackal.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetCPTasksDone:
-                RPC.CrewpostorTasksRecieveRPC(reader);
+            case CustomRPC.SetCrewpostorTasksDone:
+                Crewpostor.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetBanditStealLimit:
                 Bandit.ReceiveRPC(reader);
@@ -533,21 +533,16 @@ internal class RPCHandlerPatch
                 CustomSoundsManager.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetGhostPlayer:
-                BallLightning.ReceiveRPC(reader);
+                Lightning.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetDarkHiderKillCount:
                 DarkHide.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetGreedierOE:
-                Greedier.ReceiveRPC(reader);
+            case CustomRPC.SetGreedy:
+                Greedy.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetCursedWolfSpellCount:
-                byte CursedWolfId = reader.ReadByte();
-                int GuardNum = reader.ReadInt32();
-                if (Main.CursedWolfSpellCount.ContainsKey(CursedWolfId))
-                    Main.CursedWolfSpellCount[CursedWolfId] = GuardNum;
-                else
-                    Main.CursedWolfSpellCount.Add(CursedWolfId, Options.GuardSpellTimes.GetInt());
+                CursedWolf.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetJinxSpellCount:
                 byte JinxId = reader.ReadByte();
@@ -574,7 +569,7 @@ internal class RPCHandlerPatch
                 GuessManager.RpcClientGuess(Utils.GetPlayerById(reader.ReadByte()));
                 break;
             case CustomRPC.SetMarkedPlayer:
-                Assassin.ReceiveRPC(reader);
+                Ninja.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetMedicalerProtectList:
                 Medic.ReceiveRPCForProtectList(reader);
@@ -661,8 +656,8 @@ internal class RPCHandlerPatch
             case CustomRPC.SetCursedSoulCurseLimit:
                 CursedSoul.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetEvilDiviner:
-                EvilDiviner.ReceiveRPC(reader);
+            case CustomRPC.SetConsigliere:
+                Consigliere.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetPotionMaster:
                 PotionMaster.ReceiveRPC(reader);
@@ -981,11 +976,11 @@ internal static class RPC
         {
             Main.PlayerStates[targetId].SetSubRole(role);
         }
+
+        Main.PlayerStates[targetId]?.Role?.Add(targetId);
+
         switch (role)
         {
-            case CustomRoles.BountyHunter:
-                BountyHunter.Add(targetId);
-                break;
             case CustomRoles.Mercenary:
                 Mercenary.Add(targetId);
                 break;
@@ -1043,9 +1038,6 @@ internal static class RPC
             //case CustomRoles.Occultist:
             //    Occultist.Add(targetId);
             //    break;
-            case CustomRoles.Camouflager:
-                Camouflager.Add();
-                break;
             case CustomRoles.Jackal:
                 Jackal.Add(targetId);
                 break;
@@ -1106,9 +1098,6 @@ internal static class RPC
             case CustomRoles.Snitch:
                 Snitch.Add(targetId);
                 break;
-            case CustomRoles.Chronomancer:
-                Chronomancer.Add(targetId);
-                break;
             case CustomRoles.Medusa:
                 Medusa.Add(targetId);
                 break;
@@ -1118,9 +1107,6 @@ internal static class RPC
             case CustomRoles.Marshall:
                 Marshall.Add(targetId);
                 break;
-            case CustomRoles.AntiAdminer:
-                AntiAdminer.Add(targetId);
-                break;
             case CustomRoles.Monitor:
                 Monitor.Add(targetId);
                 break;
@@ -1129,9 +1115,6 @@ internal static class RPC
                 break;
             case CustomRoles.Aware:
                 Aware.Add(targetId);
-                break;
-            case CustomRoles.Crewpostor:
-                Main.CrewpostorTasksDone[targetId] = 0;
                 break;
             case CustomRoles.TimeManager:
                 TimeManager.Add(targetId);
@@ -1157,9 +1140,6 @@ internal static class RPC
             case CustomRoles.Gangster:
                 Gangster.Add(targetId);
                 break;
-            case CustomRoles.EvilDiviner:
-                EvilDiviner.Add(targetId);
-                break;
             case CustomRoles.PotionMaster:
                 PotionMaster.Add(targetId);
                 break;
@@ -1175,20 +1155,17 @@ internal static class RPC
             case CustomRoles.Gamer:
                 Gamer.Add(targetId);
                 break;
-            case CustomRoles.BallLightning:
-                BallLightning.Add(targetId);
+            case CustomRoles.Lightning:
+                Lightning.Add(targetId);
                 break;
             case CustomRoles.DarkHide:
                 DarkHide.Add(targetId);
                 break;
-            case CustomRoles.Stealth:
-                Stealth.Add(targetId);
-                break;
             case CustomRoles.Penguin:
                 Penguin.Add(targetId);
                 break;
-            case CustomRoles.Greedier:
-                Greedier.Add(targetId);
+            case CustomRoles.Greedy:
+                Greedy.Add(targetId);
                 break;
             case CustomRoles.Collector:
                 Collector.Add(targetId);
@@ -1199,9 +1176,6 @@ internal static class RPC
             case CustomRoles.Benefactor:
                 Benefactor.Add(targetId);
                 break;
-            case CustomRoles.CursedWolf:
-                Main.CursedWolfSpellCount[targetId] = Options.GuardSpellTimes.GetInt();
-                break;
             case CustomRoles.Jinx:
                 Main.JinxSpellCount[targetId] = Jinx.JinxSpellTimes.GetInt();
                 Jinx.Add(targetId);
@@ -1209,20 +1183,14 @@ internal static class RPC
             case CustomRoles.Eraser:
                 Eraser.Add(targetId);
                 break;
-            case CustomRoles.Assassin:
-                Assassin.Add(targetId);
-                break;
-            case CustomRoles.Arrogance:
-                Arrogance.Add(targetId);
+            case CustomRoles.Ninja:
+                Ninja.Add(targetId);
                 break;
             case CustomRoles.Juggernaut:
                 Juggernaut.Add(targetId);
                 break;
             case CustomRoles.Reverie:
                 Reverie.Add(targetId);
-                break;
-            case CustomRoles.Anonymous:
-                Anonymous.Add(targetId);
                 break;
             case CustomRoles.Psychic:
                 Psychic.Add(targetId);
@@ -1241,9 +1209,6 @@ internal static class RPC
                 break;
             case CustomRoles.Keeper:
                 Keeper.Add(targetId);
-                break;
-            case CustomRoles.Councillor:
-                Councillor.Add(targetId);
                 break;
             case CustomRoles.Mortician:
                 Mortician.Add(targetId);
@@ -1377,26 +1342,14 @@ internal static class RPC
             case CustomRoles.Maverick:
                 Maverick.Add(targetId);
                 break;
-            case CustomRoles.Dazzler:
-                Dazzler.Add(targetId);
-                break;
-            case CustomRoles.Addict:
-                Addict.Add(targetId);
-                break;
             case CustomRoles.Mole:
                 Mole.Add(targetId);
-                break;
-            case CustomRoles.Deathpact:
-                Deathpact.Add(targetId);
                 break;
             case CustomRoles.Wildling:
                 Wildling.Add(targetId);
                 break;
             case CustomRoles.Morphling:
                 Morphling.Add(targetId);
-                break;
-            case CustomRoles.Devourer:
-                Devourer.Add(targetId);
                 break;
             case CustomRoles.Spiritualist:
                 Spiritualist.Add(targetId);
@@ -1416,9 +1369,7 @@ internal static class RPC
             case CustomRoles.Pixie:
                 Pixie.Add(targetId);
                 break;
-            case CustomRoles.Seeker:
-                Seeker.Add(targetId);
-                break;
+
             case CustomRoles.Pitfall:
                 Pitfall.Add(targetId);
                 break;
@@ -1433,9 +1384,6 @@ internal static class RPC
                 break;
             case CustomRoles.EvilMini:
                 Mini.Add(targetId);
-                break;
-            case CustomRoles.Blackmailer:
-                Blackmailer.Add(targetId);
                 break;
             case CustomRoles.Diseased:
                 Diseased.Add();
@@ -1642,31 +1590,6 @@ internal static class RPC
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
     }
-    public static void CrewpostorTasksSendRPC(byte cpID, int tasksDone)
-    {
-        if (PlayerControl.LocalPlayer.PlayerId == cpID)
-        {
-            if (Main.CrewpostorTasksDone.ContainsKey(cpID))
-                Main.CrewpostorTasksDone[cpID] = tasksDone;
-            else Main.CrewpostorTasksDone[cpID] = 0;
-        }
-        else
-        {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCPTasksDone, SendOption.Reliable, -1);
-            writer.Write(cpID);
-            writer.WritePacked(tasksDone);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-        }
-    }
-    public static void CrewpostorTasksRecieveRPC(MessageReader reader)
-    {
-        byte PlayerId = reader.ReadByte();
-        int tasksDone = reader.ReadInt32();
-        if (Main.CrewpostorTasksDone.ContainsKey(PlayerId))
-            Main.CrewpostorTasksDone[PlayerId] = tasksDone;
-        else
-            Main.CrewpostorTasksDone.Add(PlayerId, 0);
-    }
     public static void SetCurrentDrawTarget(byte arsonistId, byte targetId)
     {
         if (PlayerControl.LocalPlayer.PlayerId == arsonistId)
@@ -1694,13 +1617,6 @@ internal static class RPC
             writer.Write(targetId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
-    }
-    public static void SendRPCCursedWolfSpellCount(byte playerId)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCursedWolfSpellCount, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.WritePacked(Main.CursedWolfSpellCount[playerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void SendRPCJinxSpellCount(byte playerId)
     {

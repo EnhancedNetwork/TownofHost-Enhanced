@@ -11,20 +11,21 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
-public static class Councillor
+internal class Councillor : RoleBase
 {
-    private static readonly int Id = 1000;
-    private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    private const int Id = 1000;
+    public static bool On;
+    public override bool IsEnable => On;
 
     private static OptionItem MurderLimitPerMeeting;
-  //  private static OptionItem MurderLimitPerGame;
     private static OptionItem TryHideMsg;
     private static OptionItem CanMurderMadmate;
     private static OptionItem CanMurderImpostor;
-    public static OptionItem KillCooldown;
+    private static OptionItem KillCooldown;
+    
     private static Dictionary<byte, int> MurderLimit = [];
-    // private static Dictionary<byte, int> MurderLimitGame;
+
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     public static void SetupCustomOption()
     {
@@ -33,26 +34,22 @@ public static class Councillor
                 .SetValueFormat(OptionFormat.Seconds);
         MurderLimitPerMeeting = IntegerOptionItem.Create(Id + 10, "MurderLimitPerMeeting", new(1, 15, 1), 1, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor])
             .SetValueFormat(OptionFormat.Times);
-     //   MurderLimitPerGame = IntegerOptionItem.Create(Id + 13, "MurderLimitPerGame", new(1, 99, 1), 2, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor])
-       //     .SetValueFormat(OptionFormat.Times);
         CanMurderMadmate = BooleanOptionItem.Create(Id + 12, "CouncillorCanMurderMadmate", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor]);
         CanMurderImpostor = BooleanOptionItem.Create(Id + 16, "CouncillorCanMurderImpostor", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor]);
         TryHideMsg = BooleanOptionItem.Create(Id + 11, "CouncillorTryHideMsg", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor])
             .SetColor(Color.green);
     }
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
         MurderLimit = [];
-        IsEnable = false;
+        On = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         MurderLimit.Add(playerId, MurderLimitPerMeeting.GetInt());
-        IsEnable = true;
+        On = true;
     }
-    public static void AfterMeetingTasks()
+    public override void AfterMeetingTasks()
     {
         foreach (byte playerId in MurderLimit.Keys)
         {
@@ -221,12 +218,9 @@ public static class Councillor
         error = string.Empty;
         return true;
     }
-    public static void SetKillCooldown(byte id)
-        {
-            Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-        }
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
-    public static bool CheckCommond(ref string msg, string command, bool exact = true)
+    private static bool CheckCommond(ref string msg, string command, bool exact = true)
     {
         var comList = command.Split('|');
         for (int i = 0; i < comList.Length; i++)
@@ -277,7 +271,7 @@ public static class Councillor
                 CreateCouncillorButton(__instance);
         }
     }
-    public static void CreateCouncillorButton(MeetingHud __instance)
+    private static void CreateCouncillorButton(MeetingHud __instance)
     {
         foreach (var pva in __instance.playerStates)
         {

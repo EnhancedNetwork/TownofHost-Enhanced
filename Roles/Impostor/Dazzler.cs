@@ -9,20 +9,20 @@ using static TOHE.Utils;
 
 namespace TOHE.Roles.Impostor;
 
-public static class Dazzler
+internal class Dazzler : RoleBase
 {
-    private static readonly int Id = 5400;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
-
-    public static Dictionary<byte, List<byte>> PlayersDazzled = [];
+    private const int Id = 5400;
+    public static bool On;
+    public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
 
     private static OptionItem KillCooldown;
     private static OptionItem ShapeshiftCooldown;
-    //    private static OptionItem ShapeshiftDuration;
     private static OptionItem CauseVision;
     private static OptionItem DazzleLimit;
     private static OptionItem ResetDazzledVisionOnDeath;
+
+    private static Dictionary<byte, List<byte>> PlayersDazzled = [];
 
     public static void SetupCustomOption()
     {
@@ -31,8 +31,6 @@ public static class Dazzler
             .SetValueFormat(OptionFormat.Seconds);
         ShapeshiftCooldown = FloatOptionItem.Create(Id + 11, "DazzleCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler])
             .SetValueFormat(OptionFormat.Seconds);
-        //     ShapeshiftDuration = FloatOptionItem.Create(Id + 12, "ShapeshiftDuration", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler])
-        //       .SetValueFormat(OptionFormat.Seconds);
         CauseVision = FloatOptionItem.Create(Id + 13, "DazzlerCauseVision", new(0f, 5f, 0.05f), 0.65f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler])
             .SetValueFormat(OptionFormat.Multiplier);
         DazzleLimit = IntegerOptionItem.Create(Id + 14, "DazzlerDazzleLimit", new(1, 15, 1), 3, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler])
@@ -40,39 +38,41 @@ public static class Dazzler
         ResetDazzledVisionOnDeath = BooleanOptionItem.Create(Id + 15, "DazzlerResetDazzledVisionOnDeath", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dazzler]);
     }
 
-    public static void Init()
+    public override void Init()
     {
-        playerIdList = [];
         PlayersDazzled = [];
-        IsEnable = false;
+        On = false;
     }
 
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         PlayersDazzled.TryAdd(playerId, []);
-        IsEnable = true;
+        On = true;
     }
 
-    public static void ApplyGameOptions()
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = ShapeshiftCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = 1f;
     }
 
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
-    public static void OnShapeshift(PlayerControl pc, PlayerControl target)
+    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
     {
-        if (!pc.IsAlive() || Pelican.IsEaten(pc.PlayerId)) return;
+        if (!shapeshifting && !shapeshiftIsHidden) return;
+        if (!shapeshifter.IsAlive() || Pelican.IsEaten(shapeshifter.PlayerId)) return;
 
-        if (!PlayersDazzled[pc.PlayerId].Contains(target.PlayerId) && PlayersDazzled[pc.PlayerId].Count < DazzleLimit.GetInt())
+        if (!PlayersDazzled[shapeshifter.PlayerId].Contains(target.PlayerId) && PlayersDazzled[shapeshifter.PlayerId].Count < DazzleLimit.GetInt())
         {
-            Tired.Remove(pc.PlayerId);
+            Tired.Remove(shapeshifter.PlayerId);
             target.Notify(ColorString(GetRoleColor(CustomRoles.Dazzler), GetString("DazzlerDazzled")));
-            PlayersDazzled[pc.PlayerId].Add(target.PlayerId);
+            PlayersDazzled[shapeshifter.PlayerId].Add(target.PlayerId);
             MarkEveryoneDirtySettings();
         }
+
+        if (shapeshiftIsHidden)
+            shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
     }
 
     public static void SetDazzled(PlayerControl player, IGameOptions opt)

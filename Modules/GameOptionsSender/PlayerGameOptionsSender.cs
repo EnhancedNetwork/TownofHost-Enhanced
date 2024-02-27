@@ -117,6 +117,10 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                     break;
             }
         }
+
+        if (Main.PlayerStates.TryGetValue(player.PlayerId, out var playerState))
+            playerState.Role?.ApplyGameOptions(opt, player.PlayerId);
+
         switch (role)
         {
             case CustomRoles.Terrorist:
@@ -167,9 +171,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
             case CustomRoles.Tracefinder:
                 Tracefinder.ApplyGameOptions();
-                break;
-            case CustomRoles.BountyHunter:
-                BountyHunter.ApplyGameOptions();
                 break;
             case CustomRoles.Sniper:
                 Sniper.ApplyGameOptions(player);
@@ -238,14 +239,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.ShapeshifterTOHE:
                 AURoleOptions.ShapeshifterCooldown = Options.ShapeshiftCD.GetFloat();
                 AURoleOptions.ShapeshifterDuration = Options.ShapeshiftDur.GetFloat();
-                break;
-            case CustomRoles.Bomber:
-                AURoleOptions.ShapeshifterCooldown = Options.BombCooldown.GetFloat();
-                AURoleOptions.ShapeshifterDuration = 2f;
-                break;
-            case CustomRoles.Nuker:
-                AURoleOptions.ShapeshifterCooldown = Options.NukeCooldown.GetFloat();
-                AURoleOptions.ShapeshifterDuration = 2f;
                 break;
             case CustomRoles.Nemesis:
                 AURoleOptions.ShapeshifterCooldown = Nemesis.NemesisShapeshiftCD.GetFloat();
@@ -416,22 +409,11 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Solsticer:
                 Solsticer.ApplyGameOptions();
                 break;
-            case CustomRoles.ImperiusCurse:
-                AURoleOptions.ShapeshifterCooldown = Options.ImperiusCurseShapeshiftCooldown.GetFloat();
-                AURoleOptions.ShapeshifterLeaveSkin = false;
-                AURoleOptions.ShapeshifterDuration = Options.ShapeImperiusCurseShapeshiftDuration.GetFloat();
-                break;
             case CustomRoles.QuickShooter:
                 QuickShooter.ApplyGameOptions();
                 break;
-            case CustomRoles.Camouflager:
-                Camouflager.ApplyGameOptions();
-                break;
-            case CustomRoles.Assassin:
-                Assassin.ApplyGameOptions();
-                break;
-            case CustomRoles.Anonymous:
-                Anonymous.ApplyGameOptions();
+            case CustomRoles.Ninja:
+                Ninja.ApplyGameOptions();
                 break;
             case CustomRoles.Hangman:
                 Hangman.ApplyGameOptions();
@@ -455,12 +437,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 opt.SetFloat(FloatOptionNames.CrewLightMod, Farseer.Vision.GetFloat());
                 opt.SetFloat(FloatOptionNames.ImpostorLightMod, Farseer.Vision.GetFloat());
                 break;
-            case CustomRoles.Dazzler:
-                Dazzler.ApplyGameOptions();
-                break;
-            case CustomRoles.Devourer:
-                Devourer.ApplyGameOptions();
-                break;
             case CustomRoles.Addict:
                 AURoleOptions.EngineerCooldown = Addict.VentCooldown.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 1;
@@ -472,9 +448,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Mario:
                 AURoleOptions.EngineerCooldown = Options.MarioVentCD.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 1;
-                break;
-            case CustomRoles.Deathpact:
-                Deathpact.ApplyGameOptions();
                 break;
             case CustomRoles.Twister:
                 Twister.ApplyGameOptions();
@@ -490,9 +463,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
             case CustomRoles.Pitfall:
                 Pitfall.ApplyGameOptions();
-                break;
-            case CustomRoles.Blackmailer:
-                Blackmailer.ApplyGameOptions();
                 break;
             case CustomRoles.Warden:
                 Warden.SetAbilityCooldown();
@@ -527,8 +497,8 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
               opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.FlashbangVision.GetFloat());
           }*/
 
-        if (Dazzler.IsEnable) Dazzler.SetDazzled(player, opt);
-        if (Deathpact.IsEnable) Deathpact.SetDeathpactVision(player, opt);
+        if (Dazzler.On) Dazzler.SetDazzled(player, opt);
+        if (Deathpact.On) Deathpact.SetDeathpactVision(player, opt);
         if (Spiritcaller.IsEnable) Spiritcaller.ReduceVision(opt, player);
         if (Pitfall.IsEnable) Pitfall.SetPitfallTrapVision(opt, player);
 

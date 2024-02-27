@@ -10,11 +10,14 @@ namespace TOHE.Roles.Impostor;
 
 // 参考 : https://github.com/ykundesu/SuperNewRoles/blob/master/SuperNewRoles/Mode/SuperHostRoles/BlockTool.cs
 // 贡献：https://github.com/Yumenopai/TownOfHost_Y/tree/AntiAdminer
-internal class AntiAdminer
+internal class AntiAdminer : RoleBase
 {
-    private static readonly int Id = 2800;
+    private const int Id = 2800;
     private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+
+    public static bool On;
+    public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     private static OptionItem CanCheckCamera;
     public static bool IsAdminWatch;
@@ -27,23 +30,23 @@ internal class AntiAdminer
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.AntiAdminer);
         CanCheckCamera = BooleanOptionItem.Create(Id + 10, "CanCheckCamera", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.AntiAdminer]);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         IsAdminWatch = false;
         IsVitalWatch = false;
         IsDoorLogWatch = false;
         IsCameraWatch = false;
-        IsEnable = false;
+        On = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
+        On = true;
     }
 
     private static int Count = 0;
-    public static void FixedUpdate()
+    public override void OnFixedUpdateLowLoad(PlayerControl player)
     {
         Count--; if (Count > 0) return; Count = 5;
 

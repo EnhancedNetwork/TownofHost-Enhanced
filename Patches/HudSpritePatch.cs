@@ -47,11 +47,11 @@ public static class HudSpritePatch
 
         switch (player.GetCustomRole())
         {
-            case CustomRoles.Assassin:
+            case CustomRoles.Ninja:
                 if (!shapeshifting)
                 {
                     newKillButton = CustomButton.Get("Mark");
-                    if (Assassin.MarkedPlayer.ContainsKey(player.PlayerId))
+                    if (Ninja.MarkedPlayer.ContainsKey(player.PlayerId))
                         newAbilityButton = CustomButton.Get("Assassinate");
                 }
                 break;
@@ -144,7 +144,7 @@ public static class HudSpritePatch
             case CustomRoles.BountyHunter:
                 newKillButton = CustomButton.Get("Handoff");
                 break;
-            case CustomRoles.ImperiusCurse:
+            case CustomRoles.SoulCatcher:
                 newKillButton = CustomButton.Get("Teleport");
                 break;
             case CustomRoles.Swooper:

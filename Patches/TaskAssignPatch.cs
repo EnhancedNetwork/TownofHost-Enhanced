@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 
 namespace TOHE;
@@ -174,13 +175,6 @@ class RpcSetTasksPatch
             var taskState = pc.GetPlayerTaskState();
             taskState.AllTasksCount = NumShortTasks + NumLongTasks;
             hasCommonTasks = false;
-        }
-
-        // Capitalism is going to wreak havoc on people
-        if (Main.CapitalismAssignTask.ContainsKey(playerId))
-        {
-            NumShortTasks += Main.CapitalismAssignTask[playerId];
-            Main.CapitalismAssignTask.Remove(playerId);
         }
 
         if (taskTypeIds.Count == 0) hasCommonTasks = false; //Common to 0 when redistributing tasks

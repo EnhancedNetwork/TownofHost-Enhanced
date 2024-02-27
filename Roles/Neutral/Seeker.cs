@@ -4,11 +4,13 @@ using System.Linq;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
-public static class Seeker
+internal class Seeker : RoleBase
 {
     private static readonly int Id = 14600;
     private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    public static bool On;
+    public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     public static OptionItem PointsToWin;
     private static OptionItem TagCooldownOpt;
@@ -16,8 +18,8 @@ public static class Seeker
     public static int PointsToWinOpt;
 
     public static Dictionary<byte, byte> Targets = [];
-    public static Dictionary<byte, int> TotalPoints = [];
-    private static float DefaultSpeed = new();
+    private static Dictionary<byte, int> TotalPoints = [];
+    private static Dictionary<byte, float> DefaultSpeed = [];
 
     public static void SetupCustomOption()
     {
@@ -26,22 +28,22 @@ public static class Seeker
         TagCooldownOpt = FloatOptionItem.Create(Id + 11, "SeekerTagCooldown", new(0f, 180f, 2.5f), 12.5f, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Seeker])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         Targets = [];
         TotalPoints = [];
-        DefaultSpeed = new();
-        IsEnable = false;
+        DefaultSpeed = []; 
+        On = false;
     }
 
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
+        On = true;
 
         TotalPoints.Add(playerId, 0);
-        DefaultSpeed = Main.AllPlayerSpeed[playerId];
+        DefaultSpeed[playerId] = Main.AllPlayerSpeed[playerId];
         PointsToWinOpt = PointsToWin.GetInt();
 
         if (AmongUsClient.Instance.AmHost)
@@ -54,7 +56,7 @@ public static class Seeker
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = TagCooldownOpt.GetFloat();
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = TagCooldownOpt.GetFloat();
 
     private static void SendRPC(byte seekerId, byte targetId = 0xff, bool setTarget = true)
     {
@@ -89,10 +91,10 @@ public static class Seeker
 
         Targets[seekerId] = targetId;
     }
-    public static void OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (GetTarget(killer) == target.PlayerId)
-        {//ターゲットをキルした場合
+        {//if the target is correct
             TotalPoints[killer.PlayerId] += 1;
             ResetTarget(killer);
         }
@@ -100,20 +102,21 @@ public static class Seeker
         {
             TotalPoints[killer.PlayerId] -= 1;
         }
-        killer.SyncSettings();  //IDK WHAT DOES THIS DO!!
         if (!Options.DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill();
         SetKillCooldown(killer.PlayerId);
+        killer.SyncSettings();
         SendRPC(killer.PlayerId, setTarget: false);
+        return false;
     }
-    public static void OnReportDeadBody()
+    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
         foreach (var playerId in playerIdList)
         {
-            Main.AllPlayerSpeed[playerId] = DefaultSpeed;
+            Main.AllPlayerSpeed[playerId] = DefaultSpeed[playerId];
         }
     }
 
-    public static void OnFixedUpdate(PlayerControl player)
+    public override void OnFixedUpdateLowLoad(PlayerControl player)
     {
         if (player == null) return;
         var targetId = GetTarget(player);
@@ -136,7 +139,7 @@ public static class Seeker
             }
         }
     }
-    public static byte GetTarget(PlayerControl player)
+    private static byte GetTarget(PlayerControl player)
     {
         if (player == null) return 0xff;
         Targets ??= [];
@@ -145,19 +148,19 @@ public static class Seeker
             targetId = ResetTarget(player);
         return targetId;
     }
-    public static void FreezeSeeker(PlayerControl player)
+    private static void FreezeSeeker(PlayerControl player)
     {
         Main.AllPlayerSpeed[player.PlayerId] = Main.MinSpeed;
         ReportDeadBodyPatch.CanReport[player.PlayerId] = false;
         player.MarkDirtySettings();
         _ = new LateTask(() =>
         {
-            Main.AllPlayerSpeed[player.PlayerId] = DefaultSpeed;
+            Main.AllPlayerSpeed[player.PlayerId] = DefaultSpeed[player.PlayerId];
             ReportDeadBodyPatch.CanReport[player.PlayerId] = true;
-            player.MarkDirtySettings(); // dont know what the hell is this
+            player.MarkDirtySettings();
         }, 5f, "Freeze Seeker");
     }
-    public static byte ResetTarget(PlayerControl player)
+    private static byte ResetTarget(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return 0xff;
 
@@ -187,29 +190,30 @@ public static class Seeker
         FreezeSeeker(player);
         return targetId;
     }
-    public static void AfterMeetingTasks(bool notifyPlayer = false)
-    {
-        if (notifyPlayer)
-        {
-            foreach (var id in playerIdList.ToArray())
-            {
-                if (!Main.PlayerStates[id].IsDead)
-                {
-                    var targetId = GetTarget(Utils.GetPlayerById(id));
-                    Utils.GetPlayerById(id).Notify(string.Format(GetString("SeekerNotify"), Utils.GetPlayerById(targetId).GetRealName()));
-                    Utils.GetPlayerById(targetId).Notify(GetString("SeekerTargetNotify"));
+    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
 
-                }
+    public static string GetProgressText(byte playerId) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Seeker).ShadeColor(0.25f), $"({TotalPoints[playerId]}/{Seeker.PointsToWin.GetInt()})");
+
+    public override void AfterMeetingTasks()
+    {
+        foreach (var id in playerIdList.ToArray())
+        {
+            if (!Main.PlayerStates[id].IsDead)
+            {
+                FreezeSeeker(Utils.GetPlayerById(id));
             }
         }
-        else
+    }
+    public override void NotifyAfterMeeting()
+    {
+        foreach (var id in playerIdList.ToArray())
         {
-            foreach (var id in playerIdList.ToArray())
+            if (!Main.PlayerStates[id].IsDead)
             {
-                if (!Main.PlayerStates[id].IsDead)
-                {
-                    FreezeSeeker(Utils.GetPlayerById(id));
-                }
+                var targetId = GetTarget(Utils.GetPlayerById(id));
+                Utils.GetPlayerById(id).Notify(string.Format(GetString("SeekerNotify"), Utils.GetPlayerById(targetId).GetRealName()));
+                Utils.GetPlayerById(targetId).Notify(GetString("SeekerTargetNotify"));
+
             }
         }
     }
