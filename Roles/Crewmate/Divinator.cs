@@ -186,7 +186,7 @@ public static class Divinator
                 CustomRoles.Lighter],
 
                 [CustomRoles.Crusader,
-                CustomRoles.Farseer,
+                CustomRoles.Overseer,
                 CustomRoles.Arsonist,
                 CustomRoles.Ninja,
                 CustomRoles.Lightning,

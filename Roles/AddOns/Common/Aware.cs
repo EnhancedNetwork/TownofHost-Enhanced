@@ -42,7 +42,7 @@ public static class Aware
         switch (killerRole)
         {
             case CustomRoles.Consigliere:
-            case CustomRoles.Farseer:
+            case CustomRoles.Overseer:
                 if (!AwareInteracted.ContainsKey(target.PlayerId))
                 {
                     AwareInteracted.Add(target.PlayerId, []);

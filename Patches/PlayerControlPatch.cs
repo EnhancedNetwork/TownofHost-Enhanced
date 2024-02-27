@@ -19,6 +19,7 @@ using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
 using TOHE.Roles.Core;
+using static UnityEngine.RemoteConfigSettingsHelper;
 
 namespace TOHE;
 
@@ -240,8 +241,13 @@ class CheckMurderPatch
 
         if (Main.PlayerStates.TryGetValue(target.PlayerId, out var targetState) && targetState.Role != null)
             if (!targetState.Role.OnCheckMurderAsTarget(killer, target))
+            {
                 return false;
-
+            }
+            else
+            {
+                targetState.Role.OnCheckMurderAsTarget(killer, target); // if simply an action happens on target attacked
+            }
         if (killer.PlayerId != target.PlayerId && Main.PlayerStates.TryGetValue(killer.PlayerId, out var killerState) && killerState.Role != null)
             if (!killerState.Role.OnCheckMurderAsKiller(killer, target))
                 return false;
@@ -487,9 +493,6 @@ class CheckMurderPatch
                         RPC.SetCurrentDrawTarget(killer.PlayerId, target.PlayerId);
                     }
                     return false;
-                case CustomRoles.Farseer:
-                    Farseer.OnCheckMurder(killer, target, __instance);
-                    return false;
                 case CustomRoles.Innocent:
                     target.RpcMurderPlayerV3(killer);
                     return false;
@@ -550,9 +553,6 @@ class CheckMurderPatch
                 case CustomRoles.Infectious:
                     Infectious.OnCheckMurder(killer, target);
                     return false;
-                case CustomRoles.Monarch:
-                    Monarch.OnCheckMurder(killer, target);
-                    return false;
                 case CustomRoles.Deputy:
                     Deputy.OnCheckMurder(killer, target);
                     return false;
@@ -593,10 +593,6 @@ class CheckMurderPatch
                     break;
                 case CustomRoles.Jailer:
                     if (!Jailer.OnCheckMurder(killer, target))
-                        return false;
-                    break;
-                case CustomRoles.CopyCat:
-                    if (!CopyCat.OnCheckMurder(killer, target))
                         return false;
                     break;
 
@@ -965,11 +961,6 @@ class CheckMurderPatch
                     }
                 }
                 return false;
-            //President kill
-            case CustomRoles.President:
-                if (President.CheckPresidentReveal[target.PlayerId] == true)
-                    killer.SetKillCooldown(0.9f);
-                break;
             //return true;
             case CustomRoles.SuperStar:
                 if (Main.AllAlivePlayerControls.Any(x =>
@@ -2033,8 +2024,8 @@ class ReportDeadBodyPatch
                         }
                         else if (tar.Is(CustomRoles.CopyCat))
                         {
-                            CopyCat.Add(__instance.PlayerId);
                             __instance.RpcSetCustomRole(CustomRoles.CopyCat);
+                            Main.PlayerStates[tar.PlayerId].Role.Add(tar.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         }
@@ -2052,10 +2043,10 @@ class ReportDeadBodyPatch
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         }
-                        else if (tar.Is(CustomRoles.Farseer))
+                        else if (tar.Is(CustomRoles.Overseer))
                         {
-                            Farseer.Add(__instance.PlayerId);
-                            __instance.RpcSetCustomRole(CustomRoles.Farseer);
+                            __instance.RpcSetCustomRole(CustomRoles.Overseer);
+                            Main.PlayerStates[tar.PlayerId].Role.Add(tar.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         }
@@ -2091,23 +2082,23 @@ class ReportDeadBodyPatch
                         }
                         else if (tar.Is(CustomRoles.Monarch))
                         {
-                            Monarch.Add(__instance.PlayerId);
                             __instance.RpcSetCustomRole(CustomRoles.Monarch);
+                            Main.PlayerStates[tar.PlayerId].Role.Add(tar.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         }
                         else if (tar.Is(CustomRoles.Monitor))
                         {
-                            Monitor.Add(__instance.PlayerId);
                             __instance.RpcSetCustomRole(CustomRoles.Monitor);
+                            Main.PlayerStates[tar.PlayerId].Role.Add(tar.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                             Main.TasklessCrewmate.Add(__instance.PlayerId);
                         }
                         else if (tar.Is(CustomRoles.Swapper))
                         {
-                            Swapper.Add(__instance.PlayerId);
                             __instance.RpcSetCustomRole(CustomRoles.Swapper);
+                            Main.PlayerStates[tar.PlayerId].Role.Add(tar.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                             Main.TasklessCrewmate.Add(__instance.PlayerId);
@@ -2270,10 +2261,7 @@ class ReportDeadBodyPatch
             if (Quizmaster.IsEnable)
                 Quizmaster.OnButtonPress(player);
 
-            if (player.Is(CustomRoles.Mayor))
-            {
-                Main.MayorUsedButtonCount[player.PlayerId] += 1;
-            }
+            
         }
         else
         {
@@ -2367,7 +2355,6 @@ class ReportDeadBodyPatch
         if (Lightning.IsEnable) Lightning.OnReportDeadBody();
         if (Jailer.IsEnable) Jailer.OnReportDeadBody();
         if (Romantic.IsEnable) Romantic.OnReportDeadBody();
-        if (Captain.IsEnable) Captain.OnReportDeadBody();
         if (Investigator.IsEnable) Investigator.OnReportDeadBody();
         if (Swooper.IsEnable) Swooper.OnReportDeadBody();
         if (Chameleon.IsEnable) Chameleon.OnReportDeadBody();
@@ -2633,10 +2620,6 @@ class FixedUpdateInNormalGamePatch
 
                     case CustomRoles.PlagueBearer:
                         PlagueBearer.OnFixedUpdate(player);
-                        break;
-
-                    case CustomRoles.Farseer:
-                        Farseer.OnFixedUpdate(player);
                         break;
 
                     case CustomRoles.Warlock:
@@ -3012,7 +2995,7 @@ class FixedUpdateInNormalGamePatch
                     {
                         DisableDevice.FixedUpdate();
 
-                        if (Monitor.IsEnable)
+                        if (CustomRoles.Monitor.IsClassEnable())
                             Monitor.FixedUpdate();
                     }
                 }
@@ -3074,8 +3057,8 @@ class FixedUpdateInNormalGamePatch
                 else RoleText.enabled = false;
                 if (!PlayerControl.LocalPlayer.Data.IsDead && PlayerControl.LocalPlayer.IsRevealedPlayer(__instance) && __instance.Is(CustomRoles.Trickster))
                 {
-                    RoleText.text = Farseer.RandomRole[PlayerControl.LocalPlayer.PlayerId];
-                    RoleText.text += Farseer.GetTaskState();
+                    RoleText.text = Overseer.RandomRole[PlayerControl.LocalPlayer.PlayerId]; // random role for revealed trickster
+                    RoleText.text += TaskState.GetTaskState(); // random task count for revealed trickster
                 }
 
                 if (!AmongUsClient.Instance.IsGameStarted && AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay)
@@ -3088,6 +3071,7 @@ class FixedUpdateInNormalGamePatch
 
 
                 var seer = PlayerControl.LocalPlayer;
+                var seerRoleClass = Main.PlayerStates[seer.PlayerId].Role;
                 var target = __instance;
 
                 string RealName = target.GetRealName();
@@ -3126,7 +3110,6 @@ class FixedUpdateInNormalGamePatch
 
                 RealName = RealName.ApplyNameColorData(seer, target, false);
                 var seerRole = seer.GetCustomRole();
-                var seerRoleClass = seerRole.GetRoleClass();
 
 
                 Mark.Append(seerRoleClass?.GetMark(seer, target, false));
@@ -3146,14 +3129,10 @@ class FixedUpdateInNormalGamePatch
                         if (target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate))
                             Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), "★"));
                     }
-
-                    if (seerRole.IsCrewmate() && !seer.Is(CustomRoles.Madmate))
-                    {
-                        if (target.Is(CustomRoles.Marshall))
-                            Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Marshall), "★"));
-                    }
                 }
-                
+
+                Mark.Append(seerRoleClass?.GetMark(seer, target));
+
                 if (PlagueDoctor.IsEnable) 
                     Mark.Append(PlagueDoctor.GetMarkOthers(seer, target));
                 
@@ -3167,9 +3146,6 @@ class FixedUpdateInNormalGamePatch
                     if (target.AmOwner || target.Is(CustomRoles.Solsticer))
                         Mark.Append(Solsticer.GetWarningArrow(seer, target));
 
-                if (Marshall.IsEnable)
-                    Mark.Append(Marshall.GetWarningMark(seer, target));
-
                 if (Executioner.IsEnable)
                     Mark.Append(Executioner.TargetMark(seer, target));
 
@@ -3181,13 +3157,6 @@ class FixedUpdateInNormalGamePatch
 
                 if (Romantic.IsEnable)
                     Mark.Append(Romantic.TargetMark(seer, target));
-
-                if (Captain.IsEnable)
-                    if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) &&
-                        (target.GetPlayerTaskState().CompletedTasksCount >= Captain.OptionTaskRequiredToReveal.GetInt()) &&
-                        (seerRole.IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
-                        Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Captain), " ☆"));
-
 
                 if (Lawyer.IsEnable)
                     Mark.Append(Lawyer.LawyerMark(seer, target));
@@ -3234,11 +3203,6 @@ class FixedUpdateInNormalGamePatch
                             Mark.Append($"<color={Utils.GetRoleColorCode(seerRole)}>●</color>");
 
                         else if (Main.currentDrawTarget != byte.MaxValue && Main.currentDrawTarget == target.PlayerId)
-                            Mark.Append($"<color={Utils.GetRoleColorCode(seerRole)}>○</color>");
-                        break;
-
-                    case CustomRoles.Farseer:
-                        if (Main.currentDrawTarget != byte.MaxValue && Main.currentDrawTarget == target.PlayerId)
                             Mark.Append($"<color={Utils.GetRoleColorCode(seerRole)}>○</color>");
                         break;
 
@@ -3349,8 +3313,6 @@ class FixedUpdateInNormalGamePatch
                     if (seer.Is(CustomRoles.Monitor))
                     {
                         Monitor.FixedUpdate();
-                        if (target.AmOwner)
-                            Suffix.Append(Monitor.GetSuffix());
                     }
                     if (player.Is(CustomRoles.TimeMaster))
                     {
@@ -3503,18 +3465,12 @@ class EnterVentPatch
     {
         if (GameStates.IsHideNSeek) return;
 
+        Main.PlayerStates[pc.PlayerId]?.Role?.OnEnterVent(pc, __instance);
+
         Witch.OnEnterVent(pc);
         HexMaster.OnEnterVent(pc);
         //Occultist.OnEnterVent(pc);
 
-        if (pc.Is(CustomRoles.Mayor) && Options.MayorHasPortableButton.GetBool() && !CopyCat.playerIdList.Contains(pc.PlayerId))
-        {
-            if (Main.MayorUsedButtonCount.TryGetValue(pc.PlayerId, out var count) && count < Options.MayorNumOfUseButton.GetInt())
-            {
-                pc?.MyPhysics?.RpcBootFromVent(__instance.Id);
-                pc?.NoCheckStartMeeting(pc?.Data);
-            }
-        }
      /* if (pc.Is(CustomRoles.Wraith)) // THIS WAS FOR WEREWOLF TESTING PURPOSES, PLEASE IGNORE
         {
             pc?.MyPhysics?.RpcBootFromVent(__instance.Id);            
@@ -3537,7 +3493,7 @@ class EnterVentPatch
             }
         } */
 
-        else if (pc.Is(CustomRoles.Mario))
+        if (pc.Is(CustomRoles.Mario))
         {
             Main.MarioVentCount.TryAdd(pc.PlayerId, 0);
             Main.MarioVentCount[pc.PlayerId]++;
@@ -3842,7 +3798,7 @@ class CoEnterVentPatch
         if (
             (__instance.myPlayer.Data.Role.Role != RoleTypes.Engineer
                 && !__instance.myPlayer.CanUseImpostorVentButton())
-            || (__instance.myPlayer.Is(CustomRoles.Mayor) && Main.MayorUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count) && count >= Options.MayorNumOfUseButton.GetInt())
+            || (__instance.myPlayer.Is(CustomRoles.Mayor) && Mayor.MayorUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count) && count >= Mayor.MayorNumOfUseButton.GetInt())
           //|| (__instance.myPlayer.Is(CustomRoles.Paranoia) && Main.ParaUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count2) && count2 >= Options.ParanoiaNumOfUseButton.GetInt())
             || (__instance.myPlayer.Is(CustomRoles.Veteran) && Main.VeteranNumOfUsed.TryGetValue(__instance.myPlayer.PlayerId, out var count3) && count3 < 1)
             || (__instance.myPlayer.Is(CustomRoles.DovesOfNeace) && Main.DovesOfNeaceNumOfUsed.TryGetValue(__instance.myPlayer.PlayerId, out var count4) && count4 < 1)

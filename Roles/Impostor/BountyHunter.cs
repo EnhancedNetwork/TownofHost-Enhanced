@@ -66,6 +66,10 @@ internal class BountyHunter : RoleBase
             CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateLowLoadOthers);
         }
     }
+    public override void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+    }
 
     private static void SendRPC(byte bountyId, byte targetId)
     {

@@ -25,6 +25,7 @@ using UnityEngine;
 using static TOHE.Translator;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
+using static UnityEngine.RemoteConfigSettingsHelper;
 
 namespace TOHE;
 
@@ -605,7 +606,7 @@ public static class Utils
             case CustomRoles.Deputy:
             case CustomRoles.Investigator:
             case CustomRoles.Virus:
-            case CustomRoles.Farseer:
+            case CustomRoles.Overseer:
             case CustomRoles.Counterfeiter:
             case CustomRoles.Witness:
             case CustomRoles.Pursuer:
@@ -698,6 +699,7 @@ public static class Utils
             if (!Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId)) return ""; //ホストがMODを入れていなければ未記入を返す
             var ProgressText = new StringBuilder();
             var role = Main.PlayerStates[playerId].MainRole;
+            ProgressText.Append(Main.PlayerStates[playerId]?.Role?.GetProgressText(playerId));
             switch (role)
             {
                 case CustomRoles.Arsonist:
@@ -713,9 +715,6 @@ public static class Utils
                     break;
                 case CustomRoles.Sheriff:
                     if (Sheriff.ShowShotLimit.GetBool()) ProgressText.Append(Sheriff.GetShotLimit(playerId));
-                    break;
-                case CustomRoles.President:
-                    ProgressText.Append(President.GetEndLimit(playerId));
                     break;
                 case CustomRoles.Veteran:
                     var taskState2 = Main.PlayerStates?[playerId].TaskState;
@@ -1065,9 +1064,6 @@ public static class Utils
                 case CustomRoles.Infectious:
                     ProgressText.Append(Infectious.GetBiteLimit());
                     break;
-                case CustomRoles.Monarch:
-                    ProgressText.Append(Monarch.GetKnightLimit());
-                    break;
                 case CustomRoles.Deputy:
                     ProgressText.Append(Deputy.GetHandcuffLimit());
                     break;
@@ -1095,9 +1091,6 @@ public static class Utils
                     break;
                 case CustomRoles.Spiritcaller:
                     ProgressText.Append(Spiritcaller.GetSpiritLimit());
-                    break;
-                case CustomRoles.Swapper:
-                    ProgressText.Append(Swapper.GetSwappermax(playerId));
                     break;
                 case CustomRoles.ChiefOfPolice:
                     ProgressText.Append(ChiefOfPolice.GetSkillLimit(playerId));
@@ -2055,7 +2048,7 @@ public static class Utils
             //logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":START");
 
             var seerRole = seer.GetCustomRole();
-            var seerRoleClass = seerRole.GetRoleClass();
+            var seerRoleClass = Main.PlayerStates[seer.PlayerId].Role;
 
             // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
             if (!CamouflageIsForMeeting && MushroomMixupIsActive && seer.IsAlive() && !seer.Is(CustomRoleTypes.Impostor) && Main.ResetCamPlayerList.Contains(seer.PlayerId))
@@ -2115,7 +2108,7 @@ public static class Utils
                 SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, isForMeeting: isForMeeting));
 
 
-                if (Deathpact.On)
+                if (CustomRoles.Deathpact.IsClassEnable())
                     SelfSuffix.Append(Deathpact.GetDeathpactPlayerArrow(seer));
 
 
@@ -2162,10 +2155,6 @@ public static class Utils
 
                         case CustomRoles.Spiritualist:
                             SelfSuffix.Append(Spiritualist.GetSpiritualistArrow(seer));
-                            break;
-
-                        case CustomRoles.Monitor:
-                            SelfSuffix.Append(Monitor.GetSuffix());
                             break;
 
                         case CustomRoles.Vulture:
@@ -2274,14 +2263,14 @@ public static class Utils
                 if (Pelican.IsEnable && Pelican.IsEaten(seer.PlayerId))
                     SelfName = $"{ColorString(GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"))}";
 
-                if (Deathpact.On && Deathpact.IsInActiveDeathpact(seer))
+                if (CustomRoles.Deathpact.IsClassEnable() && Deathpact.IsInActiveDeathpact(seer))
                     SelfName = Deathpact.GetDeathpactString(seer);
 
                 if (NameNotifyManager.GetNameNotify(seer, out var name))
                     SelfName = name;
 
                 // Devourer
-                if (Devourer.On)
+                if (CustomRoles.Devourer.IsClassEnable())
                 {
                     bool playerDevoured = Devourer.HideNameOfTheDevoured(seer.PlayerId);
                     if (playerDevoured && !CamouflageIsForMeeting)
@@ -2367,17 +2356,8 @@ public static class Utils
                         if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate) && target.GetPlayerTaskState().IsTaskFinished)
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Impostor), "★"));
 
-                        if (seer.Is(CustomRoleTypes.Crewmate) && target.Is(CustomRoles.Marshall) && target.GetPlayerTaskState().IsTaskFinished)
-                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Marshall), "★"));
-
                         if (target.Is(CustomRoles.SuperStar) && Options.EveryOneKnowSuperStar.GetBool())
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.SuperStar), "★"));
-
-                        if (Captain.IsEnable)
-                            if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && Captain.OptionCrewCanFindCaptain.GetBool()) &&
-                                (target.GetPlayerTaskState().CompletedTasksCount >= Captain.OptionTaskRequiredToReveal.GetInt()) &&
-                                (seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && Captain.OptionMadmateCanFindCaptain.GetBool())))
-                                TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Captain), " ☆"));
 
                         if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
@@ -2408,7 +2388,7 @@ public static class Utils
                         if (Lawyer.IsEnable)
                             TargetMark.Append(Lawyer.LawyerMark(seer, target));
 
-                        if (Deathpact.On)
+                        if (CustomRoles.Deathpact.IsClassEnable())
                             TargetMark.Append(Deathpact.GetDeathpactMark(seer, target));
 
 
@@ -2468,11 +2448,6 @@ public static class Utils
                                     TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Revolutionist)}>○</color>");
                                 break;
 
-                            case CustomRoles.Farseer:
-                                if (Farseer.FarseerTimer.TryGetValue(seer.PlayerId, out var fa_kvp) && fa_kvp.Item1 == target)
-                                    TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Farseer)}>○</color>");
-                                break;
-
                             case CustomRoles.Puppeteer:
                                 TargetMark.Append(Puppeteer.TargetMark(seer, target));
                                 break;
@@ -2491,15 +2466,13 @@ public static class Utils
 
                         if (seer.IsAlive() && seer.IsRevealedPlayer(target) && target.Is(CustomRoles.Trickster))
                         {
-                            TargetRoleText = Farseer.RandomRole[seer.PlayerId];
-                            TargetRoleText += Farseer.GetTaskState();
+                            TargetRoleText = Overseer.RandomRole[seer.PlayerId]; // Random trickster role
+                            TargetRoleText += TaskState.GetTaskState(); // Random task count for revealed trickster
                         }
-
 
                         // ====== Target player name ======
 
                         string TargetPlayerName = target.GetRealName(isForMeeting);
-
 
                         // ========= During Game And Meeting =========
                         switch (seerRole)
@@ -2516,11 +2489,6 @@ public static class Utils
                                     TargetRoleText = $"<size={fontSize}>{Tracker.GetArrowAndLastRoom(seer, target)}</size>\r\n";
                                 break;
 
-                            case CustomRoles.Lookout:
-                                if (seer.IsAlive() && target.IsAlive())
-                                    TargetPlayerName = (ColorString(GetRoleColor(CustomRoles.Lookout), " " + target.PlayerId.ToString()) + " " + TargetPlayerName);
-                                break;
-
                             case CustomRoles.Swapper:
                                 if (seer.IsAlive() && target.IsAlive())
                                     TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + TargetPlayerName;
@@ -2531,7 +2499,13 @@ public static class Utils
                                 break;
 
                         }
+                        if (seer.PlayerId != target.PlayerId && Main.PlayerStates.TryGetValue(seer.PlayerId, out var seerState) && seerState.Role != null)
+                            if (seerState.Role.NotifyPlayerName(seer, target, TargetPlayerName) != string.Empty)
+                                TargetPlayerName = seerState.Role.NotifyPlayerName(seer, target, TargetPlayerName);
+                            else if (seerState.Role.NotifyPlayerName(seer, target, string.Empty, isForMeeting) != string.Empty)
+                            {
 
+                            }
                         // ========= Only During Meeting =========
                         if (isForMeeting)
                         {
@@ -2629,7 +2603,7 @@ public static class Utils
                             ? $" ({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))})" : "";
 
                         // Devourer
-                        if (Devourer.On)
+                        if (CustomRoles.Devourer.IsClassEnable())
                         {
                             bool targetDevoured = Devourer.HideNameOfTheDevoured(target.PlayerId);
                             if (targetDevoured && !CamouflageIsForMeeting)
@@ -2695,13 +2669,15 @@ public static class Utils
         if (Retributionist.IsEnable) Retributionist.AfterMeetingTasks(); 
         if (PlagueDoctor.IsEnable) PlagueDoctor.AfterMeetingTasks();
         if (Jailer.IsEnable) Jailer.AfterMeetingTasks();
-        if (CopyCat.IsEnable) CopyCat.AfterMeetingTasks();  //all crew after meeting task should be before this
         if (Pirate.IsEnable) Pirate.AfterMeetingTask();
         if (Solsticer.IsEnable) Solsticer.AfterMeetingTasks();
         if (RiftMaker.IsEnable) RiftMaker.AfterMeetingTasks();
         if (Statue.IsEnable) Statue.AfterMeetingTasks();
         if (Burst.IsEnable) Burst.AfterMeetingTasks();
+        if (CustomRoles.CopyCat.IsClassEnable()) CopyCat.UnAfterMeetingTasks(); // All crew hast to be before this
+        
 
+        
         Main.ShamanTarget = byte.MaxValue;
         Main.ShamanTargetChoosen = false;
 

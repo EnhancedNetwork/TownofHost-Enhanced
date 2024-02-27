@@ -1128,7 +1128,7 @@ internal class ChatCommands
             "和平之鴿" or "和平之鸽" => GetString("DovesOfNeace"),
             "窺視者" or "观察者" or "观察" => GetString("Observer"),
             "君主" => GetString("Monarch"),
-            "預言家" or "预言家" or "预言" => GetString("Farseer"),
+            "預言家" or "预言家" or "预言" => GetString("Overseer"),
             "驗屍官" or "验尸官" or "验尸" => GetString("Bloodhound"),
             "正義的追蹤者" or "正义追踪者" or "正义的追踪者" => GetString("Tracker"),
             "商人" => GetString("Merchant"),

@@ -131,10 +131,6 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("KillButtonText"));
                         break;
-                    case CustomRoles.CopyCat:
-                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        __instance.KillButton.OverrideText(GetString("CopyButtonText"));
-                        break;
                     case CustomRoles.Shaman:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("ShamanButtonText"));
@@ -183,10 +179,6 @@ class HudManagerPatch
                         __instance.KillButton?.OverrideText(Penguin.OverrideKillButtonText());
                         __instance.AbilityButton?.OverrideText(Penguin.GetAbilityButtonText());
                         __instance.AbilityButton?.ToggleVisible(Penguin.CanUseAbilityButton());
-                        break;
-                    case CustomRoles.Farseer:
-                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        __instance.KillButton.OverrideText(GetString("FarseerKillButtonText"));
                         break;
                     case CustomRoles.Puppeteer:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
@@ -339,10 +331,6 @@ class HudManagerPatch
                         break;
                     case CustomRoles.Witness:
                         __instance.KillButton.OverrideText(GetString("WitnessButtonText"));
-                        break;
-                    case CustomRoles.Mayor:
-                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        __instance.AbilityButton.buttonLabelText.text = GetString("MayorVentButtonText");
                         break;
                     case CustomRoles.Paranoia:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
@@ -634,7 +622,7 @@ class SetHudActivePatch
             case CustomRoles.Gamer:
             case CustomRoles.DarkHide:
             case CustomRoles.Provocateur:
-            case CustomRoles.Farseer:
+            case CustomRoles.Overseer:
             case CustomRoles.Crusader:
                 __instance.SabotageButton.ToggleVisible(false);
                 __instance.AbilityButton.ToggleVisible(false);

@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.AddOns.Common;
@@ -8,21 +8,23 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate
 {
-    public static class Farseer
+    internal class Overseer : RoleBase
     {
         private static readonly int Id = 12200;
 
-        private static readonly string fontSize = "1.5";
-        public static bool IsEnable = false;
+        public static bool On = false;
+        public override bool IsEnable => false;
+        public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
         public static Dictionary<byte, string> RandomRole = [];
-        public static Dictionary<byte, (PlayerControl, float)> FarseerTimer = [];
+        public static Dictionary<byte, (PlayerControl, float)> OverseerTimer = [];
 
-        public static OptionItem FarseerCooldown;
-        public static OptionItem FarseerRevealTime;
+        public static OptionItem OverseerCooldown;
+        public static OptionItem OverseerRevealTime;
         public static OptionItem Vision;
 
         private static readonly List<CustomRoles> randomRolesForTrickster =
@@ -71,68 +73,74 @@ namespace TOHE.Roles.Crewmate
 
         public static void SetupCustomOption()
         {
-            SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Farseer);
-            FarseerCooldown = FloatOptionItem.Create(Id + 10, "FarseerRevealCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Farseer])
+            SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Overseer);
+            OverseerCooldown = FloatOptionItem.Create(Id + 10, "OverseerRevealCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Overseer])
                 .SetValueFormat(OptionFormat.Seconds);
-            FarseerRevealTime = FloatOptionItem.Create(Id + 11, "FarseerRevealTime", new(0f, 60f, 1f), 10f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Farseer])
+            OverseerRevealTime = FloatOptionItem.Create(Id + 11, "OverseerRevealTime", new(0f, 60f, 1f), 10f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Overseer])
                 .SetValueFormat(OptionFormat.Seconds);
-            Vision = FloatOptionItem.Create(Id + 12, "FarseerVision", new(0f, 5f, 0.05f), 0.25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Farseer])
+            Vision = FloatOptionItem.Create(Id + 12, "OverseerVision", new(0f, 5f, 0.05f), 0.25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Overseer])
                 .SetValueFormat(OptionFormat.Multiplier);
         }
-        public static void Init()
+        public override void Init()
         {
-            FarseerTimer = [];
+            OverseerTimer = [];
             RandomRole = [];
-            IsEnable = false;
+            On = false;
         }
-        public static void Add(byte playerId)
+        public override void Add(byte playerId)
         {
-            IsEnable = true;
+            On = true;
 
             if (!AmongUsClient.Instance.AmHost) return;
             if (!Main.ResetCamPlayerList.Contains(playerId))
                 Main.ResetCamPlayerList.Add(playerId);
         }
-        public static void Remove(byte playerId)
+        public override void Remove(byte playerId)
         {
-            FarseerTimer.Remove(playerId);
+            OverseerTimer.Remove(playerId);
             RandomRole.Remove(playerId);
         }
-
-        public static void SetCooldown(byte id) => Main.AllPlayerKillCooldown[id] = FarseerCooldown.GetFloat();
-        public static void OnCheckMurder(PlayerControl killer, PlayerControl target, PlayerControl __instance)
+        public override void ApplyGameOptions(IGameOptions opt, byte playerId)
         {
-            killer.SetKillCooldown(FarseerRevealTime.GetFloat());
-            if (!Main.isRevealed[(killer.PlayerId, target.PlayerId)] && !FarseerTimer.ContainsKey(killer.PlayerId))
+            opt.SetVision(false);
+            opt.SetFloat(FloatOptionNames.CrewLightMod, Vision.GetFloat());
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Vision.GetFloat());
+        }
+        public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = OverseerCooldown.GetFloat();
+        public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+        {
+            killer.SetKillCooldown(OverseerRevealTime.GetFloat());
+            if (!Main.isRevealed[(killer.PlayerId, target.PlayerId)] && !OverseerTimer.ContainsKey(killer.PlayerId))
             {
-                FarseerTimer.TryAdd(killer.PlayerId, (target, 0f));
-                NotifyRoles(SpecifySeer: __instance);
+                OverseerTimer.TryAdd(killer.PlayerId, (target, 0f));
+                NotifyRoles(SpecifySeer: killer);
                 RPC.SetCurrentRevealTarget(killer.PlayerId, target.PlayerId);
             }
+            return false;
         }
-        public static void OnFixedUpdate(PlayerControl player)
+        public override void OnFixedUpdate(PlayerControl player)
         {
-            if (!FarseerTimer.ContainsKey(player.PlayerId)) return;
+            if (!OverseerTimer.ContainsKey(player.PlayerId)) return;
 
             var playerId = player.PlayerId;
             if (!player.IsAlive() || Pelican.IsEaten(playerId))
             {
-                FarseerTimer.Remove(playerId);
+                OverseerTimer.Remove(playerId);
                 NotifyRoles(SpecifySeer: player);
                 RPC.ResetCurrentRevealTarget(playerId);
             }
             else
             {
-                var (farTarget, farTime) = FarseerTimer[playerId];
+                var (farTarget, farTime) = OverseerTimer[playerId];
                 
                 if (!farTarget.IsAlive())
                 {
-                    FarseerTimer.Remove(playerId);
+                    OverseerTimer.Remove(playerId);
                 }
-                else if (farTime >= FarseerRevealTime.GetFloat())
+                else if (farTime >= OverseerRevealTime.GetFloat())
                 {
                     player.SetKillCooldown();
-                    FarseerTimer.Remove(playerId);
+                    OverseerTimer.Remove(playerId);
                     Main.isRevealed[(playerId, farTarget.PlayerId)] = true;
                     player.RpcSetRevealtPlayer(farTarget, true);
                     NotifyRoles(SpecifySeer: player);
@@ -145,24 +153,20 @@ namespace TOHE.Roles.Crewmate
                     float dis = Vector2.Distance(player.GetCustomPosition(), farTarget.GetCustomPosition());
                     if (dis <= range)
                     {
-                        FarseerTimer[playerId] = (farTarget, farTime + Time.fixedDeltaTime);
+                        OverseerTimer[playerId] = (farTarget, farTime + Time.fixedDeltaTime);
                     }
                     else
                     {
-                        FarseerTimer.Remove(playerId);
+                        OverseerTimer.Remove(playerId);
                         NotifyRoles(SpecifySeer: player, SpecifyTarget: farTarget, ForceLoop: true);
                         RPC.ResetCurrentRevealTarget(playerId);
 
-                        Logger.Info($"Canceled: {player.GetNameWithRole()}", "Farseer");
+                        Logger.Info($"Canceled: {player.GetNameWithRole()}", "Overseer");
                     }
                 }
             }
         }
-        public static void OnReportDeadBody()
-        {
-            FarseerTimer.Clear();
-        }
-        public static string GetRandomCrewRoleString()
+        public static string GetRandomCrewRoleString() // Random role for trickster
         {
             var rd = IRandom.Instance;
             var randomRole = randomRolesForTrickster[rd.Next(0, randomRolesForTrickster.Count)];
@@ -170,30 +174,22 @@ namespace TOHE.Roles.Crewmate
             //string roleName = GetRoleName(randomRole);
             string RoleText = ColorString(GetRoleColor(randomRole), GetString(randomRole.ToString()));
 
-            return $"<size={fontSize}>{RoleText}</size>";
+            return $"<size={1.5}>{RoleText}</size>";
         }
 
-        public static string GetTaskState()
+        public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
         {
-            var playersWithTasks = Main.PlayerStates.Where(a => a.Value.TaskState.hasTasks).ToArray();
-            if (playersWithTasks.Length == 0)
-            {
-                return "\r\n";
-            }
+            if (seer.Is(CustomRoles.Overseer))
+            if (OverseerTimer.TryGetValue(seer.PlayerId, out var fa_kvp) && fa_kvp.Item1 == seen)
+                return $"<color={GetRoleColorCode(CustomRoles.Overseer)}>○</color>";
 
-            var rd = IRandom.Instance;
-            var randomPlayer = playersWithTasks[rd.Next(0, playersWithTasks.Length)];
-            var taskState = randomPlayer.Value.TaskState;
-
-            Color TextColor;
-            var TaskCompleteColor = Color.green;
-            var NonCompleteColor = Color.yellow;
-            var NormalColor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
-
-            TextColor = Camouflager.AbilityActivated ? Color.gray : NormalColor;
-            string Completed = Camouflager.AbilityActivated ? "?" : $"{taskState.CompletedTasksCount}";
-
-            return $" <size={fontSize}>" + ColorString(TextColor, $"({Completed}/{taskState.AllTasksCount})") + "</size>\r\n";
+            return string.Empty;
         }
+        public override void SetAbilityButtonText(HudManager hud, byte id)
+        {
+            hud.ReportButton.OverrideText(GetString("ReportButtonText"));
+            hud.KillButton.OverrideText(GetString("OverseerKillButtonText"));
+        }
+        public override Sprite KillButtonSprite => CustomButton.Get("prophecies");
     }
 }

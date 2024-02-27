@@ -415,10 +415,10 @@ internal class RPCHandlerPatch
                 Main.isDraw[(RevolutionistId, DrawId)] = drawed;
                 break;
             case CustomRPC.SetRevealedPlayer:
-                byte FarseerId = reader.ReadByte();
+                byte OverseerId = reader.ReadByte();
                 byte RevealId = reader.ReadByte();
                 bool revealed = reader.ReadBoolean();
-                Main.isRevealed[(FarseerId, RevealId)] = revealed;
+                Main.isRevealed[(OverseerId, RevealId)] = revealed;
                 break;
             case CustomRPC.SetNameColorData:
                 NameColorManager.ReceiveRPC(reader);
@@ -1018,9 +1018,6 @@ internal static class RPC
             case CustomRoles.Executioner:
                 Executioner.Add(targetId);
                 break;
-            case CustomRoles.Farseer:
-                Farseer.Add(targetId);
-                break;
             case CustomRoles.Lawyer:
                 Lawyer.Add(targetId);
                 break;
@@ -1050,12 +1047,6 @@ internal static class RPC
                 break;
             case CustomRoles.Sheriff:
                 Sheriff.Add(targetId);
-                break;
-            case CustomRoles.CopyCat:
-                CopyCat.Add(targetId);
-                break;
-            case CustomRoles.Captain:
-                Captain.Add(targetId);
                 break;
             case CustomRoles.GuessMaster:
                 GuessMaster.Add(targetId);
@@ -1095,12 +1086,6 @@ internal static class RPC
                 break;
             case CustomRoles.Necromancer:
                 Necromancer.Add(targetId);
-                break;
-            case CustomRoles.Marshall:
-                Marshall.Add(targetId);
-                break;
-            case CustomRoles.Monitor:
-                Monitor.Add(targetId);
                 break;
             case CustomRoles.LastImpostor:
                 LastImpostor.Add(targetId);
@@ -1193,9 +1178,6 @@ internal static class RPC
             case CustomRoles.Judge:
                 Judge.Add(targetId);
                 break;
-            case CustomRoles.President:
-                President.Add(targetId);
-                break;
             case CustomRoles.Inspector:
                 Inspector.Add(targetId);
                 break;
@@ -1280,9 +1262,6 @@ internal static class RPC
             case CustomRoles.Infectious:
                 Infectious.Add(targetId);
                 break;
-            case CustomRoles.Monarch:
-                Monarch.Add(targetId);
-                break;
             case CustomRoles.Deputy:
                 Deputy.Add(targetId);
                 break;
@@ -1361,9 +1340,6 @@ internal static class RPC
 
             case CustomRoles.Pitfall:
                 Pitfall.Add(targetId);
-                break;
-            case CustomRoles.Swapper: 
-                Swapper.Add(targetId);
                 break;
             case CustomRoles.ChiefOfPolice:
                 ChiefOfPolice.Add(targetId);

@@ -10,6 +10,7 @@ using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using UnityEngine;
+using static TOHE.Utils;
 using TOHE.Roles.Impostor;
 
 namespace TOHE;
@@ -52,6 +53,7 @@ public class PlayerState(byte playerId)
         MainRole = role;
         countTypes = role.GetCountTypes();
         Role = role.GetRoleClass();
+
 
         var pc = Utils.GetPlayerById(PlayerId);
 
@@ -415,6 +417,28 @@ public class TaskState
 
         Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()}: TaskCounts = {CompletedTasksCount}/{AllTasksCount}", "TaskState.Init");
     }
+    public static string GetTaskState()
+    {
+        var playersWithTasks = Main.PlayerStates.Where(a => a.Value.TaskState.hasTasks).ToArray();
+        if (playersWithTasks.Length == 0)
+        {
+            return "\r\n";
+        }
+
+        var rd = IRandom.Instance;
+        var randomPlayer = playersWithTasks[rd.Next(0, playersWithTasks.Length)];
+        var taskState = randomPlayer.Value.TaskState;
+
+        Color TextColor;
+        var TaskCompleteColor = Color.green;
+        var NonCompleteColor = Color.yellow;
+        var NormalColor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
+
+        TextColor = Camouflager.AbilityActivated ? Color.gray : NormalColor;
+        string Completed = Camouflager.AbilityActivated ? "?" : $"{taskState.CompletedTasksCount}";
+
+        return $" <size={1.5}>" + ColorString(TextColor, $"({Completed}/{taskState.AllTasksCount})") + "</size>\r\n";
+    }
     public void Update(PlayerControl player)
     {
         Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()}: UpdateTask", "TaskState.Update");
@@ -495,10 +519,6 @@ public class TaskState
 
                 case CustomRoles.Bastion when player.IsAlive():
                     Main.BastionNumberOfAbilityUses += Options.BastionAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    break;
-
-                case CustomRoles.Captain when player.IsAlive():
-                    Captain.OnTaskComplete(player);
                     break;
 
                 case CustomRoles.Divinator when player.IsAlive():

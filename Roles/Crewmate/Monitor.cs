@@ -5,16 +5,19 @@ using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Utils;
 using static TOHE.Translator;
+using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Crewmate;
 
 // 参考 : https://github.com/ykundesu/SuperNewRoles/blob/master/SuperNewRoles/Mode/SuperHostRoles/BlockTool.cs
 // 贡献：https://github.com/Yumenopai/TownOfHost_Y/tree/Monitor
-internal class Monitor
+internal class Monitor : RoleBase
 {
     private static readonly int Id = 12500;
     private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    public static bool On = false;
+    public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
 
     private static OptionItem CanCheckCamera;
     public static OptionItem CanVent;
@@ -29,26 +32,31 @@ internal class Monitor
         CanCheckCamera = BooleanOptionItem.Create(Id + 10, "CanCheckCamera", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Monitor]);
         CanVent = BooleanOptionItem.Create(Id + 14, "CanVent", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Monitor]);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         IsAdminWatch = false;
         IsVitalWatch = false;
         IsDoorLogWatch = false;
         IsCameraWatch = false;
-        IsEnable = false;
+        On = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
+        On = true;
     }
-    public static void Remove(byte playerId)
+    public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
     }
 
     private static int Count = 0;
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    {
+        AURoleOptions.EngineerCooldown = 0f;
+        AURoleOptions.EngineerInVentMaxTime = 0f;
+    }
     public static void FixedUpdate()
     {
         Count--; if (Count > 0) return; Count = 5;
@@ -141,8 +149,9 @@ internal class Monitor
             }
         }
     }
-    public static string GetSuffix()
+    public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
+        if (!seer.Is(CustomRoles.Monitor) && (!seen.Is(CustomRoles.Monitor) || seen == null)) return "";
         StringBuilder sb = new();
         if (IsAdminWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Monitor), "★")).Append(ColorString(GetRoleColor(CustomRoles.Monitor), GetString("AdminWarning")));
         if (IsVitalWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Monitor), "★")).Append(ColorString(GetRoleColor(CustomRoles.Monitor), GetString("VitalsWarning")));
