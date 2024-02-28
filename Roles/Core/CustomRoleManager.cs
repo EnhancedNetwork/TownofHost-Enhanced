@@ -169,7 +169,7 @@ public static class CustomRoleManager
         //CustomRoles.Merchant => new Merchant(),
         CustomRoles.Monitor => new Monitor(),
         //CustomRoles.Mole => new Mole(),
-        //CustomRoles.Monarch => new Monarch(),
+        CustomRoles.Monarch => new Monarch(),
         //CustomRoles.Mortician => new Mortician(),
         //CustomRoles.NiceEraser => new NiceEraser(),
         //CustomRoles.NiceGuesser => new NiceGuesser(),
