@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.Core;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;

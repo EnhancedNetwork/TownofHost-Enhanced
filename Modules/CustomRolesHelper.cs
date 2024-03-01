@@ -1892,7 +1892,6 @@ public static class CustomRolesHelper
         }
     }
     public static bool IsEnable(this CustomRoles role) => role.GetCount() > 0;
-    public static bool IsClassEnable(this CustomRoles role) => Main.PlayerStates.Any(x => x.Value.MainRole == role && x.Value.Role.IsEnable);
     public static CountTypes GetCountTypes(this CustomRoles role)
        => role switch
        {

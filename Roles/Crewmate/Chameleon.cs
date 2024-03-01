@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using TOHE.Roles.Core;
 using static TOHE.Utils;
 using static TOHE.Options;
 using static TOHE.Translator;
