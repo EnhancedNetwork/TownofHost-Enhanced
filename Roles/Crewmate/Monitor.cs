@@ -153,7 +153,8 @@ internal class Monitor : RoleBase
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
-        if (!seer.Is(CustomRoles.Monitor) && (!seen.Is(CustomRoles.Monitor) || seen == null)) return "";
+        if (isForMeeting) return "";
+
         StringBuilder sb = new();
         if (IsAdminWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Monitor), "★")).Append(ColorString(GetRoleColor(CustomRoles.Monitor), GetString("AdminWarning")));
         if (IsVitalWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Monitor), "★")).Append(ColorString(GetRoleColor(CustomRoles.Monitor), GetString("VitalsWarning")));

@@ -3290,14 +3290,12 @@ class FixedUpdateInNormalGamePatch
                     if (seer.Is(CustomRoles.AntiAdminer))
                     {
                         AntiAdminer.FixedUpdateLowLoad();
-
-                        if (target.AmOwner)
-                            Suffix.Append(AntiAdminer.GetSuffix());
                     }
-                    if (seer.Is(CustomRoles.Monitor))
+                    else if (seer.Is(CustomRoles.Monitor))
                     {
                         Monitor.FixedUpdate();
                     }
+
                     if (player.Is(CustomRoles.TimeMaster))
                     {
                         if (Main.TimeMasterInProtect.TryGetValue(player.PlayerId, out var vtime) && vtime + Options.TimeMasterSkillDuration.GetInt() < Utils.GetTimeStamp())

@@ -2095,10 +2095,6 @@ public static class Utils
                             SelfSuffix.Append(Fireworker.GetStateText(seer));
                             break;
 
-                        case CustomRoles.AntiAdminer:
-                            SelfSuffix.Append(AntiAdminer.GetSuffix());
-                            break;
-
                         case CustomRoles.Snitch:
                             SelfSuffix.Append(Snitch.GetSnitchArrow(seer));
                             break;

@@ -62,6 +62,8 @@ internal class Coroner : RoleBase
         playerIdList.Remove(playerId);
         UseLimit.Remove(playerId);
         CoronerTargets.Remove(playerId);
+
+        CustomRoleManager.CheckDeadBodyOthers.Remove(CheckDeadBody);
     }
 
     private static void SendRPC(byte playerId, bool add, Vector3 loc = new())
