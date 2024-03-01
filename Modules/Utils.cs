@@ -25,7 +25,6 @@ using UnityEngine;
 using static TOHE.Translator;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
-using static UnityEngine.RemoteConfigSettingsHelper;
 
 namespace TOHE;
 
@@ -2014,7 +2013,7 @@ public static class Utils
             //logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":START");
 
             var seerRole = seer.GetCustomRole();
-            var seerRoleClass = Main.PlayerStates[seer.PlayerId].Role;
+            var seerRoleClass = seer.GetRoleClass();
 
             // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
             if (!CamouflageIsForMeeting && MushroomMixupIsActive && seer.IsAlive() && !seer.Is(CustomRoleTypes.Impostor) && Main.ResetCamPlayerList.Contains(seer.PlayerId))

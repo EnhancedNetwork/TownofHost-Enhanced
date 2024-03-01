@@ -146,9 +146,9 @@ public abstract class RoleBase
     public virtual bool OnPressReportButton(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer) => reporter.IsAlive();
 
     /// <summary>
-    /// When the meeting start by report dead body
+    /// When the meeting start by press button
     /// </summary>
-    public virtual void OnPressMeetingButton(PlayerControl reporter)
+    public virtual void OnPressEmergencyButton(PlayerControl reporter)
     { }
 
     /// <summary>
@@ -214,7 +214,7 @@ public abstract class RoleBase
     public virtual string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;
     public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
     public virtual string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;
-    public virtual bool KnowRoletarget(PlayerControl seer, PlayerControl target) => false;
+    public virtual bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => false;
     public virtual string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => string.Empty;
     public virtual bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => false;
 

@@ -2250,9 +2250,9 @@ class ReportDeadBodyPatch
         // Hereinafter, it is assumed that the button is confirmed to be pressed
         //=============================================
 
-        if (target == null) //Meeting button
+        if (target == null) // Emergency Button
         {
-            player.GetRoleClass()?.OnPressMeetingButton(player);
+            player.GetRoleClass()?.OnPressEmergencyButton(player);
 
             if (Quizmaster.IsEnable)
                 Quizmaster.OnButtonPress(player);

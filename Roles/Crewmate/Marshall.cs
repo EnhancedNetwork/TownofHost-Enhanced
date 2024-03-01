@@ -38,7 +38,7 @@ internal class Marshall : RoleBase
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
         => IsMarshallTarget(seer) && GetExpose(target) ? Utils.ColorString(RoleColor, "★") : string.Empty;
 
-    public override bool KnowRoletarget(PlayerControl seer, PlayerControl target) => target.GetPlayerTaskState().IsTaskFinished && seer.Is(CustomRoleTypes.Crewmate) && target.Is(CustomRoles.Marshall);
+    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => target.GetPlayerTaskState().IsTaskFinished && seer.Is(CustomRoleTypes.Crewmate) && target.Is(CustomRoles.Marshall);
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => (seer.Is(CustomRoleTypes.Crewmate) && target.Is(CustomRoles.Marshall) && target.GetPlayerTaskState().IsTaskFinished);
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc)
     {

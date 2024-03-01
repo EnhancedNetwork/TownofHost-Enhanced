@@ -61,7 +61,7 @@ namespace TOHE.Roles.Crewmate
             return MayorAdditionalVote.GetInt();
         }
 
-        public override void OnPressMeetingButton(PlayerControl reporter)
+        public override void OnPressEmergencyButton(PlayerControl reporter)
         {
             if (reporter.Is(CustomRoles.Mayor))
             {
@@ -101,8 +101,8 @@ namespace TOHE.Roles.Crewmate
             }
             return false;
         }
-        public override bool KnowRoletarget(PlayerControl seer, PlayerControl target) => MayorRevealWhenDoneTasks.GetBool() && target.Is(CustomRoles.Mayor) && target.GetPlayerTaskState().IsTaskFinished;
-        public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoletarget(seer, target);
+        public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => MayorRevealWhenDoneTasks.GetBool() && target.Is(CustomRoles.Mayor) && target.GetPlayerTaskState().IsTaskFinished;
+        public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
         public override void SetAbilityButtonText(HudManager hud, byte id)
         {
             hud.ReportButton.OverrideText(GetString("ReportButtonText"));
