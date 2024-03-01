@@ -1,17 +1,21 @@
 ﻿using Hazel;
 using System.Collections.Generic;
 using System.Linq;
-
 using static TOHE.Options;
 using static TOHE.Translator;
+using Il2CppSystem.Text;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
-public static class Captain
+internal class Captain : RoleBase
 {
-    private static readonly int Id = 26300;
+    private const int Id = 26300;
     //private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    public static bool On = false;
+    public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+
 
     private static Dictionary<byte, float> OriginalSpeed = [];
     public static Dictionary<byte, List<byte>> CaptainVoteTargets = [];
@@ -46,18 +50,18 @@ public static class Captain
         OverrideTasksData.Create(Id + 21, TabGroup.CrewmateRoles, CustomRoles.Captain);
     }
 
-    public static void Init()
+    public override void Init()
     {
         //playerIdList = [];
-        IsEnable = false;
+        On = false;
         OriginalSpeed = [];
         CaptainVoteTargets = [];
     }
 
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         //playerIdList.Add(playerId);
-        IsEnable = true;
+        On = true;
     }
     private static void SendRPCSetSpeed(byte targetId)
     {
@@ -135,9 +139,9 @@ public static class Captain
         else CaptainVoteTargets.Clear();
     }
 
-    public static void OnTaskComplete(PlayerControl pc)
+    public override void OnTaskComplete(PlayerControl pc, int y, int z)
     {
-        if (pc == null) return;
+        if (pc == null || !pc.IsAlive()) return;
         if (pc.GetPlayerTaskState().CompletedTasksCount >= OptionTaskRequiredToReveal.GetInt()) Utils.NotifyRoles(SpecifyTarget: pc, ForceLoop: true);
         if (pc.GetPlayerTaskState().CompletedTasksCount < OptionTaskRequiredToSlow.GetInt()) return;
         var allTargets = Main.AllAlivePlayerControls.Where(x => (x != null) && (!OriginalSpeed.ContainsKey(x.PlayerId)) &&
@@ -191,7 +195,7 @@ public static class Captain
         var addon = AllSubRoles[rand.Next(0, AllSubRoles.Count)];
         return addon;
     }
-    public static void OnExile(GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(PlayerControl x, GameData.PlayerInfo exiled)
     {
         if (exiled == null) return;
         if (!exiled.GetCustomRole().Is(CustomRoles.Captain)) return;
@@ -211,7 +215,7 @@ public static class Captain
         CaptainVoteTargets.Clear();
         SendRPCVoteRemove();
     }
-    public static void OnReportDeadBody()
+    public override void OnReportDeadBody(PlayerControl y, PlayerControl x)
     {
         foreach (byte target in OriginalSpeed.Keys.ToArray())
         {
@@ -223,6 +227,26 @@ public static class Captain
 
         OriginalSpeed.Clear();
         SendRPCRevertAllSpeed();
+    }
+    public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+    {
+        if ((target.PlayerId != seer.PlayerId) && (target.Is(CustomRoles.Captain) && OptionCrewCanFindCaptain.GetBool()) &&
+                                (target.GetPlayerTaskState().CompletedTasksCount >= OptionTaskRequiredToReveal.GetInt()) &&
+                                (seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) || (seer.Is(CustomRoles.Madmate) && OptionMadmateCanFindCaptain.GetBool())))
+            return ColorString(GetRoleColor(CustomRoles.Captain), " ☆");
+        return string.Empty;
+    }
+    public override void OnVote(PlayerControl pc, PlayerControl voteTarget)
+    {
+        if (voteTarget.Is(CustomRoles.Captain))
+        {
+            if (!CaptainVoteTargets.ContainsKey(voteTarget.PlayerId)) CaptainVoteTargets[voteTarget.PlayerId] = [];
+            if (!CaptainVoteTargets[voteTarget.PlayerId].Contains(pc.PlayerId))
+            {
+                CaptainVoteTargets[voteTarget.PlayerId].Add(pc.PlayerId);
+                SendRPCVoteAdd(voteTarget.PlayerId, pc.PlayerId);
+            }
+        }
     }
 }
 

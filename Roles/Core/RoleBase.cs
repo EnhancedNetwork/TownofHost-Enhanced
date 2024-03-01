@@ -1,4 +1,7 @@
 ﻿using AmongUs.GameOptions;
+using System.Text;
+using TOHE.Roles.Crewmate;
+using UnityEngine;
 
 namespace TOHE;
 
@@ -14,6 +17,11 @@ public abstract class RoleBase
     /// </summary>
     public abstract void Add(byte playerId);
 
+    /// <summary>
+    /// If role has to be removed from player
+    /// </summary>
+    public virtual void Remove(byte playerId)
+    { }
     /// <summary>
     /// Make a bool and apply IsEnable => {Bool};
     /// </summary>
@@ -37,7 +45,7 @@ public abstract class RoleBase
     /// <summary>
     /// A generic method to set if the role can use sabotage.
     /// </summary>
-    public virtual bool CanUseSabotage(PlayerControl pc) =>  pc.Is(CustomRoleTypes.Impostor);
+    public virtual bool CanUseSabotage(PlayerControl pc) => pc.Is(CustomRoleTypes.Impostor);
 
     /// <summary>
     /// When the player presses the sabotage button
@@ -63,12 +71,16 @@ public abstract class RoleBase
     /// </summary>
     public virtual void OnFixedUpdate(PlayerControl pc)
     { }
+
     /// <summary>
     /// A local method to check conditions during gameplay, which aren't prioritized
     /// </summary>
     public virtual void OnFixedUpdateLowLoad(PlayerControl pc)
     { }
 
+    /// <summary>
+    /// Player completes a task
+    /// </summary>
     public virtual void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
     { }
 
@@ -81,7 +93,7 @@ public abstract class RoleBase
     /// <summary>
     /// A method for activating actions when role is already in vent
     /// </summary>
-    public virtual void OnCoEnterVent(PlayerPhysics physics, Vent vent)
+    public virtual void OnCoEnterVent(PlayerPhysics physics, int ventId)
     { }
 
     /// <summary>
@@ -89,7 +101,6 @@ public abstract class RoleBase
     /// </summary>
     public virtual void OnExitVent(PlayerControl pc, Vent vent)
     { }
-
     /// <summary>
     /// A generic method to check a Guardian Angel protecting someone.
     /// </summary>
@@ -176,12 +187,37 @@ public abstract class RoleBase
     { }
 
     /// <summary>
+    /// Set PlayerName text for the role
+    /// </summary>
+    public virtual string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false) => string.Empty;
+
+    /// <summary>
+    /// A method to determine conditions on voter/targetvote
+    /// </summary>
+    public virtual void OnVote(PlayerControl pc, PlayerControl voteTarget)
+    { }
+
+    /// <summary>
     /// Set text for Kill/Shapeshift/Report/Vent/Protect button
     /// </summary>
     public virtual void SetAbilityButtonText(HudManager hud, byte id) => hud.KillButton?.OverrideText(Translator.GetString("KillButtonText"));
-
+    public virtual Sprite KillButtonSprite { get; }
+    public virtual Sprite VentButtonSprite { get; }
+    public virtual Sprite AbilityButtonSprite { get; }
+    public virtual Sprite ReportButtonSprite { get; }
     public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
     public virtual string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;
     public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
     public virtual string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;
+    public virtual bool KnowRoletarget(PlayerControl seer, PlayerControl target) => false;
+    public virtual bool KnowTargetRoleColor(PlayerControl seer, PlayerControl target) => false;
+    public virtual string ThisKnowTargetsColor(PlayerControl seer, PlayerControl target) => string.Empty;
+
+    /// <summary>
+    /// Gets & Appends the role's skill limit
+    /// </summary>
+    public virtual string GetProgressText(byte PlayerId) => string.Empty;
+    public virtual void AppendProgressText(byte playerId, bool comms, StringBuilder ProgressText)
+    { }
+    public virtual int CalcVote(PlayerVoteArea PVA) => 0;
 }

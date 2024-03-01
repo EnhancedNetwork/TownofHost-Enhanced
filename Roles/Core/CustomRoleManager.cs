@@ -10,7 +10,7 @@ namespace TOHE.Roles.Core;
 
 public static class CustomRoleManager
 {
-    public static RoleBase GetRoleClass(this CustomRoles role) => role switch
+    public static RoleBase CreateRoleClass(this CustomRoles role) => role switch
     {
         // ==== Vanilla ====
         CustomRoles.Crewmate => new VanillaRole(),
@@ -119,21 +119,22 @@ public static class CustomRoleManager
         //CustomRoles.Analyzer => new Analyzer(),
         //CustomRoles.Autocrat => new Autocrat(),
         //CustomRoles.Beacon => new Beacon(),
-        //CustomRoles.Benefactor => new Benefactor(),
+        CustomRoles.Benefactor => new Benefactor(),
         //CustomRoles.Bodyguard => new Bodyguard(),
         //CustomRoles.CameraMan => new CameraMan(),
         //CustomRoles.CyberStar => new CyberStar(),
-        //CustomRoles.Chameleon => new Chameleon(),
+        CustomRoles.Chameleon => new Chameleon(),
         //CustomRoles.Cleaner => new Cleaner(),
         //CustomRoles.Cleanser => new Cleanser(),
-        //CustomRoles.CopyCat => new CopyCat(),
-        //CustomRoles.Bloodhound => new Bloodhound(),
+        CustomRoles.Captain => new Captain(),
+        CustomRoles.CopyCat => new CopyCat(),
+        CustomRoles.Coroner => new Coroner(),
         //CustomRoles.Crusader => new Crusader(),
         //CustomRoles.Demolitionist => new Demolitionist(),
         //CustomRoles.Deputy => new Deputy(),
         //CustomRoles.Detective => new Detective(),
         //CustomRoles.Detour => new Detour(),
-        //CustomRoles.Dictator => new Dictator(),
+        CustomRoles.Dictator => new Dictator(),
         //CustomRoles.Doctor => new Doctor(),
         //CustomRoles.DonutDelivery => new DonutDelivery(),
         //CustomRoles.Doormaster => new Doormaster(),
@@ -144,7 +145,7 @@ public static class CustomRoleManager
         //CustomRoles.Enigma => new Enigma(),
         //CustomRoles.Escort => new Escort(),
         //CustomRoles.Express => new Express(),
-        //CustomRoles.Farseer => new Farseer(),
+        CustomRoles.Overseer => new Overseer(),
         //CustomRoles.Divinator => new Divinator(),
         //CustomRoles.Gaulois => new Gaulois(),
         //CustomRoles.Glitch => new Glitch(),
@@ -158,25 +159,26 @@ public static class CustomRoleManager
         //CustomRoles.Judge => new Judge(),
         //CustomRoles.Needy => new Needy(),
         //CustomRoles.Lighter => new Lighter(),
-        //CustomRoles.Lookout => new Lookout(),
+        CustomRoles.Lookout => new Lookout(),
         //CustomRoles.Luckey => new Luckey(),
-        //CustomRoles.Marshall => new Marshall(),
-        //CustomRoles.Mayor => new Mayor(),
+        CustomRoles.Marshall => new Marshall(),
+        CustomRoles.Mayor => new Mayor(),
         //CustomRoles.SabotageMaster => new SabotageMaster(),
         //CustomRoles.Medic => new Medic(),
         //CustomRoles.Mediumshiper => new Mediumshiper(),
         //CustomRoles.Merchant => new Merchant(),
-        //CustomRoles.Monitor => new Monitor(),
+        CustomRoles.Monitor => new Monitor(),
         //CustomRoles.Mole => new Mole(),
-        //CustomRoles.Monarch => new Monarch(),
+        CustomRoles.Monarch => new Monarch(),
         //CustomRoles.Mortician => new Mortician(),
         //CustomRoles.NiceEraser => new NiceEraser(),
         //CustomRoles.NiceGuesser => new NiceGuesser(),
         //CustomRoles.NiceHacker => new NiceHacker(),
-        //CustomRoles.NiceSwapper => new NiceSwapper(),
+        CustomRoles.Swapper => new Swapper(),
         //CustomRoles.Nightmare => new Nightmare(),
         //CustomRoles.Observer => new Observer(),
         //CustomRoles.Oracle => new Oracle(),
+        CustomRoles.President => new President(),
         //CustomRoles.Paranoia => new Paranoia(),
         //CustomRoles.Philantropist => new Philantropist(),
         //CustomRoles.Psychic => new Psychic(),
@@ -311,7 +313,7 @@ public static class CustomRoleManager
     public static HashSet<Action<PlayerControl>> OnFixedUpdateLowLoadOthers = [];
     public static void OnFixedUpdateLowLoad(PlayerControl player)
     {
-        player.GetCustomRole().GetRoleClass()?.OnFixedUpdateLowLoad(player);
+        Main.PlayerStates[player.PlayerId]?.Role?.OnFixedUpdateLowLoad(player);
 
         if (OnFixedUpdateLowLoadOthers.Count <= 0) return;
         //Execute other viewpoint processing if any

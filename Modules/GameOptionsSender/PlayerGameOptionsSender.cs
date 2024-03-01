@@ -131,13 +131,8 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Crewpostor:
             case CustomRoles.Taskinator:
           //  case CustomRoles.Jester:
-            case CustomRoles.Monitor:
                 AURoleOptions.EngineerCooldown = 0f;
                 AURoleOptions.EngineerInVentMaxTime = 0f;
-                break;
-            case CustomRoles.Chameleon:
-                AURoleOptions.EngineerCooldown = Chameleon.ChameleonCooldown.GetFloat() + 1f;
-                AURoleOptions.EngineerInVentMaxTime = 1f;
                 break;
             case CustomRoles.Alchemist:
                 AURoleOptions.EngineerCooldown = Alchemist.VentCooldown.GetFloat();
@@ -184,7 +179,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Medic:
             case CustomRoles.Crusader:
             case CustomRoles.Provocateur:
-            case CustomRoles.Monarch:
             case CustomRoles.Deputy:
             case CustomRoles.Investigator:
             case CustomRoles.Counterfeiter:
@@ -215,13 +209,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Doctor:
                 AURoleOptions.ScientistCooldown = 0f;
                 AURoleOptions.ScientistBatteryCharge = Options.DoctorTaskCompletedBatteryCharge.GetFloat();
-                break;
-            case CustomRoles.Mayor:
-                AURoleOptions.EngineerCooldown =
-                    !Main.MayorUsedButtonCount.TryGetValue(player.PlayerId, out var count) || count < Options.MayorNumOfUseButton.GetInt()
-                    ? opt.GetInt(Int32OptionNames.EmergencyCooldown)
-                    : 300f;
-                AURoleOptions.EngineerInVentMaxTime = 1;
                 break;
          /* case CustomRoles.Paranoia:
                 AURoleOptions.EngineerCooldown =
@@ -427,11 +414,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
             case CustomRoles.Disperser:
                 Disperser.ApplyGameOptions();
-                break;
-            case CustomRoles.Farseer:
-                opt.SetVision(false);
-                opt.SetFloat(FloatOptionNames.CrewLightMod, Farseer.Vision.GetFloat());
-                opt.SetFloat(FloatOptionNames.ImpostorLightMod, Farseer.Vision.GetFloat());
                 break;
             case CustomRoles.Addict:
                 AURoleOptions.EngineerCooldown = Addict.VentCooldown.GetFloat();

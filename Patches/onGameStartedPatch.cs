@@ -88,7 +88,6 @@ internal class ChangeRoleSettings
             Main.CheckShapeshift = [];
             Main.ShapeshiftTarget = [];
             Main.SpeedBoostTarget = [];
-            Main.MayorUsedButtonCount = [];
             Main.ParaUsedButtonCount = [];
             Main.MarioVentCount = [];
             Main.VeteranInProtect = [];
@@ -222,8 +221,6 @@ internal class ChangeRoleSettings
             Doppelganger.Init();
             RiftMaker.Init();
             Sheriff.Init();
-            CopyCat.Init();
-            Captain.Init();
             GuessMaster.Init();
             Cleanser.Init();
             SwordsMan.Init();
@@ -233,7 +230,6 @@ internal class ChangeRoleSettings
             Vampire.Init();
             Vampiress.Init();
             Poisoner.Init();
-            Monitor.Init();
             TimeManager.Init();
             LastImpostor.Init();
             TargetArrow.Init();
@@ -253,7 +249,6 @@ internal class ChangeRoleSettings
             Observer.Init();
             Collector.Init();
             Clumsy.Init();
-            Benefactor.Init();
             Taskinator.Init();
             QuickShooter.Init();
             Kamikaze.Init();
@@ -274,7 +269,6 @@ internal class ChangeRoleSettings
             Pickpocket.Init();
             Hangman.Init();
             Judge.Init();
-            President.Init();
             Mortician.Init();
             Mediumshiper.Init();
             Swooper.Init();
@@ -295,14 +289,10 @@ internal class ChangeRoleSettings
             Antidote.Init();
             Imitator.Init();
             Medusa.Init();
-            Marshall.Init();
             Amnesiac.Init();
-            Farseer.Init();
             Fool.Init();
             Infectious.Init();
-            Monarch.Init();
             Virus.Init();
-            Bloodhound.Init();
             Tracker.Init();
             Burst.Init();
             Merchant.Init();
@@ -321,7 +311,6 @@ internal class ChangeRoleSettings
             Alchemist.Init();
             PlagueDoctor.Init();
             Penguin.Init();
-            Chameleon.Init();
             Wildling.Init();
             Morphling.Init();
             Inspector.Init(); // *giggle* party cop
@@ -340,7 +329,6 @@ internal class ChangeRoleSettings
             Necromancer.Init();
             Pitfall.Init();
             Agitater.Init();
-            Swapper.Init();
             Enigma.Init();
             ChiefOfPolice.Init();
             Cyber.Init();
@@ -657,13 +645,12 @@ internal class SelectRolesPatch
                         foreach (var ar in Main.AllPlayerControls)
                             Main.isDraw.Add((pc.PlayerId, ar.PlayerId), false);
                         break;
-                    case CustomRoles.Farseer:
+                    case CustomRoles.Overseer:
                         foreach (var ar in Main.AllPlayerControls)
                         { 
                             Main.isRevealed.Add((pc.PlayerId, ar.PlayerId), false);
                         }
-                        Farseer.RandomRole.Add(pc.PlayerId, Farseer.GetRandomCrewRoleString());
-                        Farseer.Add(pc.PlayerId);
+                        Overseer.RandomRole.Add(pc.PlayerId, Overseer.GetRandomCrewRoleString());
                         break;
                     case CustomRoles.Executioner:
                         Executioner.Add(pc.PlayerId);
@@ -698,17 +685,11 @@ internal class SelectRolesPatch
                     case CustomRoles.Sheriff:
                         Sheriff.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Marshall:
-                        Marshall.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Glitch:
                         Glitch.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Huntsman:
                         Huntsman.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.CopyCat:
-                        CopyCat.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Cleanser:
                         Cleanser.Add(pc.PlayerId);
@@ -718,12 +699,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.QuickShooter:
                         QuickShooter.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Mayor:
-                        Main.MayorUsedButtonCount[pc.PlayerId] = 0;
-                        break;
-                    case CustomRoles.Captain:
-                        Captain.Add(pc.PlayerId);
                         break;
                     case CustomRoles.GuessMaster:
                         GuessMaster.Add(pc.PlayerId);
@@ -749,9 +724,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Solsticer:
                         Solsticer.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Monitor:
-                        Monitor.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Mario:
                         Main.MarioVentCount[pc.PlayerId] = 0;
@@ -807,9 +779,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Taskinator:
                         Taskinator.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Benefactor:
-                        Benefactor.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Observer:
                         Observer.Add(pc.PlayerId);
                         break;
@@ -834,9 +803,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Judge:
                         Judge.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.President:
-                        President.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Mortician:
                         Mortician.Add(pc.PlayerId);
@@ -870,9 +836,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.SchrodingersCat:
                         SchrodingersCat.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Chameleon:
-                        Chameleon.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Alchemist:
                         Alchemist.Add(pc.PlayerId);
@@ -913,9 +876,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Infectious:
                         Infectious.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Monarch:
-                        Monarch.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Deputy:
                         Deputy.Add(pc.PlayerId);
                         break;
@@ -927,9 +887,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Wildling:
                         Wildling.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Bloodhound:
-                        Bloodhound.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Tracker:
                         Tracker.Add(pc.PlayerId);
@@ -996,9 +953,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Pitfall:
                         Pitfall.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Swapper:
-                        Swapper.Add(pc.PlayerId);
                         break;
                     case CustomRoles.ChiefOfPolice:
                         ChiefOfPolice.Add(pc.PlayerId);

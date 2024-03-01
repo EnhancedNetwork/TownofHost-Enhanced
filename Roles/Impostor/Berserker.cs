@@ -63,6 +63,10 @@ internal class Berserker : RoleBase
         BerserkerKillMax[playerId] = 0;
         On = true;
     }
+    public override void Remove(byte playerId)
+    {
+        BerserkerKillMax.Remove(playerId);
+    }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = BerserkerKillCooldown.GetFloat();
 
