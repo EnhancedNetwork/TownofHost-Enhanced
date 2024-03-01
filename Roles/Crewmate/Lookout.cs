@@ -34,7 +34,5 @@ namespace TOHE.Roles.Crewmate
             if (!seer.IsAlive() || !seen.IsAlive()) return string.Empty;
             return ColorString(GetRoleColor(CustomRoles.Lookout), " " + seen.PlayerId.ToString()) + " " + TargetPlayerName;
         }
-
-
     }
 }

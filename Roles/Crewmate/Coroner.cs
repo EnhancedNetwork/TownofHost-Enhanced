@@ -2,13 +2,13 @@
 {
     using Hazel;
     using System;
-    using MS.Internal.Xml.XPath;
     using System.Collections.Generic;
     using System.Text;
     using UnityEngine;
     using static TOHE.Options;
     using static TOHE.Translator;
     using static TOHE.Utils;
+    using TOHE.Roles.Core;
 
     internal class Coroner : RoleBase
     {
@@ -54,6 +54,8 @@
             UseLimit.Add(playerId, UseLimitOpt.GetInt());
             CoronerTargets.Add(playerId, []);
             On = true;
+
+            CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
         }
         public override void Remove(byte playerId)
         {
@@ -75,7 +77,7 @@
             }
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
-        public static void SendRPCLimit(byte playerId, int operate, byte targetId = 0xff)
+        private static void SendRPCLimit(byte playerId, int operate, byte targetId = 0xff)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
             writer.WritePacked((int)CustomRoles.Coroner);
@@ -105,7 +107,7 @@
             UseLimit[pc.PlayerId] += CoronerAbilityUseGainWithEachTaskCompleted.GetFloat();
             SendRPCLimit(pc.PlayerId, operate: 2);
         }
-        public static void SendRPCKiller(byte playerId, byte killerId, bool add)
+        private static void SendRPCKiller(byte playerId, byte killerId, bool add)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCoronerkKillerArrow, SendOption.Reliable, -1);
             writer.Write(playerId);
@@ -144,28 +146,13 @@
             }
         }
 
-        public override bool OnPressReportButton(PlayerControl reporter, PlayerControl thisTarget)
+        public override bool OnPressReportButton(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
         {
             if (reporter.Is(CustomRoles.Coroner))
             {
-                if (thisTarget != null)
+                if (killer != null)
                 {
-                    foreach (var apc in playerIdList.ToArray())
-                    {
-                        LocateArrow.RemoveAllTarget(apc);
-                        SendRPC(apc, false);
-                    }
-
-                    foreach (var Coroner in CoronerTargets)
-                    {
-                        foreach (var target in Coroner.Value.ToArray())
-                        {
-                            TargetArrow.Remove(Coroner.Key, target);
-                            SendRPCKiller(Coroner.Key, target, add: false);
-                        }
-
-                        CoronerTargets[Coroner.Key].Clear();
-                    }
+                    FindKiller(reporter, deadBody, killer);
                 }
                 else
                 {
@@ -175,20 +162,7 @@
             return false;
         }
 
-        public override void OnPlayerDead(PlayerControl AMOGUS, PlayerControl target)
-        {
-            if (!ArrowsPointingToDeadBody.GetBool()) return;
-
-            foreach (var pc in playerIdList.ToArray())
-            {
-                var player = Utils.GetPlayerById(pc);
-                if (player == null || !player.IsAlive()) continue;
-                LocateArrow.Add(pc, target.transform.position);
-                SendRPC(pc, true, target.transform.position);
-            }
-        }
-
-        public override bool CheckReportDeadBody(PlayerControl pc, GameData.PlayerInfo deadBody, PlayerControl killer)
+        private static bool FindKiller(PlayerControl pc, GameData.PlayerInfo deadBody, PlayerControl killer)
         {
             if (CoronerTargets[pc.PlayerId].Contains(killer.PlayerId))
             {
@@ -226,6 +200,39 @@
             return true;
         }
 
+        public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+        {
+            foreach (var apc in playerIdList.ToArray())
+            {
+                LocateArrow.RemoveAllTarget(apc);
+                SendRPC(apc, false);
+            }
+
+            foreach (var bloodhound in CoronerTargets)
+            {
+                foreach (var tar in bloodhound.Value.ToArray())
+                {
+                    TargetArrow.Remove(bloodhound.Key, tar);
+                    SendRPCKiller(bloodhound.Key, tar, add: false);
+                }
+
+                CoronerTargets[bloodhound.Key].Clear();
+            }
+        }
+
+        private void CheckDeadBody(PlayerControl target)
+        {
+            if (!ArrowsPointingToDeadBody.GetBool()) return;
+
+            foreach (var pc in playerIdList.ToArray())
+            {
+                var player = GetPlayerById(pc);
+                if (player == null || !player.IsAlive()) continue;
+                LocateArrow.Add(pc, target.transform.position);
+                SendRPC(pc, true, target.transform.position);
+            }
+        }
+
         public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
         {
             if (!seer.Is(CustomRoles.Coroner)) return "";
@@ -237,11 +244,11 @@
                 foreach (var targetId in CoronerTargets[seer.PlayerId])
                 {
                     var arrow = TargetArrow.GetArrows(seer, targetId);
-                    arrows += Utils.ColorString(seer.GetRoleColor(), arrow);
+                    arrows += ColorString(seer.GetRoleColor(), arrow);
                 }
                 return arrows;
             }
-            return Utils.ColorString(Color.white, LocateArrow.GetArrows(seer));
+            return ColorString(Color.white, LocateArrow.GetArrows(seer));
         }
         public override void AppendProgressText(byte playerId, bool comms, StringBuilder ProgressText)
         {

@@ -55,7 +55,7 @@ internal class Swapper : RoleBase
         playerIdList.Remove(playerId);
         Swappermax.Remove(playerId);
     }
-    public override string GetProgressText(byte playerId) => Utils.ColorString((Swappermax.TryGetValue(playerId, out var x) && x >= 1) ? Utils.GetRoleColor(CustomRoles.Swapper).ShadeColor(0.25f) : Color.gray, Swappermax.TryGetValue(playerId, out var changermax) ? $"({changermax})" : "Invalid");
+    public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString((Swappermax.TryGetValue(PlayerId, out var x) && x >= 1) ? Utils.GetRoleColor(CustomRoles.Swapper).ShadeColor(0.25f) : Color.gray, Swappermax.TryGetValue(PlayerId, out var changermax) ? $"({changermax})" : "Invalid");
     public static bool SwapMsg(PlayerControl pc, string msg, bool isUI = false)
     {
         var originMsg = msg;

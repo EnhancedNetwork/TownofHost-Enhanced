@@ -142,8 +142,8 @@ class CheckForEndVotingPatch
                                 Jailer.OnVote(pc, voteTarget);
                                 break;
                         }
-                        Main.PlayerStates[voteTarget.PlayerId]?.Role?.OnVote(pc, voteTarget); // Role is voted
-                        Main.PlayerStates[pc.PlayerId]?.Role?.OnVote(pc, voteTarget); // Role has voted
+                        voteTarget.GetRoleClass()?.OnVote(pc, voteTarget); // Role is voted
+                        pc.GetRoleClass()?.OnVote(pc, voteTarget); // Role has voted
 
                         if (voteTarget.Is(CustomRoles.Aware))
                         {
@@ -818,7 +818,7 @@ static class ExtendedMeetingHud
                 var pc = Utils.GetPlayerById(ps.TargetPlayerId);
                 if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, pc.GetCustomRole())
                     && ps.TargetPlayerId != ps.VotedFor && ps != null)
-                        VoteNum += Main.PlayerStates[ps.TargetPlayerId].Role.CalcVote(ps); // returns + 0 or given role value (+/-)
+                        VoteNum += ps.TargetPlayerId.GetRoleClassById().CalcVote(ps); // returns + 0 or given role value (+/-)
 
                 if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Knighted) // not doing addons lol, so this stays
                     && ps.TargetPlayerId != ps.VotedFor
@@ -1066,14 +1066,14 @@ class MeetingHudStartPatch
             roleTextMeeting.enableWordWrapping = false;
             roleTextMeeting.enabled = pc.AmOwner || ExtendedPlayerControl.KnowRoleTarget(PlayerControl.LocalPlayer, pc);
 
-            var myRole = Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].Role;
+            var myRole = PlayerControl.LocalPlayer.GetRoleClass();
             var enable = true;
 
             if (!PlayerControl.LocalPlayer.Data.IsDead && PlayerControl.LocalPlayer.IsRevealedPlayer(pc) && pc.Is(CustomRoles.Trickster))
             {
                 roleTextMeeting.text = Overseer.RandomRole[PlayerControl.LocalPlayer.PlayerId]; // random role for revealed trickster
                 roleTextMeeting.text += TaskState.GetTaskState(); // Random task count for revealed trickster
-                enable = false;
+                //enable = false;
             }
 
             if (EvilTracker.IsTrackTarget(PlayerControl.LocalPlayer, pc) && EvilTracker.CanSeeLastRoomInMeeting)
@@ -1164,7 +1164,7 @@ class MeetingHudStartPatch
         {
             if (pva == null) continue;
             PlayerControl seer = PlayerControl.LocalPlayer;
-            var seerRoleClass = Main.PlayerStates[seer.PlayerId].Role;
+            var seerRoleClass = seer.GetRoleClass();
             PlayerControl target = Utils.GetPlayerById(pva.TargetPlayerId);
             if (target == null) continue;
 

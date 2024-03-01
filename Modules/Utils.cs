@@ -699,8 +699,9 @@ public static class Utils
             if (!Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId)) return ""; //ホストがMODを入れていなければ未記入を返す
             var ProgressText = new StringBuilder();
             var role = Main.PlayerStates[playerId].MainRole;
-            ProgressText.Append(Main.PlayerStates[playerId]?.Role?.GetProgressText(playerId));
-            Main.PlayerStates[playerId]?.Role?.AppendProgressText(playerId, comms, ProgressText);
+            ProgressText.Append(playerId.GetRoleClassById()?.GetProgressText(playerId, comms));
+            playerId.GetRoleClassById()?.AppendProgressText(playerId, comms, ProgressText);
+
             switch (role)
             {
                 case CustomRoles.Arsonist:
@@ -2460,13 +2461,15 @@ public static class Utils
                                 break;
 
                         }
-                        if (seer.PlayerId != target.PlayerId && Main.PlayerStates.TryGetValue(seer.PlayerId, out var seerState) && seerState.Role != null)
-                            if (seerState.Role.NotifyPlayerName(seer, target, TargetPlayerName) != string.Empty)
-                                TargetPlayerName = seerState.Role.NotifyPlayerName(seer, target, TargetPlayerName);
-                            else if (seerState.Role.NotifyPlayerName(seer, target, string.Empty, isForMeeting) != string.Empty)
-                            {
 
-                            }
+                        if (seer.GetRoleClass()?.NotifyPlayerName(seer, target, TargetPlayerName) != string.Empty)
+                            TargetPlayerName = seer.GetRoleClass()?.NotifyPlayerName(seer, target, TargetPlayerName);
+
+                        //else if (seer.GetRoleClass()?.NotifyPlayerName(seer, target, string.Empty, isForMeeting) != string.Empty)
+                        //{
+
+                        //}
+
                         // ========= Only During Meeting =========
                         if (isForMeeting)
                         {

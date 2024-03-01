@@ -58,7 +58,7 @@ internal class President : RoleBase
         EndLimit.Remove(playerId);
         RevealLimit.Remove(playerId);
     }
-    public override string GetProgressText(byte playerId) => Utils.ColorString(EndLimit[playerId] > 0 ? Utils.GetRoleColor(CustomRoles.President) : Color.gray, EndLimit.TryGetValue(playerId, out var endLimit) ? $"({endLimit})" : "Invalid");
+    public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString(EndLimit[PlayerId] > 0 ? Utils.GetRoleColor(CustomRoles.President) : Color.gray, EndLimit.TryGetValue(PlayerId, out var endLimit) ? $"({endLimit})" : "Invalid");
 
     public static void TryHideMsgForPresident()
     {

@@ -154,7 +154,7 @@ internal class CopyCat : RoleBase
             {
                 if (pc.GetCustomRole() != CustomRoles.CopyCat)
                 {
-                    Main.PlayerStates[pc.PlayerId].Role.Remove(pc.PlayerId);
+                    pc.GetRoleClass()?.Remove(pc.PlayerId);
                 }
                 pc.RpcSetCustomRole(CustomRoles.CopyCat);
             }
@@ -239,7 +239,7 @@ internal class CopyCat : RoleBase
             if (role != CustomRoles.CopyCat)
             {
                 pc.RpcSetCustomRole(role);
-                Main.PlayerStates[pc.PlayerId].Role.Add(pc.PlayerId);
+                pc.GetRoleClass()?.Add(pc.PlayerId);
             }
             if (CopyTeamChangingAddon.GetBool())
             {

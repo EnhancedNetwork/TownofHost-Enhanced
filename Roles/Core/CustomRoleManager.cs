@@ -10,6 +10,9 @@ namespace TOHE.Roles.Core;
 
 public static class CustomRoleManager
 {
+    public static RoleBase GetRoleClass(this PlayerControl player) => Main.PlayerStates.TryGetValue(player.PlayerId, out var statePlayer) && statePlayer != null ? statePlayer.Role : new VanillaRole();
+    public static RoleBase GetRoleClassById(this byte playerId) => Main.PlayerStates.TryGetValue(playerId, out var statePlayer) && statePlayer != null ? statePlayer.Role : new VanillaRole();
+
     public static RoleBase CreateRoleClass(this CustomRoles role) => role switch
     {
         // ==== Vanilla ====
@@ -293,15 +296,29 @@ public static class CustomRoleManager
         _ => new VanillaRole(),
     };
 
+    public static HashSet<Action<PlayerControl>> CheckDeadBodyOthers = [];
+    /// <summary>
+    /// If the role need check a present dead body
+    /// </summary>
+    public static void CheckDeadBody(PlayerControl deadBody)
+    {
+        if (CheckDeadBodyOthers.Count <= 0) return;
+        //Execute other viewpoint processing if any
+        foreach (var checkDeadBodyOthers in CheckDeadBodyOthers.ToArray())
+        {
+            checkDeadBodyOthers(deadBody);
+        }
+    }
+
+    public static HashSet<Action<PlayerControl>> OnFixedUpdateOthers = [];
     /// <summary>
     /// Function always called in a task turn
     /// For interfering with other roles
     /// Registered with OnFixedUpdateOthers+= at initialization
     /// </summary>
-    public static HashSet<Action<PlayerControl>> OnFixedUpdateOthers = [];
     public static void OnFixedUpdate(PlayerControl player)
     {
-        Main.PlayerStates[player.PlayerId]?.Role?.OnFixedUpdate(player);
+        player.GetRoleClass()?.OnFixedUpdate(player);
 
         if (OnFixedUpdateOthers.Count <= 0) return;
         //Execute other viewpoint processing if any
@@ -313,7 +330,7 @@ public static class CustomRoleManager
     public static HashSet<Action<PlayerControl>> OnFixedUpdateLowLoadOthers = [];
     public static void OnFixedUpdateLowLoad(PlayerControl player)
     {
-        Main.PlayerStates[player.PlayerId]?.Role?.OnFixedUpdateLowLoad(player);
+        player.GetRoleClass()?.OnFixedUpdateLowLoad(player);
 
         if (OnFixedUpdateLowLoadOthers.Count <= 0) return;
         //Execute other viewpoint processing if any

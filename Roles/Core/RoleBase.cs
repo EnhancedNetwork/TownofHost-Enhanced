@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using System.Text;
-using TOHE.Roles.Crewmate;
 using UnityEngine;
 
 namespace TOHE;
@@ -109,6 +108,7 @@ public abstract class RoleBase
 
     /// <summary>
     /// When role the target requires a kill check
+    /// If the target doesn't require a kill cancel, always use "return true"
     /// </summary>
     public virtual bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target) => target != null && killer != null;
 
@@ -126,7 +126,7 @@ public abstract class RoleBase
     /// <summary>
     /// When the target role died
     /// </summary>
-    public virtual void OnPlayerDead(PlayerControl killer, PlayerControl target)
+    public virtual void OnTargetDead(PlayerControl killer, PlayerControl target)
     { }
 
     /// <summary>
@@ -143,7 +143,13 @@ public abstract class RoleBase
     /// <summary>
     /// When reporter press report button
     /// </summary>
-    public virtual bool OnPressReportButton(PlayerControl reporter, PlayerControl target) => reporter.IsAlive();
+    public virtual bool OnPressReportButton(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer) => reporter.IsAlive();
+
+    /// <summary>
+    /// When the meeting start by report dead body
+    /// </summary>
+    public virtual void OnPressMeetingButton(PlayerControl reporter)
+    { }
 
     /// <summary>
     /// When the meeting start by report dead body
@@ -205,7 +211,6 @@ public abstract class RoleBase
     public virtual Sprite VentButtonSprite { get; }
     public virtual Sprite AbilityButtonSprite { get; }
     public virtual Sprite ReportButtonSprite { get; }
-    public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
     public virtual string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;
     public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
     public virtual string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;
@@ -216,7 +221,7 @@ public abstract class RoleBase
     /// <summary>
     /// Gets & Appends the role's skill limit
     /// </summary>
-    public virtual string GetProgressText(byte PlayerId) => string.Empty;
+    public virtual string GetProgressText(byte PlayerId, bool comms) => string.Empty;
     public virtual void AppendProgressText(byte playerId, bool comms, StringBuilder ProgressText)
     { }
     public virtual int CalcVote(PlayerVoteArea PVA) => 0;

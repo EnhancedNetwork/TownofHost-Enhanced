@@ -57,8 +57,8 @@ internal class Addict : RoleBase
         playerIdList.Remove(playerId);
         SuicideTimer.Remove(playerId);
         ImmortalTimer.Remove(playerId);
-        DefaultSpeed = new();
-        On = false;
+        DefaultSpeed = Main.AllPlayerSpeed[playerId];
+        if (playerIdList.Count <= 0) On = false;
     }
 
     public static bool IsImmortal(PlayerControl player) => player.Is(CustomRoles.Addict) && ImmortalTimer[player.PlayerId] <= ImmortalTimeAfterVent.GetFloat();

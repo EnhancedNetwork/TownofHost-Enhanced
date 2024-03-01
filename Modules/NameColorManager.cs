@@ -32,7 +32,7 @@ public static class NameColorManager
     }
     private static bool KnowTargetRoleColor(PlayerControl seer, PlayerControl target, bool isMeeting, out string color)
     {
-        color = Main.PlayerStates[seer.PlayerId]?.Role?.ThisKnowTargetsColor(seer, target); // returns "" unless overriden
+        color = seer.GetRoleClass()?.ThisKnowTargetsColor(seer, target); // returns "" unless overriden
         // Impostor & Madmate
         if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoleTypes.Impostor)) color = (seer.Is(CustomRoles.Egoist) && target.Is(CustomRoles.Egoist) && Egoist.ImpEgoistVisibalToAllies.GetBool() && seer != target) ? Main.roleColors[CustomRoles.Egoist] : Main.roleColors[CustomRoles.Impostor];
         if (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoleTypes.Impostor) && Madmate.MadmateKnowWhosImp.GetBool()) color = Main.roleColors[CustomRoles.Impostor];

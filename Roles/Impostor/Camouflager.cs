@@ -108,9 +108,10 @@ internal class Camouflager : RoleBase
         ClearCamouflage();
         Timer = [];
     }
-    public override void OnPlayerDead(PlayerControl killer, PlayerControl target)
+
+    public override void OnTargetDead(PlayerControl killer, PlayerControl target)
     {
-        if (GameStates.IsMeeting || !Camouflager.AbilityActivated) return;
+        if (GameStates.IsMeeting || !AbilityActivated) return;
 
         ClearCamouflage();
     }

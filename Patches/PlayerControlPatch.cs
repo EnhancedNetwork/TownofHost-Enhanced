@@ -239,18 +239,18 @@ class CheckMurderPatch
             Logger.Info($"Real Killer = {killer.GetNameWithRole().RemoveHtmlTags()}", "CheckMurder");
         }
 
-        if (Main.PlayerStates.TryGetValue(target.PlayerId, out var targetState) && targetState.Role != null)
-            if (!targetState.Role.OnCheckMurderAsTarget(killer, target))
-            {
-                return false;
-            }
-            else
-            {
-                targetState.Role.OnCheckMurderAsTarget(killer, target); // if simply an action happens on target attacked
-            }
-        if (killer.PlayerId != target.PlayerId && Main.PlayerStates.TryGetValue(killer.PlayerId, out var killerState) && killerState.Role != null)
-            if (!killerState.Role.OnCheckMurderAsKiller(killer, target))
-                return false;
+        var killerRoleClass = killer.GetRoleClass();
+        var targetRoleClass = target.GetRoleClass();
+
+        if (!targetRoleClass.OnCheckMurderAsTarget(killer, target))
+        {
+            return false;
+        }
+
+        if (!killerRoleClass.OnCheckMurderAsKiller(killer, target))
+        {
+            return false;
+        }
 
 
         foreach (var targetSubRole in target.GetCustomSubRoles().ToArray())
@@ -1301,11 +1301,15 @@ class MurderPlayerPatch
         if (Main.FirstDied == "")
             Main.FirstDied = target.GetClient().GetHashedPuid();
 
+
+        CustomRoleManager.CheckDeadBody(target);
+
         if (Main.PlayerStates.TryGetValue(target.PlayerId, out var targetState))
-            targetState.Role?.OnPlayerDead(killer, target);
+            targetState.Role?.OnTargetDead(killer, target);
 
         if (Main.PlayerStates.TryGetValue(killer.PlayerId, out var killerState))
             killerState.Role?.OnMurder(killer, target);
+
 
         if (target.Is(CustomRoles.Bait))
         {
@@ -1894,7 +1898,6 @@ class ReportDeadBodyPatch
 
                 if (Coroner.UnreportablePlayers.Contains(target.PlayerId)) return false;
 
-
                 if (!Main.PlayerStates.TryGetValue(__instance.PlayerId, out var playerState))
                     if (playerState != null && playerState.Role != null && playerState.Role.CheckReportDeadBody(__instance, target, killer))
                         return false;
@@ -2015,7 +2018,7 @@ class ReportDeadBodyPatch
                         else if (tar.Is(CustomRoles.CopyCat))
                         {
                             __instance.RpcSetCustomRole(CustomRoles.CopyCat);
-                            Main.PlayerStates[tar.PlayerId].Role.Add(tar.PlayerId);
+                            tar.GetRoleClass()?.Add(tar.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         }
@@ -2036,7 +2039,7 @@ class ReportDeadBodyPatch
                         else if (tar.Is(CustomRoles.Overseer))
                         {
                             __instance.RpcSetCustomRole(CustomRoles.Overseer);
-                            Main.PlayerStates[tar.PlayerId].Role.Add(tar.PlayerId);
+                            tar.GetRoleClass()?.Add(tar.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         }
@@ -2073,14 +2076,14 @@ class ReportDeadBodyPatch
                         else if (tar.Is(CustomRoles.Monarch))
                         {
                             __instance.RpcSetCustomRole(CustomRoles.Monarch);
-                            Main.PlayerStates[tar.PlayerId].Role.Add(tar.PlayerId);
+                            tar.GetRoleClass()?.Add(tar.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         }
                         else if (tar.Is(CustomRoles.Monitor))
                         {
                             __instance.RpcSetCustomRole(CustomRoles.Monitor);
-                            Main.PlayerStates[tar.PlayerId].Role.Add(tar.PlayerId);
+                            tar.GetRoleClass()?.Add(tar.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                             Main.TasklessCrewmate.Add(__instance.PlayerId);
@@ -2088,7 +2091,7 @@ class ReportDeadBodyPatch
                         else if (tar.Is(CustomRoles.Swapper))
                         {
                             __instance.RpcSetCustomRole(CustomRoles.Swapper);
-                            Main.PlayerStates[tar.PlayerId].Role.Add(tar.PlayerId);
+                            tar.GetRoleClass()?.Add(tar.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                             Main.TasklessCrewmate.Add(__instance.PlayerId);
@@ -2203,7 +2206,7 @@ class ReportDeadBodyPatch
                     }
                 }
 
-                if (playerState != null && playerState.Role != null && !playerState.Role.OnPressReportButton(__instance, target.Object))
+                if (playerState != null && playerState.Role != null && !playerState.Role.OnPressReportButton(__instance, target, killer))
                     return false;
 
                 if (target.Object.Is(CustomRoles.Unreportable)) return false;
@@ -2246,12 +2249,12 @@ class ReportDeadBodyPatch
         // Hereinafter, it is assumed that the button is confirmed to be pressed
         //=============================================
 
-        if (target == null) //ボタン
+        if (target == null) //Meeting button
         {
+            player.GetRoleClass()?.OnPressMeetingButton(player);
+
             if (Quizmaster.IsEnable)
                 Quizmaster.OnButtonPress(player);
-
-            
         }
         else
         {
@@ -3052,7 +3055,7 @@ class FixedUpdateInNormalGamePatch
 
 
                 var seer = PlayerControl.LocalPlayer;
-                var seerRoleClass = Main.PlayerStates[seer.PlayerId].Role;
+                var seerRoleClass = seer.GetRoleClass();
                 var target = __instance;
 
                 string RealName = target.GetRealName();
@@ -3111,8 +3114,6 @@ class FixedUpdateInNormalGamePatch
                             Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), "★"));
                     }
                 }
-
-                Mark.Append(seerRoleClass?.GetMark(seer, target));
 
                 if (PlagueDoctor.IsEnable) 
                     Mark.Append(PlagueDoctor.GetMarkOthers(seer, target));
@@ -3443,7 +3444,7 @@ class EnterVentPatch
     {
         if (GameStates.IsHideNSeek) return;
 
-        Main.PlayerStates[pc.PlayerId]?.Role?.OnEnterVent(pc, __instance);
+        pc.GetRoleClass()?.OnEnterVent(pc, __instance);
 
         Witch.OnEnterVent(pc);
         HexMaster.OnEnterVent(pc);
@@ -3672,7 +3673,6 @@ class CoEnterVentPatch
             }
 
         }
-        Main.PlayerStates[__instance.myPlayer.PlayerId].Role.OnCoEnterVent(__instance, id);
 
         if (RiftMaker.IsEnable) RiftMaker.OnVent(__instance.myPlayer, id);
 
@@ -3794,6 +3794,8 @@ class CoEnterVentPatch
             }, 0.5f, "Fix DesyncImpostor Stuck");
             return false;
         }
+
+        __instance.myPlayer.GetRoleClass()?.OnCoEnterVent(__instance, id);
 
         if (__instance.myPlayer.Is(CustomRoles.Swooper))
             Swooper.OnCoEnterVent(__instance, id);

@@ -118,10 +118,10 @@ internal class Benefactor : RoleBase
         }
     }
 
-    public override string GetProgressText(byte playerId)
+    public override string GetProgressText(byte PlayerId, bool comms)
     {
-        if (!TaskMarkPerRound.ContainsKey(playerId)) TaskMarkPerRound[playerId] = 0;
-        int markedTasks = TaskMarkPerRound[playerId];
+        if (!TaskMarkPerRound.ContainsKey(PlayerId)) TaskMarkPerRound[PlayerId] = 0;
+        int markedTasks = TaskMarkPerRound[PlayerId];
         int x = Math.Max(maxTasksMarkedPerRound - markedTasks, 0);
         return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Taskinator).ShadeColor(0.25f), $"({x})");
     }

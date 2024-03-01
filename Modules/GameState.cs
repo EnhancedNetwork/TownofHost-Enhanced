@@ -34,7 +34,7 @@ public class PlayerState(byte playerId)
 
     public CustomRoles GetCustomRoleFromRoleType()
     {
-        var RoleInfo = Utils.GetPlayerInfoById(PlayerId);
+        var RoleInfo = GetPlayerInfoById(PlayerId);
         return RoleInfo.Role == null
             ? MainRole
             : RoleInfo.Role.Role switch
@@ -55,7 +55,7 @@ public class PlayerState(byte playerId)
         Role = role.CreateRoleClass();
 
 
-        var pc = Utils.GetPlayerById(PlayerId);
+        var pc = GetPlayerById(PlayerId);
 
         if (role == CustomRoles.Opportunist)
         {
@@ -434,8 +434,8 @@ public class TaskState
         var NonCompleteColor = Color.yellow;
         var NormalColor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
 
-        TextColor = Camouflager.AbilityActivated ? Color.gray : NormalColor;
-        string Completed = Camouflager.AbilityActivated ? "?" : $"{taskState.CompletedTasksCount}";
+        TextColor = Camouflager.AbilityActivated || Camouflage.IsCamouflage ? Color.gray : NormalColor;
+        string Completed = Camouflager.AbilityActivated || Camouflage.IsCamouflage ? "?" : $"{taskState.CompletedTasksCount}";
 
         return $" <size={1.5}>" + ColorString(TextColor, $"({Completed}/{taskState.AllTasksCount})") + "</size>\r\n";
     }

@@ -192,7 +192,7 @@ internal class Seeker : RoleBase
     }
     public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
 
-    public override string GetProgressText(byte playerId) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Seeker).ShadeColor(0.25f), $"({TotalPoints[playerId]}/{Seeker.PointsToWin.GetInt()})");
+    public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Seeker).ShadeColor(0.25f), $"({TotalPoints[PlayerId]}/{PointsToWin.GetInt()})");
 
     public override void AfterMeetingTasks()
     {

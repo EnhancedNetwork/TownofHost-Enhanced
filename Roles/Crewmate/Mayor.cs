@@ -61,7 +61,7 @@ namespace TOHE.Roles.Crewmate
             return MayorAdditionalVote.GetInt();
         }
 
-        public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+        public override void OnPressMeetingButton(PlayerControl reporter)
         {
             if (reporter.Is(CustomRoles.Mayor))
             {

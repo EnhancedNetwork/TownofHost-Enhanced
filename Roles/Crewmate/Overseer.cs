@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.AddOns.Common;
-using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate
 {
@@ -89,6 +87,12 @@ namespace TOHE.Roles.Crewmate
         }
         public override void Add(byte playerId)
         {
+            foreach (var ar in Main.AllPlayerControls)
+            {
+                Main.isRevealed.Add((playerId, ar.PlayerId), false);
+            }
+
+            RandomRole.Add(playerId, GetRandomCrewRoleString());
             On = true;
 
             if (!AmongUsClient.Instance.AmHost) return;
@@ -166,7 +170,12 @@ namespace TOHE.Roles.Crewmate
                 }
             }
         }
-        public static string GetRandomCrewRoleString() // Random role for trickster
+        public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
+        {
+            OverseerTimer.Clear();
+        }
+
+        private static string GetRandomCrewRoleString() // Random role for trickster
         {
             var rd = IRandom.Instance;
             var randomRole = randomRolesForTrickster[rd.Next(0, randomRolesForTrickster.Count)];

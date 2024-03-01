@@ -584,8 +584,7 @@ static class ExtendedPlayerControl
         if (Necromancer.Killer && !pc.Is(CustomRoles.Necromancer)) return false;
         if (pc.Is(CustomRoles.Nimble)) return true;
         if (Circumvent.CantUseVent(pc)) return false;
-        if (Main.PlayerStates.TryGetValue(pc.PlayerId, out var PlayerState) && PlayerState != null)
-            return PlayerState.Role.CanUseImpostorVentButton(pc); 
+        if (pc.GetRoleClass().CanUseImpostorVentButton(pc)) return true;
 
         return pc.GetCustomRole() switch
         {
@@ -741,8 +740,7 @@ static class ExtendedPlayerControl
     {
         Main.AllPlayerKillCooldown[player.PlayerId] = GameStates.IsNormalGame ? Options.DefaultKillCooldown : 1f; //キルクールをデフォルトキルクールに変更
 
-        if (Main.PlayerStates.TryGetValue(player.PlayerId, out var playerState))
-            playerState?.Role?.SetKillCooldown(player.PlayerId);
+        player.GetRoleClass()?.SetKillCooldown(player.PlayerId);
 
         switch (player.GetCustomRole())
         {
@@ -1285,7 +1283,7 @@ static class ExtendedPlayerControl
     public static bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
     {
         if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || seer.Is(CustomRoles.God) || (seer.AmOwner && Main.GodMode.Value)) return true;
-        else if (Main.PlayerStates[target.PlayerId].Role.KnowRoletarget(seer, target)) return true;
+        else if (target.GetRoleClass().KnowRoletarget(seer, target)) return true;
         else if (Options.CurrentGameMode == CustomGameMode.FFA) return true;
         else if (target.Is(CustomRoles.Solsticer) && Solsticer.EveryOneKnowSolsticer.GetBool()) return true;
         else if (Main.VisibleTasksCount && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool()) return true;
