@@ -32,7 +32,8 @@ public static class NameColorManager
     }
     private static bool KnowTargetRoleColor(PlayerControl seer, PlayerControl target, bool isMeeting, out string color)
     {
-        color = seer.GetRoleClass()?.ThisKnowTargetsColor(seer, target); // returns "" unless overriden
+        color = seer.GetRoleClass()?.PlayerKnowTargetColor(seer, target); // returns "" unless overriden
+        
         // Impostor & Madmate
         if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoleTypes.Impostor)) color = (seer.Is(CustomRoles.Egoist) && target.Is(CustomRoles.Egoist) && Egoist.ImpEgoistVisibalToAllies.GetBool() && seer != target) ? Main.roleColors[CustomRoles.Egoist] : Main.roleColors[CustomRoles.Impostor];
         if (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoleTypes.Impostor) && Madmate.MadmateKnowWhosImp.GetBool()) color = Main.roleColors[CustomRoles.Impostor];
@@ -220,7 +221,7 @@ public static class NameColorManager
             || (Options.CurrentGameMode == CustomGameMode.FFA)
             || (Main.VisibleTasksCount && Main.PlayerStates[seer.Data.PlayerId].IsDead && seer.Data.IsDead && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool())
             || seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM)
-            || Main.PlayerStates[target.PlayerId].Role.KnowTargetRoleColor(seer, target)
+            || target.GetRoleClass().OthersKnowTargetRoleColor(seer, target)
             || seer.Is(CustomRoles.God)
             || Mimic.CanSeeDeadRoles(seer, target)
             || (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoleTypes.Impostor))

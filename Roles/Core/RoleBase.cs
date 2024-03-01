@@ -215,8 +215,8 @@ public abstract class RoleBase
     public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
     public virtual string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;
     public virtual bool KnowRoletarget(PlayerControl seer, PlayerControl target) => false;
-    public virtual bool KnowTargetRoleColor(PlayerControl seer, PlayerControl target) => false;
-    public virtual string ThisKnowTargetsColor(PlayerControl seer, PlayerControl target) => string.Empty;
+    public virtual string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => string.Empty;
+    public virtual bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => false;
 
     /// <summary>
     /// Gets & Appends the role's skill limit

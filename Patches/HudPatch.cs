@@ -453,7 +453,7 @@ class HudManagerPatch
                 switch (Options.CurrentGameMode)
                 {
                     case CustomGameMode.Standard:
-                        var roleClass = Main.PlayerStates[player.PlayerId].Role;
+                        var roleClass = player.GetRoleClass();
                         //LowerInfoText.text = roleClass?.GetLowerText(player, isForMeeting: GameStates.IsMeeting, isForHud: true) ?? "";
 
                         //if (LowerInfoText.text != "" || LowerInfoText.text != string.Empty)

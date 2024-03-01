@@ -19,7 +19,6 @@ using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
 using TOHE.Roles.Core;
-using static UnityEngine.RemoteConfigSettingsHelper;
 
 namespace TOHE;
 
@@ -60,6 +59,8 @@ class CheckProtectPatch
         Logger.Info("CheckProtect occurs: " + __instance.GetNameWithRole() + "=>" + target.GetNameWithRole(), "CheckProtect");
         var angel = __instance;
         var getAngelRole = angel.GetCustomRole();
+
+        //angel.GetRoleClass()?.OnCheckProtect(angel, target);
 
         switch (getAngelRole)
         {

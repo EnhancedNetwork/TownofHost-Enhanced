@@ -236,5 +236,5 @@ internal class President : RoleBase
                 (target.Is(CustomRoles.President) && seer.Is(CustomRoles.Madmate) && MadmatesSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId] == true) ||
                 (target.Is(CustomRoles.President) && seer.GetCustomRole().IsNeutral() && NeutralsSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId] == true) ||
                 (target.Is(CustomRoles.President) && (seer.GetCustomRole().IsImpostorTeam()) && ImpsSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId] == true));
-    public override bool KnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoletarget(seer, target);
+    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoletarget(seer, target);
 }

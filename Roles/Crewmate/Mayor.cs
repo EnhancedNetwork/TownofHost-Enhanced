@@ -102,7 +102,7 @@ namespace TOHE.Roles.Crewmate
             return false;
         }
         public override bool KnowRoletarget(PlayerControl seer, PlayerControl target) => MayorRevealWhenDoneTasks.GetBool() && target.Is(CustomRoles.Mayor) && target.GetPlayerTaskState().IsTaskFinished;
-        public override bool KnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoletarget(seer, target);
+        public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoletarget(seer, target);
         public override void SetAbilityButtonText(HudManager hud, byte id)
         {
             hud.ReportButton.OverrideText(GetString("ReportButtonText"));
