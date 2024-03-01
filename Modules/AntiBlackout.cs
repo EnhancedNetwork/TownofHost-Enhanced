@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using TOHE.Modules;
+using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -230,10 +231,14 @@ public static class AntiBlackout
         {
             _ = new LateTask(() =>
             {
-                if (Eraser.IsEnable) Eraser.AfterMeetingTasks(notifyPlayer: true);
-                if (Cleanser.IsEnable) Cleanser.AfterMeetingTasks(notifyPlayer: true);
-                if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: true);
+                foreach (var pc in Main.AllAlivePlayerControls)
+                {
+                    pc.GetRoleClass()?.NotifyAfterMeeting();
 
+                    if (Eraser.IsEnable) Eraser.AfterMeetingTasks(notifyPlayer: true);
+                    if (Cleanser.IsEnable) Cleanser.AfterMeetingTasks(notifyPlayer: true);
+                    if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: true);
+                }
             }, timeNotify + 0.2f, "Notify AfterMeetingTasks");
         }
         catch (Exception error)

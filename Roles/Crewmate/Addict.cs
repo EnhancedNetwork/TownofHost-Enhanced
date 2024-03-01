@@ -1,3 +1,4 @@
+using AmongUs.GameOptions;
 using System.Collections.Generic;
 using UnityEngine;
 using static TOHE.Options;
@@ -13,10 +14,10 @@ internal class Addict : RoleBase
     public override bool IsEnable => On;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
 
-    public static OptionItem VentCooldown;
-    public static OptionItem TimeLimit;
-    public static OptionItem ImmortalTimeAfterVent;
-    public static OptionItem FreezeTimeAfterImmortal;
+    private static OptionItem VentCooldown;
+    private static OptionItem TimeLimit;
+    private static OptionItem ImmortalTimeAfterVent;
+    private static OptionItem FreezeTimeAfterImmortal;
 
     private static Dictionary<byte, float> SuicideTimer = [];
     private static Dictionary<byte, float> ImmortalTimer = [];
@@ -52,8 +53,22 @@ internal class Addict : RoleBase
         DefaultSpeed = Main.AllPlayerSpeed[playerId];
         On = true;
     }
+    public override void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        SuicideTimer.Remove(playerId);
+        ImmortalTimer.Remove(playerId);
+        DefaultSpeed = Main.AllPlayerSpeed[playerId];
+        if (playerIdList.Count <= 0) On = false;
+    }
 
-    public static bool IsImmortal(PlayerControl player) => player.Is(CustomRoles.Addict) && ImmortalTimer[player.PlayerId] <= ImmortalTimeAfterVent.GetFloat();
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    {
+        AURoleOptions.EngineerCooldown = VentCooldown.GetFloat();
+        AURoleOptions.EngineerInVentMaxTime = 1;
+    }
+
+    private static bool IsImmortal(PlayerControl player) => player.Is(CustomRoles.Addict) && ImmortalTimer[player.PlayerId] <= ImmortalTimeAfterVent.GetFloat();
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {

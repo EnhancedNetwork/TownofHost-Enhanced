@@ -44,7 +44,14 @@ public static class HudSpritePatch
         Sprite newReportButton = Report;
 
         if (!Main.EnableCustomButton.Value) goto EndOfSelectImg;
-
+        if (Main.PlayerStates.TryGetValue(player.PlayerId, out var PlayerState) && PlayerState?.Role?.KillButtonSprite != null)
+            newKillButton = PlayerState.Role.KillButtonSprite;
+        if(PlayerState?.Role?.VentButtonSprite != null)
+            newVentButton = PlayerState.Role.VentButtonSprite;
+        if(PlayerState?.Role?.AbilityButtonSprite != null)
+            newAbilityButton = PlayerState.Role.AbilityButtonSprite;
+        if (PlayerState?.Role?.ReportButtonSprite != null)
+            newReportButton = PlayerState.Role.ReportButtonSprite;
         switch (player.GetCustomRole())
         {
             case CustomRoles.Ninja:
@@ -132,9 +139,6 @@ public static class HudSpritePatch
             case CustomRoles.Mario:
                 newAbilityButton = CustomButton.Get("Happy");
                 break;
-            case CustomRoles.Mayor:
-                newAbilityButton = CustomButton.Get("Collective");
-                break;
             case CustomRoles.Sheriff:
                 newKillButton = CustomButton.Get("Kill");
                 break;
@@ -158,9 +162,6 @@ public static class HudSpritePatch
                 break;
             case CustomRoles.Escapist:
                 newAbilityButton = CustomButton.Get("abscond");
-                break;
-            case CustomRoles.Farseer:
-                newKillButton = CustomButton.Get("prophecies");
                 break;
             case CustomRoles.Jailer:
                 newKillButton = CustomButton.Get("penitentiary");

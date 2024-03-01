@@ -10,49 +10,55 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
-public static class Swapper
+internal class Swapper : RoleBase
 {
-    private static readonly int Id = 12400;
-    public static bool IsEnable = false;
-    public static OptionItem SwapMax;
-    public static OptionItem CanSwapSelf;
-    public static OptionItem CanStartMeeting;
-    public static OptionItem TryHideMsg;
+    private const int Id = 12400;
+    public static bool On = false;
+    public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+
+    private static OptionItem SwapMax;
+    private static OptionItem CanSwapSelf;
+    private static OptionItem OptCanStartMeeting;
+    private static OptionItem TryHideMsg;
+
     public static List<byte> playerIdList = [];
     public static Dictionary<byte, byte> Vote = [];
     public static Dictionary<byte, byte> VoteTwo = [];
     public static Dictionary<byte, int> Swappermax = [];
     public static List<byte> ResultSent = [];
+
     public static void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Swapper);
         SwapMax = IntegerOptionItem.Create(Id + 3, "SwapperMax", new(1, 999, 1), 3, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Swapper])
             .SetValueFormat(OptionFormat.Times);
         CanSwapSelf = BooleanOptionItem.Create(Id + 2, "CanSwapSelfVotes", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Swapper]);
-        CanStartMeeting = BooleanOptionItem.Create(Id + 4, "JesterCanUseButton", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Swapper]);
+        OptCanStartMeeting = BooleanOptionItem.Create(Id + 4, "JesterCanUseButton", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Swapper]);
         TryHideMsg = BooleanOptionItem.Create(Id + 5, "SwapperTryHideMsg", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Swapper]);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
-        IsEnable = false;
+        On = false;
         Vote = [];
         VoteTwo = [];
         Swappermax = [];
         ResultSent = [];
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
+        On = true;
         Swappermax.TryAdd(playerId, SwapMax.GetInt());
     }
-    public static void Remove(byte playerId)
+    public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
         Swappermax.Remove(playerId);
     }
-    public static string GetSwappermax(byte playerId) => Utils.ColorString((Swappermax.TryGetValue(playerId, out var x) && x >= 1) ? Utils.GetRoleColor(CustomRoles.Swapper).ShadeColor(0.25f) : Color.gray, Swappermax.TryGetValue(playerId, out var changermax) ? $"({changermax})" : "Invalid");
+    public override bool CantStartMeeting(PlayerControl reporter) => !OptCanStartMeeting.GetBool();
+    public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString((Swappermax.TryGetValue(PlayerId, out var x) && x >= 1) ? Utils.GetRoleColor(CustomRoles.Swapper).ShadeColor(0.25f) : Color.gray, Swappermax.TryGetValue(PlayerId, out var changermax) ? $"({changermax})" : "Invalid");
     public static bool SwapMsg(PlayerControl pc, string msg, bool isUI = false)
     {
         var originMsg = msg;
@@ -354,7 +360,7 @@ public static class Swapper
                     if (!pc.Is(CustomRoles.Swapper) || !pc.IsAlive()) continue;
 
                     if (!playerIdList.Contains(pc.PlayerId))
-                        Add(pc.PlayerId);
+                        Main.PlayerStates[pc.PlayerId].Role.Add(pc.PlayerId);
 
                     Vote.Add(pc.PlayerId, 253);
                     VoteTwo.Add(pc.PlayerId, 253);

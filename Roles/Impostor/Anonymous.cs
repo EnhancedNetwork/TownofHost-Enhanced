@@ -44,6 +44,11 @@ internal class Anonymous : RoleBase
         HackLimit.TryAdd(playerId, HackLimitOpt.GetInt());
         On = true;
     }
+    public override void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        HackLimit.Remove(playerId);
+    }
     private static void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);

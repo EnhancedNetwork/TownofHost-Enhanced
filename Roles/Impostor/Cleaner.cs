@@ -38,8 +38,10 @@ internal class Cleaner : RoleBase
 
     public static bool BodyIsCleansed(byte targetId) => CleanerBodies.Contains(targetId);
 
-    public override bool OnPressReportButton(PlayerControl reporter, PlayerControl target)
+    public override bool OnPressReportButton(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
     {
+        var target = deadBody.Object;
+
         CleanerBodies.Remove(target.PlayerId);
         CleanerBodies.Add(target.PlayerId);
 
