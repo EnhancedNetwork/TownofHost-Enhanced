@@ -46,7 +46,7 @@ internal class AntiAdminer : RoleBase
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId); 
+        playerIdList.Remove(playerId);
     }
 
     private static int Count = 0;
