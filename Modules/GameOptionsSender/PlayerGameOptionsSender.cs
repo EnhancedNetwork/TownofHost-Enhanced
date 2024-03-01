@@ -7,6 +7,7 @@ using InnerNet;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -118,8 +119,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             }
         }
 
-        if (Main.PlayerStates.TryGetValue(player.PlayerId, out var playerState))
-            playerState.Role?.ApplyGameOptions(opt, player.PlayerId);
+        player.GetRoleClass()?.ApplyGameOptions(opt, player.PlayerId);
 
         switch (role)
         {
@@ -414,10 +414,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
             case CustomRoles.Disperser:
                 Disperser.ApplyGameOptions();
-                break;
-            case CustomRoles.Addict:
-                AURoleOptions.EngineerCooldown = Addict.VentCooldown.GetFloat();
-                AURoleOptions.EngineerInVentMaxTime = 1;
                 break;
             case CustomRoles.Mole:
                 AURoleOptions.EngineerCooldown = Mole.VentCooldown.GetFloat();

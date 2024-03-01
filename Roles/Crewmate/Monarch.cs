@@ -16,8 +16,8 @@ internal class Monarch : RoleBase
     public override bool IsEnable => On;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
-    public static OptionItem KnightCooldown;
-    public static OptionItem KnightMax;
+    private static OptionItem KnightCooldown;
+    private static OptionItem KnightMax;
     
     private static int KnightLimit = new();
 
@@ -111,7 +111,7 @@ internal class Monarch : RoleBase
         return false;
     }
     public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString(KnightLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Monarch).ShadeColor(0.25f) : Color.gray, $"({KnightLimit})");
-    public static bool CanBeKnighted(PlayerControl pc)
+    private static bool CanBeKnighted(PlayerControl pc)
     {
         return pc != null && !pc.GetCustomRole().IsNotKnightable() && 
             !pc.IsAnySubRole(x => x is CustomRoles.Knighted or CustomRoles.Stubborn or CustomRoles.TicketsStealer);

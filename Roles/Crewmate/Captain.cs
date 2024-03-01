@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using static TOHE.Options;
 using static TOHE.Translator;
-using Il2CppSystem.Text;
 using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
@@ -11,26 +10,24 @@ namespace TOHE.Roles.Crewmate;
 internal class Captain : RoleBase
 {
     private const int Id = 26300;
-    //private static List<byte> playerIdList = [];
+
     public static bool On = false;
     public override bool IsEnable => On;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
+    private static OptionItem OptionCrewCanFindCaptain;
+    private static OptionItem OptionMadmateCanFindCaptain;
+    private static OptionItem OptionTaskRequiredToReveal;
+    private static OptionItem OptionTaskRequiredToSlow;
+    private static OptionItem OptionReducedSpeed;
+    private static OptionItem OptionReducedSpeedTime;
+    private static OptionItem CaptainCanTargetNB;
+    private static OptionItem CaptainCanTargetNC;
+    private static OptionItem CaptainCanTargetNE;
+    private static OptionItem CaptainCanTargetNK;
 
     private static Dictionary<byte, float> OriginalSpeed = [];
-    public static Dictionary<byte, List<byte>> CaptainVoteTargets = [];
-
-    public static OptionItem OptionCrewCanFindCaptain;
-    public static OptionItem OptionMadmateCanFindCaptain;
-    public static OptionItem OptionTaskRequiredToReveal;
-    public static OptionItem OptionTaskRequiredToSlow;
-    public static OptionItem OptionReducedSpeed;
-    public static OptionItem OptionReducedSpeedTime;
-    public static OptionItem CaptainCanTargetNB;
-    public static OptionItem CaptainCanTargetNC;
-    public static OptionItem CaptainCanTargetNE;
-    public static OptionItem CaptainCanTargetNK;
-
+    private static Dictionary<byte, List<byte>> CaptainVoteTargets = [];
 
     public static void SetupCustomOption()
     {
@@ -138,6 +135,8 @@ internal class Captain : RoleBase
         }
         else CaptainVoteTargets.Clear();
     }
+
+    public static bool CrewCanFindCaptain() => OptionCrewCanFindCaptain.GetBool();
 
     public override void OnTaskComplete(PlayerControl pc, int y, int z)
     {

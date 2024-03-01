@@ -20,15 +20,15 @@ internal class Chameleon : RoleBase
     public override bool IsEnable => On;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
 
-    public static OptionItem ChameleonCooldown;
+    private static OptionItem ChameleonCooldown;
     private static OptionItem ChameleonDuration;
-    public static OptionItem UseLimitOpt;
-    public static OptionItem ChameleonAbilityUseGainWithEachTaskCompleted;
+    private static OptionItem UseLimitOpt;
+    private static OptionItem ChameleonAbilityUseGainWithEachTaskCompleted;
 
     private static Dictionary<byte, long> InvisTime = [];
     private static Dictionary<byte, long> lastTime = [];
     private static Dictionary<byte, int> ventedId = [];
-    public static Dictionary<byte, float> UseLimit = [];
+    private static Dictionary<byte, float> UseLimit = [];
 
     public static void SetupCustomOption()
     {
@@ -103,9 +103,9 @@ internal class Chameleon : RoleBase
         AURoleOptions.EngineerCooldown = ChameleonCooldown.GetFloat() + 1f;
         AURoleOptions.EngineerInVentMaxTime = 1f;
     }
-    public static bool CanGoInvis(byte id)
+    private static bool CanGoInvis(byte id)
         => GameStates.IsInTask && !InvisTime.ContainsKey(id) && !lastTime.ContainsKey(id);
-    public static bool IsInvis(byte id) => InvisTime.ContainsKey(id);
+    private static bool IsInvis(byte id) => InvisTime.ContainsKey(id);
 
     private static long lastFixedTime = 0;
     public override void OnReportDeadBody(PlayerControl y, PlayerControl x)

@@ -14,11 +14,11 @@ internal class CopyCat : RoleBase
     public override bool IsEnable => On;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
-    public static float CurrentKillCooldown = new();
+    private static OptionItem KillCooldown;
+    private static OptionItem CopyCrewVar;
+    private static OptionItem CopyTeamChangingAddon;
 
-    public static OptionItem KillCooldown;
-    public static OptionItem CopyCrewVar;
-    public static OptionItem CopyTeamChangingAddon;
+    private static float CurrentKillCooldown = new();
 
     public static void SetupCustomOption()
     {
@@ -51,6 +51,9 @@ internal class CopyCat : RoleBase
         playerIdList.Remove(playerId);
         if (!playerIdList.Any()) On = false;
     }
+    public static bool CanCopyTeamChangingAddon() => CopyTeamChangingAddon.GetBool();
+    public static bool NoHaveTask(byte playerId) => playerIdList.Contains(playerId);
+
     public override bool CanUseImpostorVentButton(PlayerControl pc) => playerIdList.Contains(pc.PlayerId);
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Utils.GetPlayerById(id).IsAlive() ? CurrentKillCooldown : 300f;
     public static void UnAfterMeetingTasks()
@@ -179,6 +182,7 @@ internal class CopyCat : RoleBase
         //bcoz of single role
         // Other
     }
+
     public override bool OnCheckMurderAsKiller(PlayerControl pc, PlayerControl tpc)
     {
         CustomRoles role = tpc.GetCustomRole();

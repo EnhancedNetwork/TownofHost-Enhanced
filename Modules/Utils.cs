@@ -664,7 +664,8 @@ public static class Utils
                     break;
 
             }
-        if (CopyCat.playerIdList.Contains(p.PlayerId)) hasTasks = false;
+
+        if (CopyCat.NoHaveTask(p.PlayerId)) hasTasks = false;
         if (Main.TasklessCrewmate.Contains(p.PlayerId)) hasTasks = false;
 
         return hasTasks;
@@ -2427,7 +2428,7 @@ public static class Utils
 
                         if (seer.IsAlive() && seer.IsRevealedPlayer(target) && target.Is(CustomRoles.Trickster))
                         {
-                            TargetRoleText = Overseer.RandomRole[seer.PlayerId]; // Random trickster role
+                            TargetRoleText = Overseer.GetRandomRole(seer.PlayerId); // Random trickster role
                             TargetRoleText += TaskState.GetTaskState(); // Random task count for revealed trickster
                         }
 

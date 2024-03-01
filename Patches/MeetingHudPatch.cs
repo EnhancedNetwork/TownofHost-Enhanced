@@ -56,10 +56,11 @@ class CheckForEndVotingPatch
                     }
                 }
 
-                if (pc.Is(CustomRoles.Dictator) && pva.DidVote && pc.PlayerId != pva.VotedFor && pva.VotedFor < 253 && !pc.Data.IsDead)
+                if (Dictator.CheckVotingForTarget(pc, pva))
                 {
                     var voteTarget = Utils.GetPlayerById(pva.VotedFor);
                     TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Suicide, pc.PlayerId);
+
                     statesList.Add(new()
                     {
                         VoterId = pva.TargetPlayerId,
@@ -81,16 +82,21 @@ class CheckForEndVotingPatch
                     }
                     else __instance.RpcVotingComplete(states, voteTarget.Data, false);
 
-                    Logger.Info($"{voteTarget.GetNameWithRole()} 被独裁者驱逐", "Dictator");
+                    Logger.Info($"{voteTarget.GetNameWithRole()} expelled by Dictator", "Dictator");
+                    
                     CheckForDeathOnExile(PlayerState.DeathReason.Vote, pva.VotedFor);
-                    Logger.Info("独裁投票，会议强制结束", "Special Phase");
+                    
+                    Logger.Info("Dictatorial vote, forced closure of the meeting", "Special Phase");
+                    
                     voteTarget.SetRealKiller(pc);
+                    
                     Main.LastVotedPlayerInfo = voteTarget.Data;
                     if (Main.LastVotedPlayerInfo != null)
                         ConfirmEjections(Main.LastVotedPlayerInfo);
+
                     return true;
                 }
-
+                
                 if (pva.DidVote && pva.VotedFor < 253 && !pc.Data.IsDead)
                 {
                     var voteTarget = Utils.GetPlayerById(pva.VotedFor);
@@ -1069,7 +1075,7 @@ class MeetingHudStartPatch
 
             if (!PlayerControl.LocalPlayer.Data.IsDead && PlayerControl.LocalPlayer.IsRevealedPlayer(pc) && pc.Is(CustomRoles.Trickster))
             {
-                roleTextMeeting.text = Overseer.RandomRole[PlayerControl.LocalPlayer.PlayerId]; // random role for revealed trickster
+                roleTextMeeting.text = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId); // random role for revealed trickster
                 roleTextMeeting.text += TaskState.GetTaskState(); // Random task count for revealed trickster
                 //enable = false;
             }

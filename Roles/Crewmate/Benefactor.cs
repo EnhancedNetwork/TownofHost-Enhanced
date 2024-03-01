@@ -9,19 +9,20 @@ namespace TOHE.Roles.Crewmate;
 internal class Benefactor : RoleBase
 {
     private static readonly int Id = 26400;
-    //private static List<byte> playerIdList = [];
+
     public static bool On = false;
     public override bool IsEnable => On;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
-    public static Dictionary<byte, List<int>> taskIndex = [];
-    public static Dictionary<byte, int> TaskMarkPerRound = [];
-    private static int maxTasksMarkedPerRound = new();
-    public static Dictionary<byte, long> shieldedPlayers = [];
+    private static OptionItem TaskMarkPerRoundOpt;
+    private static OptionItem ShieldDuration;
+    private static OptionItem ShieldIsOneTimeUse;
 
-    public static OptionItem TaskMarkPerRoundOpt;
-    public static OptionItem ShieldDuration;
-    public static OptionItem ShieldIsOneTimeUse;
+    private static int maxTasksMarkedPerRound = new();
+
+    private static Dictionary<byte, List<int>> taskIndex = [];
+    private static Dictionary<byte, int> TaskMarkPerRound = [];
+    private static Dictionary<byte, long> shieldedPlayers = [];
 
     public static void SetupCustomOption()
     {
@@ -36,7 +37,6 @@ internal class Benefactor : RoleBase
 
     public override void Init()
     {
-        //playerIdList = [];
         taskIndex = [];
         shieldedPlayers = [];
         TaskMarkPerRound = [];

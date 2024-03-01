@@ -1104,7 +1104,7 @@ static class ExtendedPlayerControl
         return target.Is(CustomRoles.EngineerTOHE)
             || target.Is(CustomRoles.SabotageMaster)
             || target.Is(CustomRoles.CopyCat)
-            || target.Is(CustomRoles.Monitor) && Monitor.CanVent.GetBool()
+            || target.Is(CustomRoles.Monitor) && Monitor.CanUseVent()
             || target.Is(CustomRoles.SwordsMan) && SwordsMan.CanVent.GetBool()
             || target.Is(CustomRoles.Nimble);
     }

@@ -1,4 +1,3 @@
-using System.Linq;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -32,14 +31,18 @@ internal class Marshall : RoleBase
     {
         if (!pc.IsAlive() || pc.Is(CustomRoles.Madmate)) return false;
 
-        return (pc.Is(CustomRoles.Marshall) && pc.GetPlayerTaskState().IsTaskFinished);
+        return pc.Is(CustomRoles.Marshall) && pc.GetPlayerTaskState().IsTaskFinished;
     }
     private static bool IsMarshallTarget(PlayerControl seer) => CustomRoles.Marshall.IsClassEnable() && seer.Is(CustomRoleTypes.Crewmate);
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
-        => IsMarshallTarget(seer) && GetExpose(target) ? Utils.ColorString(RoleColor, "★") : string.Empty;
+    {
+        target ??= seer;
+
+        return IsMarshallTarget(seer) && GetExpose(target) ? Utils.ColorString(RoleColor, "★") : string.Empty;
+    }
 
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => target.GetPlayerTaskState().IsTaskFinished && seer.Is(CustomRoleTypes.Crewmate) && target.Is(CustomRoles.Marshall);
-    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => (seer.Is(CustomRoleTypes.Crewmate) && target.Is(CustomRoles.Marshall) && target.GetPlayerTaskState().IsTaskFinished);
+    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => seer.Is(CustomRoleTypes.Crewmate) && target.Is(CustomRoles.Marshall) && target.GetPlayerTaskState().IsTaskFinished;
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc)
     {
         if (!isUI) Utils.SendMessage(GetString("GuessMarshallTask"), pc.PlayerId);

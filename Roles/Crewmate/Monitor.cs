@@ -20,11 +20,11 @@ internal class Monitor : RoleBase
     public override CustomRoles ThisRoleBase => CanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
 
     private static OptionItem CanCheckCamera;
-    public static OptionItem CanVent;
-    public static bool IsAdminWatch;
-    public static bool IsVitalWatch;
-    public static bool IsDoorLogWatch;
-    public static bool IsCameraWatch;
+    private static OptionItem CanVent;
+    private static bool IsAdminWatch;
+    private static bool IsVitalWatch;
+    private static bool IsDoorLogWatch;
+    private static bool IsCameraWatch;
 
     public static void SetupCustomOption()
     {
@@ -50,6 +50,8 @@ internal class Monitor : RoleBase
     {
         playerIdList.Remove(playerId);
     }
+
+    public static bool CanUseVent() => CanVent.GetBool();
 
     private static int Count = 0;
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

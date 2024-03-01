@@ -9,6 +9,7 @@ using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -195,8 +196,8 @@ internal class RPCHandlerPatch
                 break;
         }
         if (__instance.PlayerId != 0
-    && Enum.IsDefined(typeof(CustomRPC), (int)callId)
-    && !TrustedRpc(callId)) //ホストではなく、CustomRPCで、VersionCheckではない
+            && Enum.IsDefined(typeof(CustomRPC), (int)callId)
+            && !TrustedRpc(callId)) //ホストではなく、CustomRPCで、VersionCheckではない
         {
             Logger.Warn($"{__instance?.Data?.PlayerName}:{callId}({RPC.GetRpcName(callId)}) has been canceled because it was sent by someone other than the host", "CustomRPC");
             if (AmongUsClient.Instance.AmHost)
@@ -969,7 +970,7 @@ internal static class RPC
             Main.PlayerStates[targetId].SetSubRole(role);
         }
 
-        Main.PlayerStates[targetId]?.Role?.Add(targetId);
+        targetId.GetRoleClassById()?.Add(targetId);
 
         switch (role)
         {

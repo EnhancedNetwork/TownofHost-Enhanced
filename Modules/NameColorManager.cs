@@ -124,9 +124,8 @@ public static class NameColorManager
             var targetColor = Investigator.InvestigatedColor(seer, target);
             if (targetColor != string.Empty) color = targetColor;
         }
-                    
-        //Seeker
-        if (seer.Is(CustomRoles.Seeker) && Seeker.Targets.ContainsValue(target.PlayerId)) color = Main.roleColors[CustomRoles.Seeker];
+        
+
         //Pixie
         if (seer.Is(CustomRoles.Pixie) && Pixie.PixieTargets[seer.PlayerId].Contains(target.PlayerId)) color = Main.roleColors[CustomRoles.Pixie];
         // Pyromaniac

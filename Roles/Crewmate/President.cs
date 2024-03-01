@@ -4,6 +4,7 @@ using System.Linq;
 using TOHE.Modules.ChatManager;
 using UnityEngine;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -14,18 +15,16 @@ internal class President : RoleBase
     public override bool IsEnable => On;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
-    public static Dictionary<byte, int> EndLimit = [];
-    public static Dictionary<byte, int> RevealLimit = [];
-    public static Dictionary<byte, bool> CheckPresidentReveal = [];
+    private static OptionItem PresidentAbilityUses;
+    private static OptionItem PresidentCanBeGuessedAfterRevealing;
+    private static OptionItem HidePresidentEndCommand;
+    private static OptionItem NeutralsSeePresident;
+    private static OptionItem MadmatesSeePresident;
+    private static OptionItem ImpsSeePresident;
 
-
-    public static OptionItem PresidentAbilityUses;
-    public static OptionItem PresidentCanBeGuessedAfterRevealing;
-    public static OptionItem HidePresidentEndCommand;
-    public static OptionItem NeutralsSeePresident;
-    public static OptionItem MadmatesSeePresident;
-    public static OptionItem ImpsSeePresident;
-
+    private static Dictionary<byte, int> EndLimit = [];
+    private static Dictionary<byte, int> RevealLimit = [];
+    private static Dictionary<byte, bool> CheckPresidentReveal = [];
 
     public static void SetupCustomOption()
     {
@@ -58,6 +57,8 @@ internal class President : RoleBase
         EndLimit.Remove(playerId);
         RevealLimit.Remove(playerId);
     }
+
+    public static bool CheckReveal(byte targetId) => CheckPresidentReveal.TryGetValue(targetId, out var canBeReveal) && canBeReveal;
     public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString(EndLimit[PlayerId] > 0 ? Utils.GetRoleColor(CustomRoles.President) : Color.gray, EndLimit.TryGetValue(PlayerId, out var endLimit) ? $"({endLimit})" : "Invalid");
 
     public static void TryHideMsgForPresident()

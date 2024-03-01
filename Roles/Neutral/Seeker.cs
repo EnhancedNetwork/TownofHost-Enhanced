@@ -12,12 +12,12 @@ internal class Seeker : RoleBase
     public override bool IsEnable => On;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
-    public static OptionItem PointsToWin;
+    private static OptionItem PointsToWin;
     private static OptionItem TagCooldownOpt;
 
-    public static int PointsToWinOpt;
+    private static int PointsToWinOpt;
 
-    public static Dictionary<byte, byte> Targets = [];
+    private static Dictionary<byte, byte> Targets = [];
     private static Dictionary<byte, int> TotalPoints = [];
     private static Dictionary<byte, float> DefaultSpeed = [];
 
@@ -57,7 +57,7 @@ internal class Seeker : RoleBase
             Main.ResetCamPlayerList.Add(playerId);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = TagCooldownOpt.GetFloat();
-
+    
     private static void SendRPC(byte seekerId, byte targetId = 0xff, bool setTarget = true)
     {
         MessageWriter writer;
@@ -191,7 +191,7 @@ internal class Seeker : RoleBase
         return targetId;
     }
     public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
-
+    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => Targets.ContainsValue(target.PlayerId) ? Main.roleColors[CustomRoles.Seeker] : "";
     public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Seeker).ShadeColor(0.25f), $"({TotalPoints[PlayerId]}/{PointsToWin.GetInt()})");
 
     public override void AfterMeetingTasks()

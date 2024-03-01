@@ -574,7 +574,7 @@ internal class SelectRolesPatch
             {
                 if (pc.Data.Role.Role == RoleTypes.Shapeshifter) Main.CheckShapeshift.Add(pc.PlayerId, false);
 
-                Main.PlayerStates[pc.PlayerId]?.Role?.Add(pc.PlayerId);
+                pc.GetRoleClass()?.Add(pc.PlayerId);
 
                 switch (pc.GetCustomRole())
                 {

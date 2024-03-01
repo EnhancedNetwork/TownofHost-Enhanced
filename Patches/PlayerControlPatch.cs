@@ -871,7 +871,6 @@ class CheckMurderPatch
         switch (targetRole)
         {
             case CustomRoles.Opportunist when Options.OppoImmuneToAttacksWhenTasksDone.GetBool() && target.AllTasksCompleted():
-            case CustomRoles.Guardian when target.AllTasksCompleted():
             case CustomRoles.Monarch when CustomRoles.Knighted.RoleExist():
                 return false;
             case CustomRoles.Pestilence: // 🗿🗿
@@ -1890,14 +1889,15 @@ class ReportDeadBodyPatch
 
             if (target == null) //拍灯事件
             {
+                if (__instance.GetRoleClass().CantStartMeeting(__instance)) return false;
+
                 if (__instance.Is(CustomRoles.Jester) && !Options.JesterCanUseButton.GetBool()) return false;
-                if (__instance.Is(CustomRoles.Swapper) && !Swapper.CanStartMeeting.GetBool()) return false;
             }
             if (target != null) //拍灯事件
             {
                 if (UnreportablePlayers.Contains(target.PlayerId)) return false;
 
-                if (Coroner.UnreportablePlayers.Contains(target.PlayerId)) return false;
+                if (Coroner.CannotReportBody(target.PlayerId)) return false;
 
                 if (!Main.PlayerStates.TryGetValue(__instance.PlayerId, out var playerState))
                     if (playerState != null && playerState.Role != null && playerState.Role.CheckReportDeadBody(__instance, target, killer))
@@ -2980,6 +2980,9 @@ class FixedUpdateInNormalGamePatch
                     {
                         DisableDevice.FixedUpdate();
 
+                        if (CustomRoles.AntiAdminer.IsClassEnable())
+                            AntiAdminer.FixedUpdateLowLoad();
+
                         if (CustomRoles.Monitor.IsClassEnable())
                             Monitor.FixedUpdate();
                     }
@@ -3042,7 +3045,7 @@ class FixedUpdateInNormalGamePatch
                 else RoleText.enabled = false;
                 if (!PlayerControl.LocalPlayer.Data.IsDead && PlayerControl.LocalPlayer.IsRevealedPlayer(__instance) && __instance.Is(CustomRoles.Trickster))
                 {
-                    RoleText.text = Overseer.RandomRole[PlayerControl.LocalPlayer.PlayerId]; // random role for revealed trickster
+                    RoleText.text = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId); // random role for revealed trickster
                     RoleText.text += TaskState.GetTaskState(); // random task count for revealed trickster
                 }
 
@@ -3286,7 +3289,8 @@ class FixedUpdateInNormalGamePatch
                 {
                     if (seer.Is(CustomRoles.AntiAdminer))
                     {
-                        //seer.GetCustomRole().GetRoleClass().OnFixedUpdateLowLoad(player);
+                        AntiAdminer.FixedUpdateLowLoad();
+
                         if (target.AmOwner)
                             Suffix.Append(AntiAdminer.GetSuffix());
                     }
