@@ -2617,8 +2617,7 @@ public static class Utils
         if (Spiritualist.IsEnable) Spiritualist.AfterMeetingTasks();
         if (Penguin.IsEnable) Penguin.AfterMeetingTasks();
         if (Taskinator.IsEnable) Taskinator.AfterMeetingTasks();
-        if (Hawk.IsEnable) Hawk.AfterMeetingTasks(); 
-        if (Retributionist.IsEnable) Retributionist.AfterMeetingTasks(); 
+        if (Hawk.IsEnable) Hawk.AfterMeetingTasks();
         if (PlagueDoctor.IsEnable) PlagueDoctor.AfterMeetingTasks();
         if (Jailer.IsEnable) Jailer.AfterMeetingTasks();
         if (Pirate.IsEnable) Pirate.AfterMeetingTask();
