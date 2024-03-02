@@ -245,12 +245,12 @@ class CheckMurderPatch
 
         if (!targetRoleClass.OnCheckMurderAsTarget(killer, target))
         {
-            return targetRoleClass.OnCheckMurderAsTarget(killer, target);
+            return false;
         }
 
         if (!killerRoleClass.OnCheckMurderAsKiller(killer, target))
         {
-            return killerRoleClass.OnCheckMurderAsKiller(killer, target);
+            return false;
         }
 
 
