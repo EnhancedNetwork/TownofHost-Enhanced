@@ -10,8 +10,6 @@ namespace TOHE;
 //[HarmonyPatch]
 public static class Credentials
 {
-    public static SpriteRenderer ToheLogo { get; private set; }
-
     [HarmonyPatch(typeof(PingTracker), nameof(PingTracker.Update))]
     class PingTrackerUpdatePatch
     {
@@ -140,9 +138,9 @@ public static class Credentials
 
             VersionChecker.Check();
 
-            if (SpecialEventText == null && ToheLogo != null)
+            if (SpecialEventText == null && MainMenuManagerStartPatch.ToheLogo != null)
             {
-                SpecialEventText = Object.Instantiate(__instance.text, ToheLogo.transform);
+                SpecialEventText = Object.Instantiate(__instance.text, MainMenuManagerStartPatch.ToheLogo.transform);
                 SpecialEventText.name = "SpecialEventText";
                 SpecialEventText.text = "";
                 SpecialEventText.color = Color.white;
@@ -152,7 +150,7 @@ public static class Credentials
             }
             if (SpecialEventText != null)
             {
-                SpecialEventText.enabled = TitleLogoPatch.amongUsLogo != null;
+                SpecialEventText.enabled = MainMenuManagerStartPatch.amongUsLogo != null;
             }
             if (Main.IsInitialRelease)
             {
@@ -161,52 +159,6 @@ public static class Credentials
                 {
                     SpecialEventText.color = col;
                 }
-            }
-        }
-    }
-
-    [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
-    public class TitleLogoPatch
-    {
-        public static GameObject amongUsLogo;
-        public static GameObject Ambience;
-        public static GameObject LoadingHint;
-
-        private static void Postfix(MainMenuManager __instance)
-        {
-            amongUsLogo = GameObject.Find("LOGO-AU");
-
-            var rightpanel = __instance.gameModeButtons.transform.parent;
-            var logoObject = new GameObject("titleLogo_TOHE");
-            var logoTransform = logoObject.transform;
-            ToheLogo = logoObject.AddComponent<SpriteRenderer>();
-            logoTransform.parent = rightpanel;
-            logoTransform.localPosition = new(-0.16f, 0f, 1f); //new(0f, 0.3f, 1f); new(0f, 0.15f, 1f);
-            logoTransform.localScale *= 1.2f;
-
-            if (!Options.IsLoaded)
-            {
-                LoadingHint = new GameObject("LoadingHint");
-                LoadingHint.transform.position = Vector3.down;
-                var LoadingHintText = LoadingHint.AddComponent<TextMeshPro>();
-                LoadingHintText.text = GetString("Loading");
-                LoadingHintText.alignment = TextAlignmentOptions.Center;
-                LoadingHintText.fontSize = 2f;
-                LoadingHintText.transform.position = amongUsLogo.transform.position;
-                LoadingHintText.transform.position += new Vector3 (-0.25f, -0.9f, 0f);
-                LoadingHintText.color = new Color32(17, 255, 1, byte.MaxValue);
-                __instance.playButton.transform.gameObject.SetActive(false);
-            }
-            if ((Ambience = GameObject.Find("Ambience")) != null)
-            {
-                // Show playButton when mod is fully loaded
-                if (Options.IsLoaded && LoadingHint != null) __instance.playButton.transform.gameObject.SetActive(true);
-
-                Ambience.SetActive(false);
-                //var CustomBG = new GameObject("CustomBG");
-                //CustomBG.transform.position = new Vector3(2.095f, -0.25f, 520f);
-                //var bgRenderer = CustomBG.AddComponent<SpriteRenderer>();
-                //bgRenderer.sprite = Utils.LoadSprite("TOHE.Resources.Background.TOH-Background-Old.jpg", 245f);
             }
         }
     }
