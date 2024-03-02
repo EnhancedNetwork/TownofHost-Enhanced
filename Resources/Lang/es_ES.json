@@ -665,7 +665,7 @@
   "JinxInfo": "Devuelve el ataque a quien te toque",
   "PotionMasterInfo": "Usa pociones para ganar",
   "NecromancerInfo": "Mata a la tripulación usando demonios nigrófagos",
-  "WardenInfo": "(Ghost) Alert about danger",
+  "WardenInfo": "(Fantasma) Alerta sobre peligro",
   "MinionInfo": "(Ghost) Blind enemies",
   "LoversInfo": "Sobrevive y gana juntos",
   "MadmateInfo": "Ayuda a los impostores",
@@ -3631,7 +3631,7 @@
   "ImpCanBeStatue": "<color=#ff1919>Impostors</color> can become Statue",
   "CrewCanBeStatue": "<color=#8cffff>Crewmates</color> can become Statue",
   "NeutralCanBeStatue": "<color=#7f8c8d>Neutrals</color> can become Statue",
-  "WardenIncreaseSpeed": "Increase Speed By",
-  "WardenWarn": "DANGER! RUN!",
-  "MinionAbilityTime": "Ability Duration"
+  "WardenIncreaseSpeed": "Aumentar la Velocidad en",
+  "WardenWarn": "¡PELIGRO! ¡CORRE!",
+  "MinionAbilityTime": "Duración de la Habilidad"
 }
