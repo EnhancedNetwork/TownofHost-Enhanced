@@ -10,24 +10,24 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor
 {
-    public static class Nemesis
+    public static class Bloodmoon
     {
-        private static readonly int Id = 3600;
+        private static readonly int Id = 28100;
 
 
-        public static OptionItem MinimumPlayersAliveToRevenge;
+        public static OptionItem MinimumPlayersAliveToKill;
         public static OptionItem KillCooldown;
-        public static OptionItem MafiaCanKillNum;
+        public static OptionItem CanKillNum;
         public static Dictionary<byte, int> KillCount;
 
         public static void SetupCustomOption()
         {
-            SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Nemesis);
-            KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(2.5f, 120f, 2.5f), 40f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis])
+            SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Bloodmoon);
+            KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(2.5f, 120f, 2.5f), 40f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bloodmoon])
             .SetValueFormat(OptionFormat.Seconds);
-            MafiaCanKillNum = IntegerOptionItem.Create(Id + 11, "NemesisCanKillNum", new(1, 15, 1), 1, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis])
+            CanKillNum = IntegerOptionItem.Create(Id + 11, "HawkCanKillNum", new(1, 15, 1), 1, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bloodmoon])
                 .SetValueFormat(OptionFormat.Players);
-            MinimumPlayersAliveToRevenge = IntegerOptionItem.Create(Id + 12, "MinimumPlayersAliveToRetri", new(0, 15, 1), 4, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis])
+            MinimumPlayersAliveToKill = IntegerOptionItem.Create(Id + 12, "MinimumPlayersAliveToKill", new(0, 15, 1), 4, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bloodmoon])
             .SetValueFormat(OptionFormat.Players);
         }
         public static void Init()
@@ -36,12 +36,12 @@ namespace TOHE.Roles.Impostor
         }
         public static void Add(byte PlayerId)
         {
-            KillCount.Add(PlayerId, MafiaCanKillNum.GetInt());
+            KillCount.TryAdd(PlayerId, CanKillNum.GetInt());
         }
         private static void SendRPC(byte playerId)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-            writer.WritePacked((int)CustomRoles.Nemesis);
+            writer.WritePacked((int)CustomRoles.Bloodmoon);
             writer.Write(playerId);
             writer.Write(KillCount[playerId]);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -61,20 +61,19 @@ namespace TOHE.Roles.Impostor
         {
             if (!target.Is(CustomRoles.Pestilence) 
                 && KillCount[killer.PlayerId] > 0 
-                && Main.AllAlivePlayerControls.Length >= MinimumPlayersAliveToRevenge.GetInt()
+                && Main.AllAlivePlayerControls.Length >= MinimumPlayersAliveToKill.GetInt()
                 && (target.Is(CustomRoles.NiceMini) ? Mini.Age > 18 : true))
             {
-                Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Revenge;
                 killer.RpcMurderPlayerV3(target);
                 killer.RpcResetAbilityCooldown();
                 KillCount[killer.PlayerId]--;
                 SendRPC(killer.PlayerId);
             }
-            else if (Main.AllAlivePlayerControls.Count() < MinimumPlayersAliveToRevenge.GetInt()) killer.Notify(GetString("NemesisTooManyDied"));
+            else if (Main.AllAlivePlayerControls.Count() < MinimumPlayersAliveToKill.GetInt()) killer.Notify(GetString("HawkTooManyDied"));
             return false;
         }
         public static bool CanKill(byte id) => KillCount.TryGetValue(id, out var x) && x > 0;
-        public static string GetRevengeLimit(byte playerId) => Utils.ColorString(CanKill(playerId) ? Utils.GetRoleColor(CustomRoles.Nemesis).ShadeColor(0.25f) : Color.gray, KillCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");
+        public static string GetRevengeLimit(byte playerId) => Utils.ColorString(CanKill(playerId) ? Utils.GetRoleColor(CustomRoles.Bloodmoon).ShadeColor(0.25f) : Color.gray, KillCount.TryGetValue(playerId, out var killLimit) ? $"({killLimit})" : "Invalid");
 
     }
 }

@@ -218,7 +218,11 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.ShapeshifterDuration = Options.ShapeshiftDur.GetFloat();
                 break;
             case CustomRoles.Nemesis:
-                Nemesis.SetKillCooldown();
+                AURoleOptions.ShapeshifterCooldown = Nemesis.NemesisShapeshiftCD.GetFloat();
+                AURoleOptions.ShapeshifterDuration = Nemesis.NemesisShapeshiftDur.GetFloat();
+                break;
+            case CustomRoles.Bloodmoon:
+                Bloodmoon.SetKillCooldown();
                 break;
             case CustomRoles.ScientistTOHE:
                 AURoleOptions.ScientistCooldown = Options.ScientistCD.GetFloat();
@@ -431,8 +435,8 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Minion:
                 Minion.SetAbilityCooldown();
                 break;
-            case CustomRoles.Retributionist:
-                Retributionist.SetKillCooldown();
+            case CustomRoles.Hawk:
+                Hawk.SetKillCooldown();
                 break;
             default:
                 opt.SetVision(false);

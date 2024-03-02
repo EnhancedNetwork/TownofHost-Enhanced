@@ -165,6 +165,8 @@ public class Main : BasePlugin
     public static Dictionary<byte, float> WarlockTimer = [];
     public static Dictionary<byte, PlayerControl> CursedPlayers = [];
     public static Dictionary<byte, bool> isCurseAndKill = [];
+    public static Dictionary<byte, int> NemesisRevenged = [];
+    public static Dictionary<byte, int> RetributionistRevenged = [];
     public static Dictionary<byte, int> GuesserGuessed = [];
     public static Dictionary<(byte, byte), bool> isDoused = [];
     public static Dictionary<(byte, byte), bool> isDraw = [];
@@ -540,6 +542,7 @@ public enum CustomRoles
     Blackmailer,
     Bomber,
     BountyHunter,
+    Bloodmoon,
     Butcher,
     Camouflager,
     Chronomancer,
@@ -574,7 +577,7 @@ public enum CustomRoles
     Mercenary,
     Miner,
     Morphling,
-    Nemesis,
+    Nemesis, 
     Minion,
     Ninja,
     Nuker,
@@ -641,6 +644,7 @@ public enum CustomRoles
     Guardian,
     GuessMaster,
     Grenadier,
+    Hawk,
     Inspector, //inspector
     Investigator,
     Jailer,

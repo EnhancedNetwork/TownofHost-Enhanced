@@ -510,7 +510,7 @@ public static class Divinator
 
                    CustomRoles.Warlock or
                    CustomRoles.Anonymous or
-                   CustomRoles.Mafia or
+                   CustomRoles.Nemesis or
                    CustomRoles.Retributionist or
                    CustomRoles.Doctor or
                    CustomRoles.ScientistTOHE or

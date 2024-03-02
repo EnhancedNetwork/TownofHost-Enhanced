@@ -45,7 +45,8 @@ public static class CustomRolesHelper
                 CustomRoles.President => CustomRoles.Crewmate,
                 CustomRoles.Marshall => CustomRoles.Crewmate,
                 CustomRoles.SabotageMaster => CustomRoles.Engineer,
-                CustomRoles.Nemesis => CustomRoles.GuardianAngel,
+                CustomRoles.Nemesis => Nemesis.LegacyNemesis.GetBool() ? CustomRoles.Shapeshifter : CustomRoles.Impostor,
+                CustomRoles.Bloodmoon => CustomRoles.GuardianAngel,
                 CustomRoles.Terrorist => CustomRoles.Engineer,
                 CustomRoles.Executioner => CustomRoles.Crewmate,
                 CustomRoles.Lawyer => CustomRoles.Crewmate,
@@ -157,8 +158,9 @@ public static class CustomRolesHelper
                 CustomRoles.Coroner => CustomRoles.Crewmate,
                 CustomRoles.Tracker => CustomRoles.Crewmate,
                 CustomRoles.Merchant => CustomRoles.Crewmate,
-                CustomRoles.Retributionist => CustomRoles.GuardianAngel,
-                CustomRoles.Guardian => CustomRoles.Crewmate, // ADDED to ThisRoleBase
+                CustomRoles.Retributionist => CustomRoles.Crewmate,
+                CustomRoles.Hawk => CustomRoles.GuardianAngel,
+                CustomRoles.Guardian => CustomRoles.Crewmate,
                 CustomRoles.Addict => CustomRoles.Engineer,
                 CustomRoles.Mole => CustomRoles.Engineer,
                 CustomRoles.Chameleon => CustomRoles.Engineer,
@@ -283,8 +285,8 @@ public static class CustomRolesHelper
             CustomRoles.GuardianAngelTOHE or
             CustomRoles.EvilSpirit or
             CustomRoles.Warden or
-            CustomRoles.Retributionist or
-            CustomRoles.Nemesis or
+            CustomRoles.Hawk or
+            CustomRoles.Bloodmoon or
             CustomRoles.Minion;
 
     }
@@ -691,6 +693,7 @@ public static class CustomRolesHelper
             CustomRoles.RiftMaker or
             CustomRoles.Ninja or
             CustomRoles.Berserker or
+            CustomRoles.Bloodmoon or
             CustomRoles.Anonymous or
             CustomRoles.Visionary or
             CustomRoles.Miner or
@@ -1029,6 +1032,7 @@ public static class CustomRolesHelper
             CustomRoles.Mayor or
             CustomRoles.Captain or
             CustomRoles.Transporter or
+            CustomRoles.Retributionist or
             CustomRoles.Benefactor or
             CustomRoles.Alchemist;
     }
@@ -1887,7 +1891,7 @@ public static class CustomRolesHelper
            CustomRoles.Poisoner => CountTypes.Poisoner,
            CustomRoles.Pelican => CountTypes.Pelican,
            CustomRoles.Minion => CountTypes.Impostor,
-           CustomRoles.Nemesis => CountTypes.Impostor,
+           CustomRoles.Bloodmoon => CountTypes.Impostor,
            CustomRoles.Gamer => CountTypes.Gamer,
            CustomRoles.BloodKnight => CountTypes.BloodKnight,
            CustomRoles.Succubus => CountTypes.Succubus,

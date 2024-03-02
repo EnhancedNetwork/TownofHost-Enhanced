@@ -9,7 +9,7 @@ namespace TOHE.Roles.Crewmate;
 
 public class Warden
 {
-    private static readonly int Id = 27800;
+    private static readonly int Id = 27800; // id
     public static OptionItem AbilityCooldown;
     public static OptionItem IncreaseSpeed;
     public static OptionItem WardenCanAlertNum;
@@ -32,7 +32,7 @@ public class Warden
     }
     public static void Add(byte PlayerId)
     {
-        AbilityCount.Add(PlayerId, WardenCanAlertNum.GetInt());
+        AbilityCount.TryAdd(PlayerId, WardenCanAlertNum.GetInt());
     }
     private static void SendRPC(byte playerId)
     {

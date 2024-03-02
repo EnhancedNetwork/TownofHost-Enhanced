@@ -20,7 +20,7 @@ public static class GhostRoleAssign
         if (GameStates.IsHideNSeek || player == null || player.Data.Disconnected) return;
 
         var getplrRole = player.GetCustomRole();
-        if (getplrRole is CustomRoles.GM) return;
+        if (getplrRole is CustomRoles.GM or CustomRoles.Nemesis or CustomRoles.Retributionist) return;
 
         if (getplrRole.IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole()) || Options.CustomGhostRoleCounts.Count <= 0) return;
         
@@ -121,11 +121,11 @@ public static class GhostRoleAssign
     {
         switch (GhostRole)
         {
-            case CustomRoles.Retributionist:
-                Retributionist.Add(target.PlayerId);
+            case CustomRoles.Hawk:
+                Hawk.Add(target.PlayerId);
                 break;
-             case CustomRoles.Nemesis:
-                Nemesis.Add(target.PlayerId);
+             case CustomRoles.Bloodmoon:
+                Bloodmoon.Add(target.PlayerId);
                 break;
             case CustomRoles.Warden:
                 Warden.Add(target.PlayerId);
