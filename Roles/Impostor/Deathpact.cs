@@ -202,7 +202,7 @@ internal class Deathpact : RoleBase
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         seen ??= seer;
-        if (!seer.Is(CustomRoles.Deathpact) || !IsInDeathpact(seer.PlayerId, seen)) return string.Empty;
+        if (!seer.Is(CustomRoles.Deathpact) || !IsInDeathpact(seer, seen)) return string.Empty;
         return ColorString(Palette.ImpostorRed, "◀");
     }
 
@@ -235,9 +235,9 @@ internal class Deathpact : RoleBase
         return false;
     }
 
-    public static bool IsInDeathpact(byte deathpact, PlayerControl target)
+    public static bool IsInDeathpact(PlayerControl deathpact, PlayerControl target)
     {
-        return PlayersInDeathpact.ContainsKey(deathpact) && PlayersInDeathpact[deathpact].Any(a => a.PlayerId == target.PlayerId);
+        return deathpact.PlayerId != target.PlayerId && PlayersInDeathpact.ContainsKey(deathpact.PlayerId) && PlayersInDeathpact[deathpact.PlayerId].Any(a => a.PlayerId == target.PlayerId);
     }
 
     public static string GetDeathpactString(PlayerControl player)
