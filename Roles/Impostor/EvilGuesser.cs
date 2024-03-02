@@ -4,7 +4,7 @@ namespace TOHE.Roles.Impostor;
 
 internal class EvilGuesser : RoleBase
 {
-    private static readonly int Id = 1300;
+    private const int Id = 1300;
 
     public static bool On;
     public override bool IsEnable => On;

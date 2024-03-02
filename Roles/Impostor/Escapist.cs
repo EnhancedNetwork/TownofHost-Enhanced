@@ -7,7 +7,7 @@ namespace TOHE.Roles.Impostor;
 
 internal class Escapist : RoleBase
 {
-    private static readonly int Id = 4000;
+    private const int Id = 4000;
 
     public static bool On;
     public override bool IsEnable => On;

@@ -10,7 +10,7 @@ namespace TOHE.Roles.Impostor;
 
 internal class EvilTracker : RoleBase
 {
-    private static readonly int Id = 1400;
+    private const int Id = 1400;
     private static List<byte> playerIdList = [];
     
     public static bool On;

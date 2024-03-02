@@ -9,7 +9,7 @@ namespace TOHE.Roles.Impostor;
 
 internal class Eraser : RoleBase
 {
-    private static readonly int Id = 24200;
+    private const int Id = 24200;
     private static List<byte> playerIdList = [];
 
     public static bool On;
