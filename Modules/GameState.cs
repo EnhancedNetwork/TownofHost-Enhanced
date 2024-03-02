@@ -18,7 +18,7 @@ namespace TOHE;
 public class PlayerState(byte playerId)
 {
     readonly byte PlayerId = playerId;
-    public RoleBase Role;
+    public RoleBase RoleClass;
     public CustomRoles MainRole = CustomRoles.NotAssigned;
     public List<CustomRoles> SubRoles = [];
     public CountTypes countTypes = CountTypes.OutOfGame;
@@ -52,7 +52,7 @@ public class PlayerState(byte playerId)
     {
         MainRole = role;
         countTypes = role.GetCountTypes();
-        Role = role.CreateRoleClass();
+        RoleClass = role.CreateRoleClass();
 
 
         var pc = GetPlayerById(PlayerId);
@@ -455,7 +455,7 @@ public class TaskState
             var playerRole = player.GetCustomRole();
             var playerSubRoles = player.GetCustomSubRoles();
 
-            Main.PlayerStates[player.PlayerId]?.Role?.OnTaskComplete(player, CompletedTasksCount, AllTasksCount);
+            player.GetRoleClass()?.OnTaskComplete(player, CompletedTasksCount, AllTasksCount);
 
             switch (playerRole)
             {
@@ -495,12 +495,12 @@ public class TaskState
                             target1.RPCPlayCustomSound("Teleport");
                             target2.RPCPlayCustomSound("Teleport");
 
-                            target1.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Transporter), string.Format(Translator.GetString("TeleportedByTransporter"), target2.GetRealName())));
-                            target2.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Transporter), string.Format(Translator.GetString("TeleportedByTransporter"), target1.GetRealName())));
+                            target1.Notify(ColorString(GetRoleColor(CustomRoles.Transporter), string.Format(Translator.GetString("TeleportedByTransporter"), target2.GetRealName())));
+                            target2.Notify(ColorString(GetRoleColor(CustomRoles.Transporter), string.Format(Translator.GetString("TeleportedByTransporter"), target1.GetRealName())));
                         }
                         else
                         {
-                            player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), Translator.GetString("ErrorTeleport")));
+                            player.Notify(ColorString(GetRoleColor(CustomRoles.Impostor), Translator.GetString("ErrorTeleport")));
                         }
                     }
                     break;

@@ -13,6 +13,8 @@ internal partial class Mayor : RoleBase
     public override bool IsEnable => On;
     public override CustomRoles ThisRoleBase => MayorHasPortableButton.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
 
+    public override Sprite AbilityButtonSprite => CustomButton.Get("Collective");
+
     public static OptionItem MayorAdditionalVote;
     public static OptionItem MayorHasPortableButton;
     public static OptionItem MayorNumOfUseButton;
@@ -108,7 +110,4 @@ internal partial class Mayor : RoleBase
         hud.ReportButton.OverrideText(GetString("ReportButtonText"));
         hud.AbilityButton.buttonLabelText.text = GetString("MayorVentButtonText");
     }
-    public override Sprite AbilityButtonSprite => CustomButton.Get("Collective");
-
-
 }

@@ -13,6 +13,8 @@ internal class Escapist : RoleBase
     public override bool IsEnable => On;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
 
+    public override Sprite AbilityButtonSprite => CustomButton.Get("abscond");
+
     private static OptionItem ShapeshiftDuration;
     private static OptionItem ShapeshiftCooldown;
 
@@ -38,7 +40,6 @@ internal class Escapist : RoleBase
         On = true;
     }
 
-    public override Sprite AbilityButtonSprite => CustomButton.Get("abscond");
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterDuration = ShapeshiftDuration.GetFloat();

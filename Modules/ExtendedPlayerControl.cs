@@ -472,8 +472,8 @@ static class ExtendedPlayerControl
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
         if (Mastermind.ManipulatedPlayers.ContainsKey(pc.PlayerId)) return true;
 
-        if (Main.PlayerStates.TryGetValue(pc.PlayerId, out var playerState) && playerState != null && playerState.Role != null)
-            return playerState.Role.CanUseKillButton(pc);
+        var playerRoleClass = pc.GetRoleClass();
+        if (playerRoleClass != null && playerRoleClass.CanUseKillButton(pc)) return true;
 
         return pc.GetCustomRole() switch
         {
@@ -561,11 +561,12 @@ static class ExtendedPlayerControl
             _ => pc.Is(CustomRoleTypes.Impostor),
         };
     }
-    public static bool HasKillButton(PlayerControl pc = null, CustomRoles role = new())
+    public static bool HasKillButton(PlayerControl pc = null)
     {
         if (pc == null) return false;
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
-        role = pc.GetCustomRole();
+        
+        var role = pc.GetCustomRole();
         if (!role.IsImpostor())
         {
             return role.GetDYRole() == RoleTypes.Impostor;
@@ -585,7 +586,9 @@ static class ExtendedPlayerControl
         if (Necromancer.Killer && !pc.Is(CustomRoles.Necromancer)) return false;
         if (pc.Is(CustomRoles.Nimble)) return true;
         if (Circumvent.CantUseVent(pc)) return false;
-        if (pc.GetRoleClass() != null && pc.GetRoleClass().CanUseImpostorVentButton(pc)) return true;
+
+        var playerRoleClass = pc.GetRoleClass();
+        if (playerRoleClass != null && playerRoleClass.CanUseImpostorVentButton(pc)) return true;
 
         return pc.GetCustomRole() switch
         {
@@ -666,6 +669,10 @@ static class ExtendedPlayerControl
     public static bool CanUseSabotage(this PlayerControl pc) // NOTE: THIS IS FOR THE HUD FOR MODDED CLIENTS, THIS DOES NOT DETERMINE WHETHER A ROLE CAN SABOTAGE
     {
         if (pc.Data.Role.Role == RoleTypes.GuardianAngel) return false;
+        if (pc.Is(CustomRoleTypes.Impostor) && !pc.IsAlive() && Options.DeadImpCantSabotage.GetBool()) return false;
+
+        var playerRoleClass = pc.GetRoleClass();
+        if (playerRoleClass != null && playerRoleClass.CanUseSabotage(pc)) return true;
 
         if (pc.Is(CustomRoleTypes.Impostor))
         {
@@ -673,7 +680,7 @@ static class ExtendedPlayerControl
             {
                 CustomRoles.KillingMachine => false,
 
-                _ => !(!pc.IsAlive() && Options.DeadImpCantSabotage.GetBool()),
+                _ => true,
             };
         }
         else

@@ -89,7 +89,7 @@ class HudManagerPatch
             {
                 __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
 
-                Main.PlayerStates[player.PlayerId]?.Role?.SetAbilityButtonText(__instance, player.PlayerId);
+                player.GetRoleClass()?.SetAbilityButtonText(__instance, player.PlayerId);
 
                 //MOD入り用のボタン下テキスト変更
                 switch (player.GetCustomRole())

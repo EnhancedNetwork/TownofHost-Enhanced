@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
+using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -360,7 +361,7 @@ internal class Swapper : RoleBase
                     if (!pc.Is(CustomRoles.Swapper) || !pc.IsAlive()) continue;
 
                     if (!playerIdList.Contains(pc.PlayerId))
-                        Main.PlayerStates[pc.PlayerId].Role.Add(pc.PlayerId);
+                        pc.GetRoleClass()?.Add(pc.PlayerId);
 
                     Vote.Add(pc.PlayerId, 253);
                     VoteTwo.Add(pc.PlayerId, 253);

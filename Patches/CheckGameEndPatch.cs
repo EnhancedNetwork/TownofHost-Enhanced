@@ -465,9 +465,9 @@ class GameEndCheckerForNormal
     {
         if (Quizmaster.IsEnable) Quizmaster.ResetMarkedPlayer();
 
-        foreach (var playerState in Main.PlayerStates.Values.Where(pc => pc.Role.IsEnable).ToArray())
+        foreach (var playerState in Main.PlayerStates.Values.Where(pc => pc.RoleClass.IsEnable).ToArray())
         {
-            playerState.Role?.OnCoEndGame();
+            playerState.RoleClass?.OnCoEndGame();
         }
 
         // Set ghost role

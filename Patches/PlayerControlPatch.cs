@@ -756,11 +756,16 @@ class CheckMurderPatch
         var killerRole = killer.GetCustomRole();
         var targetRole = target.GetCustomRole();
 
+        var targetRoleClass = target.GetRoleClass();
+
+        if (!targetRoleClass.OnCheckMurderAsTarget(killer, target))
+            return false;
+
         if (Jackal.ResetKillCooldownWhenSbGetKilled.GetBool() && !killerRole.Is(CustomRoles.Sidekick) && !killerRole.Is(CustomRoles.Jackal) && !target.Is(CustomRoles.Sidekick) && !target.Is(CustomRoles.Jackal) && !GameStates.IsMeeting)
             Jackal.AfterPlayerDiedTask(killer);
 
         if (CustomRoles.Benefactor.IsClassEnable() 
-            && !Main.PlayerStates.Any(x => x.Value.MainRole == CustomRoles.Benefactor && x.Value.Role.OnCheckMurderAsTarget(killer, target)))
+            && !Main.PlayerStates.Any(x => x.Value.MainRole == CustomRoles.Benefactor && x.Value.RoleClass.OnCheckMurderAsTarget(killer, target)))
             return false;
 
         // Romantic partner is protected
@@ -1250,6 +1255,8 @@ class MurderPlayerPatch
         PlayerControl killer = __instance;
         bool needUpadteNotifyRoles = true;
 
+        var killerRoleClass = killer.GetRoleClass();
+        var targetRoleClass = target.GetRoleClass();
 
         if (PlagueDoctor.IsEnable)
         {
@@ -1301,14 +1308,13 @@ class MurderPlayerPatch
         if (Main.FirstDied == "")
             Main.FirstDied = target.GetClient().GetHashedPuid();
 
+        targetRoleClass.OnTargetDead(killer, target);
 
+        killerRoleClass.OnMurder(killer, target);
+
+        // Check dead body for others roles
         CustomRoleManager.CheckDeadBody(target);
 
-        if (Main.PlayerStates.TryGetValue(target.PlayerId, out var targetState))
-            targetState.Role?.OnTargetDead(killer, target);
-
-        if (Main.PlayerStates.TryGetValue(killer.PlayerId, out var killerState))
-            killerState.Role?.OnMurder(killer, target);
 
 
         if (target.Is(CustomRoles.Bait))
@@ -1507,13 +1513,13 @@ public static class CheckShapeShiftPatch
             return false;
         }
 
-        bool shapeshifting = shapeshifter.PlayerId != target.PlayerId;
+        bool shapeshifting = false;
+        bool shapeshiftIsHidden = true;
 
-        var shapeshiftIsHidden = true;
         if (Main.PlayerStates.TryGetValue(shapeshifter.PlayerId, out var playerState))
         {
             shapeshifter.RejectShapeshiftAndReset();
-            playerState.Role?.OnShapeshift(shapeshifter, target, false, shapeshiftIsHidden);
+            playerState.RoleClass?.OnShapeshift(shapeshifter, target, false, shapeshiftIsHidden);
             return false;
         }
 
@@ -1686,7 +1692,7 @@ class ShapeshiftPatch
         if (!Pelican.IsEaten(shapeshifter.PlayerId))
         {
             var shapeshiftIsHidden = false;
-            Main.PlayerStates[shapeshifter.PlayerId].Role?.OnShapeshift(shapeshifter, target, shapeshifting, shapeshiftIsHidden);
+            shapeshifter.GetRoleClass()?.OnShapeshift(shapeshifter, target, shapeshifting, shapeshiftIsHidden);
 
             switch (shapeshifter.GetCustomRole())
             {
@@ -2266,9 +2272,9 @@ class ReportDeadBodyPatch
             Main.BombedVents.Clear();
         }
 
-        foreach (var playerStates in Main.PlayerStates.Values.Where(p => p.Role.IsEnable).ToArray())
+        foreach (var playerStates in Main.PlayerStates.Values.Where(p => p.RoleClass.IsEnable).ToArray())
         {
-            playerStates.Role?.OnReportDeadBody(player, target?.Object);
+            playerStates.RoleClass?.OnReportDeadBody(player, target?.Object);
         }
 
         if (Reverie.IsEnable) Reverie.OnReportDeadBody();

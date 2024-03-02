@@ -451,7 +451,7 @@ internal class SelectRolesPatch
         {
             foreach (var playerState in Main.PlayerStates.Values.ToArray())
             {
-                playerState?.Role?.Init();
+                playerState?.RoleClass?.Init();
             }
             return;
         }
@@ -566,7 +566,7 @@ internal class SelectRolesPatch
 
             foreach (var playerState in Main.PlayerStates.Values.ToArray())
             {
-                playerState?.Role?.Init();
+                playerState?.RoleClass?.Init();
             }
 
             foreach (var pc in Main.AllPlayerControls)

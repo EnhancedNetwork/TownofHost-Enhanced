@@ -2603,9 +2603,9 @@ public static class Utils
         if (Cleanser.IsEnable) Cleanser.AfterMeetingTasks(notifyPlayer: false);
         if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: false);
 
-        foreach (var playerState in Main.PlayerStates.Values.Where(pc => pc.Role.IsEnable).ToArray())
+        foreach (var playerState in Main.PlayerStates.Values.Where(pc => pc.RoleClass.IsEnable).ToArray())
         {
-            playerState.Role?.AfterMeetingTasks();
+            playerState.RoleClass?.AfterMeetingTasks();
         }
 
         if (Collector.IsEnable) Collector.AfterMeetingTasks();

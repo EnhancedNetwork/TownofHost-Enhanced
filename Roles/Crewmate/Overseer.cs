@@ -18,6 +18,8 @@ internal class Overseer : RoleBase
     public override bool IsEnable => false;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
+    public override Sprite KillButtonSprite => CustomButton.Get("prophecies");
+
     private static Dictionary<byte, string> RandomRole = [];
     private static Dictionary<byte, (PlayerControl, float)> OverseerTimer = [];
 
@@ -201,5 +203,4 @@ internal class Overseer : RoleBase
         hud.ReportButton.OverrideText(GetString("ReportButtonText"));
         hud.KillButton.OverrideText(GetString("OverseerKillButtonText"));
     }
-    public override Sprite KillButtonSprite => CustomButton.Get("prophecies");
 }

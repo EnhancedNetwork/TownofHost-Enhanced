@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
 using UnityEngine;
 
@@ -22,6 +23,8 @@ public static class HudSpritePatch
         var player = PlayerControl.LocalPlayer;
         if (player == null || GameStates.IsHideNSeek || !GameStates.IsModHost) return;
         if (!SetHudActivePatch.IsActive || !player.IsAlive()) return;
+        if (!Main.EnableCustomButton.Value) return;
+
         if (!AmongUsClient.Instance.IsGameStarted || !Main.introDestroyed)
         {
             Kill = null;
@@ -43,15 +46,20 @@ public static class HudSpritePatch
         Sprite newVentButton = Vent;
         Sprite newReportButton = Report;
 
-        if (!Main.EnableCustomButton.Value) goto EndOfSelectImg;
-        if (Main.PlayerStates.TryGetValue(player.PlayerId, out var PlayerState) && PlayerState?.Role?.KillButtonSprite != null)
-            newKillButton = PlayerState.Role.KillButtonSprite;
-        if(PlayerState?.Role?.ImpostorVentButtonSprite != null)
-            newVentButton = PlayerState.Role.ImpostorVentButtonSprite;
-        if(PlayerState?.Role?.AbilityButtonSprite != null)
-            newAbilityButton = PlayerState.Role.AbilityButtonSprite;
-        if (PlayerState?.Role?.ReportButtonSprite != null)
-            newReportButton = PlayerState.Role.ReportButtonSprite;
+        var playerRoleClass = player.GetRoleClass();
+        if (playerRoleClass == null) goto EndOfSelectImg;
+
+        if (playerRoleClass?.KillButtonSprite != null)
+            newKillButton = playerRoleClass.KillButtonSprite;
+
+        if (playerRoleClass?.ImpostorVentButtonSprite != null)
+            newVentButton = playerRoleClass.ImpostorVentButtonSprite;
+
+        if (playerRoleClass?.AbilityButtonSprite != null)
+            newAbilityButton = playerRoleClass.AbilityButtonSprite;
+
+        if (playerRoleClass?.ReportButtonSprite != null)
+            newReportButton = playerRoleClass.ReportButtonSprite;
 
         switch (player.GetCustomRole())
         {
@@ -62,13 +70,6 @@ public static class HudSpritePatch
                     if (Ninja.MarkedPlayer.ContainsKey(player.PlayerId))
                         newAbilityButton = CustomButton.Get("Assassinate");
                 }
-                break;
-            case CustomRoles.Bomber:
-            case CustomRoles.Nuker:
-                newAbilityButton = CustomButton.Get("Bomb");
-                break;
-            case CustomRoles.Camouflager:
-                newAbilityButton = CustomButton.Get("Camo");
                 break;
             case CustomRoles.Arsonist:
                 newKillButton = CustomButton.Get("Douse");

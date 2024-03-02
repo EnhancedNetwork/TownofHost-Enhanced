@@ -1,6 +1,7 @@
 using AmongUs.Data;
 using HarmonyLib;
 using System.Linq;
+using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -191,7 +192,7 @@ class ExileControllerWrapUpPatch
         
         foreach (var player in Main.AllPlayerControls)
         {
-            Main.PlayerStates[player.PlayerId]?.Role?.OnPlayerExiled(player, exiled);
+            player.GetRoleClass()?.OnPlayerExiled(player, exiled);
 
             CustomRoles playerRole = player.GetCustomRole(); // Only roles (no add-ons)
 

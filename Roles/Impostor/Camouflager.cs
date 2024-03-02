@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using System.Collections.Generic;
+using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
@@ -10,6 +11,8 @@ internal class Camouflager : RoleBase
     public static bool On;
     public override bool IsEnable => On;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+
+    public override Sprite AbilityButtonSprite => CustomButton.Get("Camo");
 
     private static OptionItem CamouflageCooldownOpt;
     private static OptionItem CamouflageDurationOpt;
