@@ -141,7 +141,7 @@ public static class CustomRoleManager
         //CustomRoles.Doctor => new Doctor(),
         //CustomRoles.DonutDelivery => new DonutDelivery(),
         //CustomRoles.Doormaster => new Doormaster(),
-        //CustomRoles.pacifist => new pacifist(),
+        CustomRoles.pacifist => new pacifist(),
         //CustomRoles.Drainer => new Drainer(),
         //CustomRoles.Druid => new Druid(),
         //CustomRoles.Electric => new Electric(),
@@ -212,7 +212,7 @@ public static class CustomRoleManager
         //CustomRoles.Ventguard => new Ventguard(),
         //CustomRoles.Veteran => new Veteran(),
         //CustomRoles.SwordsMan => new SwordsMan(),
-        //CustomRoles.Witness => new Witness(),
+        CustomRoles.Witness => new Witness(),
         //CustomRoles.Agitater => new Agitater(),
 
         // ==== Neutrals ====
