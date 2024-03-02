@@ -2539,7 +2539,7 @@
   "PVP.ATK": "Attack",
   "PVP.DF": "Defend",
   "PVP.RCO": "Recover",
-  "Loading": "<b>Settings failed to load</b>",
+  "SettingsAreLoading": "<b>Loading\nsettings...</b>",
   "EAC.CheatDetected.HighLevel": "Warning: EAC detected High Level of cheats.",
   "EAC.CheatDetected.LowLevel": "Warning: EAC detected Low Level of cheats. One of the players is hacking.",
   "ExiledJester": "You're all fools!\n{0} the {1} laughing out loud tricked you into ejecting them.\nGG!",
