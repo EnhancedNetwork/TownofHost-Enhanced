@@ -55,7 +55,10 @@ internal class Coroner : RoleBase
         CoronerTargets.Add(playerId, []);
         On = true;
 
-        CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
+        if (AmongUsClient.Instance.AmHost)
+        {
+            CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
+        }
     }
     public override void Remove(byte playerId)
     {
@@ -63,7 +66,10 @@ internal class Coroner : RoleBase
         UseLimit.Remove(playerId);
         CoronerTargets.Remove(playerId);
 
-        CustomRoleManager.CheckDeadBodyOthers.Remove(CheckDeadBody);
+        if (AmongUsClient.Instance.AmHost)
+        {
+            CustomRoleManager.CheckDeadBodyOthers.Remove(CheckDeadBody);
+        }
     }
 
     private static void SendRPC(byte playerId, bool add, Vector3 loc = new())

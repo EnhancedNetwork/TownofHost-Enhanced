@@ -1,8 +1,9 @@
 using AmongUs.GameOptions;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Text;
 using TOHE.Roles.AddOns.Common;
-using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Options;
@@ -198,32 +199,33 @@ internal class Deathpact : RoleBase
         target.RpcMurderPlayerV3(target);
     }
 
-    public static string GetDeathpactPlayerArrow(PlayerControl seer, PlayerControl target = null)
+    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
-        if (!On) return string.Empty;
-        if (GameStates.IsMeeting) return string.Empty;
-        if (!ShowArrowsToOtherPlayersInPact.GetBool()) return string.Empty;
-        if (target != null && seer.PlayerId != target.PlayerId) return string.Empty;
+        seen ??= seer;
+        if (!seer.Is(CustomRoles.Deathpact) || !IsInDeathpact(seer.PlayerId, seen)) return string.Empty;
+        return ColorString(Palette.ImpostorRed, "◀");
+    }
+
+    public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    {
+        if (isForMeeting || !ShowArrowsToOtherPlayersInPact.GetBool()) return string.Empty;
+
+        seen ??= seer;
+        if (seer.PlayerId != seen.PlayerId) return string.Empty;
         if (!IsInActiveDeathpact(seer)) return string.Empty;
 
-        string arrows = string.Empty;
+        var arrows = new StringBuilder();
         var activeDeathpactsForPlayer = PlayersInDeathpact.Where(a => ActiveDeathpacts.Contains(a.Key) && a.Value.Any(b => b.PlayerId == seer.PlayerId)).ToArray();
+
         foreach (var deathpact in activeDeathpactsForPlayer)
         {
             foreach (var otherPlayerInPact in deathpact.Value.Where(a => a.PlayerId != seer.PlayerId).ToArray())
             {
-                var arrow = TargetArrow.GetArrows(seer, otherPlayerInPact.PlayerId);
-                arrows += ColorString(GetRoleColor(CustomRoles.Crewmate), arrow); 
+                arrows.Append(ColorString(GetRoleColor(CustomRoles.CrewmateTOHE), TargetArrow.GetArrows(seer, otherPlayerInPact.PlayerId)));
             }
         }
 
-        return arrows;
-    }
-
-    public static string GetDeathpactMark(PlayerControl seer, PlayerControl target)
-    {
-        if (!seer.Is(CustomRoles.Deathpact) || !Deathpact.IsInDeathpact(seer.PlayerId, target)) return string.Empty;
-        return ColorString(Palette.ImpostorRed, "◀");
+        return arrows.ToString();
     }
 
     public static bool IsInActiveDeathpact(PlayerControl player)

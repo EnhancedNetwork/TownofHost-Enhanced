@@ -3222,13 +3222,6 @@ class FixedUpdateInNormalGamePatch
                 if (Tracker.IsEnable)
                     Suffix.Append(Tracker.GetTrackerArrow(seer, target));
 
-
-                if (Deathpact.On)
-                {
-                    Suffix.Append(Deathpact.GetDeathpactPlayerArrow(seer, target));
-                    Suffix.Append(Deathpact.GetDeathpactMark(seer, target));
-                }
-
                 if (Spiritualist.IsEnable)
                     Suffix.Append(Spiritualist.GetSpiritualistArrow(seer, target));
 

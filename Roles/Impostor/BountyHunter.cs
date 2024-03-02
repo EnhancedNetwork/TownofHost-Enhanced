@@ -63,7 +63,7 @@ internal class BountyHunter : RoleBase
         if (AmongUsClient.Instance.AmHost)
         {
             ResetTarget(Utils.GetPlayerById(playerId));
-            CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateLowLoadOthers);
+            CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateLowLoadOthers);
         }
     }
     public override void Remove(byte playerId)

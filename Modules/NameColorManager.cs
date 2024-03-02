@@ -37,7 +37,6 @@ public static class NameColorManager
         // Impostor & Madmate
         if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoleTypes.Impostor)) color = (seer.Is(CustomRoles.Egoist) && target.Is(CustomRoles.Egoist) && Egoist.ImpEgoistVisibalToAllies.GetBool() && seer != target) ? Main.roleColors[CustomRoles.Egoist] : Main.roleColors[CustomRoles.Impostor];
         if (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoleTypes.Impostor) && Madmate.MadmateKnowWhosImp.GetBool()) color = Main.roleColors[CustomRoles.Impostor];
-        if (Crewpostor.KnowRole(seer, target)) color = Main.roleColors[CustomRoles.Impostor];
         if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
         if (seer.Is(CustomRoleTypes.Impostor) && (target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor())) color = Main.roleColors[CustomRoles.Madmate];
         if (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate) && Madmate.MadmateKnowWhosMadmate.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
@@ -184,9 +183,6 @@ public static class NameColorManager
             }
         }
 
-        // Rogue
-        //if (seer.Is(CustomRoles.Rogue) && target.Is(CustomRoles.Rogue) && Options.RogueKnowEachOther.GetBool()) color = Main.roleColors[CustomRoles.Rogue];
-
         // Jackal recruit
         if (seer.Is(CustomRoles.Jackal) && (target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit))) color = Main.roleColors[CustomRoles.Jackal];
         if (seer.Is(CustomRoles.Sidekick) && (target.Is(CustomRoles.Jackal) || target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick))) color = Main.roleColors[CustomRoles.Jackal];
@@ -194,15 +190,10 @@ public static class NameColorManager
 
         // Spiritcaller can see Evil Spirits in meetings
         if (seer.Is(CustomRoles.Spiritcaller) && target.Is(CustomRoles.EvilSpirit)) color = Main.roleColors[CustomRoles.EvilSpirit];
- 
-        // GLOW SQUID IS 
-        // BEST MOB IN MINECRAFT
-        //if (target.Is(CustomRoles.Glow) && Utils.IsActive(SystemTypes.Electrical)) color = Main.roleColors[CustomRoles.Glow];
-
 
         if (target.Is(CustomRoles.Mare) && Utils.IsActive(SystemTypes.Electrical) && !isMeeting) color = Main.roleColors[CustomRoles.Mare];
 
-   /*     if (Main.ShroudList.ContainsKey(target.PlayerId) && isMeeting) color = Main.roleColors[CustomRoles.Shroud];
+        /*if (Main.ShroudList.ContainsKey(target.PlayerId) && isMeeting) color = Main.roleColors[CustomRoles.Shroud];
 
         if ((target.PlayerId == Pirate.PirateTarget) && isMeeting) color = Main.roleColors[CustomRoles.Pirate]; */
 
@@ -232,9 +223,8 @@ public static class NameColorManager
             || (target.Is(CustomRoles.Workaholic) && Options.WorkaholicVisibleToEveryone.GetBool())
             || (target.Is(CustomRoles.Doctor) && Options.DoctorVisibleToEveryone.GetBool())
             || (target.Is(CustomRoles.Gravestone) && Main.PlayerStates[target.Data.PlayerId].IsDead)
-            || Consigliere.IsShowTargetRole(seer, target)
             || PotionMaster.IsShowTargetRole(seer, target)
-            //   || Mare.KnowTargetRoleColor(target, isMeeting)
+            || Mare.KnowTargetRoleColor(target, isMeeting)
             || (target.Is(CustomRoles.NiceMini) && Mini.EveryoneCanKnowMini.GetBool())
             || (target.Is(CustomRoles.EvilMini) && Mini.EveryoneCanKnowMini.GetBool());
     }

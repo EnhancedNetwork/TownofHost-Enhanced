@@ -21,8 +21,7 @@ public static class Mare
         KillCooldownInLightsOut = FloatOptionItem.Create(Id + 11, "MareKillCooldownInLightsOut", new(0f, 180f, 2.5f), 7.5f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mare])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    
-  
+
     public static void Init()
     {
         playerIdList = [];

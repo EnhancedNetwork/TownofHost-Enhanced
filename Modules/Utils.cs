@@ -1033,9 +1033,6 @@ public static class Utils
                 case CustomRoles.Virus:
                     ProgressText.Append(Virus.GetInfectLimit());
                     break;
-                case CustomRoles.Consigliere:
-                    ProgressText.Append(Consigliere.GetDivinationCount(playerId));
-                    break;
                 case CustomRoles.PotionMaster:
                     ProgressText.Append(PotionMaster.GetRitualCount(playerId));
                     break;
@@ -2067,11 +2064,6 @@ public static class Utils
                 SelfSuffix.Append(seerRoleClass?.GetSuffix(seer, isForMeeting: isForMeeting));
                 SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, isForMeeting: isForMeeting));
 
-
-                if (CustomRoles.Deathpact.IsClassEnable())
-                    SelfSuffix.Append(Deathpact.GetDeathpactPlayerArrow(seer));
-
-
                 if (!isForMeeting) // Only during game
                 {
                     switch (seerRole)
@@ -2182,6 +2174,9 @@ public static class Utils
                 string SelfDeathReason = seer.KnowDeathReason(seer) ? $"({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(seer.PlayerId))})" : "";
                 string SelfName = $"{ColorString(seer.GetRoleColor(), SeerRealName)}{SelfDeathReason}{SelfMark}";
 
+                if (NameNotifyManager.GetNameNotify(seer, out var name))
+                    SelfName = name;
+
                 switch (seerRole)
                 {
                     case CustomRoles.PlagueBearer:
@@ -2213,9 +2208,6 @@ public static class Utils
 
                 if (CustomRoles.Deathpact.IsClassEnable() && Deathpact.IsInActiveDeathpact(seer))
                     SelfName = Deathpact.GetDeathpactString(seer);
-
-                if (NameNotifyManager.GetNameNotify(seer, out var name))
-                    SelfName = name;
 
                 // Devourer
                 if (CustomRoles.Devourer.IsClassEnable())
@@ -2335,9 +2327,6 @@ public static class Utils
 
                         if (Lawyer.IsEnable)
                             TargetMark.Append(Lawyer.LawyerMark(seer, target));
-
-                        if (CustomRoles.Deathpact.IsClassEnable())
-                            TargetMark.Append(Deathpact.GetDeathpactMark(seer, target));
 
 
                         if (seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers))

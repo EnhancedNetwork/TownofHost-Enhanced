@@ -1303,7 +1303,6 @@ static class ExtendedPlayerControl
         else if (Options.ImpsCanSeeEachOthersRoles.GetBool() && seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoleTypes.Impostor)) return true;
         else if (Madmate.MadmateKnowWhosImp.GetBool() && seer.Is(CustomRoles.Madmate) && target.Is(CustomRoleTypes.Impostor)) return true;
         else if (Madmate.ImpKnowWhosMadmate.GetBool() && target.Is(CustomRoles.Madmate) && seer.Is(CustomRoleTypes.Impostor)) return true;
-        else if (Crewpostor.KnowRole(seer, target)) return true;
         else if (seer.Is(CustomRoleTypes.Impostor) && (target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor())) return true;
         else if (Options.WorkaholicVisibleToEveryone.GetBool() && target.Is(CustomRoles.Workaholic)) return true;
         else if (Options.DoctorVisibleToEveryone.GetBool() && target.Is(CustomRoles.Doctor)) return true;
@@ -1314,7 +1313,6 @@ static class ExtendedPlayerControl
         else if (Totocalcio.KnowRole(seer, target)) return true;
         else if (Romantic.KnowRole(seer, target)) return true;
         else if (Lawyer.KnowRole(seer, target)) return true;
-        else if (Consigliere.IsShowTargetRole(seer, target)) return true;
         else if (PotionMaster.IsShowTargetRole(seer, target)) return true;
         else if (Executioner.KnowRole(seer, target)) return true;
         else if (Succubus.KnowRole(seer, target)) return true;

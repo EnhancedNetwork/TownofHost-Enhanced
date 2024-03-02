@@ -77,15 +77,10 @@ internal class Crewpostor : RoleBase
 
     public override bool CanUseKillButton(PlayerControl pc) => false;
 
-    public static bool KnowRole(PlayerControl seer, PlayerControl target)
-    {
-        if (AlliesKnowCrewpostor.GetBool() && seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Crewpostor)
-            ||
-            KnowsAllies.GetBool() && seer.Is(CustomRoles.Crewpostor) && target.Is(CustomRoleTypes.Impostor))
-            return true;
-
-        return false;
-    }
+    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
+    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
+        => (AlliesKnowCrewpostor.GetBool() && seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Crewpostor))
+            || (KnowsAllies.GetBool() && seer.Is(CustomRoles.Crewpostor) && target.Is(CustomRoleTypes.Impostor));
 
     public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {

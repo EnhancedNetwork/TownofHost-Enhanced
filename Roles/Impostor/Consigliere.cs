@@ -100,7 +100,7 @@ internal class Consigliere : RoleBase
             //killer.RpcGuardAndKill(target);
         }
     }
-    public static bool IsShowTargetRole(PlayerControl seer, PlayerControl target)
+    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
     {
         var IsWatch = false;
         DivinationTarget.Do(x =>
@@ -110,5 +110,6 @@ internal class Consigliere : RoleBase
         });
         return IsWatch;
     }
-    public static string GetDivinationCount(byte playerId) => Utils.ColorString(DivinationCount[playerId] > 0 ? Utils.GetRoleColor(CustomRoles.Consigliere).ShadeColor(0.25f) : Color.gray, DivinationCount.TryGetValue(playerId, out var shotLimit) ? $"({shotLimit})" : "Invalid");
+    public override string GetProgressText(byte playerId, bool comms) 
+        => Utils.ColorString(DivinationCount[playerId] > 0 ? Utils.GetRoleColor(CustomRoles.Consigliere).ShadeColor(0.25f) : Color.gray, DivinationCount.TryGetValue(playerId, out var shotLimit) ? $"({shotLimit})" : "Invalid");
 }
