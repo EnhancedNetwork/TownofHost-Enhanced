@@ -1,4 +1,5 @@
-﻿using Hazel;
+﻿using AmongUs.GameOptions;
+using Hazel;
 using System.Collections.Generic;
 using TOHE.Roles.Crewmate;
 using UnityEngine;
@@ -143,11 +144,27 @@ internal class Eraser : RoleBase
                 Logger.Info($"Canceled {player.GetNameWithRole()} Eraser bcz already erased.", "Eraser");
                 return;
             }
-            player.RpcSetCustomRole(CustomRolesHelper.GetErasedRole(player.GetCustomRole().GetRoleTypes(), player.GetCustomRole()));
+            player.RpcSetCustomRole(GetErasedRole(player.GetCustomRole().GetRoleTypes(), player.GetCustomRole()));
             player.ResetKillCooldown();
             player.SetKillCooldown();
             Logger.Info($"{player.GetNameWithRole()} Erase by Eraser", "Eraser");
         }
         Utils.MarkEveryoneDirtySettings();
+    }
+
+    // Erased RoleType - Impostor, Shapeshifter, Crewmate, Engineer, Scientist (Not Neutrals)
+    private static CustomRoles GetErasedRole(RoleTypes roleType, CustomRoles role)
+    {
+        return role.IsVanilla()
+            ? role
+            : roleType switch
+            {
+                RoleTypes.Crewmate => CustomRoles.CrewmateTOHE,
+                RoleTypes.Scientist => CustomRoles.ScientistTOHE,
+                RoleTypes.Engineer => CustomRoles.EngineerTOHE,
+                RoleTypes.Impostor => CustomRoles.ImpostorTOHE,
+                RoleTypes.Shapeshifter => CustomRoles.ShapeshifterTOHE,
+                _ => role,
+            };
     }
 }

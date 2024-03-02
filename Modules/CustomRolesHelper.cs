@@ -181,22 +181,6 @@ public static class CustomRolesHelper
                 _ => role.IsImpostor() ? CustomRoles.Impostor : CustomRoles.Crewmate,
             };
     }
-    // Erased RoleType - Impostor, Shapeshifter, Crewmate, Engineer, Scientist (Not Neutrals)
-    public static CustomRoles GetErasedRole(RoleTypes roleType, CustomRoles role)
-    {
-        return role.IsVanilla()
-            ? role
-            : roleType switch
-            {
-                RoleTypes.Crewmate => CustomRoles.CrewmateTOHE,
-                RoleTypes.Scientist => CustomRoles.ScientistTOHE,
-                RoleTypes.Engineer => CustomRoles.EngineerTOHE,
-                RoleTypes.Impostor => CustomRoles.ImpostorTOHE,
-                RoleTypes.Shapeshifter => CustomRoles.ShapeshifterTOHE,
-                _ => role,
-            };
-    }
-
     public static RoleTypes GetDYRole(this CustomRoles role) // Role has a kill button (Non-Impostor)
     {
         return role switch

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using AmongUs.GameOptions;
+using System.Collections.Generic;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
 
@@ -79,7 +80,7 @@ public static class Oiiai
         if (!killer.GetCustomRole().IsNeutral())
         {
             //Use eraser here LOL
-            killer.RpcSetCustomRole(CustomRolesHelper.GetErasedRole(killer.GetCustomRole().GetRoleTypes(), killer.GetCustomRole()));
+            killer.RpcSetCustomRole(GetErasedRole(killer.GetCustomRole().GetRoleTypes(), killer.GetCustomRole()));
             Logger.Info($"Oiiai {killer.GetNameWithRole()} with eraser assign.", "Oiiai");
         }
         else
@@ -115,5 +116,20 @@ public static class Oiiai
         if (player.Is(CustomRoles.Loyal)) return false;
 
         return true;
+    }
+
+    private static CustomRoles GetErasedRole(RoleTypes roleType, CustomRoles role)
+    {
+        return role.IsVanilla()
+            ? role
+            : roleType switch
+            {
+                RoleTypes.Crewmate => CustomRoles.CrewmateTOHE,
+                RoleTypes.Scientist => CustomRoles.ScientistTOHE,
+                RoleTypes.Engineer => CustomRoles.EngineerTOHE,
+                RoleTypes.Impostor => CustomRoles.ImpostorTOHE,
+                RoleTypes.Shapeshifter => CustomRoles.ShapeshifterTOHE,
+                _ => role,
+            };
     }
 }
