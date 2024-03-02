@@ -46,11 +46,11 @@ class CreateOptionsPickerPatch
 
         __instance.MapMenu.MapButtons = CollectionExtensions.AddItem(__instance.MapMenu.MapButtons, dleksIconInMenuCopy).ToArray();
 
-        float x = -1f;
+        float xPos = -1f;
         for (int index = 0; index < 6; ++index)
         {
-            __instance.MapMenu.MapButtons[index].transform.SetLocalX(x);
-            x += 0.34f;
+            __instance.MapMenu.MapButtons[index].transform.SetLocalX(xPos);
+            xPos += 0.34f;
         }
 
         if (__instance.mode == SettingsMode.Host)
