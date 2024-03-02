@@ -2,24 +2,28 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.Core;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
-public static class Benefactor
+internal class Benefactor : RoleBase
 {
     private static readonly int Id = 26400;
-    //private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
 
-    public static Dictionary<byte, List<int>> taskIndex = [];
-    public static Dictionary<byte, int> TaskMarkPerRound = [];
+    public static bool On = false;
+    public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+
+    private static OptionItem TaskMarkPerRoundOpt;
+    private static OptionItem ShieldDuration;
+    private static OptionItem ShieldIsOneTimeUse;
+
     private static int maxTasksMarkedPerRound = new();
-    public static Dictionary<byte, long> shieldedPlayers = [];
 
-    public static OptionItem TaskMarkPerRoundOpt;
-    public static OptionItem ShieldDuration;
-    public static OptionItem ShieldIsOneTimeUse;
+    private static Dictionary<byte, List<int>> taskIndex = [];
+    private static Dictionary<byte, int> TaskMarkPerRound = [];
+    private static Dictionary<byte, long> shieldedPlayers = [];
 
     public static void SetupCustomOption()
     {
@@ -32,21 +36,20 @@ public static class Benefactor
         Options.OverrideTasksData.Create(Id + 13, TabGroup.CrewmateRoles, CustomRoles.Benefactor);
     }
 
-    public static void Init()
+    public override void Init()
     {
-        //playerIdList = [];
         taskIndex = [];
         shieldedPlayers = [];
         TaskMarkPerRound = [];
-        IsEnable = false;
+        On = false;
         maxTasksMarkedPerRound = TaskMarkPerRoundOpt.GetInt();
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         TaskMarkPerRound[playerId] = 0;
-        IsEnable = true;
+        On = true;
     }
-    public static void Remove(byte playerId)
+    public override void Remove(byte playerId)
     {
         TaskMarkPerRound.Remove(playerId);
     }
@@ -116,15 +119,15 @@ public static class Benefactor
         }
     }
 
-    public static string GetProgressText(byte playerId)
+    public override string GetProgressText(byte PlayerId, bool comms)
     {
-        if (!TaskMarkPerRound.ContainsKey(playerId)) TaskMarkPerRound[playerId] = 0;
-        int markedTasks = TaskMarkPerRound[playerId];
+        if (!TaskMarkPerRound.ContainsKey(PlayerId)) TaskMarkPerRound[PlayerId] = 0;
+        int markedTasks = TaskMarkPerRound[PlayerId];
         int x = Math.Max(maxTasksMarkedPerRound - markedTasks, 0);
         return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Taskinator).ShadeColor(0.25f), $"({x})");
     }
 
-    public static void AfterMeetingTasks()
+    public override void AfterMeetingTasks()
     {
         foreach (var playerId in TaskMarkPerRound.Keys.ToArray())
         {
@@ -139,10 +142,10 @@ public static class Benefactor
         }
     }
 
-    public static void OnTasKComplete(PlayerControl player, PlayerTask task)
+    public static void OnTasKComplete(PlayerControl player, PlayerTask task) // runs for every player which compeletes a task
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (!IsEnable) return;
+        if (!CustomRoles.Benefactor.IsClassEnable()) return;
         if (player == null) return;
         if (!player.IsAlive()) return;
         byte playerId = player.PlayerId;
@@ -183,9 +186,9 @@ public static class Benefactor
         }
     }
 
-    public static void OnFixedUpdate()
+    public override void OnFixedUpdate(PlayerControl pc)
     {
-        if (!IsEnable) return;
+        if (!CustomRoles.Benefactor.IsClassEnable()) return;
         var now = Utils.GetTimeStamp();
         foreach (var x in shieldedPlayers.Where(x => x.Value + ShieldDuration.GetInt() < now).ToArray())
         {
@@ -197,7 +200,7 @@ public static class Benefactor
         }
     }
 
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (target == null || killer == null) return true;
         if (!shieldedPlayers.ContainsKey(target.PlayerId)) return true;

@@ -40,7 +40,7 @@ public class Main : BasePlugin
     public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0225.160.0005"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginVersion = "2024.0302.160.0005"; // YEAR.MMDD.VERSION.CANARYDEV
     public const string PluginDisplayVersion = "1.6.0 dev 5";
     public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
 
@@ -177,7 +177,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, long> RevolutionistLastTime = [];
     public static Dictionary<byte, int> RevolutionistCountdown = [];
     public static Dictionary<byte, byte> SpeedBoostTarget = [];
-    public static Dictionary<byte, int> MayorUsedButtonCount = [];
     public static Dictionary<byte, int> ParaUsedButtonCount = [];
     public static Dictionary<byte, int> MarioVentCount = [];
     public static Dictionary<byte, long> VeteranInProtect = [];
@@ -196,7 +195,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, bool> CheckShapeshift = [];
     public static Dictionary<byte, byte> ShapeshiftTarget = [];
     public static Dictionary<(byte, byte), string> targetArrows = [];
-    public static Dictionary<byte, Vector2> EscapistLocation = [];
     public static Dictionary<byte, Vector2> TimeMasterLocation = [];
     public static bool VisibleTasksCount = false;
     public static string nickName = "";
@@ -634,7 +632,7 @@ public enum CustomRoles
     Chameleon,
     Cleanser,
     CopyCat,
-    Bloodhound, //coroner
+    Coroner, 
     Crusader,
     Detective,
     Counterfeiter, //deceiver
@@ -670,7 +668,7 @@ public enum CustomRoles
     NiceMini,
     Observer,
     Oracle,
-    Farseer, //overseer
+    Overseer, //overseer
     DovesOfNeace, //pacifist
     Paranoia, //paranoid
     ChiefOfPolice, //police commisioner

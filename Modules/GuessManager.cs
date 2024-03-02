@@ -191,13 +191,6 @@ public static class GuessManager
                     if (targetState.Role.OnRoleGuess(isUI, target, pc))
                         return true;
 
-                if (CopyCat.playerIdList.Contains(pc.PlayerId))
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessDisabled"));
-                    return true;
-                }
-
                 if (!Mundane.OnGuess(pc))
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessedAsMundane"), pc.PlayerId);
@@ -254,12 +247,6 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("GuessShielded"));
                     return true;
                 }
-                if (role == CustomRoles.Monarch && target.Is(CustomRoles.Monarch) && CustomRoles.Knighted.RoleExist())
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessMonarch"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessMonarch"));
-                    return true;
-                }
                 if (role == CustomRoles.Knighted && pc.Is(CustomRoles.Monarch))
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessKnighted"), pc.PlayerId);
@@ -271,15 +258,6 @@ public static class GuessManager
                     if (!isUI) Utils.SendMessage(GetString("GuessMasochistBlocked"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessMasochistBlocked"));
                     return true;
-                }
-                if (Options.MayorRevealWhenDoneTasks.GetBool())
-                {
-                    if (target.Is(CustomRoles.Mayor) && target.GetPlayerTaskState().IsTaskFinished)
-                    {
-                        if (!isUI) Utils.SendMessage(GetString("GuessMayor"), pc.PlayerId);
-                        else pc.ShowPopUp(GetString("GuessMayor"));
-                        return true;
-                    }
                 }
                 if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
                 {
@@ -315,11 +293,6 @@ public static class GuessManager
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessSuperStar"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessSuperStar"));
-                    return true;
-                }
-                if ((role == CustomRoles.President || target.Is(CustomRoles.President)) && President.CheckPresidentReveal[target.PlayerId] == true && !President.PresidentCanBeGuessedAfterRevealing.GetBool())
-                {
-                    Utils.SendMessage(GetString("GuessPresident"), pc.PlayerId);
                     return true;
                 }
                 if (role == CustomRoles.Bait && target.Is(CustomRoles.Bait) && Bait.BaitNotification.GetBool())
@@ -406,21 +379,10 @@ public static class GuessManager
                     Utils.SendMessage(GetString("GuessGM"), pc.PlayerId);
                     return true;
                 }
-                /*   if (role == CustomRoles.Marshall || target.Is(CustomRoles.Marshall))
-                   {
-                       Utils.SendMessage(GetString("GuessMarshall"), pc.PlayerId);
-                       return true;
-                   } */
                 if (target.Is(CustomRoles.Snitch) && target.GetPlayerTaskState().IsTaskFinished)
                 {
                     if (!isUI) Utils.SendMessage(GetString("EGGuessSnitchTaskDone"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("EGGuessSnitchTaskDone"));
-                    return true;
-                }
-                if (target.Is(CustomRoles.Marshall) && target.GetPlayerTaskState().IsTaskFinished)
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessMarshallTask"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessMarshallTask"));
                     return true;
                 }
 

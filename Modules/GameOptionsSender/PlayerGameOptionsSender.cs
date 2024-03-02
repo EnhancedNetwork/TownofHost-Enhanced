@@ -7,6 +7,7 @@ using InnerNet;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -118,8 +119,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             }
         }
 
-        if (Main.PlayerStates.TryGetValue(player.PlayerId, out var playerState))
-            playerState.Role?.ApplyGameOptions(opt, player.PlayerId);
+        player.GetRoleClass()?.ApplyGameOptions(opt, player.PlayerId);
 
         switch (role)
         {
@@ -131,13 +131,8 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Crewpostor:
             case CustomRoles.Taskinator:
           //  case CustomRoles.Jester:
-            case CustomRoles.Monitor:
                 AURoleOptions.EngineerCooldown = 0f;
                 AURoleOptions.EngineerInVentMaxTime = 0f;
-                break;
-            case CustomRoles.Chameleon:
-                AURoleOptions.EngineerCooldown = Chameleon.ChameleonCooldown.GetFloat() + 1f;
-                AURoleOptions.EngineerInVentMaxTime = 1f;
                 break;
             case CustomRoles.Alchemist:
                 AURoleOptions.EngineerCooldown = Alchemist.VentCooldown.GetFloat();
@@ -157,10 +152,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Warlock:
                 AURoleOptions.ShapeshifterCooldown = Main.isCursed ? 1f : Options.DefaultKillCooldown;
                 AURoleOptions.ShapeshifterDuration = Options.WarlockShiftDuration.GetFloat();
-                break;
-            case CustomRoles.Escapist:
-                AURoleOptions.ShapeshifterCooldown = Options.EscapistSSCD.GetFloat();
-                AURoleOptions.ShapeshifterDuration = Options.EscapistSSDuration.GetFloat();
                 break;
             case CustomRoles.Miner:
                 AURoleOptions.ShapeshifterCooldown = Options.MinerSSCD.GetFloat();
@@ -184,7 +175,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Medic:
             case CustomRoles.Crusader:
             case CustomRoles.Provocateur:
-            case CustomRoles.Monarch:
             case CustomRoles.Deputy:
             case CustomRoles.Investigator:
             case CustomRoles.Counterfeiter:
@@ -216,13 +206,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.ScientistCooldown = 0f;
                 AURoleOptions.ScientistBatteryCharge = Options.DoctorTaskCompletedBatteryCharge.GetFloat();
                 break;
-            case CustomRoles.Mayor:
-                AURoleOptions.EngineerCooldown =
-                    !Main.MayorUsedButtonCount.TryGetValue(player.PlayerId, out var count) || count < Options.MayorNumOfUseButton.GetInt()
-                    ? opt.GetInt(Int32OptionNames.EmergencyCooldown)
-                    : 300f;
-                AURoleOptions.EngineerInVentMaxTime = 1;
-                break;
          /* case CustomRoles.Paranoia:
                 AURoleOptions.EngineerCooldown =
                     !Main.ParaUsedButtonCount.TryGetValue(player.PlayerId, out var count2) || count2 < Options.ParanoiaNumOfUseButton.GetInt()
@@ -230,12 +213,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                     : 300f;
                 AURoleOptions.EngineerInVentMaxTime = 1;
                 break; */
-         /* case CustomRoles.Mare:
-                Mare.ApplyGameOptions(player.PlayerId);
-                break; */
-            case CustomRoles.EvilTracker:
-                EvilTracker.ApplyGameOptions(player.PlayerId);
-                break;
             case CustomRoles.ShapeshifterTOHE:
                 AURoleOptions.ShapeshifterCooldown = Options.ShapeshiftCD.GetFloat();
                 AURoleOptions.ShapeshifterDuration = Options.ShapeshiftDur.GetFloat();
@@ -427,18 +404,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
             case CustomRoles.DovesOfNeace:
                 AURoleOptions.EngineerCooldown = Options.DovesOfNeaceCooldown.GetFloat();
-                AURoleOptions.EngineerInVentMaxTime = 1;
-                break;
-            case CustomRoles.Disperser:
-                Disperser.ApplyGameOptions();
-                break;
-            case CustomRoles.Farseer:
-                opt.SetVision(false);
-                opt.SetFloat(FloatOptionNames.CrewLightMod, Farseer.Vision.GetFloat());
-                opt.SetFloat(FloatOptionNames.ImpostorLightMod, Farseer.Vision.GetFloat());
-                break;
-            case CustomRoles.Addict:
-                AURoleOptions.EngineerCooldown = Addict.VentCooldown.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 1;
                 break;
             case CustomRoles.Mole:

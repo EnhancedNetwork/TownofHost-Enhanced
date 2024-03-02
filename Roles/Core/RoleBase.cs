@@ -1,4 +1,6 @@
 ﻿using AmongUs.GameOptions;
+using System.Text;
+using UnityEngine;
 
 namespace TOHE;
 
@@ -14,6 +16,11 @@ public abstract class RoleBase
     /// </summary>
     public abstract void Add(byte playerId);
 
+    /// <summary>
+    /// If role has to be removed from player
+    /// </summary>
+    public virtual void Remove(byte playerId)
+    { }
     /// <summary>
     /// Make a bool and apply IsEnable => {Bool};
     /// </summary>
@@ -37,7 +44,7 @@ public abstract class RoleBase
     /// <summary>
     /// A generic method to set if the role can use sabotage.
     /// </summary>
-    public virtual bool CanUseSabotage(PlayerControl pc) =>  pc.Is(CustomRoleTypes.Impostor);
+    public virtual bool CanUseSabotage(PlayerControl pc) => pc.Is(CustomRoleTypes.Impostor);
 
     /// <summary>
     /// When the player presses the sabotage button
@@ -63,12 +70,16 @@ public abstract class RoleBase
     /// </summary>
     public virtual void OnFixedUpdate(PlayerControl pc)
     { }
+
     /// <summary>
     /// A local method to check conditions during gameplay, which aren't prioritized
     /// </summary>
     public virtual void OnFixedUpdateLowLoad(PlayerControl pc)
     { }
 
+    /// <summary>
+    /// Player completes a task
+    /// </summary>
     public virtual void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
     { }
 
@@ -81,7 +92,7 @@ public abstract class RoleBase
     /// <summary>
     /// A method for activating actions when role is already in vent
     /// </summary>
-    public virtual void OnCoEnterVent(PlayerPhysics physics, Vent vent)
+    public virtual void OnCoEnterVent(PlayerPhysics physics, int ventId)
     { }
 
     /// <summary>
@@ -89,7 +100,6 @@ public abstract class RoleBase
     /// </summary>
     public virtual void OnExitVent(PlayerControl pc, Vent vent)
     { }
-
     /// <summary>
     /// A generic method to check a Guardian Angel protecting someone.
     /// </summary>
@@ -98,6 +108,7 @@ public abstract class RoleBase
 
     /// <summary>
     /// When role the target requires a kill check
+    /// If the target doesn't require a kill cancel, always use "return true"
     /// </summary>
     public virtual bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target) => target != null && killer != null;
 
@@ -115,7 +126,7 @@ public abstract class RoleBase
     /// <summary>
     /// When the target role died
     /// </summary>
-    public virtual void OnPlayerDead(PlayerControl killer, PlayerControl target)
+    public virtual void OnTargetDead(PlayerControl killer, PlayerControl target)
     { }
 
     /// <summary>
@@ -127,12 +138,23 @@ public abstract class RoleBase
     /// <summary>
     /// Checking that a dead body can be reported
     /// </summary>
-    public virtual bool CheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer) => reporter.IsAlive();
+    //public virtual bool CheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer) => reporter.IsAlive();
+
+    /// <summary>
+    /// Can start meeting by press button
+    /// </summary>
+    public virtual bool CantStartMeeting(PlayerControl reporter) => !reporter.IsAlive();
+
+    /// <summary>
+    /// When the meeting start by press button
+    /// </summary>
+    public virtual void OnPressEmergencyButton(PlayerControl reporter)
+    { }
 
     /// <summary>
     /// When reporter press report button
     /// </summary>
-    public virtual bool OnPressReportButton(PlayerControl reporter, PlayerControl target) => reporter.IsAlive();
+    public virtual bool OnPressReportButton(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer) => reporter.IsAlive();
 
     /// <summary>
     /// When the meeting start by report dead body
@@ -176,12 +198,45 @@ public abstract class RoleBase
     { }
 
     /// <summary>
+    /// Set PlayerName text for the role
+    /// </summary>
+    public virtual string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false) => string.Empty;
+
+    /// <summary>
+    /// When player vote for target
+    /// </summary>
+    public virtual void OnVote(PlayerControl votePlayer, PlayerControl voteTarget)
+    { }
+    /// <summary>
+    /// When the player was voted
+    /// </summary>
+    public virtual void OnVoted(PlayerControl votedPlayer, PlayerControl votedTarget)
+    { }
+    /// <summary>
+    /// When need hide vote
+    /// </summary>
+    public virtual bool HideVote(PlayerVoteArea votedPlayer) => false;
+
+    /// <summary>
     /// Set text for Kill/Shapeshift/Report/Vent/Protect button
     /// </summary>
     public virtual void SetAbilityButtonText(HudManager hud, byte id) => hud.KillButton?.OverrideText(Translator.GetString("KillButtonText"));
-
-    public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
+    public virtual Sprite KillButtonSprite { get; }
+    public virtual Sprite ImpostorVentButtonSprite { get; }
+    public virtual Sprite AbilityButtonSprite { get; }
+    public virtual Sprite ReportButtonSprite { get; }
     public virtual string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;
     public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
     public virtual string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;
+    public virtual bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => false;
+    public virtual string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => string.Empty;
+    public virtual bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => false;
+
+    /// <summary>
+    /// Gets & Appends the role's skill limit
+    /// </summary>
+    public virtual string GetProgressText(byte PlayerId, bool comms) => string.Empty;
+    public virtual void AppendProgressText(byte playerId, bool comms, StringBuilder ProgressText)
+    { }
+    public virtual int CalcVote(PlayerVoteArea PVA) => 0;
 }

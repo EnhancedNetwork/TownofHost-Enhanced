@@ -510,9 +510,6 @@ public static class Options
     public static OptionItem VindicatorAdditionalVote;
     public static OptionItem VindicatorHideVote;
 
-    public static OptionItem EscapistSSDuration;
-    public static OptionItem EscapistSSCD;
-
     public static OptionItem MinerSSDuration;
     public static OptionItem MinerSSCD;
 
@@ -599,11 +596,6 @@ public static class Options
 
     public static OptionItem VigilanteKillCooldown;
 
-    public static OptionItem MayorAdditionalVote;
-    public static OptionItem MayorHasPortableButton;
-    public static OptionItem MayorNumOfUseButton;
-    public static OptionItem MayorHideVote;
-    public static OptionItem MayorRevealWhenDoneTasks;
 
 
     // Neutrals role settings
@@ -762,7 +754,6 @@ public static class Options
     public static OverrideTasksData WorkaholicTasks;
     public static OverrideTasksData PhantomTasks;
     public static OverrideTasksData OpportunistTasks;
-    public static OverrideTasksData MayorTasks;
     public static OverrideTasksData TimeManagerTasks;
 
 
@@ -1189,13 +1180,7 @@ public static class Options
         /*
          * Escapist
          */
-        SetupRoleOptions(4000, TabGroup.ImpostorRoles, CustomRoles.Escapist);
-        EscapistSSDuration = FloatOptionItem.Create(4002, "ShapeshiftDuration", new(1f, 180f, 1f), 1, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Escapist])
-            .SetValueFormat(OptionFormat.Seconds);
-        EscapistSSCD = FloatOptionItem.Create(4003, "ShapeshiftCooldown", new(1f, 180f, 1f), 5f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Escapist])
-            .SetValueFormat(OptionFormat.Seconds);
+        Escapist.SetupCustomOption();
 
         /*
          * Lightning
@@ -1526,7 +1511,7 @@ public static class Options
         /*
          * Coroner
          */
-        Bloodhound.SetupCustomOption();
+        Coroner.SetupCustomOption();
 
         /*
          * Deputy
@@ -1804,32 +1789,19 @@ public static class Options
 
         CopyCat.SetupCustomOption();
 
-        SetupRoleOptions(11600, TabGroup.CrewmateRoles, CustomRoles.Dictator);
+        Dictator.SetupCustomOptions();
 
         Guardian.SetupCustomOptions();
 
-        SetupRoleOptions(11800, TabGroup.CrewmateRoles, CustomRoles.Lookout);
+        Lookout.SetupCustomOptions();
 
         Marshall.SetupCustomOption();
 
-        SetupRoleOptions(12000, TabGroup.CrewmateRoles, CustomRoles.Mayor);
-        MayorAdditionalVote = IntegerOptionItem.Create(12002, "MayorAdditionalVote", new(1, 20, 1), 3, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Mayor])
-            .SetValueFormat(OptionFormat.Votes);
-        MayorHasPortableButton = BooleanOptionItem.Create(12003, "MayorHasPortableButton", false, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Mayor]);
-        MayorNumOfUseButton = IntegerOptionItem.Create(12004, "MayorNumOfUseButton", new(1, 20, 1), 1, TabGroup.CrewmateRoles, false)
-            .SetParent(MayorHasPortableButton)
-            .SetValueFormat(OptionFormat.Times);
-        MayorHideVote = BooleanOptionItem.Create(12005, "MayorHideVote", false, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Mayor]);
-        MayorRevealWhenDoneTasks = BooleanOptionItem.Create(12006, "MayorRevealWhenDoneTasks", false, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Mayor]);
-        MayorTasks = OverrideTasksData.Create(12007, TabGroup.CrewmateRoles, CustomRoles.Mayor);
-        
+        Mayor.SetupCustomOptions();
+
         Monarch.SetupCustomOption();
         
-        Farseer.SetupCustomOption();
+        Overseer.SetupCustomOption();
         
         President.SetupCustomOption();
         

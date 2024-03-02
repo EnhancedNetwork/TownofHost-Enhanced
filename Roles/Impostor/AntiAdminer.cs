@@ -44,9 +44,13 @@ internal class AntiAdminer : RoleBase
         playerIdList.Add(playerId);
         On = true;
     }
+    public override void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+    }
 
     private static int Count = 0;
-    public override void OnFixedUpdateLowLoad(PlayerControl player)
+    public static void FixedUpdateLowLoad()
     {
         Count--; if (Count > 0) return; Count = 5;
 
@@ -139,8 +143,10 @@ internal class AntiAdminer : RoleBase
             }
         }
     }
-    public static string GetSuffix()
+    public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
+        if (isForMeeting) return "";
+
         StringBuilder sb = new();
         if (IsAdminWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), "⚠")).Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), GetString("AdminWarning")));
         if (IsVitalWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), "⚠")).Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), GetString("VitalsWarning")));
