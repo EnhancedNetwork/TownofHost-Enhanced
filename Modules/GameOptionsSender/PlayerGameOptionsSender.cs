@@ -213,12 +213,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                     : 300f;
                 AURoleOptions.EngineerInVentMaxTime = 1;
                 break; */
-         /* case CustomRoles.Mare:
-                Mare.ApplyGameOptions(player.PlayerId);
-                break; */
-            case CustomRoles.EvilTracker:
-                EvilTracker.ApplyGameOptions(player.PlayerId);
-                break;
             case CustomRoles.ShapeshifterTOHE:
                 AURoleOptions.ShapeshifterCooldown = Options.ShapeshiftCD.GetFloat();
                 AURoleOptions.ShapeshifterDuration = Options.ShapeshiftDur.GetFloat();

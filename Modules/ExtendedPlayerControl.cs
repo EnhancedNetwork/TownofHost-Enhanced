@@ -584,7 +584,7 @@ static class ExtendedPlayerControl
         if (Necromancer.Killer && !pc.Is(CustomRoles.Necromancer)) return false;
         if (pc.Is(CustomRoles.Nimble)) return true;
         if (Circumvent.CantUseVent(pc)) return false;
-        if (pc.GetRoleClass().CanUseImpostorVentButton(pc)) return true;
+        if (pc.GetRoleClass() != null && pc.GetRoleClass().CanUseImpostorVentButton(pc)) return true;
 
         return pc.GetCustomRole() switch
         {

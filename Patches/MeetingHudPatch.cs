@@ -1078,12 +1078,6 @@ class MeetingHudStartPatch
                 //enable = false;
             }
 
-            if (EvilTracker.IsTrackTarget(PlayerControl.LocalPlayer, pc) && EvilTracker.CanSeeLastRoomInMeeting)
-            {
-                roleTextMeeting.text = EvilTracker.GetArrowAndLastRoom(PlayerControl.LocalPlayer, pc);
-                roleTextMeeting.enabled = true;
-                continue;
-            }
             if (Tracker.IsTrackTarget(PlayerControl.LocalPlayer, pc) && Tracker.CanSeeLastRoomInMeeting)
             {
                 roleTextMeeting.text = Tracker.GetArrowAndLastRoom(PlayerControl.LocalPlayer, pc);
@@ -1248,9 +1242,6 @@ class MeetingHudStartPatch
                 case CustomRoles.Jackal:
                 case CustomRoles.Sidekick:
                     sb.Append(Snitch.GetWarningMark(seer, target));
-                    break;
-                case CustomRoles.EvilTracker:
-                    sb.Append(EvilTracker.GetTargetMark(seer, target));
                     break;
                 case CustomRoles.Revolutionist:
                     if (seer.IsDrawPlayer(target))

@@ -1604,12 +1604,6 @@ public static class CheckShapeShiftPatch
                 shapeshifter.RejectShapeshiftAndReset();
                 return false;
 
-            case CustomRoles.EvilTracker:
-                EvilTracker.OnShapeshift(shapeshifter, target, shapeshifting, shapeshiftIsHidden: shapeshiftIsHidden);
-                shapeshifter.RejectShapeshiftAndReset();
-                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
-                return false;
-
             case CustomRoles.Miner:
                 shapeshifter.RejectShapeshiftAndReset();
                 if (Main.LastEnteredVent.ContainsKey(shapeshifter.PlayerId))
@@ -1696,9 +1690,6 @@ class ShapeshiftPatch
 
             switch (shapeshifter.GetCustomRole())
             {
-                case CustomRoles.EvilTracker:
-                    EvilTracker.OnShapeshift(shapeshifter, target, shapeshifting);
-                    break;
                 case CustomRoles.Sniper:
                     Sniper.OnShapeshift(shapeshifter, shapeshifting);
                     break;
@@ -3112,9 +3103,6 @@ class FixedUpdateInNormalGamePatch
                 if (Lawyer.IsEnable)
                     Mark.Append(Lawyer.LawyerMark(seer, target));
 
-                if (EvilTracker.IsEnable && seer.Is(CustomRoles.EvilTracker))
-                    Mark.Append(EvilTracker.GetTargetMark(seer, target));
-
                 if (Tracker.IsEnable && seer.Is(CustomRoles.Tracker))
                     Mark.Append(Tracker.GetTargetMark(seer, target));
 
@@ -3221,9 +3209,6 @@ class FixedUpdateInNormalGamePatch
 
                 if (Mortician.IsEnable)
                     Suffix.Append(Mortician.GetTargetArrow(seer, target));
-
-                if (EvilTracker.IsEnable)
-                    Suffix.Append(EvilTracker.GetTargetArrow(seer, target));
 
                 if (PlagueDoctor.IsEnable)
                     Suffix.Append(PlagueDoctor.GetLowerTextOthers(seer, target));

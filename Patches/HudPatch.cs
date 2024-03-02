@@ -188,10 +188,6 @@ class HudManagerPatch
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText($"{GetString("ShroudButtonText")}");
                        break;
-                    case CustomRoles.EvilTracker:
-                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        EvilTracker.GetAbilityButtonText(__instance, player.PlayerId);
-                        break;
                     case CustomRoles.Innocent:
                         __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
                         __instance.KillButton.OverrideText(GetString("InnocentButtonText"));

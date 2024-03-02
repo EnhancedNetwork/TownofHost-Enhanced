@@ -932,9 +932,6 @@ public static class Utils
                 case CustomRoles.Sniper:
                     ProgressText.Append(Sniper.GetBulletCount(playerId));
                     break;
-                case CustomRoles.EvilTracker:
-                    ProgressText.Append(EvilTracker.GetMarker(playerId));
-                    break;
                 case CustomRoles.TimeThief:
                     ProgressText.Append(TimeThief.GetProgressText(playerId));
                     break;
@@ -2084,10 +2081,6 @@ public static class Utils
                             SelfSuffix.Append(BountyHunter.GetTargetArrow(seer));
                             break;
 
-                        case CustomRoles.EvilTracker:
-                            SelfSuffix.Append(EvilTracker.GetTargetArrow(seer, seer));
-                            break;
-
                         case CustomRoles.Fireworker:
                             SelfSuffix.Append(Fireworker.GetStateText(seer));
                             break;
@@ -2247,7 +2240,7 @@ public static class Utils
                         SelfName = SelfRoleName + "\r\n" + SelfName;
                         break;
                 }
-                SelfName += SelfSuffix.ToString() == "" ? "" : "\r\n " + SelfSuffix.ToString();
+                SelfName += SelfSuffix.Length == 0 ? string.Empty : "\r\n " + SelfSuffix.ToString();
 
                 if (!isForMeeting) SelfName += "\r\n";
 
@@ -2432,12 +2425,6 @@ public static class Utils
                         // ========= During Game And Meeting =========
                         switch (seerRole)
                         {
-                            case CustomRoles.EvilTracker:
-                                TargetMark.Append(EvilTracker.GetTargetMark(seer, target));
-                                if (isForMeeting && EvilTracker.IsTrackTarget(seer, target) && EvilTracker.CanSeeLastRoomInMeeting)
-                                    TargetRoleText = $"<size={fontSize}>{EvilTracker.GetArrowAndLastRoom(seer, target)}</size>\r\n";
-                                break;
-
                             case CustomRoles.Tracker:
                                 TargetMark.Append(Tracker.GetTargetMark(seer, target));
                                 if (isForMeeting && Tracker.IsTrackTarget(seer, target) && Tracker.CanSeeLastRoomInMeeting)
@@ -2615,7 +2602,6 @@ public static class Utils
         if (Wraith.IsEnable) Wraith.AfterMeetingTasks();
         if (Glitch.IsEnable) Glitch.AfterMeetingTasks();
         if (Keeper.IsEnable) Keeper.AfterMeetingTasks();
-        if (EvilTracker.IsEnable) EvilTracker.AfterMeetingTasks();
         if (Mercenary.IsEnable) Mercenary.AfterMeetingTasks();
         if (Spiritualist.IsEnable) Spiritualist.AfterMeetingTasks();
         if (Penguin.IsEnable) Penguin.AfterMeetingTasks();

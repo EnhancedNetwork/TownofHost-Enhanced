@@ -223,7 +223,6 @@ internal class ChangeRoleSettings
             GuessMaster.Init();
             Cleanser.Init();
             SwordsMan.Init();
-            EvilTracker.Init();
             Snitch.Init();
             Solsticer.Init();
             Vampire.Init();
@@ -706,9 +705,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.SabotageMaster:
                         SabotageMaster.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.EvilTracker:
-                        EvilTracker.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Snitch:
                         Snitch.Add(pc.PlayerId);

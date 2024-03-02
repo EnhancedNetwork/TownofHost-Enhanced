@@ -42,7 +42,7 @@ internal class Escapist : RoleBase
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterDuration = ShapeshiftDuration.GetFloat();
-        AURoleOptions.ShapeshifterCooldown = ShapeshiftCooldown.GetFloat();
+        AURoleOptions.ShapeshifterCooldown = EscapeLocation.ContainsKey(playerId) ? ShapeshiftCooldown.GetFloat() : 1f;
     }
 
     public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
@@ -59,6 +59,7 @@ internal class Escapist : RoleBase
         else
         {
             EscapeLocation.Add(shapeshifter.PlayerId, shapeshifter.GetCustomPosition());
+            shapeshifter.SyncSettings();
             shapeshifter.Notify(Translator.GetString("EscapisMtarkedPosition"));
         }
     }

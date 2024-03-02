@@ -8,11 +8,14 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
-public static class EvilTracker
+internal class EvilTracker : RoleBase
 {
     private static readonly int Id = 1400;
     private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    
+    public static bool On;
+    public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => (TargetMode)OptionTargetMode.GetValue() == TargetMode.Never ? CustomRoles.Impostor : CustomRoles.Shapeshifter;
 
     private static OptionItem OptionCanSeeKillFlash;
     private static OptionItem OptionTargetMode;
@@ -20,8 +23,11 @@ public static class EvilTracker
 
     private static bool CanSeeKillFlash;
     private static TargetMode CurrentTargetMode;
-    public static RoleTypes RoleTypes;
-    public static bool CanSeeLastRoomInMeeting;
+    private static bool CanSeeLastRoomInMeeting;
+
+    private static Dictionary<byte, byte> Target = [];
+    private static Dictionary<byte, bool> CanSetTarget = [];
+    private static Dictionary<byte, HashSet<byte>> ImpostorsId = [];
 
     private enum TargetMode
     {
@@ -38,9 +44,6 @@ public static class EvilTracker
         "EvilTrackerTargetMode.Always",
     ];
 
-    public static Dictionary<byte, byte> Target = [];
-    public static Dictionary<byte, bool> CanSetTarget = [];
-    private static Dictionary<byte, HashSet<byte>> ImpostorsId = [];
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.EvilTracker);
@@ -51,27 +54,27 @@ public static class EvilTracker
         OptionCanSeeLastRoomInMeeting = BooleanOptionItem.Create(Id + 12, "EvilTrackerCanSeeLastRoomInMeeting", false, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.EvilTracker]);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         Target = [];
         CanSetTarget = [];
         ImpostorsId = [];
-        IsEnable = false;
+        On = false;
 
         CanSeeKillFlash = OptionCanSeeKillFlash.GetBool();
         CurrentTargetMode = (TargetMode)OptionTargetMode.GetValue();
-        RoleTypes = CurrentTargetMode == TargetMode.Never ? RoleTypes.Impostor : RoleTypes.Shapeshifter;
         CanSeeLastRoomInMeeting = OptionCanSeeLastRoomInMeeting.GetBool();
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
         Target.Add(playerId, byte.MaxValue);
         CanSetTarget.Add(playerId, CurrentTargetMode != TargetMode.Never);
-        //ImpostorsIdはEvilTracker内で共有
+
         ImpostorsId[playerId] = [];
+        On = true;
+
         foreach (var target in Main.AllAlivePlayerControls)
         {
             var targetId = target.PlayerId;
@@ -82,15 +85,15 @@ public static class EvilTracker
             }
         }
     }
-    public static void ApplyGameOptions(byte playerId)
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = CanTarget(playerId) ? 1f : 255f;
         AURoleOptions.ShapeshifterDuration = 1f;
     }
-    public static void GetAbilityButtonText(HudManager __instance, byte playerId)
+    public override void SetAbilityButtonText(HudManager hud, byte id)
     {
-        __instance.AbilityButton.ToggleVisible(CanTarget(playerId));
-        __instance.AbilityButton.OverrideText(GetString("EvilTrackerChangeButtonText"));
+        hud.AbilityButton.ToggleVisible(CanTarget(id));
+        hud.AbilityButton.OverrideText(GetString("EvilTrackerChangeButtonText"));
     }
 
     public static bool KillFlashCheck() => CanSeeKillFlash;
@@ -106,22 +109,25 @@ public static class EvilTracker
         && target.IsAlive() && seer != target
         && (target.Is(CustomRoleTypes.Impostor) || GetTargetId(seer.PlayerId) == target.PlayerId);
 
-    public static void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden = false)
+    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden = false)
     {
-        if (!CanTarget(shapeshifter.PlayerId) || !shapeshifting) return;
+        if (!CanTarget(shapeshifter.PlayerId) || (!shapeshifting && !shapeshiftIsHidden)) return;
         if (target == null || target.Is(CustomRoleTypes.Impostor)) return;
 
         SetTarget(shapeshifter.PlayerId, target.PlayerId);
 
         if (shapeshiftIsHidden)
+        {
+            shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
             shapeshifter.SyncSettings();
+        }
         else
             shapeshifter.MarkDirtySettings();
 
         Logger.Info($"{shapeshifter.GetNameWithRole()} target to {target.GetNameWithRole()}", "EvilTrackerTarget");
         Utils.NotifyRoles(SpecifySeer: shapeshifter, SpecifyTarget: target, ForceLoop: true);
     }
-    public static void AfterMeetingTasks()
+    public override void AfterMeetingTasks()
     {
         if (CurrentTargetMode == TargetMode.EveryMeeting)
         {
@@ -138,7 +144,7 @@ public static class EvilTracker
             pc?.RpcResetAbilityCooldown();
         }
     }
-    public static void SetTarget(byte trackerId = byte.MaxValue, byte targetId = byte.MaxValue)
+    private static void SetTarget(byte trackerId = byte.MaxValue, byte targetId = byte.MaxValue)
     {
         if (trackerId == byte.MaxValue) // Targets can be re-set
             foreach (var playerId in playerIdList.ToArray())
@@ -155,6 +161,10 @@ public static class EvilTracker
         }
 
         if (!AmongUsClient.Instance.AmHost) return;
+        SendRPC(trackerId, targetId);
+    }
+    private static void SendRPC(byte trackerId, byte targetId)
+    {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetEvilTrackerTarget, SendOption.Reliable, -1);
         writer.Write(trackerId);
         writer.Write(targetId);
@@ -167,9 +177,31 @@ public static class EvilTracker
         SetTarget(trackerId, targetId);
     }
 
-    public static string GetMarker(byte playerId) => CanTarget(playerId) ? Utils.ColorString(Palette.ImpostorRed.ShadeColor(0.5f), "◁") : "";
-    public static string GetTargetMark(PlayerControl seer, PlayerControl target) => GetTargetId(seer.PlayerId) == target.PlayerId ? Utils.ColorString(Palette.ImpostorRed, "◀") : "";
-    public static string GetTargetArrow(PlayerControl seer, PlayerControl target)
+    public override string GetProgressText(byte PlayerId, bool comms)
+        => CanTarget(PlayerId) ? Utils.ColorString(Palette.ImpostorRed.ShadeColor(0.5f), "◁") : string.Empty;
+
+    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    {
+        seen ??= seer;
+        return Target.ContainsValue(seen.PlayerId)
+            ? Utils.ColorString(Palette.ImpostorRed.ShadeColor(0.5f), "◀") : string.Empty;
+    }
+    public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    {
+        seen ??= seer;
+
+        if (isForMeeting)
+        {
+            var roomName = GetArrowAndLastRoom(seer, seen);
+            return roomName.Length == 0 ? string.Empty : $"<size=1.5>{roomName}</size>";
+        }
+        else
+        {
+            return GetTargetArrow(seer, seen);
+        }
+    }
+
+    private static string GetTargetArrow(PlayerControl seer, PlayerControl target)
     {
         if (!GameStates.IsInTask || !target.Is(CustomRoles.EvilTracker)) return "";
 
@@ -196,7 +228,7 @@ public static class EvilTracker
         }
         return sb.ToString();
     }
-    public static string GetArrowAndLastRoom(PlayerControl seer, PlayerControl target)
+    private static string GetArrowAndLastRoom(PlayerControl seer, PlayerControl target)
     {
         string text = Utils.ColorString(Palette.ImpostorRed, TargetArrow.GetArrows(seer, target.PlayerId));
         var room = Main.PlayerStates[target.PlayerId].LastRoom;

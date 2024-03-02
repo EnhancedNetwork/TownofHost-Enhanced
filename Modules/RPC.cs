@@ -1001,12 +1001,6 @@ internal static class RPC
             case CustomRoles.Crusader:
                 Crusader.Add(targetId);
                 break;
-        /*    case CustomRoles.Mare:
-                Mare.Add(targetId);
-                break; */
-            case CustomRoles.EvilTracker:
-                EvilTracker.Add(targetId);
-                break;
             case CustomRoles.Witch:
                 Witch.Add(targetId);
                 break;
@@ -1025,9 +1019,6 @@ internal static class RPC
             case CustomRoles.HexMaster:
                 HexMaster.Add(targetId);
                 break;
-            //case CustomRoles.Occultist:
-            //    Occultist.Add(targetId);
-            //    break;
             case CustomRoles.Jackal:
                 Jackal.Add(targetId);
                 break;
