@@ -1,15 +1,23 @@
 ﻿using Hazel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using TOHE.Roles.Core;
+using UnityEngine;
+using static TOHE.Utils;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
-public static class Mediumshiper
+internal class Mediumshiper : RoleBase
 {
     private static readonly int Id = 8700;
     public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    public static bool On = false;
+    public override bool IsEnable => On;
+    public static bool HasEnabled => CustomRoles.Mediumshiper.IsClassEnable();
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
     public static OptionItem ContactLimitOpt;
     public static OptionItem OnlyReceiveMsgFromCrew;
@@ -28,20 +36,20 @@ public static class Mediumshiper
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mediumshiper])
             .SetValueFormat(OptionFormat.Times);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         ContactPlayer = [];
         ContactLimit = [];
-        IsEnable = false;
+        On = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         ContactLimit.Add(playerId, ContactLimitOpt.GetInt());
-        IsEnable = true;
+        On = true;
     }
-    public static void Remove(byte playerId)
+    public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
         ContactLimit.Remove(playerId);
@@ -69,7 +77,13 @@ public static class Mediumshiper
             ContactPlayer.TryAdd(targetId, pid);
         }
     }
-    public static void OnReportDeadBody(GameData.PlayerInfo target)
+    public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    {
+        if (!player.IsAlive()) return;
+        Mediumshiper.ContactLimit[player.PlayerId] += Mediumshiper.MediumAbilityUseGainWithEachTaskCompleted.GetFloat();
+        Mediumshiper.SendRPC(player.PlayerId);
+    }
+    public override void OnReportDeadBody(PlayerControl reported, PlayerControl target)
     {
         ContactPlayer = [];
         if (target == null) return;
@@ -79,7 +93,7 @@ public static class Mediumshiper
             ContactLimit[pc.PlayerId] -= 1;
             ContactPlayer.TryAdd(target.PlayerId, pc.PlayerId);
             SendRPC(pc.PlayerId, target.PlayerId, true);
-            Logger.Info($"通灵师建立联系：{pc.GetNameWithRole()} => {target.PlayerName}", "Mediumshiper");
+            Logger.Info($"通灵师建立联系：{pc.GetNameWithRole()} => {target.GetRealName}", "Mediumshiper");
         }
     }
     public static bool MsMsg(PlayerControl pc, string msg)
@@ -127,5 +141,22 @@ public static class Mediumshiper
             }
         }
         return false;
+    }
+    public override string GetProgressText(byte playerId, bool comms)
+    {
+        var ProgressText = new StringBuilder();
+        var taskState7 = Main.PlayerStates?[playerId].TaskState;
+        Color TextColor7;
+        var TaskCompleteColor7 = Color.green;
+        var NonCompleteColor7 = Color.yellow;
+        var NormalColor7 = taskState7.IsTaskFinished ? TaskCompleteColor7 : NonCompleteColor7;
+        TextColor7 = comms ? Color.gray : NormalColor7;
+        string Completed7 = comms ? "?" : $"{taskState7.CompletedTasksCount}";
+        Color TextColor71;
+        if (Mediumshiper.ContactLimit[playerId] < 1) TextColor71 = Color.red;
+        else TextColor71 = Color.white;
+        ProgressText.Append(ColorString(TextColor7, $"({Completed7}/{taskState7.AllTasksCount})"));
+        ProgressText.Append(ColorString(TextColor71, $" <color=#ffffff>-</color> {Math.Round(Mediumshiper.ContactLimit[playerId], 1)}"));
+        return ProgressText.ToString();
     }
 }

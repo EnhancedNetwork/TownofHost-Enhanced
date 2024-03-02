@@ -44,9 +44,10 @@ public static class CustomRolesHelper
                 CustomRoles.Keeper => CustomRoles.Crewmate,
                 CustomRoles.President => CustomRoles.Crewmate,
                 CustomRoles.Marshall => CustomRoles.Crewmate,
-                CustomRoles.SabotageMaster => CustomRoles.Engineer,
                 CustomRoles.Nemesis => Nemesis.LegacyNemesis.GetBool() ? CustomRoles.Shapeshifter : CustomRoles.Impostor,
                 CustomRoles.Bloodmoon => CustomRoles.GuardianAngel,
+                CustomRoles.Mechanic => CustomRoles.Engineer,
+                CustomRoles.Nemesis => CustomRoles.GuardianAngel,
                 CustomRoles.Terrorist => CustomRoles.Engineer,
                 CustomRoles.Executioner => CustomRoles.Crewmate,
                 CustomRoles.Lawyer => CustomRoles.Crewmate,
@@ -122,7 +123,7 @@ public static class CustomRolesHelper
                 CustomRoles.Gangster => CustomRoles.Impostor,
                 CustomRoles.Cleaner => CustomRoles.Impostor,
                 CustomRoles.Konan => CustomRoles.Crewmate,
-                CustomRoles.Divinator => CustomRoles.Crewmate,
+                CustomRoles.FortuneTeller => CustomRoles.Crewmate,
                 CustomRoles.Oracle => CustomRoles.Crewmate,
                 CustomRoles.Lightning => CustomRoles.Impostor,
                 CustomRoles.Greedy => CustomRoles.Impostor,
@@ -149,7 +150,7 @@ public static class CustomRolesHelper
                 CustomRoles.SoulCollector => CustomRoles.Crewmate,
                 CustomRoles.Crewpostor => CustomRoles.Engineer,
                 CustomRoles.Observer => CustomRoles.Crewmate,
-                CustomRoles.DovesOfNeace => CustomRoles.Engineer,
+                CustomRoles.pacifist => CustomRoles.Engineer,
                 CustomRoles.Disperser => CustomRoles.Shapeshifter,
                 CustomRoles.Camouflager => CustomRoles.Shapeshifter,
                 CustomRoles.Dazzler => CustomRoles.Shapeshifter,
@@ -1024,7 +1025,7 @@ public static class CustomRolesHelper
     {
         return role is
             CustomRoles.Snitch or
-            CustomRoles.Divinator or
+            CustomRoles.FortuneTeller or
             CustomRoles.Marshall or
             CustomRoles.TimeManager or
             CustomRoles.Guardian or
@@ -1675,7 +1676,7 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Fool:
-                if (pc.Is(CustomRoles.SabotageMaster)
+                if (pc.Is(CustomRoles.Mechanic)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Fool.CrewCanBeFool.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Fool.NeutralCanBeFool.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Fool.ImpCanBeFool.GetBool()))

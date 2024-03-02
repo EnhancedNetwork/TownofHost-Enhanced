@@ -1,16 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate
 {
-    internal class Merchant
+    internal class Merchant : RoleBase
     {
         private static readonly int Id = 8800;
+        public static bool On = false;
+        public override bool IsEnable => On;
+        public static bool HasEnabled = CustomRoles.Merchant.IsClassEnable();
+        public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+
         private static readonly List<byte> playerIdList = [];
-        public static bool IsEnable = false;
 
         public static Dictionary<byte, int> addonsSold = [];
         public static Dictionary<byte, List<byte>> bribedKiller = [];
@@ -94,10 +99,10 @@ namespace TOHE.Roles.Crewmate
 
             OverrideTasksData.Create(Id + 16, TabGroup.CrewmateRoles, CustomRoles.Merchant);
         }
-        public static void Init()
+        public override void Init()
         {
             playerIdList.Clear();
-            IsEnable = false;
+            On = false;
 
             addons = [];
             addonsSold = [];
@@ -123,22 +128,27 @@ namespace TOHE.Roles.Crewmate
             }
         }
 
-        public static void Add(byte playerId)
+        public override void Add(byte playerId)
         {
             playerIdList.Add(playerId);
             addonsSold.Add(playerId, 0);
             bribedKiller.Add(playerId, []);
-            IsEnable = true;
+            On = true;
         }
-        public static void Remove(byte playerId)
+        public override void Remove(byte playerId)
         {
             playerIdList.Remove(playerId);
             addonsSold.Remove(playerId);
             bribedKiller.Remove(playerId);
         }
-
-        public static void OnTaskFinished(PlayerControl player)
+        public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
         {
+            return target.Is(CustomRoles.Merchant) && OnClientMurder(killer, target) ? false : true;
+        }
+        public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+        {
+            if (!player.IsAlive()) return;
+
             if (addonsSold[player.PlayerId] >= OptionMaxSell.GetInt())
             {
                 return;
@@ -210,6 +220,16 @@ namespace TOHE.Roles.Crewmate
                 
                 addonsSold[player.PlayerId] += 1;
             }
+        }
+        public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc)
+        {
+            if (target.Is(CustomRoles.Merchant) && Merchant.IsBribedKiller(pc, target))
+            {
+                if (!isUI) Utils.SendMessage(GetString("BribedByMerchant2"), pc.PlayerId);
+                else pc.ShowPopUp(GetString("BribedByMerchant2"));
+                return true;
+            }
+            return false;
         }
 
         public static bool OnClientMurder(PlayerControl killer, PlayerControl target)

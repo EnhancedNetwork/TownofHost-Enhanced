@@ -509,10 +509,6 @@ public class TaskState
                     Main.VeteranNumOfUsed[player.PlayerId] += Options.VeteranAbilityUseGainWithEachTaskCompleted.GetFloat();
                     break;
 
-                case CustomRoles.Grenadier when player.IsAlive():
-                    Main.GrenadierNumOfUsed[player.PlayerId] += Options.GrenadierAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    break;
-
                 case CustomRoles.Alchemist when player.IsAlive():
                     Alchemist.OnTaskComplete(player);
                     break;
@@ -520,61 +516,9 @@ public class TaskState
                 case CustomRoles.Bastion when player.IsAlive():
                     Main.BastionNumberOfAbilityUses += Options.BastionAbilityUseGainWithEachTaskCompleted.GetFloat();
                     break;
-
-                case CustomRoles.Divinator when player.IsAlive():
-                    Divinator.CheckLimit[player.PlayerId] += Divinator.AbilityUseGainWithEachTaskCompleted.GetFloat();
-                    Divinator.SendRPC(player.PlayerId);
-                    break;
-
-                case CustomRoles.Lighter when player.IsAlive():
-                    Main.LighterNumOfUsed[player.PlayerId] += Options.LighterAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    break;
-
-                case CustomRoles.DovesOfNeace when player.IsAlive():
-                    Main.DovesOfNeaceNumOfUsed[player.PlayerId] += Options.DovesOfNeaceAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    break;
-
-                case CustomRoles.TimeMaster when player.IsAlive():
-                    Main.TimeMasterNumOfUsed[player.PlayerId] += Options.TimeMasterAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    break;
-
-                case CustomRoles.Mediumshiper when player.IsAlive():
-                    Mediumshiper.ContactLimit[player.PlayerId] += Mediumshiper.MediumAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    Mediumshiper.SendRPC(player.PlayerId);
-                    break;
-
-                case CustomRoles.Inspector when player.IsAlive():
-                    Inspector.MaxCheckLimit[player.PlayerId] += Inspector.InspectAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    Inspector.SendRPC(player.PlayerId, 2);
-                    break;
-
-                case CustomRoles.Oracle when player.IsAlive():
-                    Oracle.CheckLimit[player.PlayerId] += Oracle.OracleAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    Oracle.SendRPC(player.PlayerId);
-                    break;
-
                 //case CustomRoles.Cleanser when player.IsAlive():
                 //    Cleanser.CleanserUses[player.PlayerId] += Cleanser.AbilityUseGainWithEachTaskCompleted.GetInt();
                 //    break;
-
-                case CustomRoles.SabotageMaster when player.IsAlive():
-                    SabotageMaster.UsedSkillCount[player.PlayerId] -= SabotageMaster.SMAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    SabotageMaster.SendRPC(player.PlayerId);
-                    break;
-
-                case CustomRoles.Tracker when player.IsAlive():
-                    Tracker.TrackLimit[player.PlayerId] += Tracker.TrackerAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    Tracker.SendRPC(2, player.PlayerId);
-                    break;
-
-                case CustomRoles.Spy when player.IsAlive():
-                    Spy.UseLimit[player.PlayerId] += Spy.SpyAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    Spy.SendAbilityRPC(player.PlayerId);
-                    break;
-
-                case CustomRoles.Merchant when player.IsAlive():
-                    Merchant.OnTaskFinished(player);
-                    break;
 
                 case CustomRoles.Workaholic when (CompletedTasksCount + 1) >= AllTasksCount && !(Options.WorkaholicCannotWinAtDeath.GetBool() && !player.IsAlive()):
                     Logger.Info("The Workaholic task is done", "Workaholic");

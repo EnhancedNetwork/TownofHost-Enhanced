@@ -1,16 +1,22 @@
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.Core;
 using UnityEngine;
+using static TOHE.Translator;
 
 using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
 
-public static class Snitch
+internal class Snitch : RoleBase
 {
     private static readonly int Id = 9500;
     private static readonly List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    public static bool On = false;
+    public override bool IsEnable => On;
+    public static bool HasEnabled => CustomRoles.Snitch.IsClassEnable();
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+
     private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Snitch);
 
     private static OptionItem OptionEnableTargetArrow;
@@ -41,10 +47,10 @@ public static class Snitch
         OptionRemainingTasks = IntegerOptionItem.Create(Id + 13, "SnitchRemainingTaskFound", new(0, 10, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Snitch]);
         OverrideTasksData.Create(Id + 20, TabGroup.CrewmateRoles, CustomRoles.Snitch);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList.Clear();
-        IsEnable = false;
+        On = false;
 
         EnableTargetArrow = OptionEnableTargetArrow.GetBool();
         CanGetColoredArrow = OptionCanGetColoredArrow.GetBool();
@@ -59,15 +65,15 @@ public static class Snitch
         TargetColorlist.Clear();
     }
 
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
+        On = true;
 
         IsExposed[playerId] = false;
         IsComplete[playerId] = false;
     }
-    public static void Remove(byte playerId)
+    public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
 
@@ -83,7 +89,7 @@ public static class Snitch
         var snitchId = pc.PlayerId;
         return IsExposed[snitchId];
     }
-    private static bool IsSnitchTarget(PlayerControl target) => IsEnable && (target.Is(CustomRoleTypes.Impostor) && !target.Is(CustomRoles.Trickster) || (target.IsSnitchTarget() && CanFindNeutralKiller) || (target.Is(CustomRoles.Madmate) && CanFindMadmate) || (target.Is(CustomRoles.Rascal) && CanFindMadmate));
+    private static bool IsSnitchTarget(PlayerControl target) => HasEnabled && (target.Is(CustomRoleTypes.Impostor) && !target.Is(CustomRoles.Trickster) || (target.IsSnitchTarget() && CanFindNeutralKiller) || (target.Is(CustomRoles.Madmate) && CanFindMadmate) || (target.Is(CustomRoles.Rascal) && CanFindMadmate));
     public static void CheckTask(PlayerControl snitch)
     {
         if (!snitch.IsAlive() || snitch.Is(CustomRoles.Madmate)) return;
@@ -147,7 +153,7 @@ public static class Snitch
     /// <returns></returns>
     public static string GetWarningArrow(PlayerControl seer, PlayerControl target = null)
     {
-        if (!IsEnable) return "";
+        if (!HasEnabled) return "";
         if (!IsSnitchTarget(seer) || GameStates.IsMeeting) return "";
         if (target != null && seer.PlayerId != target.PlayerId) return "";
 
@@ -166,7 +172,7 @@ public static class Snitch
     /// <param name="seer">スニッチの場合有効</param>
     /// <param name="target">スニッチの場合有効</param>
     /// <returns></returns>
-    public static string GetSnitchArrow(PlayerControl seer, PlayerControl target = null)
+    public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
         if (!IsThisRole(seer.PlayerId) || seer.Is(CustomRoles.Madmate)) return "";
         if (!EnableTargetArrow || GameStates.IsMeeting) return "";
@@ -183,5 +189,15 @@ public static class Snitch
     {
         if (!IsThisRole(player.PlayerId) || player.Is(CustomRoles.Madmate)) return;
         CheckTask(player);
+    }
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc)
+    {
+        if (target.Is(CustomRoles.Snitch) && target.GetPlayerTaskState().IsTaskFinished)
+        {
+            if (!isUI) Utils.SendMessage(GetString("EGGuessSnitchTaskDone"), pc.PlayerId);
+            else pc.ShowPopUp(GetString("EGGuessSnitchTaskDone"));
+            return true;
+        }
+        return false;
     }
 }

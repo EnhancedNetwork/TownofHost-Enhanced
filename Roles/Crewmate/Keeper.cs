@@ -5,20 +5,24 @@ using System.Text;
 using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Options;
+using TOHE.Roles.Core;
+using static TOHE.CheckForEndVotingPatch;
 
 namespace TOHE.Roles.Crewmate;
-public static class Keeper
+internal class Keeper : RoleBase
 {
     private static readonly int Id = 26500;
     //public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    public static bool On = false;
+    public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
     public static List<byte> keeperTarget = [];
     public static Dictionary<byte, int> keeperUses = [];
     public static Dictionary<byte, bool> DidVote = [];
 
     public static OptionItem KeeperUsesOpt;
-    public static OptionItem HideVote;
+    public static OptionItem HidesVote;
     public static OptionItem AbilityUseGainWithEachTaskCompleted;
 
     public static void SetupCustomOption()
@@ -26,34 +30,35 @@ public static class Keeper
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Keeper);
         KeeperUsesOpt = IntegerOptionItem.Create(Id + 10, "MaxProtections", new(1, 14, 1), 3, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Keeper])
             .SetValueFormat(OptionFormat.Times);
-        HideVote = BooleanOptionItem.Create(Id + 11, "KeeperHideVote", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Keeper]);
+        HidesVote = BooleanOptionItem.Create(Id + 11, "KeeperHideVote", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Keeper]);
         //    AbilityUseGainWithEachTaskCompleted = IntegerOptionItem.Create(Id + 12, "AbilityUseGainWithEachTaskCompleted", new(0, 5, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cleanser])
         //        .SetValueFormat(OptionFormat.Times);
 
     }
-    public static void Init()
+    public override void Init()
     {
         //playerIdList = [];
         keeperTarget = [];
         keeperUses = [];
         DidVote = [];
-        IsEnable = false;
+        On = false;
     }
 
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         //playerIdList.Add(playerId);
         DidVote.Add(playerId, false);
         keeperUses[playerId] = 0;
-        IsEnable = true;
+        On = true;
     }
-    public static void Remove(byte playerId)
+    public override void Remove(byte playerId)
     {
         DidVote.Remove(playerId);
         keeperUses.Remove(playerId);
     }
+    public override bool HideVote(byte playerId) => CheckRole(playerId, CustomRoles.Keeper) && Keeper.HidesVote.GetBool() && Keeper.keeperUses[playerId] > 0;
 
-    public static string GetProgressText(byte playerId, bool comms)
+    public override string GetProgressText(byte playerId, bool comms)
     {
         if (playerId == byte.MaxValue) return string.Empty;
         if (!keeperUses.ContainsKey(playerId)) return string.Empty;
@@ -119,9 +124,9 @@ public static class Keeper
         }
     }
 
-    public static bool OnVote(PlayerControl voter, PlayerControl target)
+    public static bool OnVoted(PlayerControl voter, PlayerControl target)
     {
-        if (!IsEnable) return true;
+        if (!CustomRoles.Keeper.IsClassEnable()) return true;
         if (voter == null || target == null) return true;
         if (!voter.Is(CustomRoles.Keeper)) return true;
         if (DidVote[voter.PlayerId]) return true;
@@ -137,7 +142,7 @@ public static class Keeper
         return false;
     }
 
-    public static void AfterMeetingTasks()
+    public override void AfterMeetingTasks()
     {
         foreach (var pid in DidVote.Keys)
         {
