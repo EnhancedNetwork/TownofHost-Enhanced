@@ -1,21 +1,29 @@
 ﻿using Hazel;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Text;
+using TOHE.Roles.Core;
+using static TOHE.Utils;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.CheckForEndVotingPatch;
 
 namespace TOHE.Roles.Crewmate
 {
-    public static class Tracker
+    internal class Tracker : RoleBase
     {
         private static readonly int Id = 10000;
         private static List<byte> playerIdList = [];
-        public static bool IsEnable = false;
+        private static bool On = false;
+        public override bool IsEnable => On;
+        public static bool HasEnabled => CustomRoles.Tracker.IsClassEnable();
+        public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
         private static OptionItem TrackLimitOpt;
         private static OptionItem OptionCanSeeLastRoomInMeeting;
         private static OptionItem CanGetColoredArrow;
-        public static OptionItem HideVote;
+        public static OptionItem HidesVote;
         public static OptionItem TrackerAbilityUseGainWithEachTaskCompleted;
 
         public static bool CanSeeLastRoomInMeeting;
@@ -27,39 +35,40 @@ namespace TOHE.Roles.Crewmate
         public static void SetupCustomOption()
         {
             SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Tracker);
-            TrackLimitOpt = IntegerOptionItem.Create(Id + 5, "DivinatorSkillLimit", new(0, 20, 1), 3, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Tracker])
+            TrackLimitOpt = IntegerOptionItem.Create(Id + 5, "FortuneTellerSkillLimit", new(0, 20, 1), 3, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Tracker])
                 .SetValueFormat(OptionFormat.Times);
             CanGetColoredArrow = BooleanOptionItem.Create(Id + 6, "TrackerCanGetArrowColor", true, TabGroup.CrewmateRoles, false)
                 .SetParent(CustomRoleSpawnChances[CustomRoles.Tracker]);
             OptionCanSeeLastRoomInMeeting = BooleanOptionItem.Create(Id + 7, "EvilTrackerCanSeeLastRoomInMeeting", true, TabGroup.CrewmateRoles, false)
                 .SetParent(CustomRoleSpawnChances[CustomRoles.Tracker]);
-            HideVote = BooleanOptionItem.Create(Id + 8, "TrackerHideVote", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Tracker]);
+            HidesVote = BooleanOptionItem.Create(Id + 8, "TrackerHideVote", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Tracker]);
             TrackerAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 9, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
                 .SetParent(CustomRoleSpawnChances[CustomRoles.Tracker])
                 .SetValueFormat(OptionFormat.Times);
         }
-        public static void Init()
+        public override void Init()
         {
             playerIdList = [];
             TrackLimit = [];
             TrackerTarget = [];
             CanSeeLastRoomInMeeting = OptionCanSeeLastRoomInMeeting.GetBool();
             TempTrackLimit = [];
-            IsEnable = false;
+            On = false;
         }
-        public static void Add(byte playerId)
+        public override void Add(byte playerId)
         {
             playerIdList.Add(playerId);
             TrackLimit.Add(playerId, TrackLimitOpt.GetInt());
             TrackerTarget.Add(playerId, []);
-            IsEnable = true;
+            On = true;
         }
-        public static void Remove(byte playerId)
+        public override void Remove(byte playerId)
         {
             playerIdList.Remove(playerId);
             TrackLimit.Remove(playerId);
             TrackerTarget.Remove(playerId);
         }
+        public override bool HideVote(byte playerId) => CheckRole(playerId, CustomRoles.Tracker) && Tracker.HidesVote.GetBool() && Tracker.TempTrackLimit[playerId] > 0;
         public static void SendRPC(int operate, byte trackerId = byte.MaxValue, byte targetId = byte.MaxValue)
         {
             if (!AmongUsClient.Instance.AmHost) return;
@@ -92,9 +101,9 @@ namespace TOHE.Roles.Crewmate
                 TrackLimit[trackerId] = limit;
             }
         }
-        public static string GetTargetMark(PlayerControl seer, PlayerControl target) => !(seer == null || target == null) && TrackerTarget.ContainsKey(seer.PlayerId) && TrackerTarget[seer.PlayerId].Contains(target.PlayerId) ? Utils.ColorString(seer.GetRoleColor(), "◀") : "";
+        public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false) => !(seer == null || target == null) && TrackerTarget.ContainsKey(seer.PlayerId) && TrackerTarget[seer.PlayerId].Contains(target.PlayerId) ? Utils.ColorString(seer.GetRoleColor(), "◀") : "";
 
-        public static void OnVote(PlayerControl player, PlayerControl target)
+        public override void OnVote(PlayerControl player, PlayerControl target)
         {
             if (player == null || target == null) return;
             if (TrackLimit[player.PlayerId] < 1) return;
@@ -109,7 +118,7 @@ namespace TOHE.Roles.Crewmate
             SendRPC(0,player.PlayerId, target.PlayerId);
         }
 
-        public static void OnReportDeadBody()
+        public override void OnReportDeadBody(PlayerControl reported, PlayerControl repoted)
         {
             foreach (var trackerId in playerIdList) 
             {
@@ -118,7 +127,7 @@ namespace TOHE.Roles.Crewmate
             }
         }
 
-        public static string GetTrackerArrow(PlayerControl seer, PlayerControl target = null)
+        public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
         {
             if (seer == null) return string.Empty;
             if (!seer.Is(CustomRoles.Tracker)) return string.Empty;
@@ -146,7 +155,12 @@ namespace TOHE.Roles.Crewmate
             => seer.IsAlive() && playerIdList.Contains(seer.PlayerId)
                 && TrackerTarget[seer.PlayerId].Contains(target.PlayerId)
                 && target.IsAlive();
-
+        public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+        {
+            if (!player.IsAlive()) return;
+            Tracker.TrackLimit[player.PlayerId] += Tracker.TrackerAbilityUseGainWithEachTaskCompleted.GetFloat();
+            Tracker.SendRPC(2, player.PlayerId);
+        }
         public static string GetArrowAndLastRoom(PlayerControl seer, PlayerControl target)
         {
             if (seer == null || target == null) return string.Empty;
@@ -157,5 +171,23 @@ namespace TOHE.Roles.Crewmate
             else text += Utils.ColorString(Utils.GetRoleColor(CustomRoles.Tracker), "@" + GetString(room.RoomId.ToString()));
             return text;
         }
+        public override string GetProgressText(byte playerId, bool comms)
+        {
+            var ProgressText = new StringBuilder();
+            var taskState11 = Main.PlayerStates?[playerId].TaskState;
+            Color TextColor11;
+            var TaskCompleteColor11 = Color.green;
+            var NonCompleteColor11 = Color.yellow;
+            var NormalColor11 = taskState11.IsTaskFinished ? TaskCompleteColor11 : NonCompleteColor11;
+            TextColor11 = comms ? Color.gray : NormalColor11;
+            string Completed11 = comms ? "?" : $"{taskState11.CompletedTasksCount}";
+            Color TextColor111;
+            if (Tracker.TrackLimit[playerId] < 1) TextColor111 = Color.red;
+            else TextColor111 = Color.white;
+            ProgressText.Append(ColorString(TextColor11, $"({Completed11}/{taskState11.AllTasksCount})"));
+            ProgressText.Append(ColorString(TextColor111, $" <color=#ffffff>-</color> {Math.Round(Tracker.TrackLimit[playerId], 1)}"));
+            return ProgressText.ToString();
+        }
+        public override Sprite AbilityButtonSprite => CustomButton.Get("Track");
     }
 }

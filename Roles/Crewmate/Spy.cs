@@ -2,20 +2,25 @@ using Hazel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate
 {
-    public static class Spy
+    internal class Spy : RoleBase
     {
         private static readonly int Id = 9700;
+        public static bool On = false;
+        public override bool IsEnable => On;
+        public static bool HasEnabled => CustomRoles.Spy.IsClassEnable();
+        public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+
         private static List<byte> playerIdList = [];
         public static bool change = false;
         public static Dictionary<byte, float> UseLimit = [];
         public static Dictionary<byte, long> SpyRedNameList = [];
-        public static bool IsEnable = false;
         public static OptionItem SpyRedNameDur;
         public static OptionItem UseLimitOpt;
         public static OptionItem SpyAbilityUseGainWithEachTaskCompleted;
@@ -33,21 +38,21 @@ namespace TOHE.Roles.Crewmate
             .SetValueFormat(OptionFormat.Times);
             SpyInteractionBlocked = BooleanOptionItem.Create(Id + 13, "SpyInteractionBlocked", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spy]);
         }
-        public static void Init()
+        public override void Init()
         {
             playerIdList = [];
             UseLimit = [];
             SpyRedNameList = [];
-            IsEnable = false;
+            On = false;
             change = false;
         }
-        public static void Add(byte playerId)
+        public override void Add(byte playerId)
         {
             playerIdList.Add(playerId);
             UseLimit.Add(playerId, UseLimitOpt.GetInt());
-            IsEnable = true;
+            On = true;
         }
-        public static void Remove(byte playerId)
+        public override void Remove(byte playerId)
         {
             playerIdList.Remove(playerId);
             UseLimit.Remove(playerId);
@@ -113,7 +118,9 @@ namespace TOHE.Roles.Crewmate
             }
             return true;
         }
-        public static void OnFixedUpdate(PlayerControl pc)
+        public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target) => target.Is(CustomRoles.Spy) && !Spy.OnKillAttempt(killer, target) ? false : true;
+        
+        public override void OnFixedUpdate(PlayerControl pc)
         {
             if (pc == null) return;
             if (SpyRedNameList.Count == 0) return;
@@ -133,7 +140,13 @@ namespace TOHE.Roles.Crewmate
             }
             if (change && GameStates.IsInTask) { NotifyRoles(SpecifySeer: pc, ForceLoop: true); }
         }
-        public static string GetProgressText(byte playerId, bool comms)
+        public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+        {
+            if (!player.IsAlive()) return;
+            Spy.UseLimit[player.PlayerId] += Spy.SpyAbilityUseGainWithEachTaskCompleted.GetFloat();
+            Spy.SendAbilityRPC(player.PlayerId);
+        }
+        public override string GetProgressText(byte playerId, bool comms)
         {
             var sb = "";
 
@@ -154,5 +167,6 @@ namespace TOHE.Roles.Crewmate
 
             return sb;
         }
+        public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => (seer.Is(CustomRoles.Spy) && Spy.SpyRedNameList.ContainsKey(target.PlayerId)) ? "#BA4A00" : "";
     }
 }

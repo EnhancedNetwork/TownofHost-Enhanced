@@ -1,14 +1,21 @@
 using Hazel;
+using System;
 using System.Collections.Generic;
+using System.Text;
+using static TOHE.Utils;
+using UnityEngine;
+using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Crewmate;
 
-public static class SabotageMaster
+internal class Mechanic : RoleBase
 {
     private static readonly int Id = 8500;
+    public static bool On = false;
     public static List<byte> playerIdList = [];
     public static Dictionary<byte, float> UsedSkillCount = [];
-    public static bool IsEnable = false;
+    public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
 
     public static OptionItem SkillLimit;
     private static OptionItem FixesDoors;
@@ -24,37 +31,37 @@ public static class SabotageMaster
 
     public static void SetupCustomOption()
     {
-        Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.SabotageMaster);
-        SkillLimit = IntegerOptionItem.Create(Id + 10, "SabotageMasterSkillLimit", new(0, 100, 1), 10, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.SabotageMaster])
+        Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Mechanic);
+        SkillLimit = IntegerOptionItem.Create(Id + 10, "MechanicSkillLimit", new(0, 100, 1), 10, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mechanic])
             .SetValueFormat(OptionFormat.Times);
-        FixesDoors = BooleanOptionItem.Create(Id + 11, "SabotageMasterFixesDoors", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.SabotageMaster]);
-        FixesReactors = BooleanOptionItem.Create(Id + 12, "SabotageMasterFixesReactors", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.SabotageMaster]);
-        FixesOxygens = BooleanOptionItem.Create(Id + 13, "SabotageMasterFixesOxygens", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.SabotageMaster]);
-        FixesComms = BooleanOptionItem.Create(Id + 14, "SabotageMasterFixesCommunications", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.SabotageMaster]);
-        FixesElectrical = BooleanOptionItem.Create(Id + 15, "SabotageMasterFixesElectrical", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.SabotageMaster]);
+        FixesDoors = BooleanOptionItem.Create(Id + 11, "MechanicFixesDoors", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mechanic]);
+        FixesReactors = BooleanOptionItem.Create(Id + 12, "MechanicFixesReactors", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mechanic]);
+        FixesOxygens = BooleanOptionItem.Create(Id + 13, "MechanicFixesOxygens", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mechanic]);
+        FixesComms = BooleanOptionItem.Create(Id + 14, "MechanicFixesCommunications", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mechanic]);
+        FixesElectrical = BooleanOptionItem.Create(Id + 15, "MechanicFixesElectrical", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mechanic]);
         SMAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 16, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.SabotageMaster])
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mechanic])
             .SetValueFormat(OptionFormat.Times);
         UsesUsedWhenFixingReactorOrO2 = FloatOptionItem.Create(Id + 17, "SMUsesUsedWhenFixingReactorOrO2", new(0f, 5f, 0.1f), 4f, TabGroup.CrewmateRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.SabotageMaster])
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mechanic])
             .SetValueFormat(OptionFormat.Times);
         UsesUsedWhenFixingLightsOrComms = FloatOptionItem.Create(Id + 18, "SMUsesUsedWhenFixingLightsOrComms", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.SabotageMaster])
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mechanic])
             .SetValueFormat(OptionFormat.Times);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         UsedSkillCount = [];
-        IsEnable = false;
+        On = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         UsedSkillCount.Add(playerId, 0);
-        IsEnable = true;
+        On = true;
     }
-    public static void Remove(byte playerId)
+    public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
         UsedSkillCount.Remove(playerId);
@@ -157,7 +164,7 @@ public static class SabotageMaster
     public static void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.SabotageMaster);
+        writer.WritePacked((int)CustomRoles.Mechanic);
         writer.Write(playerId);
         writer.Write(UsedSkillCount[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -172,5 +179,33 @@ public static class SabotageMaster
             UsedSkillCount.Add(playerId, count);
         }
         else UsedSkillCount[playerId] = count;
+    }
+    public override string GetProgressText(byte playerId, bool comms)
+    {
+        var ProgressText = new StringBuilder();
+        var taskState10 = Main.PlayerStates?[playerId].TaskState;
+        Color TextColor10;
+        var TaskCompleteColor10 = Color.green;
+        var NonCompleteColor10 = Color.yellow;
+        var NormalColor10 = taskState10.IsTaskFinished ? TaskCompleteColor10 : NonCompleteColor10;
+        TextColor10 = comms ? Color.gray : NormalColor10;
+        string Completed10 = comms ? "?" : $"{taskState10.CompletedTasksCount}";
+        Color TextColor101;
+        if (Mechanic.SkillLimit.GetFloat() - Mechanic.UsedSkillCount[playerId] < 1) TextColor101 = Color.red;
+        else TextColor101 = Color.white;
+        ProgressText.Append(ColorString(TextColor10, $"({Completed10}/{taskState10.AllTasksCount})"));
+        ProgressText.Append(ColorString(TextColor101, $" <color=#ffffff>-</color> {Math.Round(Mechanic.SkillLimit.GetFloat() - Mechanic.UsedSkillCount[playerId], 1)}"));
+        return ProgressText.ToString();
+    }
+    public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    {
+        if (!player.IsAlive()) return;
+        Mechanic.UsedSkillCount[player.PlayerId] -= Mechanic.SMAbilityUseGainWithEachTaskCompleted.GetFloat();
+        Mechanic.SendRPC(player.PlayerId);
+    }
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    {
+        AURoleOptions.EngineerCooldown = 0f;
+        AURoleOptions.EngineerInVentMaxTime = 0f;
     }
 }

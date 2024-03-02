@@ -124,15 +124,12 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
         switch (role)
         {
             case CustomRoles.Terrorist:
-            case CustomRoles.SabotageMaster:
        //     case CustomRoles.Mario:
             case CustomRoles.EngineerTOHE:
             case CustomRoles.Phantom:
             case CustomRoles.Crewpostor:
             case CustomRoles.Taskinator:
           //  case CustomRoles.Jester:
-                AURoleOptions.EngineerCooldown = 0f;
-                AURoleOptions.EngineerInVentMaxTime = 0f;
                 break;
             case CustomRoles.Alchemist:
                 AURoleOptions.EngineerCooldown = Alchemist.VentCooldown.GetFloat();
@@ -176,13 +173,10 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Arsonist:
             case CustomRoles.Innocent:
             case CustomRoles.Revolutionist:
-            case CustomRoles.Medic:
             case CustomRoles.Crusader:
             case CustomRoles.Provocateur:
-            case CustomRoles.Deputy:
             case CustomRoles.Investigator:
             case CustomRoles.Counterfeiter:
-            case CustomRoles.Witness:
             case CustomRoles.Succubus:
             case CustomRoles.CursedSoul:
             case CustomRoles.Admirer:
@@ -265,28 +259,10 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.EngineerCooldown = Options.VeteranSkillCooldown.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 1;
                 break;
-            case CustomRoles.Grenadier:
-                AURoleOptions.EngineerCooldown = Options.GrenadierSkillCooldown.GetFloat();
-                AURoleOptions.EngineerInVentMaxTime = 1;
-                break;
      /*       case CustomRoles.Flashbang:
                 AURoleOptions.ShapeshifterCooldown = Options.FlashbangSkillCooldown.GetFloat();
                 AURoleOptions.ShapeshifterDuration = Options.FlashbangSkillDuration.GetFloat();
                 break; */
-            case CustomRoles.Lighter:
-                AURoleOptions.EngineerInVentMaxTime = 1;
-                AURoleOptions.EngineerCooldown = Options.LighterSkillCooldown.GetFloat();
-                if (Main.Lighter.Count > 0)
-                {
-                    opt.SetVision(false);
-                    if (Utils.IsActive(SystemTypes.Electrical)) opt.SetFloat(FloatOptionNames.CrewLightMod, Options.LighterVisionOnLightsOut.GetFloat() * 5);
-                    else opt.SetFloat(FloatOptionNames.CrewLightMod, Options.LighterVisionNormal.GetFloat());
-                }
-                break;
-            case CustomRoles.TimeMaster:
-                AURoleOptions.EngineerCooldown = Options.TimeMasterSkillCooldown.GetFloat();
-                AURoleOptions.EngineerInVentMaxTime = 1;
-                break;
             case CustomRoles.Penguin:
                 Penguin.ApplyGameOptions();
                 break;
@@ -408,10 +384,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.BloodKnight:
                 BloodKnight.ApplyGameOptions(opt);
                 break;
-            case CustomRoles.DovesOfNeace:
-                AURoleOptions.EngineerCooldown = Options.DovesOfNeaceCooldown.GetFloat();
-                AURoleOptions.EngineerInVentMaxTime = 1;
-                break;
             case CustomRoles.Disperser:
                 Disperser.ApplyGameOptions();
                 break;
@@ -453,15 +425,15 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
         }
 
         // Grenadier or Mad Grenadier enter the vent
-        if ((Main.GrenadierBlinding.Count > 0 &&
+        if ((Grenadier.GrenadierBlinding.Count > 0 &&
             (player.GetCustomRole().IsImpostor() ||
-            (player.GetCustomRole().IsNeutral() && Options.GrenadierCanAffectNeutral.GetBool()))
+            (player.GetCustomRole().IsNeutral() && Grenadier.GrenadierCanAffectNeutral.GetBool()))
             )
-            || (Main.MadGrenadierBlinding.Count > 0 && !player.GetCustomRole().IsImpostorTeam() && !player.Is(CustomRoles.Madmate)))
+            || (Grenadier.MadGrenadierBlinding.Count > 0 && !player.GetCustomRole().IsImpostorTeam() && !player.Is(CustomRoles.Madmate)))
         {
             opt.SetVision(false);
-            opt.SetFloat(FloatOptionNames.CrewLightMod, Options.GrenadierCauseVision.GetFloat());
-            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.GrenadierCauseVision.GetFloat());
+            opt.SetFloat(FloatOptionNames.CrewLightMod, Grenadier.GrenadierCauseVision.GetFloat());
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Grenadier.GrenadierCauseVision.GetFloat());
         }
 
         /*if ((Main.FlashbangInProtect.Count >= 1 && Main.ForFlashbang.Contains(player.PlayerId) && (!player.GetCustomRole().IsCrewmate())))  

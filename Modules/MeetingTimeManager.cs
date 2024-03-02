@@ -52,7 +52,7 @@ public class MeetingTimeManager
             MeetingTimeMinTimeThief = TimeThief.LowerLimitVotingTime.GetInt();
             BonusMeetingTime += TimeThief.TotalDecreasedMeetingTime();
         }
-        if (TimeManager.IsEnable)
+        if (TimeManager.HasEnabled)
         {
             MeetingTimeMinTimeManager = TimeManager.MadMinMeetingTimeLimit.GetInt();
             MeetingTimeMax = TimeManager.MeetingTimeLimit.GetInt();
@@ -61,9 +61,9 @@ public class MeetingTimeManager
 
         int TotalMeetingTime = DiscussionTime + VotingTime;
        
-        if (TimeManager.IsEnable) BonusMeetingTime = Math.Clamp(TotalMeetingTime + BonusMeetingTime, MeetingTimeMinTimeManager, MeetingTimeMax) - TotalMeetingTime;
+        if (TimeManager.HasEnabled) BonusMeetingTime = Math.Clamp(TotalMeetingTime + BonusMeetingTime, MeetingTimeMinTimeManager, MeetingTimeMax) - TotalMeetingTime;
         if (TimeThief.IsEnable) BonusMeetingTime = Math.Clamp(TotalMeetingTime + BonusMeetingTime, MeetingTimeMinTimeThief, MeetingTimeMax) - TotalMeetingTime;
-        if (!TimeManager.IsEnable && !TimeThief.IsEnable) BonusMeetingTime = Math.Clamp(TotalMeetingTime + BonusMeetingTime, MeetingTimeMinTimeThief, MeetingTimeMax) - TotalMeetingTime;
+        if (!TimeManager.HasEnabled && !TimeThief.IsEnable) BonusMeetingTime = Math.Clamp(TotalMeetingTime + BonusMeetingTime, MeetingTimeMinTimeThief, MeetingTimeMax) - TotalMeetingTime;
 
         if (BonusMeetingTime >= 0)
             VotingTime += BonusMeetingTime; //投票時間を延長

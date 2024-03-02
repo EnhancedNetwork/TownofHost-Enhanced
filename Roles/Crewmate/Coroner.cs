@@ -254,8 +254,9 @@ internal class Coroner : RoleBase
         }
         return ColorString(Color.white, LocateArrow.GetArrows(seer));
     }
-    public override void AppendProgressText(byte playerId, bool comms, StringBuilder ProgressText)
+    public override string GetProgressText(byte playerId, bool comms)
     {
+        var ProgressText = new StringBuilder();
         var taskState12 = Main.PlayerStates?[playerId].TaskState;
         Color TextColor12;
         var TaskCompleteColor12 = Color.green;
@@ -268,5 +269,6 @@ internal class Coroner : RoleBase
         else TextColor121 = Color.white;
         ProgressText.Append(ColorString(TextColor12, $"({Completed12}/{taskState12.AllTasksCount})"));
         ProgressText.Append(ColorString(TextColor121, $" <color=#ffffff>-</color> {Math.Round(UseLimit[playerId], 1)}"));
+        return ProgressText.ToString();
     }
 }

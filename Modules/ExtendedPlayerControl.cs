@@ -186,7 +186,7 @@ static class ExtendedPlayerControl
         if (target == null) target = killer;
 
         // Check Observer
-        if (Observer.IsEnable && !forObserver && !MeetingStates.FirstMeeting)
+        if (Observer.HasEnabled && !forObserver && !MeetingStates.FirstMeeting)
         {
             Observer.ActivateGuardAnimation(killer.PlayerId, target, colorId);
         }
@@ -246,7 +246,7 @@ static class ExtendedPlayerControl
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
             }
             // Check Observer
-            if (Observer.IsEnable)
+            if (Observer.HasEnabled)
             {
                 Observer.ActivateGuardAnimation(target.PlayerId, target, 11);
             }
@@ -275,7 +275,7 @@ static class ExtendedPlayerControl
                 writer.Write(time);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
             }
-            Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Observer) && target.PlayerId != x.PlayerId).Do(x => x.RpcGuardAndKill(target, 11, true));
+            Observer.ObserverSetKillShield(target);
         }
         player.ResetKillCooldown();
     }
@@ -519,7 +519,6 @@ static class ExtendedPlayerControl
             CustomRoles.Parasite => pc.IsAlive(),
             CustomRoles.Refugee => pc.IsAlive(),
     //        CustomRoles.Minion => pc.IsAlive(),
-            CustomRoles.Witness => pc.IsAlive(),
             CustomRoles.Shroud => pc.IsAlive(),
             CustomRoles.Wraith => pc.IsAlive(),
             CustomRoles.Innocent => pc.IsAlive(),
@@ -527,7 +526,6 @@ static class ExtendedPlayerControl
             CustomRoles.Pursuer => Pursuer.CanUseKillButton(pc.PlayerId),
             CustomRoles.Morphling => Morphling.CanUseKillButton(pc.PlayerId),
             CustomRoles.Hater => pc.IsAlive(),
-            CustomRoles.Medic => Medic.CanUseKillButton(pc.PlayerId),
             CustomRoles.Gamer => pc.IsAlive(),
             CustomRoles.DarkHide => DarkHide.CanUseKillButton(pc),
             CustomRoles.Provocateur => pc.IsAlive(),
@@ -543,7 +541,6 @@ static class ExtendedPlayerControl
             CustomRoles.Imitator => Imitator.CanUseKillButton(pc),
             //CustomRoles.Warlock => !Main.isCurseAndKill.TryGetValue(pc.PlayerId, out bool wcs) || !wcs,
             CustomRoles.Infectious => Infectious.CanUseKillButton(pc),
-            CustomRoles.Deputy => Deputy.CanUseKillButton(pc),
             CustomRoles.Investigator => Investigator.CanUseKillButton(pc),
             CustomRoles.Virus => pc.IsAlive(),
             CustomRoles.Spiritcaller => pc.IsAlive(),
@@ -883,9 +880,6 @@ static class ExtendedPlayerControl
             case CustomRoles.Scavenger:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.ScavengerKillCooldown.GetFloat();
                 break;
-            case CustomRoles.Witness:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Options.WitnessCD.GetFloat();
-                break;
             //case CustomRoles.Capitalism:
             //    Main.AllPlayerKillCooldown[player.PlayerId] = Options.CapitalismSkillCooldown.GetFloat();
             //    break;
@@ -906,9 +900,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Ludopath:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.LudopathRandomKillCD.GetFloat();
-                break;
-            case CustomRoles.Medic:
-                Medic.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Gamer:
                 Gamer.SetKillCooldown(player.PlayerId);
@@ -982,9 +973,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Pixie:
                 Pixie.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Deputy:
-                Deputy.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Investigator:
                 Investigator.SetKillCooldown(player.PlayerId);
@@ -1102,7 +1090,7 @@ static class ExtendedPlayerControl
     public static bool IsCrewVenter(this PlayerControl target)
     {
         return target.Is(CustomRoles.EngineerTOHE)
-            || target.Is(CustomRoles.SabotageMaster)
+            || target.Is(CustomRoles.Mechanic)
             || target.Is(CustomRoles.CopyCat)
             || target.Is(CustomRoles.Monitor) && Monitor.CanUseVent()
             || target.Is(CustomRoles.SwordsMan) && SwordsMan.CanVent.GetBool()

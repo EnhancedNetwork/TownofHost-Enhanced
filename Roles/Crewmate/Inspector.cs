@@ -2,19 +2,23 @@ using Hazel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.AddOns.Common;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.Utils;
 using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate;
-public static class Inspector
+internal class Inspector : RoleBase
 {
     private static readonly int Id = 8300;
     private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    public static bool On = false;
+    public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
     public static Dictionary<byte, float> MaxCheckLimit = [];
     public static Dictionary<byte, int> RoundCheckLimit = [];
@@ -47,22 +51,22 @@ public static class Inspector
             .SetValueFormat(OptionFormat.Times);
         OverrideTasksData.Create(Id + 20, TabGroup.CrewmateRoles, CustomRoles.Inspector);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         MaxCheckLimit = [];
         RoundCheckLimit = [];
-        IsEnable = false;
+        On = false;
     }
 
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         MaxCheckLimit.Add(playerId, InspectCheckLimitMax.GetInt());
         RoundCheckLimit.Add(playerId, InspectCheckLimitPerMeeting.GetInt());
-        IsEnable = true;
+        On = true;
     }
-    public static void Remove(byte playerId)
+    public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
         MaxCheckLimit.Remove(playerId);
@@ -107,7 +111,13 @@ public static class Inspector
             MaxCheckLimit[pid] = maxLimit;
         }
     }
-    public static void OnReportDeadBody()
+    public override void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
+    {
+        if (!pc.IsAlive()) return;
+        Inspector.MaxCheckLimit[pc.PlayerId] += Inspector.InspectAbilityUseGainWithEachTaskCompleted.GetFloat();
+        Inspector.SendRPC(pc.PlayerId, 2);
+    }
+    public override void OnReportDeadBody(PlayerControl reported, PlayerControl target)
     {
         foreach (var pid in RoundCheckLimit.Keys)
         {
@@ -369,7 +379,7 @@ public static class Inspector
         }
         return false;
     }
-    public static void TryHideMsgForCompare()
+    private static void TryHideMsgForCompare()
     {
         ChatUpdatePatch.DoBlockChat = true;
         List<CustomRoles> roles = CustomRolesHelper.AllRoles.Where(x => x is not CustomRoles.NotAssigned).ToList();
@@ -403,5 +413,32 @@ public static class Inspector
             writer.SendMessage();
         }
         ChatUpdatePatch.DoBlockChat = false;
+    }
+    public override string GetProgressText(byte playerId, bool comms)
+    {
+        var ProgressText = new StringBuilder();
+        var taskState8 = Main.PlayerStates?[playerId].TaskState;
+        Color TextColor8;
+        var TaskCompleteColor8 = Color.green;
+        var NonCompleteColor8 = Color.yellow;
+        var NormalColor8 = taskState8.IsTaskFinished ? TaskCompleteColor8 : NonCompleteColor8;
+        TextColor8 = comms ? Color.gray : NormalColor8;
+        string Completed8 = comms ? "?" : $"{taskState8.CompletedTasksCount}";
+        Color TextColor81;
+        if (Inspector.MaxCheckLimit[playerId] < 1) TextColor81 = Color.red;
+        else TextColor81 = Color.white;
+        ProgressText.Append(ColorString(TextColor8, $"({Completed8}/{taskState8.AllTasksCount})"));
+        ProgressText.Append(ColorString(TextColor81, $" <color=#ffffff>-</color> {Math.Round(Inspector.MaxCheckLimit[playerId], 1)}"));
+        return ProgressText.ToString();
+    }
+
+    public override string PVANameText(PlayerVoteArea pva, PlayerControl target) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Inspector), target.PlayerId.ToString()) + " " + pva.NameText.text;
+    public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
+    {
+        if (IsForMeeting)
+        {
+            return ColorString(GetRoleColor(CustomRoles.Inspector), target.PlayerId.ToString()) + " " + TargetPlayerName;
+        }
+        return string.Empty;
     }
 }

@@ -1,16 +1,20 @@
 using Hazel;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate
 {
-    internal class Spiritualist
+    internal class Spiritualist : RoleBase
     {
-        private static readonly int Id = 9600;
+        private const int Id = 9600;
         private static List<byte> playerIdList = [];
-        public static bool IsEnable = false;
+        public static bool On = false;
+        public override bool IsEnable => On;
+        public static bool HasEnabled => CustomRoles.Spiritualist.IsClassEnable();
+        public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
         private static Dictionary<byte, long> ShowGhostArrowUntil = [];
         private static Dictionary<byte, long> LastGhostArrowShowTime = [];
@@ -28,23 +32,23 @@ namespace TOHE.Roles.Crewmate
             ShowGhostArrowForSeconds = FloatOptionItem.Create(Id + 11, "SpiritualistShowGhostArrowForSeconds", new(1f, 60f, 1f), 2f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spiritualist])
                 .SetValueFormat(OptionFormat.Seconds);
         }
-        public static void Init()
+        public override void Init()
         {
             playerIdList = [];
             SpiritualistTarget = new();
             LastGhostArrowShowTime = [];
             ShowGhostArrowUntil = [];
-            IsEnable = false;
+            On = false;
         }
-        public static void Add(byte playerId)
+        public override void Add(byte playerId)
         {
             playerIdList.Add(playerId);
             SpiritualistTarget = byte.MaxValue;
             LastGhostArrowShowTime.Add(playerId, 0);
             ShowGhostArrowUntil.Add(playerId, 0);
-            IsEnable = true;
+            On = true;
         }
-        public static void Remove(byte playerId)
+        public override void Remove(byte playerId)
         {
             playerIdList.Remove(playerId);
             LastGhostArrowShowTime.Remove(playerId);
@@ -66,7 +70,7 @@ namespace TOHE.Roles.Crewmate
             return false;
         }
 
-        public static void OnReportDeadBody(GameData.PlayerInfo target)
+        public override void OnReportDeadBody(PlayerControl reported, PlayerControl target)
         {
             if (target == null) return;
 
@@ -76,7 +80,7 @@ namespace TOHE.Roles.Crewmate
             SpiritualistTarget = target.PlayerId;
         }
 
-        public static void AfterMeetingTasks()
+        public override void AfterMeetingTasks()
         {
             foreach (var spiritualist in playerIdList)
             {
@@ -109,7 +113,7 @@ namespace TOHE.Roles.Crewmate
             }
         }
 
-        public static string GetSpiritualistArrow(PlayerControl seer, PlayerControl target = null)
+        public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
         {
             if (!seer.Is(CustomRoles.Spiritualist) || !seer.IsAlive()) return "";
             if (target != null && seer.PlayerId != target.PlayerId) return "";

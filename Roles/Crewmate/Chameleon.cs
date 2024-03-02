@@ -266,8 +266,9 @@ internal class Chameleon : RoleBase
         hud.AbilityButton.OverrideText(GetString(IsInvis(PlayerControl.LocalPlayer.PlayerId) ? "ChameleonRevertDisguise" : "ChameleonDisguise"));
         hud.ReportButton.OverrideText(GetString("ReportButtonText"));
     }
-    public override void AppendProgressText(byte playerId, bool comms, StringBuilder ProgressText)
+    public override string GetProgressText(byte playerId, bool comms)
     {
+        var ProgressText = new StringBuilder();
         var taskState13 = Main.PlayerStates?[playerId].TaskState;
         Color TextColor13;
         var TaskCompleteColor13 = Color.green;
@@ -280,5 +281,6 @@ internal class Chameleon : RoleBase
         else TextColor131 = Color.white;
         ProgressText.Append(ColorString(TextColor13, $"({Completed13}/{taskState13.AllTasksCount})"));
         ProgressText.Append(ColorString(TextColor131, $" <color=#ffffff>-</color> {Math.Round(UseLimit[playerId], 1)}"));
+        return ProgressText.ToString();
     }
 }

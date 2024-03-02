@@ -189,7 +189,7 @@ public static class GuessManager
                 
                 if (Main.PlayerStates.TryGetValue(target.PlayerId, out var targetState) && targetState.Role != null)
                     if (targetState.Role.OnRoleGuess(isUI, target, pc))
-                        return true;
+                        return targetState.Role.OnRoleGuess(isUI, target, pc);
 
                 if (!Mundane.OnGuess(pc))
                 {
@@ -379,12 +379,6 @@ public static class GuessManager
                     Utils.SendMessage(GetString("GuessGM"), pc.PlayerId);
                     return true;
                 }
-                if (target.Is(CustomRoles.Snitch) && target.GetPlayerTaskState().IsTaskFinished)
-                {
-                    if (!isUI) Utils.SendMessage(GetString("EGGuessSnitchTaskDone"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("EGGuessSnitchTaskDone"));
-                    return true;
-                }
 
                 if (pc.Is(CustomRoles.Doomsayer))
                 {
@@ -486,12 +480,6 @@ public static class GuessManager
                        return true;
                    } */
 
-                if (target.Is(CustomRoles.Merchant) && Merchant.IsBribedKiller(pc, target))
-                {
-                    if (!isUI) Utils.SendMessage(GetString("BribedByMerchant2"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("BribedByMerchant2"));
-                    return true;
-                }
 
                 if (pc.PlayerId == target.PlayerId)
                 {

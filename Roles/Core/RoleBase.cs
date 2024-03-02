@@ -180,6 +180,23 @@ public abstract class RoleBase
     { }
 
     /// <summary>
+    /// When the meeting hud is loaded
+    /// </summary>
+    public virtual void OnMeetingHudStart(PlayerControl pc)
+    { }
+
+    /// <summary>
+    /// Clears the initial meetinghud message
+    /// </summary>
+    public virtual void MeetingHudClear()
+    { }
+
+    /// <summary>
+    /// Notify the playername for modded clients OnMeeting
+    /// </summary>
+    public virtual string PVANameText(PlayerVoteArea pva, PlayerControl target) => string.Empty;
+
+    /// <summary>
     /// Notify a specific role about something after the meeting was ended.
     /// </summary>
     public virtual void NotifyAfterMeeting()
@@ -191,6 +208,10 @@ public abstract class RoleBase
     public virtual void AfterMeetingTasks()
     { }
 
+    /// <summary>
+    /// A bool to hide the playerRole's vote
+    /// </summary>
+    public virtual bool HideVote(byte playerId) => false;
     /// <summary>
     /// When the game starts to ending
     /// </summary>
@@ -227,7 +248,5 @@ public abstract class RoleBase
     /// Gets & Appends the role's skill limit
     /// </summary>
     public virtual string GetProgressText(byte PlayerId, bool comms) => string.Empty;
-    public virtual void AppendProgressText(byte playerId, bool comms, StringBuilder ProgressText)
-    { }
     public virtual int CalcVote(PlayerVoteArea PVA) => 0;
 }

@@ -162,8 +162,8 @@ public static class Jackal
                 RecruitLimit[killer.PlayerId]--;
                 SendRPC(killer.PlayerId);
                 //if (!AttendantCantRoles.GetBool() && Mini.Age == 18 || !AttendantCantRoles.GetBool() &&  Mini.Age != 18 && !(target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
-                
-                if (CopyCat.playerIdList.Contains(target.PlayerId))
+
+                if (CopyCat.playerIdList.Contains(target.PlayerId) && target.Is(CustomRoles.CopyCat))
                     Main.PlayerStates[target.PlayerId].Role.Remove(target.PlayerId);
                 target.RpcSetCustomRole(CustomRoles.Sidekick);
 

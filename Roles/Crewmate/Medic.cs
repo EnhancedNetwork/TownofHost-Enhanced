@@ -1,17 +1,25 @@
-﻿using HarmonyLib;
+﻿using AmongUs.GameOptions;
+using HarmonyLib;
 using Hazel;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Modules;
+using static TOHE.Translator;
+using TOHE.Roles.Core;
 using UnityEngine;
+using static TOHE.Utils;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate;
 
-public static class Medic
+internal class Medic : RoleBase
 {
     private static readonly int Id = 8600;
+    public static bool On = false;
     public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    public override bool IsEnable => On;
+    public static bool HasEnabled => CustomRoles.Medic.IsClassEnable();
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     public static List<byte> ProtectList = [];
     public static byte TempMarkProtected;
@@ -65,28 +73,28 @@ public static class Medic
         GuesserIgnoreShield = BooleanOptionItem.Create(Id + 32, "MedicShieldedCanBeGuessed", false, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Medic]);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         ProtectList = [];
         ProtectLimit = [];
         TempMarkProtected = byte.MaxValue;
         SkillLimit = 1;
-        IsEnable = false;
+        On = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         ProtectLimit.TryAdd(playerId, SkillLimit);
-        IsEnable = true;
-
+        On = true;
+        CustomRoleManager.MarkOthers.Add(GetMedicMark);
         Logger.Info($"{Utils.GetPlayerById(playerId)?.GetNameWithRole()} : {ProtectLimit[playerId]} shields left", "Medicaler");
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public static void Remove(byte playerId)
+    public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
         ProtectLimit.Remove(playerId);
@@ -126,8 +134,9 @@ public static class Medic
     public static bool CanUseKillButton(byte playerId)
         => !Main.PlayerStates[playerId].IsDead
         && (ProtectLimit.TryGetValue(playerId, out var x) ? x : 1) >= 1;
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(id) ? 5f : 300f;
-    public static string GetSkillLimit(byte playerId) => Utils.ColorString(CanUseKillButton(playerId) ? Utils.GetRoleColor(CustomRoles.Medic).ShadeColor(0.25f) : Color.gray, ProtectLimit.TryGetValue(playerId, out var protectLimit) ? $"({protectLimit})" : "Invalid");
+    public override bool CanUseKillButton(PlayerControl pc) => Medic.CanUseKillButton(pc.PlayerId);
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(id) ? 5f : 300f;
+    public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(CanUseKillButton(playerId) ? Utils.GetRoleColor(CustomRoles.Medic).ShadeColor(0.25f) : Color.gray, ProtectLimit.TryGetValue(playerId, out var protectLimit) ? $"({protectLimit})" : "Invalid");
     public static bool InProtect(byte id) => ProtectList.Contains(id) && Main.PlayerStates.TryGetValue(id, out var ps) && !ps.IsDead;
     public static void OnCheckMurderFormedicaler(PlayerControl killer, PlayerControl target)
     {
@@ -222,4 +231,34 @@ public static class Medic
         }
         Utils.NotifyRoles(ForceLoop: true);
     }
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
+
+    private static string GetMedicMark(PlayerControl seer, PlayerControl target, bool isformeeting)
+    {
+        if (seer.Is(CustomRoles.Medic) && (Medic.WhoCanSeeProtect.GetInt() is 0 or 1) && (Medic.InProtect(target.PlayerId) || Medic.TempMarkProtected == target.PlayerId))
+        {
+            return ColorString(GetRoleColor(CustomRoles.Medic), "✚");
+        }
+        else if (!seer.IsAlive() && !seer.Is(CustomRoles.Medic) && (Medic.InProtect(target.PlayerId) || Medic.TempMarkProtected == target.PlayerId))
+        {
+            return ColorString(GetRoleColor(CustomRoles.Medic), "✚");
+        }
+        return string.Empty;
+    }
+    public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+    {
+        if ((Medic.WhoCanSeeProtect.GetInt() is 0 or 1) && (Medic.InProtect(target.PlayerId) || Medic.TempMarkProtected == target.PlayerId))
+            return $"<color={Utils.GetRoleColorCode(seer.GetCustomRole())}>✚</color>";
+        return string.Empty;
+    }
+    public override void SetAbilityButtonText(HudManager hud, byte id)
+    {
+        hud.ReportButton.OverrideText(GetString("ReportButtonText"));
+        hud.KillButton.OverrideText(GetString("MedicalerButtonText"));
+
+        hud.SabotageButton.ToggleVisible(false);
+        hud.AbilityButton.ToggleVisible(false);
+        hud.ImpostorVentButton.ToggleVisible(false);
+    }
+    public override Sprite KillButtonSprite => CustomButton.Get("Shield");
 }
