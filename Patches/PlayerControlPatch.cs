@@ -1906,9 +1906,9 @@ class ReportDeadBodyPatch
 
                 if (Coroner.CannotReportBody(target.PlayerId)) return false;
 
-                if (!Main.PlayerStates.TryGetValue(__instance.PlayerId, out var playerState))
-                    if (playerState != null && playerState.Role != null && playerState.Role.CheckReportDeadBody(__instance, target, killer))
-                        return false;
+                //if (!Main.PlayerStates.TryGetValue(__instance.PlayerId, out var playerState))
+                //    if (playerState != null && playerState.Role != null && playerState.Role.CheckReportDeadBody(__instance, target, killer))
+                //        return false;
 
                 //Add all the patch bodies here!!!
                 //Vulture ate body can not be reported
@@ -1924,7 +1924,10 @@ class ReportDeadBodyPatch
                 //Medusa bodies can not be reported
                 if (Main.MedusaBodies.Contains(target.PlayerId)) return false;
 
-                
+                if (target.Object.Is(CustomRoles.Unreportable)) return false;
+
+                if (Trapster.On)
+                    Trapster.CheckReportDeadBodyD(__instance, target, killer);
 
                 if (__instance.Is(CustomRoles.Vulture))
                 {
@@ -2214,10 +2217,8 @@ class ReportDeadBodyPatch
                     }
                 }
 
-                if (playerState != null && playerState.Role != null && !playerState.Role.OnPressReportButton(__instance, target, killer))
+                if (__instance.GetRoleClass().OnPressReportButton(__instance, target, killer))
                     return false;
-
-                if (target.Object.Is(CustomRoles.Unreportable)) return false;
             }
 
             if (Options.SyncButtonMode.GetBool() && target == null)

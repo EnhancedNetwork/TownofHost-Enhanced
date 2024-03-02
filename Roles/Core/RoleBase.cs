@@ -138,7 +138,7 @@ public abstract class RoleBase
     /// <summary>
     /// Checking that a dead body can be reported
     /// </summary>
-    public virtual bool CheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer) => reporter.IsAlive();
+    //public virtual bool CheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer) => reporter.IsAlive();
 
     /// <summary>
     /// Can start meeting by press button
