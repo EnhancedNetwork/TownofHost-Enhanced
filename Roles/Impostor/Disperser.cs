@@ -1,13 +1,17 @@
-﻿using TOHE.Modules;
+﻿using AmongUs.GameOptions;
+using TOHE.Modules;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
 
 namespace TOHE.Roles.Impostor;
 
-public static class Disperser
+internal class Disperser : RoleBase
 {
-    private static readonly int Id = 24400;
+    private const int Id = 24400;
+    public static bool On;
+    public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
 
     private static OptionItem DisperserShapeshiftCooldown;
     private static OptionItem DisperserShapeshiftDuration;
@@ -20,13 +24,25 @@ public static class Disperser
         DisperserShapeshiftDuration = FloatOptionItem.Create(Id + 7, "ShapeshiftDuration", new(1f, 60f, 1f), 15f, TabGroup.OtherRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Disperser])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public static void ApplyGameOptions()
+
+    public override void Init()
+    {
+        On = false;
+    }
+    public override void Add(byte playerId)
+    {
+        On = true;
+    }
+
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = DisperserShapeshiftCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = DisperserShapeshiftDuration.GetFloat();
     }
-    public static void DispersePlayers(PlayerControl shapeshifter, bool shapeshiftIsHidden = false)
+    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
     {
+        if (!shapeshifting && !shapeshiftIsHidden) return;
+        
         foreach (var pc in PlayerControl.AllPlayerControls)
         {
             if ((!shapeshiftIsHidden && shapeshifter.PlayerId == pc.PlayerId) || !pc.CanBeTeleported())

@@ -1661,11 +1661,6 @@ public static class CheckShapeShiftPatch
                 shapeshifter.RejectShapeshiftAndReset();
                 shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 return false;
-
-            case CustomRoles.Disperser:
-                shapeshifter.RejectShapeshiftAndReset();
-                Disperser.DispersePlayers(shapeshifter, shapeshiftIsHidden: shapeshiftIsHidden);
-                return false;
         }
 
         return true;
@@ -1806,10 +1801,6 @@ class ShapeshiftPatch
                     break;
                 case CustomRoles.QuickShooter:
                     QuickShooter.OnShapeshift(shapeshifter, shapeshifting);
-                    break;
-                case CustomRoles.Disperser:
-                    if (shapeshifting)
-                        Disperser.DispersePlayers(shapeshifter);
                     break;
                 case CustomRoles.Twister:
                     Twister.TwistPlayers(shapeshifter);

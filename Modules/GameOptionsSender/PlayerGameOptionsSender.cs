@@ -412,9 +412,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.EngineerCooldown = Options.DovesOfNeaceCooldown.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 1;
                 break;
-            case CustomRoles.Disperser:
-                Disperser.ApplyGameOptions();
-                break;
             case CustomRoles.Mole:
                 AURoleOptions.EngineerCooldown = Mole.VentCooldown.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 1;
