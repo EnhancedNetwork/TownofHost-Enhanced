@@ -2539,7 +2539,7 @@
   "PVP.ATK": "攻擊力",
   "PVP.DF": "防禦力",
   "PVP.RCO": "恢復力",
-  "Loading": "<b>設定載入失敗</b>",
+  "SettingsAreLoading": "<b>Loading\nsettings...</b>",
   "EAC.CheatDetected.HighLevel": "警告: EAC正在抵禦炸房外掛",
   "EAC.CheatDetected.LowLevel": "警告: EAC檢測到可能存在作弊玩家",
   "ExiledJester": "票出 {0} 讓你有種不祥的預感\n{1} 在狂笑著...",
