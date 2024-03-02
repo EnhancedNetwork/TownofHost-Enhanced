@@ -1522,7 +1522,7 @@ static class ExtendedPlayerControl
     public static bool IsAlive(this PlayerControl target)
     {
         //In lobby all is alive
-        if (GameStates.IsLobby)
+        if (GameStates.IsLobby && !GameStates.IsInGame)
         {
             return true;
         }
