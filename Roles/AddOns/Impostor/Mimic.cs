@@ -14,5 +14,5 @@ public static class Mimic
         CanSeeDeadRolesOpt = BooleanOptionItem.Create(Id + 10, "MimicCanSeeDeadRoles", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mimic]);
     }
 
-    public static bool CanSeeDeadRoles(PlayerControl seer, PlayerControl target) => CanSeeDeadRolesOpt.GetBool() && Main.VisibleTasksCount && seer.Is(CustomRoles.Mimic) && !target.IsAlive();
+    public static bool CanSeeDeadRoles(PlayerControl seer, PlayerControl target) => seer.Is(CustomRoles.Mimic) && CanSeeDeadRolesOpt.GetBool() && Main.VisibleTasksCount && !target.IsAlive() && target.Data.IsDead;
 }
