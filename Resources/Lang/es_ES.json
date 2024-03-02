@@ -2539,7 +2539,7 @@
   "PVP.ATK": "Atacar",
   "PVP.DF": "Defender",
   "PVP.RCO": "Regenerar",
-  "Loading": "<b>Los ajustes fallan a cargar.</b>",
+  "SettingsAreLoading": "<b>Loading\nsettings...</b>",
   "EAC.CheatDetected.HighLevel": "Peligro: EAC detectó un nivel alto de tramposos.",
   "EAC.CheatDetected.LowLevel": "Peligro: Parece que alguien esté usando hacks. EAC detectó un tramposo.",
   "ExiledJester": "Idiotas, el {1} {0} se ríe de todos vosotros porque ha conseguido que lo exiliarais\nEZ!",
