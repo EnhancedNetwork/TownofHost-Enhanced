@@ -388,5 +388,7 @@ public static class CustomRoleManager
         LowerOthers.Clear();
         SuffixOthers.Clear();
         OnFixedUpdateOthers.Clear();
+        OnFixedUpdateLowLoadOthers.Clear();
+        CheckDeadBodyOthers.Clear();
     }
 }
