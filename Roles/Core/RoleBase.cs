@@ -222,7 +222,7 @@ public abstract class RoleBase
     /// </summary>
     public virtual void SetAbilityButtonText(HudManager hud, byte id) => hud.KillButton?.OverrideText(Translator.GetString("KillButtonText"));
     public virtual Sprite KillButtonSprite { get; }
-    public virtual Sprite VentButtonSprite { get; }
+    public virtual Sprite ImpostorVentButtonSprite { get; }
     public virtual Sprite AbilityButtonSprite { get; }
     public virtual Sprite ReportButtonSprite { get; }
     public virtual string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;

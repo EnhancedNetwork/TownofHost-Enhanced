@@ -45,8 +45,6 @@ internal class Eraser : RoleBase
         playerIdList.Add(playerId);
         EraseLimit.Add(playerId, EraseLimitOpt.GetInt());
         On = true;
-
-        Logger.Info($"{Utils.GetPlayerById(playerId)?.GetNameWithRole()} : 剩余{EraseLimit[playerId]}次", "Eraser");
     }
     private static void SendRPC(byte playerId)
     {

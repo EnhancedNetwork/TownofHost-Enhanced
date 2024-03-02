@@ -510,9 +510,6 @@ public static class Options
     public static OptionItem VindicatorAdditionalVote;
     public static OptionItem VindicatorHideVote;
 
-    public static OptionItem EscapistSSDuration;
-    public static OptionItem EscapistSSCD;
-
     public static OptionItem MinerSSDuration;
     public static OptionItem MinerSSCD;
 
@@ -1179,13 +1176,7 @@ public static class Options
         /*
          * Escapist
          */
-        SetupRoleOptions(4000, TabGroup.ImpostorRoles, CustomRoles.Escapist);
-        EscapistSSDuration = FloatOptionItem.Create(4002, "ShapeshiftDuration", new(1f, 180f, 1f), 1, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Escapist])
-            .SetValueFormat(OptionFormat.Seconds);
-        EscapistSSCD = FloatOptionItem.Create(4003, "ShapeshiftCooldown", new(1f, 180f, 1f), 5f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Escapist])
-            .SetValueFormat(OptionFormat.Seconds);
+        Escapist.SetupCustomOption();
 
         /*
          * Lightning

@@ -79,7 +79,6 @@ internal class ChangeRoleSettings
 
             Main.LastEnteredVent = [];
             Main.LastEnteredVentLocation = [];
-            Main.EscapistLocation = [];
 
             Main.AfterMeetingDeathPlayers = [];
             Main.ResetCamPlayerList = [];

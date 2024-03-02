@@ -1625,22 +1625,6 @@ public static class CheckShapeShiftPatch
                 Ninja.OnShapeshift(shapeshifter, shapeshifting, shapeshiftIsHidden: shapeshiftIsHidden);
                 return false;
 
-            case CustomRoles.Escapist:
-                if (Main.EscapistLocation.TryGetValue(shapeshifter.PlayerId, out var position))
-                {
-                    Main.EscapistLocation.Remove(shapeshifter.PlayerId);
-                    Logger.Info($"{shapeshifter.GetNameWithRole()}:{position}", "Escapist Teleport");
-                    shapeshifter.RpcTeleport(position);
-                    shapeshifter.RPCPlayCustomSound("Teleport");
-                }
-                else
-                {
-                    Main.EscapistLocation.Add(shapeshifter.PlayerId, shapeshifter.GetCustomPosition());
-                    shapeshifter.Notify(GetString("EscapisMtarkedPosition"));
-                }
-                shapeshifter.RejectShapeshiftAndReset();
-                return false;
-
             case CustomRoles.QuickShooter:
                 QuickShooter.OnShapeshift(shapeshifter, shapeshifting);
                 shapeshifter.RejectShapeshiftAndReset();
@@ -1768,23 +1752,6 @@ class ShapeshiftPatch
                             Main.isCurseAndKill[shapeshifter.PlayerId] = false;
                         }
                         Main.CursedPlayers[shapeshifter.PlayerId] = null;
-                    }
-                    break;
-                case CustomRoles.Escapist:
-                    if (shapeshifting)
-                    {
-                        if (Main.EscapistLocation.TryGetValue(shapeshifter.PlayerId, out var position))
-                        {
-                            Main.EscapistLocation.Remove(shapeshifter.PlayerId);
-                            Logger.Msg($"{shapeshifter.GetNameWithRole()}:{position}", "EscapistTeleport");
-                            shapeshifter.RpcTeleport(position);
-                            shapeshifter.RPCPlayCustomSound("Teleport");
-                        }
-                        else
-                        {
-                            Main.EscapistLocation.Add(shapeshifter.PlayerId, shapeshifter.GetCustomPosition());
-                            shapeshifter.Notify(GetString("EscapisMtarkedPosition"));
-                        }
                     }
                     break;
                 case CustomRoles.Miner:

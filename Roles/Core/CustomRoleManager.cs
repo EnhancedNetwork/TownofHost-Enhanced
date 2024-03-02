@@ -48,7 +48,7 @@ public static class CustomRoleManager
         CustomRoles.Devourer => new Devourer(),
         CustomRoles.Disperser => new Disperser(),
         CustomRoles.Eraser => new Eraser(),
-        //CustomRoles.Escapist => new Escapist(),
+        CustomRoles.Escapist => new Escapist(),
         //CustomRoles.EvilGuesser => new EvilGuesser(),
         //CustomRoles.EvilTracker => new EvilTracker(),
         //CustomRoles.Fireworker => new EvilGuesser(),

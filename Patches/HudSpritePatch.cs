@@ -46,12 +46,13 @@ public static class HudSpritePatch
         if (!Main.EnableCustomButton.Value) goto EndOfSelectImg;
         if (Main.PlayerStates.TryGetValue(player.PlayerId, out var PlayerState) && PlayerState?.Role?.KillButtonSprite != null)
             newKillButton = PlayerState.Role.KillButtonSprite;
-        if(PlayerState?.Role?.VentButtonSprite != null)
-            newVentButton = PlayerState.Role.VentButtonSprite;
+        if(PlayerState?.Role?.ImpostorVentButtonSprite != null)
+            newVentButton = PlayerState.Role.ImpostorVentButtonSprite;
         if(PlayerState?.Role?.AbilityButtonSprite != null)
             newAbilityButton = PlayerState.Role.AbilityButtonSprite;
         if (PlayerState?.Role?.ReportButtonSprite != null)
             newReportButton = PlayerState.Role.ReportButtonSprite;
+
         switch (player.GetCustomRole())
         {
             case CustomRoles.Ninja:
@@ -159,9 +160,6 @@ public static class HudSpritePatch
                 break;
             case CustomRoles.Wraith:
                 newAbilityButton = CustomButton.Get("invisible");
-                break;
-            case CustomRoles.Escapist:
-                newAbilityButton = CustomButton.Get("abscond");
                 break;
             case CustomRoles.Jailer:
                 newKillButton = CustomButton.Get("penitentiary");
