@@ -204,11 +204,11 @@ internal class Captain : RoleBase
         for (int i = 0; i < CaptainVoteTargets[playerId].Count; i++)
         {
             var captainTarget = CaptainVoteTargets[playerId][i];
-            if (captainTarget == byte.MaxValue || !Utils.GetPlayerById(captainTarget).IsAlive()) continue; 
+            if (captainTarget == byte.MaxValue || !GetPlayerById(captainTarget).IsAlive()) continue; 
             var SelectedAddOn = SelectRandomAddon(captainTarget);
             if (SelectedAddOn == null) continue;
             Main.PlayerStates[captainTarget].RemoveSubRole((CustomRoles)SelectedAddOn);
-            Logger.Info($"Successfully removed {SelectedAddOn} addon from {Utils.GetPlayerById(captainTarget).GetNameWithRole()}", "Captain");
+            Logger.Info($"Successfully removed {SelectedAddOn} addon from {GetPlayerById(captainTarget).GetNameWithRole()}", "Captain");
             SendRPCVoteRemove(captainTarget: captainTarget, SelectedAddOn) ;
         }
         CaptainVoteTargets.Clear();
@@ -218,7 +218,7 @@ internal class Captain : RoleBase
     {
         foreach (byte target in OriginalSpeed.Keys.ToArray())
         {
-            PlayerControl targetPC = Utils.GetPlayerById(target);
+            PlayerControl targetPC = GetPlayerById(target);
             if (targetPC == null) continue;
             Main.AllPlayerSpeed[target] = OriginalSpeed[target];
             targetPC.SyncSettings();
@@ -235,15 +235,16 @@ internal class Captain : RoleBase
             return ColorString(GetRoleColor(CustomRoles.Captain), " ☆");
         return string.Empty;
     }
-    public override void OnVote(PlayerControl pc, PlayerControl voteTarget)
+    public override void OnVoted(PlayerControl votedPlayer, PlayerControl votedTarget)
     {
-        if (voteTarget.Is(CustomRoles.Captain))
+        if (votedPlayer.Is(CustomRoles.Captain))
         {
-            if (!CaptainVoteTargets.ContainsKey(voteTarget.PlayerId)) CaptainVoteTargets[voteTarget.PlayerId] = [];
-            if (!CaptainVoteTargets[voteTarget.PlayerId].Contains(pc.PlayerId))
+            if (!CaptainVoteTargets.ContainsKey(votedPlayer.PlayerId)) CaptainVoteTargets[votedPlayer.PlayerId] = [];
+
+            if (!CaptainVoteTargets[votedPlayer.PlayerId].Contains(votedTarget.PlayerId))
             {
-                CaptainVoteTargets[voteTarget.PlayerId].Add(pc.PlayerId);
-                SendRPCVoteAdd(voteTarget.PlayerId, pc.PlayerId);
+                CaptainVoteTargets[votedPlayer.PlayerId].Add(votedTarget.PlayerId);
+                SendRPCVoteAdd(votedPlayer.PlayerId, votedTarget.PlayerId);
             }
         }
     }

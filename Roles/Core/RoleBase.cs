@@ -203,10 +203,19 @@ public abstract class RoleBase
     public virtual string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false) => string.Empty;
 
     /// <summary>
-    /// A method to determine conditions on voter/targetvote
+    /// When player vote for target
     /// </summary>
-    public virtual void OnVote(PlayerControl pc, PlayerControl voteTarget)
+    public virtual void OnVote(PlayerControl votePlayer, PlayerControl voteTarget)
     { }
+    /// <summary>
+    /// When the player was voted
+    /// </summary>
+    public virtual void OnVoted(PlayerControl votedPlayer, PlayerControl votedTarget)
+    { }
+    /// <summary>
+    /// When need hide vote
+    /// </summary>
+    public virtual bool HideVote(PlayerVoteArea votedPlayer) => false;
 
     /// <summary>
     /// Set text for Kill/Shapeshift/Report/Vent/Protect button

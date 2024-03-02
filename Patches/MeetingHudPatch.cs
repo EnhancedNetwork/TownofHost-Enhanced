@@ -125,9 +125,6 @@ class CheckForEndVotingPatch
                             case CustomRoles.Oracle:
                                 Oracle.OnVote(pc, voteTarget);
                                 break;
-                            case CustomRoles.Eraser:
-                                Eraser.OnVote(pc, voteTarget);
-                                break;
                             case CustomRoles.Cleanser:
                                 Cleanser.OnVote(pc, voteTarget);
                                 break;
@@ -146,8 +143,8 @@ class CheckForEndVotingPatch
                                 Jailer.OnVote(pc, voteTarget);
                                 break;
                         }
-                        voteTarget.GetRoleClass()?.OnVote(pc, voteTarget); // Role is voted
-                        pc.GetRoleClass()?.OnVote(pc, voteTarget); // Role has voted
+                        pc.GetRoleClass()?.OnVote(pc, voteTarget); // Role is voted
+                        voteTarget.GetRoleClass()?.OnVoted(voteTarget, pc); // Role has voted
 
                         if (voteTarget.Is(CustomRoles.Aware))
                         {
@@ -221,10 +218,11 @@ class CheckForEndVotingPatch
                         }
                     }
                 }
+
+                if (ps.TargetPlayerId.GetRoleClassById().HideVote(ps)) continue;
+
                 // Hide Divinator Vote
                 if (CheckRole(ps.TargetPlayerId, CustomRoles.Divinator) && Divinator.HideVote.GetBool() && Divinator.TempCheckLimit[ps.TargetPlayerId] > 0) continue;
-                // Hide Eraser Vote
-                if (CheckRole(ps.TargetPlayerId, CustomRoles.Eraser) && Eraser.HideVote.GetBool() && Eraser.TempEraseLimit[ps.TargetPlayerId] > 0) continue;
                 // Hide Tracker Vote
                 if (CheckRole(ps.TargetPlayerId, CustomRoles.Tracker) && Tracker.HideVote.GetBool() && Tracker.TempTrackLimit[ps.TargetPlayerId] > 0) continue;
                 // Hide Oracle Vote

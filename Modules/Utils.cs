@@ -985,9 +985,6 @@ public static class Utils
                 case CustomRoles.Taskinator:
                     ProgressText.Append(Taskinator.GetProgressText(playerId));
                     break;
-                case CustomRoles.Eraser:
-                    ProgressText.Append(Eraser.GetProgressText(playerId));
-                    break;
                 case CustomRoles.Cleanser:
                     ProgressText.Append(Cleanser.GetProgressText(playerId));
                     break;
@@ -2605,7 +2602,6 @@ public static class Utils
 
         AntiBlackout.AfterMeetingTasks();
 
-        if (Eraser.IsEnable) Eraser.AfterMeetingTasks(notifyPlayer: false);
         if (Cleanser.IsEnable) Cleanser.AfterMeetingTasks(notifyPlayer: false);
         if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: false);
 

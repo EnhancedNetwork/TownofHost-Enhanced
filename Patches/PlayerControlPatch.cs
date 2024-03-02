@@ -2333,7 +2333,6 @@ class ReportDeadBodyPatch
         if (Agitater.IsEnable) Agitater.OnReportDeadBody();
         if (Counterfeiter.IsEnable) Counterfeiter.OnReportDeadBody();
         if (QuickShooter.IsEnable) QuickShooter.OnReportDeadBody();
-        if (Eraser.IsEnable) Eraser.OnReportDeadBody();
         if (Divinator.IsEnable) Divinator.OnReportDeadBody();
         if (Retributionist.IsEnable) Retributionist.OnReportDeadBody();
         if (Tracefinder.IsEnable) Tracefinder.OnReportDeadBody();

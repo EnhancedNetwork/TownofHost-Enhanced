@@ -47,7 +47,7 @@ public static class CustomRoleManager
         CustomRoles.Deathpact => new Deathpact(),
         CustomRoles.Devourer => new Devourer(),
         CustomRoles.Disperser => new Disperser(),
-        //CustomRoles.Eraser => new Eraser(),
+        CustomRoles.Eraser => new Eraser(),
         //CustomRoles.Escapist => new Escapist(),
         //CustomRoles.EvilGuesser => new EvilGuesser(),
         //CustomRoles.EvilTracker => new EvilTracker(),

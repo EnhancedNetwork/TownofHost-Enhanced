@@ -1155,9 +1155,6 @@ internal static class RPC
                 Main.JinxSpellCount[targetId] = Jinx.JinxSpellTimes.GetInt();
                 Jinx.Add(targetId);
                 break;
-            case CustomRoles.Eraser:
-                Eraser.Add(targetId);
-                break;
             case CustomRoles.Ninja:
                 Ninja.Add(targetId);
                 break;

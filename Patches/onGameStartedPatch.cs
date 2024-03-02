@@ -256,7 +256,6 @@ internal class ChangeRoleSettings
             Aware.Init();
             Jailer.Init();
             Oracle.Init();
-            Eraser.Init();
             Ninja.Init();
             Juggernaut.Init();
             Psychic.Init();
@@ -778,9 +777,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Jinx:
                         Main.JinxSpellCount[pc.PlayerId] = Jinx.JinxSpellTimes.GetInt();
                         Jinx.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Eraser:
-                        Eraser.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Ninja:
                         Ninja.Add(pc.PlayerId);
