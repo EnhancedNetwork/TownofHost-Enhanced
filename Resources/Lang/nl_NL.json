@@ -2539,7 +2539,7 @@
   "PVP.ATK": "Aanvallen",
   "PVP.DF": "Verdedigen",
   "PVP.RCO": "Herstellen",
-  "Loading": "<b>Settings failed to load</b>",
+  "SettingsAreLoading": "<b>Loading\nsettings...</b>",
   "EAC.CheatDetected.HighLevel": "Warning: EAC detected High Level of cheats.",
   "EAC.CheatDetected.LowLevel": "Warning: EAC detected Low Level of cheats. One of the players is hacking.",
   "ExiledJester": "Jullie zijn allemaal dwazen!\n{0} de {1} die hardop lachte, heeft iedereen misleid om hem eruit te werpen.\nGG!",
