@@ -1286,7 +1286,7 @@ static class ExtendedPlayerControl
         else if (target.GetRoleClass().KnowRoleTarget(seer, target)) return true;
         else if (Options.CurrentGameMode == CustomGameMode.FFA) return true;
         else if (target.Is(CustomRoles.Solsticer) && Solsticer.EveryOneKnowSolsticer.GetBool()) return true;
-        else if (Main.VisibleTasksCount && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool()) return true;
+        else if (Main.VisibleTasksCount && seer.Data.IsDead && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool()) return true;
         else if (Gravestone.EveryoneKnowRole(target)) return true;
         else if (Mimic.CanSeeDeadRoles(seer, target)) return true;
         else if (Options.SeeEjectedRolesInMeeting.GetBool() && Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote) return true;
@@ -1460,7 +1460,7 @@ static class ExtendedPlayerControl
     public static bool IsAlive(this PlayerControl target)
     {
         //In lobby all is alive
-        if (GameStates.IsLobby)
+        if (GameStates.IsLobby && !GameStates.IsInGame)
         {
             return true;
         }

@@ -1398,7 +1398,14 @@ class MurderPlayerPatch
         }
         else
         {
-            GhostRoleAssign.GhostAssignPatch(target);
+            try
+            {
+                GhostRoleAssign.GhostAssignPatch(target);
+            }
+            catch (Exception error)
+            {
+                Logger.Error($"Error after Ghost assign: {error}", "MurderPlayerPatch.GhostAssign");
+            }
         }
 
         Utils.AfterPlayerDeathTasks(target);
