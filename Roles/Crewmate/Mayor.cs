@@ -88,7 +88,7 @@ internal partial class Mayor : RoleBase
             }
         }
     }
-    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser)
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role)
     {
         if (MayorRevealWhenDoneTasks.GetBool())
         {

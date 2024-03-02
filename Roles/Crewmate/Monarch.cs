@@ -100,7 +100,7 @@ internal class Monarch : RoleBase
         Logger.Info($"{killer.GetNameWithRole()} : 剩余{KnightLimit}次招募机会", "Monarch");
         return false;
     }
-    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser)
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role)
     {
         if (target.Is(CustomRoles.Monarch) && CustomRoles.Knighted.RoleExist())
         {

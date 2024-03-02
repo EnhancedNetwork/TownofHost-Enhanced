@@ -490,12 +490,6 @@ public static class Options
     public static OptionItem ShapeshiftCD;
     public static OptionItem ShapeshiftDur;
 
-    public static OptionItem EGCanGuessTime;
-    public static OptionItem EGCanGuessImp;
-    public static OptionItem EGCanGuessAdt;
-    public static OptionItem EGCanGuessTaskDoneSnitch;
-    public static OptionItem EGTryHideMsg;
-
     public static OptionItem InhibitorCD;
 
     public static OptionItem LudopathRandomKillCD;
@@ -962,19 +956,7 @@ public static class Options
         /*
          * Evil Guesser
          */
-        SetupRoleOptions(1300, TabGroup.ImpostorRoles, CustomRoles.EvilGuesser);
-        EGCanGuessTime = IntegerOptionItem.Create(1302, "GuesserCanGuessTimes", new(1, 15, 1), 15, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.EvilGuesser])
-            .SetValueFormat(OptionFormat.Times);
-        EGCanGuessImp = BooleanOptionItem.Create(1303, "EGCanGuessImp", true, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.EvilGuesser]);
-        EGCanGuessAdt = BooleanOptionItem.Create(1304, "EGCanGuessAdt", false, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.EvilGuesser]);
-        EGCanGuessTaskDoneSnitch = BooleanOptionItem.Create(1305, "EGCanGuessTaskDoneSnitch", true, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.EvilGuesser]);
-        EGTryHideMsg = BooleanOptionItem.Create(1306, "GuesserTryHideMsg", true, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.EvilGuesser])
-            .SetColor(Color.green);
+        EvilGuesser.SetupCustomOption();
 
         /*
          * Evil Tracker
