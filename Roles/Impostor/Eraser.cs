@@ -153,7 +153,7 @@ internal class Eraser : RoleBase
     }
 
     // Erased RoleType - Impostor, Shapeshifter, Crewmate, Engineer, Scientist (Not Neutrals)
-    private static CustomRoles GetErasedRole(RoleTypes roleType, CustomRoles role)
+    public static CustomRoles GetErasedRole(RoleTypes roleType, CustomRoles role)
     {
         return role.IsVanilla()
             ? role
