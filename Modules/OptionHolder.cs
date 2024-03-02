@@ -1492,6 +1492,7 @@ public static class Options
         /*
          * Grenadier
          */
+        Grenadier.SetupCustomOptions();
 
         /*
          * Inspector
@@ -1589,6 +1590,7 @@ public static class Options
         /*
          * Time Master
          */
+        TimeMaster.SetupCustomOptions();
 
         /*
          * Tracker
@@ -1598,6 +1600,7 @@ public static class Options
         /*
          * Witness
          */
+        Witness.SetupCustomOptions();
 
 
         TextOptionItem.Create(10000009, "RoleType.CrewKilling", TabGroup.CrewmateRoles)
