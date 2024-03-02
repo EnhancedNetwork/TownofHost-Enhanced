@@ -2539,7 +2539,7 @@
   "PVP.ATK": "Atacar",
   "PVP.DF": "Defender",
   "PVP.RCO": "Recuperar",
-  "Loading": "<b>Los ajustes fallaron al cargar.</b>",
+  "SettingsAreLoading": "<b>Loading\nsettings...</b>",
   "EAC.CheatDetected.HighLevel": "Aviso: EAC detectó niveles altos de hacks.",
   "EAC.CheatDetected.LowLevel": "Aviso: EAC detectó niveles bajos de hacks. Uno de los jugadores está hackeando.",
   "ExiledJester": "{0} el {1} ha conseguido su victoria tras ser eyectado durante la reunión.\n¡Fin del Juego!",
