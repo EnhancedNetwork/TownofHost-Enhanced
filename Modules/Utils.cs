@@ -2877,19 +2877,7 @@ public static class Utils
     }
     public static string RemoveHtmlTagsTemplate(this string str) => Regex.Replace(str, "", "");
     public static string RemoveHtmlTags(this string str) => Regex.Replace(str, "<[^>]*?>", "");
-    public static bool CanNemesisKill()
-    {
-        if (Main.PlayerStates == null) return false;
-        //  Number of Living Impostors excluding Nemesis
-        int LivingImpostorsNum = 0;
-        foreach (var pc in Main.AllAlivePlayerControls)
-        {
-            var role = pc.GetCustomRole();
-            if (role != CustomRoles.Nemesis && role.IsImpostor()) LivingImpostorsNum++;
-        }
 
-        return LivingImpostorsNum <= 0;
-    }
     public static void FlashColor(Color color, float duration = 1f)
     {
         var hud = DestroyableSingleton<HudManager>.Instance;

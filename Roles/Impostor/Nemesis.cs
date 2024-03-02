@@ -158,6 +158,21 @@ public static class Nemesis
         NemesisMsgCheck(pc, $"/rv {PlayerId}", true);
     }
 
+    public static bool CanUseKillButton(PlayerControl pc)
+    {
+        if (Main.PlayerStates == null) return false;
+        //  Number of Living Impostors excluding Nemesis
+
+        int LivingImpostorsNum = 0;
+        foreach (var player in Main.AllAlivePlayerControls)
+        {
+            var role = player.GetCustomRole();
+            if (role != CustomRoles.Nemesis && role.IsImpostor()) LivingImpostorsNum++;
+        }
+
+        return LivingImpostorsNum <= 0;
+    }
+
     private static void NemesisOnClick(byte playerId /*, MeetingHud __instance*/)
     {
         Logger.Msg($"Click: ID {playerId}", "Nemesis UI");

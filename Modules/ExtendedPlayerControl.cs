@@ -481,7 +481,7 @@ static class ExtendedPlayerControl
             CustomRoles.Killer => pc.IsAlive(),
             //Standard
             CustomRoles.Fireworker => Fireworker.CanUseKillButton(pc),
-            CustomRoles.Nemesis => Utils.CanNemesisKill(),
+            CustomRoles.Nemesis => Nemesis.CanUseKillButton(pc),
             CustomRoles.Shaman => pc.IsAlive(),
             CustomRoles.Underdog => playerCount <= Options.UnderdogMaximumPlayersNeededToKill.GetInt(),
             CustomRoles.Inhibitor => !Utils.IsActive(SystemTypes.Electrical) && !Utils.IsActive(SystemTypes.Comms) && !Utils.IsActive(SystemTypes.MushroomMixupSabotage) && !Utils.IsActive(SystemTypes.Laboratory) && !Utils.IsActive(SystemTypes.LifeSupp) && !Utils.IsActive(SystemTypes.Reactor) && !Utils.IsActive(SystemTypes.HeliSabotage),
@@ -1427,7 +1427,7 @@ static class ExtendedPlayerControl
             switch (role)
             {
                 case CustomRoles.Nemesis:
-                    Prefix = Utils.CanNemesisKill() ? "After" : "Before";
+                    Prefix = Nemesis.CanUseKillButton(player) ? "After" : "Before";
                     break;
             };
         var Info = (role.IsVanilla() ? "Blurb" : "Info") + (InfoLong ? "Long" : "");
