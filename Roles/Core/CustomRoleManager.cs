@@ -60,7 +60,6 @@ public static class CustomRoleManager
         //CustomRoles.Instigator => new Instigator(),
         //CustomRoles.Kamikaze => new Kamikaze(),
         //CustomRoles.KillingMachine => new KillingMachine(),
-        //CustomRoles.Minimalism => new Minimalism(),
         //CustomRoles.Lightning => new Lightning(),
         //CustomRoles.Ludopath => new Ludopath(),
         //CustomRoles.Lurker => new Lurker(),

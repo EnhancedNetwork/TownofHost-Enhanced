@@ -2634,7 +2634,6 @@ public static class Utils
     }
     public static void AfterPlayerDeathTasks(PlayerControl target, bool onMeeting = false)
     {
-
         switch (target.GetCustomRole())
         {
             case CustomRoles.Terrorist:

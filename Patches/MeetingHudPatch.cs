@@ -653,7 +653,6 @@ class CheckForEndVotingPatch
 
     public static void TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason deathReason, params byte[] playerIds)
     {
-
         var AddedIdList = new List<byte>();
         foreach (var playerId in playerIds)
         {
@@ -670,7 +669,7 @@ class CheckForEndVotingPatch
         }
         CheckForDeathOnExile(deathReason, [.. AddedIdList]);
     }
-    public static void CheckForDeathOnExile(PlayerState.DeathReason deathReason, params byte[] playerIds)
+    private static void CheckForDeathOnExile(PlayerState.DeathReason deathReason, params byte[] playerIds)
     {
         Witch.OnCheckForEndVoting(deathReason, playerIds);
         HexMaster.OnCheckForEndVoting(deathReason, playerIds);
