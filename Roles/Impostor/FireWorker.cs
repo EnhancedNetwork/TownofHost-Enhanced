@@ -112,7 +112,7 @@ internal class Fireworker : RoleBase
     {
         Logger.Info($"Fireworker ShapeShift", "Fireworker");
         if (!shapeshifting && !shapeshiftIsHidden) return;
-        if (shapeshifter == null || shapeshifter.Data.IsDead || !shapeshifting || Pelican.IsEaten(shapeshifter.PlayerId)) return;
+        if (shapeshifter == null || shapeshifter.Data.IsDead || Pelican.IsEaten(shapeshifter.PlayerId)) return;
 
         var shapeshifterId = shapeshifter.PlayerId;
         switch (state[shapeshifterId])
@@ -121,15 +121,16 @@ internal class Fireworker : RoleBase
             case FireworkerState.SettingFireworker:
                 Logger.Info("One firework set up", "Fireworker");
 
-                if (shapeshiftIsHidden)
-                    shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
-
                 FireworkerPosition[shapeshifterId].Add(shapeshifter.transform.position);
                 nowFireworkerCount[shapeshifterId]--;
                 state[shapeshifterId] = nowFireworkerCount[shapeshifterId] == 0
                     ? Main.AliveImpostorCount <= 1 ? FireworkerState.ReadyFire : FireworkerState.WaitTime
                     : FireworkerState.SettingFireworker;
+
+                if (shapeshiftIsHidden)
+                    shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 break;
+
             case FireworkerState.ReadyFire:
                 Logger.Info("Blowing up fireworks", "Fireworker");
                 bool suicide = false;
@@ -160,14 +161,11 @@ internal class Fireworker : RoleBase
                         Main.PlayerStates[shapeshifterId].deathReason = PlayerState.DeathReason.Misfire;
                         shapeshifter.RpcMurderPlayerV3(shapeshifter);
                     }
-
-                    if (shapeshiftIsHidden)
-                        shapeshifter.SyncSettings();
-                    else
-                        shapeshifter.MarkDirtySettings();
+                    shapeshifter.MarkDirtySettings();
                 }
                 state[shapeshifterId] = FireworkerState.FireEnd;
                 break;
+
             default:
                 break;
         }
@@ -210,8 +208,8 @@ internal class Fireworker : RoleBase
     public override void SetAbilityButtonText(HudManager hud, byte id)
     {
         if (state[id] == FireworkerState.ReadyFire)
-            hud.AbilityButton.OverrideText(GetString("FireWorksExplosionButtonText"));
+            hud.AbilityButton.OverrideText(GetString("FireworkerExplosionButtonText"));
         else
-            hud.AbilityButton.OverrideText(GetString("FireWorksInstallAtionButtonText"));
+            hud.AbilityButton.OverrideText(GetString("FireworkerInstallAtionButtonText"));
     }
 }

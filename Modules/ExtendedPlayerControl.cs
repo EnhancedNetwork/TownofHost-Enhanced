@@ -557,7 +557,7 @@ static class ExtendedPlayerControl
             CustomRoles.Doppelganger => pc.IsAlive(),
             CustomRoles.Quizmaster => Quizmaster.CanUseKillButton(pc),
 
-            _ => pc.Is(CustomRoleTypes.Impostor),
+            _ => false,
         };
     }
     public static bool HasKillButton(PlayerControl pc = null)

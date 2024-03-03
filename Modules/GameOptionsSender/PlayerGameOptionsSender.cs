@@ -263,10 +263,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.EngineerCooldown = Options.GrenadierSkillCooldown.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 1;
                 break;
-     /*       case CustomRoles.Flashbang:
-                AURoleOptions.ShapeshifterCooldown = Options.FlashbangSkillCooldown.GetFloat();
-                AURoleOptions.ShapeshifterDuration = Options.FlashbangSkillDuration.GetFloat();
-                break; */
             case CustomRoles.Lighter:
                 AURoleOptions.EngineerInVentMaxTime = 1;
                 AURoleOptions.EngineerCooldown = Options.LighterSkillCooldown.GetFloat();
