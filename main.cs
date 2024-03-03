@@ -574,7 +574,7 @@ public enum CustomRoles
     Mercenary,
     Miner,
     Morphling,
-    Nemesis, 
+    Nemesis,
     Minion,
     Ninja,
     Nuker,
@@ -607,6 +607,7 @@ public enum CustomRoles
     Wildling,
     Zombie,
     // Flashbang,
+
     //Crewmate(Vanilla)
     Engineer,
     GuardianAngel,
