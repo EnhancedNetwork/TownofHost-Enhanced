@@ -105,7 +105,6 @@ public static class HudSpritePatch
             case CustomRoles.EvilTracker:
                 newAbilityButton = CustomButton.Get("Track");
                 break;
-                break;
             case CustomRoles.Vampire:
                 newKillButton = CustomButton.Get("Bite");
                 break;

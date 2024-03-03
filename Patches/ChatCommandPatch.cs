@@ -1127,7 +1127,7 @@ internal class ChatCommands
             "法官" or "正义法官" or "正义审判" => GetString("Judge"),
             "殯葬師" or "入殓师" => GetString("Mortician"),
             "通靈師" or "通灵师" => GetString("Mediumshiper"),
-            "和平之鴿" or "和平之鸽" => GetString("pacifist"),
+            "和平之鴿" or "和平之鸽" => GetString("Pacifist"),
             "窺視者" or "观察者" or "观察" => GetString("Observer"),
             "君主" => GetString("Monarch"),
             "預言家" or "预言家" or "预言" => GetString("Overseer"),

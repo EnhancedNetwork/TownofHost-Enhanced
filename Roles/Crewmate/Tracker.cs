@@ -68,7 +68,7 @@ namespace TOHE.Roles.Crewmate
             TrackLimit.Remove(playerId);
             TrackerTarget.Remove(playerId);
         }
-        public override bool HideVote(byte playerId) => CheckRole(playerId, CustomRoles.Tracker) && Tracker.HidesVote.GetBool() && Tracker.TempTrackLimit[playerId] > 0;
+        public override bool HideVote(PlayerVoteArea pva) => CheckRole(pva.TargetPlayerId, CustomRoles.Tracker) && Tracker.HidesVote.GetBool() && Tracker.TempTrackLimit[pva.TargetPlayerId] > 0;
         public static void SendRPC(int operate, byte trackerId = byte.MaxValue, byte targetId = byte.MaxValue)
         {
             if (!AmongUsClient.Instance.AmHost) return;

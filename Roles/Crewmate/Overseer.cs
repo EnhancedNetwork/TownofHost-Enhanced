@@ -63,7 +63,7 @@ internal class Overseer : RoleBase
         CustomRoles.Mortician,
         CustomRoles.Mediumshiper,
         CustomRoles.Observer,
-        CustomRoles.pacifist,
+        CustomRoles.Pacifist,
         CustomRoles.Coroner,
         CustomRoles.Retributionist,
         CustomRoles.Guardian,

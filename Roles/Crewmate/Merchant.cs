@@ -221,7 +221,7 @@ namespace TOHE.Roles.Crewmate
                 addonsSold[player.PlayerId] += 1;
             }
         }
-        public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc)
+        public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role)
         {
             if (target.Is(CustomRoles.Merchant) && Merchant.IsBribedKiller(pc, target))
             {

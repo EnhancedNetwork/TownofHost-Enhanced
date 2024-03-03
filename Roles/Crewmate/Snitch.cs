@@ -190,7 +190,7 @@ internal class Snitch : RoleBase
         if (!IsThisRole(player.PlayerId) || player.Is(CustomRoles.Madmate)) return;
         CheckTask(player);
     }
-    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc)
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role)
     {
         if (target.Is(CustomRoles.Snitch) && target.GetPlayerTaskState().IsTaskFinished)
         {

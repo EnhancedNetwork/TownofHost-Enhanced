@@ -119,9 +119,6 @@ class CheckForEndVotingPatch
                     {
                         switch (pc.GetCustomRole())
                         {
-                            case CustomRoles.Eraser:
-                                Eraser.OnVote(pc, voteTarget);
-                                break;
                             case CustomRoles.Cleanser:
                                 Cleanser.OnVote(pc, voteTarget);
                                 break;
@@ -214,8 +211,6 @@ class CheckForEndVotingPatch
 
                 // Hide roles vote
                 if (ps.TargetPlayerId.GetRoleClassById().HideVote(ps)) continue;
-                // Hide Eraser Vote
-                if (CheckRole(ps.TargetPlayerId, CustomRoles.Eraser) && Eraser.HideVote.GetBool() && Eraser.TempEraseLimit[ps.TargetPlayerId] > 0) continue;
                 // Hide Cleanser Vote
                 if (CheckRole(ps.TargetPlayerId, CustomRoles.Cleanser) && Cleanser.HideVote.GetBool() && Cleanser.CleanserUses[ps.TargetPlayerId] > 0) continue;
                 // Hide Jester Vote
@@ -748,7 +743,7 @@ class CastVotePatch
                     } //patch here so checkend is not triggered
                     break;
                 case CustomRoles.Keeper:
-                    if (!Keeper.OnVoted(voter, target))
+                    if (!Keeper.OnVotes(voter, target))
                     {
                         __instance.RpcClearVote(voter.GetClientId());
                         return false;
@@ -991,8 +986,8 @@ class MeetingHudStartPatch
                 AddMsg(Solsticer.MurderMessage, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("SolsticerTitle")));
             }
         }
-        Main.PlayerStates.Where(x => x.Value.Role.IsEnable)?.Do(x
-            => x.Value.Role.OnMeetingHudStart(Utils.GetPlayerById(x.Key)));
+        Main.PlayerStates.Where(x => x.Value.RoleClass.IsEnable)?.Do(x
+            => x.Value.RoleClass.OnMeetingHudStart(Utils.GetPlayerById(x.Key)));
             
         //宝箱怪的消息（合并）
         if (MimicMsg != "")
@@ -1014,8 +1009,8 @@ class MeetingHudStartPatch
             msgToSend.Do(x => Utils.SendMessage(x.Item1, x.Item2, x.Item3));
         }, 3f, "Skill Notice On Meeting Start");
         
-        Main.PlayerStates.Where(x => x.Value.Role.IsEnable)?.Do(x
-            => x.Value.Role.MeetingHudClear());
+        Main.PlayerStates.Where(x => x.Value.RoleClass.IsEnable)?.Do(x
+            => x.Value.RoleClass.MeetingHudClear());
 
         Main.CyberStarDead.Clear();
         Main.VirusNotify.Clear();

@@ -82,7 +82,7 @@ internal class CopyCat : RoleBase
             //bcoz of vent cd
             CustomRoles.Grenadier or
             CustomRoles.Lighter or
-            CustomRoles.pacifist or
+            CustomRoles.Pacifist or
             CustomRoles.Veteran or
             CustomRoles.Bastion or
             CustomRoles.Addict or

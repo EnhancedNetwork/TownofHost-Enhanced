@@ -1153,8 +1153,6 @@ internal static class RPC
                 break;
             case CustomRoles.Hawk:
                 Hawk.Add(targetId);
-            case CustomRoles.Retributionist:
-                Retributionist.Add(targetId);
                 break;
             case CustomRoles.Bloodmoon:
                 Bloodmoon.Add(targetId);

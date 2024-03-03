@@ -214,10 +214,6 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// A bool to hide the playerRole's vote
-    /// </summary>
-    public virtual bool HideVote(byte playerId) => false;
-    /// <summary>
     /// When the game starts to ending
     /// </summary>
     public virtual void OnCoEndGame()

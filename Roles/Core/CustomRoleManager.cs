@@ -141,7 +141,7 @@ public static class CustomRoleManager
         //CustomRoles.Doctor => new Doctor(),
         //CustomRoles.DonutDelivery => new DonutDelivery(),
         //CustomRoles.Doormaster => new Doormaster(),
-        CustomRoles.pacifist => new pacifist(),
+        CustomRoles.Pacifist => new Pacifist(),
         //CustomRoles.Drainer => new Drainer(),
         //CustomRoles.Druid => new Druid(),
         //CustomRoles.Electric => new Electric(),

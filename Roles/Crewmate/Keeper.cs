@@ -56,7 +56,7 @@ internal class Keeper : RoleBase
         DidVote.Remove(playerId);
         keeperUses.Remove(playerId);
     }
-    public override bool HideVote(byte playerId) => CheckRole(playerId, CustomRoles.Keeper) && Keeper.HidesVote.GetBool() && Keeper.keeperUses[playerId] > 0;
+    public override bool HideVote(PlayerVoteArea pva) => CheckRole(pva.TargetPlayerId, CustomRoles.Keeper) && Keeper.HidesVote.GetBool() && Keeper.keeperUses[pva.TargetPlayerId] > 0;
 
     public override string GetProgressText(byte playerId, bool comms)
     {
@@ -124,7 +124,7 @@ internal class Keeper : RoleBase
         }
     }
 
-    public static bool OnVoted(PlayerControl voter, PlayerControl target)
+    public static bool OnVotes(PlayerControl voter, PlayerControl target)
     {
         if (!CustomRoles.Keeper.IsClassEnable()) return true;
         if (voter == null || target == null) return true;

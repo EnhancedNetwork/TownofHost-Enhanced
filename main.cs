@@ -657,7 +657,7 @@ public enum CustomRoles
     Observer,
     Oracle,
     Overseer, 
-    pacifist, //pacifist
+    Pacifist, 
     Paranoia, //paranoid
     ChiefOfPolice, //police commisioner
     President,

@@ -66,7 +66,7 @@ internal class Oracle : RoleBase
         playerIdList.Remove(playerId);
         CheckLimit.Remove(playerId);
     }
-    public override bool HideVote(byte playerId) => CheckRole(playerId, CustomRoles.Oracle) && Oracle.HidesVote.GetBool() && Oracle.TempCheckLimit[playerId] > 0;
+    public override bool HideVote(PlayerVoteArea pva) => CheckRole(pva.TargetPlayerId, CustomRoles.Oracle) && Oracle.HidesVote.GetBool() && Oracle.TempCheckLimit[pva.TargetPlayerId] > 0;
     public static void SendRPC(byte playerId, bool isTemp = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);

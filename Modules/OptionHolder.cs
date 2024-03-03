@@ -1550,7 +1550,7 @@ public static class Options
         Oracle.SetupCustomOption();
 
         /*
-         * pacifist
+         * Pacifist
          */
         Pacifist.SetupCustomOptions();
 

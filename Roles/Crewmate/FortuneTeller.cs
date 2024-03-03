@@ -68,7 +68,7 @@ internal class FortuneTeller : RoleBase
         CheckLimit.Remove(playerId);
         targetList.Remove(playerId);
     }
-    public override bool HideVote(byte playerId) => CheckRole(playerId, CustomRoles.FortuneTeller) && HidesVote.GetBool() && TempCheckLimit[playerId] > 0;
+    public override bool HideVote(PlayerVoteArea pva) => CheckRole(pva.TargetPlayerId, CustomRoles.FortuneTeller) && HidesVote.GetBool() && TempCheckLimit[pva.TargetPlayerId] > 0;
 
     public static void SendRPC(byte playerId, bool isTemp = false, bool voted = false)
     {
@@ -358,7 +358,7 @@ internal class FortuneTeller : RoleBase
                 
                 [CustomRoles.Poisoner,
                 CustomRoles.Vampire,
-                CustomRoles.pacifist,
+                CustomRoles.Pacifist,
                 CustomRoles.SoulCatcher,
                 CustomRoles.Huntsman,
                 CustomRoles.Traitor],

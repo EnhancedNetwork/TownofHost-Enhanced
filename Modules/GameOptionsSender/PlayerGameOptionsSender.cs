@@ -378,13 +378,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.BloodKnight:
                 BloodKnight.ApplyGameOptions(opt);
                 break;
-            case CustomRoles.Disperser:
-                Disperser.ApplyGameOptions();
-                break;
-            case CustomRoles.DovesOfNeace:
-                AURoleOptions.EngineerCooldown = Options.DovesOfNeaceCooldown.GetFloat();
-                AURoleOptions.EngineerInVentMaxTime = 1;
-                break;
             case CustomRoles.Mole:
                 AURoleOptions.EngineerCooldown = Mole.VentCooldown.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 1;
