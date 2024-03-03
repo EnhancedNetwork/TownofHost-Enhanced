@@ -39,7 +39,7 @@ public abstract class RoleBase
     /// <summary>
     /// A generic method to set if a impostor/SS base may vent.
     /// </summary>
-    public virtual bool CanUseImpostorVentButton(PlayerControl pc) => pc.IsAlive() && pc.GetCustomRole().GetRoleTypes() is RoleTypes.Impostor or RoleTypes.Shapeshifter;
+    public virtual bool CanUseImpostorVentButton(PlayerControl pc) => pc.Is(CustomRoleTypes.Impostor) && pc.IsAlive();
 
     /// <summary>
     /// A generic method to set if the role can use sabotage.
