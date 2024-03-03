@@ -1,40 +1,43 @@
 ﻿using Hazel;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace TOHE;
 
-// 来源：https://github.com/Yumenopai/TownOfHost_Y
-public static class Greedy
+// Thanks： https://github.com/Yumenopai/TownOfHost_Y
+internal class Greedy : RoleBase
 {
-    private static readonly int Id = 1500;
+    private const int Id = 1500;
     public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    public static bool On;
+    public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     private static OptionItem OddKillCooldown;
     private static OptionItem EvenKillCooldown;
 
-    public static Dictionary<byte, bool> IsOdd = [];
+    private static Dictionary<byte, bool> IsOdd = [];
 
     public static void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Greedy);
-        OddKillCooldown = FloatOptionItem.Create(Id + 10, "GreedyOddKillCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Greedy])
+        OddKillCooldown = FloatOptionItem.Create(Id + 10, "GreedyOddKillCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.ImpostorRoles, false)
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Greedy])
             .SetValueFormat(OptionFormat.Seconds);
-        EvenKillCooldown = FloatOptionItem.Create(Id + 11, "GreedyEvenKillCooldown", new(0f, 180f, 2.5f), 5f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Greedy])
+        EvenKillCooldown = FloatOptionItem.Create(Id + 11, "GreedyEvenKillCooldown", new(0f, 180f, 2.5f), 5f, TabGroup.ImpostorRoles, false)
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Greedy])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public static void Init()
+    public override void Init()
     {
+        On = false;
         playerIdList = [];
         IsOdd = [];
-        IsEnable = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         IsOdd.Add(playerId, true);
-        IsEnable = true;
+        On = true;
     }
 
     private static void SendRPC(byte playerId)
@@ -51,35 +54,34 @@ public static class Greedy
         IsOdd[playerId] = reader.ReadBoolean();
     }
 
-    public static void SetKillCooldown(byte id)
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = OddKillCooldown.GetFloat();
+    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
-        Main.AllPlayerKillCooldown[id] = OddKillCooldown.GetFloat();
-    }
-    public static void OnReportDeadBody()
-    {
-        foreach (var pc in Main.AllAlivePlayerControls.Where(x => playerIdList.Contains(x.PlayerId)).ToArray())
+        foreach (var greedyId in playerIdList.ToArray())
         {
-            IsOdd[pc.PlayerId] = true;
-            SendRPC(pc.PlayerId);
-            Main.AllPlayerKillCooldown[pc.PlayerId] = OddKillCooldown.GetFloat();
+            IsOdd[greedyId] = true;
+            SendRPC(greedyId);
+            SetKillCooldown(greedyId);
         }
     }
-    public static void OnCheckMurder(PlayerControl killer)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         switch (IsOdd[killer.PlayerId])
         {
             case true:
-                Logger.Info($"{killer?.Data?.PlayerName}:奇数击杀冷却", "Greedier");
+                Logger.Info($"{killer?.Data?.PlayerName}: Odd kill cooldown", "Greedier");
                 Main.AllPlayerKillCooldown[killer.PlayerId] = EvenKillCooldown.GetFloat();
                 break;
             case false:
-                Logger.Info($"{killer?.Data?.PlayerName}:偶数击杀冷却", "Greedier");
+                Logger.Info($"{killer?.Data?.PlayerName}: Even kill cooldown", "Greedier");
                 Main.AllPlayerKillCooldown[killer.PlayerId] = OddKillCooldown.GetFloat();
                 break;
         }
+
         IsOdd[killer.PlayerId] = !IsOdd[killer.PlayerId];
-        //RPCによる同期
         SendRPC(killer.PlayerId);
-        killer.SyncSettings();//キルクール処理を同期
+
+        killer.SyncSettings();
+        return true;
     }
 }

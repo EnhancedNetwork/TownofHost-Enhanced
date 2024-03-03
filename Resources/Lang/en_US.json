@@ -2730,8 +2730,8 @@
   "LudopathRandomKillCD": "Maximum kill cooldown",
   "UnderdogMaximumPlayersNeededToKill": "Maximum players needed to start killing",
   "GodfatherTargetCountMode": "Killer turns into",
-  "GodfatherCount.Refugee": "<color=#ff1919>Refugee</color>",
-  "GodfatherCount.Madmate": "<color=#ff1919>Madmate</color>",
+  "GodfatherCount_Refugee": "<color=#ff1919>Refugee</color>",
+  "GodfatherCount_Madmate": "<color=#ff1919>Madmate</color>",
 
   "BerserkerKillCooldown": "Berserker kill cooldown",
   "BerserkerMax": "Max level that Berserker can reach",

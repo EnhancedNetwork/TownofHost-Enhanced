@@ -401,31 +401,21 @@ class CheckMurderPatch
                 case CustomRoles.Huntsman:
                     Huntsman.OnCheckMurder(killer, target);
                     break;
-                //case CustomRoles.Occultist:
-                //    if (!Occultist.OnCheckMurder(killer, target)) return false;
-                //    break;
                 case CustomRoles.Puppeteer:
                     if (!Puppeteer.OnCheckPuppet(killer, target)) return false;
                     break;
                 case CustomRoles.Mastermind:
                     if (!Mastermind.OnCheckMurder(killer, target)) return false;
                     break;
-                case CustomRoles.Necromancer: //必须在击杀发生前处理
+                case CustomRoles.Necromancer:
                     if (!Necromancer.OnCheckMurder(killer, target)) return false;
                     break;
                 case CustomRoles.Shroud:
                     if (!Shroud.OnCheckMurder(killer, target)) return false;
                     break;
-                case CustomRoles.Gangster:
-                    if (Gangster.OnCheckMurder(killer, target))
-                        return false;
-                    break;
                 case CustomRoles.Lightning:
                     if (Lightning.OnCheckMurderAsKiller(killer, target))
                         return false;
-                    break;
-                case CustomRoles.Greedy:
-                    Greedy.OnCheckMurder(killer);
                     break;
                 case CustomRoles.QuickShooter:
                     QuickShooter.QuickShooterKill(killer);
@@ -438,9 +428,6 @@ class CheckMurderPatch
                     break;
                 case CustomRoles.Reverie:
                     Reverie.OnCheckMurder(killer, target);
-                    break;
-                case CustomRoles.Hangman:
-                    if (!Hangman.OnCheckMurder(killer, target)) return false;
                     break;
                 case CustomRoles.Swooper:
                     if (!Swooper.OnCheckMurder(killer, target)) return false;
@@ -1237,12 +1224,6 @@ class MurderPlayerPatch
         if (Pelican.IsEnable && target.Is(CustomRoles.Pelican))
             Pelican.OnPelicanDied(target.PlayerId);
 
-        if (Main.GodfatherTarget.Contains(target.PlayerId) && !(killer.GetCustomRole().IsImpostor() || killer.GetCustomRole().IsMadmate() || killer.Is(CustomRoles.Madmate)))
-        {
-            if (Options.GodfatherChangeOpt.GetValue() == 0) killer.RpcSetCustomRole(CustomRoles.Refugee);
-            else killer.RpcSetCustomRole(CustomRoles.Madmate);
-        }
-
         if (Sniper.IsEnable)
         {
             if (Sniper.TryGetSniper(target.PlayerId, ref killer))
@@ -1280,7 +1261,7 @@ class MurderPlayerPatch
         killerRoleClass.OnMurder(killer, target);
 
         // Check dead body for others roles
-        CustomRoleManager.CheckDeadBody(target);
+        CustomRoleManager.CheckDeadBody(target, killer);
 
 
 
@@ -1451,7 +1432,7 @@ public static class CheckShapeShiftPatch
         var role = shapeshifter.GetCustomRole();
 
         // Always show
-        if (role is CustomRoles.ShapeshifterTOHE or CustomRoles.Shapeshifter or CustomRoles.ShapeMaster) return true;
+        if (role is CustomRoles.ShapeshifterTOHE or CustomRoles.Shapeshifter or CustomRoles.ShapeMaster or CustomRoles.Hangman) return true;
 
         // Check Sniper settings conditions
         if (role is CustomRoles.Sniper && Sniper.ShowShapeshiftAnimations) return true;
@@ -1626,7 +1607,7 @@ class ShapeshiftPatch
 
             // Check shapeshift
             if (!(
-                (role is CustomRoles.ShapeshifterTOHE or CustomRoles.Shapeshifter or CustomRoles.ShapeMaster)
+                (role is CustomRoles.ShapeshifterTOHE or CustomRoles.Shapeshifter or CustomRoles.ShapeMaster or CustomRoles.Hangman)
                 ||
                 (role is CustomRoles.Sniper && Sniper.ShowShapeshiftAnimations)
                 ))
@@ -2208,7 +2189,6 @@ class ReportDeadBodyPatch
         Main.GuesserGuessed.Clear();
         Main.VeteranInProtect.Clear();
         Main.AllKillers.Clear();
-        Main.GodfatherTarget.Clear();
         Solsticer.patched = false;
 
         if (Options.BombsClearAfterMeeting.GetBool())
@@ -2242,7 +2222,6 @@ class ReportDeadBodyPatch
         if (QuickShooter.IsEnable) QuickShooter.OnReportDeadBody();
         if (Tracefinder.IsEnable) Tracefinder.OnReportDeadBody();
         if (Judge.IsEnable) Judge.OnReportDeadBody();
-        if (Greedy.IsEnable) Greedy.OnReportDeadBody();
         if (PlagueDoctor.IsEnable) PlagueDoctor.OnReportDeadBody();
         if (Doomsayer.IsEnable) Doomsayer.OnReportDeadBody();
         if (Lightning.IsEnable) Lightning.OnReportDeadBody();
@@ -3080,9 +3059,6 @@ class FixedUpdateInNormalGamePatch
                 {
                     Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
                 }
-
-                if (BountyHunter.On)
-                    Suffix.Append(BountyHunter.GetTargetArrow(seer, target));
 
                 if (PlagueDoctor.IsEnable)
                     Suffix.Append(PlagueDoctor.GetLowerTextOthers(seer, target));

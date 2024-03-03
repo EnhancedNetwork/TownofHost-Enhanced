@@ -19,7 +19,7 @@ internal class Fireworker : RoleBase
         CanUseKill = Initial | FireEnd
     }
 
-    private static readonly int Id = 3200;
+    private const int Id = 3200;
     public static bool On;
     public override bool IsEnable => On;
 

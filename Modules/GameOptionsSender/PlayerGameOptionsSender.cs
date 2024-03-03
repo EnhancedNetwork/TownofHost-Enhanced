@@ -364,9 +364,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Ninja:
                 Ninja.ApplyGameOptions();
                 break;
-            case CustomRoles.Hangman:
-                Hangman.ApplyGameOptions();
-                break;
             case CustomRoles.Sunnyboy:
                 AURoleOptions.ScientistCooldown = 0f;
                 AURoleOptions.ScientistBatteryCharge = 60f;

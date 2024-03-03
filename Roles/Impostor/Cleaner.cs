@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace TOHE.Roles.Impostor;
 
@@ -8,6 +9,8 @@ internal class Cleaner : RoleBase
     public static bool On;
     public override bool IsEnable => On;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+
+    public override Sprite ReportButtonSprite => CustomButton.Get("Clean");
 
     private static OptionItem KillCooldown;
     private static OptionItem KillCooldownAfterCleaning;

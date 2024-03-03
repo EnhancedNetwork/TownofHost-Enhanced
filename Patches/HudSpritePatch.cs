@@ -75,9 +75,6 @@ public static class HudSpritePatch
                 newKillButton = CustomButton.Get("Douse");
                 if (player.IsDouseDone() || (Options.ArsonistCanIgniteAnytime.GetBool() && Utils.GetDousedPlayerCount(player.PlayerId).Item1 >= Options.ArsonistMinPlayersToIgnite.GetInt())) newVentButton = CustomButton.Get("Ignite");
                 break;
-            case CustomRoles.Anonymous:
-                newAbilityButton = CustomButton.Get("Hack");
-                break;
             case CustomRoles.Hangman:
                 if (shapeshifting) newAbilityButton = CustomButton.Get("Hangman");
                 break;
@@ -87,17 +84,11 @@ public static class HudSpritePatch
             case CustomRoles.Puppeteer:
                 newKillButton = CustomButton.Get("Puttpuer");
                 break;
-            case CustomRoles.Gangster:
-                if (Gangster.CanRecruit(player.PlayerId)) newKillButton = CustomButton.Get("Sidekick");
-                break;
             case CustomRoles.Succubus:
                 newKillButton = CustomButton.Get("Subbus");
                 break;
             case CustomRoles.Innocent:
                 newKillButton = CustomButton.Get("Suidce");
-                break;
-            case CustomRoles.EvilTracker:
-                newAbilityButton = CustomButton.Get("Track");
                 break;
             case CustomRoles.Vampire:
                 newKillButton = CustomButton.Get("Bite");
@@ -126,9 +117,6 @@ public static class HudSpritePatch
             case CustomRoles.Pirate:
                 newKillButton = CustomButton.Get("Challenge");
                 break;
-            case CustomRoles.BountyHunter:
-                newKillButton = CustomButton.Get("Handoff");
-                break;
             case CustomRoles.SoulCatcher:
                 newKillButton = CustomButton.Get("Teleport");
                 break;
@@ -144,9 +132,6 @@ public static class HudSpritePatch
             case CustomRoles.Jailer:
                 newKillButton = CustomButton.Get("penitentiary");
                 break;
-            //case CustomRoles.Penguin:
-            //    newAbilityButton = CustomButton.Get("Timer");
-            //    break;
             case CustomRoles.Agitater:
                 newKillButton = CustomButton.Get("bombshell");
                 break;
@@ -155,9 +140,6 @@ public static class HudSpritePatch
                 break;
             case CustomRoles.Pursuer:
                 newAbilityButton = CustomButton.Get("Pursuer");
-                break;
-            case CustomRoles.Cleaner:
-                newReportButton = CustomButton.Get("Clean");
                 break;
             case CustomRoles.Warlock:
                 if (!shapeshifting)

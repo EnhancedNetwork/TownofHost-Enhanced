@@ -100,7 +100,6 @@ internal class ChangeRoleSettings
             Main.MadmateNum = 0;
             Main.BardCreations = 0;
             Main.MeetingsPassed = 0;
-            Main.GodfatherTarget = [];
             Main.ShamanTarget = byte.MaxValue;
             Main.ShamanTargetChoosen = false;
             Main.MeetingIsStarted = false;
@@ -226,11 +225,9 @@ internal class ChangeRoleSettings
             Counterfeiter.Init();
             Pursuer.Init();
             Diseased.Init();
-            Gangster.Init();
             Gamer.Init();
             Lightning.Init();
             DarkHide.Init();
-            Greedy.Init();
             Collector.Init();
             Clumsy.Init();
             Taskinator.Init();
@@ -246,7 +243,6 @@ internal class ChangeRoleSettings
             Bait.Init();
             Investigator.Init();
             Pickpocket.Init();
-            Hangman.Init();
             Judge.Init();
             Swooper.Init();
             Hawk.Init();
@@ -681,9 +677,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Pursuer:
                         Pursuer.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Gangster:
-                        Gangster.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.PotionMaster:
                         PotionMaster.Add(pc.PlayerId);
                         break;
@@ -698,9 +691,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Penguin:
                         Penguin.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Greedy:
-                        Greedy.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Collector:
                         Collector.Add(pc.PlayerId);
@@ -717,9 +707,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Juggernaut:
                         Juggernaut.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Hangman:
-                        Hangman.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Judge:
                         Judge.Add(pc.PlayerId);

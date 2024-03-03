@@ -202,8 +202,6 @@ public class Main : BasePlugin
     public static int BardCreations = 0;
     public static int MeetingsPassed = 0;
     public static Dictionary<byte, byte> Provoked = [];
-
-    public static List<byte> GodfatherTarget = [];
     
     public static byte ShamanTarget = byte.MaxValue;
     public static bool ShamanTargetChoosen = false;

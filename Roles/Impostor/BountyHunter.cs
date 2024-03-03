@@ -18,6 +18,8 @@ internal class BountyHunter : RoleBase
     public override bool IsEnable => On;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
 
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Handoff");
+
     private static OptionItem OptionTargetChangeTime;
     private static OptionItem OptionSuccessKillCooldown;
     private static OptionItem OptionFailureKillCooldown;
@@ -233,21 +235,21 @@ internal class BountyHunter : RoleBase
             }
         }
     }
-    public static string GetTargetText(PlayerControl bounty, bool hud)
+    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if (GameStates.IsMeeting) return "";
-        var targetId = GetTarget(bounty);
-        return targetId != 0xff ? $"{(hud ? GetString("BountyCurrentTarget") : GetString("Target"))}: {Main.AllPlayerNames[targetId].RemoveHtmlTags().Replace("\r\n", string.Empty)}" : "";
-    }
-    public static string GetTargetArrow(PlayerControl seer, PlayerControl target = null)
-    {
-        if (seer == null) return "";
-        if (!seer.Is(CustomRoles.BountyHunter)) return "";
-        if (target != null && seer.PlayerId != target.PlayerId) return "";
-        if (!ShowTargetArrow || GameStates.IsMeeting) return "";
+        if (isForMeeting) return string.Empty;
 
-        //seerがtarget自身でBountyHunterのとき、
-        //矢印オプションがありミーティング以外で矢印表示
+        var targetId = GetTarget(seer);
+        return targetId != 0xff ? $"{(isForHud ? GetString("BountyCurrentTarget") : GetString("Target"))}: {Main.AllPlayerNames[targetId].RemoveHtmlTags().Replace("\r\n", string.Empty)}" : string.Empty;
+    }
+    public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    {
+        if (seer == null) return string.Empty;
+        if (!seer.Is(CustomRoles.BountyHunter)) return string.Empty;
+        if (seen != null && seer.PlayerId != seen.PlayerId) return string.Empty;
+        
+        if (!ShowTargetArrow || isForMeeting) return string.Empty;
+
         var targetId = GetTarget(seer);
         return TargetArrow.GetArrows(seer, targetId);
     }

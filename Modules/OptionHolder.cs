@@ -490,16 +490,10 @@ public static class Options
     public static OptionItem ShapeshiftCD;
     public static OptionItem ShapeshiftDur;
 
-    public static OptionItem InhibitorCD;
-
     public static OptionItem LudopathRandomKillCD;
-
-    public static OptionItem SaboteurCD;
 
     public static OptionItem UnderdogMaximumPlayersNeededToKill;
     public static OptionItem UnderdogKillCooldown;
-
-    public static OptionItem GodfatherChangeOpt;
 
     public static OptionItem VindicatorAdditionalVote;
     public static OptionItem VindicatorHideVote;
@@ -662,11 +656,6 @@ public static class Options
         "SidekickCountMode.Jackal",
         "SidekickCountMode.None",
         "SidekickCountMode.Original",
-    ];
-    public static readonly string[] GodfatherChangeMode =
-    [
-        "GodfatherCount.Refugee",
-        "GodfatherCount.Madmate"
     ];
     public static readonly string[] suffixModes =
     [
@@ -950,10 +939,7 @@ public static class Options
         /*
          * Inhibitor
          */
-        SetupRoleOptions(1600, TabGroup.ImpostorRoles, CustomRoles.Inhibitor);
-        InhibitorCD = FloatOptionItem.Create(1602, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Inhibitor])
-            .SetValueFormat(OptionFormat.Seconds);
+        Inhibitor.SetupCustomOption();
 
         /*
          * Instigator
@@ -1001,10 +987,7 @@ public static class Options
         /*
          * Saboteur
          */
-        SetupRoleOptions(2300, TabGroup.ImpostorRoles, CustomRoles.Saboteur);
-        SaboteurCD = FloatOptionItem.Create(2302, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Saboteur])
-            .SetValueFormat(OptionFormat.Seconds);
+        Saboteur.SetupCustomOption();
 
         /*
          * Sniper
@@ -1088,9 +1071,7 @@ public static class Options
         /*
          * Godfather
          */
-        SetupRoleOptions(3400, TabGroup.ImpostorRoles, CustomRoles.Godfather);
-        GodfatherChangeOpt = StringOptionItem.Create(3402, "GodfatherTargetCountMode", GodfatherChangeMode, 0, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Godfather]);
+        Godfather.SetupCustomOption();
 
         /*
          * Kamikaze
