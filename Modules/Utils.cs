@@ -2073,10 +2073,6 @@ public static class Utils
                             SelfSuffix.Append(BountyHunter.GetTargetArrow(seer));
                             break;
 
-                        case CustomRoles.Fireworker:
-                            SelfSuffix.Append(Fireworker.GetStateText(seer));
-                            break;
-
                         case CustomRoles.Snitch:
                             SelfSuffix.Append(Snitch.GetSnitchArrow(seer));
                             break;

@@ -14,7 +14,7 @@ internal class Bomber : RoleBase
     public override bool IsEnable => On;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
 
-    public override Sprite AbilityButtonSprite => CustomButton.Get("Bomb");
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Bomb");
 
     public static OptionItem BomberRadius;
     public static OptionItem BomberCanKill;

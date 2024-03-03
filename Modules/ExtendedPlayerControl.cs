@@ -480,7 +480,6 @@ static class ExtendedPlayerControl
             //FFA
             CustomRoles.Killer => pc.IsAlive(),
             //Standard
-            CustomRoles.Fireworker => Fireworker.CanUseKillButton(pc),
             CustomRoles.Nemesis => Nemesis.CanUseKillButton(pc),
             CustomRoles.Shaman => pc.IsAlive(),
             CustomRoles.Underdog => playerCount <= Options.UnderdogMaximumPlayersNeededToKill.GetInt(),

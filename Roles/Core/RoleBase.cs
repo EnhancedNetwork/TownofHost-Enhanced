@@ -226,9 +226,9 @@ public abstract class RoleBase
     /// Set text for Kill/Shapeshift/Report/Vent/Protect button
     /// </summary>
     public virtual void SetAbilityButtonText(HudManager hud, byte id) => hud.KillButton?.OverrideText(Translator.GetString("KillButtonText"));
-    public virtual Sprite KillButtonSprite { get; }
+    public virtual Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => null;
+    public virtual Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => null;
     public virtual Sprite ImpostorVentButtonSprite { get; }
-    public virtual Sprite AbilityButtonSprite { get; }
     public virtual Sprite ReportButtonSprite { get; }
     public virtual string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;
     public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;

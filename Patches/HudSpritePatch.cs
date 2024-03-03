@@ -49,14 +49,14 @@ public static class HudSpritePatch
         var playerRoleClass = player.GetRoleClass();
         if (playerRoleClass == null) goto EndOfSelectImg;
 
-        if (playerRoleClass?.KillButtonSprite != null)
-            newKillButton = playerRoleClass.KillButtonSprite;
+        if (playerRoleClass?.GetKillButtonSprite(player, shapeshifting) != null)
+            newKillButton = playerRoleClass.GetKillButtonSprite(player, shapeshifting);
 
         if (playerRoleClass?.ImpostorVentButtonSprite != null)
             newVentButton = playerRoleClass.ImpostorVentButtonSprite;
 
-        if (playerRoleClass?.AbilityButtonSprite != null)
-            newAbilityButton = playerRoleClass.AbilityButtonSprite;
+        if (playerRoleClass?.GetAbilityButtonSprite(player, shapeshifting) != null)
+            newAbilityButton = playerRoleClass.GetAbilityButtonSprite(player, shapeshifting);
 
         if (playerRoleClass?.ReportButtonSprite != null)
             newReportButton = playerRoleClass.ReportButtonSprite;
@@ -74,12 +74,6 @@ public static class HudSpritePatch
             case CustomRoles.Arsonist:
                 newKillButton = CustomButton.Get("Douse");
                 if (player.IsDouseDone() || (Options.ArsonistCanIgniteAnytime.GetBool() && Utils.GetDousedPlayerCount(player.PlayerId).Item1 >= Options.ArsonistMinPlayersToIgnite.GetInt())) newVentButton = CustomButton.Get("Ignite");
-                break;
-            case CustomRoles.Fireworker:
-                if (Fireworker.nowFireworkerCount[player.PlayerId] == 0)
-                    newAbilityButton = CustomButton.Get("FireworkD");
-                else
-                    newAbilityButton = CustomButton.Get("FireworkP");
                 break;
             case CustomRoles.Anonymous:
                 newAbilityButton = CustomButton.Get("Hack");
