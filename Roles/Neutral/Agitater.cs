@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using static TOHE.Translator;
+using TOHE.Roles.Crewmate;
 
 namespace TOHE.Roles.Neutral;
 public static class Agitater
