@@ -3181,9 +3181,6 @@ class FixedUpdateInNormalGamePatch
                 if (Snitch.IsEnable)
                     Suffix.Append(Snitch.GetSnitchArrow(seer, target));
 
-                if (BountyHunter.On)
-                    Suffix.Append(BountyHunter.GetTargetArrow(seer, target));
-
                 if (Mortician.IsEnable)
                     Suffix.Append(Mortician.GetTargetArrow(seer, target));
 

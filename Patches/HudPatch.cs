@@ -444,7 +444,6 @@ class HudManagerPatch
                         //if (LowerInfoText.text != "" || LowerInfoText.text != string.Empty)
                             LowerInfoText.text = player.GetCustomRole() switch
                             {
-                                CustomRoles.BountyHunter => BountyHunter.GetTargetText(player, true),
                                 CustomRoles.Witch => Witch.GetSpellModeText(player, true),
                                 CustomRoles.HexMaster => HexMaster.GetHexModeText(player, true),
                                 CustomRoles.Swooper => Swooper.GetHudText(player),
@@ -568,21 +567,17 @@ class SetVentOutlinePatch
 class SetHudActivePatch
 {
     public static bool IsActive = false;
-    public static void Prefix(/*HudManager __instance,*/ [HarmonyArgument(2)] ref bool isActive)
-    {
-        isActive &= !GameStates.IsMeeting;
-        return;
-    }
     public static void Postfix(HudManager __instance, [HarmonyArgument(2)] bool isActive)
     {
         __instance.ReportButton.ToggleVisible(!GameStates.IsLobby && isActive);
-        if (GameStates.IsHideNSeek) return;
         if (!GameStates.IsModHost) return;
+        if (GameStates.IsHideNSeek) return;
         IsActive = isActive;
         if (!isActive) return;
 
         var player = PlayerControl.LocalPlayer;
         if (player == null) return;
+
         switch (player.GetCustomRole())
         {
             case CustomRoles.Sheriff:
@@ -647,7 +642,7 @@ class SetHudActivePatch
         }
         __instance.KillButton.ToggleVisible(player.CanUseKillButton());
         __instance.ImpostorVentButton.ToggleVisible(player.CanUseImpostorVentButton());
-        __instance.SabotageButton.ToggleVisible(player.CanUseSabotage() && isActive);
+        __instance.SabotageButton.ToggleVisible(player.CanUseSabotage());
     }
 }
 [HarmonyPatch(typeof(VentButton), nameof(VentButton.DoClick))]
@@ -676,14 +671,7 @@ class MapBehaviourShowPatch
         {
             var player = PlayerControl.LocalPlayer;
 
-            if (player.Is(CustomRoleTypes.Impostor)
-            || player.Is(CustomRoles.Parasite)
-            || player.Is(CustomRoles.Refugee)
-            || player.Is(CustomRoles.Glitch)
-            || (player.Is(CustomRoles.Bandit) && Bandit.CanUseSabotage.GetBool())
-            || (player.Is(CustomRoles.Jackal) && Jackal.CanUseSabotage.GetBool())
-            || (player.Is(CustomRoles.Sidekick) && Jackal.CanUseSabotageSK.GetBool())
-            || (player.Is(CustomRoles.Traitor) && Traitor.CanUseSabotage.GetBool()))
+            if (player.CanUseSabotage())
                 opts.Mode = MapOptions.Modes.Sabotage;
             else
                 opts.Mode = MapOptions.Modes.Normal;
@@ -693,7 +681,6 @@ class MapBehaviourShowPatch
 [HarmonyPatch(typeof(TaskPanelBehaviour), nameof(TaskPanelBehaviour.SetTaskText))]
 class TaskPanelBehaviourPatch
 {
-    // タスク表示の文章が更新・適用された後に実行される
     public static void Postfix(TaskPanelBehaviour __instance)
     {
         if (!GameStates.IsModHost) return;
@@ -771,7 +758,7 @@ class TaskPanelBehaviourPatch
             __instance.taskText.text = AllText;
         }
 
-        // RepairSenderの表示
+        // RepairSender display
         if (RepairSender.enabled && AmongUsClient.Instance.NetworkMode != NetworkModes.OnlineGame)
             __instance.taskText.text = RepairSender.GetText();
     }
@@ -789,13 +776,13 @@ class RepairSender
     {
         if (!TypingAmount)
         {
-            //SystemType入力中
+            //SystemType is being entered
             SystemType *= 10;
             SystemType += num;
         }
         else
         {
-            //Amount入力中
+            //Amount being entered
             amount *= 10;
             amount += num;
         }
@@ -804,12 +791,12 @@ class RepairSender
     {
         if (!TypingAmount)
         {
-            //SystemType入力中
+            //SystemType is being entered
             TypingAmount = true;
         }
         else
         {
-            //Amount入力中
+            //Amount being entered
             Send();
         }
     }

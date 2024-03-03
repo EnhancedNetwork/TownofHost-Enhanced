@@ -2075,11 +2075,6 @@ public static class Utils
                 {
                     switch (seerRole)
                     {
-                        case CustomRoles.BountyHunter:
-                            SelfSuffix.Append(BountyHunter.GetTargetText(seer, false));
-                            SelfSuffix.Append(BountyHunter.GetTargetArrow(seer));
-                            break;
-
                         case CustomRoles.Snitch:
                             SelfSuffix.Append(Snitch.GetSnitchArrow(seer));
                             break;
