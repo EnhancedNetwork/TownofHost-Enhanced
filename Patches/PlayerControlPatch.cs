@@ -312,10 +312,6 @@ class CheckMurderPatch
         if (Pelican.IsEaten(target.PlayerId))
             return false;
 
-        // Fake Check
-        if (Counterfeiter.IsEnable && Counterfeiter.OnClientMurder(killer))
-            return false;
-
         if (Pursuer.IsEnable && Pursuer.OnClientMurder(killer))
             return false;
 
@@ -436,9 +432,6 @@ class CheckMurderPatch
                 case CustomRoles.Penguin:
                     if (!Penguin.OnCheckMurderAsKiller(killer, target)) return false;
                     break;
-                case CustomRoles.Reverie:
-                    Reverie.OnCheckMurder(killer, target);
-                    break;
                 case CustomRoles.Hangman:
                     if (!Hangman.OnCheckMurder(killer, target)) return false;
                     break;
@@ -451,9 +444,6 @@ class CheckMurderPatch
                 case CustomRoles.Lurker:
                     Lurker.OnCheckMurder(killer);
                     break;
-                case CustomRoles.Crusader:
-                    Crusader.OnCheckMurder(killer, target);
-                    return false;
 
                 case CustomRoles.PlagueBearer:
                     if (!PlagueBearer.OnCheckMurder(killer, target))
@@ -579,38 +569,15 @@ class CheckMurderPatch
                         return false;
                     break;
 
-                case CustomRoles.Sheriff:
-                    if (!Sheriff.OnCheckMurder(killer, target))
-                        return false;
-                    break;
-                case CustomRoles.Jailer:
-                    if (!Jailer.OnCheckMurder(killer, target))
-                        return false;
-                    break;
-
-                case CustomRoles.SwordsMan:
-                    if (!SwordsMan.OnCheckMurder(killer))
-                        return false;
-                    break;
                 case CustomRoles.Medic:
                     Medic.OnCheckMurderFormedicaler(killer, target);
                     return false;
-                case CustomRoles.Counterfeiter:
+                case CustomRoles.Deceiver:
                     if (target.Is(CustomRoles.Pestilence)) break;
                     if (target.Is(CustomRoles.SerialKiller)) return true;
-                    if (Counterfeiter.CanBeClient(target) && Counterfeiter.CanSeel(killer.PlayerId))
-                        Counterfeiter.SeelToClient(killer, target);
+                    if (Deceiver.CanBeClient(target) && Deceiver.CanSeel(killer.PlayerId))
+                        Deceiver.SeelToClient(killer, target);
                     return false;
-                case CustomRoles.Vigilante:
-                    if (killer.Is(CustomRoles.Madmate)) break;
-                    if (target.GetCustomRole().IsCrewmate())
-                    {
-                        killer.RpcSetCustomRole(CustomRoles.Madmate);
-                        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("VigilanteNotify")));
-                        //Utils.NotifyRoles(SpecifySeer: killer);
-                        Utils.MarkEveryoneDirtySettings();
-                    }
-                    break;
                 case CustomRoles.Pursuer:
                     if (target.Is(CustomRoles.Pestilence)) break;
                     if (target.Is(CustomRoles.SerialKiller)) return true;
@@ -902,26 +869,6 @@ class CheckMurderPatch
                 }
                 return false;
             //击杀老兵
-            case CustomRoles.Veteran:
-                if (Main.VeteranInProtect.ContainsKey(target.PlayerId) && killer.PlayerId != target.PlayerId)
-                    if (Main.VeteranInProtect[target.PlayerId] + Options.VeteranSkillDuration.GetInt() >= Utils.GetTimeStamp())
-                    {
-                        if (!killer.Is(CustomRoles.Pestilence))
-                        {
-                            killer.SetRealKiller(target);
-                            target.RpcMurderPlayerV3(killer);
-                            Logger.Info($"{target.GetRealName()} 老兵反弹击杀：{killer.GetRealName()}", "Veteran Kill");
-                            return false;
-                        }
-                        if (killer.Is(CustomRoles.Pestilence))
-                        {
-                            target.SetRealKiller(killer);
-                            killer.RpcMurderPlayerV3(target);
-                            Logger.Info($"{target.GetRealName()} 老兵反弹击杀：{target.GetRealName()}", "Pestilence Reflect");
-                            return false;
-                        }
-                    }
-                break;
             case CustomRoles.Masochist:
 
                 killer.SetKillCooldown(target: target, forceAnime: true);
@@ -1061,21 +1008,10 @@ class CheckMurderPatch
             {
                 var pos = target.transform.position;
                 var dis = Vector2.Distance(pos, pc.transform.position);
-                if (dis > Options.BodyguardProtectRadius.GetFloat()) continue;
-                if (pc.Is(CustomRoles.Bodyguard))
-                {
-                    if (pc.Is(CustomRoles.Madmate) && killer.GetCustomRole().IsImpostorTeam())
-                        Logger.Info($"{pc.GetRealName()} 是个叛徒，所以他选择无视杀人现场", "Bodyguard");
-                    else
-                    {
-                        Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Sacrifice;
-                        pc.RpcMurderPlayerV3(killer);
-                        pc.SetRealKiller(killer);
-                        pc.RpcMurderPlayerV3(pc);
-                        Logger.Info($"{pc.GetRealName()} 挺身而出与歹徒 {killer.GetRealName()} 同归于尽", "Bodyguard");
-                        return false;
-                    }
-                }
+                if (dis > Bodyguard.BodyguardProtectRadius.GetFloat()) continue;
+
+                if (!Bodyguard.OnNearKilling(pc, killer)) return false;
+                
                 if (target.Is(CustomRoles.Cyber))
                 {
                     if (Main.AllAlivePlayerControls.Any(x =>
@@ -1087,32 +1023,7 @@ class CheckMurderPatch
             }
         }
 
-        if (Main.ForCrusade.Contains(target.PlayerId))
-        {
-            foreach (var player in Main.AllAlivePlayerControls)
-            {
-                if (player.Is(CustomRoles.Crusader))
-                {
-                    if (!killer.Is(CustomRoles.Pestilence) && !killer.Is(CustomRoles.KillingMachine))
-                    {
-                        player.RpcMurderPlayerV3(killer);
-                        Main.ForCrusade.Remove(target.PlayerId);
-                        killer.RpcGuardAndKill(target);
-                        return false;
-                    }
-
-                    if (killer.Is(CustomRoles.Pestilence))
-                    {
-                        Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.PissedOff;
-                        killer.RpcMurderPlayerV3(player);
-                        Main.ForCrusade.Remove(target.PlayerId);
-                        target.RpcGuardAndKill(killer);
-
-                        return false;
-                    }
-                }
-            }
-        }
+        if (!Crusader.OnCheckCrusade(killer, target)) return false;
 
         if (PlagueBearer.IsEnable && PlagueBearer.OnCheckMurderPestilence(killer, target))
             return false;
@@ -1312,10 +1223,6 @@ class MurderPlayerPatch
         }
         switch (killer.GetCustomRole())
         {
-            case CustomRoles.SwordsMan:
-                if (killer != target)
-                    SwordsMan.OnMurder(killer);
-                break;
             case CustomRoles.BloodKnight:
                 BloodKnight.OnMurderPlayer(killer, target);
                 break;
@@ -1927,8 +1834,8 @@ class ReportDeadBodyPatch
                         }
                         else if (tar.Is(CustomRoles.Sheriff))
                         {
-                            Sheriff.Add(__instance.PlayerId);
                             __instance.RpcSetCustomRole(CustomRoles.Sheriff);
+                            __instance.GetRoleClass()?.Add(__instance.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         }
@@ -1941,8 +1848,8 @@ class ReportDeadBodyPatch
                         }
                         else if (tar.Is(CustomRoles.Cleanser))
                         {
-                            Sheriff.Add(__instance.PlayerId);
                             __instance.RpcSetCustomRole(CustomRoles.Cleanser);
+                            __instance.GetRoleClass()?.Add(__instance.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                             Main.TasklessCrewmate.Add(__instance.PlayerId);
@@ -1950,42 +1857,42 @@ class ReportDeadBodyPatch
                         else if (tar.Is(CustomRoles.CopyCat))
                         {
                             __instance.RpcSetCustomRole(CustomRoles.CopyCat);
-                            tar.GetRoleClass()?.Add(tar.PlayerId);
+                            __instance.GetRoleClass()?.Add(__instance.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         }
-                        else if (tar.Is(CustomRoles.Counterfeiter))
+                        else if (tar.Is(CustomRoles.Deceiver))
                         {
-                            Counterfeiter.Add(__instance.PlayerId);
-                            __instance.RpcSetCustomRole(CustomRoles.Counterfeiter);
+                            __instance.RpcSetCustomRole(CustomRoles.Deceiver);
+                            __instance.GetRoleClass()?.Add(__instance.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         }
                         else if (tar.Is(CustomRoles.Crusader))
                         {
-                            Crusader.Add(__instance.PlayerId);
                             __instance.RpcSetCustomRole(CustomRoles.Crusader);
+                            __instance.GetRoleClass()?.Add(__instance.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         }
                         else if (tar.Is(CustomRoles.Overseer))
                         {
                             __instance.RpcSetCustomRole(CustomRoles.Overseer);
-                            tar.GetRoleClass()?.Add(tar.PlayerId);
+                            __instance.GetRoleClass()?.Add(__instance.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         }
                         else if (tar.Is(CustomRoles.Jailer))
                         {
-                            Jailer.Add(__instance.PlayerId);
                             __instance.RpcSetCustomRole(CustomRoles.Jailer);
+                            __instance.GetRoleClass()?.Add(__instance.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         }
                         else if (tar.Is(CustomRoles.Judge))
                         {
-                            Judge.Add(__instance.PlayerId);
                             __instance.RpcSetCustomRole(CustomRoles.Judge);
+                            __instance.GetRoleClass()?.Add(__instance.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                             Main.TasklessCrewmate.Add(__instance.PlayerId);
@@ -2036,10 +1943,10 @@ class ReportDeadBodyPatch
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                             Main.TasklessCrewmate.Add(__instance.PlayerId);
                         }
-                        else if (tar.Is(CustomRoles.SwordsMan))
+                        else if (tar.Is(CustomRoles.Knight))
                         {
-                            SwordsMan.Add(__instance.PlayerId);
-                            __instance.RpcSetCustomRole(CustomRoles.SwordsMan);
+                            __instance.RpcSetCustomRole(CustomRoles.Knight);
+                            __instance.GetRoleClass()?.Add(__instance.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         }
@@ -2214,22 +2121,16 @@ class ReportDeadBodyPatch
         Main.LastVotedPlayerInfo = null;
         Main.ArsonistTimer.Clear();
         Main.GuesserGuessed.Clear();
-        Main.VeteranInProtect.Clear();
         Main.AllKillers.Clear();
         Main.GodfatherTarget.Clear();
         Solsticer.patched = false;
 
-        if (Options.BombsClearAfterMeeting.GetBool())
-        {
-            Main.BombedVents.Clear();
-        }
 
         foreach (var playerStates in Main.PlayerStates.Values.Where(p => p.RoleClass.IsEnable).ToArray())
         {
             playerStates.RoleClass?.OnReportDeadBody(player, target?.Object);
         }
 
-        if (Reverie.IsEnable) Reverie.OnReportDeadBody();
         if (Huntsman.IsEnable) Huntsman.OnReportDeadBody();
         if (Mercenary.IsEnable) Mercenary.OnReportDeadBody();
         if (SoulCollector.IsEnable) SoulCollector.OnReportDeadBody();
@@ -2246,15 +2147,12 @@ class ReportDeadBodyPatch
         if (Bandit.IsEnable) Bandit.OnReportDeadBody();
         if (Cleanser.IsEnable) Cleanser.OnReportDeadBody();
         if (Agitater.IsEnable) Agitater.OnReportDeadBody();
-        if (Counterfeiter.IsEnable) Counterfeiter.OnReportDeadBody();
         if (QuickShooter.IsEnable) QuickShooter.OnReportDeadBody();
         if (Tracefinder.IsEnable) Tracefinder.OnReportDeadBody();
-        if (Judge.IsEnable) Judge.OnReportDeadBody();
         if (Greedy.IsEnable) Greedy.OnReportDeadBody();
         if (PlagueDoctor.IsEnable) PlagueDoctor.OnReportDeadBody();
         if (Doomsayer.IsEnable) Doomsayer.OnReportDeadBody();
         if (Lightning.IsEnable) Lightning.OnReportDeadBody();
-        if (Jailer.IsEnable) Jailer.OnReportDeadBody();
         if (Romantic.IsEnable) Romantic.OnReportDeadBody();
         if (Investigator.IsEnable) Investigator.OnReportDeadBody();
         if (Swooper.IsEnable) Swooper.OnReportDeadBody();
@@ -2774,24 +2672,6 @@ class FixedUpdateInNormalGamePatch
                             break;
                         case CustomRoles.Glitch:
                             Glitch.UpdateHackCooldown(player);
-                            break;
-
-                        case CustomRoles.Veteran:
-                            if (Main.VeteranInProtect.TryGetValue(player.PlayerId, out var vtime) && vtime + Options.VeteranSkillDuration.GetInt() < Utils.GetTimeStamp())
-                            {
-                                Main.VeteranInProtect.Remove(player.PlayerId);
-
-                                if (!Options.DisableShieldAnimations.GetBool())
-                                {
-                                    player.RpcGuardAndKill();
-                                }
-                                else
-                                {
-                                    player.RpcResetAbilityCooldown();
-                                }
-
-                                player.Notify(string.Format(GetString("VeteranOffGuard"), Main.VeteranNumOfUsed[player.PlayerId]));
-                            }
                             break;
 
                         case CustomRoles.Mario:
@@ -3322,30 +3202,8 @@ class EnterVentPatch
         Alchemist.OnEnterVent(pc, __instance.Id);
         Lurker.OnEnterVent(pc);
 
-        if (pc.GetCustomRole() == CustomRoles.Bastion)
-        {
-            if (Main.BastionNumberOfAbilityUses >= 1)
-            {
-                Main.BastionNumberOfAbilityUses -= 1;
-                if (!Main.BombedVents.Contains(__instance.Id)) Main.BombedVents.Add(__instance.Id);
-                pc.Notify(GetString("VentBombSuccess"));
-            }
-            else
-            {
-                pc.Notify(GetString("OutOfAbilityUsesDoMoreTasks"));
-            }
-        }
 
-
-        if (pc.Is(CustomRoles.Veteran) && !Main.VeteranInProtect.ContainsKey(pc.PlayerId))
-        {
-            Main.VeteranInProtect.Remove(pc.PlayerId);
-            Main.VeteranInProtect.Add(pc.PlayerId, Utils.GetTimeStamp(DateTime.Now));
-            Main.VeteranNumOfUsed[pc.PlayerId] -= 1;
-            if (!Options.DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);
-            pc.RPCPlayCustomSound("Gunload");
-            pc.Notify(GetString("VeteranOnGuard"), Options.VeteranSkillDuration.GetFloat());
-        }
+        
         if (pc.Is(CustomRoles.Unlucky))
         {
             Unlucky.SuicideRand(pc);
@@ -3406,27 +3264,9 @@ class CoEnterVentPatch
             return true;
         }
 
-        if (Main.BombedVents.Contains(id))
+        if (Bastion.BombedVents.Contains(id) && Bastion.OnOthersEnterVent(__instance, id))
         {
-            var pc = __instance.myPlayer;
-            if (pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Bastion) && !pc.IsCrewVenter() && !CopyCat.playerIdList.Contains(pc.PlayerId) && !Main.TasklessCrewmate.Contains(pc.PlayerId)) { }
-            else
-            {
-                _ = new LateTask(() =>
-                {
-                    foreach (var bastion in Main.AllAlivePlayerControls.Where(bastion => bastion.GetCustomRole() == CustomRoles.Bastion).ToArray())
-                    {
-                        pc.SetRealKiller(bastion);
-                        bastion.Notify(GetString("BastionNotify"));
-                        pc.Notify(GetString("EnteredBombedVent"));
-
-                        Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
-                        pc.RpcMurderPlayerV3(pc);
-                        Main.BombedVents.Remove(id);
-                    }
-                }, 0.5f, "Player bombed by Bastion");
-                return true;
-            }
+            return true;
         }
         if (AmongUsClient.Instance.IsGameStarted)
         {
@@ -3498,7 +3338,7 @@ class CoEnterVentPatch
                 && !__instance.myPlayer.CanUseImpostorVentButton())
             || (__instance.myPlayer.Is(CustomRoles.Mayor) && Mayor.MayorUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count) && count >= Mayor.MayorNumOfUseButton.GetInt())
           //|| (__instance.myPlayer.Is(CustomRoles.Paranoia) && Main.ParaUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count2) && count2 >= Options.ParanoiaNumOfUseButton.GetInt())
-            || (__instance.myPlayer.Is(CustomRoles.Veteran) && Main.VeteranNumOfUsed.TryGetValue(__instance.myPlayer.PlayerId, out var count3) && count3 < 1)
+            || (__instance.myPlayer.Is(CustomRoles.Veteran) && Veteran.VeteranNumOfUsed.TryGetValue(__instance.myPlayer.PlayerId, out var count3) && count3 < 1)
             || (__instance.myPlayer.Is(CustomRoles.Pacifist) && Pacifist.PacifistNumOfUsed.TryGetValue(__instance.myPlayer.PlayerId, out var count4) && count4 < 1)
         )
         {
@@ -3524,10 +3364,7 @@ class CoEnterVentPatch
             Wraith.OnCoEnterVent(__instance, id);
         
         if (__instance.myPlayer.Is(CustomRoles.Alchemist) && Alchemist.PotionID == 8)
-            Alchemist.OnCoEnterVent(__instance, id);
-
-        if (__instance.myPlayer.Is(CustomRoles.Pacifist)) __instance.myPlayer.Notify(GetString("PacifistMaxUsage"));
-        if (__instance.myPlayer.Is(CustomRoles.Veteran)) __instance.myPlayer.Notify(GetString("VeteranMaxUsage"));
+            Alchemist.OnCoEnterVent(__instance, id); 
 
         return true;
     }

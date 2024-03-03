@@ -207,7 +207,7 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.Collector,
                 CustomRoles.Stealth],
                 
-                [CustomRoles.Counterfeiter,
+                [CustomRoles.Deceiver,
                 CustomRoles.Witness,
                 CustomRoles.Greedy,
                 CustomRoles.Merchant,
@@ -386,7 +386,7 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.Vulture],
                 
                 [CustomRoles.Jinx,
-                CustomRoles.SwordsMan,
+                CustomRoles.Knight,
                 CustomRoles.Veteran,
                 CustomRoles.Pyromaniac,
                 CustomRoles.TaskManager,

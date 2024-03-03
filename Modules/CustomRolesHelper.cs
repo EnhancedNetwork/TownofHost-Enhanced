@@ -215,11 +215,11 @@ public static class CustomRolesHelper
             CustomRoles.Bandit => RoleTypes.Impostor,
             CustomRoles.Medusa => RoleTypes.Impostor,
             CustomRoles.Sidekick => RoleTypes.Impostor,
-            CustomRoles.SwordsMan => RoleTypes.Impostor,
+            CustomRoles.Knight => RoleTypes.Impostor,
             CustomRoles.Reverie => RoleTypes.Impostor,
             CustomRoles.Innocent => RoleTypes.Impostor,
             CustomRoles.Pelican => RoleTypes.Impostor,
-            CustomRoles.Counterfeiter => RoleTypes.Impostor,
+            CustomRoles.Deceiver => RoleTypes.Impostor,
             CustomRoles.Witness => RoleTypes.Impostor,
             CustomRoles.Pursuer => RoleTypes.Impostor,
             CustomRoles.Revolutionist => RoleTypes.Impostor,
@@ -652,7 +652,7 @@ public static class CustomRolesHelper
     public static bool IsCK(this CustomRoles role)
     {
         return role is
-            CustomRoles.SwordsMan or
+            CustomRoles.Knight or
             CustomRoles.Veteran or
             CustomRoles.Judge or
             CustomRoles.Bodyguard or
@@ -660,7 +660,7 @@ public static class CustomRolesHelper
             CustomRoles.Reverie or
             CustomRoles.Crusader or
             CustomRoles.NiceGuesser or
-            CustomRoles.Counterfeiter or
+            CustomRoles.Deceiver or
             CustomRoles.Retributionist or
             CustomRoles.Sheriff or
             CustomRoles.Vigilante or
@@ -890,13 +890,13 @@ public static class CustomRolesHelper
             CustomRoles.Infectious or
             CustomRoles.Pursuer or
             CustomRoles.Jinx or
-            CustomRoles.Counterfeiter or
+            CustomRoles.Deceiver or
             CustomRoles.Witness or
             CustomRoles.Totocalcio or
             CustomRoles.Imitator or
             CustomRoles.Overseer or
             CustomRoles.Hater or
-            CustomRoles.SwordsMan or
+            CustomRoles.Knight or
             CustomRoles.CursedSoul or
             CustomRoles.Admirer or
             CustomRoles.Refugee or
@@ -1009,12 +1009,12 @@ public static class CustomRolesHelper
             CustomRoles.CopyCat or
             CustomRoles.Reverie or
             CustomRoles.Crusader or
-            CustomRoles.Counterfeiter or
+            CustomRoles.Deceiver or
             CustomRoles.Witness or
             CustomRoles.Monarch or
             CustomRoles.Overseer or
             CustomRoles.Investigator or
-            CustomRoles.SwordsMan or
+            CustomRoles.Knight or
             CustomRoles.Admirer or
             CustomRoles.Reverie or
             CustomRoles.Deputy or
@@ -1557,7 +1557,7 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Nimble:
-                if ((pc.Is(CustomRoles.SwordsMan) && SwordsMan.CanVent.GetBool())
+                if ((pc.Is(CustomRoles.Knight) && Knight.CanVent.GetBool())
                     || pc.Is(CustomRoles.CopyCat))
                     return false;
                 if (!pc.GetCustomRole().IsTasklessCrewmate())

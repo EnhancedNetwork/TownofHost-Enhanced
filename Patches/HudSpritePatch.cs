@@ -108,9 +108,6 @@ public static class HudSpritePatch
             case CustomRoles.Vampire:
                 newKillButton = CustomButton.Get("Bite");
                 break;
-            case CustomRoles.Veteran:
-                newAbilityButton = CustomButton.Get("Veteran");
-                break;
             case CustomRoles.Witness:
                 newKillButton = CustomButton.Get("Examine");
                 break;
@@ -125,9 +122,6 @@ public static class HudSpritePatch
                 break;
             case CustomRoles.Mario:
                 newAbilityButton = CustomButton.Get("Happy");
-                break;
-            case CustomRoles.Sheriff:
-                newKillButton = CustomButton.Get("Kill");
                 break;
             case CustomRoles.Pirate:
                 newKillButton = CustomButton.Get("Challenge");
@@ -146,9 +140,6 @@ public static class HudSpritePatch
                 break;
             case CustomRoles.Wraith:
                 newAbilityButton = CustomButton.Get("invisible");
-                break;
-            case CustomRoles.Jailer:
-                newKillButton = CustomButton.Get("penitentiary");
                 break;
             //case CustomRoles.Penguin:
             //    newAbilityButton = CustomButton.Get("Timer");

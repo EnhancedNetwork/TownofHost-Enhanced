@@ -1,50 +1,56 @@
-﻿using Hazel;
+﻿using AmongUs.GameOptions;
+using Hazel;
 using System.Collections.Generic;
 using TOHE.Modules;
+using TOHE.Roles.Core;
 using UnityEngine;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
-public static class Counterfeiter
+internal class Deceiver : RoleBase
 {
     private static readonly int Id = 10500;
     private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    private static bool On = false;
+    public override bool IsEnable => On;
+    public static bool HasEnabled => CustomRoles.Deceiver.IsClassEnable();
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     private static Dictionary<byte, List<byte>> clientList = [];
     private static List<byte> notActiveList = [];
     public static Dictionary<byte, int> SeelLimit = [];
-    public static OptionItem CounterfeiterSkillCooldown;
-    public static OptionItem CounterfeiterSkillLimitTimes;
-    public static OptionItem CounterfeiterAbilityLost;
+    public static OptionItem DeceiverSkillCooldown;
+    public static OptionItem DeceiverSkillLimitTimes;
+    public static OptionItem DeceiverAbilityLost;
     public static void SetupCustomOption()
     {
-        Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Counterfeiter);
-        CounterfeiterSkillCooldown = FloatOptionItem.Create(Id + 10, "CounterfeiterSkillCooldown", new(2.5f, 180f, 2.5f), 20f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Counterfeiter])
+        Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Deceiver);
+        DeceiverSkillCooldown = FloatOptionItem.Create(Id + 10, "DeceiverSkillCooldown", new(2.5f, 180f, 2.5f), 20f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Deceiver])
             .SetValueFormat(OptionFormat.Seconds);
-        CounterfeiterSkillLimitTimes = IntegerOptionItem.Create(Id + 11, "CounterfeiterSkillLimitTimes", new(1, 15, 1), 2, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Counterfeiter])
+        DeceiverSkillLimitTimes = IntegerOptionItem.Create(Id + 11, "DeceiverSkillLimitTimes", new(1, 15, 1), 2, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Deceiver])
             .SetValueFormat(OptionFormat.Times);
-        CounterfeiterAbilityLost = BooleanOptionItem.Create(Id + 12, "CounterfeiterAbilityLost", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Counterfeiter]);
+        DeceiverAbilityLost = BooleanOptionItem.Create(Id + 12, "DeceiverAbilityLost", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Deceiver]);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         clientList = [];
         notActiveList = [];
         SeelLimit = [];
-        IsEnable = false;
+        On = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        SeelLimit.Add(playerId, CounterfeiterSkillLimitTimes.GetInt());
-        IsEnable = true;
+        SeelLimit.Add(playerId, DeceiverSkillLimitTimes.GetInt());
+        On = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public static void Remove(byte playerId)
+    public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
         SeelLimit.Remove(playerId);
@@ -52,7 +58,7 @@ public static class Counterfeiter
     private static void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Counterfeiter);
+        writer.WritePacked((int)CustomRoles.Deceiver);
         writer.Write(playerId);
         writer.Write(SeelLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -64,25 +70,25 @@ public static class Counterfeiter
         if (SeelLimit.ContainsKey(PlayerId))
             SeelLimit[PlayerId] = Limit;
         else
-            SeelLimit.Add(PlayerId, CounterfeiterSkillLimitTimes.GetInt());
+            SeelLimit.Add(PlayerId, DeceiverSkillLimitTimes.GetInt());
     }
-    public static bool CanUseKillButton(byte playerId)
-        => !Main.PlayerStates[playerId].IsDead
-        && SeelLimit.TryGetValue(playerId, out var x) && x >= 1;
-    public static string GetSeelLimit(byte playerId) => Utils.ColorString(CanUseKillButton(playerId) ? Utils.GetRoleColor(CustomRoles.Counterfeiter).ShadeColor(0.25f) : Color.gray, SeelLimit.TryGetValue(playerId, out var x) ? $"({x})" : "Invalid");
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(id) ? CounterfeiterSkillCooldown.GetFloat() : 300f;
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
+    public override bool CanUseKillButton(PlayerControl pc)
+        => !Main.PlayerStates[pc.PlayerId].IsDead
+        && SeelLimit.TryGetValue(pc.PlayerId, out var x) && x >= 1;
+    public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(CanUseKillButton(Utils.GetPlayerById(playerId)) ? Utils.GetRoleColor(CustomRoles.Deceiver).ShadeColor(0.25f) : Color.gray, SeelLimit.TryGetValue(playerId, out var x) ? $"({x})" : "Invalid");
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(Utils.GetPlayerById(id)) ? DeceiverSkillCooldown.GetFloat() : 300f;
     public static bool IsClient(byte playerId)
     {
         foreach (var pc in clientList)
             if (pc.Value.Contains(playerId)) return true;
         return false;
     }
-    public static bool IsClient(byte pc, byte tar) => clientList.TryGetValue(pc, out var x) && x.Contains(tar);
     public static bool CanBeClient(PlayerControl pc) => pc != null && pc.IsAlive() && !GameStates.IsMeeting && !IsClient(pc.PlayerId);
     public static bool CanSeel(byte playerId) => playerIdList.Contains(playerId) && SeelLimit.TryGetValue(playerId, out int x) && x > 0;
     public static void SeelToClient(PlayerControl pc, PlayerControl target)
     {
-        if (pc == null || target == null || !pc.Is(CustomRoles.Counterfeiter)) return;
+        if (pc == null || target == null || !pc.Is(CustomRoles.Deceiver)) return;
         SeelLimit[pc.PlayerId]--;
         SendRPC(pc.PlayerId);
         if (target.Is(CustomRoles.KillingMachine))
@@ -97,9 +103,9 @@ public static class Counterfeiter
         pc.SetKillCooldown();
         pc.RPCPlayCustomSound("Bet");
         Utils.NotifyRoles(SpecifySeer: pc);
-        Logger.Info($"赝品商 {pc.GetRealName()} 将赝品卖给了 {target.GetRealName()}", "Counterfeiter");
+        Logger.Info($"赝品商 {pc.GetRealName()} 将赝品卖给了 {target.GetRealName()}", "Deceiver");
     }
-    public static bool OnClientMurder(PlayerControl pc)
+    public override bool OnCheckMurderAsKiller(PlayerControl sob, PlayerControl pc)
     {
         if (!IsClient(pc.PlayerId) || notActiveList.Contains(pc.PlayerId)) return false;
         byte cfId = byte.MaxValue;
@@ -114,10 +120,10 @@ public static class Counterfeiter
         Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
         target.RpcMurderPlayerV3(target);
         Main.PlayerStates[target.PlayerId].SetDead();
-        Logger.Info($"赝品商 {pc.GetRealName()} 的客户 {target.GetRealName()} 因使用赝品走火自杀", "Counterfeiter");
+        Logger.Info($"赝品商 {pc.GetRealName()} 的客户 {target.GetRealName()} 因使用赝品走火自杀", "Deceiver");
         return true;
     }
-    public static void OnReportDeadBody()
+    public override void OnReportDeadBody(PlayerControl rafaeu, PlayerControl dinosaurs)
     {
         notActiveList.Clear();
         foreach (var cl in clientList)
@@ -136,13 +142,18 @@ public static class Counterfeiter
                     CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Misfire, target.PlayerId);
                     target.SetRealKiller(Utils.GetPlayerById(pc));
                     target.SetRealKiller(killer);
-                    if (CounterfeiterAbilityLost.GetBool())
+                    if (DeceiverAbilityLost.GetBool())
                     {
                         SeelLimit[killer.PlayerId] = 0;
                         SendRPC(killer.PlayerId);
                     }
-                    Logger.Info($"Counterfeiter: {killer.GetRealName()} deceived {target.GetRealName()} player without kill button", "Counterfeiter");
+                    Logger.Info($"Deceiver: {killer.GetRealName()} deceived {target.GetRealName()} player without kill button", "Deceiver");
                 }
             }
+    }
+    public override void SetAbilityButtonText(HudManager hud, byte id)
+    {
+        hud.ReportButton.OverrideText(GetString("ReportButtonText"));
+        hud.KillButton.OverrideText(GetString("DeceiverButtonText"));
     }
 }

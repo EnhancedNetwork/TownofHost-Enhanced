@@ -575,7 +575,7 @@ public static class Utils
             case CustomRoles.Mario:
             case CustomRoles.Vulture:
             case CustomRoles.God:
-            case CustomRoles.SwordsMan:
+            case CustomRoles.Knight:
             case CustomRoles.Innocent:
             case CustomRoles.Pelican:
             case CustomRoles.Medusa:
@@ -607,7 +607,7 @@ public static class Utils
             case CustomRoles.Investigator:
             case CustomRoles.Virus:
             case CustomRoles.Overseer:
-            case CustomRoles.Counterfeiter:
+            case CustomRoles.Deceiver:
             case CustomRoles.Witness:
             case CustomRoles.Pursuer:
             case CustomRoles.Spiritcaller:
@@ -715,37 +715,6 @@ public static class Utils
                 case CustomRoles.Pixie:
                     ProgressText.Append(Pixie.GetProgressText(playerId));
                     break;
-                case CustomRoles.Sheriff:
-                    if (Sheriff.ShowShotLimit.GetBool()) ProgressText.Append(Sheriff.GetShotLimit(playerId));
-                    break;
-                case CustomRoles.Veteran:
-                    var taskState2 = Main.PlayerStates?[playerId].TaskState;
-                    Color TextColor2;
-                    var TaskCompleteColor2 = Color.green;
-                    var NonCompleteColor2 = Color.yellow;
-                    var NormalColor2 = taskState2.IsTaskFinished ? TaskCompleteColor2 : NonCompleteColor2;
-                    TextColor2 = comms ? Color.gray : NormalColor2;
-                    string Completed2 = comms ? "?" : $"{taskState2.CompletedTasksCount}";
-                    Color TextColor21;
-                    if (Main.VeteranNumOfUsed[playerId] < 1) TextColor21 = Color.red;
-                    else TextColor21 = Color.white;
-                    ProgressText.Append(ColorString(TextColor2, $"({Completed2}/{taskState2.AllTasksCount})"));
-                    ProgressText.Append(ColorString(TextColor21, $" <color=#ffffff>-</color> {Math.Round(Main.VeteranNumOfUsed[playerId], 1)}"));
-                    break;
-                case CustomRoles.Bastion:
-                    var taskState15 = Main.PlayerStates?[playerId].TaskState;
-                    Color TextColor15;
-                    var TaskCompleteColor15 = Color.green;
-                    var NonCompleteColor15 = Color.yellow;
-                    var NormalColor15 = taskState15.IsTaskFinished ? TaskCompleteColor15 : NonCompleteColor15;
-                    TextColor15 = comms ? Color.gray : NormalColor15;
-                    string Completed15 = comms ? "?" : $"{taskState15.CompletedTasksCount}";
-                    Color TextColor151;
-                    if (Main.BastionNumberOfAbilityUses < 1) TextColor151 = Color.red;
-                    else TextColor151 = Color.white;
-                    ProgressText.Append(ColorString(TextColor15, $"({Completed15}/{taskState15.AllTasksCount})"));
-                    ProgressText.Append(ColorString(TextColor151, $" <color=#777777>-</color> {Math.Round(Main.BastionNumberOfAbilityUses, 1)}"));
-                    break;
                 case CustomRoles.Alchemist:
                     ProgressText.Append(Alchemist.GetProgressText(playerId));
                     break;
@@ -767,12 +736,6 @@ public static class Utils
                     break;
                 case CustomRoles.Pirate:
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Pirate).ShadeColor(0.25f), $"({Pirate.NumWin}/{Pirate.SuccessfulDuelsToWin.GetInt()})"));
-                    break;
-                case CustomRoles.Crusader:
-                    ProgressText.Append(Crusader.GetSkillLimit(playerId));
-                    break;
-                case CustomRoles.Jailer:
-                    ProgressText.Append(Jailer.GetProgressText(playerId));
                     break;
                 /*     case CustomRoles.CopyCat:
                          ProgressText.Append(ColorString(GetRoleColor(CustomRoles.CopyCat).ShadeColor(0.25f), $"({(CopyCat.MiscopyLimit.TryGetValue(playerId, out var count2) ? count2 : 0)})"));
@@ -810,14 +773,8 @@ public static class Utils
                 case CustomRoles.QuickShooter:
                     ProgressText.Append(QuickShooter.GetShotLimit(playerId));
                     break;
-                case CustomRoles.SwordsMan:
-                    ProgressText.Append(SwordsMan.GetKillLimit(playerId));
-                    break;
                 case CustomRoles.Pelican:
                     ProgressText.Append(Pelican.GetProgressText(playerId));
-                    break;
-                case CustomRoles.Counterfeiter:
-                    ProgressText.Append(Counterfeiter.GetSeelLimit(playerId));
                     break;
                 case CustomRoles.Pursuer:
                     ProgressText.Append(Pursuer.GetSeelLimit(playerId));
@@ -2242,12 +2199,6 @@ public static class Utils
                                 if (!seer.IsAlive() && target.IsAlive())
                                     TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Nemesis), target.PlayerId.ToString()) + " " + TargetPlayerName;
                                 break;
-
-
-                            case CustomRoles.Retributionist:
-                                if (!seer.IsAlive() && target.IsAlive())
-                                    TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Retributionist), target.PlayerId.ToString()) + " " + TargetPlayerName;
-                                break;
                             
                             case CustomRoles.Swapper:
                                 if (seer.IsAlive() && target.IsAlive())
@@ -2273,12 +2224,6 @@ public static class Utils
                         {
                             switch (seerRole)
                             {
-
-                                case CustomRoles.Judge:
-                                    if (seer.IsAlive() && target.IsAlive())
-                                        TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Judge), target.PlayerId.ToString()) + " " + TargetPlayerName;
-                                    break;
-
                                 case CustomRoles.Councillor:
                                     if (seer.IsAlive() && target.IsAlive())
                                         TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Councillor), target.PlayerId.ToString()) + " " + TargetPlayerName;
@@ -2415,7 +2360,6 @@ public static class Utils
         if (Taskinator.IsEnable) Taskinator.AfterMeetingTasks();
         if (Hawk.IsEnable) Hawk.AfterMeetingTasks();
         if (PlagueDoctor.IsEnable) PlagueDoctor.AfterMeetingTasks();
-        if (Jailer.IsEnable) Jailer.AfterMeetingTasks();
         if (Pirate.IsEnable) Pirate.AfterMeetingTask();
         if (Solsticer.IsEnable) Solsticer.AfterMeetingTasks();
         if (RiftMaker.IsEnable) RiftMaker.AfterMeetingTasks();

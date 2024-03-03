@@ -172,13 +172,13 @@ public static class NameColorManager
                 if (target.Is(CustomRoles.Refugee)) color = Main.roleColors[CustomRoles.Impostor];
                 if (target.Is(CustomRoles.Rascal)) color = Main.roleColors[CustomRoles.Impostor];
                 if (target.Is(CustomRoleTypes.Crewmate)) color = Main.roleColors[CustomRoles.Bait];
-                if (target.Is(CustomRoleTypes.Neutral)) color = Main.roleColors[CustomRoles.SwordsMan];
-                if (target.Is(CustomRoles.Charmed)) color = Main.roleColors[CustomRoles.SwordsMan];
-                if (target.Is(CustomRoles.Infected)) color = Main.roleColors[CustomRoles.SwordsMan];
-                if (target.Is(CustomRoles.Contagious)) color = Main.roleColors[CustomRoles.SwordsMan];
-                if (target.Is(CustomRoles.Egoist)) color = Main.roleColors[CustomRoles.SwordsMan];
-                if (target.Is(CustomRoles.Recruit)) color = Main.roleColors[CustomRoles.SwordsMan];
-                if (target.Is(CustomRoles.Soulless)) color = Main.roleColors[CustomRoles.SwordsMan];
+                if (target.Is(CustomRoleTypes.Neutral)) color = Main.roleColors[CustomRoles.Knight];
+                if (target.Is(CustomRoles.Charmed)) color = Main.roleColors[CustomRoles.Knight];
+                if (target.Is(CustomRoles.Infected)) color = Main.roleColors[CustomRoles.Knight];
+                if (target.Is(CustomRoles.Contagious)) color = Main.roleColors[CustomRoles.Knight];
+                if (target.Is(CustomRoles.Egoist)) color = Main.roleColors[CustomRoles.Knight];
+                if (target.Is(CustomRoles.Recruit)) color = Main.roleColors[CustomRoles.Knight];
+                if (target.Is(CustomRoles.Soulless)) color = Main.roleColors[CustomRoles.Knight];
             }
         }
 

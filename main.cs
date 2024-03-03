@@ -143,7 +143,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, int> MasochistKillMax = [];
     //public static Dictionary<byte, long> FlashbangInProtect = [];
     public static List<byte> CyberStarDead = [];
-    public static List<int> BombedVents = [];
     public static List<byte> WorkaholicAlive = [];
     public static List<byte> TasklessCrewmate = [];
     public static Dictionary<byte, string> VirusNotify = [];
@@ -162,7 +161,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, PlayerControl> CursedPlayers = [];
     public static Dictionary<byte, bool> isCurseAndKill = [];
     public static Dictionary<byte, int> NemesisRevenged = [];
-    public static Dictionary<byte, int> RetributionistRevenged = [];
     public static Dictionary<byte, int> GuesserGuessed = [];
     public static Dictionary<(byte, byte), bool> isDoused = [];
     public static Dictionary<(byte, byte), bool> isDraw = [];
@@ -175,9 +173,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, byte> SpeedBoostTarget = [];
     public static Dictionary<byte, int> ParaUsedButtonCount = [];
     public static Dictionary<byte, int> MarioVentCount = [];
-    public static Dictionary<byte, long> VeteranInProtect = [];
-    public static Dictionary<byte, float> VeteranNumOfUsed = [];
-    public static float BastionNumberOfAbilityUses = 0;
     public static Dictionary<byte, long> AllKillers = [];
     public static Dictionary<byte, int> JinxSpellCount = [];
     public static int AliveImpostorCount;
@@ -623,7 +618,7 @@ public enum CustomRoles
     Coroner, 
     Crusader,
     Detective,
-    Counterfeiter, //deceiver
+    Deceiver, //deceiver
     Deputy,
     Dictator,
     Doctor,
@@ -638,7 +633,7 @@ public enum CustomRoles
     Jailer,
     Judge,
     Keeper,
-    SwordsMan, //knight
+    Knight, //knight
     Needy, //Lazy guy
     Lighter,
    // Luckey,

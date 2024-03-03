@@ -147,7 +147,7 @@ internal class CopyCat : RoleBase
                     role = CustomRoles.Monitor;
                     break;
                 case CustomRoles.Pursuer:
-                    role = CustomRoles.Counterfeiter;
+                    role = CustomRoles.Deceiver;
                     break;
             }
         }

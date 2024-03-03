@@ -71,8 +71,8 @@ public static class ChiefOfPolice
             {
                 if (player.PlayerId == targetId)
                 {
-                    Sheriff.Add(player.PlayerId);
-                   Sheriff.Add(player.PlayerId);
+                   // Sheriff.Add(player.PlayerId);
+                  // Sheriff.Add(player.PlayerId);
                 }
             }
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), GetString("SheriffSuccessfullyRecruited")));

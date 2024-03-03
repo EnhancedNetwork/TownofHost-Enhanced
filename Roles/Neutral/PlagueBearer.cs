@@ -133,7 +133,7 @@ public static class PlagueBearer
         if (!PestilenceList.Contains(target.PlayerId)) return false;
         if (Guardian.CannotBeKilled(target)) return true;
         if (target.Is(CustomRoles.Opportunist) && target.AllTasksCompleted()) return true;
-        if (target.Is(CustomRoles.Veteran) && Main.VeteranInProtect.ContainsKey(target.PlayerId)) return true;
+        if (target.Is(CustomRoles.Veteran) && Veteran.VeteranInProtect.ContainsKey(target.PlayerId)) return true;
         if (target.Is(CustomRoles.TimeMaster) && TimeMaster.TimeMasterInProtect.ContainsKey(target.PlayerId)) return true;
         if (IsIndirectKill(killer)) return false;
         killer.SetRealKiller(target);

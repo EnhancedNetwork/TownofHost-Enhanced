@@ -163,16 +163,11 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Sniper:
                 Sniper.ApplyGameOptions(player);
                 break;
-            case CustomRoles.Sheriff:
-            case CustomRoles.Jailer:
-            case CustomRoles.SwordsMan:
             case CustomRoles.Arsonist:
             case CustomRoles.Innocent:
             case CustomRoles.Revolutionist:
-            case CustomRoles.Crusader:
             case CustomRoles.Provocateur:
             case CustomRoles.Investigator:
-            case CustomRoles.Counterfeiter:
             case CustomRoles.Succubus:
             case CustomRoles.CursedSoul:
             case CustomRoles.Admirer:
@@ -249,20 +244,12 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Bandit:
                 Bandit.ApplyGameOptions(opt);
                 break;
-            case CustomRoles.Veteran:
-                AURoleOptions.EngineerCooldown = Options.VeteranSkillCooldown.GetFloat();
-                AURoleOptions.EngineerInVentMaxTime = 1;
-                break;
      /*       case CustomRoles.Flashbang:
                 AURoleOptions.ShapeshifterCooldown = Options.FlashbangSkillCooldown.GetFloat();
                 AURoleOptions.ShapeshifterDuration = Options.FlashbangSkillDuration.GetFloat();
                 break; */
             case CustomRoles.Penguin:
                 Penguin.ApplyGameOptions();
-                break;
-            case CustomRoles.Bastion:
-                AURoleOptions.EngineerInVentMaxTime = 1;
-                AURoleOptions.EngineerCooldown = Options.BastionBombCooldown.GetFloat();
                 break;
             case CustomRoles.Hater:
             case CustomRoles.Pursuer:
@@ -309,9 +296,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
             case CustomRoles.Juggernaut:
                 opt.SetVision(Juggernaut.HasImpostorVision.GetBool());
-                break;
-            case CustomRoles.Reverie:
-                opt.SetVision(false);
                 break;
             case CustomRoles.Jester:
                 AURoleOptions.EngineerCooldown = 0f;

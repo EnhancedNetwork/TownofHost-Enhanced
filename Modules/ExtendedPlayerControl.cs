@@ -487,10 +487,6 @@ static class ExtendedPlayerControl
             CustomRoles.Inhibitor => !Utils.IsActive(SystemTypes.Electrical) && !Utils.IsActive(SystemTypes.Comms) && !Utils.IsActive(SystemTypes.MushroomMixupSabotage) && !Utils.IsActive(SystemTypes.Laboratory) && !Utils.IsActive(SystemTypes.LifeSupp) && !Utils.IsActive(SystemTypes.Reactor) && !Utils.IsActive(SystemTypes.HeliSabotage),
             CustomRoles.Saboteur => Utils.IsActive(SystemTypes.Electrical) || Utils.IsActive(SystemTypes.Comms) || Utils.IsActive(SystemTypes.MushroomMixupSabotage) || Utils.IsActive(SystemTypes.Laboratory) || Utils.IsActive(SystemTypes.LifeSupp) || Utils.IsActive(SystemTypes.Reactor) || Utils.IsActive(SystemTypes.HeliSabotage),
             CustomRoles.Sniper => Sniper.CanUseKillButton(pc),
-            CustomRoles.Sheriff => Sheriff.CanUseKillButton(pc.PlayerId),
-            CustomRoles.Vigilante => pc.IsAlive(),
-            CustomRoles.Jailer => pc.IsAlive(),
-            CustomRoles.Crusader => Crusader.CanUseKillButton(pc.PlayerId),
             CustomRoles.Pelican => pc.IsAlive(),
             CustomRoles.Mastermind => pc.IsAlive(),
             CustomRoles.Arsonist => Options.ArsonistCanIgniteAnytime.GetBool() ? Utils.GetDousedPlayerCount(pc.PlayerId).Item1 < Options.ArsonistMaxPlayersToIgnite.GetInt() : !pc.IsDouseDone(),
@@ -498,7 +494,7 @@ static class ExtendedPlayerControl
             CustomRoles.Pyromaniac => pc.IsAlive(),
             CustomRoles.PlagueDoctor => pc.IsAlive() && PlagueDoctor.CanUseKillButton(),
             CustomRoles.Huntsman => pc.IsAlive(),
-            CustomRoles.SwordsMan => pc.IsAlive(),
+            CustomRoles.Knight => pc.IsAlive(),
             CustomRoles.Jackal => pc.IsAlive(),
             CustomRoles.Bandit => pc.IsAlive(),
             CustomRoles.Sidekick => pc.IsAlive(),
@@ -523,7 +519,6 @@ static class ExtendedPlayerControl
             CustomRoles.Shroud => pc.IsAlive(),
             CustomRoles.Wraith => pc.IsAlive(),
             CustomRoles.Innocent => pc.IsAlive(),
-            CustomRoles.Counterfeiter => Counterfeiter.CanUseKillButton(pc.PlayerId),
             CustomRoles.Pursuer => Pursuer.CanUseKillButton(pc.PlayerId),
             CustomRoles.Morphling => Morphling.CanUseKillButton(pc.PlayerId),
             CustomRoles.Hater => pc.IsAlive(),
@@ -595,7 +590,7 @@ static class ExtendedPlayerControl
             CustomRoles.Deputy or
             CustomRoles.Investigator or
             CustomRoles.Innocent or
-            //    CustomRoles.SwordsMan or
+            //    CustomRoles.Knight or
             CustomRoles.Hater or
             CustomRoles.Medic or
             //      CustomRoles.NWitch or
@@ -641,7 +636,6 @@ static class ExtendedPlayerControl
             CustomRoles.Doppelganger => Doppelganger.CanVent.GetBool(),
             CustomRoles.PotionMaster => PotionMaster.CanVent.GetBool(),
             CustomRoles.Virus => Virus.CanVent.GetBool(),
-            CustomRoles.SwordsMan => SwordsMan.CanVent.GetBool(),
             CustomRoles.Pickpocket => Pickpocket.CanVent.GetBool(),
             CustomRoles.HexMaster => true,
             //CustomRoles.Occultist => true,
@@ -751,12 +745,6 @@ static class ExtendedPlayerControl
         {
             case CustomRoles.Mercenary:
                 Mercenary.ApplyKillCooldown(player.PlayerId); //シリアルキラーはシリアルキラーのキルクールに。
-                break;
-            case CustomRoles.Jailer:
-                Jailer.SetKillCooldown(player.PlayerId); //シリアルキラーはシリアルキラーのキルクールに。
-                break;
-            case CustomRoles.Vigilante:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Options.VigilanteKillCooldown.GetFloat();
                 break;
             case CustomRoles.TimeThief:
                 TimeThief.SetKillCooldown(player.PlayerId); //タイムシーフはタイムシーフのキルクールに。
@@ -872,14 +860,8 @@ static class ExtendedPlayerControl
             case CustomRoles.Poisoner:
                 Poisoner.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.Sheriff:
-                Sheriff.SetKillCooldown(player.PlayerId); //シェリフはシェリフのキルクールに。
-                break;
             case CustomRoles.KillingMachine:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.MNKillCooldown.GetFloat();
-                break;
-            case CustomRoles.SwordsMan:
-                SwordsMan.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Zombie:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.ZombieKillCooldown.GetFloat();
@@ -893,9 +875,6 @@ static class ExtendedPlayerControl
             //    break;
             case CustomRoles.Pelican:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Pelican.KillCooldown.GetFloat();
-                break;
-            case CustomRoles.Counterfeiter:
-                Counterfeiter.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Pursuer:
                 Pursuer.SetKillCooldown(player.PlayerId);
@@ -935,9 +914,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Juggernaut:
                 Juggernaut.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Reverie:
-                Reverie.SetKillCooldown(player.PlayerId);
                 break;
             //FFA
             case CustomRoles.Killer:
@@ -993,9 +969,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Lurker:
                 Lurker.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Crusader:
-                Crusader.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.ChiefOfPolice:
                 ChiefOfPolice.SetKillCooldown(player.PlayerId);
@@ -1102,7 +1075,7 @@ static class ExtendedPlayerControl
             || target.Is(CustomRoles.Mechanic)
             || target.Is(CustomRoles.CopyCat)
             || target.Is(CustomRoles.Monitor) && Monitor.CanUseVent()
-            || target.Is(CustomRoles.SwordsMan) && SwordsMan.CanVent.GetBool()
+            || target.Is(CustomRoles.Knight) && Knight.CanVent.GetBool()
             || target.Is(CustomRoles.Nimble);
     }
     

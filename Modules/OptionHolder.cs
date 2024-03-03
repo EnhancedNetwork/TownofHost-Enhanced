@@ -546,26 +546,11 @@ public static class Options
     //public static OptionItem ParanoiaVentCooldown;
 
 
-    public static OptionItem BombsClearAfterMeeting;
-    public static OptionItem BastionBombCooldown;
-    public static OptionItem BastionAbilityUseGainWithEachTaskCompleted;
-    public static OptionItem BastionMaxBombs;
-
-    public static OptionItem BodyguardProtectRadius;
 
     public static OptionItem GGCanGuessTime;
     public static OptionItem GGCanGuessCrew;
     public static OptionItem GGCanGuessAdt;
     public static OptionItem GGTryHideMsg;
-
-    public static OptionItem VeteranSkillCooldown;
-    public static OptionItem VeteranSkillDuration;
-    public static OptionItem VeteranSkillMaxOfUseage;
-    public static OptionItem VeteranAbilityUseGainWithEachTaskCompleted;
-
-    public static OptionItem VigilanteKillCooldown;
-
-
 
     // Neutrals role settings
     public static OptionItem OppoImmuneToAttacksWhenTasksDone;
@@ -1607,69 +1592,27 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
-        SetupSingleRoleOptions(10200, TabGroup.CrewmateRoles, CustomRoles.Bastion, 1);
-        BombsClearAfterMeeting = BooleanOptionItem.Create(10202, "BombsClearAfterMeeting", false, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bastion]);
-        BastionBombCooldown = FloatOptionItem.Create(10203, "BombCooldown", new(0, 180, 1), 15, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bastion])
-            .SetValueFormat(OptionFormat.Seconds);
-        BastionAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(10204, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bastion])
-            .SetValueFormat(OptionFormat.Times);
-        BastionMaxBombs = IntegerOptionItem.Create(10205, "BastionMaxBombs", new(1, 20, 1), 5, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bastion]);
-        
-        SetupRoleOptions(10300, TabGroup.CrewmateRoles, CustomRoles.Bodyguard);
-        BodyguardProtectRadius = FloatOptionItem.Create(10302, "BodyguardProtectRadius", new(0.5f, 5f, 0.5f), 1.5f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bodyguard])
-            .SetValueFormat(OptionFormat.Multiplier);
+        Bastion.SetupCustomOptions();
+
+        Bodyguard.SetupCustomOptions();
         
         Crusader.SetupCustomOption();
         
-        Counterfeiter.SetupCustomOption();
+        Deceiver.SetupCustomOption();
         
         Jailer.SetupCustomOption();
         
         Judge.SetupCustomOption();
         
-        SwordsMan.SetupCustomOption();
-        
-        SetupRoleOptions(10900, TabGroup.CrewmateRoles, CustomRoles.NiceGuesser);
-        GGCanGuessTime = IntegerOptionItem.Create(10902, "GuesserCanGuessTimes", new(1, 15, 1), 15, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser])
-            .SetValueFormat(OptionFormat.Times);
-        GGCanGuessCrew = BooleanOptionItem.Create(10903, "GGCanGuessCrew", true, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser]);
-        GGCanGuessAdt = BooleanOptionItem.Create(10904, "GGCanGuessAdt", false, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser]);
-        GGTryHideMsg = BooleanOptionItem.Create(10905, "GuesserTryHideMsg", true, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser])
-            .SetColor(Color.green);
+        Knight.SetupCustomOption();
 
         Retributionist.SetupCustomOptions();
         
         Reverie.SetupCustomOption();
         
         Sheriff.SetupCustomOption();
-        
-        SetupRoleOptions(11350, TabGroup.CrewmateRoles, CustomRoles.Veteran);
-        VeteranSkillCooldown = FloatOptionItem.Create(11358, "VeteranSkillCooldown", new(1f, 180f, 1f), 20f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Veteran])
-            .SetValueFormat(OptionFormat.Seconds);
-        VeteranSkillDuration = FloatOptionItem.Create(11359, "VeteranSkillDuration", new(1f, 180f, 1f), 20f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Veteran])
-            .SetValueFormat(OptionFormat.Seconds);
-        VeteranSkillMaxOfUseage = IntegerOptionItem.Create(11360, "VeteranSkillMaxOfUseage", new(0, 20, 1), 10, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Veteran])
-            .SetValueFormat(OptionFormat.Times);
-        VeteranAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(11361, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Veteran])
-            .SetValueFormat(OptionFormat.Times);
 
-        SetupRoleOptions(11400, TabGroup.CrewmateRoles, CustomRoles.Vigilante);
-        VigilanteKillCooldown = FloatOptionItem.Create(11402, "KillCooldown", new(5f, 180f, 2.5f), 30f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Vigilante])
-            .SetValueFormat(OptionFormat.Seconds);
+        Veteran.SetupCustomOptions();
 
         TextOptionItem.Create(10000010, "RoleType.CrewPower", TabGroup.CrewmateRoles)
             .SetGameMode(CustomGameMode.Standard)

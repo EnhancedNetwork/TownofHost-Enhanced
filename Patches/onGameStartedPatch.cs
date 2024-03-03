@@ -64,7 +64,6 @@ internal class ChangeRoleSettings
             Main.RevolutionistCountdown = [];
             Main.CursedPlayers = [];
             Main.NemesisRevenged = [];
-            Main.RetributionistRevenged = [];
             Main.isCurseAndKill = [];
             Main.isCursed = false;
             Main.ForCrusade = [];
@@ -88,10 +87,7 @@ internal class ChangeRoleSettings
             Main.SpeedBoostTarget = [];
             Main.ParaUsedButtonCount = [];
             Main.MarioVentCount = [];
-            Main.VeteranInProtect = [];
-            Main.VeteranNumOfUsed = [];
             Main.AllKillers = [];
-            Main.BombedVents = [];
             Main.JinxSpellCount = [];
             Main.OverDeadPlayerList = [];
             Main.Provoked = [];
@@ -210,10 +206,8 @@ internal class ChangeRoleSettings
             Bandit.Init();
             Doppelganger.Init();
             RiftMaker.Init();
-            Sheriff.Init();
             GuessMaster.Init();
             Cleanser.Init();
-            SwordsMan.Init();
             Solsticer.Init();
             Vampire.Init();
             Vampiress.Init();
@@ -224,7 +218,6 @@ internal class ChangeRoleSettings
             DoubleTrigger.Init();
             Workhorse.Init();
             Pelican.Init();
-            Counterfeiter.Init();
             Pursuer.Init();
             Diseased.Init();
             Gangster.Init();
@@ -238,7 +231,6 @@ internal class ChangeRoleSettings
             QuickShooter.Init();
             Kamikaze.Init();
             Aware.Init();
-            Jailer.Init();
             Ninja.Init();
             Juggernaut.Init();
             Sleuth.Init();
@@ -248,7 +240,6 @@ internal class ChangeRoleSettings
             Investigator.Init();
             Pickpocket.Init();
             Hangman.Init();
-            Judge.Init();
             Swooper.Init();
             Hawk.Init();
             Bloodmoon.Init();
@@ -261,7 +252,6 @@ internal class ChangeRoleSettings
             VengefulRomantic.Init();
             RuthlessRomantic.Init();
             Succubus.Init();
-            Crusader.Init();
             CursedSoul.Init();
             Admirer.Init();
             Antidote.Init();
@@ -291,7 +281,6 @@ internal class ChangeRoleSettings
             Spiritcaller.Init();
             Lurker.Init();
             PlagueBearer.Init();
-            Reverie.Init();
             Doomsayer.Init();
             Lucky.Init();
             Pirate.Init();
@@ -549,9 +538,6 @@ internal class SelectRolesPatch
 
                 switch (pc.GetCustomRole())
                 {
-                    case CustomRoles.Reverie:
-                        Reverie.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Mercenary:
                         Mercenary.Add(pc.PlayerId);
                         break;
@@ -564,10 +550,6 @@ internal class SelectRolesPatch
                     //case CustomRoles.Occultist:
                     //    Occultist.Add(pc.PlayerId);
                     //    break;
-                    case CustomRoles.Crusader:
-                        Crusader.Add(pc.PlayerId);
-                        Crusader.CrusaderLimit[pc.PlayerId] = Crusader.SkillLimitOpt.GetInt();
-                        break;
                     case CustomRoles.Warlock:
                         Main.CursedPlayers.Add(pc.PlayerId, null);
                         Main.isCurseAndKill.Add(pc.PlayerId, false);
@@ -601,9 +583,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Vampiress:
                         Vampiress.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.SwordsMan:
-                        SwordsMan.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Pickpocket:
                         Pickpocket.Add(pc.PlayerId);
@@ -646,9 +625,6 @@ internal class SelectRolesPatch
                     case CustomRoles.PlagueDoctor:
                         PlagueDoctor.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Sheriff:
-                        Sheriff.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Glitch:
                         Glitch.Add(pc.PlayerId);
                         break;
@@ -681,12 +657,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Pelican:
                         Pelican.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Counterfeiter:
-                        Counterfeiter.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Jailer:
-                        Jailer.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Pursuer:
                         Pursuer.Add(pc.PlayerId);
@@ -731,17 +701,8 @@ internal class SelectRolesPatch
                     case CustomRoles.Hangman:
                         Hangman.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Judge:
-                        Judge.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Tracefinder:
                         Tracefinder.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Veteran:
-                        Main.VeteranNumOfUsed.Add(pc.PlayerId, Options.VeteranSkillMaxOfUseage.GetInt());
-                        break;
-                    case CustomRoles.Bastion:
-                        Main.BastionNumberOfAbilityUses = Options.BastionMaxBombs.GetInt();
                         break;
                     case CustomRoles.Swooper:
                         Swooper.Add(pc.PlayerId);

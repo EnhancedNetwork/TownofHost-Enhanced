@@ -129,12 +129,9 @@ class CheckForEndVotingPatch
                                 if (pc == null || voteTarget == null) break;
                                 Main.GodfatherTarget.Add(voteTarget.PlayerId);
                                 break;
-                            case CustomRoles.Jailer:
-                                Jailer.OnVote(pc, voteTarget);
-                                break;
                         }
-                        pc.GetRoleClass()?.OnVote(pc, voteTarget); // Role is voted
-                        voteTarget.GetRoleClass()?.OnVoted(voteTarget, pc); // Role has voted
+                        pc.GetRoleClass()?.OnVote(pc, voteTarget); // Role has voted
+                        voteTarget.GetRoleClass()?.OnVoted(voteTarget, pc); // Role is voted
 
                         if (voteTarget.Is(CustomRoles.Aware))
                         {
@@ -938,9 +935,6 @@ class MeetingHudStartPatch
             //黑手党死后技能提示
             if (pc.Is(CustomRoles.Nemesis) && !pc.IsAlive())
                 AddMsg(GetString("NemesisDeadMsg"), pc.PlayerId);
-            //惩罚者死后技能提示
-            if (pc.Is(CustomRoles.Retributionist) && !pc.IsAlive())
-                AddMsg(GetString("RetributionistDeadMsg"), pc.PlayerId);
             //网红死亡消息提示
             foreach (var csId in Main.CyberStarDead)
             {
@@ -1241,18 +1235,9 @@ class MeetingHudStartPatch
                     if (seer.Data.IsDead && !target.Data.IsDead)
                         pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Nemesis), target.PlayerId.ToString()) + " " + pva.NameText.text;
                     break;
-                case CustomRoles.Retributionist:
-                    if (seer.Data.IsDead && !target.Data.IsDead)
-                        pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Retributionist), target.PlayerId.ToString()) + " " + pva.NameText.text;
-                    break;
-                case CustomRoles.NiceGuesser:
                 case CustomRoles.EvilGuesser:
                     if (!seer.Data.IsDead && !target.Data.IsDead)
                         pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(seer.Is(CustomRoles.NiceGuesser) ? CustomRoles.NiceGuesser : CustomRoles.EvilGuesser), target.PlayerId.ToString()) + " " + pva.NameText.text;
-                    break;
-                case CustomRoles.Judge:
-                    if (!seer.Data.IsDead && !target.Data.IsDead)
-                        pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Judge), target.PlayerId.ToString()) + " " + pva.NameText.text;
                     break;
                 case CustomRoles.Swapper:
                     if (!seer.Data.IsDead && !target.Data.IsDead)

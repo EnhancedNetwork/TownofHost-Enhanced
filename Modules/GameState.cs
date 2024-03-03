@@ -505,17 +505,10 @@ public class TaskState
                     }
                     break;
 
-                case CustomRoles.Veteran when player.IsAlive():
-                    Main.VeteranNumOfUsed[player.PlayerId] += Options.VeteranAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    break;
-
                 case CustomRoles.Alchemist when player.IsAlive():
                     Alchemist.OnTaskComplete(player);
                     break;
 
-                case CustomRoles.Bastion when player.IsAlive():
-                    Main.BastionNumberOfAbilityUses += Options.BastionAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    break;
                 //case CustomRoles.Cleanser when player.IsAlive():
                 //    Cleanser.CleanserUses[player.PlayerId] += Cleanser.AbilityUseGainWithEachTaskCompleted.GetInt();
                 //    break;
