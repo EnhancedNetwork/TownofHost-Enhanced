@@ -237,6 +237,8 @@ internal class BountyHunter : RoleBase
     }
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
+        if (isForMeeting) return string.Empty;
+
         var targetId = GetTarget(seer);
         return targetId != 0xff ? $"{(isForHud ? GetString("BountyCurrentTarget") : GetString("Target"))}: {Main.AllPlayerNames[targetId].RemoveHtmlTags().Replace("\r\n", string.Empty)}" : string.Empty;
     }
