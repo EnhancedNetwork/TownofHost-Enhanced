@@ -268,6 +268,8 @@ class CheckMurderPatch
 
                 case CustomRoles.Susceptible:
                     Susceptible.CallEnabledAndChange(target);
+                   if (Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote)
+                        Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Kill; // When susceptible is still alive "Vote" triggers role visibility for others.
                     break;
 
                 case CustomRoles.Fragile:
