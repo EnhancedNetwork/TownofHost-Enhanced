@@ -966,9 +966,6 @@ public static class Utils
                     var draw = GetDrawPlayerCount(playerId, out var _);
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Revolutionist).ShadeColor(0.25f), $"({draw.Item1}/{draw.Item2})"));
                     break;
-                case CustomRoles.Gangster:
-                    ProgressText.Append(Gangster.GetRecruitLimit(playerId));
-                    break;
                 case CustomRoles.Medic:
                     ProgressText.Append(Medic.GetSkillLimit(playerId));
                     break;

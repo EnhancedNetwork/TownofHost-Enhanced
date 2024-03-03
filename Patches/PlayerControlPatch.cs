@@ -410,24 +410,17 @@ class CheckMurderPatch
                 case CustomRoles.Huntsman:
                     Huntsman.OnCheckMurder(killer, target);
                     break;
-                //case CustomRoles.Occultist:
-                //    if (!Occultist.OnCheckMurder(killer, target)) return false;
-                //    break;
                 case CustomRoles.Puppeteer:
                     if (!Puppeteer.OnCheckPuppet(killer, target)) return false;
                     break;
                 case CustomRoles.Mastermind:
                     if (!Mastermind.OnCheckMurder(killer, target)) return false;
                     break;
-                case CustomRoles.Necromancer: //必须在击杀发生前处理
+                case CustomRoles.Necromancer:
                     if (!Necromancer.OnCheckMurder(killer, target)) return false;
                     break;
                 case CustomRoles.Shroud:
                     if (!Shroud.OnCheckMurder(killer, target)) return false;
-                    break;
-                case CustomRoles.Gangster:
-                    if (Gangster.OnCheckMurder(killer, target))
-                        return false;
                     break;
                 case CustomRoles.Lightning:
                     if (Lightning.OnCheckMurderAsKiller(killer, target))

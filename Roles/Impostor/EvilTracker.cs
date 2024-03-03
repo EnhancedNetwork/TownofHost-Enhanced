@@ -17,6 +17,8 @@ internal class EvilTracker : RoleBase
     public override bool IsEnable => On;
     public override CustomRoles ThisRoleBase => (TargetMode)OptionTargetMode.GetValue() == TargetMode.Never ? CustomRoles.Impostor : CustomRoles.Shapeshifter;
 
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Track");
+
     private static OptionItem OptionCanSeeKillFlash;
     private static OptionItem OptionTargetMode;
     private static OptionItem OptionCanSeeLastRoomInMeeting;

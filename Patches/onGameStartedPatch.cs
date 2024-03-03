@@ -239,7 +239,6 @@ internal class ChangeRoleSettings
             Counterfeiter.Init();
             Pursuer.Init();
             Diseased.Init();
-            Gangster.Init();
             Medic.Init();
             Gamer.Init();
             Lightning.Init();
@@ -721,9 +720,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Pursuer:
                         Pursuer.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Gangster:
-                        Gangster.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Medic:
                         Medic.Add(pc.PlayerId);

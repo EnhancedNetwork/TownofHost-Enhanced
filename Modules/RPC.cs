@@ -1111,9 +1111,6 @@ internal static class RPC
             case CustomRoles.Pursuer:
                 Pursuer.Add(targetId);
                 break;
-            case CustomRoles.Gangster:
-                Gangster.Add(targetId);
-                break;
             case CustomRoles.PotionMaster:
                 PotionMaster.Add(targetId);
                 break;
