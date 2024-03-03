@@ -1641,7 +1641,7 @@ class ShapeshiftPatch
 
             // Check shapeshift
             if (!(
-                (role is CustomRoles.ShapeshifterTOHE or CustomRoles.Shapeshifter or CustomRoles.ShapeMaster)
+                (role is CustomRoles.ShapeshifterTOHE or CustomRoles.Shapeshifter or CustomRoles.ShapeMaster or CustomRoles.Hangman)
                 ||
                 (role is CustomRoles.Sniper && Sniper.ShowShapeshiftAnimations)
                 ))
