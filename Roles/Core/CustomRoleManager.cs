@@ -18,7 +18,6 @@ public static class CustomRoleManager
     public static RoleBase CreateRoleClass(this CustomRoles role) => role switch
     {
         // ==== Vanilla ====
-        CustomRoles.Crewmate => new VanillaRole(),
         CustomRoles.Impostor => new VanillaRole(),
         CustomRoles.Shapeshifter => new VanillaRole(),
         CustomRoles.ImpostorTOHE => new VanillaRole(),
@@ -106,14 +105,17 @@ public static class CustomRoleManager
         // ==== Ghost Impostors ====
         //CustomRoles.Minion => new Minion(),
 
-        // ==== Crewmates ====
+        // ==== Vanilla ====
+        CustomRoles.Crewmate => new VanillaRole(),
         CustomRoles.Engineer => new VanillaRole(),
-        CustomRoles.GuardianAngel => new VanillaRole(),
         CustomRoles.Scientist => new VanillaRole(),
+        CustomRoles.GuardianAngel => new VanillaRole(),
         CustomRoles.CrewmateTOHE => new VanillaRole(),
         CustomRoles.EngineerTOHE => new VanillaRole(),
-        CustomRoles.GuardianAngelTOHE => new VanillaRole(),
         CustomRoles.ScientistTOHE => new VanillaRole(),
+        CustomRoles.GuardianAngelTOHE => new VanillaRole(),
+
+        // ==== Crewmates ====
         CustomRoles.Addict => new Addict(),
         //CustomRoles.Aid => new Aid(),
         //CustomRoles.Alchemist => new Alchemist(),
