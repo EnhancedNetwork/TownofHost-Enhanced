@@ -1093,9 +1093,9 @@ internal class ChatCommands
             "教唆者" or "教唆" => GetString("Instigator"),
 
             // 船员阵营职业
-            "擺爛人" or "摆烂人" or "摆烂" => GetString("Needy"),
+            "擺爛人" or "摆烂人" or "摆烂" => GetString("LazyGuy"),
             "大明星" or "明星" => GetString("SuperStar"),
-            "網紅" or "网红" => GetString("CyberStar"),
+            "網紅" or "网红" => GetString("Celebrity"),
             "清洗者" or "清洗" => GetString("Cleanser"),
             "守衛者" or "守卫者" => GetString("Keeper"),
             "俠客" or "侠客" or "正义使者" => GetString("Knight"),

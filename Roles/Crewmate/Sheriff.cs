@@ -207,5 +207,5 @@ internal class Sheriff : RoleBase
         hud.AbilityButton.ToggleVisible(false);
         hud.ImpostorVentButton.ToggleVisible(false);
     }
-    public override Sprite KillButtonSprite => CustomButton.Get("Kill");
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Kill");
 }

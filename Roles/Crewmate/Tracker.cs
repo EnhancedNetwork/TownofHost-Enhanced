@@ -188,6 +188,6 @@ namespace TOHE.Roles.Crewmate
             ProgressText.Append(ColorString(TextColor111, $" <color=#ffffff>-</color> {Math.Round(Tracker.TrackLimit[playerId], 1)}"));
             return ProgressText.ToString();
         }
-        public override Sprite AbilityButtonSprite => CustomButton.Get("Track");
+        public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Track");
     }
 }

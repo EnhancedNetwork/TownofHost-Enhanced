@@ -260,5 +260,5 @@ internal class Medic : RoleBase
         hud.AbilityButton.ToggleVisible(false);
         hud.ImpostorVentButton.ToggleVisible(false);
     }
-    public override Sprite KillButtonSprite => CustomButton.Get("Shield");
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Shield");
 }

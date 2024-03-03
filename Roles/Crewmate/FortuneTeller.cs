@@ -283,7 +283,7 @@ internal class FortuneTeller : RoleBase
                 
                 [CustomRoles.Gamer,
                 CustomRoles.Zombie,
-                CustomRoles.CyberStar,
+                CustomRoles.Celebrity,
                 CustomRoles.SuperStar,
                 CustomRoles.Captain,
                 CustomRoles.Deathpact,
@@ -378,7 +378,7 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.HexMaster,
                 CustomRoles.Witch],
                 
-                [CustomRoles.Needy,
+                [CustomRoles.LazyGuy,
                 CustomRoles.Totocalcio,
                 CustomRoles.Pelican,
                 CustomRoles.Scavenger,

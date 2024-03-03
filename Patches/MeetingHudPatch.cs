@@ -119,9 +119,6 @@ class CheckForEndVotingPatch
                     {
                         switch (pc.GetCustomRole())
                         {
-                            case CustomRoles.Cleanser:
-                                Cleanser.OnVote(pc, voteTarget);
-                                break;
                             case CustomRoles.SoulCollector:
                                 SoulCollector.OnVote(pc, voteTarget);
                                 break;
@@ -204,8 +201,6 @@ class CheckForEndVotingPatch
 
                 // Hide roles vote
                 if (ps.TargetPlayerId.GetRoleClassById().HideVote(ps)) continue;
-                // Hide Cleanser Vote
-                if (CheckRole(ps.TargetPlayerId, CustomRoles.Cleanser) && Cleanser.HideVote.GetBool() && Cleanser.CleanserUses[ps.TargetPlayerId] > 0) continue;
                 // Hide Jester Vote
                 if (CheckRole(ps.TargetPlayerId, CustomRoles.Jester) && Options.HideJesterVote.GetBool()) continue;
                 // Assing Madmate Slef Vote
@@ -932,12 +927,6 @@ class MeetingHudStartPatch
             if (pc.Is(CustomRoles.Nemesis) && !pc.IsAlive())
                 AddMsg(GetString("NemesisDeadMsg"), pc.PlayerId);
             //网红死亡消息提示
-            foreach (var csId in Main.CyberStarDead)
-            {
-                if (!Options.ImpKnowCyberStarDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
-                if (!Options.NeutralKnowCyberStarDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
-                AddMsg(string.Format(GetString("CyberStarDead"), Main.AllPlayerNames[csId]), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.CyberStar), GetString("CyberStarNewsTitle")));
-            }
 
             foreach (var csId in Cyber.CyberDead)
             {
@@ -1002,7 +991,6 @@ class MeetingHudStartPatch
         Main.PlayerStates.Where(x => x.Value.RoleClass.IsEnable)?.Do(x
             => x.Value.RoleClass.MeetingHudClear());
 
-        Main.CyberStarDead.Clear();
         Main.VirusNotify.Clear();
         
         Cyber.Clear();
@@ -1314,10 +1302,6 @@ class MeetingHudStartPatch
             if (target.PlayerId == Pirate.PirateTarget)
                 sb.Append(Pirate.GetPlunderedMark(target.PlayerId, true));
 
-            //如果是大明星
-            if (target.Is(CustomRoles.SuperStar) && Options.EveryOneKnowSuperStar.GetBool())
-                sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.SuperStar), "★"));
-
             //网络人提示
             if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), "★"));
@@ -1325,14 +1309,6 @@ class MeetingHudStartPatch
             //玩家被勒索提示
             if (Blackmailer.CheckBlackmaile(target))
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Blackmailer), "╳"));
-
-            //迷你船员提示
-            if (target.Is(CustomRoles.NiceMini) && Mini.EveryoneCanKnowMini.GetBool())
-                sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), Mini.Age != 18 && Mini.UpDateAge.GetBool() ? $"({Mini.Age})" : ""));
-
-            //迷你船员提示
-            if (target.Is(CustomRoles.EvilMini) && Mini.EveryoneCanKnowMini.GetBool())
-                sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), Mini.Age != 18 && Mini.UpDateAge.GetBool() ? $"({Mini.Age})" : ""));
 
             //球状闪电提示
             if (Lightning.IsGhost(target))

@@ -124,9 +124,15 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// When the target role died
+    /// When the target role died by killer
     /// </summary>
     public virtual void OnTargetDead(PlayerControl killer, PlayerControl target)
+    { }
+
+    /// <summary>
+    /// Always do these tasks once the role dies
+    /// </summary>
+    public virtual void AfterPlayerDeathTask(PlayerControl target)
     { }
 
     /// <summary>

@@ -214,6 +214,6 @@ internal class Jailer : RoleBase
         hud.ReportButton.OverrideText(GetString("ReportButtonText"));
         hud.KillButton.OverrideText(GetString("JailorKillButtonText"));
     }
-    public override Sprite KillButtonSprite => CustomButton.Get("penitentiary");
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("penitentiary");
 
 }

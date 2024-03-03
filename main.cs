@@ -141,7 +141,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, Vector2> LastEnteredVentLocation = [];
     public static Dictionary<byte, int> MasochistKillMax = [];
     //public static Dictionary<byte, long> FlashbangInProtect = [];
-    public static List<byte> CyberStarDead = [];
     public static List<byte> WorkaholicAlive = [];
     public static List<byte> TasklessCrewmate = [];
     public static Dictionary<byte, string> VirusNotify = [];
@@ -608,14 +607,14 @@ public enum CustomRoles
     Benefactor,
     Bodyguard,
     Captain,
-    CyberStar, //celebrity
+    Celebrity, 
     Chameleon,
     Cleanser,
     CopyCat,
     Coroner, 
     Crusader,
     Detective,
-    Deceiver, //deceiver
+    Deceiver, 
     Deputy,
     Dictator,
     Doctor,
@@ -625,19 +624,19 @@ public enum CustomRoles
     GuessMaster,
     Grenadier,
     Hawk,
-    Inspector, //inspector
+    Inspector, 
     Investigator,
     Jailer,
     Judge,
     Keeper,
-    Knight, //knight
-    Needy, //Lazy guy
+    Knight, 
+    LazyGuy, //Lazy guy
     Lighter,
    // Luckey,
     Lookout,
     Marshall,
     Mayor,
-    Mechanic, //Mechanic
+    Mechanic, 
     Medic,
     Mediumshiper, //medium
     Merchant,
@@ -651,7 +650,7 @@ public enum CustomRoles
     Overseer, 
     Pacifist, 
     Paranoia, //paranoid
-    ChiefOfPolice, //police commisioner
+    ChiefOfPolice, //police commisioner ///// UNUSED
     President,
     Psychic,
     Randomizer,

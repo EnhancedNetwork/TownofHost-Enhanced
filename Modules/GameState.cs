@@ -469,49 +469,9 @@ public class TaskState
                 //    }
                 //    break;
 
-                case CustomRoles.Transporter when player.IsAlive():
-                    if ((CompletedTasksCount + 1) <= Options.TransporterTeleportMax.GetInt())
-                    {
-                        Logger.Info($"Transporter: {player.GetNameWithRole().RemoveHtmlTags()} completed the task", "Transporter");
-
-                        var rd = IRandom.Instance;
-                        List<PlayerControl> AllAlivePlayer = Main.AllAlivePlayerControls.Where(x => x.CanBeTeleported()).ToList();
-
-                        if (AllAlivePlayer.Count >= 2)
-                        {
-                            var target1 = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
-                            var positionTarget1 = target1.GetCustomPosition();
-
-                            AllAlivePlayer.Remove(target1);
-
-                            var target2 = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
-                            var positionTarget2 = target2.GetCustomPosition();
-
-                            target1.RpcTeleport(positionTarget2);
-                            target2.RpcTeleport(positionTarget1);
-
-                            AllAlivePlayer.Clear();
-
-                            target1.RPCPlayCustomSound("Teleport");
-                            target2.RPCPlayCustomSound("Teleport");
-
-                            target1.Notify(ColorString(GetRoleColor(CustomRoles.Transporter), string.Format(Translator.GetString("TeleportedByTransporter"), target2.GetRealName())));
-                            target2.Notify(ColorString(GetRoleColor(CustomRoles.Transporter), string.Format(Translator.GetString("TeleportedByTransporter"), target1.GetRealName())));
-                        }
-                        else
-                        {
-                            player.Notify(ColorString(GetRoleColor(CustomRoles.Impostor), Translator.GetString("ErrorTeleport")));
-                        }
-                    }
-                    break;
-
                 case CustomRoles.Alchemist when player.IsAlive():
                     Alchemist.OnTaskComplete(player);
                     break;
-
-                //case CustomRoles.Cleanser when player.IsAlive():
-                //    Cleanser.CleanserUses[player.PlayerId] += Cleanser.AbilityUseGainWithEachTaskCompleted.GetInt();
-                //    break;
 
                 case CustomRoles.Workaholic when (CompletedTasksCount + 1) >= AllTasksCount && !(Options.WorkaholicCannotWinAtDeath.GetBool() && !player.IsAlive()):
                     Logger.Info("The Workaholic task is done", "Workaholic");

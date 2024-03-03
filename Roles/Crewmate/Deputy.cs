@@ -102,5 +102,5 @@ internal class Deputy : RoleBase
         hud.ReportButton.OverrideText(GetString("ReportButtonText"));
         hud.KillButton.OverrideText(GetString("DeputyHandcuffText"));
     }
-    public override Sprite KillButtonSprite => CustomButton.Get("Deputy");
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Deputy");
 }

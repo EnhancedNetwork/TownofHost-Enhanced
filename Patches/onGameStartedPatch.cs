@@ -67,7 +67,6 @@ internal class ChangeRoleSettings
             Main.isCurseAndKill = [];
             Main.isCursed = false;
             Main.ForCrusade = [];
-            Main.CyberStarDead = [];
             Main.WorkaholicAlive = [];
             Main.TasklessCrewmate = [];
             Main.MedusaBodies = [];
@@ -204,8 +203,6 @@ internal class ChangeRoleSettings
             Bandit.Init();
             Doppelganger.Init();
             RiftMaker.Init();
-            GuessMaster.Init();
-            Cleanser.Init();
             Solsticer.Init();
             Vampire.Init();
             Vampiress.Init();
@@ -262,8 +259,6 @@ internal class ChangeRoleSettings
             Maverick.Init();
             Jinx.Init();
             DoubleShot.Init();
-            Mole.Init();
-            Tracefinder.Init();
             PotionMaster.Init();
             Warden.Init();
             Traitor.Init();
@@ -288,7 +283,6 @@ internal class ChangeRoleSettings
             Agitater.Init();
             ChiefOfPolice.Init();
             Cyber.Init();
-            Mini.Init();
             Oiiai.Init();
             Hater.Init();
             Instigator.Init();
@@ -617,17 +611,11 @@ internal class SelectRolesPatch
                     case CustomRoles.Huntsman:
                         Huntsman.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Cleanser:
-                        Cleanser.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Agitater:
                         Agitater.Add(pc.PlayerId);
                         break;
                     case CustomRoles.QuickShooter:
                         QuickShooter.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.GuessMaster:
-                        GuessMaster.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Masochist:
                         Main.MasochistKillMax[pc.PlayerId] = 0;
@@ -677,9 +665,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Juggernaut:
                         Juggernaut.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Tracefinder:
-                        Tracefinder.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Swooper:
                         Swooper.Add(pc.PlayerId);
@@ -759,9 +744,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Maverick:
                         Maverick.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Mole:
-                        Mole.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Morphling:
                         Morphling.Add(pc.PlayerId);
                         break;
@@ -794,12 +776,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Instigator:
                         Instigator.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.NiceMini:
-                        Mini.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.EvilMini:
-                        Mini.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Hater:
                         Hater.Add(pc.PlayerId);

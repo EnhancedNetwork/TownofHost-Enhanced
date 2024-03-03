@@ -1,25 +1,34 @@
 ﻿using Hazel;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.CheckForEndVotingPatch;
 
 namespace TOHE.Roles.Crewmate;
-public static class Cleanser
+internal class Cleanser : RoleBase
 {
-    private static readonly int Id = 6600;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    //===========================SETUP================================\\
+    private const int Id = 6600;
+    private static bool On = false;
+    public override bool IsEnable => On;
+    public static bool HasEnabled => CustomRoles.Cleanser.IsClassEnable();
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+
+    //==================================================================\\
 
     public static Dictionary<byte,byte> CleanserTarget = [];
     public static Dictionary<byte, int> CleanserUses = [];
     public static List<byte> CleansedPlayers = [];
+
+    public static List<byte> playerIdList = [];
     public static Dictionary<byte, bool> DidVote = [];
 
     public static OptionItem CleanserUsesOpt;
     public static OptionItem CleansedCanGetAddon;
-    public static OptionItem HideVote;
+    public static OptionItem HidesVote;
     public static OptionItem AbilityUseGainWithEachTaskCompleted;
 
     public static void SetupCustomOption()
@@ -28,39 +37,38 @@ public static class Cleanser
         CleanserUsesOpt = IntegerOptionItem.Create(Id + 10, "MaxCleanserUses", new(1, 14, 1), 3, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cleanser])
             .SetValueFormat(OptionFormat.Times);
         CleansedCanGetAddon = BooleanOptionItem.Create(Id + 11, "CleansedCanGetAddon", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cleanser]);
-        HideVote = BooleanOptionItem.Create(Id + 12, "CleanserHideVote", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cleanser]);
+        HidesVote = BooleanOptionItem.Create(Id + 12, "CleanserHideVote", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cleanser]);
     //    AbilityUseGainWithEachTaskCompleted = IntegerOptionItem.Create(Id + 12, "AbilityUseGainWithEachTaskCompleted", new(0, 5, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cleanser])
     //        .SetValueFormat(OptionFormat.Times);
 
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         CleanserTarget = [];
         CleanserUses = [];
         CleansedPlayers = [];
         DidVote = [];
-        IsEnable = false;
+        On = false;
     }
 
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         CleanserTarget.Add(playerId, byte.MaxValue);
         CleanserUses.Add(playerId, 0);
         DidVote.Add(playerId, false);
-        IsEnable = true;
+        On = true;
     }
-    public static void Remove(byte playerId)
+    public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
         CleanserTarget.Remove(playerId);
         CleanserUses.Remove(playerId);
         DidVote.Remove(playerId);
     }
-
-    //public static string GetProgressText(byte playerId) => Utils.ColorString(CleanserUsesOpt.GetInt() - CleanserUses[playerId] > 0 ? Utils.GetRoleColor(CustomRoles.Cleanser).ShadeColor(0.25f) : Color.gray, CleanserUses.TryGetValue(playerId, out var x) ? $"({CleanserUsesOpt.GetInt() - x})" : "Invalid");
-    public static string GetProgressText(byte playerId)
+    public override bool HideVote(PlayerVoteArea ps) => CheckRole(ps.TargetPlayerId, CustomRoles.Cleanser) && Cleanser.HidesVote.GetBool() && Cleanser.CleanserUses[ps.TargetPlayerId] > 0;
+    public override string GetProgressText(byte playerId, bool comms)
     {
         if (!CleanserUses.ContainsKey(playerId)) return "Invalid";
         Color x;
@@ -88,7 +96,7 @@ public static class Cleanser
             CleanserUses.Add(CleanserId, 0);
     }
 
-    public static void OnVote(PlayerControl voter, PlayerControl target)
+    public override void OnVote(PlayerControl voter, PlayerControl target)
     {
         if (!voter.Is(CustomRoles.Cleanser)) return;
         if (DidVote[voter.PlayerId]) return;
@@ -113,7 +121,7 @@ public static class Cleanser
         Utils.SendMessage(string.Format(GetString("CleanserRemovedRole"), target.GetRealName()), voter.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cleanser),GetString("CleanserTitle")));
         SendRPC(voter.PlayerId);
     }
-    public static void OnReportDeadBody()
+    public override void OnReportDeadBody(PlayerControl baba, PlayerControl lilelam)
     {
         foreach (var pid in CleanserTarget.Keys.ToArray())
         {

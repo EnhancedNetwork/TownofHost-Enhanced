@@ -159,9 +159,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Mercenary:
                 Mercenary.ApplyGameOptions(player);
                 break;
-            case CustomRoles.Tracefinder:
-                Tracefinder.ApplyGameOptions();
-                break;
             case CustomRoles.Sniper:
                 Sniper.ApplyGameOptions(player);
                 break;
@@ -192,10 +189,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Zombie:
             case CustomRoles.KillingMachine:
                 opt.SetFloat(FloatOptionNames.ImpostorLightMod, 0.2f);
-                break;
-            case CustomRoles.Doctor:
-                AURoleOptions.ScientistCooldown = 0f;
-                AURoleOptions.ScientistBatteryCharge = Options.DoctorTaskCompletedBatteryCharge.GetFloat();
                 break;
          /* case CustomRoles.Paranoia:
                 AURoleOptions.EngineerCooldown =
@@ -356,10 +349,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
             case CustomRoles.BloodKnight:
                 BloodKnight.ApplyGameOptions(opt);
-                break;
-            case CustomRoles.Mole:
-                AURoleOptions.EngineerCooldown = Mole.VentCooldown.GetFloat();
-                AURoleOptions.EngineerInVentMaxTime = 1;
                 break;
             case CustomRoles.Mario:
                 AURoleOptions.EngineerCooldown = Options.MarioVentCD.GetFloat();

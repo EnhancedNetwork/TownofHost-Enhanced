@@ -517,17 +517,9 @@ public static class Options
     public static OptionItem ScientistCD;
     public static OptionItem ScientistDur;
 
-    public static OptionItem ImpKnowCyberStarDead;
-    public static OptionItem NeutralKnowCyberStarDead;
-
-    public static OptionItem DoctorTaskCompletedBatteryCharge;
-    public static OptionItem DoctorVisibleToEveryone;
-
    //public static OptionItem LuckeyProbability;
 
-    public static OptionItem EveryOneKnowSuperStar;
 
-    public static OptionItem TransporterTeleportMax;
 
     public static OptionItem BecomeBaitDelayNotify;
     public static OptionItem BecomeBaitDelayMin;
@@ -693,7 +685,6 @@ public static class Options
 
     // Override Tasks
     public static OverrideTasksData TerroristTasks;
-    public static OverrideTasksData TransporterTasks;
     public static OverrideTasksData WorkaholicTasks;
     public static OverrideTasksData PhantomTasks;
     public static OverrideTasksData OpportunistTasks;
@@ -1322,11 +1313,7 @@ public static class Options
         /*
          * Celebrity
          */
-        SetupRoleOptions(6500, TabGroup.CrewmateRoles, CustomRoles.CyberStar);
-        ImpKnowCyberStarDead = BooleanOptionItem.Create(6502, "ImpKnowCyberStarDead", false, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.CyberStar]);
-        NeutralKnowCyberStarDead = BooleanOptionItem.Create(6503, "NeutralKnowCyberStarDead", false, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.CyberStar]);
+        Celebrity.SetupCustomOptions();    
 
         /*
          * Cleanser
@@ -1336,12 +1323,7 @@ public static class Options
         /*
          * Doctor
          */
-        SetupRoleOptions(6700, TabGroup.CrewmateRoles, CustomRoles.Doctor);
-        DoctorTaskCompletedBatteryCharge = FloatOptionItem.Create(6702, "DoctorTaskCompletedBatteryCharge", new(0f, 250f, 1f), 50f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Doctor])
-            .SetValueFormat(OptionFormat.Seconds);
-        DoctorVisibleToEveryone = BooleanOptionItem.Create(6703, "DoctorVisibleToEveryone", false, TabGroup.CrewmateRoles, false)
-        .SetParent(CustomRoleSpawnChances[CustomRoles.Doctor]);
+        Doctor.SetupCustomOptions();
 
         /*
          * Guess Master
@@ -1351,7 +1333,7 @@ public static class Options
         /*
          * Lazy Guy
          */
-        SetupRoleOptions(6800, TabGroup.CrewmateRoles, CustomRoles.Needy);
+        LazyGuy.SetupCustomOptions();
 
         /*
          * Luckey
@@ -1374,14 +1356,12 @@ public static class Options
         /*
          * Superstar
          */
-        SetupRoleOptions(7150, TabGroup.CrewmateRoles, CustomRoles.SuperStar);
-        EveryOneKnowSuperStar = BooleanOptionItem.Create(7152, "EveryOneKnowSuperStar", true, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.SuperStar]);
+        SuperStar.SetupCustomOptions();
 
         /*
          * Task Manager
          */
-        SetupRoleOptions(7200, TabGroup.CrewmateRoles, CustomRoles.TaskManager);
+        TaskManager.SetupCustomOptions();
 
         /*
          * Tracefinder
@@ -1391,27 +1371,12 @@ public static class Options
         /*
          * Transporter
          */
-        SetupRoleOptions(7400, TabGroup.CrewmateRoles, CustomRoles.Transporter);
-        TransporterTeleportMax = IntegerOptionItem.Create(7402, "TransporterTeleportMax", new(1, 100, 1), 5, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Transporter])
-            .SetValueFormat(OptionFormat.Times);
-        TransporterTasks = OverrideTasksData.Create(7403, TabGroup.CrewmateRoles, CustomRoles.Transporter);
+        Transporter.SetupCustomOptions();
 
         /*
          * Randomizer
          */
-        SetupRoleOptions(7500, TabGroup.CrewmateRoles, CustomRoles.Randomizer);
-        BecomeBaitDelayNotify = BooleanOptionItem.Create(7502, "BecomeBaitDelayNotify", false, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer]);
-        BecomeBaitDelayMin = FloatOptionItem.Create(7503, "BaitDelayMin", new(0f, 5f, 1f), 0f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
-            .SetValueFormat(OptionFormat.Seconds);
-        BecomeBaitDelayMax = FloatOptionItem.Create(7504, "BaitDelayMax", new(0f, 10f, 1f), 0f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
-            .SetValueFormat(OptionFormat.Seconds);
-        BecomeTrapperBlockMoveTime = FloatOptionItem.Create(7505, "BecomeTrapperBlockMoveTime", new(1f, 180f, 1f), 5f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
-            .SetValueFormat(OptionFormat.Seconds);
+        Randomizer.SetupCustomOptions();
         
         /*
          * SUPPORT ROLES

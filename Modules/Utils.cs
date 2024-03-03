@@ -334,12 +334,12 @@ public static class Utils
                 seer.KillFlash();
                 continue;
             }
-            else if (target.Is(CustomRoles.CyberStar))
+            else if (target.Is(CustomRoles.Celebrity))
             {
-                if (!Options.ImpKnowCyberStarDead.GetBool() && seer.GetCustomRole().IsImpostor()) continue;
-                if (!Options.NeutralKnowCyberStarDead.GetBool() && seer.GetCustomRole().IsNeutral()) continue;
+                if (!Celebrity.ImpKnowCelebrityDead.GetBool() && seer.GetCustomRole().IsImpostor()) continue;
+                if (!Celebrity.NeutralKnowCelebrityDead.GetBool() && seer.GetCustomRole().IsNeutral()) continue;
                 seer.KillFlash();
-                seer.Notify(ColorString(GetRoleColor(CustomRoles.CyberStar), GetString("OnCyberStarDead")));
+                seer.Notify(ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("OnCelebrityDead")));
             }
             else if (target.Is(CustomRoles.Cyber))
             {
@@ -350,7 +350,7 @@ public static class Utils
                 seer.Notify(ColorString(GetRoleColor(CustomRoles.Cyber), GetString("OnCyberDead"))); 
             } 
         }
-        if (target.Is(CustomRoles.CyberStar) && !Main.CyberStarDead.Contains(target.PlayerId)) Main.CyberStarDead.Add(target.PlayerId);
+        if (target.Is(CustomRoles.Celebrity) && !Celebrity.CelebrityDead.Contains(target.PlayerId)) Celebrity.CelebrityDead.Add(target.PlayerId);
         if (target.Is(CustomRoles.Cyber) && !Cyber.CyberDead.Contains(target.PlayerId)) Cyber.CyberDead.Add(target.PlayerId);
     }
     public static bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer)
@@ -732,18 +732,6 @@ public static class Utils
                     ProgressText.Append(PlagueDoctor.GetProgressText());
                     break;
                     
-                case CustomRoles.TaskManager:
-                    var taskState1 = Main.PlayerStates?[playerId].TaskState;
-                    Color TextColor1;
-                    var TaskCompleteColor1 = Color.green;
-                    var NonCompleteColor1 = Color.yellow;
-                    var NormalColor1 = taskState1.IsTaskFinished ? TaskCompleteColor1 : NonCompleteColor1;
-                    TextColor1 = comms ? Color.gray : NormalColor1;
-                    string Completed1 = comms ? "?" : $"{taskState1.CompletedTasksCount}";
-                    string totalCompleted1 = comms ? "?" : $"{GameData.Instance.CompletedTasks}";
-                    ProgressText.Append(ColorString(TextColor1, $"({Completed1}/{taskState1.AllTasksCount})"));
-                    ProgressText.Append($" <color=#777777>-</color> <color=#00ffa5>{totalCompleted1}/{GameData.Instance.TotalTasks}</color>");
-                    break;
                 case CustomRoles.Pirate:
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Pirate).ShadeColor(0.25f), $"({Pirate.NumWin}/{Pirate.SuccessfulDuelsToWin.GetInt()})"));
                     break;
@@ -793,7 +781,6 @@ public static class Utils
                     var draw = GetDrawPlayerCount(playerId, out var _);
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Revolutionist).ShadeColor(0.25f), $"({draw.Item1}/{draw.Item2})"));
                     break;
-                    break;
                 case CustomRoles.Jinx:
                     int JinxSpellCount = Main.JinxSpellCount[playerId];
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Jinx), $"({JinxSpellCount})"));
@@ -803,9 +790,6 @@ public static class Utils
                     break;
                 case CustomRoles.Taskinator:
                     ProgressText.Append(Taskinator.GetProgressText(playerId));
-                    break;
-                case CustomRoles.Cleanser:
-                    ProgressText.Append(Cleanser.GetProgressText(playerId));
                     break;
                 case CustomRoles.Anonymous:
                     ProgressText.Append(Anonymous.GetHackLimit(playerId));
@@ -867,10 +851,6 @@ public static class Utils
                     break;
                 case CustomRoles.ChiefOfPolice:
                     ProgressText.Append(ChiefOfPolice.GetSkillLimit(playerId));
-                    break;
-                case CustomRoles.NiceMini:
-                case CustomRoles.EvilMini:
-                    ProgressText.Append(Mini.GetAge(playerId));
                     break;
                 default:
                     //タスクテキスト
@@ -1837,8 +1817,6 @@ public static class Utils
                 if (seer.Is(CustomRoles.Lovers) /* || CustomRoles.Ntr.RoleExist() */)
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Lovers), "♥"));
 
-                if (seer.Is(CustomRoles.SuperStar) && Options.EveryOneKnowSuperStar.GetBool())
-                    SelfMark.Append(ColorString(GetRoleColor(CustomRoles.SuperStar), "★"));
 
                 if (seer.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
@@ -1881,9 +1859,6 @@ public static class Utils
                 {
                     switch (seerRole)
                     {
-                        case CustomRoles.Tracefinder:
-                            SelfSuffix.Append(Tracefinder.GetTargetArrow(seer));
-                            break;
                         case CustomRoles.Vulture:
                             if (Vulture.ArrowsPointingToDeadBody.GetBool())
                                 SelfSuffix.Append(Vulture.GetTargetArrow(seer));
@@ -2075,16 +2050,9 @@ public static class Utils
                                 TargetMark.Append(Shroud.GetShroudMark(target.PlayerId, true));
                         }
 
-                        if (Mini.IsEnable && Mini.EveryoneCanKnowMini.GetBool() && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
-                        {
-                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Mini), Mini.Age != 18 && Mini.UpDateAge.GetBool() ? $"({Mini.Age})" : ""));
-                        }
-
                         if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate) && target.GetPlayerTaskState().IsTaskFinished)
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Impostor), "★"));
 
-                        if (target.Is(CustomRoles.SuperStar) && Options.EveryOneKnowSuperStar.GetBool())
-                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.SuperStar), "★"));
 
                         if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
@@ -2342,7 +2310,7 @@ public static class Utils
 
         AntiBlackout.AfterMeetingTasks();
 
-        if (Cleanser.IsEnable) Cleanser.AfterMeetingTasks(notifyPlayer: false);
+        if (Cleanser.HasEnabled) Cleanser.AfterMeetingTasks(notifyPlayer: false);
         if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: false);
 
         foreach (var playerState in Main.PlayerStates.Values.Where(pc => pc.RoleClass.IsEnable).ToArray())
@@ -2386,6 +2354,7 @@ public static class Utils
     }
     public static void AfterPlayerDeathTasks(PlayerControl target, bool onMeeting = false)
     {
+        target.GetRoleClass()?.AfterPlayerDeathTask(target);
 
         switch (target.GetCustomRole())
         {
@@ -2405,24 +2374,6 @@ public static class Utils
                 {
                     Lawyer.Target.Remove(target.PlayerId);
                     Lawyer.SendRPC(target.PlayerId);
-                }
-                break;
-            case CustomRoles.CyberStar:
-                if (GameStates.IsMeeting)
-                {
-                    //Death Message
-                    foreach (var pc in Main.AllPlayerControls)
-                    {
-                        if (!Options.ImpKnowCyberStarDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
-                        if (!Options.NeutralKnowCyberStarDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
-
-                        SendMessage(string.Format(GetString("CyberStarDead"), target.GetRealName()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.CyberStar), GetString("CyberStarNewsTitle")));
-                    }
-                }
-                else
-                {
-                    if (!Main.CyberStarDead.Contains(target.PlayerId))
-                        Main.CyberStarDead.Add(target.PlayerId);
                 }
                 break;
             case CustomRoles.Romantic:
