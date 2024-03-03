@@ -19,7 +19,6 @@ public static class CustomRoleManager
     public static RoleBase CreateRoleClass(this CustomRoles role) => role switch
     {
         // ==== Vanilla ====
-        CustomRoles.Crewmate => new VanillaRole(),
         CustomRoles.Impostor => new VanillaRole(),
         CustomRoles.Shapeshifter => new VanillaRole(),
         CustomRoles.ImpostorTOHE => new VanillaRole(),
@@ -61,14 +60,14 @@ public static class CustomRoleManager
         //CustomRoles.Instigator => new Instigator(),
         //CustomRoles.Kamikaze => new Kamikaze(),
         //CustomRoles.KillingMachine => new KillingMachine(),
-        //CustomRoles.Minimalism => new Minimalism(),
         //CustomRoles.Lightning => new Lightning(),
         //CustomRoles.Ludopath => new Ludopath(),
         //CustomRoles.Lurker => new Lurker(),
         //CustomRoles.Mastermind => new Mastermind(),
-        //CustomRoles.Mafia => new Mafia(),
+        //CustomRoles.Mercenary => new Mercenary(),
         //CustomRoles.Miner => new Miner(),
         //CustomRoles.Morphling => new Morphling(),
+        //CustomRoles.Nemesis => new Nemesis(),
         //CustomRoles.Ninja => new Ninja(),
         //CustomRoles.Parasite => new Parasite(),
         //CustomRoles.Penguin => new Penguin(),
@@ -105,14 +104,17 @@ public static class CustomRoleManager
         // ==== Ghost Impostors ====
         //CustomRoles.Minion => new Minion(),
 
-        // ==== Crewmates ====
+        // ==== Vanilla ====
+        CustomRoles.Crewmate => new VanillaRole(),
         CustomRoles.Engineer => new VanillaRole(),
-        CustomRoles.GuardianAngel => new VanillaRole(),
         CustomRoles.Scientist => new VanillaRole(),
+        CustomRoles.GuardianAngel => new VanillaRole(),
         CustomRoles.CrewmateTOHE => new VanillaRole(),
         CustomRoles.EngineerTOHE => new VanillaRole(),
-        CustomRoles.GuardianAngelTOHE => new VanillaRole(),
         CustomRoles.ScientistTOHE => new VanillaRole(),
+        CustomRoles.GuardianAngelTOHE => new VanillaRole(),
+
+        // ==== Crewmates ====
         CustomRoles.Addict => new Addict(),
         //CustomRoles.Alchemist => new Alchemist(),
         CustomRoles.Benefactor => new Benefactor(),

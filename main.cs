@@ -503,6 +503,7 @@ public enum CustomRoles
     /*******************************************************
      * Please add all the new roles in alphabetical order *
      ******************************************************/
+
     //Default
     Crewmate = 0,
     //Impostor(Vanilla)
@@ -511,6 +512,10 @@ public enum CustomRoles
     // Vanilla Remakes
     ImpostorTOHE,
     ShapeshifterTOHE,
+
+    // Impostor Ghost
+    Bloodmoon,
+    Minion,
 
     //Impostor
     Anonymous,
@@ -521,7 +526,6 @@ public enum CustomRoles
     Blackmailer,
     Bomber,
     BountyHunter,
-    Bloodmoon,
     Butcher,
     Camouflager,
     Chronomancer,
@@ -556,8 +560,7 @@ public enum CustomRoles
     Mercenary,
     Miner,
     Morphling,
-    Nemesis, 
-    Minion,
+    Nemesis,
     Ninja,
     Nuker,
     Parasite,
@@ -589,6 +592,7 @@ public enum CustomRoles
     Wildling,
     Zombie,
     // Flashbang,
+
     //Crewmate(Vanilla)
     Engineer,
     GuardianAngel,
@@ -598,6 +602,10 @@ public enum CustomRoles
     EngineerTOHE,
     ScientistTOHE,
     GuardianAngelTOHE,
+
+    //Crewmate Ghost
+    Hawk,
+    Warden,
 
     //Crewmate
     Addict,
@@ -623,7 +631,6 @@ public enum CustomRoles
     Guardian,
     GuessMaster,
     Grenadier,
-    Hawk,
     Inspector, 
     Investigator,
     Jailer,
@@ -632,7 +639,6 @@ public enum CustomRoles
     Knight, 
     LazyGuy, //Lazy guy
     Lighter,
-   // Luckey,
     Lookout,
     Marshall,
     Mayor,
@@ -707,7 +713,6 @@ public enum CustomRoles
     Medusa,
     Necromancer,
     Opportunist,
-    //Occultist,
     Pelican,
     Pestilence,
     Phantom,
@@ -744,15 +749,11 @@ public enum CustomRoles
     Virus,
     Vulture,
     Werewolf,
-    Warden,
     Workaholic,
     Wraith,
 
    //two-way camp
     Mini,
-
-    // Sorcerer,
-    // Flux,
 
     //FFA
     Killer,
@@ -762,6 +763,8 @@ public enum CustomRoles
 
     // Sub-role after 500
     NotAssigned = 500,
+
+    // Add-ons
     Admired,
     Antidote,
     Autopsy,
@@ -814,7 +817,6 @@ public enum CustomRoles
     Reach,
     Rebound,
     Recruit,
-    //Repairman,
     Rogue,
     Schizophrenic,
     Seer,
@@ -833,17 +835,8 @@ public enum CustomRoles
     Unlucky,
     VoidBallot,
     Watcher,
-    //Sunglasses,
     Workhorse,
-    Youtuber
-
-   // Reflective,
-    //Glow,
-
-    // QuickFix
-    
-    //You need to put roles in order by their name
-    
+    Youtuber   
 }
 //WinData
 public enum CustomWinner
