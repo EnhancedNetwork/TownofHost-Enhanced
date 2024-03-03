@@ -490,11 +490,7 @@ public static class Options
     public static OptionItem ShapeshiftCD;
     public static OptionItem ShapeshiftDur;
 
-    public static OptionItem InhibitorCD;
-
     public static OptionItem LudopathRandomKillCD;
-
-    public static OptionItem SaboteurCD;
 
     public static OptionItem UnderdogMaximumPlayersNeededToKill;
     public static OptionItem UnderdogKillCooldown;
@@ -969,10 +965,7 @@ public static class Options
         /*
          * Inhibitor
          */
-        SetupRoleOptions(1600, TabGroup.ImpostorRoles, CustomRoles.Inhibitor);
-        InhibitorCD = FloatOptionItem.Create(1602, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Inhibitor])
-            .SetValueFormat(OptionFormat.Seconds);
+        Inhibitor.SetupCustomOption();
 
         /*
          * Instigator
@@ -1020,10 +1013,7 @@ public static class Options
         /*
          * Saboteur
          */
-        SetupRoleOptions(2300, TabGroup.ImpostorRoles, CustomRoles.Saboteur);
-        SaboteurCD = FloatOptionItem.Create(2302, "KillCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Saboteur])
-            .SetValueFormat(OptionFormat.Seconds);
+        Saboteur.SetupCustomOption();
 
         /*
          * Sniper

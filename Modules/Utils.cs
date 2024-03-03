@@ -182,6 +182,16 @@ public static class Utils
             return null;
         }
     }
+
+    public static bool AnySabotageIsActive()
+        => IsActive(SystemTypes.Electrical)
+           || IsActive(SystemTypes.Comms)
+           || IsActive(SystemTypes.MushroomMixupSabotage)
+           || IsActive(SystemTypes.Laboratory)
+           || IsActive(SystemTypes.LifeSupp)
+           || IsActive(SystemTypes.Reactor)
+           || IsActive(SystemTypes.HeliSabotage);
+
     public static bool IsActive(SystemTypes type)
     {
         if (GameStates.IsHideNSeek) return false;
