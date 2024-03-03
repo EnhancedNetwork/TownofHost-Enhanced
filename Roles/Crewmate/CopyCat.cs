@@ -167,7 +167,7 @@ public static class CopyCat
                     break;
             }
 
-            if (pc.GetCustomRole() != CustomRoles.Sidekick)
+            if (pc.GetCustomRole() != CustomRoles.Sidekick || pc.GetCustomRole() != CustomRoles.Retributionist)
                 pc.RpcSetCustomRole(CustomRoles.CopyCat);
 
             SetKillCooldown(player);
