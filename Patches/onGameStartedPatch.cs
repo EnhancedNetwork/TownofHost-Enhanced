@@ -262,7 +262,6 @@ internal class ChangeRoleSettings
             Deputy.Init();
             Investigator.Init();
             Pickpocket.Init();
-            Hangman.Init();
             Judge.Init();
             Mortician.Init();
             Mediumshiper.Init();
@@ -764,9 +763,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Psychic:
                         Psychic.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Hangman:
-                        Hangman.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Judge:
                         Judge.Add(pc.PlayerId);

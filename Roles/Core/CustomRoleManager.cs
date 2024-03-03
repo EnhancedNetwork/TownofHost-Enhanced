@@ -55,7 +55,7 @@ public static class CustomRoleManager
         CustomRoles.Gangster => new Gangster(),
         CustomRoles.Godfather => new Godfather(),
         CustomRoles.Greedy => new Greedy(),
-        //CustomRoles.Hangman => new Hangman(),
+        CustomRoles.Hangman => new Hangman(),
         //CustomRoles.Hitman => new Hitman(),
         //CustomRoles.Inhibitor => new Inhibitor(),
         //CustomRoles.Instigator => new Instigator(),

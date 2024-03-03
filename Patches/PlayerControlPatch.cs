@@ -438,9 +438,6 @@ class CheckMurderPatch
                 case CustomRoles.Reverie:
                     Reverie.OnCheckMurder(killer, target);
                     break;
-                case CustomRoles.Hangman:
-                    if (!Hangman.OnCheckMurder(killer, target)) return false;
-                    break;
                 case CustomRoles.Swooper:
                     if (!Swooper.OnCheckMurder(killer, target)) return false;
                     break;
@@ -1469,7 +1466,7 @@ public static class CheckShapeShiftPatch
         var role = shapeshifter.GetCustomRole();
 
         // Always show
-        if (role is CustomRoles.ShapeshifterTOHE or CustomRoles.Shapeshifter or CustomRoles.ShapeMaster) return true;
+        if (role is CustomRoles.ShapeshifterTOHE or CustomRoles.Shapeshifter or CustomRoles.ShapeMaster or CustomRoles.Hangman) return true;
 
         // Check Sniper settings conditions
         if (role is CustomRoles.Sniper && Sniper.ShowShapeshiftAnimations) return true;

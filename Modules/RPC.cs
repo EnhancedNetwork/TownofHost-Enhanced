@@ -1157,9 +1157,6 @@ internal static class RPC
             case CustomRoles.Psychic:
                 Psychic.Add(targetId);
                 break;
-            case CustomRoles.Hangman:
-                Hangman.Add(targetId);
-                break;
             case CustomRoles.Judge:
                 Judge.Add(targetId);
                 break;
