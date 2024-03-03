@@ -110,7 +110,6 @@ internal class ChangeRoleSettings
             Main.BardCreations = 0;
             Main.MeetingsPassed = 0;
             Main.DovesOfNeaceNumOfUsed = [];
-            Main.GodfatherTarget = [];
             Main.ShamanTarget = byte.MaxValue;
             Main.ShamanTargetChoosen = false;
             Main.MeetingIsStarted = false;

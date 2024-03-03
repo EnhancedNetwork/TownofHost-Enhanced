@@ -230,7 +230,7 @@ internal class Coroner : RoleBase
         }
     }
 
-    private void CheckDeadBody(PlayerControl target)
+    private void CheckDeadBody(PlayerControl target, PlayerControl killer)
     {
         if (!ArrowsPointingToDeadBody.GetBool()) return;
 

@@ -12,7 +12,7 @@ namespace TOHE.Roles.Impostor;
 
 internal class Gangster : RoleBase
 {
-    private static readonly int Id = 3300;
+    private const int Id = 3300;
     private static List<byte> playerIdList = [];
 
     public static bool On;

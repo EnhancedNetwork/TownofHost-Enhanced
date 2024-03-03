@@ -499,8 +499,6 @@ public static class Options
     public static OptionItem UnderdogMaximumPlayersNeededToKill;
     public static OptionItem UnderdogKillCooldown;
 
-    public static OptionItem GodfatherChangeOpt;
-
     public static OptionItem VindicatorAdditionalVote;
     public static OptionItem VindicatorHideVote;
 
@@ -687,11 +685,6 @@ public static class Options
         "SidekickCountMode.Jackal",
         "SidekickCountMode.None",
         "SidekickCountMode.Original",
-    ];
-    public static readonly string[] GodfatherChangeMode =
-    [
-        "GodfatherCount.Refugee",
-        "GodfatherCount.Madmate"
     ];
     public static readonly string[] suffixModes =
     [
@@ -1114,9 +1107,7 @@ public static class Options
         /*
          * Godfather
          */
-        SetupRoleOptions(3400, TabGroup.ImpostorRoles, CustomRoles.Godfather);
-        GodfatherChangeOpt = StringOptionItem.Create(3402, "GodfatherTargetCountMode", GodfatherChangeMode, 0, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Godfather]);
+        Godfather.SetupCustomOption();
 
         /*
          * Kamikaze

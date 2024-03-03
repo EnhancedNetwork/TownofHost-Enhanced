@@ -1263,12 +1263,6 @@ class MurderPlayerPatch
         if (Pelican.IsEnable && target.Is(CustomRoles.Pelican))
             Pelican.OnPelicanDied(target.PlayerId);
 
-        if (Main.GodfatherTarget.Contains(target.PlayerId) && !(killer.GetCustomRole().IsImpostor() || killer.GetCustomRole().IsMadmate() || killer.Is(CustomRoles.Madmate)))
-        {
-            if (Options.GodfatherChangeOpt.GetValue() == 0) killer.RpcSetCustomRole(CustomRoles.Refugee);
-            else killer.RpcSetCustomRole(CustomRoles.Madmate);
-        }
-
         if (Sniper.IsEnable)
         {
             if (Sniper.TryGetSniper(target.PlayerId, ref killer))
@@ -1306,7 +1300,7 @@ class MurderPlayerPatch
         killerRoleClass.OnMurder(killer, target);
 
         // Check dead body for others roles
-        CustomRoleManager.CheckDeadBody(target);
+        CustomRoleManager.CheckDeadBody(target, killer);
 
 
 
@@ -2249,7 +2243,6 @@ class ReportDeadBodyPatch
         Main.MadGrenadierBlinding.Clear();
         Main.Lighter.Clear();
         Main.AllKillers.Clear();
-        Main.GodfatherTarget.Clear();
         Solsticer.patched = false;
 
         if (Options.BombsClearAfterMeeting.GetBool())

@@ -53,7 +53,7 @@ public static class CustomRoleManager
         CustomRoles.EvilTracker => new EvilTracker(),
         CustomRoles.Fireworker => new Fireworker(),
         CustomRoles.Gangster => new Gangster(),
-        //CustomRoles.Godfather => new Godfather(),
+        CustomRoles.Godfather => new Godfather(),
         //CustomRoles.Greedy => new Greedy(),
         //CustomRoles.Hangman => new Hangman(),
         //CustomRoles.Hitman => new Hitman(),
@@ -296,17 +296,17 @@ public static class CustomRoleManager
         _ => new VanillaRole(),
     };
 
-    public static HashSet<Action<PlayerControl>> CheckDeadBodyOthers = [];
+    public static HashSet<Action<PlayerControl, PlayerControl>> CheckDeadBodyOthers = [];
     /// <summary>
     /// If the role need check a present dead body
     /// </summary>
-    public static void CheckDeadBody(PlayerControl deadBody)
+    public static void CheckDeadBody(PlayerControl deadBody, PlayerControl killer)
     {
         if (CheckDeadBodyOthers.Count <= 0) return;
         //Execute other viewpoint processing if any
         foreach (var checkDeadBodyOthers in CheckDeadBodyOthers.ToArray())
         {
-            checkDeadBodyOthers(deadBody);
+            checkDeadBodyOthers(deadBody, killer);
         }
     }
 
