@@ -183,6 +183,16 @@ public static class Utils
             return null;
         }
     }
+
+    public static bool AnySabotageIsActive()
+        => IsActive(SystemTypes.Electrical)
+           || IsActive(SystemTypes.Comms)
+           || IsActive(SystemTypes.MushroomMixupSabotage)
+           || IsActive(SystemTypes.Laboratory)
+           || IsActive(SystemTypes.LifeSupp)
+           || IsActive(SystemTypes.Reactor)
+           || IsActive(SystemTypes.HeliSabotage);
+
     public static bool IsActive(SystemTypes type)
     {
         if (GameStates.IsHideNSeek) return false;
@@ -783,8 +793,6 @@ public static class Utils
                     var draw = GetDrawPlayerCount(playerId, out var _);
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Revolutionist).ShadeColor(0.25f), $"({draw.Item1}/{draw.Item2})"));
                     break;
-                case CustomRoles.Gangster:
-                    ProgressText.Append(Gangster.GetRecruitLimit(playerId));
                     break;
                 case CustomRoles.Jinx:
                     int JinxSpellCount = Main.JinxSpellCount[playerId];
@@ -1873,15 +1881,6 @@ public static class Utils
                 {
                     switch (seerRole)
                     {
-                        case CustomRoles.BountyHunter:
-                            SelfSuffix.Append(BountyHunter.GetTargetText(seer, false));
-                            SelfSuffix.Append(BountyHunter.GetTargetArrow(seer));
-                            break;
-
-                        case CustomRoles.Fireworker:
-                            SelfSuffix.Append(Fireworker.GetStateText(seer));
-                            break;
-
                         case CustomRoles.Tracefinder:
                             SelfSuffix.Append(Tracefinder.GetTargetArrow(seer));
                             break;

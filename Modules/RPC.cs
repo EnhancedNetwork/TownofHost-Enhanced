@@ -985,9 +985,6 @@ internal static class RPC
             case CustomRoles.Mercenary:
                 Mercenary.Add(targetId);
                 break;
-            case CustomRoles.Fireworker:
-                Fireworker.Add(targetId);
-                break;
             case CustomRoles.TimeThief:
                 TimeThief.Add(targetId);
                 break;
@@ -1087,9 +1084,6 @@ internal static class RPC
             case CustomRoles.Pursuer:
                 Pursuer.Add(targetId);
                 break;
-            case CustomRoles.Gangster:
-                Gangster.Add(targetId);
-                break;
             case CustomRoles.PotionMaster:
                 PotionMaster.Add(targetId);
                 break;
@@ -1104,9 +1098,6 @@ internal static class RPC
                 break;
             case CustomRoles.Penguin:
                 Penguin.Add(targetId);
-                break;
-            case CustomRoles.Greedy:
-                Greedy.Add(targetId);
                 break;
             case CustomRoles.Collector:
                 Collector.Add(targetId);
@@ -1123,9 +1114,6 @@ internal static class RPC
                 break;
             case CustomRoles.Juggernaut:
                 Juggernaut.Add(targetId);
-                break;
-            case CustomRoles.Hangman:
-                Hangman.Add(targetId);
                 break;
             case CustomRoles.Tracefinder:
                 Tracefinder.Add(targetId);

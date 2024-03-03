@@ -64,9 +64,10 @@ internal class CopyCat : RoleBase
             if (pc == null) continue;
             ////////////           /*remove the settings for current role*/             /////////////////////
             
-            if (pc.GetCustomRole() != CustomRoles.Sidekick)
+            var pcRole = pc.GetCustomRole();
+            if (pcRole != CustomRoles.Sidekick || pcRole != CustomRoles.Retributionist)
             {
-                if (pc.GetCustomRole() != CustomRoles.CopyCat)
+                if (pcRole != CustomRoles.CopyCat)
                 {
                     pc.GetRoleClass()?.Remove(pc.PlayerId);
                 }

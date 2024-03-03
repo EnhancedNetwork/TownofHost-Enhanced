@@ -125,10 +125,6 @@ class CheckForEndVotingPatch
                             case CustomRoles.SoulCollector:
                                 SoulCollector.OnVote(pc, voteTarget);
                                 break;
-                            case CustomRoles.Godfather:
-                                if (pc == null || voteTarget == null) break;
-                                Main.GodfatherTarget.Add(voteTarget.PlayerId);
-                                break;
                         }
                         pc.GetRoleClass()?.OnVote(pc, voteTarget); // Role has voted
                         voteTarget.GetRoleClass()?.OnVoted(voteTarget, pc); // Role is voted

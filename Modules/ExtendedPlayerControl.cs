@@ -480,12 +480,9 @@ static class ExtendedPlayerControl
             //FFA
             CustomRoles.Killer => pc.IsAlive(),
             //Standard
-            CustomRoles.Fireworker => Fireworker.CanUseKillButton(pc),
             CustomRoles.Nemesis => Nemesis.CanUseKillButton(pc),
             CustomRoles.Shaman => pc.IsAlive(),
             CustomRoles.Underdog => playerCount <= Options.UnderdogMaximumPlayersNeededToKill.GetInt(),
-            CustomRoles.Inhibitor => !Utils.IsActive(SystemTypes.Electrical) && !Utils.IsActive(SystemTypes.Comms) && !Utils.IsActive(SystemTypes.MushroomMixupSabotage) && !Utils.IsActive(SystemTypes.Laboratory) && !Utils.IsActive(SystemTypes.LifeSupp) && !Utils.IsActive(SystemTypes.Reactor) && !Utils.IsActive(SystemTypes.HeliSabotage),
-            CustomRoles.Saboteur => Utils.IsActive(SystemTypes.Electrical) || Utils.IsActive(SystemTypes.Comms) || Utils.IsActive(SystemTypes.MushroomMixupSabotage) || Utils.IsActive(SystemTypes.Laboratory) || Utils.IsActive(SystemTypes.LifeSupp) || Utils.IsActive(SystemTypes.Reactor) || Utils.IsActive(SystemTypes.HeliSabotage),
             CustomRoles.Sniper => Sniper.CanUseKillButton(pc),
             CustomRoles.Pelican => pc.IsAlive(),
             CustomRoles.Mastermind => pc.IsAlive(),
@@ -550,7 +547,7 @@ static class ExtendedPlayerControl
             CustomRoles.Doppelganger => pc.IsAlive(),
             CustomRoles.Quizmaster => Quizmaster.CanUseKillButton(pc),
 
-            _ => pc.Is(CustomRoleTypes.Impostor),
+            _ => false,
         };
     }
     public static bool HasKillButton(PlayerControl pc = null)
@@ -654,7 +651,7 @@ static class ExtendedPlayerControl
             //FFA
             CustomRoles.Killer => true,
 
-            _ => pc.Is(CustomRoleTypes.Impostor),
+            _ => false,
         };
     }
     public static bool CanUseSabotage(this PlayerControl pc) // NOTE: THIS IS FOR THE HUD FOR MODDED CLIENTS, THIS DOES NOT DETERMINE WHETHER A ROLE CAN SABOTAGE
@@ -777,13 +774,7 @@ static class ExtendedPlayerControl
                 Pickpocket.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Arsonist:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Options.ArsonistCooldown.GetFloat(); //アーソニストはアーソニストのキルクールに。
-                break;
-            case CustomRoles.Inhibitor:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Options.InhibitorCD.GetFloat(); //アーソニストはアーソニストのキルクールに。
-                break;
-            case CustomRoles.Saboteur:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Options.SaboteurCD.GetFloat(); //アーソニストはアーソニストのキルクールに。
+                Main.AllPlayerKillCooldown[player.PlayerId] = Options.ArsonistCooldown.GetFloat();
                 break;
             case CustomRoles.Mastermind:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Mastermind.KillCooldown.GetFloat();
@@ -897,9 +888,6 @@ static class ExtendedPlayerControl
             case CustomRoles.DarkHide:
                 DarkHide.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.Greedy:
-                Greedy.SetKillCooldown(player.PlayerId);
-                break;
             case CustomRoles.QuickShooter:
                 QuickShooter.SetKillCooldown(player.PlayerId);
                 break;
@@ -934,9 +922,6 @@ static class ExtendedPlayerControl
             case CustomRoles.RuthlessRomantic:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Romantic.RuthlessKCD.GetFloat();
                 break;
-            case CustomRoles.Gangster:
-                Gangster.SetKillCooldown(player.PlayerId);
-                break;
             case CustomRoles.Succubus:
                 Succubus.SetKillCooldown(player.PlayerId);
                 break;
@@ -946,9 +931,6 @@ static class ExtendedPlayerControl
             case CustomRoles.Admirer:
                 Admirer.SetKillCooldown(player.PlayerId);
                 break;
-        /*    case CustomRoles.Imitator:
-                Imitator.SetKillCooldown(player.PlayerId);
-                break; */
             case CustomRoles.Infectious:
                 Infectious.SetKillCooldown(player.PlayerId);
                 break;

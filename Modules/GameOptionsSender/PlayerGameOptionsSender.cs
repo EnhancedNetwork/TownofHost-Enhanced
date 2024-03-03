@@ -244,10 +244,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Bandit:
                 Bandit.ApplyGameOptions(opt);
                 break;
-     /*       case CustomRoles.Flashbang:
-                AURoleOptions.ShapeshifterCooldown = Options.FlashbangSkillCooldown.GetFloat();
-                AURoleOptions.ShapeshifterDuration = Options.FlashbangSkillDuration.GetFloat();
-                break; */
             case CustomRoles.Penguin:
                 Penguin.ApplyGameOptions();
                 break;
@@ -351,9 +347,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
             case CustomRoles.Ninja:
                 Ninja.ApplyGameOptions();
-                break;
-            case CustomRoles.Hangman:
-                Hangman.ApplyGameOptions();
                 break;
             case CustomRoles.Sunnyboy:
                 AURoleOptions.ScientistCooldown = 0f;

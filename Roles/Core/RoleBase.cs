@@ -39,7 +39,7 @@ public abstract class RoleBase
     /// <summary>
     /// A generic method to set if a impostor/SS base may vent.
     /// </summary>
-    public virtual bool CanUseImpostorVentButton(PlayerControl pc) => pc.IsAlive() && pc.GetCustomRole().GetRoleTypes() is RoleTypes.Impostor or RoleTypes.Shapeshifter;
+    public virtual bool CanUseImpostorVentButton(PlayerControl pc) => pc.Is(CustomRoleTypes.Impostor) && pc.IsAlive();
 
     /// <summary>
     /// A generic method to set if the role can use sabotage.
@@ -242,10 +242,10 @@ public abstract class RoleBase
     /// <summary>
     /// Set text for Kill/Shapeshift/Report/Vent/Protect button
     /// </summary>
-    public virtual void SetAbilityButtonText(HudManager hud, byte id) => hud.KillButton?.OverrideText(Translator.GetString("KillButtonText"));
-    public virtual Sprite KillButtonSprite { get; }
+    public virtual void SetAbilityButtonText(HudManager hud, byte playerId) => hud.KillButton?.OverrideText(Translator.GetString("KillButtonText"));
+    public virtual Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => null;
+    public virtual Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => null;
     public virtual Sprite ImpostorVentButtonSprite { get; }
-    public virtual Sprite AbilityButtonSprite { get; }
     public virtual Sprite ReportButtonSprite { get; }
     public virtual string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;
     public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;

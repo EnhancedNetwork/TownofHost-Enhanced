@@ -96,7 +96,6 @@ internal class ChangeRoleSettings
             Main.MadmateNum = 0;
             Main.BardCreations = 0;
             Main.MeetingsPassed = 0;
-            Main.GodfatherTarget = [];
             Main.ShamanTarget = byte.MaxValue;
             Main.ShamanTargetChoosen = false;
             Main.MeetingIsStarted = false;
@@ -190,7 +189,6 @@ internal class ChangeRoleSettings
 
             FallFromLadder.Reset();
             Mercenary.Init();
-            Fireworker.Init();
             Sniper.Init();
             Undertaker.Init();
             TimeThief.Init();
@@ -220,11 +218,9 @@ internal class ChangeRoleSettings
             Pelican.Init();
             Pursuer.Init();
             Diseased.Init();
-            Gangster.Init();
             Gamer.Init();
             Lightning.Init();
             DarkHide.Init();
-            Greedy.Init();
             Collector.Init();
             Clumsy.Init();
             Taskinator.Init();
@@ -239,7 +235,6 @@ internal class ChangeRoleSettings
             Bait.Init();
             Investigator.Init();
             Pickpocket.Init();
-            Hangman.Init();
             Swooper.Init();
             Hawk.Init();
             Bloodmoon.Init();
@@ -547,15 +542,9 @@ internal class SelectRolesPatch
                     case CustomRoles.HexMaster:
                         HexMaster.Add(pc.PlayerId);
                         break;
-                    //case CustomRoles.Occultist:
-                    //    Occultist.Add(pc.PlayerId);
-                    //    break;
                     case CustomRoles.Warlock:
                         Main.CursedPlayers.Add(pc.PlayerId, null);
                         Main.isCurseAndKill.Add(pc.PlayerId, false);
-                        break;
-                    case CustomRoles.Fireworker:
-                        Fireworker.Add(pc.PlayerId);
                         break;
                     case CustomRoles.TimeThief:
                         TimeThief.Add(pc.PlayerId);
@@ -575,9 +564,6 @@ internal class SelectRolesPatch
                     case CustomRoles.RiftMaker:
                         RiftMaker.Add(pc.PlayerId);
                         break;
-               /*     case CustomRoles.Mare:
-                        Mare.Add(pc.PlayerId);
-                        break; */
                     case CustomRoles.Vampire:
                         Vampire.Add(pc.PlayerId);
                         break;
@@ -661,9 +647,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Pursuer:
                         Pursuer.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Gangster:
-                        Gangster.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.PotionMaster:
                         PotionMaster.Add(pc.PlayerId);
                         break;
@@ -678,9 +661,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Penguin:
                         Penguin.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Greedy:
-                        Greedy.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Collector:
                         Collector.Add(pc.PlayerId);
@@ -697,9 +677,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Juggernaut:
                         Juggernaut.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Hangman:
-                        Hangman.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Tracefinder:
                         Tracefinder.Add(pc.PlayerId);

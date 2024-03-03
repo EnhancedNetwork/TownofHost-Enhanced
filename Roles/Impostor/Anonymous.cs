@@ -17,6 +17,8 @@ internal class Anonymous : RoleBase
     public override bool IsEnable => On;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
 
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Hack");
+
     private static OptionItem HackLimitOpt;
     private static OptionItem KillCooldown;
 

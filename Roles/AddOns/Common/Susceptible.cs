@@ -131,7 +131,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Bombed:
-                    if (!Bomber.On && !Burst.IsEnable && !Trapster.On && !Fireworker.IsEnable)
+                    if (!Bomber.On && !Burst.IsEnable && !Trapster.On && !Fireworker.On)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }
@@ -252,7 +252,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.LossOfHead:
-                    if (!Hangman.IsEnable)
+                    if (!Hangman.On)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }
