@@ -153,9 +153,11 @@ internal class CopyCat : RoleBase
                     Investigator.Remove(pc.PlayerId);
                     break;
             }
-            if (pc.GetCustomRole() != CustomRoles.Sidekick)
+
+            var pcRole = pc.GetCustomRole();
+            if (pcRole != CustomRoles.Sidekick || pcRole != CustomRoles.Retributionist)
             {
-                if (pc.GetCustomRole() != CustomRoles.CopyCat)
+                if (pcRole != CustomRoles.CopyCat)
                 {
                     pc.GetRoleClass()?.Remove(pc.PlayerId);
                 }
