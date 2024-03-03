@@ -129,7 +129,9 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Phantom:
             case CustomRoles.Crewpostor:
             case CustomRoles.Taskinator:
-          //  case CustomRoles.Jester:
+                //  case CustomRoles.Jester:
+                AURoleOptions.EngineerCooldown = 0f;
+                AURoleOptions.EngineerInVentMaxTime = 0f;
                 break;
             case CustomRoles.Alchemist:
                 AURoleOptions.EngineerCooldown = Alchemist.VentCooldown.GetFloat();
