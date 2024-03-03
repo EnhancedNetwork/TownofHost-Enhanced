@@ -160,7 +160,11 @@ internal class Fireworker : RoleBase
                         Main.PlayerStates[shapeshifterId].deathReason = PlayerState.DeathReason.Misfire;
                         shapeshifter.RpcMurderPlayerV3(shapeshifter);
                     }
-                    shapeshifter.MarkDirtySettings();
+
+                    if (shapeshiftIsHidden)
+                        shapeshifter.SyncSettings();
+                    else
+                        shapeshifter.MarkDirtySettings();
                 }
                 state[shapeshifterId] = FireworkerState.FireEnd;
                 break;
