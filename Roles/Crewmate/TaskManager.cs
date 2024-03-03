@@ -22,7 +22,7 @@ namespace TOHE.Roles.Crewmate
         //==================================================================\\
         public static void SetupCustomOptions()
         {
-            SetupRoleOptions(7200, TabGroup.CrewmateRoles, CustomRoles.TaskManager);
+            SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.TaskManager);
         }
         public override void Init()
         {

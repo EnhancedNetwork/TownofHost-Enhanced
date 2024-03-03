@@ -129,6 +129,6 @@ namespace TOHE.Roles.Crewmate
             hud.ReportButton.OverrideText(GetString("ReportButtonText"));
             hud.AbilityButton.buttonLabelText.text = GetString("LighterVentButtonText");
         }
-        public override Sprite AbilityButtonSprite => CustomButton.Get("Lighter");
+        public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Lighter");
     }
 }

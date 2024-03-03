@@ -147,6 +147,6 @@ namespace TOHE.Roles.Crewmate
             ProgressText.Append(ColorString(TextColor61, $" <color=#ffffff>-</color> {Math.Round(TimeMaster.TimeMasterNumOfUsed[playerId], 1)}"));
             return ProgressText.ToString();
         }
-        public override Sprite AbilityButtonSprite => CustomButton.Get("Time Master");
+        public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Time Master");
     }
 }
