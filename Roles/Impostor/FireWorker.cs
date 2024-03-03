@@ -1,15 +1,15 @@
+using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
-using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
-public static class Fireworker
+internal class Fireworker : RoleBase
 {
-    public enum FireworkerState
+    private enum FireworkerState
     {
         Initial = 1,
         SettingFireworker = 2,
@@ -20,13 +20,18 @@ public static class Fireworker
     }
 
     private static readonly int Id = 3200;
-    public static bool IsEnable = false;
+    public static bool On;
+    public override bool IsEnable => On;
+
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => nowFireworkerCount[player.PlayerId] == 0 ? CustomButton.Get("FireworkD") : CustomButton.Get("FireworkP");
 
     private static OptionItem FireworkerCount;
     private static OptionItem FireworkerRadius;
-    public static OptionItem CanKill;
+    private static OptionItem CanKill;
 
-    public static Dictionary<byte, int> nowFireworkerCount = [];
+    private static Dictionary<byte, int> nowFireworkerCount = [];
     private static Dictionary<byte, List<Vector3>> FireworkerPosition = [];
     private static Dictionary<byte, FireworkerState> state = [];
     private static Dictionary<byte, int> FireworkerBombKill = [];
@@ -43,9 +48,9 @@ public static class Fireworker
         CanKill = BooleanOptionItem.Create(Id + 12, "CanKill", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Fireworker]);
     }
 
-    public static void Init()
+    public override void Init()
     {
-        IsEnable = false;
+        On = false;
         nowFireworkerCount = [];
         FireworkerPosition = [];
         state = [];
@@ -55,16 +60,16 @@ public static class Fireworker
         fireworkerRadius = FireworkerRadius.GetFloat();
     }
 
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         nowFireworkerCount[playerId] = fireworkerCount;
         FireworkerPosition[playerId] = [];
         state.TryAdd(playerId, FireworkerState.Initial);
         FireworkerBombKill[playerId] = 0;
-        IsEnable = true;
+        On = true;
     }
 
-    public static void SendRPC(byte playerId)
+    private static void SendRPC(byte playerId)
     {
         Logger.Info($"Player{playerId}:SendRPC", "Fireworker");
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SendFireworkerState, SendOption.Reliable, -1);
@@ -82,7 +87,12 @@ public static class Fireworker
         Logger.Info($"Player{playerId}:ReceiveRPC", "Fireworker");
     }
 
-    public static bool CanUseKillButton(PlayerControl pc)
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    {
+        AURoleOptions.ShapeshifterDuration = state[playerId] != FireworkerState.FireEnd ? 1f : 30f;
+    }
+
+    public override bool CanUseKillButton(PlayerControl pc)
     {
         if (!state.ContainsKey(pc.PlayerId) || !pc.IsAlive()) return false;
 
@@ -98,86 +108,90 @@ public static class Fireworker
         return canUse;
     }
 
-    public static void ShapeShiftState(PlayerControl pc, bool shapeshifting, bool shapeshiftIsHidden = false)
+    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
     {
         Logger.Info($"Fireworker ShapeShift", "Fireworker");
-        if (pc == null || pc.Data.IsDead || !shapeshifting || Pelican.IsEaten(pc.PlayerId) || Medic.ProtectList.Contains(pc.PlayerId)) return;
-        switch (state[pc.PlayerId])
+        if (!shapeshifting && !shapeshiftIsHidden) return;
+        if (shapeshifter == null || shapeshifter.Data.IsDead || Pelican.IsEaten(shapeshifter.PlayerId)) return;
+
+        var shapeshifterId = shapeshifter.PlayerId;
+        switch (state[shapeshifterId])
         {
             case FireworkerState.Initial:
             case FireworkerState.SettingFireworker:
                 Logger.Info("One firework set up", "Fireworker");
 
-                if (shapeshiftIsHidden)
-                    pc.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
-
-                FireworkerPosition[pc.PlayerId].Add(pc.transform.position);
-                nowFireworkerCount[pc.PlayerId]--;
-                state[pc.PlayerId] = nowFireworkerCount[pc.PlayerId] == 0
+                FireworkerPosition[shapeshifterId].Add(shapeshifter.transform.position);
+                nowFireworkerCount[shapeshifterId]--;
+                state[shapeshifterId] = nowFireworkerCount[shapeshifterId] == 0
                     ? Main.AliveImpostorCount <= 1 ? FireworkerState.ReadyFire : FireworkerState.WaitTime
                     : FireworkerState.SettingFireworker;
+
+                if (shapeshiftIsHidden)
+                    shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 break;
+
             case FireworkerState.ReadyFire:
                 Logger.Info("Blowing up fireworks", "Fireworker");
                 bool suicide = false;
-                foreach (var target in Main.AllAlivePlayerControls)
+                foreach (var player in Main.AllAlivePlayerControls)
                 {
-                    foreach (var pos in FireworkerPosition[pc.PlayerId])
+                    foreach (var pos in FireworkerPosition[shapeshifterId].ToArray())
                     {
-                        var dis = Vector2.Distance(pos, target.transform.position);
+                        var dis = Vector2.Distance(pos, player.transform.position);
                         if (dis > fireworkerRadius) continue;
 
-                        if (target == pc)
+                        if (player == shapeshifter)
                         {
-                            //自分は後回し
                             suicide = true;
                         }
                         else
                         {
-                            Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
-                            target.SetRealKiller(pc);
-                            target.RpcMurderPlayerV3(target);
-                            Medic.IsDead(target);
+                            Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
+                            player.SetRealKiller(shapeshifter);
+                            player.RpcMurderPlayerV3(player);
                         }
                     }
                 }
                 if (suicide)
                 {
                     var totalAlive = Main.AllAlivePlayerControls.Length;
-                    //自分が最後の生き残りの場合は勝利のために死なない
                     if (totalAlive != 1)
                     {
-                        Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
-                        pc.RpcMurderPlayerV3(pc);
+                        Main.PlayerStates[shapeshifterId].deathReason = PlayerState.DeathReason.Misfire;
+                        shapeshifter.RpcMurderPlayerV3(shapeshifter);
                     }
+                    shapeshifter.MarkDirtySettings();
                 }
-                state[pc.PlayerId] = FireworkerState.FireEnd;
+                state[shapeshifterId] = FireworkerState.FireEnd;
                 break;
+
             default:
                 break;
         }
-        SendRPC(pc.PlayerId);
+        SendRPC(shapeshifterId);
         Utils.NotifyRoles(ForceLoop: true);
     }
 
-    public static string GetStateText(PlayerControl pc)
+    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        string retText = "";
-        if (pc == null || !pc.IsAlive()) return retText;
-        if (!state.ContainsKey(pc.PlayerId)) return retText;
+        string retText = string.Empty;
+        var seerId = seer.PlayerId;
+        if (seer == null || !seer.IsAlive()) return retText;
+        if (!state.ContainsKey(seerId)) return retText;
 
-        if (state[pc.PlayerId] == FireworkerState.WaitTime && Main.AliveImpostorCount <= 1)
+        if (state[seer.PlayerId] == FireworkerState.WaitTime && Main.AliveImpostorCount <= 1)
         {
-            Logger.Info("爆破準備OK", "Fireworker");
-            state[pc.PlayerId] = FireworkerState.ReadyFire;
-            SendRPC(pc.PlayerId);
-            Utils.NotifyRoles(SpecifySeer: pc);
+            Logger.Info("Ready to blow up", "Fireworker");
+            state[seerId] = FireworkerState.ReadyFire;
+            SendRPC(seerId);
+            Utils.NotifyRoles(SpecifySeer: seer);
         }
-        switch (state[pc.PlayerId])
+        switch (state[seerId])
         {
             case FireworkerState.Initial:
             case FireworkerState.SettingFireworker:
-                retText = string.Format(GetString("FireworkerPutPhase"), nowFireworkerCount[pc.PlayerId]);
+                retText = string.Format(GetString("FireworkerPutPhase"), nowFireworkerCount[seerId]);
                 break;
             case FireworkerState.WaitTime:
                 retText = GetString("FireworkerWaitPhase");
@@ -189,5 +203,13 @@ public static class Fireworker
                 break;
         }
         return retText;
+    }
+
+    public override void SetAbilityButtonText(HudManager hud, byte id)
+    {
+        if (state[id] == FireworkerState.ReadyFire)
+            hud.AbilityButton.OverrideText(GetString("FireworkerExplosionButtonText"));
+        else
+            hud.AbilityButton.OverrideText(GetString("FireworkerInstallAtionButtonText"));
     }
 }

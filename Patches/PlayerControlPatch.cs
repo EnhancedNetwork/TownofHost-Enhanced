@@ -1571,11 +1571,6 @@ public static class CheckShapeShiftPatch
                 shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 return false;
 
-            case CustomRoles.Fireworker:
-                Fireworker.ShapeShiftState(shapeshifter, shapeshifting, shapeshiftIsHidden: shapeshiftIsHidden);
-                shapeshifter.RejectShapeshiftAndReset();
-                return false;
-
             case CustomRoles.Miner:
                 shapeshifter.RejectShapeshiftAndReset();
                 if (Main.LastEnteredVent.ContainsKey(shapeshifter.PlayerId))
@@ -1670,9 +1665,6 @@ class ShapeshiftPatch
                     break;
                 case CustomRoles.RiftMaker:
                     RiftMaker.OnShapeshift(shapeshifter, shapeshifting);
-                    break;
-                case CustomRoles.Fireworker:
-                    Fireworker.ShapeShiftState(shapeshifter, shapeshifting);
                     break;
                 case CustomRoles.Warlock:
                     if (Main.CursedPlayers[shapeshifter.PlayerId] != null)

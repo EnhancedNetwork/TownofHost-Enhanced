@@ -51,7 +51,7 @@ public static class CustomRoleManager
         CustomRoles.Escapist => new Escapist(),
         CustomRoles.EvilGuesser => new EvilGuesser(),
         CustomRoles.EvilTracker => new EvilTracker(),
-        //CustomRoles.Fireworker => new Fireworker(),
+        CustomRoles.Fireworker => new Fireworker(),
         //CustomRoles.Gangster => new Gangster(),
         //CustomRoles.Godfather => new Godfather(),
         //CustomRoles.Greedy => new Greedy(),

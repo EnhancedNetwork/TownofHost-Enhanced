@@ -194,7 +194,6 @@ internal class ChangeRoleSettings
 
             FallFromLadder.Reset();
             Mercenary.Init();
-            Fireworker.Init();
             Sniper.Init();
             Undertaker.Init();
             TimeThief.Init();
@@ -561,9 +560,6 @@ internal class SelectRolesPatch
                     case CustomRoles.HexMaster:
                         HexMaster.Add(pc.PlayerId);
                         break;
-                    //case CustomRoles.Occultist:
-                    //    Occultist.Add(pc.PlayerId);
-                    //    break;
                     case CustomRoles.Crusader:
                         Crusader.Add(pc.PlayerId);
                         Crusader.CrusaderLimit[pc.PlayerId] = Crusader.SkillLimitOpt.GetInt();
@@ -571,9 +567,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Warlock:
                         Main.CursedPlayers.Add(pc.PlayerId, null);
                         Main.isCurseAndKill.Add(pc.PlayerId, false);
-                        break;
-                    case CustomRoles.Fireworker:
-                        Fireworker.Add(pc.PlayerId);
                         break;
                     case CustomRoles.TimeThief:
                         TimeThief.Add(pc.PlayerId);
@@ -593,9 +586,6 @@ internal class SelectRolesPatch
                     case CustomRoles.RiftMaker:
                         RiftMaker.Add(pc.PlayerId);
                         break;
-               /*     case CustomRoles.Mare:
-                        Mare.Add(pc.PlayerId);
-                        break; */
                     case CustomRoles.Vampire:
                         Vampire.Add(pc.PlayerId);
                         break;

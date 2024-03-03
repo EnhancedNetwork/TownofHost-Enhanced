@@ -985,9 +985,6 @@ internal static class RPC
             case CustomRoles.Mercenary:
                 Mercenary.Add(targetId);
                 break;
-            case CustomRoles.Fireworker:
-                Fireworker.Add(targetId);
-                break;
             case CustomRoles.TimeThief:
                 TimeThief.Add(targetId);
                 break;

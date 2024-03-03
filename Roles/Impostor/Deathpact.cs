@@ -235,10 +235,8 @@ internal class Deathpact : RoleBase
         return false;
     }
 
-    public static bool IsInDeathpact(byte deathpact, PlayerControl target)
-    {
-        return PlayersInDeathpact.ContainsKey(deathpact) && PlayersInDeathpact[deathpact].Any(a => a.PlayerId == target.PlayerId);
-    }
+    public static bool IsInDeathpact(byte deathpactId, PlayerControl target)
+        => deathpactId != target.PlayerId && PlayersInDeathpact.TryGetValue(deathpactId, out var targets) && targets.Any(a => a.PlayerId == target.PlayerId);
 
     public static string GetDeathpactString(PlayerControl player)
     {

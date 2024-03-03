@@ -480,7 +480,6 @@ static class ExtendedPlayerControl
             //FFA
             CustomRoles.Killer => pc.IsAlive(),
             //Standard
-            CustomRoles.Fireworker => Fireworker.CanUseKillButton(pc),
             CustomRoles.Nemesis => Nemesis.CanUseKillButton(pc),
             CustomRoles.Shaman => pc.IsAlive(),
             CustomRoles.Underdog => playerCount <= Options.UnderdogMaximumPlayersNeededToKill.GetInt(),
@@ -555,7 +554,7 @@ static class ExtendedPlayerControl
             CustomRoles.Doppelganger => pc.IsAlive(),
             CustomRoles.Quizmaster => Quizmaster.CanUseKillButton(pc),
 
-            _ => pc.Is(CustomRoleTypes.Impostor),
+            _ => false,
         };
     }
     public static bool HasKillButton(PlayerControl pc = null)
@@ -660,7 +659,7 @@ static class ExtendedPlayerControl
             //FFA
             CustomRoles.Killer => true,
 
-            _ => pc.Is(CustomRoleTypes.Impostor),
+            _ => false,
         };
     }
     public static bool CanUseSabotage(this PlayerControl pc) // NOTE: THIS IS FOR THE HUD FOR MODDED CLIENTS, THIS DOES NOT DETERMINE WHETHER A ROLE CAN SABOTAGE
