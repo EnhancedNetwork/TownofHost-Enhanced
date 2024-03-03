@@ -242,7 +242,6 @@ internal class ChangeRoleSettings
             Gamer.Init();
             Lightning.Init();
             DarkHide.Init();
-            Greedy.Init();
             Observer.Init();
             Collector.Init();
             Clumsy.Init();
@@ -743,9 +742,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Penguin:
                         Penguin.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Greedy:
-                        Greedy.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Collector:
                         Collector.Add(pc.PlayerId);

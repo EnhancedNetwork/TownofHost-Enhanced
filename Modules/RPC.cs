@@ -1135,9 +1135,6 @@ internal static class RPC
             case CustomRoles.Penguin:
                 Penguin.Add(targetId);
                 break;
-            case CustomRoles.Greedy:
-                Greedy.Add(targetId);
-                break;
             case CustomRoles.Collector:
                 Collector.Add(targetId);
                 break;

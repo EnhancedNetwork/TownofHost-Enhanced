@@ -426,9 +426,6 @@ class CheckMurderPatch
                     if (Lightning.OnCheckMurderAsKiller(killer, target))
                         return false;
                     break;
-                case CustomRoles.Greedy:
-                    Greedy.OnCheckMurder(killer);
-                    break;
                 case CustomRoles.QuickShooter:
                     QuickShooter.QuickShooterKill(killer);
                     break;
@@ -2279,7 +2276,6 @@ class ReportDeadBodyPatch
         if (Hawk.IsEnable) Hawk.OnReportDeadBody();
         if (Tracefinder.IsEnable) Tracefinder.OnReportDeadBody();
         if (Judge.IsEnable) Judge.OnReportDeadBody();
-        if (Greedy.IsEnable) Greedy.OnReportDeadBody();
         if (Tracker.IsEnable) Tracker.OnReportDeadBody();
         if (Oracle.IsEnable) Oracle.OnReportDeadBody();
         if (Inspector.IsEnable) Inspector.OnReportDeadBody();

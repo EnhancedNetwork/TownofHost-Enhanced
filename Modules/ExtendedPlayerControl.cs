@@ -926,9 +926,6 @@ static class ExtendedPlayerControl
             case CustomRoles.DarkHide:
                 DarkHide.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.Greedy:
-                Greedy.SetKillCooldown(player.PlayerId);
-                break;
             case CustomRoles.QuickShooter:
                 QuickShooter.SetKillCooldown(player.PlayerId);
                 break;
