@@ -7,6 +7,7 @@ using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Utils;
 using static TOHE.Translator;
+using static TOHE.MeetingHudStartPatch;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -158,5 +159,14 @@ internal class Mediumshiper : RoleBase
         ProgressText.Append(ColorString(TextColor7, $"({Completed7}/{taskState7.AllTasksCount})"));
         ProgressText.Append(ColorString(TextColor71, $" <color=#ffffff>-</color> {Math.Round(Mediumshiper.ContactLimit[playerId], 1)}"));
         return ProgressText.ToString();
+    }
+    public override void OnMeetingHudStart(PlayerControl pc)
+    {
+        //self 
+        if (Mediumshiper.ContactPlayer.ContainsValue(pc.PlayerId))
+            AddMsg(string.Format(GetString("MediumshipNotifySelf"), Main.AllPlayerNames[Mediumshiper.ContactPlayer.Where(x => x.Value == pc.PlayerId).FirstOrDefault().Key], Mediumshiper.ContactLimit[pc.PlayerId]), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mediumshiper), GetString("MediumshipTitle")));
+        //others
+        if (Mediumshiper.ContactPlayer.ContainsKey(pc.PlayerId) && (!Mediumshiper.OnlyReceiveMsgFromCrew.GetBool() || pc.GetCustomRole().IsCrewmate()))
+            AddMsg(string.Format(GetString("MediumshipNotifyTarget"), Main.AllPlayerNames[Mediumshiper.ContactPlayer[pc.PlayerId]]), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mediumshiper), GetString("MediumshipTitle")));
     }
 }

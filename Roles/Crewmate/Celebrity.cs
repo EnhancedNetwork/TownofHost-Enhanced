@@ -62,13 +62,13 @@ namespace TOHE.Roles.Crewmate
                     Celebrity.CelebrityDead.Add(target.PlayerId);
             }
         }
-        public override void OnMeetingHudStart(PlayerControl pc)
+        public override void OnMeetingHudStart(PlayerControl targets)
         {
             foreach (var csId in Celebrity.CelebrityDead)
             {
-                if (!Celebrity.ImpKnowCelebrityDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
-                if (!Celebrity.NeutralKnowCelebrityDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
-                AddMsg(string.Format(GetString("CelebrityDead"), Main.AllPlayerNames[csId]), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Celebrity), GetString("CelebrityNewsTitle")));
+                if (!Celebrity.ImpKnowCelebrityDead.GetBool() && targets.GetCustomRole().IsImpostor()) continue;
+                if (!Celebrity.NeutralKnowCelebrityDead.GetBool() && targets.GetCustomRole().IsNeutral()) continue;
+                AddMsg(string.Format(GetString("CelebrityDead"), Main.AllPlayerNames[csId]), targets.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Celebrity), GetString("CelebrityNewsTitle")));
             }
         }
         public override void MeetingHudClear()
