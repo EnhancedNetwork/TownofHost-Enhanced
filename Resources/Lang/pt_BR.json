@@ -2539,7 +2539,7 @@
   "PVP.ATK": "Ataque",
   "PVP.DF": "Defendendo",
   "PVP.RCO": "Recuperando",
-  "SettingsAreLoading": "<b>Loading\nsettings...</b>",
+  "SettingsAreLoading": "<b>Carregando configurações...</b>",
   "EAC.CheatDetected.HighLevel": "Aviso: EAC detectou altos níveis de trapaças.",
   "EAC.CheatDetected.LowLevel": "Aviso: EAC detectou baixo nível de trapaças. Um dos jogadores está hackeando.",
   "ExiledJester": "Você foi enganado!\n{0} era o {1} rindo da maneira que enganou vocês.\nGG!",
