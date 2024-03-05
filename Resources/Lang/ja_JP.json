@@ -807,7 +807,7 @@
   "LurkerInfoLong": "(インポスター):\nラーカーとして、クールダウンを一定の秒数短縮するためにベントに入ることができます。キルした後、クールダウンは元の値にリセットされます。",
   "ConvictInfoLong": "(マッドメイツ):\nコンビクトとして、元々はエグゼキューショナーまたは弁護士でした。あなたのターゲットは殺され、今はインポスターの仕事をしています。",
   "VisionaryInfoLong": "(インポスター):\nビジョナリーとして、会議中に生存プレイヤーの陣営を見ることができます。以下の情報がプレイヤーに表示されます：\n\n- 赤い名前はインポスターを示します。\n- シアンの名前はクルーメイトを示します。\n- グレーの名前はニュートラルを示します。",
-  "PlagueDoctorInfoLong": "(中立):\n(TOHのペスト医師)\nペストドクターの目標は、生きているすべてのプレイヤーを感染させることです。\n彼らは最初に一人のプレイヤーを感染させることから始め、その後、感染したプレイヤーの範囲内で設定された時間を過ごした人は誰でも自身が感染します。\n感染の進行は累積的であり、距離が離れたり会議後でもリセットされません。",
+  "PlagueDoctorInfoLong": "(Neutrals):\n(Plague Doctor from TOH)\nThe Plague Scientist's goal is to infect every living player.\nThey start by choosing one player to infect, after which anyone who spends a set amount of time in range of the infected player becomes infected themselves.\nInfection progress is cumulative, and does not reset with distance or after meetings.",
   "RefugeeInfoLong": "(マッドメイツ):\nリフュジーとして、アンネシアックでインポスターを思い出したか、ゴッドファーザーのターゲットを殺した殺人者でした。今はあなたの仕事はインポスターがクルーメイトを殺すのを手伝うことです。",
   "UnderdogInfoLong": "(インポスター):\nアンダードッグとして、一定数のプレイヤーが生存するまでキルできません。",
   "EvilDivinerInfoLong": "(インポスター):\nコンシリエーレとして、キルボタンを使用して他のプレイヤーの役割を明らかにすることができます。\n\n1回クリック：役割を明らかにする\n2回クリック：キル\n\n明らかにする回数が尽きた場合、キルボタンは通常通り機能します。",
