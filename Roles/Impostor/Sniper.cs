@@ -234,7 +234,7 @@ public static class Sniper
         bulletCount[sniperId]--;
 
         //命中判定はホストのみ行う
-        if (!AmongUsClient.Instance.AmHost || Pelican.IsEaten(pc.PlayerId) || Medic.ProtectList.Contains(pc.PlayerId)) return;
+        if (!AmongUsClient.Instance.AmHost || Pelican.IsEaten(pc.PlayerId)) return;
 
         sniper.RPCPlayCustomSound("AWP");
 
