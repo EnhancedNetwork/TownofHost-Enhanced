@@ -13,6 +13,8 @@ namespace TOHE.Patches
         private static string region = "";
         public static void Prefix([HarmonyArgument(0)] Activity activity)
         {
+            if (activity == null) return;
+
             var details = $"TOHE v{Main.PluginDisplayVersion}";
             activity.Details = details;
 
