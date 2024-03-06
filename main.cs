@@ -41,7 +41,7 @@ public class Main : BasePlugin
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
     public const string PluginVersion = "2024.0306.160.0006"; // YEAR.MMDD.VERSION.CANARYDEV
     public const string PluginDisplayVersion = "1.6.0 dev 6";
-    public static readonly string SupportedVersionAU = "2023.3.5";
+    public static readonly string SupportedVersionAU = "2024.3.5";
 
     /******************* Change one of the three variables to true before making a release. *******************/
     public static readonly bool Canary = false; // INACTIVE - Latest: V1.5.1 Canary 5
