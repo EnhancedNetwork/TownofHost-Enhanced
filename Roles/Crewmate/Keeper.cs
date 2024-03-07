@@ -23,7 +23,7 @@ internal class Keeper : RoleBase
 
     public static OptionItem KeeperUsesOpt;
     public static OptionItem HidesVote;
-    public static OptionItem AbilityUseGainWithEachTaskCompleted;
+    //public static OptionItem AbilityUseGainWithEachTaskCompleted;
 
     public static void SetupCustomOption()
     {

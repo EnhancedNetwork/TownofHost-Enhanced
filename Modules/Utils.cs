@@ -2310,7 +2310,6 @@ public static class Utils
 
         AntiBlackout.AfterMeetingTasks();
 
-        if (Cleanser.HasEnabled) Cleanser.AfterMeetingTasks(notifyPlayer: false);
         if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: false);
 
         foreach (var playerState in Main.PlayerStates.Values.Where(pc => pc.RoleClass.IsEnable).ToArray())

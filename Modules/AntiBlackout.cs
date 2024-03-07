@@ -235,7 +235,6 @@ public static class AntiBlackout
                 {
                     pc.GetRoleClass()?.NotifyAfterMeeting();
 
-                    if (Cleanser.HasEnabled) Cleanser.AfterMeetingTasks(notifyPlayer: true);
                     if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: true);
                 }
             }, timeNotify + 0.2f, "Notify AfterMeetingTasks");

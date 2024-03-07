@@ -29,7 +29,7 @@ static class ExtendedPlayerControl
         }
         else if (role >= CustomRoles.NotAssigned)   //500:NoSubRole 501~:SubRole 
         {
-            if (!Cleanser.CleansedCanGetAddon.GetBool() && player.Is(CustomRoles.Cleansed)) return;
+            if (Cleanser.CantGetAddon() && player.Is(CustomRoles.Cleansed)) return;
             if (role == CustomRoles.Cleansed) Main.PlayerStates[player.PlayerId].SetSubRole(role, pc: player);
             else Main.PlayerStates[player.PlayerId].SetSubRole(role);            
         }

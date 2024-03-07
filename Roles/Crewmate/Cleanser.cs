@@ -8,6 +8,7 @@ using static TOHE.Translator;
 using static TOHE.CheckForEndVotingPatch;
 
 namespace TOHE.Roles.Crewmate;
+
 internal class Cleanser : RoleBase
 {
     //===========================SETUP================================\\
@@ -19,17 +20,17 @@ internal class Cleanser : RoleBase
 
     //==================================================================\\
 
-    public static Dictionary<byte,byte> CleanserTarget = [];
-    public static Dictionary<byte, int> CleanserUses = [];
-    public static List<byte> CleansedPlayers = [];
+    private static Dictionary<byte,byte> CleanserTarget = [];
+    private static Dictionary<byte, int> CleanserUses = [];
+    private static List<byte> CleansedPlayers = [];
 
-    public static List<byte> playerIdList = [];
-    public static Dictionary<byte, bool> DidVote = [];
+    private static List<byte> playerIdList = [];
+    private static Dictionary<byte, bool> DidVote = [];
 
-    public static OptionItem CleanserUsesOpt;
-    public static OptionItem CleansedCanGetAddon;
-    public static OptionItem HidesVote;
-    public static OptionItem AbilityUseGainWithEachTaskCompleted;
+    private static OptionItem CleanserUsesOpt;
+    private static OptionItem CleansedCanGetAddon;
+    private static OptionItem HidesVote;
+    //private static OptionItem AbilityUseGainWithEachTaskCompleted;
 
     public static void SetupCustomOption()
     {
@@ -67,6 +68,7 @@ internal class Cleanser : RoleBase
         CleanserUses.Remove(playerId);
         DidVote.Remove(playerId);
     }
+    public static bool CantGetAddon() => !CleansedCanGetAddon.GetBool();
     public override bool HideVote(PlayerVoteArea ps) => CheckRole(ps.TargetPlayerId, CustomRoles.Cleanser) && Cleanser.HidesVote.GetBool() && Cleanser.CleanserUses[ps.TargetPlayerId] > 0;
     public override string GetProgressText(byte playerId, bool comms)
     {
@@ -128,40 +130,37 @@ internal class Cleanser : RoleBase
             CleanserTarget[pid] = byte.MaxValue;
         }
     }
-    public static void AfterMeetingTasks(bool notifyPlayer = false)
+    public override void NotifyAfterMeeting()
     {
-        if (notifyPlayer) 
+        foreach (var pid in CleanserTarget.Keys.ToArray())
         {
-            foreach (var pid in CleanserTarget.Keys.ToArray())
-            {
-                var targetid = CleanserTarget[pid];
-                if (targetid == byte.MaxValue) continue;
-                var targetpc = Utils.GetPlayerById(targetid);
-                if (targetpc == null) continue;
+            var targetid = CleanserTarget[pid];
+            if (targetid == byte.MaxValue) continue;
+            var targetpc = Utils.GetPlayerById(targetid);
+            if (targetpc == null) continue;
 
-                targetpc.Notify(GetString("LostAddonByCleanser"));
-            }
+            targetpc.Notify(GetString("LostAddonByCleanser"));
         }
-        else
+    }
+    public override void AfterMeetingTasks()
+    {
+        foreach (var pid in CleanserTarget.Keys.ToArray())
         {
-            foreach (var pid in CleanserTarget.Keys.ToArray())
-            {
-                DidVote[pid] = false;
-                if (pid == byte.MaxValue) continue;
-                var targetid = CleanserTarget[pid];
-                if (targetid == byte.MaxValue) continue;
-                var targetpc = Utils.GetPlayerById(targetid);
-                if (targetpc == null) continue;
-                //var allAddons = targetpc.GetCustomSubRoles();
-                targetpc.RpcSetCustomRole(CustomRoles.Cleansed);
-                Logger.Info($"Removed all the add ons of {targetpc.GetNameWithRole()}", "Cleanser");
-                //foreach (var role in allAddons)
-                //{
-                //    Main.PlayerStates[targetid].RemoveSubRole(role);
+            DidVote[pid] = false;
+            if (pid == byte.MaxValue) continue;
+            var targetid = CleanserTarget[pid];
+            if (targetid == byte.MaxValue) continue;
+            var targetpc = Utils.GetPlayerById(targetid);
+            if (targetpc == null) continue;
+            //var allAddons = targetpc.GetCustomSubRoles();
+            targetpc.RpcSetCustomRole(CustomRoles.Cleansed);
+            Logger.Info($"Removed all the add ons of {targetpc.GetNameWithRole()}", "Cleanser");
+            //foreach (var role in allAddons)
+            //{
+            //    Main.PlayerStates[targetid].RemoveSubRole(role);
 
-                //}
-            }
-            Utils.MarkEveryoneDirtySettings();
+            //}
         }
+        Utils.MarkEveryoneDirtySettings();
     }
 }
