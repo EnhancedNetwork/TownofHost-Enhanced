@@ -1,3 +1,5 @@
+using System;
+
 namespace TOHE;
 
 public class IntegerOptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue, IntegerValueRule rule, bool vanilla) : OptionItem(id, name, rule.GetNearestIndex(defaultValue), tab, isSingleValue, vanillaStr: vanilla)
@@ -8,6 +10,10 @@ public class IntegerOptionItem(int id, string name, int defaultValue, TabGroup t
     public static IntegerOptionItem Create(int id, string name, IntegerValueRule rule, int defaultValue, TabGroup tab, bool isSingleValue, bool vanillaText = false)
     {
         return new IntegerOptionItem(id, name, defaultValue, tab, isSingleValue, rule, vanillaText);
+    }
+    public static IntegerOptionItem Create(int id, Enum name, IntegerValueRule rule, int defaultValue, TabGroup tab, bool isSingleValue, bool vanillaText = false)
+    {
+        return new IntegerOptionItem(id, name.ToString(), defaultValue, tab, isSingleValue, rule, vanillaText);
     }
 
     // Getter

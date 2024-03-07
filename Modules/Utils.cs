@@ -86,11 +86,11 @@ public static class Utils
         }
     }
 
-    public static void RpcTeleport(this PlayerControl player, Vector2 location, bool isRandomSpawn = false, bool sendInfoInLogs = true)
+    public static void RpcTeleport(this PlayerControl player, Vector2 position, bool isRandomSpawn = false, bool sendInfoInLogs = true)
     {
         if (sendInfoInLogs)
         {
-            Logger.Info($" {player.GetNameWithRole().RemoveHtmlTags()} => {location}", "RpcTeleport");
+            Logger.Info($" {player.GetNameWithRole().RemoveHtmlTags()} => {position}", "RpcTeleport");
             Logger.Info($" Player Id: {player.PlayerId}", "RpcTeleport");
         }
 
@@ -127,38 +127,28 @@ public static class Utils
         }
 
         var playerNetTransform = player.NetTransform;
-        var numHost = (ushort)(playerNetTransform.lastSequenceId + 6);
-        var numLocalClient = (ushort)(playerNetTransform.lastSequenceId + 48);
-        var numGlobal = (ushort)(playerNetTransform.lastSequenceId + 100);
 
-        // Host side
-        if (AmongUsClient.Instance.AmHost)
+        if (AmongUsClient.Instance.AmClient)
         {
-            playerNetTransform.SnapTo(location, numHost);
+            playerNetTransform.SnapTo(position, (ushort)(playerNetTransform.lastSequenceId + 132));
         }
 
-        var sender = CustomRpcSender.Create("TeleportPlayer");
+        // Local Teleport For Client
+        if (PlayerControl.LocalPlayer.PlayerId != player.PlayerId)
         {
-            // Local Teleport For Client
-            if (PlayerControl.LocalPlayer.PlayerId != player.PlayerId)
-            {
-                sender.AutoStartRpc(playerNetTransform.NetId, (byte)RpcCalls.SnapTo, targetClientId: player.GetClientId());
-                {
-                    NetHelpers.WriteVector2(location, sender.stream);
-                    sender.Write(numLocalClient);
-                }
-                sender.EndRpc();
-            }
-
-            // Global Teleport
-            sender.AutoStartRpc(playerNetTransform.NetId, (byte)RpcCalls.SnapTo);
-            {
-                NetHelpers.WriteVector2(location, sender.stream);
-                sender.Write(numGlobal);
-            }
-            sender.EndRpc();
+            ushort newSidForLocal = (ushort)(playerNetTransform.lastSequenceId + 4);
+            MessageWriter localMessageWriter = AmongUsClient.Instance.StartRpcImmediately(playerNetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable, player.GetClientId());
+            NetHelpers.WriteVector2(position, localMessageWriter);
+            localMessageWriter.Write(newSidForLocal);
+            AmongUsClient.Instance.FinishRpcImmediately(localMessageWriter);
         }
-        sender.SendMessage();
+
+        // Global Teleport
+        ushort newSidForGlobal = (ushort)(playerNetTransform.lastSequenceId + 8);
+        MessageWriter globalMessageWriter = AmongUsClient.Instance.StartRpcImmediately(playerNetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable);
+        NetHelpers.WriteVector2(position, globalMessageWriter);
+        globalMessageWriter.Write(newSidForGlobal);
+        AmongUsClient.Instance.FinishRpcImmediately(globalMessageWriter);
     }
     public static void RpcRandomVentTeleport(this PlayerControl player)
     {

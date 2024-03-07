@@ -1296,11 +1296,6 @@ class MurderPlayerPatch
     {
         Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}{(target.IsProtected() ? "(Protected)" : "")}, flags : {resultFlags}", "MurderPlayer Prefix");
 
-        if (RandomSpawn.CustomNetworkTransformPatch.NumOfTP.TryGetValue(__instance.PlayerId, out var num) && num > 2)
-        {
-            RandomSpawn.CustomNetworkTransformPatch.NumOfTP[__instance.PlayerId] = 3;
-        }
-
         var isProtectedByClient = resultFlags.HasFlag(MurderResultFlags.DecisionByHost) && target.IsProtected();
         var isProtectedByHost = resultFlags.HasFlag(MurderResultFlags.FailedProtected);
         var isFailed = resultFlags.HasFlag(MurderResultFlags.FailedError);

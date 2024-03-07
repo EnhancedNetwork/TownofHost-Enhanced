@@ -244,11 +244,6 @@ public static class Options
     public static OptionItem FungleChance;
     public static OptionItem UseMoreRandomMapSelection;
 
-    public static OptionItem RandomSpawn;
-    public static OptionItem SpawnRandomLocation;
-    public static OptionItem AirshipAdditionalSpawn;
-    public static OptionItem SpawnRandomVents;
-
     public static OptionItem MapModification;
     public static OptionItem AirshipVariableElectrical;
     public static OptionItem DisableAirshipMovingPlatform;
@@ -2656,17 +2651,10 @@ public static class Options
             .SetHidden(true)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
+
         // Random Spawn
-        RandomSpawn = BooleanOptionItem.Create(60470, "RandomSpawn", false, TabGroup.GameSettings, false)
-            .HideInFFA()
-            //.SetGameMode(CustomGameMode.HidenSeekTOHE) Temporarily removed as additional changes are needed
-            .SetColor(new Color32(19, 188, 233, byte.MaxValue));
-        SpawnRandomLocation = BooleanOptionItem.Create(60471, "SpawnRandomLocation", true, TabGroup.GameSettings, false)
-            .SetParent(RandomSpawn);
-        AirshipAdditionalSpawn = BooleanOptionItem.Create(60472, "AirshipAdditionalSpawn", true, TabGroup.GameSettings, false)
-            .SetParent(SpawnRandomLocation);
-        SpawnRandomVents = BooleanOptionItem.Create(60475, "SpawnRandomVents", false, TabGroup.GameSettings, false)
-            .SetParent(RandomSpawn);
+        RandomSpawn.SetupCustomOption();
+        
         MapModification = BooleanOptionItem.Create(60480, "MapModification", false, TabGroup.GameSettings, false)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         // Airship Variable Electrical
