@@ -211,9 +211,10 @@ class RandomSpawn
             var locations = Positions.ToArray();
             if (first) return locations[0].Value;
 
-            var location = Positions.ContainsKey("Brig") && AirshipAdditionalSpawn.GetBool()
-                ? locations.ToArray().OrderBy(_ => Guid.NewGuid()).Take(1).FirstOrDefault()
-                : locations.ToArray()[0..6].OrderBy(_ => Guid.NewGuid()).Take(1).FirstOrDefault();
+            var location = locations.ToArray().OrderBy(_ => Guid.NewGuid()).Take(1).FirstOrDefault();
+            
+            if (GameStates.AirshipIsActive && !AirshipAdditionalSpawn.GetBool())
+                location = locations.ToArray()[0..6].OrderBy(_ => Guid.NewGuid()).Take(1).FirstOrDefault();
 
             return location.Value;
         }
