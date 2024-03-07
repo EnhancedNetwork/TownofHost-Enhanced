@@ -2980,12 +2980,16 @@ class CoExitVentPatch
     {
         if (GameStates.IsHideNSeek) return;
 
+        var player = __instance.myPlayer;
+        var playerRoleClass = player.GetRoleClass();
+
         if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenKCDIsUp.GetBool())
         {
-            if (__instance.myPlayer != null)
+            if (player != null)
             {
                 var now = Utils.GetTimeStamp();
-                byte playerId = __instance.myPlayer.PlayerId;
+                byte playerId = player.PlayerId;
+
                 if (FFAManager.FFAEnterVentTime.ContainsKey(playerId))
                 {
                     if (!FFAManager.FFAVentDuration.ContainsKey(playerId)) FFAManager.FFAVentDuration[playerId] = 0f;
@@ -2997,6 +3001,7 @@ class CoExitVentPatch
             }
         }
 
+        playerRoleClass?.OnExitVent(player, id);
     }
 }
 
@@ -3062,8 +3067,6 @@ class EnterVentPatch
         Alchemist.OnEnterVent(pc, __instance.Id);
         Lurker.OnEnterVent(pc);
 
-
-        
         if (pc.Is(CustomRoles.Unlucky))
         {
             Unlucky.SuicideRand(pc);

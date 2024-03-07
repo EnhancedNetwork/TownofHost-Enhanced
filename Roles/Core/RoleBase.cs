@@ -98,7 +98,7 @@ public abstract class RoleBase
     /// <summary>
     /// A generic method to activate actions once (CustomRole)player exists vent.
     /// </summary>
-    public virtual void OnExitVent(PlayerControl pc, Vent vent)
+    public virtual void OnExitVent(PlayerControl pc, int ventId)
     { }
     /// <summary>
     /// A generic method to check a Guardian Angel protecting someone.
