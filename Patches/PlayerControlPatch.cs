@@ -244,6 +244,11 @@ class CheckMurderPatch
         var killerRoleClass = killer.GetRoleClass();
         var targetRoleClass = target.GetRoleClass();
 
+        if (!killerRoleClass.ForcedCheckMurderAsKiller(killer, target))
+        {
+            return false;
+        }
+
         if (!targetRoleClass.OnCheckMurderAsTarget(killer, target))
         {
             return false;

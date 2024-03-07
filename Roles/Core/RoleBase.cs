@@ -107,6 +107,11 @@ public abstract class RoleBase
     { }
 
     /// <summary>
+    ///  When role based on Impostors need force check target
+    /// </summary>
+    public virtual bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target) => target != null && killer != null;
+
+    /// <summary>
     /// When role the target requires a kill check
     /// If the target doesn't require a kill cancel, always use "return true"
     /// </summary>
