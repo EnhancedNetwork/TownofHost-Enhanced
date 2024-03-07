@@ -228,7 +228,7 @@ public static class Pelican
 
                 var pos = GetBlackRoomPSForPelican();
                 var dis = Vector2.Distance(pos, target.GetCustomPosition());
-                if (dis < 1f) continue;
+                //if (dis < 1f) continue;
 
                 target.RpcTeleport(pos, sendInfoInLogs: false);
                 //Utils.NotifyRoles(SpecifySeer: target, ForceLoop: false);
