@@ -2,14 +2,18 @@
 using System.Linq;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.MeetingHudStartPatch;
 
 namespace TOHE.Roles.Crewmate
 {
-    public class Enigma
+    internal class Enigma : RoleBase
     {
         private static readonly int Id = 8100;
         private static List<byte> playerIdList = [];
-        public static bool IsEnable = false;
+        public static bool On = false;
+        public override bool IsEnable => On;
+        public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+
         private static Dictionary<byte, List<EnigmaClue>> ShownClues = [];
 
         public static OptionItem EnigmaClueStage1Tasks;
@@ -67,31 +71,29 @@ namespace TOHE.Roles.Crewmate
 
             OverrideTasksData.Create(Id + 20, TabGroup.CrewmateRoles, CustomRoles.Enigma);
         }
-        public static void Init()
+        public override void Init()
         {
             playerIdList = [];
-            IsEnable = false;
+            On = false;
             ShownClues = [];
             MsgToSend = [];
             MsgToSendTitle = [];
         }
-        public static void Add(byte playerId)
+        public override void Add(byte playerId)
         {
             playerIdList.Add(playerId);
-            IsEnable = true;
+            On = true;
             ShownClues.Add(playerId, []);
         }
-        public static void Remove(byte playerId)
+        public override void Remove(byte playerId)
         {
             playerIdList.Remove(playerId);
             ShownClues.Remove(playerId);
         }
 
-        public static void OnReportDeadBody(PlayerControl player, GameData.PlayerInfo targetInfo)
+        public override void OnReportDeadBody(PlayerControl player, PlayerControl target)
         {
-            if (targetInfo == null) return;
 
-            var target = Utils.GetPlayerById(targetInfo.PlayerId);
             if (target == null) return;
 
             PlayerControl killer = target.GetRealKiller();
@@ -150,6 +152,12 @@ namespace TOHE.Roles.Crewmate
             }
         }
 
+        public override void OnMeetingHudStart(PlayerControl pc)
+        {
+            if (MsgToSend.ContainsKey(pc.PlayerId))
+                AddMsg(MsgToSend[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Enigma), Enigma.MsgToSendTitle[pc.PlayerId]));
+        }
+        public override void MeetingHudClear() => MsgToSend = [];
         private abstract class EnigmaClue
         {
             public int ClueStage { get; set; }

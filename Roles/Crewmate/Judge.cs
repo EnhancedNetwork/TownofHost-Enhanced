@@ -5,17 +5,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
+using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
+using static TOHE.Utils;
 using static TOHE.Translator;
+using TOHE.Roles.AddOns.Common;
 
 namespace TOHE.Roles.Crewmate; 
 
-public static class Judge
+internal class Judge : RoleBase
 {
     private static readonly int Id = 10700;
     private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    private static bool On = false;
+    public override bool IsEnable => On;
+    public static bool HasEnabled => CustomRoles.Judge.IsClassEnable();
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
     public static OptionItem TrialLimitPerMeeting;
     private static OptionItem TryHideMsg;
@@ -49,24 +55,24 @@ public static class Judge
         TryHideMsg = BooleanOptionItem.Create(Id + 11, "JudgeTryHideMsg", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Judge])
             .SetColor(Color.green);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         TrialLimit = [];
-        IsEnable = false;
+        On = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         TrialLimit.Add(playerId, TrialLimitPerMeeting.GetInt());
-        IsEnable = true;
+        On = true;
     }
-    public static void Remove(byte playerId)
+    public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
         TrialLimit.Remove(playerId);
     }
-    public static void OnReportDeadBody()
+    public override void OnReportDeadBody(PlayerControl party, PlayerControl dinosaur)
     {
         foreach (var pid in TrialLimit.Keys)
         {
@@ -278,6 +284,10 @@ public static class Judge
         if (AmongUsClient.Instance.AmHost) TrialMsg(PlayerControl.LocalPlayer, $"/tl {playerId}", true);
         else SendRPC(playerId);
     }
+    public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
+            => seer.IsAlive() && target.IsAlive() && IsForMeeting ? ColorString(GetRoleColor(CustomRoles.Judge), target.PlayerId.ToString()) + " " + TargetPlayerName : "";
+    public override string PVANameText(PlayerVoteArea pva, PlayerControl target)
+    => !Utils.GetPlayerById(pva.TargetPlayerId).Data.IsDead && !target.Data.IsDead ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Judge), target.PlayerId.ToString()) + " " + pva.NameText.text : "";
 
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
     class StartMeetingPatch

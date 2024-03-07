@@ -1,14 +1,19 @@
-﻿using Hazel;
+﻿using AmongUs.GameOptions;
+using Hazel;
 using System.Collections.Generic;
+using TOHE.Roles.Core;
 using UnityEngine;
 
 namespace TOHE.Roles.Crewmate;
 
-public static class SwordsMan
+internal class Knight : RoleBase
 {
     private static readonly int Id = 10800;
     public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    private static bool On = false;
+    public override bool IsEnable => On;
+    public static bool HasEnabled => CustomRoles.Knight.IsClassEnable();
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     public static List<byte> killed = [];
     public static OptionItem CanVent;
@@ -16,58 +21,65 @@ public static class SwordsMan
 
     public static void SetupCustomOption()
     {
-        Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.SwordsMan);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 60f, 2.5f), 15f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.SwordsMan])
+        Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Knight);
+        KillCooldown = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 60f, 2.5f), 15f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Knight])
             .SetValueFormat(OptionFormat.Seconds);
-        CanVent = BooleanOptionItem.Create(Id + 11, "CanVent", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.SwordsMan]);
+        CanVent = BooleanOptionItem.Create(Id + 11, "CanVent", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Knight]);
     }
-    public static void Init()
+    public override void Init()
     {
         killed = [];
         playerIdList = [];
-        IsEnable = false;
+        On = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
+        On = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public static void Remove(byte playerId)
+    public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
     }
-
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = IsKilled(id) ? 300f : KillCooldown.GetFloat();
-    public static string GetKillLimit(byte id) => Utils.ColorString(!IsKilled(id) ? Utils.GetRoleColor(CustomRoles.SwordsMan).ShadeColor(0.25f) : Color.gray, !IsKilled(id) ? "(1)" : "(0)");
-    public static bool CanUseKillButton(byte playerId)
-        => !Main.PlayerStates[playerId].IsDead
-        && !IsKilled(playerId);
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => Knight.CanVent.GetBool();
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = IsKilled(id) ? 300f : KillCooldown.GetFloat();
+    public override string GetProgressText(byte id, bool comms) => Utils.ColorString(!IsKilled(id) ? Utils.GetRoleColor(CustomRoles.Knight).ShadeColor(0.25f) : Color.gray, !IsKilled(id) ? "(1)" : "(0)");
+    public override bool CanUseKillButton(PlayerControl pc)
+        => !Main.PlayerStates[pc.PlayerId].IsDead
+        && !IsKilled(pc.PlayerId);
     public static bool IsKilled(byte playerId) => killed.Contains(playerId);
 
     private static void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.SwordsMan);
+        writer.WritePacked((int)CustomRoles.Knight);
         writer.Write(playerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC(MessageReader reader)
     {
-        byte SwordsManId = reader.ReadByte();
-        if (!killed.Contains(SwordsManId))
-            killed.Add(SwordsManId);
+        byte KnightId = reader.ReadByte();
+        if (!killed.Contains(KnightId))
+            killed.Add(KnightId);
     }
-    public static bool OnCheckMurder(PlayerControl killer) => CanUseKillButton(killer.PlayerId);
-    public static void OnMurder(PlayerControl killer)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl banana)
     {
         SendRPC(killer.PlayerId);
         killed.Add(killer.PlayerId);
-        Logger.Info($"{killer.GetNameWithRole()} : " + (IsKilled(killer.PlayerId) ? "已使用击杀机会" : "未使用击杀机会"), "SwordsMan");
-        SetKillCooldown(killer.PlayerId);
+        Logger.Info($"{killer.GetNameWithRole()} : " + (IsKilled(killer.PlayerId) ? "Kill chance used" : "Kill chance not used"), "Knight");
+        killer.ResetKillCooldown();
         Utils.NotifyRoles(SpecifySeer: killer);
+        return true;
+    }
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
+    public override void SetAbilityButtonText(HudManager hud, byte id)
+    {
+        hud.SabotageButton.ToggleVisible(false);
+        hud.AbilityButton.ToggleVisible(false);
+        hud.ImpostorVentButton.ToggleVisible(false);
     }
 }

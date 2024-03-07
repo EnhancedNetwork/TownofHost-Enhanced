@@ -40,10 +40,6 @@ public static class NameColorManager
         if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
         if (seer.Is(CustomRoleTypes.Impostor) && (target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor())) color = Main.roleColors[CustomRoles.Madmate];
         if (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate) && Madmate.MadmateKnowWhosMadmate.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
-        if (seer.Is(CustomRoles.Gangster) && target.Is(CustomRoles.Madmate)) color = Main.roleColors[CustomRoles.Madmate];
-
-        // Mini
-        if (!seer.GetCustomRole().IsImpostorTeam() && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini))) color = Main.roleColors[CustomRoles.Mini];
 
         // Succubus
         if (seer.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Succubus)) color = Main.roleColors[CustomRoles.Succubus];
@@ -115,8 +111,7 @@ public static class NameColorManager
         if (seer.Is(CustomRoles.Infected) && target.Is(CustomRoles.Infectious)) color = Main.roleColors[CustomRoles.Infectious];
         if (seer.Is(CustomRoles.Infectious) && target.Is(CustomRoles.Infected)) color = Main.roleColors[CustomRoles.Infected];
         if (seer.Is(CustomRoles.Infected) && target.Is(CustomRoles.Infected) && Infectious.TargetKnowOtherTarget.GetBool()) color = Main.roleColors[CustomRoles.Infectious];
-        //Spy
-        if (seer.Is(CustomRoles.Spy) && Spy.SpyRedNameList.ContainsKey(target.PlayerId)) color = "#BA4A00";
+        
         //Investigator
         if (seer.Is(CustomRoles.Investigator))
         {
@@ -173,13 +168,13 @@ public static class NameColorManager
                 if (target.Is(CustomRoles.Refugee)) color = Main.roleColors[CustomRoles.Impostor];
                 if (target.Is(CustomRoles.Rascal)) color = Main.roleColors[CustomRoles.Impostor];
                 if (target.Is(CustomRoleTypes.Crewmate)) color = Main.roleColors[CustomRoles.Bait];
-                if (target.Is(CustomRoleTypes.Neutral)) color = Main.roleColors[CustomRoles.SwordsMan];
-                if (target.Is(CustomRoles.Charmed)) color = Main.roleColors[CustomRoles.SwordsMan];
-                if (target.Is(CustomRoles.Infected)) color = Main.roleColors[CustomRoles.SwordsMan];
-                if (target.Is(CustomRoles.Contagious)) color = Main.roleColors[CustomRoles.SwordsMan];
-                if (target.Is(CustomRoles.Egoist)) color = Main.roleColors[CustomRoles.SwordsMan];
-                if (target.Is(CustomRoles.Recruit)) color = Main.roleColors[CustomRoles.SwordsMan];
-                if (target.Is(CustomRoles.Soulless)) color = Main.roleColors[CustomRoles.SwordsMan];
+                if (target.Is(CustomRoleTypes.Neutral)) color = Main.roleColors[CustomRoles.Knight];
+                if (target.Is(CustomRoles.Charmed)) color = Main.roleColors[CustomRoles.Knight];
+                if (target.Is(CustomRoles.Infected)) color = Main.roleColors[CustomRoles.Knight];
+                if (target.Is(CustomRoles.Contagious)) color = Main.roleColors[CustomRoles.Knight];
+                if (target.Is(CustomRoles.Egoist)) color = Main.roleColors[CustomRoles.Knight];
+                if (target.Is(CustomRoles.Recruit)) color = Main.roleColors[CustomRoles.Knight];
+                if (target.Is(CustomRoles.Soulless)) color = Main.roleColors[CustomRoles.Knight];
             }
         }
 
@@ -219,14 +214,10 @@ public static class NameColorManager
             || (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoleTypes.Impostor) && Madmate.MadmateKnowWhosImp.GetBool())
             || (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool())
             || (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate) && Madmate.MadmateKnowWhosMadmate.GetBool())
-            || (target.Is(CustomRoles.SuperStar) && Options.EveryOneKnowSuperStar.GetBool())
             || (target.Is(CustomRoles.Workaholic) && Options.WorkaholicVisibleToEveryone.GetBool())
-            || (target.Is(CustomRoles.Doctor) && Options.DoctorVisibleToEveryone.GetBool())
             || (target.Is(CustomRoles.Gravestone) && Main.PlayerStates[target.Data.PlayerId].IsDead)
             || PotionMaster.IsShowTargetRole(seer, target)
-            || Mare.KnowTargetRoleColor(target, isMeeting)
-            || (target.Is(CustomRoles.NiceMini) && Mini.EveryoneCanKnowMini.GetBool())
-            || (target.Is(CustomRoles.EvilMini) && Mini.EveryoneCanKnowMini.GetBool());
+            || Mare.KnowTargetRoleColor(target, isMeeting);
     }
     public static bool TryGetData(PlayerControl seer, PlayerControl target, out string colorCode)
     {

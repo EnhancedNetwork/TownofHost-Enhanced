@@ -1,14 +1,22 @@
+using AmongUs.GameOptions;
 using Hazel;
+using MS.Internal.Xml.XPath;
 using System.Collections.Generic;
+using TOHE.Roles.Core;
 using UnityEngine;
+using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate;
 
-public static class Crusader
+internal class Crusader : RoleBase
 {
-    private static readonly int Id = 10400;
+    private const int Id = 10400;
     private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    private static bool On = false;
+    public override bool IsEnable => On;
+    public static bool HasEnabled => CustomRoles.Crusader.IsClassEnable();
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     public static Dictionary<byte, int> CrusaderLimit = [];
     public static OptionItem SkillLimitOpt;
@@ -23,25 +31,25 @@ public static class Crusader
         SkillLimitOpt = IntegerOptionItem.Create(Id + 11, "CrusaderSkillLimit", new(1, 15, 1), 5, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Crusader])
             .SetValueFormat(OptionFormat.Times);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         CrusaderLimit = [];
         CurrentKillCooldown = [];
-        IsEnable = false;
+        On = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         CrusaderLimit.Add(playerId, SkillLimitOpt.GetInt());
         CurrentKillCooldown.Add(playerId, SkillCooldown.GetFloat());
-        IsEnable = true;
+        On = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public static void Remove(byte playerId)
+    public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
         CrusaderLimit.Remove(playerId);
@@ -64,12 +72,13 @@ public static class Crusader
         else
             CrusaderLimit.Add(PlayerId, Limit);
     }
-    public static bool CanUseKillButton(byte playerId)
-        => !Main.PlayerStates[playerId].IsDead
-        && (CrusaderLimit.TryGetValue(playerId, out var x) ? x : 1) >= 1;
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(id) ? CurrentKillCooldown[id] : 300f;
-    public static string GetSkillLimit(byte playerId) => Utils.ColorString(CanUseKillButton(playerId) ? Utils.GetRoleColor(CustomRoles.Crusader).ShadeColor(0.25f) : Color.gray, CrusaderLimit.TryGetValue(playerId, out var constableLimit) ? $"({constableLimit})" : "Invalid");
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool CanUseKillButton(PlayerControl pc)
+        => !Main.PlayerStates[pc.PlayerId].IsDead
+        && (CrusaderLimit.TryGetValue(pc.PlayerId, out var x) ? x : 1) >= 1;
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(Utils.GetPlayerById(id)) ? CurrentKillCooldown[id] : 300f;
+    public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(CanUseKillButton(Utils.GetPlayerById(playerId)) ? Utils.GetRoleColor(CustomRoles.Crusader).ShadeColor(0.25f) : Color.gray, CrusaderLimit.TryGetValue(playerId, out var constableLimit) ? $"({constableLimit})" : "Invalid");
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (CrusaderLimit[killer.PlayerId] <= 0) return false;
         Main.ForCrusade.Remove(target.PlayerId);
@@ -81,5 +90,44 @@ public static class Crusader
         if (!Options.DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
         target.RpcGuardAndKill(killer);
         return false;
+    }
+    public static bool OnCheckCrusade(PlayerControl killer, PlayerControl target)
+    {
+        if (Main.ForCrusade.Contains(target.PlayerId))
+        {
+            foreach (var player in Main.AllAlivePlayerControls)
+            {
+                if (player.Is(CustomRoles.Crusader))
+                {
+                    if (!killer.Is(CustomRoles.Pestilence) && !killer.Is(CustomRoles.KillingMachine))
+                    {
+                        player.RpcMurderPlayerV3(killer);
+                        Main.ForCrusade.Remove(target.PlayerId);
+                        killer.RpcGuardAndKill(target);
+                        return false;
+                    }
+
+                    if (killer.Is(CustomRoles.Pestilence))
+                    {
+                        Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.PissedOff;
+                        killer.RpcMurderPlayerV3(player);
+                        Main.ForCrusade.Remove(target.PlayerId);
+                        target.RpcGuardAndKill(killer);
+
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+    public override void SetAbilityButtonText(HudManager hud, byte id)
+    {
+        hud.ReportButton.OverrideText(GetString("ReportButtonText"));
+        hud.KillButton.OverrideText(GetString("CrusaderKillButtonText"));
+
+        hud.SabotageButton.ToggleVisible(false);
+        hud.AbilityButton.ToggleVisible(false);
+        hud.ImpostorVentButton.ToggleVisible(false);
     }
 }

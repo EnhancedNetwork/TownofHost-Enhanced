@@ -139,16 +139,10 @@ public class Main : BasePlugin
     public static Dictionary<byte, float> AllPlayerKillCooldown = [];
     public static Dictionary<byte, Vent> LastEnteredVent = [];
     public static Dictionary<byte, Vector2> LastEnteredVentLocation = [];
-    public static Dictionary<byte, Vector2> TimeMasterBackTrack = [];
     public static Dictionary<byte, int> MasochistKillMax = [];
-    public static Dictionary<byte, int> TimeMasterNum = [];
-    public static Dictionary<byte, long> TimeMasterInProtect = [];
     //public static Dictionary<byte, long> FlashbangInProtect = [];
-    public static List<byte> CyberStarDead = [];
-    public static List<int> BombedVents = [];
     public static List<byte> WorkaholicAlive = [];
     public static List<byte> TasklessCrewmate = [];
-    public static Dictionary<byte, string> DetectiveNotify = [];
     public static Dictionary<byte, string> VirusNotify = [];
     public static List<byte> OverDeadPlayerList = [];
     public static bool DoBlockNameChange = false;
@@ -165,7 +159,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, PlayerControl> CursedPlayers = [];
     public static Dictionary<byte, bool> isCurseAndKill = [];
     public static Dictionary<byte, int> NemesisRevenged = [];
-    public static Dictionary<byte, int> RetributionistRevenged = [];
     public static Dictionary<byte, int> GuesserGuessed = [];
     public static Dictionary<(byte, byte), bool> isDoused = [];
     public static Dictionary<(byte, byte), bool> isDraw = [];
@@ -178,23 +171,13 @@ public class Main : BasePlugin
     public static Dictionary<byte, byte> SpeedBoostTarget = [];
     public static Dictionary<byte, int> ParaUsedButtonCount = [];
     public static Dictionary<byte, int> MarioVentCount = [];
-    public static Dictionary<byte, long> VeteranInProtect = [];
-    public static Dictionary<byte, float> VeteranNumOfUsed = [];
-    public static Dictionary<byte, long> GrenadierBlinding = [];
-    public static Dictionary<byte, long> MadGrenadierBlinding = [];
-    public static float BastionNumberOfAbilityUses = 0;
-    public static Dictionary<byte, float> GrenadierNumOfUsed = [];
-    public static Dictionary<byte, long> Lighter = [];
-    public static Dictionary<byte, float> LighterNumOfUsed = [];
     public static Dictionary<byte, long> AllKillers = [];
-    public static Dictionary<byte, float> TimeMasterNumOfUsed = [];
     public static Dictionary<byte, int> JinxSpellCount = [];
     public static int AliveImpostorCount;
     public static bool isCursed;
     public static Dictionary<byte, bool> CheckShapeshift = [];
     public static Dictionary<byte, byte> ShapeshiftTarget = [];
     public static Dictionary<(byte, byte), string> targetArrows = [];
-    public static Dictionary<byte, Vector2> TimeMasterLocation = [];
     public static bool VisibleTasksCount = false;
     public static string nickName = "";
     public static bool introDestroyed = false;
@@ -213,7 +196,6 @@ public class Main : BasePlugin
     public static int BardCreations = 0;
     public static int MeetingsPassed = 0;
     public static Dictionary<byte, byte> Provoked = [];
-    public static Dictionary<byte, float> DovesOfNeaceNumOfUsed = [];
     
     public static byte ShamanTarget = byte.MaxValue;
     public static bool ShamanTargetChoosen = false;
@@ -633,34 +615,34 @@ public enum CustomRoles
     Benefactor,
     Bodyguard,
     Captain,
-    CyberStar, //celebrity
+    Celebrity, 
     Chameleon,
     Cleanser,
     CopyCat,
     Coroner, 
     Crusader,
     Detective,
-    Counterfeiter, //deceiver
+    Deceiver, 
     Deputy,
     Dictator,
     Doctor,
     Enigma,
-    Divinator, //FortuneTeller
+    FortuneTeller, 
     Guardian,
     GuessMaster,
     Grenadier,
-    Inspector, //inspector
+    Inspector, 
     Investigator,
     Jailer,
     Judge,
     Keeper,
-    SwordsMan, //knight
-    Needy, //Lazy guy
+    Knight, 
+    LazyGuy, //Lazy guy
     Lighter,
     Lookout,
     Marshall,
     Mayor,
-    SabotageMaster, //Mechanic
+    Mechanic, 
     Medic,
     Mediumshiper, //medium
     Merchant,
@@ -671,10 +653,10 @@ public enum CustomRoles
     NiceMini,
     Observer,
     Oracle,
-    Overseer, //overseer
-    DovesOfNeace, //pacifist
+    Overseer, 
+    Pacifist, 
     Paranoia, //paranoid
-    ChiefOfPolice, //police commisioner
+    ChiefOfPolice, //police commisioner ///// UNUSED
     President,
     Psychic,
     Randomizer,

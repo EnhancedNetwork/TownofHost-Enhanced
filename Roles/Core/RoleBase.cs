@@ -124,9 +124,15 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// When the target role died
+    /// When the target role died by killer
     /// </summary>
     public virtual void OnTargetDead(PlayerControl killer, PlayerControl target)
+    { }
+
+    /// <summary>
+    /// Always do these tasks once the role dies
+    /// </summary>
+    public virtual void AfterPlayerDeathTask(PlayerControl target)
     { }
 
     /// <summary>
@@ -185,6 +191,23 @@ public abstract class RoleBase
     { }
 
     /// <summary>
+    /// When the meeting hud is loaded
+    /// </summary>
+    public virtual void OnMeetingHudStart(PlayerControl pc)
+    { }
+
+    /// <summary>
+    /// Clears the initial meetinghud message
+    /// </summary>
+    public virtual void MeetingHudClear()
+    { }
+
+    /// <summary>
+    /// Notify the playername for modded clients OnMeeting
+    /// </summary>
+    public virtual string PVANameText(PlayerVoteArea pva, PlayerControl target) => string.Empty;
+
+    /// <summary>
     /// Notify a specific role about something after the meeting was ended.
     /// </summary>
     public virtual void NotifyAfterMeeting()
@@ -240,8 +263,6 @@ public abstract class RoleBase
     /// <summary>
     /// Gets & Appends the role's skill limit
     /// </summary>
-    public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
-    public virtual void AppendProgressText(byte playerId, bool comms, StringBuilder ProgressText)
-    { }
+    public virtual string GetProgressText(byte PlayerId, bool comms) => string.Empty;
     public virtual int CalcVote(PlayerVoteArea PVA) => 0;
 }

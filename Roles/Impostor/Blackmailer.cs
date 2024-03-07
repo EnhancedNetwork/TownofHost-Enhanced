@@ -1,5 +1,8 @@
 using AmongUs.GameOptions;
 using System.Collections.Generic;
+using TOHE.Roles.Neutral;
+using static TOHE.MeetingHudStartPatch;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
@@ -65,4 +68,13 @@ internal class Blackmailer : RoleBase
     private static void ClearBlackmaile() => ForBlackmailer.Clear();
 
     public static bool CheckBlackmaile(PlayerControl player) => On && ForBlackmailer.Contains(player.PlayerId);
+    public override void OnMeetingHudStart(PlayerControl pc)
+    {
+        if (Blackmailer.CheckBlackmaile(pc))
+        {
+            var playername = pc.GetRealName();
+            if (Doppelganger.DoppelVictim.ContainsKey(pc.PlayerId)) playername = Doppelganger.DoppelVictim[pc.PlayerId];
+            AddMsg(string.Format(GetString("BlackmailerDead"), playername, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Blackmailer), GetString("BlackmaileKillTitle"))));
+        }
+    }
 }

@@ -220,12 +220,6 @@ public static class GuessManager
                     else pc.ShowPopUp(GetString("SolsticerGuessMax"));
                     return true;
                 }
-                if (pc.Is(CustomRoles.NiceMini) && Mini.Age < 18 && Mini.misguessed)
-                {
-                    if (!isUI) Utils.SendMessage(GetString("MiniGuessMax"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("MiniGuessMax"));
-                    return true;
-                }
                 if (pc.Is(CustomRoles.Phantom) && !Options.PhantomCanGuess.GetBool())
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
@@ -236,12 +230,6 @@ public static class GuessManager
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessWorkaholic"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessWorkaholic"));
-                    return true;
-                }
-                if (target.Is(CustomRoles.Doctor) && Options.DoctorVisibleToEveryone.GetBool() && !target.IsEvilAddons())
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessDoctor"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessDoctor"));
                     return true;
                 }
                 if (Medic.ProtectList.Contains(target.PlayerId) && !Medic.GuesserIgnoreShield.GetBool())
@@ -260,12 +248,6 @@ public static class GuessManager
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessMasochistBlocked"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessMasochistBlocked"));
-                    return true;
-                }
-                if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessMini"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessMini"));
                     return true;
                 }
                 if (pc.Is(CustomRoles.Terrorist) && !Options.TerroristCanGuess.GetBool())
@@ -290,12 +272,6 @@ public static class GuessManager
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessDisabled"));
-                    return true;
-                }
-                if (role == CustomRoles.SuperStar || target.Is(CustomRoles.SuperStar))
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessSuperStar"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessSuperStar"));
                     return true;
                 }
                 if (role == CustomRoles.Bait && target.Is(CustomRoles.Bait) && Bait.BaitNotification.GetBool())
@@ -380,12 +356,6 @@ public static class GuessManager
                 if (role == CustomRoles.GM || target.Is(CustomRoles.GM))
                 {
                     Utils.SendMessage(GetString("GuessGM"), pc.PlayerId);
-                    return true;
-                }
-                if (target.Is(CustomRoles.Snitch) && target.GetPlayerTaskState().IsTaskFinished)
-                {
-                    if (!isUI) Utils.SendMessage(GetString("EGGuessSnitchTaskDone"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("EGGuessSnitchTaskDone"));
                     return true;
                 }
 
@@ -482,12 +452,6 @@ public static class GuessManager
                        return true;
                    } */
 
-                if (target.Is(CustomRoles.Merchant) && Merchant.IsBribedKiller(pc, target))
-                {
-                    if (!isUI) Utils.SendMessage(GetString("BribedByMerchant2"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("BribedByMerchant2"));
-                    return true;
-                }
 
                 if (pc.PlayerId == target.PlayerId)
                 {

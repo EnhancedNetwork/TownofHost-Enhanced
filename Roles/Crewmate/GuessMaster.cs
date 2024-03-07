@@ -1,36 +1,44 @@
 ﻿using System.Collections.Generic;
+using TOHE.Roles.Core;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate
 {
-    public static class GuessMaster
+    internal class GuessMaster : RoleBase
     {
-        private static readonly int Id = 26800;
-        private static bool IsEnable = false;
+        //===========================SETUP================================\\
+        private const int Id = 26800;
+        private static bool On = false;
+        public override bool IsEnable => On;
+        public static bool HasEnabled => CustomRoles.GuessMaster.IsClassEnable();
+        public override CustomRoles ThisRoleBase => CustomRoles.GuessMaster;
+
+        //==================================================================\\
+
         private static HashSet<byte> playerIdList = [];
         public static void SetupCustomOption()
         {
             Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.GuessMaster);
         }
 
-        public static void Init()
+        public override void Init()
         {
-            IsEnable = false;
+            On = false;
             playerIdList = [];
         }
-        public static void Add(byte playerId)
+        public override void Add(byte playerId)
         {
-            IsEnable = true;
+            On = true;
             playerIdList.Add(playerId);
         }
-        public static void Remove(byte playerId)
+        public override void Remove(byte playerId)
         {
             playerIdList.Remove(playerId);
         }
 
         public static void OnGuess(CustomRoles role, bool isMisguess = false, PlayerControl dp = null)
         {
-            if (!IsEnable) return;
+            if (!HasEnabled) return;
             foreach (var gmID in playerIdList)
             {
                 var gmPC = Utils.GetPlayerById(gmID);

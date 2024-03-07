@@ -62,98 +62,8 @@ internal class CopyCat : RoleBase
         {
             var pc = Utils.GetPlayerById(player);
             if (pc == null) continue;
-            var role = pc.GetCustomRole();
             ////////////           /*remove the settings for current role*/             /////////////////////
             
-            
-            switch (role)
-            {
-                case CustomRoles.Cleanser:
-                    Cleanser.Remove(player);
-                    break;
-                case CustomRoles.Jailer:
-                    Jailer.Remove(pc.PlayerId);
-                    break;
-                case CustomRoles.Deputy:
-                    Deputy.Remove(player);
-                    break;
-                case CustomRoles.Inspector:
-                    Inspector.Remove(player);
-                    break;
-                case CustomRoles.Medic:
-                    Medic.Remove(player);
-                    break;
-                case CustomRoles.Mediumshiper:
-                    Mediumshiper.Remove(player);
-                    break;
-                case CustomRoles.Merchant:
-                    Merchant.Remove(player);
-                    break;
-                case CustomRoles.Oracle:
-                    Oracle.Remove(player);
-                    break;
-                case CustomRoles.Paranoia:
-                    Main.ParaUsedButtonCount.Remove(player);
-                    break;
-                case CustomRoles.Snitch:
-                    Snitch.Remove(player);
-                    break;
-                case CustomRoles.Counterfeiter:
-                    Counterfeiter.Remove(player);
-                    break;
-                case CustomRoles.SwordsMan:
-                    SwordsMan.Remove(player);
-                    break;
-                case CustomRoles.Sheriff:
-                    Sheriff.Remove(player);
-                    break;
-                case CustomRoles.Crusader:
-                    Crusader.Remove(player);
-                    break;
-                case CustomRoles.Judge:
-                    Judge.Remove(player);
-                    break;
-                case CustomRoles.Divinator:
-                    Divinator.Remove(pc.PlayerId);
-                    break;
-                case CustomRoles.Reverie:
-                    Reverie.Remove(pc.PlayerId);
-                    break;
-                case CustomRoles.Spy:
-                    Spy.Remove(pc.PlayerId);
-                    break;
-                case CustomRoles.SabotageMaster:
-                    SabotageMaster.Remove(pc.PlayerId);
-                    break;
-                case CustomRoles.Admirer:
-                    Admirer.Remove(pc.PlayerId);
-                    break;
-                case CustomRoles.Keeper:
-                    Keeper.Remove(pc.PlayerId);
-                    break;
-                case CustomRoles.GuessMaster:
-                    GuessMaster.Remove(pc.PlayerId);
-                    break;
-                case CustomRoles.Enigma:
-                    Enigma.Remove(pc.PlayerId);
-                    break;
-                case CustomRoles.Mortician:
-                    Mortician.Remove(pc.PlayerId);
-                    break;
-                case CustomRoles.Tracefinder:
-                    Tracefinder.Remove(pc.PlayerId);
-                    break;
-                case CustomRoles.Spiritualist:
-                    Spiritualist.Remove(pc.PlayerId);
-                    break;
-                case CustomRoles.Tracker:
-                    Tracker.Remove(pc.PlayerId);
-                    break;
-                case CustomRoles.Investigator:
-                    Investigator.Remove(pc.PlayerId);
-                    break;
-            }
-
             var pcRole = pc.GetCustomRole();
             if (pcRole != CustomRoles.Sidekick || pcRole != CustomRoles.Retributionist)
             {
@@ -173,7 +83,7 @@ internal class CopyCat : RoleBase
             //bcoz of vent cd
             CustomRoles.Grenadier or
             CustomRoles.Lighter or
-            CustomRoles.DovesOfNeace or
+            CustomRoles.Pacifist or
             CustomRoles.Veteran or
             CustomRoles.Bastion or
             CustomRoles.Addict or
@@ -238,7 +148,7 @@ internal class CopyCat : RoleBase
                     role = CustomRoles.Monitor;
                     break;
                 case CustomRoles.Pursuer:
-                    role = CustomRoles.Counterfeiter;
+                    role = CustomRoles.Deceiver;
                     break;
             }
         }

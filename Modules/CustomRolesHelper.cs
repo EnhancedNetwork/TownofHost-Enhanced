@@ -44,9 +44,9 @@ public static class CustomRolesHelper
                 CustomRoles.Keeper => CustomRoles.Crewmate,
                 CustomRoles.President => CustomRoles.Crewmate,
                 CustomRoles.Marshall => CustomRoles.Crewmate,
-                CustomRoles.SabotageMaster => CustomRoles.Engineer,
                 CustomRoles.Nemesis => Nemesis.LegacyNemesis.GetBool() ? CustomRoles.Shapeshifter : CustomRoles.Impostor,
                 CustomRoles.Bloodmoon => CustomRoles.GuardianAngel,
+                CustomRoles.Mechanic => CustomRoles.Engineer,
                 CustomRoles.Terrorist => CustomRoles.Engineer,
                 CustomRoles.Executioner => CustomRoles.Crewmate,
                 CustomRoles.Lawyer => CustomRoles.Crewmate,
@@ -87,14 +87,14 @@ public static class CustomRolesHelper
                 CustomRoles.CrewmateTOHE => CustomRoles.Crewmate,
                 CustomRoles.Miner => CustomRoles.Shapeshifter,
                 CustomRoles.Psychic => CustomRoles.Crewmate,
-                CustomRoles.Needy => CustomRoles.Crewmate,
+                CustomRoles.LazyGuy => CustomRoles.Crewmate,
                 CustomRoles.Twister => CustomRoles.Shapeshifter,
                 CustomRoles.SuperStar => CustomRoles.Crewmate,
                 CustomRoles.Anonymous => CustomRoles.Shapeshifter,
                 CustomRoles.Visionary => CustomRoles.Impostor,
                 CustomRoles.Ninja => CustomRoles.Shapeshifter,
             //    CustomRoles.Luckey => CustomRoles.Crewmate,
-                CustomRoles.CyberStar => CustomRoles.Crewmate,
+                CustomRoles.Celebrity => CustomRoles.Crewmate,
                 CustomRoles.TaskManager => CustomRoles.Crewmate,
                 CustomRoles.Escapist => CustomRoles.Shapeshifter,
                 CustomRoles.NiceGuesser => CustomRoles.Crewmate,
@@ -122,7 +122,7 @@ public static class CustomRolesHelper
                 CustomRoles.Gangster => CustomRoles.Impostor,
                 CustomRoles.Cleaner => CustomRoles.Impostor,
                 CustomRoles.Konan => CustomRoles.Crewmate,
-                CustomRoles.Divinator => CustomRoles.Crewmate,
+                CustomRoles.FortuneTeller => CustomRoles.Crewmate,
                 CustomRoles.Oracle => CustomRoles.Crewmate,
                 CustomRoles.Lightning => CustomRoles.Impostor,
                 CustomRoles.Greedy => CustomRoles.Impostor,
@@ -149,7 +149,7 @@ public static class CustomRolesHelper
                 CustomRoles.SoulCollector => CustomRoles.Crewmate,
                 CustomRoles.Crewpostor => CustomRoles.Engineer,
                 CustomRoles.Observer => CustomRoles.Crewmate,
-                CustomRoles.DovesOfNeace => CustomRoles.Engineer,
+                CustomRoles.Pacifist => CustomRoles.Engineer,
                 CustomRoles.Disperser => CustomRoles.Shapeshifter,
                 CustomRoles.Camouflager => CustomRoles.Shapeshifter,
                 CustomRoles.Dazzler => CustomRoles.Shapeshifter,
@@ -215,11 +215,11 @@ public static class CustomRolesHelper
             CustomRoles.Bandit => RoleTypes.Impostor,
             CustomRoles.Medusa => RoleTypes.Impostor,
             CustomRoles.Sidekick => RoleTypes.Impostor,
-            CustomRoles.SwordsMan => RoleTypes.Impostor,
+            CustomRoles.Knight => RoleTypes.Impostor,
             CustomRoles.Reverie => RoleTypes.Impostor,
             CustomRoles.Innocent => RoleTypes.Impostor,
             CustomRoles.Pelican => RoleTypes.Impostor,
-            CustomRoles.Counterfeiter => RoleTypes.Impostor,
+            CustomRoles.Deceiver => RoleTypes.Impostor,
             CustomRoles.Witness => RoleTypes.Impostor,
             CustomRoles.Pursuer => RoleTypes.Impostor,
             CustomRoles.Revolutionist => RoleTypes.Impostor,
@@ -652,7 +652,7 @@ public static class CustomRolesHelper
     public static bool IsCK(this CustomRoles role)
     {
         return role is
-            CustomRoles.SwordsMan or
+            CustomRoles.Knight or
             CustomRoles.Veteran or
             CustomRoles.Judge or
             CustomRoles.Bodyguard or
@@ -660,7 +660,7 @@ public static class CustomRolesHelper
             CustomRoles.Reverie or
             CustomRoles.Crusader or
             CustomRoles.NiceGuesser or
-            CustomRoles.Counterfeiter or
+            CustomRoles.Deceiver or
             CustomRoles.Retributionist or
             CustomRoles.Sheriff or
             CustomRoles.Vigilante or
@@ -890,13 +890,13 @@ public static class CustomRolesHelper
             CustomRoles.Infectious or
             CustomRoles.Pursuer or
             CustomRoles.Jinx or
-            CustomRoles.Counterfeiter or
+            CustomRoles.Deceiver or
             CustomRoles.Witness or
             CustomRoles.Totocalcio or
             CustomRoles.Imitator or
             CustomRoles.Overseer or
             CustomRoles.Hater or
-            CustomRoles.SwordsMan or
+            CustomRoles.Knight or
             CustomRoles.CursedSoul or
             CustomRoles.Admirer or
             CustomRoles.Refugee or
@@ -1009,12 +1009,12 @@ public static class CustomRolesHelper
             CustomRoles.CopyCat or
             CustomRoles.Reverie or
             CustomRoles.Crusader or
-            CustomRoles.Counterfeiter or
+            CustomRoles.Deceiver or
             CustomRoles.Witness or
             CustomRoles.Monarch or
             CustomRoles.Overseer or
             CustomRoles.Investigator or
-            CustomRoles.SwordsMan or
+            CustomRoles.Knight or
             CustomRoles.Admirer or
             CustomRoles.Reverie or
             CustomRoles.Deputy or
@@ -1024,7 +1024,7 @@ public static class CustomRolesHelper
     {
         return role is
             CustomRoles.Snitch or
-            CustomRoles.Divinator or
+            CustomRoles.FortuneTeller or
             CustomRoles.Marshall or
             CustomRoles.TimeManager or
             CustomRoles.Guardian or
@@ -1061,7 +1061,7 @@ public static class CustomRolesHelper
         else if ((pc.Is(CustomRoles.RuthlessRomantic) || pc.Is(CustomRoles.Romantic) || pc.Is(CustomRoles.VengefulRomantic)) && role is CustomRoles.Lovers) return false;
 
         // Checking for conflicts with roles
-        else if (pc.Is(CustomRoles.GM) || role is CustomRoles.Lovers || pc.Is(CustomRoles.Needy)) return false;
+        else if (pc.Is(CustomRoles.GM) || role is CustomRoles.Lovers || pc.Is(CustomRoles.LazyGuy)) return false;
 
         if (checkLimitAddons)
             if (pc.HasSubRole() && pc.GetCustomSubRoles().Count >= Options.NoLimitAddonsNumMax.GetInt()) return false;
@@ -1163,7 +1163,7 @@ public static class CustomRolesHelper
 
             case CustomRoles.Onbound:
                 if (pc.Is(CustomRoles.SuperStar)
-                    || (pc.Is(CustomRoles.Doctor) && Options.DoctorVisibleToEveryone.GetBool())
+                    || (pc.Is(CustomRoles.Doctor) && Doctor.DoctorVisibleToEveryone.GetBool())
                     || (pc.Is(CustomRoles.Bait) && Bait.BaitNotification.GetBool())
                     //|| pc.Is(CustomRoles.Glow) 
                     || pc.Is(CustomRoles.LastImpostor)
@@ -1179,7 +1179,7 @@ public static class CustomRolesHelper
 
             case CustomRoles.Rebound:
                 if (pc.Is(CustomRoles.SuperStar)
-                    || (pc.Is(CustomRoles.Doctor) && Options.DoctorVisibleToEveryone.GetBool())
+                    || (pc.Is(CustomRoles.Doctor) && Doctor.DoctorVisibleToEveryone.GetBool())
                     || (pc.Is(CustomRoles.Bait) && Bait.BaitNotification.GetBool())
                     //|| pc.Is(CustomRoles.Glow) 
                     || pc.Is(CustomRoles.LastImpostor)
@@ -1219,7 +1219,7 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Cyber:
-                if (pc.Is(CustomRoles.Doppelganger) || pc.Is(CustomRoles.CyberStar) || pc.Is(CustomRoles.SuperStar))
+                if (pc.Is(CustomRoles.Doppelganger) || pc.Is(CustomRoles.Celebrity) || pc.Is(CustomRoles.SuperStar))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Cyber.CrewCanBeCyber.GetBool())
                     || (pc.GetCustomRole().IsNeutral() && !Cyber.NeutralCanBeCyber.GetBool())
@@ -1244,7 +1244,7 @@ public static class CustomRolesHelper
 
             case CustomRoles.Ghoul:
                 if (pc.Is(CustomRoles.Lazy)
-                    || pc.Is(CustomRoles.Needy))
+                    || pc.Is(CustomRoles.LazyGuy))
                     return false;
                 if (pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsTasklessCrewmate() || pc.GetCustomRole().IsTaskBasedCrewmate())
                     return false;
@@ -1254,7 +1254,7 @@ public static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Lazy)
                     || pc.Is(CustomRoles.Merchant)
                     || pc.Is(CustomRoles.Alchemist)
-                    || pc.Is(CustomRoles.Needy))
+                    || pc.Is(CustomRoles.LazyGuy))
                     return false;
                 if (pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsTasklessCrewmate())
                     return false;
@@ -1557,7 +1557,7 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Nimble:
-                if ((pc.Is(CustomRoles.SwordsMan) && SwordsMan.CanVent.GetBool())
+                if ((pc.Is(CustomRoles.Knight) && Knight.CanVent.GetBool())
                     || pc.Is(CustomRoles.CopyCat))
                     return false;
                 if (!pc.GetCustomRole().IsTasklessCrewmate())
@@ -1675,7 +1675,7 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Fool:
-                if (pc.Is(CustomRoles.SabotageMaster)
+                if (pc.Is(CustomRoles.Mechanic)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Fool.CrewCanBeFool.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Fool.NeutralCanBeFool.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Fool.ImpCanBeFool.GetBool()))
@@ -1751,7 +1751,7 @@ public static class CustomRolesHelper
         //if (role is CustomRoles.Reflective && ((pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeReflective.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeReflective.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeReflective.GetBool()))) return false;
         //if (role is CustomRoles.Onbound && pc.Is(CustomRoles.Reflective)) return false;
         //if (role is CustomRoles.Reflective && pc.Is(CustomRoles.Onbound)) return false;
-        //if (role is CustomRoles.Cyber && pc.Is(CustomRoles.CyberStar)) return false;
+        //if (role is CustomRoles.Cyber && pc.Is(CustomRoles.Celebrity)) return false;
         //if (role is CustomRoles.Ntr or CustomRoles.Watcher or CustomRoles.Flash or CustomRoles.Torch or CustomRoles.Seer or CustomRoles.Bait or CustomRoles.Burst) return false;
 
         return true;
@@ -1799,10 +1799,10 @@ public static class CustomRolesHelper
     public static bool IsRevealingRole(this CustomRoles role, PlayerControl target)
     {
         return (((role is CustomRoles.Mayor) && (Mayor.MayorRevealWhenDoneTasks.GetBool()) && target.AllTasksCompleted()) ||
-             ((role is CustomRoles.SuperStar) && (Options.EveryOneKnowSuperStar.GetBool())) ||
+             ((role is CustomRoles.SuperStar) && (SuperStar.EveryOneKnowSuperStar.GetBool())) ||
             ((role is CustomRoles.Marshall) && target.AllTasksCompleted()) ||
             ((role is CustomRoles.Workaholic) && (Options.WorkaholicVisibleToEveryone.GetBool())) ||
-            ((role is CustomRoles.Doctor) && (Options.DoctorVisibleToEveryone.GetBool())) ||
+            ((role is CustomRoles.Doctor) && (Doctor.DoctorVisibleToEveryone.GetBool())) ||
             ((role is CustomRoles.Bait) && (Bait.BaitNotification.GetBool()) && Inspector.InspectCheckBaitCountType.GetBool()) ||
             ((role is CustomRoles.President) && President.CheckReveal(target.PlayerId))) ||
             (role is CustomRoles.Captain && Captain.CrewCanFindCaptain());

@@ -517,74 +517,26 @@ public static class Options
     public static OptionItem ScientistCD;
     public static OptionItem ScientistDur;
 
-    public static OptionItem ImpKnowCyberStarDead;
-    public static OptionItem NeutralKnowCyberStarDead;
-
-    public static OptionItem DoctorTaskCompletedBatteryCharge;
-    public static OptionItem DoctorVisibleToEveryone;
-
    //public static OptionItem LuckeyProbability;
 
-    public static OptionItem EveryOneKnowSuperStar;
 
-    public static OptionItem TransporterTeleportMax;
 
     public static OptionItem BecomeBaitDelayNotify;
     public static OptionItem BecomeBaitDelayMin;
     public static OptionItem BecomeBaitDelayMax;
     public static OptionItem BecomeTrapperBlockMoveTime;
 
-    public static OptionItem DetectiveCanknowKiller;
 
-    public static OptionItem GrenadierSkillCooldown;
-    public static OptionItem GrenadierSkillDuration;
-    public static OptionItem GrenadierCauseVision;
-    public static OptionItem GrenadierCanAffectNeutral;
-    public static OptionItem GrenadierSkillMaxOfUseage;
-    public static OptionItem GrenadierAbilityUseGainWithEachTaskCompleted;
-
-    public static OptionItem LighterVisionNormal;
-    public static OptionItem LighterVisionOnLightsOut;
-    public static OptionItem LighterSkillCooldown;
-    public static OptionItem LighterSkillDuration;
-    public static OptionItem LighterSkillMaxOfUseage;
-    public static OptionItem LighterAbilityUseGainWithEachTaskCompleted;
-
-    public static OptionItem DovesOfNeaceCooldown;
-    public static OptionItem DovesOfNeaceMaxOfUseage;
-    public static OptionItem DovesOfNeaceAbilityUseGainWithEachTaskCompleted;
 
     //public static OptionItem ParanoiaNumOfUseButton;
     //public static OptionItem ParanoiaVentCooldown;
 
-    public static OptionItem TimeMasterSkillCooldown;
-    public static OptionItem TimeMasterSkillDuration;
-    public static OptionItem TimeMasterMaxUses;
-    public static OptionItem TimeMasterAbilityUseGainWithEachTaskCompleted;
 
-    public static OptionItem WitnessCD;
-    public static OptionItem WitnessTime;
-
-    public static OptionItem BombsClearAfterMeeting;
-    public static OptionItem BastionBombCooldown;
-    public static OptionItem BastionAbilityUseGainWithEachTaskCompleted;
-    public static OptionItem BastionMaxBombs;
-
-    public static OptionItem BodyguardProtectRadius;
 
     public static OptionItem GGCanGuessTime;
     public static OptionItem GGCanGuessCrew;
     public static OptionItem GGCanGuessAdt;
     public static OptionItem GGTryHideMsg;
-
-    public static OptionItem VeteranSkillCooldown;
-    public static OptionItem VeteranSkillDuration;
-    public static OptionItem VeteranSkillMaxOfUseage;
-    public static OptionItem VeteranAbilityUseGainWithEachTaskCompleted;
-
-    public static OptionItem VigilanteKillCooldown;
-
-
 
     // Neutrals role settings
     public static OptionItem OppoImmuneToAttacksWhenTasksDone;
@@ -733,11 +685,9 @@ public static class Options
 
     // Override Tasks
     public static OverrideTasksData TerroristTasks;
-    public static OverrideTasksData TransporterTasks;
     public static OverrideTasksData WorkaholicTasks;
     public static OverrideTasksData PhantomTasks;
     public static OverrideTasksData OpportunistTasks;
-    public static OverrideTasksData TimeManagerTasks;
 
 
     public static int SnitchExposeTaskLeft = 1;
@@ -1363,11 +1313,7 @@ public static class Options
         /*
          * Celebrity
          */
-        SetupRoleOptions(6500, TabGroup.CrewmateRoles, CustomRoles.CyberStar);
-        ImpKnowCyberStarDead = BooleanOptionItem.Create(6502, "ImpKnowCyberStarDead", false, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.CyberStar]);
-        NeutralKnowCyberStarDead = BooleanOptionItem.Create(6503, "NeutralKnowCyberStarDead", false, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.CyberStar]);
+        Celebrity.SetupCustomOptions();    
 
         /*
          * Cleanser
@@ -1377,12 +1323,7 @@ public static class Options
         /*
          * Doctor
          */
-        SetupRoleOptions(6700, TabGroup.CrewmateRoles, CustomRoles.Doctor);
-        DoctorTaskCompletedBatteryCharge = FloatOptionItem.Create(6702, "DoctorTaskCompletedBatteryCharge", new(0f, 250f, 1f), 50f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Doctor])
-            .SetValueFormat(OptionFormat.Seconds);
-        DoctorVisibleToEveryone = BooleanOptionItem.Create(6703, "DoctorVisibleToEveryone", false, TabGroup.CrewmateRoles, false)
-        .SetParent(CustomRoleSpawnChances[CustomRoles.Doctor]);
+        Doctor.SetupCustomOptions();
 
         /*
          * Guess Master
@@ -1392,7 +1333,7 @@ public static class Options
         /*
          * Lazy Guy
          */
-        SetupRoleOptions(6800, TabGroup.CrewmateRoles, CustomRoles.Needy);
+        LazyGuy.SetupCustomOptions();
 
         /*
          * Luckey
@@ -1415,14 +1356,12 @@ public static class Options
         /*
          * Superstar
          */
-        SetupRoleOptions(7150, TabGroup.CrewmateRoles, CustomRoles.SuperStar);
-        EveryOneKnowSuperStar = BooleanOptionItem.Create(7152, "EveryOneKnowSuperStar", true, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.SuperStar]);
+        SuperStar.SetupCustomOptions();
 
         /*
          * Task Manager
          */
-        SetupRoleOptions(7200, TabGroup.CrewmateRoles, CustomRoles.TaskManager);
+        TaskManager.SetupCustomOptions();
 
         /*
          * Tracefinder
@@ -1432,27 +1371,12 @@ public static class Options
         /*
          * Transporter
          */
-        SetupRoleOptions(7400, TabGroup.CrewmateRoles, CustomRoles.Transporter);
-        TransporterTeleportMax = IntegerOptionItem.Create(7402, "TransporterTeleportMax", new(1, 100, 1), 5, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Transporter])
-            .SetValueFormat(OptionFormat.Times);
-        TransporterTasks = OverrideTasksData.Create(7403, TabGroup.CrewmateRoles, CustomRoles.Transporter);
+        Transporter.SetupCustomOptions();
 
         /*
          * Randomizer
          */
-        SetupRoleOptions(7500, TabGroup.CrewmateRoles, CustomRoles.Randomizer);
-        BecomeBaitDelayNotify = BooleanOptionItem.Create(7502, "BecomeBaitDelayNotify", false, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer]);
-        BecomeBaitDelayMin = FloatOptionItem.Create(7503, "BaitDelayMin", new(0f, 5f, 1f), 0f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
-            .SetValueFormat(OptionFormat.Seconds);
-        BecomeBaitDelayMax = FloatOptionItem.Create(7504, "BaitDelayMax", new(0f, 10f, 1f), 0f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
-            .SetValueFormat(OptionFormat.Seconds);
-        BecomeTrapperBlockMoveTime = FloatOptionItem.Create(7505, "BecomeTrapperBlockMoveTime", new(1f, 180f, 1f), 5f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
-            .SetValueFormat(OptionFormat.Seconds);
+        Randomizer.SetupCustomOptions();
         
         /*
          * SUPPORT ROLES
@@ -1484,14 +1408,12 @@ public static class Options
         /*
          * Detective
          */
-        SetupRoleOptions(7900, TabGroup.CrewmateRoles, CustomRoles.Detective);
-        DetectiveCanknowKiller = BooleanOptionItem.Create(7902, "DetectiveCanknowKiller", true, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Detective]);
+        Detective.SetupCustomOptions();
 
         /*
          * Fortune Teller
          */
-        Divinator.SetupCustomOption();
+        FortuneTeller.SetupCustomOption();
 
         /*
          * Enigma
@@ -1501,24 +1423,7 @@ public static class Options
         /*
          * Grenadier
          */
-        SetupRoleOptions(8200, TabGroup.CrewmateRoles, CustomRoles.Grenadier);
-        GrenadierSkillCooldown = FloatOptionItem.Create(8202, "GrenadierSkillCooldown", new(1f, 180f, 1f), 25f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Grenadier])
-            .SetValueFormat(OptionFormat.Seconds);
-        GrenadierSkillDuration = FloatOptionItem.Create(8203, "GrenadierSkillDuration", new(1f, 60f, 1f), 10f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Grenadier])
-            .SetValueFormat(OptionFormat.Seconds);
-        GrenadierCauseVision = FloatOptionItem.Create(8204, "GrenadierCauseVision", new(0f, 5f, 0.05f), 0.3f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Grenadier])
-            .SetValueFormat(OptionFormat.Multiplier);
-        GrenadierCanAffectNeutral = BooleanOptionItem.Create(8205, "GrenadierCanAffectNeutral", false, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Grenadier]);
-        GrenadierSkillMaxOfUseage = IntegerOptionItem.Create(8206, "GrenadierSkillMaxOfUseage", new(0, 20, 1), 2, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Grenadier])
-            .SetValueFormat(OptionFormat.Times);
-        GrenadierAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(8207, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Grenadier])
-            .SetValueFormat(OptionFormat.Times);
+        Grenadier.SetupCustomOptions();
 
         /*
          * Inspector
@@ -1538,30 +1443,12 @@ public static class Options
         /*
          * Lighter
          */
-        SetupSingleRoleOptions(8400, TabGroup.CrewmateRoles, CustomRoles.Lighter, 1);
-        LighterSkillCooldown = FloatOptionItem.Create(8402, "LighterSkillCooldown", new(1f, 180f, 1f), 25f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Lighter])
-            .SetValueFormat(OptionFormat.Seconds);
-        LighterSkillDuration = FloatOptionItem.Create(8403, "LighterSkillDuration", new(1f, 180f, 1f), 10f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Lighter])
-            .SetValueFormat(OptionFormat.Seconds);
-        LighterVisionNormal = FloatOptionItem.Create(8404, "LighterVisionNormal", new(0f, 5f, 0.05f), 1.35f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Lighter])
-            .SetValueFormat(OptionFormat.Multiplier);
-        LighterVisionOnLightsOut = FloatOptionItem.Create(8405, "LighterVisionOnLightsOut", new(0f, 5f, 0.05f), 0.5f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Lighter])
-            .SetValueFormat(OptionFormat.Multiplier);
-        LighterSkillMaxOfUseage = IntegerOptionItem.Create(8406, "AbilityUseLimit", new(0, 180, 1), 4, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Lighter])
-            .SetValueFormat(OptionFormat.Times);
-        LighterAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(8407, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Lighter])
-            .SetValueFormat(OptionFormat.Times);
+        Lighter.SetupCustomOptions();
 
         /*
          * Mechanic
          */
-        SabotageMaster.SetupCustomOption();
+        Mechanic.SetupCustomOption();
 
         /*
          * Medic
@@ -1594,18 +1481,9 @@ public static class Options
         Oracle.SetupCustomOption();
 
         /*
-         * DovesOfNeace
+         * Pacifist
          */
-        SetupRoleOptions(9200, TabGroup.CrewmateRoles, CustomRoles.DovesOfNeace);
-        DovesOfNeaceCooldown = FloatOptionItem.Create(9202, "DovesOfNeaceCooldown", new(1f, 180f, 1f), 30f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.DovesOfNeace])
-            .SetValueFormat(OptionFormat.Seconds);
-        DovesOfNeaceMaxOfUseage = IntegerOptionItem.Create(9203, "DovesOfNeaceMaxOfUseage", new(0, 20, 1), 3, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.DovesOfNeace])
-            .SetValueFormat(OptionFormat.Times);
-        DovesOfNeaceAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(9204, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.DovesOfNeace])
-            .SetValueFormat(OptionFormat.Times);
+        Pacifist.SetupCustomOptions();
 
         /*SetupRoleOptions(9300, TabGroup.CrewmateRoles, CustomRoles.Paranoia);
         ParanoiaNumOfUseButton = IntegerOptionItem.Create(9302, "ParanoiaNumOfUseButton", new(1, 20, 1), 3, TabGroup.CrewmateRoles, false)
@@ -1643,19 +1521,7 @@ public static class Options
         /*
          * Time Master
          */
-        SetupRoleOptions(9900, TabGroup.CrewmateRoles, CustomRoles.TimeMaster);
-        TimeMasterSkillCooldown = FloatOptionItem.Create(9902, "TimeMasterSkillCooldown", new(1f, 180f, 1f), 20f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.TimeMaster])
-            .SetValueFormat(OptionFormat.Seconds);
-        TimeMasterSkillDuration = FloatOptionItem.Create(9903, "TimeMasterSkillDuration", new(1f, 180f, 1f), 20f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.TimeMaster])
-            .SetValueFormat(OptionFormat.Seconds);
-        TimeMasterMaxUses = IntegerOptionItem.Create(9904, "TimeMasterMaxUses", new(0, 20, 1), 1, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.TimeMaster])
-            .SetValueFormat(OptionFormat.Times);
-        TimeMasterAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(9905, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.TimeMaster])
-            .SetValueFormat(OptionFormat.Times);
+        TimeMaster.SetupCustomOptions();
 
         /*
          * Tracker
@@ -1665,82 +1531,34 @@ public static class Options
         /*
          * Witness
          */
-        SetupSingleRoleOptions(10100, TabGroup.CrewmateRoles, CustomRoles.Witness, 1);
-        WitnessCD = FloatOptionItem.Create(10102, "AbilityCD", new(0f, 60f, 2.5f), 15f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Witness])
-            .SetValueFormat(OptionFormat.Seconds);
-        WitnessTime = IntegerOptionItem.Create(10103, "WitnessTime", new(1, 30, 1), 10, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Witness])
-            .SetValueFormat(OptionFormat.Seconds);
+        Witness.SetupCustomOptions();
 
 
         TextOptionItem.Create(10000009, "RoleType.CrewKilling", TabGroup.CrewmateRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
-        SetupSingleRoleOptions(10200, TabGroup.CrewmateRoles, CustomRoles.Bastion, 1);
-        BombsClearAfterMeeting = BooleanOptionItem.Create(10202, "BombsClearAfterMeeting", false, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bastion]);
-        BastionBombCooldown = FloatOptionItem.Create(10203, "BombCooldown", new(0, 180, 1), 15, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bastion])
-            .SetValueFormat(OptionFormat.Seconds);
-        BastionAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(10204, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bastion])
-            .SetValueFormat(OptionFormat.Times);
-        BastionMaxBombs = IntegerOptionItem.Create(10205, "BastionMaxBombs", new(1, 20, 1), 5, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bastion]);
-        
-        SetupRoleOptions(10300, TabGroup.CrewmateRoles, CustomRoles.Bodyguard);
-        BodyguardProtectRadius = FloatOptionItem.Create(10302, "BodyguardProtectRadius", new(0.5f, 5f, 0.5f), 1.5f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Bodyguard])
-            .SetValueFormat(OptionFormat.Multiplier);
+        Bastion.SetupCustomOptions();
+
+        Bodyguard.SetupCustomOptions();
         
         Crusader.SetupCustomOption();
         
-        Counterfeiter.SetupCustomOption();
+        Deceiver.SetupCustomOption();
         
         Jailer.SetupCustomOption();
         
         Judge.SetupCustomOption();
         
-        SwordsMan.SetupCustomOption();
-        
-        SetupRoleOptions(10900, TabGroup.CrewmateRoles, CustomRoles.NiceGuesser);
-        GGCanGuessTime = IntegerOptionItem.Create(10902, "GuesserCanGuessTimes", new(1, 15, 1), 15, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser])
-            .SetValueFormat(OptionFormat.Times);
-        GGCanGuessCrew = BooleanOptionItem.Create(10903, "GGCanGuessCrew", true, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser]);
-        GGCanGuessAdt = BooleanOptionItem.Create(10904, "GGCanGuessAdt", false, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser]);
-        GGTryHideMsg = BooleanOptionItem.Create(10905, "GuesserTryHideMsg", true, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser])
-            .SetColor(Color.green);
+        Knight.SetupCustomOption();
 
         Retributionist.SetupCustomOptions();
         
         Reverie.SetupCustomOption();
         
         Sheriff.SetupCustomOption();
-        
-        SetupRoleOptions(11350, TabGroup.CrewmateRoles, CustomRoles.Veteran);
-        VeteranSkillCooldown = FloatOptionItem.Create(11358, "VeteranSkillCooldown", new(1f, 180f, 1f), 20f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Veteran])
-            .SetValueFormat(OptionFormat.Seconds);
-        VeteranSkillDuration = FloatOptionItem.Create(11359, "VeteranSkillDuration", new(1f, 180f, 1f), 20f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Veteran])
-            .SetValueFormat(OptionFormat.Seconds);
-        VeteranSkillMaxOfUseage = IntegerOptionItem.Create(11360, "VeteranSkillMaxOfUseage", new(0, 20, 1), 10, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Veteran])
-            .SetValueFormat(OptionFormat.Times);
-        VeteranAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(11361, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Veteran])
-            .SetValueFormat(OptionFormat.Times);
 
-        SetupRoleOptions(11400, TabGroup.CrewmateRoles, CustomRoles.Vigilante);
-        VigilanteKillCooldown = FloatOptionItem.Create(11402, "KillCooldown", new(5f, 180f, 2.5f), 30f, TabGroup.CrewmateRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Vigilante])
-            .SetValueFormat(OptionFormat.Seconds);
+        Veteran.SetupCustomOptions();
 
         TextOptionItem.Create(10000010, "RoleType.CrewPower", TabGroup.CrewmateRoles)
             .SetGameMode(CustomGameMode.Standard)
@@ -2219,8 +2037,6 @@ public static class Options
         SpeedBoosterTimes = IntegerOptionItem.Create(24704, "SpeedBoosterTimes", new(1, 99, 1), 5, TabGroup.OtherRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.SpeedBooster])
             .SetValueFormat(OptionFormat.Times); */
-
-        //Divinator.SetupCustomOption();
                 
         // 中立
         TextOptionItem.Create(10000022, "OtherRoles.NeutralRoles", TabGroup.OtherRoles)

@@ -6,17 +6,28 @@ using TOHE.Modules;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using UnityEngine;
+using System.Collections.Generic;
 using static TOHE.Options;
 using static TOHE.Translator;
+using TOHE.Roles.Core;
+using static TOHE.Utils;
+using static TOHE.MeetingHudStartPatch;
+using TOHE.Roles.AddOns.Common;
 
 namespace TOHE;
 
-public static class Retributionist
+internal class Retributionist : RoleBase
 {
-    public static readonly int Id = 11000;
+    public const int Id = 11000;
+    private static bool On = false;
+    public override bool IsEnable => On;
+    public static bool HasEnabled => CustomRoles.Retributionist.IsClassEnable();
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+
     public static OptionItem RetributionistCanKillNum;
     public static OptionItem MinimumPlayersAliveToRetri;
     public static OptionItem CanOnlyRetributeWithTasksDone;
+    public static Dictionary<byte, int> RetributionistRevenged = [];
 
     public static OverrideTasksData RetributionistTasks;
     public static void SetupCustomOptions()
@@ -32,6 +43,18 @@ public static class Retributionist
             .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist]);
         RetributionistTasks = OverrideTasksData.Create(Id + 13, TabGroup.CrewmateRoles, CustomRoles.Retributionist);
     }
+    public override void Init()
+    {
+        On = false;
+        RetributionistRevenged = [];
+    }
+    public override void Add(byte playerId)
+    {
+        On = true;
+        RetributionistRevenged.Add(playerId, RetributionistCanKillNum.GetInt());
+    }
+    public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
+            => !seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Retributionist), target.PlayerId.ToString()) + " " + TargetPlayerName : "";
     public static bool RetributionistMsgCheck(PlayerControl pc, string msg, bool isUI = false)
     {
         if (!AmongUsClient.Instance.AmHost) return false;
@@ -82,9 +105,9 @@ public static class Retributionist
             return true;
         }
 
-        if (Main.RetributionistRevenged.ContainsKey(pc.PlayerId))
+        if (RetributionistRevenged.ContainsKey(pc.PlayerId))
         {
-            if (Main.RetributionistRevenged[pc.PlayerId] >= RetributionistCanKillNum.GetInt())
+            if (RetributionistRevenged[pc.PlayerId] >= RetributionistCanKillNum.GetInt())
             {
                 if (!isUI) Utils.SendMessage(GetString("RetributionistKillMax"), pc.PlayerId);
                 else pc.ShowPopUp(GetString("RetributionistKillMax"));
@@ -93,7 +116,7 @@ public static class Retributionist
         }
         else
         {
-            Main.RetributionistRevenged.Add(pc.PlayerId, 0);
+            RetributionistRevenged.Add(pc.PlayerId, 0);
         }
 
         int targetId;
@@ -139,7 +162,7 @@ public static class Retributionist
 
         string Name = target.GetRealName();
 
-        Main.RetributionistRevenged[pc.PlayerId]++;
+        RetributionistRevenged[pc.PlayerId]++;
 
         CustomSoundsManager.RPCPlayCustomSoundAll("AWP");
 
@@ -184,6 +207,14 @@ public static class Retributionist
         if (AmongUsClient.Instance.AmHost) RetributionistMsgCheck(PlayerControl.LocalPlayer, $"/ret {playerId}", true);
         else SendRPC(playerId);
     }
+    public override void OnMeetingHudStart(PlayerControl pc)
+    {
+        if (!pc.IsAlive())
+            AddMsg(GetString("RetributionistDeadMsg"), pc.PlayerId);
+    }
+    public override string PVANameText(PlayerVoteArea pva, PlayerControl target)
+            => Utils.GetPlayerById(pva.TargetPlayerId).Data.IsDead && !target.Data.IsDead ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Retributionist), target.PlayerId.ToString()) + " " + pva.NameText.text : "";
+    
 
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
     class StartMeetingPatch
