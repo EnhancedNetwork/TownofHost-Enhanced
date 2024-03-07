@@ -1453,6 +1453,9 @@ static class ExtendedPlayerControl
         }
         return true;
     }
+
+    public static Vector2 GetCustomPosition(this PlayerControl player) => new(player.transform.position.x, player.transform.position.y);
+
     public static Vector2 GetBlackRoomPosition()
     {
         return Utils.GetActiveMapId() switch
@@ -1466,7 +1469,7 @@ static class ExtendedPlayerControl
             _ => throw new NotImplementedException(),
         };
     }
-    public static Vector2 GetCustomPosition(this PlayerControl player) => new (player.transform.position.x, player.transform.position.y);
+    
     public static void RpcTeleportAllPlayers(Vector2 location)
     {
         foreach (var pc in Main.AllAlivePlayerControls)
