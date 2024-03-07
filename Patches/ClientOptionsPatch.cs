@@ -14,7 +14,7 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem DarkTheme;
     private static ClientOptionItem ShowTextOverlay;
     private static ClientOptionItem ModeForSmallScreen;
-    private static ClientOptionItem HorseMode;
+    //private static ClientOptionItem HorseMode;
     private static ClientOptionItem AutoMuteUs;
     private static ClientOptionItem ForceOwnLanguage;
     private static ClientOptionItem ForceOwnLanguageRoleName;
@@ -82,10 +82,10 @@ public static class OptionsMenuBehaviourStartPatch
         {
             ModeForSmallScreen = ClientOptionItem.Create("ModeForSmallScreen", Main.ModeForSmallScreen, __instance);
         }
-        if (HorseMode == null || HorseMode.ToggleButton == null)
-        {
-            HorseMode = ClientOptionItem.Create("HorseMode", Main.HorseMode, __instance);
-        }
+        //if (HorseMode == null || HorseMode.ToggleButton == null)
+        //{
+        //    HorseMode = ClientOptionItem.Create("HorseMode", Main.HorseMode, __instance);
+        //}
         if (AutoMuteUs == null || AutoMuteUs.ToggleButton == null)
         {
             AutoMuteUs = ClientOptionItem.Create("AutoMuteUs", Main.AutoMuteUs, __instance);
