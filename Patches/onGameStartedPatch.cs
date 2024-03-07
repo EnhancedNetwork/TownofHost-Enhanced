@@ -895,15 +895,6 @@ internal class SelectRolesPatch
             Utils.SyncAllSettings();
             SetColorPatch.IsAntiGlitchDisabled = false;
 
-            // fix GM spawn in Airship
-            if (Main.EnableGM.Value && GameStates.AirshipIsActive)
-            {
-                _ = new LateTask(() => 
-                {
-                    PlayerControl.LocalPlayer.RpcTeleport(new(15.5f, 0.0f));
-                }, 15f, "GM Auto-TP Failsafe"); // TP to Main Hall
-            }
-
             Logger.Msg("Ended", "AssignRoles");
         }
         catch (Exception ex)
