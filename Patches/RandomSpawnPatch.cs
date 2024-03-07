@@ -187,22 +187,30 @@ class RandomSpawn
 
         private void Teleport(PlayerControl player, bool isRadndom)
         {
-            var selectRand = (SpawnRandomLocation.GetBool() && SpawnRandomVents.GetBool()) ? IRandom.Instance.Next(0, 101)
-                : SpawnRandomLocation.GetBool() ? 50
-                : SpawnRandomVents.GetBool() ? 51 : -1; // -1: Not Random Spawn
+            int selectRandomSpawn = SpawnRandomLocation.GetBool() ? 1 : 2;
 
-            if (Options.CurrentGameMode == CustomGameMode.FFA) selectRand = 50;
-            if (selectRand == -1) return;
+            if (SpawnRandomLocation.GetBool() && SpawnRandomVents.GetBool())
+            {
+                var rand = IRandom.Instance;
+                selectRandomSpawn = rand.Next(1, 3); // 1 or 2
+            }
+            else if (!SpawnRandomLocation.GetBool() && !SpawnRandomVents.GetBool())
+            {
+                selectRandomSpawn = 0;
+            }
+            
+            if (Options.CurrentGameMode == CustomGameMode.FFA) selectRandomSpawn = 1;
+            if (selectRandomSpawn == 0) return; 
 
-            if (selectRand >= 0 && selectRand <= 50)
+            if (selectRandomSpawn == 1)
             {
                 var location = GetLocation(!isRadndom);
                 Logger.Info($"{player.Data.PlayerName}:{location}", "RandomSpawnInLocation");
                 player.RpcTeleport(location, isRandomSpawn: true);
             }
-            if (selectRand >= 51 && selectRand <= 101)
+            else
             {
-                Logger.Info($"{player.Data.PlayerName}", "Spawn Random Vent");
+                Logger.Info($"{player.Data.PlayerName}", "RandomSpawnInVent");
                 player.RpcRandomVentTeleport();
             }
         }
