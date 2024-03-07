@@ -383,25 +383,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
         }
 
-        // Grenadier or Mad Grenadier enter the vent
-        if ((Grenadier.GrenadierBlinding.Count > 0 &&
-            (player.GetCustomRole().IsImpostor() ||
-            (player.GetCustomRole().IsNeutral() && Grenadier.GrenadierCanAffectNeutral.GetBool()))
-            )
-            || (Grenadier.MadGrenadierBlinding.Count > 0 && !player.GetCustomRole().IsImpostorTeam() && !player.Is(CustomRoles.Madmate)))
-        {
-            opt.SetVision(false);
-            opt.SetFloat(FloatOptionNames.CrewLightMod, Grenadier.GrenadierCauseVision.GetFloat());
-            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Grenadier.GrenadierCauseVision.GetFloat());
-        }
-
-        /*if ((Main.FlashbangInProtect.Count >= 1 && Main.ForFlashbang.Contains(player.PlayerId) && (!player.GetCustomRole().IsCrewmate())))  
-          {
-              opt.SetVision(false);
-              opt.SetFloat(FloatOptionNames.CrewLightMod, Options.FlashbangVision.GetFloat());
-              opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.FlashbangVision.GetFloat());
-          }*/
-
+        if (Grenadier.On) Grenadier.ApplyGameOptionsForOthers(opt, player);
         if (Dazzler.On) Dazzler.SetDazzled(player, opt);
         if (Deathpact.On) Deathpact.SetDeathpactVision(player, opt);
         if (Spiritcaller.IsEnable) Spiritcaller.ReduceVision(opt, player);

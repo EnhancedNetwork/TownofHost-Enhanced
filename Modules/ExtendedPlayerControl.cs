@@ -273,7 +273,11 @@ static class ExtendedPlayerControl
                 writer.Write(time);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
             }
-            Observer.ObserverSetKillShield(target);
+            // Check Observer
+            if (Observer.HasEnabled)
+            {
+                Observer.ActivateGuardAnimation(target.PlayerId, target, 11);
+            }
         }
         player.ResetKillCooldown();
     }
@@ -344,22 +348,6 @@ static class ExtendedPlayerControl
         messageWriter.Write((byte)amount);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
     }
-
-    /*public static void RpcBeKilled(this PlayerControl player, PlayerControl KilledBy = null) {
-        if(!AmongUsClient.Instance.AmHost) return;
-        byte KilledById;
-        if(KilledBy == null)
-            KilledById = byte.MaxValue;
-        else
-            KilledById = KilledBy.PlayerId;
-
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)CustomRPC.BeKilled, Hazel.SendOption.Reliable, -1);
-        writer.Write(player.PlayerId);
-        writer.Write(KilledById);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-
-        RPC.BeKilled(player.PlayerId, KilledById);
-    }*/
     public static void MarkDirtySettings(this PlayerControl player)
     {
         PlayerGameOptionsSender.SetDirty(player.PlayerId);
@@ -651,7 +639,7 @@ static class ExtendedPlayerControl
             _ => false,
         };
     }
-    public static bool CanUseSabotage(this PlayerControl pc) // NOTE: THIS IS FOR THE HUD FOR MODDED CLIENTS, THIS DOES NOT DETERMINE WHETHER A ROLE CAN SABOTAGE
+    public static bool CanUseSabotage(this PlayerControl pc)
     {
         if (pc.Data.Role.Role == RoleTypes.GuardianAngel) return false;
         if (pc.Is(CustomRoleTypes.Impostor) && !pc.IsAlive() && Options.DeadImpCantSabotage.GetBool()) return false;
@@ -738,10 +726,10 @@ static class ExtendedPlayerControl
         switch (player.GetCustomRole())
         {
             case CustomRoles.Mercenary:
-                Mercenary.ApplyKillCooldown(player.PlayerId); //シリアルキラーはシリアルキラーのキルクールに。
+                Mercenary.ApplyKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.TimeThief:
-                TimeThief.SetKillCooldown(player.PlayerId); //タイムシーフはタイムシーフのキルクールに。
+                TimeThief.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Agitater:
                 Agitater.SetKillCooldown(player.PlayerId);
@@ -755,9 +743,6 @@ static class ExtendedPlayerControl
             case CustomRoles.Penguin:
                 Penguin.SetKillCooldown(player.PlayerId);
                 break;
-            /* case CustomRoles.Mare:
-                 Mare.SetKillCooldown(player.PlayerId);
-                 break; */
             case CustomRoles.Morphling:
                 Morphling.SetKillCooldown(player.PlayerId);
                 break;
@@ -858,9 +843,6 @@ static class ExtendedPlayerControl
             case CustomRoles.Scavenger:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.ScavengerKillCooldown.GetFloat();
                 break;
-            //case CustomRoles.Capitalism:
-            //    Main.AllPlayerKillCooldown[player.PlayerId] = Options.CapitalismSkillCooldown.GetFloat();
-            //    break;
             case CustomRoles.Pelican:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Pelican.KillCooldown.GetFloat();
                 break;

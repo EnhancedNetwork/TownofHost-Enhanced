@@ -1,7 +1,6 @@
 using Hazel;
 using System.Collections.Generic;
 using TOHE.Roles.Core;
-using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Utils;
 
@@ -79,9 +78,9 @@ internal class Mini : RoleBase
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        if (Mini.Age < 18)
+        if (Age < 18)
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), GetString("Cantkillkid")));
+            killer.Notify(ColorString(GetRoleColor(CustomRoles.Mini), GetString("Cantkillkid")));
             return false;
         }
         return true;
@@ -103,8 +102,8 @@ internal class Mini : RoleBase
 
         if (GameStates.IsMeeting && !CountMeetingTime.GetBool()) return;
 
-        if (LastFixedUpdate == Utils.GetTimeStamp()) return;
-        LastFixedUpdate = Utils.GetTimeStamp();
+        if (LastFixedUpdate == GetTimeStamp()) return;
+        LastFixedUpdate = GetTimeStamp();
         GrowUpTime++;
 
         if (GrowUpTime >= GrowUpDuration.GetInt() / 18)
@@ -145,29 +144,32 @@ internal class Mini : RoleBase
 
         return MinorCD.GetFloat() + (MajorCD.GetFloat() - MinorCD.GetFloat()) / 18 * Age;
     }
-    public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), Age != 18 ? $"({Age})" : "");
-    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role)
+    public override string GetProgressText(byte playerId, bool comms) => ColorString(GetRoleColor(CustomRoles.Mini), Age != 18 ? $"({Age})" : "");
+    public override bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role)
     {
-        if (pc.Is(CustomRoles.NiceMini) && Mini.Age < 18 && Mini.misguessed)
+        if (guesser.Is(CustomRoles.NiceMini) && Age < 18 && misguessed)
         {
-            if (!isUI) Utils.SendMessage(GetString("MiniGuessMax"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("MiniGuessMax"));
+            if (!isUI) SendMessage(GetString("MiniGuessMax"), guesser.PlayerId);
+            else guesser.ShowPopUp(GetString("MiniGuessMax"));
             return true;
         }
-        else if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
+        return false;
+    }
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role)
+    {
+        if (target.Is(CustomRoles.NiceMini) && Age < 18)
         {
-            if (!isUI) Utils.SendMessage(GetString("GuessMini"), pc.PlayerId);
-            else pc.ShowPopUp(GetString("GuessMini"));
+            if (!isUI) SendMessage(GetString("GuessMini"), guesser.PlayerId);
+            else guesser.ShowPopUp(GetString("GuessMini"));
             return true;
         }
-
         return false;
     }
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target)
-        => (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) && Mini.EveryoneCanKnowMini.GetBool();
+        => (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) && EveryoneCanKnowMini.GetBool();
 
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
             => !seer.GetCustomRole().IsImpostorTeam() && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) ? Main.roleColors[CustomRoles.Mini] : "";
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
-            => Mini.HasEnabled && Mini.EveryoneCanKnowMini.GetBool() && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) ? ColorString(GetRoleColor(CustomRoles.Mini), Mini.Age != 18 && Mini.UpDateAge.GetBool() ? $"({Mini.Age})" : "") : "";
+            => Mini.HasEnabled && Mini.EveryoneCanKnowMini.GetBool() && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) ? ColorString(GetRoleColor(CustomRoles.Mini), Age != 18 && Mini.UpDateAge.GetBool() ? $"({Mini.Age})" : "") : "";
 }
