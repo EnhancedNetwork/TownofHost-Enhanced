@@ -1,11 +1,9 @@
 using AmongUs.GameOptions;
 using Hazel;
-using MS.Internal.Xml.XPath;
 using System.Collections.Generic;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -18,10 +16,11 @@ internal class Crusader : RoleBase
     public static bool HasEnabled => CustomRoles.Crusader.IsClassEnable();
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
-    public static Dictionary<byte, int> CrusaderLimit = [];
-    public static OptionItem SkillLimitOpt;
-    public static OptionItem SkillCooldown;
-    public static Dictionary<byte, float> CurrentKillCooldown = [];
+    private static OptionItem SkillLimitOpt;
+    private static OptionItem SkillCooldown;
+
+    private static Dictionary<byte, int> CrusaderLimit = [];
+    private static Dictionary<byte, float> CurrentKillCooldown = [];
 
     public static void SetupCustomOption()
     {

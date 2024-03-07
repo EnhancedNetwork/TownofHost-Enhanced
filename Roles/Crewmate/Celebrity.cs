@@ -1,79 +1,83 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Utils;
 using static TOHE.Translator;
 using static TOHE.MeetingHudStartPatch;
 
-namespace TOHE.Roles.Crewmate
+namespace TOHE.Roles.Crewmate;
+
+internal class Celebrity : RoleBase
 {
-    internal class Celebrity : RoleBase
+    //===========================SETUP================================\\
+    private const int Id = 6500;
+    private static bool On = false;
+    public override bool IsEnable => On;
+    public static bool HasEnabled => CustomRoles.Celebrity.IsClassEnable();
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    //==================================================================\\
+
+    private static OptionItem ImpKnowCelebrityDead;
+    private static OptionItem NeutralKnowCelebrityDead;
+
+    private static List<byte> CelebrityDead = [];
+
+    public static void SetupCustomOptions()
     {
-        //===========================SETUP================================\\
-        private const int Id = 6500;
-        private static bool On = false;
-        public override bool IsEnable => On;
-        public static bool HasEnabled => CustomRoles.Celebrity.IsClassEnable();
-        public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-        //==================================================================\\
+        SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Celebrity);
+        ImpKnowCelebrityDead = BooleanOptionItem.Create(Id + 10, "ImpKnowCelebrityDead", false, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Celebrity]);
+        NeutralKnowCelebrityDead = BooleanOptionItem.Create(Id + 11, "NeutralKnowCelebrityDead", false, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Celebrity]);
 
-        public static List<byte> CelebrityDead = [];
+    }
+    public override void Init()
+    {
+        CelebrityDead = [];
+        On = false;
+    }
+    public override void Add(byte playerId)
+    {
+        On = true;
+    }
+    public override bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer)
+    {
+        if (!ImpKnowCelebrityDead.GetBool() && seer.GetCustomRole().IsImpostor()) return false;
+        if (!NeutralKnowCelebrityDead.GetBool() && seer.GetCustomRole().IsNeutral()) return false;
 
-        public static OptionItem ImpKnowCelebrityDead;
-        public static OptionItem NeutralKnowCelebrityDead;
-        public static void SetupCustomOptions()
+        seer.Notify(ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("OnCelebrityDead")));
+        return true;
+    }
+    public override void AfterPlayerDeathTask(PlayerControl target)
+    {
+        if (GameStates.IsMeeting)
         {
-            SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Celebrity);
-            ImpKnowCelebrityDead = BooleanOptionItem.Create(Id + 10, "ImpKnowCelebrityDead", false, TabGroup.CrewmateRoles, false)
-                .SetParent(CustomRoleSpawnChances[CustomRoles.Celebrity]);
-            NeutralKnowCelebrityDead = BooleanOptionItem.Create(Id + 11, "NeutralKnowCelebrityDead", false, TabGroup.CrewmateRoles, false)
-                .SetParent(CustomRoleSpawnChances[CustomRoles.Celebrity]);
-
-        }
-        public override void Init()
-        {
-            CelebrityDead = [];
-            On = false;
-        }
-        public override void Add(byte playerId)
-        {
-            On = true;
-        }
-        public override void AfterPlayerDeathTask(PlayerControl target)
-        {
-            if (GameStates.IsMeeting)
+            //Death Message
+            foreach (var pc in Main.AllPlayerControls)
             {
-                //Death Message
-                foreach (var pc in Main.AllPlayerControls)
-                {
-                    if (!Celebrity.ImpKnowCelebrityDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
-                    if (!Celebrity.NeutralKnowCelebrityDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
+                if (!ImpKnowCelebrityDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
+                if (!NeutralKnowCelebrityDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
 
-                    SendMessage(string.Format(GetString("CelebrityDead"), target.GetRealName()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("CelebrityNewsTitle")));
-                }
-            }
-            else
-            {
-                if (!Celebrity.CelebrityDead.Contains(target.PlayerId))
-                    Celebrity.CelebrityDead.Add(target.PlayerId);
+                SendMessage(string.Format(GetString("CelebrityDead"), target.GetRealName()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("CelebrityNewsTitle")));
             }
         }
-        public override void OnMeetingHudStart(PlayerControl targets)
+        else
         {
-            foreach (var csId in Celebrity.CelebrityDead)
-            {
-                if (!Celebrity.ImpKnowCelebrityDead.GetBool() && targets.GetCustomRole().IsImpostor()) continue;
-                if (!Celebrity.NeutralKnowCelebrityDead.GetBool() && targets.GetCustomRole().IsNeutral()) continue;
-                AddMsg(string.Format(GetString("CelebrityDead"), Main.AllPlayerNames[csId]), targets.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Celebrity), GetString("CelebrityNewsTitle")));
-            }
+            if (!CelebrityDead.Contains(target.PlayerId))
+                CelebrityDead.Add(target.PlayerId);
         }
-        public override void MeetingHudClear()
+    }
+    public override void OnMeetingHudStart(PlayerControl targets)
+    {
+        foreach (var csId in CelebrityDead)
         {
-            CelebrityDead.Clear();
+            if (!ImpKnowCelebrityDead.GetBool() && targets.GetCustomRole().IsImpostor()) continue;
+            if (!NeutralKnowCelebrityDead.GetBool() && targets.GetCustomRole().IsNeutral()) continue;
+            AddMsg(string.Format(GetString("CelebrityDead"), Main.AllPlayerNames[csId]), targets.PlayerId, ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("CelebrityNewsTitle")));
         }
+    }
+    public override void MeetingHudClear()
+    {
+        CelebrityDead.Clear();
     }
 }

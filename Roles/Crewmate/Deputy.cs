@@ -15,11 +15,10 @@ internal class Deputy : RoleBase
     private static List<byte> playerIdList = [];
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
-    public static OptionItem HandcuffCooldown;
-    public static OptionItem HandcuffMax;
-    public static OptionItem DeputyHandcuffCDForTarget;
+    private static OptionItem HandcuffCooldown;
+    private static OptionItem HandcuffMax;
+    private static OptionItem DeputyHandcuffCDForTarget;
     
-
     private static int HandcuffLimit = new();
 
     public static void SetupCustomOption()
@@ -71,6 +70,9 @@ internal class Deputy : RoleBase
     {
         if (target.Is(CustomRoles.SerialKiller)) return true;
         if (HandcuffLimit < 1) return false;
+
+        Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} : Limit {HandcuffLimit}", "Deputy");
+
         if (!target.Is(CustomRoles.Deputy))
         {
             HandcuffLimit--;
@@ -79,27 +81,19 @@ internal class Deputy : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("DeputyHandcuffedPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("HandcuffedByDeputy")));
 
-          //  target.ResetKillCooldown();
             target.SetKillCooldownV3(DeputyHandcuffCDForTarget.GetFloat());
             if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
             if (!DisableShieldAnimations.GetBool()) target.RpcGuardAndKill(target);
 
-            if (HandcuffLimit < 0)
-                HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
-            Logger.Info($"{killer.GetNameWithRole()} : 剩余{HandcuffLimit}次招募机会", "Deputy");
             return true;
         }
         
-        if (HandcuffLimit < 0)
-            HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
         killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("DeputyInvalidTarget")));
-        Logger.Info($"{killer.GetNameWithRole()} : 剩余{HandcuffLimit}次招募机会", "Deputy");
         return false;
     }
     public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString(HandcuffLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Deputy) : Color.gray, $"({HandcuffLimit})");
     public override void SetAbilityButtonText(HudManager hud, byte id)
     {
-        hud.ReportButton.OverrideText(GetString("ReportButtonText"));
         hud.KillButton.OverrideText(GetString("DeputyHandcuffText"));
     }
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Deputy");

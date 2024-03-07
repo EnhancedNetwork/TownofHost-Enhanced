@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using MS.Internal.Xml.XPath;
 using System.Collections.Generic;
 using TOHE.Modules;
 using TOHE.Roles.Core;
@@ -17,12 +18,14 @@ internal class Deceiver : RoleBase
     public static bool HasEnabled => CustomRoles.Deceiver.IsClassEnable();
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
-    private static Dictionary<byte, List<byte>> clientList = [];
+    private static OptionItem DeceiverSkillCooldown;
+    private static OptionItem DeceiverSkillLimitTimes;
+    private static OptionItem DeceiverAbilityLost;
+
     private static List<byte> notActiveList = [];
-    public static Dictionary<byte, int> SeelLimit = [];
-    public static OptionItem DeceiverSkillCooldown;
-    public static OptionItem DeceiverSkillLimitTimes;
-    public static OptionItem DeceiverAbilityLost;
+    private static Dictionary<byte, List<byte>> clientList = [];
+    private static Dictionary<byte, int> SeelLimit = [];
+
     public static void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Deceiver);
@@ -78,49 +81,64 @@ internal class Deceiver : RoleBase
         && SeelLimit.TryGetValue(pc.PlayerId, out var x) && x >= 1;
     public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(CanUseKillButton(Utils.GetPlayerById(playerId)) ? Utils.GetRoleColor(CustomRoles.Deceiver).ShadeColor(0.25f) : Color.gray, SeelLimit.TryGetValue(playerId, out var x) ? $"({x})" : "Invalid");
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(Utils.GetPlayerById(id)) ? DeceiverSkillCooldown.GetFloat() : 300f;
-    public static bool IsClient(byte playerId)
+    private static bool IsClient(byte playerId)
     {
         foreach (var pc in clientList)
             if (pc.Value.Contains(playerId)) return true;
         return false;
     }
-    public static bool CanBeClient(PlayerControl pc) => pc != null && pc.IsAlive() && !GameStates.IsMeeting && !IsClient(pc.PlayerId);
-    public static bool CanSeel(byte playerId) => playerIdList.Contains(playerId) && SeelLimit.TryGetValue(playerId, out int x) && x > 0;
-    public static void SeelToClient(PlayerControl pc, PlayerControl target)
+    private static bool CanBeClient(PlayerControl pc) => pc != null && pc.IsAlive() && !GameStates.IsMeeting && !IsClient(pc.PlayerId);
+    private static bool CanSeel(byte playerId) => playerIdList.Contains(playerId) && SeelLimit.TryGetValue(playerId, out int x) && x > 0;
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (pc == null || target == null || !pc.Is(CustomRoles.Deceiver)) return;
-        SeelLimit[pc.PlayerId]--;
-        SendRPC(pc.PlayerId);
+        if (killer == null || target == null) return true;
+        if (target.Is(CustomRoles.Pestilence) || target.Is(CustomRoles.SerialKiller)) return true;
+
+        if (!(CanBeClient(target) && CanSeel(killer.PlayerId))) return false;
+
+        SeelLimit[killer.PlayerId]--;
+        SendRPC(killer.PlayerId);
+
         if (target.Is(CustomRoles.KillingMachine))
         {
             Logger.Info("target is Killing Machine, ability used count reduced, but target will not die", "Deceiver");
-            return;
+            return false;
         }
-        if (!clientList.ContainsKey(pc.PlayerId)) clientList.Add(pc.PlayerId, []);
-        clientList[pc.PlayerId].Add(target.PlayerId);
-        if (!Options.DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);
-        notActiveList.Add(pc.PlayerId);
-        pc.SetKillCooldown();
-        pc.RPCPlayCustomSound("Bet");
-        Utils.NotifyRoles(SpecifySeer: pc);
-        Logger.Info($"赝品商 {pc.GetRealName()} 将赝品卖给了 {target.GetRealName()}", "Deceiver");
+
+        if (!clientList.ContainsKey(killer.PlayerId)) clientList.Add(killer.PlayerId, []);
+        clientList[killer.PlayerId].Add(target.PlayerId);
+
+        notActiveList.Add(killer.PlayerId);
+        killer.RpcGuardAndKill(killer);
+        killer.SetKillCooldown();
+
+        killer.RPCPlayCustomSound("Bet");
+
+        Utils.NotifyRoles(SpecifySeer: killer);
+
+        Logger.Info($"Counterfeiters {killer.GetRealName()} sell counterfeits to {target.GetRealName()}", "Deceiver");
+        return false;
     }
-    public override bool OnCheckMurderAsKiller(PlayerControl sob, PlayerControl pc)
+    public static bool OnClientMurder(PlayerControl pc, PlayerControl _)
     {
         if (!IsClient(pc.PlayerId) || notActiveList.Contains(pc.PlayerId)) return false;
+        
         byte cfId = byte.MaxValue;
         foreach (var cf in clientList)
             if (cf.Value.Contains(pc.PlayerId)) cfId = cf.Key;
+
         if (cfId == byte.MaxValue) return false;
+
         var killer = Utils.GetPlayerById(cfId);
         var target = pc;
         if (killer == null) return false;
+        
         target.SetRealKiller(killer);
-        target.Data.IsDead = true;
         Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
         target.RpcMurderPlayerV3(target);
         Main.PlayerStates[target.PlayerId].SetDead();
-        Logger.Info($"赝品商 {pc.GetRealName()} 的客户 {target.GetRealName()} 因使用赝品走火自杀", "Deceiver");
+        
+        Logger.Info($"The customer {target.GetRealName()} of {pc.GetRealName()}, a counterfeiter, commits suicide by using counterfeits", "Deceiver");
         return true;
     }
     public override void OnReportDeadBody(PlayerControl rafaeu, PlayerControl dinosaurs)

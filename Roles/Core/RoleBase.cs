@@ -135,6 +135,11 @@ public abstract class RoleBase
     { }
 
     /// <summary>
+    /// When the target role died and need run kill flash
+    /// </summary>
+    public virtual bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer) => false;
+
+    /// <summary>
     /// Always do these tasks once the role dies
     /// </summary>
     public virtual void AfterPlayerDeathTask(PlayerControl target)

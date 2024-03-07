@@ -319,6 +319,10 @@ class CheckMurderPatch
         if (Pelican.IsEaten(target.PlayerId))
             return false;
 
+        // Fake Check
+        if (Deceiver.HasEnabled && Deceiver.OnClientMurder(killer, target))
+            return false;
+
         if (Pursuer.IsEnable && Pursuer.OnClientMurder(killer))
             return false;
 
@@ -565,12 +569,6 @@ class CheckMurderPatch
 
                 case CustomRoles.Medic:
                     Medic.OnCheckMurderFormedicaler(killer, target);
-                    return false;
-                case CustomRoles.Deceiver:
-                    if (target.Is(CustomRoles.Pestilence)) break;
-                    if (target.Is(CustomRoles.SerialKiller)) return true;
-                    if (Deceiver.CanBeClient(target) && Deceiver.CanSeel(killer.PlayerId))
-                        Deceiver.SeelToClient(killer, target);
                     return false;
                 case CustomRoles.Pursuer:
                     if (target.Is(CustomRoles.Pestilence)) break;
@@ -906,16 +904,11 @@ class CheckMurderPatch
             //击杀萧暮
         }
 
-        //保镖保护
         if (killer.PlayerId != target.PlayerId)
         {
             foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId).ToArray())
             {
-                var pos = target.transform.position;
-                var dis = Vector2.Distance(pos, pc.transform.position);
-                if (dis > Bodyguard.BodyguardProtectRadius.GetFloat()) continue;
-
-                if (!Bodyguard.OnNearKilling(pc, killer)) return false;
+                if (!Bodyguard.OnNearKilling(pc, killer, target)) return false;
                 
                 if (target.Is(CustomRoles.Cyber))
                 {
@@ -2381,6 +2374,7 @@ class FixedUpdateInNormalGamePatch
                         Solsticer.OnFixedUpdate(player);
                         break;
                 }
+
                 if (player.Is(CustomRoles.Statue) && player.IsAlive())
                     Statue.OnFixedUpdate(player);
             
@@ -3100,7 +3094,6 @@ class CoEnterVentPatch
         //FFA
         if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenKCDIsUp.GetBool())
         {
-
             var pc = __instance?.myPlayer;
             var now = Utils.GetTimeStamp();
             FFAManager.FFAEnterVentTime[pc.PlayerId] = now;
@@ -3132,10 +3125,11 @@ class CoEnterVentPatch
             return true;
         }
 
-        if (Bastion.BombedVents.Contains(id) && Bastion.OnOthersEnterVent(__instance, id))
+        if (Bastion.OnOthersEnterVent(__instance, id))
         {
             return true;
         }
+
         if (AmongUsClient.Instance.IsGameStarted)
         {
             if (__instance.myPlayer.IsDouseDone())

@@ -18,7 +18,6 @@ using TOHE.Modules.ChatManager;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
-using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -334,13 +333,6 @@ public static class Utils
                 seer.KillFlash();
                 continue;
             }
-            else if (target.Is(CustomRoles.Celebrity))
-            {
-                if (!Celebrity.ImpKnowCelebrityDead.GetBool() && seer.GetCustomRole().IsImpostor()) continue;
-                if (!Celebrity.NeutralKnowCelebrityDead.GetBool() && seer.GetCustomRole().IsNeutral()) continue;
-                seer.KillFlash();
-                seer.Notify(ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("OnCelebrityDead")));
-            }
             else if (target.Is(CustomRoles.Cyber))
             {
                 if (!Cyber.ImpKnowCyberDead.GetBool() && seer.GetCustomRole().IsImpostor()) continue;
@@ -350,13 +342,15 @@ public static class Utils
                 seer.Notify(ColorString(GetRoleColor(CustomRoles.Cyber), GetString("OnCyberDead"))); 
             } 
         }
-        if (target.Is(CustomRoles.Celebrity) && !Celebrity.CelebrityDead.Contains(target.PlayerId)) Celebrity.CelebrityDead.Add(target.PlayerId);
         if (target.Is(CustomRoles.Cyber) && !Cyber.CyberDead.Contains(target.PlayerId)) Cyber.CyberDead.Add(target.PlayerId);
     }
     public static bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer)
     {
         if (seer.Is(CustomRoles.GM) || seer.Is(CustomRoles.Seer)) return true;
         if (seer.Data.IsDead || killer == seer || target == seer) return false;
+
+        if (seer.GetRoleClass().KillFlashCheck(killer, target, seer)) return true;
+        if (target.GetRoleClass().KillFlashCheck(killer, target, seer)) return true;
         if (seer.Is(CustomRoles.EvilTracker)) return EvilTracker.KillFlashCheck();
         return false;
     }
