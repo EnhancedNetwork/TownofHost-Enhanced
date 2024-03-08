@@ -10,41 +10,44 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Sheriff : RoleBase
 {
-    private static readonly int Id = 11200;
+    private const int Id = 11200;
     private static bool On = false;
     public override bool IsEnable => On;
     public static bool HasEnabled => CustomRoles.Sheriff.IsClassEnable();
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
-    public static List<byte> playerIdList = [];
-    public static Dictionary<CustomRoles, OptionItem> KillTargetOptions = [];
-    public static Dictionary<byte, int> ShotLimit = [];
-    public static Dictionary<byte, float> CurrentKillCooldown = [];
-
-    public static OptionItem KillCooldown;
+    private static OptionItem KillCooldown;
     private static OptionItem MisfireKillsTarget;
-    public static OptionItem ShotLimitOpt;
-    public static OptionItem ShowShotLimit;
+    private static OptionItem ShotLimitOpt;
+    private static OptionItem ShowShotLimit;
     private static OptionItem CanKillAllAlive;
-    public static OptionItem CanKillNeutrals;
-    public static OptionItem CanKillNeutralsMode;
-    public static OptionItem CanKillMadmate;
-    public static OptionItem CanKillCharmed;
-    public static OptionItem CanKillLovers;
-    public static OptionItem CanKillSidekicks;
-    public static OptionItem CanKillEgoists;
-    public static OptionItem CanKillInfected;
-    public static OptionItem CanKillContagious;
-    public static OptionItem SidekickSheriffCanGoBerserk;
-    public static OptionItem SetNonCrewCanKill;
-    public static OptionItem NonCrewCanKillCrew;
-    public static OptionItem NonCrewCanKillImp;
-    public static OptionItem NonCrewCanKillNeutral;
+    private static OptionItem CanKillNeutrals;
+    private static OptionItem CanKillNeutralsMode;
+    private static OptionItem CanKillMadmate;
+    private static OptionItem CanKillCharmed;
+    private static OptionItem CanKillLovers;
+    private static OptionItem CanKillSidekicks;
+    private static OptionItem CanKillEgoists;
+    private static OptionItem CanKillInfected;
+    private static OptionItem CanKillContagious;
+    private static OptionItem SidekickSheriffCanGoBerserk;
+    private static OptionItem SetNonCrewCanKill;
+    private static OptionItem NonCrewCanKillCrew;
+    private static OptionItem NonCrewCanKillImp;
+    private static OptionItem NonCrewCanKillNeutral;
 
-    public static readonly string[] KillOption =
-    [
-        "SheriffCanKillAll", "SheriffCanKillSeparately"
-    ];
+    private static List<byte> playerIdList = [];
+    private static Dictionary<byte, int> ShotLimit = [];
+    private static Dictionary<byte, float> CurrentKillCooldown = [];
+
+    private static readonly Dictionary<CustomRoles, OptionItem> KillTargetOptions = [];
+
+    private enum KillOption
+    {
+        SheriffCanKillAll,
+        SheriffCanKillSeparately
+    }
+
     public static void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Sheriff);
@@ -63,7 +66,7 @@ internal class Sheriff : RoleBase
         CanKillInfected = BooleanOptionItem.Create(Id + 26, "SheriffCanKillInfected", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sheriff]);
         CanKillContagious = BooleanOptionItem.Create(Id + 27, "SheriffCanKillContagious", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sheriff]);
         CanKillNeutrals = BooleanOptionItem.Create(Id + 16, "SheriffCanKillNeutrals", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sheriff]);
-        CanKillNeutralsMode = StringOptionItem.Create(Id + 14, "SheriffCanKillNeutralsMode", KillOption, 0, TabGroup.CrewmateRoles, false).SetParent(CanKillNeutrals);
+        CanKillNeutralsMode = StringOptionItem.Create(Id + 14, "SheriffCanKillNeutralsMode", EnumHelper.GetAllNames<KillOption>(), 0, TabGroup.CrewmateRoles, false).SetParent(CanKillNeutrals);
         SetUpNeutralOptions(Id + 30);
         SidekickSheriffCanGoBerserk = BooleanOptionItem.Create(Id + 28, "SidekickSheriffCanGoBerserk", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sheriff]);
         SetNonCrewCanKill = BooleanOptionItem.Create(Id + 18, "SheriffSetMadCanKill", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sheriff]);
@@ -85,7 +88,7 @@ internal class Sheriff : RoleBase
         On = true;
 
         ShotLimit.TryAdd(playerId, ShotLimitOpt.GetInt());
-        Logger.Info($"{Utils.GetPlayerById(playerId)?.GetNameWithRole()} : 残り{ShotLimit[playerId]}発", "Sheriff");
+        Logger.Info($"{Utils.GetPlayerById(playerId)?.GetNameWithRole()} : limit: {ShotLimit[playerId]}", "Sheriff");
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -98,7 +101,7 @@ internal class Sheriff : RoleBase
         CurrentKillCooldown.Remove(playerId);
         ShotLimit.Remove(playerId);
     }
-    public override bool CanUseKillButton(PlayerControl pc) => Sheriff.IsUseKillButton(pc);
+    public override bool CanUseKillButton(PlayerControl pc) => IsUseKillButton(pc);
     public static void SetUpNeutralOptions(int Id)
     {
         foreach (var neutral in CustomRolesHelper.AllRoles.Where(x => x.IsNeutral() && x is not CustomRoles.Konan && x is not CustomRoles.Pestilence && x is not CustomRoles.Glitch).ToArray())
@@ -158,7 +161,7 @@ internal class Sheriff : RoleBase
         return MisfireKillsTarget.GetBool();
     }
     public override string GetProgressText(byte playerId, bool computervirus)
-        => Sheriff.ShowShotLimit.GetBool() ? Utils.ColorString(IsUseKillButton(Utils.GetPlayerById(playerId)) ? Utils.GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f) : Color.gray, ShotLimit.TryGetValue(playerId, out var shotLimit) ? $"({shotLimit})" : "Invalid") : "";
+        => ShowShotLimit.GetBool() ? Utils.ColorString(IsUseKillButton(Utils.GetPlayerById(playerId)) ? Utils.GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f) : Color.gray, ShotLimit.TryGetValue(playerId, out var shotLimit) ? $"({shotLimit})" : "Invalid") : "";
     public static bool CanBeKilledBySheriff(PlayerControl player)
     {
         var cRole = player.GetCustomRole();

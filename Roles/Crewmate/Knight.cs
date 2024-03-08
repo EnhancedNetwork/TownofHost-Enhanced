@@ -8,16 +8,17 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Knight : RoleBase
 {
-    private static readonly int Id = 10800;
+    private const int Id = 10800;
     public static List<byte> playerIdList = [];
     private static bool On = false;
     public override bool IsEnable => On;
     public static bool HasEnabled => CustomRoles.Knight.IsClassEnable();
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
-    public static List<byte> killed = [];
-    public static OptionItem CanVent;
-    public static OptionItem KillCooldown;
+    private static OptionItem CanVent;
+    private static OptionItem KillCooldown;
+
+    private static List<byte> killed = [];
 
     public static void SetupCustomOption()
     {
@@ -45,13 +46,16 @@ internal class Knight : RoleBase
     {
         playerIdList.Remove(playerId);
     }
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => Knight.CanVent.GetBool();
+    
+    public static bool CheckCanUseVent(PlayerControl player) => player.Is(CustomRoles.Knight) && CanVent.GetBool();
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => CheckCanUseVent(pc);
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = IsKilled(id) ? 300f : KillCooldown.GetFloat();
     public override string GetProgressText(byte id, bool comms) => Utils.ColorString(!IsKilled(id) ? Utils.GetRoleColor(CustomRoles.Knight).ShadeColor(0.25f) : Color.gray, !IsKilled(id) ? "(1)" : "(0)");
     public override bool CanUseKillButton(PlayerControl pc)
         => !Main.PlayerStates[pc.PlayerId].IsDead
         && !IsKilled(pc.PlayerId);
-    public static bool IsKilled(byte playerId) => killed.Contains(playerId);
+    
+    private static bool IsKilled(byte playerId) => killed.Contains(playerId);
 
     private static void SendRPC(byte playerId)
     {

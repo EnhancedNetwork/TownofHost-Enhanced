@@ -10,7 +10,7 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Snitch : RoleBase
 {
-    private static readonly int Id = 9500;
+    private const int Id = 9500;
     private static readonly List<byte> playerIdList = [];
     public static bool On = false;
     public override bool IsEnable => On;
@@ -31,8 +31,8 @@ internal class Snitch : RoleBase
     private static bool CanFindMadmate;
     private static int RemainingTasksToBeFound;
 
-    public static readonly Dictionary<byte, bool> IsExposed = [];
-    public static readonly Dictionary<byte, bool> IsComplete = [];
+    private static readonly Dictionary<byte, bool> IsExposed = [];
+    private static readonly Dictionary<byte, bool> IsComplete = [];
 
     private static readonly HashSet<byte> TargetList = [];
     private static readonly Dictionary<byte, Color> TargetColorlist = [];
@@ -131,7 +131,7 @@ internal class Snitch : RoleBase
             }
         }
 
-        NameNotifyManager.Notify(snitch, Translator.GetString("SnitchDoneTasks"));
+        NameNotifyManager.Notify(snitch, GetString("SnitchDoneTasks"));
 
         IsComplete[snitchId] = true;
     }

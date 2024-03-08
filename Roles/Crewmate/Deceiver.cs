@@ -11,7 +11,7 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Deceiver : RoleBase
 {
-    private static readonly int Id = 10500;
+    private const int Id = 10500;
     private static List<byte> playerIdList = [];
     private static bool On = false;
     public override bool IsEnable => On;

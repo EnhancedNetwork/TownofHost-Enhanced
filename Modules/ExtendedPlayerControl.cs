@@ -1031,7 +1031,7 @@ static class ExtendedPlayerControl
             || target.Is(CustomRoles.Mechanic)
             || target.Is(CustomRoles.CopyCat)
             || target.Is(CustomRoles.Monitor) && Monitor.CanUseVent()
-            || target.Is(CustomRoles.Knight) && Knight.CanVent.GetBool()
+            || Knight.CheckCanUseVent(target)
             || target.Is(CustomRoles.Nimble);
     }
     

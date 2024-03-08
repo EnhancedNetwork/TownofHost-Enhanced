@@ -10,7 +10,7 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Jailer : RoleBase
 {
-    private static readonly int Id = 10600;
+    private const int Id = 10600;
     private static bool On = false;
     public override bool IsEnable => On;
     public static bool HasEnabled => CustomRoles.Jailer.IsClassEnable();

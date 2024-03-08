@@ -61,7 +61,7 @@ internal class ChatCommands
         if (Councillor.MurderMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Nemesis.NemesisMsgCheck(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Retributionist.RetributionistMsgCheck(PlayerControl.LocalPlayer, text)) goto Canceled;
-        if (Mediumshiper.MsMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
+        if (Medium.MsMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Swapper.SwapMsg(PlayerControl.LocalPlayer, text)) goto Canceled; 
         Directory.CreateDirectory(modTagsFiles);
         Directory.CreateDirectory(vipTagsFiles);
@@ -1441,7 +1441,7 @@ internal class ChatCommands
         if (Pirate.DuelCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Pirate command", "OnReceiveChat"); return; }
         if (Councillor.MurderMsg(player, text)) { canceled = true; Logger.Info($"Is Councillor command", "OnReceiveChat"); return; }
         if (Swapper.SwapMsg(player, text)) { canceled = true; Logger.Info($"Is Swapper command", "OnReceiveChat"); return; }
-        if (Mediumshiper.MsMsg(player, text)) { Logger.Info($"Is Medium command", "OnReceiveChat"); return; }
+        if (Medium.MsMsg(player, text)) { Logger.Info($"Is Medium command", "OnReceiveChat"); return; }
         if (Nemesis.NemesisMsgCheck(player, text)) { Logger.Info($"Is Nemesis Revenge command", "OnReceiveChat"); return; }
         if (Retributionist.RetributionistMsgCheck(player, text)) { Logger.Info($"Is Retributionist Revenge command", "OnReceiveChat"); return; }
 

@@ -11,30 +11,32 @@ using static TOHE.MeetingHudStartPatch;
 
 namespace TOHE.Roles.Crewmate;
 
-internal class Mediumshiper : RoleBase
+internal class Medium : RoleBase
 {
-    private static readonly int Id = 8700;
+    private const int Id = 8700;
     public static List<byte> playerIdList = [];
     public static bool On = false;
     public override bool IsEnable => On;
-    public static bool HasEnabled => CustomRoles.Mediumshiper.IsClassEnable();
+    public static bool HasEnabled => CustomRoles.Medium.IsClassEnable();
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
-    public static OptionItem ContactLimitOpt;
-    public static OptionItem OnlyReceiveMsgFromCrew;
-    public static OptionItem MediumAbilityUseGainWithEachTaskCompleted;
+    private static OptionItem ContactLimitOpt;
+    private static OptionItem OnlyReceiveMsgFromCrew;
+    private static OptionItem MediumAbilityUseGainWithEachTaskCompleted;
 
-    public static Dictionary<byte, byte> ContactPlayer = [];
-    public static Dictionary<byte, float> ContactLimit = [];
+    private static Dictionary<byte, byte> ContactPlayer = [];
+    private static Dictionary<byte, float> ContactLimit = [];
 
     public static void SetupCustomOption()
     {
-        Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Mediumshiper);
-        ContactLimitOpt = IntegerOptionItem.Create(Id + 10, "MediumshiperContactLimit", new(0, 15, 1), 1, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mediumshiper])
+        Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Medium);
+        ContactLimitOpt = IntegerOptionItem.Create(Id + 10, "MediumContactLimit", new(0, 15, 1), 1, TabGroup.CrewmateRoles, false)
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Medium])
             .SetValueFormat(OptionFormat.Times);
-        OnlyReceiveMsgFromCrew = BooleanOptionItem.Create(Id + 11, "MediumshiperOnlyReceiveMsgFromCrew", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mediumshiper]);
+        OnlyReceiveMsgFromCrew = BooleanOptionItem.Create(Id + 11, "MediumOnlyReceiveMsgFromCrew", true, TabGroup.CrewmateRoles, false)
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Medium]);
         MediumAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 12, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mediumshiper])
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Medium])
             .SetValueFormat(OptionFormat.Times);
     }
     public override void Init()
@@ -49,6 +51,11 @@ internal class Mediumshiper : RoleBase
         playerIdList.Add(playerId);
         ContactLimit.Add(playerId, ContactLimitOpt.GetInt());
         On = true;
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
+        }
     }
     public override void Remove(byte playerId)
     {
@@ -58,7 +65,7 @@ internal class Mediumshiper : RoleBase
     public static void SendRPC(byte playerId, byte targetId = 0xff, bool isUsed = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Mediumshiper);
+        writer.WritePacked((int)CustomRoles.Medium);
         writer.Write(playerId);
         writer.Write(ContactLimit[playerId]);
         writer.Write(isUsed);
@@ -69,8 +76,10 @@ internal class Mediumshiper : RoleBase
     {
         byte pid = reader.ReadByte();
         float limit = reader.ReadSingle();
-        ContactLimit[pid] = limit;
         bool isUsed = reader.ReadBoolean();
+
+        ContactLimit[pid] = limit;
+
         if (isUsed)
         {
             byte targetId = reader.ReadByte();
@@ -81,22 +90,34 @@ internal class Mediumshiper : RoleBase
     public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         if (!player.IsAlive()) return;
-        Mediumshiper.ContactLimit[player.PlayerId] += Mediumshiper.MediumAbilityUseGainWithEachTaskCompleted.GetFloat();
-        Mediumshiper.SendRPC(player.PlayerId);
+        ContactLimit[player.PlayerId] += MediumAbilityUseGainWithEachTaskCompleted.GetFloat();
+        SendRPC(player.PlayerId);
     }
     public override void OnReportDeadBody(PlayerControl reported, PlayerControl target)
     {
         ContactPlayer = [];
         if (target == null) return;
+
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => playerIdList.Contains(x.PlayerId) && x.PlayerId != target.PlayerId).ToArray())
         {
             if (ContactLimit[pc.PlayerId] < 1) continue;
             ContactLimit[pc.PlayerId] -= 1;
             ContactPlayer.TryAdd(target.PlayerId, pc.PlayerId);
             SendRPC(pc.PlayerId, target.PlayerId, true);
-            Logger.Info($"通灵师建立联系：{pc.GetNameWithRole()} => {target.GetRealName}", "Mediumshiper");
+            Logger.Info($"Psychics Make Connections： {pc.GetNameWithRole()} => {target.GetRealName}", "Medium");
         }
     }
+    public static void CheckDeadBody(PlayerControl Killer, PlayerControl target)
+    {
+        foreach (var mediumId in playerIdList.ToArray())
+        {
+            var mediun = GetPlayerById(mediumId);
+            if (mediun == null) continue;
+
+            mediun.Notify(ColorString(GetRoleColor(CustomRoles.Medium), GetString("MediumKnowPlayerDead")));
+        }
+    }
+
     public static bool MsMsg(PlayerControl pc, string msg)
     {
         if (!AmongUsClient.Instance.AmHost) return false;
@@ -112,12 +133,12 @@ internal class Mediumshiper : RoleBase
         else if (msg.Contains('y') || msg.Contains(GetString("Yes")) || msg.Contains('对')) ans = true;
         else
         {
-            Utils.SendMessage(GetString("MediumshipHelp"), pc.PlayerId);
+            SendMessage(GetString("MediumHelp"), pc.PlayerId);
             return true;
         }
 
-        Utils.SendMessage(GetString("Mediumship" + (ans ? "Yes" : "No")), ContactPlayer[pc.PlayerId], Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mediumshiper), GetString("MediumshipTitle")));
-        Utils.SendMessage(GetString("MediumshipDone"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mediumshiper), GetString("MediumshipTitle")));
+        SendMessage(GetString("Medium" + (ans ? "Yes" : "No")), ContactPlayer[pc.PlayerId], ColorString(GetRoleColor(CustomRoles.Medium), GetString("MediumTitle")));
+        SendMessage(GetString("MediumDone"), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Medium), GetString("MediumTitle")));
 
         ContactPlayer.Remove(pc.PlayerId);
 
@@ -154,19 +175,20 @@ internal class Mediumshiper : RoleBase
         TextColor7 = comms ? Color.gray : NormalColor7;
         string Completed7 = comms ? "?" : $"{taskState7.CompletedTasksCount}";
         Color TextColor71;
-        if (Mediumshiper.ContactLimit[playerId] < 1) TextColor71 = Color.red;
+        if (ContactLimit[playerId] < 1) TextColor71 = Color.red;
         else TextColor71 = Color.white;
         ProgressText.Append(ColorString(TextColor7, $"({Completed7}/{taskState7.AllTasksCount})"));
-        ProgressText.Append(ColorString(TextColor71, $" <color=#ffffff>-</color> {Math.Round(Mediumshiper.ContactLimit[playerId], 1)}"));
+        ProgressText.Append(ColorString(TextColor71, $" <color=#ffffff>-</color> {Math.Round(ContactLimit[playerId], 1)}"));
         return ProgressText.ToString();
     }
     public override void OnMeetingHudStart(PlayerControl pc)
     {
-        //self 
-        if (Mediumshiper.ContactPlayer.ContainsValue(pc.PlayerId))
-            AddMsg(string.Format(GetString("MediumshipNotifySelf"), Main.AllPlayerNames[Mediumshiper.ContactPlayer.Where(x => x.Value == pc.PlayerId).FirstOrDefault().Key], Mediumshiper.ContactLimit[pc.PlayerId]), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mediumshiper), GetString("MediumshipTitle")));
-        //others
-        if (Mediumshiper.ContactPlayer.ContainsKey(pc.PlayerId) && (!Mediumshiper.OnlyReceiveMsgFromCrew.GetBool() || pc.GetCustomRole().IsCrewmate()))
-            AddMsg(string.Format(GetString("MediumshipNotifyTarget"), Main.AllPlayerNames[Mediumshiper.ContactPlayer[pc.PlayerId]]), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mediumshiper), GetString("MediumshipTitle")));
+        //Self 
+        if (ContactPlayer.ContainsValue(pc.PlayerId))
+            AddMsg(string.Format(GetString("MediumNotifySelf"), Main.AllPlayerNames[ContactPlayer.Where(x => x.Value == pc.PlayerId).FirstOrDefault().Key], ContactLimit[pc.PlayerId]), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Medium), GetString("MediumTitle")));
+
+        //For target
+        if (ContactPlayer.ContainsKey(pc.PlayerId) && (!OnlyReceiveMsgFromCrew.GetBool() || pc.GetCustomRole().IsCrewmate()))
+            AddMsg(string.Format(GetString("MediumNotifyTarget"), Main.AllPlayerNames[ContactPlayer[pc.PlayerId]]), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Medium), GetString("MediumTitle")));
     }
 }

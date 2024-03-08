@@ -47,7 +47,6 @@ public static class Vampiress
         if (target.Is(CustomRoles.Pestilence)) return true;
         if (Guardian.CannotBeKilled(target)) return true;
         if (target.Is(CustomRoles.Opportunist) && target.AllTasksCompleted() && Options.OppoImmuneToAttacksWhenTasksDone.GetBool()) return false;
-        if (target.Is(CustomRoles.Veteran) && Veteran.VeteranInProtect.ContainsKey(target.PlayerId)) return true;
         if (Medic.ProtectList.Contains(target.PlayerId)) return false;
 
         killer.SetKillCooldown();
@@ -67,7 +66,6 @@ public static class Vampiress
         if (target.Is(CustomRoles.Pestilence)) return true;
         if (Guardian.CannotBeKilled(target)) return true;
         if (target.Is(CustomRoles.Opportunist) && target.AllTasksCompleted() && Options.OppoImmuneToAttacksWhenTasksDone.GetBool()) return false;
-        if (target.Is(CustomRoles.Veteran) && Veteran.VeteranInProtect.ContainsKey(target.PlayerId)) return true;
         if (Medic.ProtectList.Contains(target.PlayerId)) return false;
 
         return killer.CheckDoubleTrigger(target, () => 
@@ -91,7 +89,6 @@ public static class Vampiress
         if (target.Is(CustomRoles.Pestilence)) return true;
         if (Guardian.CannotBeKilled(target)) return true;
         if (target.Is(CustomRoles.Opportunist) && target.AllTasksCompleted() && Options.OppoImmuneToAttacksWhenTasksDone.GetBool()) return false;
-        if (target.Is(CustomRoles.Veteran) && Veteran.VeteranInProtect.ContainsKey(target.PlayerId)) return true;
         if (Medic.ProtectList.Contains(target.PlayerId)) return false;
         
         return false;
@@ -131,7 +128,7 @@ public static class Vampiress
             Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Bite;
             target.SetRealKiller(vampiress);
             target.RpcMurderPlayerV3(target);
-            Medic.IsDead(target);
+
             Logger.Info($"Vampiressに噛まれている{target.name}を自爆させました。", "Vampiress");
             if (!isButton && vampiress.IsAlive())
             {

@@ -30,7 +30,6 @@ internal class Observer : RoleBase
         playerIdList.Add(playerId);
         On = true;
     }
-    public static void ObserverSetKillShield(PlayerControl target) => Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Observer) && target.PlayerId != x.PlayerId).Do(x => x.RpcGuardAndKill(target, 11, true));
     public static void ActivateGuardAnimation(byte killerId, PlayerControl target, int colorId)
     {
         foreach (var observerId in playerIdList.ToArray())

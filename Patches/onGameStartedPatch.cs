@@ -882,9 +882,10 @@ internal class SelectRolesPatch
 
             // Added players with positions that have not yet been classified to the list of players requiring ResetCam   
             Main.ResetCamPlayerList.UnionWith(Main.AllPlayerControls
-                .Where(p => p.GetCustomRole() is CustomRoles.Arsonist or CustomRoles.Revolutionist or CustomRoles.Sidekick or CustomRoles.Shaman or CustomRoles.Vigilante or CustomRoles.Witness or CustomRoles.Innocent or CustomRoles.Killer)
+                .Where(p => p.GetCustomRole() is CustomRoles.Arsonist or CustomRoles.Revolutionist or CustomRoles.Sidekick or CustomRoles.Shaman or CustomRoles.Innocent or CustomRoles.Killer)
                 .Select(p => p.PlayerId)
                 .ToArray());
+
             EAC.LogAllRoles();
 
             Utils.CountAlivePlayers(true);

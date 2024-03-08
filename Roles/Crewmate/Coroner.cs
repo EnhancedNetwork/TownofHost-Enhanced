@@ -12,7 +12,7 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Coroner : RoleBase
 {
-    private static readonly int Id = 7700;
+    private const int Id = 7700;
     private static List<byte> playerIdList = [];
     public static bool On = false;
     public override bool IsEnable => On;

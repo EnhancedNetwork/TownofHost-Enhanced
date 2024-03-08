@@ -12,7 +12,7 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Keeper : RoleBase
 {
-    private static readonly int Id = 26500;
+    private const int Id = 26500;
     public static bool On = false;
     public override bool IsEnable => On;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
@@ -51,7 +51,7 @@ internal class Keeper : RoleBase
         DidVote.Remove(playerId);
         keeperUses.Remove(playerId);
     }
-    public override bool HideVote(PlayerVoteArea pva) => CheckRole(pva.TargetPlayerId, CustomRoles.Keeper) && HidesVote.GetBool() && keeperUses[pva.TargetPlayerId] > 0;
+    public override bool HideVote(PlayerVoteArea pva) => HidesVote.GetBool() && keeperUses[pva.TargetPlayerId] > 0;
 
     public override string GetProgressText(byte playerId, bool comms)
     {

@@ -9,7 +9,7 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Deputy : RoleBase
 {
-    private static readonly int Id = 7800;
+    private const int Id = 7800;
     public static bool On = false;
     public override bool IsEnable => On;
     private static List<byte> playerIdList = [];

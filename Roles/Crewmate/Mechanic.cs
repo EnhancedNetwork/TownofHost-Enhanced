@@ -2,28 +2,28 @@ using Hazel;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using static TOHE.Utils;
 using UnityEngine;
 using AmongUs.GameOptions;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Mechanic : RoleBase
 {
-    private static readonly int Id = 8500;
+    private const int Id = 8500;
     public static bool On = false;
     public static List<byte> playerIdList = [];
     public static Dictionary<byte, float> UsedSkillCount = [];
     public override bool IsEnable => On;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
 
-    public static OptionItem SkillLimit;
+    private static OptionItem SkillLimit;
     private static OptionItem FixesDoors;
     private static OptionItem FixesReactors;
     private static OptionItem FixesOxygens;
     private static OptionItem FixesComms;
     private static OptionItem FixesElectrical;
-    public static OptionItem SMAbilityUseGainWithEachTaskCompleted;
+    private static OptionItem SMAbilityUseGainWithEachTaskCompleted;
     private static OptionItem UsesUsedWhenFixingReactorOrO2;
     private static OptionItem UsesUsedWhenFixingLightsOrComms;
 
@@ -143,7 +143,7 @@ internal class Mechanic : RoleBase
                 DoorsProgressing = false;
                 break;
         }
-        Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(playerId));
+        NotifyRoles(SpecifySeer: GetPlayerById(playerId));
     }
     public static void SwitchSystemRepair(SwitchSystem __instance, byte amount, byte playerId)
     {
@@ -191,17 +191,17 @@ internal class Mechanic : RoleBase
         TextColor10 = comms ? Color.gray : NormalColor10;
         string Completed10 = comms ? "?" : $"{taskState10.CompletedTasksCount}";
         Color TextColor101;
-        if (Mechanic.SkillLimit.GetFloat() - Mechanic.UsedSkillCount[playerId] < 1) TextColor101 = Color.red;
+        if (SkillLimit.GetFloat() - UsedSkillCount[playerId] < 1) TextColor101 = Color.red;
         else TextColor101 = Color.white;
         ProgressText.Append(ColorString(TextColor10, $"({Completed10}/{taskState10.AllTasksCount})"));
-        ProgressText.Append(ColorString(TextColor101, $" <color=#ffffff>-</color> {Math.Round(Mechanic.SkillLimit.GetFloat() - Mechanic.UsedSkillCount[playerId], 1)}"));
+        ProgressText.Append(ColorString(TextColor101, $" <color=#ffffff>-</color> {Math.Round(SkillLimit.GetFloat() - UsedSkillCount[playerId], 1)}"));
         return ProgressText.ToString();
     }
     public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         if (!player.IsAlive()) return;
-        Mechanic.UsedSkillCount[player.PlayerId] -= Mechanic.SMAbilityUseGainWithEachTaskCompleted.GetFloat();
-        Mechanic.SendRPC(player.PlayerId);
+        UsedSkillCount[player.PlayerId] -= SMAbilityUseGainWithEachTaskCompleted.GetFloat();
+        SendRPC(player.PlayerId);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {

@@ -143,7 +143,7 @@ public static class CustomRolesHelper
                 CustomRoles.Judge => CustomRoles.Crewmate,
                 CustomRoles.Councillor => CustomRoles.Impostor, 
                 CustomRoles.Mortician => CustomRoles.Crewmate,
-                CustomRoles.Mediumshiper => CustomRoles.Crewmate,
+                CustomRoles.Medium => CustomRoles.Crewmate,
                 CustomRoles.Bard => CustomRoles.Impostor,
                 CustomRoles.Swooper => CustomRoles.Impostor,
                 CustomRoles.SoulCollector => CustomRoles.Crewmate,
@@ -1424,7 +1424,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Coroner)
                     || pc.Is(CustomRoles.Medusa)
                     || pc.Is(CustomRoles.Mortician)
-                    || pc.Is(CustomRoles.Mediumshiper)
+                    || pc.Is(CustomRoles.Medium)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Oblivious.CrewCanBeOblivious.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Oblivious.NeutralCanBeOblivious.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Oblivious.ImpCanBeOblivious.GetBool()))
@@ -1555,7 +1555,7 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Nimble:
-                if ((pc.Is(CustomRoles.Knight) && Knight.CanVent.GetBool())
+                if (Knight.CheckCanUseVent(pc)
                     || pc.Is(CustomRoles.CopyCat))
                     return false;
                 if (!pc.GetCustomRole().IsTasklessCrewmate())
@@ -1797,7 +1797,7 @@ public static class CustomRolesHelper
     public static bool IsRevealingRole(this CustomRoles role, PlayerControl target)
     {
         return (role is CustomRoles.Mayor && Mayor.VisibleToEveryone(target))
-            || (role is CustomRoles.SuperStar && SuperStar.EveryOneKnowSuperStar.GetBool())
+            || (role is CustomRoles.SuperStar && SuperStar.VisibleToEveryone(target))
             || (role is CustomRoles.Marshall && target.AllTasksCompleted())
             || (role is CustomRoles.Workaholic && Options.WorkaholicVisibleToEveryone.GetBool())
             || (role is CustomRoles.Doctor && Doctor.VisibleToEveryone(target))

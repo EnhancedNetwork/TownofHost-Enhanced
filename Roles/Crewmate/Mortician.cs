@@ -9,17 +9,17 @@ using static TOHE.Translator;
 namespace TOHE.Roles.Crewmate;
 internal class Mortician : RoleBase
 {
-    private static readonly int Id = 8900;
+    private const int Id = 8900;
     public static bool On = false;
-    private static List<byte> playerIdList = [];
     public override bool IsEnable => On;
     public static bool HasEnabled => CustomRoles.Mortician.IsClassEnable();
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
     private static OptionItem ShowArrows;
 
+    private static List<byte> playerIdList = [];
     private static Dictionary<byte, string> lastPlayerName = [];
-    public static Dictionary<byte, string> msgToSend = [];
+    private static Dictionary<byte, string> msgToSend = [];
 
     public static void SetupCustomOption()
     {

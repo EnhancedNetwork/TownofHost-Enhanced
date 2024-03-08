@@ -23,14 +23,17 @@ class CheckForEndVotingPatch
     public static bool Prefix(MeetingHud __instance)
     {
         if (!AmongUsClient.Instance.AmHost) return true;
+        
         if (Medic.HasEnabled) Medic.OnCheckMark();
+
         //Meeting Skip with vote counting on keystroke (m + delete)
         var shouldSkip = false;
         if (Input.GetKeyDown(KeyCode.F6))
         {
             shouldSkip = true;
         }
-        //
+        
+
         var voteLog = Logger.Handler("Vote");
         try
         {
@@ -41,9 +44,7 @@ class CheckForEndVotingPatch
                 if (pva == null) continue;
                 PlayerControl pc = Utils.GetPlayerById(pva.TargetPlayerId);
                 if (pc == null) continue;
-                //死んでいないディクテーターが投票済み
 
-                //主动叛变
                 if (pva.DidVote && pc.PlayerId == pva.VotedFor && pva.VotedFor < 253 && !pc.Data.IsDead)
                 {
                     if (Madmate.MadmateSpawnMode.GetInt() == 2 && Main.MadmateNum < CustomRoles.Madmate.GetCount() && pc.CanBeMadmate(inGame: true))
@@ -138,7 +139,7 @@ class CheckForEndVotingPatch
             {
                 foreach (var ps in __instance.playerStates.ToArray())
                 {
-                    //死んでいないプレイヤーが投票していない
+                    //Players who are not dead have not voted
                     if (!ps.DidVote && Utils.GetPlayerById(ps.TargetPlayerId)?.IsAlive() == true)
                     {
                         return false;
@@ -199,8 +200,11 @@ class CheckForEndVotingPatch
                     }
                 }
 
+                var player = Utils.GetPlayerById(ps.TargetPlayerId);
+                var playerRoleClass = player.GetRoleClass();
+
                 // Hide roles vote
-                if (ps.TargetPlayerId.GetRoleClassById().HideVote(ps)) continue;
+                if (playerRoleClass.HideVote(ps)) continue;
                 
                 // Hide Jester Vote
                 if (CheckRole(ps.TargetPlayerId, CustomRoles.Jester) && Options.HideJesterVote.GetBool()) continue;
@@ -213,51 +217,8 @@ class CheckForEndVotingPatch
                     VotedForId = ps.VotedFor
                 });
 
-                //Swapper swap votes
-                foreach (var pid in Swapper.playerIdList)
-                {
-                    if (Swapper.ResultSent.Contains(pid)) continue;
-                    //idk why this would be triggered repeatedly.
-                    var pc = Utils.GetPlayerById(pid);
-                    if (pc == null || !pc.IsAlive()) continue;
-
-                    if (!Swapper.Vote.TryGetValue(pc.PlayerId, out var tid1) || !Swapper.VoteTwo.TryGetValue(pc.PlayerId, out var tid2)) continue;
-                    if (tid1 == 253 || tid2 == 253 || tid1 == tid2) continue;
-
-                    var target1 = Utils.GetPlayerById(tid1);
-                    var target2 = Utils.GetPlayerById(tid2);
-
-                    if (target1 == null || target2 == null || !target1.IsAlive() || !target2.IsAlive()) continue;
-
-                    List<byte> templist = [];
-
-                    foreach (var pva in __instance.playerStates.ToArray())
-                    {
-                        if (pva.VotedFor != target1.PlayerId || pva.AmDead) continue;
-                        templist.Add(pva.TargetPlayerId);
-                        pva.VotedFor = target2.PlayerId;
-                        ReturnChangedPva(pva);
-                    }
-
-                    foreach (var pva in __instance.playerStates.ToArray())
-                    {
-                        if (pva.VotedFor != target2.PlayerId || pva.AmDead) continue;
-                        if (templist.Contains(pva.TargetPlayerId)) continue;
-                        pva.VotedFor = target1.PlayerId;
-                        ReturnChangedPva(pva);
-                    }
-
-                    if (!Swapper.ResultSent.Contains(pid))
-                    {
-                        Swapper.ResultSent.Add(pid);
-                        Utils.SendMessage(string.Format(GetString("SwapVote"), target1.GetRealName(), target2.GetRealName()), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
-                        Swapper.Swappermax[pid] -= 1;
-                        Swapper.SendSkillRPC(pid);
-                    }
-                }
-
-                var player = Utils.GetPlayerById(ps.TargetPlayerId);
-                var playerRoleClass = player.GetRoleClass();
+                // Swapper swap votes
+                Swapper.SwapVotes(__instance);
 
                 playerRoleClass?.AddVisualVotes(ps, ref statesList);
 
@@ -1023,13 +984,6 @@ class MeetingHudStartPatch
                 //enable = false;
             }
 
-            if (Tracker.IsTrackTarget(PlayerControl.LocalPlayer, pc) && Tracker.CanSeeLastRoomInMeeting)
-            {
-                roleTextMeeting.text = Tracker.GetArrowAndLastRoom(PlayerControl.LocalPlayer, pc);
-                roleTextMeeting.enabled = true;
-                continue;
-            }
-
             var suffixBuilder = new StringBuilder(32);
             if (myRole != null)
             {
@@ -1296,16 +1250,6 @@ class MeetingHudStartPatch
             //球状闪电提示
             if (Lightning.IsGhost(target))
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lightning), "■"));
-
-            //医生护盾提示
-            if (seer.PlayerId == target.PlayerId && (Medic.InProtect(seer.PlayerId) || Medic.TempMarkProtected == seer.PlayerId) && (Medic.WhoCanSeeProtect.GetInt() is 0 or 2))
-                sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Medic), "✚"));
-
-            if (seer.Is(CustomRoles.Medic) && (Medic.InProtect(target.PlayerId) || Medic.TempMarkProtected == target.PlayerId) && (Medic.WhoCanSeeProtect.GetInt() is 0 or 1))
-                sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Medic), "✚"));
-
-            if (seer.Data.IsDead && Medic.InProtect(target.PlayerId) && !seer.Is(CustomRoles.Medic))
-                sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Medic), "✚"));
 
             //赌徒提示
             sb.Append(Totocalcio.TargetMark(seer, target));

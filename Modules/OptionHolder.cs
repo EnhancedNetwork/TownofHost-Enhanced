@@ -519,19 +519,8 @@ public static class Options
 
    //public static OptionItem LuckeyProbability;
 
-
-
-    public static OptionItem BecomeBaitDelayNotify;
-    public static OptionItem BecomeBaitDelayMin;
-    public static OptionItem BecomeBaitDelayMax;
-    public static OptionItem BecomeTrapperBlockMoveTime;
-
-
-
     //public static OptionItem ParanoiaNumOfUseButton;
     //public static OptionItem ParanoiaVentCooldown;
-
-
 
     public static OptionItem GGCanGuessTime;
     public static OptionItem GGCanGuessCrew;
@@ -1458,7 +1447,7 @@ public static class Options
         /*
          * Medium
          */
-        Mediumshiper.SetupCustomOption();
+        Medium.SetupCustomOption();
 
         /*
          * Merchant

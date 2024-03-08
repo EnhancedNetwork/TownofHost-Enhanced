@@ -16,7 +16,7 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Judge : RoleBase
 {
-    private static readonly int Id = 10700;
+    private const int Id = 10700;
     private static List<byte> playerIdList = [];
     private static bool On = false;
     public override bool IsEnable => On;

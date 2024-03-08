@@ -297,10 +297,8 @@ class OnPlayerLeftPatch
                 {
                     Pelican.OnPelicanDied(data.Character.PlayerId);
                 }
-                if (Spiritualist.SpiritualistTarget == data.Character.PlayerId)
-                {
-                    Spiritualist.RemoveTarget();
-                }
+
+                if (Spiritualist.HasEnabled) Spiritualist.RemoveTarget(data.Character.PlayerId);
 
                 if (Main.PlayerStates[data.Character.PlayerId].deathReason == PlayerState.DeathReason.etc) // If no cause of death was established
                 {

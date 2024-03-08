@@ -7,6 +7,7 @@ using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
+
 internal class Tracefinder : RoleBase
 {
     //===========================SETUP================================\\
@@ -48,10 +49,20 @@ internal class Tracefinder : RoleBase
     {
         playerIdList.Add(playerId);
         On = true;
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
+        }
     }
     public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            CustomRoleManager.CheckDeadBodyOthers.Remove(CheckDeadBody);
+        }
     }
     private static void SendRPC(byte playerId, bool add, Vector3 loc = new())
     {
@@ -80,6 +91,7 @@ internal class Tracefinder : RoleBase
         else
             LocateArrow.RemoveAllTarget(playerId);
     }
+
     public override void OnReportDeadBody(PlayerControl GODZILLA_VS, PlayerControl KINGKONG)
     {
         foreach (var apc in playerIdList)
@@ -89,21 +101,9 @@ internal class Tracefinder : RoleBase
         }
     }
 
-    public override void OnTargetDead(PlayerControl killer, PlayerControl target)
+    public static void CheckDeadBody(PlayerControl killer, PlayerControl target)
     {
         var pos = target.GetCustomPosition();
-        float minDis = float.MaxValue;
-        string minName = "";
-        foreach (var pc in Main.AllAlivePlayerControls)
-        {
-            if (pc.PlayerId == target.PlayerId) continue;
-            var dis = Vector2.Distance(pc.GetCustomPosition(), pos);
-            if (dis < minDis && dis < 1.5f)
-            {
-                minDis = dis;
-                minName = pc.GetRealName();
-            }
-        }
 
         float delay;
         if (ArrowDelayMax.GetFloat() < ArrowDelayMin.GetFloat()) delay = 0f;

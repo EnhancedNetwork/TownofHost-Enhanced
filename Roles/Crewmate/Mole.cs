@@ -37,7 +37,11 @@ internal class Mole : RoleBase
         //playerIdList.Add(playerId);
         On = true;
     }
-
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    {
+        AURoleOptions.EngineerCooldown = VentCooldown.GetFloat();
+        AURoleOptions.EngineerInVentMaxTime = 1;
+    }
     public override void OnExitVent(PlayerControl pc, int ventId)
     {
         if (!pc.Is(CustomRoles.Mole)) return;
@@ -55,10 +59,5 @@ internal class Mole : RoleBase
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.AbilityButton.OverrideText(GetString("MoleVentButtonText"));
-    }
-    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
-    {
-        AURoleOptions.EngineerCooldown = VentCooldown.GetFloat();
-        AURoleOptions.EngineerInVentMaxTime = 1;
     }
 }

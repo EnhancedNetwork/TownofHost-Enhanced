@@ -1293,8 +1293,8 @@ internal static class RPC
             case CustomRoles.Medic:
                 Medic.ReceiveRPC(reader);
                 break;
-            case CustomRoles.Mediumshiper:
-                Mediumshiper.ReceiveRPC(reader);
+            case CustomRoles.Medium:
+                Medium.ReceiveRPC(reader);
                 break;
             case CustomRoles.Monarch:
                 Monarch.ReceiveRPC(reader);

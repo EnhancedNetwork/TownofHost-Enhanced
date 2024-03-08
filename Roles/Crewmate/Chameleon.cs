@@ -15,7 +15,7 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Chameleon : RoleBase
 {
-    private static readonly int Id = 7600;
+    private const int Id = 7600;
     private static List<byte> playerIdList = [];
     public static bool On = false;
     public override bool IsEnable => On;

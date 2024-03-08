@@ -9,24 +9,23 @@ namespace TOHE;
 
 internal class Reverie : RoleBase
 {
-    private static readonly int Id = 11100;
+    private const int Id = 11100;
     private static bool On = false;
     public override bool IsEnable => On;
     public static bool HasEnabled => CustomRoles.Retributionist.IsClassEnable();
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
-    public static List<byte> playerIdList = [];
+    private static OptionItem DefaultKillCooldown;
+    private static OptionItem ReduceKillCooldown;
+    private static OptionItem IncreaseKillCooldown;
+    private static OptionItem MinKillCooldown;
+    private static OptionItem MaxKillCooldown;
+    private static OptionItem MisfireSuicide;
+    private static OptionItem ResetCooldownMeeting;
+    private static OptionItem ConvertedReverieRogue;
 
-    public static OptionItem DefaultKillCooldown;
-    public static OptionItem ReduceKillCooldown;
-    public static OptionItem IncreaseKillCooldown;
-    public static OptionItem MinKillCooldown;
-    public static OptionItem MaxKillCooldown;
-    public static OptionItem MisfireSuicide;
-    public static OptionItem ResetCooldownMeeting;
-    public static OptionItem ConvertedReverieRogue;
-
-    public static Dictionary<byte, float> NowCooldown;
+    private static List<byte> playerIdList = [];
+    private static Dictionary<byte, float> NowCooldown;
 
     public static void SetupCustomOption()
     {

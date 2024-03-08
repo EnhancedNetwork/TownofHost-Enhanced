@@ -9,7 +9,7 @@ namespace TOHE.Roles.Crewmate;
 // Unused role
 public static class ChiefOfPolice
 {
-    private static readonly int Id = 12600;
+    private const int Id = 12600;
     private static List<byte> playerIdList = [];
     public static Dictionary<byte, int> PoliceLimit = [];
     public static bool IsEnable = false;

@@ -3,49 +3,50 @@ using Il2CppSystem.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using UnityEngine;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
-using UnityEngine;
 using static TOHE.Utils;
-using static TOHE.CheckForEndVotingPatch;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Oracle : RoleBase
 {
-    private static readonly int Id = 9100;
-    private static List<byte> playerIdList = [];
+    private const int Id = 9100;
+
     public static bool On = false;
     public override bool IsEnable => On;
     public static bool HasEnabled => CustomRoles.Oracle.IsClassEnable();
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
-    public static OptionItem CheckLimitOpt;
-    //  private static OptionItem OracleCheckMode;
-    public static OptionItem HidesVote;
-    public static OptionItem FailChance;
-    public static OptionItem OracleAbilityUseGainWithEachTaskCompleted;
-    public static OptionItem ChangeRecruitTeam;
-    public static List<byte> didVote = [];
-    public static Dictionary<byte, float> CheckLimit = [];
-    public static Dictionary<byte, float> TempCheckLimit = [];
+    private static OptionItem CheckLimitOpt;
+    private static OptionItem HidesVote;
+    private static OptionItem FailChance;
+    private static OptionItem OracleAbilityUseGainWithEachTaskCompleted;
+    private static OptionItem ChangeRecruitTeam;
+
+    private List<byte> playerIdList = [];
+    private List<byte> DidVote = [];
+    private static Dictionary<byte, float> CheckLimit = [];
+    private static Dictionary<byte, float> TempCheckLimit = [];
 
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Oracle);
-        CheckLimitOpt = IntegerOptionItem.Create(Id + 10, "OracleSkillLimit", new(0, 10, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Oracle])
+        CheckLimitOpt = IntegerOptionItem.Create(Id + 10, "OracleSkillLimit", new(0, 10, 1), 1, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Oracle])
             .SetValueFormat(OptionFormat.Times);
-        //    OracleCheckMode = BooleanOptionItem.Create(Id + 11, "AccurateCheckMode", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Oracle]);
-        HidesVote = BooleanOptionItem.Create(Id + 12, "OracleHideVote", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Oracle]);
-        //  OverrideTasksData.Create(Id + 20, TabGroup.CrewmateRoles, CustomRoles.Oracle);
+        HidesVote = BooleanOptionItem.Create(Id + 12, "OracleHideVote", false, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Oracle]);
         FailChance = IntegerOptionItem.Create(Id + 13, "FailChance", new(0, 100, 5), 0, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Oracle])
             .SetValueFormat(OptionFormat.Percent);
         OracleAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 14, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Oracle])
             .SetValueFormat(OptionFormat.Times);
-        ChangeRecruitTeam = BooleanOptionItem.Create(Id+15,"OracleCheckAddons",false,TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Oracle]);
+        ChangeRecruitTeam = BooleanOptionItem.Create(Id+15,"OracleCheckAddons",false,TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Oracle]);
 
     }
     public override void Init()
@@ -53,6 +54,7 @@ internal class Oracle : RoleBase
         playerIdList = [];
         CheckLimit = [];
         TempCheckLimit = [];
+        DidVote = [];
         On = false;
     }
     public override void Add(byte playerId)
@@ -66,7 +68,7 @@ internal class Oracle : RoleBase
         playerIdList.Remove(playerId);
         CheckLimit.Remove(playerId);
     }
-    public override bool HideVote(PlayerVoteArea pva) => CheckRole(pva.TargetPlayerId, CustomRoles.Oracle) && Oracle.HidesVote.GetBool() && Oracle.TempCheckLimit[pva.TargetPlayerId] > 0;
+    public override bool HideVote(PlayerVoteArea pva) => HidesVote.GetBool() && TempCheckLimit[pva.TargetPlayerId] > 0;
     public static void SendRPC(byte playerId, bool isTemp = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
@@ -95,12 +97,12 @@ internal class Oracle : RoleBase
     public override void OnVote(PlayerControl player, PlayerControl target)
     {
         if (player == null || target == null) return;
-        if (didVote.Contains(player.PlayerId)) return;
-        didVote.Add(player.PlayerId);
+        if (DidVote.Contains(player.PlayerId)) return;
+        DidVote.Add(player.PlayerId);
 
         if (CheckLimit[player.PlayerId] < 1)
         {
-            Utils.SendMessage(GetString("OracleCheckReachLimit"), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
+            SendMessage(GetString("OracleCheckReachLimit"), player.PlayerId, ColorString(GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
             return;
         }
 
@@ -109,14 +111,14 @@ internal class Oracle : RoleBase
 
         if (player.PlayerId == target.PlayerId)
         {
-            Utils.SendMessage(GetString("OracleCheckSelfMsg") + "\n\n" + string.Format(GetString("OracleCheckLimit"), CheckLimit[player.PlayerId]), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
+            SendMessage(GetString("OracleCheckSelfMsg") + "\n\n" + string.Format(GetString("OracleCheckLimit"), CheckLimit[player.PlayerId]), player.PlayerId, ColorString(GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
             return;
         }
 
         {
             string msg;
 
-        {
+            {
 
                 string text = "Crewmate";
                 if (ChangeRecruitTeam.GetBool())
@@ -157,19 +159,20 @@ internal class Oracle : RoleBase
                     }
                 }
                 msg = string.Format(GetString("OracleCheck." + text), target.GetRealName());
-        }
+            }
 
-        Utils.SendMessage(GetString("OracleCheck") + "\n" + msg + "\n\n" + string.Format(GetString("OracleCheckLimit"), CheckLimit[player.PlayerId]), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));}
+            SendMessage(GetString("OracleCheck") + "\n" + msg + "\n\n" + string.Format(GetString("OracleCheckLimit"), CheckLimit[player.PlayerId]), player.PlayerId, ColorString(GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
+        }
     }
     public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         if (!player.IsAlive()) return;
-        Oracle.CheckLimit[player.PlayerId] += Oracle.OracleAbilityUseGainWithEachTaskCompleted.GetFloat();
-        Oracle.SendRPC(player.PlayerId);
+        CheckLimit[player.PlayerId] += OracleAbilityUseGainWithEachTaskCompleted.GetFloat();
+        SendRPC(player.PlayerId);
     }
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl tagret)
     {
-        didVote.Clear();
+        DidVote.Clear();
         foreach (var oracleId in CheckLimit.Keys)
         {
             TempCheckLimit[oracleId] = CheckLimit[oracleId];
@@ -187,10 +190,10 @@ internal class Oracle : RoleBase
         TextColor9 = comms ? Color.gray : NormalColor9;
         string Completed9 = comms ? "?" : $"{taskState9.CompletedTasksCount}";
         Color TextColor91;
-        if (Oracle.CheckLimit[playerId] < 1) TextColor91 = Color.red;
+        if (CheckLimit[playerId] < 1) TextColor91 = Color.red;
         else TextColor91 = Color.white;
         ProgressText.Append(ColorString(TextColor9, $"({Completed9}/{taskState9.AllTasksCount})"));
-        ProgressText.Append(ColorString(TextColor91, $" <color=#ffffff>-</color> {Math.Round(Oracle.CheckLimit[playerId], 1)}"));
+        ProgressText.Append(ColorString(TextColor91, $" <color=#ffffff>-</color> {Math.Round(CheckLimit[playerId], 1)}"));
         return ProgressText.ToString();
     }
 }

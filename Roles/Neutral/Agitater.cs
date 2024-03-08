@@ -75,7 +75,7 @@ public static class Agitater
     {
         if (!IsEnable) return false;
         if (AgitaterAutoReportBait.GetBool() && target.Is(CustomRoles.Bait)) return true;
-        if (target.Is(CustomRoles.Pestilence) || (target.Is(CustomRoles.Veteran) && Veteran.VeteranInProtect.ContainsKey(target.PlayerId)))
+        if (target.Is(CustomRoles.Pestilence))
         {
             target.RpcMurderPlayerV3(killer);
             ResetBomb();
@@ -172,7 +172,7 @@ public static class Agitater
         if (!AgitaterCanGetBombed.GetBool() && target.Is(CustomRoles.Agitater)) return;
 
 
-        if (target.Is(CustomRoles.Pestilence) || (target.Is(CustomRoles.Veteran) && Veteran.VeteranInProtect.ContainsKey(target.PlayerId)))
+        if (target.Is(CustomRoles.Pestilence))
         {
             target.RpcMurderPlayerV3(player);
             ResetBomb();

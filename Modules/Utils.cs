@@ -1818,9 +1818,6 @@ public static class Utils
                 if (Lightning.IsEnable && Lightning.IsGhost(seer))
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Lightning), "■"));
 
-                if (Medic.HasEnabled && (Medic.InProtect(seer.PlayerId) || Medic.TempMarkProtected == seer.PlayerId) && (Medic.WhoCanSeeProtect.GetInt() is 0 or 2))
-                    SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Medic), "✚"));
-
                 if (Snitch.HasEnabled)
                     SelfMark.Append(Snitch.GetWarningArrow(seer));
 
@@ -2147,12 +2144,7 @@ public static class Utils
 
                         // ========= During Game And Meeting =========
                         switch (seerRole)
-                        {
-                            case CustomRoles.Tracker:
-                                if (isForMeeting && Tracker.IsTrackTarget(seer, target) && Tracker.CanSeeLastRoomInMeeting)
-                                    TargetRoleText = $"<size={fontSize}>{Tracker.GetArrowAndLastRoom(seer, target)}</size>\r\n";
-                                break;
-                            
+                        {                            
                             case CustomRoles.Nemesis:
                                 if (!seer.IsAlive() && target.IsAlive())
                                     TargetPlayerName = ColorString(GetRoleColor(CustomRoles.Nemesis), target.PlayerId.ToString()) + " " + TargetPlayerName;

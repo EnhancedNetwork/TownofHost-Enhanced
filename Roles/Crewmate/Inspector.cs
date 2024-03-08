@@ -13,7 +13,7 @@ using static TOHE.Utils;
 namespace TOHE.Roles.Crewmate;
 internal class Inspector : RoleBase
 {
-    private static readonly int Id = 8300;
+    private const int Id = 8300;
     private static List<byte> playerIdList = [];
     public static bool On = false;
     public override bool IsEnable => On;

@@ -637,14 +637,14 @@ public enum CustomRoles
     Judge,
     Keeper,
     Knight, 
-    LazyGuy, //Lazy guy
+    LazyGuy,
     Lighter,
     Lookout,
     Marshall,
     Mayor,
     Mechanic, 
     Medic,
-    Mediumshiper, //medium
+    Medium,
     Merchant,
     Mole,
     Monarch,

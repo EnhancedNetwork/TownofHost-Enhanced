@@ -17,7 +17,7 @@ internal class Transporter : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     //==================================================================\\
 
-    public static OptionItem TransporterTeleportMax;
+    private static OptionItem TransporterTeleportMax;
 
     public static void SetupCustomOptions()
     {
@@ -37,7 +37,7 @@ internal class Transporter : RoleBase
     }
     public override void OnTaskComplete(PlayerControl pc, int CompletedTasksCount, int totalTaskCount)
     {
-        if ((CompletedTasksCount + 1) <= Transporter.TransporterTeleportMax.GetInt())
+        if ((CompletedTasksCount + 1) <= TransporterTeleportMax.GetInt())
         {
             Logger.Info($"Transporter: {pc.GetNameWithRole().RemoveHtmlTags()} completed the task", "Transporter");
 

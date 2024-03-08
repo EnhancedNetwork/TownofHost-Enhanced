@@ -3,7 +3,6 @@ using Hazel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Utils;
@@ -12,7 +11,7 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Psychic : RoleBase
 {
-    private static readonly int Id = 9400;
+    private const int Id = 9400;
     private static List<byte> playerIdList = [];
     public static bool On = false;
     public override bool IsEnable => On;

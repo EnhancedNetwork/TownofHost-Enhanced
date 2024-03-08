@@ -9,7 +9,7 @@ namespace TOHE.Roles.Crewmate;
 
 internal class President : RoleBase
 {
-    private static readonly int Id = 12300;
+    private const int Id = 12300;
     public static bool On = false;
     public override bool IsEnable => On;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
@@ -63,7 +63,7 @@ internal class President : RoleBase
     public static void TryHideMsgForPresident()
     {
         ChatUpdatePatch.DoBlockChat = true;
-        //List<CustomRoles> roles = Enum.GetValues(typeof(CustomRoles)).Cast<CustomRoles>().Where(x => x is not CustomRoles.NotAssigned and not CustomRoles.KB_Normal).ToList();
+
         var rd = IRandom.Instance;
         string msg;
         for (int i = 0; i < 20; i++)

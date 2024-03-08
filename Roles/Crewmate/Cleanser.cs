@@ -69,7 +69,7 @@ internal class Cleanser : RoleBase
         DidVote.Remove(playerId);
     }
     public static bool CantGetAddon() => !CleansedCanGetAddon.GetBool();
-    public override bool HideVote(PlayerVoteArea ps) => CheckRole(ps.TargetPlayerId, CustomRoles.Cleanser) && Cleanser.HidesVote.GetBool() && Cleanser.CleanserUses[ps.TargetPlayerId] > 0;
+    public override bool HideVote(PlayerVoteArea ps) => HidesVote.GetBool() && CleanserUses[ps.TargetPlayerId] > 0;
     public override string GetProgressText(byte playerId, bool comms)
     {
         if (!CleanserUses.ContainsKey(playerId)) return "Invalid";

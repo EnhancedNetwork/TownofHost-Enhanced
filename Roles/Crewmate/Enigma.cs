@@ -8,7 +8,7 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Enigma : RoleBase
 {
-    private static readonly int Id = 8100;
+    private const int Id = 8100;
     private static List<byte> playerIdList = [];
     public static bool On = false;
     public override bool IsEnable => On;

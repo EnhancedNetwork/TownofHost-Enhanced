@@ -5,8 +5,7 @@ namespace TOHE.Roles.Crewmate;
 
 internal class TimeManager : RoleBase
 {
-    private static readonly int Id = 9800;
-    private static List<byte> playerIdList = [];
+    private const int Id = 9800;
     public static bool On = false;
     public override bool IsEnable => On;
     public static bool HasEnabled => CustomRoles.TimeManager.IsClassEnable();
@@ -15,7 +14,9 @@ internal class TimeManager : RoleBase
     public static OptionItem IncreaseMeetingTime;
     public static OptionItem MeetingTimeLimit;
     public static OptionItem MadMinMeetingTimeLimit;
-    
+
+    private static List<byte> playerIdList = [];
+
     public static void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.TimeManager);

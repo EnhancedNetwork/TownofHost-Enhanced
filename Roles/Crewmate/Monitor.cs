@@ -13,7 +13,7 @@ namespace TOHE.Roles.Crewmate;
 // 贡献：https://github.com/Yumenopai/TownOfHost_Y/tree/Monitor
 internal class Monitor : RoleBase
 {
-    private static readonly int Id = 12500;
+    private const int Id = 12500;
     private static List<byte> playerIdList = [];
     public static bool On = false;
     public override bool IsEnable => On;

@@ -3,17 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
-using UnityEngine;
 using static TOHE.Utils;
-using static TOHE.CheckForEndVotingPatch;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class FortuneTeller : RoleBase
 {
-    private static readonly int Id = 8000;
+    private const int Id = 8000;
     private static List<byte> playerIdList = [];
     public static bool On = false;
     public override bool IsEnable => On;
@@ -68,7 +67,7 @@ internal class FortuneTeller : RoleBase
         CheckLimit.Remove(playerId);
         targetList.Remove(playerId);
     }
-    public override bool HideVote(PlayerVoteArea pva) => CheckRole(pva.TargetPlayerId, CustomRoles.FortuneTeller) && HidesVote.GetBool() && TempCheckLimit[pva.TargetPlayerId] > 0;
+    public override bool HideVote(PlayerVoteArea pva) => HidesVote.GetBool() && TempCheckLimit[pva.TargetPlayerId] > 0;
 
     public static void SendRPC(byte playerId, bool isTemp = false, bool voted = false)
     {
@@ -394,7 +393,7 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.Hangman,
                 CustomRoles.Pitfall],
                 
-                [CustomRoles.Mediumshiper,
+                [CustomRoles.Medium,
                 CustomRoles.Spiritcaller,
                 CustomRoles.Spiritualist,
                 CustomRoles.Parasite,

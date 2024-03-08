@@ -12,7 +12,7 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Overseer : RoleBase
 {
-    private static readonly int Id = 12200;
+    private const int Id = 12200;
 
     public static bool On = false;
     public override bool IsEnable => false;
@@ -61,7 +61,7 @@ internal class Overseer : RoleBase
   //      CustomRoles.Glitch,
         CustomRoles.Judge,
         CustomRoles.Mortician,
-        CustomRoles.Mediumshiper,
+        CustomRoles.Medium,
         CustomRoles.Observer,
         CustomRoles.Pacifist,
         CustomRoles.Coroner,
