@@ -536,9 +536,6 @@ class CheckMurderPatch
                 case CustomRoles.Infectious:
                     Infectious.OnCheckMurder(killer, target);
                     return false;
-                case CustomRoles.Investigator:
-                    Investigator.OnCheckMurder(killer, target);
-                    return false;
                 case CustomRoles.Jackal:
                     if (Jackal.OnCheckMurder(killer, target))
                         return false;
@@ -2033,7 +2030,6 @@ class ReportDeadBodyPatch
         if (Doomsayer.IsEnable) Doomsayer.OnReportDeadBody();
         if (Lightning.IsEnable) Lightning.OnReportDeadBody();
         if (Romantic.IsEnable) Romantic.OnReportDeadBody();
-        if (Investigator.IsEnable) Investigator.OnReportDeadBody();
         if (Swooper.IsEnable) Swooper.OnReportDeadBody();
         if (Wraith.IsEnable) Wraith.OnReportDeadBody();
 

@@ -518,9 +518,7 @@ static class ExtendedPlayerControl
             CustomRoles.CursedSoul => CursedSoul.CanUseKillButton(pc),
             CustomRoles.Admirer => Admirer.CanUseKillButton(pc),
             CustomRoles.Imitator => Imitator.CanUseKillButton(pc),
-            //CustomRoles.Warlock => !Main.isCurseAndKill.TryGetValue(pc.PlayerId, out bool wcs) || !wcs,
             CustomRoles.Infectious => Infectious.CanUseKillButton(pc),
-            CustomRoles.Investigator => Investigator.CanUseKillButton(pc),
             CustomRoles.Virus => pc.IsAlive(),
             CustomRoles.Spiritcaller => pc.IsAlive(),
             CustomRoles.PlagueBearer => pc.IsAlive(),
@@ -918,9 +916,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Pixie:
                 Pixie.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Investigator:
-                Investigator.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Virus:
                 Virus.SetKillCooldown(player.PlayerId);

@@ -821,9 +821,6 @@ public static class Utils
                 case CustomRoles.Infectious:
                     ProgressText.Append(Infectious.GetBiteLimit());
                     break;
-                case CustomRoles.Investigator:
-                    ProgressText.Append(Investigator.GetInvestigateLimit(playerId));
-                    break;
                 case CustomRoles.Virus:
                     ProgressText.Append(Virus.GetInfectLimit());
                     break;

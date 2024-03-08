@@ -230,7 +230,6 @@ internal class ChangeRoleSettings
             Glitch.Init();
             Huntsman.Init();
             Bait.Init();
-            Investigator.Init();
             Pickpocket.Init();
             Swooper.Init();
             Hawk.Init();
@@ -713,9 +712,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Infectious:
                         Infectious.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Investigator:
-                        Investigator.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Virus:
                         Virus.Add(pc.PlayerId);

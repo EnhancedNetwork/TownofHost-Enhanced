@@ -1990,9 +1990,6 @@
   "InvestigateMax": "Maximum Investigations",
   "InvestigateRoundMax": "Maximum Investigations in one round",
 
-  "CrewKillingShowAs": "<color=#8cffff>Crewmate Killing</color> show as",
-  "NeutralKillingShowAs": "<color=#7f8c8d>Neutral Killers</color> show as",
-  "PassiveNeutralsShowAs": "<color=#7f8c8d>Passive Neutrals</color> show as",
   "Color.Red": "<color=#ff1919>Red</color>",
   "Color.Green": "<color=#00ff00>Green</color>",
   "Color.Gray": "<color=#696969>Gray</color>",

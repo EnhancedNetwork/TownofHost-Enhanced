@@ -9,7 +9,6 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate;
 internal class Inspector : RoleBase
@@ -20,18 +19,17 @@ internal class Inspector : RoleBase
     public override bool IsEnable => On;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
-    public static Dictionary<byte, float> MaxCheckLimit = [];
-    public static Dictionary<byte, int> RoundCheckLimit = [];
-
     private static OptionItem TryHideMsg;
-    public static OptionItem InspectCheckLimitMax;
-    public static OptionItem InspectCheckLimitPerMeeting;
+    private static OptionItem InspectCheckLimitMax;
+    private static OptionItem InspectCheckLimitPerMeeting;
     private static OptionItem InspectCheckTargetKnow;
     private static OptionItem InspectCheckOtherTargetKnow;
-    public static OptionItem InspectCheckBaitCountType;
-    public static OptionItem InspectCheckRevealTargetTeam;
-    public static OptionItem InspectAbilityUseGainWithEachTaskCompleted;
+    private static OptionItem InspectCheckBaitCountTypeOpt;
+    private static OptionItem InspectCheckRevealTargetTeam;
+    private static OptionItem InspectAbilityUseGainWithEachTaskCompleted;
 
+    private static Dictionary<byte, float> MaxCheckLimit = [];
+    private static Dictionary<byte, int> RoundCheckLimit = [];
 
     public static void SetupCustomOption()
     {
@@ -42,7 +40,7 @@ internal class Inspector : RoleBase
             .SetValueFormat(OptionFormat.Times);
         InspectCheckLimitPerMeeting = IntegerOptionItem.Create(Id + 12, "InspectCheckLimitPerMeeting", new(1, 20, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Inspector])
             .SetValueFormat(OptionFormat.Times);
-        InspectCheckBaitCountType = BooleanOptionItem.Create(Id + 14, "InspectCheckBaitCountMode", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Inspector]);
+        InspectCheckBaitCountTypeOpt = BooleanOptionItem.Create(Id + 14, "InspectCheckBaitCountMode", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Inspector]);
         InspectCheckTargetKnow = BooleanOptionItem.Create(Id + 15, "InspectCheckTargetKnow", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Inspector]);
         InspectCheckOtherTargetKnow = BooleanOptionItem.Create(Id + 16, "InspectCheckOtherTargetKnow", false, TabGroup.CrewmateRoles, false).SetParent(InspectCheckTargetKnow);
         InspectCheckRevealTargetTeam = BooleanOptionItem.Create(Id + 17, "InspectCheckRevealTarget", false, TabGroup.CrewmateRoles, false).SetParent(InspectCheckOtherTargetKnow);
@@ -111,11 +109,13 @@ internal class Inspector : RoleBase
             MaxCheckLimit[pid] = maxLimit;
         }
     }
+
+    public static bool CheckBaitCountType => InspectCheckBaitCountTypeOpt.GetBool();
     public override void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
     {
         if (!pc.IsAlive()) return;
-        Inspector.MaxCheckLimit[pc.PlayerId] += Inspector.InspectAbilityUseGainWithEachTaskCompleted.GetFloat();
-        Inspector.SendRPC(pc.PlayerId, 2);
+        MaxCheckLimit[pc.PlayerId] += InspectAbilityUseGainWithEachTaskCompleted.GetFloat();
+        SendRPC(pc.PlayerId, 2);
     }
     public override void OnReportDeadBody(PlayerControl reported, PlayerControl target)
     {
@@ -142,13 +142,13 @@ internal class Inspector : RoleBase
 
         if (!pc.IsAlive())
         {
-            Utils.SendMessage(GetString("InspectorDead"), pc.PlayerId);
+            SendMessage(GetString("InspectorDead"), pc.PlayerId);
             return true;
         }
 
         if (operate == 1)
         {
-            Utils.SendMessage(GuessManager.GetFormatString(), pc.PlayerId);
+            SendMessage(GuessManager.GetFormatString(), pc.PlayerId);
             return true;
         }
         else if (operate == 2)
@@ -161,15 +161,15 @@ internal class Inspector : RoleBase
                 TryHideMsgForCompare();
                 ChatManager.SendPreviousMessagesToAll();
             }
-            else if (pc.AmOwner) Utils.SendMessage(originMsg, 255, pc.GetRealName());
+            else if (pc.AmOwner) SendMessage(originMsg, 255, pc.GetRealName());
 
             if (!MsgToPlayerAndRole(msg, out byte targetId1, out byte targetId2, out string error))
             {
-                Utils.SendMessage(error, pc.PlayerId);
+                SendMessage(error, pc.PlayerId);
                 return true;
             }
-            var target1 = Utils.GetPlayerById(targetId1);
-            var target2 = Utils.GetPlayerById(targetId2);
+            var target1 = GetPlayerById(targetId1);
+            var target2 = GetPlayerById(targetId2);
             if (target1 != null && target2 != null)
             {
                 Logger.Info($"{pc.GetNameWithRole()} checked {target1.GetNameWithRole()} and {target2.GetNameWithRole()}", "Inspector");
@@ -180,7 +180,7 @@ internal class Inspector : RoleBase
                     {
                         _ = new LateTask(() =>
                         {
-                            if (!isUI) Utils.SendMessage(GetString("InspectCheckMax"), pc.PlayerId);
+                            if (!isUI) SendMessage(GetString("InspectCheckMax"), pc.PlayerId);
                             else pc.ShowPopUp(GetString("InspectCheckMax"));
                             Logger.Msg("Check attempted at max checks per game", "Inspector");
                         }, 0.2f, "Inspector Msg 1");
@@ -189,7 +189,7 @@ internal class Inspector : RoleBase
                     {
                         _ = new LateTask(() =>
                         {
-                            if (!isUI) Utils.SendMessage(GetString("InspectCheckRound"), pc.PlayerId);
+                            if (!isUI) SendMessage(GetString("InspectCheckRound"), pc.PlayerId);
                             else pc.ShowPopUp(GetString("InspectCheckRound"));
                             Logger.Msg("Check attempted at max checks per meeting", "Inspector");
                         }, 0.2f, "Inspector Msg 2");
@@ -200,8 +200,8 @@ internal class Inspector : RoleBase
                 {
                     _ = new LateTask(() =>
                     {
-                        if (!isUI) Utils.SendMessage(GetString("InspectCheckSelf"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
-                        else pc.ShowPopUp(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckSelf")) + "\n" + GetString("InspectCheckTitle"));
+                        if (!isUI) SendMessage(GetString("InspectCheckSelf"), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
+                        else pc.ShowPopUp(ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckSelf")) + "\n" + GetString("InspectCheckTitle"));
                         Logger.Msg("Check attempted on self", "Inspector");
                     }, 0.2f, "Inspector Msg 3");
                     return true;
@@ -210,8 +210,8 @@ internal class Inspector : RoleBase
                 {
                     _ = new LateTask(() =>
                     {
-                        if (!isUI) Utils.SendMessage(GetString("InspectCheckReveal"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
-                        else pc.ShowPopUp(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckReveal")) + "\n" + GetString("InspectCheckTitle"));
+                        if (!isUI) SendMessage(GetString("InspectCheckReveal"), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
+                        else pc.ShowPopUp(ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckReveal")) + "\n" + GetString("InspectCheckTitle"));
                         Logger.Msg("Check attempted on revealed role", "Inspector");
                     }, 0.2f, "Inspector Msg 4");
                     return true;
@@ -241,8 +241,8 @@ internal class Inspector : RoleBase
                     {
                         _ = new LateTask(() =>
                         {
-                            if (!isUI) Utils.SendMessage(string.Format(GetString("InspectCheckTrue"), target1.GetRealName(), target2.GetRealName()), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
-                            else pc.ShowPopUp(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTrue")) + "\n" + GetString("InspectCheckTitle"));
+                            if (!isUI) SendMessage(string.Format(GetString("InspectCheckTrue"), target1.GetRealName(), target2.GetRealName()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
+                            else pc.ShowPopUp(ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTrue")) + "\n" + GetString("InspectCheckTitle"));
                             Logger.Msg("Check attempt, result TRUE", "Inspector");
                         }, 0.2f, "Inspector Msg 5");
                     }
@@ -250,8 +250,8 @@ internal class Inspector : RoleBase
                     {
                         _ = new LateTask(() =>
                         {
-                            if (!isUI) Utils.SendMessage(string.Format(GetString("InspectCheckFalse"), target1.GetRealName(), target2.GetRealName()), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
-                            else pc.ShowPopUp(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckFalse")) + "\n" + GetString("InspectCheckTitle"));
+                            if (!isUI) SendMessage(string.Format(GetString("InspectCheckFalse"), target1.GetRealName(), target2.GetRealName()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
+                            else pc.ShowPopUp(ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckFalse")) + "\n" + GetString("InspectCheckTitle"));
                             Logger.Msg("Check attempt, result FALSE", "Inspector");
                         }, 0.2f, "Inspector Msg 6");
                     }
@@ -269,8 +269,8 @@ internal class Inspector : RoleBase
                         textToSend1 += GetString("InspectCheckTargetMsg");
                         _ = new LateTask(() =>
                         {
-                            Utils.SendMessage(textToSend, target1.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
-                            Utils.SendMessage(textToSend1, target2.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
+                            SendMessage(textToSend, target1.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
+                            SendMessage(textToSend1, target2.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
                             Logger.Msg("Check attempt, target1 notified", "Inspector");
                             Logger.Msg("Check attempt, target2 notified", "Inspector");
                         }, 0.2f, "Inspector Msg 7");
@@ -290,8 +290,8 @@ internal class Inspector : RoleBase
 
                             _ = new LateTask(() =>
                             {
-                                Utils.SendMessage(string.Format(GetString("InspectorTargetReveal"), target2.GetRealName(), roleT2), target1.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
-                                Utils.SendMessage(string.Format(GetString("InspectorTargetReveal"), target1.GetRealName(), roleT1), target2.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
+                                SendMessage(string.Format(GetString("InspectorTargetReveal"), target2.GetRealName(), roleT2), target1.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
+                                SendMessage(string.Format(GetString("InspectorTargetReveal"), target1.GetRealName(), roleT1), target2.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
                                 Logger.Msg($"check attempt, target1 notified target2 as {roleT2} and target2 notified target1 as {roleT1}", "Inspector");
                             }, 0.3f, "Inspector Msg 8");
                         }
@@ -301,12 +301,12 @@ internal class Inspector : RoleBase
                         if (target1.Is(CustomRoles.Aware))
                         {
                             if (!Aware.AwareInteracted.ContainsKey(target1.PlayerId)) Aware.AwareInteracted[target1.PlayerId] = [];
-                            if (!Aware.AwareInteracted[target1.PlayerId].Contains(Utils.GetRoleName(CustomRoles.Inspector))) Aware.AwareInteracted[target1.PlayerId].Add(Utils.GetRoleName(CustomRoles.Inspector));
+                            if (!Aware.AwareInteracted[target1.PlayerId].Contains(GetRoleName(CustomRoles.Inspector))) Aware.AwareInteracted[target1.PlayerId].Add(GetRoleName(CustomRoles.Inspector));
                         }
                         if (target2.Is(CustomRoles.Aware))
                         {
                             if (!Aware.AwareInteracted.ContainsKey(target2.PlayerId)) Aware.AwareInteracted[target2.PlayerId] = [];
-                            if (!Aware.AwareInteracted[target2.PlayerId].Contains(Utils.GetRoleName(CustomRoles.Inspector))) Aware.AwareInteracted[target2.PlayerId].Add(Utils.GetRoleName(CustomRoles.Inspector));
+                            if (!Aware.AwareInteracted[target2.PlayerId].Contains(GetRoleName(CustomRoles.Inspector))) Aware.AwareInteracted[target2.PlayerId].Add(GetRoleName(CustomRoles.Inspector));
                         }
                     }
                     MaxCheckLimit[pc.PlayerId] -= 1;
@@ -348,8 +348,8 @@ internal class Inspector : RoleBase
         }
 
         //判断选择的玩家是否合理
-        PlayerControl target1 = Utils.GetPlayerById(id1);
-        PlayerControl target2 = Utils.GetPlayerById(id2);
+        PlayerControl target1 = GetPlayerById(id1);
+        PlayerControl target2 = GetPlayerById(id2);
         if (target1 == null || target1.Data.IsDead || target2 == null || target2.Data.IsDead)
         {
             error = GetString("InspectCheckNull");
@@ -425,14 +425,14 @@ internal class Inspector : RoleBase
         TextColor8 = comms ? Color.gray : NormalColor8;
         string Completed8 = comms ? "?" : $"{taskState8.CompletedTasksCount}";
         Color TextColor81;
-        if (Inspector.MaxCheckLimit[playerId] < 1) TextColor81 = Color.red;
+        if (MaxCheckLimit[playerId] < 1) TextColor81 = Color.red;
         else TextColor81 = Color.white;
         ProgressText.Append(ColorString(TextColor8, $"({Completed8}/{taskState8.AllTasksCount})"));
-        ProgressText.Append(ColorString(TextColor81, $" <color=#ffffff>-</color> {Math.Round(Inspector.MaxCheckLimit[playerId], 1)}"));
+        ProgressText.Append(ColorString(TextColor81, $" <color=#ffffff>-</color> {Math.Round(MaxCheckLimit[playerId], 1)}"));
         return ProgressText.ToString();
     }
 
-    public override string PVANameText(PlayerVoteArea pva, PlayerControl target) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Inspector), target.PlayerId.ToString()) + " " + pva.NameText.text;
+    public override string PVANameText(PlayerVoteArea pva, PlayerControl target) => ColorString(GetRoleColor(CustomRoles.Inspector), target.PlayerId.ToString()) + " " + pva.NameText.text;
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
     {
         if (IsForMeeting)

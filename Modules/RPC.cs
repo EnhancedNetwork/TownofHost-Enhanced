@@ -1160,9 +1160,6 @@ internal static class RPC
             case CustomRoles.Infectious:
                 Infectious.Add(targetId);
                 break;
-            case CustomRoles.Investigator:
-                Investigator.Add(targetId);
-                break;
             case CustomRoles.Virus:
                 Virus.Add(targetId);
                 break;

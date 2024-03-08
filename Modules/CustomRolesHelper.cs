@@ -7,6 +7,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -1163,9 +1164,8 @@ public static class CustomRolesHelper
 
             case CustomRoles.Onbound:
                 if (pc.Is(CustomRoles.SuperStar)
-                    || (pc.Is(CustomRoles.Doctor) && Doctor.DoctorVisibleToEveryone.GetBool())
+                    || Doctor.VisibleToEveryone(pc)
                     || (pc.Is(CustomRoles.Bait) && Bait.BaitNotification.GetBool())
-                    //|| pc.Is(CustomRoles.Glow) 
                     || pc.Is(CustomRoles.LastImpostor)
                     || pc.Is(CustomRoles.NiceMini)
                     || pc.Is(CustomRoles.Mare)
@@ -1179,9 +1179,8 @@ public static class CustomRolesHelper
 
             case CustomRoles.Rebound:
                 if (pc.Is(CustomRoles.SuperStar)
-                    || (pc.Is(CustomRoles.Doctor) && Doctor.DoctorVisibleToEveryone.GetBool())
+                    || Doctor.VisibleToEveryone(pc)
                     || (pc.Is(CustomRoles.Bait) && Bait.BaitNotification.GetBool())
-                    //|| pc.Is(CustomRoles.Glow) 
                     || pc.Is(CustomRoles.LastImpostor)
                     || pc.Is(CustomRoles.NiceMini)
                     || pc.Is(CustomRoles.Mare)
@@ -1798,14 +1797,14 @@ public static class CustomRolesHelper
     }
     public static bool IsRevealingRole(this CustomRoles role, PlayerControl target)
     {
-        return (((role is CustomRoles.Mayor) && (Mayor.MayorRevealWhenDoneTasks.GetBool()) && target.AllTasksCompleted()) ||
-             ((role is CustomRoles.SuperStar) && (SuperStar.EveryOneKnowSuperStar.GetBool())) ||
-            ((role is CustomRoles.Marshall) && target.AllTasksCompleted()) ||
-            ((role is CustomRoles.Workaholic) && (Options.WorkaholicVisibleToEveryone.GetBool())) ||
-            ((role is CustomRoles.Doctor) && (Doctor.DoctorVisibleToEveryone.GetBool())) ||
-            ((role is CustomRoles.Bait) && (Bait.BaitNotification.GetBool()) && Inspector.InspectCheckBaitCountType.GetBool()) ||
-            ((role is CustomRoles.President) && President.CheckReveal(target.PlayerId))) ||
-            (role is CustomRoles.Captain && Captain.CrewCanFindCaptain());
+        return (role is CustomRoles.Mayor && Mayor.MayorRevealWhenDoneTasks.GetBool() && target.AllTasksCompleted())
+            || (role is CustomRoles.SuperStar && SuperStar.EveryOneKnowSuperStar.GetBool())
+            || (role is CustomRoles.Marshall && target.AllTasksCompleted())
+            || (role is CustomRoles.Workaholic && Options.WorkaholicVisibleToEveryone.GetBool())
+            || (role is CustomRoles.Doctor && Doctor.VisibleToEveryone(target))
+            || (role is CustomRoles.Bait && Bait.BaitNotification.GetBool() && Inspector.CheckBaitCountType)
+            || (role is CustomRoles.President && President.CheckReveal(target.PlayerId))
+            || (role is CustomRoles.Captain && Captain.CrewCanFindCaptain());
     }
     public static bool IsImpostorTeamV3(this CustomRoles role) => role.IsImpostor() || role.IsMadmate();
     public static bool IsNeutralKillerTeam(this CustomRoles role) => role.IsNK() && !role.IsMadmate();

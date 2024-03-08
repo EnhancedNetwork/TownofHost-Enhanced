@@ -19,18 +19,18 @@ internal class FortuneTeller : RoleBase
     public override bool IsEnable => On;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
-    public static OptionItem CheckLimitOpt;
-    public static OptionItem AccurateCheckMode;
-    public static OptionItem HidesVote;
-    public static OptionItem ShowSpecificRole;
-    public static OptionItem AbilityUseGainWithEachTaskCompleted;
-    public static OptionItem RandomActiveRoles;
+    private static OptionItem CheckLimitOpt;
+    private static OptionItem AccurateCheckMode;
+    private static OptionItem HidesVote;
+    private static OptionItem ShowSpecificRole;
+    private static OptionItem AbilityUseGainWithEachTaskCompleted;
+    private static OptionItem RandomActiveRoles;
 
 
-    public static HashSet<byte> didVote = [];
-    public static Dictionary<byte, float> CheckLimit = [];
-    public static Dictionary<byte, float> TempCheckLimit = [];
-    public static Dictionary<byte, HashSet<byte>> targetList = [];
+    private static HashSet<byte> didVote = [];
+    private static Dictionary<byte, float> CheckLimit = [];
+    private static Dictionary<byte, float> TempCheckLimit = [];
+    private static Dictionary<byte, HashSet<byte>> targetList = [];
 
 
     public static void SetupCustomOption()
