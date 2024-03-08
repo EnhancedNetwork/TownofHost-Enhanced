@@ -1796,7 +1796,7 @@ public static class CustomRolesHelper
     }
     public static bool IsRevealingRole(this CustomRoles role, PlayerControl target)
     {
-        return (role is CustomRoles.Mayor && Mayor.MayorRevealWhenDoneTasks.GetBool() && target.AllTasksCompleted())
+        return (role is CustomRoles.Mayor && Mayor.VisibleToEveryone(target))
             || (role is CustomRoles.SuperStar && SuperStar.EveryOneKnowSuperStar.GetBool())
             || (role is CustomRoles.Marshall && target.AllTasksCompleted())
             || (role is CustomRoles.Workaholic && Options.WorkaholicVisibleToEveryone.GetBool())

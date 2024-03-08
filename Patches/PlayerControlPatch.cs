@@ -3190,11 +3190,13 @@ class CoEnterVentPatch
             return true;
         }
 
+        var playerRoleClass = __instance.myPlayer.GetRoleClass();
+        
         // Fix Vent Stuck
         if (
             (__instance.myPlayer.Data.Role.Role != RoleTypes.Engineer
                 && !__instance.myPlayer.CanUseImpostorVentButton())
-            || (__instance.myPlayer.Is(CustomRoles.Mayor) && Mayor.MayorUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count) && count >= Mayor.MayorNumOfUseButton.GetInt())
+            || (playerRoleClass != null && playerRoleClass.CheckBootFromVentVent(__instance, id))
           //|| (__instance.myPlayer.Is(CustomRoles.Paranoia) && Main.ParaUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count2) && count2 >= Options.ParanoiaNumOfUseButton.GetInt())
             || (__instance.myPlayer.Is(CustomRoles.Veteran) && Veteran.VeteranNumOfUsed.TryGetValue(__instance.myPlayer.PlayerId, out var count3) && count3 < 1)
             || (__instance.myPlayer.Is(CustomRoles.Pacifist) && Pacifist.PacifistNumOfUsed.TryGetValue(__instance.myPlayer.PlayerId, out var count4) && count4 < 1)
@@ -3203,6 +3205,7 @@ class CoEnterVentPatch
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.BootFromVent, SendOption.Reliable, -1);
             writer.WritePacked(127);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
+            
             _ = new LateTask(() =>
             {
                 int clientId = __instance.myPlayer.GetClientId();

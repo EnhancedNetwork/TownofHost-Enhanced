@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using System.Text;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TOHE;
@@ -88,6 +89,11 @@ public abstract class RoleBase
     /// </summary>
     public virtual void OnEnterVent(PlayerControl pc, Vent vent)
     { }
+
+    /// <summary>
+    /// A method for activating actions when role is already in vent
+    /// </summary>
+    public virtual bool CheckBootFromVentVent(PlayerPhysics physics, int ventId) => physics == null;
 
     /// <summary>
     /// A method for activating actions when role is already in vent
@@ -256,23 +262,31 @@ public abstract class RoleBase
     public virtual bool HideVote(PlayerVoteArea votedPlayer) => false;
 
     /// <summary>
-    /// Set text for Kill/Shapeshift/Report/Vent/Protect button
+    /// When need add visual votes
     /// </summary>
+    public virtual void AddVisualVotes(PlayerVoteArea votedPlayer, ref List<MeetingHud.VoterState> statesList)
+    { }
+
+    /// <summary>
+    /// Add real votes num
+    /// </summary>
+    public virtual int AddRealVotesNum(PlayerVoteArea PVA) => 0;
+
+    // Set text for Kill/Shapeshift/Report/Vent/Protect button
     public virtual void SetAbilityButtonText(HudManager hud, byte playerId) => hud.KillButton?.OverrideText(Translator.GetString("KillButtonText"));
     public virtual Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => null;
     public virtual Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => null;
     public virtual Sprite ImpostorVentButtonSprite { get; }
     public virtual Sprite ReportButtonSprite { get; }
+
+    // Add Mark/LowerText/Suffix for player
     public virtual string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;
     public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
     public virtual string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;
+    public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
+
+    // Player know role target, color role target
     public virtual bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => false;
     public virtual string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => string.Empty;
     public virtual bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => false;
-
-    /// <summary>
-    /// Gets & Appends the role's skill limit
-    /// </summary>
-    public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
-    public virtual int CalcVote(PlayerVoteArea PVA) => 0;
 }

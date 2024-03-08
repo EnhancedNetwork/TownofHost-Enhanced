@@ -201,6 +201,7 @@ class CheckForEndVotingPatch
 
                 // Hide roles vote
                 if (ps.TargetPlayerId.GetRoleClassById().HideVote(ps)) continue;
+                
                 // Hide Jester Vote
                 if (CheckRole(ps.TargetPlayerId, CustomRoles.Jester) && Options.HideJesterVote.GetBool()) continue;
                 // Assing Madmate Slef Vote
@@ -255,18 +256,13 @@ class CheckForEndVotingPatch
                     }
                 }
 
-                if (CheckRole(ps.TargetPlayerId, CustomRoles.Mayor) && !Mayor.MayorHideVote.GetBool()) //Mayorの投票数
-                {
-                    for (var i2 = 0; i2 < Mayor.MayorAdditionalVote.GetFloat(); i2++)
-                    {
-                        statesList.Add(new MeetingHud.VoterState()
-                        {
-                            VoterId = ps.TargetPlayerId,
-                            VotedForId = ps.VotedFor
-                        });
-                    }
-                }
-                if (CheckRole(ps.TargetPlayerId, CustomRoles.Vindicator) && !Options.VindicatorHideVote.GetBool()) //Vindicator
+                var player = Utils.GetPlayerById(ps.TargetPlayerId);
+                var playerRoleClass = player.GetRoleClass();
+
+                playerRoleClass?.AddVisualVotes(ps, ref statesList);
+
+                
+                if (CheckRole(ps.TargetPlayerId, CustomRoles.Vindicator) && !Options.VindicatorHideVote.GetBool())
                 {
                     for (var i2 = 0; i2 < Options.VindicatorAdditionalVote.GetFloat(); i2++)
                     {
@@ -785,11 +781,11 @@ static class ExtendedMeetingHud
                     Collector.CollectorVotes(target, ps);
                 }
 
-                //市长附加票数
+                //Add votes for roles
                 var pc = Utils.GetPlayerById(ps.TargetPlayerId);
                 if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, pc.GetCustomRole())
                     && ps.TargetPlayerId != ps.VotedFor && ps != null)
-                        VoteNum += ps.TargetPlayerId.GetRoleClassById().CalcVote(ps); // returns + 0 or given role value (+/-)
+                        VoteNum += ps.TargetPlayerId.GetRoleClassById().AddRealVotesNum(ps); // returns + 0 or given role value (+/-)
 
                 if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Knighted) // not doing addons lol, so this stays
                     && ps.TargetPlayerId != ps.VotedFor

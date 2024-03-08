@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -15,13 +16,13 @@ internal partial class Mayor : RoleBase
 
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Collective");
 
-    public static OptionItem MayorAdditionalVote;
+    private static OptionItem MayorAdditionalVote;
     public static OptionItem MayorHasPortableButton;
-    public static OptionItem MayorNumOfUseButton;
-    public static OptionItem MayorHideVote;
-    public static OptionItem MayorRevealWhenDoneTasks;
+    private static OptionItem MayorNumOfUseButton;
+    private static OptionItem MayorHideVote;
+    private static OptionItem MayorRevealWhenDoneTasks;
 
-    public static Dictionary<byte, int> MayorUsedButtonCount = [];
+    private static Dictionary<byte, int> MayorUsedButtonCount = [];
 
     public static void SetupCustomOptions()
     {
@@ -56,17 +57,25 @@ internal partial class Mayor : RoleBase
         MayorUsedButtonCount[playerId] = 0;
     }
 
-    public override int CalcVote(PlayerVoteArea PVA)
+    public override int AddRealVotesNum(PlayerVoteArea PVA) => MayorAdditionalVote.GetInt();
+
+    public override void AddVisualVotes(PlayerVoteArea votedPlayer, ref List<MeetingHud.VoterState> statesList)
     {
-        return MayorAdditionalVote.GetInt();
+        if (MayorHideVote.GetBool()) return;
+
+        for (var i2 = 0; i2 < MayorAdditionalVote.GetFloat(); i2++)
+        {
+            statesList.Add(new MeetingHud.VoterState()
+            {
+                VoterId = votedPlayer.TargetPlayerId,
+                VotedForId = votedPlayer.VotedFor
+            });
+        }
     }
 
     public override void OnPressEmergencyButton(PlayerControl reporter)
     {
-        if (reporter.Is(CustomRoles.Mayor))
-        {
-            MayorUsedButtonCount[reporter.PlayerId] += 1;
-        }
+        MayorUsedButtonCount[reporter.PlayerId] += 1;
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
@@ -78,8 +87,7 @@ internal partial class Mayor : RoleBase
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
-
-        if (pc.Is(CustomRoles.Mayor) && MayorHasPortableButton.GetBool() && !CopyCat.playerIdList.Contains(pc.PlayerId))
+        if (MayorHasPortableButton.GetBool() && !CopyCat.playerIdList.Contains(pc.PlayerId))
         {
             if (MayorUsedButtonCount.TryGetValue(pc.PlayerId, out var count) && count < MayorNumOfUseButton.GetInt())
             {
@@ -88,6 +96,10 @@ internal partial class Mayor : RoleBase
             }
         }
     }
+    public override bool CheckBootFromVentVent(PlayerPhysics physics, int ventId)
+        => MayorUsedButtonCount.TryGetValue(physics.myPlayer.PlayerId, out var count)
+        && count >= MayorNumOfUseButton.GetInt();
+
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role)
     {
         if (MayorRevealWhenDoneTasks.GetBool())
@@ -101,11 +113,13 @@ internal partial class Mayor : RoleBase
         }
         return false;
     }
-    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => MayorRevealWhenDoneTasks.GetBool() && target.Is(CustomRoles.Mayor) && target.GetPlayerTaskState().IsTaskFinished;
-    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
+
+    public static bool VisibleToEveryone(PlayerControl target) => MayorRevealWhenDoneTasks.GetBool() && target.GetPlayerTaskState().IsTaskFinished;
+    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => VisibleToEveryone(target);
+    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => VisibleToEveryone(target);
+    
     public override void SetAbilityButtonText(HudManager hud, byte id)
     {
-        hud.ReportButton.OverrideText(GetString("ReportButtonText"));
         hud.AbilityButton.buttonLabelText.text = GetString("MayorVentButtonText");
     }
 }
