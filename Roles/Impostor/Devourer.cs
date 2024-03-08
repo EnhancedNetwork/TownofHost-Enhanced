@@ -1,11 +1,9 @@
 using AmongUs.GameOptions;
 using System.Collections.Generic;
 using System.Linq;
-using HarmonyLib;
 using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Impostor;
 

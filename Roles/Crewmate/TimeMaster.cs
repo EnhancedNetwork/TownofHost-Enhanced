@@ -1,14 +1,12 @@
 ﻿using AmongUs.GameOptions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using static TOHE.Translator;
 using UnityEngine;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Utils;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate
 {

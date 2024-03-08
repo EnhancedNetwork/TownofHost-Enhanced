@@ -4,7 +4,6 @@ using System.Linq;
 using TOHE.Modules.ChatManager;
 using UnityEngine;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate;
 
