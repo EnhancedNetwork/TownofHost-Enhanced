@@ -11,9 +11,10 @@ namespace TOHE.Roles.Core;
 
 public static class CustomRoleManager
 {
+    //public static Dictionary<byte, RoleBase> AllActiveRoles = new(15);
     public static bool IsClassEnable(this CustomRoles role) => Main.PlayerStates.Any(x => x.Value.MainRole == role && x.Value.RoleClass.IsEnable);
 
-    public static RoleBase GetRoleClass(this PlayerControl player) => Main.PlayerStates.TryGetValue(player.PlayerId, out var statePlayer) && statePlayer != null ? statePlayer.RoleClass : new VanillaRole();
+    public static RoleBase GetRoleClass(this PlayerControl player) => GetRoleClassById(player.PlayerId);
     public static RoleBase GetRoleClassById(this byte playerId) => Main.PlayerStates.TryGetValue(playerId, out var statePlayer) && statePlayer != null ? statePlayer.RoleClass : new VanillaRole();
 
     public static RoleBase CreateRoleClass(this CustomRoles role) => role switch
@@ -140,6 +141,7 @@ public static class CustomRoleManager
         CustomRoles.GuessMaster => new GuessMaster(),
         CustomRoles.Guardian => new Guardian(),
         CustomRoles.Inspector => new Inspector(),
+        CustomRoles.Investigator => new Investigator(),
         CustomRoles.Jailer => new Jailer(),
         CustomRoles.Judge => new Judge(),
         CustomRoles.Keeper => new Keeper(),
