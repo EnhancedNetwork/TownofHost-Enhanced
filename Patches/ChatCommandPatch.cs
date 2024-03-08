@@ -438,11 +438,21 @@ internal class ChatCommands
                 case "/tpout":
                     canceled = true;
                     if (!GameStates.IsLobby) break;
+                    if (!Options.PlayerCanUseTP.GetBool())
+                    {
+                        Utils.SendMessage(GetString("DisableUseCommand"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
                     PlayerControl.LocalPlayer.RpcTeleport(new Vector2(0.1f, 3.8f));
                     break;
                 case "/tpin":
                     canceled = true;
                     if (!GameStates.IsLobby) break;
+                    if (!Options.PlayerCanUseTP.GetBool())
+                    {
+                        Utils.SendMessage(GetString("DisableUseCommand"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
                     PlayerControl.LocalPlayer.RpcTeleport(new Vector2(-0.2f, 1.3f));
                     break;
 
@@ -829,7 +839,13 @@ internal class ChatCommands
                     if (args.Length < 1 || !int.TryParse(args[1], out int sound1)) break;
                     RPC.PlaySoundRPC(PlayerControl.LocalPlayer.PlayerId, (Sounds)sound1);
                     break;
+
                 case "/rps":
+                    if (!Options.CanPlayMiniGames.GetBool())
+                    {
+                        Utils.SendMessage(GetString("DisableUseCommand"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
                     canceled = true;
                     subArgs = args.Length != 2 ? "" : args[1];
 
@@ -871,6 +887,11 @@ internal class ChatCommands
                         break;
                     }
                 case "/coinflip":
+                    if (!Options.CanPlayMiniGames.GetBool())
+                    {
+                        Utils.SendMessage(GetString("DisableUseCommand"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
                     canceled = true;
 
                     if (!GameStates.IsLobby && PlayerControl.LocalPlayer.IsAlive())
@@ -887,6 +908,11 @@ internal class ChatCommands
                         break;
                     }
                 case "/gno":
+                    if (!Options.CanPlayMiniGames.GetBool())
+                    {
+                        Utils.SendMessage(GetString("DisableUseCommand"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
                     canceled = true;
                     if (!GameStates.IsLobby && PlayerControl.LocalPlayer.IsAlive())
                     {
@@ -942,7 +968,12 @@ internal class ChatCommands
 
                     }
                     case "/rand":
-                        canceled = true;
+                    if (!Options.CanPlayMiniGames.GetBool())
+                    {
+                        Utils.SendMessage(GetString("DisableUseCommand"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    canceled = true;
                         subArgs = args.Length != 3 ? "" : args[1];
                         subArgs2 = args.Length != 3 ? "" : args[2];
 
@@ -2146,10 +2177,21 @@ internal class ChatCommands
 
             case "/tpout":
                 if (!GameStates.IsLobby) break;
+                if (!Options.PlayerCanUseTP.GetBool())
+                {
+                    Utils.SendMessage(GetString("DisableUseCommand"), player.PlayerId);
+                    break;
+                }
                 player.RpcTeleport(new Vector2(0.1f, 3.8f));
                 break;
             case "/tpin":
                 if (!GameStates.IsLobby) break;
+                if (!Options.PlayerCanUseTP.GetBool())
+                {
+                    Utils.SendMessage(GetString("DisableUseCommand"), player.PlayerId);
+                    break;
+                }
+
                 player.RpcTeleport(new Vector2(-0.2f, 1.3f));
                 break;
 
@@ -2190,6 +2232,11 @@ internal class ChatCommands
                 break;
             case "/rps":
                 //canceled = true;
+                if (!Options.CanPlayMiniGames.GetBool())
+                {
+                    Utils.SendMessage(GetString("DisableUseCommand"), player.PlayerId);
+                    break;
+                }
                 subArgs = args.Length != 2 ? "" : args[1];
 
                 if (!GameStates.IsLobby && player.IsAlive())
@@ -2231,6 +2278,11 @@ internal class ChatCommands
                 }
             case "/coinflip":
                 //canceled = true;
+                if (!Options.CanPlayMiniGames.GetBool())
+                {
+                    Utils.SendMessage(GetString("DisableUseCommand"), player.PlayerId);
+                    break;
+                }
 
                 if (!GameStates.IsLobby && player.IsAlive())
                 {
@@ -2246,6 +2298,11 @@ internal class ChatCommands
                     break;
                 }
             case "/gno":
+                if (!Options.CanPlayMiniGames.GetBool())
+                {
+                    Utils.SendMessage(GetString("DisableUseCommand"), player.PlayerId);
+                    break;
+                }
                 //canceled = true;
                 if (!GameStates.IsLobby && player.IsAlive())
                 {
@@ -2300,6 +2357,11 @@ internal class ChatCommands
                     }
                 }
             case "/rand":
+                if (!Options.CanPlayMiniGames.GetBool())
+                {
+                    Utils.SendMessage(GetString("DisableUseCommand"), player.PlayerId);
+                    break;
+                }
                 subArgs = args.Length != 3 ? "" : args[1];
                 subArgs2 = args.Length != 3 ? "" : args[2];
 
