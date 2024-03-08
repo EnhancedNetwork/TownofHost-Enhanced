@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using TOHE.Roles.Core;
-using static TOHE.CheckForEndVotingPatch;
 using static TOHE.Translator;
 using static TOHE.Options;
 

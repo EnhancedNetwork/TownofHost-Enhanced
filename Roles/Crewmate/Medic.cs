@@ -1,13 +1,11 @@
 ﻿using AmongUs.GameOptions;
-using HarmonyLib;
 using Hazel;
 using System.Collections.Generic;
-using System.Linq;
-using TOHE.Modules;
-using static TOHE.Translator;
-using TOHE.Roles.Core;
 using UnityEngine;
+using TOHE.Modules;
+using TOHE.Roles.Core;
 using static TOHE.Utils;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
