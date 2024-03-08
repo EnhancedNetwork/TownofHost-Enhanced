@@ -3196,7 +3196,7 @@ class CoEnterVentPatch
         if (
             (__instance.myPlayer.Data.Role.Role != RoleTypes.Engineer
                 && !__instance.myPlayer.CanUseImpostorVentButton())
-            || (playerRoleClass != null && playerRoleClass.CheckBootFromVentVent(__instance, id))
+            || (playerRoleClass != null && playerRoleClass.CheckBootFromVent(__instance, id))
           //|| (__instance.myPlayer.Is(CustomRoles.Paranoia) && Main.ParaUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count2) && count2 >= Options.ParanoiaNumOfUseButton.GetInt())
             || (__instance.myPlayer.Is(CustomRoles.Veteran) && Veteran.VeteranNumOfUsed.TryGetValue(__instance.myPlayer.PlayerId, out var count3) && count3 < 1)
             || (__instance.myPlayer.Is(CustomRoles.Pacifist) && Pacifist.PacifistNumOfUsed.TryGetValue(__instance.myPlayer.PlayerId, out var count4) && count4 < 1)

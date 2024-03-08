@@ -96,7 +96,7 @@ internal partial class Mayor : RoleBase
             }
         }
     }
-    public override bool CheckBootFromVentVent(PlayerPhysics physics, int ventId)
+    public override bool CheckBootFromVent(PlayerPhysics physics, int ventId)
         => MayorUsedButtonCount.TryGetValue(physics.myPlayer.PlayerId, out var count)
         && count >= MayorNumOfUseButton.GetInt();
 

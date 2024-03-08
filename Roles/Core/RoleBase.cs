@@ -91,9 +91,9 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// A method for activating actions when role is already in vent
+    /// When role need force boot from vent
     /// </summary>
-    public virtual bool CheckBootFromVentVent(PlayerPhysics physics, int ventId) => physics == null;
+    public virtual bool CheckBootFromVent(PlayerPhysics physics, int ventId) => physics == null;
 
     /// <summary>
     /// A method for activating actions when role is already in vent
