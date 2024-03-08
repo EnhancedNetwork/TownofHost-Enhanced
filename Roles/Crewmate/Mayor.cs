@@ -21,8 +21,6 @@ internal partial class Mayor : RoleBase
     public static OptionItem MayorHideVote;
     public static OptionItem MayorRevealWhenDoneTasks;
 
-    public static OverrideTasksData MayorTasks;
-
     public static Dictionary<byte, int> MayorUsedButtonCount = [];
 
     public static void SetupCustomOptions()
@@ -40,7 +38,7 @@ internal partial class Mayor : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Mayor]);
         MayorRevealWhenDoneTasks = BooleanOptionItem.Create(Id + 14, "MayorRevealWhenDoneTasks", false, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Mayor]);
-        MayorTasks = OverrideTasksData.Create(Id + 15, TabGroup.CrewmateRoles, CustomRoles.Mayor);
+        OverrideTasksData.Create(Id + 15, TabGroup.CrewmateRoles, CustomRoles.Mayor);
     }
 
     public override void Init()

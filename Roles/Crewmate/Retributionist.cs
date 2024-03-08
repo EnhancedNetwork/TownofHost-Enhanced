@@ -29,7 +29,6 @@ internal class Retributionist : RoleBase
     public static OptionItem CanOnlyRetributeWithTasksDone;
     public static Dictionary<byte, int> RetributionistRevenged = [];
 
-    public static OverrideTasksData RetributionistTasks;
     public static void SetupCustomOptions()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Retributionist);
@@ -41,7 +40,7 @@ internal class Retributionist : RoleBase
             .SetValueFormat(OptionFormat.Players);
         CanOnlyRetributeWithTasksDone = BooleanOptionItem.Create(Id + 12, "CanOnlyRetributeWithTasksDone", true, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist]);
-        RetributionistTasks = OverrideTasksData.Create(Id + 13, TabGroup.CrewmateRoles, CustomRoles.Retributionist);
+        OverrideTasksData.Create(Id + 13, TabGroup.CrewmateRoles, CustomRoles.Retributionist);
     }
     public override void Init()
     {

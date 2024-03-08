@@ -18,7 +18,6 @@ internal class Crewpostor : RoleBase
     private static OptionItem AlliesKnowCrewpostor;
     private static OptionItem LungeKill;
     private static OptionItem KillAfterTask;
-    private static OverrideTasksData CrewpostorTasks;
 
     private static Dictionary<byte, int> TasksDone = [];
 
@@ -35,7 +34,7 @@ internal class Crewpostor : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Crewpostor]);
         KillAfterTask = IntegerOptionItem.Create(Id + 6, "CrewpostorKillAfterTask", new(1, 50, 1), 1, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Crewpostor]);
-        CrewpostorTasks = OverrideTasksData.Create(Id + 7, TabGroup.ImpostorRoles, CustomRoles.Crewpostor);
+        OverrideTasksData.Create(Id + 7, TabGroup.ImpostorRoles, CustomRoles.Crewpostor);
     }
 
     public override void Init()
