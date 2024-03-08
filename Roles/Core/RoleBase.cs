@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using System.Text;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TOHE;
@@ -90,6 +91,11 @@ public abstract class RoleBase
     { }
 
     /// <summary>
+    /// When role need force boot from vent
+    /// </summary>
+    public virtual bool CheckBootFromVent(PlayerPhysics physics, int ventId) => physics == null;
+
+    /// <summary>
     /// A method for activating actions when role is already in vent
     /// </summary>
     public virtual void OnCoEnterVent(PlayerPhysics physics, int ventId)
@@ -98,13 +104,18 @@ public abstract class RoleBase
     /// <summary>
     /// A generic method to activate actions once (CustomRole)player exists vent.
     /// </summary>
-    public virtual void OnExitVent(PlayerControl pc, Vent vent)
+    public virtual void OnExitVent(PlayerControl pc, int ventId)
     { }
     /// <summary>
     /// A generic method to check a Guardian Angel protecting someone.
     /// </summary>
     public virtual void OnCheckProtect(PlayerControl angel, PlayerControl target)
     { }
+
+    /// <summary>
+    ///  When role based on Impostors need force check target
+    /// </summary>
+    public virtual bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target) => target != null && killer != null;
 
     /// <summary>
     /// When role the target requires a kill check
@@ -124,9 +135,20 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// When the target role died
+    /// When the target role died by killer
     /// </summary>
     public virtual void OnTargetDead(PlayerControl killer, PlayerControl target)
+    { }
+
+    /// <summary>
+    /// When the target role died and need run kill flash
+    /// </summary>
+    public virtual bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer) => false;
+
+    /// <summary>
+    /// Always do these tasks once the role dies
+    /// </summary>
+    public virtual void AfterPlayerDeathTask(PlayerControl target)
     { }
 
     /// <summary>
@@ -185,6 +207,23 @@ public abstract class RoleBase
     { }
 
     /// <summary>
+    /// When the meeting hud is loaded
+    /// </summary>
+    public virtual void OnMeetingHudStart(PlayerControl pc)
+    { }
+
+    /// <summary>
+    /// Clears the initial meetinghud message
+    /// </summary>
+    public virtual void MeetingHudClear()
+    { }
+
+    /// <summary>
+    /// Notify the playername for modded clients OnMeeting
+    /// </summary>
+    public virtual string PVANameText(PlayerVoteArea pva, PlayerControl target) => string.Empty;
+
+    /// <summary>
     /// Notify a specific role about something after the meeting was ended.
     /// </summary>
     public virtual void NotifyAfterMeeting()
@@ -223,25 +262,31 @@ public abstract class RoleBase
     public virtual bool HideVote(PlayerVoteArea votedPlayer) => false;
 
     /// <summary>
-    /// Set text for Kill/Shapeshift/Report/Vent/Protect button
+    /// When need add visual votes
     /// </summary>
+    public virtual void AddVisualVotes(PlayerVoteArea votedPlayer, ref List<MeetingHud.VoterState> statesList)
+    { }
+
+    /// <summary>
+    /// Add real votes num
+    /// </summary>
+    public virtual int AddRealVotesNum(PlayerVoteArea PVA) => 0;
+
+    // Set text for Kill/Shapeshift/Report/Vent/Protect button
     public virtual void SetAbilityButtonText(HudManager hud, byte playerId) => hud.KillButton?.OverrideText(Translator.GetString("KillButtonText"));
     public virtual Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => null;
     public virtual Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => null;
     public virtual Sprite ImpostorVentButtonSprite { get; }
     public virtual Sprite ReportButtonSprite { get; }
+
+    // Add Mark/LowerText/Suffix for player
     public virtual string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;
     public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
     public virtual string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => string.Empty;
+    public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
+
+    // Player know role target, color role target
     public virtual bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => false;
     public virtual string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => string.Empty;
     public virtual bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => false;
-
-    /// <summary>
-    /// Gets & Appends the role's skill limit
-    /// </summary>
-    public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
-    public virtual void AppendProgressText(byte playerId, bool comms, StringBuilder ProgressText)
-    { }
-    public virtual int CalcVote(PlayerVoteArea PVA) => 0;
 }

@@ -12,7 +12,7 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Overseer : RoleBase
 {
-    private static readonly int Id = 12200;
+    private const int Id = 12200;
 
     public static bool On = false;
     public override bool IsEnable => false;
@@ -31,14 +31,14 @@ internal class Overseer : RoleBase
     [
         CustomRoles.Snitch,
         //CustomRoles.Luckey,
-        CustomRoles.Needy,
+        CustomRoles.LazyGuy,
         CustomRoles.SuperStar,
-        CustomRoles.CyberStar,
+        CustomRoles.Celebrity,
         CustomRoles.TaskManager,
         CustomRoles.Mayor,
         CustomRoles.Paranoia,
         CustomRoles.Psychic,
-        CustomRoles.SabotageMaster,
+        CustomRoles.Mechanic,
         CustomRoles.Snitch,
         CustomRoles.Marshall,
         CustomRoles.Inspector,
@@ -55,15 +55,15 @@ internal class Overseer : RoleBase
         CustomRoles.Bodyguard,
         CustomRoles.Grenadier,
         CustomRoles.Lighter,
-        CustomRoles.Divinator,
+        CustomRoles.FortuneTeller,
         CustomRoles.Oracle,
         CustomRoles.Tracefinder,
   //      CustomRoles.Glitch,
         CustomRoles.Judge,
         CustomRoles.Mortician,
-        CustomRoles.Mediumshiper,
+        CustomRoles.Medium,
         CustomRoles.Observer,
-        CustomRoles.DovesOfNeace,
+        CustomRoles.Pacifist,
         CustomRoles.Coroner,
         CustomRoles.Retributionist,
         CustomRoles.Guardian,

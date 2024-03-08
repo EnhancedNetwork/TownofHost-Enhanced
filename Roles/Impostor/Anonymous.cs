@@ -91,7 +91,7 @@ internal class Anonymous : RoleBase
     }
     public override void OnShapeshift(PlayerControl pc, PlayerControl ssTarget, bool shapeshifting, bool shapeshiftIsHidden)
     {
-        if (!shapeshifting || !HackLimit.TryGetValue(pc.PlayerId, out var x) || x < 1 || ssTarget == null || ssTarget.Is(CustomRoles.Needy) || ssTarget.Is(CustomRoles.Lazy) || ssTarget.Is(CustomRoles.NiceMini) && Mini.Age < 18) return;
+        if (!shapeshifting || !HackLimit.TryGetValue(pc.PlayerId, out var x) || x < 1 || ssTarget == null || ssTarget.Is(CustomRoles.LazyGuy) || ssTarget.Is(CustomRoles.Lazy) || ssTarget.Is(CustomRoles.NiceMini) && Mini.Age < 18) return;
         HackLimit[pc.PlayerId]--;
         SendRPC(pc.PlayerId);
 

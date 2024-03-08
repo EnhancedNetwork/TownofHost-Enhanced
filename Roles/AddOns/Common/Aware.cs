@@ -79,7 +79,7 @@ public static class Aware
     {
         switch (pc.GetCustomRole())
         {
-            case CustomRoles.Divinator:
+            case CustomRoles.FortuneTeller:
             case CustomRoles.Oracle:
                 if (!AwareInteracted.ContainsKey(pva.VotedFor)) AwareInteracted[pva.VotedFor] = [];
                 if (!AwareInteracted[pva.VotedFor].Contains(Utils.GetRoleName(pc.GetCustomRole())))

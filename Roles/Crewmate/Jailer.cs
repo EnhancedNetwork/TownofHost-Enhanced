@@ -1,30 +1,36 @@
+using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
+using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
-public static class Jailer
+internal class Jailer : RoleBase
 {
-    private static readonly int Id = 10600;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    private const int Id = 10600;
+    private static bool On = false;
+    public override bool IsEnable => On;
+    public static bool HasEnabled => CustomRoles.Jailer.IsClassEnable();
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
-    public static Dictionary<byte, byte> JailerTarget = [];
-    public static Dictionary<byte, int> JailerExeLimit = [];
-    public static Dictionary<byte, bool> JailerHasExe = [];
-    public static Dictionary<byte, bool> JailerDidVote = [];
+    private static List<byte> playerIdList = [];
 
-    public static OptionItem JailCooldown;
-    public static OptionItem MaxExecution;
-    public static OptionItem NBCanBeExe;
-    public static OptionItem NCCanBeExe;
-    public static OptionItem NECanBeExe;
-    public static OptionItem NKCanBeExe;
-    public static OptionItem CKCanBeExe;
-    public static OptionItem notifyJailedOnMeeting;
+    private static OptionItem JailCooldown;
+    private static OptionItem MaxExecution;
+    private static OptionItem NBCanBeExe;
+    private static OptionItem NCCanBeExe;
+    private static OptionItem NECanBeExe;
+    private static OptionItem NKCanBeExe;
+    private static OptionItem CKCanBeExe;
+    private static OptionItem NotifyJailedOnMeetingOpt;
 
+    private static Dictionary<byte, byte> JailerTarget = [];
+    private static Dictionary<byte, int> JailerExeLimit = [];
+    private static Dictionary<byte, bool> JailerHasExe = [];
+    private static Dictionary<byte, bool> JailerDidVote = [];
 
     public static void SetupCustomOption()
     {
@@ -38,41 +44,42 @@ public static class Jailer
         NECanBeExe = BooleanOptionItem.Create(Id + 14, "JailerNECanBeExe", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Jailer]);
         NKCanBeExe = BooleanOptionItem.Create(Id + 15, "JailerNKCanBeExe", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Jailer]);
         CKCanBeExe = BooleanOptionItem.Create(Id + 16, "JailerCKCanBeExe", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Jailer]);
-        notifyJailedOnMeeting = BooleanOptionItem.Create(Id + 18, "notifyJailedOnMeeting", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Jailer]);
+        NotifyJailedOnMeetingOpt = BooleanOptionItem.Create(Id + 18, "notifyJailedOnMeeting", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Jailer]);
     }
 
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         JailerExeLimit = [];
         JailerTarget = [];
         JailerHasExe = [];
         JailerDidVote = [];
-        IsEnable = false;
+        On = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         JailerExeLimit.Add(playerId, MaxExecution.GetInt());
         JailerTarget.Add(playerId, byte.MaxValue);
         JailerHasExe.Add(playerId, false);
         JailerDidVote.Add(playerId, false);
-        IsEnable = true;
+        On = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public static void Remove(byte playerId)
+    public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
         JailerExeLimit.Remove(playerId);
         JailerHasExe.Remove(playerId);
         JailerDidVote.Remove(playerId);
     }
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Utils.GetPlayerById(id).IsAlive() ? JailCooldown.GetFloat() : 300f;
-    public static string GetProgressText(byte playerId) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer).ShadeColor(0.25f), JailerExeLimit.TryGetValue(playerId, out var exeLimit) ? $"({exeLimit})" : "Invalid");
 
+    public static bool IsTarget(byte playerId) => JailerTarget.ContainsValue(playerId);
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Utils.GetPlayerById(id).IsAlive() ? JailCooldown.GetFloat() : 300f;
+    public override string GetProgressText(byte playerId, bool cooms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer).ShadeColor(0.25f), JailerExeLimit.TryGetValue(playerId, out var exeLimit) ? $"({exeLimit})" : "Invalid");
 
     public static void SendRPC(byte jailerId, byte targetId = byte.MaxValue, bool setTarget = true)
     {
@@ -117,7 +124,7 @@ public static class Jailer
         JailerTarget[jailerId] = targetId;
     }
 
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (!killer.Is(CustomRoles.Jailer)) return true;
         if (killer == null || target == null) return true;
@@ -133,15 +140,16 @@ public static class Jailer
         SendRPC(killer.PlayerId, target.PlayerId, true);
         return false;
     }
-
-    public static void OnReportDeadBody()
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
+    public override void OnReportDeadBody(PlayerControl sob, PlayerControl bakugan)
     {
         foreach (var targetId in JailerTarget.Values)
         {
             if (targetId == byte.MaxValue) continue;
             var tpc = Utils.GetPlayerById(targetId);
             if (tpc == null) continue;
-            if (notifyJailedOnMeeting.GetBool() && tpc.IsAlive())
+
+            if (NotifyJailedOnMeetingOpt.GetBool() && tpc.IsAlive())
                 _ = new LateTask(() =>
                 {
                     Utils.SendMessage(GetString("JailedNotifyMsg"), targetId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
@@ -149,7 +157,7 @@ public static class Jailer
         }
     }
 
-    public static void OnVote(PlayerControl voter, PlayerControl target)
+    public override void OnVote(PlayerControl voter, PlayerControl target)
     {
         if (voter == null || target == null) return;
         if (!voter.Is(CustomRoles.Jailer)) return;
@@ -168,7 +176,7 @@ public static class Jailer
         SendRPC(voter.PlayerId, setTarget: false);
     }
 
-    public static bool CanBeExecuted(this CustomRoles role)
+    private static bool CanBeExecuted(CustomRoles role)
     {
         return ((role.IsNB() && NBCanBeExe.GetBool()) ||
                 (role.IsNC() && NCCanBeExe.GetBool()) ||
@@ -178,7 +186,7 @@ public static class Jailer
                 (role.IsImpostorTeamV3()));
     }
 
-    public static void AfterMeetingTasks()
+    public override void AfterMeetingTasks()
     {
         foreach (var pid in JailerHasExe.Keys)
         {
@@ -191,7 +199,7 @@ public static class Jailer
                     CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Execution, targetId);
                     tpc.SetRealKiller(Utils.GetPlayerById(pid));
                 }
-                if (!tpc.GetCustomRole().CanBeExecuted())
+                if (!CanBeExecuted(tpc.GetCustomRole()))
                 {
                     JailerExeLimit[pid] = 0;
                     SendRPC(pid, setTarget: false);
@@ -203,5 +211,10 @@ public static class Jailer
             SendRPC(pid, byte.MaxValue, setTarget: true);
         }
     }
-
+    public override void SetAbilityButtonText(HudManager hud, byte id)
+    {
+        hud.ReportButton.OverrideText(GetString("ReportButtonText"));
+        hud.KillButton.OverrideText(GetString("JailorKillButtonText"));
+    }
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("penitentiary");
 }

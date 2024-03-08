@@ -9,7 +9,7 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Benefactor : RoleBase
 {
-    private static readonly int Id = 26400;
+    private const int Id = 26400;
 
     public static bool On = false;
     public override bool IsEnable => On;

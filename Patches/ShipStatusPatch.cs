@@ -95,8 +95,8 @@ class RepairSystemPatch
         // Fast fix critical saboatge
         switch (player.GetCustomRole())
         {
-            case CustomRoles.SabotageMaster:
-                SabotageMaster.UpdateSystem(__instance, systemType, amount, player.PlayerId);
+            case CustomRoles.Mechanic:
+                Mechanic.UpdateSystem(__instance, systemType, amount, player.PlayerId);
                 break;
             case CustomRoles.Alchemist when Alchemist.FixNextSabo:
                 Alchemist.UpdateSystem(systemType, amount);
@@ -129,9 +129,9 @@ class RepairSystemPatch
             {
                 switch (player.GetCustomRole())
                 {
-                    case CustomRoles.SabotageMaster:
+                    case CustomRoles.Mechanic:
                         Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()} instant-fix-lights", "SwitchSystem");
-                        SabotageMaster.SwitchSystemRepair(SwitchSystem, amount, player.PlayerId);
+                        Mechanic.SwitchSystemRepair(SwitchSystem, amount, player.PlayerId);
                         break;
                     case CustomRoles.Alchemist when Alchemist.FixNextSabo:
                         Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()} instant-fix-lights", "SwitchSystem");

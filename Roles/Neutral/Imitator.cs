@@ -1,6 +1,6 @@
 using Hazel;
 using System.Collections.Generic;
-
+using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -109,9 +109,6 @@ public static class Imitator
                 case CustomRoles.BloodKnight:
                     BloodKnight.Add(killer.PlayerId);
                     break;
-                case CustomRoles.Sheriff:
-                    Sheriff.Add(killer.PlayerId);
-                    break;
             }
 
             if (role.IsCrewmate())
@@ -159,7 +156,7 @@ public static class Imitator
             RememberLimit[killer.PlayerId]--;
             SendRPC(killer.PlayerId);
             killer.RpcSetCustomRole(CustomRoles.Sheriff);
-            Sheriff.Add(killer.PlayerId);
+            killer.GetRoleClass().Add(killer.PlayerId);
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedCrewmate")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
         }

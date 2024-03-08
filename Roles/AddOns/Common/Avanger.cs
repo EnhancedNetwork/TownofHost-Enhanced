@@ -27,6 +27,7 @@ public static class Avanger
     {
         var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId && !Pelican.IsEaten(x.PlayerId) && !Medic.ProtectList.Contains(x.PlayerId)
             && !x.Is(CustomRoles.Pestilence) && !x.Is(CustomRoles.Masochist) && !x.Is(CustomRoles.Solsticer) && !((x.Is(CustomRoles.NiceMini) || x.Is(CustomRoles.EvilMini)) && Mini.Age < 18)).ToList();
+        
         if (pcList.Count > 0)
         {
             PlayerControl rp = pcList[IRandom.Instance.Next(0, pcList.Count)];

@@ -1,6 +1,5 @@
 ﻿using static TOHE.Options;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -11,12 +10,10 @@ internal class Guardian : RoleBase
     public override bool IsEnable => On;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
-    public static OverrideTasksData GuardianTasks;
-
     public static void SetupCustomOptions()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Guardian);
-        GuardianTasks = OverrideTasksData.Create(Id + 10, TabGroup.CrewmateRoles, CustomRoles.Guardian);
+        OverrideTasksData.Create(Id + 10, TabGroup.CrewmateRoles, CustomRoles.Guardian);
     }
 
     public override void Init()

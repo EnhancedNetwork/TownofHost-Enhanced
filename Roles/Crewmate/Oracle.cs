@@ -1,62 +1,74 @@
 using Hazel;
+using Il2CppSystem.Text;
 using System.Collections.Generic;
 using System.Linq;
+using System;
+using UnityEngine;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
-public static class Oracle
+internal class Oracle : RoleBase
 {
-    private static readonly int Id = 9100;
-    private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    private const int Id = 9100;
 
-    public static OptionItem CheckLimitOpt;
-    //  private static OptionItem OracleCheckMode;
-    public static OptionItem HideVote;
-    public static OptionItem FailChance;
-    public static OptionItem OracleAbilityUseGainWithEachTaskCompleted;
-    public static OptionItem ChangeRecruitTeam;
-    public static List<byte> didVote = [];
-    public static Dictionary<byte, float> CheckLimit = [];
-    public static Dictionary<byte, float> TempCheckLimit = [];
+    public static bool On = false;
+    public override bool IsEnable => On;
+    public static bool HasEnabled => CustomRoles.Oracle.IsClassEnable();
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+
+    private static OptionItem CheckLimitOpt;
+    private static OptionItem HidesVote;
+    private static OptionItem FailChance;
+    private static OptionItem OracleAbilityUseGainWithEachTaskCompleted;
+    private static OptionItem ChangeRecruitTeam;
+
+    private List<byte> playerIdList = [];
+    private List<byte> DidVote = [];
+    private static Dictionary<byte, float> CheckLimit = [];
+    private static Dictionary<byte, float> TempCheckLimit = [];
 
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Oracle);
-        CheckLimitOpt = IntegerOptionItem.Create(Id + 10, "OracleSkillLimit", new(0, 10, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Oracle])
+        CheckLimitOpt = IntegerOptionItem.Create(Id + 10, "OracleSkillLimit", new(0, 10, 1), 1, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Oracle])
             .SetValueFormat(OptionFormat.Times);
-        //    OracleCheckMode = BooleanOptionItem.Create(Id + 11, "AccurateCheckMode", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Oracle]);
-        HideVote = BooleanOptionItem.Create(Id + 12, "OracleHideVote", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Oracle]);
-        //  OverrideTasksData.Create(Id + 20, TabGroup.CrewmateRoles, CustomRoles.Oracle);
+        HidesVote = BooleanOptionItem.Create(Id + 12, "OracleHideVote", false, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Oracle]);
         FailChance = IntegerOptionItem.Create(Id + 13, "FailChance", new(0, 100, 5), 0, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Oracle])
             .SetValueFormat(OptionFormat.Percent);
         OracleAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 14, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Oracle])
             .SetValueFormat(OptionFormat.Times);
-        ChangeRecruitTeam = BooleanOptionItem.Create(Id+15,"OracleCheckAddons",false,TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Oracle]);
+        ChangeRecruitTeam = BooleanOptionItem.Create(Id+15,"OracleCheckAddons",false,TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Oracle]);
 
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         CheckLimit = [];
         TempCheckLimit = [];
-        IsEnable = false;
+        DidVote = [];
+        On = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         CheckLimit.TryAdd(playerId, CheckLimitOpt.GetInt());
-        IsEnable = true;
+        On = true;
     }
-    public static void Remove(byte playerId)
+    public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
         CheckLimit.Remove(playerId);
     }
+    public override bool HideVote(PlayerVoteArea pva) => HidesVote.GetBool() && TempCheckLimit[pva.TargetPlayerId] > 0;
     public static void SendRPC(byte playerId, bool isTemp = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
@@ -82,15 +94,15 @@ public static class Oracle
             TempCheckLimit[pid] = tempLimit;
         }
     }
-    public static void OnVote(PlayerControl player, PlayerControl target)
+    public override void OnVote(PlayerControl player, PlayerControl target)
     {
         if (player == null || target == null) return;
-        if (didVote.Contains(player.PlayerId)) return;
-        didVote.Add(player.PlayerId);
+        if (DidVote.Contains(player.PlayerId)) return;
+        DidVote.Add(player.PlayerId);
 
         if (CheckLimit[player.PlayerId] < 1)
         {
-            Utils.SendMessage(GetString("OracleCheckReachLimit"), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
+            SendMessage(GetString("OracleCheckReachLimit"), player.PlayerId, ColorString(GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
             return;
         }
 
@@ -99,14 +111,14 @@ public static class Oracle
 
         if (player.PlayerId == target.PlayerId)
         {
-            Utils.SendMessage(GetString("OracleCheckSelfMsg") + "\n\n" + string.Format(GetString("OracleCheckLimit"), CheckLimit[player.PlayerId]), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
+            SendMessage(GetString("OracleCheckSelfMsg") + "\n\n" + string.Format(GetString("OracleCheckLimit"), CheckLimit[player.PlayerId]), player.PlayerId, ColorString(GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
             return;
         }
 
         {
             string msg;
 
-        {
+            {
 
                 string text = "Crewmate";
                 if (ChangeRecruitTeam.GetBool())
@@ -122,116 +134,7 @@ public static class Oracle
                     else if (target.GetCustomRole().IsNeutral()) text = "Neutral";
                     else text = "Crewmate";
                 }
-                //      string text = target.GetCustomRole() switch
-                //      {
-                //          CustomRoles.Impostor or
-                //      CustomRoles.Shapeshifter or
-                //      CustomRoles.ShapeshifterTOHE or
-                //      CustomRoles.ImpostorTOHE or
-                //      CustomRoles.EvilDiviner or
-                //      CustomRoles.Wildling or
-                //      CustomRoles.BountyHunter or
-                //      CustomRoles.Vampire or
-                //      CustomRoles.Witch or
-                //      CustomRoles.Vindicator or
-                //      CustomRoles.ShapeMaster or
-                //      CustomRoles.Zombie or
-                //      CustomRoles.Warlock or
-                //      CustomRoles.Assassin or
-                //      CustomRoles.Anonymous or
-                //      CustomRoles.Miner or
-                //      CustomRoles.Escapist or
-                //      CustomRoles.Mercenary or
-                // //     CustomRoles.Mare or
-                //      CustomRoles.Inhibitor or
-                //      CustomRoles.Councillor or
-                //      CustomRoles.Saboteur or
-                //      CustomRoles.Puppeteer or
-                //      CustomRoles.TimeThief or
-                ////      CustomRoles.Trickster or // Trickster appears as crew to Oracle
-                //      CustomRoles.Mafia or
-                //      CustomRoles.KillingMachine or
-                //      CustomRoles.Fireworker or
-                //      CustomRoles.Sniper or
-                //      CustomRoles.EvilTracker or
-                //      CustomRoles.EvilGuesser or
-                //      CustomRoles.AntiAdminer or
-                //      CustomRoles.Ludopath or
-                //      CustomRoles.Godfather or
-                //      CustomRoles.Arrogance or
-                //      CustomRoles.Bomber or
-                //      CustomRoles.Nuker or
-                //      CustomRoles.Scavenger or
-                //      CustomRoles.BoobyTrap or
-                //      CustomRoles.Capitalism or
-                //      CustomRoles.Gangster or
-                //      CustomRoles.Cleaner or
-                //      CustomRoles.BallLightning or
-                //      CustomRoles.Greedier or
-                //      CustomRoles.CursedWolf or
-                //      CustomRoles.ImperiusCurse or
-                //      CustomRoles.QuickShooter or
-                //      CustomRoles.Eraser or
-                //      CustomRoles.OverKiller or
-                //      CustomRoles.Hangman or
-                //      CustomRoles.Bard or
-                //      CustomRoles.Swooper or
-                //      CustomRoles.Disperser or
-                //      CustomRoles.Dazzler or
-                //      CustomRoles.Deathpact or
-                //      CustomRoles.Devourer or
-                //      CustomRoles.Camouflager or
-                //      CustomRoles.Twister or
-                //      CustomRoles.Visionary or
-                //      CustomRoles.Lurker or
-                //      CustomRoles.Pitfall
-                //          => "Imp",
-
-                //      CustomRoles.Jester or
-                //      CustomRoles.Opportunist or
-                //      CustomRoles.Shroud or
-                //      CustomRoles.Mario or
-                //      CustomRoles.Crewpostor or
-                //      CustomRoles.NWitch or
-                //      CustomRoles.Parasite or
-                //      CustomRoles.Refugee or
-                //      CustomRoles.Terrorist or
-                //      CustomRoles.Executioner or
-                //      CustomRoles.Juggernaut or
-                //      CustomRoles.Lawyer or
-                //      CustomRoles.Arsonist or
-                //      CustomRoles.Jackal or
-                //      CustomRoles.Maverick or
-                //      CustomRoles.Sidekick or
-                //      CustomRoles.God or
-                //      CustomRoles.PlagueBearer or
-                //      CustomRoles.Pestilence or
-                //      CustomRoles.Masochist or
-                //      CustomRoles.Innocent or
-                //      CustomRoles.Pursuer or
-                //      CustomRoles.SerialKiller or
-                //      CustomRoles.Pelican or
-                //      CustomRoles.Revolutionist or
-                //      CustomRoles.FFF or
-                //      CustomRoles.Konan or
-                //      CustomRoles.Gamer or
-                //      CustomRoles.DarkHide or
-                //      CustomRoles.Infectious or
-                //      CustomRoles.Workaholic or
-                //      CustomRoles.Collector or
-                //      CustomRoles.Provocateur or
-                //      CustomRoles.Sunnyboy or
-                //      CustomRoles.Phantom or
-                //      CustomRoles.BloodKnight or
-                //      CustomRoles.Totocalcio or
-                //      CustomRoles.Virus or
-                //      CustomRoles.Succubus or
-                //      CustomRoles.Doomsayer or
-                //      CustomRoles.Pirate
-                //          => "Neut",
-
-                //          _ => "Crew",
-                //      };
+               
                 if (FailChance.GetInt() > 0)
                 {
                     int random_number_1 = HashRandom.Next(1, 100);
@@ -256,17 +159,41 @@ public static class Oracle
                     }
                 }
                 msg = string.Format(GetString("OracleCheck." + text), target.GetRealName());
-        }
+            }
 
-        Utils.SendMessage(GetString("OracleCheck") + "\n" + msg + "\n\n" + string.Format(GetString("OracleCheckLimit"), CheckLimit[player.PlayerId]), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));}
+            SendMessage(GetString("OracleCheck") + "\n" + msg + "\n\n" + string.Format(GetString("OracleCheckLimit"), CheckLimit[player.PlayerId]), player.PlayerId, ColorString(GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
+        }
     }
-    public static void OnReportDeadBody()
+    public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        didVote.Clear();
+        if (!player.IsAlive()) return;
+        CheckLimit[player.PlayerId] += OracleAbilityUseGainWithEachTaskCompleted.GetFloat();
+        SendRPC(player.PlayerId);
+    }
+    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl tagret)
+    {
+        DidVote.Clear();
         foreach (var oracleId in CheckLimit.Keys)
         {
             TempCheckLimit[oracleId] = CheckLimit[oracleId];
             SendRPC(oracleId, isTemp: true);
         }
+    }
+    public override string GetProgressText(byte playerId, bool comms)
+    {
+        var ProgressText = new StringBuilder();
+        var taskState9 = Main.PlayerStates?[playerId].TaskState;
+        Color TextColor9;
+        var TaskCompleteColor9 = Color.green;
+        var NonCompleteColor9 = Color.yellow;
+        var NormalColor9 = taskState9.IsTaskFinished ? TaskCompleteColor9 : NonCompleteColor9;
+        TextColor9 = comms ? Color.gray : NormalColor9;
+        string Completed9 = comms ? "?" : $"{taskState9.CompletedTasksCount}";
+        Color TextColor91;
+        if (CheckLimit[playerId] < 1) TextColor91 = Color.red;
+        else TextColor91 = Color.white;
+        ProgressText.Append(ColorString(TextColor9, $"({Completed9}/{taskState9.AllTasksCount})"));
+        ProgressText.Append(ColorString(TextColor91, $" <color=#ffffff>-</color> {Math.Round(CheckLimit[playerId], 1)}"));
+        return ProgressText.ToString();
     }
 }

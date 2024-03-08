@@ -4,7 +4,6 @@ using System.Linq;
 using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Impostor;
 

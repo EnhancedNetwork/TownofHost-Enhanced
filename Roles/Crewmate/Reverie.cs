@@ -1,26 +1,31 @@
 using System;
 using System.Collections.Generic;
-using static TOHE.Options;
 using System.Linq;
+using TOHE.Roles.Core;
+using AmongUs.GameOptions;
+using static TOHE.Options;
 
 namespace TOHE;
 
-public static class Reverie
+internal class Reverie : RoleBase
 {
-    private static readonly int Id = 11100;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    private const int Id = 11100;
+    private static bool On = false;
+    public override bool IsEnable => On;
+    public static bool HasEnabled => CustomRoles.Retributionist.IsClassEnable();
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
-    public static OptionItem DefaultKillCooldown;
-    public static OptionItem ReduceKillCooldown;
-    public static OptionItem IncreaseKillCooldown;
-    public static OptionItem MinKillCooldown;
-    public static OptionItem MaxKillCooldown;
-    public static OptionItem MisfireSuicide;
-    public static OptionItem ResetCooldownMeeting;
-    public static OptionItem ConvertedReverieRogue;
+    private static OptionItem DefaultKillCooldown;
+    private static OptionItem ReduceKillCooldown;
+    private static OptionItem IncreaseKillCooldown;
+    private static OptionItem MinKillCooldown;
+    private static OptionItem MaxKillCooldown;
+    private static OptionItem MisfireSuicide;
+    private static OptionItem ResetCooldownMeeting;
+    private static OptionItem ConvertedReverieRogue;
 
-    public static Dictionary<byte, float> NowCooldown;
+    private static List<byte> playerIdList = [];
+    private static Dictionary<byte, float> NowCooldown;
 
     public static void SetupCustomOption()
     {
@@ -39,28 +44,28 @@ public static class Reverie
         ResetCooldownMeeting =  BooleanOptionItem.Create(Id + 16, "ReverieResetCooldownMeeting", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie]);
         ConvertedReverieRogue = BooleanOptionItem.Create(Id + 17, "ConvertedReverieKillAll", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Reverie]);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         NowCooldown = [];
-        IsEnable = false;
+        On = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         NowCooldown.TryAdd(playerId, DefaultKillCooldown.GetFloat());
-        IsEnable = true;
+        On = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public static void Remove(byte playerId)
+    public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
         NowCooldown.Remove(playerId);
     }
-    public static void OnReportDeadBody()
+    public override void OnReportDeadBody(PlayerControl HES, PlayerControl HIM)
     {
         foreach(var playerId in NowCooldown.Keys)
         {
@@ -70,11 +75,12 @@ public static class Reverie
             }
         }
     }
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = NowCooldown[id];
-    public static void OnCheckMurder(PlayerControl killer,PlayerControl target)
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = NowCooldown[id];
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
+    public override bool OnCheckMurderAsKiller(PlayerControl killer,PlayerControl target)
     {
-        if (killer == null || target == null) return;
-        if (!IsEnable || !killer.Is(CustomRoles.Reverie)) return;
+        if (killer == null || target == null) return true;
+        if (!HasEnabled || !killer.Is(CustomRoles.Reverie)) return true;
         float kcd;
         if ((!target.GetCustomRole().IsCrewmate() && !target.Is(CustomRoles.Trickster)) || (ConvertedReverieRogue.GetBool() && killer.GetCustomSubRoles().Any(subrole => subrole.IsConverted() || subrole == CustomRoles.Madmate))) // if killed non crew or if converted
                 kcd = NowCooldown[killer.PlayerId] - ReduceKillCooldown.GetFloat();
@@ -87,5 +93,12 @@ public static class Reverie
             Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Misfire;
             killer.RpcMurderPlayerV3(killer);
         }
+        return true;
+    }
+    public override void SetAbilityButtonText(HudManager hud, byte id)
+    {
+        hud.SabotageButton.ToggleVisible(false);
+        hud.AbilityButton.ToggleVisible(false);
+        hud.ImpostorVentButton.ToggleVisible(false);
     }
 }

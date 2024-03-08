@@ -51,7 +51,7 @@ public static class Workhorse
     private static bool IsAssignTarget(PlayerControl pc)
     {
         if (!pc.IsAlive() || IsThisRole(pc.PlayerId)) return false;
-        if (pc.Is(CustomRoles.Needy)) return false;
+        if (pc.Is(CustomRoles.LazyGuy)) return false;
         if (pc.Is(CustomRoles.Lazy)) return false;
         var taskState = pc.GetPlayerTaskState();
         if (taskState.CompletedTasksCount + 1 < taskState.AllTasksCount) return false;

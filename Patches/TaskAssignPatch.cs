@@ -156,7 +156,7 @@ class RpcSetTasksPatch
         }
 
         // GM - no have tasks, Lazy Gay and Lazy have 1 task, FFA all are killers so need to assign any tasks
-        if (pc.Is(CustomRoles.GM) || pc.Is(CustomRoles.Needy) || pc.Is(CustomRoles.Lazy) || Options.CurrentGameMode == CustomGameMode.FFA)
+        if (pc.Is(CustomRoles.GM) || pc.Is(CustomRoles.LazyGuy) || pc.Is(CustomRoles.Lazy) || Options.CurrentGameMode == CustomGameMode.FFA)
         {
             hasCommonTasks = false;
             NumShortTasks = 0;

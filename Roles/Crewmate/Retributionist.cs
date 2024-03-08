@@ -5,20 +5,30 @@ using System.Linq;
 using TOHE.Modules;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
+using TOHE.Roles.Core;
 using UnityEngine;
+using System.Collections.Generic;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.Utils;
+using static TOHE.MeetingHudStartPatch;
 
 namespace TOHE;
 
-public static class Retributionist
+internal class Retributionist : RoleBase
 {
-    public static readonly int Id = 11000;
-    public static OptionItem RetributionistCanKillNum;
-    public static OptionItem MinimumPlayersAliveToRetri;
-    public static OptionItem CanOnlyRetributeWithTasksDone;
+    public const int Id = 11000;
+    private static bool On = false;
+    public override bool IsEnable => On;
+    public static bool HasEnabled => CustomRoles.Retributionist.IsClassEnable();
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
-    public static OverrideTasksData RetributionistTasks;
+    private static OptionItem RetributionistCanKillNum;
+    private static OptionItem MinimumPlayersAliveToRetri;
+    private static OptionItem CanOnlyRetributeWithTasksDone;
+
+    private static Dictionary<byte, int> RetributionistRevenged = [];
+
     public static void SetupCustomOptions()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Retributionist);
@@ -30,8 +40,20 @@ public static class Retributionist
             .SetValueFormat(OptionFormat.Players);
         CanOnlyRetributeWithTasksDone = BooleanOptionItem.Create(Id + 12, "CanOnlyRetributeWithTasksDone", true, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist]);
-        RetributionistTasks = OverrideTasksData.Create(Id + 13, TabGroup.CrewmateRoles, CustomRoles.Retributionist);
+        OverrideTasksData.Create(Id + 13, TabGroup.CrewmateRoles, CustomRoles.Retributionist);
     }
+    public override void Init()
+    {
+        On = false;
+        RetributionistRevenged = [];
+    }
+    public override void Add(byte playerId)
+    {
+        On = true;
+        RetributionistRevenged.Add(playerId, RetributionistCanKillNum.GetInt());
+    }
+    public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
+            => !seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Retributionist), target.PlayerId.ToString()) + " " + TargetPlayerName : "";
     public static bool RetributionistMsgCheck(PlayerControl pc, string msg, bool isUI = false)
     {
         if (!AmongUsClient.Instance.AmHost) return false;
@@ -41,7 +63,7 @@ public static class Retributionist
         if (msg.Length < 4 || msg[..4] != "/ret") return false;
         if (RetributionistCanKillNum.GetInt() < 1)
         {
-            if (!isUI) Utils.SendMessage(GetString("RetributionistKillDisable"), pc.PlayerId);
+            if (!isUI) SendMessage(GetString("RetributionistKillDisable"), pc.PlayerId);
             else pc.ShowPopUp(GetString("RetributionistKillDisable"));
             return true;
         }
@@ -51,7 +73,7 @@ public static class Retributionist
             {
                 if (!pc.IsAlive())
                 {
-                    if (!isUI) Utils.SendMessage(GetString("RetributionistKillTooManyDead"), pc.PlayerId);
+                    if (!isUI) SendMessage(GetString("RetributionistKillTooManyDead"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("RetributionistKillTooManyDead"));
                     return true;
                 }
@@ -62,14 +84,14 @@ public static class Retributionist
         {
             if (!pc.GetPlayerTaskState().IsTaskFinished && !pc.IsAlive() && !CopyCat.playerIdList.Contains(pc.PlayerId) && !Main.TasklessCrewmate.Contains(pc.PlayerId))
             {
-                if (!isUI) Utils.SendMessage(GetString("RetributionistKillDisable"), pc.PlayerId);
+                if (!isUI) SendMessage(GetString("RetributionistKillDisable"), pc.PlayerId);
                 else pc.ShowPopUp(GetString("RetributionistKillDisable"));
                 return true;
             }
         }
         if (pc.IsAlive())
         {
-            Utils.SendMessage(GetString("RetributionistAliveKill"), pc.PlayerId);
+            SendMessage(GetString("RetributionistAliveKill"), pc.PlayerId);
             return true;
         }
 
@@ -78,22 +100,22 @@ public static class Retributionist
             string text = GetString("PlayerIdList");
             foreach (var npc in Main.AllAlivePlayerControls)
                 text += "\n" + npc.PlayerId.ToString() + " → (" + npc.GetDisplayRoleAndSubName(npc, false) + ") " + npc.GetRealName();
-            Utils.SendMessage(text, pc.PlayerId);
+            SendMessage(text, pc.PlayerId);
             return true;
         }
 
-        if (Main.RetributionistRevenged.ContainsKey(pc.PlayerId))
+        if (RetributionistRevenged.ContainsKey(pc.PlayerId))
         {
-            if (Main.RetributionistRevenged[pc.PlayerId] >= RetributionistCanKillNum.GetInt())
+            if (RetributionistRevenged[pc.PlayerId] >= RetributionistCanKillNum.GetInt())
             {
-                if (!isUI) Utils.SendMessage(GetString("RetributionistKillMax"), pc.PlayerId);
+                if (!isUI) SendMessage(GetString("RetributionistKillMax"), pc.PlayerId);
                 else pc.ShowPopUp(GetString("RetributionistKillMax"));
                 return true;
             }
         }
         else
         {
-            Main.RetributionistRevenged.Add(pc.PlayerId, 0);
+            RetributionistRevenged.Add(pc.PlayerId, 0);
         }
 
         int targetId;
@@ -101,36 +123,36 @@ public static class Retributionist
         try
         {
             targetId = int.Parse(msg.Replace("/ret", string.Empty));
-            target = Utils.GetPlayerById(targetId);
+            target = GetPlayerById(targetId);
         }
         catch
         {
-            if (!isUI) Utils.SendMessage(GetString("RetributionistKillDead"), pc.PlayerId);
+            if (!isUI) SendMessage(GetString("RetributionistKillDead"), pc.PlayerId);
             else pc.ShowPopUp(GetString("RetributionistKillDead"));
             return true;
         }
 
         if (target == null || !target.IsAlive())
         {
-            if (!isUI) Utils.SendMessage(GetString("RetributionistKillDead"), pc.PlayerId);
+            if (!isUI) SendMessage(GetString("RetributionistKillDead"), pc.PlayerId);
             else pc.ShowPopUp(GetString("RetributionistKillDead"));
             return true;
         }
         else if (target.Is(CustomRoles.Pestilence))
         {
-            if (!isUI) Utils.SendMessage(GetString("PestilenceImmune"), pc.PlayerId);
+            if (!isUI) SendMessage(GetString("PestilenceImmune"), pc.PlayerId);
             else pc.ShowPopUp(GetString("PestilenceImmune"));
             return true;
         }
         else if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
         {
-            if (!isUI) Utils.SendMessage(GetString("GuessMini"), pc.PlayerId);
+            if (!isUI) SendMessage(GetString("GuessMini"), pc.PlayerId);
             else pc.ShowPopUp(GetString("GuessMini"));
             return true;
         }
         else if (target.Is(CustomRoles.Solsticer))
         {
-            if (!isUI) Utils.SendMessage(GetString("GuessSolsticer"), pc.PlayerId);
+            if (!isUI) SendMessage(GetString("GuessSolsticer"), pc.PlayerId);
             else pc.ShowPopUp(GetString("GuessSolsticer"));
             return true;
         }
@@ -139,7 +161,7 @@ public static class Retributionist
 
         string Name = target.GetRealName();
 
-        Main.RetributionistRevenged[pc.PlayerId]++;
+        RetributionistRevenged[pc.PlayerId]++;
 
         CustomSoundsManager.RPCPlayCustomSoundAll("AWP");
 
@@ -150,16 +172,19 @@ public static class Retributionist
             if (GameStates.IsMeeting)
             {
                 GuessManager.RpcGuesserMurderPlayer(target);
-                //死者检查
-                Utils.AfterPlayerDeathTasks(target, true);
-                Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
+
+                AfterPlayerDeathTasks(target, true);
+                NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
             }
             else
             {
                 target.RpcMurderPlayerV3(target);
                 Main.PlayerStates[target.PlayerId].SetDead();
             }
-            _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("RetributionistKillSucceed"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Retributionist), GetString("RetributionistRevengeTitle")), true); }, 0.6f, "Retributionist Kill");
+            _ = new LateTask(() => {
+                SendMessage(string.Format(GetString("RetributionistKillSucceed"), Name), 255, ColorString(GetRoleColor(CustomRoles.Retributionist), GetString("RetributionistRevengeTitle")), true);
+            }, 0.6f, "Retributionist Kill");
+
         }, 0.2f, "Retributionist Start Kill");
         return true;
     }
@@ -184,7 +209,15 @@ public static class Retributionist
         if (AmongUsClient.Instance.AmHost) RetributionistMsgCheck(PlayerControl.LocalPlayer, $"/ret {playerId}", true);
         else SendRPC(playerId);
     }
+    public override void OnMeetingHudStart(PlayerControl pc)
+    {
+        if (!pc.IsAlive())
+            AddMsg(GetString("RetributionistDeadMsg"), pc.PlayerId);
+    }
 
+    public override string PVANameText(PlayerVoteArea pva, PlayerControl target)
+            => GetPlayerById(pva.TargetPlayerId).Data.IsDead && !target.Data.IsDead ? ColorString(GetRoleColor(CustomRoles.Retributionist), target.PlayerId.ToString()) + " " + pva.NameText.text : "";
+    
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
     class StartMeetingPatch
     {
@@ -198,8 +231,9 @@ public static class Retributionist
     {
         foreach (var pva in __instance.playerStates.ToArray())
         {
-            var pc = Utils.GetPlayerById(pva.TargetPlayerId);
+            var pc = GetPlayerById(pva.TargetPlayerId);
             if (pc == null || !pc.IsAlive()) continue;
+
             GameObject template = pva.Buttons.transform.Find("CancelButton").gameObject;
             GameObject targetBox = UnityEngine.Object.Instantiate(template, pva.transform);
             targetBox.name = "ShootButton";

@@ -15,15 +15,13 @@ internal partial class Mayor : RoleBase
 
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Collective");
 
-    public static OptionItem MayorAdditionalVote;
+    private static OptionItem MayorAdditionalVote;
     public static OptionItem MayorHasPortableButton;
-    public static OptionItem MayorNumOfUseButton;
-    public static OptionItem MayorHideVote;
-    public static OptionItem MayorRevealWhenDoneTasks;
+    private static OptionItem MayorNumOfUseButton;
+    private static OptionItem MayorHideVote;
+    private static OptionItem MayorRevealWhenDoneTasks;
 
-    public static OverrideTasksData MayorTasks;
-
-    public static Dictionary<byte, int> MayorUsedButtonCount = [];
+    private static Dictionary<byte, int> MayorUsedButtonCount = [];
 
     public static void SetupCustomOptions()
     {
@@ -40,7 +38,7 @@ internal partial class Mayor : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Mayor]);
         MayorRevealWhenDoneTasks = BooleanOptionItem.Create(Id + 14, "MayorRevealWhenDoneTasks", false, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Mayor]);
-        MayorTasks = OverrideTasksData.Create(Id + 15, TabGroup.CrewmateRoles, CustomRoles.Mayor);
+        OverrideTasksData.Create(Id + 15, TabGroup.CrewmateRoles, CustomRoles.Mayor);
     }
 
     public override void Init()
@@ -58,17 +56,25 @@ internal partial class Mayor : RoleBase
         MayorUsedButtonCount[playerId] = 0;
     }
 
-    public override int CalcVote(PlayerVoteArea PVA)
+    public override int AddRealVotesNum(PlayerVoteArea PVA) => MayorAdditionalVote.GetInt();
+
+    public override void AddVisualVotes(PlayerVoteArea votedPlayer, ref List<MeetingHud.VoterState> statesList)
     {
-        return MayorAdditionalVote.GetInt();
+        if (MayorHideVote.GetBool()) return;
+
+        for (var i2 = 0; i2 < MayorAdditionalVote.GetFloat(); i2++)
+        {
+            statesList.Add(new MeetingHud.VoterState()
+            {
+                VoterId = votedPlayer.TargetPlayerId,
+                VotedForId = votedPlayer.VotedFor
+            });
+        }
     }
 
     public override void OnPressEmergencyButton(PlayerControl reporter)
     {
-        if (reporter.Is(CustomRoles.Mayor))
-        {
-            MayorUsedButtonCount[reporter.PlayerId] += 1;
-        }
+        MayorUsedButtonCount[reporter.PlayerId] += 1;
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
@@ -80,8 +86,7 @@ internal partial class Mayor : RoleBase
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
-
-        if (pc.Is(CustomRoles.Mayor) && MayorHasPortableButton.GetBool() && !CopyCat.playerIdList.Contains(pc.PlayerId))
+        if (MayorHasPortableButton.GetBool() && !CopyCat.playerIdList.Contains(pc.PlayerId))
         {
             if (MayorUsedButtonCount.TryGetValue(pc.PlayerId, out var count) && count < MayorNumOfUseButton.GetInt())
             {
@@ -90,6 +95,10 @@ internal partial class Mayor : RoleBase
             }
         }
     }
+    public override bool CheckBootFromVent(PlayerPhysics physics, int ventId)
+        => MayorUsedButtonCount.TryGetValue(physics.myPlayer.PlayerId, out var count)
+        && count >= MayorNumOfUseButton.GetInt();
+
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role)
     {
         if (MayorRevealWhenDoneTasks.GetBool())
@@ -103,11 +112,13 @@ internal partial class Mayor : RoleBase
         }
         return false;
     }
-    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => MayorRevealWhenDoneTasks.GetBool() && target.Is(CustomRoles.Mayor) && target.GetPlayerTaskState().IsTaskFinished;
-    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
+
+    public static bool VisibleToEveryone(PlayerControl target) => MayorRevealWhenDoneTasks.GetBool() && target.GetPlayerTaskState().IsTaskFinished;
+    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => VisibleToEveryone(target);
+    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => VisibleToEveryone(target);
+    
     public override void SetAbilityButtonText(HudManager hud, byte id)
     {
-        hud.ReportButton.OverrideText(GetString("ReportButtonText"));
         hud.AbilityButton.buttonLabelText.text = GetString("MayorVentButtonText");
     }
 }

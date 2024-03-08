@@ -8,6 +8,7 @@ using TOHE.Modules.ChatManager;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
+using static TOHE.CheckForEndVotingPatch;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -23,11 +24,11 @@ internal class Swapper : RoleBase
     private static OptionItem OptCanStartMeeting;
     private static OptionItem TryHideMsg;
 
-    public static List<byte> playerIdList = [];
-    public static Dictionary<byte, byte> Vote = [];
-    public static Dictionary<byte, byte> VoteTwo = [];
-    public static Dictionary<byte, int> Swappermax = [];
-    public static List<byte> ResultSent = [];
+    private static List<byte> playerIdList = [];
+    private static Dictionary<byte, byte> Vote = [];
+    private static Dictionary<byte, byte> VoteTwo = [];
+    private static Dictionary<byte, int> Swappermax = [];
+    private static List<byte> ResultSent = [];
 
     public static void SetupCustomOption()
     {
@@ -68,7 +69,7 @@ internal class Swapper : RoleBase
         if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false;
         if (!pc.Is(CustomRoles.Swapper)) return false;
 
-        int operate = 0;
+        int operate;
         msg = msg.ToLower().TrimStart().TrimEnd();
         if (CheckCommond(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id|編號|玩家編號")) operate = 1;
         else if (CheckCommond(ref msg, "sw|换票|换|換票|換|swap|st", false)) operate = 2;
@@ -226,12 +227,13 @@ internal class Swapper : RoleBase
         }
         return true;
     }
+
     public static void CheckSwapperTarget(byte deadid)
     {
         if (deadid == 253) return;
         foreach (var pid in playerIdList)
         {
-            if (!Swapper.Vote.TryGetValue(pid, out var tid1) || !Swapper.VoteTwo.TryGetValue(pid, out var tid2)) continue;
+            if (!Vote.TryGetValue(pid, out var tid1) || !VoteTwo.TryGetValue(pid, out var tid2)) continue;
             if (tid1 == deadid || tid2 == deadid)
             {
                 Vote.TryAdd(pid, 253);
@@ -243,6 +245,53 @@ internal class Swapper : RoleBase
             }
         }
     }
+
+    public static void SwapVotes(MeetingHud __instance)
+    {
+        foreach (var pid in playerIdList)
+        {
+            if (ResultSent.Contains(pid)) continue;
+
+            //idk why this would be triggered repeatedly.
+            var pc = Utils.GetPlayerById(pid);
+            if (pc == null || !pc.IsAlive()) continue;
+
+            if (!Vote.TryGetValue(pc.PlayerId, out var tid1) || !VoteTwo.TryGetValue(pc.PlayerId, out var tid2)) continue;
+            if (tid1 == 253 || tid2 == 253 || tid1 == tid2) continue;
+
+            var target1 = Utils.GetPlayerById(tid1);
+            var target2 = Utils.GetPlayerById(tid2);
+
+            if (target1 == null || target2 == null || !target1.IsAlive() || !target2.IsAlive()) continue;
+
+            List<byte> templist = [];
+
+            foreach (var pva in __instance.playerStates.ToArray())
+            {
+                if (pva.VotedFor != target1.PlayerId || pva.AmDead) continue;
+                templist.Add(pva.TargetPlayerId);
+                pva.VotedFor = target2.PlayerId;
+                ReturnChangedPva(pva);
+            }
+
+            foreach (var pva in __instance.playerStates.ToArray())
+            {
+                if (pva.VotedFor != target2.PlayerId || pva.AmDead) continue;
+                if (templist.Contains(pva.TargetPlayerId)) continue;
+                pva.VotedFor = target1.PlayerId;
+                ReturnChangedPva(pva);
+            }
+
+            if (!ResultSent.Contains(pid))
+            {
+                ResultSent.Add(pid);
+                Utils.SendMessage(string.Format(GetString("SwapVote"), target1.GetRealName(), target2.GetRealName()), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), GetString("SwapTitle")));
+                Swappermax[pid] -= 1;
+                SendSkillRPC(pid);
+            }
+        }
+    }
+
     private static bool MsgToPlayerAndRole(string msg, out byte id, out string error)
     {
         if (msg.StartsWith("/")) msg = msg.Replace("/", string.Empty);

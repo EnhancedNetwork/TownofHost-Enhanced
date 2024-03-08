@@ -154,7 +154,7 @@ namespace TOHE.Roles.Impostor
             mastermind.SetKillCooldown(time: KillCooldown.GetFloat());
             killer.Notify(GetString("SurvivedManipulation"));
 
-            if (target.Is(CustomRoles.Pestilence) || Main.VeteranInProtect.ContainsKey(target.PlayerId) || target.Is(CustomRoles.Mastermind))
+            if (target.Is(CustomRoles.Pestilence))
             {
                 target.RpcMurderPlayerV3(killer);
                 TempKCDs.Remove(killer.PlayerId);

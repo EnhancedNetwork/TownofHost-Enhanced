@@ -1,18 +1,22 @@
 using Hazel;
 using System.Collections.Generic;
-using UnityEngine;
+using TOHE.Roles.Core;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Double;
-public class Mini
+internal class Mini : RoleBase
 {
-    private static readonly int Id = 7000;
+    //===========================SETUP================================\\
+    private const int Id = 7000;
+    private static bool On = false;
+    public override bool IsEnable => On;
+    public static bool HasEnabled => CustomRoles.NiceMini.IsClassEnable() || CustomRoles.EvilMini.IsClassEnable();
+    public override CustomRoles ThisRoleBase => throw new System.NotImplementedException(); //not sure :/
+
+    //==================================================================\\
     public static bool IsEvilMini = false;
-    public static void SetMiniTeam(float EvilMiniRate)
-    {
-        EvilMiniRate = EvilMiniSpawnChances.GetFloat();
-        IsEvilMini = Random.Range(1, 100) < EvilMiniRate;
-    }
+
     private static List<byte> playerIdList = [];
     public static int GrowUpTime = new();
     public static int GrowUp = new();
@@ -22,7 +26,6 @@ public class Mini
     public static OptionItem GrowUpDuration;
     public static OptionItem EveryoneCanKnowMini;
     public static OptionItem CountMeetingTime;
-    public static bool IsEnable = false;
     public static bool misguessed = false;
     public static OptionItem EvilMiniSpawnChances;
     public static OptionItem CanBeEvil;
@@ -45,19 +48,19 @@ public class Mini
         UpDateAge = BooleanOptionItem.Create(Id + 114, "UpDateAge", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mini]);
         CountMeetingTime = BooleanOptionItem.Create(Id + 116, "CountMeetingTime", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mini]);
     }
-    public static void Init()
+    public override void Init()
     {
         GrowUpTime = 0;
         playerIdList = [];
         GrowUp = GrowUpDuration.GetInt() / 18;
-        IsEnable = false;
+        On = false;
         Age = 0;
         misguessed = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
+        On = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -73,7 +76,16 @@ public class Mini
     {
         Age = reader.ReadInt32();
     }
-    public static void OnFixedUpdate(PlayerControl player)
+    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
+    {
+        if (Age < 18)
+        {
+            killer.Notify(ColorString(GetRoleColor(CustomRoles.Mini), GetString("Cantkillkid")));
+            return false;
+        }
+        return true;
+    }
+    public static void OnFixedUpdates(PlayerControl player)
     {
         if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
         if (Age >= 18) return;
@@ -90,8 +102,8 @@ public class Mini
 
         if (GameStates.IsMeeting && !CountMeetingTime.GetBool()) return;
 
-        if (LastFixedUpdate == Utils.GetTimeStamp()) return;
-        LastFixedUpdate = Utils.GetTimeStamp();
+        if (LastFixedUpdate == GetTimeStamp()) return;
+        LastFixedUpdate = GetTimeStamp();
         GrowUpTime++;
 
         if (GrowUpTime >= GrowUpDuration.GetInt() / 18)
@@ -132,5 +144,32 @@ public class Mini
 
         return MinorCD.GetFloat() + (MajorCD.GetFloat() - MinorCD.GetFloat()) / 18 * Age;
     }
-    public static string GetAge(byte playerId) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mini), Age != 18 ? $"({Age})" : "");
+    public override string GetProgressText(byte playerId, bool comms) => ColorString(GetRoleColor(CustomRoles.Mini), Age != 18 ? $"({Age})" : "");
+    public override bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role)
+    {
+        if (guesser.Is(CustomRoles.NiceMini) && Age < 18 && misguessed)
+        {
+            if (!isUI) SendMessage(GetString("MiniGuessMax"), guesser.PlayerId);
+            else guesser.ShowPopUp(GetString("MiniGuessMax"));
+            return true;
+        }
+        return false;
+    }
+    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role)
+    {
+        if (target.Is(CustomRoles.NiceMini) && Age < 18)
+        {
+            if (!isUI) SendMessage(GetString("GuessMini"), guesser.PlayerId);
+            else guesser.ShowPopUp(GetString("GuessMini"));
+            return true;
+        }
+        return false;
+    }
+    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target)
+        => (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) && EveryoneCanKnowMini.GetBool();
+
+    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
+            => !seer.GetCustomRole().IsImpostorTeam() && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) ? Main.roleColors[CustomRoles.Mini] : "";
+    public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+            => Mini.HasEnabled && Mini.EveryoneCanKnowMini.GetBool() && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) ? ColorString(GetRoleColor(CustomRoles.Mini), Age != 18 && Mini.UpDateAge.GetBool() ? $"({Mini.Age})" : "") : "";
 }

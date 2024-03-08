@@ -10,7 +10,7 @@ namespace TOHE.Roles.Crewmate;
 
 internal class Monarch : RoleBase
 {
-    private static readonly int Id = 12100;
+    private const int Id = 12100;
     private static List<byte> playerIdList = [];
     public static bool On = false;
     public override bool IsEnable => On;

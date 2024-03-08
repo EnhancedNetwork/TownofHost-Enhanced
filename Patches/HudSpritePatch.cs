@@ -84,26 +84,14 @@ public static class HudSpritePatch
             case CustomRoles.Puppeteer:
                 newKillButton = CustomButton.Get("Puttpuer");
                 break;
-            case CustomRoles.Medic:
-                newKillButton = CustomButton.Get("Shield");
-                break;
             case CustomRoles.Succubus:
                 newKillButton = CustomButton.Get("Subbus");
                 break;
             case CustomRoles.Innocent:
                 newKillButton = CustomButton.Get("Suidce");
                 break;
-            case CustomRoles.Tracker:
-                newAbilityButton = CustomButton.Get("Track");
-                break;
             case CustomRoles.Vampire:
                 newKillButton = CustomButton.Get("Bite");
-                break;
-            case CustomRoles.Veteran:
-                newAbilityButton = CustomButton.Get("Veteran");
-                break;
-            case CustomRoles.Lighter:
-                newAbilityButton = CustomButton.Get("Lighter");
                 break;
             case CustomRoles.Witness:
                 newKillButton = CustomButton.Get("Examine");
@@ -117,17 +105,8 @@ public static class HudSpritePatch
             case CustomRoles.Amnesiac:
                 newReportButton = CustomButton.Get("Amnesiac");
                 break;
-            case CustomRoles.Deputy:
-                newKillButton = CustomButton.Get("Deputy");
-                break;
-            case CustomRoles.TimeMaster:
-                newAbilityButton = CustomButton.Get("Time Master");
-                break;
             case CustomRoles.Mario:
                 newAbilityButton = CustomButton.Get("Happy");
-                break;
-            case CustomRoles.Sheriff:
-                newKillButton = CustomButton.Get("Kill");
                 break;
             case CustomRoles.Pirate:
                 newKillButton = CustomButton.Get("Challenge");
@@ -143,9 +122,6 @@ public static class HudSpritePatch
                 break;
             case CustomRoles.Wraith:
                 newAbilityButton = CustomButton.Get("invisible");
-                break;
-            case CustomRoles.Jailer:
-                newKillButton = CustomButton.Get("penitentiary");
                 break;
             case CustomRoles.Agitater:
                 newKillButton = CustomButton.Get("bombshell");

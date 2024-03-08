@@ -110,7 +110,7 @@ internal class Councillor : RoleBase
                     else pc.ShowPopUp(GetString("CouncillorMurderMax"));
                     return true;
                 }
-                if (Jailer.JailerTarget.ContainsValue(target.PlayerId))
+                if (Jailer.IsTarget(target.PlayerId))
                 {
                     if (!isUI) Utils.SendMessage(GetString("CanNotTrialJailed"), pc.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
                     else pc.ShowPopUp(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")) + "\n" + GetString("CanNotTrialJailed"));

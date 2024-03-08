@@ -1003,9 +1003,6 @@ internal static class RPC
             case CustomRoles.RiftMaker:
                 RiftMaker.Add(targetId);
                 break;
-            case CustomRoles.Crusader:
-                Crusader.Add(targetId);
-                break;
             case CustomRoles.Witch:
                 Witch.Add(targetId);
                 break;
@@ -1042,17 +1039,8 @@ internal static class RPC
             case CustomRoles.PlagueDoctor:
                 PlagueDoctor.Add(targetId);
                 break;
-            case CustomRoles.Sheriff:
-                Sheriff.Add(targetId);
-                break;
-            case CustomRoles.GuessMaster:
-                GuessMaster.Add(targetId);
-                break;
             case CustomRoles.Pickpocket:
                 Pickpocket.Add(targetId);
-                break;
-            case CustomRoles.Cleanser:
-                Cleanser.Add(targetId);
                 break;
             case CustomRoles.SoulCollector:
                 SoulCollector.Add(targetId);
@@ -1066,18 +1054,6 @@ internal static class RPC
             case CustomRoles.QuickShooter:
                 QuickShooter.Add(targetId);
                 break;
-            case CustomRoles.Observer:
-                Observer.Add(targetId);
-                break;
-            case CustomRoles.SwordsMan:
-                SwordsMan.Add(targetId);
-                break;
-            case CustomRoles.SabotageMaster:
-                SabotageMaster.Add(targetId);
-                break;
-            case CustomRoles.Snitch:
-                Snitch.Add(targetId);
-                break;
             case CustomRoles.Medusa:
                 Medusa.Add(targetId);
                 break;
@@ -1090,9 +1066,6 @@ internal static class RPC
             case CustomRoles.Aware:
                 Aware.Add(targetId);
                 break;
-            case CustomRoles.TimeManager:
-                TimeManager.Add(targetId);
-                break;
             case CustomRoles.Workhorse:
                 Workhorse.Add(targetId);
                 break;
@@ -1102,26 +1075,11 @@ internal static class RPC
             case CustomRoles.Glitch:
                 Glitch.Add(targetId);
                 break;
-            case CustomRoles.Counterfeiter:
-                Counterfeiter.Add(targetId);
-                break;
-            case CustomRoles.Jailer:
-                Jailer.Add(targetId);
-                break;
             case CustomRoles.Pursuer:
                 Pursuer.Add(targetId);
                 break;
             case CustomRoles.PotionMaster:
                 PotionMaster.Add(targetId);
-                break;
-            case CustomRoles.Medic:
-                Medic.Add(targetId);
-                break;
-            case CustomRoles.Divinator:
-                Divinator.Add(targetId);
-                break;
-            case CustomRoles.Oracle:
-                Oracle.Add(targetId);
                 break;
             case CustomRoles.Gamer:
                 Gamer.Add(targetId);
@@ -1151,30 +1109,6 @@ internal static class RPC
             case CustomRoles.Juggernaut:
                 Juggernaut.Add(targetId);
                 break;
-            case CustomRoles.Reverie:
-                Reverie.Add(targetId);
-                break;
-            case CustomRoles.Psychic:
-                Psychic.Add(targetId);
-                break;
-            case CustomRoles.Judge:
-                Judge.Add(targetId);
-                break;
-            case CustomRoles.Inspector:
-                Inspector.Add(targetId);
-                break;
-            case CustomRoles.Keeper:
-                Keeper.Add(targetId);
-                break;
-            case CustomRoles.Mortician:
-                Mortician.Add(targetId);
-                break;
-            case CustomRoles.Tracefinder:
-                Tracefinder.Add(targetId);
-                break;
-            case CustomRoles.Mediumshiper:
-                Mediumshiper.Add(targetId);
-                break;
             case CustomRoles.Hawk:
                 Hawk.Add(targetId);
                 break;
@@ -1183,21 +1117,6 @@ internal static class RPC
                 break;
             case CustomRoles.Warden:
                 Warden.Add(targetId);
-                break;
-            case CustomRoles.Veteran:
-                Main.VeteranNumOfUsed.Add(targetId, Options.VeteranSkillMaxOfUseage.GetInt());
-                break;
-            case CustomRoles.Grenadier:
-                Main.GrenadierNumOfUsed.Add(targetId, Options.GrenadierSkillMaxOfUseage.GetInt());
-                break;
-            case CustomRoles.Lighter:
-                Main.LighterNumOfUsed.Add(targetId, Options.LighterSkillMaxOfUseage.GetInt());
-                break;
-            case CustomRoles.Bastion:
-                Main.BastionNumberOfAbilityUses = Options.BastionMaxBombs.GetInt();
-                break;
-            case CustomRoles.TimeMaster:
-                Main.TimeMasterNumOfUsed.Add(targetId, Options.TimeMasterMaxUses.GetInt());
                 break;
             case CustomRoles.Swooper:
                 Swooper.Add(targetId);
@@ -1238,17 +1157,8 @@ internal static class RPC
             case CustomRoles.Imitator:
                 Imitator.Add(targetId);
                 break;
-            case CustomRoles.DovesOfNeace:
-                Main.DovesOfNeaceNumOfUsed.Add(targetId, Options.DovesOfNeaceMaxOfUseage.GetInt());
-                break;
             case CustomRoles.Infectious:
                 Infectious.Add(targetId);
-                break;
-            case CustomRoles.Deputy:
-                Deputy.Add(targetId);
-                break;
-            case CustomRoles.Investigator:
-                Investigator.Add(targetId);
                 break;
             case CustomRoles.Virus:
                 Virus.Add(targetId);
@@ -1258,12 +1168,6 @@ internal static class RPC
                 break;
             case CustomRoles.PlagueBearer:
                 PlagueBearer.Add(targetId);
-                break;
-            case CustomRoles.Tracker:
-                Tracker.Add(targetId);
-                break;
-            case CustomRoles.Merchant:
-                Merchant.Add(targetId);
                 break;
             case CustomRoles.SerialKiller:
                 SerialKiller.Add(targetId);
@@ -1289,17 +1193,11 @@ internal static class RPC
             case CustomRoles.Maverick:
                 Maverick.Add(targetId);
                 break;
-            case CustomRoles.Mole:
-                Mole.Add(targetId);
-                break;
             case CustomRoles.Wildling:
                 Wildling.Add(targetId);
                 break;
             case CustomRoles.Morphling:
                 Morphling.Add(targetId);
-                break;
-            case CustomRoles.Spiritualist:
-                Spiritualist.Add(targetId);
                 break;
             case CustomRoles.Spiritcaller:
                 Spiritcaller.Add(targetId);
@@ -1323,12 +1221,6 @@ internal static class RPC
             case CustomRoles.ChiefOfPolice:
                 ChiefOfPolice.Add(targetId);
                 break;
-            case CustomRoles.NiceMini:
-                Mini.Add(targetId);
-                break;
-            case CustomRoles.EvilMini:
-                Mini.Add(targetId);
-                break;
             case CustomRoles.Diseased:
                 Diseased.Add();
                 break;
@@ -1343,12 +1235,6 @@ internal static class RPC
                 break;
             case CustomRoles.Ghoul:
                 Ghoul.Add();
-                break;
-            case CustomRoles.Spy:
-                Spy.Add(targetId);
-                break;
-            case CustomRoles.Enigma:
-                Enigma.Add(targetId);
                 break;
             case CustomRoles.Instigator:
                 Instigator.Add(targetId);
@@ -1391,8 +1277,8 @@ internal static class RPC
             case CustomRoles.Cleanser:
                 Cleanser.ReceiveRPC(reader);
                 break;
-            case CustomRoles.Counterfeiter:
-                Counterfeiter.ReceiveRPC(reader);
+            case CustomRoles.Deceiver:
+                Deceiver.ReceiveRPC(reader);
                 break;
             case CustomRoles.Crusader:
                 Crusader.ReceiveRPC(reader);
@@ -1401,14 +1287,14 @@ internal static class RPC
                 Deputy.ReceiveRPC(reader);
                 break; 
                 //Waiting for fix
-            case CustomRoles.Divinator:
-                Divinator.ReceiveRPC(reader);
+            case CustomRoles.FortuneTeller:
+                FortuneTeller.ReceiveRPC(reader);
                 break;
             case CustomRoles.Medic:
                 Medic.ReceiveRPC(reader);
                 break;
-            case CustomRoles.Mediumshiper:
-                Mediumshiper.ReceiveRPC(reader);
+            case CustomRoles.Medium:
+                Medium.ReceiveRPC(reader);
                 break;
             case CustomRoles.Monarch:
                 Monarch.ReceiveRPC(reader);
@@ -1416,8 +1302,8 @@ internal static class RPC
             case CustomRoles.Oracle:
                 Oracle.ReceiveRPC(reader);
                 break;
-            case CustomRoles.SabotageMaster:
-                SabotageMaster.ReceiveRPC(reader);
+            case CustomRoles.Mechanic:
+                Mechanic.ReceiveRPC(reader);
                 break;
             case CustomRoles.Sheriff:
                 Sheriff.ReceiveRPC(reader);
@@ -1428,8 +1314,8 @@ internal static class RPC
             case CustomRoles.Swapper:
                 Swapper.ReceiveSkillRPC(reader);
                 break;
-            case CustomRoles.SwordsMan:
-                SwordsMan.ReceiveRPC(reader);
+            case CustomRoles.Knight:
+                Knight.ReceiveRPC(reader);
                 break;
 
             //Impostors

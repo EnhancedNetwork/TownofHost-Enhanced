@@ -124,13 +124,12 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
         switch (role)
         {
             case CustomRoles.Terrorist:
-            case CustomRoles.SabotageMaster:
        //     case CustomRoles.Mario:
             case CustomRoles.EngineerTOHE:
             case CustomRoles.Phantom:
             case CustomRoles.Crewpostor:
             case CustomRoles.Taskinator:
-          //  case CustomRoles.Jester:
+                //  case CustomRoles.Jester:
                 AURoleOptions.EngineerCooldown = 0f;
                 AURoleOptions.EngineerInVentMaxTime = 0f;
                 break;
@@ -160,25 +159,14 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Mercenary:
                 Mercenary.ApplyGameOptions(player);
                 break;
-            case CustomRoles.Tracefinder:
-                Tracefinder.ApplyGameOptions();
-                break;
             case CustomRoles.Sniper:
                 Sniper.ApplyGameOptions(player);
                 break;
-            case CustomRoles.Sheriff:
-            case CustomRoles.Jailer:
-            case CustomRoles.SwordsMan:
             case CustomRoles.Arsonist:
             case CustomRoles.Innocent:
             case CustomRoles.Revolutionist:
-            case CustomRoles.Medic:
-            case CustomRoles.Crusader:
             case CustomRoles.Provocateur:
-            case CustomRoles.Deputy:
             case CustomRoles.Investigator:
-            case CustomRoles.Counterfeiter:
-            case CustomRoles.Witness:
             case CustomRoles.Succubus:
             case CustomRoles.CursedSoul:
             case CustomRoles.Admirer:
@@ -201,10 +189,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Zombie:
             case CustomRoles.KillingMachine:
                 opt.SetFloat(FloatOptionNames.ImpostorLightMod, 0.2f);
-                break;
-            case CustomRoles.Doctor:
-                AURoleOptions.ScientistCooldown = 0f;
-                AURoleOptions.ScientistBatteryCharge = Options.DoctorTaskCompletedBatteryCharge.GetFloat();
                 break;
          /* case CustomRoles.Paranoia:
                 AURoleOptions.EngineerCooldown =
@@ -255,34 +239,8 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Bandit:
                 Bandit.ApplyGameOptions(opt);
                 break;
-            case CustomRoles.Veteran:
-                AURoleOptions.EngineerCooldown = Options.VeteranSkillCooldown.GetFloat();
-                AURoleOptions.EngineerInVentMaxTime = 1;
-                break;
-            case CustomRoles.Grenadier:
-                AURoleOptions.EngineerCooldown = Options.GrenadierSkillCooldown.GetFloat();
-                AURoleOptions.EngineerInVentMaxTime = 1;
-                break;
-            case CustomRoles.Lighter:
-                AURoleOptions.EngineerInVentMaxTime = 1;
-                AURoleOptions.EngineerCooldown = Options.LighterSkillCooldown.GetFloat();
-                if (Main.Lighter.Count > 0)
-                {
-                    opt.SetVision(false);
-                    if (Utils.IsActive(SystemTypes.Electrical)) opt.SetFloat(FloatOptionNames.CrewLightMod, Options.LighterVisionOnLightsOut.GetFloat() * 5);
-                    else opt.SetFloat(FloatOptionNames.CrewLightMod, Options.LighterVisionNormal.GetFloat());
-                }
-                break;
-            case CustomRoles.TimeMaster:
-                AURoleOptions.EngineerCooldown = Options.TimeMasterSkillCooldown.GetFloat();
-                AURoleOptions.EngineerInVentMaxTime = 1;
-                break;
             case CustomRoles.Penguin:
                 Penguin.ApplyGameOptions();
-                break;
-            case CustomRoles.Bastion:
-                AURoleOptions.EngineerInVentMaxTime = 1;
-                AURoleOptions.EngineerCooldown = Options.BastionBombCooldown.GetFloat();
                 break;
             case CustomRoles.Hater:
             case CustomRoles.Pursuer:
@@ -329,9 +287,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
             case CustomRoles.Juggernaut:
                 opt.SetVision(Juggernaut.HasImpostorVision.GetBool());
-                break;
-            case CustomRoles.Reverie:
-                opt.SetVision(false);
                 break;
             case CustomRoles.Jester:
                 AURoleOptions.EngineerCooldown = 0f;
@@ -395,14 +350,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.BloodKnight:
                 BloodKnight.ApplyGameOptions(opt);
                 break;
-            case CustomRoles.DovesOfNeace:
-                AURoleOptions.EngineerCooldown = Options.DovesOfNeaceCooldown.GetFloat();
-                AURoleOptions.EngineerInVentMaxTime = 1;
-                break;
-            case CustomRoles.Mole:
-                AURoleOptions.EngineerCooldown = Mole.VentCooldown.GetFloat();
-                AURoleOptions.EngineerInVentMaxTime = 1;
-                break;
             case CustomRoles.Mario:
                 AURoleOptions.EngineerCooldown = Options.MarioVentCD.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 1;
@@ -436,25 +383,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
         }
 
-        // Grenadier or Mad Grenadier enter the vent
-        if ((Main.GrenadierBlinding.Count > 0 &&
-            (player.GetCustomRole().IsImpostor() ||
-            (player.GetCustomRole().IsNeutral() && Options.GrenadierCanAffectNeutral.GetBool()))
-            )
-            || (Main.MadGrenadierBlinding.Count > 0 && !player.GetCustomRole().IsImpostorTeam() && !player.Is(CustomRoles.Madmate)))
-        {
-            opt.SetVision(false);
-            opt.SetFloat(FloatOptionNames.CrewLightMod, Options.GrenadierCauseVision.GetFloat());
-            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.GrenadierCauseVision.GetFloat());
-        }
-
-        /*if ((Main.FlashbangInProtect.Count >= 1 && Main.ForFlashbang.Contains(player.PlayerId) && (!player.GetCustomRole().IsCrewmate())))  
-          {
-              opt.SetVision(false);
-              opt.SetFloat(FloatOptionNames.CrewLightMod, Options.FlashbangVision.GetFloat());
-              opt.SetFloat(FloatOptionNames.ImpostorLightMod, Options.FlashbangVision.GetFloat());
-          }*/
-
+        if (Grenadier.On) Grenadier.ApplyGameOptionsForOthers(opt, player);
         if (Dazzler.On) Dazzler.SetDazzled(player, opt);
         if (Deathpact.On) Deathpact.SetDeathpactVision(player, opt);
         if (Spiritcaller.IsEnable) Spiritcaller.ReduceVision(opt, player);

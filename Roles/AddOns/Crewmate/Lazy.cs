@@ -21,7 +21,7 @@ public class Lazy
     public static bool CheckConflicts(PlayerControl player)
     {
         if (player.Is(CustomRoles.Ghoul)
-            || player.Is(CustomRoles.Needy))
+            || player.Is(CustomRoles.LazyGuy))
             return false;
 
         if (player.GetCustomRole().IsNeutral() 
