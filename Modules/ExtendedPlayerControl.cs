@@ -1491,20 +1491,16 @@ static class ExtendedPlayerControl
         {
             var cancelTeleport = false;
 
-            if (player.inVent
-                || player.MyPhysics.Animations.IsPlayingEnterVentAnimation())
+            if (player.inVent || player.MyPhysics.Animations.IsPlayingEnterVentAnimation())
             {
                 Logger.Info($"Target: ({player.GetNameWithRole().RemoveHtmlTags()}) in vent", "RpcTeleport");
                 cancelTeleport = true;
             }
-
-            else if (player.onLadder
-                || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+            else if (player.onLadder || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
             {
                 Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) is in on Ladder", "RpcTeleport");
                 cancelTeleport = true;
             }
-
             else if (player.inMovingPlat)
             {
                 Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) use moving platform (Airship/Fungle)", "RpcTeleport");
@@ -1519,7 +1515,7 @@ static class ExtendedPlayerControl
         }
 
         var playerNetTransform = player.NetTransform;
-        var newSidForHost = (ushort)(playerNetTransform.lastSequenceId + 132);
+        var newSidForHost = (ushort)(playerNetTransform.lastSequenceId + 12); //132
         var newSidForLocal = (ushort)(playerNetTransform.lastSequenceId * 1.2);
         var newSidForGlobal = (ushort)(playerNetTransform.lastSequenceId * 1.8);
 
