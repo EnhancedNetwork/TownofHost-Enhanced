@@ -120,6 +120,7 @@ internal class Mini : RoleBase
 
             if (player.Is(CustomRoles.NiceMini))
                 player.RpcGuardAndKill();
+            
             /*Dont show guard animation for evil mini,
             this would simply stop them from murdering.
             Imagine reseting kill cool down every 20 seconds
@@ -129,12 +130,13 @@ internal class Mini : RoleBase
             {
                 SendRPC();
                 player.Notify(GetString("MiniUp"));
-                Utils.NotifyRoles();
+                NotifyRoles();
             }
         }
     }
 
-    public static float GetKillCoolDown()
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = GetKillCoolDown();
+    private static float GetKillCoolDown()
     {
         if (MinorCD.GetFloat() <= MajorCD.GetFloat())
             return MinorCD.GetFloat();
@@ -169,7 +171,8 @@ internal class Mini : RoleBase
         => (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) && EveryoneCanKnowMini.GetBool();
 
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
-            => !seer.GetCustomRole().IsImpostorTeam() && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) ? Main.roleColors[CustomRoles.Mini] : "";
+            => !seer.GetCustomRole().IsImpostorTeam() && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) ? Main.roleColors[CustomRoles.Mini] : string.Empty;
+    
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
-            => Mini.HasEnabled && Mini.EveryoneCanKnowMini.GetBool() && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) ? ColorString(GetRoleColor(CustomRoles.Mini), Age != 18 && Mini.UpDateAge.GetBool() ? $"({Mini.Age})" : "") : "";
+            => HasEnabled && EveryoneCanKnowMini.GetBool() && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) ? ColorString(GetRoleColor(CustomRoles.Mini), Age != 18 && UpDateAge.GetBool() ? $"({Age})" : string.Empty) : string.Empty;
 }

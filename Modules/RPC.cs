@@ -1084,9 +1084,6 @@ internal static class RPC
             case CustomRoles.Gamer:
                 Gamer.Add(targetId);
                 break;
-            case CustomRoles.Lightning:
-                Lightning.Add(targetId);
-                break;
             case CustomRoles.DarkHide:
                 DarkHide.Add(targetId);
                 break;
@@ -1181,9 +1178,6 @@ internal static class RPC
             case CustomRoles.Huntsman:
                 Huntsman.Add(targetId);
                 break;
-            case CustomRoles.Kamikaze:
-                Kamikaze.Add(targetId);
-                break;
             case CustomRoles.Shroud:
                 Shroud.Add(targetId);
                 break;
@@ -1232,9 +1226,6 @@ internal static class RPC
                 break;
             case CustomRoles.Ghoul:
                 Ghoul.Add();
-                break;
-            case CustomRoles.Instigator:
-                Instigator.Add(targetId);
                 break;
             case CustomRoles.Quizmaster:
                 Quizmaster.Add(targetId);

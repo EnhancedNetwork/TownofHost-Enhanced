@@ -590,8 +590,6 @@ public static class Options
     public static OptionItem NeutralCanBeInLove;
 
     // Experimental Roles
-    public static OptionItem MNKillCooldown;
-
     public static OptionItem ZombieKillCooldown;
     public static OptionItem ZombieSpeedReduce;
 
@@ -916,10 +914,7 @@ public static class Options
         /*
          * Killing Machine
          */
-        SetupRoleOptions(23800, TabGroup.ImpostorRoles, CustomRoles.KillingMachine);
-        MNKillCooldown = FloatOptionItem.Create(23805, "KillCooldown", new(2.5f, 180f, 2.5f), 10f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.KillingMachine])
-            .SetValueFormat(OptionFormat.Seconds);
+        KillingMachine.SetupCustomOption();
 
         /*
          * Ludopath
@@ -1989,9 +1984,6 @@ public static class Options
          * Tricky
          */
         Tricky.SetupCustomOption();
-
-      //SetupAdtRoleOptions(23400, CustomRoles.KillingMachine, canSetNum: true, tab: TabGroup.Addons);
-
 
         TextOptionItem.Create(10000019, "RoleType.Misc", TabGroup.Addons) // NEUTRAL
             .SetGameMode(CustomGameMode.Standard)

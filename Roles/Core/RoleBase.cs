@@ -194,7 +194,7 @@ public abstract class RoleBase
     /// <summary>
     /// When player was exiled
     /// </summary>
-    public virtual void OnPlayerExiled(PlayerControl Bard, GameData.PlayerInfo exiled)
+    public virtual void OnPlayerExiled(PlayerControl player, GameData.PlayerInfo exiled)
     { }
 
     /// <summary>

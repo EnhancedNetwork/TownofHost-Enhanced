@@ -187,6 +187,7 @@ internal class ChangeRoleSettings
             }
 
             FallFromLadder.Reset();
+
             Mercenary.Init();
             Sniper.Init();
             Undertaker.Init();
@@ -216,13 +217,11 @@ internal class ChangeRoleSettings
             Pursuer.Init();
             Diseased.Init();
             Gamer.Init();
-            Lightning.Init();
             DarkHide.Init();
             Collector.Init();
             Clumsy.Init();
             Taskinator.Init();
             QuickShooter.Init();
-            Kamikaze.Init();
             Aware.Init();
             Ninja.Init();
             Juggernaut.Init();
@@ -283,7 +282,6 @@ internal class ChangeRoleSettings
             Cyber.Init();
             Oiiai.Init();
             Hater.Init();
-            Instigator.Init();
             Quizmaster.Init();
             Tired.Init();
             Statue.Init();
@@ -639,9 +637,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Gamer:
                         Gamer.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Lightning:
-                        Lightning.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.DarkHide:
                         DarkHide.Add(pc.PlayerId);
                         break;
@@ -721,9 +716,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Pyromaniac:
                         Pyromaniac.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Kamikaze:
-                        Kamikaze.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Werewolf:
                         Werewolf.Add(pc.PlayerId);
                         break;
@@ -765,9 +757,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.ChiefOfPolice:
                         ChiefOfPolice.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Instigator:
-                        Instigator.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Hater:
                         Hater.Add(pc.PlayerId);

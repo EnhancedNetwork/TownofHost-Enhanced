@@ -756,9 +756,6 @@ public static class Utils
                 case CustomRoles.Masochist:
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Masochist).ShadeColor(0.25f), $"({(Main.MasochistKillMax.TryGetValue(playerId, out var count3) ? count3 : 0)}/{Options.MasochistKillMax.GetInt()})"));
                     break;
-                case CustomRoles.Kamikaze:
-                    ProgressText.Append(Kamikaze.GetMarkedLimit(playerId));
-                    break;
                 case CustomRoles.QuickShooter:
                     ProgressText.Append(QuickShooter.GetShotLimit(playerId));
                     break;
@@ -1809,9 +1806,6 @@ public static class Utils
                 if (seer.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
 
-                if (Lightning.IsEnable && Lightning.IsGhost(seer))
-                    SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Lightning), "■"));
-
                 if (CustomRoles.Solsticer.RoleExist())
                     SelfMark.Append(Solsticer.GetWarningArrow(seer, seer));
 
@@ -2029,9 +2023,6 @@ public static class Utils
 
                         if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
-
-                        if (Lightning.IsEnable && Lightning.IsGhost(target))
-                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Lightning), "■"));
 
                         if (target.Is(CustomRoles.Solsticer))
                         {

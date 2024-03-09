@@ -197,7 +197,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Quantization:
-                    if (!Lightning.IsEnable)
+                    if (!Lightning.On)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }

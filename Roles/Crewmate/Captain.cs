@@ -194,10 +194,10 @@ internal class Captain : RoleBase
         var addon = AllSubRoles[rand.Next(0, AllSubRoles.Count)];
         return addon;
     }
-    public override void OnPlayerExiled(PlayerControl x, GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(PlayerControl captain, GameData.PlayerInfo exiled)
     {
-        if (exiled == null) return;
-        if (!exiled.GetCustomRole().Is(CustomRoles.Captain)) return;
+        if (exiled == null || !exiled.GetCustomRole().Is(CustomRoles.Captain)) return;
+
         byte playerId = exiled.PlayerId;
         if (playerId == byte.MaxValue) return;
         if (!CaptainVoteTargets.ContainsKey(playerId)) return;

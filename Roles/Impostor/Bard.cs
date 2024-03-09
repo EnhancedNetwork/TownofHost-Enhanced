@@ -21,8 +21,8 @@ internal class Bard: RoleBase
         return Rand.Next(0, 100) < Arrogance.BardChance.GetInt();
     }
 
-    public override void OnPlayerExiled(PlayerControl Bard, GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(PlayerControl bard, GameData.PlayerInfo exiled)
     {
-        if (exiled != null) Main.AllPlayerKillCooldown[Bard.PlayerId] /= 2;
+        if (exiled != null) Main.AllPlayerKillCooldown[bard.PlayerId] /= 2;
     }
 }

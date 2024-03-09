@@ -126,7 +126,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Terrorist:
             case CustomRoles.EngineerTOHE:
             case CustomRoles.Phantom:
-            case CustomRoles.Crewpostor:
             case CustomRoles.Taskinator:
                 AURoleOptions.EngineerCooldown = 0f;
                 AURoleOptions.EngineerInVentMaxTime = 0f;
@@ -154,7 +153,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Innocent:
             case CustomRoles.Revolutionist:
             case CustomRoles.Provocateur:
-            case CustomRoles.Investigator:
             case CustomRoles.Succubus:
             case CustomRoles.CursedSoul:
             case CustomRoles.Admirer:
@@ -168,14 +166,12 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 Pelican.ApplyGameOptions(opt);
                 break;
             case CustomRoles.Refugee:
-        //    case CustomRoles.Minion:
                 opt.SetVision(true);
                 break;
             case CustomRoles.Virus:
                 opt.SetVision(Virus.ImpostorVision.GetBool());
                 break;
             case CustomRoles.Zombie:
-            case CustomRoles.KillingMachine:
                 opt.SetFloat(FloatOptionNames.ImpostorLightMod, 0.2f);
                 break;
          /* case CustomRoles.Paranoia:
@@ -290,25 +286,15 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Doppelganger:
                 opt.SetVision(Doppelganger.HasImpostorVision.GetBool());
                 break;
-            case CustomRoles.Lawyer:
-                //Main.NormalOptions.CrewLightMod = Lawyer.LawyerVision.GetFloat();
-                break;
             case CustomRoles.Parasite:
                 opt.SetVision(true);
                 break;
-        /*    case CustomRoles.Chameleon:
-                opt.SetVision(false);
-                break; */
-            
             case CustomRoles.Gamer:
                 Gamer.ApplyGameOptions(opt);
                 break;
             case CustomRoles.HexMaster:
                 HexMaster.ApplyGameOptions(opt);
                 break;
-            //case CustomRoles.Occultist:
-            //    Occultist.ApplyGameOptions(opt);
-            //    break;
             case CustomRoles.Wraith:
                 Wraith.ApplyGameOptions(opt);
                 break;

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using static TOHE.Options;
+using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Impostor;
 
@@ -72,6 +73,12 @@ internal class Crewpostor : RoleBase
             TasksDone[PlayerId] = tasksDone;
         else
             TasksDone.Add(PlayerId, 0);
+    }
+
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    {
+        AURoleOptions.EngineerCooldown = 0f;
+        AURoleOptions.EngineerInVentMaxTime = 0f;
     }
 
     public override bool CanUseKillButton(PlayerControl pc) => false;

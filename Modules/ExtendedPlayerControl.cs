@@ -564,16 +564,13 @@ static class ExtendedPlayerControl
 
         return pc.GetCustomRole() switch
         {
-            CustomRoles.KillingMachine or
             CustomRoles.Sheriff or
             CustomRoles.Vigilante or
             CustomRoles.Deputy or
             CustomRoles.Investigator or
             CustomRoles.Innocent or
-            //    CustomRoles.Knight or
             CustomRoles.Hater or
             CustomRoles.Medic or
-            //      CustomRoles.NWitch or
             CustomRoles.Monarch or
             CustomRoles.Romantic or
             CustomRoles.Provocateur or
@@ -645,33 +642,21 @@ static class ExtendedPlayerControl
         var playerRoleClass = pc.GetRoleClass();
         if (playerRoleClass != null && playerRoleClass.CanUseSabotage(pc)) return true;
 
-        if (pc.Is(CustomRoleTypes.Impostor))
+        return pc.GetCustomRole() switch
         {
-            return pc.GetCustomRole() switch
-            {
-                CustomRoles.KillingMachine => false,
+            CustomRoles.Bandit => Bandit.CanUseSabotage.GetBool(),
+            CustomRoles.Jackal => Jackal.CanUseSabotage.GetBool(),
+            CustomRoles.Sidekick => Jackal.CanUseSabotageSK.GetBool(),
+            CustomRoles.Traitor => Traitor.CanUseSabotage.GetBool(),
 
-                _ => true,
-            };
-        }
-        else
-        {
-            return pc.GetCustomRole() switch
-            {
-                CustomRoles.Bandit => Bandit.CanUseSabotage.GetBool(),
-                CustomRoles.Jackal => Jackal.CanUseSabotage.GetBool(),
-                CustomRoles.Sidekick => Jackal.CanUseSabotageSK.GetBool(),
-                CustomRoles.Traitor => Traitor.CanUseSabotage.GetBool(),
+            CustomRoles.Parasite or
+            CustomRoles.Glitch or
+            CustomRoles.PotionMaster or
+            CustomRoles.Refugee
+            => true,
 
-                CustomRoles.Parasite or
-                CustomRoles.Glitch or
-                CustomRoles.PotionMaster or
-                CustomRoles.Refugee
-                => true,
-
-                _ => false,
-            };
-        }
+            _ => false,
+        };
     }
     public static bool IsDousedPlayer(this PlayerControl arsonist, PlayerControl target)
     {
@@ -735,9 +720,6 @@ static class ExtendedPlayerControl
             case CustomRoles.PlagueDoctor:
                 PlagueDoctor.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.Kamikaze:
-                Kamikaze.SetKillCooldown(player.PlayerId);
-                break;
             case CustomRoles.Penguin:
                 Penguin.SetKillCooldown(player.PlayerId);
                 break;
@@ -779,9 +761,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Bandit:
                 Bandit.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Instigator:
-                Instigator.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Doppelganger:
                 Doppelganger.SetKillCooldown(player.PlayerId);
@@ -831,9 +810,6 @@ static class ExtendedPlayerControl
             case CustomRoles.Poisoner:
                 Poisoner.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.KillingMachine:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Options.MNKillCooldown.GetFloat();
-                break;
             case CustomRoles.Zombie:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.ZombieKillCooldown.GetFloat();
                 Main.AllPlayerSpeed[player.PlayerId] -= Options.ZombieSpeedReduce.GetFloat();
@@ -858,9 +834,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Gamer:
                 Gamer.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Lightning:
-                Lightning.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.DarkHide:
                 DarkHide.SetKillCooldown(player.PlayerId);
@@ -928,9 +901,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.ChiefOfPolice:
                 ChiefOfPolice.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.EvilMini:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Mini.GetKillCoolDown();
                 break;
             case CustomRoles.Quizmaster:
                 Quizmaster.SetKillCooldown(player.PlayerId);

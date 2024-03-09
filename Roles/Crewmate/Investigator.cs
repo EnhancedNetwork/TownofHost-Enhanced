@@ -1,3 +1,4 @@
+using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
 using TOHE.Roles.Core;
@@ -105,6 +106,12 @@ internal class Investigator : RoleBase
             }
         }
     }
+
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    {
+        opt.SetVision(false);
+    }
+
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = InvestigateCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl player)
     {

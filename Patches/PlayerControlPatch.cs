@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
@@ -16,9 +17,8 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using UnityEngine;
-using static TOHE.Translator;
 using TOHE.Roles.Core;
+using static TOHE.Translator;
 
 namespace TOHE;
 
@@ -209,14 +209,6 @@ class CheckMurderPatch
             return false;
         }
 
-        // added here because it bypasses every shield and just kills the player and antidote, diseased etc.. wont take effect
-        if (killer.Is(CustomRoles.KillingMachine))
-        {
-            killer.RpcMurderPlayerV3(target);
-            killer.ResetKillCooldown();
-            return false;
-        }
-
         if (killerRole.Is(CustomRoles.Chronomancer))
             Chronomancer.OnCheckMurder(killer);
 
@@ -361,9 +353,6 @@ class CheckMurderPatch
                 case CustomRoles.Pyromaniac:
                     if (!Pyromaniac.OnCheckMurder(killer, target)) return false;
                     break;
-                case CustomRoles.Kamikaze:
-                    if (!Kamikaze.OnCheckMurder(killer, target)) return false;
-                    break;
                 case CustomRoles.Poisoner:
                     if (!Poisoner.OnCheckMurder(killer, target)) return false;
                     break;
@@ -420,10 +409,6 @@ class CheckMurderPatch
                     break;
                 case CustomRoles.Shroud:
                     if (!Shroud.OnCheckMurder(killer, target)) return false;
-                    break;
-                case CustomRoles.Lightning:
-                    if (Lightning.OnCheckMurderAsKiller(killer, target))
-                        return false;
                     break;
                 case CustomRoles.QuickShooter:
                     QuickShooter.QuickShooterKill(killer);
@@ -1088,13 +1073,6 @@ class MurderPlayerPatch
         if (!killer.Is(CustomRoles.Trickster))
             Main.AllKillers.Add(killer.PlayerId, Utils.GetTimeStamp());
 
-        switch (target.GetCustomRole())
-        {
-            case CustomRoles.Lightning:
-                if (killer != target)
-                    Lightning.MurderPlayer(killer, target);
-                break;
-        }
         switch (killer.GetCustomRole())
         {
             case CustomRoles.BloodKnight:
@@ -1998,7 +1976,6 @@ class ReportDeadBodyPatch
         if (QuickShooter.IsEnable) QuickShooter.OnReportDeadBody();
         if (PlagueDoctor.IsEnable) PlagueDoctor.OnReportDeadBody();
         if (Doomsayer.IsEnable) Doomsayer.OnReportDeadBody();
-        if (Lightning.IsEnable) Lightning.OnReportDeadBody();
         if (Romantic.IsEnable) Romantic.OnReportDeadBody();
         if (Swooper.IsEnable) Swooper.OnReportDeadBody();
         if (Wraith.IsEnable) Wraith.OnReportDeadBody();
@@ -2457,9 +2434,6 @@ class FixedUpdateInNormalGamePatch
 
                     CustomRoleManager.OnFixedUpdateLowLoad(player);
 
-                    if (Kamikaze.IsEnable)
-                        Kamikaze.MurderKamikazedPlayers(player);
-
                     if (Puppeteer.IsEnable)
                         Puppeteer.OnFixedUpdate(player);
 
@@ -2486,10 +2460,6 @@ class FixedUpdateInNormalGamePatch
 
                         case CustomRoles.Wraith:
                             Wraith.OnFixedUpdate(player);
-                            break;
-
-                        case CustomRoles.Lightning:
-                            Lightning.OnFixedUpdate();
                             break;
 
                         case CustomRoles.BloodKnight:
@@ -2711,9 +2681,6 @@ class FixedUpdateInNormalGamePatch
 
                 if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                     Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), "★"));
-
-                if (Lightning.IsEnable && Lightning.IsGhost(target))
-                    Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lightning), "■"));
 
 
                 seerRole = seer.GetCustomRole();

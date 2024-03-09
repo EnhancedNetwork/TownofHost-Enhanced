@@ -176,8 +176,6 @@ class ExileControllerWrapUpPatch
 
 
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist) Main.PlayerStates[exiled.PlayerId].SetDead();
-
-            Instigator.OnPlayerExile(exiled);
         }
         if (AmongUsClient.Instance.AmHost && Main.IsFixedCooldown)
         {
