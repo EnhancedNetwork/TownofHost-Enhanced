@@ -472,14 +472,12 @@ static class ExtendedPlayerControl
             CustomRoles.Sniper => Sniper.CanUseKillButton(pc),
             CustomRoles.Pelican => pc.IsAlive(),
             CustomRoles.Mastermind => pc.IsAlive(),
-            CustomRoles.Arsonist => Options.ArsonistCanIgniteAnytime.GetBool() ? Utils.GetDousedPlayerCount(pc.PlayerId).Item1 < Options.ArsonistMaxPlayersToIgnite.GetInt() : !pc.IsDouseDone(),
             CustomRoles.Revolutionist => !pc.IsDrawDone(),
             CustomRoles.Pyromaniac => pc.IsAlive(),
             CustomRoles.PlagueDoctor => pc.IsAlive() && PlagueDoctor.CanUseKillButton(),
             CustomRoles.Huntsman => pc.IsAlive(),
             CustomRoles.Knight => pc.IsAlive(),
             CustomRoles.Jackal => pc.IsAlive(),
-            CustomRoles.Bandit => pc.IsAlive(),
             CustomRoles.Sidekick => pc.IsAlive(),
             CustomRoles.Necromancer => pc.IsAlive(),
             CustomRoles.HexMaster => pc.IsAlive(),
@@ -525,7 +523,6 @@ static class ExtendedPlayerControl
             CustomRoles.Pestilence => pc.IsAlive(),
             CustomRoles.Pirate => pc.IsAlive(),
             CustomRoles.Pixie => pc.IsAlive(),
-            CustomRoles.Agitater => pc.IsAlive(),
             CustomRoles.ChiefOfPolice => ChiefOfPolice.CanUseKillButton(pc.PlayerId),
             CustomRoles.Doppelganger => pc.IsAlive(),
             CustomRoles.Quizmaster => Quizmaster.CanUseKillButton(pc),
@@ -589,7 +586,6 @@ static class ExtendedPlayerControl
             => false,
 
             CustomRoles.Jackal => Jackal.CanVent.GetBool(),
-            CustomRoles.Bandit => Bandit.CanVent.GetBool(),
             CustomRoles.VengefulRomantic => Romantic.VengefulCanVent.GetBool(),
             CustomRoles.Glitch => Glitch.CanVent.GetBool(),
             CustomRoles.RuthlessRomantic => Romantic.RuthlessCanVent.GetBool(),
@@ -627,8 +623,6 @@ static class ExtendedPlayerControl
             CustomRoles.Refugee => true,
             CustomRoles.Spiritcaller => Spiritcaller.CanVent.GetBool(),
             CustomRoles.Quizmaster => Quizmaster.CanUseVentButton(pc),
-
-            CustomRoles.Arsonist => pc.IsDouseDone() || (Options.ArsonistCanIgniteAnytime.GetBool() && (Utils.GetDousedPlayerCount(pc.PlayerId).Item1 >= Options.ArsonistMinPlayersToIgnite.GetInt() || pc.inVent)),
             CustomRoles.Revolutionist => pc.IsDrawDone(),
 
             //FFA
@@ -658,7 +652,6 @@ static class ExtendedPlayerControl
         {
             return pc.GetCustomRole() switch
             {
-                CustomRoles.Bandit => Bandit.CanUseSabotage.GetBool(),
                 CustomRoles.Jackal => Jackal.CanUseSabotage.GetBool(),
                 CustomRoles.Sidekick => Jackal.CanUseSabotageSK.GetBool(),
                 CustomRoles.Traitor => Traitor.CanUseSabotage.GetBool(),
@@ -672,18 +665,6 @@ static class ExtendedPlayerControl
                 _ => false,
             };
         }
-    }
-    public static bool IsDousedPlayer(this PlayerControl arsonist, PlayerControl target)
-    {
-        if (arsonist == null || target == null || Main.isDoused == null) return false;
-        Main.isDoused.TryGetValue((arsonist.PlayerId, target.PlayerId), out bool isDoused);
-        return isDoused;
-    }
-    public static bool IsDrawPlayer(this PlayerControl arsonist, PlayerControl target)
-    {
-        if (arsonist == null && target == null && Main.isDraw == null) return false;
-        Main.isDraw.TryGetValue((arsonist.PlayerId, target.PlayerId), out bool isDraw);
-        return isDraw;
     }
     public static bool IsRevealedPlayer(this PlayerControl player, PlayerControl target)
     {
@@ -729,9 +710,6 @@ static class ExtendedPlayerControl
             case CustomRoles.TimeThief:
                 TimeThief.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.Agitater:
-                Agitater.SetKillCooldown(player.PlayerId);
-                break;
             case CustomRoles.PlagueDoctor:
                 PlagueDoctor.SetKillCooldown(player.PlayerId);
                 break;
@@ -753,9 +731,6 @@ static class ExtendedPlayerControl
             case CustomRoles.Pickpocket:
                 Pickpocket.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.Arsonist:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Options.ArsonistCooldown.GetFloat();
-                break;
             case CustomRoles.Mastermind:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Mastermind.KillCooldown.GetFloat();
                 break;
@@ -776,9 +751,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Sidekick:
                 Sidekick.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Bandit:
-                Bandit.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Instigator:
                 Instigator.SetKillCooldown(player.PlayerId);
@@ -1033,13 +1005,6 @@ static class ExtendedPlayerControl
             || target.Is(CustomRoles.Monitor) && Monitor.CanUseVent()
             || Knight.CheckCanUseVent(target)
             || target.Is(CustomRoles.Nimble);
-    }
-    
-    public static bool IsDouseDone(this PlayerControl player)
-    {
-        if (!player.Is(CustomRoles.Arsonist)) return false;
-        var (countItem1, countItem2) = Utils.GetDousedPlayerCount(player.PlayerId);
-        return countItem1 >= countItem2;
     }
     public static bool IsDrawDone(this PlayerControl player)
     {

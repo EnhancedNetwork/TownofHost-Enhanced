@@ -708,11 +708,6 @@ public static class Utils
 
             switch (role)
             {
-                case CustomRoles.Arsonist:
-                    var doused = GetDousedPlayerCount(playerId);
-                    if (!Options.ArsonistCanIgniteAnytime.GetBool()) ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Arsonist).ShadeColor(0.25f), $"({doused.Item1}/{doused.Item2})"));
-                    else ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Arsonist).ShadeColor(0.25f), $"({doused.Item1}/{Options.ArsonistMaxPlayersToIgnite.GetInt()})"));
-                    break;
                 case CustomRoles.SoulCollector:
                     ProgressText.Append(SoulCollector.GetProgressText(playerId));
                     break;
@@ -830,9 +825,6 @@ public static class Utils
                 case CustomRoles.Jackal:
                     if (Jackal.CanRecruitSidekick.GetBool())
                         ProgressText.Append(Jackal.GetRecruitLimit(playerId));
-                    break;
-                case CustomRoles.Bandit:
-                    ProgressText.Append(Bandit.GetStealLimit(playerId));
                     break;
                 case CustomRoles.Doppelganger:
                     ProgressText.Append(Doppelganger.GetStealLimit(playerId));
@@ -2098,14 +2090,6 @@ public static class Utils
                                 {
                                     TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.PlagueBearer)}>●</color>");
                                 }
-                                break;
-
-                            case CustomRoles.Arsonist:
-                                if (seer.IsDousedPlayer(target))
-                                    TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Arsonist)}>▲</color>");
-
-                                if (Main.ArsonistTimer.TryGetValue(seer.PlayerId, out var ar_kvp) && ar_kvp.Item1 == target)
-                                    TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Arsonist)}>△</color>");
                                 break;
 
                             case CustomRoles.Revolutionist:

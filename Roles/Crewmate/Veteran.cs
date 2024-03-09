@@ -140,5 +140,5 @@ internal class Veteran : RoleBase
     {
         hud.AbilityButton.buttonLabelText.text = GetString("VeteranVentButtonText");
     }
-    public override Sprite ImpostorVentButtonSprite => CustomButton.Get("Veteran");
+    public override Sprite ImpostorVentButtonSprite(PlayerControl player) => CustomButton.Get("Veteran");
 }

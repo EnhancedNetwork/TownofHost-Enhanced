@@ -460,15 +460,6 @@ class CheckMurderPatch
                     Pixie.OnCheckMurder(killer, target);
                     return false;
 
-                case CustomRoles.Arsonist:
-                    killer.SetKillCooldown(Options.ArsonistDouseTime.GetFloat());
-                    if (!Main.isDoused[(killer.PlayerId, target.PlayerId)] && !Main.ArsonistTimer.ContainsKey(killer.PlayerId))
-                    {
-                        Main.ArsonistTimer.Add(killer.PlayerId, (target, 0f));
-                        Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
-                        RPC.SetCurrentDousingTarget(killer.PlayerId, target.PlayerId);
-                    }
-                    return false;
                 case CustomRoles.Revolutionist:
                     killer.SetKillCooldown(Options.RevolutionistDrawTime.GetFloat());
                     if (!Main.isDraw[(killer.PlayerId, target.PlayerId)] && !Main.RevolutionistTimer.ContainsKey(killer.PlayerId))
@@ -545,16 +536,6 @@ class CheckMurderPatch
                     if (Jackal.OnCheckMurder(killer, target))
                         return false;
                     break;
-                case CustomRoles.Bandit:
-                    if (!Bandit.OnCheckMurder(killer, target))
-                    {
-                        Bandit.killCooldown[killer.PlayerId] = Bandit.StealCooldown.GetFloat();
-                        return false;
-                    }
-                    else Bandit.killCooldown[killer.PlayerId] = Bandit.KillCooldownOpt.GetFloat();
-                    killer.ResetKillCooldown();
-                    killer.SyncSettings();
-                    break;
                 case CustomRoles.Shaman:
                     if (Main.ShamanTargetChoosen == false)
                     {
@@ -564,10 +545,6 @@ class CheckMurderPatch
                     }
                     else killer.Notify(GetString("ShamanTargetAlreadySelected"));
                     return false;
-                case CustomRoles.Agitater:
-                    if (!Agitater.OnCheckMurder(killer, target))
-                        return false;
-                    break;
                 case CustomRoles.Pursuer:
                     if (target.Is(CustomRoles.Pestilence)) break;
                     if (target.Is(CustomRoles.SerialKiller)) return true;
@@ -1992,7 +1969,6 @@ class ReportDeadBodyPatch
         }
 
         Main.LastVotedPlayerInfo = null;
-        Main.ArsonistTimer.Clear();
         Main.GuesserGuessed.Clear();
         Main.AllKillers.Clear();
         Solsticer.patched = false;
@@ -2016,8 +1992,6 @@ class ReportDeadBodyPatch
         if (Vulture.IsEnable) Vulture.Clear();
         if (Penguin.IsEnable) Penguin.OnReportDeadBody(); 
         if (Pelican.IsEnable) Pelican.OnReportDeadBody();
-        if (Bandit.IsEnable) Bandit.OnReportDeadBody();
-        if (Agitater.IsEnable) Agitater.OnReportDeadBody();
         if (QuickShooter.IsEnable) QuickShooter.OnReportDeadBody();
         if (PlagueDoctor.IsEnable) PlagueDoctor.OnReportDeadBody();
         if (Doomsayer.IsEnable) Doomsayer.OnReportDeadBody();
@@ -2251,10 +2225,6 @@ class FixedUpdateInNormalGamePatch
                 if (DoubleTrigger.FirstTriggerTimer.Count > 0)
                     DoubleTrigger.OnFixedUpdate(player);
 
-                // Agitater
-                if (Agitater.IsEnable && Agitater.CurrentBombedPlayer == player.PlayerId)
-                    Agitater.OnFixedUpdate(player);
-
                 if (PlagueDoctor.IsEnable)
                     PlagueDoctor.OnCheckPlayerPosition(player);
 
@@ -2306,55 +2276,6 @@ class FixedUpdateInNormalGamePatch
                             else
                             {
                                 Main.WarlockTimer.Remove(playerId);
-                            }
-                        }
-                        break;
-
-                    case CustomRoles.Arsonist:
-                        if (Main.ArsonistTimer.TryGetValue(player.PlayerId, out var arsonistTimerData))
-                        {
-                            var playerId = player.PlayerId;
-                            if (!player.IsAlive() || Pelican.IsEaten(playerId))
-                            {
-                                Main.ArsonistTimer.Remove(playerId);
-                                Utils.NotifyRoles(SpecifySeer: player);
-                                RPC.ResetCurrentDousingTarget(playerId);
-                            }
-                            else
-                            {
-                                var (arTarget, arTime) = arsonistTimerData;
-
-                                if (!arTarget.IsAlive())
-                                {
-                                    Main.ArsonistTimer.Remove(playerId);
-                                }
-                                else if (arTime >= Options.ArsonistDouseTime.GetFloat())
-                                {
-                                    player.SetKillCooldown();
-                                    Main.ArsonistTimer.Remove(playerId);
-                                    Main.isDoused[(playerId, arTarget.PlayerId)] = true;
-                                    player.RpcSetDousedPlayer(arTarget, true);
-                                    Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: arTarget, ForceLoop: true);
-                                    RPC.ResetCurrentDousingTarget(playerId);
-                                }
-                                else
-                                {
-                                    float range = NormalGameOptionsV07.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
-                                    float distance = Vector2.Distance(player.GetCustomPosition(), arTarget.GetCustomPosition());
-
-                                    if (distance <= range)
-                                    {
-                                        Main.ArsonistTimer[playerId] = (arTarget, arTime + Time.fixedDeltaTime);
-                                    }
-                                    else
-                                    {
-                                        Main.ArsonistTimer.Remove(playerId);
-                                        Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: arTarget, ForceLoop: true);
-                                        RPC.ResetCurrentDousingTarget(playerId);
-
-                                        Logger.Info($"Canceled: {player.GetNameWithRole()}", "Arsonist");
-                                    }
-                                }
                             }
                         }
                         break;
@@ -2764,14 +2685,6 @@ class FixedUpdateInNormalGamePatch
                             Mark.Append($"<color={Utils.GetRoleColorCode(seerRole)}>●</color>");
                         break;
 
-                    case CustomRoles.Arsonist:
-                        if (seer.IsDousedPlayer(target))
-                            Mark.Append($"<color={Utils.GetRoleColorCode(seerRole)}>▲</color>");
-
-                        else if (Main.currentDousingTarget != byte.MaxValue && Main.currentDousingTarget == target.PlayerId)
-                            Mark.Append($"<color={Utils.GetRoleColorCode(seerRole)}>△</color>");
-                        break;
-
                     case CustomRoles.Revolutionist:
                         if (seer.IsDrawPlayer(target))
                             Mark.Append($"<color={Utils.GetRoleColorCode(seerRole)}>●</color>");
@@ -3096,57 +3009,6 @@ class CoEnterVentPatch
             return true;
         }
 
-        if (AmongUsClient.Instance.IsGameStarted)
-        {
-            if (__instance.myPlayer.IsDouseDone())
-            {
-                CustomSoundsManager.RPCPlayCustomSoundAll("Boom");
-                foreach (var pc in Main.AllAlivePlayerControls)
-                {
-                    if (pc != __instance.myPlayer)
-                    {
-                        //生存者は焼殺
-                        pc.SetRealKiller(__instance.myPlayer);
-                        Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Torched;
-                        pc.RpcMurderPlayerV3(pc);
-                        Main.PlayerStates[pc.PlayerId].SetDead();
-                    }
-                }
-                foreach (var pc in Main.AllPlayerControls) pc.KillFlash();
-                if (!CustomWinnerHolder.CheckForConvertedWinner(__instance.myPlayer.PlayerId))
-                {
-                    CustomWinnerHolder.ShiftWinnerAndSetWinner(CustomWinner.Arsonist); //焼殺で勝利した人も勝利させる
-                    CustomWinnerHolder.WinnerIds.Add(__instance.myPlayer.PlayerId);
-                }
-                return true;
-            }
-            else if (Options.ArsonistCanIgniteAnytime.GetBool())
-            {
-                var douseCount = Utils.GetDousedPlayerCount(__instance.myPlayer.PlayerId).Item1;
-                if (douseCount >= Options.ArsonistMinPlayersToIgnite.GetInt()) // Don't check for max, since the player would not be able to ignite at all if they somehow get more players doused than the max
-                {
-                    if (douseCount > Options.ArsonistMaxPlayersToIgnite.GetInt()) Logger.Warn("Arsonist Ignited with more players doused than the maximum amount in the settings", "Arsonist Ignite");
-                    foreach (var pc in Main.AllAlivePlayerControls)
-                    {
-                        if (!__instance.myPlayer.IsDousedPlayer(pc)) continue;
-                        pc.KillFlash();
-                        pc.SetRealKiller(__instance.myPlayer);
-                        Main.PlayerStates[pc.PlayerId].deathReason = PlayerState.DeathReason.Torched;
-                        pc.RpcMurderPlayerV3(pc);
-                        Main.PlayerStates[pc.PlayerId].SetDead();
-                    }
-                    if (Main.AllAlivePlayerControls.Length == 1)
-                    {
-                        if (!CustomWinnerHolder.CheckForConvertedWinner(__instance.myPlayer.PlayerId))
-                        {
-                            CustomWinnerHolder.ShiftWinnerAndSetWinner(CustomWinner.Arsonist); //焼殺で勝利した人も勝利させる
-                            CustomWinnerHolder.WinnerIds.Add(__instance.myPlayer.PlayerId);
-                        }
-                    }
-                    return true;
-                }
-            }
-        }
 
         if (AmongUsClient.Instance.IsGameStarted && __instance.myPlayer.IsDrawDone())//完成拉拢任务的玩家跳管后
         {
@@ -3181,7 +3043,7 @@ class CoEnterVentPatch
             return false;
         }
 
-        __instance.myPlayer.GetRoleClass()?.OnCoEnterVent(__instance, id);
+        __instance.myPlayer.GetRoleClass().OnCoEnterVent(__instance, id);
 
         if (__instance.myPlayer.Is(CustomRoles.Swooper))
             Swooper.OnCoEnterVent(__instance, id);

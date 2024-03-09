@@ -478,7 +478,7 @@ public static class CustomRolesHelper
 
     public static bool IsNK(this CustomRoles role)
     {
-        if (role == CustomRoles.Arsonist && Options.ArsonistCanIgniteAnytime.GetBool()) return true;
+        if (role == CustomRoles.Arsonist && Arsonist.ArsonistCanIgniteAnytime.GetBool()) return true;
         else if (role == CustomRoles.Quizmaster && Quizmaster.CanKillAfterMark.GetBool()) return true;
 
         return role is
@@ -520,7 +520,7 @@ public static class CustomRolesHelper
     }
     public static bool IsNonNK(this CustomRoles role) // ROLE ASSIGNING, NOT NEUTRAL TYPE
     {
-        if (role == CustomRoles.Arsonist && !Options.ArsonistCanIgniteAnytime.GetBool()) return true;
+        if (role == CustomRoles.Arsonist && !Arsonist.ArsonistCanIgniteAnytime.GetBool()) return true;
         else if (role == CustomRoles.Quizmaster && !Quizmaster.CanKillAfterMark.GetBool()) return true; 
 
         return role is
@@ -609,7 +609,7 @@ public static class CustomRolesHelper
     }
     public static bool IsSnitchTarget(this CustomRoles role)
     {
-        if (role is CustomRoles.Arsonist && Options.ArsonistCanIgniteAnytime.GetBool()) return true;
+        if (role is CustomRoles.Arsonist && Arsonist.ArsonistCanIgniteAnytime.GetBool()) return true;
         return role is
             CustomRoles.Jackal or
             CustomRoles.Doppelganger or
@@ -1897,7 +1897,7 @@ public static class CustomRolesHelper
            //CustomRoles.Occultist => CountTypes.Occultist,
            CustomRoles.Necromancer => CountTypes.Necromancer,
            CustomRoles.DarkHide => !DarkHide.SnatchesWin.GetBool() ? CountTypes.DarkHide : CountTypes.Crew,
-           CustomRoles.Arsonist => Options.ArsonistCanIgniteAnytime.GetBool() ? CountTypes.Arsonist : CountTypes.Crew,
+           CustomRoles.Arsonist => Arsonist.ArsonistCanIgniteAnytime.GetBool() ? CountTypes.Arsonist : CountTypes.Crew,
            CustomRoles.Shroud => CountTypes.Shroud,
            CustomRoles.Werewolf => CountTypes.Werewolf,
            CustomRoles.Wraith => CountTypes.Wraith,

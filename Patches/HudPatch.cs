@@ -136,10 +136,6 @@ class HudManagerPatch
                     case CustomRoles.Poisoner:
                         Poisoner.SetKillButtonText();
                         break;
-                    case CustomRoles.Arsonist:
-                        __instance.KillButton.OverrideText(GetString("ArsonistDouseButtonText"));
-                        __instance.ImpostorVentButton.buttonLabelText.text = GetString("ArsonistVentButtonText");
-                        break;
                     case CustomRoles.Revolutionist:
                         __instance.KillButton.OverrideText(GetString("RevolutionistDrawButtonText"));
                         __instance.ImpostorVentButton.buttonLabelText.text = GetString("RevolutionistVentButtonText");
@@ -245,9 +241,6 @@ class HudManagerPatch
                     case CustomRoles.Undertaker:
                         __instance.KillButton.OverrideText(GetString("KillButtonText"));
                         __instance.AbilityButton.OverrideText(GetString("UndertakerButtonText"));
-                        break;
-                    case CustomRoles.Agitater:
-                        __instance.KillButton.OverrideText(GetString("AgitaterKillButtonText"));
                         break;
                     case CustomRoles.Totocalcio:
                         __instance.KillButton.OverrideText(GetString("TotocalcioKillButtonText"));
@@ -465,7 +458,6 @@ class SetHudActivePatch
 
         switch (player.GetCustomRole())
         {
-            case CustomRoles.Arsonist:
             case CustomRoles.Deputy:
             case CustomRoles.Investigator:
             case CustomRoles.Monarch:
@@ -478,9 +470,6 @@ class SetHudActivePatch
             case CustomRoles.DarkHide:
             case CustomRoles.Provocateur:
             case CustomRoles.Overseer:
-                __instance.SabotageButton.ToggleVisible(false);
-                __instance.AbilityButton.ToggleVisible(false);
-                __instance.ImpostorVentButton.ToggleVisible(false);
                 break;
 
             case CustomRoles.KillingMachine:

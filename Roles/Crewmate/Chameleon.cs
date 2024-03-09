@@ -219,6 +219,7 @@ internal class Chameleon : RoleBase
                 NameNotifyManager.Notify(pc, GetString("ChameleonInvisInCooldown"));
             }
         }, 0.5f, "Chameleon Vent");
+        return;
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {

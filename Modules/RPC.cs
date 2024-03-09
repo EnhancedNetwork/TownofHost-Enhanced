@@ -1027,9 +1027,6 @@ internal static class RPC
             case CustomRoles.Sidekick:
                 Sidekick.Add(targetId);
                 break;
-            case CustomRoles.Bandit:
-                Bandit.Add(targetId);
-                break;
             case CustomRoles.Doppelganger:
                 Doppelganger.Add(targetId);
                 break;
@@ -1047,9 +1044,6 @@ internal static class RPC
                 break;
             case CustomRoles.SchrodingersCat:
                 SchrodingersCat.Add(targetId);
-                break;
-            case CustomRoles.Agitater:
-                Agitater.Add(targetId);
                 break;
             case CustomRoles.QuickShooter:
                 QuickShooter.Add(targetId);

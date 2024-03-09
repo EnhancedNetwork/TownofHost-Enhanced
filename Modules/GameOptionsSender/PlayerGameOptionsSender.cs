@@ -162,7 +162,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Sniper:
                 Sniper.ApplyGameOptions(player);
                 break;
-            case CustomRoles.Arsonist:
             case CustomRoles.Innocent:
             case CustomRoles.Revolutionist:
             case CustomRoles.Provocateur:
@@ -171,7 +170,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.CursedSoul:
             case CustomRoles.Admirer:
             case CustomRoles.Amnesiac:
-                opt.SetVision(false);
                 break;
             case CustomRoles.Pestilence:
                 opt.SetVision(PlagueBearer.PestilenceHasImpostorVision.GetBool());
@@ -235,9 +233,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
             case CustomRoles.PlagueDoctor:
                 PlagueDoctor.ApplyGameOptions(opt);
-                break;
-            case CustomRoles.Bandit:
-                Bandit.ApplyGameOptions(opt);
                 break;
             case CustomRoles.Penguin:
                 Penguin.ApplyGameOptions();
@@ -323,9 +318,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             //    break;
             case CustomRoles.Wraith:
                 Wraith.ApplyGameOptions(opt);
-                break;
-            case CustomRoles.Agitater:
-                Agitater.ApplyGameOptions(opt);
                 break;
             case CustomRoles.DarkHide:
                 DarkHide.ApplyGameOptions(opt);

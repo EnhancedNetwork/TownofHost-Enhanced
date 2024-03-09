@@ -276,7 +276,7 @@ public abstract class RoleBase
     public virtual void SetAbilityButtonText(HudManager hud, byte playerId) => hud.KillButton?.OverrideText(Translator.GetString("KillButtonText"));
     public virtual Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => null;
     public virtual Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => null;
-    public virtual Sprite ImpostorVentButtonSprite { get; }
+    public virtual Sprite ImpostorVentButtonSprite(PlayerControl player) => null;
     public virtual Sprite ReportButtonSprite { get; }
 
     // Add Mark/LowerText/Suffix for player

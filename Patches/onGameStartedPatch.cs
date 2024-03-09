@@ -57,7 +57,6 @@ internal class ChangeRoleSettings
             Main.isDoused = [];
             Main.isDraw = [];
             Main.isRevealed = [];
-            Main.ArsonistTimer = [];
             Main.RevolutionistTimer = [];
             Main.RevolutionistStart = [];
             Main.RevolutionistLastTime = [];
@@ -200,7 +199,6 @@ internal class ChangeRoleSettings
             Lawyer.Init();
             Jackal.Init();
             Sidekick.Init();
-            Bandit.Init();
             Doppelganger.Init();
             RiftMaker.Init();
             Solsticer.Init();
@@ -279,7 +277,6 @@ internal class ChangeRoleSettings
             Bewilder.Init();
             Necromancer.Init();
             Pitfall.Init();
-            Agitater.Init();
             ChiefOfPolice.Init();
             Cyber.Init();
             Oiiai.Init();
@@ -592,9 +589,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Sidekick:
                         Sidekick.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Bandit:
-                        Bandit.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Doppelganger:
                         Doppelganger.Add(pc.PlayerId);
                         break;
@@ -609,9 +603,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Huntsman:
                         Huntsman.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Agitater:
-                        Agitater.Add(pc.PlayerId);
                         break;
                     case CustomRoles.QuickShooter:
                         QuickShooter.Add(pc.PlayerId);
