@@ -1200,6 +1200,8 @@
   "PlayerCanSetColor": "Los jugadores pueden usar el comando /color",
   "PlayerCanSetName": "Los jugadores pueden usar el comando /rn",
   "PlayerCanUseQuitCommand": "Los jugadores pueden usar comando /quit para dejar un lobby para siempre",
+  "PlayerCanUseTP": "Players can use the /tpin and /tpout command",
+  "CanPlayMiniGames": "Players can play mini games",
   "KPDCamouflageMode": "Aparencia de camuflaje",
   "RoleOptions": "Opciones de rol",
   "ModeOptions": "Opciones de modo de juego",
