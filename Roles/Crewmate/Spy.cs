@@ -118,7 +118,8 @@ internal class Spy : RoleBase
         }
         return true;
     }
-    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target) => target.Is(CustomRoles.Spy) && !Spy.OnKillAttempt(killer, target) ? false : true;
+    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
+        => OnKillAttempt(killer, target);
     
     public override void OnFixedUpdate(PlayerControl pc)
     {
@@ -143,8 +144,8 @@ internal class Spy : RoleBase
     public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         if (!player.IsAlive()) return;
-        Spy.UseLimit[player.PlayerId] += Spy.SpyAbilityUseGainWithEachTaskCompleted.GetFloat();
-        Spy.SendAbilityRPC(player.PlayerId);
+        UseLimit[player.PlayerId] += SpyAbilityUseGainWithEachTaskCompleted.GetFloat();
+        SendAbilityRPC(player.PlayerId);
     }
     public override string GetProgressText(byte playerId, bool comms)
     {
@@ -167,5 +168,5 @@ internal class Spy : RoleBase
 
         return sb;
     }
-    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => (seer.Is(CustomRoles.Spy) && Spy.SpyRedNameList.ContainsKey(target.PlayerId)) ? "#BA4A00" : "";
+    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => (seer.Is(CustomRoles.Spy) && SpyRedNameList.ContainsKey(target.PlayerId)) ? "#BA4A00" : "";
 }

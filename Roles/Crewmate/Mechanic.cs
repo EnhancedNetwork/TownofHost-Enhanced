@@ -118,7 +118,7 @@ internal class Mechanic : RoleBase
                 if (!FixesDoors.GetBool()) break;
                 if (DoorsProgressing == true) break;
 
-                int mapId = Utils.GetActiveMapId();
+                int mapId = GetActiveMapId();
                 if (AmongUsClient.Instance.NetworkMode == NetworkModes.FreePlay) mapId = AmongUsClient.Instance.TutorialMapId;
 
                 DoorsProgressing = true;

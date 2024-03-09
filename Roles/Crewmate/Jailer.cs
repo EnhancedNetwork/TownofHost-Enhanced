@@ -126,8 +126,8 @@ internal class Jailer : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (!killer.Is(CustomRoles.Jailer)) return true;
-        if (killer == null || target == null) return true;
+        if (killer == null || target == null) return false;
+
         if (JailerTarget[killer.PlayerId] != byte.MaxValue)
         {
             killer.Notify(GetString("JailerTargetAlreadySelected"));

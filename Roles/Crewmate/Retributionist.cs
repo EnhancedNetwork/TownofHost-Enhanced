@@ -3,7 +3,6 @@ using Hazel;
 using System;
 using System.Linq;
 using TOHE.Modules;
-using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -13,7 +12,7 @@ using static TOHE.Translator;
 using static TOHE.Utils;
 using static TOHE.MeetingHudStartPatch;
 
-namespace TOHE;
+namespace TOHE.Roles.Crewmate;
 
 internal class Retributionist : RoleBase
 {

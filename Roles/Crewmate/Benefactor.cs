@@ -186,6 +186,21 @@ internal class Benefactor : RoleBase
         }
     }
 
+    public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
+    {
+        if (target == null || killer == null || !shieldedPlayers.ContainsKey(target.PlayerId)) return true;
+
+        if (ShieldIsOneTimeUse.GetBool())
+        {
+            shieldedPlayers.Remove(target.PlayerId);
+            SendRPC(type: 4, targetId: target.PlayerId);
+            Logger.Info($"{target.GetNameWithRole()} shield broken", "BenefactorShieldBroken");
+        }
+        killer.RpcGuardAndKill();
+        killer.SetKillCooldown();
+        return false;
+    }
+
     public override void OnFixedUpdate(PlayerControl pc)
     {
         if (!CustomRoles.Benefactor.IsClassEnable()) return;
@@ -199,21 +214,5 @@ internal class Benefactor : RoleBase
             SendRPC(type: 4, targetId: target); //remove shieldedPlayer
         }
     }
-
-    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
-    {
-        if (target == null || killer == null) return true;
-        if (!shieldedPlayers.ContainsKey(target.PlayerId)) return true;
-        if (ShieldIsOneTimeUse.GetBool())
-        {
-            shieldedPlayers.Remove(target.PlayerId);
-            SendRPC(type:4 , targetId: target.PlayerId);
-            Logger.Info($"{target.GetNameWithRole()} shield broken", "BenefactorShieldBroken");
-        }
-        killer.RpcGuardAndKill();
-        killer.SetKillCooldown();
-        return false;
-    }
-
 }
 
