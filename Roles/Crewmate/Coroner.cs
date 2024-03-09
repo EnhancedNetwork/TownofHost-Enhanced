@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using TOHE.Roles.Core;
 using System.Linq;
 
 namespace TOHE.Roles.Crewmate;
@@ -165,13 +165,14 @@ internal class Coroner : RoleBase
             {
                 reporter.Notify(GetString("CoronerNoTrack"));
             }
+            return false;
         }
-        return false;
+        return true;
     }
 
     private static bool FindKiller(PlayerControl pc, GameData.PlayerInfo deadBody, PlayerControl killer)
     {
-        if (CoronerTargets[pc.PlayerId].Contains(killer.PlayerId))
+        if (CoronerTargets.TryGetValue(pc.PlayerId, out var target) && target.Contains(killer.PlayerId))
         {
             return true;
         }

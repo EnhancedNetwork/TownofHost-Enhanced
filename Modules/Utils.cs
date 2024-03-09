@@ -844,7 +844,8 @@ public static class Utils
                     ProgressText.Append(ChiefOfPolice.GetSkillLimit(playerId));
                     break;
                 default:
-                    //タスクテキスト
+                    if (ProgressText.Length != 0) break;
+
                     var taskState = Main.PlayerStates?[playerId].TaskState;
                     if (taskState.hasTasks)
                     {

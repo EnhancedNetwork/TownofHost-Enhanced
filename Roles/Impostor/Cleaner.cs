@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Impostor;
 
@@ -45,15 +43,20 @@ internal class Cleaner : RoleBase
     {
         if (CleanerBodies.Contains(deadBody.PlayerId)) return false;
 
-        var target = deadBody.Object;
+        if (reporter.Is(CustomRoles.Cleaner))
+        {
+            var target = deadBody.Object;
 
-        CleanerBodies.Remove(target.PlayerId);
-        CleanerBodies.Add(target.PlayerId);
+            CleanerBodies.Remove(target.PlayerId);
+            CleanerBodies.Add(target.PlayerId);
 
-        reporter.Notify(Translator.GetString("CleanerCleanBody"));
-        reporter.SetKillCooldownV3(KillCooldownAfterCleaning.GetFloat(), forceAnime: true);
+            reporter.Notify(Translator.GetString("CleanerCleanBody"));
+            reporter.SetKillCooldownV3(KillCooldownAfterCleaning.GetFloat(), forceAnime: true);
 
-        Logger.Info($"Cleaner: {reporter.GetRealName()} clear body: {target.GetRealName()}", "Cleaner");
-        return false;
+            Logger.Info($"Cleaner: {reporter.GetRealName()} clear body: {target.GetRealName()}", "Cleaner");
+            return false;
+        }
+
+        return true;
     }
 }
