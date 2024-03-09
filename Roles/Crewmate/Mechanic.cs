@@ -66,8 +66,10 @@ internal class Mechanic : RoleBase
         playerIdList.Remove(playerId);
         UsedSkillCount.Remove(playerId);
     }
-    public static void UpdateSystem(ShipStatus __instance, SystemTypes systemType, byte amount, byte playerId)
+    public override void UpdateSystem(ShipStatus __instance, SystemTypes systemType, byte amount, PlayerControl player)
     {
+        var playerId = player.PlayerId;
+
         switch (systemType)
         {
             case SystemTypes.Reactor:
@@ -143,22 +145,25 @@ internal class Mechanic : RoleBase
                 DoorsProgressing = false;
                 break;
         }
-        NotifyRoles(SpecifySeer: GetPlayerById(playerId));
+        NotifyRoles(SpecifySeer: player);
     }
-    public static void SwitchSystemRepair(SwitchSystem __instance, byte amount, byte playerId)
+    public override void SwitchSystemUpdate(SwitchSystem __instance, byte amount, PlayerControl player)
     {
         if (!FixesElectrical.GetBool()) return;
+
+        var playerId = player.PlayerId;
+        
         if (SkillLimit.GetFloat() > 0 &&
             UsedSkillCount[playerId] + UsesUsedWhenFixingLightsOrComms.GetFloat() - 1 >= SkillLimit.GetFloat())
             return;
 
-        if (amount is >= 0 and <= 4)
-        {
-            __instance.ActualSwitches = 0;
-            __instance.ExpectedSwitches = 0;
-            UsedSkillCount[playerId] += UsesUsedWhenFixingLightsOrComms.GetFloat();
-            SendRPC(playerId);
-        }
+        __instance.ActualSwitches = 0;
+        __instance.ExpectedSwitches = 0;
+
+        UsedSkillCount[playerId] += UsesUsedWhenFixingLightsOrComms.GetFloat();
+        SendRPC(playerId);
+
+        Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()} instant - fix-lights", "SwitchSystem");
     }
 
     public static void SendRPC(byte playerId)

@@ -13,7 +13,7 @@ internal class Investigator : RoleBase
     private static bool On = false;
     public override bool IsEnable => On;
     public static bool HasEnabled => CustomRoles.GuessMaster.IsClassEnable();
-    public override CustomRoles ThisRoleBase => CustomRoles.GuessMaster;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     //==================================================================\\
 

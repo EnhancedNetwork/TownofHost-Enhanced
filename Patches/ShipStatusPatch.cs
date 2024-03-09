@@ -8,6 +8,7 @@ using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using TOHE.Roles.Core;
 
 namespace TOHE;
 
@@ -82,25 +83,9 @@ class RepairSystemPatch
 
         // ###### Roles/Add-ons During Sabotages ######
 
-        if (Quizmaster.IsEnable)
-            Quizmaster.OnSabotageCall(systemType);
-
-
         if (Fool.IsEnable && Fool.BlockFixSabotage(player, systemType))
         {
             return false;
-        }
-
-
-        // Fast fix critical saboatge
-        switch (player.GetCustomRole())
-        {
-            case CustomRoles.Mechanic:
-                Mechanic.UpdateSystem(__instance, systemType, amount, player.PlayerId);
-                break;
-            case CustomRoles.Alchemist when Alchemist.FixNextSabo:
-                Alchemist.UpdateSystem(systemType, amount);
-                break;
         }
 
 
@@ -110,6 +95,11 @@ class RepairSystemPatch
             Unlucky.SuicideRand(player);
             if (Unlucky.UnluckCheck[player.PlayerId]) return false;
         }
+
+        player.GetRoleClass()?.UpdateSystem(__instance, systemType, amount, player);
+
+        if (Quizmaster.IsEnable)
+            Quizmaster.OnSabotageCall(systemType);
 
         return true;
     }
@@ -127,19 +117,7 @@ class RepairSystemPatch
             var SwitchSystem = ShipStatus.Instance.Systems[SystemTypes.Electrical].Cast<SwitchSystem>();
             if (SwitchSystem != null && SwitchSystem.IsActive)
             {
-                switch (player.GetCustomRole())
-                {
-                    case CustomRoles.Mechanic:
-                        Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()} instant-fix-lights", "SwitchSystem");
-                        Mechanic.SwitchSystemRepair(SwitchSystem, amount, player.PlayerId);
-                        break;
-                    case CustomRoles.Alchemist when Alchemist.FixNextSabo:
-                        Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()} instant-fix-lights", "SwitchSystem");
-                        SwitchSystem.ActualSwitches = 0;
-                        SwitchSystem.ExpectedSwitches = 0;
-                        Alchemist.FixNextSabo = false;
-                        break;
-                }
+                player.GetRoleClass()?.SwitchSystemUpdate(SwitchSystem, amount, player);
             }
         }
     }

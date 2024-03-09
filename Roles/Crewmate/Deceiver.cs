@@ -1,19 +1,16 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using MS.Internal.Xml.XPath;
 using System.Collections.Generic;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Deceiver : RoleBase
 {
     private const int Id = 10500;
-    private static List<byte> playerIdList = [];
     private static bool On = false;
     public override bool IsEnable => On;
     public static bool HasEnabled => CustomRoles.Deceiver.IsClassEnable();
@@ -23,6 +20,7 @@ internal class Deceiver : RoleBase
     private static OptionItem DeceiverSkillLimitTimes;
     private static OptionItem DeceiverAbilityLost;
 
+    private static List<byte> playerIdList = [];
     private static List<byte> notActiveList = [];
     private static Dictionary<byte, List<byte>> clientList = [];
     private static Dictionary<byte, int> SeelLimit = [];

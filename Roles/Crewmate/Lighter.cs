@@ -13,7 +13,7 @@ internal class Lighter : RoleBase
     public const int Id = 8400;
     public static bool On = false;
     public override bool IsEnable => On;
-    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
 
     private static OptionItem LighterVisionNormal;
     private static OptionItem LighterVisionOnLightsOut;

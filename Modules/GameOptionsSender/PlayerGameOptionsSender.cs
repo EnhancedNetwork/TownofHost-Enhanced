@@ -124,24 +124,12 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
         switch (role)
         {
             case CustomRoles.Terrorist:
-       //     case CustomRoles.Mario:
             case CustomRoles.EngineerTOHE:
             case CustomRoles.Phantom:
             case CustomRoles.Crewpostor:
             case CustomRoles.Taskinator:
-                //  case CustomRoles.Jester:
                 AURoleOptions.EngineerCooldown = 0f;
                 AURoleOptions.EngineerInVentMaxTime = 0f;
-                break;
-            case CustomRoles.Alchemist:
-                AURoleOptions.EngineerCooldown = Alchemist.VentCooldown.GetFloat();
-                AURoleOptions.EngineerInVentMaxTime = 1;
-                if (Alchemist.VisionPotionActive)
-                {
-                    opt.SetVisionV2();
-                    if (Utils.IsActive(SystemTypes.Electrical)) opt.SetFloat(FloatOptionNames.CrewLightMod, Alchemist.VisionOnLightsOut.GetFloat() * 5);
-                    else opt.SetFloat(FloatOptionNames.CrewLightMod, Alchemist.Vision.GetFloat());
-                }
                 break;
             case CustomRoles.ShapeMaster:
                 AURoleOptions.ShapeshifterCooldown = 1f;

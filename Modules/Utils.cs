@@ -719,9 +719,6 @@ public static class Utils
                 case CustomRoles.Pixie:
                     ProgressText.Append(Pixie.GetProgressText(playerId));
                     break;
-                case CustomRoles.Alchemist:
-                    ProgressText.Append(Alchemist.GetProgressText(playerId));
-                    break;
                 case CustomRoles.PlagueDoctor:
                     ProgressText.Append(PlagueDoctor.GetProgressText());
                     break;

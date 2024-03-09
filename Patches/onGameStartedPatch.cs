@@ -262,7 +262,6 @@ internal class ChangeRoleSettings
             Warden.Init();
             Traitor.Init();
             Vulture.Init();
-            Alchemist.Init();
             PlagueDoctor.Init();
             Penguin.Init();
             Wildling.Init();
@@ -676,9 +675,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.SchrodingersCat:
                         SchrodingersCat.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Alchemist:
-                        Alchemist.Add(pc.PlayerId);
                         break;
                     case CustomRoles.BloodKnight:
                         BloodKnight.Add(pc.PlayerId);

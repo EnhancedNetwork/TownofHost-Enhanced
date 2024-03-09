@@ -285,12 +285,6 @@ class CheckMurderPatch
         if (targetRole.Is(CustomRoles.Necromancer) && !Necromancer.OnKillAttempt(killer, target))
             return false;
 
-        if (Alchemist.IsProtected && targetRole.Is(CustomRoles.Alchemist))
-        {
-            killer.SetKillCooldown(time: 5f);
-            return false;
-        }
-
         // Check murder as killer
         if (!killerRoleClass.OnCheckMurderAsKiller(killer, target))
         {
@@ -2010,7 +2004,7 @@ class ReportDeadBodyPatch
         if (Wraith.IsEnable) Wraith.OnReportDeadBody();
 
         // Alchemist & Bloodlust
-        Alchemist.OnReportDeadBody();
+        Alchemist.OnReportDeadBodyGlobal();
 
         if (Quizmaster.IsEnable) Quizmaster.OnReportDeadBody(target);
 
@@ -2466,9 +2460,6 @@ class FixedUpdateInNormalGamePatch
                     if (Kamikaze.IsEnable)
                         Kamikaze.MurderKamikazedPlayers(player);
 
-                    if (Alchemist.IsEnable)
-                        Alchemist.OnFixedUpdateINV(player);
-
                     if (Puppeteer.IsEnable)
                         Puppeteer.OnFixedUpdate(player);
 
@@ -2483,9 +2474,6 @@ class FixedUpdateInNormalGamePatch
 
                     if (Rainbow.isEnabled)
                         Rainbow.OnFixedUpdate();
-
-                    if (Alchemist.BloodlustList.ContainsKey(player.PlayerId))
-                        Alchemist.OnFixedUpdate(player);
 
                     switch (playerRole)
                     {
@@ -2954,34 +2942,6 @@ class EnterVentPatch
     {
         if (GameStates.IsHideNSeek) return;
 
-        pc.GetRoleClass()?.OnEnterVent(pc, __instance);
-
-        Witch.OnEnterVent(pc);
-        HexMaster.OnEnterVent(pc);
-        //Occultist.OnEnterVent(pc);
-
-     /* if (pc.Is(CustomRoles.Wraith)) // THIS WAS FOR WEREWOLF TESTING PURPOSES, PLEASE IGNORE
-        {
-            pc?.MyPhysics?.RpcBootFromVent(__instance.Id);            
-        } */
-
-     /* else if (pc.Is(CustomRoles.Paranoia))
-        {
-            if (Main.ParaUsedButtonCount.TryGetValue(pc.PlayerId, out var count) && count < Options.ParanoiaNumOfUseButton.GetInt())
-            {
-                Main.ParaUsedButtonCount[pc.PlayerId] += 1;
-                if (AmongUsClient.Instance.AmHost)
-                {
-                    _ = new LateTask(() =>
-                    {
-                        Utils.SendMessage(GetString("SkillUsedLeft") + (Options.ParanoiaNumOfUseButton.GetInt() - Main.ParaUsedButtonCount[pc.PlayerId]).ToString(), pc.PlayerId);
-                    }, 4.0f, "Skill Remain Message");
-                }
-                pc?.MyPhysics?.RpcBootFromVent(__instance.Id);
-                pc?.NoCheckStartMeeting(pc?.Data);
-            }
-        } */
-
         if (pc.Is(CustomRoles.Mario))
         {
             Main.MarioVentCount.TryAdd(pc.PlayerId, 0);
@@ -2997,16 +2957,19 @@ class EnterVentPatch
             }
         }
 
-        if (!AmongUsClient.Instance.AmHost) return;
-
         Main.LastEnteredVent.Remove(pc.PlayerId);
         Main.LastEnteredVent.Add(pc.PlayerId, __instance);
         Main.LastEnteredVentLocation.Remove(pc.PlayerId);
         Main.LastEnteredVentLocation.Add(pc.PlayerId, pc.GetCustomPosition());
 
+        if (!AmongUsClient.Instance.AmHost) return;
+
+        pc.GetRoleClass()?.OnEnterVent(pc, __instance);
+
+        Witch.OnEnterVent(pc);
+        HexMaster.OnEnterVent(pc);
         Swooper.OnEnterVent(pc, __instance);
         Wraith.OnEnterVent(pc, __instance);
-        Alchemist.OnEnterVent(pc, __instance.Id);
         Lurker.OnEnterVent(pc);
 
         if (pc.Is(CustomRoles.Unlucky))
@@ -3158,16 +3121,14 @@ class CoEnterVentPatch
             return false;
         }
 
-        __instance.myPlayer.GetRoleClass()?.OnCoEnterVent(__instance, id);
+        __instance.myPlayer?.GetRoleClass()?.OnCoEnterVent(__instance, id);
 
         if (__instance.myPlayer.Is(CustomRoles.Swooper))
             Swooper.OnCoEnterVent(__instance, id);
 
         if (__instance.myPlayer.Is(CustomRoles.Wraith))
             Wraith.OnCoEnterVent(__instance, id);
-        
-        if (__instance.myPlayer.Is(CustomRoles.Alchemist) && Alchemist.PotionID == 8)
-            Alchemist.OnCoEnterVent(__instance, id); 
+       
 
         return true;
     }

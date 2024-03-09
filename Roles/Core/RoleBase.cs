@@ -108,6 +108,17 @@ public abstract class RoleBase
     { }
 
     /// <summary>
+    /// When role try fix any sabotage or open doors
+    /// </summary>
+    public virtual void UpdateSystem(ShipStatus __instance, SystemTypes systemType, byte amount, PlayerControl player)
+    { }
+    /// <summary>
+    /// When role try fix electrical
+    /// </summary>
+    public virtual void SwitchSystemUpdate(SwitchSystem __instance, byte amount, PlayerControl player)
+    { }
+
+    /// <summary>
     ///  When role based on Impostors need force check target
     /// </summary>
     public virtual bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target) => target != null && killer != null;

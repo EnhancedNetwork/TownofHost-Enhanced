@@ -7,7 +7,6 @@ using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using System.Linq;
 
 namespace TOHE.Roles.Crewmate;
 

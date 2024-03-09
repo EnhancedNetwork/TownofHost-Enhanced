@@ -469,10 +469,6 @@ public class TaskState
                 //    }
                 //    break;
 
-                case CustomRoles.Alchemist when player.IsAlive():
-                    Alchemist.OnTaskComplete(player);
-                    break;
-
                 case CustomRoles.Workaholic when (CompletedTasksCount + 1) >= AllTasksCount && !(Options.WorkaholicCannotWinAtDeath.GetBool() && !player.IsAlive()):
                     Logger.Info("The Workaholic task is done", "Workaholic");
 

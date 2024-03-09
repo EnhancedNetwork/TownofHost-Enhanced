@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using TOHE.Roles.AddOns.Common;
 using UnityEngine;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Impostor;
 
