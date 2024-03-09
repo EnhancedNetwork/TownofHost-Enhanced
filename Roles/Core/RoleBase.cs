@@ -163,28 +163,17 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// Checking that a dead body can be reported
+    /// Check start meeting by press meeting button
     /// </summary>
-    //public virtual bool CheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer) => reporter.IsAlive();
+    public virtual bool OnCheckStartMeeting(PlayerControl reporter) => reporter.IsAlive();
 
     /// <summary>
-    /// Can start meeting by press button
+    /// Check start meeting by dead body
     /// </summary>
-    public virtual bool CantStartMeeting(PlayerControl reporter) => !reporter.IsAlive();
+    public virtual bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer) => reporter.IsAlive();
 
     /// <summary>
-    /// When the meeting start by press button
-    /// </summary>
-    public virtual void OnPressEmergencyButton(PlayerControl reporter)
-    { }
-
-    /// <summary>
-    /// When reporter press report button
-    /// </summary>
-    public virtual bool OnPressReportButton(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer) => reporter.IsAlive();
-
-    /// <summary>
-    /// When the meeting start by report dead body
+    /// When the meeting was start by report dead body or press meeting button
     /// </summary>
     public virtual void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     { }

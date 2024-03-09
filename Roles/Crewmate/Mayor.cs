@@ -72,9 +72,10 @@ internal partial class Mayor : RoleBase
         }
     }
 
-    public override void OnPressEmergencyButton(PlayerControl reporter)
+    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
-        MayorUsedButtonCount[reporter.PlayerId] += 1;
+        if (target == null)
+            MayorUsedButtonCount[reporter.PlayerId] += 1;
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {

@@ -59,7 +59,7 @@ internal class Swapper : RoleBase
         playerIdList.Remove(playerId);
         Swappermax.Remove(playerId);
     }
-    public override bool CantStartMeeting(PlayerControl reporter) => !OptCanStartMeeting.GetBool();
+    public override bool OnCheckStartMeeting(PlayerControl reporter) => OptCanStartMeeting.GetBool();
     public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString((Swappermax.TryGetValue(PlayerId, out var x) && x >= 1) ? Utils.GetRoleColor(CustomRoles.Swapper).ShadeColor(0.25f) : Color.gray, Swappermax.TryGetValue(PlayerId, out var changermax) ? $"({changermax})" : "Invalid");
     public static bool SwapMsg(PlayerControl pc, string msg, bool isUI = false)
     {

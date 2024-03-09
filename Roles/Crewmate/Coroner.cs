@@ -7,6 +7,7 @@ using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
 using TOHE.Roles.Core;
+using System.Linq;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -150,10 +151,10 @@ internal class Coroner : RoleBase
         SendRPCLimit(pc.PlayerId, operate: 2);
     }
 
-    public static bool CannotReportBody(byte deadBodyId) => UnreportablePlayers.Contains(deadBodyId);
-
-    public override bool OnPressReportButton(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
     {
+        if (UnreportablePlayers.Contains(deadBody.PlayerId)) return false;
+
         if (reporter.Is(CustomRoles.Coroner))
         {
             if (killer != null)

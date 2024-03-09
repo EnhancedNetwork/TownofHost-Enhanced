@@ -152,11 +152,16 @@ internal class Deathpact : RoleBase
         }
     }
 
-    public static bool CanCallMeeting(PlayerControl player)
-    {
-        if (!On) return false;
+    private static bool CanCallMeeting(PlayerControl player)
+        => !PlayersInDeathpactCanCallMeeting.GetBool() && IsInActiveDeathpact(player);
 
-        return !PlayersInDeathpactCanCallMeeting.GetBool() && IsInActiveDeathpact(player);
+    public override bool OnCheckStartMeeting(PlayerControl reporter)
+    {
+        return CanCallMeeting(reporter);
+    }
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
+    {
+        return CanCallMeeting(reporter);
     }
 
     public static bool CheckCancelDeathpact(PlayerControl deathpact)

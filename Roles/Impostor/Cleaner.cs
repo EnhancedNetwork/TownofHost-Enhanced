@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Impostor;
 
@@ -39,10 +41,10 @@ internal class Cleaner : RoleBase
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
-    public static bool BodyIsCleansed(byte targetId) => CleanerBodies.Contains(targetId);
-
-    public override bool OnPressReportButton(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
     {
+        if (CleanerBodies.Contains(deadBody.PlayerId)) return false;
+
         var target = deadBody.Object;
 
         CleanerBodies.Remove(target.PlayerId);

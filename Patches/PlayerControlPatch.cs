@@ -273,10 +273,6 @@ class CheckMurderPatch
         if (Pelican.IsEaten(target.PlayerId))
             return false;
 
-        // Fake Check
-        if (Deceiver.HasEnabled && Deceiver.OnClientMurder(killer, target))
-            return false;
-
         if (Pursuer.IsEnable && Pursuer.OnClientMurder(killer))
             return false;
 
@@ -1535,7 +1531,6 @@ class ShapeshiftPatch
 class ReportDeadBodyPatch
 {
     public static Dictionary<byte, bool> CanReport;
-    public static HashSet<byte> UnreportablePlayers = [];
     public static Dictionary<byte, List<GameData.PlayerInfo>> WaitReport = [];
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo target)
     {
@@ -1568,65 +1563,61 @@ class ReportDeadBodyPatch
 
         try
         {
-            //通報者が死んでいる場合、本処理で会議がキャンセルされるのでここで止める
+            // If the player is dead, the meeting is canceled
             if (__instance.Data.IsDead) return false;
 
             //=============================================
-            //以下、检查是否允许本次会议
+            //Below, check if this meeting is allowed
             //=============================================
 
             var killer = target?.Object?.GetRealKiller();
             var killerRole = killer?.GetCustomRole();
 
-            //杀戮机器无法报告或拍灯
-            //     if (__instance.Is(CustomRoles.KillingMachine)) return false;
-
-            // if Bait is killed, check the setting condition
-            if (!(target != null && target.Object.Is(CustomRoles.Bait) && Bait.BaitCanBeReportedUnderAllConditions.GetBool()))
+            if (target == null) //Meeting
             {
-                // Camouflager
-                if (Camouflager.CantPressOnReportButton()) return false;
+                var playerRoleClass = __instance.GetRoleClass();
 
-                // Comms Camouflage
-                if (Options.DisableReportWhenCC.GetBool() && Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive) return false;
-            }
-
-            if (Deathpact.CanCallMeeting(__instance)) return false;
-
-            if (target == null) //拍灯事件
-            {
-                if (__instance.GetRoleClass().CantStartMeeting(__instance)) return false;
+                if (playerRoleClass.OnCheckStartMeeting(__instance) == false)
+                {
+                    Logger.Info($"Player has role class: {playerRoleClass} - the start of the meeting has been cancelled", "ReportDeadBody");
+                    return false;
+                }
 
                 if (__instance.Is(CustomRoles.Jester) && !Options.JesterCanUseButton.GetBool()) return false;
             }
-            if (target != null) //拍灯事件
+            if (target != null) // Report dead body
             {
-                if (UnreportablePlayers.Contains(target.PlayerId)) return false;
-
-                if (Coroner.CannotReportBody(target.PlayerId)) return false;
-
-                //if (!Main.PlayerStates.TryGetValue(__instance.PlayerId, out var playerState))
-                //    if (playerState != null && playerState.Role != null && playerState.Role.CheckReportDeadBody(__instance, target, killer))
-                //        return false;
-
-                //Add all the patch bodies here!!!
-                //Vulture ate body can not be reported
-                if (Vulture.UnreportablePlayers.Contains(target.PlayerId)) return false;
-                // 被赌杀的尸体无法被报告 guessed
+                // Guessed player cannot report
                 if (Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Gambled) return false;
-                // 清道夫的尸体无法被报告 scavenger
+
+                // Check report bead body
+                foreach (var player in Main.PlayerStates.Values.ToArray())
+                {
+                    var playerRoleClass = player.RoleClass;
+                    if (player == null ||  playerRoleClass == null) continue;
+
+                    if (playerRoleClass.OnCheckReportDeadBody(__instance, target, killer) == false)
+                    {
+                        Logger.Info($"Player has role class: {playerRoleClass} - is canceled the report", "ReportDeadBody");
+                        return false;
+                    }
+                }
+
+                // if Bait is killed, check the setting condition
+                if (!(target.Object.Is(CustomRoles.Bait) && Bait.BaitCanBeReportedUnderAllConditions.GetBool()))
+                {
+                    // Comms Camouflage
+                    if (Options.DisableReportWhenCC.GetBool() && Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive) return false;
+                }
+
+                if (target.Object.Is(CustomRoles.Unreportable)) return false;
                 if (killerRole == CustomRoles.Scavenger) return false;
 
-                // Cleaner cleansed body
-                if (Cleaner.BodyIsCleansed(target.PlayerId)) return false;
-
+                // Vulture was eat body
+                if (Vulture.UnreportablePlayers.Contains(target.PlayerId)) return false;
                 //Medusa bodies can not be reported
                 if (Main.MedusaBodies.Contains(target.PlayerId)) return false;
 
-                if (target.Object.Is(CustomRoles.Unreportable)) return false;
-
-                if (Trapster.On)
-                    Trapster.CheckReportDeadBodyD(__instance, target, killer);
 
                 if (__instance.Is(CustomRoles.Vulture))
                 {
@@ -1915,23 +1906,21 @@ class ReportDeadBodyPatch
                         return false;
                     }
                 }
-
-                if (__instance.GetRoleClass().OnPressReportButton(__instance, target, killer))
-                    return false;
             }
 
             if (Options.SyncButtonMode.GetBool() && target == null)
             {
-                Logger.Info("最大:" + Options.SyncedButtonCount.GetInt() + ", 現在:" + Options.UsedButtonCount, "ReportDeadBody");
+                Logger.Info($"Option: {Options.SyncedButtonCount.GetInt()}, has button count: {Options.UsedButtonCount}", "ReportDeadBody");
                 if (Options.SyncedButtonCount.GetFloat() <= Options.UsedButtonCount)
                 {
-                    Logger.Info("使用可能ボタン回数が最大数を超えているため、ボタンはキャンセルされました。", "ReportDeadBody");
+                    Logger.Info("The button has been canceled because the maximum number of available buttons has been exceeded", "ReportDeadBody");
                     return false;
                 }
                 else Options.UsedButtonCount++;
+                
                 if (Options.SyncedButtonCount.GetFloat() == Options.UsedButtonCount)
                 {
-                    Logger.Info("使用可能ボタン回数が最大数に達しました。", "ReportDeadBody");
+                    Logger.Info("The maximum number of meeting buttons has been reached", "ReportDeadBody");
                 }
             }
 
@@ -1959,8 +1948,6 @@ class ReportDeadBodyPatch
 
         if (target == null) // Emergency Button
         {
-            player.GetRoleClass()?.OnPressEmergencyButton(player);
-
             if (Quizmaster.IsEnable)
                 Quizmaster.OnButtonPress(player);
         }
@@ -1969,8 +1956,6 @@ class ReportDeadBodyPatch
             var tpc = Utils.GetPlayerById(target.PlayerId);
             if (tpc != null && !tpc.IsAlive())
             {
-                // 侦探报告
-                
                 if (player.Is(CustomRoles.Sleuth) && player.PlayerId != target.PlayerId)
                 {
                     string msg;
@@ -1996,7 +1981,7 @@ class ReportDeadBodyPatch
         Solsticer.patched = false;
 
 
-        foreach (var playerStates in Main.PlayerStates.Values.Where(p => p.RoleClass.IsEnable).ToArray())
+        foreach (var playerStates in Main.PlayerStates.Values.ToArray())
         {
             playerStates.RoleClass?.OnReportDeadBody(player, target?.Object);
         }
