@@ -249,6 +249,12 @@ class CheckMurderPatch
             return false;
         }
 
+        // Check murder on others targets
+        if (!CustomRoleManager.OnCheckMurderAsTargetOnOthers(killer, target))
+        {
+            return false;
+        }
+
         // Check Murder on target
         if (!targetRoleClass.OnCheckMurderAsTarget(killer, target))
         {
@@ -706,10 +712,6 @@ class CheckMurderPatch
         if (Jackal.ResetKillCooldownWhenSbGetKilled.GetBool() && !killerRole.Is(CustomRoles.Sidekick) && !killerRole.Is(CustomRoles.Jackal) && !target.Is(CustomRoles.Sidekick) && !target.Is(CustomRoles.Jackal) && !GameStates.IsMeeting)
             Jackal.AfterPlayerDiedTask(killer);
 
-        if (CustomRoles.Benefactor.IsClassEnable() 
-            && !Main.PlayerStates.Any(x => x.Value.MainRole == CustomRoles.Benefactor && x.Value.RoleClass.OnCheckMurderAsTarget(killer, target)))
-            return false;
-
         // Romantic partner is protected
         if (Romantic.isPartnerProtected && Romantic.BetPlayer.ContainsValue(target.PlayerId))
             return false;
@@ -902,9 +904,7 @@ class CheckMurderPatch
         if (killer.PlayerId != target.PlayerId)
         {
             foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId).ToArray())
-            {
-                if (!Bodyguard.OnNearKilling(pc, killer, target)) return false;
-                
+            {                
                 if (target.Is(CustomRoles.Cyber))
                 {
                     if (Main.AllAlivePlayerControls.Any(x =>
@@ -915,8 +915,6 @@ class CheckMurderPatch
                 }
             }
         }
-
-        if (!Crusader.OnCheckCrusade(killer, target)) return false;
 
         if (PlagueBearer.IsEnable && PlagueBearer.OnCheckMurderPestilence(killer, target))
             return false;

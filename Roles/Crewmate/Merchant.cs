@@ -140,7 +140,7 @@ internal class Merchant : RoleBase
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        return target.Is(CustomRoles.Merchant) && OnClientMurder(killer, target) ? false : true;
+        return !OnClientMurder(killer, target);
     }
     public override void OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
@@ -220,7 +220,7 @@ internal class Merchant : RoleBase
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role)
     {
-        if (target.Is(CustomRoles.Merchant) && Merchant.IsBribedKiller(pc, target))
+        if (target.Is(CustomRoles.Merchant) && IsBribedKiller(pc, target))
         {
             if (!isUI) Utils.SendMessage(GetString("BribedByMerchant2"), pc.PlayerId);
             else pc.ShowPopUp(GetString("BribedByMerchant2"));

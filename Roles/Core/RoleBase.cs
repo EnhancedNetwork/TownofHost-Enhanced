@@ -1,5 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using System.Text;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -122,6 +121,12 @@ public abstract class RoleBase
     /// If the target doesn't require a kill cancel, always use "return true"
     /// </summary>
     public virtual bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target) => target != null && killer != null;
+
+    /// <summary>
+    /// When role the target requires a kill check
+    /// If the target doesn't require a kill cancel, always use "return true"
+    /// </summary>
+    public virtual bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target) => target != null && killer != null;
 
     /// <summary>
     ///  When role the killer requires a kill check

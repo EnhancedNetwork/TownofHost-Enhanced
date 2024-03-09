@@ -24,7 +24,6 @@ internal class Addict : RoleBase
 
     private static float DefaultSpeed = new();
 
-
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Addict);
@@ -68,9 +67,9 @@ internal class Addict : RoleBase
         AURoleOptions.EngineerInVentMaxTime = 1;
     }
 
-    private static bool IsImmortal(PlayerControl player) => player.Is(CustomRoles.Addict) && ImmortalTimer[player.PlayerId] <= ImmortalTimeAfterVent.GetFloat();
+    private static bool IsImmortal(PlayerControl player) => ImmortalTimer[player.PlayerId] <= ImmortalTimeAfterVent.GetFloat();
 
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         return !IsImmortal(target);
     }
@@ -128,6 +127,7 @@ internal class Addict : RoleBase
         Main.AllPlayerSpeed[addict.PlayerId] = Main.MinSpeed;
         ReportDeadBodyPatch.CanReport[addict.PlayerId] = false;
         addict.MarkDirtySettings();
+
         _ = new LateTask(() =>
         {
             Main.AllPlayerSpeed[addict.PlayerId] = DefaultSpeed;

@@ -65,11 +65,6 @@ internal class Coroner : RoleBase
         playerIdList.Remove(playerId);
         UseLimit.Remove(playerId);
         CoronerTargets.Remove(playerId);
-
-        if (AmongUsClient.Instance.AmHost)
-        {
-            CustomRoleManager.CheckDeadBodyOthers.Remove(CheckDeadBody);
-        }
     }
 
     private static void SendRPC(byte playerId, bool add, Vector3 loc = new())
@@ -109,12 +104,6 @@ internal class Coroner : RoleBase
             if (opt == 1) UnreportablePlayers.Add(tid);
         }
     }
-    public override void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
-    {
-        if (!pc.IsAlive()) return;
-        UseLimit[pc.PlayerId] += CoronerAbilityUseGainWithEachTaskCompleted.GetFloat();
-        SendRPCLimit(pc.PlayerId, operate: 2);
-    }
     private static void SendRPCKiller(byte playerId, byte killerId, bool add)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCoronerkKillerArrow, SendOption.Reliable, -1);
@@ -152,6 +141,13 @@ internal class Coroner : RoleBase
             LocateArrow.RemoveAllTarget(playerId);
             if (CoronerTargets.ContainsKey(playerId)) CoronerTargets[playerId].Clear();
         }
+    }
+
+    public override void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
+    {
+        if (!pc.IsAlive()) return;
+        UseLimit[pc.PlayerId] += CoronerAbilityUseGainWithEachTaskCompleted.GetFloat();
+        SendRPCLimit(pc.PlayerId, operate: 2);
     }
 
     public static bool CannotReportBody(byte deadBodyId) => UnreportablePlayers.Contains(deadBodyId);

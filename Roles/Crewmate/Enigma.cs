@@ -154,7 +154,7 @@ internal class Enigma : RoleBase
     public override void OnMeetingHudStart(PlayerControl pc)
     {
         if (MsgToSend.ContainsKey(pc.PlayerId))
-            AddMsg(MsgToSend[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Enigma), Enigma.MsgToSendTitle[pc.PlayerId]));
+            AddMsg(MsgToSend[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Enigma), MsgToSendTitle[pc.PlayerId]));
     }
     public override void MeetingHudClear() => MsgToSend = [];
     private abstract class EnigmaClue
@@ -281,7 +281,7 @@ internal class Enigma : RoleBase
                     return GetStage1Clue(killer, letter);
                 case 3:
                     if (showStageClue) GetStage3Clue(killerName, letter);
-                    if (rd.Next(0, 100) < Enigma.EnigmaClueStage2Probability.GetInt()) GetStage2Clue(letter);
+                    if (rd.Next(0, 100) < EnigmaClueStage2Probability.GetInt()) GetStage2Clue(letter);
                     return GetStage1Clue(killer, letter);
             }
 
@@ -343,7 +343,7 @@ internal class Enigma : RoleBase
                     return GetStage1Clue(length);
                 case 3:
                     if (showStageClue) return GetStage3Clue(length);
-                    if (rd.Next(0, 100) < Enigma.EnigmaClueStage2Probability.GetInt()) return GetStage2Clue(length);
+                    if (rd.Next(0, 100) < EnigmaClueStage2Probability.GetInt()) return GetStage2Clue(length);
                     return GetStage1Clue(length);
             }
 
@@ -480,7 +480,7 @@ internal class Enigma : RoleBase
                     return GetStage1Clue(level);
                 case 3:
                     if (showStageClue) return GetStage3Clue(level);
-                    if (rd.Next(0, 100) < Enigma.EnigmaClueStage2Probability.GetInt()) return GetStage2Clue(level);
+                    if (rd.Next(0, 100) < EnigmaClueStage2Probability.GetInt()) return GetStage2Clue(level);
                     return GetStage1Clue(level);
             }
 
