@@ -68,7 +68,7 @@ internal class Pacifist : RoleBase
                 x.SetKillCooldown();
                 if (x.Is(CustomRoles.Mercenary))
                 { Mercenary.OnReportDeadBody(); }
-                x.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pacifist), GetString("PacifistSkillNotify")));
+                x.Notify(ColorString(GetRoleColor(CustomRoles.Pacifist), GetString("PacifistSkillNotify")));
             });
             pc.RPCPlayCustomSound("Dove");
             pc.Notify(string.Format(GetString("PacifistOnGuard"), PacifistNumOfUsed[pc.PlayerId]));

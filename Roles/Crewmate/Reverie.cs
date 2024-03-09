@@ -5,7 +5,7 @@ using TOHE.Roles.Core;
 using AmongUs.GameOptions;
 using static TOHE.Options;
 
-namespace TOHE;
+namespace TOHE.Roles.Crewmate;
 
 internal class Reverie : RoleBase
 {
@@ -67,7 +67,7 @@ internal class Reverie : RoleBase
     }
     public override void OnReportDeadBody(PlayerControl HES, PlayerControl HIM)
     {
-        foreach(var playerId in NowCooldown.Keys)
+        foreach (var playerId in NowCooldown.Keys)
         {
             if (ResetCooldownMeeting.GetBool())
             {
@@ -80,7 +80,7 @@ internal class Reverie : RoleBase
     public override bool OnCheckMurderAsKiller(PlayerControl killer,PlayerControl target)
     {
         if (killer == null || target == null) return true;
-        if (!HasEnabled || !killer.Is(CustomRoles.Reverie)) return true;
+
         float kcd;
         if ((!target.GetCustomRole().IsCrewmate() && !target.Is(CustomRoles.Trickster)) || (ConvertedReverieRogue.GetBool() && killer.GetCustomSubRoles().Any(subrole => subrole.IsConverted() || subrole == CustomRoles.Madmate))) // if killed non crew or if converted
                 kcd = NowCooldown[killer.PlayerId] - ReduceKillCooldown.GetFloat();
