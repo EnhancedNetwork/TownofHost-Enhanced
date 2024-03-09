@@ -1030,7 +1030,7 @@ static class ExtendedPlayerControl
         return target.Is(CustomRoles.EngineerTOHE)
             || target.Is(CustomRoles.Mechanic)
             || target.Is(CustomRoles.CopyCat)
-            || target.Is(CustomRoles.Monitor) && Monitor.CanUseVent()
+            || target.Is(CustomRoles.Telecommunication) && Telecommunication.CanUseVent()
             || Knight.CheckCanUseVent(target)
             || target.Is(CustomRoles.Nimble);
     }

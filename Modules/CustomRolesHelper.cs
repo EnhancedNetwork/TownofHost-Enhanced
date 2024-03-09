@@ -29,7 +29,7 @@ public static class CustomRolesHelper
             {
                 CustomRoles.Sniper => CustomRoles.Shapeshifter,
                 CustomRoles.Jester => Options.JesterCanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
-                CustomRoles.Monitor => Monitor.CanUseVent() ? CustomRoles.Engineer : CustomRoles.Crewmate,
+                CustomRoles.Telecommunication => Telecommunication.CanUseVent() ? CustomRoles.Engineer : CustomRoles.Crewmate,
                 CustomRoles.Mayor => Mayor.MayorHasPortableButton.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,
                 CustomRoles.Captain => CustomRoles.Crewmate,
                 CustomRoles.Vulture => Vulture.CanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate,

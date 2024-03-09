@@ -1579,7 +1579,7 @@ public static class Options
         
         Swapper.SetupCustomOption();
         
-        Monitor.SetupCustomOption();
+        Telecommunication.SetupCustomOption();
 
         //ChiefOfPolice.SetupCustomOption();
 

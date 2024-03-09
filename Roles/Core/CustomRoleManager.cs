@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using TOHE.Roles.Impostor;
-using TOHE.Roles.Neutral;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
+using TOHE.Roles.Impostor;
+using TOHE.Roles.Neutral;
 
 namespace TOHE.Roles.Core;
 
@@ -30,7 +30,7 @@ public static class CustomRoleManager
         CustomRoles.AntiAdminer => new AntiAdminer(),
         CustomRoles.Arrogance => new Arrogance(),
         CustomRoles.Bard => new Bard(),
-        CustomRoles.Berserker  => new Berserker(),
+        CustomRoles.Berserker => new Berserker(),
         CustomRoles.Blackmailer => new Blackmailer(),
         CustomRoles.Bomber or CustomRoles.Nuker => new Bomber(),
         CustomRoles.BountyHunter => new BountyHunter(),
@@ -156,7 +156,7 @@ public static class CustomRoleManager
         CustomRoles.Merchant => new Merchant(),
         CustomRoles.Mole => new Mole(),
         CustomRoles.Monarch => new Monarch(),
-        CustomRoles.Monitor => new Monitor(),
+        CustomRoles.Telecommunication => new Telecommunication(),
         CustomRoles.Mortician => new Mortician(),
         CustomRoles.NiceGuesser => new NiceGuesser(),
         CustomRoles.Observer => new Observer(),

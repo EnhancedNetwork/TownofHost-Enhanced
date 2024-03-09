@@ -145,7 +145,7 @@ internal class CopyCat : RoleBase
                     role = CustomRoles.Tracker;
                     break;
                 case CustomRoles.AntiAdminer:
-                    role = CustomRoles.Monitor;
+                    role = CustomRoles.Telecommunication;
                     break;
                 case CustomRoles.Pursuer:
                     role = CustomRoles.Deceiver;

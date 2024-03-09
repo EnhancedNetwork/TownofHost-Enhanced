@@ -1183,7 +1183,7 @@ internal class ChatCommands
             "十字軍" or "十字军" => GetString("Crusader"),
             "遐想者" or "遐想" => GetString("Reverie"),
             "瞭望者" or "瞭望员" => GetString("Lookout"),
-            "通訊員" or "通信员" => GetString("Monitor"),
+            "通訊員" or "通信员" => GetString("Telecommunication"),
             "執燈人" or "执灯人" or "执灯" or "灯人" or "小灯人" => GetString("Lighter"),
             "任務管理員" or "任务管理者" => GetString("TaskManager"),
             "目擊者" or "目击者" or "目击" => GetString("Witness"),

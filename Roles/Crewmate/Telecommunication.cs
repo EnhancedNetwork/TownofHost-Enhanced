@@ -9,9 +9,7 @@ using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Crewmate;
 
-// 参考 : https://github.com/ykundesu/SuperNewRoles/blob/master/SuperNewRoles/Mode/SuperHostRoles/BlockTool.cs
-// 贡献：https://github.com/Yumenopai/TownOfHost_Y/tree/Monitor
-internal class Monitor : RoleBase
+internal class Telecommunication : RoleBase
 {
     private const int Id = 12500;
     private static List<byte> playerIdList = [];
@@ -28,9 +26,9 @@ internal class Monitor : RoleBase
 
     public static void SetupCustomOption()
     {
-        Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Monitor);
-        CanCheckCamera = BooleanOptionItem.Create(Id + 10, "CanCheckCamera", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Monitor]);
-        CanVent = BooleanOptionItem.Create(Id + 14, "CanVent", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Monitor]);
+        Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Telecommunication);
+        CanCheckCamera = BooleanOptionItem.Create(Id + 10, "CanCheckCamera", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Telecommunication]);
+        CanVent = BooleanOptionItem.Create(Id + 14, "CanVent", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Telecommunication]);
     }
     public override void Init()
     {
@@ -153,13 +151,13 @@ internal class Monitor : RoleBase
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
-        if (isForMeeting) return "";
+        if (isForMeeting) return string.Empty;
 
         StringBuilder sb = new();
-        if (IsAdminWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Monitor), "★")).Append(ColorString(GetRoleColor(CustomRoles.Monitor), GetString("AdminWarning")));
-        if (IsVitalWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Monitor), "★")).Append(ColorString(GetRoleColor(CustomRoles.Monitor), GetString("VitalsWarning")));
-        if (IsDoorLogWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Monitor), "★")).Append(ColorString(GetRoleColor(CustomRoles.Monitor), GetString("DoorlogWarning")));
-        if (IsCameraWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Monitor), "★")).Append(ColorString(GetRoleColor(CustomRoles.Monitor), GetString("CameraWarning")));
+        if (IsAdminWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), "★")).Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), GetString("AdminWarning")));
+        if (IsVitalWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), "★")).Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), GetString("VitalsWarning")));
+        if (IsDoorLogWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), "★")).Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), GetString("DoorlogWarning")));
+        if (IsCameraWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), "★")).Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), GetString("CameraWarning")));
 
         return sb.ToString();
     }

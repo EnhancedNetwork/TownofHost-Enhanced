@@ -591,7 +591,6 @@ public enum CustomRoles
     Warlock,
     Wildling,
     Zombie,
-    // Flashbang,
 
     //Crewmate(Vanilla)
     Engineer,
@@ -670,7 +669,7 @@ public enum CustomRoles
     SuperStar,
     Swapper,
     TaskManager,
-    Monitor, //telecommunications
+    Telecommunication,
     Tracefinder,
     Tracker,
     Transporter,

@@ -191,7 +191,7 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.Eraser,
                 CustomRoles.Refugee,
                 CustomRoles.AntiAdminer,
-                CustomRoles.Monitor,
+                CustomRoles.Telecommunication,
                 CustomRoles.Dazzler,
                 CustomRoles.Grenadier,
                 CustomRoles.Imitator,

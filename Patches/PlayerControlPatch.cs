@@ -1775,9 +1775,9 @@ class ReportDeadBodyPatch
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                         }
-                        else if (tar.Is(CustomRoles.Monitor))
+                        else if (tar.Is(CustomRoles.Telecommunication))
                         {
-                            __instance.RpcSetCustomRole(CustomRoles.Monitor);
+                            __instance.RpcSetCustomRole(CustomRoles.Telecommunication);
                             __instance.GetRoleClass()?.Add(__instance.PlayerId);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
@@ -2551,8 +2551,8 @@ class FixedUpdateInNormalGamePatch
                         if (CustomRoles.AntiAdminer.IsClassEnable())
                             AntiAdminer.FixedUpdateLowLoad();
 
-                        if (CustomRoles.Monitor.IsClassEnable())
-                            Monitor.FixedUpdate();
+                        if (CustomRoles.Telecommunication.IsClassEnable())
+                            Telecommunication.FixedUpdate();
                     }
                 }
             }
@@ -2794,9 +2794,9 @@ class FixedUpdateInNormalGamePatch
                     {
                         AntiAdminer.FixedUpdateLowLoad();
                     }
-                    else if (seer.Is(CustomRoles.Monitor))
+                    else if (seer.Is(CustomRoles.Telecommunication))
                     {
-                        Monitor.FixedUpdate();
+                        Telecommunication.FixedUpdate();
                     }
                 }
 

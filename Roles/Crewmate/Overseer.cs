@@ -46,7 +46,7 @@ internal class Overseer : RoleBase
         CustomRoles.Doctor,
         CustomRoles.Detective,
         CustomRoles.Lookout,
-        CustomRoles.Monitor,
+        CustomRoles.Telecommunication,
         CustomRoles.NiceGuesser,
         CustomRoles.Transporter,
         CustomRoles.TimeManager,
