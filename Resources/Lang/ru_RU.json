@@ -1200,6 +1200,8 @@
   "PlayerCanSetColor": "Игроки могут использовать команду /color",
   "PlayerCanSetName": "Игроки могут использовать команду /rename",
   "PlayerCanUseQuitCommand": "Игроки могут использовать команду /quit, чтобы навсегда покинуть лобби",
+  "PlayerCanUseTP": "Игроки могут использовать команды /tpout и /tpin",
+  "CanPlayMiniGames": "Игроки могут играть в мини-игры",
   "KPDCamouflageMode": "Внешний вид камуфляжа",
   "RoleOptions": "Настройка Ролей",
   "ModeOptions": "Настройка Режима",
