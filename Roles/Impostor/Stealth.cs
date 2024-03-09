@@ -148,7 +148,7 @@ internal class Stealth : RoleBase
         // During the meeting, unless it's my suffix or it's dark everywhere, I won't show anything.
         if (!On || isForMeeting || seer != Player || seen != Player || !darkenedRoom.HasValue)
         {
-            return base.GetSuffix(seer, seen, isForMeeting);
+            return string.Empty;
         }
         return string.Format(Translator.GetString("StealthDarkened"), DestroyableSingleton<TranslationController>.Instance.GetString(darkenedRoom.Value));
     }

@@ -2701,12 +2701,6 @@ class FixedUpdateInNormalGamePatch
 
                 if (PlagueDoctor.IsEnable) 
                     Mark.Append(PlagueDoctor.GetMarkOthers(seer, target));
-                
-                if (Snitch.HasEnabled)
-                {
-                    Mark.Append(Snitch.GetWarningMark(seer, target));
-                    Mark.Append(Snitch.GetWarningArrow(seer, target));
-                }
 
                 if (CustomRoles.Solsticer.RoleExist())
                     if (target.AmOwner || target.Is(CustomRoles.Solsticer))
