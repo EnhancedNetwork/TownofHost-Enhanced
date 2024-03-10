@@ -1198,10 +1198,8 @@ class MeetingHudStartPatch
             else if (seer == target && CustomRolesHelper.RoleExist(CustomRoles.Ntr) && !isLover)
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), "♥"));
 
-            //呪われている場合
-            sb.Append(Witch.GetSpelledMark(target.PlayerId, true));
+
             sb.Append(HexMaster.GetHexedMark(target.PlayerId, true));
-            //sb.Append(Occultist.GetCursedMark(target.PlayerId, true));
             sb.Append(Shroud.GetShroudMark(target.PlayerId, true));
 
             if (target.PlayerId == Pirate.PirateTarget)

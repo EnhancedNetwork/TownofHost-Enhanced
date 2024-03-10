@@ -80,7 +80,6 @@ public static class CustomRoleManager
         CustomRoles.Scavenger => new Scavenger(),
         CustomRoles.ShapeMaster => new ShapeMaster(),
         CustomRoles.Sniper => new Sniper(),
-        //CustomRoles.Witch => new Witch(),
         CustomRoles.SoulCatcher => new SoulCatcher(),
         //CustomRoles.Swooper => new Swooper(),
         CustomRoles.Stealth => new Stealth(),
@@ -96,6 +95,7 @@ public static class CustomRoleManager
         //CustomRoles.Visionary => new Visionary(),
         //CustomRoles.Warlock => new Warlock(),
         //CustomRoles.Wildling => new Wildling(),
+        CustomRoles.Witch => new Witch(),
         //CustomRoles.Zombie => new Zombie(),
 
         // ==== Mini ====

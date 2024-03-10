@@ -978,7 +978,6 @@ internal static class RPC
             Main.PlayerStates[targetId].SetSubRole(role);
         }
 
-        targetId.GetRoleClassById()?.Init();
         targetId.GetRoleClassById()?.Add(targetId);
 
         switch (role)
@@ -988,9 +987,6 @@ internal static class RPC
                 break;
             case CustomRoles.Undertaker:
                 Undertaker.Add(targetId);
-                break;
-            case CustomRoles.Witch:
-                Witch.Add(targetId);
                 break;
             case CustomRoles.Vampire:
                 Vampire.Add(targetId);

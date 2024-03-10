@@ -377,9 +377,6 @@ class CheckMurderPatch
                     }
                     if (Main.isCurseAndKill[killer.PlayerId]) killer.RpcGuardAndKill(target);
                     return false;
-                case CustomRoles.Witch:
-                    if (!Witch.OnCheckMurder(killer, target)) return false;
-                    break;
                 case CustomRoles.HexMaster:
                     if (!HexMaster.OnCheckMurder(killer, target)) return false;
                     break;
@@ -2782,7 +2779,6 @@ class EnterVentPatch
 
         pc.GetRoleClass()?.OnEnterVent(pc, __instance);
 
-        Witch.OnEnterVent(pc);
         HexMaster.OnEnterVent(pc);
         Swooper.OnEnterVent(pc, __instance);
         Wraith.OnEnterVent(pc, __instance);

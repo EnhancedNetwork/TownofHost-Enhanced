@@ -182,9 +182,6 @@ class ExileControllerWrapUpPatch
             Main.RefixCooldownDelay = Options.DefaultKillCooldown - 3f;
         }
 
-        if (Witch.IsEnable) 
-            Witch.RemoveSpelledPlayer();
-
         if (HexMaster.IsEnable)
             HexMaster.RemoveHexedPlayer();
         

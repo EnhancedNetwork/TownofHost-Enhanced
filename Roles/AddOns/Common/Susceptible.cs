@@ -52,7 +52,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Spell:
-                    if (!Witch.IsEnable)
+                    if (!Witch.On)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }

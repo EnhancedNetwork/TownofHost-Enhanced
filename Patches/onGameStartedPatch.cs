@@ -187,9 +187,14 @@ internal class ChangeRoleSettings
 
             FallFromLadder.Reset();
 
+            // Initialize all custom roles
+            foreach (var role in EnumHelper.GetAllValues<CustomRoles>())
+            {
+                role.CreateRoleClass()?.Init();
+            }
+
             Undertaker.Init();
             TimeThief.Init();
-            Witch.Init();
             HexMaster.Init();
             Executioner.Init();
             Lawyer.Init();
@@ -486,12 +491,6 @@ internal class SelectRolesPatch
                     ExtendedPlayerControl.RpcSetCustomRole(pair.Key, subRole);
             }
 
-            // Initialize Custom Roles
-            foreach (var playerState in Main.PlayerStates.Values.ToArray())
-            {
-                playerState?.RoleClass?.Init();
-            }
-
             GhostRoleAssign.Add();
 
             foreach (var pc in Main.AllPlayerControls)
@@ -502,9 +501,6 @@ internal class SelectRolesPatch
 
                 switch (pc.GetCustomRole())
                 {
-                    case CustomRoles.Witch:
-                        Witch.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.HexMaster:
                         HexMaster.Add(pc.PlayerId);
                         break;
