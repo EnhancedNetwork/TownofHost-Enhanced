@@ -398,9 +398,6 @@ class CheckMurderPatch
                 case CustomRoles.Shroud:
                     if (!Shroud.OnCheckMurder(killer, target)) return false;
                     break;
-                case CustomRoles.QuickShooter:
-                    QuickShooter.QuickShooterKill(killer);
-                    break;
                 case CustomRoles.Juggernaut:
                     Juggernaut.OnCheckMurder(killer);
                     break;
@@ -586,25 +583,6 @@ class CheckMurderPatch
                 if (!PotionMaster.OnCheckMurder(killer, target))
                     return false;
                 break;
-
-            case CustomRoles.Scavenger:
-                if (!targetRole.Is(CustomRoles.Pestilence))
-                {
-                    target.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
-                    target.SetRealKiller(killer);
-                    Main.PlayerStates[target.PlayerId].SetDead();
-                    target.RpcMurderPlayerV3(target);
-                    killer.SetKillCooldown();
-                    RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
-                    NameNotifyManager.Notify(target, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Scavenger), GetString("KilledByScavenger")));
-                    return false;
-                }
-                else
-                {
-                    target.RpcMurderPlayerV3(target);
-                    target.SetRealKiller(killer);
-                    return false;
-                }
         }
 
         foreach (var killerSubRole in killer.GetCustomSubRoles().ToArray())
@@ -1179,7 +1157,7 @@ public static class CheckShapeShiftPatch
         var role = shapeshifter.GetCustomRole();
 
         // Always show
-        if (role is CustomRoles.ShapeshifterTOHE or CustomRoles.Shapeshifter or CustomRoles.ShapeMaster or CustomRoles.Hangman or CustomRoles.Morphling) return true;
+        if (role is CustomRoles.ShapeshifterTOHE or CustomRoles.Shapeshifter or CustomRoles.ShapeMaster or CustomRoles.Hangman or CustomRoles.Morphling or CustomRoles.Glitch) return true;
 
         // Check Sniper settings conditions
         if (role is CustomRoles.Sniper && Sniper.ShowShapeshiftAnimations) return true;
@@ -1299,16 +1277,6 @@ public static class CheckShapeShiftPatch
                 shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 return false;
 
-            case CustomRoles.QuickShooter:
-                QuickShooter.OnShapeshift(shapeshifter, shapeshifting);
-                shapeshifter.RejectShapeshiftAndReset();
-                return false;
-
-            case CustomRoles.RiftMaker:
-                RiftMaker.OnShapeshift(shapeshifter, shapeshifting);
-                shapeshifter.RejectShapeshiftAndReset();
-                return false;
-
             case CustomRoles.Twister:
                 shapeshifter.RejectShapeshiftAndReset();
                 Twister.TwistPlayers(shapeshifter, shapeshiftIsHidden: shapeshiftIsHidden);
@@ -1333,7 +1301,7 @@ class ShapeshiftPatch
 
             // Check shapeshift
             if (!(
-                (role is CustomRoles.ShapeshifterTOHE or CustomRoles.Shapeshifter or CustomRoles.ShapeMaster)
+                (role is CustomRoles.ShapeshifterTOHE or CustomRoles.Shapeshifter or CustomRoles.ShapeMaster or CustomRoles.Hangman or CustomRoles.Morphling or CustomRoles.Glitch)
                 ||
                 (role is CustomRoles.Sniper && Sniper.ShowShapeshiftAnimations)
                 ))
@@ -1369,9 +1337,6 @@ class ShapeshiftPatch
                     break;
                 case CustomRoles.Undertaker:
                     Undertaker.OnShapeshift(shapeshifter, shapeshifting);
-                    break;
-                case CustomRoles.RiftMaker:
-                    RiftMaker.OnShapeshift(shapeshifter, shapeshifting);
                     break;
                 case CustomRoles.Warlock:
                     if (Main.CursedPlayers[shapeshifter.PlayerId] != null)
@@ -1415,9 +1380,6 @@ class ShapeshiftPatch
                         }
                         Main.CursedPlayers[shapeshifter.PlayerId] = null;
                     }
-                    break;
-                case CustomRoles.QuickShooter:
-                    QuickShooter.OnShapeshift(shapeshifter, shapeshifting);
                     break;
                 case CustomRoles.Twister:
                     Twister.TwistPlayers(shapeshifter);
@@ -1520,7 +1482,6 @@ class ReportDeadBodyPatch
                 }
 
                 if (target.Object.Is(CustomRoles.Unreportable)) return false;
-                if (killerRole == CustomRoles.Scavenger) return false;
 
                 // Vulture was eat body
                 if (Vulture.UnreportablePlayers.Contains(target.PlayerId)) return false;
@@ -1906,7 +1867,6 @@ class ReportDeadBodyPatch
         if (Pelican.IsEnable) Pelican.OnReportDeadBody();
         if (Bandit.IsEnable) Bandit.OnReportDeadBody();
         if (Agitater.IsEnable) Agitater.OnReportDeadBody();
-        if (QuickShooter.IsEnable) QuickShooter.OnReportDeadBody();
         if (PlagueDoctor.IsEnable) PlagueDoctor.OnReportDeadBody();
         if (Doomsayer.IsEnable) Doomsayer.OnReportDeadBody();
         if (Romantic.IsEnable) Romantic.OnReportDeadBody();
@@ -2370,9 +2330,6 @@ class FixedUpdateInNormalGamePatch
 
                     switch (playerRole)
                     {
-                        case CustomRoles.RiftMaker:
-                            RiftMaker.OnFixedUpdate(player);
-                            break;
                         case CustomRoles.Swooper:
                             Swooper.OnFixedUpdate(player);
                             break;
@@ -2897,8 +2854,6 @@ class CoEnterVentPatch
             }
 
         }
-
-        if (RiftMaker.IsEnable) RiftMaker.OnVent(__instance.myPlayer, id);
 
         if (Glitch.hackedIdList.ContainsKey(__instance.myPlayer.PlayerId))
         {

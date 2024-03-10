@@ -198,7 +198,6 @@ internal class ChangeRoleSettings
             Sidekick.Init();
             Bandit.Init();
             Doppelganger.Init();
-            RiftMaker.Init();
             Solsticer.Init();
             Vampire.Init();
             Vampiress.Init();
@@ -216,7 +215,6 @@ internal class ChangeRoleSettings
             Collector.Init();
             Clumsy.Init();
             Taskinator.Init();
-            QuickShooter.Init();
             Aware.Init();
             Juggernaut.Init();
             Sleuth.Init();
@@ -525,9 +523,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Undertaker:
                         Undertaker.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.RiftMaker:
-                        RiftMaker.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Vampire:
                         Vampire.Add(pc.PlayerId);
                         break;
@@ -583,9 +578,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Agitater:
                         Agitater.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.QuickShooter:
-                        QuickShooter.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Masochist:
                         Main.MasochistKillMax[pc.PlayerId] = 0;

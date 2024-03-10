@@ -130,27 +130,12 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.EngineerCooldown = 0f;
                 AURoleOptions.EngineerInVentMaxTime = 0f;
                 break;
-            case CustomRoles.ShapeMaster:
-                AURoleOptions.ShapeshifterCooldown = 1f;
-                AURoleOptions.ShapeshifterLeaveSkin = false;
-                AURoleOptions.ShapeshifterDuration = Options.ShapeMasterShapeshiftDuration.GetFloat();
-                break;
             case CustomRoles.Warlock:
                 AURoleOptions.ShapeshifterCooldown = Main.isCursed ? 1f : Options.DefaultKillCooldown;
                 AURoleOptions.ShapeshifterDuration = Options.WarlockShiftDuration.GetFloat();
                 break;
             case CustomRoles.Sniper:
                 Sniper.ApplyGameOptions(player);
-                break;
-            case CustomRoles.Arsonist:
-            case CustomRoles.Innocent:
-            case CustomRoles.Revolutionist:
-            case CustomRoles.Provocateur:
-            case CustomRoles.Succubus:
-            case CustomRoles.CursedSoul:
-            case CustomRoles.Admirer:
-            case CustomRoles.Amnesiac:
-                opt.SetVision(false);
                 break;
             case CustomRoles.Pestilence:
                 opt.SetVision(PlagueBearer.PestilenceHasImpostorVision.GetBool());
@@ -294,9 +279,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Solsticer:
                 Solsticer.ApplyGameOptions();
                 break;
-            case CustomRoles.QuickShooter:
-                QuickShooter.ApplyGameOptions();
-                break;
             case CustomRoles.Sunnyboy:
                 AURoleOptions.ScientistCooldown = 0f;
                 AURoleOptions.ScientistBatteryCharge = 60f;
@@ -313,9 +295,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
             case CustomRoles.Undertaker:
                 Undertaker.ApplyGameOptions();
-                break;
-            case CustomRoles.RiftMaker:
-                RiftMaker.ApplyGameOptions();
                 break;
             case CustomRoles.Spiritcaller:
                 opt.SetVision(Spiritcaller.ImpostorVision.GetBool());

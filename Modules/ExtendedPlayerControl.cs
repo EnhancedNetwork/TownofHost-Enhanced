@@ -495,7 +495,6 @@ static class ExtendedPlayerControl
             CustomRoles.Pickpocket => pc.IsAlive(),
             CustomRoles.Maverick => pc.IsAlive(),
             CustomRoles.Jinx => pc.IsAlive(),
-            CustomRoles.Refugee => pc.IsAlive(),
             CustomRoles.Shroud => pc.IsAlive(),
             CustomRoles.Wraith => pc.IsAlive(),
             CustomRoles.Innocent => pc.IsAlive(),
@@ -613,7 +612,6 @@ static class ExtendedPlayerControl
             CustomRoles.Wraith => true,
             CustomRoles.Pyromaniac => Pyromaniac.CanVent.GetBool(),
             CustomRoles.Amnesiac => true,
-            CustomRoles.Refugee => true,
             CustomRoles.Spiritcaller => Spiritcaller.CanVent.GetBool(),
             CustomRoles.Quizmaster => Quizmaster.CanUseVentButton(pc),
 
@@ -642,8 +640,7 @@ static class ExtendedPlayerControl
             CustomRoles.Traitor => Traitor.CanUseSabotage.GetBool(),
 
             CustomRoles.Glitch or
-            CustomRoles.PotionMaster or
-            CustomRoles.Refugee
+            CustomRoles.PotionMaster
             => true,
 
             _ => false,
@@ -729,9 +726,6 @@ static class ExtendedPlayerControl
             case CustomRoles.Undertaker:
                 Undertaker.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.RiftMaker:
-                RiftMaker.SetKillCooldown(player.PlayerId);
-                break;
             case CustomRoles.Jackal:
                 Jackal.SetKillCooldown(player.PlayerId);
                 break;
@@ -752,9 +746,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Shaman:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.VoodooCooldown.GetFloat();
-                break;
-            case CustomRoles.Refugee:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Options.RefugeeKillCD.GetFloat();
                 break;
             case CustomRoles.SerialKiller:
                 SerialKiller.SetKillCooldown(player.PlayerId);
@@ -790,9 +781,6 @@ static class ExtendedPlayerControl
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.ZombieKillCooldown.GetFloat();
                 Main.AllPlayerSpeed[player.PlayerId] -= Options.ZombieSpeedReduce.GetFloat();
                 break;
-            case CustomRoles.Scavenger:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Options.ScavengerKillCooldown.GetFloat();
-                break;
             case CustomRoles.Pelican:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Pelican.KillCooldown.GetFloat();
                 break;
@@ -810,9 +798,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.DarkHide:
                 DarkHide.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.QuickShooter:
-                QuickShooter.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Provocateur:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.ProvKillCD.GetFloat();

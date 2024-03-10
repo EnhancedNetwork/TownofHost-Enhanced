@@ -992,9 +992,6 @@ internal static class RPC
             case CustomRoles.Undertaker:
                 Undertaker.Add(targetId);
                 break;
-            case CustomRoles.RiftMaker:
-                RiftMaker.Add(targetId);
-                break;
             case CustomRoles.Witch:
                 Witch.Add(targetId);
                 break;
@@ -1042,9 +1039,6 @@ internal static class RPC
                 break;
             case CustomRoles.Agitater:
                 Agitater.Add(targetId);
-                break;
-            case CustomRoles.QuickShooter:
-                QuickShooter.Add(targetId);
                 break;
             case CustomRoles.Medusa:
                 Medusa.Add(targetId);

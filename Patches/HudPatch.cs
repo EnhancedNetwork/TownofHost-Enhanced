@@ -166,10 +166,6 @@ class HudManagerPatch
                     case CustomRoles.Twister:
                         __instance.AbilityButton.OverrideText(GetString("TwisterButtonText"));
                         break;
-                    case CustomRoles.QuickShooter:
-                        __instance.AbilityButton.OverrideText(GetString("QuickShooterShapeshiftText"));
-                        __instance.AbilityButton.SetUsesRemaining(QuickShooter.ShotLimit.TryGetValue(PlayerControl.LocalPlayer.PlayerId, out var qx) ? qx : 0);
-                        break;
                     case CustomRoles.Provocateur:
                         __instance.KillButton.OverrideText(GetString("ProvocateurButtonText"));
                         break;

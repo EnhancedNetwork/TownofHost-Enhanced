@@ -470,7 +470,6 @@ public static class Options
     public static OptionItem ImpsCanSeeEachOthersRoles;
     public static OptionItem ImpsCanSeeEachOthersAddOns;
 
-    public static OptionItem RefugeeKillCD;
     //public static OptionItem MadmateCanFixSabotage;
     public static OptionItem DefaultShapeshiftCooldown;
     public static OptionItem DeadImpCantSabotage;
@@ -497,10 +496,6 @@ public static class Options
 
     public static OptionItem VindicatorAdditionalVote;
     public static OptionItem VindicatorHideVote;
-
-    public static OptionItem ScavengerKillCooldown;
-
-    public static OptionItem ShapeMasterShapeshiftDuration;
 
     public static OptionItem WarlockCanKillAllies;
     public static OptionItem WarlockCanKillSelf;
@@ -755,12 +750,9 @@ public static class Options
 
 
         Madmate.SetupMenuOptions();
-        
 
-        RefugeeKillCD = FloatOptionItem.Create(60009, "RefugeeKillCD", new(0f, 180f, 2.5f), 22.5f, TabGroup.ImpostorRoles, false)
-            .SetHeader(true)
-            .SetValueFormat(OptionFormat.Seconds)
-            .SetGameMode(CustomGameMode.Standard);
+        Refugee.SetupCustomOption();
+
         //MadmateCanFixSabotage = BooleanOptionItem.Create(50010, "MadmateCanFixSabotage", false, TabGroup.ImpostorRoles, false)
         //.SetGameMode(CustomGameMode.Standard);
 
@@ -1098,18 +1090,12 @@ public static class Options
         /*
          * Scavenger
          */
-        SetupRoleOptions(4400, TabGroup.ImpostorRoles, CustomRoles.Scavenger);
-        ScavengerKillCooldown = FloatOptionItem.Create(4402, "KillCooldown", new(5f, 180f, 2.5f), 40f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Scavenger])
-            .SetValueFormat(OptionFormat.Seconds);
+        Scavenger.SetupCustomOption();
 
         /*
-         * Shapemaster
+         * ShapeMaster
          */
-        SetupRoleOptions(4500, TabGroup.ImpostorRoles, CustomRoles.ShapeMaster);
-        ShapeMasterShapeshiftDuration = FloatOptionItem.Create(4502, "ShapeshiftDuration", new(1, 60, 1), 10, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.ShapeMaster])
-            .SetValueFormat(OptionFormat.Seconds);
+        ShapeMaster.SetupCustomOption();
 
         /*
          * Soul Catcher
