@@ -825,7 +825,8 @@ public static class Utils
                     ProgressText.Append(ChiefOfPolice.GetSkillLimit(playerId));
                     break;
                 default:
-                    //タスクテキスト
+                    if (ProgressText.Length != 0) break;
+
                     var taskState = Main.PlayerStates?[playerId].TaskState;
                     if (taskState.hasTasks)
                     {
@@ -1789,18 +1790,11 @@ public static class Utils
                 if (seer.Is(CustomRoles.Lovers) /* || CustomRoles.Ntr.RoleExist() */)
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Lovers), "♥"));
 
-
                 if (seer.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
 
-                if (Blackmailer.CheckBlackmaile(seer))
-                    SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Blackmailer), "╳"));
-
                 if (Lightning.IsEnable && Lightning.IsGhost(seer))
                     SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Lightning), "■"));
-
-                if (Snitch.HasEnabled)
-                    SelfMark.Append(Snitch.GetWarningArrow(seer));
 
                 if (CustomRoles.Solsticer.RoleExist())
                     SelfMark.Append(Solsticer.GetWarningArrow(seer, seer));
@@ -1833,11 +1827,6 @@ public static class Utils
                         case CustomRoles.Witch:
                             SelfSuffix.Append(Witch.GetSpellModeText(seer, false));
                             break;
-
-                        //case CustomRoles.Occultist:
-                        //    SelfSuffix.Append(Occultist.GetHexModeText(seer, false));
-                        //    break;
-
                         case CustomRoles.PlagueDoctor:
                             SelfSuffix.Append(PlagueDoctor.GetLowerTextOthers(seer));
                             break;
@@ -1856,8 +1845,6 @@ public static class Utils
 
                     if (Witch.IsEnable)
                         SelfMark.Append(Witch.GetSpelledMark(seer.PlayerId, true));
-
-                    //SelfMark.Append(Occultist.GetCursedMark(seer.PlayerId, true));
                 }
                 switch (Options.CurrentGameMode)
                 {
@@ -2015,9 +2002,6 @@ public static class Utils
 
                         if (Lightning.IsEnable && Lightning.IsGhost(target))
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Lightning), "■"));
-
-                        if (Snitch.HasEnabled)
-                            TargetMark.Append(Snitch.GetWarningMark(seer, target));
 
                         if (target.Is(CustomRoles.Solsticer))
                         {

@@ -39,19 +39,24 @@ internal class Cleaner : RoleBase
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
-    public static bool BodyIsCleansed(byte targetId) => CleanerBodies.Contains(targetId);
-
-    public override bool OnPressReportButton(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
     {
-        var target = deadBody.Object;
+        if (CleanerBodies.Contains(deadBody.PlayerId)) return false;
 
-        CleanerBodies.Remove(target.PlayerId);
-        CleanerBodies.Add(target.PlayerId);
+        if (reporter.Is(CustomRoles.Cleaner))
+        {
+            var target = deadBody.Object;
 
-        reporter.Notify(Translator.GetString("CleanerCleanBody"));
-        reporter.SetKillCooldownV3(KillCooldownAfterCleaning.GetFloat(), forceAnime: true);
+            CleanerBodies.Remove(target.PlayerId);
+            CleanerBodies.Add(target.PlayerId);
 
-        Logger.Info($"Cleaner: {reporter.GetRealName()} clear body: {target.GetRealName()}", "Cleaner");
-        return false;
+            reporter.Notify(Translator.GetString("CleanerCleanBody"));
+            reporter.SetKillCooldownV3(KillCooldownAfterCleaning.GetFloat(), forceAnime: true);
+
+            Logger.Info($"Cleaner: {reporter.GetRealName()} clear body: {target.GetRealName()}", "Cleaner");
+            return false;
+        }
+
+        return true;
     }
 }

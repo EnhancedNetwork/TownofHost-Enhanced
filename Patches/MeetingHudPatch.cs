@@ -1099,8 +1099,7 @@ class MeetingHudStartPatch
             {
                 case CustomRoleTypes.Impostor:
                     if (target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate) && target.GetPlayerTaskState().IsTaskFinished)
-                        sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), "★")); //変更対象にSnitchマークをつける
-                    sb.Append(Snitch.GetWarningMark(seer, target));
+                        sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), "★"));
                     break;
             }
 
@@ -1113,36 +1112,6 @@ class MeetingHudStartPatch
             {
                 case CustomRoles.Executioner:
                     sb.Append(Executioner.TargetMark(seer, target));
-                    break;
-                case CustomRoles.Lawyer:
-                    //   sb.Append(Lawyer.TargetMark(seer, target));
-                    break;
-                //   case CustomRoles.Jackal:
-                //   case CustomRoles.Sidekick:
-                case CustomRoles.Poisoner:
-                case CustomRoles.SerialKiller:
-                case CustomRoles.Werewolf:
-                case CustomRoles.Pelican:
-                case CustomRoles.DarkHide:
-                case CustomRoles.BloodKnight:
-                case CustomRoles.Infectious:
-                case CustomRoles.RuthlessRomantic:
-                case CustomRoles.Necromancer:
-                case CustomRoles.Virus:
-                case CustomRoles.PlagueDoctor:
-                case CustomRoles.Pyromaniac:
-                case CustomRoles.Medusa:
-                case CustomRoles.Succubus:
-                case CustomRoles.Pickpocket:
-                case CustomRoles.PotionMaster:
-                case CustomRoles.Huntsman:
-                case CustomRoles.Traitor:
-                case CustomRoles.Spiritcaller:
-                    sb.Append(Snitch.GetWarningMark(seer, target));
-                    break;
-                case CustomRoles.Jackal:
-                case CustomRoles.Sidekick:
-                    sb.Append(Snitch.GetWarningMark(seer, target));
                     break;
                 case CustomRoles.Revolutionist:
                     if (seer.IsDrawPlayer(target))
@@ -1236,10 +1205,6 @@ class MeetingHudStartPatch
             //网络人提示
             if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), "★"));
-
-            //玩家被勒索提示
-            if (Blackmailer.CheckBlackmaile(target))
-                sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Blackmailer), "╳"));
 
             //球状闪电提示
             if (Lightning.IsGhost(target))

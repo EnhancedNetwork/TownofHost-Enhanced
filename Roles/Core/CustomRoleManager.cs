@@ -269,6 +269,25 @@ public static class CustomRoleManager
         _ => new VanillaRole(),
     };
 
+    /// <summary>
+    /// If the role protect others players
+    /// </summary>
+    public static bool OnCheckMurderAsTargetOnOthers(PlayerControl killer, PlayerControl target)
+    {
+        bool cancel = false;
+        foreach (var player in Main.PlayerStates.Values.ToArray())
+        {
+            var playerRoleClass = player.RoleClass;
+            if (player == null || playerRoleClass == null) continue;
+
+            if (!playerRoleClass.CheckMurderOnOthersTarget(killer, target))
+            {
+                cancel = true;
+            }
+        }
+        return !cancel;
+    }
+
     public static HashSet<Action<PlayerControl, PlayerControl>> CheckDeadBodyOthers = [];
     /// <summary>
     /// If the role need check a present dead body

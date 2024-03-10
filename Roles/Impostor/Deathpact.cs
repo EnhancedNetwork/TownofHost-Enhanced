@@ -40,8 +40,6 @@ internal class Deathpact : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         ShapeshiftCooldown = FloatOptionItem.Create(Id + 11, "DeathPactCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact])
             .SetValueFormat(OptionFormat.Seconds);
-     //   ShapeshiftDuration = FloatOptionItem.Create(Id + 12, "ShapeshiftDuration", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact])
-      //      .SetValueFormat(OptionFormat.Seconds);
         DeathpactDuration = FloatOptionItem.Create(Id + 13, "DeathpactDuration", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact])
             .SetValueFormat(OptionFormat.Seconds);
         NumberOfPlayersInPact = IntegerOptionItem.Create(Id + 14, "DeathpactNumberOfPlayersInPact", new(2, 5, 1), 2, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deathpact])
@@ -152,14 +150,19 @@ internal class Deathpact : RoleBase
         }
     }
 
-    public static bool CanCallMeeting(PlayerControl player)
-    {
-        if (!On) return false;
+    private static bool CanCallMeeting(PlayerControl player)
+        => !PlayersInDeathpactCanCallMeeting.GetBool() && IsInActiveDeathpact(player);
 
-        return !PlayersInDeathpactCanCallMeeting.GetBool() && IsInActiveDeathpact(player);
+    public override bool OnCheckStartMeeting(PlayerControl reporter)
+    {
+        return CanCallMeeting(reporter);
+    }
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
+    {
+        return CanCallMeeting(reporter);
     }
 
-    public static bool CheckCancelDeathpact(PlayerControl deathpact)
+    private static bool CheckCancelDeathpact(PlayerControl deathpact)
     {
         if (PlayersInDeathpact[deathpact.PlayerId].Any(a => a.Data.Disconnected || a.Data.IsDead))
         {
@@ -189,7 +192,7 @@ internal class Deathpact : RoleBase
         return cancelDeathpact;
     }
 
-    public static void KillPlayerInDeathpact(PlayerControl deathpact, PlayerControl target)
+    private static void KillPlayerInDeathpact(PlayerControl deathpact, PlayerControl target)
     {
         if (deathpact == null || target == null || target.Data.Disconnected) return;
         if (!target.IsAlive()) return;
@@ -235,7 +238,7 @@ internal class Deathpact : RoleBase
         return false;
     }
 
-    public static bool IsInDeathpact(byte deathpactId, PlayerControl target)
+    private static bool IsInDeathpact(byte deathpactId, PlayerControl target)
         => deathpactId != target.PlayerId && PlayersInDeathpact.TryGetValue(deathpactId, out var targets) && targets.Any(a => a.PlayerId == target.PlayerId);
 
     public static string GetDeathpactString(PlayerControl player)

@@ -3,10 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using TOHE.Roles.Core;
+using System.Linq;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -65,11 +66,6 @@ internal class Coroner : RoleBase
         playerIdList.Remove(playerId);
         UseLimit.Remove(playerId);
         CoronerTargets.Remove(playerId);
-
-        if (AmongUsClient.Instance.AmHost)
-        {
-            CustomRoleManager.CheckDeadBodyOthers.Remove(CheckDeadBody);
-        }
     }
 
     private static void SendRPC(byte playerId, bool add, Vector3 loc = new())
@@ -108,12 +104,6 @@ internal class Coroner : RoleBase
             CoronerTargets[pid].Add(tid);
             if (opt == 1) UnreportablePlayers.Add(tid);
         }
-    }
-    public override void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
-    {
-        if (!pc.IsAlive()) return;
-        UseLimit[pc.PlayerId] += CoronerAbilityUseGainWithEachTaskCompleted.GetFloat();
-        SendRPCLimit(pc.PlayerId, operate: 2);
     }
     private static void SendRPCKiller(byte playerId, byte killerId, bool add)
     {
@@ -154,10 +144,17 @@ internal class Coroner : RoleBase
         }
     }
 
-    public static bool CannotReportBody(byte deadBodyId) => UnreportablePlayers.Contains(deadBodyId);
-
-    public override bool OnPressReportButton(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
+    public override void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
     {
+        if (!pc.IsAlive()) return;
+        UseLimit[pc.PlayerId] += CoronerAbilityUseGainWithEachTaskCompleted.GetFloat();
+        SendRPCLimit(pc.PlayerId, operate: 2);
+    }
+
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo deadBody, PlayerControl killer)
+    {
+        if (UnreportablePlayers.Contains(deadBody.PlayerId)) return false;
+
         if (reporter.Is(CustomRoles.Coroner))
         {
             if (killer != null)
@@ -168,13 +165,14 @@ internal class Coroner : RoleBase
             {
                 reporter.Notify(GetString("CoronerNoTrack"));
             }
+            return false;
         }
-        return false;
+        return true;
     }
 
     private static bool FindKiller(PlayerControl pc, GameData.PlayerInfo deadBody, PlayerControl killer)
     {
-        if (CoronerTargets[pc.PlayerId].Contains(killer.PlayerId))
+        if (CoronerTargets.TryGetValue(pc.PlayerId, out var target) && target.Contains(killer.PlayerId))
         {
             return true;
         }

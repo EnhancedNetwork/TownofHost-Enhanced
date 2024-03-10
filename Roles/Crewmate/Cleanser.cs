@@ -158,7 +158,6 @@ internal class Cleanser : RoleBase
             //foreach (var role in allAddons)
             //{
             //    Main.PlayerStates[targetid].RemoveSubRole(role);
-
             //}
         }
         Utils.MarkEveryoneDirtySettings();

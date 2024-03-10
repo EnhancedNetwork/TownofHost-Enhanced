@@ -47,19 +47,19 @@ internal class FortuneTeller : RoleBase
     }
     public override void Init()
     {
+        On = false;
         playerIdList = [];
         CheckLimit = [];
         TempCheckLimit = [];
-        On = false;
         targetList = [];
+        didVote = [];
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         CheckLimit.TryAdd(playerId, CheckLimitOpt.GetInt());
-        On = true;
         targetList[playerId] = [];
-
+        On = true;
     }
     public override void Remove(byte playerId)
     {
@@ -67,7 +67,6 @@ internal class FortuneTeller : RoleBase
         CheckLimit.Remove(playerId);
         targetList.Remove(playerId);
     }
-    public override bool HideVote(PlayerVoteArea pva) => HidesVote.GetBool() && TempCheckLimit[pva.TargetPlayerId] > 0;
 
     public static void SendRPC(byte playerId, bool isTemp = false, bool voted = false)
     {
@@ -106,9 +105,10 @@ internal class FortuneTeller : RoleBase
         }
     }
 
-    public static string GetTargetRoleList(HashSet<CustomRoles> roles)
+    public override bool HideVote(PlayerVoteArea pva) => HidesVote.GetBool() && TempCheckLimit[pva.TargetPlayerId] > 0;
+    private static string GetTargetRoleList(HashSet<CustomRoles> roles)
     {
-        return string.Join("\n", roles.Select(role => $"    ★ {Utils.GetRoleName(role)}"));
+        return string.Join("\n", roles.Select(role => $"    ★ {GetRoleName(role)}"));
     }
     public override void OnTaskComplete(PlayerControl pc, int completedTaskCount, int totalTaskCount)
     {
@@ -126,7 +126,7 @@ internal class FortuneTeller : RoleBase
 
         if (CheckLimit[player.PlayerId] < 1)
         {
-            Utils.SendMessage(GetString("FortuneTellerCheckReachLimit"), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
+            SendMessage(GetString("FortuneTellerCheckReachLimit"), player.PlayerId, ColorString(GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
             return;
         }
 
@@ -135,7 +135,7 @@ internal class FortuneTeller : RoleBase
             if (!targetList.ContainsKey(player.PlayerId)) targetList[player.PlayerId] = [];
             if (targetList[player.PlayerId].Contains(target.PlayerId))
             {
-                Utils.SendMessage(GetString("FortuneTellerAlreadyCheckedMsg") + "\n\n" + string.Format(GetString("FortuneTellerCheckLimit"), CheckLimit[player.PlayerId]), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
+                SendMessage(GetString("FortuneTellerAlreadyCheckedMsg") + "\n\n" + string.Format(GetString("FortuneTellerCheckLimit"), CheckLimit[player.PlayerId]), player.PlayerId, ColorString(GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
                 return;
             }
         }
@@ -145,7 +145,7 @@ internal class FortuneTeller : RoleBase
 
         if (player.PlayerId == target.PlayerId)
         {
-            Utils.SendMessage(GetString("FortuneTellerCheckSelfMsg") + "\n\n" + string.Format(GetString("FortuneTellerCheckLimit"), CheckLimit[player.PlayerId]), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
+            SendMessage(GetString("FortuneTellerCheckSelfMsg") + "\n\n" + string.Format(GetString("FortuneTellerCheckLimit"), CheckLimit[player.PlayerId]), player.PlayerId, ColorString(GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
             return;
         }
 
@@ -447,7 +447,7 @@ internal class FortuneTeller : RoleBase
             }
         }
 
-        Utils.SendMessage(GetString("FortuneTellerCheck") + "\n" + msg + "\n\n" + string.Format(GetString("FortuneTellerCheckLimit"), CheckLimit[player.PlayerId]), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
+        SendMessage(GetString("FortuneTellerCheck") + "\n" + msg + "\n\n" + string.Format(GetString("FortuneTellerCheckLimit"), CheckLimit[player.PlayerId]), player.PlayerId, ColorString(GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
     }
     public override string GetProgressText(byte playerId, bool comms)
     {

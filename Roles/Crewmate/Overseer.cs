@@ -6,7 +6,6 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -115,7 +114,7 @@ internal class Overseer : RoleBase
         opt.SetFloat(FloatOptionNames.ImpostorLightMod, Vision.GetFloat());
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = OverseerCooldown.GetFloat();
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         killer.SetKillCooldown(OverseerRevealTime.GetFloat());
         if (!Main.isRevealed[(killer.PlayerId, target.PlayerId)] && !OverseerTimer.ContainsKey(killer.PlayerId))

@@ -58,11 +58,6 @@ internal class Tracefinder : RoleBase
     public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
-
-        if (AmongUsClient.Instance.AmHost)
-        {
-            CustomRoleManager.CheckDeadBodyOthers.Remove(CheckDeadBody);
-        }
     }
     private static void SendRPC(byte playerId, bool add, Vector3 loc = new())
     {
@@ -103,6 +98,8 @@ internal class Tracefinder : RoleBase
 
     public static void CheckDeadBody(PlayerControl killer, PlayerControl target)
     {
+        if (playerIdList.Count <= 0) return;
+
         var pos = target.GetCustomPosition();
 
         float delay;

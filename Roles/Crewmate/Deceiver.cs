@@ -1,10 +1,12 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using MS.Internal.Xml.XPath;
 using System.Collections.Generic;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -113,12 +115,12 @@ internal class Deceiver : RoleBase
 
         killer.RPCPlayCustomSound("Bet");
 
-        Utils.NotifyRoles(SpecifySeer: killer);
+        Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);
 
         Logger.Info($"Counterfeiters {killer.GetRealName()} sell counterfeits to {target.GetRealName()}", "Deceiver");
         return false;
     }
-    public static bool OnClientMurder(PlayerControl pc, PlayerControl _)
+    public override bool CheckMurderOnOthersTarget(PlayerControl pc, PlayerControl _)
     {
         if (!IsClient(pc.PlayerId) || notActiveList.Contains(pc.PlayerId)) return false;
         

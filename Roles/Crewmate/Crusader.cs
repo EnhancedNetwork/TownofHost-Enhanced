@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
+using System.Linq;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
@@ -80,44 +81,45 @@ internal class Crusader : RoleBase
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (CrusaderLimit[killer.PlayerId] <= 0) return false;
+
         Main.ForCrusade.Remove(target.PlayerId);
         Main.ForCrusade.Add(target.PlayerId);
         CrusaderLimit[killer.PlayerId]--;
         SendRPC(killer.PlayerId);
+
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
+        
         if (!Options.DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
         target.RpcGuardAndKill(killer);
+        
         return false;
     }
-    public static bool OnCheckCrusade(PlayerControl killer, PlayerControl target)
+    public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (Main.ForCrusade.Contains(target.PlayerId))
+        if (Main.ForCrusade.Contains(target.PlayerId)) return true;
+
+        foreach (var player in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Crusader)).ToArray())
         {
-            foreach (var player in Main.AllAlivePlayerControls)
+            if (!killer.Is(CustomRoles.Pestilence) && !killer.Is(CustomRoles.KillingMachine))
             {
-                if (player.Is(CustomRoles.Crusader))
-                {
-                    if (!killer.Is(CustomRoles.Pestilence) && !killer.Is(CustomRoles.KillingMachine))
-                    {
-                        player.RpcMurderPlayerV3(killer);
-                        Main.ForCrusade.Remove(target.PlayerId);
-                        killer.RpcGuardAndKill(target);
-                        return false;
-                    }
+                player.RpcMurderPlayerV3(killer);
+                Main.ForCrusade.Remove(target.PlayerId);
+                killer.RpcGuardAndKill(target);
+                return false;
+            }
 
-                    if (killer.Is(CustomRoles.Pestilence))
-                    {
-                        Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.PissedOff;
-                        killer.RpcMurderPlayerV3(player);
-                        Main.ForCrusade.Remove(target.PlayerId);
-                        target.RpcGuardAndKill(killer);
+            if (killer.Is(CustomRoles.Pestilence))
+            {
+                Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.PissedOff;
+                killer.RpcMurderPlayerV3(player);
+                Main.ForCrusade.Remove(target.PlayerId);
+                target.RpcGuardAndKill(killer);
 
-                        return false;
-                    }
-                }
+                return false;
             }
         }
+
         return true;
     }
     public override void SetAbilityButtonText(HudManager hud, byte id)

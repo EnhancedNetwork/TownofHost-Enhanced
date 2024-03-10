@@ -116,7 +116,7 @@ internal class Bastion : RoleBase
     }
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
-        if (Bastion.BombsClearAfterMeeting.GetBool())
+        if (BombsClearAfterMeeting.GetBool())
         {
             BombedVents.Clear();
         }

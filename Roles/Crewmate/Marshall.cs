@@ -2,6 +2,7 @@ using UnityEngine;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
+using TOHE.Roles.AddOns.Common;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -42,8 +43,9 @@ internal class Marshall : RoleBase
         return IsMarshallTarget(seer) && GetExpose(target) ? Utils.ColorString(RoleColor, "★") : string.Empty;
     }
 
-    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => target.GetPlayerTaskState().IsTaskFinished && seer.Is(CustomRoleTypes.Crewmate) && target.Is(CustomRoles.Marshall);
-    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => seer.Is(CustomRoleTypes.Crewmate) && target.Is(CustomRoles.Marshall) && target.GetPlayerTaskState().IsTaskFinished;
+    private static bool VisibleToCrewmate(PlayerControl seer, PlayerControl target) => target.GetPlayerTaskState().IsTaskFinished && target.Is(CustomRoles.Marshall) && seer.Is(CustomRoleTypes.Crewmate);
+    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => VisibleToCrewmate(seer, target);
+    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => VisibleToCrewmate(seer, target);
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role)
     {
         if (!isUI) Utils.SendMessage(GetString("GuessMarshallTask"), pc.PlayerId);

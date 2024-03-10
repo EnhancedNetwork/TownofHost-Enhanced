@@ -37,6 +37,11 @@ internal class Mortician : RoleBase
     {
         playerIdList.Add(playerId);
         On = true;
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
+        }
     }
     public override void Remove(byte playerId)
     {
@@ -65,7 +70,7 @@ internal class Mortician : RoleBase
         else
             LocateArrow.RemoveAllTarget(playerId);
     }
-    public override void OnTargetDead(PlayerControl killer, PlayerControl target)
+    private void CheckDeadBody(PlayerControl killer, PlayerControl target)
     {
         Vector2 pos = target.transform.position;
         float minDis = float.MaxValue;
@@ -100,8 +105,8 @@ internal class Mortician : RoleBase
 
         if (!pc.Is(CustomRoles.Mortician) || target == null || pc.PlayerId == target.PlayerId) return;
         lastPlayerName.TryGetValue(target.PlayerId, out var name);
-        if (name == "") msgToSend.Add(pc.PlayerId, string.Format(Translator.GetString("MorticianGetNoInfo"), target.GetRealName()));
-        else msgToSend.Add(pc.PlayerId, string.Format(Translator.GetString("MorticianGetInfo"), target.GetRealName(), name));
+        if (name == "") msgToSend.Add(pc.PlayerId, string.Format(GetString("MorticianGetNoInfo"), target.GetRealName()));
+        else msgToSend.Add(pc.PlayerId, string.Format(GetString("MorticianGetInfo"), target.GetRealName(), name));
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
@@ -116,8 +121,8 @@ internal class Mortician : RoleBase
     }
     public override void OnMeetingHudStart(PlayerControl pc)
     {
-        if (Mortician.msgToSend.ContainsKey(pc.PlayerId))
-            AddMsg(Mortician.msgToSend[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mortician), GetString("MorticianCheckTitle")));
+        if (msgToSend.ContainsKey(pc.PlayerId))
+            AddMsg(msgToSend[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mortician), GetString("MorticianCheckTitle")));
     }
     public override void MeetingHudClear() => msgToSend = [];
 }
