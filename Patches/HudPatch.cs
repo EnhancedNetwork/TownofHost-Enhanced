@@ -540,7 +540,7 @@ class VentButtonDoClickPatch
 [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.Show))]
 class MapBehaviourShowPatch
 {
-    public static void Prefix(MapBehaviour __instance, ref MapOptions opts)
+    public static void Prefix(ref MapOptions opts)
     {
         if (GameStates.IsMeeting || GameStates.IsHideNSeek) return;
 
