@@ -455,6 +455,7 @@ static class ExtendedPlayerControl
     {
         int playerCount = Main.AllAlivePlayerControls.Length;
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
+        
         if (Mastermind.PlayerIsManipulated(pc)) return true;
 
         var playerRoleClass = pc.GetRoleClass();
@@ -494,9 +495,7 @@ static class ExtendedPlayerControl
             CustomRoles.Pickpocket => pc.IsAlive(),
             CustomRoles.Maverick => pc.IsAlive(),
             CustomRoles.Jinx => pc.IsAlive(),
-            CustomRoles.Parasite => pc.IsAlive(),
             CustomRoles.Refugee => pc.IsAlive(),
-    //        CustomRoles.Minion => pc.IsAlive(),
             CustomRoles.Shroud => pc.IsAlive(),
             CustomRoles.Wraith => pc.IsAlive(),
             CustomRoles.Innocent => pc.IsAlive(),
@@ -611,12 +610,9 @@ static class ExtendedPlayerControl
             CustomRoles.Virus => Virus.CanVent.GetBool(),
             CustomRoles.Pickpocket => Pickpocket.CanVent.GetBool(),
             CustomRoles.HexMaster => true,
-            //CustomRoles.Occultist => true,
             CustomRoles.Wraith => true,
             CustomRoles.Pyromaniac => Pyromaniac.CanVent.GetBool(),
             CustomRoles.Amnesiac => true,
-            //   CustomRoles.Chameleon => true,
-            CustomRoles.Parasite => true,
             CustomRoles.Refugee => true,
             CustomRoles.Spiritcaller => Spiritcaller.CanVent.GetBool(),
             CustomRoles.Quizmaster => Quizmaster.CanUseVentButton(pc),
@@ -645,7 +641,6 @@ static class ExtendedPlayerControl
             CustomRoles.Sidekick => Jackal.CanUseSabotageSK.GetBool(),
             CustomRoles.Traitor => Traitor.CanUseSabotage.GetBool(),
 
-            CustomRoles.Parasite or
             CustomRoles.Glitch or
             CustomRoles.PotionMaster or
             CustomRoles.Refugee
@@ -713,9 +708,6 @@ static class ExtendedPlayerControl
             case CustomRoles.PlagueDoctor:
                 PlagueDoctor.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.Penguin:
-                Penguin.SetKillCooldown(player.PlayerId);
-                break;
             case CustomRoles.PotionMaster:
                 PotionMaster.SetKillCooldown(player.PlayerId);
                 break;
@@ -757,9 +749,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Pestilence:
                 PlagueBearer.SetKillCooldownPestilence(player.PlayerId);
-                break;
-            case CustomRoles.Parasite:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Options.ParasiteCD.GetFloat();
                 break;
             case CustomRoles.Shaman:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.VoodooCooldown.GetFloat();

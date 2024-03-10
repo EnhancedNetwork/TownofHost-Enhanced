@@ -138,11 +138,6 @@ class HudManagerPatch
                         __instance.KillButton.OverrideText(GetString("RevolutionistDrawButtonText"));
                         __instance.ImpostorVentButton.buttonLabelText.text = GetString("RevolutionistVentButtonText");
                         break;
-                    case CustomRoles.Penguin:
-                        __instance.KillButton?.OverrideText(Penguin.OverrideKillButtonText());
-                        __instance.AbilityButton?.OverrideText(Penguin.GetAbilityButtonText());
-                        __instance.AbilityButton?.ToggleVisible(Penguin.CanUseAbilityButton());
-                        break;
                     case CustomRoles.Puppeteer:
                         __instance.KillButton.OverrideText(GetString("KillButtonText"));
                         break;

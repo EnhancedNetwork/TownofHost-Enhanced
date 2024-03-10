@@ -212,9 +212,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Bandit:
                 Bandit.ApplyGameOptions(opt);
                 break;
-            case CustomRoles.Penguin:
-                Penguin.ApplyGameOptions();
-                break;
             case CustomRoles.Hater:
             case CustomRoles.Pursuer:
                 opt.SetVision(true);
@@ -323,9 +320,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Spiritcaller:
                 opt.SetVision(Spiritcaller.ImpostorVision.GetBool());
                 break;
-            case CustomRoles.Pitfall:
-                Pitfall.ApplyGameOptions();
-                break;
             case CustomRoles.Warden:
                 Warden.SetAbilityCooldown();
                 break;
@@ -344,7 +338,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
         if (Dazzler.On) Dazzler.SetDazzled(player, opt);
         if (Deathpact.On) Deathpact.SetDeathpactVision(player, opt);
         if (Spiritcaller.IsEnable) Spiritcaller.ReduceVision(opt, player);
-        if (Pitfall.IsEnable) Pitfall.SetPitfallTrapVision(opt, player);
+        if (Pitfall.On) Pitfall.SetPitfallTrapVision(opt, player);
 
         // Add-ons
         if (Bewilder.IsEnable) Bewilder.ApplyGameOptions(opt, player);

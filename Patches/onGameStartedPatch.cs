@@ -190,10 +190,8 @@ internal class ChangeRoleSettings
             Sniper.Init();
             Undertaker.Init();
             TimeThief.Init();
-            Puppeteer.Init();
             Witch.Init();
             HexMaster.Init();
-            //Occultist.Init();
             Executioner.Init();
             Lawyer.Init();
             Jackal.Init();
@@ -258,7 +256,6 @@ internal class ChangeRoleSettings
             Traitor.Init();
             Vulture.Init();
             PlagueDoctor.Init();
-            Penguin.Init();
             Wildling.Init();
             Spiritcaller.Init();
             PlagueBearer.Init();
@@ -270,7 +267,6 @@ internal class ChangeRoleSettings
             Werewolf.Init();
             Bewilder.Init();
             Necromancer.Init();
-            Pitfall.Init();
             Agitater.Init();
             ChiefOfPolice.Init();
             Cyber.Init();
@@ -523,9 +519,6 @@ internal class SelectRolesPatch
                     case CustomRoles.TimeThief:
                         TimeThief.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Puppeteer:
-                        Puppeteer.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Sniper:
                         Sniper.Add(pc.PlayerId);
                         break;
@@ -620,9 +613,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.DarkHide:
                         DarkHide.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Penguin:
-                        Penguin.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Collector:
                         Collector.Add(pc.PlayerId);
@@ -723,9 +713,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Pixie:
                         Pixie.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Pitfall:
-                        Pitfall.Add(pc.PlayerId);
                         break;
                     case CustomRoles.ChiefOfPolice:
                         ChiefOfPolice.Add(pc.PlayerId);

@@ -506,9 +506,6 @@ public static class Options
     public static OptionItem WarlockCanKillSelf;
     public static OptionItem WarlockShiftDuration;
 
-    // Madmate
-    public static OptionItem ParasiteCD;
-
 
     // Crewmates role settings
     public static OptionItem ScientistCD;
@@ -1218,10 +1215,7 @@ public static class Options
         /*
          * Parasite
          */
-        SetupSingleRoleOptions(5900, TabGroup.ImpostorRoles, CustomRoles.Parasite, zeroOne: false);
-        ParasiteCD = FloatOptionItem.Create(5902, "KillCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Parasite])
-            .SetValueFormat(OptionFormat.Seconds);
+        Parasite.SetupCustomOption();
 
         /*
          * Impostor Ghost Roles

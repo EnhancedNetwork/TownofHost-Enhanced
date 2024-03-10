@@ -986,9 +986,6 @@ internal static class RPC
             case CustomRoles.TimeThief:
                 TimeThief.Add(targetId);
                 break;
-            case CustomRoles.Puppeteer:
-                Puppeteer.Add(targetId);
-                break;
             case CustomRoles.Sniper:
                 Sniper.Add(targetId);
                 break;
@@ -1081,9 +1078,6 @@ internal static class RPC
                 break;
             case CustomRoles.DarkHide:
                 DarkHide.Add(targetId);
-                break;
-            case CustomRoles.Penguin:
-                Penguin.Add(targetId);
                 break;
             case CustomRoles.Collector:
                 Collector.Add(targetId);
@@ -1190,10 +1184,6 @@ internal static class RPC
                 break;
             case CustomRoles.Pixie:
                 Pixie.Add(targetId);
-                break;
-
-            case CustomRoles.Pitfall:
-                Pitfall.Add(targetId);
                 break;
             case CustomRoles.ChiefOfPolice:
                 ChiefOfPolice.Add(targetId);

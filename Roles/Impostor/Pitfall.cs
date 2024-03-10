@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using System.Collections.Generic;
 using System.Linq;
+using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Options;
@@ -8,26 +9,29 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
-public static class Pitfall
+internal class Pitfall : RoleBase
 {
-    private static readonly int Id = 5600;
-
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
-
-    private static List<PitfallTrap> Traps = [];
-    private static List<byte> ReducedVisionPlayers = [];
+    private const int Id = 5600;
+    public static bool On;
+    public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
 
     private static OptionItem ShapeshiftCooldown;
-    public static OptionItem MaxTrapCount;
-    public static OptionItem TrapMaxPlayerCount;
-    public static OptionItem TrapDuration;
+    private static OptionItem MaxTrapCount;
+    private static OptionItem TrapMaxPlayerCountOpt;
+    private static OptionItem TrapDurationOpt;
     private static OptionItem TrapRadius;
     private static OptionItem TrapFreezeTime;
     private static OptionItem TrapCauseVision;
     private static OptionItem TrapCauseVisionTime;
 
+    private static List<byte> playerIdList = [];
+    private static List<PitfallTrap> Traps = [];
+    private static List<byte> ReducedVisionPlayers = [];
+
     private static float DefaultSpeed = new();
+    public static float TrapMaxPlayerCount = new();
+    public static float TrapDuration = new();
 
     public static void SetupCustomOption()
     {
@@ -36,9 +40,9 @@ public static class Pitfall
             .SetValueFormat(OptionFormat.Seconds);
         MaxTrapCount = FloatOptionItem.Create(Id + 11, "PitfallMaxTrapCount", new(1f, 5f, 1f), 1f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
             .SetValueFormat(OptionFormat.Times);
-        TrapMaxPlayerCount = FloatOptionItem.Create(Id + 12, "PitfallTrapMaxPlayerCount", new(1f, 15f, 1f), 3f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
+        TrapMaxPlayerCountOpt = FloatOptionItem.Create(Id + 12, "PitfallTrapMaxPlayerCount", new(1f, 15f, 1f), 3f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
             .SetValueFormat(OptionFormat.Times);
-        TrapDuration = FloatOptionItem.Create(Id + 13, "PitfallTrapDuration", new(5f, 180f, 1f), 30f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pitfall])
+        TrapDurationOpt = FloatOptionItem.Create(Id + 13, "PitfallTrapDuration", new(5f, 180f, 1f), 30f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pitfall])
             .SetValueFormat(OptionFormat.Seconds);
         TrapRadius = FloatOptionItem.Create(Id + 14, "PitfallTrapRadius", new(0.5f, 5f, 0.5f), 2f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
             .SetValueFormat(OptionFormat.Multiplier);
@@ -49,28 +53,41 @@ public static class Pitfall
         TrapCauseVisionTime = FloatOptionItem.Create(Id + 17, "PitfallTrapCauseVisionTime", new(0f, 45f, 1f), 15f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pitfall])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public static void ApplyGameOptions()
+    public override void Init()
+    {
+        On = false;
+        playerIdList = [];
+        Traps = [];
+        ReducedVisionPlayers = [];
+        DefaultSpeed = new();
+        TrapMaxPlayerCount = new();
+        TrapDuration = new();
+    }
+    public override void Add(byte playerId)
+    {
+        playerIdList.Add(playerId);
+        DefaultSpeed = Main.AllPlayerSpeed[playerId];
+
+        TrapMaxPlayerCount = TrapMaxPlayerCountOpt.GetFloat();
+        TrapDuration = TrapDurationOpt.GetFloat();
+        On = true;
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateOthers);
+        }
+    }
+
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = ShapeshiftCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = 1f;
     }
 
-    public static void Init()
+    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
     {
-        playerIdList = [];
-        Traps = [];
-        ReducedVisionPlayers = [];
-        IsEnable = false;
-    }
-    public static void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
-        DefaultSpeed = Main.AllPlayerSpeed[playerId];
-        IsEnable = true;
-    }
+        if (!shapeshifting && !shapeshiftIsHidden) return;
 
-    public static void OnShapeshift(PlayerControl shapeshifter)
-    {
         // Remove inactive traps so there is room for new traps
         Traps = Traps.Where(a => a.IsActive).ToList();
 
@@ -93,9 +110,12 @@ public static class Pitfall
                 Timer = 0
             });
         }
+
+        if (shapeshiftIsHidden)
+            shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
     }
 
-    public static void OnFixedUpdate(PlayerControl player)
+    private void OnFixedUpdateOthers(PlayerControl player)
     {
         if (Pelican.IsEaten(player.PlayerId) || !player.IsAlive()) return;
 
@@ -185,7 +205,7 @@ public class PitfallTrap
     {
         get
         {
-            return Timer <= Pitfall.TrapDuration.GetFloat() && PlayersTrapped.Count < Pitfall.TrapMaxPlayerCount.GetInt();
+            return Timer <= Pitfall.TrapDuration && PlayersTrapped.Count < Pitfall.TrapMaxPlayerCount;
         }
     }
 }

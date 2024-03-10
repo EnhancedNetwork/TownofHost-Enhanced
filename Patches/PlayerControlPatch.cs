@@ -392,9 +392,6 @@ class CheckMurderPatch
                 case CustomRoles.Huntsman:
                     Huntsman.OnCheckMurder(killer, target);
                     break;
-                case CustomRoles.Puppeteer:
-                    if (!Puppeteer.OnCheckPuppet(killer, target)) return false;
-                    break;
                 case CustomRoles.Necromancer:
                     if (!Necromancer.OnCheckMurder(killer, target)) return false;
                     break;
@@ -406,9 +403,6 @@ class CheckMurderPatch
                     break;
                 case CustomRoles.Juggernaut:
                     Juggernaut.OnCheckMurder(killer);
-                    break;
-                case CustomRoles.Penguin:
-                    if (!Penguin.OnCheckMurderAsKiller(killer, target)) return false;
                     break;
                 case CustomRoles.Swooper:
                     if (!Swooper.OnCheckMurder(killer, target)) return false;
@@ -1319,12 +1313,6 @@ public static class CheckShapeShiftPatch
                 shapeshifter.RejectShapeshiftAndReset();
                 Twister.TwistPlayers(shapeshifter, shapeshiftIsHidden: shapeshiftIsHidden);
                 return false;
-
-            case CustomRoles.Pitfall:
-                Pitfall.OnShapeshift(shapeshifter);
-                shapeshifter.RejectShapeshiftAndReset();
-                shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
-                return false;
         }
 
         return true;
@@ -1433,10 +1421,6 @@ class ShapeshiftPatch
                     break;
                 case CustomRoles.Twister:
                     Twister.TwistPlayers(shapeshifter);
-                    break;
-                case CustomRoles.Pitfall:
-                    if (shapeshifting)
-                        Pitfall.OnShapeshift(shapeshifter);
                     break;
             }
         }
@@ -1913,14 +1897,12 @@ class ReportDeadBodyPatch
 
         if (Huntsman.IsEnable) Huntsman.OnReportDeadBody();
         if (SoulCollector.IsEnable) SoulCollector.OnReportDeadBody();
-        if (Puppeteer.IsEnable) Puppeteer.OnReportDeadBody();
         if (Sniper.IsEnable) Sniper.OnReportDeadBody();
         if (Undertaker.IsEnable) Undertaker.OnReportDeadBody();
         if (Vampire.IsEnable) Vampire.OnStartMeeting();
         if (Poisoner.IsEnable) Poisoner.OnStartMeeting();
         if (Vampiress.IsEnable) Vampiress.OnStartMeeting();
         if (Vulture.IsEnable) Vulture.Clear();
-        if (Penguin.IsEnable) Penguin.OnReportDeadBody(); 
         if (Pelican.IsEnable) Pelican.OnReportDeadBody();
         if (Bandit.IsEnable) Bandit.OnReportDeadBody();
         if (Agitater.IsEnable) Agitater.OnReportDeadBody();
@@ -2165,10 +2147,6 @@ class FixedUpdateInNormalGamePatch
 
                 switch (playerRole)
                 {
-                    case CustomRoles.Penguin:
-                        Penguin.OnFixedUpdate(player);
-                        break;
-
                     case CustomRoles.Vampire:
                         Vampire.OnFixedUpdate(player);
                         break;
@@ -2381,17 +2359,11 @@ class FixedUpdateInNormalGamePatch
 
                     CustomRoleManager.OnFixedUpdateLowLoad(player);
 
-                    if (Puppeteer.IsEnable)
-                        Puppeteer.OnFixedUpdate(player);
-
                     if (Shroud.IsEnable)
                         Shroud.OnFixedUpdate(player);
 
                     if (Spiritcaller.IsEnable)
                         Spiritcaller.OnFixedUpdate(player);
-
-                    if (Pitfall.IsEnable)
-                        Pitfall.OnFixedUpdate(player);
 
                     if (Rainbow.isEnabled)
                         Rainbow.OnFixedUpdate();
@@ -2653,10 +2625,6 @@ class FixedUpdateInNormalGamePatch
 
                         else if (Main.currentDrawTarget != byte.MaxValue && Main.currentDrawTarget == target.PlayerId)
                             Mark.Append($"<color={Utils.GetRoleColorCode(seerRole)}>○</color>");
-                        break;
-
-                    case CustomRoles.Puppeteer:
-                        Mark.Append(Puppeteer.TargetMark(seer, target));
                         break;
 
                     case CustomRoles.Shroud:

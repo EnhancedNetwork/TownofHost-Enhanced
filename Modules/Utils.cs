@@ -2089,10 +2089,6 @@ public static class Utils
                                     TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Revolutionist)}>○</color>");
                                 break;
 
-                            case CustomRoles.Puppeteer:
-                                TargetMark.Append(Puppeteer.TargetMark(seer, target));
-                                break;
-
                             case CustomRoles.Shroud:
                                 TargetMark.Append(Shroud.TargetMark(seer, target));
                                 break;
@@ -2277,7 +2273,6 @@ public static class Utils
         if (Swooper.IsEnable) Swooper.AfterMeetingTasks();
         if (Wraith.IsEnable) Wraith.AfterMeetingTasks();
         if (Glitch.IsEnable) Glitch.AfterMeetingTasks();
-        if (Penguin.IsEnable) Penguin.AfterMeetingTasks();
         if (Taskinator.IsEnable) Taskinator.AfterMeetingTasks();
         if (Hawk.IsEnable) Hawk.AfterMeetingTasks();
         if (PlagueDoctor.IsEnable) PlagueDoctor.AfterMeetingTasks();
