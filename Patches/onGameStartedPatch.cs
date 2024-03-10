@@ -56,7 +56,6 @@ internal class ChangeRoleSettings
             Main.isDoused = [];
             Main.isDraw = [];
             Main.isRevealed = [];
-            Main.ArsonistTimer = [];
             Main.RevolutionistTimer = [];
             Main.RevolutionistStart = [];
             Main.RevolutionistLastTime = [];
@@ -68,7 +67,7 @@ internal class ChangeRoleSettings
             Main.ForCrusade = [];
             Main.WorkaholicAlive = [];
             Main.TasklessCrewmate = [];
-            Main.MedusaBodies = [];
+            Main.UnreportableBodies = [];
             Main.InfectedBodies = [];
             Main.VirusNotify = [];
             Main.ErasedRoleStorage = [];
@@ -86,7 +85,6 @@ internal class ChangeRoleSettings
             Main.ParaUsedButtonCount = [];
             Main.MarioVentCount = [];
             Main.AllKillers = [];
-            Main.JinxSpellCount = [];
             Main.OverDeadPlayerList = [];
             Main.Provoked = [];
             Main.ShieldPlayer = Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : "";
@@ -195,12 +193,8 @@ internal class ChangeRoleSettings
 
             Undertaker.Init();
             TimeThief.Init();
-            HexMaster.Init();
             Executioner.Init();
             Lawyer.Init();
-            Jackal.Init();
-            Sidekick.Init();
-            Bandit.Init();
             Doppelganger.Init();
             Solsticer.Init();
             Vampire.Init();
@@ -211,28 +205,21 @@ internal class ChangeRoleSettings
             LocateArrow.Init();
             DoubleTrigger.Init();
             Workhorse.Init();
-            Pelican.Init();
             Pursuer.Init();
             Diseased.Init();
-            Gamer.Init();
             DarkHide.Init();
             Collector.Init();
             Clumsy.Init();
             Taskinator.Init();
             Aware.Init();
-            Juggernaut.Init();
             Sleuth.Init();
-            Glitch.Init();
-            Huntsman.Init();
             Bait.Init();
-            Pickpocket.Init();
             Swooper.Init();
             Hawk.Init();
             Bloodmoon.Init();
             Wraith.Init();
             SoulCollector.Init();
             SchrodingersCat.Init();
-            BloodKnight.Init();
             Totocalcio.Init();
             Romantic.Init();
             VengefulRomantic.Init();
@@ -241,16 +228,13 @@ internal class ChangeRoleSettings
             CursedSoul.Init();
             Antidote.Init();
             Imitator.Init();
-            Medusa.Init();
             Amnesiac.Init();
             Fool.Init();
-            Infectious.Init();
             Virus.Init();
             Burst.Init();
             Pyromaniac.Init();
             SerialKiller.Init();
             Maverick.Init();
-            Jinx.Init();
             DoubleShot.Init();
             PotionMaster.Init();
             Warden.Init();
@@ -267,8 +251,6 @@ internal class ChangeRoleSettings
             Shroud.Init();
             Werewolf.Init();
             Bewilder.Init();
-            Necromancer.Init();
-            Agitater.Init();
             ChiefOfPolice.Init();
             Cyber.Init();
             Oiiai.Init();
@@ -501,9 +483,6 @@ internal class SelectRolesPatch
 
                 switch (pc.GetCustomRole())
                 {
-                    case CustomRoles.HexMaster:
-                        HexMaster.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Warlock:
                         Main.CursedPlayers.Add(pc.PlayerId, null);
                         Main.isCurseAndKill.Add(pc.PlayerId, false);
@@ -520,9 +499,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Vampiress:
                         Vampiress.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Pickpocket:
-                        Pickpocket.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Arsonist:
                         foreach (var ar in Main.AllPlayerControls)
                             Main.isDoused.Add((pc.PlayerId, ar.PlayerId), false);
@@ -534,23 +510,8 @@ internal class SelectRolesPatch
                     case CustomRoles.Executioner:
                         Executioner.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Medusa:
-                        Medusa.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Necromancer:
-                        Necromancer.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Lawyer:
                         Lawyer.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Jackal:
-                        Jackal.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Sidekick:
-                        Sidekick.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Bandit:
-                        Bandit.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Doppelganger:
                         Doppelganger.Add(pc.PlayerId);
@@ -560,15 +521,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.PlagueDoctor:
                         PlagueDoctor.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Glitch:
-                        Glitch.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Huntsman:
-                        Huntsman.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Agitater:
-                        Agitater.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Masochist:
                         Main.MasochistKillMax[pc.PlayerId] = 0;
@@ -582,17 +534,11 @@ internal class SelectRolesPatch
                     case CustomRoles.Mario:
                         Main.MarioVentCount[pc.PlayerId] = 0;
                         break;
-                    case CustomRoles.Pelican:
-                        Pelican.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Pursuer:
                         Pursuer.Add(pc.PlayerId);
                         break;
                     case CustomRoles.PotionMaster:
                         PotionMaster.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Gamer:
-                        Gamer.Add(pc.PlayerId);
                         break;
                     case CustomRoles.DarkHide:
                         DarkHide.Add(pc.PlayerId);
@@ -602,13 +548,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Taskinator:
                         Taskinator.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Jinx:
-                        Main.JinxSpellCount[pc.PlayerId] = Jinx.JinxSpellTimes.GetInt();
-                        Jinx.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Juggernaut:
-                        Juggernaut.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Swooper:
                         Swooper.Add(pc.PlayerId);
@@ -621,9 +560,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.SchrodingersCat:
                         SchrodingersCat.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.BloodKnight:
-                        BloodKnight.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Totocalcio:
                         Totocalcio.Add(pc.PlayerId);
@@ -648,9 +584,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Imitator:
                         Imitator.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Infectious:
-                        Infectious.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Virus:
                         Virus.Add(pc.PlayerId);

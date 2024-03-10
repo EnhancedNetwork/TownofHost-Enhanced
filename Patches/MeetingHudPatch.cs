@@ -768,10 +768,6 @@ static class ExtendedMeetingHud
                 {
                     VoteNum += (int)(Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == ps.TargetPlayerId) * Stealer.TicketsPerKill.GetFloat());
                 }
-                if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Pickpocket))
-                {
-                    VoteNum += (int)(Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == ps.TargetPlayerId) * Pickpocket.VotesPerKill.GetFloat());
-                }
 
                 // 主动叛变模式下自票无效
                 if (ps.TargetPlayerId == ps.VotedFor && Madmate.MadmateSpawnMode.GetInt() == 2) VoteNum = 0;
@@ -1110,10 +1106,6 @@ class MeetingHudStartPatch
 
             switch (seer.GetCustomRole())
             {
-                case CustomRoles.Arsonist:
-                    if (seer.IsDousedPlayer(target))
-                        sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Arsonist), "▲"));
-                    break;
                 case CustomRoles.Executioner:
                     sb.Append(Executioner.TargetMark(seer, target));
                     break;
@@ -1145,11 +1137,6 @@ class MeetingHudStartPatch
                 case CustomRoles.Councillor:
                     if (!seer.Data.IsDead && !target.Data.IsDead)
                         pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Councillor), target.PlayerId.ToString()) + " " + pva.NameText.text;
-
-                    break;
-
-                case CustomRoles.Gamer:
-                    sb.Append(Gamer.TargetMark(seer, target));
                     break;
 
                 case CustomRoles.Quizmaster:
@@ -1198,8 +1185,6 @@ class MeetingHudStartPatch
             else if (seer == target && CustomRolesHelper.RoleExist(CustomRoles.Ntr) && !isLover)
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), "♥"));
 
-
-            sb.Append(HexMaster.GetHexedMark(target.PlayerId, true));
             sb.Append(Shroud.GetShroudMark(target.PlayerId, true));
 
             if (target.PlayerId == Pirate.PirateTarget)

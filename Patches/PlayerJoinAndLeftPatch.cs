@@ -12,6 +12,7 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
 using TOHE.Roles.Core.AssignManager;
+using TOHE.Roles.Core;
 
 namespace TOHE;
 
@@ -295,7 +296,7 @@ class OnPlayerLeftPatch
 
                 if (data.Character.Is(CustomRoles.Pelican))
                 {
-                    Pelican.OnPelicanDied(data.Character.PlayerId);
+                    data.Character.GetRoleClass().OnTargetDead(data.Character, data.Character);
                 }
 
                 if (Spiritualist.HasEnabled) Spiritualist.RemoveTarget(data.Character.PlayerId);

@@ -182,8 +182,6 @@ class ExileControllerWrapUpPatch
             Main.RefixCooldownDelay = Options.DefaultKillCooldown - 3f;
         }
 
-        if (HexMaster.IsEnable)
-            HexMaster.RemoveHexedPlayer();
         
         foreach (var player in Main.AllPlayerControls)
         {
@@ -204,7 +202,7 @@ class ExileControllerWrapUpPatch
                     break;
             }
 
-            if (Infectious.IsEnable)
+            if (Infectious.HasEnabled)
             {
                 if (playerRole.Is(CustomRoles.Infectious) && !player.IsAlive())
                 {

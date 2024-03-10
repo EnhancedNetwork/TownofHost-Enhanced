@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
+using TOHE.Roles.Neutral;
 using UnityEngine;
 
 namespace TOHE;
@@ -52,8 +53,8 @@ public static class HudSpritePatch
         if (playerRoleClass?.GetKillButtonSprite(player, shapeshifting) != null)
             newKillButton = playerRoleClass.GetKillButtonSprite(player, shapeshifting);
 
-        if (playerRoleClass?.ImpostorVentButtonSprite != null)
-            newVentButton = playerRoleClass.ImpostorVentButtonSprite;
+        if (playerRoleClass?.ImpostorVentButtonSprite(player) != null)
+            newVentButton = playerRoleClass.ImpostorVentButtonSprite(player);
 
         if (playerRoleClass?.GetAbilityButtonSprite(player, shapeshifting) != null)
             newAbilityButton = playerRoleClass.GetAbilityButtonSprite(player, shapeshifting);
@@ -63,10 +64,6 @@ public static class HudSpritePatch
 
         switch (player.GetCustomRole())
         {
-            case CustomRoles.Arsonist:
-                newKillButton = CustomButton.Get("Douse");
-                if (player.IsDouseDone() || (Options.ArsonistCanIgniteAnytime.GetBool() && Utils.GetDousedPlayerCount(player.PlayerId).Item1 >= Options.ArsonistMinPlayersToIgnite.GetInt())) newVentButton = CustomButton.Get("Ignite");
-                break;
             case CustomRoles.Hangman:
                 if (shapeshifting) newAbilityButton = CustomButton.Get("Hangman");
                 break;
@@ -87,9 +84,6 @@ public static class HudSpritePatch
                 break;
             case CustomRoles.Witness:
                 newKillButton = CustomButton.Get("Examine");
-                break;
-            case CustomRoles.Pelican:
-                newKillButton = CustomButton.Get("Vulture");
                 break;
             case CustomRoles.CursedSoul:
                 newKillButton = CustomButton.Get("Soul");
@@ -114,9 +108,6 @@ public static class HudSpritePatch
                 break;
             case CustomRoles.Wraith:
                 newAbilityButton = CustomButton.Get("invisible");
-                break;
-            case CustomRoles.Agitater:
-                newKillButton = CustomButton.Get("bombshell");
                 break;
             case CustomRoles.Vulture:
                 newReportButton = CustomButton.Get("Eat");

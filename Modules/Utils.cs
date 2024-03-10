@@ -585,7 +585,7 @@ public static class Utils
             case CustomRoles.Medusa:
             case CustomRoles.Revolutionist:
             case CustomRoles.Hater:
-            case CustomRoles.Gamer:
+            case CustomRoles.Demon:
             case CustomRoles.HexMaster:
             //case CustomRoles.Occultist:
             case CustomRoles.Wraith:
@@ -708,11 +708,6 @@ public static class Utils
 
             switch (role)
             {
-                case CustomRoles.Arsonist:
-                    var doused = GetDousedPlayerCount(playerId);
-                    if (!Options.ArsonistCanIgniteAnytime.GetBool()) ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Arsonist).ShadeColor(0.25f), $"({doused.Item1}/{doused.Item2})"));
-                    else ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Arsonist).ShadeColor(0.25f), $"({doused.Item1}/{Options.ArsonistMaxPlayersToIgnite.GetInt()})"));
-                    break;
                 case CustomRoles.SoulCollector:
                     ProgressText.Append(SoulCollector.GetProgressText(playerId));
                     break;
@@ -752,19 +747,12 @@ public static class Utils
                 case CustomRoles.Masochist:
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Masochist).ShadeColor(0.25f), $"({(Main.MasochistKillMax.TryGetValue(playerId, out var count3) ? count3 : 0)}/{Options.MasochistKillMax.GetInt()})"));
                     break;
-                case CustomRoles.Pelican:
-                    ProgressText.Append(Pelican.GetProgressText(playerId));
-                    break;
                 case CustomRoles.Pursuer:
                     ProgressText.Append(Pursuer.GetSeelLimit(playerId));
                     break;
                 case CustomRoles.Revolutionist:
                     var draw = GetDrawPlayerCount(playerId, out var _);
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Revolutionist).ShadeColor(0.25f), $"({draw.Item1}/{draw.Item2})"));
-                    break;
-                case CustomRoles.Jinx:
-                    int JinxSpellCount = Main.JinxSpellCount[playerId];
-                    ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Jinx), $"({JinxSpellCount})"));
                     break;
                 case CustomRoles.Collector:
                     ProgressText.Append(Collector.GetProgressText(playerId));
@@ -802,21 +790,11 @@ public static class Utils
                 case CustomRoles.Warden:
                     ProgressText.Append(Warden.GetNotifyLimit(playerId));
                     break;
-                case CustomRoles.Infectious:
-                    ProgressText.Append(Infectious.GetBiteLimit());
-                    break;
                 case CustomRoles.Virus:
                     ProgressText.Append(Virus.GetInfectLimit());
                     break;
                 case CustomRoles.PotionMaster:
                     ProgressText.Append(PotionMaster.GetRitualCount(playerId));
-                    break;
-                case CustomRoles.Jackal:
-                    if (Jackal.CanRecruitSidekick.GetBool())
-                        ProgressText.Append(Jackal.GetRecruitLimit(playerId));
-                    break;
-                case CustomRoles.Bandit:
-                    ProgressText.Append(Bandit.GetStealLimit(playerId));
                     break;
                 case CustomRoles.Doppelganger:
                     ProgressText.Append(Doppelganger.GetStealLimit(playerId));
@@ -1799,8 +1777,6 @@ public static class Utils
                 if (CustomRoles.Solsticer.RoleExist())
                     SelfMark.Append(Solsticer.GetWarningArrow(seer, seer));
 
-                if (Gamer.IsEnable)
-                    SelfMark.Append(Gamer.TargetMark(seer, seer));
 
                 if (Romantic.IsEnable)
                     SelfMark.Append(Romantic.SelfMark(seer));
@@ -1824,10 +1800,6 @@ public static class Utils
                                 SelfSuffix.Append(Vulture.GetTargetArrow(seer));
                             break;
 
-                        case CustomRoles.HexMaster:
-                            SelfSuffix.Append(HexMaster.GetHexModeText(seer, false));
-                            break;
-
                         case CustomRoles.PlagueDoctor:
                             SelfSuffix.Append(PlagueDoctor.GetLowerTextOthers(seer));
                             break;
@@ -1843,9 +1815,6 @@ public static class Utils
 
                     if (Pirate.IsEnable && seer.PlayerId == Pirate.PirateTarget)
                         SelfMark.Append(Pirate.GetPlunderedMark(seer.PlayerId, true));
-
-                    if (HexMaster.IsEnable)
-                        SelfMark.Append(HexMaster.GetHexedMark(seer.PlayerId, true));
                 }
                 switch (Options.CurrentGameMode)
                 {
@@ -1912,7 +1881,7 @@ public static class Utils
                         break;
                 }
 
-                if (Pelican.IsEnable && Pelican.IsEaten(seer.PlayerId))
+                if (Pelican.HasEnabled && Pelican.IsEaten(seer.PlayerId))
                     SelfName = $"{ColorString(GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"))}";
 
                 if (CustomRoles.Deathpact.IsClassEnable() && Deathpact.IsInActiveDeathpact(seer))
@@ -1981,8 +1950,6 @@ public static class Utils
 
                         if (isForMeeting)
                         {
-                            if (HexMaster.IsEnable)
-                                TargetMark.Append(HexMaster.GetHexedMark(target.PlayerId, true));
 
                             //if (Occultist.IsEnable)
                             //    TargetMark.Append(Occultist.GetCursedMark(target.PlayerId, true));
@@ -2009,8 +1976,6 @@ public static class Utils
                         if (Executioner.IsEnable)
                             TargetMark.Append(Executioner.TargetMark(seer, target));
 
-                        if (Gamer.IsEnable)
-                            TargetMark.Append(Gamer.TargetMark(seer, target));
 
                         if (Totocalcio.IsEnable)
                             TargetMark.Append(Totocalcio.TargetMark(seer, target));
@@ -2048,14 +2013,6 @@ public static class Utils
                                 {
                                     TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.PlagueBearer)}>●</color>");
                                 }
-                                break;
-
-                            case CustomRoles.Arsonist:
-                                if (seer.IsDousedPlayer(target))
-                                    TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Arsonist)}>▲</color>");
-
-                                if (Main.ArsonistTimer.TryGetValue(seer.PlayerId, out var ar_kvp) && ar_kvp.Item1 == target)
-                                    TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Arsonist)}>△</color>");
                                 break;
 
                             case CustomRoles.Revolutionist:
@@ -2249,7 +2206,6 @@ public static class Utils
         if (Collector.IsEnable) Collector.AfterMeetingTasks();
         if (Swooper.IsEnable) Swooper.AfterMeetingTasks();
         if (Wraith.IsEnable) Wraith.AfterMeetingTasks();
-        if (Glitch.IsEnable) Glitch.AfterMeetingTasks();
         if (Taskinator.IsEnable) Taskinator.AfterMeetingTasks();
         if (Hawk.IsEnable) Hawk.AfterMeetingTasks();
         if (PlagueDoctor.IsEnable) PlagueDoctor.AfterMeetingTasks();
@@ -2302,9 +2258,6 @@ public static class Utils
                 break;
             case CustomRoles.Romantic:
                 Romantic.isRomanticAlive = false;
-                break;
-            case CustomRoles.Pelican:
-                Pelican.OnPelicanDied(target.PlayerId);
                 break;
             case CustomRoles.Devourer:
                 Devourer.OnDevourerDied(target.PlayerId);

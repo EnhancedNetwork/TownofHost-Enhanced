@@ -88,6 +88,8 @@ class HudManagerPatch
             if (player.IsAlive())
             {
                 __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
+                __instance.KillButton.OverrideText(GetString("KillButtonText"));
+
                 player.GetRoleClass()?.SetAbilityButtonText(__instance, player.PlayerId);
 
                 switch (player.GetCustomRole())
@@ -114,19 +116,12 @@ class HudManagerPatch
                     case CustomRoles.Pirate:
                         __instance.KillButton.OverrideText(GetString("PirateDuelButtonText"));
                         break;
-                    case CustomRoles.HexMaster:
-                        HexMaster.GetAbilityButtonText(__instance);
-                        break;
                     case CustomRoles.Vampire:
                     case CustomRoles.Vampiress:
                         Vampire.SetKillButtonText();
                         break;
                     case CustomRoles.Poisoner:
                         Poisoner.SetKillButtonText();
-                        break;
-                    case CustomRoles.Arsonist:
-                        __instance.KillButton.OverrideText(GetString("ArsonistDouseButtonText"));
-                        __instance.ImpostorVentButton.buttonLabelText.text = GetString("ArsonistVentButtonText");
                         break;
                     case CustomRoles.Revolutionist:
                         __instance.KillButton.OverrideText(GetString("RevolutionistDrawButtonText"));
@@ -141,31 +136,17 @@ class HudManagerPatch
                     case CustomRoles.Innocent:
                         __instance.KillButton.OverrideText(GetString("InnocentButtonText"));
                         break;
-                    case CustomRoles.Pelican:
-                        __instance.KillButton.OverrideText(GetString("PelicanButtonText"));
-                        break;
                     case CustomRoles.Pursuer:
                         __instance.KillButton.OverrideText(GetString("PursuerButtonText"));
                         break;
-                    case CustomRoles.Glitch:
-                        __instance.KillButton.OverrideText(GetString("KillButtonText"));
-                        __instance.SabotageButton.OverrideText(GetString("MimicButtonText"));
-                        break;
                     case CustomRoles.Hater:
                         __instance.KillButton.OverrideText(GetString("HaterButtonText"));
-                        break;
-                    case CustomRoles.Gamer:
-                        __instance.KillButton.OverrideText(GetString("GamerButtonText"));
                         break;
                     case CustomRoles.Twister:
                         __instance.AbilityButton.OverrideText(GetString("TwisterButtonText"));
                         break;
                     case CustomRoles.Provocateur:
                         __instance.KillButton.OverrideText(GetString("ProvocateurButtonText"));
-                        break;
-                    case CustomRoles.Medusa:
-                        __instance.KillButton.OverrideText(GetString("KillButtonText"));
-                        __instance.ReportButton.OverrideText(GetString("MedusaReportButtonText"));
                         break;
                     case CustomRoles.Vulture:
                         __instance.ReportButton.OverrideText(GetString("VultureEatButtonText"));
@@ -188,9 +169,6 @@ class HudManagerPatch
                         __instance.KillButton.OverrideText(GetString("KillButtonText"));
                         __instance.AbilityButton.OverrideText(GetString("UndertakerButtonText"));
                         break;
-                    case CustomRoles.Agitater:
-                        __instance.KillButton.OverrideText(GetString("AgitaterKillButtonText"));
-                        break;
                     case CustomRoles.Totocalcio:
                         __instance.KillButton.OverrideText(GetString("TotocalcioKillButtonText"));
                         break;
@@ -205,9 +183,6 @@ class HudManagerPatch
                         break;
                     case CustomRoles.Amnesiac:
                         __instance.ReportButton.OverrideText(GetString("RememberButtonText"));
-                        break;
-                    case CustomRoles.Infectious:
-                        __instance.KillButton.OverrideText(GetString("InfectiousKillButtonText"));
                         break;
                     case CustomRoles.Imitator:
                         __instance.KillButton.OverrideText(GetString("ImitatorKillButtonText"));
@@ -250,13 +225,9 @@ class HudManagerPatch
                         //if (LowerInfoText.text != "" || LowerInfoText.text != string.Empty)
                             LowerInfoText.text = player.GetCustomRole() switch
                             {
-                                CustomRoles.HexMaster => HexMaster.GetHexModeText(player, true),
                                 CustomRoles.Swooper => Swooper.GetHudText(player),
                                 CustomRoles.Wraith => Wraith.GetHudText(player),
                                 CustomRoles.Alchemist => Alchemist.GetHudText(player),
-                                CustomRoles.Huntsman => Huntsman.GetHudText(player),
-                                CustomRoles.Glitch => Glitch.GetHudText(player),
-                                CustomRoles.BloodKnight => BloodKnight.GetHudText(player),
                                 CustomRoles.Wildling => Wildling.GetHudText(player),
                                 CustomRoles.PlagueDoctor => PlagueDoctor.GetLowerTextOthers(player),
                                 _ => roleClass?.GetLowerText(player, isForMeeting: GameStates.IsMeeting, isForHud: true) ?? "",
@@ -383,26 +354,20 @@ class SetHudActivePatch
         var player = PlayerControl.LocalPlayer;
         if (player == null) return;
 
+        player.GetRoleClass()?.SetHudActive(__instance, isActive);
+
         switch (player.GetCustomRole())
         {
-            case CustomRoles.Arsonist:
             case CustomRoles.Deputy:
             case CustomRoles.Investigator:
             case CustomRoles.Monarch:
             case CustomRoles.Shroud:
             case CustomRoles.Innocent:
-            case CustomRoles.Pelican:
             case CustomRoles.Revolutionist:
             case CustomRoles.Hater:
-            case CustomRoles.Gamer:
             case CustomRoles.DarkHide:
             case CustomRoles.Provocateur:
             case CustomRoles.Overseer:
-                __instance.SabotageButton.ToggleVisible(false);
-                __instance.AbilityButton.ToggleVisible(false);
-                __instance.ImpostorVentButton.ToggleVisible(false);
-                break;
-
             case CustomRoles.KillingMachine:
                 __instance.SabotageButton.ToggleVisible(false);
                 __instance.AbilityButton.ToggleVisible(false);
@@ -412,17 +377,8 @@ class SetHudActivePatch
             case CustomRoles.Refugee:
                 __instance.SabotageButton.ToggleVisible(true);
                 break;
-            case CustomRoles.Jackal:
-                Jackal.SetHudActive(__instance, isActive);
-                break;
-            case CustomRoles.Sidekick:
-                Sidekick.SetHudActive(__instance, isActive);
-                break;
             case CustomRoles.Traitor:
                 Traitor.SetHudActive(__instance, isActive);
-                break;
-            case CustomRoles.Glitch:
-                Glitch.SetHudActive(__instance, isActive);
                 break;
             
         }
