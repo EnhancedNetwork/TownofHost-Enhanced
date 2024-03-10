@@ -129,4 +129,9 @@ internal class Bomber : RoleBase
             }, timer, $"{playerRole} was suicide");
         }
     }
+
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.AbilityButton.OverrideText(Translator.GetString("BomberShapeshiftText"));
+    }
 }

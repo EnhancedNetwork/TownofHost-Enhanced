@@ -498,9 +498,6 @@ public static class Options
     public static OptionItem VindicatorAdditionalVote;
     public static OptionItem VindicatorHideVote;
 
-    public static OptionItem MinerSSDuration;
-    public static OptionItem MinerSSCD;
-
     public static OptionItem ScavengerKillCooldown;
 
     public static OptionItem ShapeMasterShapeshiftDuration;
@@ -1089,13 +1086,7 @@ public static class Options
         /*
          * Miner
          */
-        SetupRoleOptions(4200, TabGroup.ImpostorRoles, CustomRoles.Miner);
-        MinerSSDuration = FloatOptionItem.Create(4202, "ShapeshiftDuration", new(1f, 180f, 1f), 1, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Miner])
-            .SetValueFormat(OptionFormat.Seconds);
-        MinerSSCD = FloatOptionItem.Create(4203, "ShapeshiftCooldown", new(1f, 180f, 1f), 15f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Miner])
-            .SetValueFormat(OptionFormat.Seconds);
+        Miner.SetupCustomOption();
 
         /*
          * Puppeteer

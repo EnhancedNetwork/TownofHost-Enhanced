@@ -1,24 +1,28 @@
-﻿using Hazel;
+﻿using AmongUs.GameOptions;
+using Hazel;
 using System.Collections.Generic;
 using TOHE.Modules;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
-internal static class Ninja
+internal class Ninja : RoleBase
 {
     private const int Id = 2100;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    public static bool On;
+    public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
 
     private static OptionItem MarkCooldown;
     private static OptionItem AssassinateCooldown;
     private static OptionItem CanKillAfterAssassinate;
 
-    public static Dictionary<byte, byte> MarkedPlayer = [];
+    private static List<byte> playerIdList = [];
+    private static Dictionary<byte, byte> MarkedPlayer = [];
 
     public static void SetupCustomOption()
     {
@@ -29,17 +33,18 @@ internal static class Ninja
             .SetValueFormat(OptionFormat.Seconds);
         CanKillAfterAssassinate = BooleanOptionItem.Create(Id + 12, "NinjaCanKillAfterAssassinate", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ninja]);
     }
-    public static void Init()
+    public override void Init()
     {
+        On = false;
         playerIdList = [];
         MarkedPlayer = [];
-        IsEnable = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
+        On = true;
     }
+
     private static void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMarkedPlayer, SendOption.Reliable, -1);
@@ -56,21 +61,28 @@ internal static class Ninja
         if (targetId != byte.MaxValue)
             MarkedPlayer.Add(playerId, targetId);
     }
-    private static bool Shapeshifting(this PlayerControl pc) => pc.PlayerId.Shapeshifting();
-    private static bool Shapeshifting(this byte id) => Main.CheckShapeshift.TryGetValue(id, out bool shapeshifting) && shapeshifting;
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = id.Shapeshifting() ? DefaultKillCooldown : MarkCooldown.GetFloat();
-    public static void ApplyGameOptions() => AURoleOptions.ShapeshifterCooldown = AssassinateCooldown.GetFloat();
-    public static bool CanUseKillButton(PlayerControl pc)
+
+    private static bool Shapeshifting(byte id) => Main.CheckShapeshift.TryGetValue(id, out bool shapeshifting) && shapeshifting;
+    
+    public override void SetKillCooldown(byte id)
+        => Main.AllPlayerKillCooldown[id] = Shapeshifting(id) ? DefaultKillCooldown : MarkCooldown.GetFloat();
+
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+        => AURoleOptions.ShapeshifterCooldown = AssassinateCooldown.GetFloat();
+
+    private static bool CheckCanUseKillButton(PlayerControl pc)
     {
         if (pc == null || !pc.IsAlive()) return false;
         if (!CanKillAfterAssassinate.GetBool() && pc.shapeshifting) return false;
         return true;
     }
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool CanUseKillButton(PlayerControl pc) => CheckCanUseKillButton(pc);
+
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer.Shapeshifting())
+        if (Shapeshifting(killer.PlayerId))
         {
-            return CanUseKillButton(killer);
+            return CheckCanUseKillButton(killer);
         }
         else
         {
@@ -84,51 +96,54 @@ internal static class Ninja
             return false;
         }
     }
-    public static void OnShapeshift(PlayerControl pc, bool shapeshifting, bool shapeshiftIsHidden = false)
+    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool shapeshifting, bool shapeshiftIsHidden)
     {
-        if (shapeshiftIsHidden && (!MarkedPlayer.ContainsKey(pc.PlayerId) || !pc.IsAlive() || Pelican.IsEaten(pc.PlayerId)))
+        if (shapeshiftIsHidden && (!MarkedPlayer.ContainsKey(shapeshifter.PlayerId) || !shapeshifter.IsAlive() || Pelican.IsEaten(shapeshifter.PlayerId)))
         {
-            pc.RejectShapeshiftAndReset(reset: false);
+            shapeshifter.RejectShapeshiftAndReset(reset: false);
             return;
         }
-        if (!pc.IsAlive() || Pelican.IsEaten(pc.PlayerId)) return;
+        if (!shapeshifter.IsAlive() || Pelican.IsEaten(shapeshifter.PlayerId)) return;
 
         if (!shapeshifting || shapeshiftIsHidden)
         {
-            pc.SetKillCooldown();
+            shapeshifter.SetKillCooldown();
             if (!shapeshiftIsHidden) return;
         }
 
-        if (MarkedPlayer.TryGetValue(pc.PlayerId, out var targetId))
+        if (MarkedPlayer.TryGetValue(shapeshifter.PlayerId, out var targetId))
         {
             var timer = shapeshiftIsHidden ? 0.1f : 1.5f;
             var marketTarget = Utils.GetPlayerById(targetId);
             
-            MarkedPlayer.Remove(pc.PlayerId);
-            SendRPC(pc.PlayerId);
+            MarkedPlayer.Remove(shapeshifter.PlayerId);
+            SendRPC(shapeshifter.PlayerId);
 
             if (shapeshiftIsHidden)
-                pc.RejectShapeshiftAndReset();
+                shapeshifter.RejectShapeshiftAndReset();
 
             _ = new LateTask(() =>
             {
                 if (!(marketTarget == null || !marketTarget.IsAlive() || Pelican.IsEaten(marketTarget.PlayerId) || Medic.ProtectList.Contains(marketTarget.PlayerId) || marketTarget.inVent || !GameStates.IsInTask))
                 {
-                    pc.RpcTeleport(marketTarget.GetCustomPosition());
-                    pc.ResetKillCooldown();
-                    pc.RpcCheckAndMurder(marketTarget);
+                    shapeshifter.RpcTeleport(marketTarget.GetCustomPosition());
+                    shapeshifter.ResetKillCooldown();
+                    shapeshifter.RpcCheckAndMurder(marketTarget);
                 }
             }, timer, "Ninja Assassinate");
         }
     }
-    public static void SetAbilityButtonText(HudManager hud, byte playerid)
+    public override void SetAbilityButtonText(HudManager hud, byte playerid)
     {
-        if (!playerid.Shapeshifting())
+        if (!Shapeshifting(playerid))
             hud.KillButton.OverrideText(GetString("NinjaMarkButtonText"));
         else
             hud.KillButton.OverrideText(GetString("KillButtonText"));
 
-        if (MarkedPlayer.ContainsKey(playerid) && !playerid.Shapeshifting())
+        if (MarkedPlayer.ContainsKey(playerid) && !Shapeshifting(playerid))
             hud.AbilityButton.OverrideText(GetString("NinjaShapeshiftText"));
     }
+
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => !shapeshifting ? CustomButton.Get("Mark") : null;
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => !shapeshifting && MarkedPlayer.ContainsKey(player.PlayerId) ? CustomButton.Get("Assassinate") : null;
 }

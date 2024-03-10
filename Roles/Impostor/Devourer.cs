@@ -9,7 +9,7 @@ namespace TOHE.Roles.Impostor;
 
 internal class Devourer : RoleBase
 {
-    static GameData.PlayerOutfit ConsumedOutfit = new GameData.PlayerOutfit().Set("", 15, "", "", "visor_Crack", "", "");
+    private readonly static GameData.PlayerOutfit ConsumedOutfit = new GameData.PlayerOutfit().Set("", 15, "", "", "visor_Crack", "", "");
     private static Dictionary<byte, GameData.PlayerOutfit> OriginalPlayerSkins = [];
 
     private const int Id = 5500;
@@ -138,5 +138,10 @@ internal class Devourer : RoleBase
             .EndRpc();
 
         sender.SendMessage();
+    }
+
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.AbilityButton.OverrideText(GetString("DevourerButtonText"));
     }
 }

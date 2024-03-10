@@ -182,4 +182,9 @@ internal class Lightning : RoleBase
 
         return (!seer.IsAlive() && seer != target && IsGhost(target)) || IsGhost(target) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lightning), "■") : string.Empty;
     }
+
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.KillButton.OverrideText(Translator.GetString("LightningButtonText"));
+    }
 }

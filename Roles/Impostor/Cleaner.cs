@@ -59,4 +59,9 @@ internal class Cleaner : RoleBase
 
         return true;
     }
+
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.ReportButton.OverrideText(Translator.GetString("CleanerReportButtonText"));
+    }
 }

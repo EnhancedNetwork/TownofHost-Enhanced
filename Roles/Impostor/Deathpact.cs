@@ -309,4 +309,9 @@ internal class Deathpact : RoleBase
             ClearDeathpact(deathpact);
         }
     }
+
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.AbilityButton.OverrideText(GetString("DeathpactButtonText"));
+    }
 }

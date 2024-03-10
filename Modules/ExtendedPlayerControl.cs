@@ -465,7 +465,6 @@ static class ExtendedPlayerControl
             //FFA
             CustomRoles.Killer => pc.IsAlive(),
             //Standard
-            CustomRoles.Nemesis => Nemesis.CanUseKillButton(pc),
             CustomRoles.Shaman => pc.IsAlive(),
             CustomRoles.Underdog => playerCount <= Options.UnderdogMaximumPlayersNeededToKill.GetInt(),
             CustomRoles.Sniper => Sniper.CanUseKillButton(pc),
@@ -502,12 +501,10 @@ static class ExtendedPlayerControl
             CustomRoles.Wraith => pc.IsAlive(),
             CustomRoles.Innocent => pc.IsAlive(),
             CustomRoles.Pursuer => Pursuer.CanUseKillButton(pc.PlayerId),
-            CustomRoles.Morphling => Morphling.CanUseKillButton(pc.PlayerId),
             CustomRoles.Hater => pc.IsAlive(),
             CustomRoles.Gamer => pc.IsAlive(),
             CustomRoles.DarkHide => DarkHide.CanUseKillButton(pc),
             CustomRoles.Provocateur => pc.IsAlive(),
-            CustomRoles.Ninja => Ninja.CanUseKillButton(pc),
             CustomRoles.BloodKnight => pc.IsAlive(),
             CustomRoles.Totocalcio => Totocalcio.CanUseKillButton(pc),
             CustomRoles.Romantic => pc.IsAlive(),
@@ -719,9 +716,6 @@ static class ExtendedPlayerControl
             case CustomRoles.Penguin:
                 Penguin.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.Morphling:
-                Morphling.SetKillCooldown(player.PlayerId);
-                break;
             case CustomRoles.PotionMaster:
                 PotionMaster.SetKillCooldown(player.PlayerId);
                 break;
@@ -833,9 +827,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Provocateur:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.ProvKillCD.GetFloat();
-                break;
-            case CustomRoles.Ninja:
-                Ninja.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Vampiress:
                 Vampiress.SetKillCooldown(player.PlayerId);
@@ -1298,7 +1289,7 @@ static class ExtendedPlayerControl
             switch (role)
             {
                 case CustomRoles.Nemesis:
-                    Prefix = Nemesis.CanUseKillButton(player) ? "After" : "Before";
+                    Prefix = Nemesis.CheckCanUseKillButton() ? "After" : "Before";
                     break;
             };
         var Info = (role.IsVanilla() ? "Blurb" : "Info") + (InfoLong ? "Long" : "");

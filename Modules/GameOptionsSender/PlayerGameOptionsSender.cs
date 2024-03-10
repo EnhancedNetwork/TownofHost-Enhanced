@@ -139,10 +139,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.ShapeshifterCooldown = Main.isCursed ? 1f : Options.DefaultKillCooldown;
                 AURoleOptions.ShapeshifterDuration = Options.WarlockShiftDuration.GetFloat();
                 break;
-            case CustomRoles.Miner:
-                AURoleOptions.ShapeshifterCooldown = Options.MinerSSCD.GetFloat();
-                AURoleOptions.ShapeshifterDuration = Options.MinerSSDuration.GetFloat();
-                break;
             case CustomRoles.Sniper:
                 Sniper.ApplyGameOptions(player);
                 break;
@@ -181,10 +177,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.ShapeshifterTOHE:
                 AURoleOptions.ShapeshifterCooldown = Options.ShapeshiftCD.GetFloat();
                 AURoleOptions.ShapeshifterDuration = Options.ShapeshiftDur.GetFloat();
-                break;
-            case CustomRoles.Nemesis:
-                AURoleOptions.ShapeshifterCooldown = Nemesis.NemesisShapeshiftCD.GetFloat();
-                AURoleOptions.ShapeshifterDuration = Nemesis.NemesisShapeshiftDur.GetFloat();
                 break;
             case CustomRoles.Bloodmoon:
                 Bloodmoon.SetKillCooldown();
@@ -238,9 +230,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
             case CustomRoles.Necromancer:
                 Necromancer.ApplyGameOptions(opt);
-                break;
-            case CustomRoles.Morphling:
-                Morphling.ApplyGameOptions();
                 break;
             case CustomRoles.Traitor:
                 Traitor.ApplyGameOptions(opt);
@@ -310,9 +299,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
             case CustomRoles.QuickShooter:
                 QuickShooter.ApplyGameOptions();
-                break;
-            case CustomRoles.Ninja:
-                Ninja.ApplyGameOptions();
                 break;
             case CustomRoles.Sunnyboy:
                 AURoleOptions.ScientistCooldown = 0f;

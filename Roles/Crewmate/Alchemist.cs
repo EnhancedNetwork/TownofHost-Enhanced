@@ -506,4 +506,9 @@ internal class Alchemist : RoleBase
 
         Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()} instant - fix-lights", "SwitchSystem");
     }
+
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.AbilityButton.OverrideText(GetString("AlchemistVentButtonText"));
+    }
 }

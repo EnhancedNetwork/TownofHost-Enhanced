@@ -1,6 +1,6 @@
-﻿using HarmonyLib;
+﻿using AmongUs.GameOptions;
+using HarmonyLib;
 using Hazel;
-using Hazel.Crypto;
 using System;
 using System.Linq;
 using TOHE.Modules;
@@ -11,13 +11,17 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
-public static class Nemesis
+internal class Nemesis : RoleBase
 {
-    public static readonly int Id = 3600;
-    public static OptionItem NemesisCanKillNum;
+    public const int Id = 3600;
+    public static bool On;
+    public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => LegacyNemesis.GetBool() ? CustomRoles.Shapeshifter : CustomRoles.Impostor;
+
+    private static OptionItem NemesisCanKillNum;
     public static OptionItem LegacyNemesis;
-    public static OptionItem NemesisShapeshiftCD;
-    public static OptionItem NemesisShapeshiftDur;
+    private static OptionItem NemesisShapeshiftCD;
+    private static OptionItem NemesisShapeshiftDur;
 
     public static void SetupCustomOptions()
     {
@@ -34,6 +38,21 @@ public static class Nemesis
                 .SetParent(LegacyNemesis)
                 .SetValueFormat(OptionFormat.Seconds);
     }
+    public override void Init()
+    {
+        On = false;
+    }
+    public override void Add(byte playerId)
+    {
+        On = true;
+    }
+
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    {
+        AURoleOptions.ShapeshifterCooldown = NemesisShapeshiftCD.GetFloat();
+        AURoleOptions.ShapeshifterDuration = NemesisShapeshiftDur.GetFloat();
+    }
+
     public static bool NemesisMsgCheck(PlayerControl pc, string msg, bool isUI = false)
     {
         if (!AmongUsClient.Instance.AmHost) return false;
@@ -132,7 +151,7 @@ public static class Nemesis
             if (GameStates.IsMeeting)
             {
                 GuessManager.RpcGuesserMurderPlayer(target);
-                //死者检查
+
                 Utils.AfterPlayerDeathTasks(target, true);
                 Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
             }
@@ -158,11 +177,13 @@ public static class Nemesis
         NemesisMsgCheck(pc, $"/rv {PlayerId}", true);
     }
 
-    public static bool CanUseKillButton(PlayerControl pc)
+    public override bool CanUseKillButton(PlayerControl pc) => CheckCanUseKillButton();
+
+    public static bool CheckCanUseKillButton()
     {
         if (Main.PlayerStates == null) return false;
+        
         //  Number of Living Impostors excluding Nemesis
-
         int LivingImpostorsNum = 0;
         foreach (var player in Main.AllAlivePlayerControls)
         {

@@ -104,9 +104,6 @@ class HudManagerPatch
                         if (!shapeshifting && curse)
                             __instance.AbilityButton.OverrideText(GetString("WarlockShapeshiftButtonText"));
                         break;
-                    case CustomRoles.Miner:
-                        __instance.AbilityButton.OverrideText(GetString("MinerTeleButtonText"));
-                        break;
                     case CustomRoles.Pestilence:
                         __instance.KillButton.OverrideText(GetString("KillButtonText"));
                         break;
@@ -161,25 +158,6 @@ class HudManagerPatch
                     case CustomRoles.Pursuer:
                         __instance.KillButton.OverrideText(GetString("PursuerButtonText"));
                         break;
-                    case CustomRoles.SerialKiller:
-                    case CustomRoles.Juggernaut:
-                    case CustomRoles.Pyromaniac:
-                    case CustomRoles.Jackal:
-                    case CustomRoles.Virus:
-                    case CustomRoles.BloodKnight:
-                    case CustomRoles.Knight:
-                    case CustomRoles.Parasite:
-                    case CustomRoles.Refugee:
-                    case CustomRoles.Huntsman:
-                    case CustomRoles.Traitor:
-                    case CustomRoles.PotionMaster:
-                    case CustomRoles.Werewolf:
-                    case CustomRoles.Spiritcaller:
-                    case CustomRoles.Necromancer:
-                    case CustomRoles.DarkHide:
-                    case CustomRoles.Maverick:
-                        __instance.KillButton.OverrideText(GetString("KillButtonText"));
-                        break;
                     case CustomRoles.Glitch:
                         __instance.KillButton.OverrideText(GetString("KillButtonText"));
                         __instance.SabotageButton.OverrideText(GetString("MimicButtonText"));
@@ -190,15 +168,6 @@ class HudManagerPatch
                     case CustomRoles.Gamer:
                         __instance.KillButton.OverrideText(GetString("GamerButtonText"));
                         break;
-                    case CustomRoles.Lightning:
-                        __instance.KillButton.OverrideText(GetString("LightningButtonText"));
-                        break;
-                    case CustomRoles.Bomber:
-                    case CustomRoles.Nuker:
-                        __instance.AbilityButton.OverrideText(GetString("BomberShapeshiftText"));
-                        break;
-                    case CustomRoles.Kamikaze:
-                        break;
                     case CustomRoles.Twister:
                         __instance.AbilityButton.OverrideText(GetString("TwisterButtonText"));
                         break;
@@ -208,12 +177,6 @@ class HudManagerPatch
                         break;
                     case CustomRoles.Provocateur:
                         __instance.KillButton.OverrideText(GetString("ProvocateurButtonText"));
-                        break;
-                    case CustomRoles.Ninja:
-                        Ninja.SetAbilityButtonText(__instance, player.PlayerId);
-                        break;
-                    case CustomRoles.Cleaner:
-                        __instance.ReportButton.OverrideText(GetString("CleanerReportButtonText"));
                         break;
                     case CustomRoles.Medusa:
                         __instance.KillButton.OverrideText(GetString("KillButtonText"));
@@ -228,9 +191,6 @@ class HudManagerPatch
                     case CustomRoles.Wraith:
                         __instance.KillButton.OverrideText(GetString("KillButtonText"));
                         __instance.ImpostorVentButton.OverrideText(GetString(Wraith.IsInvis(PlayerControl.LocalPlayer.PlayerId) ? "WraithRevertVentButtonText" : "WraithVentButtonText"));
-                        break;
-                    case CustomRoles.Alchemist:
-                        __instance.AbilityButton.OverrideText(GetString("AlchemistVentButtonText"));
                         break;
                     case CustomRoles.Mario:
                         __instance.AbilityButton.buttonLabelText.text = GetString("VectorVentButtonText");
@@ -267,30 +227,9 @@ class HudManagerPatch
                     case CustomRoles.Imitator:
                         __instance.KillButton.OverrideText(GetString("ImitatorKillButtonText"));
                         break;
-                    case CustomRoles.Monarch:
-                        __instance.KillButton.OverrideText(GetString("MonarchKillButtonText"));
-                        break;
-                    case CustomRoles.Investigator:
-                        __instance.KillButton.OverrideText(GetString("InvestigatorButtonText"));
-                        break;
                     case CustomRoles.Sidekick:
                         __instance.KillButton.OverrideText(GetString("KillButtonText"));
                         __instance.SabotageButton.OverrideText(GetString("SabotageButtonText"));
-                        break;
-                    case CustomRoles.Addict:
-                        __instance.AbilityButton.OverrideText(GetString("AddictVentButtonText"));
-                        break;
-                    case CustomRoles.Dazzler:
-                        __instance.AbilityButton.OverrideText(GetString("DazzleButtonText"));
-                        break;
-                    case CustomRoles.Deathpact:
-                        __instance.AbilityButton.OverrideText(GetString("DeathpactButtonText"));
-                        break;
-                    case CustomRoles.Devourer:
-                        __instance.AbilityButton.OverrideText(GetString("DevourerButtonText"));
-                        break;
-                    case CustomRoles.ChiefOfPolice:
-                        __instance.KillButton.OverrideText(GetString("ChiefOfPoliceKillButtonText"));
                         break;
                     case CustomRoles.Quizmaster:
                         __instance.KillButton.OverrideText(GetString("QuizmasterKillButtonText"));

@@ -135,4 +135,9 @@ internal class Addict : RoleBase
             addict.MarkDirtySettings();
         }, FreezeTimeAfterImmortal.GetFloat(), "AddictGetDown");
     }
+
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.AbilityButton.OverrideText(Translator.GetString("AddictVentButtonText"));
+    }
 }

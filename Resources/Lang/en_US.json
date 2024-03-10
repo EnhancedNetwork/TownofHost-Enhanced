@@ -1762,7 +1762,7 @@
   "EraserHideVote": "Hide Eraser Votes",
   "NinjaMarkCooldown": "Mark Cooldown",
   "NinjaAssassinateCooldown": "Ass​assinate Cooldown",
-  "NinjaCanKillAfterAssassinate": "Can kill after Assas​sinating",
+  "NinjaCanKillAfterAssassinate": "Can kill while shapeshift",
   "JudgeTryHideMsg": "Hide <color=#f8d85a>Judge</color>'s commands",
   "TrialLimitPerMeeting": "Max Trials per Meeting",
   "JudgeCanTrialMadmate": "Can trial <color=#ff1919>Madmates</color>",

@@ -110,4 +110,9 @@ public static class ChiefOfPolice
     {
         return pc != null && (pc.GetCustomRole().IsCrewmate() && pc.CanUseKillButton()) || pc.GetCustomRole().IsNeutral() && pc.CanUseKillButton() && CanImpostorAndNeutarl.GetBool()|| pc.GetCustomRole().IsImpostor() && CanImpostorAndNeutarl.GetBool();
     }
+
+    public static void SetAbilityButtonText(HudManager hud/*, byte playerId*/)
+    {
+        hud.KillButton.OverrideText(GetString("ChiefOfPoliceKillButtonText"));
+    }
 }

@@ -220,7 +220,6 @@ internal class ChangeRoleSettings
             Taskinator.Init();
             QuickShooter.Init();
             Aware.Init();
-            Ninja.Init();
             Juggernaut.Init();
             Sleuth.Init();
             Glitch.Init();
@@ -261,7 +260,6 @@ internal class ChangeRoleSettings
             PlagueDoctor.Init();
             Penguin.Init();
             Wildling.Init();
-            Morphling.Init();
             Spiritcaller.Init();
             PlagueBearer.Init();
             Doomsayer.Init();
@@ -636,9 +634,6 @@ internal class SelectRolesPatch
                         Main.JinxSpellCount[pc.PlayerId] = Jinx.JinxSpellTimes.GetInt();
                         Jinx.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Ninja:
-                        Ninja.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Juggernaut:
                         Juggernaut.Add(pc.PlayerId);
                         break;
@@ -710,9 +705,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Maverick:
                         Maverick.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Morphling:
-                        Morphling.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Vulture:
                         Vulture.Add(pc.PlayerId);

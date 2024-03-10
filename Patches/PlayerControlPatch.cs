@@ -377,9 +377,6 @@ class CheckMurderPatch
                     }
                     if (Main.isCurseAndKill[killer.PlayerId]) killer.RpcGuardAndKill(target);
                     return false;
-                case CustomRoles.Ninja:
-                    if (!Ninja.OnCheckMurder(killer, target)) return false;
-                    break;
                 case CustomRoles.Witch:
                     if (!Witch.OnCheckMurder(killer, target)) return false;
                     break;
@@ -1308,21 +1305,6 @@ public static class CheckShapeShiftPatch
                 shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 return false;
 
-            case CustomRoles.Miner:
-                shapeshifter.RejectShapeshiftAndReset();
-                if (Main.LastEnteredVent.ContainsKey(shapeshifter.PlayerId))
-                {
-                    var lastVentPosition = Main.LastEnteredVentLocation[shapeshifter.PlayerId];
-                    Logger.Info($"Miner - {shapeshifter.GetNameWithRole()}:{lastVentPosition}", "MinerTeleport");
-                    shapeshifter.RpcTeleport(lastVentPosition);
-                    shapeshifter.RPCPlayCustomSound("Teleport");
-                }
-                return false;
-
-            case CustomRoles.Ninja:
-                Ninja.OnShapeshift(shapeshifter, shapeshifting, shapeshiftIsHidden: shapeshiftIsHidden);
-                return false;
-
             case CustomRoles.QuickShooter:
                 QuickShooter.OnShapeshift(shapeshifter, shapeshifting);
                 shapeshifter.RejectShapeshiftAndReset();
@@ -1445,18 +1427,6 @@ class ShapeshiftPatch
                         }
                         Main.CursedPlayers[shapeshifter.PlayerId] = null;
                     }
-                    break;
-                case CustomRoles.Miner:
-                    if (shapeshifting && Main.LastEnteredVent.ContainsKey(shapeshifter.PlayerId))
-                    {
-                        var lastVentPosition = Main.LastEnteredVentLocation[shapeshifter.PlayerId];
-                        Logger.Info($"Miner - {shapeshifter.GetNameWithRole()}:{lastVentPosition}", "MinerTeleport");
-                        shapeshifter.RpcTeleport(lastVentPosition);
-                        shapeshifter.RPCPlayCustomSound("Teleport");
-                    }
-                    break;
-                case CustomRoles.Ninja:
-                    Ninja.OnShapeshift(shapeshifter, shapeshifting);
                     break;
                 case CustomRoles.QuickShooter:
                     QuickShooter.OnShapeshift(shapeshifter, shapeshifting);

@@ -63,14 +63,6 @@ public static class HudSpritePatch
 
         switch (player.GetCustomRole())
         {
-            case CustomRoles.Ninja:
-                if (!shapeshifting)
-                {
-                    newKillButton = CustomButton.Get("Mark");
-                    if (Ninja.MarkedPlayer.ContainsKey(player.PlayerId))
-                        newAbilityButton = CustomButton.Get("Assassinate");
-                }
-                break;
             case CustomRoles.Arsonist:
                 newKillButton = CustomButton.Get("Douse");
                 if (player.IsDouseDone() || (Options.ArsonistCanIgniteAnytime.GetBool() && Utils.GetDousedPlayerCount(player.PlayerId).Item1 >= Options.ArsonistMinPlayersToIgnite.GetInt())) newVentButton = CustomButton.Get("Ignite");

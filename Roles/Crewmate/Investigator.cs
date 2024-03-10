@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
+using System.Transactions;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -165,4 +166,9 @@ internal class Investigator : RoleBase
         SendRPC(1);
     }
     public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(MaxInvestigateLimit[playerId] >= 1 ? Utils.GetRoleColor(CustomRoles.Investigator).ShadeColor(0.25f) : Color.gray, $"({MaxInvestigateLimit[playerId]})");
+
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.KillButton.OverrideText(Translator.GetString("InvestigatorButtonText")); ;
+    }
 }

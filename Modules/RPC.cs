@@ -1095,9 +1095,6 @@ internal static class RPC
                 Main.JinxSpellCount[targetId] = Jinx.JinxSpellTimes.GetInt();
                 Jinx.Add(targetId);
                 break;
-            case CustomRoles.Ninja:
-                Ninja.Add(targetId);
-                break;
             case CustomRoles.Juggernaut:
                 Juggernaut.Add(targetId);
                 break;
@@ -1181,9 +1178,6 @@ internal static class RPC
                 break;
             case CustomRoles.Wildling:
                 Wildling.Add(targetId);
-                break;
-            case CustomRoles.Morphling:
-                Morphling.Add(targetId);
                 break;
             case CustomRoles.Spiritcaller:
                 Spiritcaller.Add(targetId);

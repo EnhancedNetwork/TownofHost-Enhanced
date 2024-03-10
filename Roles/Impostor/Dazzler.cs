@@ -85,4 +85,9 @@ internal class Dazzler : RoleBase
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, CauseVision.GetFloat());
         }
     }
+
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.AbilityButton.OverrideText(GetString("DazzleButtonText"));
+    }
 }
