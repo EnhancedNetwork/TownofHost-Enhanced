@@ -223,7 +223,7 @@ public static class CustomRoleManager
         //CustomRoles.Maverick => new Maverick(),
         //CustomRoles.Medusa => new Medusa(),
         //CustomRoles.Mycologist => new Mycologist(),
-        //CustomRoles.Necromancer => new Necromancer(),
+        CustomRoles.Necromancer => new Necromancer(),
         //CustomRoles.Opportunist => new Opportunist(),
         //CustomRoles.Pelican => new Pelican(),
         //CustomRoles.Perceiver => new Perceiver(),

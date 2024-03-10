@@ -174,9 +174,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Pestilence:
                 opt.SetVision(PlagueBearer.PestilenceHasImpostorVision.GetBool());
                 break;
-            case CustomRoles.Pelican:
-                Pelican.ApplyGameOptions(opt);
-                break;
             case CustomRoles.Refugee:
         //    case CustomRoles.Minion:
                 opt.SetVision(true);
@@ -241,9 +238,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Werewolf:
                 Werewolf.ApplyGameOptions(opt);
                 break;
-            case CustomRoles.Necromancer:
-                Necromancer.ApplyGameOptions(opt);
-                break;
             case CustomRoles.Morphling:
                 Morphling.ApplyGameOptions();
                 break;
@@ -256,17 +250,8 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Maverick:
                 Maverick.ApplyGameOptions(opt);
                 break;
-            case CustomRoles.Medusa:
-                Medusa.ApplyGameOptions(opt);
-                break;
             case CustomRoles.PotionMaster:
                 PotionMaster.ApplyGameOptions(opt);
-                break;
-            case CustomRoles.Pickpocket:
-                Pickpocket.ApplyGameOptions(opt);
-                break;
-            case CustomRoles.Juggernaut:
-                opt.SetVision(Juggernaut.HasImpostorVision.GetBool());
                 break;
             case CustomRoles.Jester:
                 AURoleOptions.EngineerCooldown = 0f;

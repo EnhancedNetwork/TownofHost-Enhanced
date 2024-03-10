@@ -427,7 +427,6 @@ public static class CustomRolesHelper
             CustomRoles.Hater or
             CustomRoles.Workaholic or
             CustomRoles.Solsticer or
-        //    CustomRoles.Pelican or
             CustomRoles.Collector or
             CustomRoles.Sunnyboy or
             CustomRoles.Arsonist or

@@ -281,9 +281,6 @@ class CheckMurderPatch
         if (Pursuer.IsEnable && Pursuer.OnClientMurder(killer))
             return false;
 
-        if (targetRole.Is(CustomRoles.Necromancer) && !Necromancer.OnKillAttempt(killer, target))
-            return false;
-
         if (Alchemist.IsProtected && targetRole.Is(CustomRoles.Alchemist))
         {
             killer.SetKillCooldown(time: 5f);
@@ -411,9 +408,6 @@ class CheckMurderPatch
                 case CustomRoles.Mastermind:
                     if (!Mastermind.OnCheckMurder(killer, target)) return false;
                     break;
-                case CustomRoles.Necromancer:
-                    if (!Necromancer.OnCheckMurder(killer, target)) return false;
-                    break;
                 case CustomRoles.Shroud:
                     if (!Shroud.OnCheckMurder(killer, target)) return false;
                     break;
@@ -423,9 +417,6 @@ class CheckMurderPatch
                     break;
                 case CustomRoles.QuickShooter:
                     QuickShooter.QuickShooterKill(killer);
-                    break;
-                case CustomRoles.Juggernaut:
-                    Juggernaut.OnCheckMurder(killer);
                     break;
                 case CustomRoles.Penguin:
                     if (!Penguin.OnCheckMurderAsKiller(killer, target)) return false;
@@ -463,21 +454,6 @@ class CheckMurderPatch
                     return false;
                 case CustomRoles.Innocent:
                     target.RpcMurderPlayerV3(killer);
-                    return false;
-                case CustomRoles.Pelican:
-                    if (Pelican.CanEat(killer, target.PlayerId))
-                    {
-                        Pelican.EatPlayer(killer, target);
-                        if (!Options.DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(killer);
-                        killer.SetKillCooldown();
-                        killer.RPCPlayCustomSound("Eat");
-                        target.RPCPlayCustomSound("Eat");
-                    }
-                    else
-                    {
-                        killer.SetKillCooldown();
-                        killer.Notify(GetString("Pelican.TargetCannotBeEaten"));
-                    }
                     return false;
                 case CustomRoles.Hater:
                     if (!Hater.OnCheckMurder(killer, target)) return false;
@@ -942,9 +918,6 @@ class MurderPlayerPatch
         if (Quizmaster.IsEnable)
             Quizmaster.OnPlayerDead(target);
 
-        if (Pelican.IsEnable && target.Is(CustomRoles.Pelican))
-            Pelican.OnPelicanDied(target.PlayerId);
-
         if (Sniper.IsEnable)
         {
             if (Sniper.TryGetSniper(target.PlayerId, ref killer))
@@ -1024,8 +997,6 @@ class MurderPlayerPatch
         if (killer.Is(CustomRoles.TicketsStealer) && killer.PlayerId != target.PlayerId)
             killer.Notify(string.Format(GetString("TicketsStealerGetTicket"), ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId) + 1) * Stealer.TicketsPerKill.GetFloat()).ToString("0.0#####")));
 
-        if (killer.Is(CustomRoles.Pickpocket) && killer.PlayerId != target.PlayerId)
-            killer.Notify(string.Format(GetString("PickpocketGetVote"), ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId) + 1) * Pickpocket.VotesPerKill.GetFloat()).ToString("0.0#####")));
 
         if (target.Is(CustomRoles.Avanger))
         {
@@ -1517,13 +1488,18 @@ class ReportDeadBodyPatch
                     if (Options.DisableReportWhenCC.GetBool() && Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive) return false;
                 }
 
+                //Check unreportable bodies
+                if (Main.UnreportableBodies.Contains(target.PlayerId))
+                {
+                    __instance.Notify(Utils.ColorString(__instance.GetRoleColor(), GetString("BodyCannotBeReported")));
+                    return false;
+                }
+
                 if (target.Object.Is(CustomRoles.Unreportable)) return false;
                 if (killerRole == CustomRoles.Scavenger) return false;
 
                 // Vulture was eat body
                 if (Vulture.UnreportablePlayers.Contains(target.PlayerId)) return false;
-                //Medusa bodies can not be reported
-                if (Main.MedusaBodies.Contains(target.PlayerId)) return false;
 
 
                 if (__instance.Is(CustomRoles.Vulture))
@@ -1554,16 +1530,6 @@ class ReportDeadBodyPatch
                     }
                 }
 
-                if (__instance.Is(CustomRoles.Medusa))
-                {
-                    Main.MedusaBodies.Remove(target.PlayerId);
-                    Main.MedusaBodies.Add(target.PlayerId);
-                    __instance.Notify(GetString("MedusaStoneBody"));
-                    //      __instance.ResetKillCooldown();
-                    __instance.SetKillCooldownV3(Medusa.KillCooldownAfterStoneGazing.GetFloat(), forceAnime: true);
-                    Logger.Info($"{__instance.GetRealName()} stoned {target.PlayerName} body", "Medusa");
-                    return false;
-                }
 
                 // 胆小鬼不敢报告
                 var tpc = Utils.GetPlayerById(target.PlayerId);
@@ -1785,8 +1751,8 @@ class ReportDeadBodyPatch
 
                     if (tar.Is(CustomRoles.Juggernaut))
                     {
-                        Juggernaut.Add(__instance.PlayerId);
                         __instance.RpcSetCustomRole(CustomRoles.Juggernaut);
+                        __instance.GetRoleClass()?.Add(__instance.PlayerId);
                         __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                         tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                     }
@@ -1903,7 +1869,6 @@ class ReportDeadBodyPatch
         if (Vampiress.IsEnable) Vampiress.OnStartMeeting();
         if (Vulture.IsEnable) Vulture.Clear();
         if (Penguin.IsEnable) Penguin.OnReportDeadBody(); 
-        if (Pelican.IsEnable) Pelican.OnReportDeadBody();
         if (QuickShooter.IsEnable) QuickShooter.OnReportDeadBody();
         if (PlagueDoctor.IsEnable) PlagueDoctor.OnReportDeadBody();
         if (Doomsayer.IsEnable) Doomsayer.OnReportDeadBody();
@@ -2356,10 +2321,6 @@ class FixedUpdateInNormalGamePatch
 
                         case CustomRoles.Mastermind:
                             Mastermind.OnFixedUpdate();
-                            break;
-
-                        case CustomRoles.Pelican:
-                            Pelican.OnFixedUpdate();
                             break;
 
                         case CustomRoles.Mario:

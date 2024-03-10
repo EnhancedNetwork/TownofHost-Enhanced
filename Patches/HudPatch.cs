@@ -88,6 +88,8 @@ class HudManagerPatch
             if (player.IsAlive())
             {
                 __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
+                __instance.KillButton.OverrideText(GetString("KillButtonText"));
+
                 player.GetRoleClass()?.SetAbilityButtonText(__instance, player.PlayerId);
 
                 switch (player.GetCustomRole())
@@ -151,30 +153,8 @@ class HudManagerPatch
                     case CustomRoles.Innocent:
                         __instance.KillButton.OverrideText(GetString("InnocentButtonText"));
                         break;
-                    case CustomRoles.Pelican:
-                        __instance.KillButton.OverrideText(GetString("PelicanButtonText"));
-                        break;
                     case CustomRoles.Pursuer:
                         __instance.KillButton.OverrideText(GetString("PursuerButtonText"));
-                        break;
-                    case CustomRoles.SerialKiller:
-                    case CustomRoles.Juggernaut:
-                    case CustomRoles.Pyromaniac:
-                    case CustomRoles.Jackal:
-                    case CustomRoles.Virus:
-                    case CustomRoles.BloodKnight:
-                    case CustomRoles.Knight:
-                    case CustomRoles.Parasite:
-                    case CustomRoles.Refugee:
-                    case CustomRoles.Huntsman:
-                    case CustomRoles.Traitor:
-                    case CustomRoles.PotionMaster:
-                    case CustomRoles.Werewolf:
-                    case CustomRoles.Spiritcaller:
-                    case CustomRoles.Necromancer:
-                    case CustomRoles.DarkHide:
-                    case CustomRoles.Maverick:
-                        __instance.KillButton.OverrideText(GetString("KillButtonText"));
                         break;
                     case CustomRoles.Hater:
                         __instance.KillButton.OverrideText(GetString("HaterButtonText"));
@@ -203,10 +183,6 @@ class HudManagerPatch
                         break;
                     case CustomRoles.Cleaner:
                         __instance.ReportButton.OverrideText(GetString("CleanerReportButtonText"));
-                        break;
-                    case CustomRoles.Medusa:
-                        __instance.KillButton.OverrideText(GetString("KillButtonText"));
-                        __instance.ReportButton.OverrideText(GetString("MedusaReportButtonText"));
                         break;
                     case CustomRoles.Vulture:
                         __instance.ReportButton.OverrideText(GetString("VultureEatButtonText"));
@@ -448,7 +424,6 @@ class SetHudActivePatch
             case CustomRoles.Monarch:
             case CustomRoles.Shroud:
             case CustomRoles.Innocent:
-            case CustomRoles.Pelican:
             case CustomRoles.Revolutionist:
             case CustomRoles.Hater:
             case CustomRoles.DarkHide:

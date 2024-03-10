@@ -470,24 +470,19 @@ static class ExtendedPlayerControl
             CustomRoles.Shaman => pc.IsAlive(),
             CustomRoles.Underdog => playerCount <= Options.UnderdogMaximumPlayersNeededToKill.GetInt(),
             CustomRoles.Sniper => Sniper.CanUseKillButton(pc),
-            CustomRoles.Pelican => pc.IsAlive(),
             CustomRoles.Mastermind => pc.IsAlive(),
             CustomRoles.Revolutionist => !pc.IsDrawDone(),
             CustomRoles.Pyromaniac => pc.IsAlive(),
             CustomRoles.PlagueDoctor => pc.IsAlive() && PlagueDoctor.CanUseKillButton(),
             CustomRoles.Knight => pc.IsAlive(),
             CustomRoles.Sidekick => pc.IsAlive(),
-            CustomRoles.Necromancer => pc.IsAlive(),
             //CustomRoles.Occultist => pc.IsAlive(),
             CustomRoles.Poisoner => pc.IsAlive(),
-            CustomRoles.Juggernaut => pc.IsAlive(),
             CustomRoles.Reverie => pc.IsAlive(),
             CustomRoles.PotionMaster => pc.IsAlive(),
             CustomRoles.SerialKiller => pc.IsAlive(),
             CustomRoles.Werewolf => pc.IsAlive(),
-            CustomRoles.Medusa => pc.IsAlive(),
             CustomRoles.Traitor => pc.IsAlive(),
-            CustomRoles.Pickpocket => pc.IsAlive(),
             CustomRoles.Maverick => pc.IsAlive(),
             CustomRoles.Parasite => pc.IsAlive(),
             CustomRoles.Refugee => pc.IsAlive(),
@@ -586,17 +581,12 @@ static class ExtendedPlayerControl
             CustomRoles.SerialKiller => SerialKiller.CanVent.GetBool(),
             CustomRoles.Werewolf => Werewolf.CanVent.GetBool(),
             CustomRoles.Pestilence => PlagueBearer.PestilenceCanVent.GetBool(),
-            CustomRoles.Medusa => Medusa.CanVent.GetBool(),
             CustomRoles.Traitor => Traitor.CanVent.GetBool(),
-            CustomRoles.Necromancer => Necromancer.CanVent.GetBool(),
             CustomRoles.Shroud => Shroud.CanVent.GetBool(),
             CustomRoles.Maverick => Maverick.CanVent.GetBool(),
-            CustomRoles.Pelican => Pelican.CanVent.GetBool(),
-            CustomRoles.Juggernaut => Juggernaut.CanVent.GetBool(),
             CustomRoles.Doppelganger => Doppelganger.CanVent.GetBool(),
             CustomRoles.PotionMaster => PotionMaster.CanVent.GetBool(),
             CustomRoles.Virus => Virus.CanVent.GetBool(),
-            CustomRoles.Pickpocket => Pickpocket.CanVent.GetBool(),
             //CustomRoles.Occultist => true,
             CustomRoles.Wraith => true,
             CustomRoles.Pyromaniac => Pyromaniac.CanVent.GetBool(),
@@ -709,9 +699,6 @@ static class ExtendedPlayerControl
             case CustomRoles.Pyromaniac:
                 Pyromaniac.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.Pickpocket:
-                Pickpocket.SetKillCooldown(player.PlayerId);
-                break;
             case CustomRoles.Mastermind:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Mastermind.KillCooldown.GetFloat();
                 break;
@@ -754,9 +741,6 @@ static class ExtendedPlayerControl
             case CustomRoles.Werewolf:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Werewolf.KillCooldown.GetFloat();
                 break;
-            case CustomRoles.Necromancer:
-                Necromancer.SetKillCooldown(player.PlayerId);
-                break;
             case CustomRoles.Traitor:
                 Traitor.SetKillCooldown(player.PlayerId);
                 break;
@@ -779,17 +763,11 @@ static class ExtendedPlayerControl
             case CustomRoles.Scavenger:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.ScavengerKillCooldown.GetFloat();
                 break;
-            case CustomRoles.Pelican:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Pelican.KillCooldown.GetFloat();
-                break;
             case CustomRoles.Pursuer:
                 Pursuer.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Hater:
                 Main.AllPlayerKillCooldown[player.PlayerId] = 1f;
-                break;
-            case CustomRoles.Medusa:
-                Medusa.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Ludopath:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.LudopathRandomKillCD.GetFloat();
@@ -811,9 +789,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Vampiress:
                 Vampiress.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Juggernaut:
-                Juggernaut.SetKillCooldown(player.PlayerId);
                 break;
             //FFA
             case CustomRoles.Killer:

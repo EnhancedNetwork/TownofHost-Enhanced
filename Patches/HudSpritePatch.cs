@@ -93,9 +93,6 @@ public static class HudSpritePatch
             case CustomRoles.Witness:
                 newKillButton = CustomButton.Get("Examine");
                 break;
-            case CustomRoles.Pelican:
-                newKillButton = CustomButton.Get("Vulture");
-                break;
             case CustomRoles.CursedSoul:
                 newKillButton = CustomButton.Get("Soul");
                 break;

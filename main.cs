@@ -152,7 +152,7 @@ public class Main : BasePlugin
     public static Dictionary<int, int> SayBanwordsTimes = [];
     public static Dictionary<byte, float> AllPlayerSpeed = [];
     public const float MinSpeed = 0.0001f;
-    public static List<byte> MedusaBodies = [];
+    public static HashSet<byte> UnreportableBodies = [];
     public static List<byte> InfectedBodies = [];
     public static Dictionary<byte, (byte, float)> BitPlayers = [];
     public static Dictionary<byte, float> WarlockTimer = [];
@@ -201,15 +201,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, CustomRoles> ErasedRoleStorage = [];
     public static Dictionary<string, int> PlayerQuitTimes = [];
 
-    
-
-    //public static IEnumerable<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null);
-    //public static IEnumerable<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId));
-
-    //public static List<PlayerControl> AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null).ToList();
-    //public static List<PlayerControl> AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId)).ToList();
-
-    // Seems this better (if use foreach)
     public static PlayerControl[] AllPlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null).ToArray();
     public static PlayerControl[] AllAlivePlayerControls => PlayerControl.AllPlayerControls.ToArray().Where(p => p != null && p.IsAlive() && !p.Data.Disconnected && !Pelican.IsEaten(p.PlayerId)).ToArray();
 

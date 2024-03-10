@@ -30,7 +30,7 @@ internal class Infectious : RoleBase
     private static OptionItem HasImpostorVision;
     private static OptionItem CanVent;
     private static OptionItem DoubleClickKill;
-    private static OptionItem HideBittenRolesOnEject;
+    // private static OptionItem HideBittenRolesOnEject;
     
 
     public static void SetupCustomOption()
@@ -162,12 +162,15 @@ internal class Infectious : RoleBase
         return false;
     }
     public override string GetProgressText(byte playerid, bool cooms) => Utils.ColorString(BiteLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Infectious).ShadeColor(0.25f) : Color.gray, $"({BiteLimit})");
-    private static bool CanBeBitten(PlayerControl pc)
+    public static bool CanBeBitten(PlayerControl pc)
     {
-        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNK()) && !pc.Is(CustomRoles.Infected) && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Succubus) && !pc.Is(CustomRoles.Infectious) && !pc.Is(CustomRoles.Virus)
-        && !(
-            false
-            );
+        return pc != null && (pc.GetCustomRole().IsCrewmate() 
+            || pc.GetCustomRole().IsImpostor() 
+            || pc.GetCustomRole().IsNK()) && !pc.Is(CustomRoles.Infected) 
+            && !pc.Is(CustomRoles.Admired) 
+            && !pc.Is(CustomRoles.Loyal) 
+            && !pc.Is(CustomRoles.Succubus) 
+            && !pc.Is(CustomRoles.Infectious) && !pc.Is(CustomRoles.Virus);
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {

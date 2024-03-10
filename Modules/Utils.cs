@@ -760,9 +760,6 @@ public static class Utils
                 case CustomRoles.QuickShooter:
                     ProgressText.Append(QuickShooter.GetShotLimit(playerId));
                     break;
-                case CustomRoles.Pelican:
-                    ProgressText.Append(Pelican.GetProgressText(playerId));
-                    break;
                 case CustomRoles.Pursuer:
                     ProgressText.Append(Pursuer.GetSeelLimit(playerId));
                     break;
@@ -1911,7 +1908,7 @@ public static class Utils
                         break;
                 }
 
-                if (Pelican.IsEnable && Pelican.IsEaten(seer.PlayerId))
+                if (Pelican.HasEnabled && Pelican.IsEaten(seer.PlayerId))
                     SelfName = $"{ColorString(GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"))}";
 
                 if (CustomRoles.Deathpact.IsClassEnable() && Deathpact.IsInActiveDeathpact(seer))
@@ -2301,9 +2298,6 @@ public static class Utils
                 break;
             case CustomRoles.Romantic:
                 Romantic.isRomanticAlive = false;
-                break;
-            case CustomRoles.Pelican:
-                Pelican.OnPelicanDied(target.PlayerId);
                 break;
             case CustomRoles.Devourer:
                 Devourer.OnDevourerDied(target.PlayerId);

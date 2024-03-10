@@ -1022,9 +1022,6 @@ internal static class RPC
             case CustomRoles.PlagueDoctor:
                 PlagueDoctor.Add(targetId);
                 break;
-            case CustomRoles.Pickpocket:
-                Pickpocket.Add(targetId);
-                break;
             case CustomRoles.SoulCollector:
                 SoulCollector.Add(targetId);
                 break;
@@ -1034,12 +1031,6 @@ internal static class RPC
             case CustomRoles.QuickShooter:
                 QuickShooter.Add(targetId);
                 break;
-            case CustomRoles.Medusa:
-                Medusa.Add(targetId);
-                break;
-            case CustomRoles.Necromancer:
-                Necromancer.Add(targetId);
-                break;
             case CustomRoles.LastImpostor:
                 LastImpostor.Add(targetId);
                 break;
@@ -1048,9 +1039,6 @@ internal static class RPC
                 break;
             case CustomRoles.Workhorse:
                 Workhorse.Add(targetId);
-                break;
-            case CustomRoles.Pelican:
-                Pelican.Add(targetId);
                 break;
             case CustomRoles.Pursuer:
                 Pursuer.Add(targetId);
@@ -1075,9 +1063,6 @@ internal static class RPC
                 break;
             case CustomRoles.Ninja:
                 Ninja.Add(targetId);
-                break;
-            case CustomRoles.Juggernaut:
-                Juggernaut.Add(targetId);
                 break;
             case CustomRoles.Hawk:
                 Hawk.Add(targetId);

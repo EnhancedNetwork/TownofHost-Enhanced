@@ -68,7 +68,7 @@ internal class ChangeRoleSettings
             Main.ForCrusade = [];
             Main.WorkaholicAlive = [];
             Main.TasklessCrewmate = [];
-            Main.MedusaBodies = [];
+            Main.UnreportableBodies = [];
             Main.InfectedBodies = [];
             Main.VirusNotify = [];
             Main.ErasedRoleStorage = [];
@@ -206,7 +206,6 @@ internal class ChangeRoleSettings
             LocateArrow.Init();
             DoubleTrigger.Init();
             Workhorse.Init();
-            Pelican.Init();
             Pursuer.Init();
             Diseased.Init();
             Lightning.Init();
@@ -218,10 +217,8 @@ internal class ChangeRoleSettings
             Kamikaze.Init();
             Aware.Init();
             Ninja.Init();
-            Juggernaut.Init();
             Sleuth.Init();
             Bait.Init();
-            Pickpocket.Init();
             Swooper.Init();
             Hawk.Init();
             Bloodmoon.Init();
@@ -237,7 +234,6 @@ internal class ChangeRoleSettings
             Admirer.Init();
             Antidote.Init();
             Imitator.Init();
-            Medusa.Init();
             Amnesiac.Init();
             Fool.Init();
             Virus.Init();
@@ -265,7 +261,6 @@ internal class ChangeRoleSettings
             Shroud.Init();
             Werewolf.Init();
             Bewilder.Init();
-            Necromancer.Init();
             Pitfall.Init();
             ChiefOfPolice.Init();
             Cyber.Init();
@@ -547,9 +542,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Vampiress:
                         Vampiress.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Pickpocket:
-                        Pickpocket.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Arsonist:
                         foreach (var ar in Main.AllPlayerControls)
                             Main.isDoused.Add((pc.PlayerId, ar.PlayerId), false);
@@ -560,12 +552,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Executioner:
                         Executioner.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Medusa:
-                        Medusa.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Necromancer:
-                        Necromancer.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Lawyer:
                         Lawyer.Add(pc.PlayerId);
@@ -594,9 +580,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Mario:
                         Main.MarioVentCount[pc.PlayerId] = 0;
                         break;
-                    case CustomRoles.Pelican:
-                        Pelican.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Pursuer:
                         Pursuer.Add(pc.PlayerId);
                         break;
@@ -620,9 +603,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Ninja:
                         Ninja.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Juggernaut:
-                        Juggernaut.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Swooper:
                         Swooper.Add(pc.PlayerId);

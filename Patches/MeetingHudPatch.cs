@@ -768,10 +768,6 @@ static class ExtendedMeetingHud
                 {
                     VoteNum += (int)(Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == ps.TargetPlayerId) * Stealer.TicketsPerKill.GetFloat());
                 }
-                if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Pickpocket))
-                {
-                    VoteNum += (int)(Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == ps.TargetPlayerId) * Pickpocket.VotesPerKill.GetFloat());
-                }
 
                 // 主动叛变模式下自票无效
                 if (ps.TargetPlayerId == ps.VotedFor && Madmate.MadmateSpawnMode.GetInt() == 2) VoteNum = 0;
@@ -1141,11 +1137,6 @@ class MeetingHudStartPatch
                 case CustomRoles.Councillor:
                     if (!seer.Data.IsDead && !target.Data.IsDead)
                         pva.NameText.text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Councillor), target.PlayerId.ToString()) + " " + pva.NameText.text;
-
-                    break;
-
-                case CustomRoles.Demon:
-                    sb.Append(Snitch.GetWarningMark(seer, target));
                     break;
 
                 case CustomRoles.Quizmaster:

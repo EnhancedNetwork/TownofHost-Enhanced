@@ -39,7 +39,7 @@ internal class Jackal : RoleBase
     public static OptionItem SidekickRecruitLimitOpt;
     public static OptionItem SidekickCountMode;
     public static OptionItem SidekickAssignMode;
-    public static OptionItem SidekickCanWinWithOriginalTeam;
+    // public static OptionItem SidekickCanWinWithOriginalTeam;
     public static OptionItem KillCooldownSK;
     public static OptionItem CanVentSK;
     public static OptionItem CanUseSabotageSK;
