@@ -222,7 +222,7 @@ class CheckMurderPatch
         }
 
         // Replacement process when the actual killer and the KILLER are different
-        if (Sniper.IsEnable)
+        if (Sniper.On)
         {
             Sniper.TryGetSniper(target.PlayerId, ref killer);
         }
@@ -963,12 +963,9 @@ class MurderPlayerPatch
         if (Pelican.IsEnable && target.Is(CustomRoles.Pelican))
             Pelican.OnPelicanDied(target.PlayerId);
 
-        if (Sniper.IsEnable)
+        if (Sniper.On && Sniper.TryGetSniper(target.PlayerId, ref killer))
         {
-            if (Sniper.TryGetSniper(target.PlayerId, ref killer))
-            {
-                Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Sniped;
-            }
+            Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Sniped;
         }
         if (killer != __instance)
         {
@@ -1210,11 +1207,6 @@ public static class CheckShapeShiftPatch
                 shapeshifter.RejectShapeshiftAndReset(false);
                 return false;
 
-            case CustomRoles.Sniper:
-                Sniper.OnShapeshift(shapeshifter, false, shapeshiftIsHidden: shapeshiftIsHidden);
-                shapeshifter.RejectShapeshiftAndReset();
-                return false;
-
             case CustomRoles.Warlock:
                 shapeshifter.RejectShapeshiftAndReset();
                 if (Main.CursedPlayers[shapeshifter.PlayerId] != null)
@@ -1329,9 +1321,6 @@ class ShapeshiftPatch
 
             switch (shapeshifter.GetCustomRole())
             {
-                case CustomRoles.Sniper:
-                    Sniper.OnShapeshift(shapeshifter, shapeshifting);
-                    break;
                 case CustomRoles.Undertaker:
                     Undertaker.OnShapeshift(shapeshifter, shapeshifting);
                     break;
@@ -1855,7 +1844,6 @@ class ReportDeadBodyPatch
 
         if (Huntsman.IsEnable) Huntsman.OnReportDeadBody();
         if (SoulCollector.IsEnable) SoulCollector.OnReportDeadBody();
-        if (Sniper.IsEnable) Sniper.OnReportDeadBody();
         if (Undertaker.IsEnable) Undertaker.OnReportDeadBody();
         if (Vampire.IsEnable) Vampire.OnStartMeeting();
         if (Poisoner.IsEnable) Poisoner.OnStartMeeting();
@@ -2006,8 +1994,7 @@ class FixedUpdateInNormalGamePatch
         // Only during the game
         if (GameStates.IsInGame)
         {
-            if (Sniper.IsEnable)
-                Sniper.OnFixedUpdate(player);
+            Sniper.OnFixedUpdateGlobal(player);
 
             if (!lowLoad)
             {
@@ -2589,9 +2576,6 @@ class FixedUpdateInNormalGamePatch
                         Mark.Append(Quizmaster.TargetMark(seer, target));
                         break;
                 }
-
-                if (Sniper.IsEnable && target.AmOwner)
-                    Mark.Append(Sniper.GetShotNotify(target.PlayerId));
 
                 if (target.Is(CustomRoles.Lovers) && seer.Is(CustomRoles.Lovers))
                 {

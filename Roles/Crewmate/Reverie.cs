@@ -76,6 +76,9 @@ internal class Reverie : RoleBase
         }
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = NowCooldown[id];
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => false;
+    public override bool CanUseSabotage(PlayerControl pc) => false;
+
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
     public override bool OnCheckMurderAsKiller(PlayerControl killer,PlayerControl target)
     {
@@ -94,11 +97,5 @@ internal class Reverie : RoleBase
             killer.RpcMurderPlayerV3(killer);
         }
         return true;
-    }
-    public override void SetAbilityButtonText(HudManager hud, byte id)
-    {
-        hud.SabotageButton.ToggleVisible(false);
-        hud.AbilityButton.ToggleVisible(false);
-        hud.ImpostorVentButton.ToggleVisible(false);
     }
 }

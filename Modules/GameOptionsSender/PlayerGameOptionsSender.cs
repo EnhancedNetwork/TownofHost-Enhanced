@@ -134,9 +134,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.ShapeshifterCooldown = Main.isCursed ? 1f : Options.DefaultKillCooldown;
                 AURoleOptions.ShapeshifterDuration = Options.WarlockShiftDuration.GetFloat();
                 break;
-            case CustomRoles.Sniper:
-                Sniper.ApplyGameOptions(player);
-                break;
             case CustomRoles.Pestilence:
                 opt.SetVision(PlagueBearer.PestilenceHasImpostorVision.GetBool());
                 break;

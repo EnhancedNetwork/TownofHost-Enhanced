@@ -740,10 +740,6 @@ public static class Utils
                 case CustomRoles.SchrodingersCat:
                     ProgressText.Append(SchrodingersCat.GetProgressText(playerId));
                     break;
-
-                case CustomRoles.Sniper:
-                    ProgressText.Append(Sniper.GetBulletCount(playerId));
-                    break;
                 case CustomRoles.TimeThief:
                     ProgressText.Append(TimeThief.GetProgressText(playerId));
                     break;
@@ -1805,9 +1801,6 @@ public static class Utils
 
                 if (Gamer.IsEnable)
                     SelfMark.Append(Gamer.TargetMark(seer, seer));
-
-                if (Sniper.IsEnable)
-                    SelfMark.Append(Sniper.GetShotNotify(seer.PlayerId));
 
                 if (Romantic.IsEnable)
                     SelfMark.Append(Romantic.SelfMark(seer));

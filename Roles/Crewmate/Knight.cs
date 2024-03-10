@@ -51,9 +51,9 @@ internal class Knight : RoleBase
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CheckCanUseVent(pc);
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = IsKilled(id) ? 300f : KillCooldown.GetFloat();
     public override string GetProgressText(byte id, bool comms) => Utils.ColorString(!IsKilled(id) ? Utils.GetRoleColor(CustomRoles.Knight).ShadeColor(0.25f) : Color.gray, !IsKilled(id) ? "(1)" : "(0)");
+    
     public override bool CanUseKillButton(PlayerControl pc)
-        => !Main.PlayerStates[pc.PlayerId].IsDead
-        && !IsKilled(pc.PlayerId);
+        => !IsKilled(pc.PlayerId);
     
     private static bool IsKilled(byte playerId) => killed.Contains(playerId);
 

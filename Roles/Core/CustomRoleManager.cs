@@ -79,7 +79,7 @@ public static class CustomRoleManager
         CustomRoles.Saboteur => new Saboteur(),
         CustomRoles.Scavenger => new Scavenger(),
         CustomRoles.ShapeMaster => new ShapeMaster(),
-        //CustomRoles.Sniper => new Sniper(),
+        CustomRoles.Sniper => new Sniper(),
         //CustomRoles.Witch => new Witch(),
         CustomRoles.SoulCatcher => new SoulCatcher(),
         //CustomRoles.Swooper => new Swooper(),
@@ -103,6 +103,7 @@ public static class CustomRoleManager
 
         // ==== Ghost Impostors ====
         //CustomRoles.Minion => new Minion(),
+        //CustomRoles.Bloodmoon => new Bloodmoon(),
 
         // ==== Vanilla ====
         CustomRoles.Crewmate => new VanillaRole(),
@@ -184,6 +185,10 @@ public static class CustomRoleManager
         CustomRoles.Veteran => new Veteran(),
         CustomRoles.Vigilante => new Vigilante(),
         CustomRoles.Witness => new Witness(),
+
+        // ==== Ghost Crewmates ====
+        //CustomRoles.Hawk => new Hawk(),
+        //CustomRoles.Warden => new Warden(),
 
         // ==== Neutrals ====
         CustomRoles.Seeker => new Seeker(),

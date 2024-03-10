@@ -187,7 +187,6 @@ internal class ChangeRoleSettings
 
             FallFromLadder.Reset();
 
-            Sniper.Init();
             Undertaker.Init();
             TimeThief.Init();
             Witch.Init();
@@ -515,9 +514,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.TimeThief:
                         TimeThief.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Sniper:
-                        Sniper.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Undertaker:
                         Undertaker.Add(pc.PlayerId);

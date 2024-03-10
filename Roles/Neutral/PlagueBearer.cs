@@ -124,7 +124,7 @@ public static class PlagueBearer
         return Puppeteer.PuppetIsActive(killer.PlayerId) ||
             Shroud.ShroudList.ContainsKey(killer.PlayerId) ||
             Main.CursedPlayers.ContainsValue(killer) ||
-            Sniper.snipeTarget.ContainsValue(killer.PlayerId);
+            Sniper.SnipeIsActive(killer.PlayerId);
     }
 
     public static bool OnCheckMurderPestilence(PlayerControl killer, PlayerControl target)

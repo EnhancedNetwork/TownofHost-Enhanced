@@ -468,24 +468,19 @@ static class ExtendedPlayerControl
             //Standard
             CustomRoles.Shaman => pc.IsAlive(),
             CustomRoles.Underdog => playerCount <= Options.UnderdogMaximumPlayersNeededToKill.GetInt(),
-            CustomRoles.Sniper => Sniper.CanUseKillButton(pc),
             CustomRoles.Pelican => pc.IsAlive(),
-            CustomRoles.Mastermind => pc.IsAlive(),
             CustomRoles.Arsonist => Options.ArsonistCanIgniteAnytime.GetBool() ? Utils.GetDousedPlayerCount(pc.PlayerId).Item1 < Options.ArsonistMaxPlayersToIgnite.GetInt() : !pc.IsDouseDone(),
             CustomRoles.Revolutionist => !pc.IsDrawDone(),
             CustomRoles.Pyromaniac => pc.IsAlive(),
             CustomRoles.PlagueDoctor => pc.IsAlive() && PlagueDoctor.CanUseKillButton(),
             CustomRoles.Huntsman => pc.IsAlive(),
-            CustomRoles.Knight => pc.IsAlive(),
             CustomRoles.Jackal => pc.IsAlive(),
             CustomRoles.Bandit => pc.IsAlive(),
             CustomRoles.Sidekick => pc.IsAlive(),
             CustomRoles.Necromancer => pc.IsAlive(),
             CustomRoles.HexMaster => pc.IsAlive(),
-            //CustomRoles.Occultist => pc.IsAlive(),
             CustomRoles.Poisoner => pc.IsAlive(),
             CustomRoles.Juggernaut => pc.IsAlive(),
-            CustomRoles.Reverie => pc.IsAlive(),
             CustomRoles.PotionMaster => pc.IsAlive(),
             CustomRoles.SerialKiller => pc.IsAlive(),
             CustomRoles.Werewolf => pc.IsAlive(),
@@ -557,27 +552,6 @@ static class ExtendedPlayerControl
 
         return pc.GetCustomRole() switch
         {
-            CustomRoles.Sheriff or
-            CustomRoles.Vigilante or
-            CustomRoles.Deputy or
-            CustomRoles.Investigator or
-            CustomRoles.Innocent or
-            CustomRoles.Hater or
-            CustomRoles.Medic or
-            CustomRoles.Monarch or
-            CustomRoles.Romantic or
-            CustomRoles.Provocateur or
-            CustomRoles.Totocalcio or
-            CustomRoles.Succubus or
-            CustomRoles.CursedSoul or
-            CustomRoles.PlagueBearer or
-            CustomRoles.PlagueDoctor or
-            CustomRoles.Admirer or
-            CustomRoles.Crusader or
-            CustomRoles.ChiefOfPolice or
-            CustomRoles.Wildling
-            => false,
-
             CustomRoles.Jackal => Jackal.CanVent.GetBool(),
             CustomRoles.Bandit => Bandit.CanVent.GetBool(),
             CustomRoles.VengefulRomantic => Romantic.VengefulCanVent.GetBool(),

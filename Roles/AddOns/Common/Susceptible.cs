@@ -164,7 +164,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Sniped:
-                    if (!Sniper.IsEnable)
+                    if (!Sniper.On)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }

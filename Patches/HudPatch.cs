@@ -92,9 +92,6 @@ class HudManagerPatch
 
                 switch (player.GetCustomRole())
                 {
-                    case CustomRoles.Sniper:
-                        Sniper.OverrideShapeText(player.PlayerId);
-                        break;
                     case CustomRoles.Warlock:
                         bool curse = Main.isCurseAndKill.TryGetValue(player.PlayerId, out bool wcs) && wcs;
                         if (!shapeshifting && !curse)
