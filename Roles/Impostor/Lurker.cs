@@ -3,14 +3,18 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
-public static class Lurker
+internal class Lurker : RoleBase
 {
     private static readonly int Id = 1900;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+
+    public static bool On;
+    public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     private static OptionItem DefaultKillCooldown;
     private static OptionItem ReduceKillCooldown;
+
+    private static List<byte> playerIdList = [];
 
     public static void SetupCustomOption()
     {
@@ -20,24 +24,21 @@ public static class Lurker
         ReduceKillCooldown = FloatOptionItem.Create(Id + 11, "ArroganceReduceKillCooldown", new(0f, 10f, 1f), 2f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lurker])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public static void Init()
+    public override void Init()
     {
+        On = false;
         playerIdList = [];
-        IsEnable = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
+        On = true;
     }
 
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = DefaultKillCooldown.GetFloat();
+    public  override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = DefaultKillCooldown.GetFloat();
 
-    public static void OnEnterVent(PlayerControl pc)
+    public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
-        if (!IsEnable) return;
-        if (!pc.Is(CustomRoles.Lurker)) return;
-
         float newCd = Main.AllPlayerKillCooldown[pc.PlayerId] - ReduceKillCooldown.GetFloat();
         if (newCd <= 0)
         {
@@ -48,7 +49,7 @@ public static class Lurker
         pc.SyncSettings();
     }
 
-    public static bool OnCheckMurder(PlayerControl killer)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         killer.ResetKillCooldown();
         killer.SyncSettings();

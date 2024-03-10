@@ -143,9 +143,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.ShapeshifterCooldown = Options.MinerSSCD.GetFloat();
                 AURoleOptions.ShapeshifterDuration = Options.MinerSSDuration.GetFloat();
                 break;
-            case CustomRoles.Mercenary:
-                Mercenary.ApplyGameOptions(player);
-                break;
             case CustomRoles.Sniper:
                 Sniper.ApplyGameOptions(player);
                 break;

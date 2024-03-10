@@ -253,7 +253,7 @@ class CheckMurderPatch
             return false;
         }
 
-        if (Mastermind.ManipulatedPlayers.ContainsKey(killer.PlayerId) && !Mastermind.ForceKillForManipulatedPlayer(killer, target))
+        if (Mastermind.PlayerIsManipulated(killer) && !Mastermind.ForceKillForManipulatedPlayer(killer, target))
         {
             return false;
         }
@@ -341,9 +341,6 @@ class CheckMurderPatch
             switch (killerRole)
             {
                 //==========On Check Murder==========//
-                case CustomRoles.Mercenary:
-                    Mercenary.OnCheckMurder(killer);
-                    break;
                 case CustomRoles.Vampire:
                     if (!Vampire.OnCheckMurder(killer, target)) return false;
                     break;
@@ -401,9 +398,6 @@ class CheckMurderPatch
                 case CustomRoles.Puppeteer:
                     if (!Puppeteer.OnCheckPuppet(killer, target)) return false;
                     break;
-                case CustomRoles.Mastermind:
-                    if (!Mastermind.OnCheckMurder(killer, target)) return false;
-                    break;
                 case CustomRoles.Necromancer:
                     if (!Necromancer.OnCheckMurder(killer, target)) return false;
                     break;
@@ -424,9 +418,6 @@ class CheckMurderPatch
                     break;
                 case CustomRoles.Wraith:
                     if (!Wraith.OnCheckMurder(killer, target)) return false;
-                    break;
-                case CustomRoles.Lurker:
-                    Lurker.OnCheckMurder(killer);
                     break;
 
                 case CustomRoles.PlagueBearer:
@@ -576,14 +567,6 @@ class CheckMurderPatch
 
             case CustomRoles.Spiritcaller:
                 Spiritcaller.OnCheckMurder(target);
-                break;
-
-            case CustomRoles.Ludopath:
-                var ran = IRandom.Instance;
-                int KillCD = ran.Next(1, Options.LudopathRandomKillCD.GetInt());
-                {
-                    Main.AllPlayerKillCooldown[killer.PlayerId] = KillCD;
-                }
                 break;
 
             case CustomRoles.Werewolf:
@@ -1959,12 +1942,10 @@ class ReportDeadBodyPatch
         }
 
         if (Huntsman.IsEnable) Huntsman.OnReportDeadBody();
-        if (Mercenary.IsEnable) Mercenary.OnReportDeadBody();
         if (SoulCollector.IsEnable) SoulCollector.OnReportDeadBody();
         if (Puppeteer.IsEnable) Puppeteer.OnReportDeadBody();
         if (Sniper.IsEnable) Sniper.OnReportDeadBody();
         if (Undertaker.IsEnable) Undertaker.OnReportDeadBody();
-        if (Mastermind.IsEnable) Mastermind.OnReportDeadBody();
         if (Vampire.IsEnable) Vampire.OnStartMeeting();
         if (Poisoner.IsEnable) Poisoner.OnStartMeeting();
         if (Vampiress.IsEnable) Vampiress.OnStartMeeting();
@@ -2230,10 +2211,6 @@ class FixedUpdateInNormalGamePatch
                         Poisoner.OnFixedUpdate(player);
                         break;
 
-                    case CustomRoles.Mercenary:
-                        Mercenary.OnFixedUpdate(player);
-                        break;
-
                     case CustomRoles.PlagueBearer:
                         PlagueBearer.OnFixedUpdate(player);
                         break;
@@ -2468,10 +2445,6 @@ class FixedUpdateInNormalGamePatch
 
                         case CustomRoles.Wildling:
                             Wildling.OnFixedUpdate(player);
-                            break;
-
-                        case CustomRoles.Mastermind:
-                            Mastermind.OnFixedUpdate();
                             break;
 
                         case CustomRoles.Pelican:
@@ -2937,7 +2910,6 @@ class EnterVentPatch
         HexMaster.OnEnterVent(pc);
         Swooper.OnEnterVent(pc, __instance);
         Wraith.OnEnterVent(pc, __instance);
-        Lurker.OnEnterVent(pc);
 
         if (pc.Is(CustomRoles.Unlucky))
         {
@@ -2952,6 +2924,8 @@ class CoEnterVentPatch
     {
         if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek) return true;
         Logger.Info($" {__instance.myPlayer.GetNameWithRole().RemoveHtmlTags()}, Vent ID: {id}", "CoEnterVent");
+
+
 
         //FFA
         if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenTwoPlayersAlive.GetBool() && Main.AllAlivePlayerControls.Length <= 2)

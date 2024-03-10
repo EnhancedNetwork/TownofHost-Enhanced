@@ -492,8 +492,6 @@ public static class Options
     public static OptionItem ShapeshiftCD;
     public static OptionItem ShapeshiftDur;
 
-    public static OptionItem LudopathRandomKillCD;
-
     public static OptionItem UnderdogMaximumPlayersNeededToKill;
     public static OptionItem UnderdogKillCooldown;
 
@@ -919,10 +917,7 @@ public static class Options
         /*
          * Ludopath
          */
-        SetupRoleOptions(1800, TabGroup.ImpostorRoles, CustomRoles.Ludopath);
-        LudopathRandomKillCD = IntegerOptionItem.Create(1802, "LudopathRandomKillCD", new(1, 100, 1), 45, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Ludopath])
-            .SetValueFormat(OptionFormat.Seconds);
+        Ludopath.SetupCustomOption();
 
         /*
          * Lurker

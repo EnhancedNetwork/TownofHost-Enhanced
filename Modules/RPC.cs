@@ -982,17 +982,11 @@ internal static class RPC
 
         switch (role)
         {
-            case CustomRoles.Mercenary:
-                Mercenary.Add(targetId);
-                break;
             case CustomRoles.TimeThief:
                 TimeThief.Add(targetId);
                 break;
             case CustomRoles.Puppeteer:
                 Puppeteer.Add(targetId);
-                break;
-            case CustomRoles.Mastermind:
-                Mastermind.Add(targetId);
                 break;
             case CustomRoles.Sniper:
                 Sniper.Add(targetId);
@@ -1192,9 +1186,6 @@ internal static class RPC
                 break;
             case CustomRoles.Spiritcaller:
                 Spiritcaller.Add(targetId);
-                break;
-            case CustomRoles.Lurker:
-                Lurker.Add(targetId);
                 break;
             case CustomRoles.Doomsayer:
                 Doomsayer.Add(targetId);

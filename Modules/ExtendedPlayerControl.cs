@@ -456,7 +456,7 @@ static class ExtendedPlayerControl
     {
         int playerCount = Main.AllAlivePlayerControls.Length;
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
-        if (Mastermind.ManipulatedPlayers.ContainsKey(pc.PlayerId)) return true;
+        if (Mastermind.PlayerIsManipulated(pc)) return true;
 
         var playerRoleClass = pc.GetRoleClass();
         if (playerRoleClass != null && playerRoleClass.CanUseKillButton(pc)) return true;
@@ -708,9 +708,6 @@ static class ExtendedPlayerControl
 
         switch (player.GetCustomRole())
         {
-            case CustomRoles.Mercenary:
-                Mercenary.ApplyKillCooldown(player.PlayerId);
-                break;
             case CustomRoles.TimeThief:
                 TimeThief.SetKillCooldown(player.PlayerId);
                 break;
@@ -737,9 +734,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Arsonist:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.ArsonistCooldown.GetFloat();
-                break;
-            case CustomRoles.Mastermind:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Mastermind.KillCooldown.GetFloat();
                 break;
             case CustomRoles.Revolutionist:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.RevolutionistCooldown.GetFloat();
@@ -829,9 +823,6 @@ static class ExtendedPlayerControl
             case CustomRoles.Medusa:
                 Medusa.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.Ludopath:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Options.LudopathRandomKillCD.GetFloat();
-                break;
             case CustomRoles.Gamer:
                 Gamer.SetKillCooldown(player.PlayerId);
                 break;
@@ -895,9 +886,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Spiritcaller:
                 Spiritcaller.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Lurker:
-                Lurker.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.ChiefOfPolice:
                 ChiefOfPolice.SetKillCooldown(player.PlayerId);

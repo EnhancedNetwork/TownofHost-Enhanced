@@ -188,12 +188,10 @@ internal class ChangeRoleSettings
 
             FallFromLadder.Reset();
 
-            Mercenary.Init();
             Sniper.Init();
             Undertaker.Init();
             TimeThief.Init();
             Puppeteer.Init();
-            Mastermind.Init();
             Witch.Init();
             HexMaster.Init();
             //Occultist.Init();
@@ -266,7 +264,6 @@ internal class ChangeRoleSettings
             Wildling.Init();
             Morphling.Init();
             Spiritcaller.Init();
-            Lurker.Init();
             PlagueBearer.Init();
             Doomsayer.Init();
             Lucky.Init();
@@ -523,9 +520,6 @@ internal class SelectRolesPatch
 
                 switch (pc.GetCustomRole())
                 {
-                    case CustomRoles.Mercenary:
-                        Mercenary.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Witch:
                         Witch.Add(pc.PlayerId);
                         break;
@@ -541,9 +535,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Puppeteer:
                         Puppeteer.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Mastermind:
-                        Mastermind.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Sniper:
                         Sniper.Add(pc.PlayerId);
@@ -739,9 +730,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Spiritcaller:
                         Spiritcaller.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Lurker:
-                        Lurker.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Doomsayer:
                         Doomsayer.Add(pc.PlayerId);

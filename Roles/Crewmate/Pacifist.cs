@@ -57,17 +57,20 @@ internal class Pacifist : RoleBase
         {
             PacifistNumOfUsed[pc.PlayerId] -= 1;
             if (!DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);
+            
             Main.AllAlivePlayerControls.Where(x =>
-            pc.Is(CustomRoles.Madmate) ?
-            (x.CanUseKillButton() && x.GetCustomRole().IsCrewmate()) :
-            (x.CanUseKillButton())
+            pc.Is(CustomRoles.Madmate)
+                ? (x.CanUseKillButton() && x.GetCustomRole().IsCrewmate())
+                : x.CanUseKillButton()
             ).Do(x =>
             {
                 x.RPCPlayCustomSound("Dove");
                 x.ResetKillCooldown();
                 x.SetKillCooldown();
+                
                 if (x.Is(CustomRoles.Mercenary))
-                { Mercenary.OnReportDeadBody(); }
+                    { Mercenary.ClearSuicideTimer(); }
+
                 x.Notify(ColorString(GetRoleColor(CustomRoles.Pacifist), GetString("PacifistSkillNotify")));
             });
             pc.RPCPlayCustomSound("Dove");

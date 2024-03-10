@@ -11,7 +11,7 @@ namespace TOHE.Roles.Impostor;
 
 internal class Lightning : RoleBase
 {
-    private static readonly int Id = 24100;
+    private const int Id = 24100;
 
     public static bool On;
     public override bool IsEnable => On;
