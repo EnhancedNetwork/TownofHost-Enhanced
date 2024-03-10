@@ -69,7 +69,6 @@ internal class ChangeRoleSettings
             Main.TasklessCrewmate = [];
             Main.UnreportableBodies = [];
             Main.InfectedBodies = [];
-            Main.VirusNotify = [];
             Main.ErasedRoleStorage = [];
 
             Main.LastEnteredVent = [];
@@ -199,7 +198,6 @@ internal class ChangeRoleSettings
             Solsticer.Init();
             Vampire.Init();
             Vampiress.Init();
-            Poisoner.Init();
             LastImpostor.Init();
             TargetArrow.Init();
             LocateArrow.Init();
@@ -207,7 +205,6 @@ internal class ChangeRoleSettings
             Workhorse.Init();
             Pursuer.Init();
             Diseased.Init();
-            DarkHide.Init();
             Collector.Init();
             Clumsy.Init();
             Taskinator.Init();
@@ -230,25 +227,18 @@ internal class ChangeRoleSettings
             Imitator.Init();
             Amnesiac.Init();
             Fool.Init();
-            Virus.Init();
             Burst.Init();
-            Pyromaniac.Init();
-            SerialKiller.Init();
             Maverick.Init();
             DoubleShot.Init();
-            PotionMaster.Init();
             Warden.Init();
-            Traitor.Init();
             Vulture.Init();
             PlagueDoctor.Init();
             Wildling.Init();
             Spiritcaller.Init();
-            PlagueBearer.Init();
             Doomsayer.Init();
             Lucky.Init();
             Pirate.Init();
             Pixie.Init();
-            Shroud.Init();
             Werewolf.Init();
             Bewilder.Init();
             ChiefOfPolice.Init();
@@ -516,9 +506,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Doppelganger:
                         Doppelganger.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Poisoner:
-                        Poisoner.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.PlagueDoctor:
                         PlagueDoctor.Add(pc.PlayerId);
                         break;
@@ -536,12 +523,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Pursuer:
                         Pursuer.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.PotionMaster:
-                        PotionMaster.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.DarkHide:
-                        DarkHide.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Collector:
                         Collector.Add(pc.PlayerId);
@@ -585,35 +566,17 @@ internal class SelectRolesPatch
                     case CustomRoles.Imitator:
                         Imitator.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.Virus:
-                        Virus.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Wildling:
                         Wildling.Add(pc.PlayerId);
                         break;
-                    case CustomRoles.SerialKiller:
-                        SerialKiller.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Pyromaniac:
-                        Pyromaniac.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Werewolf:
                         Werewolf.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Traitor:
-                        Traitor.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Shroud:
-                        Shroud.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Maverick:
                         Maverick.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Vulture:
                         Vulture.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.PlagueBearer:
-                        PlagueBearer.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Spiritcaller:
                         Spiritcaller.Add(pc.PlayerId);

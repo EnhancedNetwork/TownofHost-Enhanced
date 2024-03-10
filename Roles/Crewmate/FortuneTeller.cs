@@ -342,7 +342,7 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.NiceGuesser,
                 CustomRoles.Doomsayer,
                 CustomRoles.GuessMaster,
-                CustomRoles.DarkHide,
+                CustomRoles.Stalker,
                 CustomRoles.Camouflager,
                 CustomRoles.Chameleon,
                 CustomRoles.Doppelganger],

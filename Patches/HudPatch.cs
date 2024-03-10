@@ -103,14 +103,10 @@ class HudManagerPatch
                         if (!shapeshifting && curse)
                             __instance.AbilityButton.OverrideText(GetString("WarlockShapeshiftButtonText"));
                         break;
-                    case CustomRoles.Pestilence:
-                        __instance.KillButton.OverrideText(GetString("KillButtonText"));
-                        break;
                     case CustomRoles.Shaman:
                         __instance.KillButton.OverrideText(GetString("ShamanButtonText"));
                         break;
                     case CustomRoles.PlagueDoctor:
-                    case CustomRoles.PlagueBearer:
                         __instance.KillButton.OverrideText(GetString("InfectiousKillButtonText"));
                         break;
                     case CustomRoles.Pirate:
@@ -119,9 +115,6 @@ class HudManagerPatch
                     case CustomRoles.Vampire:
                     case CustomRoles.Vampiress:
                         Vampire.SetKillButtonText();
-                        break;
-                    case CustomRoles.Poisoner:
-                        Poisoner.SetKillButtonText();
                         break;
                     case CustomRoles.Revolutionist:
                         __instance.KillButton.OverrideText(GetString("RevolutionistDrawButtonText"));
@@ -365,7 +358,6 @@ class SetHudActivePatch
             case CustomRoles.Innocent:
             case CustomRoles.Revolutionist:
             case CustomRoles.Hater:
-            case CustomRoles.DarkHide:
             case CustomRoles.Provocateur:
             case CustomRoles.Overseer:
             case CustomRoles.KillingMachine:
@@ -376,9 +368,6 @@ class SetHudActivePatch
             case CustomRoles.Parasite:
             case CustomRoles.Refugee:
                 __instance.SabotageButton.ToggleVisible(true);
-                break;
-            case CustomRoles.Traitor:
-                Traitor.SetHudActive(__instance, isActive);
                 break;
             
         }

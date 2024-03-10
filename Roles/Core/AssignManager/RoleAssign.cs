@@ -90,7 +90,7 @@ public class RoleAssign
             if (role.IsVanilla() || chance == 0 || role.IsAdditionRole() || role.IsGhostRole()) continue;
             switch (role)
             {
-                case CustomRoles.DarkHide when GameStates.FungleIsActive:
+                case CustomRoles.Stalker when GameStates.FungleIsActive:
                 case CustomRoles.VengefulRomantic:
                 case CustomRoles.RuthlessRomantic:
                 case CustomRoles.GM:

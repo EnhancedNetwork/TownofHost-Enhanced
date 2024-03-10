@@ -1219,7 +1219,7 @@ internal class ChatCommands
             "單身狗" => GetString("Hater"),
             "柯南" => GetString("Konan"),
             "玩家" => GetString("Demon"),
-            "潛藏者" or "潜藏" => GetString("DarkHide"),
+            "潛藏者" or "潜藏" => GetString("Stalker"),
             "工作狂" => GetString("Workaholic"),
             "至日者" or "至日" => GetString("Solsticer"),
             "集票者" or "集票" => GetString("Collector"),

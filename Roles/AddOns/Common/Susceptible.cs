@@ -120,7 +120,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Poison:
-                    if (!Poisoner.IsEnable)
+                    if (!Poisoner.HasEnabled)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }
@@ -307,7 +307,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Shrouded:
-                    if (!Shroud.IsEnable)
+                    if (!Shroud.HasEnabled)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }

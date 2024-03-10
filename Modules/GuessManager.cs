@@ -85,7 +85,7 @@ public static class GuessManager
         }
         return false;
     }
-
+    public static bool GuesserSuicides { get; set; }
     public static bool GuesserMsg(PlayerControl pc, string msg, bool isUI = false)
     {
         var originMsg = msg;
@@ -187,6 +187,7 @@ public static class GuessManager
             {
                 GuessMaster.OnGuess(role);
                 bool guesserSuicide = false;
+                GuesserSuicides = guesserSuicide;
 
                 if (!Main.GuesserGuessed.ContainsKey(pc.PlayerId)) Main.GuesserGuessed.Add(pc.PlayerId, 0);
 
@@ -316,13 +317,6 @@ public static class GuessManager
                     if (!isUI) Utils.SendMessage(GetString("GuessOnbound"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessOnbound"));
                     return true;
-                }
-                if (target.Is(CustomRoles.Pestilence))
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessPestilence"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessPestilence"));
-                    guesserSuicide = true;
-                    Logger.Msg($" {guesserSuicide}", "guesserSuicide - Is Active 1");
                 }
                 if (role == CustomRoles.Phantom && target.Is(CustomRoles.Phantom))
                 {

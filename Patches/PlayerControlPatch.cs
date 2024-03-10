@@ -343,12 +343,6 @@ class CheckMurderPatch
                 case CustomRoles.Vampiress:
                     if (!Vampiress.OnCheckKill(killer, target)) return false;
                     break;
-                case CustomRoles.Pyromaniac:
-                    if (!Pyromaniac.OnCheckMurder(killer, target)) return false;
-                    break;
-                case CustomRoles.Poisoner:
-                    if (!Poisoner.OnCheckMurder(killer, target)) return false;
-                    break;
                 case CustomRoles.Undertaker:
                     if (!Undertaker.OnCheckMurder(killer, target)) return false;
                     break;
@@ -376,19 +370,11 @@ class CheckMurderPatch
                 case CustomRoles.PlagueDoctor:
                     if (!PlagueDoctor.OnPDinfect(killer, target)) return false;
                     break;
-                case CustomRoles.Shroud:
-                    if (!Shroud.OnCheckMurder(killer, target)) return false;
-                    break;
                 case CustomRoles.Swooper:
                     if (!Swooper.OnCheckMurder(killer, target)) return false;
                     break;
                 case CustomRoles.Wraith:
                     if (!Wraith.OnCheckMurder(killer, target)) return false;
-                    break;
-
-                case CustomRoles.PlagueBearer:
-                    if (!PlagueBearer.OnCheckMurder(killer, target))
-                        return false;
                     break;
                 case CustomRoles.Pirate:
                     if (!Pirate.OnCheckMurder(killer, target))
@@ -412,9 +398,6 @@ class CheckMurderPatch
                     return false;
                 case CustomRoles.Hater:
                     if (!Hater.OnCheckMurder(killer, target)) return false;
-                    break;
-                case CustomRoles.DarkHide:
-                    DarkHide.OnCheckMurder(killer, target);
                     break;
                 case CustomRoles.Provocateur:
                     if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
@@ -476,9 +459,6 @@ class CheckMurderPatch
 
         switch (killerRole)
         {
-            case CustomRoles.Virus:
-                Virus.OnCheckMurder(killer, target);
-                break;
 
             case CustomRoles.Spiritcaller:
                 Spiritcaller.OnCheckMurder(target);
@@ -504,11 +484,6 @@ class CheckMurderPatch
                         }
                     }
                 }, 0.1f, "Werewolf Maul Bug Fix");
-                break;
-
-            case CustomRoles.PotionMaster:
-                if (!PotionMaster.OnCheckMurder(killer, target))
-                    return false;
                 break;
         }
 
@@ -596,7 +571,7 @@ class CheckMurderPatch
             case CustomRoles.Infectious when target.Is(CustomRoles.Infectious):
             case CustomRoles.Virus when target.Is(CustomRoles.Virus):
             case CustomRoles.Parasite when target.Is(CustomRoles.Parasite):
-            case CustomRoles.DarkHide when target.Is(CustomRoles.DarkHide):
+            case CustomRoles.Stalker when target.Is(CustomRoles.Stalker):
             case CustomRoles.Pickpocket when target.Is(CustomRoles.Pickpocket):
             case CustomRoles.Spiritcaller when target.Is(CustomRoles.Spiritcaller):
             case CustomRoles.Medusa when target.Is(CustomRoles.Medusa):
@@ -723,8 +698,6 @@ class CheckMurderPatch
             }
         }
 
-        if (PlagueBearer.IsEnable && PlagueBearer.OnCheckMurderPestilence(killer, target))
-            return false;
 
         if (!check) killer.RpcMurderPlayerV3(target);
         if (killer.Is(CustomRoles.Doppelganger)) Doppelganger.OnCheckMurder(killer, target);
@@ -1692,8 +1665,7 @@ class ReportDeadBodyPatch
                 }
             }
 
-            if (Virus.IsEnable && Main.InfectedBodies.Contains(target.PlayerId))
-                Virus.OnKilledBodyReport(player);
+            Virus.OnKilledBodyReport(player);
         }
 
         Main.LastVotedPlayerInfo = null;
@@ -1710,7 +1682,6 @@ class ReportDeadBodyPatch
         if (SoulCollector.IsEnable) SoulCollector.OnReportDeadBody();
         if (Undertaker.IsEnable) Undertaker.OnReportDeadBody();
         if (Vampire.IsEnable) Vampire.OnStartMeeting();
-        if (Poisoner.IsEnable) Poisoner.OnStartMeeting();
         if (Vampiress.IsEnable) Vampiress.OnStartMeeting();
         if (Vulture.IsEnable) Vulture.Clear();
         if (PlagueDoctor.IsEnable) PlagueDoctor.OnReportDeadBody();
@@ -1951,15 +1922,6 @@ class FixedUpdateInNormalGamePatch
                     case CustomRoles.Vampiress:
                         Vampiress.OnFixedUpdate(player);
                         break;
-
-                    case CustomRoles.Poisoner:
-                        Poisoner.OnFixedUpdate(player);
-                        break;
-
-                    case CustomRoles.PlagueBearer:
-                        PlagueBearer.OnFixedUpdate(player);
-                        break;
-
                     case CustomRoles.Warlock:
                         if (Main.WarlockTimer.TryGetValue(player.PlayerId, out var warlockTimer))
                         {
@@ -2106,9 +2068,6 @@ class FixedUpdateInNormalGamePatch
                     playerRole = player.GetCustomRole();
 
                     CustomRoleManager.OnFixedUpdateLowLoad(player);
-
-                    if (Shroud.IsEnable)
-                        Shroud.OnFixedUpdate(player);
 
                     if (Spiritcaller.IsEnable)
                         Spiritcaller.OnFixedUpdate(player);
@@ -2337,21 +2296,12 @@ class FixedUpdateInNormalGamePatch
                             Mark.Append(Utils.ColorString(Utils.GetRoleColor(seerRole), " " + target.PlayerId.ToString()) + " ");
                         break;
 
-                    case CustomRoles.PlagueBearer:
-                        if (PlagueBearer.IsPlagued(seer.PlayerId, target.PlayerId))
-                            Mark.Append($"<color={Utils.GetRoleColorCode(seerRole)}>●</color>");
-                        break;
-
                     case CustomRoles.Revolutionist:
                         if (seer.IsDrawPlayer(target))
                             Mark.Append($"<color={Utils.GetRoleColorCode(seerRole)}>●</color>");
 
                         else if (Main.currentDrawTarget != byte.MaxValue && Main.currentDrawTarget == target.PlayerId)
                             Mark.Append($"<color={Utils.GetRoleColorCode(seerRole)}>○</color>");
-                        break;
-
-                    case CustomRoles.Shroud:
-                        Mark.Append(Shroud.TargetMark(seer, target));
                         break;
 
                     case CustomRoles.Quizmaster:

@@ -7,11 +7,16 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral
 {
-    public static class PotionMaster
+    internal class PotionMaster : RoleBase
     {
-        private static readonly int Id = 17700;
-        public static List<byte> playerIdList = [];
-        public static bool IsEnable = false;
+        //===========================SETUP================================\\
+        private const int Id = 17700;
+        public static HashSet<byte> playerIdList = [];
+        public static bool HasEnabled => playerIdList.Count > 0;
+        public override bool IsEnable => HasEnabled;
+        public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+
+        //==================================================================\\
 
         private static OptionItem KillCooldown;
         private static OptionItem RitualMaxCount;
@@ -29,22 +34,20 @@ namespace TOHE.Roles.Neutral
                 .SetValueFormat(OptionFormat.Seconds);
             RitualMaxCount = IntegerOptionItem.Create(Id + 11, "RitualMaxCount", new(1, 15, 1), 5, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.PotionMaster])
                 .SetValueFormat(OptionFormat.Times);
-        CanVent = BooleanOptionItem.Create(Id + 12, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.PotionMaster]);
-        HasImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.PotionMaster]);
+            CanVent = BooleanOptionItem.Create(Id + 12, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.PotionMaster]);
+            HasImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.PotionMaster]);
         }
-        public static void Init()
+        public override void Init()
         {
             playerIdList = [];
             RitualCount = [];
             RitualTarget = [];
-            IsEnable = false;
         }
-        public static void Add(byte playerId)
+        public override void Add(byte playerId)
         {
             playerIdList.Add(playerId);
             RitualCount.TryAdd(playerId, RitualMaxCount.GetInt());
             RitualTarget.TryAdd(playerId, []);
-            IsEnable = true;
 
             var pc = Utils.GetPlayerById(playerId);
             pc.AddDoubleTrigger();
@@ -77,13 +80,12 @@ namespace TOHE.Roles.Neutral
                     RitualTarget.Add(playerId, []);
             }
         }
-        public static void SetKillCooldown(byte id)
+        public override void SetKillCooldown(byte id)
         {
             Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
         }
-        public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+        public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
         {
-
             if (RitualCount[killer.PlayerId] > 0)
             {
                 return killer.CheckDoubleTrigger(target, () => { SetRitual(killer, target); });
@@ -99,7 +101,8 @@ namespace TOHE.Roles.Neutral
             }
             return false;
         }
-        public static void SetRitual(PlayerControl killer, PlayerControl target)
+        public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
+        private static void SetRitual(PlayerControl killer, PlayerControl target)
         {
             if (!IsRitual(killer.PlayerId, target.PlayerId))
             {
@@ -113,7 +116,7 @@ namespace TOHE.Roles.Neutral
                 killer.SetKillCooldown();
             }
         }
-        public static bool IsShowTargetRole(PlayerControl seer, PlayerControl target)
+        public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
         {
             var IsWatch = false;
             RitualTarget.Do(x =>
@@ -123,14 +126,21 @@ namespace TOHE.Roles.Neutral
             });
             return IsWatch;
         }
-    public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(HasImpostorVision.GetBool());
-        public static void CanUseVent(PlayerControl player)
+        public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target)
+            => KnowRoleTarget(seer, target);
+        
+        public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
+        public override bool CanUseImpostorVentButton(PlayerControl pc)
         {
             bool canUse = CanVent.GetBool();
-            DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(canUse && !player.Data.IsDead);
-            player.Data.Role.CanVent = canUse;
+            DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(canUse && !pc.Data.IsDead);
+            return canUse;
         }
-
-        public static string GetRitualCount(byte playerId) => Utils.ColorString(RitualCount[playerId] > 0 ? Utils.GetRoleColor(CustomRoles.PotionMaster).ShadeColor(0.25f) : Color.gray, RitualCount.TryGetValue(playerId, out var shotLimit) ? $"({shotLimit})" : "Invalid");
+        public override bool CanUseSabotage(PlayerControl pc)
+        {
+            bool yes = true;
+            return yes;
+        }
+        public override string GetProgressText(byte playerId, bool coooonms) => Utils.ColorString(RitualCount[playerId] > 0 ? Utils.GetRoleColor(CustomRoles.PotionMaster).ShadeColor(0.25f) : Color.gray, RitualCount.TryGetValue(playerId, out var shotLimit) ? $"({shotLimit})" : "Invalid");
     }
 }

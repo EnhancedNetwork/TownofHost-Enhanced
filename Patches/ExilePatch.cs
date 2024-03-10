@@ -210,7 +210,7 @@ class ExileControllerWrapUpPatch
                 }
             }
 
-            if (Shroud.IsEnable)
+            if (Shroud.HasEnabled)
             {
                 Shroud.MurderShroudedPlayers(player);
             }

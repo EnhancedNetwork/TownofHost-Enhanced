@@ -91,13 +91,6 @@ public static class Imitator
             SendRPC(killer.PlayerId);
             killer.RpcSetCustomRole(role);
             killer.GetRoleClass().Add(killer.PlayerId);
-            //Do those trash add check here
-            switch (role)
-            {
-                case CustomRoles.Poisoner:
-                    Poisoner.Add(killer.PlayerId);
-                    break;
-            }
 
             if (role.IsCrewmate())
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedCrewmate")));

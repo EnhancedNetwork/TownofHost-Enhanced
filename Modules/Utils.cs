@@ -592,7 +592,7 @@ public static class Utils
             case CustomRoles.Juggernaut:
             case CustomRoles.Reverie:
             case CustomRoles.PotionMaster:
-            case CustomRoles.DarkHide:
+            case CustomRoles.Stalker:
             case CustomRoles.Collector:
             case CustomRoles.SoulCatcher:
             case CustomRoles.Provocateur:
@@ -724,10 +724,6 @@ public static class Utils
                 /*     case CustomRoles.CopyCat:
                          ProgressText.Append(ColorString(GetRoleColor(CustomRoles.CopyCat).ShadeColor(0.25f), $"({(CopyCat.MiscopyLimit.TryGetValue(playerId, out var count2) ? count2 : 0)})"));
                          break; */
-                case CustomRoles.PlagueBearer:
-                    var plagued = PlagueBearer.PlaguedPlayerCount(playerId);
-                    ProgressText.Append(ColorString(GetRoleColor(CustomRoles.PlagueBearer).ShadeColor(0.25f), $"({plagued.Item1}/{plagued.Item2})"));
-                    break;
                 case CustomRoles.Doomsayer:
                     var doomsayerguess = Doomsayer.GuessedPlayerCount(playerId);
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Doomsayer).ShadeColor(0.25f), $"({doomsayerguess.Item1}/{doomsayerguess.Item2})"));
@@ -789,12 +785,6 @@ public static class Utils
                     break;
                 case CustomRoles.Warden:
                     ProgressText.Append(Warden.GetNotifyLimit(playerId));
-                    break;
-                case CustomRoles.Virus:
-                    ProgressText.Append(Virus.GetInfectLimit());
-                    break;
-                case CustomRoles.PotionMaster:
-                    ProgressText.Append(PotionMaster.GetRitualCount(playerId));
                     break;
                 case CustomRoles.Doppelganger:
                     ProgressText.Append(Doppelganger.GetStealLimit(playerId));
@@ -1807,11 +1797,6 @@ public static class Utils
                 }
                 else // Only during meeting
                 {
-                    if (seer.IsAlive())
-                    {
-                        if (Shroud.IsEnable && Shroud.ShroudList.ContainsKey(seer.PlayerId))
-                            SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Shroud), "◈"));
-                    }
 
                     if (Pirate.IsEnable && seer.PlayerId == Pirate.PirateTarget)
                         SelfMark.Append(Pirate.GetPlunderedMark(seer.PlayerId, true));
@@ -1858,16 +1843,7 @@ public static class Utils
                 switch (seerRole)
                 {
                     case CustomRoles.PlagueBearer:
-                        if (PlagueBearer.IsPlaguedAll(seer))
-                        {
-                            seer.RpcSetCustomRole(CustomRoles.Pestilence);
-                            seer.Notify(GetString("PlagueBearerToPestilence"));
-                            seer.RpcGuardAndKill(seer);
-                            if (!PlagueBearer.PestilenceList.Contains(seer.PlayerId))
-                                PlagueBearer.PestilenceList.Add(seer.PlayerId);
-                            PlagueBearer.SetKillCooldownPestilence(seer.PlayerId);
-                            PlagueBearer.playerIdList.Remove(seer.PlayerId);
-                        }
+                        PlagueBearer.PlaguerNotify(seer);
                         break;
 
                     case CustomRoles.Arsonist:
@@ -1956,9 +1932,6 @@ public static class Utils
 
                             if (Pirate.IsEnable)
                                 TargetMark.Append(Pirate.GetPlunderedMark(target.PlayerId, true));
-
-                            if (Shroud.IsEnable && !seer.Is(CustomRoles.Shroud) && target.IsAlive())
-                                TargetMark.Append(Shroud.GetShroudMark(target.PlayerId, true));
                         }
 
                         if (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate) && target.GetPlayerTaskState().IsTaskFinished)
@@ -2008,12 +1981,6 @@ public static class Utils
 
                         switch (seerRole)
                         {
-                            case CustomRoles.PlagueBearer:
-                                if (PlagueBearer.IsPlagued(seer.PlayerId, target.PlayerId))
-                                {
-                                    TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.PlagueBearer)}>●</color>");
-                                }
-                                break;
 
                             case CustomRoles.Revolutionist:
                                 if (seer.IsDrawPlayer(target))
@@ -2021,10 +1988,6 @@ public static class Utils
 
                                 if (Main.RevolutionistTimer.TryGetValue(seer.PlayerId, out var re_kvp) && re_kvp.Item1 == target)
                                     TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Revolutionist)}>○</color>");
-                                break;
-
-                            case CustomRoles.Shroud:
-                                TargetMark.Append(Shroud.TargetMark(seer, target));
                                 break;
                         }
 

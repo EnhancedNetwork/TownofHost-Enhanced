@@ -94,7 +94,7 @@ enum CustomRPC
     RiftMakerSyncData,
     SetPursuerSellLimit,
     SetGhostPlayer,
-    SetDarkHiderKillCount,
+    SetStalkerrKillCount,
     SetConsigliere,
     SetGreedy,
     SetCursedWolfSpellCount,
@@ -536,8 +536,8 @@ internal class RPCHandlerPatch
             case CustomRPC.SetGhostPlayer:
                 Lightning.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetDarkHiderKillCount:
-                DarkHide.ReceiveRPC(reader);
+            case CustomRPC.SetStalkerrKillCount:
+                Stalker.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetGreedy:
                 Greedy.ReceiveRPC(reader);
@@ -998,9 +998,6 @@ internal static class RPC
             case CustomRoles.Doppelganger:
                 Doppelganger.Add(targetId);
                 break;
-            case CustomRoles.Poisoner:
-                Poisoner.Add(targetId);
-                break;
             case CustomRoles.PlagueDoctor:
                 PlagueDoctor.Add(targetId);
                 break;
@@ -1021,12 +1018,6 @@ internal static class RPC
                 break;
             case CustomRoles.Pursuer:
                 Pursuer.Add(targetId);
-                break;
-            case CustomRoles.PotionMaster:
-                PotionMaster.Add(targetId);
-                break;
-            case CustomRoles.DarkHide:
-                DarkHide.Add(targetId);
                 break;
             case CustomRoles.Collector:
                 Collector.Add(targetId);
@@ -1073,29 +1064,11 @@ internal static class RPC
             case CustomRoles.Imitator:
                 Imitator.Add(targetId);
                 break;
-            case CustomRoles.Virus:
-                Virus.Add(targetId);
-                break;
             case CustomRoles.Vulture:
                 Vulture.Add(targetId); 
                 break;
-            case CustomRoles.PlagueBearer:
-                PlagueBearer.Add(targetId);
-                break;
-            case CustomRoles.SerialKiller:
-                SerialKiller.Add(targetId);
-                break;
-            case CustomRoles.Pyromaniac:
-                Pyromaniac.Add(targetId);
-                break;
             case CustomRoles.Werewolf:
                 Werewolf.Add(targetId);
-                break;
-            case CustomRoles.Traitor:
-                Traitor.Add(targetId);
-                break;
-            case CustomRoles.Shroud:
-                Shroud.Add(targetId);
                 break;
             case CustomRoles.Maverick:
                 Maverick.Add(targetId);

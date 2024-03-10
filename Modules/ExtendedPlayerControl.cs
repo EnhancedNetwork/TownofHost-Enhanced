@@ -469,21 +469,14 @@ static class ExtendedPlayerControl
             CustomRoles.Shaman => pc.IsAlive(),
             CustomRoles.Underdog => playerCount <= Options.UnderdogMaximumPlayersNeededToKill.GetInt(),
             CustomRoles.Revolutionist => !pc.IsDrawDone(),
-            CustomRoles.Pyromaniac => pc.IsAlive(),
             CustomRoles.PlagueDoctor => pc.IsAlive() && PlagueDoctor.CanUseKillButton(),
             CustomRoles.Sidekick => pc.IsAlive(),
-            CustomRoles.Poisoner => pc.IsAlive(),
-            CustomRoles.PotionMaster => pc.IsAlive(),
-            CustomRoles.SerialKiller => pc.IsAlive(),
             CustomRoles.Werewolf => pc.IsAlive(),
-            CustomRoles.Traitor => pc.IsAlive(),
             CustomRoles.Maverick => pc.IsAlive(),
-            CustomRoles.Shroud => pc.IsAlive(),
             CustomRoles.Wraith => pc.IsAlive(),
             CustomRoles.Innocent => pc.IsAlive(),
             CustomRoles.Pursuer => Pursuer.CanUseKillButton(pc.PlayerId),
             CustomRoles.Hater => pc.IsAlive(),
-            CustomRoles.DarkHide => DarkHide.CanUseKillButton(pc),
             CustomRoles.Provocateur => pc.IsAlive(),
             CustomRoles.Totocalcio => Totocalcio.CanUseKillButton(pc),
             CustomRoles.Romantic => pc.IsAlive(),
@@ -492,10 +485,7 @@ static class ExtendedPlayerControl
             CustomRoles.Succubus => Succubus.CanUseKillButton(pc),
             CustomRoles.CursedSoul => CursedSoul.CanUseKillButton(pc),
             CustomRoles.Imitator => Imitator.CanUseKillButton(pc),
-            CustomRoles.Virus => pc.IsAlive(),
             CustomRoles.Spiritcaller => pc.IsAlive(),
-            CustomRoles.PlagueBearer => pc.IsAlive(),
-            CustomRoles.Pestilence => pc.IsAlive(),
             CustomRoles.Pirate => pc.IsAlive(),
             CustomRoles.Pixie => pc.IsAlive(),
             CustomRoles.ChiefOfPolice => ChiefOfPolice.CanUseKillButton(pc.PlayerId),
@@ -538,21 +528,12 @@ static class ExtendedPlayerControl
         {
             CustomRoles.VengefulRomantic => Romantic.VengefulCanVent.GetBool(),
             CustomRoles.RuthlessRomantic => Romantic.RuthlessCanVent.GetBool(),
-            CustomRoles.Poisoner => Poisoner.CanVent.GetBool(),
             CustomRoles.Vampiress => Vampire.CanVent.GetBool(),
             CustomRoles.Vampire => Vampire.CanVent.GetBool(),
-            CustomRoles.DarkHide => DarkHide.CanVent.GetBool(),
-            CustomRoles.SerialKiller => SerialKiller.CanVent.GetBool(),
             CustomRoles.Werewolf => Werewolf.CanVent.GetBool(),
-            CustomRoles.Pestilence => PlagueBearer.PestilenceCanVent.GetBool(),
-            CustomRoles.Traitor => Traitor.CanVent.GetBool(),
-            CustomRoles.Shroud => Shroud.CanVent.GetBool(),
             CustomRoles.Maverick => Maverick.CanVent.GetBool(),
             CustomRoles.Doppelganger => Doppelganger.CanVent.GetBool(),
-            CustomRoles.PotionMaster => PotionMaster.CanVent.GetBool(),
-            CustomRoles.Virus => Virus.CanVent.GetBool(),
             CustomRoles.Wraith => true,
-            CustomRoles.Pyromaniac => Pyromaniac.CanVent.GetBool(),
             CustomRoles.Amnesiac => true,
             CustomRoles.Spiritcaller => Spiritcaller.CanVent.GetBool(),
             CustomRoles.Quizmaster => Quizmaster.CanUseVentButton(pc),
@@ -572,16 +553,7 @@ static class ExtendedPlayerControl
         var playerRoleClass = pc.GetRoleClass();
         if (playerRoleClass != null && playerRoleClass.CanUseSabotage(pc)) return true;
 
-        return pc.GetCustomRole() switch
-        {
-            CustomRoles.Traitor => Traitor.CanUseSabotage.GetBool(),
-
-            CustomRoles.PotionMaster
-            => true,
-
-            _ => false,
-
-        };
+        return false;
     }
     public static bool IsRevealedPlayer(this PlayerControl player, PlayerControl target)
     {
@@ -627,12 +599,6 @@ static class ExtendedPlayerControl
             case CustomRoles.PlagueDoctor:
                 PlagueDoctor.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.PotionMaster:
-                PotionMaster.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Pyromaniac:
-                Pyromaniac.SetKillCooldown(player.PlayerId);
-                break;
             case CustomRoles.Revolutionist:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.RevolutionistCooldown.GetFloat();
                 break;
@@ -645,32 +611,14 @@ static class ExtendedPlayerControl
             case CustomRoles.Doppelganger:
                 Doppelganger.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.PlagueBearer:
-                PlagueBearer.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Pestilence:
-                PlagueBearer.SetKillCooldownPestilence(player.PlayerId);
-                break;
             case CustomRoles.Shaman:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.VoodooCooldown.GetFloat();
-                break;
-            case CustomRoles.SerialKiller:
-                SerialKiller.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Werewolf:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Werewolf.KillCooldown.GetFloat();
                 break;
-            case CustomRoles.Traitor:
-                Traitor.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Shroud:
-                Shroud.SetKillCooldown(player.PlayerId);
-                break;
             case CustomRoles.Maverick:
                 Maverick.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Poisoner:
-                Poisoner.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Zombie:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.ZombieKillCooldown.GetFloat();
@@ -681,9 +629,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Hater:
                 Main.AllPlayerKillCooldown[player.PlayerId] = 1f;
-                break;
-            case CustomRoles.DarkHide:
-                DarkHide.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Provocateur:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.ProvKillCD.GetFloat();
@@ -718,9 +663,6 @@ static class ExtendedPlayerControl
                 break;
             case CustomRoles.Pixie:
                 Pixie.SetKillCooldown(player.PlayerId);
-                break;
-            case CustomRoles.Virus:
-                Virus.SetKillCooldown(player.PlayerId);
                 break;
             case CustomRoles.Spiritcaller:
                 Spiritcaller.SetKillCooldown(player.PlayerId);
@@ -1016,7 +958,6 @@ static class ExtendedPlayerControl
         else if (Totocalcio.KnowRole(seer, target)) return true;
         else if (Romantic.KnowRole(seer, target)) return true;
         else if (Lawyer.KnowRole(seer, target)) return true;
-        else if (PotionMaster.IsShowTargetRole(seer, target)) return true;
         else if (Executioner.KnowRole(seer, target)) return true;
         else if (Succubus.KnowRole(seer, target)) return true;
         else if (CursedSoul.KnowRole(seer, target)) return true;
@@ -1071,7 +1012,7 @@ static class ExtendedPlayerControl
         else if (Admirer.On && Admirer.CheckKnowRoleTarget(seer, target)) return true;
         else if (Succubus.IsEnable && Succubus.KnowRole(seer, target)) return true;
         else if (Infectious.HasEnabled && Infectious.KnowRole(seer, target)) return true;
-        else if (Virus.IsEnable && Virus.KnowRole(seer, target)) return true;
+        else if (Virus.HasEnabled && Virus.KnowRole(seer, target)) return true;
         else if (Jackal.HasEnabled)
         {
             if (seer.Is(CustomRoles.Jackal) || seer.Is(CustomRoles.Recruit))

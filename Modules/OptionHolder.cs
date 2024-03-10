@@ -1752,11 +1752,11 @@ public static class Options
         if (!Quizmaster.InExperimental)
             Quizmaster.SetupCustomOption();
 
-        SerialKiller.SetupCustomOption(); // Serial Killer
+        SerialKiller.SetupCustomOption(); 
 
         Shroud.SetupCustomOption();
 
-        DarkHide.SetupCustomOption(); // Stalker (TOHY)
+        Stalker.SetupCustomOption(); // Stalker (TOHY)
 
         Traitor.SetupCustomOption();
 

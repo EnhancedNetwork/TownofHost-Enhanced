@@ -897,8 +897,6 @@ class MeetingHudStartPatch
             if (pc.Is(CustomRoles.Mimic) && !pc.IsAlive())
                 Main.AllAlivePlayerControls.Where(x => x.GetRealKiller()?.PlayerId == pc.PlayerId).Do(x => MimicMsg += $"\n{x.GetNameWithRole(true)}");
             
-            if (Main.VirusNotify.ContainsKey(pc.PlayerId))
-                AddMsg(Main.VirusNotify[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Virus), GetString("VirusNoticeTitle")));
             if (pc.Is(CustomRoles.Solsticer))
             {
                 Solsticer.SetShortTasksToAdd();
@@ -930,8 +928,6 @@ class MeetingHudStartPatch
         
         Main.PlayerStates.Where(x => x.Value.RoleClass.IsEnable)?.Do(x
             => x.Value.RoleClass.MeetingHudClear());
-
-        Main.VirusNotify.Clear();
         
         Cyber.Clear();
         Sleuth.Clear();
@@ -1184,8 +1180,6 @@ class MeetingHudStartPatch
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), "♥"));
             else if (seer == target && CustomRolesHelper.RoleExist(CustomRoles.Ntr) && !isLover)
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), "♥"));
-
-            sb.Append(Shroud.GetShroudMark(target.PlayerId, true));
 
             if (target.PlayerId == Pirate.PirateTarget)
                 sb.Append(Pirate.GetPlunderedMark(target.PlayerId, true));

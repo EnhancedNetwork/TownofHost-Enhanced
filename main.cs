@@ -143,7 +143,6 @@ public class Main : BasePlugin
     //public static Dictionary<byte, long> FlashbangInProtect = [];
     public static List<byte> WorkaholicAlive = [];
     public static List<byte> TasklessCrewmate = [];
-    public static Dictionary<byte, string> VirusNotify = [];
     public static List<byte> OverDeadPlayerList = [];
     public static bool DoBlockNameChange = false;
     public static int updateTime;
@@ -727,7 +726,7 @@ public enum CustomRoles
     Solsticer,
     SoulCollector,
     Spiritcaller,
-    DarkHide, //stalker
+    Stalker, //stalker
     Sunnyboy,
     Taskinator,
     Terrorist,
@@ -853,7 +852,7 @@ public enum CustomWinner
     Youtuber = CustomRoles.Youtuber,
     Egoist = CustomRoles.Egoist,
     Demon = CustomRoles.Demon,
-    DarkHide = CustomRoles.DarkHide,
+    Stalker = CustomRoles.Stalker,
     Workaholic = CustomRoles.Workaholic,
     Collector = CustomRoles.Collector,
     BloodKnight = CustomRoles.BloodKnight,

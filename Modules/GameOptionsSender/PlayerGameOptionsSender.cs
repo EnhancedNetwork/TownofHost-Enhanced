@@ -134,14 +134,8 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.ShapeshifterCooldown = Main.isCursed ? 1f : Options.DefaultKillCooldown;
                 AURoleOptions.ShapeshifterDuration = Options.WarlockShiftDuration.GetFloat();
                 break;
-            case CustomRoles.Pestilence:
-                opt.SetVision(PlagueBearer.PestilenceHasImpostorVision.GetBool());
-                break;
             case CustomRoles.Refugee:
                 opt.SetVision(true);
-                break;
-            case CustomRoles.Virus:
-                opt.SetVision(Virus.ImpostorVision.GetBool());
                 break;
             case CustomRoles.Zombie:
                 opt.SetFloat(FloatOptionNames.ImpostorLightMod, 0.2f);
@@ -173,9 +167,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.EngineerCooldown = 0f;
                 AURoleOptions.EngineerInVentMaxTime = 0f;
                 break;
-            case CustomRoles.Poisoner:
-                Poisoner.ApplyGameOptions(opt);
-                break;
             case CustomRoles.PlagueDoctor:
                 PlagueDoctor.ApplyGameOptions(opt);
                 break;
@@ -183,26 +174,11 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Pursuer:
                 opt.SetVision(true);
                 break;
-            case CustomRoles.SerialKiller:
-                SerialKiller.ApplyGameOptions(opt);
-                break;
-            case CustomRoles.Pyromaniac:
-                Pyromaniac.ApplyGameOptions(opt);
-                break;
             case CustomRoles.Werewolf:
                 Werewolf.ApplyGameOptions(opt);
                 break;
-            case CustomRoles.Traitor:
-                Traitor.ApplyGameOptions(opt);
-                break;
-            case CustomRoles.Shroud:
-                Shroud.ApplyGameOptions(opt);
-                break;
             case CustomRoles.Maverick:
                 Maverick.ApplyGameOptions(opt);
-                break;
-            case CustomRoles.PotionMaster:
-                PotionMaster.ApplyGameOptions(opt);
                 break;
             case CustomRoles.Jester:
                 AURoleOptions.EngineerCooldown = 0f;
@@ -220,9 +196,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             //    break;
             case CustomRoles.Wraith:
                 Wraith.ApplyGameOptions(opt);
-                break;
-            case CustomRoles.DarkHide:
-                DarkHide.ApplyGameOptions(opt);
                 break;
             case CustomRoles.Workaholic:
                 AURoleOptions.EngineerCooldown = Options.WorkaholicVentCooldown.GetFloat();

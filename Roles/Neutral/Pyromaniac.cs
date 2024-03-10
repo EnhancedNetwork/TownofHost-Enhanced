@@ -5,12 +5,17 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
 
-public static class Pyromaniac
+internal class Pyromaniac : RoleBase
 {
-    private static readonly int Id = 17800;
-    public static List<byte> playerIdList = [];
-    public static List<byte> DousedList = [];
-    public static bool IsEnable = false;
+
+    //===========================SETUP================================\\
+    private const int Id = 17800;
+    public static HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Count > 0;
+    public override bool IsEnable => HasEnabled;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+
+    //==================================================================\\
 
     private static OptionItem KillCooldown;
     private static OptionItem DouseCooldown;
@@ -18,6 +23,7 @@ public static class Pyromaniac
     public static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
 
+    public static List<byte> DousedList = [];
     public static void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Pyromaniac, 1, zeroOne: false);
@@ -30,16 +36,14 @@ public static class Pyromaniac
         CanVent = BooleanOptionItem.Create(Id + 13, "CanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pyromaniac]);
         HasImpostorVision = BooleanOptionItem.Create(Id + 14, "ImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Pyromaniac]);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         DousedList = [];
-        IsEnable = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
 
         // Double Trigger
         var pc = Utils.GetPlayerById(playerId);
@@ -49,9 +53,13 @@ public static class Pyromaniac
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(HasImpostorVision.GetBool());
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
+    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => Pyromaniac.CanVent.GetBool();
+    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
+        => seer.Is(CustomRoles.Pyromaniac) && DousedList.Contains(target.PlayerId) ? "#BA4A00" : "";
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null) return true;
         if (target == null) return true;
