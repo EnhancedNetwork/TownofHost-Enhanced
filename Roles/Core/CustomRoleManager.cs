@@ -81,7 +81,7 @@ public static class CustomRoleManager
         CustomRoles.ShapeMaster => new ShapeMaster(),
         CustomRoles.Sniper => new Sniper(),
         CustomRoles.SoulCatcher => new SoulCatcher(),
-        //CustomRoles.Swooper => new Swooper(),
+        CustomRoles.Swooper => new Swooper(),
         CustomRoles.Stealth => new Stealth(),
         //CustomRoles.TimeThief => new TimeThief(),
         CustomRoles.Trapster => new Trapster(),

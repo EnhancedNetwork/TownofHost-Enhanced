@@ -226,7 +226,6 @@ internal class ChangeRoleSettings
             Huntsman.Init();
             Bait.Init();
             Pickpocket.Init();
-            Swooper.Init();
             Hawk.Init();
             Bloodmoon.Init();
             Wraith.Init();
@@ -609,9 +608,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Juggernaut:
                         Juggernaut.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Swooper:
-                        Swooper.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Wraith:
                         Wraith.Add(pc.PlayerId);

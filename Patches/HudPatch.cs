@@ -170,9 +170,6 @@ class HudManagerPatch
                     case CustomRoles.Vulture:
                         __instance.ReportButton.OverrideText(GetString("VultureEatButtonText"));
                         break;
-                    case CustomRoles.Swooper:
-                        __instance.ImpostorVentButton.OverrideText(GetString(Swooper.IsInvis(PlayerControl.LocalPlayer.PlayerId) ? "SwooperRevertVentButtonText" : "SwooperVentButtonText"));
-                        break;
                     case CustomRoles.Wraith:
                         __instance.KillButton.OverrideText(GetString("KillButtonText"));
                         __instance.ImpostorVentButton.OverrideText(GetString(Wraith.IsInvis(PlayerControl.LocalPlayer.PlayerId) ? "WraithRevertVentButtonText" : "WraithVentButtonText"));
@@ -251,7 +248,6 @@ class HudManagerPatch
                             LowerInfoText.text = player.GetCustomRole() switch
                             {
                                 CustomRoles.HexMaster => HexMaster.GetHexModeText(player, true),
-                                CustomRoles.Swooper => Swooper.GetHudText(player),
                                 CustomRoles.Wraith => Wraith.GetHudText(player),
                                 CustomRoles.Alchemist => Alchemist.GetHudText(player),
                                 CustomRoles.Huntsman => Huntsman.GetHudText(player),

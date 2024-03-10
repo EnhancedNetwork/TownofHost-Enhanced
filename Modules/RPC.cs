@@ -1088,9 +1088,6 @@ internal static class RPC
             case CustomRoles.Warden:
                 Warden.Add(targetId);
                 break;
-            case CustomRoles.Swooper:
-                Swooper.Add(targetId);
-                break;
             case CustomRoles.Wraith:
                 Wraith.Add(targetId);
                 break;

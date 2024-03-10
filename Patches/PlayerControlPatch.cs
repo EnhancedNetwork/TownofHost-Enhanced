@@ -398,9 +398,6 @@ class CheckMurderPatch
                 case CustomRoles.Juggernaut:
                     Juggernaut.OnCheckMurder(killer);
                     break;
-                case CustomRoles.Swooper:
-                    if (!Swooper.OnCheckMurder(killer, target)) return false;
-                    break;
                 case CustomRoles.Wraith:
                     if (!Wraith.OnCheckMurder(killer, target)) return false;
                     break;
@@ -422,7 +419,7 @@ class CheckMurderPatch
                     if (!Main.isDoused[(killer.PlayerId, target.PlayerId)] && !Main.ArsonistTimer.ContainsKey(killer.PlayerId))
                     {
                         Main.ArsonistTimer.Add(killer.PlayerId, (target, 0f));
-                        Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
+                        Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);
                         RPC.SetCurrentDousingTarget(killer.PlayerId, target.PlayerId);
                     }
                     return false;
@@ -431,7 +428,7 @@ class CheckMurderPatch
                     if (!Main.isDraw[(killer.PlayerId, target.PlayerId)] && !Main.RevolutionistTimer.ContainsKey(killer.PlayerId))
                     {
                         Main.RevolutionistTimer.TryAdd(killer.PlayerId, (target, 0f));
-                        Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
+                        Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);
                         RPC.SetCurrentDrawTarget(killer.PlayerId, target.PlayerId);
                     }
                     return false;
@@ -1089,21 +1086,16 @@ class MurderPlayerPatch
         {
             __instance.MarkDirtySettings();
             target.MarkDirtySettings();
-
-            if (needUpadteNotifyRoles)
-            {
-                Utils.NotifyRoles(SpecifySeer: killer);
-                Utils.NotifyRoles(SpecifySeer: target);
-            }
         }
         else
         {
             Utils.SyncAllSettings();
+        }
 
-            if (needUpadteNotifyRoles)
-            {
-                Utils.NotifyRoles(ForceLoop: true);
-            }
+        if (needUpadteNotifyRoles)
+        {
+            Utils.NotifyRoles(SpecifySeer: killer);
+            Utils.NotifyRoles(SpecifySeer: target);
         }
     }
 }
@@ -1852,7 +1844,6 @@ class ReportDeadBodyPatch
         if (PlagueDoctor.IsEnable) PlagueDoctor.OnReportDeadBody();
         if (Doomsayer.IsEnable) Doomsayer.OnReportDeadBody();
         if (Romantic.IsEnable) Romantic.OnReportDeadBody();
-        if (Swooper.IsEnable) Swooper.OnReportDeadBody();
         if (Wraith.IsEnable) Wraith.OnReportDeadBody();
 
         // Alchemist & Bloodlust
@@ -2154,7 +2145,7 @@ class FixedUpdateInNormalGamePatch
                                     Main.ArsonistTimer.Remove(playerId);
                                     Main.isDoused[(playerId, arTarget.PlayerId)] = true;
                                     player.RpcSetDousedPlayer(arTarget, true);
-                                    Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: arTarget, ForceLoop: true);
+                                    Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: arTarget);
                                     RPC.ResetCurrentDousingTarget(playerId);
                                 }
                                 else
@@ -2169,7 +2160,7 @@ class FixedUpdateInNormalGamePatch
                                     else
                                     {
                                         Main.ArsonistTimer.Remove(playerId);
-                                        Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: arTarget, ForceLoop: true);
+                                        Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: arTarget);
                                         RPC.ResetCurrentDousingTarget(playerId);
 
                                         Logger.Info($"Canceled: {player.GetNameWithRole()}", "Arsonist");
@@ -2213,7 +2204,7 @@ class FixedUpdateInNormalGamePatch
                             Main.RevolutionistTimer.Remove(playerId);
                             Main.isDraw[(playerId, rvTargetId)] = true;
                             player.RpcSetDrawPlayer(rv_target, true);
-                            Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: rv_target, ForceLoop: true);
+                            Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: rv_target);
                             RPC.ResetCurrentDrawTarget(playerId);
                             if (IRandom.Instance.Next(1, 100) <= Options.RevolutionistKillProbability.GetInt())
                             {
@@ -2235,7 +2226,7 @@ class FixedUpdateInNormalGamePatch
                             else
                             {
                                 Main.RevolutionistTimer.Remove(playerId);
-                                Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: rv_target, ForceLoop: true);
+                                Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: rv_target);
                                 RPC.ResetCurrentDrawTarget(playerId);
                                 Logger.Info($"Canceled: {__instance.GetNameWithRole()}", "Revolutionist");
                             }
@@ -2311,10 +2302,6 @@ class FixedUpdateInNormalGamePatch
 
                     switch (playerRole)
                     {
-                        case CustomRoles.Swooper:
-                            Swooper.OnFixedUpdate(player);
-                            break;
-
                         case CustomRoles.Wraith:
                             Wraith.OnFixedUpdate(player);
                             break;
@@ -2780,7 +2767,6 @@ class EnterVentPatch
         pc.GetRoleClass()?.OnEnterVent(pc, __instance);
 
         HexMaster.OnEnterVent(pc);
-        Swooper.OnEnterVent(pc, __instance);
         Wraith.OnEnterVent(pc, __instance);
 
         if (pc.Is(CustomRoles.Unlucky))
@@ -2934,9 +2920,6 @@ class CoEnterVentPatch
 
         __instance.myPlayer?.GetRoleClass()?.OnCoEnterVent(__instance, id);
 
-        if (__instance.myPlayer.Is(CustomRoles.Swooper))
-            Swooper.OnCoEnterVent(__instance, id);
-
         if (__instance.myPlayer.Is(CustomRoles.Wraith))
             Wraith.OnCoEnterVent(__instance, id);
        
@@ -3000,7 +2983,7 @@ class PlayerControlCompleteTaskPatch
             {
                 NameColorManager.Add(impostor.PlayerId, pc.PlayerId, "#ff1919");
             }
-            Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true);
+            Utils.NotifyRoles(SpecifySeer: pc);
         }
         if ((isTaskFinish &&
             pc.GetCustomRole() is CustomRoles.Doctor or CustomRoles.Sunnyboy) ||
