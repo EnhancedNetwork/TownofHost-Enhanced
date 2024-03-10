@@ -2241,7 +2241,7 @@ public static class Utils
 
         if (Vulture.IsEnable) Vulture.AfterMeetingTasks(notifyPlayer: false);
 
-        foreach (var playerState in Main.PlayerStates.Values.Where(pc => pc.RoleClass.IsEnable).ToArray())
+        foreach (var playerState in Main.PlayerStates.Values.ToArray())
         {
             playerState.RoleClass?.AfterMeetingTasks();
         }

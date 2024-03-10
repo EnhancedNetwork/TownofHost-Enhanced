@@ -1171,13 +1171,6 @@ public static class CheckShapeShiftPatch
         bool shapeshifting = false;
         bool shapeshiftIsHidden = true;
 
-        if (Main.PlayerStates.TryGetValue(shapeshifter.PlayerId, out var playerState))
-        {
-            shapeshifter.RejectShapeshiftAndReset();
-            playerState.RoleClass?.OnShapeshift(shapeshifter, target, false, shapeshiftIsHidden);
-            return false;
-        }
-
         switch (role)
         {
 
@@ -1226,7 +1219,7 @@ public static class CheckShapeShiftPatch
                             {
                                 targetw.SetRealKiller(shapeshifter);
                                 Logger.Info($"{targetw.GetNameWithRole()} was killed", "Warlock");
-                                cp.RpcMurderPlayerV3(targetw);//殺す
+                                cp.RpcMurderPlayerV3(targetw);
                                 shapeshifter.SetKillCooldown(forceAnime: true);
                                 shapeshifter.Notify(GetString("WarlockControlKill"));
                             }
@@ -1254,14 +1247,11 @@ public static class CheckShapeShiftPatch
                 shapeshifter.RejectShapeshiftAndReset();
                 shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 return false;
-
-            case CustomRoles.Twister:
-                shapeshifter.RejectShapeshiftAndReset();
-                Twister.TwistPlayers(shapeshifter, shapeshiftIsHidden: shapeshiftIsHidden);
-                return false;
         }
 
-        return true;
+        shapeshifter.RejectShapeshiftAndReset();
+        shapeshifter.GetRoleClass()?.OnShapeshift(shapeshifter, target, false, shapeshiftIsHidden);
+        return false;
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Shapeshift))]
@@ -1355,9 +1345,6 @@ class ShapeshiftPatch
                         }
                         Main.CursedPlayers[shapeshifter.PlayerId] = null;
                     }
-                    break;
-                case CustomRoles.Twister:
-                    Twister.TwistPlayers(shapeshifter);
                     break;
             }
         }

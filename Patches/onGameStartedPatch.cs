@@ -185,8 +185,6 @@ internal class ChangeRoleSettings
                 Main.RefixCooldownDelay = 0;
             }
 
-            FallFromLadder.Reset();
-
             // Initialize all custom roles
             foreach (var role in EnumHelper.GetAllValues<CustomRoles>())
             {
@@ -194,7 +192,6 @@ internal class ChangeRoleSettings
             }
 
             Undertaker.Init();
-            TimeThief.Init();
             HexMaster.Init();
             Executioner.Init();
             Lawyer.Init();
@@ -279,16 +276,17 @@ internal class ChangeRoleSettings
             Rainbow.Init();
             Unlucky.Init();
 
-            SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
-            DoorsReset.Initialize();
-
             //FFA
             FFAManager.Init();
 
+            FallFromLadder.Reset();
             CustomRoleManager.Initialize();
             CustomWinnerHolder.Reset();
             AntiBlackout.Reset();
             NameNotifyManager.Reset();
+
+            SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
+            DoorsReset.Initialize();
 
             IRandom.SetInstanceById(Options.RoleAssigningAlgorithm.GetValue());
 
@@ -506,9 +504,6 @@ internal class SelectRolesPatch
                     case CustomRoles.Warlock:
                         Main.CursedPlayers.Add(pc.PlayerId, null);
                         Main.isCurseAndKill.Add(pc.PlayerId, false);
-                        break;
-                    case CustomRoles.TimeThief:
-                        TimeThief.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Undertaker:
                         Undertaker.Add(pc.PlayerId);

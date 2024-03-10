@@ -87,7 +87,11 @@ class HudManagerPatch
             }
             if (player.IsAlive())
             {
-                __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
+                // Set default
+                __instance.KillButton?.OverrideText(GetString("KillButtonText"));
+                __instance.ReportButton?.OverrideText(GetString("ReportButtonText"));
+                __instance.SabotageButton?.OverrideText(GetString("SabotageButtonText"));
+
                 player.GetRoleClass()?.SetAbilityButtonText(__instance, player.PlayerId);
 
                 switch (player.GetCustomRole())
@@ -157,9 +161,6 @@ class HudManagerPatch
                     case CustomRoles.Gamer:
                         __instance.KillButton.OverrideText(GetString("GamerButtonText"));
                         break;
-                    case CustomRoles.Twister:
-                        __instance.AbilityButton.OverrideText(GetString("TwisterButtonText"));
-                        break;
                     case CustomRoles.Provocateur:
                         __instance.KillButton.OverrideText(GetString("ProvocateurButtonText"));
                         break;
@@ -216,12 +217,6 @@ class HudManagerPatch
                     case CustomRoles.Quizmaster:
                         __instance.KillButton.OverrideText(GetString("QuizmasterKillButtonText"));
                         Quizmaster.SetKillButtonText(__instance);
-                        break;
-
-                    default:
-                        __instance.KillButton.OverrideText(GetString("KillButtonText"));
-                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        __instance.SabotageButton.OverrideText(GetString("SabotageButtonText"));
                         break;
                 }
 

@@ -982,9 +982,6 @@ internal static class RPC
 
         switch (role)
         {
-            case CustomRoles.TimeThief:
-                TimeThief.Add(targetId);
-                break;
             case CustomRoles.Undertaker:
                 Undertaker.Add(targetId);
                 break;
