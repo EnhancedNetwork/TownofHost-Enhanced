@@ -152,7 +152,7 @@ public class PlayerState(byte playerId)
                 }
                 SubRoles.Remove(subRole);
 
-                if (sync) Utils.MarkEveryoneDirtySettings();
+                if (sync) MarkEveryoneDirtySettings();
             }
         }
 

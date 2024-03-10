@@ -978,6 +978,7 @@ internal static class RPC
             Main.PlayerStates[targetId].SetSubRole(role);
         }
 
+        targetId.GetRoleClassById()?.Init();
         targetId.GetRoleClassById()?.Add(targetId);
 
         switch (role)
@@ -1229,8 +1230,10 @@ internal static class RPC
                 break;
 
         }
+
         HudManager.Instance.SetHudActive(true);
     //    HudManager.Instance.Chat.SetVisible(true);
+
         if (PlayerControl.LocalPlayer.PlayerId == targetId) RemoveDisableDevicesPatch.UpdateDisableDevices();
     }
     public static void SyncRoleSkillReader(MessageReader reader)

@@ -12,7 +12,6 @@ using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Crewmate;
-using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
@@ -389,18 +388,10 @@ internal class SelectRolesPatch
 
     public static void Postfix()
     {
-        // for Modded clients
-        if (!AmongUsClient.Instance.AmHost)
-        {
-            foreach (var playerState in Main.PlayerStates.Values.ToArray())
-            {
-                playerState?.RoleClass?.Init();
-            }
-            return;
-        }
-
         try
         {
+            if (!AmongUsClient.Instance.AmHost) return;
+
             if (GameStates.IsHideNSeek)
             {
                 GameOptionsSender.AllSenders.Clear();
@@ -504,13 +495,14 @@ internal class SelectRolesPatch
                 foreach (var subRole in pair.Value.SubRoles.ToArray())
                     ExtendedPlayerControl.RpcSetCustomRole(pair.Key, subRole);
             }
-            
-            GhostRoleAssign.Add();
 
+            // Initialize Custom Roles
             foreach (var playerState in Main.PlayerStates.Values.ToArray())
             {
                 playerState?.RoleClass?.Init();
             }
+
+            GhostRoleAssign.Add();
 
             foreach (var pc in Main.AllPlayerControls)
             {
