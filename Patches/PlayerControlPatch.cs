@@ -492,9 +492,6 @@ class CheckMurderPatch
                 case CustomRoles.CursedSoul:
                     CursedSoul.OnCheckMurder(killer, target);
                     return false;
-                case CustomRoles.Admirer:
-                    Admirer.OnCheckMurder(killer, target);
-                    return false;
                 case CustomRoles.Imitator:
                     Imitator.OnCheckMurder(killer, target);
                     return false;
@@ -1573,7 +1570,7 @@ class ReportDeadBodyPatch
                         }
                         else if (tar.Is(CustomRoles.Admirer))
                         {
-                            Admirer.Add(__instance.PlayerId);
+                            __instance.GetRoleClass()?.Add(__instance.PlayerId);
                             __instance.RpcSetCustomRole(CustomRoles.Admirer);
                             __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                             tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));

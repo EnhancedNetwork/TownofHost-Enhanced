@@ -8,8 +8,6 @@ namespace TOHE.Roles.Crewmate;
 internal class Addict : RoleBase
 {
     private const int Id = 6300;
-    private static List<byte> playerIdList = [];
-
     public static bool On;
     public override bool IsEnable => On;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
@@ -19,6 +17,7 @@ internal class Addict : RoleBase
     private static OptionItem ImmortalTimeAfterVent;
     private static OptionItem FreezeTimeAfterImmortal;
 
+    private static List<byte> playerIdList = [];
     private static Dictionary<byte, float> SuicideTimer = [];
     private static Dictionary<byte, float> ImmortalTimer = [];
 

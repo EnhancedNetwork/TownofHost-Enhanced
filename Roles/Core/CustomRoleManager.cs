@@ -116,7 +116,7 @@ public static class CustomRoleManager
 
         // ==== Crewmates ====
         CustomRoles.Addict => new Addict(),
-        //ustomRoles.Admirer => new Admirer(),
+        CustomRoles.Admirer => new Admirer(),
         CustomRoles.Alchemist => new Alchemist(),
         CustomRoles.Bastion => new Bastion(),
         CustomRoles.Benefactor => new Benefactor(),

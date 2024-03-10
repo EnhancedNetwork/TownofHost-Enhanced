@@ -510,7 +510,6 @@ static class ExtendedPlayerControl
             CustomRoles.VengefulRomantic => VengefulRomantic.CanUseKillButton(pc),
             CustomRoles.Succubus => Succubus.CanUseKillButton(pc),
             CustomRoles.CursedSoul => CursedSoul.CanUseKillButton(pc),
-            CustomRoles.Admirer => Admirer.CanUseKillButton(pc),
             CustomRoles.Imitator => Imitator.CanUseKillButton(pc),
             CustomRoles.Infectious => Infectious.CanUseKillButton(pc),
             CustomRoles.Virus => pc.IsAlive(),
@@ -833,9 +832,6 @@ static class ExtendedPlayerControl
             case CustomRoles.CursedSoul:
                 CursedSoul.SetKillCooldown(player.PlayerId);
                 break;
-            case CustomRoles.Admirer:
-                Admirer.SetKillCooldown(player.PlayerId);
-                break;
             case CustomRoles.Infectious:
                 Infectious.SetKillCooldown(player.PlayerId);
                 break;
@@ -1155,7 +1151,6 @@ static class ExtendedPlayerControl
         else if (Executioner.KnowRole(seer, target)) return true;
         else if (Succubus.KnowRole(seer, target)) return true;
         else if (CursedSoul.KnowRole(seer, target)) return true;
-        else if (Admirer.KnowRole(seer, target)) return true;
         else if (Amnesiac.KnowRole(seer, target)) return true;
         else if (Infectious.KnowRole(seer, target)) return true;
         else if (Virus.KnowRole(seer, target)) return true;
@@ -1204,7 +1199,7 @@ static class ExtendedPlayerControl
             else if (seer.Is(CustomRoles.Egoist) && target.Is(CustomRoles.Egoist) && Egoist.ImpEgoistVisibalToAllies.GetBool())
                 return true;
         }
-        else if (Admirer.IsEnable && Admirer.KnowRole(seer, target)) return true;
+        else if (Admirer.On && Admirer.CheckKnowRoleTarget(seer, target)) return true;
         else if (Succubus.IsEnable && Succubus.KnowRole(seer, target)) return true;
         else if (Infectious.IsEnable && Infectious.KnowRole(seer, target)) return true;
         else if (Virus.IsEnable && Virus.KnowRole(seer, target)) return true;

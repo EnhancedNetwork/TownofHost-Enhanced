@@ -235,7 +235,6 @@ internal class ChangeRoleSettings
             RuthlessRomantic.Init();
             Succubus.Init();
             CursedSoul.Init();
-            Admirer.Init();
             Antidote.Init();
             Imitator.Init();
             Medusa.Init();
@@ -651,9 +650,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.CursedSoul:
                         CursedSoul.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Admirer:
-                        Admirer.Add(pc.PlayerId);
                         break;
                     case CustomRoles.Amnesiac:
                         Amnesiac.Add(pc.PlayerId);

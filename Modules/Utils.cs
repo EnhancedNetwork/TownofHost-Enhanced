@@ -806,9 +806,6 @@ public static class Utils
                 case CustomRoles.Warden:
                     ProgressText.Append(Warden.GetNotifyLimit(playerId));
                     break;
-                case CustomRoles.Admirer:
-                    ProgressText.Append(Admirer.GetAdmireLimit(playerId));
-                    break;
                 case CustomRoles.Infectious:
                     ProgressText.Append(Infectious.GetBiteLimit());
                     break;
