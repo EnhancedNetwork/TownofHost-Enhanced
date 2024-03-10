@@ -2564,7 +2564,6 @@ class EnterVentPatch
 
         pc.GetRoleClass()?.OnEnterVent(pc, __instance);
 
-        HexMaster.OnEnterVent(pc);
         Swooper.OnEnterVent(pc, __instance);
         Wraith.OnEnterVent(pc, __instance);
 

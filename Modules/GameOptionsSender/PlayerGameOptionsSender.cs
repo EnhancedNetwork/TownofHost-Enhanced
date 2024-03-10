@@ -134,10 +134,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.ShapeshifterCooldown = Main.isCursed ? 1f : Options.DefaultKillCooldown;
                 AURoleOptions.ShapeshifterDuration = Options.WarlockShiftDuration.GetFloat();
                 break;
-                opt.SetVision(false);
-                break;
-                opt.SetVision(false);
-                break;
             case CustomRoles.Pestilence:
                 opt.SetVision(PlagueBearer.PestilenceHasImpostorVision.GetBool());
                 break;
@@ -196,7 +192,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Werewolf:
                 Werewolf.ApplyGameOptions(opt);
                 break;
-                break;
             case CustomRoles.Traitor:
                 Traitor.ApplyGameOptions(opt);
                 break;
@@ -220,13 +215,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
         /*    case CustomRoles.Chameleon:
                 opt.SetVision(false);
                 break; */
-            
-            case CustomRoles.Gamer:
-                Gamer.ApplyGameOptions(opt);
-                break;
-            case CustomRoles.HexMaster:
-                HexMaster.ApplyGameOptions(opt);
-                break;
             //case CustomRoles.Occultist:
             //    Occultist.ApplyGameOptions(opt);
             //    break;

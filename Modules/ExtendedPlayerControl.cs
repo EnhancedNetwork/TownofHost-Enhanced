@@ -579,9 +579,9 @@ static class ExtendedPlayerControl
             CustomRoles.PotionMaster
             => true,
 
-                _ => false,
-            };
-        }
+            _ => false,
+
+        };
     }
     public static bool IsRevealedPlayer(this PlayerControl player, PlayerControl target)
     {
