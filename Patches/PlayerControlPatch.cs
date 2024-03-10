@@ -240,6 +240,11 @@ class CheckMurderPatch
             Logger.Info($"Real Killer = {killer.GetNameWithRole().RemoveHtmlTags()}", "CheckMurder");
         }
 
+        if (!Glitch.OnCheckMurderOthers(killer, target))
+        {
+            return false;
+        }
+
         var killerRoleClass = killer.GetRoleClass();
         var targetRoleClass = target.GetRoleClass();
 
@@ -273,12 +278,6 @@ class CheckMurderPatch
 
         if (Pursuer.IsEnable && Pursuer.OnClientMurder(killer))
             return false;
-
-        if (Glitch.IsEnable && Glitch.hackedIdList.ContainsKey(killer.PlayerId))
-        {
-            killer.Notify(string.Format(GetString("HackedByGlitch"), GetString("GlitchKill")));
-            return false;
-        }
 
         if (targetRole.Is(CustomRoles.Necromancer) && !Necromancer.OnKillAttempt(killer, target))
             return false;
@@ -401,17 +400,8 @@ class CheckMurderPatch
                 case CustomRoles.Witch:
                     if (!Witch.OnCheckMurder(killer, target)) return false;
                     break;
-                case CustomRoles.HexMaster:
-                    if (!HexMaster.OnCheckMurder(killer, target)) return false;
-                    break;
                 case CustomRoles.PlagueDoctor:
                     if (!PlagueDoctor.OnPDinfect(killer, target)) return false;
-                    break;
-                case CustomRoles.Glitch:
-                    if (!Glitch.OnCheckMurder(killer, target)) return false;
-                    break;
-                case CustomRoles.Huntsman:
-                    Huntsman.OnCheckMurder(killer, target);
                     break;
                 case CustomRoles.Puppeteer:
                     if (!Puppeteer.OnCheckPuppet(killer, target)) return false;
@@ -490,9 +480,6 @@ class CheckMurderPatch
                 case CustomRoles.Hater:
                     if (!Hater.OnCheckMurder(killer, target)) return false;
                     break;
-                case CustomRoles.Gamer:
-                    Gamer.CheckGamerMurder(killer, target);
-                    return false;
                 case CustomRoles.DarkHide:
                     DarkHide.OnCheckMurder(killer, target);
                     break;
@@ -529,13 +516,6 @@ class CheckMurderPatch
                 case CustomRoles.Imitator:
                     Imitator.OnCheckMurder(killer, target);
                     return false;
-                case CustomRoles.Infectious:
-                    Infectious.OnCheckMurder(killer, target);
-                    return false;
-                case CustomRoles.Jackal:
-                    if (Jackal.OnCheckMurder(killer, target))
-                        return false;
-                    break;
                 case CustomRoles.Shaman:
                     if (Main.ShamanTargetChoosen == false)
                     {
@@ -695,27 +675,8 @@ class CheckMurderPatch
         if (killer.Is(CustomRoleTypes.Impostor) && !Madmate.ImpCanKillMadmate.GetBool() && target.Is(CustomRoles.Madmate))
             return false;
 
-        if (!Jackal.JackalCanKillSidekick.GetBool())
-        {
-            // Jackal can kill Sidekick/Recruit
-            if (killerRole.Is(CustomRoles.Jackal) && (targetRole.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit)))
-                return false;
-
-            // Sidekick/Recruit can kill Jackal
-            else if ((killerRole.Is(CustomRoles.Sidekick) || killer.Is(CustomRoles.Recruit)) && targetRole.Is(CustomRoles.Jackal))
-                return false;
-        }
-        
-        if (!Jackal.SidekickCanKillSidekick.GetBool())
-        {
-            // Sidekick can kill Sidekick/Recruit
-            if (killer.Is(CustomRoles.Sidekick) && (target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit)))
-                return false;
-
-            // Recruit can kill Recruit/Sidekick
-            if (killer.Is(CustomRoles.Recruit) && (target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick)))
-                return false;
-        }
+        // Jackal
+        if (!Jackal.RpcCheckAndMurder(killer, target)) return false;
 
         switch (killerRole)
         {
@@ -809,21 +770,6 @@ class CheckMurderPatch
             //    }
             //    break;
             case CustomRoles.Jinx:
-                if (Main.JinxSpellCount[target.PlayerId] <= 0) break;
-                if (killer.Is(CustomRoles.Pestilence)) break;
-                if (killer == target) break;
-                killer.RpcGuardAndKill(target);
-                target.RpcGuardAndKill(target);
-                Main.JinxSpellCount[target.PlayerId] -= 1;
-                RPC.SendRPCJinxSpellCount(target.PlayerId);
-                if (Jinx.killAttacker.GetBool())
-                {
-                    killer.SetRealKiller(target);
-                    Logger.Info($"{target.GetNameWithRole()} : {Main.JinxSpellCount[target.PlayerId]}回目", "Jinx");
-                    Main.PlayerStates[killer.PlayerId].deathReason = PlayerState.DeathReason.Jinx;
-                    killer.RpcMurderPlayerV3(killer);
-                }
-                return false;
             //击杀老兵
             case CustomRoles.Masochist:
 
@@ -842,20 +788,7 @@ class CheckMurderPatch
                 return false;
             //return true;
             //玩家被击杀事件
-            case CustomRoles.Gamer:
-                if (!Gamer.CheckMurder(killer, target))
-                    return false;
-                break;
             //嗜血骑士技能生效中
-            case CustomRoles.BloodKnight:
-                if (BloodKnight.InProtect(target.PlayerId))
-                {
-                    killer.RpcGuardAndKill(target);
-                    if (!Options.DisableShieldAnimations.GetBool()) target.RpcGuardAndKill();
-                    target.Notify(GetString("BKOffsetKill"));
-                    return false;
-                }
-                break;
             case CustomRoles.Wildling:
                 if (Wildling.InProtect(target.PlayerId))
                 {
@@ -1086,9 +1019,6 @@ class MurderPlayerPatch
         }
         switch (killer.GetCustomRole())
         {
-            case CustomRoles.BloodKnight:
-                BloodKnight.OnMurderPlayer(killer, target);
-                break;
             case CustomRoles.Wildling:
                 Wildling.OnMurderPlayer(killer, target);
                 break;
@@ -1858,8 +1788,8 @@ class ReportDeadBodyPatch
 
                     if (tar.Is(CustomRoles.Jackal))
                     {
-                        Sidekick.Add(__instance.PlayerId);
                         __instance.RpcSetCustomRole(CustomRoles.Sidekick);
+                        __instance.GetRoleClass()?.Add(__instance.PlayerId);
                         __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                         tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                     }
@@ -1874,8 +1804,8 @@ class ReportDeadBodyPatch
 
                     if (tar.Is(CustomRoles.BloodKnight))
                     {
-                        BloodKnight.Add(__instance.PlayerId);
                         __instance.RpcSetCustomRole(CustomRoles.BloodKnight);
+                        __instance.GetRoleClass()?.Add(__instance.PlayerId);
                         __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
                         tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                     }
@@ -1979,7 +1909,6 @@ class ReportDeadBodyPatch
             playerStates.RoleClass?.OnReportDeadBody(player, target?.Object);
         }
 
-        if (Huntsman.IsEnable) Huntsman.OnReportDeadBody();
         if (Mercenary.IsEnable) Mercenary.OnReportDeadBody();
         if (SoulCollector.IsEnable) SoulCollector.OnReportDeadBody();
         if (Puppeteer.IsEnable) Puppeteer.OnReportDeadBody();
@@ -2076,12 +2005,8 @@ class FixedUpdateInNormalGamePatch
         byte id = __instance.PlayerId;
         if (AmongUsClient.Instance.AmHost && GameStates.IsInTask && ReportDeadBodyPatch.CanReport[id] && ReportDeadBodyPatch.WaitReport[id].Count > 0)
         {
-            if (Glitch.hackedIdList.ContainsKey(id))
-            {
-                __instance.Notify(string.Format(GetString("HackedByGlitch"), "Report"));
-                Logger.Info("Dead Body Report Blocked (player is hacked by Glitch)", "FixedUpdate.ReportDeadBody");
-                ReportDeadBodyPatch.WaitReport[id].Clear();
-            }
+            if(!Glitch.OnCheckFixedUpdateReport(__instance, id))
+            { }
             else
             {
                 var info = ReportDeadBodyPatch.WaitReport[id][0];
@@ -2442,10 +2367,6 @@ class FixedUpdateInNormalGamePatch
                             Lightning.OnFixedUpdate();
                             break;
 
-                        case CustomRoles.BloodKnight:
-                            BloodKnight.OnFixedUpdate(player);
-                            break;
-
                         case CustomRoles.Wildling:
                             Wildling.OnFixedUpdate(player);
                             break;
@@ -2456,9 +2377,6 @@ class FixedUpdateInNormalGamePatch
 
                         case CustomRoles.Pelican:
                             Pelican.OnFixedUpdate();
-                            break;
-                        case CustomRoles.Glitch:
-                            Glitch.UpdateHackCooldown(player);
                             break;
 
                         case CustomRoles.Mario:
@@ -2652,10 +2570,6 @@ class FixedUpdateInNormalGamePatch
 
                 if (Executioner.IsEnable)
                     Mark.Append(Executioner.TargetMark(seer, target));
-
-                if (Gamer.IsEnable)
-                    Mark.Append(Gamer.TargetMark(seer, target));
-
                 if (Totocalcio.IsEnable)
                     Mark.Append(Totocalcio.TargetMark(seer, target));
 
@@ -2893,7 +2807,6 @@ class EnterVentPatch
         pc.GetRoleClass()?.OnEnterVent(pc, __instance);
 
         Witch.OnEnterVent(pc);
-        HexMaster.OnEnterVent(pc);
         //Occultist.OnEnterVent(pc);
 
      /* if (pc.Is(CustomRoles.Wraith)) // THIS WAS FOR WEREWOLF TESTING PURPOSES, PLEASE IGNORE
@@ -2994,15 +2907,8 @@ class CoEnterVentPatch
 
         if (RiftMaker.IsEnable) RiftMaker.OnVent(__instance.myPlayer, id);
 
-        if (Glitch.hackedIdList.ContainsKey(__instance.myPlayer.PlayerId))
-        {
-            _ = new LateTask(() =>
-            {
-                __instance.myPlayer?.Notify(string.Format(GetString("HackedByGlitch"), GetString("GlitchVent")));
-                __instance.myPlayer?.MyPhysics?.RpcBootFromVent(id);
-            }, 0.5f, "Player Boot From Vent By Glith");
+        if (Glitch.OnCoEnterVentOthers(__instance, id)) 
             return true;
-        }
 
         if (Bastion.OnOthersEnterVent(__instance, id))
         {

@@ -55,7 +55,6 @@ public static class NameColorManager
 
         // Bounties
         if (seer.Is(CustomRoles.BountyHunter) && BountyHunter.GetTarget(seer) == target.PlayerId) color = "bf1313";
-        if (seer.Is(CustomRoles.Huntsman) && Huntsman.Targets.Contains(target.PlayerId)) color = "6e5524";
 
         // Mastermind
         if (seer.Is(CustomRoles.Mastermind) && Mastermind.ManipulateDelays.ContainsKey(target.PlayerId)) color = "#00ffa5";
@@ -63,32 +62,7 @@ public static class NameColorManager
 
 
         // Amnesiac
-        if (seer.Is(CustomRoles.Jackal) && (target.Is(CustomRoles.Jackal))) color = Main.roleColors[CustomRoles.Jackal];
-        if (seer.Is(CustomRoles.Juggernaut) && (target.Is(CustomRoles.Juggernaut))) color = Main.roleColors[CustomRoles.Juggernaut];
-        if (seer.Is(CustomRoles.SerialKiller) && (target.Is(CustomRoles.SerialKiller))) color = Main.roleColors[CustomRoles.SerialKiller];
-        if (seer.Is(CustomRoles.Pyromaniac) && target.Is(CustomRoles.Pyromaniac)) color = Main.roleColors[CustomRoles.Pyromaniac];
-        if (seer.Is(CustomRoles.Necromancer) && target.Is(CustomRoles.Necromancer)) color = Main.roleColors[CustomRoles.Necromancer];
-        if (seer.Is(CustomRoles.Werewolf) && (target.Is(CustomRoles.Werewolf))) color = Main.roleColors[CustomRoles.Werewolf];
-        if (seer.Is(CustomRoles.Huntsman) && target.Is(CustomRoles.Huntsman)) color = Main.roleColors[CustomRoles.Huntsman];
-        if (seer.Is(CustomRoles.Shroud) && (target.Is(CustomRoles.Shroud))) color = Main.roleColors[CustomRoles.Shroud];
-        if (seer.Is(CustomRoles.Jinx) && (target.Is(CustomRoles.Jinx))) color = Main.roleColors[CustomRoles.Jinx];
-        if (seer.Is(CustomRoles.Wraith) && (target.Is(CustomRoles.Wraith))) color = Main.roleColors[CustomRoles.Wraith];
-        if (seer.Is(CustomRoles.HexMaster) && (target.Is(CustomRoles.HexMaster))) color = Main.roleColors[CustomRoles.HexMaster];
-        //if (seer.Is(CustomRoles.Occultist) && (target.Is(CustomRoles.Occultist))) color = Main.roleColors[CustomRoles.Occultist];
-        if (seer.Is(CustomRoles.BloodKnight) && (target.Is(CustomRoles.BloodKnight))) color = Main.roleColors[CustomRoles.BloodKnight];
-        if (seer.Is(CustomRoles.Pelican) && (target.Is(CustomRoles.Pelican))) color = Main.roleColors[CustomRoles.Pelican];
-        if (seer.Is(CustomRoles.Poisoner) && (target.Is(CustomRoles.Poisoner))) color = Main.roleColors[CustomRoles.Poisoner];
-        if (seer.Is(CustomRoles.Infectious) && (target.Is(CustomRoles.Infectious))) color = Main.roleColors[CustomRoles.Infectious];
-        if (seer.Is(CustomRoles.Virus) && (target.Is(CustomRoles.Virus))) color = Main.roleColors[CustomRoles.Virus];
-        if (seer.Is(CustomRoles.Parasite) && (target.Is(CustomRoles.Parasite))) color = Main.roleColors[CustomRoles.Parasite];
-        if (seer.Is(CustomRoles.Traitor) && (target.Is(CustomRoles.Traitor))) color = Main.roleColors[CustomRoles.Traitor];
-        if (seer.Is(CustomRoles.DarkHide) && (target.Is(CustomRoles.DarkHide))) color = Main.roleColors[CustomRoles.DarkHide];
-        if (seer.Is(CustomRoles.Pickpocket) && (target.Is(CustomRoles.Pickpocket))) color = Main.roleColors[CustomRoles.Pickpocket];
-        if (seer.Is(CustomRoles.Spiritcaller) && (target.Is(CustomRoles.Spiritcaller))) color = Main.roleColors[CustomRoles.Spiritcaller];
-        if (seer.Is(CustomRoles.Medusa) && (target.Is(CustomRoles.Medusa))) color = Main.roleColors[CustomRoles.Medusa];
-        if (seer.Is(CustomRoles.PotionMaster) && (target.Is(CustomRoles.PotionMaster))) color = Main.roleColors[CustomRoles.PotionMaster];
-        if (seer.Is(CustomRoles.Glitch) && (target.Is(CustomRoles.Glitch))) color = Main.roleColors[CustomRoles.Glitch];
-        if (seer.Is(CustomRoles.Succubus) && (target.Is(CustomRoles.Succubus))) color = Main.roleColors[CustomRoles.Succubus];
+        if (seer.GetCustomRole() == target.GetCustomRole() && seer.GetCustomRole().IsNK()) color = Main.roleColors[seer.GetCustomRole()];
 
         if (seer.Is(CustomRoles.Refugee) && (target.Is(CustomRoleTypes.Impostor))) color = Main.roleColors[CustomRoles.ImpostorTOHE];
         if (seer.Is(CustomRoleTypes.Impostor) && (target.Is(CustomRoles.Refugee))) color = Main.roleColors[CustomRoles.Refugee];
@@ -158,9 +132,7 @@ public static class NameColorManager
         }
 
         // Jackal recruit
-        if (seer.Is(CustomRoles.Jackal) && (target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit))) color = Main.roleColors[CustomRoles.Jackal];
-        if (seer.Is(CustomRoles.Sidekick) && (target.Is(CustomRoles.Jackal) || target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick))) color = Main.roleColors[CustomRoles.Jackal];
-        if (seer.Is(CustomRoles.Recruit) && (target.Is(CustomRoles.Jackal) || target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit))) color = Main.roleColors[CustomRoles.Jackal];
+        if (Jackal.JackalKnowRoleTarget(seer, target)) color = Main.roleColors[CustomRoles.Jackal];
 
         // Spiritcaller can see Evil Spirits in meetings
         if (seer.Is(CustomRoles.Spiritcaller) && target.Is(CustomRoles.EvilSpirit)) color = Main.roleColors[CustomRoles.EvilSpirit];

@@ -1187,7 +1187,7 @@ internal class ChatCommands
             "革命家" or "革命者" => GetString("Revolutionist"),
             "單身狗" => GetString("Hater"),
             "柯南" => GetString("Konan"),
-            "玩家" => GetString("Gamer"),
+            "玩家" => GetString("Demon"),
             "潛藏者" or "潜藏" => GetString("DarkHide"),
             "工作狂" => GetString("Workaholic"),
             "至日者" or "至日" => GetString("Solsticer"),

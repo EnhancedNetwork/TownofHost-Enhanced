@@ -63,7 +63,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Hex:
-                    if (!HexMaster.IsEnable)
+                    if (CustomRoles.HexMaster.IsEnable())
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }
@@ -285,7 +285,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Hack:
-                    if (!Glitch.IsEnable)
+                    if (!Glitch.HasEnabled)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }

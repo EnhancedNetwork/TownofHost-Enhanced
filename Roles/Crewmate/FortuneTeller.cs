@@ -280,7 +280,7 @@ internal class FortuneTeller : RoleBase
                 CustomRoles.Alchemist,
                 CustomRoles.Morphling],
                 
-                [CustomRoles.Gamer,
+                [CustomRoles.Demon,
                 CustomRoles.Zombie,
                 CustomRoles.Celebrity,
                 CustomRoles.SuperStar,

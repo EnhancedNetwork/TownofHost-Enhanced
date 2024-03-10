@@ -187,8 +187,6 @@ class ExileControllerWrapUpPatch
         if (Witch.IsEnable) 
             Witch.RemoveSpelledPlayer();
 
-        if (HexMaster.IsEnable)
-            HexMaster.RemoveHexedPlayer();
         
         foreach (var player in Main.AllPlayerControls)
         {
@@ -209,7 +207,7 @@ class ExileControllerWrapUpPatch
                     break;
             }
 
-            if (Infectious.IsEnable)
+            if (Infectious.HasEnabled)
             {
                 if (playerRole.Is(CustomRoles.Infectious) && !player.IsAlive())
                 {

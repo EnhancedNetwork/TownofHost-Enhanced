@@ -77,7 +77,7 @@ enum CustomRPC
     SetDrawPlayer,
     SetCrewpostorTasksDone,
     SetCurrentDrawTarget,
-    SetGamerHealth,
+    SetDemonHealth,
     RpcPassBomb,
     SyncRomanticTarget,
     SyncVengefulRomanticTarget,
@@ -488,8 +488,8 @@ internal class RPCHandlerPatch
                 byte killerId = reader.ReadByte();
                 RPC.SetRealKiller(targetId, killerId);
                 break;
-            case CustomRPC.SetGamerHealth:
-                Gamer.ReceiveRPC(reader);
+            case CustomRPC.SetDemonHealth:
+                Demon.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetPelicanEatenNum:
                 Pelican.ReceiveRPC(reader);
@@ -546,12 +546,7 @@ internal class RPCHandlerPatch
                 CursedWolf.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetJinxSpellCount:
-                byte JinxId = reader.ReadByte();
-                int JinxGuardNum = reader.ReadInt32();
-                if (Main.JinxSpellCount.ContainsKey(JinxId))
-                    Main.JinxSpellCount[JinxId] = JinxGuardNum;
-                else
-                    Main.JinxSpellCount.Add(JinxId, Jinx.JinxSpellTimes.GetInt());
+                Jinx.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetCollectorVotes:
                 Collector.ReceiveRPC(reader);
@@ -1018,15 +1013,6 @@ internal static class RPC
             case CustomRoles.Lawyer:
                 Lawyer.Add(targetId);
                 break;
-            case CustomRoles.HexMaster:
-                HexMaster.Add(targetId);
-                break;
-            case CustomRoles.Jackal:
-                Jackal.Add(targetId);
-                break;
-            case CustomRoles.Sidekick:
-                Sidekick.Add(targetId);
-                break;
             case CustomRoles.Doppelganger:
                 Doppelganger.Add(targetId);
                 break;
@@ -1066,17 +1052,11 @@ internal static class RPC
             case CustomRoles.Pelican:
                 Pelican.Add(targetId);
                 break;
-            case CustomRoles.Glitch:
-                Glitch.Add(targetId);
-                break;
             case CustomRoles.Pursuer:
                 Pursuer.Add(targetId);
                 break;
             case CustomRoles.PotionMaster:
                 PotionMaster.Add(targetId);
-                break;
-            case CustomRoles.Gamer:
-                Gamer.Add(targetId);
                 break;
             case CustomRoles.Lightning:
                 Lightning.Add(targetId);
@@ -1092,10 +1072,6 @@ internal static class RPC
                 break;
             case CustomRoles.Taskinator:
                 Taskinator.Add(targetId);
-                break;
-            case CustomRoles.Jinx:
-                Main.JinxSpellCount[targetId] = Jinx.JinxSpellTimes.GetInt();
-                Jinx.Add(targetId);
                 break;
             case CustomRoles.Ninja:
                 Ninja.Add(targetId);
@@ -1117,9 +1093,6 @@ internal static class RPC
                 break;
             case CustomRoles.Wraith:
                 Wraith.Add(targetId);
-                break;
-            case CustomRoles.BloodKnight:
-                BloodKnight.Add(targetId);
                 break;
             case CustomRoles.Alchemist:
                 Alchemist.Add(targetId);
@@ -1151,9 +1124,6 @@ internal static class RPC
             case CustomRoles.Imitator:
                 Imitator.Add(targetId);
                 break;
-            case CustomRoles.Infectious:
-                Infectious.Add(targetId);
-                break;
             case CustomRoles.Virus:
                 Virus.Add(targetId);
                 break;
@@ -1174,9 +1144,6 @@ internal static class RPC
                 break;
             case CustomRoles.Traitor:
                 Traitor.Add(targetId);
-                break;
-            case CustomRoles.Huntsman:
-                Huntsman.Add(targetId);
                 break;
             case CustomRoles.Kamikaze:
                 Kamikaze.Add(targetId);
@@ -1441,13 +1408,6 @@ internal static class RPC
             writer.Write(targetId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
-    }
-    public static void SendRPCJinxSpellCount(byte playerId)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetJinxSpellCount, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.WritePacked(Main.JinxSpellCount[playerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ResetCurrentDousingTarget(byte arsonistId) => SetCurrentDousingTarget(arsonistId, 255);
     public static void ResetCurrentDrawTarget(byte arsonistId) => SetCurrentDrawTarget(arsonistId, 255);

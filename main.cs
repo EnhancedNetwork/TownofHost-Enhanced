@@ -171,7 +171,6 @@ public class Main : BasePlugin
     public static Dictionary<byte, int> ParaUsedButtonCount = [];
     public static Dictionary<byte, int> MarioVentCount = [];
     public static Dictionary<byte, long> AllKillers = [];
-    public static Dictionary<byte, int> JinxSpellCount = [];
     public static int AliveImpostorCount;
     public static bool isCursed;
     public static Dictionary<byte, bool> CheckShapeshift = [];
@@ -688,7 +687,7 @@ public enum CustomRoles
     Collector,
     Succubus, //cultist
     CursedSoul,
-    Gamer, //demon
+    Demon, 
     Doomsayer,
     Doppelganger,
     Executioner,
@@ -863,7 +862,7 @@ public enum CustomWinner
     Pelican = CustomRoles.Pelican,
     Youtuber = CustomRoles.Youtuber,
     Egoist = CustomRoles.Egoist,
-    Gamer = CustomRoles.Gamer,
+    Demon = CustomRoles.Demon,
     DarkHide = CustomRoles.DarkHide,
     Workaholic = CustomRoles.Workaholic,
     Collector = CustomRoles.Collector,

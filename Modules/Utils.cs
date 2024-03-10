@@ -585,7 +585,7 @@ public static class Utils
             case CustomRoles.Medusa:
             case CustomRoles.Revolutionist:
             case CustomRoles.Hater:
-            case CustomRoles.Gamer:
+            case CustomRoles.Demon:
             case CustomRoles.HexMaster:
             //case CustomRoles.Occultist:
             case CustomRoles.Wraith:
@@ -770,10 +770,6 @@ public static class Utils
                     var draw = GetDrawPlayerCount(playerId, out var _);
                     ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Revolutionist).ShadeColor(0.25f), $"({draw.Item1}/{draw.Item2})"));
                     break;
-                case CustomRoles.Jinx:
-                    int JinxSpellCount = Main.JinxSpellCount[playerId];
-                    ProgressText.Append(ColorString(GetRoleColor(CustomRoles.Jinx), $"({JinxSpellCount})"));
-                    break;
                 case CustomRoles.Collector:
                     ProgressText.Append(Collector.GetProgressText(playerId));
                     break;
@@ -813,18 +809,11 @@ public static class Utils
                 case CustomRoles.Admirer:
                     ProgressText.Append(Admirer.GetAdmireLimit(playerId));
                     break;
-                case CustomRoles.Infectious:
-                    ProgressText.Append(Infectious.GetBiteLimit());
-                    break;
                 case CustomRoles.Virus:
                     ProgressText.Append(Virus.GetInfectLimit());
                     break;
                 case CustomRoles.PotionMaster:
                     ProgressText.Append(PotionMaster.GetRitualCount(playerId));
-                    break;
-                case CustomRoles.Jackal:
-                    if (Jackal.CanRecruitSidekick.GetBool())
-                        ProgressText.Append(Jackal.GetRecruitLimit(playerId));
                     break;
                 case CustomRoles.Doppelganger:
                     ProgressText.Append(Doppelganger.GetStealLimit(playerId));
@@ -1816,9 +1805,6 @@ public static class Utils
                 if (CustomRoles.Solsticer.RoleExist())
                     SelfMark.Append(Solsticer.GetWarningArrow(seer, seer));
 
-                if (Gamer.IsEnable)
-                    SelfMark.Append(Gamer.TargetMark(seer, seer));
-
                 if (Sniper.IsEnable)
                     SelfMark.Append(Sniper.GetShotNotify(seer.PlayerId));
 
@@ -1848,10 +1834,6 @@ public static class Utils
                             SelfSuffix.Append(Witch.GetSpellModeText(seer, false));
                             break;
 
-                        case CustomRoles.HexMaster:
-                            SelfSuffix.Append(HexMaster.GetHexModeText(seer, false));
-                            break;
-
                         //case CustomRoles.Occultist:
                         //    SelfSuffix.Append(Occultist.GetHexModeText(seer, false));
                         //    break;
@@ -1874,9 +1856,6 @@ public static class Utils
 
                     if (Witch.IsEnable)
                         SelfMark.Append(Witch.GetSpelledMark(seer.PlayerId, true));
-
-                    if (HexMaster.IsEnable)
-                        SelfMark.Append(HexMaster.GetHexedMark(seer.PlayerId, true));
 
                     //SelfMark.Append(Occultist.GetCursedMark(seer.PlayerId, true));
                 }
@@ -2017,9 +1996,6 @@ public static class Utils
                             if (Witch.IsEnable)
                                 TargetMark.Append(Witch.GetSpelledMark(target.PlayerId, true));
 
-                            if (HexMaster.IsEnable)
-                                TargetMark.Append(HexMaster.GetHexedMark(target.PlayerId, true));
-
                             //if (Occultist.IsEnable)
                             //    TargetMark.Append(Occultist.GetCursedMark(target.PlayerId, true));
 
@@ -2051,8 +2027,6 @@ public static class Utils
                         if (Executioner.IsEnable)
                             TargetMark.Append(Executioner.TargetMark(seer, target));
 
-                        if (Gamer.IsEnable)
-                            TargetMark.Append(Gamer.TargetMark(seer, target));
 
                         if (Totocalcio.IsEnable)
                             TargetMark.Append(Totocalcio.TargetMark(seer, target));
@@ -2287,7 +2261,6 @@ public static class Utils
         if (Collector.IsEnable) Collector.AfterMeetingTasks();
         if (Swooper.IsEnable) Swooper.AfterMeetingTasks();
         if (Wraith.IsEnable) Wraith.AfterMeetingTasks();
-        if (Glitch.IsEnable) Glitch.AfterMeetingTasks();
         if (Mercenary.IsEnable) Mercenary.AfterMeetingTasks();
         if (Penguin.IsEnable) Penguin.AfterMeetingTasks();
         if (Taskinator.IsEnable) Taskinator.AfterMeetingTasks();

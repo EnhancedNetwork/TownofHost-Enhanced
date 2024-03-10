@@ -126,9 +126,6 @@ class HudManagerPatch
                     case CustomRoles.Witch:
                         Witch.GetAbilityButtonText(__instance);
                         break;
-                    case CustomRoles.HexMaster:
-                        HexMaster.GetAbilityButtonText(__instance);
-                        break;
                     case CustomRoles.Vampire:
                     case CustomRoles.Vampiress:
                         Vampire.SetKillButtonText();
@@ -179,15 +176,8 @@ class HudManagerPatch
                     case CustomRoles.Maverick:
                         __instance.KillButton.OverrideText(GetString("KillButtonText"));
                         break;
-                    case CustomRoles.Glitch:
-                        __instance.KillButton.OverrideText(GetString("KillButtonText"));
-                        __instance.SabotageButton.OverrideText(GetString("MimicButtonText"));
-                        break;
                     case CustomRoles.Hater:
                         __instance.KillButton.OverrideText(GetString("HaterButtonText"));
-                        break;
-                    case CustomRoles.Gamer:
-                        __instance.KillButton.OverrideText(GetString("GamerButtonText"));
                         break;
                     case CustomRoles.Lightning:
                         __instance.KillButton.OverrideText(GetString("LightningButtonText"));
@@ -257,9 +247,6 @@ class HudManagerPatch
                     case CustomRoles.Amnesiac:
                         __instance.ReportButton.OverrideText(GetString("RememberButtonText"));
                         break;
-                    case CustomRoles.Infectious:
-                        __instance.KillButton.OverrideText(GetString("InfectiousKillButtonText"));
-                        break;
                     case CustomRoles.Imitator:
                         __instance.KillButton.OverrideText(GetString("ImitatorKillButtonText"));
                         break;
@@ -323,13 +310,9 @@ class HudManagerPatch
                             LowerInfoText.text = player.GetCustomRole() switch
                             {
                                 CustomRoles.Witch => Witch.GetSpellModeText(player, true),
-                                CustomRoles.HexMaster => HexMaster.GetHexModeText(player, true),
                                 CustomRoles.Swooper => Swooper.GetHudText(player),
                                 CustomRoles.Wraith => Wraith.GetHudText(player),
                                 CustomRoles.Alchemist => Alchemist.GetHudText(player),
-                                CustomRoles.Huntsman => Huntsman.GetHudText(player),
-                                CustomRoles.Glitch => Glitch.GetHudText(player),
-                                CustomRoles.BloodKnight => BloodKnight.GetHudText(player),
                                 CustomRoles.Wildling => Wildling.GetHudText(player),
                                 CustomRoles.PlagueDoctor => PlagueDoctor.GetLowerTextOthers(player),
                                 _ => roleClass?.GetLowerText(player, isForMeeting: GameStates.IsMeeting, isForHud: true) ?? "",
@@ -456,6 +439,8 @@ class SetHudActivePatch
         var player = PlayerControl.LocalPlayer;
         if (player == null) return;
 
+        player.GetRoleClass()?.SetHudActive(__instance, isActive);
+
         switch (player.GetCustomRole())
         {
             case CustomRoles.Deputy:
@@ -466,12 +451,9 @@ class SetHudActivePatch
             case CustomRoles.Pelican:
             case CustomRoles.Revolutionist:
             case CustomRoles.Hater:
-            case CustomRoles.Gamer:
             case CustomRoles.DarkHide:
             case CustomRoles.Provocateur:
             case CustomRoles.Overseer:
-                break;
-
             case CustomRoles.KillingMachine:
                 __instance.SabotageButton.ToggleVisible(false);
                 __instance.AbilityButton.ToggleVisible(false);
@@ -481,17 +463,8 @@ class SetHudActivePatch
             case CustomRoles.Refugee:
                 __instance.SabotageButton.ToggleVisible(true);
                 break;
-            case CustomRoles.Jackal:
-                Jackal.SetHudActive(__instance, isActive);
-                break;
-            case CustomRoles.Sidekick:
-                Sidekick.SetHudActive(__instance, isActive);
-                break;
             case CustomRoles.Traitor:
                 Traitor.SetHudActive(__instance, isActive);
-                break;
-            case CustomRoles.Glitch:
-                Glitch.SetHudActive(__instance, isActive);
                 break;
             
         }

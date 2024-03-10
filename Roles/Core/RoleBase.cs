@@ -272,6 +272,9 @@ public abstract class RoleBase
     /// </summary>
     public virtual int AddRealVotesNum(PlayerVoteArea PVA) => 0;
 
+    public virtual void SetHudActive(HudManager hud, bool IsActive)
+    { }
+
     // Set text for Kill/Shapeshift/Report/Vent/Protect button
     public virtual void SetAbilityButtonText(HudManager hud, byte playerId) => hud.KillButton?.OverrideText(Translator.GetString("KillButtonText"));
     public virtual Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => null;

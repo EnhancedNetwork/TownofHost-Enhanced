@@ -610,12 +610,6 @@ public static class Options
          "GuesserMode.All", "GuesserMode.Harmful", "GuesserMode.Random"
      }; */
     
-    public static readonly string[] sidekickCountMode =
-    [
-        "SidekickCountMode.Jackal",
-        "SidekickCountMode.None",
-        "SidekickCountMode.Original",
-    ];
     public static readonly string[] suffixModes =
     [
         "SuffixMode.None",
@@ -1756,7 +1750,7 @@ public static class Options
 
         BloodKnight.SetupCustomOption();
 
-        Gamer.SetupCustomOption();
+        Demon.SetupCustomOption();
 
         Glitch.SetupCustomOption();
 

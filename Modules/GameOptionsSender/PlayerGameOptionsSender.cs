@@ -214,15 +214,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.ShapeshifterCooldown = Wildling.ShapeshiftCD.GetFloat();
                 AURoleOptions.ShapeshifterDuration = Wildling.ShapeshiftDur.GetFloat();
                 break;
-            case CustomRoles.Jackal:
-                Jackal.ApplyGameOptions(opt);
-                break;
-            case CustomRoles.Sidekick:
-                Sidekick.ApplyGameOptions(opt);
-                break;
-            case CustomRoles.Huntsman:
-                Huntsman.ApplyGameOptions(opt);
-                break;
             case CustomRoles.Vulture:
                 Vulture.ApplyGameOptions(opt);
                 AURoleOptions.EngineerCooldown = 0f;
@@ -259,9 +250,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Traitor:
                 Traitor.ApplyGameOptions(opt);
                 break;
-            case CustomRoles.Glitch:
-                Glitch.ApplyGameOptions(opt);
-                break;
             case CustomRoles.Shroud:
                 Shroud.ApplyGameOptions(opt);
                 break;
@@ -270,9 +258,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 break;
             case CustomRoles.Medusa:
                 Medusa.ApplyGameOptions(opt);
-                break;
-            case CustomRoles.Jinx:
-                Jinx.ApplyGameOptions(opt);
                 break;
             case CustomRoles.PotionMaster:
                 PotionMaster.ApplyGameOptions(opt);
@@ -291,9 +276,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Doomsayer:
                 opt.SetVision(Doomsayer.ImpostorVision.GetBool());
                 break;
-            case CustomRoles.Infectious:
-                opt.SetVision(Infectious.HasImpostorVision.GetBool());
-                break;
             case CustomRoles.Doppelganger:
                 opt.SetVision(Doppelganger.HasImpostorVision.GetBool());
                 break;
@@ -303,19 +285,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Parasite:
                 opt.SetVision(true);
                 break;
-        /*    case CustomRoles.Chameleon:
-                opt.SetVision(false);
-                break; */
-            
-            case CustomRoles.Gamer:
-                Gamer.ApplyGameOptions(opt);
-                break;
-            case CustomRoles.HexMaster:
-                HexMaster.ApplyGameOptions(opt);
-                break;
-            //case CustomRoles.Occultist:
-            //    Occultist.ApplyGameOptions(opt);
-            //    break;
             case CustomRoles.Wraith:
                 Wraith.ApplyGameOptions(opt);
                 break;
@@ -338,9 +307,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Sunnyboy:
                 AURoleOptions.ScientistCooldown = 0f;
                 AURoleOptions.ScientistBatteryCharge = 60f;
-                break;
-            case CustomRoles.BloodKnight:
-                BloodKnight.ApplyGameOptions(opt);
                 break;
             case CustomRoles.Mario:
                 AURoleOptions.EngineerCooldown = Options.MarioVentCD.GetFloat();

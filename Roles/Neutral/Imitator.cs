@@ -90,24 +90,18 @@ public static class Imitator
             RememberLimit[killer.PlayerId]--;
             SendRPC(killer.PlayerId);
             killer.RpcSetCustomRole(role);
-
+            killer.GetRoleClass().Add(killer.PlayerId);
             //Do those trash add check here
             switch (role)
             {
                 case CustomRoles.Jackal:
                     Jackal.Add(killer.PlayerId);
                     break;
-                case CustomRoles.HexMaster:
-                    HexMaster.Add(killer.PlayerId);
-                    break;
                 case CustomRoles.Poisoner:
                     Poisoner.Add(killer.PlayerId);
                     break;
                 case CustomRoles.Juggernaut:
                     Juggernaut.Add(killer.PlayerId);
-                    break;
-                case CustomRoles.BloodKnight:
-                    BloodKnight.Add(killer.PlayerId);
                     break;
             }
 

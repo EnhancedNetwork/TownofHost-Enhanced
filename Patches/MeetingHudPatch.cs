@@ -1175,8 +1175,7 @@ class MeetingHudStartPatch
 
                     break;
 
-                case CustomRoles.Gamer:
-                    sb.Append(Gamer.TargetMark(seer, target));
+                case CustomRoles.Demon:
                     sb.Append(Snitch.GetWarningMark(seer, target));
                     break;
 
@@ -1228,7 +1227,6 @@ class MeetingHudStartPatch
 
             //呪われている場合
             sb.Append(Witch.GetSpelledMark(target.PlayerId, true));
-            sb.Append(HexMaster.GetHexedMark(target.PlayerId, true));
             //sb.Append(Occultist.GetCursedMark(target.PlayerId, true));
             sb.Append(Shroud.GetShroudMark(target.PlayerId, true));
 
