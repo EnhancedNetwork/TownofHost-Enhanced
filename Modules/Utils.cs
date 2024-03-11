@@ -1824,10 +1824,6 @@ public static class Utils
                                 SelfSuffix.Append(Vulture.GetTargetArrow(seer));
                             break;
 
-                        case CustomRoles.HexMaster:
-                            SelfSuffix.Append(HexMaster.GetHexModeText(seer, false));
-                            break;
-
                         case CustomRoles.PlagueDoctor:
                             SelfSuffix.Append(PlagueDoctor.GetLowerTextOthers(seer));
                             break;
@@ -1844,8 +1840,7 @@ public static class Utils
                     if (Pirate.IsEnable && seer.PlayerId == Pirate.PirateTarget)
                         SelfMark.Append(Pirate.GetPlunderedMark(seer.PlayerId, true));
 
-                    if (HexMaster.IsEnable)
-                        SelfMark.Append(HexMaster.GetHexedMark(seer.PlayerId, true));
+                    
                 }
                 switch (Options.CurrentGameMode)
                 {
@@ -1981,8 +1976,7 @@ public static class Utils
 
                         if (isForMeeting)
                         {
-                            if (HexMaster.IsEnable)
-                                TargetMark.Append(HexMaster.GetHexedMark(target.PlayerId, true));
+                            
 
                             //if (Occultist.IsEnable)
                             //    TargetMark.Append(Occultist.GetCursedMark(target.PlayerId, true));

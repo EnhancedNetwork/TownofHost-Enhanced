@@ -257,9 +257,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
             case CustomRoles.Gamer:
                 Gamer.ApplyGameOptions(opt);
                 break;
-            case CustomRoles.HexMaster:
-                HexMaster.ApplyGameOptions(opt);
-                break;
             case CustomRoles.Wraith:
                 Wraith.ApplyGameOptions(opt);
                 break;

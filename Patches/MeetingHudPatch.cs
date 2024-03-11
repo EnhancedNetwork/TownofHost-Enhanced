@@ -1199,7 +1199,6 @@ class MeetingHudStartPatch
                 sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), "♥"));
 
 
-            sb.Append(HexMaster.GetHexedMark(target.PlayerId, true));
             sb.Append(Shroud.GetShroudMark(target.PlayerId, true));
 
             if (target.PlayerId == Pirate.PirateTarget)

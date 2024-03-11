@@ -377,9 +377,7 @@ class CheckMurderPatch
                     }
                     if (Main.isCurseAndKill[killer.PlayerId]) killer.RpcGuardAndKill(target);
                     return false;
-                case CustomRoles.HexMaster:
-                    if (!HexMaster.OnCheckMurder(killer, target)) return false;
-                    break;
+
                 case CustomRoles.PlagueDoctor:
                     if (!PlagueDoctor.OnPDinfect(killer, target)) return false;
                     break;
@@ -2753,7 +2751,6 @@ class EnterVentPatch
 
         pc.GetRoleClass()?.OnEnterVent(pc, __instance);
 
-        HexMaster.OnEnterVent(pc);
         Wraith.OnEnterVent(pc, __instance);
 
         if (pc.Is(CustomRoles.Unlucky))

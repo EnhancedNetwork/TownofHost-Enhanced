@@ -117,10 +117,7 @@ class HudManagerPatch
                         break;
                     case CustomRoles.Pirate:
                         __instance.KillButton.OverrideText(GetString("PirateDuelButtonText"));
-                        break;
-                    case CustomRoles.HexMaster:
-                        HexMaster.GetAbilityButtonText(__instance);
-                        break;
+                        break;                    
                     case CustomRoles.Vampire:
                     case CustomRoles.Vampiress:
                         Vampire.SetKillButtonText();
@@ -242,7 +239,6 @@ class HudManagerPatch
                         //if (LowerInfoText.text != "" || LowerInfoText.text != string.Empty)
                             LowerInfoText.text = player.GetCustomRole() switch
                             {
-                                CustomRoles.HexMaster => HexMaster.GetHexModeText(player, true),
                                 CustomRoles.Wraith => Wraith.GetHudText(player),
                                 CustomRoles.Alchemist => Alchemist.GetHudText(player),
                                 CustomRoles.Huntsman => Huntsman.GetHudText(player),

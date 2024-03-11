@@ -63,7 +63,7 @@ public class Susceptible
                     break;
 
                 case PlayerState.DeathReason.Hex:
-                    if (!HexMaster.IsEnable)
+                    if (!HexMaster.On)
                     {
                         Main.PlayerStates[victim.PlayerId].deathReason = PlayerState.DeathReason.Kill;
                     }

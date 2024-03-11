@@ -3,6 +3,8 @@ using Hazel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using UnityEngine;
 using static TOHE.Options;
@@ -10,7 +12,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
-public static class HexMaster
+internal class HexMaster : RoleBase
 {
     public enum SwitchTrigger
     {
@@ -23,15 +25,18 @@ public static class HexMaster
         "TriggerKill", "TriggerVent","TriggerDouble"
     ];
 
-    private static readonly int Id = 16400;
+    private const int Id = 16400;
     private static Color RoleColorHex = Utils.GetRoleColor(CustomRoles.HexMaster);
     private static Color RoleColorSpell = Utils.GetRoleColor(CustomRoles.Impostor);
 
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    private static List<byte> playerIdList = [];
+    public static bool On;
+    public override bool IsEnable => On;
 
-    public static Dictionary<byte, bool> HexMode = [];
-    public static Dictionary<byte, List<byte>> HexedPlayer = [];
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+
+    private static Dictionary<byte, bool> HexMode = [];
+    private static Dictionary<byte, List<byte>> HexedPlayer = [];
 
     public static OptionItem ModeSwitchAction;
     public static OptionItem HexesLookLikeSpells;
@@ -44,17 +49,17 @@ public static class HexMaster
         HexesLookLikeSpells = BooleanOptionItem.Create(Id + 11, "HexesLookLikeSpells",  false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
         HasImpostorVision = BooleanOptionItem.Create(Id + 12, "ImpostorVision",  true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         HexMode = [];
         HexedPlayer = [];
-        IsEnable = false;
+        On = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
+        On = true;
         HexMode.Add(playerId, false);
         HexedPlayer.Add(playerId, []);
         NowSwitchTrigger = (SwitchTrigger)ModeSwitchAction.GetValue();
@@ -62,6 +67,7 @@ public static class HexMaster
         pc.AddDoubleTrigger();
 
         if (!AmongUsClient.Instance.AmHost) return;
+        CustomRoleManager.MarkOthers.Add(GetHexedMark);
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
@@ -83,7 +89,7 @@ public static class HexMaster
 
         }
     }
-    public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(HasImpostorVision.GetBool());
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(HasImpostorVision.GetBool());
 
     public static void ReceiveRPC(MessageReader reader, bool doHex)
     {
@@ -106,11 +112,11 @@ public static class HexMaster
             HexMode[playerId] = reader.ReadBoolean();
         }
     }
-    public static bool IsHexMode(byte playerId)
+    private static bool IsHexMode(byte playerId)
     {
         return HexMode.ContainsKey(playerId) && HexMode[playerId];
     }
-    public static void SwitchHexMode(byte playerId, bool kill)
+    private static void SwitchHexMode(byte playerId, bool kill)
     {
         bool needSwitch = false;
         switch (NowSwitchTrigger)
@@ -138,7 +144,7 @@ public static class HexMaster
         return false;
 
     }
-    public static bool IsHexed(byte target)
+    private static bool IsHexed(byte target)
     {
         foreach (var hexmaster in playerIdList)
         {
@@ -146,7 +152,7 @@ public static class HexMaster
         }
         return false;
     }
-    public static void SetHexed(PlayerControl killer, PlayerControl target)
+    private static void SetHexed(PlayerControl killer, PlayerControl target)
     {
         if (!IsHexed(target.PlayerId))
         {
@@ -156,7 +162,7 @@ public static class HexMaster
             killer.SetKillCooldown();
         }
     }
-    public static void RemoveHexedPlayer()
+    private static void RemoveHexedPlayer()
     {
         foreach (var hexmaster in playerIdList)
         {
@@ -164,7 +170,7 @@ public static class HexMaster
             SendRPC(true, hexmaster);
         }
     }
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (Medic.ProtectList.Contains(target.PlayerId)) return false;
         if (target.Is(CustomRoles.Pestilence)) return false;
@@ -189,7 +195,7 @@ public static class HexMaster
     }
     public static void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
     {
-        if (!IsEnable || deathReason != PlayerState.DeathReason.Vote) return;
+        if (!On || deathReason != PlayerState.DeathReason.Vote) return;
         foreach (var id in exileIds)
         {
             if (HexedPlayer.ContainsKey(id))
@@ -218,29 +224,28 @@ public static class HexMaster
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Hex, [.. hexedIdList]);
         RemoveHexedPlayer();
     }
-    public static string GetHexedMark(byte target, bool isMeeting)
+    public override void OnPlayerExiled(PlayerControl player, GameData.PlayerInfo exiled)
     {
-        
-        if (isMeeting && IsHexed(target))
+        RemoveHexedPlayer();
+    }
+    private string GetHexedMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    {
+        seen ??= seer;
+
+        if (IsHexed(seen.PlayerId) && isForMeeting)
         {
-            if (!HexesLookLikeSpells.GetBool())
-            {
-            return Utils.ColorString(RoleColorHex, "乂");
-            }
-            if (HexesLookLikeSpells.GetBool())
-            {
-            return Utils.ColorString(RoleColorSpell, "†");
-            }
+            if (HexesLookLikeSpells.GetBool()) return Utils.ColorString(RoleColorSpell, "†");
+            else return Utils.ColorString(RoleColorHex, "乂");
         }
-        return "";
+        return string.Empty;
         
     }
-    public static string GetHexModeText(PlayerControl hexmaster, bool hud, bool isMeeting = false)
+    public override string GetLowerText(PlayerControl hexmaster, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if (hexmaster == null || isMeeting) return "";
+        if (hexmaster == null || isForMeeting) return "";
 
         var str = new StringBuilder();
-        if (hud)
+        if (isForHud)
         {
             str.Append(GetString("WitchCurrentMode"));
         }
@@ -258,9 +263,9 @@ public static class HexMaster
         }
         return str.ToString();
     }
-    public static void GetAbilityButtonText(HudManager hud)
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
-        if (IsHexMode(PlayerControl.LocalPlayer.PlayerId) && NowSwitchTrigger != SwitchTrigger.DoubleTrigger)
+        if (IsHexMode(playerId) && NowSwitchTrigger != SwitchTrigger.DoubleTrigger)
         {
             hud.KillButton.OverrideText($"{GetString("HexButtonText")}");
         }
@@ -270,10 +275,10 @@ public static class HexMaster
         }
     }
 
-    public static void OnEnterVent(PlayerControl pc)
+    public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (!IsEnable) return;
+        if (!On) return;
         if (playerIdList.Contains(pc.PlayerId))
         {
             if (NowSwitchTrigger is SwitchTrigger.Vent)

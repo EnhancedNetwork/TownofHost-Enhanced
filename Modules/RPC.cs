@@ -997,9 +997,6 @@ internal static class RPC
             case CustomRoles.Lawyer:
                 Lawyer.Add(targetId);
                 break;
-            case CustomRoles.HexMaster:
-                HexMaster.Add(targetId);
-                break;
             case CustomRoles.Jackal:
                 Jackal.Add(targetId);
                 break;

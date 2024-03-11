@@ -182,8 +182,6 @@ class ExileControllerWrapUpPatch
             Main.RefixCooldownDelay = Options.DefaultKillCooldown - 3f;
         }
 
-        if (HexMaster.IsEnable)
-            HexMaster.RemoveHexedPlayer();
         
         foreach (var player in Main.AllPlayerControls)
         {

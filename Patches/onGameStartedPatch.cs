@@ -192,7 +192,6 @@ internal class ChangeRoleSettings
             }
 
             Undertaker.Init();
-            HexMaster.Init();
             Executioner.Init();
             Lawyer.Init();
             Jackal.Init();
@@ -498,9 +497,6 @@ internal class SelectRolesPatch
 
                 switch (pc.GetCustomRole())
                 {
-                    case CustomRoles.HexMaster:
-                        HexMaster.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Warlock:
                         Main.CursedPlayers.Add(pc.PlayerId, null);
                         Main.isCurseAndKill.Add(pc.PlayerId, false);

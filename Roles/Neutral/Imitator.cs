@@ -98,7 +98,7 @@ public static class Imitator
                     Jackal.Add(killer.PlayerId);
                     break;
                 case CustomRoles.HexMaster:
-                    HexMaster.Add(killer.PlayerId);
+                    target.GetRoleClass()?.Add(killer.PlayerId);
                     break;
                 case CustomRoles.Poisoner:
                     Poisoner.Add(killer.PlayerId);
