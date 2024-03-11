@@ -234,7 +234,7 @@ class ExileControllerWrapUpPatch
         Utils.CountAlivePlayers(true);
         Utils.AfterMeetingTasks();
         Utils.SyncAllSettings();
-        Utils.NotifyRoles(ForceLoop: true);
+        Utils.NotifyRoles(NoCache: true);
 
         if (Options.RandomSpawn.GetBool() || Options.CurrentGameMode == CustomGameMode.FFA)
         {

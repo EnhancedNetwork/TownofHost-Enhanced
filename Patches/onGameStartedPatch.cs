@@ -182,8 +182,6 @@ internal class ChangeRoleSettings
                 Main.RefixCooldownDelay = 0;
             }
 
-            FallFromLadder.Reset();
-
             // Initialize all custom roles
             foreach (var role in EnumHelper.GetAllValues<CustomRoles>())
             {
@@ -191,7 +189,6 @@ internal class ChangeRoleSettings
             }
 
             Undertaker.Init();
-            TimeThief.Init();
             Lawyer.Init();
             Solsticer.Init();
             Vampire.Init();
@@ -209,7 +206,6 @@ internal class ChangeRoleSettings
             Aware.Init();
             Sleuth.Init();
             Bait.Init();
-            Swooper.Init();
             Hawk.Init();
             Bloodmoon.Init();
             SoulCollector.Init();
@@ -243,16 +239,17 @@ internal class ChangeRoleSettings
             Rainbow.Init();
             Unlucky.Init();
 
-            SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
-            DoorsReset.Initialize();
-
             //FFA
             FFAManager.Init();
 
+            FallFromLadder.Reset();
             CustomRoleManager.Initialize();
             CustomWinnerHolder.Reset();
             AntiBlackout.Reset();
             NameNotifyManager.Reset();
+
+            SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
+            DoorsReset.Initialize();
 
             IRandom.SetInstanceById(Options.RoleAssigningAlgorithm.GetValue());
 
@@ -468,9 +465,6 @@ internal class SelectRolesPatch
                         Main.CursedPlayers.Add(pc.PlayerId, null);
                         Main.isCurseAndKill.Add(pc.PlayerId, false);
                         break;
-                    case CustomRoles.TimeThief:
-                        TimeThief.Add(pc.PlayerId);
-                        break;
                     case CustomRoles.Undertaker:
                         Undertaker.Add(pc.PlayerId);
                         break;
@@ -508,9 +502,6 @@ internal class SelectRolesPatch
                         break;
                     case CustomRoles.Taskinator:
                         Taskinator.Add(pc.PlayerId);
-                        break;
-                    case CustomRoles.Swooper:
-                        Swooper.Add(pc.PlayerId);
                         break;
                     case CustomRoles.SoulCollector:
                         SoulCollector.Add(pc.PlayerId);

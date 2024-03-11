@@ -367,9 +367,6 @@ class CheckMurderPatch
                     }
                     if (Main.isCurseAndKill[killer.PlayerId]) killer.RpcGuardAndKill(target);
                     return false;
-                case CustomRoles.Swooper:
-                    if (!Swooper.OnCheckMurder(killer, target)) return false;
-                    break;
                 case CustomRoles.Pirate:
                     if (!Pirate.OnCheckMurder(killer, target))
                         return false;
@@ -377,13 +374,13 @@ class CheckMurderPatch
                 case CustomRoles.Pixie:
                     Pixie.OnCheckMurder(killer, target);
                     return false;
-
+                
                 case CustomRoles.Revolutionist:
                     killer.SetKillCooldown(Options.RevolutionistDrawTime.GetFloat());
                     if (!Main.isDraw[(killer.PlayerId, target.PlayerId)] && !Main.RevolutionistTimer.ContainsKey(killer.PlayerId))
                     {
                         Main.RevolutionistTimer.TryAdd(killer.PlayerId, (target, 0f));
-                        Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
+                        Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);
                         RPC.SetCurrentDrawTarget(killer.PlayerId, target.PlayerId);
                     }
                     return false;
@@ -817,21 +814,16 @@ class MurderPlayerPatch
         {
             __instance.MarkDirtySettings();
             target.MarkDirtySettings();
-
-            if (needUpadteNotifyRoles)
-            {
-                Utils.NotifyRoles(SpecifySeer: killer);
-                Utils.NotifyRoles(SpecifySeer: target);
-            }
         }
         else
         {
             Utils.SyncAllSettings();
+        }
 
-            if (needUpadteNotifyRoles)
-            {
-                Utils.NotifyRoles(ForceLoop: true);
-            }
+        if (needUpadteNotifyRoles)
+        {
+            Utils.NotifyRoles(SpecifySeer: killer);
+            Utils.NotifyRoles(SpecifySeer: target);
         }
     }
 }
@@ -907,13 +899,6 @@ public static class CheckShapeShiftPatch
         bool shapeshifting = false;
         bool shapeshiftIsHidden = true;
 
-        if (Main.PlayerStates.TryGetValue(shapeshifter.PlayerId, out var playerState))
-        {
-            shapeshifter.RejectShapeshiftAndReset();
-            playerState.RoleClass?.OnShapeshift(shapeshifter, target, false, shapeshiftIsHidden);
-            return false;
-        }
-
         switch (role)
         {
 
@@ -962,7 +947,7 @@ public static class CheckShapeShiftPatch
                             {
                                 targetw.SetRealKiller(shapeshifter);
                                 Logger.Info($"{targetw.GetNameWithRole()} was killed", "Warlock");
-                                cp.RpcMurderPlayerV3(targetw);//殺す
+                                cp.RpcMurderPlayerV3(targetw);
                                 shapeshifter.SetKillCooldown(forceAnime: true);
                                 shapeshifter.Notify(GetString("WarlockControlKill"));
                             }
@@ -990,14 +975,11 @@ public static class CheckShapeShiftPatch
                 shapeshifter.RejectShapeshiftAndReset();
                 shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
                 return false;
-
-            case CustomRoles.Twister:
-                shapeshifter.RejectShapeshiftAndReset();
-                Twister.TwistPlayers(shapeshifter, shapeshiftIsHidden: shapeshiftIsHidden);
-                return false;
         }
 
-        return true;
+        shapeshifter.RejectShapeshiftAndReset();
+        shapeshifter.GetRoleClass()?.OnShapeshift(shapeshifter, target, false, shapeshiftIsHidden);
+        return false;
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Shapeshift))]
@@ -1091,9 +1073,6 @@ class ShapeshiftPatch
                         }
                         Main.CursedPlayers[shapeshifter.PlayerId] = null;
                     }
-                    break;
-                case CustomRoles.Twister:
-                    Twister.TwistPlayers(shapeshifter);
                     break;
             }
         }
@@ -1566,7 +1545,6 @@ class ReportDeadBodyPatch
         if (Vampiress.IsEnable) Vampiress.OnStartMeeting();
         if (Vulture.IsEnable) Vulture.Clear();
         if (Romantic.IsEnable) Romantic.OnReportDeadBody();
-        if (Swooper.IsEnable) Swooper.OnReportDeadBody();
 
         // Alchemist & Bloodlust
         Alchemist.OnReportDeadBodyGlobal();
@@ -1855,7 +1833,7 @@ class FixedUpdateInNormalGamePatch
                             Main.RevolutionistTimer.Remove(playerId);
                             Main.isDraw[(playerId, rvTargetId)] = true;
                             player.RpcSetDrawPlayer(rv_target, true);
-                            Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: rv_target, ForceLoop: true);
+                            Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: rv_target);
                             RPC.ResetCurrentDrawTarget(playerId);
                             if (IRandom.Instance.Next(1, 100) <= Options.RevolutionistKillProbability.GetInt())
                             {
@@ -1877,7 +1855,7 @@ class FixedUpdateInNormalGamePatch
                             else
                             {
                                 Main.RevolutionistTimer.Remove(playerId);
-                                Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: rv_target, ForceLoop: true);
+                                Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: rv_target);
                                 RPC.ResetCurrentDrawTarget(playerId);
                                 Logger.Info($"Canceled: {__instance.GetNameWithRole()}", "Revolutionist");
                             }
@@ -1947,9 +1925,6 @@ class FixedUpdateInNormalGamePatch
 
                     switch (playerRole)
                     {
-                        case CustomRoles.Swooper:
-                            Swooper.OnFixedUpdate(player);
-                            break;
 
                         case CustomRoles.Wildling:
                             Wildling.OnFixedUpdate(player);
@@ -2368,8 +2343,6 @@ class EnterVentPatch
 
         pc.GetRoleClass()?.OnEnterVent(pc, __instance);
 
-        Swooper.OnEnterVent(pc, __instance);
-
         if (pc.Is(CustomRoles.Unlucky))
         {
             Unlucky.SuicideRand(pc);
@@ -2463,9 +2436,6 @@ class CoEnterVentPatch
         }
 
         __instance.myPlayer?.GetRoleClass()?.OnCoEnterVent(__instance, id);
-
-        if (__instance.myPlayer.Is(CustomRoles.Swooper))
-            Swooper.OnCoEnterVent(__instance, id);
        
 
         return true;
@@ -2527,7 +2497,7 @@ class PlayerControlCompleteTaskPatch
             {
                 NameColorManager.Add(impostor.PlayerId, pc.PlayerId, "#ff1919");
             }
-            Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true);
+            Utils.NotifyRoles(SpecifySeer: pc);
         }
         if ((isTaskFinish &&
             pc.GetCustomRole() is CustomRoles.Doctor or CustomRoles.Sunnyboy) ||

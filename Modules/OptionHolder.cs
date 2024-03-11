@@ -491,9 +491,6 @@ public static class Options
     public static OptionItem ShapeshiftCD;
     public static OptionItem ShapeshiftDur;
 
-    public static OptionItem UnderdogMaximumPlayersNeededToKill;
-    public static OptionItem UnderdogKillCooldown;
-
     public static OptionItem VindicatorAdditionalVote;
     public static OptionItem VindicatorHideVote;
 
@@ -925,13 +922,7 @@ public static class Options
         /*
          * Underdog
          */
-        SetupRoleOptions(2700, TabGroup.ImpostorRoles, CustomRoles.Underdog);
-        UnderdogMaximumPlayersNeededToKill = IntegerOptionItem.Create(2702, "UnderdogMaximumPlayersNeededToKill", new(1, 15, 1), 5, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Underdog])
-            .SetValueFormat(OptionFormat.Players);
-        UnderdogKillCooldown = FloatOptionItem.Create(2703, "KillCooldown", new(0f, 180f, 2.5f), 12.5f, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Underdog])
-            .SetValueFormat(OptionFormat.Seconds);
+        Underdog.SetupCustomOption();
 
         /*
          * Zombie
@@ -1085,7 +1076,7 @@ public static class Options
         /*
          * Trickster
          */
-        SetupRoleOptions(4800, TabGroup.ImpostorRoles, CustomRoles.Trickster);
+        Trickster.SetupCustomOption();
 
         /*
          * Undertaker

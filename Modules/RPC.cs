@@ -977,9 +977,6 @@ internal static class RPC
 
         switch (role)
         {
-            case CustomRoles.TimeThief:
-                TimeThief.Add(targetId);
-                break;
             case CustomRoles.Undertaker:
                 Undertaker.Add(targetId);
                 break;
@@ -1024,9 +1021,6 @@ internal static class RPC
                 break;
             case CustomRoles.Warden:
                 Warden.Add(targetId);
-                break;
-            case CustomRoles.Swooper:
-                Swooper.Add(targetId);
                 break;
             case CustomRoles.Totocalcio:
                 Totocalcio.Add(targetId);

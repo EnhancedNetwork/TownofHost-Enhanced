@@ -453,7 +453,6 @@ static class ExtendedPlayerControl
     }
     public static bool CanUseKillButton(this PlayerControl pc)
     {
-        int playerCount = Main.AllAlivePlayerControls.Length;
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
         
         if (Mastermind.PlayerIsManipulated(pc)) return true;
@@ -467,7 +466,6 @@ static class ExtendedPlayerControl
             CustomRoles.Killer => pc.IsAlive(),
             //Standard
             CustomRoles.Shaman => pc.IsAlive(),
-            CustomRoles.Underdog => playerCount <= Options.UnderdogMaximumPlayersNeededToKill.GetInt(),
             CustomRoles.Revolutionist => !pc.IsDrawDone(),
             CustomRoles.Sidekick => pc.IsAlive(),
             CustomRoles.Maverick => pc.IsAlive(),
@@ -580,14 +578,8 @@ static class ExtendedPlayerControl
 
         switch (player.GetCustomRole())
         {
-            case CustomRoles.TimeThief:
-                TimeThief.SetKillCooldown(player.PlayerId);
-                break;
             case CustomRoles.Revolutionist:
                 Main.AllPlayerKillCooldown[player.PlayerId] = Options.RevolutionistCooldown.GetFloat();
-                break;
-            case CustomRoles.Underdog:
-                Main.AllPlayerKillCooldown[player.PlayerId] = Options.UnderdogKillCooldown.GetFloat();
                 break;
             case CustomRoles.Undertaker:
                 Undertaker.SetKillCooldown(player.PlayerId);

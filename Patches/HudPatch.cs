@@ -87,8 +87,10 @@ class HudManagerPatch
             }
             if (player.IsAlive())
             {
-                __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                __instance.KillButton.OverrideText(GetString("KillButtonText"));
+                // Set default
+                __instance.KillButton?.OverrideText(GetString("KillButtonText"));
+                __instance.ReportButton?.OverrideText(GetString("ReportButtonText"));
+                __instance.SabotageButton?.OverrideText(GetString("SabotageButtonText"));
 
                 player.GetRoleClass()?.SetAbilityButtonText(__instance, player.PlayerId);
 
@@ -129,17 +131,11 @@ class HudManagerPatch
                     case CustomRoles.Hater:
                         __instance.KillButton.OverrideText(GetString("HaterButtonText"));
                         break;
-                    case CustomRoles.Twister:
-                        __instance.AbilityButton.OverrideText(GetString("TwisterButtonText"));
-                        break;
                     case CustomRoles.Provocateur:
                         __instance.KillButton.OverrideText(GetString("ProvocateurButtonText"));
                         break;
                     case CustomRoles.Vulture:
                         __instance.ReportButton.OverrideText(GetString("VultureEatButtonText"));
-                        break;
-                    case CustomRoles.Swooper:
-                        __instance.ImpostorVentButton.OverrideText(GetString(Swooper.IsInvis(PlayerControl.LocalPlayer.PlayerId) ? "SwooperRevertVentButtonText" : "SwooperVentButtonText"));
                         break;
                     case CustomRoles.Mario:
                         __instance.AbilityButton.buttonLabelText.text = GetString("VectorVentButtonText");
@@ -171,12 +167,6 @@ class HudManagerPatch
                         __instance.KillButton.OverrideText(GetString("KillButtonText"));
                         __instance.SabotageButton.OverrideText(GetString("SabotageButtonText"));
                         break;
-
-                    default:
-                        __instance.KillButton.OverrideText(GetString("KillButtonText"));
-                        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
-                        __instance.SabotageButton.OverrideText(GetString("SabotageButtonText"));
-                        break;
                 }
 
                 // Set lower info text for modded players
@@ -201,7 +191,6 @@ class HudManagerPatch
                         //if (LowerInfoText.text != "" || LowerInfoText.text != string.Empty)
                             LowerInfoText.text = player.GetCustomRole() switch
                             {
-                                CustomRoles.Swooper => Swooper.GetHudText(player),
                                 CustomRoles.Alchemist => Alchemist.GetHudText(player),
                                 CustomRoles.Wildling => Wildling.GetHudText(player),
                                 _ => roleClass?.GetLowerText(player, isForMeeting: GameStates.IsMeeting, isForHud: true) ?? "",

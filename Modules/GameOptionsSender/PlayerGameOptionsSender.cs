@@ -194,9 +194,6 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                 AURoleOptions.EngineerCooldown = Options.MarioVentCD.GetFloat();
                 AURoleOptions.EngineerInVentMaxTime = 1;
                 break;
-            case CustomRoles.Twister:
-                Twister.ApplyGameOptions();
-                break;
             case CustomRoles.Undertaker:
                 Undertaker.ApplyGameOptions();
                 break;

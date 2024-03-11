@@ -308,7 +308,7 @@ class OnPlayerLeftPatch
                 }
 
                 // if the player left while he had a Notice message, clear it
-                if (NameNotifyManager.Notice.ContainsKey(data.Character.PlayerId))
+                if (NameNotifyManager.Notifying(data.Character))
                 {
                     NameNotifyManager.Notice.Remove(data.Character.PlayerId);
                     Utils.DoNotifyRoles(SpecifyTarget: data.Character, ForceLoop: true);
