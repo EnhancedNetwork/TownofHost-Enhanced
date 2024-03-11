@@ -18,8 +18,9 @@ public static class ServerAddManager
     private static readonly ServerManager serverManager = DestroyableSingleton<ServerManager>.Instance;
     public static void Init()
     {
-        if (CultureInfo.CurrentCulture.Name.StartsWith("zh") && serverManager.AvailableRegions.Count == 10) return;
-        if (!CultureInfo.CurrentCulture.Name.StartsWith("zh") && serverManager.AvailableRegions.Count == 7) return;
+        //if (CultureInfo.CurrentCulture.Name.StartsWith("zh") && serverManager.AvailableRegions.Count == 10) return;
+        //if (!CultureInfo.CurrentCulture.Name.StartsWith("zh") && serverManager.AvailableRegions.Count == 7) return;
+        // No need to do above check
 
         serverManager.AvailableRegions = ServerManager.DefaultRegions;
         List<IRegionInfo> regionInfos = [];
@@ -50,8 +51,11 @@ public static class ServerAddManager
 
     public static void UpdateRegions()
     {
+        string realIp = (UseHttps.Value ? "https://" : "http://") + CustomIp;
+        ServerInfo serverInfo = new("Custom", realIp, CustomPort.Value, false);
+        ServerInfo[] ServerInfo = [serverInfo];
         var regions = new IRegionInfo[] {
-                new StaticHttpRegionInfo("Custom", StringNames.NoTranslation, CustomIp.Value, new Il2CppReferenceArray<ServerInfo>([new ServerInfo("Custom", CustomIp.Value, CustomPort.Value, false)])).CastFast<IRegionInfo>()
+                new StaticHttpRegionInfo("Custom", StringNames.NoTranslation, CustomIp.Value, ServerInfo).CastFast<IRegionInfo>()
             };
 
         IRegionInfo currentRegion = serverManager.CurrentRegion;
@@ -101,6 +105,7 @@ internal class RegionMenuPatch
 {
     private static TextBoxTMP ipField;
     private static TextBoxTMP portField;
+    private static ToggleButtonBehaviour useHttpsButton;
     private static readonly ServerManager serverManager = DestroyableSingleton<ServerManager>.Instance;
     [HarmonyPatch(nameof(RegionMenu.Open))]
     [HarmonyPostfix]
@@ -119,6 +124,10 @@ internal class RegionMenuPatch
             {
                 portField.gameObject.SetActive(false);
             }
+            if (useHttpsButton != null && useHttpsButton.gameObject != null)
+            {
+                useHttpsButton.gameObject.SetActive(false);
+            }
         }
         else
         {
@@ -130,6 +139,10 @@ internal class RegionMenuPatch
             if (portField != null && portField.gameObject != null)
             {
                 portField.gameObject.SetActive(true);
+            }
+            if (useHttpsButton != null && useHttpsButton.gameObject != null)
+            {
+                useHttpsButton.gameObject.SetActive(true);
             }
         }
         var template = DestroyableSingleton<JoinGameButton>.Instance;
@@ -143,6 +156,21 @@ internal class RegionMenuPatch
             }
         }
         if (template == null || template.GameIdText == null) return;
+         
+        if (useHttpsButton == null || useHttpsButton.gameObject == null)
+        {
+            useHttpsButton = UnityEngine.Object.Instantiate(new ToggleButtonBehaviour(), __instance.transform);
+            useHttpsButton.gameObject.name = "UseHttpsButton";
+
+            useHttpsButton.transform.localPosition = new Vector3(3.225f, -0.05f, -100f);
+            useHttpsButton.Text.text = "Use HTTPS";
+
+            useHttpsButton.onState = UseHttps.Value;
+            useHttpsButton.UpdateText(UseHttps.Value);
+            ipField.gameObject.SetActive(isCustomRegion);
+        }
+
+        UseHttps.Value = useHttpsButton.onState;
 
         if (ipField == null || ipField.gameObject == null)
         {

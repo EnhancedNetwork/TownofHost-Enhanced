@@ -112,6 +112,7 @@ public class Main : BasePlugin
     public static ConfigEntry<string> BetaBuildURL { get; private set; }
     public static ConfigEntry<string> CustomIp { get; set; }
     public static ConfigEntry<ushort> CustomPort { get; set; }
+    public static ConfigEntry<bool> UseHttps { get; set; }
     public static ConfigEntry<float> LastKillCooldown { get; private set; }
     public static ConfigEntry<float> LastShapeshifterCooldown { get; private set; }
     public static OptionBackupData RealOptionsData;
@@ -497,6 +498,7 @@ public class Main : BasePlugin
         LastShapeshifterCooldown = Config.Bind("Other", "LastShapeshifterCooldown", (float)30);
         CustomIp = Config.Bind("Other", "CustomServerIP", "127.0.0.1");
         CustomPort = Config.Bind("Other", "CustomServerPort", (ushort)22023);
+        UseHttps = Config.Bind("Other", "UseHttps", false);
 
         hasArgumentException = false;
         ExceptionMessage = "";
