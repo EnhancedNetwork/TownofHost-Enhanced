@@ -2,10 +2,10 @@
   "News": [
     {
       "Number": "100002",
-      "Title": "Placeholder title",
-      "Subtitle": "Placeholder Subtitle",
-      "Short": "Placeholder short title",
-      "Body": "Placeholder body",
+      "Title": "标题占位符",
+      "Subtitle": "占位符字幕",
+      "Short": "占位符短标题",
+      "Body": "占位符主体",
       "Date": "2024-02-01T02:18:00Z"
     }
   ]

@@ -297,10 +297,8 @@ class OnPlayerLeftPatch
                 {
                     Pelican.OnPelicanDied(data.Character.PlayerId);
                 }
-                if (Spiritualist.SpiritualistTarget == data.Character.PlayerId)
-                {
-                    Spiritualist.RemoveTarget();
-                }
+
+                if (Spiritualist.HasEnabled) Spiritualist.RemoveTarget(data.Character.PlayerId);
 
                 if (Main.PlayerStates[data.Character.PlayerId].deathReason == PlayerState.DeathReason.etc) // If no cause of death was established
                 {
@@ -309,7 +307,7 @@ class OnPlayerLeftPatch
                 }
 
                 // if the player left while he had a Notice message, clear it
-                if (NameNotifyManager.Notice.ContainsKey(data.Character.PlayerId))
+                if (NameNotifyManager.Notifying(data.Character))
                 {
                     NameNotifyManager.Notice.Remove(data.Character.PlayerId);
                     Utils.DoNotifyRoles(SpecifyTarget: data.Character, ForceLoop: true);

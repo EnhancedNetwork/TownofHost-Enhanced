@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 using TOHE.Modules;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
@@ -16,6 +12,9 @@ internal class Bomber : RoleBase
 
     public static bool On;
     public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Bomb");
 
     public static OptionItem BomberRadius;
     public static OptionItem BomberCanKill;
@@ -66,7 +65,7 @@ internal class Bomber : RoleBase
     public static bool CheckSpawnNuker()
     {
         var Rand = IRandom.Instance;
-        return NukerChance.GetInt() <= Rand.Next(1, 101);
+        return Rand.Next(0, 100) < NukerChance.GetInt();
     }
     public override bool CanUseKillButton(PlayerControl pc) => BomberCanKill.GetBool() && pc.IsAlive();
     public override void SetKillCooldown(byte id)
@@ -129,5 +128,10 @@ internal class Bomber : RoleBase
                 Utils.NotifyRoles();
             }, timer, $"{playerRole} was suicide");
         }
+    }
+
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.AbilityButton.OverrideText(Translator.GetString("BomberShapeshiftText"));
     }
 }

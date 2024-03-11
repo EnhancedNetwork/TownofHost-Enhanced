@@ -15,6 +15,9 @@ internal class Anonymous : RoleBase
     
     public static bool On;
     public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Hack");
 
     private static OptionItem HackLimitOpt;
     private static OptionItem KillCooldown;
@@ -43,6 +46,11 @@ internal class Anonymous : RoleBase
         HackLimit.TryAdd(playerId, HackLimitOpt.GetInt());
         On = true;
     }
+    public override void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        HackLimit.Remove(playerId);
+    }
     private static void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
@@ -65,14 +73,14 @@ internal class Anonymous : RoleBase
         AURoleOptions.ShapeshifterDuration = 1f;
     }
     public static string GetHackLimit(byte playerId) => Utils.ColorString((HackLimit.TryGetValue(playerId, out var x) && x >= 1) ? Utils.GetRoleColor(CustomRoles.Anonymous).ShadeColor(0.25f) : Color.gray, HackLimit.TryGetValue(playerId, out var hackLimit) ? $"({hackLimit})" : "Invalid");
-    public override void SetAbilityButtonText(HudManager __instance, byte playerId)
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
-        __instance.ReportButton.OverrideText(GetString("ReportButtonText"));
+        hud.ReportButton.OverrideText(GetString("ReportButtonText"));
 
         if (HackLimit.TryGetValue(playerId, out var x) && x >= 1)
         {
-            __instance.AbilityButton.OverrideText(GetString("AnonymousShapeshiftText"));
-            __instance.AbilityButton.SetUsesRemaining(x);
+            hud.AbilityButton.OverrideText(GetString("AnonymousShapeshiftText"));
+            hud.AbilityButton.SetUsesRemaining(x);
         }
     }
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target) => DeadBodyList = [];
@@ -83,7 +91,7 @@ internal class Anonymous : RoleBase
     }
     public override void OnShapeshift(PlayerControl pc, PlayerControl ssTarget, bool shapeshifting, bool shapeshiftIsHidden)
     {
-        if (!shapeshifting || !HackLimit.TryGetValue(pc.PlayerId, out var x) || x < 1 || ssTarget == null || ssTarget.Is(CustomRoles.Needy) || ssTarget.Is(CustomRoles.Lazy) || ssTarget.Is(CustomRoles.NiceMini) && Mini.Age < 18) return;
+        if (!shapeshifting || !HackLimit.TryGetValue(pc.PlayerId, out var x) || x < 1 || ssTarget == null || ssTarget.Is(CustomRoles.LazyGuy) || ssTarget.Is(CustomRoles.Lazy) || ssTarget.Is(CustomRoles.NiceMini) && Mini.Age < 18) return;
         HackLimit[pc.PlayerId]--;
         SendRPC(pc.PlayerId);
 

@@ -1,4 +1,5 @@
-﻿using Hazel;
+﻿using AmongUs.GameOptions;
+using Hazel;
 using System.Collections.Generic;
 using UnityEngine;
 using static TOHE.Options;
@@ -6,17 +7,18 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
-public static class Deputy
+internal class Deputy : RoleBase
 {
-    private static readonly int Id = 7800;
+    private const int Id = 7800;
+    public static bool On = false;
+    public override bool IsEnable => On;
     private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
-    public static OptionItem HandcuffCooldown;
-    public static OptionItem HandcuffMax;
-    public static OptionItem DeputyHandcuffCDForTarget;
+    private static OptionItem HandcuffCooldown;
+    private static OptionItem HandcuffMax;
+    private static OptionItem DeputyHandcuffCDForTarget;
     
-
     private static int HandcuffLimit = new();
 
     public static void SetupCustomOption()
@@ -29,23 +31,23 @@ public static class Deputy
         HandcuffMax = IntegerOptionItem.Create(Id + 12, "DeputyHandcuffMax", new(1, 30, 1), 15, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Deputy])
             .SetValueFormat(OptionFormat.Times);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         HandcuffLimit = new();
-        IsEnable = false;
+        On = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         HandcuffLimit = HandcuffMax.GetInt();
-        IsEnable = true;
+        On = true;
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public static void Remove(byte playerId)
+    public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
     }
@@ -61,13 +63,17 @@ public static class Deputy
     {
         HandcuffLimit = reader.ReadInt32();
     }
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = HandcuffCooldown.GetFloat();
-    public static bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && HandcuffLimit >= 1;
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = HandcuffCooldown.GetFloat();
+    public override bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && HandcuffLimit >= 1;
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (target.Is(CustomRoles.SerialKiller)) return true;
         if (HandcuffLimit < 1) return false;
-        if (CanBeHandcuffed(target))
+
+        Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} : Limit {HandcuffLimit}", "Deputy");
+
+        if (!target.Is(CustomRoles.Deputy))
         {
             HandcuffLimit--;
             SendRPC();
@@ -75,29 +81,20 @@ public static class Deputy
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("DeputyHandcuffedPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("HandcuffedByDeputy")));
 
-          //  target.ResetKillCooldown();
             target.SetKillCooldownV3(DeputyHandcuffCDForTarget.GetFloat());
             if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
             if (!DisableShieldAnimations.GetBool()) target.RpcGuardAndKill(target);
 
-            if (HandcuffLimit < 0)
-                HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
-            Logger.Info($"{killer.GetNameWithRole()} : 剩余{HandcuffLimit}次招募机会", "Deputy");
             return true;
         }
         
-        if (HandcuffLimit < 0)
-            HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
         killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("DeputyInvalidTarget")));
-        Logger.Info($"{killer.GetNameWithRole()} : 剩余{HandcuffLimit}次招募机会", "Deputy");
         return false;
     }
-    public static string GetHandcuffLimit() => Utils.ColorString(HandcuffLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Deputy) : Color.gray, $"({HandcuffLimit})");
-    public static bool CanBeHandcuffed(this PlayerControl pc)
+    public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString(HandcuffLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Deputy) : Color.gray, $"({HandcuffLimit})");
+    public override void SetAbilityButtonText(HudManager hud, byte id)
     {
-        return pc != null && !pc.Is(CustomRoles.Deputy)
-        && !(
-            false
-            );
+        hud.KillButton.OverrideText(GetString("DeputyHandcuffText"));
     }
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Deputy");
 }

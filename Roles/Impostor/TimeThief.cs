@@ -1,17 +1,23 @@
 using System.Collections.Generic;
+using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Impostor;
 
-public static class TimeThief
+internal class TimeThief : RoleBase
 {
-    private static readonly int Id = 3700;
-    private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    private const int Id = 3700;
+    public static bool On;
+    public override bool IsEnable => On;
+    public static bool HasEnabled => CustomRoles.TimeThief.IsClassEnable();
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
-    public static OptionItem KillCooldown;
-    public static OptionItem DecreaseMeetingTime;
+    private static OptionItem KillCooldown;
+    private static OptionItem DecreaseMeetingTime;
     public static OptionItem LowerLimitVotingTime;
-    public static OptionItem ReturnStolenTimeUponDeath;
+    private static OptionItem ReturnStolenTimeUponDeath;
+
+    private static List<byte> playerIdList = [];
+
     public static void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.TimeThief);
@@ -23,32 +29,34 @@ public static class TimeThief
             .SetValueFormat(OptionFormat.Seconds);
         ReturnStolenTimeUponDeath = BooleanOptionItem.Create(Id + 13, "TimeThiefReturnStolenTimeUponDeath", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.TimeThief]);
     }
-    public static void Init()
+    public override void Init()
     {
+        On = false;
         playerIdList = [];
-        IsEnable = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
+        On = true;
     }
 
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    private static int StolenTime(byte id)
-    {
-        return playerIdList.Contains(id) && (Utils.GetPlayerById(id).IsAlive() || !ReturnStolenTimeUponDeath.GetBool())
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+    
+    private static int StolenTime(byte id) 
+        => playerIdList.Contains(id) && (Utils.GetPlayerById(id).IsAlive() || !ReturnStolenTimeUponDeath.GetBool()) 
             ? DecreaseMeetingTime.GetInt() * Main.PlayerStates[id].GetKillCount(true)
             : 0;
-    }
+
     public static int TotalDecreasedMeetingTime()
     {
         int sec = 0;
         foreach (var playerId in playerIdList)
             sec -= StolenTime(playerId);
+
         Logger.Info($"{sec}second", "TimeThief.TotalDecreasedMeetingTime");
         return sec;
     }
+
     public static string GetProgressText(byte playerId)
-        => StolenTime(playerId) > 0 ? Utils.ColorString(Palette.ImpostorRed.ShadeColor(0.5f), $"{-StolenTime(playerId)}s") : "";
+        => StolenTime(playerId) > 0 ? Utils.ColorString(Palette.ImpostorRed.ShadeColor(0.5f), $"{-StolenTime(playerId)}s") : string.Empty;
 }

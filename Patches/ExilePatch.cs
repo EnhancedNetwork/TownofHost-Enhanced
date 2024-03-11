@@ -1,6 +1,7 @@
 using AmongUs.Data;
 using HarmonyLib;
 using System.Linq;
+using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -175,34 +176,23 @@ class ExileControllerWrapUpPatch
 
 
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist) Main.PlayerStates[exiled.PlayerId].SetDead();
-
-            Instigator.OnPlayerExile(exiled);
         }
         if (AmongUsClient.Instance.AmHost && Main.IsFixedCooldown)
         {
             Main.RefixCooldownDelay = Options.DefaultKillCooldown - 3f;
         }
 
-        if (Witch.IsEnable) 
-            Witch.RemoveSpelledPlayer();
-
         if (HexMaster.IsEnable)
             HexMaster.RemoveHexedPlayer();
-
-        if (Captain.IsEnable)
-            Captain.OnExile(exiled);
         
         foreach (var player in Main.AllPlayerControls)
         {
-            Main.PlayerStates[player.PlayerId]?.Role?.OnPlayerExiled(player, exiled);
+            player.GetRoleClass()?.OnPlayerExiled(player, exiled);
 
             CustomRoles playerRole = player.GetCustomRole(); // Only roles (no add-ons)
 
             switch (playerRole)
             {
-                case CustomRoles.Mayor when Options.MayorHasPortableButton.GetBool():
-                    player.RpcResetAbilityCooldown();
-                    break;
 
                 case CustomRoles.Warlock:
                     Main.CursedPlayers[player.PlayerId] = null;
@@ -250,7 +240,7 @@ class ExileControllerWrapUpPatch
         Utils.CountAlivePlayers(true);
         Utils.AfterMeetingTasks();
         Utils.SyncAllSettings();
-        Utils.NotifyRoles(ForceLoop: true);
+        Utils.NotifyRoles(NoCache: true);
 
         if (Options.RandomSpawn.GetBool() || Options.CurrentGameMode == CustomGameMode.FFA)
         {

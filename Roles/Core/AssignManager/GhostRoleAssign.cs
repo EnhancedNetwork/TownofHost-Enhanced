@@ -20,11 +20,11 @@ public static class GhostRoleAssign
         if (GameStates.IsHideNSeek || player == null || player.Data.Disconnected) return;
 
         var getplrRole = player.GetCustomRole();
-        if (getplrRole is CustomRoles.GM) return;
+        if (getplrRole is CustomRoles.GM or CustomRoles.Nemesis or CustomRoles.Retributionist) return;
 
         if (getplrRole.IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole()) || Options.CustomGhostRoleCounts.Count <= 0) return;
         
-        GhostGetPreviousRole.Add(player.PlayerId, getplrRole);
+        GhostGetPreviousRole.TryAdd(player.PlayerId, getplrRole);
 
         List<CustomRoles> HauntedList = [];
         List<CustomRoles> ImpHauntedList = [];
@@ -110,21 +110,22 @@ public static class GhostRoleAssign
     public static void Init() 
     {
         getCount = []; // Remove oldcount
+        GhostGetPreviousRole = [];
     }
     public static void Add()
     {
         Options.CustomGhostRoleCounts.Keys.Do(ghostRole
-            => getCount.Add(ghostRole, ghostRole.GetCount())); // Add new count Instance (Optionitem gets constantly refreshed)
+            => getCount.TryAdd(ghostRole, ghostRole.GetCount())); // Add new count Instance (Optionitem gets constantly refreshed)
     }
     public static void AddPlayerId(this PlayerControl target, CustomRoles GhostRole)
     {
         switch (GhostRole)
         {
-            case CustomRoles.Retributionist:
-                Retributionist.Add(target.PlayerId);
+            case CustomRoles.Hawk:
+                Hawk.Add(target.PlayerId);
                 break;
-             case CustomRoles.Nemesis:
-                Nemesis.Add(target.PlayerId);
+             case CustomRoles.Bloodmoon:
+                Bloodmoon.Add(target.PlayerId);
                 break;
             case CustomRoles.Warden:
                 Warden.Add(target.PlayerId);

@@ -3,6 +3,7 @@ using Hazel;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
@@ -11,10 +12,13 @@ namespace TOHE.Roles.Impostor;
 
 internal class BountyHunter : RoleBase
 {
-    private static readonly int Id = 800;
+    private const int Id = 800;
     private static List<byte> playerIdList = [];
     public static bool On;
     public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
+
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Handoff");
 
     private static OptionItem OptionTargetChangeTime;
     private static OptionItem OptionSuccessKillCooldown;
@@ -59,7 +63,14 @@ internal class BountyHunter : RoleBase
         ShowTargetArrow = OptionShowTargetArrow.GetBool();
 
         if (AmongUsClient.Instance.AmHost)
+        {
             ResetTarget(Utils.GetPlayerById(playerId));
+            CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateLowLoadOthers);
+        }
+    }
+    public override void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
     }
 
     private static void SendRPC(byte bountyId, byte targetId)
@@ -104,7 +115,7 @@ internal class BountyHunter : RoleBase
         return true;
     }
     public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target) => ChangeTimer.Clear();
-    public override void OnFixedUpdateLowLoad(PlayerControl player)
+    public static void OnFixedUpdateLowLoadOthers(PlayerControl player)
     {
         if (!ChangeTimer.ContainsKey(player.PlayerId)) return;
 
@@ -212,7 +223,7 @@ internal class BountyHunter : RoleBase
         SendRPC(player.PlayerId, targetId);
         return targetId;
     }
-    public override void SetAbilityButtonText(HudManager __instance, byte id) => __instance.AbilityButton.OverrideText(GetString("BountyHunterChangeButtonText"));
+    public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.AbilityButton.OverrideText(GetString("BountyHunterChangeButtonText"));
     public override void AfterMeetingTasks()
     {
         foreach (var id in playerIdList.ToArray())
@@ -224,21 +235,21 @@ internal class BountyHunter : RoleBase
             }
         }
     }
-    public static string GetTargetText(PlayerControl bounty, bool hud)
+    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if (GameStates.IsMeeting) return "";
-        var targetId = GetTarget(bounty);
-        return targetId != 0xff ? $"{(hud ? GetString("BountyCurrentTarget") : GetString("Target"))}: {Main.AllPlayerNames[targetId].RemoveHtmlTags().Replace("\r\n", string.Empty)}" : "";
-    }
-    public static string GetTargetArrow(PlayerControl seer, PlayerControl target = null)
-    {
-        if (seer == null) return "";
-        if (!seer.Is(CustomRoles.BountyHunter)) return "";
-        if (target != null && seer.PlayerId != target.PlayerId) return "";
-        if (!ShowTargetArrow || GameStates.IsMeeting) return "";
+        if (isForMeeting) return string.Empty;
 
-        //seerがtarget自身でBountyHunterのとき、
-        //矢印オプションがありミーティング以外で矢印表示
+        var targetId = GetTarget(seer);
+        return targetId != 0xff ? $"{(isForHud ? GetString("BountyCurrentTarget") : GetString("Target"))}: {Main.AllPlayerNames[targetId].RemoveHtmlTags().Replace("\r\n", string.Empty)}" : string.Empty;
+    }
+    public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    {
+        if (seer == null) return string.Empty;
+        if (!seer.Is(CustomRoles.BountyHunter)) return string.Empty;
+        if (seen != null && seer.PlayerId != seen.PlayerId) return string.Empty;
+        
+        if (!ShowTargetArrow || isForMeeting) return string.Empty;
+
         var targetId = GetTarget(seer);
         return TargetArrow.GetArrows(seer, targetId);
     }

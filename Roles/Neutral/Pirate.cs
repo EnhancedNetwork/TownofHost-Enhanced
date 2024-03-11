@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
 using UnityEngine;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 public static class Pirate

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Translator;
 
@@ -79,7 +80,7 @@ public static class Oiiai
         if (!killer.GetCustomRole().IsNeutral())
         {
             //Use eraser here LOL
-            killer.RpcSetCustomRole(CustomRolesHelper.GetErasedRole(killer.GetCustomRole().GetRoleTypes(), killer.GetCustomRole()));
+            killer.RpcSetCustomRole(Eraser.GetErasedRole(killer.GetCustomRole().GetRoleTypes(), killer.GetCustomRole()));
             Logger.Info($"Oiiai {killer.GetNameWithRole()} with eraser assign.", "Oiiai");
         }
         else

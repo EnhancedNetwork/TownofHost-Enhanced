@@ -1,3 +1,4 @@
+using AmongUs.GameOptions;
 using System.Collections.Generic;
 using UnityEngine;
 using static TOHE.Options;
@@ -7,16 +8,16 @@ namespace TOHE.Roles.Crewmate;
 internal class Addict : RoleBase
 {
     private const int Id = 6300;
-    private static List<byte> playerIdList = [];
-
     public static bool On;
     public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
 
-    public static OptionItem VentCooldown;
-    public static OptionItem TimeLimit;
-    public static OptionItem ImmortalTimeAfterVent;
-    public static OptionItem FreezeTimeAfterImmortal;
+    private static OptionItem VentCooldown;
+    private static OptionItem TimeLimit;
+    private static OptionItem ImmortalTimeAfterVent;
+    private static OptionItem FreezeTimeAfterImmortal;
 
+    private static List<byte> playerIdList = [];
     private static Dictionary<byte, float> SuicideTimer = [];
     private static Dictionary<byte, float> ImmortalTimer = [];
 
@@ -50,10 +51,24 @@ internal class Addict : RoleBase
         DefaultSpeed = Main.AllPlayerSpeed[playerId];
         On = true;
     }
+    public override void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        SuicideTimer.Remove(playerId);
+        ImmortalTimer.Remove(playerId);
+        DefaultSpeed = Main.AllPlayerSpeed[playerId];
+        if (playerIdList.Count <= 0) On = false;
+    }
 
-    public static bool IsImmortal(PlayerControl player) => player.Is(CustomRoles.Addict) && ImmortalTimer[player.PlayerId] <= ImmortalTimeAfterVent.GetFloat();
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    {
+        AURoleOptions.EngineerCooldown = VentCooldown.GetFloat();
+        AURoleOptions.EngineerInVentMaxTime = 1;
+    }
 
-    public override bool OnCheckMurderOnTarget(PlayerControl killer, PlayerControl target)
+    private static bool IsImmortal(PlayerControl player) => ImmortalTimer[player.PlayerId] <= ImmortalTimeAfterVent.GetFloat();
+
+    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         return !IsImmortal(target);
     }
@@ -111,11 +126,17 @@ internal class Addict : RoleBase
         Main.AllPlayerSpeed[addict.PlayerId] = Main.MinSpeed;
         ReportDeadBodyPatch.CanReport[addict.PlayerId] = false;
         addict.MarkDirtySettings();
+
         _ = new LateTask(() =>
         {
             Main.AllPlayerSpeed[addict.PlayerId] = DefaultSpeed;
             ReportDeadBodyPatch.CanReport[addict.PlayerId] = true;
             addict.MarkDirtySettings();
         }, FreezeTimeAfterImmortal.GetFloat(), "AddictGetDown");
+    }
+
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.AbilityButton.OverrideText(Translator.GetString("AddictVentButtonText"));
     }
 }

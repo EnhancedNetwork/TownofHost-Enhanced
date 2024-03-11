@@ -1,5 +1,6 @@
 using Hazel;
 using System.Collections.Generic;
+using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
@@ -7,18 +8,19 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
-public static class Kamikaze
+internal class Kamikaze : RoleBase
 {
-    private static readonly int Id = 26900;
-    public static bool IsEnable = false;
+    private const int Id = 26900;
 
+    public static bool On;
+    public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
-    public static Dictionary<byte, byte> KamikazedList = [];
     private static OptionItem KillCooldown;
     private static OptionItem OptMaxMarked;
-    public static Dictionary<byte, int> MarkedLim = [];
-    //public static bool CheckKamiDeath = false;
 
+    private static Dictionary<byte, byte> KamikazedList = [];
+    private static Dictionary<byte, int> MarkedLim = [];
 
     public static void SetupCustomOption()
     {
@@ -29,20 +31,26 @@ public static class Kamikaze
            .SetValueFormat(OptionFormat.Times);
 
     }
-    public static void Init()
+    public override void Init()
     {
+        On = false;
         MarkedLim = [];
         KamikazedList = [];
-        IsEnable = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
-        IsEnable = true;
         MarkedLim.Add(playerId, OptMaxMarked.GetInt());
 
         // Double Trigger
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
+
+        On = true;
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(MurderKamikazedPlayers);
+        }
     }
 
     private static void SendRPC(byte KamiId, byte targetId, bool checkMurder = false)
@@ -72,33 +80,10 @@ public static class Kamikaze
         }
         else KamikazedList.Remove(targetId);
     }
-    public static void MurderKamikazedPlayers(PlayerControl kamikameha)
-    {
-        if (!KamikazedList.ContainsKey(kamikameha.PlayerId)) return;
 
-
-        if (!kamikameha.IsAlive())
-        {
-            KamikazedList.Remove(kamikameha.PlayerId);
-            SendRPC(KamiId: byte.MaxValue, targetId:kamikameha.PlayerId, checkMurder:false); // to remove playerid
-            return;
-        }
-        var kami = Utils.GetPlayerById(KamikazedList[kamikameha.PlayerId]);
-        if (kami == null) return;
-        if (!kami.IsAlive())
-        {
-            if (kamikameha.IsAlive())
-            {
-                Main.PlayerStates[kamikameha.PlayerId].deathReason = PlayerState.DeathReason.Targeted;
-                kamikameha.SetRealKiller(kami);
-                kamikameha.RpcMurderPlayerV3(kamikameha);
-                // Logger.Info($"{alivePlayer.GetNameWithRole()} is the killer of {kamikameha.GetNameWithRole()}", "Kamikaze"); -- Works fine
-            }
-
-        }
-    }
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+    
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
         {
@@ -121,14 +106,40 @@ public static class Kamikaze
             {
                 killer.RpcMurderPlayerV3(target);
             }
-
         });
         
     }
 
-    public static bool CanMark(byte id) => MarkedLim.TryGetValue(id, out var x) && x > 0;
-    public static string GetMarkedLimit(byte playerId) => Utils.ColorString(CanMark(playerId) ? Utils.GetRoleColor(CustomRoles.Kamikaze).ShadeColor(0.25f) : Color.gray, MarkedLim.TryGetValue(playerId, out var MarkedLimiter) ? $"({MarkedLimiter})" : "Invalid");
+    private void MurderKamikazedPlayers(PlayerControl kamikameha)
+    {
+        if (!KamikazedList.ContainsKey(kamikameha.PlayerId)) return;
 
+        if (!kamikameha.IsAlive())
+        {
+            KamikazedList.Remove(kamikameha.PlayerId);
+            SendRPC(KamiId: byte.MaxValue, targetId: kamikameha.PlayerId, checkMurder: false); // to remove playerid
+            return;
+        }
+        var kami = Utils.GetPlayerById(KamikazedList[kamikameha.PlayerId]);
+        if (kami == null) return;
+        if (!kami.IsAlive())
+        {
+            if (kamikameha.IsAlive())
+            {
+                Main.PlayerStates[kamikameha.PlayerId].deathReason = PlayerState.DeathReason.Targeted;
+                kamikameha.SetRealKiller(kami);
+                kamikameha.RpcMurderPlayerV3(kamikameha);
+                // Logger.Info($"{alivePlayer.GetNameWithRole()} is the killer of {kamikameha.GetNameWithRole()}", "Kamikaze"); -- Works fine
+            }
 
+        }
+    }
+
+    private static bool CanMark(byte id) => MarkedLim.TryGetValue(id, out var x) && x > 0;
+    
+    public override string GetProgressText(byte playerId, bool comms)
+        => Utils.ColorString(CanMark(playerId)
+            ? Utils.GetRoleColor(CustomRoles.Kamikaze).ShadeColor(0.25f) 
+            : Color.gray, MarkedLim.TryGetValue(playerId, out var MarkedLimiter) ? $"({MarkedLimiter})" : "Invalid");
 }
 

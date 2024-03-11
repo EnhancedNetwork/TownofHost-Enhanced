@@ -1,38 +1,49 @@
 ﻿using Hazel;
 using System.Collections.Generic;
+using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
+using static TOHE.MeetingHudStartPatch;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
-public static class Mortician
+internal class Mortician : RoleBase
 {
-    private static readonly int Id = 8900;
-    private static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    private const int Id = 8900;
+    public static bool On = false;
+    public override bool IsEnable => On;
+    public static bool HasEnabled => CustomRoles.Mortician.IsClassEnable();
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
 
     private static OptionItem ShowArrows;
 
+    private static List<byte> playerIdList = [];
     private static Dictionary<byte, string> lastPlayerName = [];
-    public static Dictionary<byte, string> msgToSend = [];
+    private static Dictionary<byte, string> msgToSend = [];
 
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Mortician);
         ShowArrows = BooleanOptionItem.Create(Id + 2, "ShowArrows", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mortician]);
     }
-    public static void Init()
+    public override void Init()
     {
         playerIdList = [];
         lastPlayerName = [];
         msgToSend = [];
-        IsEnable = false;
+        On = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
+        On = true;
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
+        }
     }
-    public static void Remove(byte playerId)
+    public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
     }
@@ -59,7 +70,7 @@ public static class Mortician
         else
             LocateArrow.RemoveAllTarget(playerId);
     }
-    public static void OnPlayerDead(PlayerControl target)
+    private void CheckDeadBody(PlayerControl killer, PlayerControl target)
     {
         Vector2 pos = target.transform.position;
         float minDis = float.MaxValue;
@@ -84,7 +95,7 @@ public static class Mortician
             SendRPC(pc, true, target.transform.position);
         }
     }
-    public static void OnReportDeadBody(PlayerControl pc, GameData.PlayerInfo target)
+    public override void OnReportDeadBody(PlayerControl pc, PlayerControl target)
     {
         foreach (var apc in playerIdList.ToArray())
         {
@@ -94,10 +105,10 @@ public static class Mortician
 
         if (!pc.Is(CustomRoles.Mortician) || target == null || pc.PlayerId == target.PlayerId) return;
         lastPlayerName.TryGetValue(target.PlayerId, out var name);
-        if (name == "") msgToSend.Add(pc.PlayerId, string.Format(Translator.GetString("MorticianGetNoInfo"), target.PlayerName));
-        else msgToSend.Add(pc.PlayerId, string.Format(Translator.GetString("MorticianGetInfo"), target.PlayerName, name));
+        if (name == "") msgToSend.Add(pc.PlayerId, string.Format(GetString("MorticianGetNoInfo"), target.GetRealName()));
+        else msgToSend.Add(pc.PlayerId, string.Format(GetString("MorticianGetInfo"), target.GetRealName(), name));
     }
-    public static string GetTargetArrow(PlayerControl seer, PlayerControl target = null)
+    public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
         if (ShowArrows.GetBool())
         {
@@ -108,4 +119,10 @@ public static class Mortician
         }
         else return "";
     }
+    public override void OnMeetingHudStart(PlayerControl pc)
+    {
+        if (msgToSend.ContainsKey(pc.PlayerId))
+            AddMsg(msgToSend[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mortician), GetString("MorticianCheckTitle")));
+    }
+    public override void MeetingHudClear() => msgToSend = [];
 }

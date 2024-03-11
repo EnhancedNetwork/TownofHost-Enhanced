@@ -60,11 +60,10 @@ public static class Poisoner
     {
         if (!IsThisRole(killer.PlayerId)) return true;
         if (target.Is(CustomRoles.Bait)) return true;
-        if (target.Is(CustomRoles.Guardian) && target.AllTasksCompleted()) return true;
+        if (Guardian.CannotBeKilled(target)) return true;
         if (target.Is(CustomRoles.Opportunist) && target.AllTasksCompleted() && Options.OppoImmuneToAttacksWhenTasksDone.GetBool()) return false;
         if (target.Is(CustomRoles.Glitch)) return true;
         if (target.Is(CustomRoles.Pestilence)) return true;
-        if (target.Is(CustomRoles.Veteran) && Main.VeteranInProtect.ContainsKey(target.PlayerId)) return true;
         if (Medic.ProtectList.Contains(target.PlayerId)) return false;
 
         killer.SetKillCooldown();
@@ -110,7 +109,6 @@ public static class Poisoner
             Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Poison;
             target.SetRealKiller(poisoner);
             target.RpcMurderPlayerV3(target);
-            Medic.IsDead(target);
             Logger.Info($"Poisonerに噛まれている{target.name}を自爆させました。", "Poisoner");
             if (!isButton && poisoner.IsAlive())
             {

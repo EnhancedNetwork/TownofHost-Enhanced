@@ -10,13 +10,15 @@ using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using UnityEngine;
+using static TOHE.Utils;
+using TOHE.Roles.Impostor;
 
 namespace TOHE;
 
 public class PlayerState(byte playerId)
 {
     readonly byte PlayerId = playerId;
-    public RoleBase Role;
+    public RoleBase RoleClass;
     public CustomRoles MainRole = CustomRoles.NotAssigned;
     public List<CustomRoles> SubRoles = [];
     public CountTypes countTypes = CountTypes.OutOfGame;
@@ -32,7 +34,7 @@ public class PlayerState(byte playerId)
 
     public CustomRoles GetCustomRoleFromRoleType()
     {
-        var RoleInfo = Utils.GetPlayerInfoById(PlayerId);
+        var RoleInfo = GetPlayerInfoById(PlayerId);
         return RoleInfo.Role == null
             ? MainRole
             : RoleInfo.Role.Role switch
@@ -50,9 +52,10 @@ public class PlayerState(byte playerId)
     {
         MainRole = role;
         countTypes = role.GetCountTypes();
-        Role = role.GetRoleClass();
+        RoleClass = role.CreateRoleClass();
 
-        var pc = Utils.GetPlayerById(PlayerId);
+
+        var pc = GetPlayerById(PlayerId);
 
         if (role == CustomRoles.Opportunist)
         {
@@ -149,7 +152,7 @@ public class PlayerState(byte playerId)
                 }
                 SubRoles.Remove(subRole);
 
-                if (sync) Utils.MarkEveryoneDirtySettings();
+                if (sync) MarkEveryoneDirtySettings();
             }
         }
 
@@ -414,6 +417,28 @@ public class TaskState
 
         Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()}: TaskCounts = {CompletedTasksCount}/{AllTasksCount}", "TaskState.Init");
     }
+    public static string GetTaskState()
+    {
+        var playersWithTasks = Main.PlayerStates.Where(a => a.Value.TaskState.hasTasks).ToArray();
+        if (playersWithTasks.Length == 0)
+        {
+            return "\r\n";
+        }
+
+        var rd = IRandom.Instance;
+        var randomPlayer = playersWithTasks[rd.Next(0, playersWithTasks.Length)];
+        var taskState = randomPlayer.Value.TaskState;
+
+        Color TextColor;
+        var TaskCompleteColor = Color.green;
+        var NonCompleteColor = Color.yellow;
+        var NormalColor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
+
+        TextColor = Camouflager.AbilityActivated || Camouflage.IsCamouflage ? Color.gray : NormalColor;
+        string Completed = Camouflager.AbilityActivated || Camouflage.IsCamouflage ? "?" : $"{taskState.CompletedTasksCount}";
+
+        return $" <size={1.5}>" + ColorString(TextColor, $"({Completed}/{taskState.AllTasksCount})") + "</size>\r\n";
+    }
     public void Update(PlayerControl player)
     {
         Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()}: UpdateTask", "TaskState.Update");
@@ -430,6 +455,8 @@ public class TaskState
             var playerRole = player.GetCustomRole();
             var playerSubRoles = player.GetCustomSubRoles();
 
+            player.GetRoleClass()?.OnTaskComplete(player, CompletedTasksCount, AllTasksCount);
+
             switch (playerRole)
             {
                 //case CustomRoles.SpeedBooster when player.IsAlive():
@@ -441,127 +468,6 @@ public class TaskState
                 //        else player.Notify(string.Format(Translator.GetString("SpeedBoosterTaskDone"), Main.AllPlayerSpeed[player.PlayerId].ToString("0.0#####")));
                 //    }
                 //    break;
-
-                case CustomRoles.Transporter when player.IsAlive():
-                    if ((CompletedTasksCount + 1) <= Options.TransporterTeleportMax.GetInt())
-                    {
-                        Logger.Info($"Transporter: {player.GetNameWithRole().RemoveHtmlTags()} completed the task", "Transporter");
-
-                        var rd = IRandom.Instance;
-                        List<PlayerControl> AllAlivePlayer = Main.AllAlivePlayerControls.Where(x => x.CanBeTeleported()).ToList();
-
-                        if (AllAlivePlayer.Count >= 2)
-                        {
-                            var target1 = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
-                            var positionTarget1 = target1.GetCustomPosition();
-
-                            AllAlivePlayer.Remove(target1);
-
-                            var target2 = AllAlivePlayer[rd.Next(0, AllAlivePlayer.Count)];
-                            var positionTarget2 = target2.GetCustomPosition();
-
-                            target1.RpcTeleport(positionTarget2);
-                            target2.RpcTeleport(positionTarget1);
-
-                            AllAlivePlayer.Clear();
-
-                            target1.RPCPlayCustomSound("Teleport");
-                            target2.RPCPlayCustomSound("Teleport");
-
-                            target1.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Transporter), string.Format(Translator.GetString("TeleportedByTransporter"), target2.GetRealName())));
-                            target2.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Transporter), string.Format(Translator.GetString("TeleportedByTransporter"), target1.GetRealName())));
-                        }
-                        else
-                        {
-                            player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), Translator.GetString("ErrorTeleport")));
-                        }
-                    }
-                    break;
-
-                case CustomRoles.Veteran when player.IsAlive():
-                    Main.VeteranNumOfUsed[player.PlayerId] += Options.VeteranAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    break;
-
-                case CustomRoles.Grenadier when player.IsAlive():
-                    Main.GrenadierNumOfUsed[player.PlayerId] += Options.GrenadierAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    break;
-
-                case CustomRoles.Alchemist when player.IsAlive():
-                    Alchemist.OnTaskComplete(player);
-                    break;
-
-                case CustomRoles.Bastion when player.IsAlive():
-                    Main.BastionNumberOfAbilityUses += Options.BastionAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    break;
-
-                case CustomRoles.Captain when player.IsAlive():
-                    Captain.OnTaskComplete(player);
-                    break;
-
-                case CustomRoles.Divinator when player.IsAlive():
-                    Divinator.CheckLimit[player.PlayerId] += Divinator.AbilityUseGainWithEachTaskCompleted.GetFloat();
-                    Divinator.SendRPC(player.PlayerId);
-                    break;
-
-                case CustomRoles.Lighter when player.IsAlive():
-                    Main.LighterNumOfUsed[player.PlayerId] += Options.LighterAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    break;
-
-                case CustomRoles.DovesOfNeace when player.IsAlive():
-                    Main.DovesOfNeaceNumOfUsed[player.PlayerId] += Options.DovesOfNeaceAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    break;
-
-                case CustomRoles.TimeMaster when player.IsAlive():
-                    Main.TimeMasterNumOfUsed[player.PlayerId] += Options.TimeMasterAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    break;
-
-                case CustomRoles.Mediumshiper when player.IsAlive():
-                    Mediumshiper.ContactLimit[player.PlayerId] += Mediumshiper.MediumAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    Mediumshiper.SendRPC(player.PlayerId);
-                    break;
-
-                case CustomRoles.Inspector when player.IsAlive():
-                    Inspector.MaxCheckLimit[player.PlayerId] += Inspector.InspectAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    Inspector.SendRPC(player.PlayerId, 2);
-                    break;
-
-                case CustomRoles.Oracle when player.IsAlive():
-                    Oracle.CheckLimit[player.PlayerId] += Oracle.OracleAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    Oracle.SendRPC(player.PlayerId);
-                    break;
-
-                //case CustomRoles.Cleanser when player.IsAlive():
-                //    Cleanser.CleanserUses[player.PlayerId] += Cleanser.AbilityUseGainWithEachTaskCompleted.GetInt();
-                //    break;
-
-                case CustomRoles.SabotageMaster when player.IsAlive():
-                    SabotageMaster.UsedSkillCount[player.PlayerId] -= SabotageMaster.SMAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    SabotageMaster.SendRPC(player.PlayerId);
-                    break;
-
-                case CustomRoles.Tracker when player.IsAlive():
-                    Tracker.TrackLimit[player.PlayerId] += Tracker.TrackerAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    Tracker.SendRPC(2, player.PlayerId);
-                    break;
-
-                case CustomRoles.Bloodhound when player.IsAlive():
-                    Bloodhound.UseLimit[player.PlayerId] += Bloodhound.BloodhoundAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    Bloodhound.SendRPCLimit(player.PlayerId, operate: 2);
-                    break;
-
-                case CustomRoles.Chameleon when player.IsAlive():
-                    Chameleon.UseLimit[player.PlayerId] += Chameleon.ChameleonAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    Chameleon.SendRPC(player, isLimit: true);
-                    break;
-
-                case CustomRoles.Spy when player.IsAlive():
-                    Spy.UseLimit[player.PlayerId] += Spy.SpyAbilityUseGainWithEachTaskCompleted.GetFloat();
-                    Spy.SendAbilityRPC(player.PlayerId);
-                    break;
-
-                case CustomRoles.Merchant when player.IsAlive():
-                    Merchant.OnTaskFinished(player);
-                    break;
 
                 case CustomRoles.Workaholic when (CompletedTasksCount + 1) >= AllTasksCount && !(Options.WorkaholicCannotWinAtDeath.GetBool() && !player.IsAlive()):
                     Logger.Info("The Workaholic task is done", "Workaholic");
@@ -584,56 +490,6 @@ public class TaskState
                     {
                         CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Workaholic); //Workaholic win
                         CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
-                    }
-                    break;
-
-                case CustomRoles.Crewpostor:
-                    if (Main.CrewpostorTasksDone.ContainsKey(player.PlayerId))
-                        Main.CrewpostorTasksDone[player.PlayerId]++;
-                    else
-                        Main.CrewpostorTasksDone[player.PlayerId] = 0;
-
-                    RPC.CrewpostorTasksSendRPC(player.PlayerId, Main.CrewpostorTasksDone[player.PlayerId]);
-                    List<PlayerControl> list = Main.AllAlivePlayerControls.Where(x => x.PlayerId != player.PlayerId && (Options.CrewpostorCanKillAllies.GetBool() || !x.GetCustomRole().IsImpostorTeam())).ToList();
-
-                    if (list.Count <= 0)
-                    {
-                        Logger.Info($"No target to kill", "Crewpostor");
-                    }
-                    else if (Main.CrewpostorTasksDone[player.PlayerId] % Options.CrewpostorKillAfterTask.GetInt() != 0 && Main.CrewpostorTasksDone[player.PlayerId] != 0)
-                    {
-                        Logger.Info($"Crewpostor task done but kill skipped, tasks completed {Main.CrewpostorTasksDone[player.PlayerId]}, but it kills after {Options.CrewpostorKillAfterTask.GetInt()} tasks", "Crewpostor");
-                    }
-                    else
-                    {
-                        list = [.. list.OrderBy(x => Vector2.Distance(player.transform.position, x.transform.position))];
-                        var target = list[0];
-
-                        if (!target.Is(CustomRoles.Pestilence))
-                        {
-                            if (!Options.CrewpostorLungeKill.GetBool())
-                            {
-                                target.SetRealKiller(player);
-                                target.RpcCheckAndMurder(target);
-                                player.RpcGuardAndKill();
-                                Logger.Info("No lunge mode kill", "Crewpostor");
-                            }
-                            else
-                            {
-                                target.SetRealKiller(player);
-                                player.RpcMurderPlayerV3(target);
-                                player.RpcGuardAndKill();
-                                Logger.Info("lunge mode kill", "Crewpostor");
-                            }
-                            Logger.Info($"Crewpostor completed task to kill：{player.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}", "Crewpostor");
-                        }
-                        else
-                        {
-                            player.SetRealKiller(target);
-                            target.RpcMurderPlayerV3(player);
-                            player.RpcGuardAndKill();
-                            Logger.Info($"Crewpostor tried to kill pestilence (reflected back)：{target.GetNameWithRole().RemoveHtmlTags()} => {player.GetNameWithRole().RemoveHtmlTags()}", "Pestilence Reflect");
-                        }
                     }
                     break;
             }

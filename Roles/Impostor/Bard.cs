@@ -4,12 +4,12 @@ internal class Bard: RoleBase
 {
     public static bool On;
     public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     public override void Init()
     {
         On = false;
     }
-
     public override void Add(byte playerId)
     {
         On = true;
@@ -18,11 +18,11 @@ internal class Bard: RoleBase
     public static bool CheckSpawn()
     {
         var Rand = IRandom.Instance;
-        return Arrogance.BardChance.GetInt() <= Rand.Next(1, 101);
+        return Rand.Next(0, 100) < Arrogance.BardChance.GetInt();
     }
 
-    public override void OnPlayerExiled(PlayerControl Bard, GameData.PlayerInfo exiled)
+    public override void OnPlayerExiled(PlayerControl bard, GameData.PlayerInfo exiled)
     {
-        if (exiled != null) Main.AllPlayerKillCooldown[Bard.PlayerId] /= 2;
+        if (exiled != null) Main.AllPlayerKillCooldown[bard.PlayerId] /= 2;
     }
 }

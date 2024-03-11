@@ -10,6 +10,7 @@ internal class Berserker : RoleBase
 
     public static bool On;
     public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     private static OptionItem BerserkerKillCooldown;
     private static OptionItem BerserkerMax;
@@ -62,10 +63,14 @@ internal class Berserker : RoleBase
         BerserkerKillMax[playerId] = 0;
         On = true;
     }
+    public override void Remove(byte playerId)
+    {
+        BerserkerKillMax.Remove(playerId);
+    }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = BerserkerKillCooldown.GetFloat();
 
-    public override bool OnCheckMurderOnTarget(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (BerserkerKillMax[target.PlayerId] >= BerserkerImmortalLevel.GetInt() && BerserkerFourCanNotKill.GetBool())
         {

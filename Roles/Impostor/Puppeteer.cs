@@ -3,6 +3,7 @@ using Hazel;
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Modules;
+using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Neutral;
@@ -10,16 +11,18 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
-
 namespace TOHE.Roles.Impostor;
 
-public static class Puppeteer
+internal class Puppeteer : RoleBase
 {
-    private static readonly int Id = 4300;
-    public static bool IsEnable = false;
+    private const int Id = 4300;
+    public static bool On;
+    public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
-    public static Dictionary<byte, byte> PuppeteerList = [];
-    public static OptionItem PuppeteerDoubleKills;
+    private static OptionItem PuppeteerDoubleKills;
+
+    private static Dictionary<byte, byte> PuppeteerList = [];
 
     public static void SetupCustomOption()
     {
@@ -27,19 +30,25 @@ public static class Puppeteer
         PuppeteerDoubleKills = BooleanOptionItem.Create(Id + 12, "PuppeteerDoubleKills", false, TabGroup.ImpostorRoles, true)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Puppeteer]);
     }
-    public static void Init()
+    public override void Init()
     {
+        On = false;
         PuppeteerList = [];
-        IsEnable = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
-        IsEnable = true;
-
         // Double Trigger
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
+
+        On = true;
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateOthers);
+        }
     }
+
     private static void SendRPC(byte puppetId, byte targetId, byte typeId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncPuppet, SendOption.Reliable, -1);
@@ -67,25 +76,31 @@ public static class Puppeteer
                 break;
         }
     }
-    public static bool OnCheckPuppet(PlayerControl killer, PlayerControl target)
+
+    public static bool PuppetIsActive(byte playerId) => PuppeteerList.ContainsKey(playerId);
+
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (target.Is(CustomRoles.Needy) || target.Is(CustomRoles.Lazy) || target.Is(CustomRoles.NiceMini) && Mini.Age < 18 || Medic.ProtectList.Contains(target.PlayerId)) return false;
+        if (target.Is(CustomRoles.LazyGuy) 
+            || target.Is(CustomRoles.Lazy)
+            || target.Is(CustomRoles.NiceMini) && Mini.Age < 18
+            || Medic.ProtectList.Contains(target.PlayerId))
+            return false;
+
             return killer.CheckDoubleTrigger(target, () => 
             {         
                 PuppeteerList[target.PlayerId] = killer.PlayerId;
                 killer.SetKillCooldown();
                 SendRPC(killer.PlayerId, target.PlayerId, 1);
                 killer.RPCPlayCustomSound("Line");
-                Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
+                Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);
             }
-
         );
     }
 
-
-    public static void OnFixedUpdate(PlayerControl puppet)
+    private void OnFixedUpdateOthers(PlayerControl puppet)
     {
-        if (!PuppeteerList.ContainsKey(puppet.PlayerId)) return;
+        if (!PuppetIsActive(puppet.PlayerId)) return;
 
         if (!puppet.IsAlive() || Pelican.IsEaten(puppet.PlayerId))
         {
@@ -139,15 +154,19 @@ public static class Puppeteer
         }
     }
 
-    public static void OnReportDeadBody()
+    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
         PuppeteerList.Clear();
         SendRPC(byte.MaxValue, byte.MaxValue, 0);
     }
 
-    public static string TargetMark(PlayerControl seer, PlayerControl target)
-        => (PuppeteerList.ContainsValue(seer.PlayerId) && PuppeteerList.ContainsKey(target.PlayerId)) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Puppeteer), "◆") : "";
+    public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+    {
+        if (target == null || isForMeeting) return string.Empty;
 
-    public static void SetKillButtonText(HudManager __instance)
-        => __instance.KillButton.OverrideText(GetString("PuppeteerOperateButtonText"));
+        return (PuppeteerList.ContainsValue(seer.PlayerId) && PuppeteerList.ContainsKey(target.PlayerId)) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Puppeteer), "◆") : "";
+    }
+
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+        => hud.KillButton?.OverrideText(GetString("PuppeteerOperateButtonText"));
 }

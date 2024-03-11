@@ -10,6 +10,7 @@ internal class Arrogance : RoleBase
     public static List<byte> playerIdList = [];
     public static bool On;
     public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     private static OptionItem DefaultKillCooldown;
     private static OptionItem ReduceKillCooldown;
@@ -42,6 +43,11 @@ internal class Arrogance : RoleBase
         playerIdList.Add(playerId);
         NowCooldown.TryAdd(playerId, DefaultKillCooldown.GetFloat());
         On = true;
+    }
+    public override void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+        NowCooldown.Remove(playerId);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = NowCooldown[id];
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)

@@ -1,38 +1,42 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using System.Collections.Generic;
+using TOHE.Roles.Core;
+using TOHE.Roles.Neutral;
+using static TOHE.MeetingHudStartPatch;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
 internal class Blackmailer : RoleBase
 {
     private const int Id = 24600;
-    private static List<byte> playerIdList = [];
     public static bool On;
     public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
 
     private static OptionItem SkillCooldown;
-    //private static OptionItem BlackmailerMax;
 
     private static List<byte> ForBlackmailer = [];
-    //private static Dictionary<byte, int> BlackmailerMaxUp = [];
 
     public static void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Blackmailer);
-        SkillCooldown = FloatOptionItem.Create(Id + 42, "BlackmailerSkillCooldown", new(2.5f, 900f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Blackmailer])
+        SkillCooldown = FloatOptionItem.Create(Id + 2, "BlackmailerSkillCooldown", new(2.5f, 900f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Blackmailer])
            .SetValueFormat(OptionFormat.Seconds);
-        //BlackmailerMax = FloatOptionItem.Create(Id + 43, "BlackmailerMax", new(2.5f, 900f, 2.5f), 20f, TabGroup.OtherRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Blackmailer])
-        //    .SetValueFormat(OptionFormat.Seconds);
     }
     public override void Init()
     {
-        //BlackmailerMaxUp = [];
         ForBlackmailer = [];
         On = false;
     }
     public override void Add(byte playerId)
     {
         On = true;
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            CustomRoleManager.MarkOthers.Add(GetMarkOthers);
+        }
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
@@ -45,12 +49,12 @@ internal class Blackmailer : RoleBase
 
         if (!target.IsAlive())
         {
-            blackmailer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Scavenger), Translator.GetString("NotAssassin")));
+            blackmailer.Notify(Utils.ColorString(Utils.GetRoleColor(blackmailer.GetCustomRole()), GetString("NotAssassin")));
             return;
         }
 
         ForBlackmailer.Add(target.PlayerId);
-        blackmailer.Notify(Translator.GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
+        blackmailer.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
     }
 
     public override void AfterMeetingTasks()
@@ -61,7 +65,24 @@ internal class Blackmailer : RoleBase
     {
         ClearBlackmaile();
     }
-    private static void ClearBlackmaile() => ForBlackmailer.Clear();
 
+    private static void ClearBlackmaile() => ForBlackmailer.Clear();
     public static bool CheckBlackmaile(PlayerControl player) => On && ForBlackmailer.Contains(player.PlayerId);
+
+    private string GetMarkOthers(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+    {
+        if (!isForMeeting) return string.Empty;
+        
+        target ??= seer;
+        return CheckBlackmaile(target) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Blackmailer), "╳") : string.Empty;
+    }
+    public override void OnMeetingHudStart(PlayerControl pc)
+    {
+        if (CheckBlackmaile(pc))
+        {
+            var playername = pc.GetRealName();
+            if (Doppelganger.DoppelVictim.ContainsKey(pc.PlayerId)) playername = Doppelganger.DoppelVictim[pc.PlayerId];
+            AddMsg(string.Format(GetString("BlackmailerDead"), playername, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Blackmailer), GetString("BlackmaileKillTitle"))));
+        }
+    }
 }

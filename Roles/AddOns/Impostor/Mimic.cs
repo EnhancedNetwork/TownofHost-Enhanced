@@ -1,6 +1,4 @@
-﻿using TOHE.Roles.AddOns.Common;
-using static TOHE.Options;
-using static UnityEngine.GraphicsBuffer;
+﻿using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Impostor;
 public static class Mimic
@@ -14,5 +12,5 @@ public static class Mimic
         CanSeeDeadRolesOpt = BooleanOptionItem.Create(Id + 10, "MimicCanSeeDeadRoles", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mimic]);
     }
 
-    public static bool CanSeeDeadRoles(PlayerControl seer, PlayerControl target) => CanSeeDeadRolesOpt.GetBool() && Main.VisibleTasksCount && seer.Is(CustomRoles.Mimic) && !target.IsAlive();
+    public static bool CanSeeDeadRoles(PlayerControl seer, PlayerControl target) => seer.Is(CustomRoles.Mimic) && CanSeeDeadRolesOpt.GetBool() && Main.VisibleTasksCount && !target.IsAlive() && target.Data.IsDead;
 }

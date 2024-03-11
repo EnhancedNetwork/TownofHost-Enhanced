@@ -37,17 +37,16 @@ public class Main : BasePlugin
     public const string DebugKeySalt = "59687b";
 
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
-    public static readonly string MainMenuText = " ";
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0223.160.0004"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "1.6.0 dev 4";
-    public static readonly string SupportedVersionAU = "2023.10.24"; // also 2023.11.28
+    public const string PluginVersion = "2024.0307.160.0007"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "1.6.0 dev 7";
+    public static readonly string SupportedVersionAU = "2024.3.5";
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool Canary = false; // INACTIVE - Latest: V1.5.1 Canary 5
-    public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.5.1
-    public static readonly bool devRelease = true; // ACTIVE - Latest: V1.6.0 Dev 4
+    public static readonly bool Canary = false; // INACTIVE - Latest: V1.5.2 Canary 1
+    public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.5.2
+    public static readonly bool devRelease = true; // ACTIVE - Latest: V1.6.0 Dev 7
 
     public static bool hasAccess = true;
 
@@ -87,7 +86,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> DarkTheme { get; private set; }
     public static ConfigEntry<bool> ShowTextOverlay { get; private set; }
     public static ConfigEntry<bool> ModeForSmallScreen { get; private set; }
-    public static ConfigEntry<bool> HorseMode { get; private set; }
+    //public static ConfigEntry<bool> HorseMode { get; private set; }
     public static ConfigEntry<bool> AutoMuteUs { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguage { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguageRoleName { get; private set; }
@@ -140,21 +139,10 @@ public class Main : BasePlugin
     public static Dictionary<byte, float> AllPlayerKillCooldown = [];
     public static Dictionary<byte, Vent> LastEnteredVent = [];
     public static Dictionary<byte, Vector2> LastEnteredVentLocation = [];
-    public static Dictionary<byte, Vector2> TimeMasterBackTrack = [];
     public static Dictionary<byte, int> MasochistKillMax = [];
-    public static Dictionary<byte, int> TimeMasterNum = [];
-    public static Dictionary<byte, long> TimeMasterInProtect = [];
     //public static Dictionary<byte, long> FlashbangInProtect = [];
-    public static List<byte> CyberStarDead = [];
-    public static List<int> BombedVents = [];
     public static List<byte> WorkaholicAlive = [];
     public static List<byte> TasklessCrewmate = [];
-    public static List<byte> BoobyTrapBody = [];
-    public static List<byte> BoobyTrapKiller = [];
-    //public static List<byte> KilledDiseased = [];
-    //public static List<byte> ForFlashbang = [];
-    public static Dictionary<byte, byte> KillerOfBoobyTrapBody = [];
-    public static Dictionary<byte, string> DetectiveNotify = [];
     public static Dictionary<byte, string> VirusNotify = [];
     public static List<byte> OverDeadPlayerList = [];
     public static bool DoBlockNameChange = false;
@@ -164,17 +152,14 @@ public class Main : BasePlugin
     public static Dictionary<int, int> SayBanwordsTimes = [];
     public static Dictionary<byte, float> AllPlayerSpeed = [];
     public const float MinSpeed = 0.0001f;
-    public static List<byte> CleanerBodies = [];
     public static List<byte> MedusaBodies = [];
     public static List<byte> InfectedBodies = [];
     public static Dictionary<byte, (byte, float)> BitPlayers = [];
     public static Dictionary<byte, float> WarlockTimer = [];
-    public static Dictionary<byte, float> AssassinTimer = [];
     public static Dictionary<byte, PlayerControl> CursedPlayers = [];
     public static Dictionary<byte, bool> isCurseAndKill = [];
+    public static Dictionary<byte, int> NemesisRevenged = [];
     public static Dictionary<byte, int> GuesserGuessed = [];
-    public static Dictionary<byte, int> CapitalismAddTask = [];
-    public static Dictionary<byte, int> CapitalismAssignTask = [];
     public static Dictionary<(byte, byte), bool> isDoused = [];
     public static Dictionary<(byte, byte), bool> isDraw = [];
     public static Dictionary<(byte, byte), bool> isRevealed = [];
@@ -184,28 +169,15 @@ public class Main : BasePlugin
     public static Dictionary<byte, long> RevolutionistLastTime = [];
     public static Dictionary<byte, int> RevolutionistCountdown = [];
     public static Dictionary<byte, byte> SpeedBoostTarget = [];
-    public static Dictionary<byte, int> MayorUsedButtonCount = [];
     public static Dictionary<byte, int> ParaUsedButtonCount = [];
     public static Dictionary<byte, int> MarioVentCount = [];
-    public static Dictionary<byte, long> VeteranInProtect = [];
-    public static Dictionary<byte, float> VeteranNumOfUsed = [];
-    public static Dictionary<byte, long> GrenadierBlinding = [];
-    public static Dictionary<byte, long> MadGrenadierBlinding = [];
-    public static float BastionNumberOfAbilityUses = 0;
-    public static Dictionary<byte, float> GrenadierNumOfUsed = [];
-    public static Dictionary<byte, long> Lighter = [];
-    public static Dictionary<byte, float> LighterNumOfUsed = [];
     public static Dictionary<byte, long> AllKillers = [];
-    public static Dictionary<byte, float> TimeMasterNumOfUsed = [];
-    public static Dictionary<byte, int> CursedWolfSpellCount = [];
     public static Dictionary<byte, int> JinxSpellCount = [];
     public static int AliveImpostorCount;
     public static bool isCursed;
     public static Dictionary<byte, bool> CheckShapeshift = [];
     public static Dictionary<byte, byte> ShapeshiftTarget = [];
     public static Dictionary<(byte, byte), string> targetArrows = [];
-    public static Dictionary<byte, Vector2> EscapistLocation = [];
-    public static Dictionary<byte, Vector2> TimeMasterLocation = [];
     public static bool VisibleTasksCount = false;
     public static string nickName = "";
     public static bool introDestroyed = false;
@@ -224,10 +196,6 @@ public class Main : BasePlugin
     public static int BardCreations = 0;
     public static int MeetingsPassed = 0;
     public static Dictionary<byte, byte> Provoked = [];
-    public static Dictionary<byte, float> DovesOfNeaceNumOfUsed = [];
-
-    public static List<byte> GodfatherTarget = [];
-    public static Dictionary<byte, int> CrewpostorTasksDone = [];
     
     public static byte ShamanTarget = byte.MaxValue;
     public static bool ShamanTargetChoosen = false;
@@ -435,7 +403,7 @@ public class Main : BasePlugin
         DarkTheme = Config.Bind("Client Options", "DarkTheme", false);
         ShowTextOverlay = Config.Bind("Client Options", "ShowTextOverlay", false);
         ModeForSmallScreen = Config.Bind("Client Options", "ModeForSmallScreen", false);
-        HorseMode = Config.Bind("Client Options", "HorseMode", false);
+        //HorseMode = Config.Bind("Client Options", "HorseMode", false);
         AutoMuteUs = Config.Bind("Client Options", "AutoMuteUs", false); // The AutoMuteUs bot fails to match the host's name.
         ForceOwnLanguage = Config.Bind("Client Options", "ForceOwnLanguage", false);
         ForceOwnLanguageRoleName = Config.Bind("Client Options", "ForceOwnLanguageRoleName", false);
@@ -535,6 +503,7 @@ public enum CustomRoles
     /*******************************************************
      * Please add all the new roles in alphabetical order *
      ******************************************************/
+
     //Default
     Crewmate = 0,
     //Impostor(Vanilla)
@@ -544,10 +513,14 @@ public enum CustomRoles
     ImpostorTOHE,
     ShapeshifterTOHE,
 
+    // Impostor Ghost
+    Bloodmoon,
+    Minion,
+
     //Impostor
-    Arrogance,
     Anonymous,
     AntiAdminer,
+    Arrogance,
     Bard,
     Berserker,
     Blackmailer,
@@ -555,10 +528,9 @@ public enum CustomRoles
     BountyHunter,
     Butcher,
     Camouflager,
-    Capitalism, //capitalist
     Chronomancer,
     Cleaner,
-    EvilDiviner, //Consigliere
+    Consigliere,
     Convict,
     Councillor,
     Crewpostor,
@@ -575,7 +547,7 @@ public enum CustomRoles
     Fireworker,
     Gangster,
     Godfather,
-    Greedier, //greedy
+    Greedy,
     Hangman,
     Inhibitor,
     Instigator,
@@ -585,17 +557,16 @@ public enum CustomRoles
     Ludopath,
     Lurker,
     Mastermind,
-    Mercenary, //mercenary
+    Mercenary,
     Miner,
     Morphling,
     Nemesis,
-    Minion,
-    Assassin, //ninja
+    Ninja,
     Nuker,
     Parasite,
+    Penguin,
     Pitfall,
     Puppeteer,
-    PlagueDoctor,
     QuickShooter,
     Refugee,
     RiftMaker,
@@ -603,16 +574,16 @@ public enum CustomRoles
     Scavenger,
     ShapeMaster,
     Sniper,
-    Witch, //spellcaster
-    ImperiusCurse, //soulcatcher
+    Witch,
+    SoulCatcher,
     Swooper,
+    Stealth,
     TimeThief,
-    BoobyTrap, //trapster
+    Trapster,
     Trickster,
     Twister,
     Underdog,
     Undertaker,
-    Penguin,
     Vampire,
     Vampiress,
     Vindicator,
@@ -620,7 +591,7 @@ public enum CustomRoles
     Warlock,
     Wildling,
     Zombie,
-    // Flashbang,
+
     //Crewmate(Vanilla)
     Engineer,
     GuardianAngel,
@@ -631,6 +602,10 @@ public enum CustomRoles
     ScientistTOHE,
     GuardianAngelTOHE,
 
+    //Crewmate Ghost
+    Hawk,
+    Warden,
+
     //Crewmate
     Addict,
     Admirer,
@@ -639,37 +614,36 @@ public enum CustomRoles
     Benefactor,
     Bodyguard,
     Captain,
-    CyberStar, //celebrity
+    Celebrity, 
     Chameleon,
     Cleanser,
     CopyCat,
-    Bloodhound, //coroner
+    Coroner, 
     Crusader,
     Detective,
-    Counterfeiter, //deceiver
+    Deceiver, 
     Deputy,
     Dictator,
     Doctor,
     Enigma,
-    Divinator, //FortuneTeller
+    FortuneTeller, 
     Guardian,
     GuessMaster,
     Grenadier,
-    Inspector, //inspector
+    Inspector, 
     Investigator,
     Jailer,
     Judge,
     Keeper,
-    SwordsMan, //knight
-    Needy, //Lazy guy
+    Knight, 
+    LazyGuy,
     Lighter,
-   // Luckey,
     Lookout,
     Marshall,
     Mayor,
-    SabotageMaster, //Mechanic
+    Mechanic, 
     Medic,
-    Mediumshiper, //medium
+    Medium,
     Merchant,
     Mole,
     Monarch,
@@ -678,10 +652,10 @@ public enum CustomRoles
     NiceMini,
     Observer,
     Oracle,
-    Farseer, //overseer
-    DovesOfNeace, //pacifist
+    Overseer, 
+    Pacifist, 
     Paranoia, //paranoid
-    ChiefOfPolice, //police commisioner
+    ChiefOfPolice, //police commisioner ///// UNUSED
     President,
     Psychic,
     Randomizer,
@@ -695,7 +669,7 @@ public enum CustomRoles
     SuperStar,
     Swapper,
     TaskManager,
-    Monitor, //telecommunications
+    Telecommunication,
     Tracefinder,
     Tracker,
     Transporter,
@@ -738,7 +712,6 @@ public enum CustomRoles
     Medusa,
     Necromancer,
     Opportunist,
-    //Occultist,
     Pelican,
     Pestilence,
     Phantom,
@@ -746,6 +719,7 @@ public enum CustomRoles
     Pirate,
     Pixie,
     PlagueBearer,
+    PlagueDoctor,
     PotionMaster,
     Poisoner,
     Provocateur,
@@ -774,16 +748,11 @@ public enum CustomRoles
     Virus,
     Vulture,
     Werewolf,
-    Warden,
     Workaholic,
     Wraith,
-    Stealth,
 
    //two-way camp
     Mini,
-
-    // Sorcerer,
-    // Flux,
 
     //FFA
     Killer,
@@ -793,6 +762,8 @@ public enum CustomRoles
 
     // Sub-role after 500
     NotAssigned = 500,
+
+    // Add-ons
     Admired,
     Antidote,
     Autopsy,
@@ -845,7 +816,6 @@ public enum CustomRoles
     Reach,
     Rebound,
     Recruit,
-    //Repairman,
     Rogue,
     Schizophrenic,
     Seer,
@@ -864,17 +834,8 @@ public enum CustomRoles
     Unlucky,
     VoidBallot,
     Watcher,
-    //Sunglasses,
     Workhorse,
-    Youtuber
-
-   // Reflective,
-    //Glow,
-
-    // QuickFix
-    
-    //You need to put roles in order by their name
-    
+    Youtuber   
 }
 //WinData
 public enum CustomWinner

@@ -59,7 +59,9 @@ internal class ChatCommands
         if (Inspector.InspectCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Pirate.DuelCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Councillor.MurderMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
-        if (Mediumshiper.MsMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
+        if (Nemesis.NemesisMsgCheck(PlayerControl.LocalPlayer, text)) goto Canceled;
+        if (Retributionist.RetributionistMsgCheck(PlayerControl.LocalPlayer, text)) goto Canceled;
+        if (Medium.MsMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Swapper.SwapMsg(PlayerControl.LocalPlayer, text)) goto Canceled; 
         Directory.CreateDirectory(modTagsFiles);
         Directory.CreateDirectory(vipTagsFiles);
@@ -438,11 +440,21 @@ internal class ChatCommands
                 case "/tpout":
                     canceled = true;
                     if (!GameStates.IsLobby) break;
+                    if (!Options.PlayerCanUseTP.GetBool())
+                    {
+                        Utils.SendMessage(GetString("DisableUseCommand"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
                     PlayerControl.LocalPlayer.RpcTeleport(new Vector2(0.1f, 3.8f));
                     break;
                 case "/tpin":
                     canceled = true;
                     if (!GameStates.IsLobby) break;
+                    if (!Options.PlayerCanUseTP.GetBool())
+                    {
+                        Utils.SendMessage(GetString("DisableUseCommand"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
                     PlayerControl.LocalPlayer.RpcTeleport(new Vector2(-0.2f, 1.3f));
                     break;
 
@@ -691,7 +703,7 @@ internal class ChatCommands
 
                         _ = new LateTask(() =>
                         {
-                            Utils.NotifyRoles(ForceLoop: true, NoCache: true);
+                            Utils.NotifyRoles(NoCache: true);
 
                         }, 0.2f, "Update NotifyRoles players after /kill");
                     }
@@ -780,7 +792,7 @@ internal class ChatCommands
                             PlayerControl.LocalPlayer.RpcSetRole(rl.GetRoleTypes());
                             PlayerControl.LocalPlayer.RpcSetCustomRole(rl);
                             Utils.SendMessage(string.Format("Debug Set your role to {0}", rl.ToString()), PlayerControl.LocalPlayer.PlayerId);
-                            Utils.NotifyRoles(ForceLoop: true);
+                            Utils.NotifyRoles(NoCache: true);
                             Utils.MarkEveryoneDirtySettings();
                             break;
                         }
@@ -829,7 +841,13 @@ internal class ChatCommands
                     if (args.Length < 1 || !int.TryParse(args[1], out int sound1)) break;
                     RPC.PlaySoundRPC(PlayerControl.LocalPlayer.PlayerId, (Sounds)sound1);
                     break;
+
                 case "/rps":
+                    if (!Options.CanPlayMiniGames.GetBool())
+                    {
+                        Utils.SendMessage(GetString("DisableUseCommand"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
                     canceled = true;
                     subArgs = args.Length != 2 ? "" : args[1];
 
@@ -871,6 +889,11 @@ internal class ChatCommands
                         break;
                     }
                 case "/coinflip":
+                    if (!Options.CanPlayMiniGames.GetBool())
+                    {
+                        Utils.SendMessage(GetString("DisableUseCommand"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
                     canceled = true;
 
                     if (!GameStates.IsLobby && PlayerControl.LocalPlayer.IsAlive())
@@ -887,6 +910,11 @@ internal class ChatCommands
                         break;
                     }
                 case "/gno":
+                    if (!Options.CanPlayMiniGames.GetBool())
+                    {
+                        Utils.SendMessage(GetString("DisableUseCommand"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
                     canceled = true;
                     if (!GameStates.IsLobby && PlayerControl.LocalPlayer.IsAlive())
                     {
@@ -942,7 +970,12 @@ internal class ChatCommands
 
                     }
                     case "/rand":
-                        canceled = true;
+                    if (!Options.CanPlayMiniGames.GetBool())
+                    {
+                        Utils.SendMessage(GetString("DisableUseCommand"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    canceled = true;
                         subArgs = args.Length != 3 ? "" : args[1];
                         subArgs2 = args.Length != 3 ? "" : args[2];
 
@@ -1028,7 +1061,7 @@ internal class ChatCommands
             "吸血鬼" or "吸血" => GetString("Vampire"),
             "吸血鬼之王" or "吸血鬼女王"  => GetString("Vampiress"),
             "術士" or "术士" => GetString("Warlock"),
-            "刺客" or "忍者" => GetString("Assassin"),
+            "刺客" or "忍者" => GetString("Ninja"),
             "僵屍" or "僵尸" or"殭屍" or "丧尸" => GetString("Zombie"),
             "駭客" or "骇客" or "黑客" => GetString("Anonymous"),
             "礦工" or "矿工" => GetString("Miner"),
@@ -1048,14 +1081,13 @@ internal class ChatCommands
             "狂妄殺手" or "狂妄杀手" => GetString("Arrogance"),
             "自爆兵" or "自爆" => GetString("Bomber"),
             "清道夫" or "清道" => GetString("Scavenger"),
-            "陷阱師" or "诡雷" => GetString("BoobyTrap"),
-            "資本主義者" or "资本家" or "资本主义" or "资本" => GetString("Capitalism"),
+            "陷阱師" or "诡雷" => GetString("Trapster"),
             "歹徒" => GetString("Gangster"),
             "清潔工" or "清理工" or "清洁工" => GetString("Cleaner"),
             "球狀閃電" or "球状闪电" => GetString("Lightning"),
-            "貪婪者" or "贪婪者" or "贪婪" => GetString("Greedier"),
+            "貪婪者" or "贪婪者" or "贪婪" => GetString("Greedy"),
             "被詛咒的狼" or "呪狼" => GetString("CursedWolf"),
-            "換魂師" or "夺魂者" or "夺魂" => GetString("ImperiusCurse"),
+            "換魂師" or "夺魂者" or "夺魂" => GetString("SoulCatcher"),
             "快槍手" or "快枪手" or "快枪" => GetString("QuickShooter"),
             "隱蔽者" or "隐蔽者" or "小黑人" => GetString("Camouflager"),
             "抹除者" or "抹除" => GetString("Eraser"),
@@ -1074,7 +1106,7 @@ internal class ChatCommands
             "眩暈者" or "眩晕者" or "眩晕" => GetString("Dazzler"),
             "簽約人" or "死亡契约" or "死亡" or "锲约" => GetString("Deathpact"),
             "吞噬者" or "吞噬" => GetString("Devourer"),
-            "軍師" or "军师" => GetString("EvilDiviner"),
+            "軍師" or "军师" => GetString("Consigliere"),
             "化型者" or "化形者" => GetString("Morphling"),
             "躁動者" or "龙卷风" => GetString("Twister"),
             "策畫者" or "潜伏者" or "潜伏" => GetString("Lurker"),
@@ -1092,16 +1124,16 @@ internal class ChatCommands
             "教唆者" or "教唆" => GetString("Instigator"),
 
             // 船员阵营职业
-            "擺爛人" or "摆烂人" or "摆烂" => GetString("Needy"),
+            "擺爛人" or "摆烂人" or "摆烂" => GetString("LazyGuy"),
             "大明星" or "明星" => GetString("SuperStar"),
-            "網紅" or "网红" => GetString("CyberStar"),
+            "網紅" or "网红" => GetString("Celebrity"),
             "清洗者" or "清洗" => GetString("Cleanser"),
             "守衛者" or "守卫者" => GetString("Keeper"),
-            "俠客" or "侠客" or "正义使者" => GetString("SwordsMan"),
+            "俠客" or "侠客" or "正义使者" => GetString("Knight"),
             "市長" or "市长" => GetString("Mayor"),
             "被害妄想症" or "被害妄想" or "被迫害妄想症" or "被害" or "妄想" or "妄想症" => GetString("Paranoia"),
             "愚者" => GetString("Psychic"),
-            "修理工" or "修理" or "修理大师" => GetString("SabotageMaster"),
+            "修理工" or "修理" or "修理大师" => GetString("Mechanic"),
             "警長" or "警长" => GetString("Sheriff"),
             "義警" or "义务警员" or "警员" => GetString("Vigilante"),
             "監禁者" or "狱警" or "狱卒" => GetString("Jailer"),
@@ -1119,18 +1151,18 @@ internal class ChatCommands
             "老兵" => GetString("Veteran"),
             "埋雷兵" => GetString("Bastion"),
             "保鑣" or "保镖" => GetString("Bodyguard"),
-            "贗品商" or "赝品商" => GetString("Counterfeiter"),
+            "贗品商" or "赝品商" => GetString("Deceiver"),
             "擲彈兵" or "掷雷兵" => GetString("Grenadier"),
             "軍醫" or "医生" => GetString("Medic"),
-            "占卜師" or "调查员" or "占卜师" => GetString("Divinator"),
+            "占卜師" or "调查员" or "占卜师" => GetString("FortuneTeller"),
             "法官" or "正义法官" or "正义审判" => GetString("Judge"),
             "殯葬師" or "入殓师" => GetString("Mortician"),
             "通靈師" or "通灵师" => GetString("Mediumshiper"),
-            "和平之鴿" or "和平之鸽" => GetString("DovesOfNeace"),
+            "和平之鴿" or "和平之鸽" => GetString("Pacifist"),
             "窺視者" or "观察者" or "观察" => GetString("Observer"),
             "君主" => GetString("Monarch"),
-            "預言家" or "预言家" or "预言" => GetString("Farseer"),
-            "驗屍官" or "验尸官" or "验尸" => GetString("Bloodhound"),
+            "預言家" or "预言家" or "预言" => GetString("Overseer"),
+            "驗屍官" or "验尸官" or "验尸" => GetString("Coroner"),
             "正義的追蹤者" or "正义追踪者" or "正义的追踪者" => GetString("Tracker"),
             "商人" => GetString("Merchant"),
             "總統" or "总统" => GetString("President"),
@@ -1151,7 +1183,7 @@ internal class ChatCommands
             "十字軍" or "十字军" => GetString("Crusader"),
             "遐想者" or "遐想" => GetString("Reverie"),
             "瞭望者" or "瞭望员" => GetString("Lookout"),
-            "通訊員" or "通信员" => GetString("Monitor"),
+            "通訊員" or "通信员" => GetString("Telecommunication"),
             "執燈人" or "执灯人" or "执灯" or "灯人" or "小灯人" => GetString("Lighter"),
             "任務管理員" or "任务管理者" => GetString("TaskManager"),
             "目擊者" or "目击者" or "目击" => GetString("Witness"),
@@ -1440,7 +1472,9 @@ internal class ChatCommands
         if (Pirate.DuelCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Pirate command", "OnReceiveChat"); return; }
         if (Councillor.MurderMsg(player, text)) { canceled = true; Logger.Info($"Is Councillor command", "OnReceiveChat"); return; }
         if (Swapper.SwapMsg(player, text)) { canceled = true; Logger.Info($"Is Swapper command", "OnReceiveChat"); return; }
-        if (Mediumshiper.MsMsg(player, text)) { Logger.Info($"Is Medium command", "OnReceiveChat"); return; }
+        if (Medium.MsMsg(player, text)) { Logger.Info($"Is Medium command", "OnReceiveChat"); return; }
+        if (Nemesis.NemesisMsgCheck(player, text)) { Logger.Info($"Is Nemesis Revenge command", "OnReceiveChat"); return; }
+        if (Retributionist.RetributionistMsgCheck(player, text)) { Logger.Info($"Is Retributionist Revenge command", "OnReceiveChat"); return; }
 
         Directory.CreateDirectory(modTagsFiles);
         Directory.CreateDirectory(vipTagsFiles);
@@ -2146,10 +2180,21 @@ internal class ChatCommands
 
             case "/tpout":
                 if (!GameStates.IsLobby) break;
+                if (!Options.PlayerCanUseTP.GetBool())
+                {
+                    Utils.SendMessage(GetString("DisableUseCommand"), player.PlayerId);
+                    break;
+                }
                 player.RpcTeleport(new Vector2(0.1f, 3.8f));
                 break;
             case "/tpin":
                 if (!GameStates.IsLobby) break;
+                if (!Options.PlayerCanUseTP.GetBool())
+                {
+                    Utils.SendMessage(GetString("DisableUseCommand"), player.PlayerId);
+                    break;
+                }
+
                 player.RpcTeleport(new Vector2(-0.2f, 1.3f));
                 break;
 
@@ -2190,6 +2235,11 @@ internal class ChatCommands
                 break;
             case "/rps":
                 //canceled = true;
+                if (!Options.CanPlayMiniGames.GetBool())
+                {
+                    Utils.SendMessage(GetString("DisableUseCommand"), player.PlayerId);
+                    break;
+                }
                 subArgs = args.Length != 2 ? "" : args[1];
 
                 if (!GameStates.IsLobby && player.IsAlive())
@@ -2231,6 +2281,11 @@ internal class ChatCommands
                 }
             case "/coinflip":
                 //canceled = true;
+                if (!Options.CanPlayMiniGames.GetBool())
+                {
+                    Utils.SendMessage(GetString("DisableUseCommand"), player.PlayerId);
+                    break;
+                }
 
                 if (!GameStates.IsLobby && player.IsAlive())
                 {
@@ -2246,6 +2301,11 @@ internal class ChatCommands
                     break;
                 }
             case "/gno":
+                if (!Options.CanPlayMiniGames.GetBool())
+                {
+                    Utils.SendMessage(GetString("DisableUseCommand"), player.PlayerId);
+                    break;
+                }
                 //canceled = true;
                 if (!GameStates.IsLobby && player.IsAlive())
                 {
@@ -2300,6 +2360,11 @@ internal class ChatCommands
                     }
                 }
             case "/rand":
+                if (!Options.CanPlayMiniGames.GetBool())
+                {
+                    Utils.SendMessage(GetString("DisableUseCommand"), player.PlayerId);
+                    break;
+                }
                 subArgs = args.Length != 3 ? "" : args[1];
                 subArgs2 = args.Length != 3 ? "" : args[2];
 

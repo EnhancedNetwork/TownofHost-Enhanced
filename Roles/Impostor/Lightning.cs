@@ -2,24 +2,29 @@
 using System.Collections.Generic;
 using System.Linq;
 using TOHE.Modules;
+using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
-public static class Lightning
+internal class Lightning : RoleBase
 {
-    private static readonly int Id = 24100;
-    public static List<byte> playerIdList = [];
-    public static bool IsEnable = false;
+    private const int Id = 24100;
+
+    public static bool On;
+    public override bool IsEnable => On;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
 
     private static OptionItem KillCooldown;
     private static OptionItem ConvertTime;
     private static OptionItem KillerConvertGhost;
 
+    private static List<byte> playerIdList = [];
     private static List<byte> GhostPlayer = [];
     private static Dictionary<byte, PlayerControl> RealKiller = [];
+
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Lightning);
@@ -29,17 +34,22 @@ public static class Lightning
             .SetValueFormat(OptionFormat.Seconds);
         KillerConvertGhost = BooleanOptionItem.Create(Id + 14, "LightningKillerConvertGhost", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lightning]);
     }
-    public static void Init()
+    public override void Init()
     {
+        On = false;
         playerIdList = [];
         GhostPlayer = [];
         RealKiller = [];
-        IsEnable = false;
     }
-    public static void Add(byte playerId)
+    public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        IsEnable = true;
+        On = true;
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            CustomRoleManager.MarkOthers.Add(GetMarkInGhostPlayer);
+        }
     }
     private static void SendRPC(byte playerId)
     {
@@ -68,18 +78,25 @@ public static class Lightning
                 GhostPlayer.Remove(GhostId);
         }
     }
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    public static bool IsGhost(PlayerControl player) => GhostPlayer.Contains(player.PlayerId);
-    public static bool IsGhost(byte id) => GhostPlayer.Contains(id);
-    public static bool CheckMurder(PlayerControl target) => IsGhost(target);
-    public static bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+    
+    public static bool IsGhost(PlayerControl player) => IsGhost(player.PlayerId);
+    private static bool IsGhost(byte id) => GhostPlayer.Contains(id);
+    
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null || !killer.Is(CustomRoles.Lightning)) return false;
         if (IsGhost(target)) return false;
+
+        killer.RpcGuardAndKill();
+        target.RpcGuardAndKill();
+
         killer.SetKillCooldown();
+
         killer.RPCPlayCustomSound("Shield");
         StartConvertCountDown(killer, target);
-        return true;
+
+        return false;
     }
     private static void StartConvertCountDown(PlayerControl killer, PlayerControl target)
     {
@@ -95,19 +112,21 @@ public static class Lightning
                     killer.RpcGuardAndKill(killer);
 
                 Utils.NotifyRoles();
-                Logger.Info($"{target.GetNameWithRole()} 转化为量子幽灵", "Lightning");
+                Logger.Info($"{target.GetNameWithRole()} transformed into a quantum ghost", "Lightning");
             }
         }, ConvertTime.GetFloat(), "Lightning Convert Player To Ghost");
     }
-    public static void MurderPlayer(PlayerControl killer, PlayerControl target)
+    public override void OnTargetDead(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null || !target.Is(CustomRoles.Lightning)) return;
+        if (killer == null || target == null || killer == target) return;
         if (!KillerConvertGhost.GetBool() || IsGhost(killer)) return;
         RealKiller.TryAdd(killer.PlayerId, target);
         StartConvertCountDown(target, killer);
     }
-    public static void OnFixedUpdate()
+    public override void OnFixedUpdateLowLoad(PlayerControl lightning)
     {
+        if (GhostPlayer.Count <= 0) return;
+
         List<byte> deList = [];
         foreach (var ghost in GhostPlayer.ToArray())
         {
@@ -125,12 +144,11 @@ public static class Lightning
                 if (dis > 0.3f) continue;
 
                 deList.Add(gs.PlayerId);
-                Main.PlayerStates[gs.PlayerId].IsDead = true;
                 Main.PlayerStates[gs.PlayerId].deathReason = PlayerState.DeathReason.Quantization;
                 gs.SetRealKiller(RealKiller[gs.PlayerId]);
                 gs.RpcMurderPlayerV3(gs);
 
-                Logger.Info($"{gs.GetNameWithRole()} 作为量子幽灵因碰撞而死", "Lightning");
+                Logger.Info($"{gs.GetNameWithRole()} As a quantum ghost dying from a collision", "Lightning");
                 break;
             }
         }
@@ -141,7 +159,7 @@ public static class Lightning
             Utils.NotifyRoles();
         }
     }
-    public static void OnReportDeadBody()
+    public override void OnReportDeadBody(PlayerControl reporter, PlayerControl target)
     {
         foreach (var ghost in GhostPlayer.ToArray())
         {
@@ -149,10 +167,24 @@ public static class Lightning
             if (gs == null) continue;
             CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Quantization, gs.PlayerId);
             gs.SetRealKiller(RealKiller[gs.PlayerId]);
-            Logger.Info($"{gs.GetNameWithRole()} 作为量子幽灵参与会议，将在会议后死亡", "Lightning");
+            Logger.Info($"{gs.GetNameWithRole()} is quantum ghost - dead on start meeting", "Lightning");
         }
         GhostPlayer = [];
         SendRPC(byte.MaxValue);
         Utils.NotifyRoles();
+    }
+
+    public string GetMarkInGhostPlayer(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+    {
+        if (isForMeeting) return string.Empty;
+
+        target ??= seer;
+
+        return (!seer.IsAlive() && seer != target && IsGhost(target)) || IsGhost(target) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lightning), "■") : string.Empty;
+    }
+
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.KillButton.OverrideText(Translator.GetString("LightningButtonText"));
     }
 }
